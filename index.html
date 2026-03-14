@@ -1054,6 +1054,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#090912;font-family:
       <div style="font-size:7px;letter-spacing:2px;color:#42A5F5;margin-bottom:6px;font-weight:700">🦸 KARAKTER SEVİYELERİ</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px" id="profCharLevels"></div>
     </div>
+    <!-- Başkasının Profili — Aksiyon Butonları -->
+    <div id="profActionSection" style="display:none;flex-direction:column;gap:8px;border-top:1px solid rgba(255,255,255,.04);padding-top:10px">
+      <div style="display:flex;gap:8px">
+        <button id="btnProfAddFriend" style="flex:1;background:rgba(105,240,174,.08);border:1px solid rgba(105,240,174,.25);color:#69F0AE;border-radius:10px;padding:12px 8px;font-family:inherit;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:1px">👥 ARKADAŞ EKLE</button>
+        <button id="btnProfMessage" style="flex:1;background:rgba(255,152,0,.08);border:1px solid rgba(255,152,0,.25);color:#FF9800;border-radius:10px;padding:12px 8px;font-family:inherit;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:1px">✉️ MESAJ AT</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button id="btnProfPoke" style="flex:1;background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.25);color:#FFD740;border-radius:10px;padding:10px 8px;font-family:inherit;font-size:8px;font-weight:700;cursor:pointer;letter-spacing:1px">👋 DÜRT</button>
+        <button id="btnProfChallenge" style="flex:1;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25);color:#00E5FF;border-radius:10px;padding:10px 8px;font-family:inherit;font-size:8px;font-weight:700;cursor:pointer;letter-spacing:1px">⚔️ MEYDAN OKU</button>
+        <button id="btnProfBlock" style="flex:1;background:rgba(255,82,82,.06);border:1px solid rgba(255,82,82,.15);color:#FF5252;border-radius:10px;padding:10px 8px;font-family:inherit;font-size:8px;font-weight:700;cursor:pointer;letter-spacing:1px">🚫 ENGELLE</button>
+      </div>
+      <div id="profActionLock" style="display:none;text-align:center;font-size:7px;color:#FF9800;background:rgba(255,152,0,.06);border:1px solid rgba(255,152,0,.15);border-radius:8px;padding:6px">🔒 Bu özellik için seviye atla</div>
+    </div>
     <!-- Profil Düzenle -->
     <div id="profEditSection" style="display:flex;flex-direction:column;gap:8px;border-top:1px solid rgba(255,255,255,.04);padding-top:10px">
       <div style="font-size:7px;letter-spacing:2px;color:#7070a0;font-weight:700">✏️ DÜZENLE</div>
@@ -8277,12 +8290,46 @@ function viewPlayerProfile(uid){
     document.getElementById('profTSpin').textContent=st.totalTSpin||0;
     document.getElementById('profCombo').textContent=st.maxCombo||0;
     document.getElementById('profFairPlay').textContent=st.fairPlay||'⭐';
-    // Düzenleme bölümünü gizle (başkasının profili)
+    // Düzenleme bölümünü gizle, aksiyon butonlarını göster (başkasının profili)
     document.getElementById('profEditSection').style.display='none';
+    document.getElementById('profActionSection').style.display='flex';
     document.getElementById('profileTitle').textContent=data.displayName||'PROFİL';
     // Online durumu
     var titleBadge=document.getElementById('profTitleBadge');
     if(data.online){titleBadge.textContent='🟢 ÇEVRİMİÇİ';titleBadge.style.color='#69F0AE';}
+    else{titleBadge.style.color='#7070a0';}
+    // Aksiyon butonlarını wire et
+    var _viewUid=uid;
+    document.getElementById('btnProfAddFriend').onclick=function(){
+      if(_xp.level<3){showPop('🔒 Seviye 3 gerekli','#FF9800');haptic(40);return;}
+      sendFriendRequest(_viewUid);
+    };
+    document.getElementById('btnProfMessage').onclick=function(){
+      if(_xp.level<3){showPop('🔒 Seviye 3 gerekli','#FF9800');haptic(40);return;}
+      var msg=prompt('Mesajını yaz (max 200 karakter):');
+      if(msg&&msg.trim())sendMessage(_viewUid,msg.trim(),'text');
+    };
+    document.getElementById('btnProfPoke').onclick=function(){
+      if(_xp.level<5){showPop('🔒 Seviye 5 gerekli','#FF9800');haptic(40);return;}
+      pokePlayer(_viewUid);
+    };
+    document.getElementById('btnProfChallenge').onclick=function(){
+      if(_xp.level<3){showPop('🔒 Seviye 3 gerekli','#FF9800');haptic(40);return;}
+      sendMessage(_viewUid,'⚔️ Seni düelloya davet ediyor!','challenge');
+      showPop('⚔️ Meydan okuma gönderildi!','#00E5FF');haptic(30);
+    };
+    document.getElementById('btnProfBlock').onclick=function(){
+      if(!confirm((data.displayName||'Bu oyuncu')+'yu engellemek istediğine emin misin?'))return;
+      if(_fb.ready&&_fb.uid){
+        _fb.db.ref('friends/'+_fb.uid+'/'+_viewUid).set({status:'blocked'});
+        showPop('🚫 Engellendi','#FF5252');haptic(60);
+      }
+    };
+    // Seviye kilidi bilgisi
+    var lockInfo=document.getElementById('profActionLock');
+    if(_xp.level<3){lockInfo.style.display='block';lockInfo.textContent='🔒 Arkadaş ekleme ve mesaj için Seviye 3 gerekli (şu an: LV.'+_xp.level+')';}
+    else if(_xp.level<5){lockInfo.style.display='block';lockInfo.textContent='🔒 Dürtme için Seviye 5 gerekli (şu an: LV.'+_xp.level+')';}
+    else{lockInfo.style.display='none';}
     // Etkileşim kaydet
     if(_fb.uid&&uid!==_fb.uid){
       _fb.db.ref('interactions/'+uid+'/'+_fb.uid+'/profileViews').transaction(function(v){return(v||0)+1;});
@@ -8485,6 +8532,7 @@ openProfileScreen=function(uid){
   if(uid&&uid!==_fb.uid){viewPlayerProfile(uid);return;}
   _origOpenProfile();
   document.getElementById('profEditSection').style.display='flex';
+  document.getElementById('profActionSection').style.display='none';
   document.getElementById('profileTitle').textContent='PROFİLİM';
 };
 // Profil kaydetme → DB sync
