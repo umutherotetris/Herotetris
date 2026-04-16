@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Clean Social Engine</title>
+</head>
+<body>
+
+<script>
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-uid], .friend-item, .chat-name");
+  if (!el) return;
+
+  const uid = el.dataset.uid || el.getAttribute("data-uid");
+  if (!uid) return;
+
+  openProfile(uid);
+});
+
+function openProfile(uid) {
+  if (window.auth && auth.currentUser && uid === auth.currentUser.uid) {
+    console.log("Kendi profilin açılıyor");
+  } else {
+    console.log("Yabancı profil açılıyor:", uid);
+  }
+}
+</script>
+
+</body>
+</html>
