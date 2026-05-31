@@ -9,6 +9,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES } from './tetris-heroes.js';
+import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
 
 // Seçili kahraman (oturum boyunca hatırlanır)
 let SELECTED_HERO = (function(){ try{ return localStorage.getItem('hero_tetris_char') || DEFAULT_HERO; }catch(e){ return DEFAULT_HERO; } })();
@@ -91,6 +92,8 @@ function lock(){
     if(y >= 0) G.board[y][x] = G.cur.color;
   });
   clearLines();
+  // Gem düşürme: her parça konunca şansla bir gem envantere
+  maybeDropGem();
   G.cur = G.next;
   G.next = spawn();
   G.canHold = true;
@@ -105,6 +108,41 @@ function lock(){
       if(collides(G.cur, 0, 0)) gameOver();
     } else {
       gameOver();
+    }
+  }
+}
+
+// Parça konunca gem düşür (kahraman gemMult çarpanıyla)
+function maybeDropGem(){
+  if(!G || G.gems.length >= GEM_MAX) return;
+  const chance = GEM_BASE_CHANCE * (G.gemMult || 1);
+  if(Math.random() < chance){
+    const gem = rollGem(SELECTED_HERO);
+    G.gems.push(gem);
+    updateGemBtn();
+    checkFusion();
+  }
+}
+
+// Fusion: aynı gem'den FUSION_COUNT (3) tane → ULTRA güç
+function checkFusion(){
+  if(!G || G.gems.length < FUSION_COUNT) return;
+  const counts = {};
+  G.gems.forEach(g => { counts[g.id] = (counts[g.id] || 0) + 1; });
+  for(const id in counts){
+    if(counts[id] >= FUSION_COUNT){
+      // 3 tanesini kaldır
+      let removed = 0;
+      G.gems = G.gems.filter(g => { if(g.id === id && removed < FUSION_COUNT){ removed++; return false; } return true; });
+      // ULTRA: alt yarıyı temizle + büyük puan + efekt
+      let n = 0;
+      for(let r = Math.floor(ROWS/2); r < ROWS; r++){ if(G.board[r].some(c=>c)) n++; G.board[r] = Array(COLS).fill(0); }
+      G.score += n*100 + 1000;
+      const gem = GEMS.find(g => g.id === id);
+      powerFX(gem || { color:'#FFD740' });
+      flash('💥 ' + (gem ? gem.nm : '') + ' FUSION!');
+      updateGemBtn(); updateHUD();
+      break;
     }
   }
 }
@@ -283,12 +321,77 @@ function usePower(){
   flash(msg);
 }
 
-// Ekran efekti — kahraman rengiyle parlama dalgası
+// Ekran efekti — kahraman/gem rengiyle parlama dalgası
 function powerFX(h){
   if(!G || !G.el.fxLayer) return;
   const fx = G.el.fxLayer;
-  fx.style.setProperty('--fxcol', h.color);
+  fx.style.setProperty('--fxcol', h.color || '#FFD740');
   fx.classList.remove('burst'); void fx.offsetWidth; fx.classList.add('burst');
+}
+
+// "S.GÜÇ" gem butonu güncelle (kaç gem var)
+function updateGemBtn(){
+  if(!G || !G.el.gemBtn) return;
+  const btn = G.el.gemBtn, n = G.gems.length;
+  btn.classList.toggle('has', n > 0);
+  // fusion yaklaşıyor mu (aynıdan 2+)
+  const counts = {}; G.gems.forEach(g => counts[g.id] = (counts[g.id]||0)+1);
+  const fusing = Object.values(counts).some(c => c >= 2);
+  btn.classList.toggle('fusing', fusing);
+  btn.innerHTML = '<span class="pw-ico">💎</span><span class="pw-txt">S.GÜÇ ' + n + '/' + GEM_MAX + '</span>';
+}
+
+// Gem envanter panelini aç
+function openGemSheet(){
+  if(!G || G.over || !G.gems.length) return;
+  G.paused = true;   // panel açıkken oyun durur
+  const sheet = G.el.gemSheet, grid = sheet.querySelector('.gem-grid');
+  const counts = {}; G.gems.forEach(g => counts[g.id] = (counts[g.id]||0)+1);
+  grid.innerHTML = '';
+  G.gems.forEach((gm, i) => {
+    const cnt = counts[gm.id] || 1;
+    const fusing = cnt >= 2;
+    const btn = document.createElement('button');
+    btn.className = 'gem-card' + (fusing ? ' fusing' : '');
+    btn.style.setProperty('--gc', gm.c);
+    btn.innerHTML =
+      (fusing ? '<span class="gem-badge">'+cnt+'x'+(cnt>=3?' 🔗':'→')+'</span>' : '') +
+      '<span class="gem-ic">'+gm.ic+'</span>' +
+      '<span class="gem-nm">'+gm.nm+'</span>' +
+      '<span class="gem-desc">'+gm.desc+'</span>';
+    btn.addEventListener('click', () => pickGem(i));
+    grid.appendChild(btn);
+  });
+  const hasFusing = Object.values(counts).some(c => c >= 2);
+  sheet.querySelector('.gem-hint').style.display = hasFusing ? 'block' : 'none';
+  sheet.classList.add('show');
+}
+function closeGemSheet(){
+  if(!G) return;
+  G.el.gemSheet.classList.remove('show');
+  G.paused = false; G.last = 0;
+}
+function pickGem(idx){
+  if(!G) return;
+  const gem = G.gems[idx];
+  if(!gem){ closeGemSheet(); return; }
+  G.gems.splice(idx, 1);   // gem'i envanterden çıkar
+  closeGemSheet();
+  // Gem etkisini çalıştır
+  const api = {
+    board: G.board, COLS, ROWS,
+    emptyRow: () => Array(COLS).fill(0),
+    addScore: (n) => { G.score += Math.round(n || 0); },
+    slowTime: (ms) => { G.slowUntil = performance.now() + ms; }
+  };
+  let msg = '';
+  try{ msg = gem.run(api) || gem.nm; }catch(e){ console.warn('[tetris] gem', e); msg = gem.nm; }
+  // Krypto gem boost
+  if(G.gemPowerBoost && G.gemPowerBoost > 1){ G.score += Math.floor(200 * G.gemPowerBoost); }
+  updateGemBtn(); updateHUD();
+  powerFX(gem);
+  flash(msg);
+  checkFusion();   // kullanım sonrası kalan gem'lerde fusion olabilir
 }
 
 // ── Karakter seçim ekranı ───────────────────────────────────────
@@ -420,7 +523,18 @@ function build(){
         </div>
       </div>
     </div>
-    <button class="t-power" data-act="power"><span class="pw-ico">⚡</span><span class="pw-txt">GÜÇ %0</span></button>
+    <div class="t-power-row">
+      <button class="t-power" data-act="power"><span class="pw-ico">⚡</span><span class="pw-txt">GÜÇ %0</span></button>
+      <button class="t-gem" data-act="gem"><span class="pw-ico">💎</span><span class="pw-txt">S.GÜÇ 0/5</span></button>
+    </div>
+    <div class="gem-sheet">
+      <div class="gem-sheet-inner">
+        <div class="gem-sheet-title">💎 SÜPER GÜÇLER</div>
+        <div class="gem-grid"></div>
+        <div class="gem-hint">💥 3 aynı gem → ULTRA FUSION!</div>
+        <button class="gem-close" data-act="gemclose">KAPAT</button>
+      </div>
+    </div>
     <div class="tetris-controls">
       <button class="t-ctrl" data-ctrl="left">◀</button>
       <button class="t-ctrl" data-ctrl="rotate">↻</button>
@@ -490,6 +604,8 @@ function bindControls(){
       else if(a==='resume') togglePause(false);
       else if(a==='restart') restart();
       else if(a==='power') usePower();
+      else if(a==='gem') openGemSheet();
+      else if(a==='gemclose') closeGemSheet();
     });
   });
 
@@ -541,6 +657,10 @@ function startGame(){
   G.slowUntil = 0;        // Flash zaman yavaşlatma bitiş (ms timestamp)
   updatePowerBtn();
 
+  // ── Gem (S.Güç) envanteri ──
+  G.gems = [];            // toplanan gem'ler
+  updateGemBtn();
+
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
   G.el.gameover.classList.remove('show');
   G.el.pause.classList.remove('show');
@@ -576,7 +696,9 @@ function launchGame(){
       heroBadge: root.querySelector('.t-herobadge'),
       shieldDot: root.querySelector('.t-shielddot'),
       powerBtn: root.querySelector('.t-power'),
-      fxLayer: root.querySelector('.t-fxlayer')
+      fxLayer: root.querySelector('.t-fxlayer'),
+      gemBtn: root.querySelector('.t-gem'),
+      gemSheet: root.querySelector('.gem-sheet')
     },
     raf: 0
   };
@@ -745,6 +867,57 @@ function injectCSS(){
   30%{ opacity: 1; box-shadow: inset 0 0 60px 10px color-mix(in srgb, var(--fxcol) 70%, transparent); }
   100%{ opacity: 0; box-shadow: inset 0 0 0 0 transparent; background: transparent; }
 }
+
+/* Güç + S.Güç buton satırı */
+.t-power-row{ display: flex; gap: 8px; margin-top: 8px; }
+.t-power-row .t-power{ margin-top: 0; flex: 1.4; }
+.t-gem{
+  flex: 1; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 50px; border-radius: var(--r-lg);
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04); color: var(--text-mute);
+  font-weight: 800; letter-spacing: .5px; transition: color .2s;
+}
+.t-gem .pw-ico{ font-size: 18px; filter: grayscale(.6); }
+.t-gem.has{ color: #fff; border-color: rgba(171,71,188,.5); background: rgba(171,71,188,.1); }
+.t-gem.has .pw-ico{ filter: none; }
+.t-gem.fusing{
+  border-color: #FFD740; color: #FFD740;
+  box-shadow: 0 0 16px rgba(255,215,64,.4);
+  animation: powerPulse 1s ease-in-out infinite;
+}
+.t-gem:active{ transform: scale(.98); }
+
+/* Gem envanter paneli */
+.gem-sheet{
+  position: fixed; inset: 0; z-index: 1002; display: none;
+  align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+}
+.gem-sheet.show{ display: flex; animation: fadeUp .2s ease both; }
+.gem-sheet-inner{
+  width: 100%; max-width: var(--maxw); background: #0c0c16;
+  border-top: 1px solid var(--border-cyan); border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 16px 14px calc(16px + env(safe-area-inset-bottom,0px)); max-height: 70vh; overflow-y: auto;
+}
+.gem-sheet-title{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; letter-spacing: 2px; color: var(--magenta); margin-bottom: 12px; }
+.gem-grid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+.gem-card{
+  --gc: #888; position: relative;
+  background: color-mix(in srgb, var(--gc) 12%, transparent);
+  border: 2px solid var(--gc); border-radius: var(--r-md);
+  padding: 13px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center;
+}
+.gem-card:active{ transform: scale(.97); }
+.gem-card.fusing{ box-shadow: 0 0 14px color-mix(in srgb, var(--gc) 60%, transparent); border-width: 3px; }
+.gem-badge{ position: absolute; top: 4px; right: 4px; font-size: 7px; font-weight: 900; color: var(--gc); background: color-mix(in srgb, var(--gc) 20%, transparent); border-radius: 4px; padding: 1px 4px; }
+.gem-ic{ font-size: 30px; line-height: 1; }
+.gem-nm{ font-size: 11px; font-weight: 700; color: var(--gc); letter-spacing: .5px; margin-top: 4px; }
+.gem-desc{ font-size: 8px; color: var(--text-mute); line-height: 1.3; }
+.gem-hint{ text-align: center; font-size: 8px; color: var(--gold); letter-spacing: 1px; font-weight: 700; padding: 10px 0 4px; }
+.gem-close{ width: 100%; margin-top: 10px; padding: 12px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--r-md); font-weight: 800; font-size: 12px; }
+
 
 `;
   document.head.appendChild(s);
