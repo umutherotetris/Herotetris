@@ -1,0 +1,47 @@
+/* ════════════════════════════════════════════════════════════════
+   Hero Oyun Portalı — TASARIM TOKENLARI
+   Orijinal neon kimliği birebir korunur (palet mevcut dosyadan çıkarıldı).
+   Tüm renk/ölçü tek yerden yönetilir → tutarlılık.
+   ════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&display=swap');
+
+:root{
+  /* ── Neon palet ── */
+  --cyan:    #00E5FF;   /* birincil */
+  --pink:    #FF4081;
+  --magenta: #E040FB;
+  --gold:    #FFD740;
+  --green:   #69F0AE;
+  --red:     #FF5252;
+  --orange:  #FF9800;
+  --blue:    #42A5F5;
+  --purple:  #AB47BC;
+
+  /* ── Metin ── */
+  --text:       #E0E0FF;
+  --text-dim:   #C0C0E0;
+  --text-mute:  #7070A0;
+  --text-faint: #505070;
+
+  /* ── Zemin & yüzey ── */
+  --bg:        #07070d;
+  --bg-2:      #0a0a14;
+  --surface:   rgba(255,255,255,.025);
+  --surface-2: rgba(255,255,255,.04);
+  --border:    rgba(255,255,255,.08);
+  --border-cyan: rgba(0,229,255,.25);
+
+  /* ── Tipografi ── */
+  --font-display: 'Chakra Petch', system-ui, sans-serif;  /* logo + başlıklar */
+  --font-body:    system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* gövde — tam Türkçe, hızlı */
+
+  /* ── Ölçü ── */
+  --r-sm: 8px;  --r-md: 12px;  --r-lg: 16px;  --r-xl: 20px;
+  --gap: 12px;
+  --maxw: 520px;
+
+  /* ── Neon parıltı ── */
+  --glow-cyan: 0 0 18px rgba(0,229,255,.45);
+  --glow-pink: 0 0 18px rgba(255,64,129,.45);
+  --glow-gold: 0 0 14px rgba(255,215,64,.4);
+}
