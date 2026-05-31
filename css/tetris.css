@@ -75,3 +75,39 @@
   .t-panel{ padding: 5px 6px; }
   .t-pval{ font-size: 15px; }
 }
+
+/* ════════ HeroTetris — Karakter seçim ekranı ════════ */
+.hero-select-overlay{
+  position: fixed; inset: 0; z-index: 1001;
+  background:
+    radial-gradient(circle at 25% 5%, rgba(0,229,255,.12), transparent 45%),
+    radial-gradient(circle at 80% 95%, rgba(255,64,129,.10), transparent 45%),
+    #05050b;
+  display: flex; flex-direction: column;
+  padding: calc(8px + env(safe-area-inset-top,0px)) 14px calc(12px + env(safe-area-inset-bottom,0px));
+  animation: fadeUp .25s ease both;
+}
+.hs-top{ display: flex; align-items: center; justify-content: space-between; }
+.hs-title{ font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 2px; color: var(--cyan); text-shadow: var(--glow-cyan); }
+.hs-sub{ text-align: center; font-size: 9px; letter-spacing: 2px; color: var(--text-mute); margin: 4px 0 12px; }
+.hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
+.hero-card{
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md);
+  padding: 11px 7px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  transition: transform .12s, border-color .15s, box-shadow .15s; min-height: 104px;
+}
+.hero-card:active{ transform: scale(.96); }
+.hero-card.selected{ border-color: var(--hc); box-shadow: 0 0 16px color-mix(in srgb, var(--hc) 40%, transparent), inset 0 0 20px color-mix(in srgb, var(--hc) 8%, transparent); }
+.hc-icon{ font-size: 30px; filter: drop-shadow(0 0 8px var(--hc)); }
+.hc-name{ font-family: var(--font-display); font-weight: 700; font-size: 9px; letter-spacing: .5px; color: var(--hc); }
+.hc-passive{ font-size: 7px; line-height: 1.4; color: var(--text-mute); }
+.hs-play{
+  margin-top: 10px; width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--cyan), #39C0FF); color: #001018;
+  font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: 2px;
+  border-radius: var(--r-lg); box-shadow: var(--glow-cyan);
+}
+
+/* Oyun içi kahraman rozeti */
+.t-herobadge{ display: inline-block; font-size: 15px; margin-left: 4px; padding: 0 4px; border-left: 2px solid var(--cyan); }
+.t-shielddot{ font-size: 12px; margin-left: 2px; }
