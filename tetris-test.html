@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tetris Tek Başına Test</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/tetris.css">
+  <style>
+    body{ font-family:system-ui; background:#07070d; color:#e0e0ff; padding:14px; }
+    .row{ padding:8px 10px; border-radius:8px; margin:5px 0; border:1px solid #1e1e32; font-size:12px; line-height:1.5; }
+    .ok{ background:rgba(105,240,174,.08); border-color:rgba(105,240,174,.3); }
+    .err{ background:rgba(255,82,82,.12); border-color:rgba(255,82,82,.4); color:#ffb0b0; }
+    .err pre{ white-space:pre-wrap; word-break:break-word; font-size:10px; margin-top:5px; }
+    #bigBtn{ display:block; width:100%; background:linear-gradient(135deg,#00E5FF,#39C0FF); color:#001018;
+      border:0; border-radius:12px; padding:18px; font-weight:900; font-size:16px; margin:14px 0; }
+  </style>
+</head>
+<body>
+  <h2 style="color:#00E5FF;font-size:15px">🎮 Tetris Tek Başına Test</h2>
+  <div id="log"></div>
+  <button id="bigBtn" style="display:none">▶ TETRİS'İ AÇ</button>
+
+  <script>
+    var log = document.getElementById('log');
+    function add(name, ok, detail){
+      var d = document.createElement('div');
+      d.className = 'row ' + (ok ? 'ok' : 'err');
+      d.innerHTML = (ok?'✅ ':'❌ ') + name + (detail ? '<pre>'+String(detail).replace(/</g,'&lt;')+'</pre>' : '');
+      log.appendChild(d);
+    }
+    window.__add = add;
+    window.addEventListener('error', function(e){ add('PENCERE HATASI', false, (e.message||'')+'\n'+(e.filename||'').split('/').pop()+':'+(e.lineno||'')); });
+    window.addEventListener('unhandledrejection', function(e){ add('PROMISE HATASI', false, (e.reason && (e.reason.stack||e.reason.message))||e.reason); });
+    add('Sayfa yüklendi (klasik script çalışıyor)', true);
+  </script>
+
+  <script type="module">
+    var add = window.__add;
+    add('ES module bloğu çalıştı', true);
+    try{
+      // store.js'i Firebase'siz çökmesin diye DEĞİL — gerçek store dahil et,
+      // ama tetris yalnızca Store.addScore/addKaju/addXP çağırır (oyun sonunda).
+      var mod = await import('./js/games/tetris.js');
+      add('tetris.js yüklendi', true);
+      if(typeof mod.openTetris === 'function'){
+        add('openTetris fonksiyonu var', true);
+        var btn = document.getElementById('bigBtn');
+        btn.style.display = 'block';
+        btn.onclick = function(){
+          try{
+            add('openTetris() çağrılıyor…', true);
+            mod.openTetris();
+            // Açıldıktan sonra overlay gerçekten var mı + canvas boyutu ne
+            setTimeout(function(){
+              var ov = document.querySelector('.tetris-overlay');
+              var cv = document.querySelector('.tetris-canvas');
+              if(!ov){ add('overlay OLUŞMADI', false); return; }
+              add('overlay oluştu', true);
+              if(cv){
+                add('canvas boyutu: ' + cv.style.width + ' × ' + cv.style.height + ' (0×0 ise sorun budur)', cv.style.width !== '0px');
+              } else add('canvas YOK', false);
+            }, 200);
+          }catch(e){ add('openTetris() PATLADI', false, (e && (e.stack||e.message))||e); }
+        };
+      } else {
+        add('openTetris YOK — export hatası', false, 'mod içeriği: ' + Object.keys(mod).join(', '));
+      }
+    }catch(e){
+      add('tetris.js YÜKLENEMEDİ', false, (e && (e.stack||e.message))||e);
+    }
+  </script>
+</body>
+</html>
