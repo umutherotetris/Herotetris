@@ -8,8 +8,16 @@
 //  Eski sistemdeki addKaju/addXP/saveTetrisScore mantığının temiz hali.
 //  Formüller orijinalle birebir: xpForLevel = 300 + lv*200, limit 2000.
 // ════════════════════════════════════════════════════════════════
-import Auth, { db, fdb } from './auth.js';
-const { ref, get, set, update } = fdb;
+import Auth from './auth.js';
+import { firebaseConfig, FIREBASE_SDK } from './firebase-config.js';
+
+// Firebase veritabanı erişimini DOĞRUDAN al (auth.js'in fdb export'una bağlı değil).
+// Böylece auth.js'in hangi sürümü repoda olursa olsun store çalışır.
+const BASE = `https://www.gstatic.com/firebasejs/${FIREBASE_SDK}`;
+const { getDatabase, ref, get, set, update } = await import(`${BASE}/firebase-database.js`);
+const { getApp, getApps, initializeApp } = await import(`${BASE}/firebase-app.js`);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const KAJU_DAILY_LIMIT = 2000;
 
