@@ -21,7 +21,7 @@ const MODES = {
   sprint:   { key:'sprint',   label:'SPRİNT',      icon:'🏃', color:'#E040FB', desc:'40 satırı en hızlı bitir' },
   zen:      { key:'zen',      label:'ZEN',         icon:'🧘', color:'#69F0AE', desc:'Baskısız, sınırsız' }
 };
-let SELECTED_MODE = 'solo';
+let SELECTED_MODE = (function(){ try{ return localStorage.getItem('hero_tetris_mode') || 'solo'; }catch(e){ return 'solo'; } })();
 const SPRINT_TARGET = 40;
 
 // ── Tetromino tanımları (neon renkler) ──────────────────────────
@@ -171,8 +171,16 @@ function clearLines(){
       updatePowerBtn();
     }
     const newLevel = Math.floor(G.lines / 10) + 1;
-    if(newLevel > G.level){ G.level = newLevel; flash('SEVİYE ' + G.level); }
-    G.dropInterval = Math.max(90, Math.round((G.baseInterval - (G.level-1)*70) * (G.speedMult||1)));
+    if(newLevel > G.level){ G.level = newLevel; if(G.mode!=='zen' && G.mode!=='survival') flash('SEVİYE ' + G.level); }
+    // Zen ve Survival kendi hızını yönetir; Solo/Sprint seviyeyle hızlanır
+    if(G.mode === 'solo' || G.mode === 'sprint'){
+      G.dropInterval = Math.max(90, Math.round((G.baseInterval - (G.level-1)*70) * (G.speedMult||1)));
+    }
+    // Sprint: 40 satır → kazandın
+    if(G.mode === 'sprint' && G.lines >= SPRINT_TARGET && !G.won){
+      G.won = true;
+      sprintWin();
+    }
     updateHUD();
   }
 }
@@ -409,27 +417,52 @@ function buildHeroSelect(onPick){
         <span class="hc-passive">${h.passive}</span>
       </button>`;
   });
+  let modeBtns = '';
+  Object.keys(MODES).forEach(key => {
+    const m = MODES[key];
+    const sel = (key === SELECTED_MODE) ? ' selected' : '';
+    modeBtns += `
+      <button class="mode-card${sel}" data-mode="${key}" style="--mc:${m.color}">
+        <span class="mode-ic">${m.icon}</span>
+        <span class="mode-nm">${m.label}</span>
+      </button>`;
+  });
   ov.innerHTML = `
     <div class="hs-top">
       <button class="t-icon" data-act="back">✕</button>
-      <div class="hs-title">KAHRAMANINI SEÇ</div>
+      <div class="hs-title">HEROTETRIS</div>
       <span style="width:38px"></span>
     </div>
-    <div class="hs-sub">Her kahramanın özel pasif gücü var</div>
+    <div class="hs-modes">${modeBtns}</div>
+    <div class="hs-modedesc" id="hsModeDesc"></div>
+    <div class="hs-sub">Kahramanını seç — her birinin özel gücü var</div>
     <div class="hero-grid">${cards}</div>
     <button class="hs-play" data-act="play">▶ OYNA</button>`;
   document.body.appendChild(ov);
 
-  function refresh(){
+  function refreshHeroes(){
     ov.querySelectorAll('.hero-card').forEach(c => c.classList.toggle('selected', c.dataset.hero === SELECTED_HERO));
+  }
+  function refreshModes(){
+    ov.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('selected', c.dataset.mode === SELECTED_MODE));
+    const d = ov.querySelector('#hsModeDesc');
+    if(d) d.textContent = MODES[SELECTED_MODE].icon + ' ' + MODES[SELECTED_MODE].desc;
   }
   ov.querySelectorAll('.hero-card').forEach(card => {
     card.addEventListener('click', () => {
       SELECTED_HERO = card.dataset.hero;
       try{ localStorage.setItem('hero_tetris_char', SELECTED_HERO); }catch(e){}
-      refresh();
+      refreshHeroes();
     });
   });
+  ov.querySelectorAll('.mode-card').forEach(card => {
+    card.addEventListener('click', () => {
+      SELECTED_MODE = card.dataset.mode;
+      try{ localStorage.setItem('hero_tetris_mode', SELECTED_MODE); }catch(e){}
+      refreshModes();
+    });
+  });
+  refreshModes();
   ov.querySelector('[data-act="play"]').addEventListener('click', () => { ov.remove(); onPick(); });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => { ov.remove(); });
   return ov;
@@ -452,6 +485,18 @@ function loop(ts){
   if(!G.last) G.last = ts;
   const dt = ts - G.last; G.last = ts;
   if(!G.paused){
+    G.elapsed += dt;
+    // Hayatta Kal: her 30 saniyede hızlan
+    if(G.mode === 'survival'){
+      const step = Math.floor(G.elapsed / 30000);
+      if(step > G.survStep){
+        G.survStep = step;
+        G.baseInterval = Math.max(120, G.baseInterval - 90);
+        G.dropInterval = Math.max(80, Math.round(G.baseInterval * (G.speedMult||1)));
+        flash('⏱️ HIZLANIYOR!');
+      }
+    }
+    updateModeUI();
     G.dropAcc += dt;
     // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat
     const slowed = (G.slowUntil && ts < G.slowUntil);
@@ -462,11 +507,46 @@ function loop(ts){
   G.raf = requestAnimationFrame(loop);
 }
 
-async function gameOver(){
+function fmtTime(ms){
+  const s = Math.floor(ms/1000); const m = Math.floor(s/60);
+  return m + ':' + String(s%60).padStart(2,'0');
+}
+
+// Mod göstergesini güncelle (süre / sprint ilerleme)
+function updateModeUI(){
+  if(!G || !G.el.modeBar) return;
+  const bar = G.el.modeBar;
+  if(G.mode === 'solo'){ bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  const m = MODES[G.mode];
+  if(G.mode === 'survival'){
+    bar.style.color = m.color;
+    bar.textContent = '⏱️ ' + fmtTime(G.elapsed) + ' · Lv' + (G.survStep+1);
+  } else if(G.mode === 'sprint'){
+    bar.style.color = m.color;
+    const left = Math.max(0, SPRINT_TARGET - G.lines);
+    bar.textContent = '🏃 ' + fmtTime(G.elapsed) + ' · ' + left + ' satır kaldı';
+  } else if(G.mode === 'zen'){
+    bar.style.color = m.color;
+    bar.textContent = '🧘 ' + fmtTime(G.elapsed);
+  }
+}
+
+async function gameOver(){ await endGame(false); }
+async function sprintWin(){ await endGame(true); }
+
+async function endGame(isWin){
+  if(G.over) return;
   G.over = true;
   cancelAnimationFrame(G.raf);
-  const score = G.score;
-  // Ödüller (modest, pozitif)
+  let score = G.score;
+  // Sprint kazanınca süre bonusu (hızlı bitirme ödüllü)
+  if(isWin && G.mode === 'sprint'){
+    const secs = Math.floor(G.elapsed/1000);
+    const timeBonus = Math.max(0, 5000 - secs*20);
+    score += timeBonus;
+    G.score = score;
+  }
   const kaju = Math.min(Math.floor(score / 200), 200);
   const xp   = Math.floor(score / 50);
   let isRecord = false;
@@ -477,8 +557,15 @@ async function gameOver(){
   }catch(e){ console.warn('[tetris] ödül', e); }
 
   const ov = G.el.gameover;
+  ov.querySelector('.go-title').textContent = isWin ? '🏆 KAZANDIN!' : 'OYUN BİTTİ';
   ov.querySelector('.go-score').textContent = score.toLocaleString('tr-TR');
-  ov.querySelector('.go-lines').textContent = G.lines;
+  // Modda süre anlamlıysa satır yerine süreyi göster
+  const lineRow = ov.querySelector('.go-lines').closest('.go-row');
+  if(G.mode === 'sprint' || G.mode === 'survival'){
+    ov.querySelector('.go-lines').textContent = G.lines + ' satır · ' + fmtTime(G.elapsed);
+  } else {
+    ov.querySelector('.go-lines').textContent = G.lines;
+  }
   ov.querySelector('.go-reward').textContent = (kaju>0?('+'+kaju+' 🥜'):'') + (xp>0?('  +'+xp+' XP'):'');
   ov.querySelector('.go-record').style.display = isRecord ? 'block' : 'none';
   ov.classList.add('show');
@@ -494,6 +581,7 @@ function build(){
       <div class="t-title">HEROTETRIS <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
+    <div class="t-modebar" style="display:none"></div>
     <div class="tetris-stage">
       <div class="tetris-side">
         <div class="t-panel"><div class="t-plabel">SKOR</div><div class="t-pval t-score">0</div></div>
@@ -661,6 +749,15 @@ function startGame(){
   G.gems = [];            // toplanan gem'ler
   updateGemBtn();
 
+  // ── Mod durumu ──
+  G.mode = SELECTED_MODE;
+  G.elapsed = 0;          // geçen süre (ms)
+  G.survStep = 0;         // survival: kaç kez hızlandı
+  G.zen = (G.mode === 'zen');
+  G.won = false;
+  if(G.mode === 'zen'){ G.baseInterval = 700; G.dropInterval = Math.round(700 * G.speedMult); }
+  updateModeUI();
+
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
   G.el.gameover.classList.remove('show');
   G.el.pause.classList.remove('show');
@@ -698,7 +795,8 @@ function launchGame(){
       powerBtn: root.querySelector('.t-power'),
       fxLayer: root.querySelector('.t-fxlayer'),
       gemBtn: root.querySelector('.t-gem'),
-      gemSheet: root.querySelector('.gem-sheet')
+      gemSheet: root.querySelector('.gem-sheet'),
+      modeBar: root.querySelector('.t-modebar')
     },
     raf: 0
   };
@@ -806,6 +904,21 @@ function injectCSS(){
 .hs-top{ display: flex; align-items: center; justify-content: space-between; }
 .hs-title{ font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 2px; color: var(--cyan); text-shadow: var(--glow-cyan); }
 .hs-sub{ text-align: center; font-size: 9px; letter-spacing: 2px; color: var(--text-mute); margin: 4px 0 12px; }
+/* Mod seçici */
+.hs-modes{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 8px; }
+.mode-card{
+  --mc: #00E5FF; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md);
+  padding: 9px 4px; transition: border-color .15s, box-shadow .15s;
+}
+.mode-card .mode-ic{ font-size: 20px; }
+.mode-card .mode-nm{ font-size: 7px; font-weight: 800; letter-spacing: .5px; color: var(--text-mute); }
+.mode-card.selected{ border-color: var(--mc); box-shadow: 0 0 12px color-mix(in srgb, var(--mc) 35%, transparent); }
+.mode-card.selected .mode-nm{ color: var(--mc); }
+.mode-card:active{ transform: scale(.95); }
+.hs-modedesc{ text-align: center; font-size: 9px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; min-height: 12px; }
+/* Oyun içi mod göstergesi */
+.t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
 .hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
 .hero-card{
   background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md);
