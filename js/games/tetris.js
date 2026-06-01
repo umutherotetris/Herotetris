@@ -732,17 +732,24 @@ function build(){
 
 function fitCanvas(){
   const wrap = G.root.querySelector('.tetris-board-wrap');
-  // Genişlik henüz 0 ise (overlay yeni eklendi) ekran genişliğinden tahmin et
-  let avail = wrap.clientWidth;
-  if(!avail || avail < 40){
+  // Genişlik
+  let availW = wrap.clientWidth;
+  if(!availW || availW < 40){
     const sideW = 92 + 10;   // yan panel + boşluk
-    avail = Math.max(120, (window.innerWidth || 360) - sideW - 20);
+    availW = Math.max(120, (window.innerWidth || 360) - sideW - 20);
   }
-  let cs = Math.floor(avail / COLS);
-  // Yükseklik taşmasın diye dikey sınır da uygula
-  const availH = (window.innerHeight || 640) - 180;
+  // Yükseklik: sarmalayıcının GERÇEK yüksekliğini ölç (mod barı, güç satırı,
+  // kontroller flex ile yer kaptıktan SONRA kalan alan). Sabit tahmin yapma.
+  let availH = wrap.clientHeight;
+  if(!availH || availH < 60){
+    // İlk render'da ölçülememişse güvenli tahmin (tüm UI elemanlarını düş)
+    const modeBarH = (G.mode && G.mode !== 'solo') ? 30 : 0;
+    availH = Math.max(200, (window.innerHeight || 640) - 56 - modeBarH - 66 - 70 - 24);
+  }
+  // Hücre boyutu: hem genişliğe hem yüksekliğe sığmalı (küçük olanı seç)
+  const csW = Math.floor(availW / COLS);
   const csH = Math.floor(availH / ROWS);
-  if(csH > 6 && csH < cs) cs = csH;
+  let cs = Math.min(csW, csH);
   if(cs < 8) cs = 8;
   G.cellSize = cs;
   const dpr = window.devicePixelRatio || 1;
@@ -905,6 +912,9 @@ function launchGame(){
   bindControls();
   Sound.resume();   // ses bağlamını başlat (OYNA dokunuşuyla)
   startGame();
+  // DOM yerleştikten sonra gerçek ölçüyle yeniden boyutlandır (mod barı dahil)
+  requestAnimationFrame(() => { if(G){ fitCanvas(); drawBoard(); } });
+  setTimeout(() => { if(G){ fitCanvas(); drawBoard(); } }, 80);
 }
 
 
@@ -942,7 +952,7 @@ function injectCSS(){
 .t-next, .t-hold{ display: block; margin: 3px auto 0; }
 
 /* Tahta */
-.tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; }
+.tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; }
 .tetris-canvas{ border: 1px solid var(--border-cyan); border-radius: 8px; background: rgba(0,0,0,.35); box-shadow: 0 0 30px rgba(0,229,255,.12) inset; }
 
 /* Seviye flash */
