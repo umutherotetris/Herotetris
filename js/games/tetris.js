@@ -8,7 +8,7 @@
 //  Dışa açtığı: openTetris() — ana ekrandaki kart bunu çağırır.
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
-import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES } from './tetris-heroes.js';
+import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES, isHeroUnlocked, unlockText } from './tetris-heroes.js';
 import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
 import Sound from './tetris-audio.js';
 import { THEMES, THEME_KEYS, DEFAULT_THEME, drawThemedCell } from './tetris-themes.js';
@@ -80,6 +80,18 @@ function spawn(){
   return { type, color: p.color, matrix: toMatrix(p.cells), x: 3, y: 0 };
 }
 
+// Kuyruğu önizleme sayısı kadar dolu tut
+function fillQueue(){
+  const need = (G.previewCount || 1) + 1;   // +1 buffer
+  while(G.queue.length < need) G.queue.push(spawn());
+}
+// Kuyruktan sıradaki taşı al, kuyruğu yeniden doldur
+function nextFromQueue(){
+  const piece = G.queue.shift();
+  fillQueue();
+  return piece;
+}
+
 function collides(piece, ox, oy, mat){
   const m = mat || piece.matrix;
   const cells = matrixCells(m);
@@ -100,8 +112,7 @@ function lock(){
   clearLines();
   // Gem düşürme: her parça konunca şansla bir gem envantere
   maybeDropGem();
-  G.cur = G.next;
-  G.next = spawn();
+  G.cur = nextFromQueue();
   G.canHold = true;
   if(collides(G.cur, 0, 0)){
     // Nexus enerji kalkanı: ölümden 1 kez kurtul (üst 4 sırayı temizle)
@@ -234,7 +245,7 @@ function hold(){
     const p = PIECES[G.holdType];
     G.cur = { type: G.holdType, color: p.color, matrix: toMatrix(p.cells), x: 3, y: 0 };
   } else {
-    G.cur = G.next; G.next = spawn();
+    G.cur = nextFromQueue();
   }
   G.holdType = curType;
   G.canHold = false;
@@ -288,7 +299,32 @@ function drawMini(canvas, type){
     ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, Math.max(2,s*0.18));
   });
 }
-function drawSide(){ drawMini(G.nextCv, G.next && G.next.type); drawMini(G.holdCv, G.holdType); }
+// Birden fazla sonraki taşı dikey çiz (kahramanın önizleme sayısı kadar)
+function drawNextQueue(canvas, count){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!G.queue || !G.queue.length) return;
+  const n = Math.min(count || 1, G.queue.length);
+  const slotH = canvas.height / n;
+  for(let i=0;i<n;i++){
+    const type = G.queue[i].type;
+    const p = PIECES[type], cells = p.cells;
+    let maxX=0,maxY=0; cells.forEach(([x,y])=>{if(x>maxX)maxX=x;if(y>maxY)maxY=y;});
+    const w=maxX+1, h=maxY+1;
+    const s = Math.floor(Math.min(canvas.width/(w+0.6), slotH/(h+0.4)));
+    const ox = (canvas.width - w*s)/2;
+    const oy = i*slotH + (slotH - h*s)/2;
+    const alpha = i === 0 ? 1 : 0.55;   // ilk taş net, sonrakiler soluk
+    cells.forEach(([x,y]) => {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = i===0?6:3;
+      ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, s-2); ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, Math.max(2,s*0.18));
+    });
+  }
+  ctx.globalAlpha = 1;
+}
+function drawSide(){ drawNextQueue(G.nextCv, G.previewCount || 1); drawMini(G.holdCv, G.holdType); }
 
 // Oyun içi kahraman göstergesi (üst barda ikon + kalkan durumu)
 function updateHeroBar(){
@@ -472,16 +508,33 @@ function pickGem(idx){
 function buildHeroSelect(onPick){
   const ov = document.createElement('div');
   ov.className = 'hero-select-overlay';
+  // Oyuncunun kaju + level'i (kilit kontrolü için)
+  const ps = (function(){ try{ return Store.getState(); }catch(e){ return {}; } })();
+  const pKaju = ps.kaju || 0, pLevel = ps.level || 1;
+
   let cards = '';
   HERO_KEYS.forEach(key => {
     const h = HEROES[key];
-    const sel = (key === SELECTED_HERO) ? ' selected' : '';
-    cards += `
-      <button class="hero-card${sel}" data-hero="${key}" style="--hc:${h.color}">
-        <span class="hc-icon">${h.icon}</span>
-        <span class="hc-name">${h.name}</span>
-        <span class="hc-passive">${h.passive}</span>
-      </button>`;
+    const unlocked = isHeroUnlocked(key, pKaju, pLevel);
+    const sel = (key === SELECTED_HERO && unlocked) ? ' selected' : '';
+    if(unlocked){
+      cards += `
+        <button class="hero-card${sel}" data-hero="${key}" style="--hc:${h.color}">
+          <span class="hc-prev">👁️${h.preview}</span>
+          <span class="hc-icon">${h.icon}</span>
+          <span class="hc-name">${h.name}</span>
+          <span class="hc-passive">${h.passive}</span>
+        </button>`;
+    } else {
+      // Kilitli → sürpriz "?" kartı
+      cards += `
+        <button class="hero-card locked" data-hero="${key}" data-locked="1" style="--hc:${h.color}">
+          <span class="hc-lockbadge">🔒</span>
+          <span class="hc-icon hc-q">?</span>
+          <span class="hc-name">???</span>
+          <span class="hc-unlock">${unlockText(key)}</span>
+        </button>`;
+    }
   });
   let modeBtns = '';
   Object.keys(MODES).forEach(key => {
@@ -519,7 +572,7 @@ function buildHeroSelect(onPick){
   document.body.appendChild(ov);
 
   function refreshHeroes(){
-    ov.querySelectorAll('.hero-card').forEach(c => c.classList.toggle('selected', c.dataset.hero === SELECTED_HERO));
+    ov.querySelectorAll('.hero-card').forEach(c => c.classList.toggle('selected', !c.dataset.locked && c.dataset.hero === SELECTED_HERO));
   }
   function refreshModes(){
     ov.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('selected', c.dataset.mode === SELECTED_MODE));
@@ -531,6 +584,15 @@ function buildHeroSelect(onPick){
   }
   ov.querySelectorAll('.hero-card').forEach(card => {
     card.addEventListener('click', () => {
+      if(card.dataset.locked){
+        // Kilitli: açılma şartını göster, titret
+        const txt = unlockText(card.dataset.hero);
+        const info = ov.querySelector('#hsModeDesc');
+        if(info) info.textContent = '🔒 Kilitli — ' + txt + ' gerekli';
+        card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+        try{ Sound.lock(); }catch(e){}
+        return;
+      }
       SELECTED_HERO = card.dataset.hero;
       try{ localStorage.setItem('hero_tetris_char', SELECTED_HERO); }catch(e){}
       refreshHeroes();
@@ -825,8 +887,7 @@ function togglePause(on){
 function startGame(){
   G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
   G.bag = newBag();
-  G.cur = spawn();
-  G.next = spawn();
+  G.queue = [];
   G.holdType = null; G.canHold = true;
   G.score = 0; G.level = 1; G.lines = 0; G.tetrisCount = 0;
   G.dropAcc = 0; G.last = 0;
@@ -834,11 +895,23 @@ function startGame(){
 
   // ── Kahraman pasif güçleri ──
   resetHeroMods(G);
-  G.hero = HEROES[SELECTED_HERO] || HEROES[DEFAULT_HERO];
+  // Seçili kahraman kilitliyse veya geçersizse varsayılana düş
+  let heroKey = SELECTED_HERO;
+  if(!HEROES[heroKey]){ heroKey = DEFAULT_HERO; }
+  else {
+    const ps = (function(){ try{ return Store.getState(); }catch(e){ return {}; } })();
+    if(!isHeroUnlocked(heroKey, ps.kaju||0, ps.level||1)){ heroKey = DEFAULT_HERO; SELECTED_HERO = DEFAULT_HERO; }
+  }
+  G.hero = HEROES[heroKey] || HEROES[DEFAULT_HERO];
   try{ G.hero.apply(G); }catch(e){ console.warn('[tetris] hero apply', e); }
+  G.previewCount = G.hero.preview || 1;   // kahramana göre önizleme sayısı (2/3/4)
   G.baseInterval = 800;
   G.dropInterval = Math.round(G.baseInterval * G.speedMult);
   G.shieldUsed = false;   // Nexus kalkanı
+
+  // Kuyruğu kur + ilk taşı al (previewCount ayarlandıktan sonra)
+  fillQueue();
+  G.cur = nextFromQueue();
 
   // ── Güç şarj sistemi ──
   G.power = G.hero.power;
@@ -985,12 +1058,15 @@ function injectCSS(){
   display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; margin-top: 10px;
 }
 .t-ctrl{
-  height: 56px; border-radius: var(--r-md);
-  background: var(--surface-2); border: 1px solid var(--border-cyan); color: var(--cyan);
+  height: 56px; border-radius: var(--r-md); position: relative; overflow: hidden;
+  background: linear-gradient(160deg, rgba(0,229,255,.10), rgba(255,255,255,.02));
+  border: 1px solid var(--border-cyan); color: var(--cyan);
   font-size: 22px; font-weight: 700; touch-action: none; user-select: none;
   display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 2px 6px rgba(0,0,0,.3);
 }
-.t-ctrl:active{ background: rgba(0,229,255,.15); transform: scale(.95); }
+.t-ctrl::before{ content:''; position:absolute; top:0; left:0; right:0; height:45%; background:linear-gradient(180deg,rgba(255,255,255,.10),transparent); pointer-events:none; }
+.t-ctrl:active{ background: rgba(0,229,255,.22); transform: scale(.93); box-shadow: inset 0 0 14px rgba(0,229,255,.3); }
 .t-ctrl[data-ctrl="drop"]{ color: var(--pink); border-color: rgba(255,64,129,.4); }
 .t-ctrl[data-ctrl="hold"]{ color: var(--gold); border-color: rgba(255,215,64,.4); }
 .t-ctrl[data-ctrl="rotate"]{ color: var(--magenta); border-color: rgba(224,64,251,.4); }
@@ -1045,15 +1121,47 @@ function injectCSS(){
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
 .hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
 .hero-card{
-  background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md);
-  padding: 11px 7px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
-  transition: transform .12s, border-color .15s, box-shadow .15s; min-height: 104px;
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--hc) 18%, transparent), transparent 70%),
+    linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+  border: 1.5px solid var(--border); border-radius: var(--r-md);
+  padding: 12px 7px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  transition: transform .12s, border-color .15s, box-shadow .15s; min-height: 112px;
+}
+.hero-card::before{
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), transparent); pointer-events: none;
 }
 .hero-card:active{ transform: scale(.96); }
-.hero-card.selected{ border-color: var(--hc); box-shadow: 0 0 16px color-mix(in srgb, var(--hc) 40%, transparent), inset 0 0 20px color-mix(in srgb, var(--hc) 8%, transparent); }
-.hc-icon{ font-size: 30px; filter: drop-shadow(0 0 8px var(--hc)); }
-.hc-name{ font-family: var(--font-display); font-weight: 700; font-size: 9px; letter-spacing: .5px; color: var(--hc); }
-.hc-passive{ font-size: 7px; line-height: 1.4; color: var(--text-mute); }
+.hero-card.selected{
+  border-color: var(--hc);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--hc) 50%, transparent), inset 0 0 24px color-mix(in srgb, var(--hc) 12%, transparent);
+  transform: translateY(-2px);
+}
+.hero-card.selected::after{
+  content: '✓'; position: absolute; top: 5px; right: 6px; z-index: 2;
+  font-size: 10px; font-weight: 900; color: #001018;
+  background: var(--hc); border-radius: 50%; width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px var(--hc);
+}
+.hc-icon{ font-size: 32px; filter: drop-shadow(0 0 10px var(--hc)); position: relative; z-index: 1; }
+.hc-name{ font-family: var(--font-display); font-weight: 700; font-size: 9px; letter-spacing: .5px; color: var(--hc); position: relative; z-index: 1; }
+.hc-passive{ font-size: 7px; line-height: 1.4; color: var(--text-mute); position: relative; z-index: 1; }
+/* Önizleme rozeti (kaç taş görünür) */
+.hc-prev{ position: absolute; top: 5px; left: 6px; z-index: 2; font-size: 7px; font-weight: 800; color: var(--hc);
+  background: color-mix(in srgb, var(--hc) 18%, transparent); border-radius: 4px; padding: 1px 4px; }
+/* Kilitli kart (sürpriz) */
+.hero-card.locked{
+  background: linear-gradient(160deg, rgba(255,255,255,.03), rgba(0,0,0,.2));
+  border-color: rgba(255,255,255,.06); border-style: dashed;
+}
+.hero-card.locked .hc-icon{ filter: none; }
+.hc-q{ font-family: var(--font-display); font-weight: 900; font-size: 40px; color: var(--text-faint); text-shadow: 0 0 16px rgba(255,255,255,.1); }
+.hc-lockbadge{ position: absolute; top: 5px; right: 6px; z-index: 2; font-size: 12px; opacity: .7; }
+.hc-unlock{ font-size: 7px; font-weight: 800; line-height: 1.3; color: var(--gold); letter-spacing: .3px; position: relative; z-index: 1; }
+.hero-card.shake{ animation: cardShake .4s ease; }
+@keyframes cardShake{ 0%,100%{ transform: translateX(0); } 20%,60%{ transform: translateX(-5px); } 40%,80%{ transform: translateX(5px); } }
 .hs-play{
   margin-top: 10px; width: 100%; padding: 15px;
   background: linear-gradient(135deg, var(--cyan), #39C0FF); color: #001018;
@@ -1100,8 +1208,9 @@ function injectCSS(){
 }
 .t-fxlayer.burst{ animation: fxBurst .6s ease-out; }
 @keyframes fxBurst{
-  0%{ opacity: 0; box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--fxcol) 80%, transparent); background: color-mix(in srgb, var(--fxcol) 35%, transparent); }
-  30%{ opacity: 1; box-shadow: inset 0 0 60px 10px color-mix(in srgb, var(--fxcol) 70%, transparent); }
+  0%{ opacity: 0; box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--fxcol) 80%, transparent); background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--fxcol) 45%, transparent), transparent 70%); }
+  25%{ opacity: 1; box-shadow: inset 0 0 80px 16px color-mix(in srgb, var(--fxcol) 75%, transparent), 0 0 40px color-mix(in srgb, var(--fxcol) 50%, transparent); }
+  60%{ opacity: .7; }
   100%{ opacity: 0; box-shadow: inset 0 0 0 0 transparent; background: transparent; }
 }
 
