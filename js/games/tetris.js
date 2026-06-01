@@ -1107,6 +1107,7 @@ function bindTouchGestures(){
   let movedH = 0, movedV = 0;   // toplam hareket (jest tipini ayırmak için)
   let didHardDrop = false;
   let dragColumns = 0;          // sürüklemeyle yapılan yatay adım sayısı
+  let gestureLock = null;       // 'vertical' → yukarı çekme jesti, yatay kilitli
 
   const onStart = (e) => {
     if(!G || G.over || G.paused) return;
@@ -1115,7 +1116,7 @@ function bindTouchGestures(){
     startX = lastX = t.clientX;
     startY = lastY = t.clientY;
     startT = Date.now();
-    movedH = movedV = 0; dragColumns = 0; didHardDrop = false;
+    movedH = movedV = 0; dragColumns = 0; didHardDrop = false; gestureLock = null;
   };
 
   const onMove = (e) => {
@@ -1126,13 +1127,22 @@ function bindTouchGestures(){
     const cell = G.cellSize || 24;
     movedH += Math.abs(dx); movedV += Math.abs(dy);
 
-    // Yatay hareket: bir hücre genişliği kadar sürüklenince 1 adım at
-    const stepThresh = Math.max(18, cell * 0.7);
-    if(Math.abs(t.clientX - startX) >= stepThresh * (Math.abs(dragColumns) + 1) && Math.abs(dx) > 1){
-      if(dx > 0){ move(1); dragColumns++; } else { move(-1); dragColumns--; }
-      e.preventDefault();
+    // Jest kilidi: toplam dikey hareket yataydan belirgin fazlaysa "dikey jest"e kilitlen
+    // (yukarı çekerken parmağın hafif sağa-sola kayması parçayı oynatmasın)
+    const totalUp = startY - t.clientY;   // yukarı = pozitif
+    if(totalUp > cell * 0.8 && movedV > movedH * 1.3){
+      gestureLock = 'vertical';
     }
-    // Aşağı sürükleme: yumuşak düşür (yavaşça aşağı çekince)
+
+    // Yatay hareket — sadece dikey kilit YOKSA uygula
+    if(gestureLock !== 'vertical'){
+      const stepThresh = Math.max(18, cell * 0.7);
+      if(Math.abs(t.clientX - startX) >= stepThresh * (Math.abs(dragColumns) + 1) && Math.abs(dx) > 1){
+        if(dx > 0){ move(1); dragColumns++; } else { move(-1); dragColumns--; }
+        e.preventDefault();
+      }
+    }
+    // Aşağı sürükleme: yumuşak düşür (yalnızca aşağı yönde, dikey kilitliyse de izin ver)
     if(dy > Math.max(14, cell * 0.6)){
       softDrop();
       e.preventDefault();
@@ -1147,18 +1157,17 @@ function bindTouchGestures(){
     active = false;
     if(!G || G.over || G.paused) return;
     const dt = Date.now() - startT;
-    const totalDX = lastX - startX;
-    const totalDY = lastY - startY;
+    const totalUp = startY - lastY;   // yukarı = pozitif
     const cell = G.cellSize || 24;
 
-    // Hızlı YUKARI swipe → sert bırak (kısa sürede büyük yukarı hareket, yatay küçük)
-    if(totalDY < -cell * 2 && dt < 300 && movedH < movedV){
+    // YUKARI çekme → sert bırak. Dikey kilide girdiyse veya yeterince yukarı çekildiyse.
+    // (yatay sürüklemeyle karışmasın diye movedV > movedH kontrolü)
+    if((gestureLock === 'vertical' || totalUp > cell * 1.5) && movedV >= movedH){
       hardDrop();
       return;
     }
     // Dokunma (tap): çok az hareket + kısa süre → döndür
     if(movedH < 12 && movedV < 12 && dt < 250){
-      // Sağ yarıya dokunma = saat yönü, sol yarı = ters yön
       const rect = wrap.getBoundingClientRect();
       const tapX = startX - rect.left;
       if(tapX > rect.width / 2) rotate('cw');
