@@ -10,6 +10,11 @@
 import Store from '../store.js';
 import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES } from './tetris-heroes.js';
 import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
+import Sound from './tetris-audio.js';
+import { THEMES, THEME_KEYS, DEFAULT_THEME, drawThemedCell } from './tetris-themes.js';
+
+// Seçili tema (oturum boyunca hatırlanır)
+let SELECTED_THEME = (function(){ try{ return localStorage.getItem('hero_tetris_theme') || DEFAULT_THEME; }catch(e){ return DEFAULT_THEME; } })();
 
 // Seçili kahraman (oturum boyunca hatırlanır)
 let SELECTED_HERO = (function(){ try{ return localStorage.getItem('hero_tetris_char') || DEFAULT_HERO; }catch(e){ return DEFAULT_HERO; } })();
@@ -87,6 +92,7 @@ function collides(piece, ox, oy, mat){
 }
 
 function lock(){
+  Sound.lock();
   matrixCells(G.cur.matrix).forEach(([cx,cy]) => {
     const x = G.cur.x + cx, y = G.cur.y + cy;
     if(y >= 0) G.board[y][x] = G.cur.color;
@@ -104,6 +110,7 @@ function lock(){
       for(let i=0;i<4;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
       G.cur.y = 0; G.cur.x = 3;
       flash('🛡️ KALKAN!');
+      Sound.shield(); screenShake(10);
       updateHeroBar();
       if(collides(G.cur, 0, 0)) gameOver();
     } else {
@@ -119,6 +126,7 @@ function maybeDropGem(){
   if(Math.random() < chance){
     const gem = rollGem(SELECTED_HERO);
     G.gems.push(gem);
+    Sound.gem();
     updateGemBtn();
     checkFusion();
   }
@@ -140,6 +148,7 @@ function checkFusion(){
       G.score += n*100 + 1000;
       const gem = GEMS.find(g => g.id === id);
       powerFX(gem || { color:'#FFD740' });
+      Sound.fusion(); screenShake(14);
       flash('💥 ' + (gem ? gem.nm : '') + ' FUSION!');
       updateGemBtn(); updateHUD();
       break;
@@ -149,20 +158,27 @@ function checkFusion(){
 
 function clearLines(){
   let cleared = 0;
+  const clearedRows = [];
   for(let y=ROWS-1;y>=0;y--){
     if(G.board[y].every(c => c)){
+      clearedRows.push(y);
       G.board.splice(y,1);
       G.board.unshift(Array(COLS).fill(0));
       cleared++; y++;
     }
   }
   if(cleared > 0){
+    // Görsel + ses
+    spawnLineParticles(clearedRows, cleared);
+    screenShake(cleared >= 4 ? 10 : 5);
+    if(cleared >= 4) Sound.tetris(); else Sound.line(cleared);
+
     G.lines += cleared;
     G.score += Math.round(LINE_SCORE[cleared] * G.level * (G.speedBonus || 1));
-    if(cleared === 4) G.tetrisCount++;
+    if(cleared === 4){ G.tetrisCount++; flash('🔥 TETRİS!'); }
     // Hulk: her 20 satırda alt sırayı temizle (sarsıntı)
     if(G.hulkQuake && Math.floor(G.lines/20) > Math.floor((G.lines-cleared)/20)){
-      G.board.shift(); G.board.push(Array(COLS).fill(0)); flash('🌋 SARSINTI');
+      G.board.shift(); G.board.push(Array(COLS).fill(0)); flash('🌋 SARSINTI'); screenShake(8);
     }
     // Güç şarjı (her satır şarjı doldurur)
     if(!G.powerReady){
@@ -171,7 +187,7 @@ function clearLines(){
       updatePowerBtn();
     }
     const newLevel = Math.floor(G.lines / 10) + 1;
-    if(newLevel > G.level){ G.level = newLevel; if(G.mode!=='zen' && G.mode!=='survival') flash('SEVİYE ' + G.level); }
+    if(newLevel > G.level){ G.level = newLevel; Sound.level(); if(G.mode!=='zen' && G.mode!=='survival') flash('SEVİYE ' + G.level); }
     // Zen ve Survival kendi hızını yönetir; Solo/Sprint seviyeyle hızlanır
     if(G.mode === 'solo' || G.mode === 'sprint'){
       G.dropInterval = Math.max(90, Math.round((G.baseInterval - (G.level-1)*70) * (G.speedMult||1)));
@@ -186,26 +202,26 @@ function clearLines(){
 }
 
 // ── Hamleler ────────────────────────────────────────────────────
-function move(dir){ if(!G.cur || G.over || G.paused) return; if(!collides(G.cur, dir, 0)){ G.cur.x += dir; } }
+function move(dir){ if(!G.cur || G.over || G.paused) return; if(!collides(G.cur, dir, 0)){ G.cur.x += dir; Sound.move(); } }
 function softDrop(){
   if(!G.cur || G.over || G.paused) return;
   const step = G.softSpeedMult > 1 ? 2 : 1;   // Flash: 2 hücre
   let moved = false;
   for(let i=0;i<step;i++){ if(!collides(G.cur, 0, 1)){ G.cur.y++; moved = true; } else { if(i===0) lock(); break; } }
-  if(moved){ G.score += (G.softBonus ? 2 : 1); updateHUD(); }
+  if(moved){ G.score += (G.softBonus ? 2 : 1); Sound.soft(); updateHUD(); }
   G.dropAcc = 0;
 }
 function hardDrop(){
   if(!G.cur || G.over || G.paused) return;
   let d = 0; while(!collides(G.cur, 0, 1)){ G.cur.y++; d++; }
-  G.score += d * 2 + (G.hardDropBonus || 0); updateHUD(); lock(); G.dropAcc = 0;
+  G.score += d * 2 + (G.hardDropBonus || 0); Sound.hard(); updateHUD(); lock(); G.dropAcc = 0;
 }
 function rotate(){
   if(!G.cur || G.over || G.paused) return;
   const r = rotateCW(G.cur.matrix);
   for(const k of [0, -1, 1, -2, 2]){   // basit duvar tekmesi
     if(!collides(G.cur, k, 0, r)){
-      G.cur.matrix = r; G.cur.x += k;
+      G.cur.matrix = r; G.cur.x += k; Sound.rotate();
       if(G.rotBonus){ G.score += G.rotBonus; updateHUD(); }   // Spiderman
       return;
     }
@@ -222,23 +238,13 @@ function hold(){
   }
   G.holdType = curType;
   G.canHold = false;
+  Sound.hold();
   drawSide();
 }
 
 // ── Çizim ───────────────────────────────────────────────────────
 function cell(ctx, x, y, size, color, ghost){
-  const px = x*size, py = y*size, g = 1;
-  if(ghost){
-    ctx.strokeStyle = color; ctx.globalAlpha = .35; ctx.lineWidth = 2;
-    ctx.strokeRect(px+g+1, py+g+1, size-2*g-2, size-2*g-2); ctx.globalAlpha = 1; return;
-  }
-  ctx.fillStyle = color;
-  ctx.shadowColor = color; ctx.shadowBlur = 8;
-  ctx.fillRect(px+g, py+g, size-2*g, size-2*g);
-  ctx.shadowBlur = 0;
-  // iç parlama
-  ctx.fillStyle = 'rgba(255,255,255,.22)';
-  ctx.fillRect(px+g, py+g, size-2*g, Math.max(2, size*0.18));
+  drawThemedCell(ctx, x, y, size, color, (G && G.theme) || SELECTED_THEME, ghost);
 }
 
 function drawBoard(){
@@ -325,7 +331,8 @@ function usePower(){
   // Şarjı sıfırla
   G.charge = 0; G.powerReady = false;
   updatePowerBtn(); updateHUD();
-  powerFX(h);
+  Sound.power();
+  powerFX(h); screenShake(7);
   flash(msg);
 }
 
@@ -335,6 +342,64 @@ function powerFX(h){
   const fx = G.el.fxLayer;
   fx.style.setProperty('--fxcol', h.color || '#FFD740');
   fx.classList.remove('burst'); void fx.offsetWidth; fx.classList.add('burst');
+}
+
+// ── Parçacık sistemi (satır temizleme patlaması) ──
+function spawnLineParticles(rows, count){
+  if(!G || !G.particles) G.particles = [];
+  const s = G.cellSize;
+  const colors = ['#00E5FF','#FF4081','#FFD740','#69F0AE','#E040FB','#42A5F5'];
+  rows.forEach(ry => {
+    const py = ry * s + s/2;
+    // satır boyunca parçacıklar
+    for(let i=0;i<COLS*2;i++){
+      const px = Math.random() * COLS * s;
+      G.particles.push({
+        x: px, y: py,
+        vx: (Math.random()-0.5) * 6,
+        vy: (Math.random()-0.5) * 6 - 2,
+        life: 1, decay: 0.02 + Math.random()*0.03,
+        size: 2 + Math.random()*3,
+        color: colors[Math.floor(Math.random()*colors.length)]
+      });
+    }
+  });
+  // çok parçacık olmasın
+  if(G.particles.length > 400) G.particles = G.particles.slice(-400);
+}
+
+function updateParticles(){
+  if(!G || !G.particles || !G.particles.length) return;
+  const ctx = G.ctx;
+  for(let i=G.particles.length-1;i>=0;i--){
+    const p = G.particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.life -= p.decay;
+    if(p.life <= 0){ G.particles.splice(i,1); continue; }
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color; ctx.shadowBlur = 6;
+    ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+  }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+}
+
+// ── Ekran sarsıntısı ──
+function screenShake(intensity){
+  if(!G || !G.canvas) return;
+  G.shake = intensity || 5;
+  G.shakeDecay = (intensity || 5) / 12;
+}
+function applyShake(){
+  if(!G || !G.canvas) return;
+  if(G.shake && G.shake > 0.3){
+    const dx = (Math.random()-0.5) * G.shake;
+    const dy = (Math.random()-0.5) * G.shake;
+    G.canvas.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
+    G.shake -= G.shakeDecay;
+  } else if(G.canvas.style.transform){
+    G.canvas.style.transform = '';
+    G.shake = 0;
+  }
 }
 
 // "S.GÜÇ" gem butonu güncelle (kaç gem var)
@@ -397,7 +462,8 @@ function pickGem(idx){
   // Krypto gem boost
   if(G.gemPowerBoost && G.gemPowerBoost > 1){ G.score += Math.floor(200 * G.gemPowerBoost); }
   updateGemBtn(); updateHUD();
-  powerFX(gem);
+  Sound.gemPick();
+  powerFX(gem); screenShake(6);
   flash(msg);
   checkFusion();   // kullanım sonrası kalan gem'lerde fusion olabilir
 }
@@ -427,14 +493,26 @@ function buildHeroSelect(onPick){
         <span class="mode-nm">${m.label}</span>
       </button>`;
   });
+  let themeBtns = '';
+  THEME_KEYS.forEach(key => {
+    const t = THEMES[key];
+    const sel = (key === SELECTED_THEME) ? ' selected' : '';
+    themeBtns += `
+      <button class="theme-card${sel}" data-theme="${key}">
+        <span class="theme-ic">${t.icon}</span>
+        <span class="theme-nm">${t.name}</span>
+      </button>`;
+  });
   ov.innerHTML = `
     <div class="hs-top">
       <button class="t-icon" data-act="back">✕</button>
       <div class="hs-title">HEROTETRIS</div>
-      <span style="width:38px"></span>
+      <button class="t-icon" data-act="sound" title="Ses">${Sound.enabled ? '🔊' : '🔇'}</button>
     </div>
     <div class="hs-modes">${modeBtns}</div>
     <div class="hs-modedesc" id="hsModeDesc"></div>
+    <div class="hs-label">🎨 TAŞ TEMASI</div>
+    <div class="hs-themes">${themeBtns}</div>
     <div class="hs-sub">Kahramanını seç — her birinin özel gücü var</div>
     <div class="hero-grid">${cards}</div>
     <button class="hs-play" data-act="play">▶ OYNA</button>`;
@@ -447,6 +525,9 @@ function buildHeroSelect(onPick){
     ov.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('selected', c.dataset.mode === SELECTED_MODE));
     const d = ov.querySelector('#hsModeDesc');
     if(d) d.textContent = MODES[SELECTED_MODE].icon + ' ' + MODES[SELECTED_MODE].desc;
+  }
+  function refreshThemes(){
+    ov.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('selected', c.dataset.theme === SELECTED_THEME));
   }
   ov.querySelectorAll('.hero-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -462,7 +543,18 @@ function buildHeroSelect(onPick){
       refreshModes();
     });
   });
+  ov.querySelectorAll('.theme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      SELECTED_THEME = card.dataset.theme;
+      try{ localStorage.setItem('hero_tetris_theme', SELECTED_THEME); }catch(e){}
+      refreshThemes();
+    });
+  });
   refreshModes();
+  ov.querySelector('[data-act="sound"]').addEventListener('click', (e) => {
+    const on = Sound.toggle();
+    e.currentTarget.textContent = on ? '🔊' : '🔇';
+  });
   ov.querySelector('[data-act="play"]').addEventListener('click', () => { ov.remove(); onPick(); });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => { ov.remove(); });
   return ov;
@@ -503,6 +595,8 @@ function loop(ts){
     const interval = slowed ? G.dropInterval * 4 : G.dropInterval;
     if(G.dropAcc >= interval){ G.dropAcc = 0; if(!collides(G.cur, 0, 1)){ G.cur.y++; } else lock(); }
     drawBoard(); drawSide();
+    updateParticles();
+    applyShake();
   }
   G.raf = requestAnimationFrame(loop);
 }
@@ -539,6 +633,7 @@ async function endGame(isWin){
   if(G.over) return;
   G.over = true;
   cancelAnimationFrame(G.raf);
+  if(isWin) Sound.win(); else Sound.gameover();
   let score = G.score;
   // Sprint kazanınca süre bonusu (hızlı bitirme ödüllü)
   if(isWin && G.mode === 'sprint'){
@@ -758,6 +853,11 @@ function startGame(){
   if(G.mode === 'zen'){ G.baseInterval = 700; G.dropInterval = Math.round(700 * G.speedMult); }
   updateModeUI();
 
+  // ── Tema + efekt durumu ──
+  G.theme = SELECTED_THEME;
+  G.particles = [];
+  G.shake = 0;
+
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
   G.el.gameover.classList.remove('show');
   G.el.pause.classList.remove('show');
@@ -803,6 +903,7 @@ function launchGame(){
   G.resizeHandler = () => { if(G){ fitCanvas(); drawBoard(); } };
   window.addEventListener('resize', G.resizeHandler);
   bindControls();
+  Sound.resume();   // ses bağlamını başlat (OYNA dokunuşuyla)
   startGame();
 }
 
@@ -917,6 +1018,19 @@ function injectCSS(){
 .mode-card.selected .mode-nm{ color: var(--mc); }
 .mode-card:active{ transform: scale(.95); }
 .hs-modedesc{ text-align: center; font-size: 9px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; min-height: 12px; }
+/* Tema seçici */
+.hs-label{ font-size: 8px; letter-spacing: 2px; color: var(--text-mute); font-weight: 800; margin: 2px 0 6px; }
+.hs-themes{ display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; margin-bottom: 8px; }
+.theme-card{
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 7px 10px; min-width: 54px;
+}
+.theme-card .theme-ic{ font-size: 18px; }
+.theme-card .theme-nm{ font-size: 7px; font-weight: 800; letter-spacing: .5px; color: var(--text-mute); }
+.theme-card.selected{ border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,229,255,.3); }
+.theme-card.selected .theme-nm{ color: var(--cyan); }
+.theme-card:active{ transform: scale(.95); }
 /* Oyun içi mod göstergesi */
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
 .hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
