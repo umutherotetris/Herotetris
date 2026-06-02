@@ -75,8 +75,13 @@ function shade(hex, amt){
 export function drawThemedCell(ctx, x, y, size, color, themeKey, ghost){
   const px = x*size, py = y*size, g = 1, w = size - 2*g, h = size - 2*g;
   if(ghost){
-    ctx.strokeStyle = color; ctx.globalAlpha = 0.35; ctx.lineWidth = 2;
-    ctx.strokeRect(px+g+1, py+g+1, w-2, h-2); ctx.globalAlpha = 1; return;
+    // Hafif dolgu + parlayan çerçeve (düşüş yeri net görünür)
+    ctx.fillStyle = color; ctx.globalAlpha = 0.12;
+    ctx.fillRect(px+g+1, py+g+1, w-2, h-2);
+    ctx.globalAlpha = 0.5; ctx.strokeStyle = color; ctx.lineWidth = 2;
+    ctx.shadowColor = color; ctx.shadowBlur = 6;
+    ctx.strokeRect(px+g+1.5, py+g+1.5, w-3, h-3);
+    ctx.shadowBlur = 0; ctx.globalAlpha = 1; return;
   }
   const theme = themeKey || 'neon';
 
