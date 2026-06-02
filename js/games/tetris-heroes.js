@@ -16,13 +16,16 @@ export const HEROES = {
     strengths: ['⚡ Sert bırakışta +50 puan', '🛡️ Çöp bloğa direnç'],
     weaknesses: ['🌑 Kaos gem 2x etki'],
     apply: (g) => { g.speedMult = 0.85; g.hardDropBonus = 50; },
-    power: { name: 'IŞIN PATLAMASI', icon: '💠', fx: 'laser', desc: 'En dolu satırı siler',
+    power: { name: 'IŞIN PATLAMASI', icon: '💠', fx: 'laser', desc: 'En dolu 2 satırı siler',
       run: (api) => {
-        let bestR = -1, bestFill = 0;
-        for(let r=0;r<api.ROWS;r++){ const f = api.board[r].filter(c=>c).length; if(f>bestFill){ bestFill=f; bestR=r; } }
-        if(bestR >= 0){ api.board.splice(bestR,1); api.board.unshift(api.emptyRow()); }
-        api.addScore(bestFill*60 + 150);
-        return '💠 IŞIN PATLAMASI!';
+        let total = 0;
+        for(let k=0;k<2;k++){
+          let bestR = -1, bestFill = 0;
+          for(let r=0;r<api.ROWS;r++){ const f = api.board[r].filter(c=>c).length; if(f>bestFill){ bestFill=f; bestR=r; } }
+          if(bestR >= 0 && bestFill > 0){ api.board.splice(bestR,1); api.board.unshift(api.emptyRow()); total += bestFill; }
+        }
+        api.addScore(total*60 + 250);
+        return 'IŞIN PATLAMASI!';
       } }
   },
   arak: {
@@ -32,12 +35,13 @@ export const HEROES = {
     strengths: ['🔄 Döndürme puanı', '💨 Yavaş indirme bonusu'],
     weaknesses: ['💣 Bomba gem 1.5x'],
     apply: (g) => { g.rotBonus = 5; g.softBonus = true; },
-    power: { name: 'AĞ ÇEKİMİ', icon: '🕸️', fx: 'web', desc: 'Alttaki 2 sırayı boşaltır',
+    power: { name: 'AĞ ÇEKİMİ', icon: '🕸️', fx: 'web', desc: 'Alttaki 3 sırayı boşaltır + yavaşlatır',
       run: (api) => {
         let moved = 0;
-        for(let i=0;i<2;i++){ if(api.board[api.ROWS-1].some(c=>c)){ api.board.splice(api.ROWS-1,1); api.board.unshift(api.emptyRow()); moved++; } }
-        api.addScore(moved*80 + 100);
-        return '🕸️ AĞ ÇEKİMİ!';
+        for(let i=0;i<3;i++){ if(api.board[api.ROWS-1].some(c=>c)){ api.board.splice(api.ROWS-1,1); api.board.unshift(api.emptyRow()); moved++; } }
+        api.slowTime(4000);
+        api.addScore(moved*80 + 150);
+        return 'AĞ ÇEKİMİ!';
       } }
   },
   ksen: {
@@ -52,7 +56,7 @@ export const HEROES = {
         let cleared = 0;
         for(let i=0;i<3;i++){ if(api.board[api.ROWS-1].some(c=>c)){ api.board.splice(api.ROWS-1,1); api.board.unshift(api.emptyRow()); cleared++; } }
         api.addScore(cleared*100 + 200);
-        return '☢️ ÇEKİRDEK PATLAMA!';
+        return 'ÇEKİRDEK PATLAMA!';
       } }
   },
   gol: {
@@ -66,10 +70,10 @@ export const HEROES = {
       run: (api) => {
         let removed = 0;
         for(let r=0;r<api.ROWS;r++) for(let c=0;c<api.COLS;c++){
-          if(api.board[r][c] && Math.random() < 0.35){ api.board[r][c] = 0; removed++; }
+          if(api.board[r][c] && Math.random() < 0.45){ api.board[r][c] = 0; removed++; }
         }
         api.addScore(removed*15 + 100);
-        return '🗡️ GÖLGE BIÇAĞI! ' + removed;
+        return 'GÖLGE BIÇAĞI! ' + removed;
       } }
   },
   hiz: {
@@ -80,7 +84,7 @@ export const HEROES = {
     weaknesses: ['🧊 Dondurma 2x uzun'],
     apply: (g) => { g.softSpeedMult = 2; g.speedBonus = 1.25; },
     power: { name: 'ZAMAN BÜKÜMÜ', icon: '🕐', fx: 'timeslow', desc: '8 sn taşlar çok yavaş',
-      run: (api) => { api.slowTime(8000); api.addScore(120); return '🕐 ZAMAN BÜKÜMÜ!'; } }
+      run: (api) => { api.slowTime(8000); api.addScore(120); return 'ZAMAN BÜKÜMÜ!'; } }
   },
   ELARA: {
     name: 'ELARA', icon: '👑', color: '#E91E63', preview: 3,
@@ -93,7 +97,7 @@ export const HEROES = {
       run: (api) => {
         for(let r=0;r<api.ROWS;r++){ if(api.board[r].some(c=>c)){ api.board.splice(r,1); api.board.unshift(api.emptyRow()); break; } }
         api.addScore(250);
-        return '👑 TAÇ FIRLATILDI!';
+        return 'TAÇ FIRLATILDI!';
       } }
   },
   golem: {
@@ -108,7 +112,7 @@ export const HEROES = {
         let cleared = 0;
         for(let i=0;i<4;i++){ if(api.board[api.ROWS-1].some(c=>c)){ api.board.splice(api.ROWS-1,1); api.board.unshift(api.emptyRow()); cleared++; } }
         api.addScore(cleared*120 + 250);
-        return '🌋 YIKIM SARSINTI!';
+        return 'YIKIM SARSINTI!';
       } }
   },
   pal: {
@@ -123,10 +127,10 @@ export const HEROES = {
         if(Math.random() < 0.5){
           let n = 0; for(let r=8;r<api.ROWS;r++){ if(api.board[r].some(c=>c)) n++; api.board[r] = api.emptyRow(); }
           api.addScore(n*80 + 200);
-          return '🃏 KAOS: TEMİZLİK!';
+          return 'KAOS: TEMİZLİK!';
         }
         api.addScore(800);
-        return '🃏 KAOS: +800!';
+        return 'KAOS: +800!';
       } }
   },
   neks: {
@@ -145,7 +149,7 @@ export const HEROES = {
           for(let r=0;r<api.ROWS;r++){ api.board[r][c] = (r >= start) ? col[r - start] : 0; }
         }
         api.addScore(300);
-        return '🌌 KOZMİK ÇEKİM!';
+        return 'KOZMİK ÇEKİM!';
       } }
   }
 };
