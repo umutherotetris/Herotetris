@@ -8,6 +8,7 @@
 //  Dışa açtığı: openTetris() — ana ekrandaki kart bunu çağırır.
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
+import Auth from '../auth.js';
 import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES, isHeroUnlocked, unlockText } from './tetris-heroes.js';
 import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
 import Sound from './tetris-audio.js';
@@ -45,9 +46,9 @@ const SPRINT_TARGET = 40;
 
 // AI zorluk profilleri: satır temizleme hızı (ms) + tetris şansı
 const AI_PROFILES = {
-  easy:   { label:'KOLAY',  icon:'😊', color:'#69F0AE', clearMs:[4500,7000], tetrisChance:0.10, mult:0.7 },
-  normal: { label:'NORMAL', icon:'🤖', color:'#7C4DFF', clearMs:[3000,4800], tetrisChance:0.20, mult:1.0 },
-  hard:   { label:'ZOR',    icon:'👹', color:'#F44336', clearMs:[1800,3200], tetrisChance:0.32, mult:1.3 }
+  easy:   { label:'KOLAY',  icon:'😊', color:'#69F0AE', dropMs:750, moveMs:260, tetrisChance:0.10, mult:0.7 },
+  normal: { label:'NORMAL', icon:'🤖', color:'#7C4DFF', dropMs:480, moveMs:160, tetrisChance:0.20, mult:1.0 },
+  hard:   { label:'ZOR',    icon:'👹', color:'#F44336', dropMs:280, moveMs:90,  tetrisChance:0.32, mult:1.3 }
 };
 
 // ── Tetromino tanımları (neon renkler) ──────────────────────────
@@ -132,11 +133,14 @@ function collides(piece, ox, oy, mat){
 
 function lock(){
   Sound.lock();
+  const linesBefore = G.lines;
   matrixCells(G.cur.matrix).forEach(([cx,cy]) => {
     const x = G.cur.x + cx, y = G.cur.y + cy;
     if(y >= 0) G.board[y][x] = G.cur.color;
   });
   clearLines();
+  // Satır temizlenmediyse combo sıfırla
+  if(G.lines === linesBefore){ G.combo = 0; }
   // Gem düşürme: her parça konunca şansla bir gem envantere
   maybeDropGem();
   // Versus: bekleyen çöp sıralarını uygula (alttan ekle, üstten kaydır)
@@ -147,6 +151,17 @@ function lock(){
   G.cur = nextFromQueue();
   G.canHold = true;
   if(collides(G.cur, 0, 0)){
+    // Admin yenilmez mod: ölme, üst yarıyı temizle ve devam et
+    if(G.godmode){
+      const half = Math.floor(ROWS/2);
+      for(let i=0;i<half;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
+      G.cur.y = 0; G.cur.x = 3;
+      flash('🛡️ YENİLMEZ');
+      if(collides(G.cur, 0, 0)){ // hâlâ sığmıyorsa tahtayı tamamen temizle
+        G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
+      }
+      return;
+    }
     // Nexus enerji kalkanı: ölümden 1 kez kurtul (üst 4 sırayı temizle)
     if(G.nexusShield && !G.shieldUsed){
       G.shieldUsed = true;
@@ -211,9 +226,13 @@ function clearLines(){
     }
   }
   if(cleared > 0){
-    // Görsel + ses
+    // Combo takibi (arka arkaya temizleme)
+    G.combo = (G.combo || 0) + 1;
+    if(G.combo > 1){ showCombo(G.combo); G.score += (G.combo - 1) * 50; }
+    // Görsel + ses (combo'ya göre daha bol parçacık)
     spawnLineParticles(clearedRows, cleared);
-    screenShake(cleared >= 4 ? 10 : 5);
+    flashRows(clearedRows, cleared);
+    screenShake(cleared >= 4 ? 12 : 5 + cleared);
     if(cleared >= 4) Sound.tetris(); else Sound.line(cleared);
 
     G.lines += cleared;
@@ -224,8 +243,8 @@ function clearLines(){
       const garbageMap = { 1:0, 2:1, 3:2, 4:4 };
       const g = garbageMap[cleared] || 0;
       if(G.ai){
-        // AI'ya çöp = AI'yı geciktir (sanal tahtasını zorlaştırır)
-        if(g > 0 && G.aiProfile){ G.aiNextClear += g * 700; }
+        // AI'ya gerçek çöp gönder (tahtasına eklenir)
+        if(g > 0){ G.aiPendingGarbage += g; }
       } else if(MP.connected){
         if(g > 0) MP.send({ type:'garbage', rows:g });
         sendVersusState();
@@ -334,6 +353,27 @@ function drawBoard(){
   }
 }
 
+// AI tahtasını çiz (bölünmüş ekran, küçük)
+function drawAIBoard(){
+  if(!G || !G.ai || !G.aiCtx || !G.aiCell) return;
+  const ctx = G.aiCtx, s = G.aiCell;
+  ctx.clearRect(0,0,G.el.aiCanvas.width,G.el.aiCanvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,.015)';
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){ if((x+y)%2===0) ctx.fillRect(x*s, y*s, s, s); }
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    if(G.aiBoard[y][x]){ drawThemedCell(ctx, x, y, s, G.aiBoard[y][x], 'neon', false); }
+  }
+  if(G.aiCur && G.oppAlive){
+    matrixCells(G.aiCur.matrix).forEach(([cx,cy]) => {
+      const x = G.aiCur.x+cx, y = G.aiCur.y+cy;
+      if(y >= 0) drawThemedCell(ctx, x, y, s, G.aiCur.color, 'neon', false);
+    });
+  }
+  if(!G.oppAlive){
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0,0,G.el.aiCanvas.width,G.el.aiCanvas.height);
+  }
+}
+
 function drawMini(canvas, type){
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -417,8 +457,30 @@ function usePower(){
   G.charge = 0; G.powerReady = false;
   updatePowerBtn(); updateHUD();
   Sound.power();
-  powerFX(h); screenShake(7);
-  flash(msg);
+  powerFX(h); screenShake(10);
+  spawnPowerParticles(h.color);   // kahramana özel patlama
+  flash('⚡ ' + msg);
+}
+
+// Güç kullanınca kahraman renginde büyük parçacık patlaması
+function spawnPowerParticles(color){
+  if(!G || !G.particles) G.particles = [];
+  const s = G.cellSize;
+  const cx = COLS * s / 2, cy = ROWS * s / 2;
+  for(let i=0;i<80;i++){
+    const ang = (i / 80) * Math.PI * 2 + Math.random()*0.3;
+    const spd = 4 + Math.random() * 10;
+    G.particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      life: 1, decay: 0.012 + Math.random()*0.02,
+      size: 3 + Math.random()*4,
+      color: color || '#FFD740',
+      glow: true
+    });
+  }
+  if(G.particles.length > 600) G.particles = G.particles.slice(-600);
 }
 
 // Ekran efekti — kahraman/gem rengiyle parlama dalgası
@@ -433,24 +495,48 @@ function powerFX(h){
 function spawnLineParticles(rows, count){
   if(!G || !G.particles) G.particles = [];
   const s = G.cellSize;
-  const colors = ['#00E5FF','#FF4081','#FFD740','#69F0AE','#E040FB','#42A5F5'];
+  const colors = ['#00E5FF','#FF4081','#FFD740','#69F0AE','#E040FB','#42A5F5','#FF6E40','#B388FF'];
+  // combo ve satır sayısına göre daha bol parçacık
+  const density = count * 2 + (G.combo > 1 ? G.combo : 0);
   rows.forEach(ry => {
     const py = ry * s + s/2;
-    // satır boyunca parçacıklar
-    for(let i=0;i<COLS*2;i++){
+    for(let i=0;i<COLS*density;i++){
       const px = Math.random() * COLS * s;
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 2 + Math.random() * (count >= 4 ? 9 : 6);
       G.particles.push({
         x: px, y: py,
-        vx: (Math.random()-0.5) * 6,
-        vy: (Math.random()-0.5) * 6 - 2,
-        life: 1, decay: 0.02 + Math.random()*0.03,
-        size: 2 + Math.random()*3,
-        color: colors[Math.floor(Math.random()*colors.length)]
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd - 2,
+        life: 1, decay: 0.015 + Math.random()*0.025,
+        size: 2 + Math.random()*(count>=4?4:3),
+        color: colors[Math.floor(Math.random()*colors.length)],
+        glow: count >= 4
       });
     }
   });
-  // çok parçacık olmasın
-  if(G.particles.length > 400) G.particles = G.particles.slice(-400);
+  if(G.particles.length > 600) G.particles = G.particles.slice(-600);
+}
+
+// Temizlenen satırlarda beyaz flaş dalgası (silinmeden hemen önce hissi)
+function flashRows(rows, count){
+  if(!G || !G.el.fxLayer) return;
+  const fx = G.el.fxLayer;
+  fx.style.setProperty('--fxcol', count >= 4 ? '#FFD740' : '#ffffff');
+  fx.classList.remove('lineflash'); void fx.offsetWidth; fx.classList.add('lineflash');
+}
+
+// Combo göstergesi (arka arkaya temizleme)
+function showCombo(n){
+  if(!G || !G.root) return;
+  let el = G.root.querySelector('.t-combo');
+  if(!el){
+    el = document.createElement('div');
+    el.className = 't-combo';
+    G.root.querySelector('.tetris-board-wrap').appendChild(el);
+  }
+  el.textContent = n + 'x COMBO!';
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
 }
 
 function updateParticles(){
@@ -458,12 +544,13 @@ function updateParticles(){
   const ctx = G.ctx;
   for(let i=G.particles.length-1;i>=0;i--){
     const p = G.particles[i];
-    p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.life -= p.decay;
+    p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.vx *= 0.99; p.life -= p.decay;
     if(p.life <= 0){ G.particles.splice(i,1); continue; }
     ctx.globalAlpha = Math.max(0, p.life);
     ctx.fillStyle = p.color;
-    ctx.shadowColor = p.color; ctx.shadowBlur = 6;
-    ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+    ctx.shadowColor = p.color; ctx.shadowBlur = p.glow ? 12 : 7;
+    const sz = p.size * (0.5 + p.life * 0.5);   // sönerken küçülür
+    ctx.fillRect(p.x - sz/2, p.y - sz/2, sz, sz);
   }
   ctx.globalAlpha = 1; ctx.shadowBlur = 0;
 }
@@ -548,8 +635,9 @@ function pickGem(idx){
   if(G.gemPowerBoost && G.gemPowerBoost > 1){ G.score += Math.floor(200 * G.gemPowerBoost); }
   updateGemBtn(); updateHUD();
   Sound.gemPick();
-  powerFX(gem); screenShake(6);
-  flash(msg);
+  powerFX(gem); screenShake(8);
+  spawnPowerParticles(gem.c || '#FFD740');   // gem rengine özel patlama
+  flash((gem.ic ? gem.ic + ' ' : '💎 ') + msg);
   checkFusion();   // kullanım sonrası kalan gem'lerde fusion olabilir
 }
 
@@ -876,7 +964,7 @@ function loop(ts){
       if(G.vsSyncAcc >= 1000){ G.vsSyncAcc = 0; sendVersusState(); }
     }
     // AI rakip: botun ilerlemesini simüle et
-    if(G.ai){ aiTick(dt); }
+    if(G.ai){ aiTick(dt); drawAIBoard(); }
     G.dropAcc += dt;
     // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat
     const slowed = (G.slowUntil && ts < G.slowUntil);
@@ -920,6 +1008,18 @@ function updateModeUI(){
 }
 
 async function gameOver(){ await endGame(false); }
+
+// Admin yenilmez mod aç/kapat
+function toggleGodmode(){
+  if(!G || !G.isAdmin) return;
+  G.godmode = !G.godmode;
+  if(G.el.godmodeBtn){
+    G.el.godmodeBtn.classList.toggle('on', G.godmode);
+    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: ' + (G.godmode ? 'AÇIK' : 'KAPALI');
+  }
+  flash(G.godmode ? '🛡️ YENİLMEZ AÇIK' : '🛡️ YENİLMEZ KAPALI');
+  try{ Sound.shield(); }catch(e){}
+}
 async function sprintWin(){ await endGame(true); }
 async function adventureWin(){
   // Dünyayı tamamla + yıldız hesapla
@@ -1005,6 +1105,7 @@ function build(){
       <div class="t-title">HEROTETRIS <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
+    <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
     <div class="tetris-stage">
       <div class="tetris-side">
@@ -1017,6 +1118,8 @@ function build(){
       <div class="tetris-board-wrap">
         <canvas class="tetris-canvas"></canvas>
         <div class="t-fxlayer"></div>
+        <canvas class="tetris-ai-canvas" style="display:none"></canvas>
+        <div class="t-ai-label" style="display:none">🤖 AI</div>
         <div class="t-flash"></div>
         <div class="tetris-gameover">
           <div class="go-title">OYUN BİTTİ</div>
@@ -1079,9 +1182,36 @@ function fitCanvas(){
     availH = Math.max(200, (window.innerHeight || 640) - 56 - modeBarH - 66 - 70 - 24);
   }
   // Hücre boyutu: hem genişliğe hem yüksekliğe sığmalı (küçük olanı seç)
+  let cs;
+  if(G.ai && G.el.aiCanvas){
+    // Bölünmüş ekran: oyuncu tahtası (büyük) + AI tahtası (küçük) yan yana
+    // Genişliği paylaş: oyuncu ~62%, AI ~34%, arada boşluk
+    const gap = 8;
+    const playerW = Math.floor((availW - gap) * 0.64);
+    const aiW = Math.floor((availW - gap) * 0.36);
+    const csW = Math.floor(playerW / COLS);
+    const csH = Math.floor(availH / ROWS);
+    cs = Math.min(csW, csH);
+    if(cs < 8) cs = 8;
+    G.cellSize = cs;
+    // AI hücre boyutu (kendi genişliğine + yüksekliğe sığsın)
+    const aiCsW = Math.floor(aiW / COLS);
+    const aiCsH = Math.floor(availH / ROWS);
+    let aiCs = Math.min(aiCsW, aiCsH);
+    if(aiCs < 5) aiCs = 5;
+    G.aiCell = aiCs;
+    const dpr = window.devicePixelRatio || 1;
+    G.canvas.width = COLS*cs*dpr; G.canvas.height = ROWS*cs*dpr;
+    G.canvas.style.width = (COLS*cs)+'px'; G.canvas.style.height = (ROWS*cs)+'px';
+    G.ctx.setTransform(dpr,0,0,dpr,0,0);
+    G.el.aiCanvas.width = COLS*aiCs*dpr; G.el.aiCanvas.height = ROWS*aiCs*dpr;
+    G.el.aiCanvas.style.width = (COLS*aiCs)+'px'; G.el.aiCanvas.style.height = (ROWS*aiCs)+'px';
+    G.aiCtx.setTransform(dpr,0,0,dpr,0,0);
+    return;
+  }
   const csW = Math.floor(availW / COLS);
   const csH = Math.floor(availH / ROWS);
-  let cs = Math.min(csW, csH);
+  cs = Math.min(csW, csH);
   if(cs < 8) cs = 8;
   G.cellSize = cs;
   const dpr = window.devicePixelRatio || 1;
@@ -1129,6 +1259,7 @@ function bindControls(){
       else if(a==='power') usePower();
       else if(a==='gem') openGemSheet();
       else if(a==='gemclose') closeGemSheet();
+      else if(a==='godmode') toggleGodmode();
     });
   });
 
@@ -1304,6 +1435,18 @@ function startGame(){
   G.theme = SELECTED_THEME;
   G.particles = [];
   G.shake = 0;
+  G.combo = 0;
+
+  // ── Admin yenilmez mod (default KAPALI; sadece admin görür) ──
+  G.godmode = false;
+  let admin = false;
+  try{ admin = Auth.getState().isAdmin === true; }catch(e){ admin = false; }
+  G.isAdmin = admin;
+  if(G.el.godmodeBtn){
+    G.el.godmodeBtn.style.display = admin ? 'block' : 'none';
+    G.el.godmodeBtn.classList.remove('on');
+    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: KAPALI';
+  }
 
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
   G.el.gameover.classList.remove('show');
@@ -1341,6 +1484,9 @@ function launchGame(){
       heroBadge: root.querySelector('.t-herobadge'),
       shieldDot: root.querySelector('.t-shielddot'),
       powerBtn: root.querySelector('.t-power'),
+      aiCanvas: root.querySelector('.tetris-ai-canvas'),
+      aiLabel: root.querySelector('.t-ai-label'),
+      godmodeBtn: root.querySelector('.t-godmode'),
       fxLayer: root.querySelector('.t-fxlayer'),
       gemBtn: root.querySelector('.t-gem'),
       gemSheet: root.querySelector('.gem-sheet'),
@@ -1387,7 +1533,7 @@ function rebindMPHandler(){
   try{ MP.__setHandler && MP.__setHandler(h); }catch(e){}
 }
 
-// AI rakibe karşı oyunu başlat
+// AI rakibe karşı oyunu başlat (bölünmüş ekran, gerçek AI tahtası)
 function launchAIGame(){
   SELECTED_MODE = 'ai';
   ADVENTURE_WORLD = null;
@@ -1399,48 +1545,186 @@ function launchAIGame(){
   G.aiProfile = prof;
   G.oppScore = 0; G.oppLines = 0; G.oppNick = prof.icon + ' AI (' + prof.label + ')'; G.oppAlive = true;
   G.pendingGarbage = 0;
-  G.aiNextClear = 0;         // AI bir sonraki satır temizleme zamanı (ms)
-  G.aiAcc = 0;
+
+  // AI gerçek tahtası + durumu
+  G.aiBoard = Array.from({length:ROWS}, () => Array(COLS).fill(0));
+  G.aiBag = newBag();
+  G.aiCur = aiSpawn();
+  G.aiDropAcc = 0;
+  G.aiDropInterval = prof.dropMs || 600;   // AI parça düşme hızı
+  G.aiMoveAcc = 0;
+  G.aiPlan = null;            // AI'nın mevcut parça için hedef planı
+  G.aiPendingGarbage = 0;     // oyuncudan AI'ya gelen çöp
+
+  // Bölünmüş ekranı aç
+  if(G.el.aiCanvas){ G.el.aiCanvas.style.display = 'block'; G.aiCtx = G.el.aiCanvas.getContext('2d'); }
+  if(G.el.aiLabel){ G.el.aiLabel.style.display = 'block'; }
+  G.root.querySelector('.tetris-board-wrap').classList.add('split');
+  fitCanvas();
   updateVersusUI();
 }
 
-// AI botunun bir adımı (loop'tan çağrılır) — kendi ilerlemesini simüle eder
+// AI için parça üret
+function aiSpawn(){
+  if(G.aiBag.length === 0) G.aiBag = newBag();
+  const type = G.aiBag.shift();
+  if(G.aiBag.length < 4) G.aiBag = G.aiBag.concat(newBag());
+  const p = PIECES[type];
+  return { type, color: p.color, matrix: toMatrix(p.cells), x: 3, y: 0 };
+}
+
+// AI botunun bir adımı (loop'tan çağrılır) — gerçek tahtada oynar
 function aiTick(dt){
   if(!G || !G.ai || G.over || !G.oppAlive) return;
   const prof = G.aiProfile;
-  G.aiAcc += dt;
-  if(G.aiNextClear === 0){
-    // İlk temizleme zamanını ayarla
-    G.aiNextClear = prof.clearMs[0] + Math.random() * (prof.clearMs[1] - prof.clearMs[0]);
+
+  // Mevcut parça için plan yoksa hesapla (en iyi sütun + dönüş)
+  if(!G.aiPlan && G.aiCur){
+    G.aiPlan = aiComputePlan(G.aiCur);
   }
-  if(G.aiAcc >= G.aiNextClear){
-    G.aiAcc = 0;
-    G.aiNextClear = prof.clearMs[0] + Math.random() * (prof.clearMs[1] - prof.clearMs[0]);
-    // AI satır temizledi: 1-4 satır (tetris şansına göre)
-    let cleared;
-    const r = Math.random();
-    if(r < prof.tetrisChance) cleared = 4;
-    else if(r < prof.tetrisChance + 0.18) cleared = 3;
-    else if(r < prof.tetrisChance + 0.45) cleared = 2;
-    else cleared = 1;
+
+  // AI hareketi: plana doğru adım adım (insansı hız)
+  G.aiMoveAcc += dt;
+  if(G.aiPlan && G.aiMoveAcc >= (prof.moveMs || 160)){
+    G.aiMoveAcc = 0;
+    const plan = G.aiPlan;
+    // Önce hedef dönüşe ulaş
+    if(plan.rot > 0){
+      const r = rotateCW(G.aiCur.matrix);
+      if(!aiCollides(G.aiCur, 0, 0, r)){ G.aiCur.matrix = r; }
+      plan.rot--;
+    } else if(G.aiCur.x < plan.x){
+      if(!aiCollides(G.aiCur, 1, 0)) G.aiCur.x++;
+    } else if(G.aiCur.x > plan.x){
+      if(!aiCollides(G.aiCur, -1, 0)) G.aiCur.x--;
+    }
+  }
+
+  // AI parça düşürme
+  G.aiDropAcc += dt;
+  if(G.aiDropAcc >= G.aiDropInterval){
+    G.aiDropAcc = 0;
+    if(!aiCollides(G.aiCur, 0, 1)){
+      G.aiCur.y++;
+    } else {
+      aiLock();
+    }
+  }
+}
+
+// AI çarpışma kontrolü (kendi tahtasında)
+function aiCollides(piece, dx, dy, matrix){
+  const m = matrix || piece.matrix;
+  for(const [cx, cy] of matrixCells(m)){
+    const x = piece.x + cx + dx, y = piece.y + cy + dy;
+    if(x < 0 || x >= COLS || y >= ROWS) return true;
+    if(y >= 0 && G.aiBoard[y][x]) return true;
+  }
+  return false;
+}
+
+// AI: parça için en iyi yerleşimi hesapla (basit sezgisel)
+function aiComputePlan(piece){
+  let best = null;
+  const rotations = [0, 1, 2, 3];
+  for(const rot of rotations){
+    let m = piece.matrix;
+    for(let i=0;i<rot;i++) m = rotateCW(m);
+    // her x konumu dene
+    for(let x = -2; x < COLS; x++){
+      const test = { type:piece.type, matrix:m, x:x, y:0, color:piece.color };
+      if(aiCollides(test, 0, 0)) continue;
+      // düşür
+      let gy = 0; while(!aiCollides(test, 0, gy+1)) gy++;
+      const landY = test.y + gy;
+      // skoru hesapla (yükseklik + delik + düzlük)
+      const score = aiEvaluate(test, landY, m);
+      if(!best || score > best.score){
+        best = { x:x, rot:rot, score:score };
+      }
+    }
+  }
+  return best || { x:piece.x, rot:0, score:0 };
+}
+
+// Yerleşim skoru: düşük yükseklik + az delik iyi
+function aiEvaluate(piece, landY, m){
+  // geçici yerleştir
+  const temp = G.aiBoard.map(r => r.slice());
+  for(const [cx, cy] of matrixCells(m)){
+    const x = piece.x + cx, y = landY + cy;
+    if(y >= 0 && y < ROWS && x >= 0 && x < COLS) temp[y][x] = piece.color;
+  }
+  let aggHeight = 0, holes = 0, lines = 0, bumpiness = 0;
+  const heights = [];
+  for(let x=0;x<COLS;x++){
+    let h = 0, blocked = false, colHoles = 0;
+    for(let y=0;y<ROWS;y++){
+      if(temp[y][x]){ if(h===0) h = ROWS - y; blocked = true; }
+      else if(blocked) colHoles++;
+    }
+    heights.push(h); aggHeight += h; holes += colHoles;
+  }
+  for(let y=0;y<ROWS;y++){ if(temp[y].every(c => c)) lines++; }
+  for(let x=0;x<COLS-1;x++) bumpiness += Math.abs(heights[x] - heights[x+1]);
+  // ağırlıklar (klasik Tetris AI sezgiseli)
+  return lines*2.0 - aggHeight*0.4 - holes*1.5 - bumpiness*0.2;
+}
+
+// AI parçayı kilitle + satır temizle + oyuncuya çöp
+function aiLock(){
+  matrixCells(G.aiCur.matrix).forEach(([cx,cy]) => {
+    const x = G.aiCur.x + cx, y = G.aiCur.y + cy;
+    if(y >= 0 && y < ROWS && x >= 0 && x < COLS) G.aiBoard[y][x] = G.aiCur.color;
+  });
+  // satır temizle
+  let cleared = 0;
+  for(let y=ROWS-1;y>=0;y--){
+    if(G.aiBoard[y].every(c => c)){ G.aiBoard.splice(y,1); G.aiBoard.unshift(Array(COLS).fill(0)); cleared++; y++; }
+  }
+  if(cleared > 0){
     G.oppLines += cleared;
-    const lineScore = [0, 100, 300, 500, 800][cleared] || 100;
-    G.oppScore += Math.round(lineScore * prof.mult);
-    // AI sana çöp gönderir (2=1, 3=2, 4=4)
+    const lineScore = [0,100,300,500,800][cleared] || 100;
+    G.oppScore += Math.round(lineScore * (G.aiProfile.mult||1));
+    // Oyuncuya çöp gönder
     const garbageMap = { 1:0, 2:1, 3:2, 4:4 };
     const g = garbageMap[cleared] || 0;
-    if(g > 0){ G.pendingGarbage += g; flash('⚠️ AI ' + g + ' çöp gönderdi!'); }
+    if(g > 0){ G.pendingGarbage += g; flash('⚠️ AI ' + g + ' çöp gönderdi!'); Sound.garbage(); }
     updateVersusUI();
-    // Zor AI küçük şansla "hata yapar" (yavaşlar) — adil hissettirir
-    if(AI_DIFFICULTY !== 'hard' && Math.random() < 0.15){ G.aiNextClear *= 1.5; }
   }
+  // Oyuncudan gelen çöbü AI tahtasına uygula
+  if(G.aiPendingGarbage > 0){
+    aiApplyGarbage(G.aiPendingGarbage);
+    G.aiPendingGarbage = 0;
+  }
+  // yeni parça
+  G.aiCur = aiSpawn();
+  G.aiPlan = null;
+  // AI öldü mü (yeni parça sığmıyorsa)
+  if(aiCollides(G.aiCur, 0, 0)){
+    G.oppAlive = false;
+    flash('🏆 AI elendi! Kazandın!');
+    updateVersusUI();
+    if(!G.over) endGame(true);
+  }
+}
+
+// AI tahtasına çöp uygula (oyuncunun saldırısı)
+function aiApplyGarbage(rows){
+  for(let i=0;i<rows;i++){
+    G.aiBoard.shift();
+    const row = Array(COLS).fill('#5a5a6e');
+    row[Math.floor(Math.random()*COLS)] = 0;
+    G.aiBoard.push(row);
+  }
+  if(G.aiCur && aiCollides(G.aiCur, 0, 0)){ G.aiCur.y = Math.max(0, G.aiCur.y - rows); }
 }
 
 function handleVersusMessage(msg){
   if(!G || !msg) return;
   if(msg.type === 'hello'){ G.oppNick = msg.nick || 'Rakip'; updateVersusUI(); }
   else if(msg.type === 'state'){ G.oppScore = msg.score||0; G.oppLines = msg.lines||0; updateVersusUI(); }
-  else if(msg.type === 'garbage'){ G.pendingGarbage += (msg.rows||0); flash('⚠️ ' + (msg.rows||0) + ' çöp geliyor!'); updateVersusUI(); }
+  else if(msg.type === 'garbage'){ G.pendingGarbage += (msg.rows||0); flash('⚠️ ' + (msg.rows||0) + ' çöp geliyor!'); Sound.garbage(); updateVersusUI(); }
   else if(msg.type === 'dead'){ G.oppAlive = false; if(!G.over){ flash('🏆 Rakip eledin!'); } updateVersusUI(); }
 }
 
@@ -1515,6 +1799,10 @@ function injectCSS(){
 .tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; }
 .tetris-board-wrap *{ -webkit-tap-highlight-color: transparent; }
 .tetris-canvas{ -webkit-tap-highlight-color: transparent; outline: none; -webkit-user-select: none; user-select: none; }
+/* Bölünmüş ekran (AI rakip) */
+.tetris-board-wrap.split{ flex-direction: row; gap: 8px; align-items: flex-start; justify-content: center; }
+.tetris-ai-canvas{ border: 1px solid rgba(124,77,255,.4); border-radius: 8px; background: rgba(0,0,0,.35); box-shadow: 0 0 20px rgba(124,77,255,.15) inset; align-self: flex-start; }
+.t-ai-label{ position: absolute; top: 4px; right: 8px; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #7C4DFF; background: rgba(124,77,255,.12); border-radius: 6px; padding: 2px 8px; z-index: 6; }
 .tetris-canvas{ border: 1px solid var(--border-cyan); border-radius: 8px; background: rgba(0,0,0,.35); box-shadow: 0 0 30px rgba(0,229,255,.12) inset; }
 
 /* Seviye flash */
@@ -1549,21 +1837,36 @@ function injectCSS(){
 .tetris-controls-2{ grid-template-columns: 1fr 1.4fr; margin-top: 7px; }
 .t-ctrl-wide{ font-size: 13px !important; font-weight: 800; letter-spacing: .5px; }
 .t-ctrl{
-  height: 58px; border-radius: var(--r-lg); position: relative; overflow: hidden;
+  height: 60px; border-radius: 16px; position: relative; overflow: hidden;
   background:
-    linear-gradient(160deg, rgba(0,229,255,.14), rgba(255,255,255,.03) 50%, rgba(0,0,0,.15)),
-    rgba(255,255,255,.02);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0,229,255,.35); color: var(--cyan);
-  font-size: 24px; font-weight: 700; touch-action: none; user-select: none; -webkit-user-select: none;
+    linear-gradient(180deg, rgba(0,229,255,.20) 0%, rgba(0,180,210,.10) 45%, rgba(0,90,120,.18) 100%),
+    radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.10), transparent 60%);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0,229,255,.4); color: var(--cyan);
+  font-size: 25px; font-weight: 800; touch-action: none; user-select: none; -webkit-user-select: none;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.15), inset 0 -2px 8px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.35);
+  text-shadow: 0 0 10px rgba(0,229,255,.5), 0 1px 1px rgba(0,0,0,.4);
+  box-shadow:
+    inset 0 2px 1px rgba(255,255,255,.30),
+    inset 0 -3px 6px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 6px 14px rgba(0,0,0,.45),
+    0 2px 4px rgba(0,0,0,.3);
+  transition: transform .08s ease, box-shadow .08s ease, filter .08s ease;
 }
-.t-ctrl::before{ content:''; position:absolute; top:0; left:0; right:0; height:48%; background:linear-gradient(180deg,rgba(255,255,255,.16),transparent); pointer-events:none; border-radius: var(--r-lg) var(--r-lg) 0 0; }
-.t-ctrl::after{ content:''; position:absolute; inset:0; border-radius:var(--r-lg); box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); pointer-events:none; }
-.t-ctrl:active{ transform: scale(.92); box-shadow: inset 0 0 18px rgba(0,229,255,.45), 0 2px 6px rgba(0,0,0,.4); filter: brightness(1.2); }
-.t-ctrl[data-ctrl="drop"], .t-ctrl-drop{ color: var(--pink); border-color: rgba(255,64,129,.5); background: linear-gradient(160deg, rgba(255,64,129,.16), rgba(255,255,255,.03) 50%, rgba(0,0,0,.15)); }
-.t-ctrl-drop::before{ background:linear-gradient(180deg,rgba(255,255,255,.18),transparent); }
+.t-ctrl::before{ content:''; position:absolute; top:1px; left:3px; right:3px; height:44%; background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.02) 90%); pointer-events:none; border-radius: 14px 14px 50% 50%; }
+.t-ctrl::after{ content:''; position:absolute; bottom:0; left:0; right:0; height:35%; background:linear-gradient(0deg,rgba(0,0,0,.25),transparent); pointer-events:none; }
+.t-ctrl:active{
+  transform: translateY(2px) scale(.96);
+  box-shadow:
+    inset 0 3px 10px rgba(0,0,0,.5),
+    inset 0 0 22px rgba(0,229,255,.5),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 1px 3px rgba(0,0,0,.4);
+  filter: brightness(1.3);
+}
+.t-ctrl[data-ctrl="drop"], .t-ctrl-drop{ color: var(--pink); border-color: rgba(255,64,129,.55); text-shadow: 0 0 10px rgba(255,64,129,.5), 0 1px 1px rgba(0,0,0,.4); background: linear-gradient(180deg, rgba(255,64,129,.22) 0%, rgba(200,40,100,.10) 45%, rgba(120,20,60,.18) 100%), radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.10), transparent 60%); }
+.t-ctrl-drop::before{ background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.02) 90%); }
 .t-ctrl[data-ctrl="hold"]{ color: var(--gold); border-color: rgba(255,215,64,.5); background: linear-gradient(160deg, rgba(255,215,64,.14), rgba(255,255,255,.03) 50%, rgba(0,0,0,.15)); }
 .t-ctrl[data-ctrl="rotateR"], .t-ctrl[data-ctrl="rotateL"]{ color: var(--magenta); border-color: rgba(224,64,251,.5); background: linear-gradient(160deg, rgba(224,64,251,.14), rgba(255,255,255,.03) 50%, rgba(0,0,0,.15)); }
 
@@ -1615,6 +1918,20 @@ function injectCSS(){
 .theme-card:active{ transform: scale(.95); }
 /* Oyun içi mod göstergesi */
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
+/* Admin yenilmez mod butonu */
+.t-godmode{
+  display: block; margin: 0 auto 8px; padding: 7px 16px; border-radius: var(--r-md);
+  background: rgba(255,215,64,.08); border: 1.5px solid rgba(255,215,64,.4); color: var(--gold);
+  font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1px;
+  transition: all .15s;
+}
+.t-godmode:active{ transform: scale(.96); }
+.t-godmode.on{
+  background: linear-gradient(135deg, rgba(255,215,64,.25), rgba(255,180,0,.15));
+  border-color: var(--gold); color: #fff;
+  box-shadow: 0 0 18px rgba(255,215,64,.5), inset 0 0 12px rgba(255,215,64,.2);
+  animation: powerPulse 1.5s ease-in-out infinite;
+}
 /* Macera bölüm seçim ekranı */
 .ws-progress{ text-align: center; font-size: 10px; letter-spacing: 2px; color: var(--text-mute); font-weight: 700; margin-bottom: 12px; }
 .ws-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; }
@@ -1758,6 +2075,28 @@ function injectCSS(){
   position: absolute; inset: 0; pointer-events: none; z-index: 5; opacity: 0; border-radius: 8px;
 }
 .t-fxlayer.burst{ animation: fxBurst .6s ease-out; }
+/* Satır temizleme flaş dalgası */
+.t-fxlayer.lineflash{ animation: lineFlash .35s ease-out; }
+@keyframes lineFlash{
+  0%{ opacity: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--fxcol) 60%, transparent), transparent); }
+  30%{ opacity: 1; }
+  100%{ opacity: 0; }
+}
+/* Combo göstergesi */
+.t-combo{
+  position: absolute; top: 30%; left: 50%; transform: translate(-50%,-50%) scale(0);
+  font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: 1px;
+  color: #FFD740; text-shadow: 0 0 16px rgba(255,215,64,.8), 0 2px 4px rgba(0,0,0,.6);
+  pointer-events: none; z-index: 7; opacity: 0; white-space: nowrap;
+}
+.t-combo.pop{ animation: comboPop .9s ease-out; }
+@keyframes comboPop{
+  0%{ opacity: 0; transform: translate(-50%,-50%) scale(0) rotate(-8deg); }
+  25%{ opacity: 1; transform: translate(-50%,-50%) scale(1.3) rotate(3deg); }
+  45%{ transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+  75%{ opacity: 1; transform: translate(-50%,-60%) scale(1); }
+  100%{ opacity: 0; transform: translate(-50%,-90%) scale(.8); }
+}
 @keyframes fxBurst{
   0%{ opacity: 0; box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--fxcol) 80%, transparent); background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--fxcol) 45%, transparent), transparent 70%); }
   25%{ opacity: 1; box-shadow: inset 0 0 80px 16px color-mix(in srgb, var(--fxcol) 75%, transparent), 0 0 40px color-mix(in srgb, var(--fxcol) 50%, transparent); }
