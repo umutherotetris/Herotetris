@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hero — Teşhis</title>
+  <style>
+    body{ font-family: system-ui, sans-serif; background:#07070d; color:#e0e0ff; padding:16px; line-height:1.6; font-size:13px; }
+    h1{ font-size:16px; color:#00E5FF; }
+    .row{ padding:8px 10px; border-radius:8px; margin:6px 0; border:1px solid #1e1e32; }
+    .ok{ background:rgba(105,240,174,.08); border-color:rgba(105,240,174,.3); }
+    .err{ background:rgba(255,82,82,.1); border-color:rgba(255,82,82,.4); color:#ffb0b0; }
+    .err pre{ white-space:pre-wrap; word-break:break-word; margin-top:6px; font-size:11px; color:#ff8080; }
+    button{ background:#00E5FF; color:#001018; border:0; border-radius:8px; padding:10px 16px; font-weight:800; font-size:13px; margin-top:12px; }
+    code{ background:rgba(255,255,255,.06); padding:1px 5px; border-radius:4px; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Hero Portal — Modül Teşhisi</h1>
+  <div id="info" class="row">URL: <code id="url"></code></div>
+  <div id="log"></div>
+  <button id="playBtn" style="display:none">▶ TETRİS'İ AÇMAYI DENE</button>
+
+  <script>
+    const log = document.getElementById('log');
+    document.getElementById('url').textContent = location.href;
+    function add(name, ok, detail){
+      const d = document.createElement('div');
+      d.className = 'row ' + (ok ? 'ok' : 'err');
+      d.innerHTML = (ok ? '✅ ' : '❌ ') + name + (detail ? '<pre>'+String(detail).replace(/</g,'&lt;')+'</pre>' : '');
+      log.appendChild(d);
+    }
+    // Global hata yakalayıcı
+    window.addEventListener('error', e => add('PENCERE HATASI', false, (e.message||'') + '\n' + (e.filename||'') + ':' + (e.lineno||'')));
+    window.addEventListener('unhandledrejection', e => add('PROMISE HATASI', false, (e.reason && (e.reason.stack||e.reason.message)) || e.reason));
+  </script>
+
+  <script type="module">
+    const log = document.getElementById('log');
+    function add(name, ok, detail){
+      const d = document.createElement('div');
+      d.className = 'row ' + (ok ? 'ok' : 'err');
+      d.innerHTML = (ok ? '✅ ' : '❌ ') + name + (detail ? '<pre>'+String(detail).replace(/</g,'&lt;')+'</pre>' : '');
+      log.appendChild(d);
+    }
+    add('ES module desteği', true, 'Bu yazıyı görüyorsan modüller yükleniyor demektir');
+
+    // 1) Her dosyayı tek tek import etmeyi dene
+    const files = ['./js/firebase-config.js', './js/auth.js', './js/store.js', './js/ui.js', './js/nav.js', './js/games/tetris.js'];
+    let tetrisMod = null;
+    for(const f of files){
+      try{
+        const m = await import(f);
+        add('import ' + f, true);
+        if(f.includes('tetris')) tetrisMod = m;
+      }catch(e){
+        add('import ' + f, false, (e && (e.stack || e.message)) || e);
+      }
+    }
+
+    // 2) Tetris açma fonksiyonu var mı
+    if(tetrisMod && typeof tetrisMod.openTetris === 'function'){
+      add('openTetris fonksiyonu bulundu', true);
+      const btn = document.getElementById('playBtn');
+      btn.style.display = 'block';
+      btn.addEventListener('click', () => {
+        try{ tetrisMod.openTetris(); add('openTetris() çağrıldı — hata yok', true); }
+        catch(e){ add('openTetris() PATLADI', false, (e && (e.stack||e.message)) || e); }
+      });
+    } else {
+      add('openTetris fonksiyonu YOK', false, 'tetris.js yüklenemedi veya export hatalı');
+    }
+  </script>
+</body>
+</html>
