@@ -942,7 +942,7 @@ function buildHeroSelect(onPick){
   ov.innerHTML = `
     <div class="hs-top">
       <button class="t-icon" data-act="back">✕</button>
-      <div class="hs-title">HEROTETRIS</div>
+      <div class="hs-title">Herotetris</div>
       <div class="hs-top-right">
         <button class="t-icon" data-act="stats" title="İstatistik & Başarımlar">🏆</button>
         <button class="t-icon" data-act="tutorial" title="Nasıl oynanır">❓</button>
@@ -1573,7 +1573,7 @@ function build(){
   root.innerHTML = `
     <div class="tetris-topbar">
       <button class="t-icon" data-act="exit">✕</button>
-      <div class="t-title">HEROTETRIS <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
+      <div class="t-title">Herotetris <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>

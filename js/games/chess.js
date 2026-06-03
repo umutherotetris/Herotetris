@@ -13,53 +13,72 @@ import { ChessMP } from './chess-mp.js';
 
 // ── Temalar (referans görsellerden: Osmanlı lacivert default) ──
 const THEMES = {
-  navy: {
-    name: 'Osmanlı Lacivert',
-    light: '#e8dcc0', dark: '#1a3a6b',          // krem + lacivert kareler
-    lightTile: '#f0e6cc', darkTile: '#23467e',
-    border: '#c8a557', borderDark: '#8a6d2f',   // altın çerçeve
-    bg: '#0a1428', wTop:'#f5efe0', wBot:'#d8cba8', // beyaz taş
-    bTop:'#2a7d8c', bBot:'#16505c',              // koyu taş (turkuaz-yeşil)
-    wPiece:'#1a3a6b', bPiece:'#f0e6cc',          // sembol rengi
-    glow:'#00d4e0'
+  sinan: {
+    name: 'Mimar Sinan Mermer',
+    desc: 'Beyaz mermer ve duman grisi, ince altın çizgiler.',
+    light:'#ece6da', dark:'#6e6862', lightTile:'#f4efe6', darkTile:'#7e7872',
+    border:'#c8a557', borderDark:'#8a6d2f', bg:'#1a1815',
+    wTop:'#f8f4ec', wBot:'#dcd4c6', bTop:'#4a4640', bBot:'#2a2622',
+    wPiece:'#4a4640', bPiece:'#f4efe6', glow:'#d4af37'
   },
-  iznik: {
-    name: 'İznik Premium',
-    light:'#e3ecf2', dark:'#1565a8', lightTile:'#eef4f8', darkTile:'#1e72b8',
-    border:'#c8a557', borderDark:'#8a6d2f', bg:'#08243f',
-    wTop:'#f5fafd', wBot:'#d5e2ec', bTop:'#0d8a9c', bBot:'#075562',
-    wPiece:'#1565a8', bPiece:'#f0f6fa', glow:'#3fc8ff'
+  bursa: {
+    name: 'Bursa Yeşil',
+    desc: 'Zümrüt yeşili ve krem, ince çini detayları.',
+    light:'#e8dcc0', dark:'#15543c', lightTile:'#f0e6cc', darkTile:'#1a6448',
+    border:'#c8a557', borderDark:'#8a6d2f', bg:'#06241a',
+    wTop:'#f5efe0', wBot:'#d8cba8', bTop:'#2a2824', bBot:'#16140f',
+    wPiece:'#15543c', bPiece:'#f0e6cc', glow:'#3fe0a0'
   },
-  red: {
-    name: 'Ay Yıldız Kırmızı',
-    light:'#f0e0c0', dark:'#a01828', lightTile:'#f5e8cc', darkTile:'#b52234',
-    border:'#d4af37', borderDark:'#9a7d27', bg:'#2a0a0e',
-    wTop:'#f8f0e0', wBot:'#e0d0b0', bTop:'#8a1420', bBot:'#5c0c14',
-    wPiece:'#a01828', bPiece:'#f5e8cc', glow:'#ff6048'
+  canakkale: {
+    name: 'Çanakkale Şafak',
+    desc: 'Gece laciverti, sıcak bej ve şafak altını.',
+    light:'#e0d0b0', dark:'#16294a', lightTile:'#ebdcbb', darkTile:'#1e335c',
+    border:'#d4a857', borderDark:'#9a7d2f', bg:'#0a1428',
+    wTop:'#f4e8d0', wBot:'#dcc8a4', bTop:'#2a2824', bBot:'#14120e',
+    wPiece:'#16294a', bPiece:'#f4e8d0', glow:'#e0a860'
   },
-  emerald: {
-    name: 'Selçuklu Zümrüt',
-    light:'#e8dcc0', dark:'#0f5a3c', lightTile:'#f0e6cc', darkTile:'#147048',
-    border:'#c8a557', borderDark:'#8a6d2f', bg:'#04201a',
-    wTop:'#f5efe0', wBot:'#d8cba8', bTop:'#0a6648', bBot:'#064030',
-    wPiece:'#0f5a3c', bPiece:'#f0e6cc', glow:'#3fe0a0'
+  kapadokya: {
+    name: 'Kapadokya Tüf',
+    desc: 'Kum, taş ve ceviz ahşap tonları.',
+    light:'#ddc9a3', dark:'#7d5a3a', lightTile:'#e6d4b2', darkTile:'#8a6644',
+    border:'#c8a557', borderDark:'#8a6d2f', bg:'#1c130a',
+    wTop:'#f0e2c8', wBot:'#d4be98', bTop:'#3a2a1c', bBot:'#221810',
+    wPiece:'#5a3e26', bPiece:'#f0e2c8', glow:'#d8a860'
   },
-  walnut: {
-    name: 'Anadolu Ceviz',
-    light:'#d8b888', dark:'#6b3e1e', lightTile:'#e0c498', darkTile:'#7d4a26',
+  sedef: {
+    name: 'Sedef Gece',
+    desc: 'Sedef beyazı, siyah inci ve menekşe-mavi yansımalar.',
+    light:'#e6e0ec', dark:'#3a3a5c', lightTile:'#efeaf4', darkTile:'#46466e',
+    border:'#b0a0d0', borderDark:'#7868a0', bg:'#15152a',
+    wTop:'#f4f0fa', wBot:'#dcd4e8', bTop:'#262236', bBot:'#16121f',
+    wPiece:'#3a3a5c', bPiece:'#f4f0fa', glow:'#9080d0'
+  },
+  kizil: {
+    name: 'Kızıl Sancak',
+    desc: 'Bordo ve fildişi, hafif hilal-yıldız gölgesi.',
+    light:'#f0e8d8', dark:'#8a1c2c', lightTile:'#f5eede', darkTile:'#9a2434',
+    border:'#d4af37', borderDark:'#9a7d27', bg:'#2a0a10',
+    wTop:'#f8f0e0', wBot:'#e0d4bc', bTop:'#2a2420', bBot:'#160f0c',
+    wPiece:'#8a1c2c', bPiece:'#f5eede', glow:'#ff6048'
+  },
+  otag: {
+    name: 'Otağ Lacivert',
+    desc: 'Lacivert derinlik, deri bej ve altın vurgular.',
+    light:'#d8c4a0', dark:'#1a2a5c', lightTile:'#e2d0ac', darkTile:'#22356e',
+    border:'#c8a557', borderDark:'#8a6d2f', bg:'#0a1024',
+    wTop:'#f0e4c8', wBot:'#d4c098', bTop:'#2a2824', bBot:'#14120e',
+    wPiece:'#1a2a5c', bPiece:'#f0e4c8', glow:'#d4af37'
+  },
+  safranbolu: {
+    name: 'Safranbolu Ahşap',
+    desc: 'Açık ve koyu ceviz, klasik ahşap işçilik.',
+    light:'#d8b888', dark:'#6b4226', lightTile:'#e0c498', darkTile:'#7d4e2e',
     border:'#c8a557', borderDark:'#8a6d2f', bg:'#1a0e06',
-    wTop:'#f0e0c0', wBot:'#d0b890', bTop:'#5a3418', bBot:'#3c2410',
-    wPiece:'#6b3e1e', bPiece:'#f0e0c0', glow:'#e0a860'
-  },
-  ice: {
-    name: 'Buzlu Deniz',
-    light:'#dce8f0', dark:'#5a7d9c', lightTile:'#e8f0f6', darkTile:'#6b8ead',
-    border:'#a8c0d4', borderDark:'#7898b0', bg:'#0a1820',
-    wTop:'#f8fbfd', wBot:'#dce8f0', bTop:'#3a5d7c', bBot:'#243c52',
-    wPiece:'#3a5d7c', bPiece:'#f0f6fa', glow:'#80c0e0'
+    wTop:'#f0e0c0', wBot:'#d0b890', bTop:'#3a2414', bBot:'#22140a',
+    wPiece:'#6b4226', bPiece:'#f0e0c0', glow:'#e0a860'
   }
 };
-let SELECTED_THEME = (function(){ try{ return localStorage.getItem('hero_chess_theme') || 'navy'; }catch(e){ return 'navy'; } })();
+let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return (t && THEMES[t]) ? t : 'bursa'; }catch(e){ return 'bursa'; } })();
 
 // Unicode satranç sembolleri (dolu figürler — 2.5D stilize edilecek)
 const GLYPH = { k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
@@ -75,7 +94,7 @@ export function openChess(){
     <div class="chess-modes" data-el="modeSelect">
       <div class="cm-head">
         <button class="c-icon" data-act="close">✕</button>
-        <div class="cm-title">♛ OSMANLI SATRANÇ</div>
+        <div class="cm-title">♛ SATRANÇ</div>
         <div style="display:flex;gap:6px">
           <button class="c-icon" data-act="sound" title="Ses">🔊</button>
           <button class="c-icon" data-act="theme" title="Tema">🎨</button>
