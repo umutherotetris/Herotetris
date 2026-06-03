@@ -1228,6 +1228,25 @@ function buildAISelect(onPick){
   return ov;
 }
 
+// ── Pano kopyalama yardımcısı (Clipboard API + fallback) ──
+function copyText(text, onDone){
+  const done = () => { if(onDone) onDone(); };
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopyText(text, done));
+    } else { fallbackCopyText(text, done); }
+  }catch(e){ fallbackCopyText(text, done); }
+}
+function fallbackCopyText(text, done){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove();
+    if(done) done();
+  }catch(e){}
+}
+
 // ── ÇOK OYUNCU: Lobi (oda oluştur / koda katıl) ──
 function buildVersusLobby(){
   const ov = document.createElement('div');
@@ -1247,7 +1266,10 @@ function buildVersusLobby(){
       <div class="vl-card">
         <div class="vl-card-title">🔑 ODAYA KATIL</div>
         <div class="vl-card-desc">Arkadaşının kodunu gir</div>
-        <input class="vl-input" data-el="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters">
+        <div class="vl-input-row">
+          <input class="vl-input" data-el="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters">
+          <button class="vl-paste" data-act="paste" title="Yapıştır">📋</button>
+        </div>
         <button class="vl-btn vl-join" data-act="join">KATIL</button>
       </div>
       <div class="vl-status" data-el="status"></div>
@@ -1263,9 +1285,15 @@ function buildVersusLobby(){
   }
   function handleEvent(type, data){
     if(type === 'code'){
-      setStatus('Oda kodu: ' + data + '  ·  Paylaş ve bekle', 'code');
-      // kod büyük gösterilsin
-      statusEl.innerHTML = '<div class="vl-codebig">' + data + '</div><div class="vl-codehint">Bu kodu arkadaşına gönder, rakip bekleniyor…</div>';
+      statusEl.innerHTML = '<div class="vl-codebig" data-el="codebig">' + data + '</div>' +
+        '<button class="vl-copy" data-act="copycode">📋 KODU KOPYALA</button>' +
+        '<div class="vl-codehint">Bu kodu arkadaşına gönder, rakip bekleniyor…</div>' +
+        '<div class="vl-spinner"></div>';
+      statusEl.className = 'vl-status code';
+      const cp = statusEl.querySelector('[data-act="copycode"]');
+      if(cp) cp.addEventListener('click', () => {
+        copyText(data, () => { cp.textContent = '✅ KOPYALANDI'; setTimeout(() => { cp.textContent = '📋 KODU KOPYALA'; }, 1600); });
+      });
     } else if(type === 'waiting'){
       /* zaten kod gösteriliyor */
     } else if(type === 'connected'){
@@ -1288,6 +1316,15 @@ function buildVersusLobby(){
     if(code.length !== 6){ setStatus('⚠️ 6 haneli kod gir', 'err'); return; }
     setStatus('Bağlanıyor…');
     MP.joinRoom(code, handleEvent);
+  });
+  const pasteBtn = ov.querySelector('[data-act="paste"]');
+  if(pasteBtn) pasteBtn.addEventListener('click', async () => {
+    try{
+      if(navigator.clipboard && navigator.clipboard.readText){
+        const txt = await navigator.clipboard.readText();
+        codeInput.value = (txt || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+      }
+    }catch(e){}
   });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => {
     MP.close();
@@ -1574,6 +1611,7 @@ function build(){
     <div class="tetris-topbar">
       <button class="t-icon" data-act="exit">✕</button>
       <div class="t-title">Herotetris <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
+      <button class="t-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="t-chat-badge" data-el="chatBadge" style="display:none"></span></button>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
@@ -1634,6 +1672,18 @@ function build(){
     <div class="tetris-controls tetris-controls-2">
       <button class="t-ctrl t-ctrl-wide" data-ctrl="hold">⇄ TUT</button>
       <button class="t-ctrl t-ctrl-wide t-ctrl-drop" data-ctrl="drop">⤓ SERT BIRAK</button>
+    </div>
+    <div class="t-chat" data-el="chatPanel" style="display:none">
+      <div class="t-chat-head">
+        <span>💬 Sohbet</span>
+        <button class="t-chat-close" data-act="chatClose">✕</button>
+      </div>
+      <div class="t-chat-msgs" data-el="chatMsgs"></div>
+      <div class="t-chat-quick" data-el="chatQuick"></div>
+      <div class="t-chat-input-row">
+        <input class="t-chat-input" data-el="chatInput" maxlength="120" placeholder="Mesaj yaz…" autocomplete="off">
+        <button class="t-chat-send" data-act="chatSend">➤</button>
+      </div>
     </div>`;
   document.body.appendChild(root);
   return root;
@@ -2041,6 +2091,7 @@ function launchVersusGame(){
   };
   // onEvent'i oyun handler'ına yönlendir (lobi handler'ı bitti)
   rebindMPHandler();
+  setupTetrisChat();   // çok oyuncu sohbetini aç
   updateVersusUI();
 }
 
@@ -2246,6 +2297,63 @@ function handleVersusMessage(msg){
   else if(msg.type === 'state'){ G.oppScore = msg.score||0; G.oppLines = msg.lines||0; updateVersusUI(); }
   else if(msg.type === 'garbage'){ G.pendingGarbage += (msg.rows||0); flash('⚠️ ' + (msg.rows||0) + ' çöp geliyor!'); Sound.garbage(); updateVersusUI(); }
   else if(msg.type === 'dead'){ G.oppAlive = false; if(!G.over){ flash('🏆 Rakip eledin!'); } updateVersusUI(); }
+  else if(msg.type === 'chat'){ addTetrisChatMessage((msg.text||'').slice(0,120), false); }
+}
+
+// ── ÇOK OYUNCU SOHBET ──
+const TETRIS_QUICK_MSGS = ['İyi oyunlar! 👋', 'Aferin! 👏', 'Çok hızlısın!', 'Hadi bakalım! 🔥', 'İyi şanslar! 🍀', 'Rövanş? 😎'];
+
+function setupTetrisChat(){
+  if(!G || !G.root) return;
+  G.chatOpen = false; G.unreadChat = 0;
+  const chatBtn = G.root.querySelector('[data-el="chatBtn"]');
+  if(chatBtn) chatBtn.style.display = 'flex';
+  const panel = G.root.querySelector('[data-el="chatPanel"]');
+  const quick = G.root.querySelector('[data-el="chatQuick"]');
+  if(quick){
+    quick.innerHTML = TETRIS_QUICK_MSGS.map(m => `<button class="t-chat-q">${m}</button>`).join('');
+    quick.querySelectorAll('.t-chat-q').forEach((b, i) => b.addEventListener('click', () => sendTetrisChat(TETRIS_QUICK_MSGS[i])));
+  }
+  if(chatBtn) chatBtn.addEventListener('click', () => {
+    G.chatOpen = true; if(panel) panel.style.display = 'flex';
+    G.unreadChat = 0; updateTetrisChatBadge();
+    const inp = G.root.querySelector('[data-el="chatInput"]');
+    if(inp) setTimeout(() => inp.focus(), 50);
+  });
+  const closeBtn = G.root.querySelector('[data-act="chatClose"]');
+  if(closeBtn) closeBtn.addEventListener('click', () => { G.chatOpen = false; if(panel) panel.style.display = 'none'; });
+  const sendBtn = G.root.querySelector('[data-act="chatSend"]');
+  const inp = G.root.querySelector('[data-el="chatInput"]');
+  if(sendBtn && inp){
+    sendBtn.addEventListener('click', () => { const t = inp.value.trim(); if(t){ sendTetrisChat(t); inp.value=''; } });
+    inp.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ const t = e.target.value.trim(); if(t){ sendTetrisChat(t); e.target.value=''; } } });
+  }
+}
+
+function sendTetrisChat(text){
+  if(!G || !MP.connected) return;
+  text = (text||'').slice(0,120);
+  MP.send({ type:'chat', text });
+  addTetrisChatMessage(text, true);
+}
+
+function addTetrisChatMessage(text, mine){
+  if(!G || !G.root) return;
+  const box = G.root.querySelector('[data-el="chatMsgs"]');
+  if(!box) return;
+  const msg = document.createElement('div');
+  msg.className = 't-chat-msg ' + (mine ? 'mine' : 'theirs');
+  msg.textContent = text;
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+  if(!mine && !G.chatOpen){ G.unreadChat = (G.unreadChat||0) + 1; updateTetrisChatBadge(); }
+}
+
+function updateTetrisChatBadge(){
+  const badge = G.root.querySelector('[data-el="chatBadge"]');
+  if(!badge) return;
+  if(G.unreadChat > 0){ badge.style.display = 'flex'; badge.textContent = G.unreadChat; }
+  else { badge.style.display = 'none'; }
 }
 
 // Rakibe durum gönder (skor/satır)
@@ -2802,6 +2910,36 @@ function injectCSS(){
 .gem-desc{ font-size: 8px; color: var(--text-mute); line-height: 1.3; }
 .gem-hint{ text-align: center; font-size: 8px; color: var(--gold); letter-spacing: 1px; font-weight: 700; padding: 10px 0 4px; }
 .gem-close{ width: 100%; margin-top: 10px; padding: 12px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--r-md); font-weight: 800; font-size: 12px; }
+
+/* ── Çok Oyuncu: lobi kopyala/yapıştır ── */
+.vl-codebig{ font-family: var(--font-display); font-weight: 900; font-size: clamp(30px, 11vw, 48px); letter-spacing: 0.14em; text-align: center; color: var(--cyan); text-shadow: 0 0 20px rgba(0,229,255,.5); padding: 14px 8px; background: rgba(0,229,255,.08); border: 1.5px dashed var(--border-cyan); border-radius: var(--r-md); overflow-wrap: break-word; }
+.vl-copy{ width: 100%; margin-top: 10px; padding: 13px; background: linear-gradient(135deg, #00E5FF, #00B8D4); border: none; border-radius: var(--r-md); color: #001a1f; font-family: var(--font-display); font-weight: 800; font-size: 13px; letter-spacing: .5px; cursor: pointer; }
+.vl-copy:active{ transform: scale(.97); }
+.vl-codehint{ text-align: center; font-size: 10px; color: var(--text-mute); margin-top: 8px; line-height: 1.4; }
+.vl-spinner{ width: 28px; height: 28px; margin: 10px auto 0; border: 3px solid rgba(0,229,255,.2); border-top-color: var(--cyan); border-radius: 50%; animation: vlSpin .9s linear infinite; }
+@keyframes vlSpin{ to{ transform: rotate(360deg); } }
+.vl-input-row{ display: flex; gap: 8px; margin-bottom: 10px; }
+.vl-input-row .vl-input{ flex: 1; min-width: 0; margin-bottom: 0; }
+.vl-paste{ width: 52px; flex-shrink: 0; background: rgba(0,229,255,.12); border: 1.5px solid var(--border-cyan); border-radius: var(--r-md); color: var(--cyan); font-size: 20px; cursor: pointer; }
+.vl-paste:active{ transform: scale(.94); }
+
+/* ── Çok Oyuncu: oyun içi sohbet ── */
+.t-chat-badge{ position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; display: flex; align-items: center; justify-content: center; background: #ff4060; color: #fff; font-size: 10px; font-weight: 800; border-radius: 8px; box-sizing: border-box; }
+.t-chat{ position: fixed; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto; background: linear-gradient(180deg, #0e0e1c, #05050b); border-top: 2px solid var(--cyan); border-radius: 18px 18px 0 0; display: flex; flex-direction: column; max-height: 60%; z-index: 1200; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
+.t-chat-head{ display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--cyan); border-bottom: 1px solid rgba(0,229,255,.2); }
+.t-chat-close{ background: none; border: none; color: var(--text-dim); font-size: 16px; cursor: pointer; }
+.t-chat-msgs{ flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; min-height: 110px; }
+.t-chat-msg{ max-width: 75%; padding: 8px 12px; border-radius: 14px; font-size: 13px; line-height: 1.4; word-break: break-word; }
+.t-chat-msg.mine{ align-self: flex-end; background: linear-gradient(135deg, #00E5FF, #00B8D4); color: #001a1f; border-bottom-right-radius: 4px; }
+.t-chat-msg.theirs{ align-self: flex-start; background: rgba(0,188,212,.18); color: #d8f8ff; border-bottom-left-radius: 4px; }
+.t-chat-quick{ display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; border-top: 1px solid rgba(0,229,255,.15); }
+.t-chat-q{ flex-shrink: 0; padding: 6px 12px; background: rgba(0,229,255,.08); border: 1px solid var(--border-cyan); border-radius: 16px; color: #d8f8ff; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.t-chat-q:active{ transform: scale(.95); }
+.t-chat-input-row{ display: flex; gap: 8px; padding: 12px; }
+.t-chat-input{ flex: 1; min-width: 0; padding: 12px 14px; background: rgba(255,255,255,.06); border: 1.5px solid var(--border-cyan); border-radius: 22px; color: #fff; font-size: 14px; }
+.t-chat-input:focus{ outline: none; border-color: var(--cyan); }
+.t-chat-send{ width: 48px; flex-shrink: 0; background: linear-gradient(135deg, #00E5FF, #00B8D4); border: none; border-radius: 50%; color: #001a1f; font-size: 18px; cursor: pointer; }
+.t-chat-send:active{ transform: scale(.94); }
 
 
 `;

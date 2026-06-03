@@ -1586,31 +1586,35 @@ function injectCSS(){
 
 /* Çevrimiçi lobi */
 .chess-online-lobby{ position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center;
-  background:rgba(5,10,20,.85); backdrop-filter:blur(6px); padding:16px; }
+  background:rgba(5,10,20,.85); backdrop-filter:blur(6px); padding:16px; box-sizing:border-box; }
 .col-box{ background:linear-gradient(135deg, #16294a, #0a1428); border:2px solid #c8a557; border-radius:20px;
-  padding:20px; max-width:400px; width:100%; position:relative; }
-.col-back{ position:absolute; top:14px; left:14px; background:none; border:none; color:#8a9bb5; font-size:13px; cursor:pointer; }
+  padding:20px; max-width:400px; width:100%; box-sizing:border-box; position:relative; overflow:hidden;
+  max-height:92vh; overflow-y:auto; }
+.col-box *{ box-sizing:border-box; }
+.col-back{ position:absolute; top:14px; left:14px; background:none; border:none; color:#8a9bb5; font-size:13px; cursor:pointer; z-index:2; }
 .col-title{ text-align:center; font-size:16px; font-weight:800; letter-spacing:.5px; color:#c8a557; margin-bottom:18px; padding-top:6px; }
-.col-panel{ display:flex; flex-direction:column; gap:12px; }
-.col-big{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:18px;
+.col-panel{ display:flex; flex-direction:column; gap:12px; width:100%; }
+.col-time-sel, .col-host-wait{ display:flex; flex-direction:column; gap:12px; width:100%; }
+.col-big{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:18px; width:100%;
   background:linear-gradient(135deg, rgba(35,70,126,.5), rgba(10,20,40,.9)); border:1.5px solid rgba(200,165,87,.4);
   border-radius:14px; color:#f0e6cc; cursor:pointer; transition:transform .12s, border-color .2s; }
 .col-big:active{ transform:scale(.98); }
 .col-big:hover{ border-color:#c8a557; }
 .col-ic{ font-size:30px; }
 .col-bname{ font-size:15px; font-weight:800; letter-spacing:.5px; }
-.col-bdesc{ font-size:11px; color:#8a9bb5; }
+.col-bdesc{ font-size:11px; color:#8a9bb5; text-align:center; }
 .col-info{ text-align:center; font-size:13px; color:#b0c0d4; }
-.col-code{ text-align:center; font-family:monospace; font-size:42px; font-weight:800; letter-spacing:8px;
-  color:#ffd740; text-shadow:0 0 20px rgba(255,215,64,.5); padding:12px; background:rgba(255,215,64,.08);
-  border-radius:12px; border:1.5px dashed rgba(200,165,87,.5); }
-.col-hint{ text-align:center; font-size:12px; color:#8a9bb5; line-height:1.5; }
+.col-code{ width:100%; text-align:center; font-family:monospace; font-weight:800;
+  font-size:clamp(26px, 9vw, 40px); letter-spacing:0.18em;
+  color:#ffd740; text-shadow:0 0 18px rgba(255,215,64,.45); padding:14px 8px; background:rgba(255,215,64,.08);
+  border-radius:12px; border:1.5px dashed rgba(200,165,87,.5); overflow-wrap:break-word; }
+.col-hint{ text-align:center; font-size:12px; color:#8a9bb5; line-height:1.5; width:100%; }
 .col-spinner{ width:32px; height:32px; margin:4px auto; border:3px solid rgba(200,165,87,.2);
   border-top-color:#c8a557; border-radius:50%; animation:colSpin 0.9s linear infinite; }
 @keyframes colSpin{ to{ transform:rotate(360deg); } }
-.col-input{ width:100%; box-sizing:border-box; padding:16px; font-family:monospace; font-size:28px; font-weight:800;
-  letter-spacing:6px; text-align:center; text-transform:uppercase; background:rgba(255,255,255,.06);
-  border:1.5px solid rgba(200,165,87,.4); border-radius:12px; color:#ffd740; }
+.col-input{ width:100%; min-width:0; padding:16px; font-family:monospace; font-weight:800;
+  font-size:clamp(22px, 7vw, 28px); letter-spacing:0.2em; text-align:center; text-transform:uppercase;
+  background:rgba(255,255,255,.06); border:1.5px solid rgba(200,165,87,.4); border-radius:12px; color:#ffd740; }
 .col-input:focus{ outline:none; border-color:#c8a557; }
 .col-connect{ width:100%; padding:14px; background:linear-gradient(135deg,#c8a557,#a07d2f); border:none;
   border-radius:12px; color:#0a1428; font-weight:800; font-size:15px; letter-spacing:1px; cursor:pointer; }
