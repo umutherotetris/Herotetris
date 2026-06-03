@@ -13,6 +13,14 @@ import { ChessMP } from './chess-mp.js';
 
 // ── Temalar (referans görsellerden: Osmanlı lacivert default) ──
 const THEMES = {
+  iznikmavi: {
+    name: 'İznik Mavi',
+    desc: 'Lapis lacivert ve beyaz çini, altın işleme.',
+    light:'#edf0ec', dark:'#1e4fa0', lightTile:'#f4f6f2', darkTile:'#2a5eb2',
+    border:'#c8a557', borderDark:'#8a6d2f', bg:'#0a1838',
+    wTop:'#f8faf8', wBot:'#dbe4f0', bTop:'#0d7d92', bBot:'#064a58',
+    wPiece:'#1e4fa0', bPiece:'#f2ead2', glow:'#3fa0ff'
+  },
   sinan: {
     name: 'Mimar Sinan Mermer',
     desc: 'Beyaz mermer ve duman grisi, ince altın çizgiler.',
@@ -78,7 +86,7 @@ const THEMES = {
     wPiece:'#6b4226', bPiece:'#f0e0c0', glow:'#e0a860'
   }
 };
-let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return (t && THEMES[t]) ? t : 'bursa'; }catch(e){ return 'bursa'; } })();
+let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return (t && THEMES[t]) ? t : 'iznikmavi'; }catch(e){ return 'iznikmavi'; } })();
 
 // Unicode satranç sembolleri (dolu figürler — 2.5D stilize edilecek)
 const GLYPH = { k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
