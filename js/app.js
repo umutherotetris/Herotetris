@@ -1,12 +1,12 @@
 // ════════════════════════════════════════════════════════════════
 //  Hero Oyun Portalı — BOOTSTRAP
-//  Tüm modülleri birbirine bağlar. Tek giriş noktası.
+//  Auth/UI/Nav baştan yüklenir (login için kritik).
+//  Oyunlar DİNAMİK yüklenir — bir oyun dosyası eksik/hatalı olsa bile
+//  login ve diğer oyunlar çalışmaya devam eder (izolasyon).
 // ════════════════════════════════════════════════════════════════
 import Auth from './auth.js';
 import initUI from './ui.js';
 import initNav from './nav.js';
-import { openTetris } from './games/tetris.js';
-import { openChess } from './games/chess.js';
 
 // Mobilde hata görmek için: ekranın üstüne kısa bir uyarı bas
 function toast(msg, isErr){
@@ -23,48 +23,48 @@ function toast(msg, isErr){
   clearTimeout(t.__h); t.__h = setTimeout(() => { t.remove(); }, isErr ? 9000 : 2500);
 }
 
+// Bir oyun modülünü dinamik yükle + aç. Hata olursa sadece o oyun etkilenir.
+async function launchGame(modulePath, exportName, label){
+  toast(label + ' açılıyor…', false);
+  try{
+    const mod = await import(modulePath);
+    const fn = mod[exportName];
+    if(typeof fn !== 'function') throw new Error(exportName + ' bulunamadı (' + modulePath + ')');
+    fn();
+  }catch(e){
+    const detail = (e && (e.message || e)) + '';
+    toast(label + ' AÇILAMADI:\n' + detail + '\n\nEksik dosya olabilir — tüm js/games/ klasörünü yükleyip ?v sayısını artır.', true);
+    console.error('[' + label + ']', e);
+  }
+}
+
+function bindCard(id, modulePath, exportName, label){
+  const card = document.getElementById(id);
+  if(!card){ toast('HATA: ' + id + ' kartı yok (index.html güncel değil)', true); return; }
+  card.addEventListener('click', () => launchGame(modulePath, exportName, label));
+}
+
 function start(){
-  initUI();
-  initNav();
+  // Auth/UI/Nav her durumda çalışır (oyun modüllerinden bağımsız)
+  try{ initUI(); }catch(e){ console.error('[UI]', e); toast('Arayüz hatası: ' + (e && e.message || e), true); }
+  try{ initNav(); }catch(e){ console.error('[Nav]', e); }
 
-  // Oyun kartlarını bağla
-  const tetrisCard = document.getElementById('gameTetris');
-  if(!tetrisCard){
-    toast('HATA: gameTetris kartı bulunamadı (index.html güncel değil)', true);
-  } else {
-    tetrisCard.addEventListener('click', () => {
-      try{
-        toast('Tetris açılıyor…', false);
-        openTetris();
-      }catch(e){
-        toast('TETRİS HATASI:\n' + (e && (e.stack || e.message) || e), true);
-        console.error('[Tetris]', e);
-      }
-    });
-  }
+  // Oyunlar dinamik yüklenir — biri eksikse diğerleri + login etkilenmez
+  bindCard('gameTetris', './games/tetris.js', 'openTetris', 'Tetris');
+  bindCard('gameChess',  './games/chess.js',  'openChess',  'Satranç');
+  bindCard('gameTavla',  './games/tavla.js',  'openTavla',  'Tavla');
 
-  // Satranç kartını bağla
-  const chessCard = document.getElementById('gameChess');
-  if(!chessCard){
-    toast('HATA: gameChess kartı bulunamadı (index.html güncel değil)', true);
-  } else {
-    chessCard.addEventListener('click', () => {
-      try{
-        toast('Satranç açılıyor…', false);
-        openChess();
-      }catch(e){
-        toast('SATRANÇ HATASI:\n' + (e && (e.stack || e.message) || e), true);
-        console.error('[Chess]', e);
-      }
-    });
-  }
-
-  // Yakalanmayan hataları da ekrana bas
+  // Yakalanmayan hataları ekrana bas
   window.addEventListener('error', (e) => toast('HATA: ' + (e.message || '') + '\n' + (e.filename||'').split('/').pop() + ':' + (e.lineno||''), true));
   window.addEventListener('unhandledrejection', (e) => toast('PROMISE HATASI:\n' + ((e.reason && (e.reason.stack || e.reason.message)) || e.reason), true));
 
-  console.info('[Hero] Stage 2 — Tetris + Satranç bağlı.');
-  window.Hero = { Auth, openTetris, openChess, toast };
+  console.info('[Hero] Stage 2 — Auth hazır, oyunlar dinamik yüklenecek.');
+  window.Hero = {
+    Auth, toast,
+    openTetris: () => launchGame('./games/tetris.js', 'openTetris', 'Tetris'),
+    openChess:  () => launchGame('./games/chess.js',  'openChess',  'Satranç'),
+    openTavla:  () => launchGame('./games/tavla.js',  'openTavla',  'Tavla')
+  };
 }
 
 if(document.readyState === 'loading'){
