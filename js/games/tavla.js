@@ -12,7 +12,7 @@ import {
 } from './tavla-engine.js';
 import { chooseSequence } from './tavla-ai.js';
 import Sound from './tavla-audio.js';
-import TavlaMP from './tavla-mp.js';
+let TavlaMP = null;   // çevrimiçi modül — sadece online moda girince dinamik yüklenir
 
 // ── 6 Osmanlı teması (referans görsellerden) ──
 const THEMES = {
@@ -1090,7 +1090,15 @@ function showAISetup(root){
 }
 
 // ════════════ ÇEVRİMİÇİ LOBİ ════════════
-function showOnlineLobby(root){
+async function showOnlineLobby(root){
+  // çevrimiçi modülü dinamik yükle (eksikse tavla yine de açılır)
+  if(!TavlaMP){
+    try{ TavlaMP = (await import('./tavla-mp.js')).default; }
+    catch(e){
+      if(window.Hero && window.Hero.toast) window.Hero.toast('Çevrimiçi modül yüklenemedi (tavla-mp.js eksik olabilir)', true);
+      console.error('[tavla-mp]', e); return;
+    }
+  }
   const ov = document.createElement('div');
   ov.className = 'tavla-online-lobby';
   ov.innerHTML = `<div class="tol-box">
