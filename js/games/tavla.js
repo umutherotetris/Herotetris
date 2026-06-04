@@ -306,12 +306,14 @@ function rollAndShow(){
 function fitCanvas(){
   if(!G || !G.canvas) return;
   const wrap = G.boardWrap;
-  const availW = wrap.clientWidth || (window.innerWidth - 20);
-  const availH = wrap.clientHeight || (window.innerHeight - 200);
-  // tavla tahtası yatay dikdörtgen (en-boy ~ 1.15:1 mobilde dikey kullanım için kare-ye yakın)
-  let w = availW, h = availH;
-  const targetRatio = 0.82;   // h/w
-  if(h / w > targetRatio){ h = w * targetRatio; } else { w = h / targetRatio; }
+  const availW = wrap.clientWidth || (window.innerWidth - 12);
+  const availH = wrap.clientHeight || (window.innerHeight - 180);
+  // Tavla tahtası DİKEY-UZUN: ekranın çoğunu doldurur. Oran = yükseklik/genişlik.
+  // Dikey ekranda mevcut alana göre dinamik (1.30–1.62 arası), boşa alan bırakmaz.
+  let ratio = availH / availW;
+  ratio = Math.max(1.30, Math.min(ratio, 1.62));
+  let w = availW, h = w * ratio;
+  if(h > availH){ h = availH; w = h / ratio; }
   const dpr = window.devicePixelRatio || 1;
   G.W = Math.floor(w); G.H = Math.floor(h);
   G.canvas.width = G.W * dpr; G.canvas.height = G.H * dpr;

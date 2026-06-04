@@ -369,21 +369,35 @@ function bindTimeRow(ov, store){
   }));
 }
 
-// Aynı cihazda 2 oyuncu: süre seçimi
+// Aynı cihazda 2 oyuncu: süre + ekran dönme seçimi
 function showTimeSetup(root){
   const ov = document.createElement('div');
   ov.className = 'chess-ai-setup';
   ov.innerHTML = `<div class="cas-box">
     <div class="cas-title">👥 2 OYUNCU</div>
     ${timeRowHTML()}
+    <div class="cas-label">TAHTA YÖNÜ</div>
+    <div class="cas-row" data-group="flip">
+      <button class="cas-opt active" data-v="1">🔄 Sıra gelene dönsün</button>
+      <button class="cas-opt" data-v="0">🔒 Sabit kalsın</button>
+    </div>
+    <div class="cas-hint" data-el="flipHint">Her oyuncunun sırasında tahta ona göre döner.</div>
     <button class="cas-start">▶ BAŞLA</button>
   </div>`;
   root.appendChild(ov);
-  const sel = { time: 0 };
+  const sel = { time: 0, autoFlip: true };
   bindTimeRow(ov, sel);
+  const hint = ov.querySelector('[data-el="flipHint"]');
+  ov.querySelectorAll('[data-group="flip"] .cas-opt').forEach(b => b.addEventListener('click', () => {
+    ov.querySelectorAll('[data-group="flip"] .cas-opt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); sel.autoFlip = (b.dataset.v === '1');
+    hint.textContent = sel.autoFlip
+      ? 'Her oyuncunun sırasında tahta ona göre döner.'
+      : 'Tahta hep beyaz tarafından görünür (dönmez) — karışıklığı önler.';
+  }));
   ov.querySelector('.cas-start').addEventListener('click', () => {
     ov.remove();
-    startGame(root, 'local', { time: sel.time });
+    startGame(root, 'local', { time: sel.time, autoFlip: sel.autoFlip });
   });
 }
 
@@ -460,7 +474,8 @@ function startGame(root, mode, opts){
   G.timeControl = opts.time || 0;   // saniye (0 = süresiz)
   G.clock = null;
   G.undoStack = [];                 // hamle geri alma için anlık görüntüler
-  // AI modunda tahta sabit (insan rengine göre), 2 oyuncu modunda döner
+  G.autoFlip = (opts.autoFlip !== undefined) ? opts.autoFlip : true;   // 2 oyuncu: tahta dönsün mü
+  // AI modunda tahta sabit (insan rengine göre), 2 oyuncu modunda (autoFlip açıksa) döner
   G.flip = ((mode === 'ai' || mode === 'online') && G.playerColor === 'b');
   G.animating = false;
 
@@ -815,37 +830,53 @@ function drawPiece(ctx, r, c, piece, t){
   drawPieceAt(ctx, x + G.cell/2, y + G.cell/2, piece, t);
 }
 
-// 2.5D taş çizimi — merkez piksel konumunda (animasyon için)
+// Premium figüratif taş çizimi — kabartmalı, altın kenarlı, gradyanlı (3D his)
 function drawPieceAt(ctx, cx, cy, piece, t){
-  const R = G.cell * 0.40;
   const isW = piece.c === 'w';
+  const s = G.cell;
+  // Hacim renkleri (üst açık → alt koyu)
+  const top  = isW ? '#fcf6e6' : '#6b6b78';
+  const mid  = isW ? '#eaddbe' : '#34343f';
+  const bot  = isW ? '#c9b78c' : '#141019';
+  const edge = isW ? '#9a824f' : '#04040a';
+  const glyph = GLYPH[piece.t];
 
   ctx.save();
-  // zemin gölgesi
-  ctx.fillStyle = 'rgba(0,0,0,.35)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + R*0.55, R*0.95, R*0.42, 0, 0, Math.PI*2); ctx.fill();
-
-  // taş gövdesi (radyal gradyan → 3D hacim)
-  const g = ctx.createRadialGradient(cx - R*0.3, cy - R*0.4, R*0.2, cx, cy, R*1.1);
-  g.addColorStop(0, isW ? t.wTop : t.bTop);
-  g.addColorStop(1, isW ? t.wBot : t.bBot);
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.fill();
-
-  // kenar halkası (altın)
-  ctx.strokeStyle = t.border; ctx.lineWidth = Math.max(1.5, G.cell*0.04);
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
-
-  // üst parlama
-  ctx.fillStyle = 'rgba(255,255,255,.25)';
-  ctx.beginPath(); ctx.ellipse(cx - R*0.25, cy - R*0.35, R*0.4, R*0.22, -0.5, 0, Math.PI*2); ctx.fill();
-
-  // sembol
-  ctx.fillStyle = isW ? t.wPiece : t.bPiece;
-  ctx.font = `${Math.floor(G.cell*0.5)}px serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 2; ctx.shadowOffsetY = 1;
-  ctx.fillText(GLYPH[piece.t], cx, cy + 1);
+
+  // zemin gölgesi (taşı tahtaya oturtur)
+  ctx.fillStyle = 'rgba(0,0,0,.30)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.31, s*0.27, s*0.08, 0, 0, Math.PI*2); ctx.fill();
+
+  const fs = Math.floor(s * 0.76);
+  ctx.font = `${fs}px "Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",serif`;
+  const yo = cy + s*0.015;   // optik merkez düzeltmesi
+
+  // 1) düşen gölge (derinlik)
+  ctx.fillStyle = 'rgba(0,0,0,.40)';
+  ctx.fillText(glyph, cx + s*0.028, yo + s*0.04);
+
+  // 2) kalın koyu/altın taban kenar (taşın silueti)
+  ctx.lineJoin = 'round'; ctx.lineWidth = s*0.085; ctx.strokeStyle = edge;
+  ctx.strokeText(glyph, cx, yo);
+
+  // 3) ana gövde — dikey gradyan (hacim)
+  const grad = ctx.createLinearGradient(cx, yo - fs*0.5, cx, yo + fs*0.5);
+  grad.addColorStop(0, top); grad.addColorStop(0.5, mid); grad.addColorStop(1, bot);
+  ctx.fillStyle = grad; ctx.fillText(glyph, cx, yo);
+
+  // 4) üst parlama (ışık) — üst kısma kırp
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx - s*0.5, yo - fs*0.62, s, fs*0.42); ctx.clip();
+  ctx.fillStyle = isW ? 'rgba(255,255,255,.50)' : 'rgba(255,255,255,.22)';
+  ctx.fillText(glyph, cx, yo);
+  ctx.restore();
+
+  // 5) ince keskin dış çizgi (altın vurgu)
+  ctx.lineWidth = Math.max(1, s*0.016);
+  ctx.strokeStyle = isW ? 'rgba(120,95,40,.55)' : 'rgba(200,170,90,.30)';
+  ctx.strokeText(glyph, cx, yo);
+
   ctx.restore();
 }
 
@@ -1033,7 +1064,7 @@ function applyAndContinue(mv, isCapture){
   const repeats = G.posHistory.filter(k => k === key).length;
 
   // 2 oyuncu modunda tahtayı çevir; AI modunda sabit
-  if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
 
   updateTurn();
   updateCaptured();
@@ -1245,7 +1276,7 @@ function showFENLoader(){
     G.captured = { w:[], b:[] };
     G.moveHistory = []; G.posHistory = [ positionKey(G.state) ];
     G.undoStack = []; G.gameEnded = false;
-    if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+    if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
     clearHistoryUI();
     updateTurn(); updateStatus(''); updateCaptured(); draw();
     const st = gameStatus(G.state);
@@ -1274,7 +1305,7 @@ function undoMove(){
   G.gameEnded = false;
   G.selected = null; G.legalForSelected = [];
   // 2 oyuncu modunda tahta yönünü düzelt
-  if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
   // Geçmiş panelini yeniden kur
   rebuildHistoryUI();
   updateTurn(); updateStatus(''); updateCaptured(); updateClockDisplay(); draw();
