@@ -366,31 +366,30 @@ function fitCanvas(){
   draw();
 }
 
-// Tahta geometrisi (çerçeve, bar, çeyrekler, nokta üçgenleri)
+// Tahta geometrisi — TAMAMEN ORANSAL (sabit piksel YOK).
+// Bölgeler: [sol oyun yarısı | orta bar | sağ oyun yarısı | toplama oluğu]
 function computeLayout(){
   const W = G.W, H = G.H;
-  const margin = Math.round(W * 0.035);
-  const barW = Math.round(W * 0.10);     // orta bar (motif için daha geniş)
-  const bearW = Math.round(W * 0.085);   // sağ toplama oluğu (görünür genişlik)
-  const innerX = margin, innerY = margin;
-  const innerW = W - margin*2, innerH = H - margin*2;
-  // sol yarı + bar + sağ yarı + bear oluğu
-  const playW = innerW - barW - bearW;
-  const halfW = playW / 2;
-  const colW = halfW / 6;               // bir nokta sütunu genişliği
-  // üçgen yüksekliği: tahtanın ~%43'ü (uzun, gerçek tavla görünümü; orta boşluk az)
-  const pointH = innerH * 0.43;
-  // pul yarıçapı: sütun genişliğine sığacak (tıklaması kolay)
-  const checkerR = colW * 0.45;
+  // iç kenar boşluğu (altın çerçeve ile keçe arası) — oransal
+  const pad = Math.round(Math.min(W, H) * 0.045);
+  const innerX = pad, innerY = pad;
+  const innerW = W - pad * 2, innerH = H - pad * 2;
+  // bölge genişlikleri (keçe genişliğine oransal)
+  const barW = Math.round(innerW * 0.085);    // orta bar
+  const bearW = Math.round(innerW * 0.075);   // sağ toplama oluğu
+  const playW = innerW - barW - bearW;         // iki oyun yarısının toplam genişliği
+  const halfW = playW / 2;                      // bir yarı (6 sütun)
+  const colW = halfW / 6;                       // bir nokta sütunu
+  const checkerR = colW * 0.42;                 // pul yarıçapı (sütuna güvenli sığar)
+  const pointH = innerH * 0.42;                 // üçgen yüksekliği
+  const safe = Math.max(2, checkerR * 0.40);    // kenarlardan güvenli boşluk (oransal)
   G.geo = {
-    margin, barW, bearW, innerX, innerY, innerW, innerH,
-    leftX: innerX,
-    barX: innerX + halfW,
-    rightX: innerX + halfW + barW,
-    bearX: innerX + playW + barW,
-    colW, halfW, playW,
-    pointH,
-    checkerR
+    pad, innerX, innerY, innerW, innerH,
+    barW, bearW, playW, halfW, colW, checkerR, pointH, safe,
+    leftX:  innerX,                       // sol yarı başlangıcı
+    barX:   innerX + halfW,               // orta bar başlangıcı
+    rightX: innerX + halfW + barW,        // sağ yarı başlangıcı
+    bearX:  innerX + halfW + barW + halfW // toplama oluğu başlangıcı (= keçe sağ kenarından bearW içeride)
   };
 }
 
@@ -522,23 +521,17 @@ function drawPoint(ctx, idx, t){
 // Her temanın kendine özgü motifi (tasarım kuralı: motif yalnızca orta bar'da)
 const THEME_MOTIF = { iznik:'flower', kizil:'crescent', lacivert:'star8', zumrut:'seljuk', ceviz:'diamond', buz:'snow' };
 
+// Orta bar — TEMİZ (dekoratif sembol/hayalet ikon YOK), yalnızca ince kenar gölgesi
 function drawBarMotif(ctx, t){
   const g = G.geo;
-  const cx = g.barX + g.barW/2;
-  const motif = THEME_MOTIF[SELECTED_THEME] || 'diamond';
   ctx.save();
-  // dikey altın orta çizgi
-  ctx.strokeStyle = t.barMotif; ctx.globalAlpha = 0.30; ctx.lineWidth = Math.max(1, g.barW*0.035);
-  ctx.beginPath(); ctx.moveTo(cx, g.innerY + 8); ctx.lineTo(cx, g.innerY + g.innerH - 8); ctx.stroke();
-  // motifi bar boyunca dikey tekrarla
-  const n = 7, gap = (g.innerH - 24) / n;
-  const r = g.barW * 0.26;
-  ctx.fillStyle = t.barMotif; ctx.strokeStyle = t.barMotif;
-  for(let k=0;k<=n;k++){
-    const cy = g.innerY + 12 + k * gap;
-    ctx.globalAlpha = (k % 2 === 0) ? 0.42 : 0.26;   // dönüşümlü vurgu
-    drawMotifSymbol(ctx, cx, cy, r * (k % 2 === 0 ? 1 : 0.7), motif, t);
-  }
+  // bar kenarlarında hafif iç gölge (3B his) — sembol değil, sadece kenar
+  const grad = ctx.createLinearGradient(g.barX, 0, g.barX + g.barW, 0);
+  grad.addColorStop(0,    'rgba(0,0,0,.28)');
+  grad.addColorStop(0.5,  'rgba(0,0,0,0)');
+  grad.addColorStop(1,    'rgba(0,0,0,.28)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(g.barX, g.innerY, g.barW, g.innerH);
   ctx.restore();
 }
 
@@ -606,26 +599,31 @@ function drawBearOff(ctx, t){
   ctx.restore();
 }
 
-// Bir noktadaki pulları çiz
+// Bir noktadaki pulları çiz — üstgenler üzerinde, güvenli boşlukla
 function drawCheckers(ctx, t){
   const g = G.geo;
+  const R = g.checkerR, safe = g.safe, maxVisible = 5;
+  // dizilim aralığı: pullar üçgen içinde, kenarlardan güvenli boşlukta kalır
+  function stackGap(vis){
+    const span = g.pointH - 2*safe - 2*R;       // ilk ve son pul merkezi arası kullanılabilir alan
+    return Math.min(R * 2.05, vis > 1 ? span / (vis - 1) : 0);
+  }
   for(let i=0;i<24;i++){
     const v = G.state.points[i];
     if(v === 0) continue;
     const color = v > 0 ? 'w' : 'b';
     const count = Math.abs(v);
     const pg = pointGeometry(i);
-    const R = g.checkerR;
-    const maxVisible = 5;
-    for(let k=0;k<Math.min(count, maxVisible);k++){
-      const gap = Math.min(R * 2.06, (g.pointH - R*2) / Math.max(1, Math.min(count, maxVisible) - 1));
-      const cy = pg.y0 + pg.dir * (R + k * gap + 3);
+    const vis = Math.min(count, maxVisible);
+    const gap = stackGap(vis);
+    for(let k=0;k<vis;k++){
+      // tabandan içe doğru: ilk pul merkezi kenardan (safe + R) içeride
+      const cy = pg.y0 + pg.dir * (safe + R + k * gap);
       drawChecker(ctx, pg.baseX, cy, R, color, t);
     }
-    // 5'ten fazlaysa sayı göster
+    // 5'ten fazlaysa son pulun üstüne sayı yaz
     if(count > maxVisible){
-      const gap2 = Math.min(R * 2.06, (g.pointH - R*2) / (maxVisible - 1));
-      const cy = pg.y0 + pg.dir * (R + (maxVisible-1) * gap2 + 3);
+      const cy = pg.y0 + pg.dir * (safe + R + (vis-1) * gap);
       ctx.save();
       ctx.fillStyle = color === 'w' ? '#1a2a4a' : '#fff';
       ctx.font = `bold ${Math.floor(R*0.9)}px system-ui`;
@@ -657,19 +655,21 @@ function drawChecker(ctx, cx, cy, R, color, t){
   ctx.restore();
 }
 
+// Vurulan (kırılan) pullar — YALNIZCA orta bar üzerinde gösterilir
 function drawBarCheckers(ctx, t){
   const g = G.geo;
-  const cx = g.barX + g.barW/2;
-  const R = g.checkerR;
-  // beyaz bar (alt yarı) + siyah bar (üst yarı), flip'e göre
+  const cx = g.barX + g.barW / 2;     // tam bar ortası
+  const R = g.checkerR, safe = g.safe;
+  const gap = R * 2.05;
   const wBar = G.state.bar.w, bBar = G.state.bar.b;
-  // beyaz: aktifse alta, siyah üste (flip false)
+  // beyaz: bir yarıda, siyah: diğer yarıda (flip'e göre yer değişir)
+  const whiteTop = G.flip;            // flip=true → beyaz üstte
   for(let k=0;k<wBar;k++){
-    const cy = (G.flip ? g.innerY + R + 4 : g.innerY + g.innerH - R - 4) + (G.flip?1:-1)*k*R*1.9;
+    const cy = whiteTop ? (g.innerY + safe + R + k*gap) : (g.innerY + g.innerH - safe - R - k*gap);
     drawChecker(ctx, cx, cy, R, 'w', t);
   }
   for(let k=0;k<bBar;k++){
-    const cy = (G.flip ? g.innerY + g.innerH - R - 4 : g.innerY + R + 4) + (G.flip?-1:1)*k*R*1.9;
+    const cy = whiteTop ? (g.innerY + g.innerH - safe - R - k*gap) : (g.innerY + safe + R + k*gap);
     drawChecker(ctx, cx, cy, R, 'b', t);
   }
 }
@@ -1689,13 +1689,14 @@ function checkerPixel(idx, color, side){
     return { x: g.bearX + g.bearW/2, y: topOff ? g.innerY + g.innerH*0.25 : g.innerY + g.innerH*0.75 };
   }
   const pg = pointGeometry(idx);
-  const R = g.checkerR;
-  // mevcut yığının üstüne yakın konum (drawCheckers ile aynı aralık)
+  const R = g.checkerR, safe = g.safe;
+  // drawCheckers ile AYNI dizilim formülü (sürüklenen/animasyonlu pul doğru oturur)
   const cnt = Math.abs(G.state.points[idx]) || 0;
   const k = side === 'from' ? Math.max(0, cnt - 1) : cnt;
   const vis = Math.min(Math.max(cnt, 1), 5);
-  const gap = Math.min(R * 2.06, (g.pointH - R*2) / Math.max(1, vis - 1));
-  const cy = pg.y0 + pg.dir * (R + Math.min(k, 4) * gap + 3);
+  const span = g.pointH - 2*safe - 2*R;
+  const gap = Math.min(R * 2.05, vis > 1 ? span / (vis - 1) : 0);
+  const cy = pg.y0 + pg.dir * (safe + R + Math.min(k, 4) * gap);
   return { x: pg.baseX, y: cy };
 }
 
