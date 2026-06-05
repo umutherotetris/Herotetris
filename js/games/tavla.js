@@ -72,6 +72,8 @@ const THEMES = {
   }
 };
 let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_tavla_theme'); return (t && THEMES[t]) ? t : 'kizil'; }catch(e){ return 'kizil'; } })();
+let AUTO_ROLL = (function(){ try{ return localStorage.getItem('hero_tavla_autoroll') === 'on'; }catch(e){ return false; } })();
+const AUTO_ROLL_MS = 5000;   // 5 sn içinde atılmazsa otomatik
 
 let G = null;
 
@@ -86,6 +88,7 @@ export function openTavla(){
         <button class="tv-icon" data-act="close">✕</button>
         <div class="tvm-title">🎲 TAVLA</div>
         <div style="display:flex;gap:6px">
+          <button class="tv-icon" data-act="autoroll" data-el="autoRollBtn" title="Otomatik zar">⏱️</button>
           <button class="tv-icon" data-act="sound" data-el="soundBtn" title="Ses">🔊</button>
           <button class="tv-icon" data-act="theme" title="Tema">🎨</button>
         </div>
@@ -128,6 +131,11 @@ export function openTavla(){
         <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn">🎲 ZAR AT</button>
         <button class="tg-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ Pas</button>
       </div>
+      <div class="tg-actions" data-el="actionsBar">
+        <button class="tg-act-btn" data-act="draw">🤝 Beraberlik</button>
+        <button class="tg-act-btn" data-act="break" data-el="breakBtn" style="display:none">🛌 Mola</button>
+        <button class="tg-act-btn danger" data-act="resign">🏳️ Pes Et</button>
+      </div>
       <div class="tv-chat" data-el="chatPanel" style="display:none">
         <div class="tvc-head">
           <span>💬 Sohbet</span>
@@ -151,6 +159,17 @@ export function openTavla(){
     soundBtn.textContent = Sound.enabled ? '🔊' : '🔇';
     soundBtn.addEventListener('click', () => { const on = Sound.toggle(); soundBtn.textContent = on ? '🔊' : '🔇'; });
   }
+  const autoRollBtn = root.querySelector('[data-el="autoRollBtn"]');
+  if(autoRollBtn){
+    const paint = () => { autoRollBtn.textContent = '⏱️'; autoRollBtn.style.opacity = AUTO_ROLL ? '1' : '0.4'; autoRollBtn.title = AUTO_ROLL ? 'Otomatik zar: AÇIK (5sn)' : 'Otomatik zar: kapalı'; };
+    paint();
+    autoRollBtn.addEventListener('click', () => {
+      AUTO_ROLL = !AUTO_ROLL;
+      try{ localStorage.setItem('hero_tavla_autoroll', AUTO_ROLL ? 'on' : 'off'); }catch(e){}
+      paint();
+      if(window.Hero && window.Hero.toast) window.Hero.toast(AUTO_ROLL ? 'Otomatik zar açıldı (5 sn)' : 'Otomatik zar kapatıldı', false);
+    });
+  }
   root.querySelectorAll('.tvm-card:not(.soon)').forEach(card => {
     card.addEventListener('click', () => {
       try{ Sound.resume(); }catch(e){}
@@ -164,6 +183,9 @@ export function openTavla(){
 }
 
 function closeAll(){
+  clearAutoRollTimer();
+  clearBreakTimers();
+  if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
   try{ if(G && G.online) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
   if(G && G.root){ G.root.remove(); }
@@ -215,16 +237,14 @@ function startGame(root, mode, opts){
     G.openingDice = open.dice;
   }
 
-  // Açılış zarı — kim başlar
-  const open = openingRoll();
-  G.state.turn = open.first;
-  G.openingDice = open.dice;
-
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => restart());
   gameEl.querySelector('[data-act="roll"]').addEventListener('click', () => rollAndShow());
   gameEl.querySelector('[data-act="undo"]').addEventListener('click', () => undoMove());
   gameEl.querySelector('[data-act="pass"]').addEventListener('click', () => endTurn());
+  gameEl.querySelector('[data-act="draw"]').addEventListener('click', () => offerDraw());
+  gameEl.querySelector('[data-act="resign"]').addEventListener('click', () => resignGame());
+  gameEl.querySelector('[data-act="break"]').addEventListener('click', () => requestBreak());
   G.canvas.addEventListener('pointerdown', onPointerDown);
   G.canvas.addEventListener('pointermove', onPointerMove);
   G.canvas.addEventListener('pointerup', onPointerUp);
@@ -251,6 +271,7 @@ function startGame(root, mode, opts){
     }
     updateControls();
     draw();
+    startAutoRollTimer();
     return;
   }
 
@@ -260,6 +281,7 @@ function startGame(root, mode, opts){
   draw();
   // AI başlıyorsa otomatik oyna
   maybeAITurn();
+  startAutoRollTimer();
 }
 
 function restart(){
@@ -274,6 +296,7 @@ function restart(){
   updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
   updateControls(); draw();
   maybeAITurn();
+  startAutoRollTimer();
 }
 
 // ════════════ ZAR ATMA ════════════
@@ -281,6 +304,7 @@ function rollAndShow(){
   if(G.gameEnded || G.rolled || G.aiThinking) return;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && G.state.turn !== G.playerColor) return;   // sıra rakipte
+  clearAutoRollTimer();
   G.state.dice = rollDice();
   G.state.used = [];
   G.rolled = true;
@@ -476,22 +500,68 @@ function drawPoint(ctx, idx, t){
   ctx.strokeStyle = 'rgba(0,0,0,.2)'; ctx.lineWidth = 1; ctx.stroke();
 }
 
+// Her temanın kendine özgü motifi (tasarım kuralı: motif yalnızca orta bar'da)
+const THEME_MOTIF = { iznik:'flower', kizil:'crescent', lacivert:'star8', zumrut:'seljuk', ceviz:'diamond', buz:'snow' };
+
 function drawBarMotif(ctx, t){
   const g = G.geo;
   const cx = g.barX + g.barW/2;
+  const motif = THEME_MOTIF[SELECTED_THEME] || 'diamond';
   ctx.save();
   // dikey altın orta çizgi
-  ctx.strokeStyle = t.barMotif; ctx.globalAlpha = 0.35; ctx.lineWidth = Math.max(1, g.barW*0.04);
-  ctx.beginPath(); ctx.moveTo(cx, g.innerY + 6); ctx.lineTo(cx, g.innerY + g.innerH - 6); ctx.stroke();
-  // tekrarlı küçük baklava (eşkenar dörtgen) motifler
-  ctx.globalAlpha = 0.4; ctx.fillStyle = t.barMotif;
-  const n = 6, gap = (g.innerH - 20) / n;
-  const d = g.barW * 0.18;
+  ctx.strokeStyle = t.barMotif; ctx.globalAlpha = 0.30; ctx.lineWidth = Math.max(1, g.barW*0.035);
+  ctx.beginPath(); ctx.moveTo(cx, g.innerY + 8); ctx.lineTo(cx, g.innerY + g.innerH - 8); ctx.stroke();
+  // motifi bar boyunca dikey tekrarla
+  const n = 7, gap = (g.innerH - 24) / n;
+  const r = g.barW * 0.26;
+  ctx.fillStyle = t.barMotif; ctx.strokeStyle = t.barMotif;
   for(let k=0;k<=n;k++){
-    const cy = g.innerY + 10 + k * gap;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy-d); ctx.lineTo(cx+d, cy); ctx.lineTo(cx, cy+d); ctx.lineTo(cx-d, cy);
-    ctx.closePath(); ctx.fill();
+    const cy = g.innerY + 12 + k * gap;
+    ctx.globalAlpha = (k % 2 === 0) ? 0.42 : 0.26;   // dönüşümlü vurgu
+    drawMotifSymbol(ctx, cx, cy, r * (k % 2 === 0 ? 1 : 0.7), motif, t);
+  }
+  ctx.restore();
+}
+
+// Tek bir tema sembolü çiz
+function drawMotifSymbol(ctx, cx, cy, r, motif, t){
+  ctx.save();
+  if(motif === 'diamond'){
+    ctx.beginPath(); ctx.moveTo(cx, cy-r); ctx.lineTo(cx+r*0.72, cy); ctx.lineTo(cx, cy+r); ctx.lineTo(cx-r*0.72, cy); ctx.closePath(); ctx.fill();
+  } else if(motif === 'star8'){
+    star(ctx, cx, cy, 8, r, r*0.45);
+  } else if(motif === 'crescent'){
+    // hilal + küçük yıldız
+    ctx.beginPath(); ctx.arc(cx, cy, r*0.92, Math.PI*0.32, Math.PI*1.68); ctx.fill();
+    ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(cx + r*0.34, cy, r*0.74, 0, Math.PI*2); ctx.fill(); ctx.restore();
+    star(ctx, cx + r*0.5, cy, 5, r*0.34, r*0.15);
+  } else if(motif === 'flower'){
+    // 6 yapraklı çiçek (İznik)
+    for(let i=0;i<6;i++){
+      const a = (Math.PI/3)*i;
+      ctx.beginPath();
+      ctx.ellipse(cx + Math.cos(a)*r*0.5, cy + Math.sin(a)*r*0.5, r*0.34, r*0.18, a, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, r*0.26, 0, Math.PI*2); ctx.fill();
+  } else if(motif === 'seljuk'){
+    // Selçuklu yıldızı: iki çakışık kare
+    ctx.beginPath(); ctx.moveTo(cx, cy-r); ctx.lineTo(cx+r, cy); ctx.lineTo(cx, cy+r); ctx.lineTo(cx-r, cy); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.rect(cx-r*0.62, cy-r*0.62, r*1.24, r*1.24); ctx.fill();
+  } else if(motif === 'snow'){
+    // kar tanesi: 6 kol
+    ctx.lineWidth = Math.max(1, r*0.16); ctx.lineCap = 'round';
+    for(let i=0;i<6;i++){
+      const a = (Math.PI/3)*i;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r); ctx.stroke();
+      // küçük çapraz dallar
+      const mx = cx+Math.cos(a)*r*0.6, my = cy+Math.sin(a)*r*0.6;
+      ctx.beginPath();
+      ctx.moveTo(mx, my); ctx.lineTo(mx+Math.cos(a+0.6)*r*0.28, my+Math.sin(a+0.6)*r*0.28);
+      ctx.moveTo(mx, my); ctx.lineTo(mx+Math.cos(a-0.6)*r*0.28, my+Math.sin(a-0.6)*r*0.28);
+      ctx.stroke();
+    }
   }
   ctx.restore();
 }
@@ -589,14 +659,31 @@ function drawDice(ctx, t){
   if(!G.state.dice || G.state.dice.length === 0) return;
   const g = G.geo;
   const dice = G.diceAnim || G.state.dice;   // animasyon sırasında rastgele yüzler
-  const sz = Math.min(g.barW*1.1, g.innerH*0.1);
-  const cy = g.innerY + g.innerH/2;
-  const startX = G.flip ? g.leftX + g.halfW*0.5 : g.rightX + g.halfW*0.5;
-  dice.forEach((d, i) => {
-    const used = G.diceAnim ? false : G.state.used.includes(i);
-    const dx = startX + (i - dice.length/2) * (sz*1.25);
-    drawDie(ctx, dx, cy, sz, d, used);
-  });
+  const n = dice.length;
+  // Zarın boyutu: bir tahta yarısına RAHAT sığacak şekilde sınırlı (taşma yok)
+  const sz = Math.min(g.barW * 1.0, g.innerH * 0.085, g.halfW * 0.30);
+  const spacing = sz * 1.28;
+  // Zarları oyuncunun kendi yarısının ortasına yerleştir
+  const halfCx = G.flip ? (g.leftX + g.halfW * 0.5) : (g.rightX + g.halfW * 0.5);
+  const cy = g.innerY + g.innerH / 2;
+
+  if(n <= 2){
+    // tek sıra, yatay
+    dice.forEach((d, i) => {
+      const used = G.diceAnim ? false : G.state.used.includes(i);
+      const dx = halfCx + (i - (n - 1) / 2) * spacing;
+      drawDie(ctx, dx, cy, sz, d, used);
+    });
+  } else {
+    // çift zar (4 adet) → 2x2 ızgara (taşmaz)
+    dice.forEach((d, i) => {
+      const used = G.diceAnim ? false : G.state.used.includes(i);
+      const col = i % 2, row = Math.floor(i / 2);
+      const dx = halfCx + (col - 0.5) * spacing;
+      const dyy = cy + (row - 0.5) * spacing;
+      drawDie(ctx, dx, dyy, sz, d, used);
+    });
+  }
 }
 
 function drawDie(ctx, cx, cy, sz, val, used){
@@ -775,6 +862,7 @@ function hitTest(px, py){
 }
 
 function doMove(mv){
+  if(G.moveGraceActive) clearMoveGrace();   // mola sonrası oynandı → ceza süresi iptal
   // undo için kaydet (online'da undo kapalı)
   if(!G.online){ G.undoStack.push({ state: G.state, selected: null }); }
   if(G.online){ TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }); }
@@ -818,6 +906,32 @@ function endTurn(){
   updateControls();
   draw();
   if(!G.online){ maybeAITurn(); }   // sıra AI'daysa otomatik oyna (online'da yok)
+  startAutoRollTimer();             // sıra insandaysa otomatik zar sayacı
+}
+
+// ════════════ OTOMATİK ZAR ════════════
+function clearAutoRollTimer(){
+  if(G && G.autoRollTimer){ clearTimeout(G.autoRollTimer); G.autoRollTimer = null; }
+  if(G && G.autoRollCountdown){ clearInterval(G.autoRollCountdown); G.autoRollCountdown = null; }
+}
+function startAutoRollTimer(){
+  if(!G) return;
+  clearAutoRollTimer();
+  if(!AUTO_ROLL || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
+  // AI sırasında gerekmez (AI kendi atar); online'da yalnızca kendi sıramda
+  if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
+  if(G.online && G.state.turn !== G.playerColor) return;
+  let left = Math.ceil(AUTO_ROLL_MS / 1000);
+  // küçük geri sayım göstergesi
+  G.autoRollCountdown = setInterval(() => {
+    if(!G || G.rolled || G.gameEnded){ clearAutoRollTimer(); return; }
+    left--;
+    if(left > 0){ updateStatus(`⏱️ ${left} sn içinde otomatik zar atılacak…`); }
+  }, 1000);
+  G.autoRollTimer = setTimeout(() => {
+    clearAutoRollTimer();
+    if(G && !G.rolled && !G.gameEnded && !G.paused) rollAndShow();
+  }, AUTO_ROLL_MS);
 }
 
 // ════════════ YAPAY ZEKÂ SIRASI ════════════
@@ -886,6 +1000,7 @@ function onRemoteMessage(type, data){
     updateStatus(`Açılış: B${G.openingDice[0]}–S${G.openingDice[1]} · ` + (mine ? 'sen başla, zar at' : 'rakip başlıyor'));
     updateControls(); draw();
   } else if(msg.type === 'dice'){
+    if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
     G.state.dice = msg.dice || []; G.state.used = []; G.rolled = true;
     try{ Sound.dice(); }catch(e){}
     animateDiceRoll(() => {
@@ -894,6 +1009,7 @@ function onRemoteMessage(type, data){
       draw();
     });
   } else if(msg.type === 'move'){
+    if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
     const mv = { from: msg.from, to: msg.to, die: msg.die, dieIdx: msg.dieIdx };
     let isHit = false;
     if(typeof mv.to === 'number'){
@@ -915,10 +1031,36 @@ function onRemoteMessage(type, data){
     const mine = (G.state.turn === G.playerColor);
     updateStatus(mine ? 'Senin sıran — zar at' : 'Rakip oynuyor…');
     updateControls(); draw();
+    startAutoRollTimer();
   } else if(msg.type === 'chat'){
     addChatMessage((msg.text || '').slice(0, 120), false);
+  } else if(msg.type === 'drawoffer'){
+    showConfirm('🤝 Rakip beraberlik teklif etti. Kabul ediyor musun?', () => {
+      if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'drawaccept' });
+      endInDraw();
+    }, 'Kabul Et');
+  } else if(msg.type === 'drawaccept'){
+    endInDraw();
+  } else if(msg.type === 'break_request'){
+    onBreakRequestReceived();
+  } else if(msg.type === 'break_accept'){
+    startBreak('resting');          // teklifim kabul edildi → ben dinleniyorum
+  } else if(msg.type === 'break_decline'){
+    G.breakState = null; G.breakRequester = null; hideBreakOverlay();
+    updateStatus('Mola reddedildi — oyun sürüyor'); startAutoRollTimer();
+  } else if(msg.type === 'break_back'){
+    endBreak();                     // rakip molasından döndü
+  } else if(msg.type === 'break_extend'){
+    startBreak('resting');          // süre uzatıldı → hâlâ dinleniyorum
+  } else if(msg.type === 'break_resume'){
+    resumeAfterBreak();             // rakip oyunu başlattı → 3 dk içinde oynamalıyım
+  } else if(msg.type === 'forfeit'){
+    G.gameEnded = true; clearAutoRollTimer(); clearMoveGrace();
+    updateStatus('🏆 Rakip hükmen yenildi — KAZANDIN!', 'win');
+    try{ Sound.win(); }catch(e){}
+    updateControls();
   } else if(msg.type === 'resign'){
-    G.gameEnded = true; G.oppLeft = true;
+    G.gameEnded = true; G.oppLeft = true; clearAutoRollTimer();
     updateStatus('🏆 Rakip pes etti — KAZANDIN!', 'win');
     try{ Sound.win(); }catch(e){}
     updateControls();
@@ -932,6 +1074,8 @@ function setupChat(){
   if(!G || !G.root) return;
   const chatBtn = G.root.querySelector('[data-el="chatBtn"]');
   if(chatBtn) chatBtn.style.display = 'flex';
+  const breakBtn = G.root.querySelector('[data-el="breakBtn"]');
+  if(breakBtn) breakBtn.style.display = 'inline-block';   // mola yalnızca çevrimiçi
   const panel = G.root.querySelector('[data-el="chatPanel"]');
   const quick = G.root.querySelector('[data-el="chatQuick"]');
   if(quick){
@@ -990,9 +1134,247 @@ function undoMove(){
   draw();
 }
 
+// ════════════ BERABERLİK / PES ════════════
+function showConfirm(msg, onYes, yesLabel, onNo, noLabel){
+  if(!G || !G.root) return;
+  const ov = document.createElement('div');
+  ov.className = 'tavla-confirm';
+  ov.innerHTML = `<div class="tvcf-box">
+    <div class="tvcf-msg">${msg}</div>
+    <div class="tvcf-row">
+      <button class="tvcf-no">${noLabel || 'Vazgeç'}</button>
+      <button class="tvcf-yes">${yesLabel || 'Evet'}</button>
+    </div>
+  </div>`;
+  G.root.appendChild(ov);
+  ov.querySelector('.tvcf-no').addEventListener('click', () => { ov.remove(); if(onNo) onNo(); });
+  ov.querySelector('.tvcf-yes').addEventListener('click', () => { ov.remove(); if(onYes) onYes(); });
+}
+
+function offerDraw(){
+  if(!G || G.gameEnded) return;
+  if(G.mode === 'local'){
+    showConfirm('Oyun berabere bitsin mi?', () => endInDraw(), 'Berabere');
+  } else if(G.mode === 'ai'){
+    // AI: pip farkı azsa kabul eder
+    const myPip = pipCount(G.state, G.playerColor);
+    const aiPip = pipCount(G.state, G.aiColor);
+    if(Math.abs(myPip - aiPip) <= 8 && (myPip + aiPip) < 200){
+      updateStatus('🤝 Yapay zekâ beraberliği kabul etti'); endInDraw();
+    } else {
+      updateStatus('🤖 Yapay zekâ beraberliği reddetti — oyun sürüyor');
+    }
+  } else if(G.online){
+    if(!TavlaMP || !TavlaMP.connected) return;
+    TavlaMP.send({ type:'drawoffer' });
+    updateStatus('🤝 Beraberlik teklifi gönderildi — yanıt bekleniyor…');
+  }
+}
+
+function resignGame(){
+  if(!G || G.gameEnded) return;
+  showConfirm('Pes etmek istediğine emin misin?', () => {
+    if(G.online){
+      if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'resign' });
+      G.gameEnded = true; clearAutoRollTimer();
+      updateStatus('🏳️ Pes ettin — rakip kazandı', 'win');
+      try{ Sound.lose(); }catch(e){}
+      updateControls(); draw();
+    } else if(G.mode === 'ai'){
+      G.gameEnded = true; clearAutoRollTimer();
+      updateStatus('🏳️ Pes ettin — 🤖 yapay zekâ kazandı', 'win');
+      try{ Sound.lose(); }catch(e){}
+      updateControls(); draw();
+    } else {
+      // local: sıradaki oyuncu pes eder, diğeri kazanır
+      const winner = G.state.turn === 'w' ? 'SİYAH' : 'BEYAZ';
+      G.gameEnded = true; clearAutoRollTimer();
+      updateStatus(`🏳️ ${G.state.turn==='w'?'Beyaz':'Siyah'} pes etti — ${winner} kazandı`, 'win');
+      try{ Sound.win(); }catch(e){}
+      updateControls(); draw();
+    }
+  }, '🏳️ Pes Et');
+}
+
+function endInDraw(){
+  G.gameEnded = true; clearAutoRollTimer();
+  updateStatus('🤝 Oyun berabere bitti', 'win');
+  G.selected = null; G.legalForSel = [];
+  updateControls(); draw();
+}
+
+// ════════════ MOLA / DİNLENME SİSTEMİ (çevrimiçi) ════════════
+const BREAK_MS = 5 * 60 * 1000;        // 5 dakika dinlenme
+const MOVE_GRACE_MS = 3 * 60 * 1000;   // resume sonrası oynama süresi
+
+function clearBreakTimers(){
+  if(!G) return;
+  if(G.breakTimer){ clearTimeout(G.breakTimer); G.breakTimer = null; }
+  if(G.breakInterval){ clearInterval(G.breakInterval); G.breakInterval = null; }
+}
+function clearMoveGrace(){
+  if(!G) return;
+  if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); G.moveGraceTimer = null; }
+  if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); G.moveGraceInterval = null; }
+  if(G.moveGraceActive){ G.moveGraceActive = false; updateStatus(''); }
+}
+function fmt(ms){ const s = Math.max(0, Math.ceil(ms/1000)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+
+// 1) Mola iste
+function requestBreak(){
+  if(!G || !G.online || G.gameEnded || G.breakState) return;
+  if(!TavlaMP || !TavlaMP.connected){ if(window.Hero) window.Hero.toast('Bağlantı yok', true); return; }
+  clearAutoRollTimer();
+  TavlaMP.send({ type:'break_request' });
+  G.breakState = 'requesting'; G.breakRequester = 'me';
+  showBreakOverlay('🛌 Mola talebi gönderildi', 'Rakibin yanıtı bekleniyor…', null);
+}
+
+// 2) Rakip mola istedi (break_request alındı)
+function onBreakRequestReceived(){
+  if(!G || G.gameEnded || G.breakState) return;
+  G.breakRequester = 'them';
+  clearAutoRollTimer();
+  showConfirm('🛌 Rakip 5 dakika mola istiyor.<br>Kabul ediyor musun?',
+    () => { TavlaMP.send({ type:'break_accept' }); startBreak('waiting'); },
+    'Kabul Et',
+    () => { TavlaMP.send({ type:'break_decline' }); G.breakRequester = null; G.breakState = null; updateStatus('Mola reddedildi — oyun sürüyor'); startAutoRollTimer(); },
+    'Reddet'
+  );
+}
+
+// 3) Molayı başlat. role: 'resting' (isteyen) | 'waiting' (bekleyen)
+function startBreak(role){
+  clearBreakTimers();
+  G.breakState = role;
+  G.breakEndsAt = Date.now() + BREAK_MS;
+  renderBreakByRole();
+  G.breakInterval = setInterval(() => renderBreakByRole(), 1000);
+  if(role === 'waiting'){
+    G.breakTimer = setTimeout(() => onBreakTimeout(), BREAK_MS);
+  }
+}
+
+function renderBreakByRole(){
+  if(!G || !G.breakState) return;
+  const left = G.breakEndsAt - Date.now();
+  if(G.breakState === 'resting'){
+    if(left > 0){
+      showBreakOverlay('🛌 Moladasın', 'Kalan süre: ' + fmt(left), 'back');
+    } else {
+      showBreakOverlay('⏳ Molan doldu', 'Rakip bekliyor / karar veriyor…', 'back');
+    }
+  } else if(G.breakState === 'waiting'){
+    showBreakOverlay('⏸️ Rakip molada', 'Kalan süre: ' + fmt(left), null);
+  }
+}
+
+// 4) Mola süresi doldu (yalnızca bekleyen tarafta tetiklenir)
+function onBreakTimeout(){
+  clearBreakTimers();
+  G.breakState = 'decision';
+  showBreakDecision();
+}
+
+// 5) Mola bitti (geri dönüş / iptal)
+function endBreak(){
+  clearBreakTimers();
+  G.breakState = null; G.breakRequester = null;
+  hideBreakOverlay();
+  updateStatus('Mola bitti — oyun devam ediyor');
+  updateControls(); draw();
+  startAutoRollTimer();
+}
+
+// 6) Oyunu sürdür (mola sonrası) — mola isteyen 3dk içinde oynamalı
+function resumeAfterBreak(){
+  clearBreakTimers();
+  G.breakState = null;
+  hideBreakOverlay();
+  updateStatus('Oyun devam ediyor — mola isteyen oynamalı');
+  updateControls(); draw();
+  startMoveGrace();
+}
+
+function startMoveGrace(){
+  clearMoveGrace();
+  G.moveGraceActive = true;
+  G.moveGraceEndsAt = Date.now() + MOVE_GRACE_MS;
+  const tick = () => {
+    if(!G || !G.moveGraceActive) return;
+    const left = G.moveGraceEndsAt - Date.now();
+    if(left > 0){
+      const who = (G.breakRequester === 'me') ? 'Sen' : 'Rakip';
+      updateStatus(`⏳ ${who} ${fmt(left)} içinde oynamazsa hükmen yenik`);
+    }
+  };
+  tick();
+  G.moveGraceInterval = setInterval(tick, 1000);
+  G.moveGraceTimer = setTimeout(() => forfeitByTimeout(), MOVE_GRACE_MS);
+}
+
+function forfeitByTimeout(){
+  clearMoveGrace();
+  if(!G || G.gameEnded) return;
+  G.gameEnded = true; clearAutoRollTimer();
+  if(G.breakRequester === 'me'){
+    if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'forfeit' });
+    updateStatus('⏳ Süre doldu — hükmen yenildin', 'win');
+    try{ Sound.lose(); }catch(e){}
+  } else {
+    updateStatus('🏆 Rakip süresinde oynamadı — hükmen kazandın!', 'win');
+    try{ Sound.win(); }catch(e){}
+  }
+  updateControls(); draw();
+}
+
+// ── Mola UI ──
+function showBreakOverlay(title, sub, button){
+  if(!G || !G.root) return;
+  let ov = G.root.querySelector('[data-el="breakOverlay"]');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.className = 'tavla-break'; ov.setAttribute('data-el','breakOverlay');
+    G.root.appendChild(ov);
+  }
+  let btnHTML = '';
+  if(button === 'back') btnHTML = `<button class="tvbk-btn" data-act="breakBack">↩️ Geri Döndüm</button>`;
+  ov.innerHTML = `<div class="tvbk-box">
+    <div class="tvbk-icon">🛌</div>
+    <div class="tvbk-title">${title}</div>
+    <div class="tvbk-sub">${sub}</div>
+    ${btnHTML}
+  </div>`;
+  const bb = ov.querySelector('[data-act="breakBack"]');
+  if(bb) bb.addEventListener('click', () => { TavlaMP.send({ type:'break_back' }); endBreak(); });
+}
+function showBreakDecision(){
+  if(!G || !G.root) return;
+  let ov = G.root.querySelector('[data-el="breakOverlay"]');
+  if(!ov){ ov = document.createElement('div'); ov.className = 'tavla-break'; ov.setAttribute('data-el','breakOverlay'); G.root.appendChild(ov); }
+  ov.innerHTML = `<div class="tvbk-box">
+    <div class="tvbk-icon">⏳</div>
+    <div class="tvbk-title">Süre doldu</div>
+    <div class="tvbk-sub">Rakip henüz dönmedi. Ne yapmak istersin?</div>
+    <div class="tvbk-row">
+      <button class="tvbk-btn alt" data-act="extend">➕ 5 dk daha bekle</button>
+      <button class="tvbk-btn" data-act="resume">▶ Oyunu başlat</button>
+    </div>
+    <div class="tvbk-note">Oyunu başlatırsan rakip 3 dk içinde oynamazsa hükmen yenilir.</div>
+  </div>`;
+  ov.querySelector('[data-act="extend"]').addEventListener('click', () => { TavlaMP.send({ type:'break_extend' }); startBreak('waiting'); });
+  ov.querySelector('[data-act="resume"]').addEventListener('click', () => { TavlaMP.send({ type:'break_resume' }); resumeAfterBreak(); });
+}
+function hideBreakOverlay(){
+  if(!G || !G.root) return;
+  const ov = G.root.querySelector('[data-el="breakOverlay"]');
+  if(ov) ov.remove();
+}
+
 async function onWin(status){
   G.gameEnded = true;
   G.aiThinking = false;
+  clearAutoRollTimer();
   const winner = status === 'white_wins' ? 'w' : 'b';
   const wt = winType(G.state, winner);
   const typeLabel = wt === 3 ? ' (Hin/Backgammon ×3)' : wt === 2 ? ' (Mars/Gammon ×2)' : '';
@@ -1037,6 +1419,8 @@ function updateControls(){
   const rollBtn = G.root.querySelector('[data-el="rollBtn"]');
   const passBtn = G.root.querySelector('[data-el="passBtn"]');
   const undoBtn = G.root.querySelector('[data-el="undoBtn"]');
+  const actionsBar = G.root.querySelector('[data-el="actionsBar"]');
+  if(actionsBar) actionsBar.style.display = G.gameEnded ? 'none' : 'flex';
   if(G.gameEnded || G.aiThinking){
     rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
@@ -1355,6 +1739,28 @@ function injectCSS(){
 .tg-board-wrap{ flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
 .tg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; }
 .tg-controls{ display:flex; gap:8px; justify-content:center; align-items:center; padding:8px 0 4px; }
+.tg-actions{ display:flex; gap:10px; justify-content:center; align-items:center; padding:0 0 6px; }
+.tg-act-btn{ padding:8px 16px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:12px; font-weight:700; cursor:pointer; transition:transform .1s; }
+.tg-act-btn:active{ transform:scale(.95); }
+.tg-act-btn.danger{ border-color:rgba(255,90,90,.4); color:#ff8080; }
+.tavla-confirm{ position:fixed; inset:0; z-index:9300; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(5px); padding:20px; box-sizing:border-box; }
+.tvcf-box{ background:linear-gradient(135deg,#16294a,#0a1428); border:2px solid #c8a557; border-radius:18px; padding:22px; max-width:340px; width:100%; box-sizing:border-box; text-align:center; }
+.tvcf-msg{ font-size:15px; font-weight:600; color:#f0e6cc; line-height:1.5; margin-bottom:18px; }
+.tvcf-row{ display:flex; gap:10px; }
+.tvcf-no, .tvcf-yes{ flex:1; padding:13px; border-radius:11px; font-size:14px; font-weight:800; cursor:pointer; border:none; }
+.tvcf-no{ background:rgba(255,255,255,.08); color:#b0c0d4; border:1px solid rgba(255,255,255,.15); }
+.tvcf-yes{ background:linear-gradient(135deg,#c8a557,#a07d2f); color:#0a1428; }
+.tvcf-no:active, .tvcf-yes:active{ transform:scale(.96); }
+.tavla-break{ position:fixed; inset:0; z-index:9400; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.9); backdrop-filter:blur(7px); padding:20px; box-sizing:border-box; }
+.tvbk-box{ background:linear-gradient(135deg,#1a2e52,#0a1428); border:2px solid #c8a557; border-radius:20px; padding:28px 22px; max-width:360px; width:100%; box-sizing:border-box; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+.tvbk-icon{ font-size:46px; margin-bottom:10px; }
+.tvbk-title{ font-size:20px; font-weight:800; color:#f0e6cc; margin-bottom:8px; }
+.tvbk-sub{ font-size:15px; color:#b8c4d8; line-height:1.5; margin-bottom:18px; font-variant-numeric:tabular-nums; }
+.tvbk-btn{ width:100%; padding:14px; border-radius:12px; font-size:15px; font-weight:800; cursor:pointer; border:none; background:linear-gradient(135deg,#c8a557,#a07d2f); color:#0a1428; margin-top:6px; }
+.tvbk-btn.alt{ background:rgba(255,255,255,.08); color:#dbe4f0; border:1px solid rgba(255,255,255,.2); }
+.tvbk-btn:active{ transform:scale(.96); }
+.tvbk-row{ display:flex; flex-direction:column; gap:8px; }
+.tvbk-note{ font-size:11px; color:#8a98ac; margin-top:12px; line-height:1.4; }
 .tg-btn{ padding:12px 18px; background:rgba(255,255,255,.06); border:1px solid rgba(200,165,87,.3); border-radius:12px; color:#c8a557; font-size:13px; font-weight:700; cursor:pointer; transition:transform .1s; }
 .tg-btn:active{ transform:scale(.96); }
 .tg-roll{ background:linear-gradient(135deg, #c8a557, #a07d2f); color:#0a1428; font-size:16px; font-weight:800; letter-spacing:1px; padding:14px 32px; box-shadow:0 0 16px rgba(200,165,87,.3); }
