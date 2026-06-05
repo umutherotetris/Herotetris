@@ -118,6 +118,7 @@ export function openTavla(){
         <button class="tv-icon" data-act="exit">✕</button>
         <div class="tg-turn" data-el="turn">BEYAZ'IN SIRASI</div>
         <div style="display:flex;gap:6px">
+          <button class="tv-icon" data-act="gameAutoRoll" data-el="gameAutoRollBtn" title="Otomatik zar">⏱️</button>
           <button class="tv-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="tg-chat-badge" data-el="chatBadge" style="display:none"></span></button>
           <button class="tv-icon" data-act="restart" title="Yeniden">🔄</button>
         </div>
@@ -239,6 +240,18 @@ function startGame(root, mode, opts){
 
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => restart());
+  const gAR = gameEl.querySelector('[data-el="gameAutoRollBtn"]');
+  if(gAR){
+    const paintG = () => { gAR.style.opacity = AUTO_ROLL ? '1' : '0.4'; gAR.title = AUTO_ROLL ? 'Otomatik zar: AÇIK (5sn)' : 'Otomatik zar: kapalı'; };
+    paintG();
+    gAR.addEventListener('click', () => {
+      AUTO_ROLL = !AUTO_ROLL;
+      try{ localStorage.setItem('hero_tavla_autoroll', AUTO_ROLL ? 'on' : 'off'); }catch(e){}
+      paintG();
+      if(AUTO_ROLL) startAutoRollTimer(); else clearAutoRollTimer();
+      if(window.Hero && window.Hero.toast) window.Hero.toast(AUTO_ROLL ? 'Otomatik zar açıldı (5 sn)' : 'Otomatik zar kapatıldı', false);
+    });
+  }
   gameEl.querySelector('[data-act="roll"]').addEventListener('click', () => rollAndShow());
   gameEl.querySelector('[data-act="undo"]').addEventListener('click', () => undoMove());
   gameEl.querySelector('[data-act="pass"]').addEventListener('click', () => endTurn());
@@ -253,10 +266,16 @@ function startGame(root, mode, opts){
   G.resizeHandler = () => fitCanvas();
   window.addEventListener('resize', G.resizeHandler);
 
-  fitCanvas();
-  // Tahta yönü: AI/online'da insan rengine göre sabit; 2 oyuncuda döner
+  // Tahta yönü ÖNCE belirlensin ki fitCanvas doğru yönle çizsin
+  // AI/online'da insan rengine göre sabit; 2 oyuncuda döner
   if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
   else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+
+  fitCanvas();
+  // Oyun ekranı yeni açıldı — board-wrap boyutu reflow sonrası kesinleşince
+  // canvas ve taşların tam oturması için yeniden boyutlandır (özellikle flip=true)
+  requestAnimationFrame(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); });
+  setTimeout(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); }, 60);
 
   if(G.online){
     setupChat();
