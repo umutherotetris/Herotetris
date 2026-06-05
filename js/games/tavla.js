@@ -308,10 +308,10 @@ function fitCanvas(){
   const wrap = G.boardWrap;
   const availW = wrap.clientWidth || (window.innerWidth - 12);
   const availH = wrap.clientHeight || (window.innerHeight - 180);
-  // Tavla tahtası DİKEY-UZUN: ekranın çoğunu doldurur. Oran = yükseklik/genişlik.
-  // Dikey ekranda mevcut alana göre dinamik (1.30–1.62 arası), boşa alan bırakmaz.
+  // Tavla tahtası DİKEY-UZUN ama dengeli (gerçek tavla oranı ~1.40).
+  // Aşırı uzamayı önlemek için 1.36–1.48 arasına sabitlenir.
   let ratio = availH / availW;
-  ratio = Math.max(1.30, Math.min(ratio, 1.62));
+  ratio = Math.max(1.36, Math.min(ratio, 1.48));
   let w = availW, h = w * ratio;
   if(h > availH){ h = availH; w = h / ratio; }
   const dpr = window.devicePixelRatio || 1;
@@ -326,15 +326,19 @@ function fitCanvas(){
 // Tahta geometrisi (çerçeve, bar, çeyrekler, nokta üçgenleri)
 function computeLayout(){
   const W = G.W, H = G.H;
-  const margin = Math.round(W * 0.03);
-  const barW = Math.round(W * 0.07);     // orta bar
-  const bearW = Math.round(W * 0.07);    // sağ toplama oluğu
+  const margin = Math.round(W * 0.035);
+  const barW = Math.round(W * 0.10);     // orta bar (motif için daha geniş)
+  const bearW = Math.round(W * 0.085);   // sağ toplama oluğu (görünür genişlik)
   const innerX = margin, innerY = margin;
   const innerW = W - margin*2, innerH = H - margin*2;
   // sol yarı + bar + sağ yarı + bear oluğu
   const playW = innerW - barW - bearW;
   const halfW = playW / 2;
   const colW = halfW / 6;               // bir nokta sütunu genişliği
+  // üçgen yüksekliği: tahtanın ~%43'ü (uzun, gerçek tavla görünümü; orta boşluk az)
+  const pointH = innerH * 0.43;
+  // pul yarıçapı: sütun genişliğine sığacak (tıklaması kolay)
+  const checkerR = colW * 0.45;
   G.geo = {
     margin, barW, bearW, innerX, innerY, innerW, innerH,
     leftX: innerX,
@@ -342,8 +346,8 @@ function computeLayout(){
     rightX: innerX + halfW + barW,
     bearX: innerX + playW + barW,
     colW, halfW, playW,
-    pointH: innerH * 0.42,              // üçgen yüksekliği
-    checkerR: Math.min(colW, innerH*0.42/5) * 0.46
+    pointH,
+    checkerR
   };
 }
 
@@ -525,12 +529,14 @@ function drawCheckers(ctx, t){
     const R = g.checkerR;
     const maxVisible = 5;
     for(let k=0;k<Math.min(count, maxVisible);k++){
-      const cy = pg.y0 + pg.dir * (R + k * R * 1.9 + 2);
+      const gap = Math.min(R * 2.06, (g.pointH - R*2) / Math.max(1, Math.min(count, maxVisible) - 1));
+      const cy = pg.y0 + pg.dir * (R + k * gap + 3);
       drawChecker(ctx, pg.baseX, cy, R, color, t);
     }
     // 5'ten fazlaysa sayı göster
     if(count > maxVisible){
-      const cy = pg.y0 + pg.dir * (R + (maxVisible-1) * R * 1.9 + 2);
+      const gap2 = Math.min(R * 2.06, (g.pointH - R*2) / (maxVisible - 1));
+      const cy = pg.y0 + pg.dir * (R + (maxVisible-1) * gap2 + 3);
       ctx.save();
       ctx.fillStyle = color === 'w' ? '#1a2a4a' : '#fff';
       ctx.font = `bold ${Math.floor(R*0.9)}px system-ui`;
@@ -1281,10 +1287,12 @@ function checkerPixel(idx, color, side){
   }
   const pg = pointGeometry(idx);
   const R = g.checkerR;
-  // mevcut yığının üstüne yakın konum
+  // mevcut yığının üstüne yakın konum (drawCheckers ile aynı aralık)
   const cnt = Math.abs(G.state.points[idx]) || 0;
   const k = side === 'from' ? Math.max(0, cnt - 1) : cnt;
-  const cy = pg.y0 + pg.dir * (R + Math.min(k,4) * R * 1.9 + 2);
+  const vis = Math.min(Math.max(cnt, 1), 5);
+  const gap = Math.min(R * 2.06, (g.pointH - R*2) / Math.max(1, vis - 1));
+  const cy = pg.y0 + pg.dir * (R + Math.min(k, 4) * gap + 3);
   return { x: pg.baseX, y: cy };
 }
 
