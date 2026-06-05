@@ -435,10 +435,14 @@ function pointGeometry(idx){
   }
 
   let top = !bottom;
-  // flip uygulandığında üst/alt ve x ters döner
+  // flip uygulandığında üst/alt ve x ters döner.
+  // ÖNEMLİ: iki oyun yarısı BAR MERKEZİNE göre simetriktir (bear-off oluğu sağda
+  // olduğu için keçe merkezi ≠ bar merkezi). Keçe merkezine aynalarsak kenar
+  // sütunlardaki pullar bar'a/bear-off'a düşer. Bu yüzden bar merkezine aynalanır.
   if(flip){
     top = !top;
-    baseX = (g.innerX*2 + g.innerW) - baseX;   // yatay ayna
+    const barCenter = g.barX + g.barW / 2;
+    baseX = barCenter * 2 - baseX;
   }
   const y0 = top ? g.innerY : (g.innerY + g.innerH);   // üçgen tabanı (kenar)
   const dir = top ? 1 : -1;                            // üçgen içe doğru
