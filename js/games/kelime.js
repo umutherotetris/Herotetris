@@ -36,56 +36,64 @@ const sndErr   = ()=>tone(160,0.18,'sawtooth',0.06);
 function injectStyles(){
   if(stylesInjected) return; stylesInjected = true;
   const css = `
-.kl-root{position:fixed;inset:0;z-index:9000;background:linear-gradient(160deg,#0d1424,#0a0f1c);color:#e8eefc;display:flex;flex-direction:column;font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
-.kl-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;gap:8px;flex:0 0 auto}
-.kl-title{font-weight:800;letter-spacing:.5px;font-size:16px;background:linear-gradient(90deg,#ffd86b,#ff9d3c);-webkit-background-clip:text;background-clip:text;color:transparent}
-.kl-icon{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#e8eefc;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.kl-root{position:fixed;inset:0;z-index:9000;background:radial-gradient(120% 80% at 50% -10%,#2a1550 0%,#1a0e30 45%,#120a22 100%);color:#efe7ff;display:flex;flex-direction:column;font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
+.kl-top{display:flex;align-items:center;gap:10px;padding:10px 12px;flex:0 0 auto}
+.kl-gameicon{width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:linear-gradient(150deg,#a855f7,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 10px rgba(124,58,237,.5),inset 0 1px 0 rgba(255,255,255,.35)}
+.kl-brand{flex:1;min-width:0}
+.kl-title{font-weight:800;letter-spacing:.5px;font-size:17px;line-height:1.1;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kl-sub{font-size:11px;color:#c9b8e8;opacity:.85;margin-top:1px}
+.kl-icon{width:38px;height:38px;flex:0 0 auto;border-radius:10px;border:1px solid rgba(200,170,255,.22);background:rgba(168,85,247,.12);color:#efe7ff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .kl-icon:active{transform:scale(.93)}
-.kl-scores{display:flex;gap:8px;padding:0 12px 8px;flex:0 0 auto}
-.kl-score{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 10px;text-align:center;transition:.2s}
-.kl-score.active{border-color:#ffd86b;background:rgba(255,216,107,.12);box-shadow:0 0 14px rgba(255,216,107,.2)}
-.kl-score .nm{font-size:11px;opacity:.7}
-.kl-score .pt{font-size:20px;font-weight:800}
-.kl-status{text-align:center;font-size:13px;padding:0 12px 6px;min-height:18px;opacity:.9;flex:0 0 auto}
+.kl-scores{display:flex;align-items:center;gap:8px;padding:0 12px 8px;flex:0 0 auto}
+.kl-score{flex:1;background:rgba(168,85,247,.08);border:1px solid rgba(200,170,255,.16);border-radius:13px;padding:7px 10px;text-align:center;transition:.2s}
+.kl-score.active{border-color:#f0b132;background:rgba(240,177,50,.14);box-shadow:0 0 16px rgba(240,177,50,.28)}
+.kl-score .nm{font-size:11px;color:#cbb9ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kl-score .pt{font-size:21px;font-weight:800;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kl-gem{width:30px;height:30px;flex:0 0 auto;border-radius:7px;transform:rotate(45deg);background:linear-gradient(135deg,#d8b4fe,#7c3aed);border:2px solid #e9c466;box-shadow:0 0 16px rgba(168,85,247,.6),inset 0 0 7px rgba(255,255,255,.45)}
+.kl-status{text-align:center;font-size:13px;padding:0 12px 6px;min-height:18px;color:#d9caf2;flex:0 0 auto}
+.kl-status .kl-turn{display:inline-block;padding:3px 12px;border-radius:999px;font-weight:700;font-size:12px}
+.kl-status .kl-turn.me{background:linear-gradient(90deg,#ffe08a,#f0b132);color:#3a2400}
+.kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0}
-.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1px;width:min(96vw,460px);aspect-ratio:1;background:#1b2740;border:3px solid #c79a3a;border-radius:8px;padding:3px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-.kl-cell{position:relative;background:#23314f;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(255,255,255,.45);user-select:none;cursor:pointer;overflow:hidden}
-.kl-cell.b-K3{background:#b3343f;color:#fff}
-.kl-cell.b-K2{background:#c76b78;color:#fff}
-.kl-cell.b-H3{background:#2f7bbf;color:#fff}
-.kl-cell.b-H2{background:#5aa6d6;color:#fff}
-.kl-cell.b-center{background:#caa23c;color:#1a1a1a;font-size:11px}
-.kl-cell.target{outline:2px solid #6cff9a;outline-offset:-2px}
-.kl-tile{position:absolute;inset:1px;border-radius:3px;background:linear-gradient(160deg,#f6e3b0,#e7c879);color:#2a1e08;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1px;width:min(96vw,460px);aspect-ratio:1;background:#241141;border:3px solid;border-image:linear-gradient(135deg,#e9c466,#a9802f) 1;border-radius:9px;padding:3px;box-shadow:0 10px 36px rgba(80,20,140,.55),inset 0 0 30px rgba(0,0,0,.35)}
+.kl-cell{position:relative;background:#33205c;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(220,200,255,.5);user-select:none;cursor:pointer;overflow:hidden}
+.kl-cell.b-K3{background:linear-gradient(160deg,#d6299a,#a01473);color:#fff}
+.kl-cell.b-K2{background:linear-gradient(160deg,#b14de0,#8a2fc4);color:#fff}
+.kl-cell.b-H3{background:linear-gradient(160deg,#7c5cf0,#5a37cf);color:#fff}
+.kl-cell.b-H2{background:linear-gradient(160deg,#a99cf2,#8472d6);color:#fff}
+.kl-cell.b-center{background:linear-gradient(160deg,#ffe08a,#e3a82f);color:#3a2400;font-size:12px}
+.kl-cell.target{outline:2px solid #ffd86b;outline-offset:-2px}
+.kl-tile{position:absolute;inset:1px;border-radius:3px;background:linear-gradient(160deg,#f7edd4,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 2px rgba(150,110,40,.3)}
 .kl-tile .l{font-size:14px;line-height:1}
-.kl-tile .p{position:absolute;right:1px;bottom:0;font-size:7px;font-weight:700;opacity:.8}
-.kl-tile.pending{background:linear-gradient(160deg,#bfe6c4,#88d39b);box-shadow:0 0 8px rgba(108,255,154,.5),inset 0 1px 0 rgba(255,255,255,.5)}
-.kl-tile.joker{background:linear-gradient(160deg,#e8d6ff,#c4a6f0)}
+.kl-tile .p{position:absolute;right:1px;bottom:0;font-size:7px;font-weight:700;color:#9a6a1a}
+.kl-tile.pending{background:linear-gradient(160deg,#ffe9a8,#f3cf6b);box-shadow:0 0 10px rgba(240,177,50,.7),inset 0 1px 0 rgba(255,255,255,.6)}
+.kl-tile.joker{background:linear-gradient(160deg,#ead6ff,#c4a6f0);color:#3a1a5e}
 .kl-rackwrap{flex:0 0 auto;padding:8px 10px 6px}
-.kl-rack{display:flex;gap:6px;justify-content:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:8px;min-height:54px}
-.kl-rtile{width:42px;height:46px;border-radius:8px;background:linear-gradient(160deg,#f6e3b0,#e7c879);color:#2a1e08;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;position:relative;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .1s}
-.kl-rtile.sel{transform:translateY(-7px);box-shadow:0 0 12px rgba(255,216,107,.7),0 4px 8px rgba(0,0,0,.4)}
-.kl-rtile.joker{background:linear-gradient(160deg,#e8d6ff,#c4a6f0)}
-.kl-rtile .p{position:absolute;right:3px;bottom:1px;font-size:9px;opacity:.8}
-.kl-rtile.empty{background:transparent;box-shadow:none;cursor:default}
+.kl-rack{display:flex;gap:6px;justify-content:center;background:linear-gradient(180deg,rgba(168,85,247,.12),rgba(124,58,237,.06));border:1px solid rgba(200,170,255,.2);border-radius:15px;padding:9px;min-height:56px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.kl-rtile{width:43px;height:48px;border-radius:9px;background:linear-gradient(160deg,#f7edd4,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px;position:relative;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 3px rgba(150,110,40,.3);transition:transform .1s}
+.kl-rtile.sel{transform:translateY(-8px);box-shadow:0 0 14px rgba(240,177,50,.8),0 5px 10px rgba(0,0,0,.4)}
+.kl-rtile.joker{background:linear-gradient(160deg,#ead6ff,#c4a6f0);color:#3a1a5e}
+.kl-rtile .p{position:absolute;right:4px;bottom:2px;font-size:9px;color:#9a6a1a}
+.kl-rtile.empty{background:rgba(255,255,255,.04);box-shadow:none;cursor:default}
 .kl-actions{display:flex;gap:6px;padding:6px 10px 12px}
-.kl-btn{flex:1;padding:11px 6px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#e8eefc;font-weight:700;font-size:13px;cursor:pointer}
+.kl-btn{flex:1;padding:12px 6px;border-radius:12px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.1);color:#efe7ff;font-weight:700;font-size:13px;cursor:pointer}
 .kl-btn:active{transform:scale(.96)}
-.kl-btn.primary{background:linear-gradient(90deg,#3a9d5b,#2f8d4e);border-color:transparent}
-.kl-btn.warn{background:rgba(200,80,80,.18)}
-.kl-overlay{position:absolute;inset:0;background:rgba(5,10,20,.82);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-.kl-card{background:#16203a;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:20px;max-width:340px;width:100%;text-align:center}
-.kl-card h3{margin:0 0 6px;font-size:18px}
-.kl-card p{margin:0 0 14px;font-size:13px;opacity:.8;line-height:1.4}
-.kl-modes{display:flex;flex-direction:column;gap:8px}
-.kl-mode{padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);cursor:pointer;font-weight:700;text-align:left;display:flex;align-items:center;gap:10px}
-.kl-mode .e{font-size:22px}
-.kl-mode.soon{opacity:.5}
-.kl-mode small{display:block;font-weight:400;opacity:.65;font-size:11px}
+.kl-btn.primary{background:linear-gradient(90deg,#b14de0,#7c3aed);border-color:transparent;box-shadow:0 3px 12px rgba(124,58,237,.45)}
+.kl-btn.warn{background:rgba(214,41,154,.16)}
+.kl-overlay{position:absolute;inset:0;background:rgba(15,8,30,.85);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.kl-card{background:linear-gradient(160deg,#241141,#1a0e30);border:1px solid rgba(200,170,255,.22);border-radius:20px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 16px 50px rgba(80,20,140,.5)}
+.kl-card h3{margin:0 0 6px;font-size:19px;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kl-card p{margin:0 0 14px;font-size:13px;color:#cbb9ea;line-height:1.45}
+.kl-modes{display:flex;flex-direction:column;gap:9px}
+.kl-mode{padding:14px;border-radius:13px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.08);cursor:pointer;font-weight:700;text-align:left;display:flex;align-items:center;gap:11px;transition:.15s}
+.kl-mode:active{transform:scale(.98);background:rgba(168,85,247,.16)}
+.kl-mode .e{font-size:23px}
+.kl-mode.soon{opacity:.45}
+.kl-mode small{display:block;font-weight:400;color:#bba8df;font-size:11px}
 .kl-jokergrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:10px}
-.kl-jk{aspect-ratio:1;border-radius:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.kl-jk:active{background:rgba(255,216,107,.25)}
-.kl-words{margin:6px 0 0;font-size:13px;text-align:left}
+.kl-jk{aspect-ratio:1;border-radius:8px;background:rgba(168,85,247,.14);border:1px solid rgba(200,170,255,.2);color:#fff;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.kl-jk:active{background:rgba(240,177,50,.3)}
+.kl-words{margin:6px 0 0;font-size:13px;text-align:left;color:#e3d3ff}
 .kl-words div{padding:2px 0}
 `;
   const tag = document.createElement('style');
@@ -99,9 +107,13 @@ export function openKelime(){
   root.className = 'kl-root';
   root.innerHTML = `
     <div class="kl-top">
-      <button class="kl-icon" data-act="close" title="Kapat">✕</button>
-      <div class="kl-title">KELİME DÜELLOSU</div>
+      <div class="kl-gameicon">🔤</div>
+      <div class="kl-brand">
+        <div class="kl-title">KELİME DÜELLOSU</div>
+        <div class="kl-sub">Türkçe · 59.000 kelime</div>
+      </div>
       <button class="kl-icon" data-el="sound" title="Ses">🔊</button>
+      <button class="kl-icon" data-act="close" title="Kapat">✕</button>
     </div>
     <div data-el="content" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative"></div>
   `;
@@ -242,6 +254,7 @@ function buildGameDOM(){
   c.innerHTML = `
     <div class="kl-scores">
       <div class="kl-score" data-el="scoreA"><div class="nm" data-el="nameA">Oyuncu 1</div><div class="pt" data-el="ptA">0</div></div>
+      <div class="kl-gem" title="Kelime Düellosu"></div>
       <div class="kl-score" data-el="scoreB"><div class="nm" data-el="nameB">Oyuncu 2</div><div class="pt" data-el="ptB">0</div></div>
     </div>
     <div class="kl-status" data-el="status"></div>
@@ -277,9 +290,10 @@ function renderScores(){
   q('[data-el="scoreB"]').classList.toggle('active', ct==='B');
   if(G.online){
     const remain = Math.max(0, 100 - (G.state.bagPointer||0));
-    q('[data-el="status"]').textContent = (isMyTurn() ? '▶ Senin sıran' : `${G.oppName} oynuyor…`) + ` · Torbada ~${remain}`;
+    const pill = isMyTurn() ? `<span class="kl-turn me">▶ Senin sıran</span>` : `<span class="kl-turn opp">${G.oppName} oynuyor…</span>`;
+    q('[data-el="status"]').innerHTML = `${pill} &nbsp; Torbada ~${remain}`;
   } else {
-    q('[data-el="status"]').textContent = `${G.names[G.who]} oynuyor · Torbada ${G.state.bag.length} taş`;
+    q('[data-el="status"]').innerHTML = `<span class="kl-turn me">${G.names[G.who]}</span> &nbsp; Torbada ${G.state.bag.length} taş`;
   }
 }
 
