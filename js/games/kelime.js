@@ -6,6 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import {
   newGame, validatePlacement, commitMove, drawFromBag, buildBagSeeded, isEmptyBoard,
+  buildSurprises, SURPRISE_INFO, previewPlacement,
   SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS
 } from './kelime-engine.js';
 
@@ -15,23 +16,34 @@ let KO = null;   // kelime-online.js (talep üzerine yüklenir)
 
 const LETTER_LIST = Object.keys(LETTERS);  // joker atama için
 
-// ── Basit ses (Web Audio) ──
+// ── Ses motoru (Web Audio) ──
 let AC = null;
-function tone(freq, dur, type, vol){
-  try{
-    if(!G || !G.sound) return;
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    const o=AC.createOscillator(), g=AC.createGain();
-    o.type=type||'sine'; o.frequency.value=freq;
-    g.gain.value=vol||0.06; o.connect(g); g.connect(AC.destination);
-    o.start(); g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+(dur||0.1));
-    o.stop(AC.currentTime+(dur||0.1));
-  }catch(e){}
+function ac(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); return AC; }catch(e){ return null; } }
+function tone(freq, dur, type, vol, when){
+  if(!G || !G.sound) return;
+  const a = ac(); if(!a) return;
+  const t0 = a.currentTime + (when||0);
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type||'sine'; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol||0.06, t0); o.connect(g); g.connect(a.destination);
+  o.start(t0); g.gain.exponentialRampToValueAtTime(0.0001, t0+(dur||0.1));
+  o.stop(t0+(dur||0.1));
 }
-const sndPlace = ()=>tone(330,0.06,'square',0.05);
-const sndPick  = ()=>tone(440,0.05,'sine',0.05);
-const sndOk    = ()=>{ tone(523,0.09,'sine',0.07); setTimeout(()=>tone(784,0.12,'sine',0.07),90); };
-const sndErr   = ()=>tone(160,0.18,'sawtooth',0.06);
+function arpeggio(freqs, step, type, vol){ freqs.forEach((f,i)=>tone(f, step*1.6, type||'sine', vol||0.06, i*step)); }
+const sndPlace = ()=>tone(300+Math.random()*40,0.05,'square',0.04);
+const sndPick  = ()=>tone(460,0.05,'sine',0.05);
+const sndErr   = ()=>{ tone(180,0.16,'sawtooth',0.06); tone(120,0.2,'sawtooth',0.05,0.04); };
+// kelime onayı — puana göre yükselen arpej (küçük: 3 nota, büyük: 5 nota)
+function sndWord(score){
+  if(score >= 40)      arpeggio([523,659,784,988,1319],0.07,'triangle',0.07);
+  else if(score >= 20) arpeggio([523,659,784,1047],0.07,'triangle',0.06);
+  else                 arpeggio([523,784],0.08,'sine',0.06);
+}
+const sndBingo = ()=>{ arpeggio([523,659,784,1047,1319,1568],0.08,'triangle',0.08); tone(1047,0.5,'sine',0.05,0.5); };
+const sndSurprise = ()=>{ arpeggio([880,1175,1568,2093],0.05,'sine',0.06); tone(2637,0.18,'sine',0.04,0.2); };
+const sndWin  = ()=>arpeggio([392,523,659,784,1047,1319],0.11,'triangle',0.08);
+const sndLose = ()=>arpeggio([392,330,262,196],0.14,'sine',0.06);
+function haptic(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){} }
 
 function injectStyles(){
   if(stylesInjected) return; stylesInjected = true;
@@ -95,6 +107,17 @@ function injectStyles(){
 .kl-jk:active{background:rgba(240,177,50,.3)}
 .kl-words{margin:6px 0 0;font-size:13px;text-align:left;color:#e3d3ff}
 .kl-words div{padding:2px 0}
+.kl-cell.b-surprise{background:linear-gradient(160deg,#fff0c0,#f3d484);box-shadow:inset 0 0 6px rgba(240,177,50,.7);animation:klpulse 1.5s ease-in-out infinite}
+.kl-cell.b-surprise .bl{font-size:12px}
+@keyframes klpulse{0%,100%{box-shadow:inset 0 0 5px rgba(240,177,50,.5)}50%{box-shadow:inset 0 0 12px rgba(255,205,70,.95)}}
+.kl-scorepop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:42px;font-weight:900;color:#ffe08a;text-shadow:0 2px 12px rgba(0,0,0,.7),0 0 22px rgba(240,177,50,.7);pointer-events:none;z-index:62;animation:klpop 1.2s ease-out forwards}
+@keyframes klpop{0%{opacity:0;transform:translate(-50%,-25%) scale(.5)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-135%) scale(1)}}
+.kl-strip{position:absolute;left:0;right:0;top:34%;text-align:center;pointer-events:none;z-index:62}
+.kl-surp{display:inline-block;margin:3px auto;padding:9px 18px;border-radius:999px;background:linear-gradient(90deg,#b14de0,#7c3aed);color:#fff;font-weight:800;font-size:15px;box-shadow:0 5px 20px rgba(124,58,237,.65);animation:klsurp 1.9s ease-out forwards}
+@keyframes klsurp{0%{opacity:0;transform:scale(.4) translateY(12px)}16%{opacity:1;transform:scale(1.12)}32%{transform:scale(1)}82%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+.kl-confetti{position:absolute;inset:0;pointer-events:none;z-index:58;overflow:hidden}
+.kl-confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:klfall linear forwards}
+@keyframes klfall{to{transform:translateY(115vh) rotate(720deg);opacity:.15}}
 `;
   const tag = document.createElement('style');
   tag.id = 'kl-styles'; tag.textContent = css;
@@ -153,6 +176,8 @@ function startLocal(){
   G.pending = [];
   G.rackView = st.racks[G.who].slice();   // bu turdaki kullanılabilir taşlar
   G.selected = null;
+  G.surprises = buildSurprises((Math.random()*0x7fffffff)|0);   // sürpriz kareler
+  G.bestWord = { text:'', score:0, who:'' };
   buildGameDOM();
   renderAll();
 }
@@ -199,6 +224,8 @@ function startOnline(role, gameId, oppName, seed){
   G.who = role;
   G.names = { A: role==='A'?'Sen':oppName, B: role==='B'?'Sen':oppName };
   G.pending = []; G.selected = null;
+  G.surprises = buildSurprises(seed);     // online: seed'den aynı sürpriz kareler (iki taraf da aynı)
+  G.bestWord = { text:'', score:0, who:'' };
   buildGameDOM();
   renderAll();
   if(KO) KO.subscribeRoom(applyRemote);
@@ -221,8 +248,13 @@ function applyRemote(room){
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
     const lm = room.lastMove;
-    if(lm.pass) flashStatus('Rakip pas geçti');
-    else if(lm.words && lm.words.length) flashStatus('Rakip: '+lm.words.map(w=>w.text).join(', ')+' (+'+lm.score+')');
+    if(lm.pass){ flashStatus('Rakip pas geçti'); }
+    else {
+      // rakibin hamlesini kutla (görsel + ses)
+      if(lm.score){ scorePopup('+'+lm.score); if(lm.bingo){ sndBingo(); confetti(); } else sndWord(lm.score); }
+      if(lm.words && lm.words.length){ if(lm.words[0] && lm.words[0].score){ trackBest(lm.words, room.lastMove.who); } flashStatus('Rakip: '+lm.words.map(w=>w.text||w).join(', ')+' (+'+lm.score+')'); }
+      if(lm.surp && lm.surp.length){ setTimeout(()=>{ surpriseStrip(lm.surp.map(l=>({icon:'🎁',label:l}))); sndSurprise(); }, 300); }
+    }
   }
   renderAll();
 }
@@ -233,10 +265,12 @@ function onlineGameOver(msg){
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
   const verdict = mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔');
+  if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
+  const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3><p>${msg}</p>
     <p>Sen: ${mine} · Rakip: ${opp}</p>
-    <p style="color:#ffd86b;font-weight:700">${verdict}</p>
+    <p style="color:#ffd86b;font-weight:700">${verdict}</p>${bw}
     <button class="kl-btn primary" data-x="menu">Menüye Dön</button></div>`;
   c.appendChild(ov);
   ov.querySelector('[data-x="menu"]').addEventListener('click', ()=>{ ov.remove(); G.online=false; G._over=false; showStart(); });
@@ -247,9 +281,12 @@ function buildGameDOM(){
   let cells = '';
   for(let r=0;r<SIZE;r++) for(let cc=0;cc<SIZE;cc++){
     const b = bonusAt(r,cc);
+    const isSurp = G.surprises && G.surprises[r+','+cc];
     let cls = 'kl-cell';
-    if(b.center) cls+=' b-center'; else if(b.label==='K³')cls+=' b-K3'; else if(b.label==='K²')cls+=' b-K2'; else if(b.label==='H³')cls+=' b-H3'; else if(b.label==='H²')cls+=' b-H2';
-    cells += `<div class="${cls}" data-r="${r}" data-c="${cc}"><span class="bl">${b.center?'★':b.label}</span></div>`;
+    if(isSurp) cls+=' b-surprise';
+    else if(b.center) cls+=' b-center'; else if(b.label==='K³')cls+=' b-K3'; else if(b.label==='K²')cls+=' b-K2'; else if(b.label==='H³')cls+=' b-H3'; else if(b.label==='H²')cls+=' b-H2';
+    const label = isSurp ? '🎁' : (b.center?'★':b.label);
+    cells += `<div class="${cls}" data-r="${r}" data-c="${cc}"><span class="bl">${label}</span></div>`;
   }
   c.innerHTML = `
     <div class="kl-scores">
@@ -277,7 +314,35 @@ function buildGameDOM(){
   c.querySelector('[data-act="submit"]').addEventListener('click', submitMove);
 }
 
-function renderAll(){ renderScores(); renderBoard(); renderRack(); }
+function renderAll(){ renderScores(); renderBoard(); renderRack(); if(G.pending && G.pending.length) previewMove(); }
+
+// Canlı puan hesaplayıcı — taş koydukça anlık puanı gösterir
+function previewMove(){
+  const s = G.root.querySelector('[data-el="status"]'); if(!s || !G.state) return;
+  if(!G.pending.length){ renderScores(); return; }
+  const pv = previewPlacement(G.state.board, G.pending);
+  if(pv.valid) s.innerHTML = `<span class="kl-turn me">⚡ Bu hamle: +${pv.score} ✓</span>`;
+  else s.innerHTML = `<span class="kl-turn opp">⚡ +${pv.score} · ${pv.reason || 'kelimeyi tamamla'}</span>`;
+}
+
+function scorePopup(text){
+  const c = G.root.querySelector('[data-el="content"]'); if(!c) return;
+  const d = document.createElement('div'); d.className='kl-scorepop'; d.textContent=text;
+  c.appendChild(d); setTimeout(()=>d.remove(), 1250);
+}
+function surpriseStrip(items){
+  const c = G.root.querySelector('[data-el="content"]'); if(!c || !items.length) return;
+  const wrap = document.createElement('div'); wrap.className='kl-strip';
+  wrap.innerHTML = items.map(it=>`<div class="kl-surp">${it.icon} ${it.label}</div>`).join('<br>');
+  c.appendChild(wrap); setTimeout(()=>wrap.remove(), 2000);
+}
+function confetti(){
+  const c = G.root.querySelector('[data-el="content"]'); if(!c) return;
+  const box = document.createElement('div'); box.className='kl-confetti';
+  const colors = ['#ffe08a','#b14de0','#7c3aed','#d6299a','#6cff9a','#5aa6d6'];
+  for(let i=0;i<70;i++){ const s=document.createElement('i'); s.style.left=(Math.random()*100)+'%'; s.style.background=colors[i%colors.length]; s.style.animationDuration=(1.2+Math.random()*1.3)+'s'; s.style.animationDelay=(Math.random()*0.35)+'s'; box.appendChild(s); }
+  c.appendChild(box); setTimeout(()=>box.remove(), 2700);
+}
 
 function renderScores(){
   const q = s => G.root.querySelector(s);
@@ -308,6 +373,7 @@ function renderBoard(){
     const bl = cell.querySelector('.bl');
     if(existing || pend){
       if(bl) bl.style.visibility='hidden';
+      if(existing) cell.classList.remove('b-surprise');   // kalıcı taş geldi → sürpriz parıltısını kaldır
       const t = existing || pend;
       const letter = t.joker ? (t.assigned||'') : t.letter;
       const pts = t.joker ? 0 : (t.points!=null?t.points:letterPoints(t.letter));
@@ -366,7 +432,7 @@ function placeTile(r,c,tileData){
   // rafView'dan seçili taşı çıkar
   G.rackView.splice(G.selected,1);
   G.pending.push({ r, c, ...tileData });
-  G.selected=null; sndPlace(); renderAll();
+  G.selected=null; sndPlace(); haptic(12); renderAll();
 }
 
 function pickJokerLetter(cb){
@@ -392,15 +458,45 @@ function recallAll(){
   G.pending=[]; G.selected=null; sndPick(); renderAll();
 }
 
+// Sürpriz karelerin ödüllerini topla + tüket
+function applySurprises(pending){
+  let extraPoints=0, doubleMul=1, extraTiles=0; const hits=[];
+  if(!G.surprises) return { extraPoints, doubleMul, extraTiles, hits };
+  for(const p of pending){
+    const key = p.r+','+p.c; const s = G.surprises[key];
+    if(!s) continue;
+    const info = SURPRISE_INFO[s.type];
+    hits.push({ icon:info.icon, label:info.label });
+    if(info.kind==='points') extraPoints += info.points;
+    else if(info.kind==='double') doubleMul = 2;
+    else if(info.kind==='extra') extraTiles += 1;
+    delete G.surprises[key];
+  }
+  return { extraPoints, doubleMul, extraTiles, hits };
+}
+function trackBest(words, who){
+  for(const w of words) if(w.score > G.bestWord.score) G.bestWord = { text:w.text, score:w.score, who };
+}
+function celebrate(moveScore, bingo, hits){
+  scorePopup('+'+moveScore);
+  haptic(bingo ? [30,40,30,40,70] : 20);
+  if(bingo){ sndBingo(); confetti(); }
+  else { sndWord(moveScore); if(moveScore>=40) confetti(); }
+  if(hits && hits.length){ setTimeout(()=>{ surpriseStrip(hits); sndSurprise(); haptic([20,30,40]); }, 320); }
+}
+
 function submitMove(){
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
   const res = validatePlacement(G.state.board, G.pending);
-  if(!res.ok){ sndErr(); flashStatus('✗ '+res.error); return; }
-  sndOk();
-  commitMove(G.state, G.pending, res.score, currentTurn());
-  const need = RACK_SIZE - G.rackView.length;
+  if(!res.ok){ sndErr(); haptic(60); flashStatus('✗ '+res.error); return; }
+  const surp = applySurprises(G.pending);
+  const moveScore = res.score * surp.doubleMul + surp.extraPoints;
+  const who = currentTurn();
+  commitMove(G.state, G.pending, moveScore, who);
+  trackBest(res.words, who);
+  celebrate(moveScore, !!res.bingo, surp.hits);
+  const need = RACK_SIZE - G.rackView.length + surp.extraTiles;
   if(G.online){
-    // bagPointer'dan kendi taşlarımı çek (raflar DB'de tutulmaz)
     const fresh = G.bag.slice(G.state.bagPointer, G.state.bagPointer+need).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
     G.state.bagPointer += fresh.length;
     G.rackView = G.rackView.concat(fresh);
@@ -410,17 +506,18 @@ function submitMove(){
       boardStr: JSON.stringify(G.state.board),
       scores: G.state.scores, turn: nextRole,
       bagPointer: G.state.bagPointer, passStreak:0,
-      lastMove: { who:G.role, words:res.words, score:res.score, ts:Date.now() }
+      lastMove: { who:G.role, words:res.words, score:moveScore, bingo:!!res.bingo, surp:surp.hits.map(h=>h.label), ts:Date.now() }
     };
     G.pending=[]; G.selected=null;
     if(KO) KO.pushMove(patch);
     renderAll();
-    const wl = res.words.map(w=>w.text).join(', ');
-    flashStatus(`✓ ${wl} (+${res.score}) · rakip bekleniyor`);
     return;
   }
-  G.state.racks[currentTurn()] = G.rackView.concat(drawFromBag(G.state.bag, need));
-  showMoveResult(res, ()=>{ G.pending=[]; G.selected=null; nextTurn(); });
+  // 2 oyuncu: rafı doldur, kutlama oynar, sonra sıra geçiş ekranı (kutlama modalın üstünde görünür)
+  G.state.racks[who] = G.rackView.concat(drawFromBag(G.state.bag, need));
+  G.pending=[]; G.selected=null;
+  renderAll();
+  nextTurn();
 }
 
 function showMoveResult(res, cb){
@@ -492,10 +589,12 @@ function endGame(){
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
+  if(a!==b){ sndWin(); confetti(); } else sndLose();
+  const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
     <p>${G.names.A}: ${a} &nbsp;·&nbsp; ${G.names.B}: ${b}</p>
-    <p style="color:#ffd86b;font-weight:700">${win}</p>
+    <p style="color:#ffd86b;font-weight:700">${win}</p>${bw}
     <button class="kl-btn primary" data-x="again">Yeni Oyun</button>
     <button class="kl-btn" style="margin-top:8px" data-x="close">Kapat</button></div>`;
   c.appendChild(ov);

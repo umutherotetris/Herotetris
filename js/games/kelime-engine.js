@@ -85,6 +85,55 @@ export function buildBagSeeded(seed){
   for(let i=bag.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); [bag[i],bag[j]]=[bag[j],bag[i]]; }
   return bag;
 }
+
+// ── Sürpriz kareler (seed tabanlı; online'da iki istemci aynısını üretir) ──
+export const SURPRISE_INFO = {
+  bonus10: { points:10, label:'+10 Puan!',     icon:'⭐', kind:'points' },
+  bonus15: { points:15, label:'+15 Bonus!',    icon:'💎', kind:'points' },
+  bonus25: { points:25, label:'+25 JACKPOT!',  icon:'💰', kind:'points' },
+  extra:   { label:'+1 Ekstra Harf!',          icon:'🎴', kind:'extra'  },
+  double:  { label:'Bu Hamle ×2!',             icon:'✖️', kind:'double' }
+};
+// Ağırlıklı havuz (jackpot/double daha nadir)
+const SURPRISE_POOL = ['bonus10','bonus10','bonus10','bonus15','bonus15','extra','extra','double','bonus25'];
+export function buildSurprises(seed, count = 4){
+  const rng = mulberry32(((seed >>> 0) ^ 0x9e3779b9) >>> 0);
+  const cells = {};
+  let placed = 0, guard = 0;
+  while(placed < count && guard < 800){
+    guard++;
+    const r = Math.floor(rng()*SIZE), c = Math.floor(rng()*SIZE);
+    const key = r + ',' + c;
+    if(cells[key]) continue;
+    if(r === CENTER.r && c === CENTER.c) continue;     // merkeze koyma
+    if(bonusAt(r,c).label) continue;                    // bonus karelerin üstüne koyma (sade)
+    cells[key] = { type: SURPRISE_POOL[Math.floor(rng()*SURPRISE_POOL.length)] };
+    placed++;
+  }
+  return cells;
+}
+
+// Yerleştirmenin ANLIK puanını hesapla (geçerli olmasa bile) — canlı hesaplayıcı için
+export function previewPlacement(board, pending){
+  if(!pending || pending.length === 0) return { empty:true, score:0, valid:false, words:[] };
+  const rows = new Set(pending.map(p=>p.r)), cols = new Set(pending.map(p=>p.c));
+  const horizontal = rows.size === 1, vertical = cols.size === 1;
+  if(!horizontal && !vertical) return { score:0, valid:false, words:[], reason:'tek hat değil' };
+  let dr, dc;
+  if(horizontal && !vertical){ dr=0; dc=1; }
+  else if(vertical && !horizontal){ dr=1; dc=0; }
+  else { const p=pending[0]; const hasH = tileAt(board,pending,p.r,p.c-1)||tileAt(board,pending,p.r,p.c+1); dr=hasH?0:1; dc=hasH?1:0; }
+  const anchor = pending[0];
+  const words = [];
+  const main = collectWord(board, pending, anchor.r, anchor.c, dr, dc); if(main.length>=2) words.push(main);
+  for(const p of pending){ const cr = collectWord(board, pending, p.r, p.c, dc, dr); if(cr.length>=2) words.push(cr); }
+  const uniq=[]; const seen=new Set();
+  for(const w of words){ const k=w.map(t=>t.r+'.'+t.c).join('|'); if(!seen.has(k)){ seen.add(k); uniq.push(w); } }
+  let score=0; for(const w of uniq) score += scoreWord(w, pending);
+  if(pending.length === RACK_SIZE) score += BINGO_BONUS;
+  const v = validatePlacement(board, pending);
+  return { score, valid: v.ok, reason: v.error, words: uniq.map(w=>wordString(w)) };
+}
 export function drawFromBag(bag, n){
   const out = [];
   for(let i=0;i<n && bag.length>0;i++) out.push(bag.pop());
