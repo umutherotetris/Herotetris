@@ -1130,9 +1130,9 @@ function recallAll(){
 }
 
 function shuffleRack(){
-  if(G.exchangeMode) return;
-  if(G.online && !isMyTurn()) return;
-  if(G.ai && (G.aiThinking || G.who!=='A')) return;
+  if(G.exchangeMode) return;   // değişim modunda seçim bozulmasın
+  // Karıştırma yalnız kendi rafını görsel diziler — sıra kimde olursa olsun yapılabilir
+  if(!G.rackView || !G.rackView.length) return;
   for(let i=G.rackView.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [G.rackView[i],G.rackView[j]]=[G.rackView[j],G.rackView[i]]; }
   G.selected=null; sndPick(); haptic(10); renderRack();
 }
