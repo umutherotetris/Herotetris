@@ -619,6 +619,7 @@ function applyRemote(room){
       const nb = JSON.parse(room.boardStr);
       for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){ if(nb[r][c] && !(G.state.board[r] && G.state.board[r][c])) newCells.push({r,c}); }
       G.state.board = nb;
+      recallConflictingPending();   // rakibin doldurduğu karelerdeki deneme taşlarımı rafa al
     }
   }catch(e){}
   if(newCells.length) setLastMove(newCells);
@@ -636,6 +637,7 @@ function applyRemote(room){
     G._lastSeenMove = room.lastMove.ts;
     const lm = room.lastMove;
     if(lm.pass){ flashStatus('Rakip pas geçti'); }
+    else if(lm.exchange){ flashStatus('🔄 Rakip '+lm.exchange+' harf değiştirdi'); }
     else {
       // rakibin hamlesini kutla (görsel + ses)
       if(lm.score){ scorePopup('+'+lm.score); if(lm.bingo){ sndBingo(); confetti(); } else sndWord(lm.score); }
@@ -952,7 +954,7 @@ function onRackPointerMove(e){
   const dx=e.clientX-_drag.x0, dy=e.clientY-_drag.y0;
   if(!_drag.moved){
     if(Math.hypot(dx,dy) < 8) return;
-    if(G.exchangeMode || !canPlayNow()) return;   // değişim modunda / sıra değilse sürükleme yok
+    if(G.exchangeMode || G._over) return;   // değişim modunda / oyun bitince sürükleme yok (sıra fark etmez)
     _drag.moved = true;
     const g = document.createElement('div'); g.className='kl-drag-ghost';
     g.textContent = _drag.tile.joker ? '★' : _drag.tile.letter;
@@ -1016,8 +1018,8 @@ function updateExchangeBtn(){
 
 function onCellTap(r, c){
   if(G._suppressNextCellTap){ G._suppressNextCellTap=false; return; }   // pending sürükleme tıklamayı yutar
-  if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
-  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
+  if(G._over) return;
+  // Sıra sende olmasa da deneme amaçlı yerleştirebilirsin (onayla sıraya bağlı)
   // doluysa (kalıcı) — kelime anlamını göster
   if(G.state.board[r][c]){ showWordMeaning(r, c); return; }
   const pendIdx = G.pending.findIndex(p=>p.r===r&&p.c===c);
@@ -1049,7 +1051,7 @@ function rawCellUnder(x,y){
 }
 function onPendingPointerDown(e, r, c){
   if(e.button!=null && e.button!==0) return;
-  if(!canPlayNow()) return;
+  if(G._over) return;   // sıra fark etmez; sadece oyun bitince taşıma yok
   e.stopPropagation();
   _pdrag = { r, c, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
   window.addEventListener('pointermove', onPendingPointerMove);
@@ -1157,6 +1159,16 @@ function trackBest(words, who){
   for(const w of words) if(w.score > G.bestWord.score) G.bestWord = { text:w.text, score:w.score, who };
 }
 function setLastMove(cells){ G.lastMoveCells = new Set(cells.map(p=>p.r+','+p.c)); }
+// Rakip/AI bir kareyi doldurduysa, oradaki deneme (pending) taşımı rafa geri al
+function recallConflictingPending(){
+  if(!G.pending || !G.pending.length) return;
+  const keep = [];
+  for(const p of G.pending){
+    if(G.state.board[p.r] && G.state.board[p.r][p.c]){ G.rackView.push({ letter:p.letter, points:p.points, joker:p.joker }); }
+    else keep.push(p);
+  }
+  if(keep.length !== G.pending.length){ G.pending = keep; G.selected = null; }
+}
 // Cihaz sahibinin kişisel rekorları (en uzun + en yüksek kelime)
 function trackRecords(words){
   if(!G.myRecord) G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
@@ -1269,8 +1281,8 @@ function celebrate(moveScore, bingo, hits){
 }
 
 function submitMove(){
-  if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
-  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
+  if(G.online && !isMyTurn()){ sndErr(); flashStatus('⏳ Sıra sende değil — deneyebilirsin ama sıran gelince onayla'); return; }
+  if(G.ai && (G.aiThinking || G.who!=='A')){ sndErr(); flashStatus('⏳ Yapay zekâ oynuyor — sıran gelince onayla'); return; }
   const res = validatePlacement(G.state.board, G.pending);
   if(!res.ok){ sndErr(); haptic(60); flashStatus('✗ '+res.error); return; }
   const surp = applySurprises(G.pending);
@@ -1368,6 +1380,7 @@ function aiTurn(){
     commitMove(G.state, mv.pending, moveScore, 'B');
     trackBest(mv.words, 'B');
     setLastMove(mv.pending);          // AI'ın son kelimesini renklendir
+    recallConflictingPending();       // AI'ın koyduğu karedeki deneme taşlarımı rafa al
     // AI rafını doldur
     const need = RACK_SIZE - G.state.racks.B.length;
     G.state.racks.B = G.state.racks.B.concat(drawFromBag(G.state.bag, need));
@@ -1469,11 +1482,12 @@ function passTurn(){
 }
 
 function toggleExchangeMode(){
-  if(G.online){ flashStatus('Çevrimiçi modda harf değişimi kapalı'); return; }
+  if(G.online && !isMyTurn()){ flashStatus('⏳ Sıra sende değil'); return; }
   if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   if(!G.exchangeMode){
     if(G.pending.length>0){ flashStatus('Önce yerleştirdiğin taşları geri al'); return; }
-    if(G.state.bag.length===0){ flashStatus('Torba boş, değişim yok'); return; }
+    const bagLeft = G.online ? (G.bag.length - G.state.bagPointer) : G.state.bag.length;
+    if(bagLeft <= 0){ flashStatus('Torba boş, değişim yok'); return; }
     G.exchangeMode=true; G.exchangeSel=new Set(); G.selected=null;
     updateExchangeBtn(); renderRack();
     flashStatus('Değiştirmek istediğin harflere dokun, sonra ✓ Onayla');
@@ -1490,6 +1504,24 @@ function exitExchangeMode(){ G.exchangeMode=false; G.exchangeSel=null; updateExc
 function performExchange(idxs){
   const removed = idxs.map(i=>G.rackView[i]);
   G.rackView = G.rackView.filter((_,i)=>!idxs.includes(i));
+  if(G.online){
+    // Çevrimiçi: yeni harfleri tohumlu torbanın ucundan çek (bagPointer ilerler), sırayı rakibe geçir
+    const need = removed.length;
+    const fresh = G.bag.slice(G.state.bagPointer, G.state.bagPointer+need).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
+    G.state.bagPointer += fresh.length;
+    G.rackView = G.rackView.concat(fresh);
+    G.state.racks[G.role] = G.rackView.slice();
+    G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
+    G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
+    const oppRole = G.role==='A'?'B':'A';
+    G.state.turn = oppRole;
+    const patch = { turn: oppRole, bagPointer: G.state.bagPointer, passStreak: 0, lastMove: { who: G.role, ts: Date.now(), exchange: need } };
+    if(G.async) patch['racks/'+G.role] = G.rackView;
+    if(KO) KO.pushMove(patch);
+    renderAll();
+    flashStatus('🔄 '+need+' harf degisti — sira rakipte');
+    return;
+  }
   const fresh = drawFromBag(G.state.bag, removed.length);
   G.rackView = G.rackView.concat(fresh);
   // çıkarılanları torbaya geri at + karıştır
