@@ -72,15 +72,16 @@ function injectStyles(){
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
 .kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
-.kl-zoom{position:absolute;top:6px;right:12px;z-index:20;width:38px;height:38px;border-radius:10px;border:1px solid rgba(200,170,255,.3);background:rgba(36,17,65,.85);color:#ffe08a;font-size:17px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.kl-zoom{position:absolute;top:6px;right:12px;z-index:20;width:40px;height:40px;border-radius:11px;border:1px solid rgba(255,255,255,.25);background:rgba(42,28,18,.9);color:#ffe08a;font-size:18px;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.5);touch-action:none;user-select:none}
+.kl-zoom:active{cursor:grabbing;transform:scale(.94)}
 .kl-zoom:active{transform:scale(.92)}
-.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#565b64,#3c4047);border:3px solid #23262c;border-radius:9px;padding:4px;box-shadow:0 12px 34px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.05),inset 0 2px 4px rgba(0,0,0,.4)}
+.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#6f5337,#4a3522);border:3px solid #36271a;border-radius:9px;padding:4px;box-shadow:0 12px 34px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,220,170,.12),inset 0 2px 4px rgba(0,0,0,.35)}
 .kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
-.kl-cell{position:relative;background:linear-gradient(160deg,#e0dcd2,#cfcabd);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(70,72,82,.6);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
-.kl-cell.b-K3{background:linear-gradient(160deg,#e23bac,#a01473);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
-.kl-cell.b-K2{background:linear-gradient(160deg,#c25ef0,#8a2fc4);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
-.kl-cell.b-H3{background:linear-gradient(160deg,#8a6cff,#5a37cf);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
-.kl-cell.b-H2{background:linear-gradient(160deg,#b3a6f5,#8472d6);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3)}
+.kl-cell{position:relative;background:linear-gradient(160deg,#f1e8d6,#ddd0b5);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(95,72,45,.62);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
+.kl-cell.b-K3{background:linear-gradient(160deg,#ef5350,#c52f2a);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.kl-cell.b-K2{background:linear-gradient(160deg,#f7a64d,#e07d22);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.kl-cell.b-H3{background:linear-gradient(160deg,#3f86cc,#1f5996);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.kl-cell.b-H2{background:linear-gradient(160deg,#7ec8ed,#3fa1d6);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3)}
 .kl-cell.b-center{background:linear-gradient(160deg,#ffe08a,#e3a82f);color:#3a2400;font-size:12px}
 .kl-cell.target{outline:2px solid #ffd86b;outline-offset:-2px}
 .kl-cell.drop-target{outline:3px solid #6cff9a;outline-offset:-2px;box-shadow:inset 0 0 10px rgba(108,255,154,.6)}
@@ -613,12 +614,69 @@ function buildGameDOM(){
   c.querySelector('[data-act="pass"]').addEventListener('click', passTurn);
   c.querySelector('[data-act="submit"]').addEventListener('click', submitMove);
   c.querySelector('[data-act="shuffle"]').addEventListener('click', shuffleRack);
-  c.querySelector('[data-act="zoom"]').addEventListener('click', toggleZoom);
+  bindZoomButton();
+  bindBoardDoubleTap();
   applyZoom();
+}
+
+// Zoom sesi (içeri/dışarı süpürme)
+function sndZoom(zin){
+  if(!G || !G.sound) return;
+  if(zin){ tone(420,0.06,'sine',0.06); setTimeout(()=>tone(760,0.09,'sine',0.06),55); }
+  else { tone(760,0.06,'sine',0.06); setTimeout(()=>tone(420,0.09,'sine',0.06),55); }
+}
+
+// Büyüteç/teleskop butonu: sürüklenebilir (park) + dokun=zoom
+function bindZoomButton(){
+  const btn = G.root.querySelector('[data-act="zoom"]');
+  const wrap = G.root.querySelector('.kl-boardwrap');
+  if(!btn || !wrap) return;
+  if(G.zoomPos){ btn.style.left=G.zoomPos.left+'px'; btn.style.top=G.zoomPos.top+'px'; btn.style.right='auto'; }
+  let sx=0, sy=0, bx=0, by=0, moved=false, dragging=false;
+  btn.addEventListener('pointerdown', e=>{
+    e.preventDefault(); e.stopPropagation();
+    dragging=true; moved=false;
+    const r=btn.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
+    sx=e.clientX; sy=e.clientY; bx=r.left-wr.left; by=r.top-wr.top;
+    try{ btn.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  btn.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const dx=e.clientX-sx, dy=e.clientY-sy;
+    if(Math.abs(dx)+Math.abs(dy)>6) moved=true;
+    if(moved){
+      const wr=wrap.getBoundingClientRect();
+      const nl=Math.max(0,Math.min(wr.width-btn.offsetWidth, bx+dx));
+      const nt=Math.max(0,Math.min(wr.height-btn.offsetHeight, by+dy));
+      btn.style.left=nl+'px'; btn.style.top=nt+'px'; btn.style.right='auto';
+    }
+  });
+  const end = e=>{
+    if(!dragging) return; dragging=false;
+    try{ btn.releasePointerCapture(e.pointerId); }catch(_){}
+    if(moved){ G.zoomPos={ left:parseFloat(btn.style.left)||0, top:parseFloat(btn.style.top)||0 }; }
+    else { toggleZoom(); }    // sürüklenmediyse = dokunma → zoom
+  };
+  btn.addEventListener('pointerup', end);
+  btn.addEventListener('pointercancel', end);
+}
+
+// Tahtaya çift dokunma → zoom (büyüteç/teleskop simgesi dışında da)
+function bindBoardDoubleTap(){
+  const board = G.root.querySelector('[data-el="board"]');
+  if(!board) return;
+  let lt=0, lx=0, ly=0;
+  board.addEventListener('pointerup', e=>{
+    if(G.selected != null) return;   // taş yerleştirme modunda karışmasın
+    const now=Date.now();
+    if(now-lt < 320 && Math.abs(e.clientX-lx)<30 && Math.abs(e.clientY-ly)<30){ toggleZoom(); lt=0; }
+    else { lt=now; lx=e.clientX; ly=e.clientY; }
+  });
 }
 
 function toggleZoom(){
   G.zoom = (G.zoom === 'large') ? 'fit' : 'large';
+  sndZoom(G.zoom === 'large');
   applyZoom();
   if(G.zoom === 'large'){
     // büyük modda ortala
@@ -667,6 +725,7 @@ function confetti(){
 
 function renderScores(){
   const q = s => G.root.querySelector(s);
+  if(!G.state || !G.names || !q('[data-el="nameA"]')) return;   // menü/geçiş anında çağrılırsa çök
   q('[data-el="nameA"]').textContent = G.names.A;
   q('[data-el="nameB"]').textContent = G.names.B;
   q('[data-el="ptA"]').textContent = G.state.scores.A;
@@ -703,7 +762,7 @@ function renderBoard(){
       if(bl) bl.style.visibility='hidden';
       if(existing) cell.classList.remove('b-surprise');   // kalıcı taş geldi → sürpriz parıltısını kaldır
       const t = existing || pend;
-      const letter = t.joker ? (t.assigned||'') : t.letter;
+      const letter = t.joker ? (t.assigned || t.letter || '') : t.letter;
       const pts = t.joker ? 0 : (t.points!=null?t.points:letterPoints(t.letter));
       const div = document.createElement('div');
       const isLast = !pend && G.lastMoveCells && G.lastMoveCells.has(r+','+cc);
@@ -951,7 +1010,7 @@ function wordsThrough(r, c){
     let sr=r, sc=c;
     while(sr-dr>=0 && sc-dc>=0 && B[sr-dr][sc-dc]){ sr-=dr; sc-=dc; }
     let s=''; let rr=sr, cc=sc;
-    while(rr<SIZE && cc<SIZE && B[rr][cc]){ const t=B[rr][cc]; s += (t.joker?(t.assigned||'?'):t.letter); rr+=dr; cc+=dc; }
+    while(rr<SIZE && cc<SIZE && B[rr][cc]){ const t=B[rr][cc]; s += (t.joker ? (t.assigned || t.letter || '?') : t.letter); rr+=dr; cc+=dc; }
     return s;
   };
   const out=[]; const h=read(0,1), v=read(1,0);
@@ -993,7 +1052,9 @@ function showLetterTable(){
     const rem = Math.max(0, total[L] - (used[L]||0));
     return `<div class="kl-lt${rem===0?' zero':''}"><div class="ltl">${L}</div><div class="ltn">${rem}/${total[L]}</div><div class="ltp">${LETTERS[L].p}p</div></div>`;
   }).join('');
-  const jokerRem = Math.max(0, JOKER_COUNT - G.rackView.filter(t=>t.joker).length - G.pending.filter(p=>p.joker).length);
+  let boardJokers = 0;
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){ if(G.state.board[r][c] && G.state.board[r][c].joker) boardJokers++; }
+  const jokerRem = Math.max(0, JOKER_COUNT - boardJokers - G.rackView.filter(t=>t.joker).length - G.pending.filter(p=>p.joker).length);
   ov.innerHTML = `<div class="kl-card" style="max-width:360px"><h3>📊 Harf Tablosu</h3>
     <p style="font-size:11px;color:#bba8df">Henüz görünmeyen (torbada + rakipte olabilecek) harf sayısı</p>
     <div class="kl-lt-grid">${cells}<div class="kl-lt"><div class="ltl">★</div><div class="ltn">${jokerRem}/${JOKER_COUNT}</div><div class="ltp">joker</div></div></div>
