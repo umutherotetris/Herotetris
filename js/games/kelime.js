@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  KELİME DÜELLOSU — Ana UI / Kontrolcü
+//  KELİMECİK — Ana UI / Kontrolcü
 //  15x15 tahta (DOM grid), harf rafı, tap-to-place yerleştirme,
 //  tur akışı (onayla/geç/değiştir), joker seçici, puanlama.
 //  İlk sürüm: 2 oyuncu (aynı cihazda sırayla). AI/online sonraki faz.
@@ -7,7 +7,7 @@
 import {
   newGame, validatePlacement, commitMove, drawFromBag, buildBagSeeded, isEmptyBoard,
   buildSurprises, SURPRISE_INFO, previewPlacement,
-  SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS
+  SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT
 } from './kelime-engine.js';
 
 let G = null;
@@ -63,30 +63,54 @@ function injectStyles(){
 .kl-score .pt{font-size:21px;font-weight:800;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
 .kl-gem{width:30px;height:30px;flex:0 0 auto;border-radius:7px;transform:rotate(45deg);background:linear-gradient(135deg,#d8b4fe,#7c3aed);border:2px solid #e9c466;box-shadow:0 0 16px rgba(168,85,247,.6),inset 0 0 7px rgba(255,255,255,.45)}
 .kl-status{text-align:center;font-size:13px;padding:0 12px 6px;min-height:18px;color:#d9caf2;flex:0 0 auto}
+.kl-timerbar{height:6px;margin:-2px 12px 6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;display:none}
+.kl-timerbar.on{display:block}
+.kl-timerfill{height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#6cff9a,#ffe08a);transition:width 1s linear}
+.kl-timerfill.low{background:#ff5470;transition:width 1s linear}
 .kl-status .kl-turn{display:inline-block;padding:3px 12px;border-radius:999px;font-weight:700;font-size:12px}
 .kl-status .kl-turn.me{background:linear-gradient(90deg,#ffe08a,#f0b132);color:#3a2400}
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
-.kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0}
-.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:#4a4e56;border:3px solid #2e323a;border-radius:8px;padding:3px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.kl-cell{position:relative;background:#d8d4ca;border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(70,72,82,.65);user-select:none;cursor:pointer;overflow:hidden}
-.kl-cell.b-K3{background:linear-gradient(160deg,#d6299a,#a01473);color:#fff}
-.kl-cell.b-K2{background:linear-gradient(160deg,#b14de0,#8a2fc4);color:#fff}
-.kl-cell.b-H3{background:linear-gradient(160deg,#7c5cf0,#5a37cf);color:#fff}
-.kl-cell.b-H2{background:linear-gradient(160deg,#a99cf2,#8472d6);color:#fff}
+.kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
+.kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
+.kl-zoom{position:absolute;top:6px;right:12px;z-index:20;width:38px;height:38px;border-radius:10px;border:1px solid rgba(200,170,255,.3);background:rgba(36,17,65,.85);color:#ffe08a;font-size:17px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.kl-zoom:active{transform:scale(.92)}
+.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#565b64,#3c4047);border:3px solid #23262c;border-radius:9px;padding:4px;box-shadow:0 12px 34px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.05),inset 0 2px 4px rgba(0,0,0,.4)}
+.kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
+.kl-cell{position:relative;background:linear-gradient(160deg,#e0dcd2,#cfcabd);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(70,72,82,.6);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
+.kl-cell.b-K3{background:linear-gradient(160deg,#e23bac,#a01473);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.kl-cell.b-K2{background:linear-gradient(160deg,#c25ef0,#8a2fc4);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.kl-cell.b-H3{background:linear-gradient(160deg,#8a6cff,#5a37cf);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.kl-cell.b-H2{background:linear-gradient(160deg,#b3a6f5,#8472d6);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3)}
 .kl-cell.b-center{background:linear-gradient(160deg,#ffe08a,#e3a82f);color:#3a2400;font-size:12px}
 .kl-cell.target{outline:2px solid #ffd86b;outline-offset:-2px}
-.kl-tile{position:absolute;inset:1px;border-radius:3px;background:linear-gradient(160deg,#f7edd4,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 2px rgba(150,110,40,.3)}
-.kl-tile .l{font-size:14px;line-height:1}
+.kl-cell.drop-target{outline:3px solid #6cff9a;outline-offset:-2px;box-shadow:inset 0 0 10px rgba(108,255,154,.6)}
+.kl-tile{position:absolute;inset:1px;border-radius:4px;background:linear-gradient(165deg,#fdf6e3 0%,#f1e1b8 55%,#e4cf97 100%);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 1.5px 0 #b9a06a,0 3px 4px rgba(0,0,0,.5),inset 0 1.5px 1px rgba(255,255,255,.85),inset 0 -2px 2px rgba(150,110,40,.35)}
+.kl-tile .l{font-size:14px;line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.5)}
 .kl-tile .p{position:absolute;right:1px;bottom:0;font-size:7px;font-weight:700;color:#9a6a1a}
-.kl-tile.pending{background:linear-gradient(160deg,#ffe9a8,#f3cf6b);box-shadow:0 0 10px rgba(240,177,50,.7),inset 0 1px 0 rgba(255,255,255,.6)}
-.kl-tile.joker{background:linear-gradient(160deg,#ead6ff,#c4a6f0);color:#3a1a5e}
-.kl-rackwrap{flex:0 0 auto;padding:8px 10px 6px}
-.kl-rack{display:flex;gap:6px;justify-content:center;background:linear-gradient(180deg,rgba(168,85,247,.12),rgba(124,58,237,.06));border:1px solid rgba(200,170,255,.2);border-radius:15px;padding:9px;min-height:56px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.kl-rtile{width:43px;height:48px;border-radius:9px;background:linear-gradient(160deg,#f7edd4,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px;position:relative;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 3px rgba(150,110,40,.3);transition:transform .1s}
-.kl-rtile.sel{transform:translateY(-8px);box-shadow:0 0 14px rgba(240,177,50,.8),0 5px 10px rgba(0,0,0,.4)}
-.kl-rtile.joker{background:linear-gradient(160deg,#ead6ff,#c4a6f0);color:#3a1a5e}
+.kl-tile.pending{background:linear-gradient(165deg,#fff3cf,#f5cf6b);box-shadow:0 1.5px 0 #d6a93f,0 0 11px rgba(240,177,50,.7),inset 0 1.5px 1px rgba(255,255,255,.85)}
+.kl-tile.joker{background:linear-gradient(165deg,#f3e4ff,#c9aef0);color:#3a1a5e}
+.kl-tile.lastmove{background:linear-gradient(165deg,#dafbe7,#a6e8c2);color:#16432f;box-shadow:0 1.5px 0 #2a9d6a,0 0 10px rgba(52,211,153,.9),inset 0 1.5px 1px rgba(255,255,255,.85)}
+.kl-tile.lastmove .p{color:#1f7a52}
+.kl-lt-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.kl-lt{background:rgba(168,85,247,.1);border:1px solid rgba(200,170,255,.18);border-radius:9px;padding:6px 2px;text-align:center}
+.kl-lt.zero{opacity:.32}
+.kl-lt .ltl{font-size:16px;font-weight:800;color:#efe7ff}
+.kl-lt .ltn{font-size:12px;font-weight:800;color:#ffe08a}
+.kl-lt .ltp{font-size:9px;color:#bba8df}
+.kl-rackwrap{flex:0 0 auto;padding:8px 10px 6px;display:flex;align-items:center;gap:8px}
+.kl-rack{display:flex;gap:6px;justify-content:center;flex:1;min-width:0;background:linear-gradient(180deg,rgba(168,85,247,.14),rgba(124,58,237,.05));border:1px solid rgba(200,170,255,.2);border-radius:15px;padding:9px;min-height:58px;box-shadow:inset 0 2px 5px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.kl-shuffle{flex:0 0 auto;width:46px;height:46px;border-radius:13px;border:1px solid rgba(200,170,255,.22);background:rgba(168,85,247,.14);color:#efe7ff;font-size:20px;cursor:pointer}
+.kl-shuffle:active{transform:scale(.92) rotate(180deg);transition:transform .2s}
+.kl-rtile{width:44px;height:50px;border-radius:9px;background:linear-gradient(165deg,#fdf6e3 0%,#f0e0b6 55%,#e6d3a4 100%);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;position:relative;cursor:grab;touch-action:none;box-shadow:0 3px 0 #b9925a,0 5px 7px rgba(0,0,0,.45),inset 0 2px 1px rgba(255,255,255,.9),inset 0 -2px 3px rgba(150,110,40,.3);transition:transform .1s}
+.kl-rtile>span:first-child{text-shadow:0 1px 0 rgba(255,255,255,.6)}
+.kl-rtile.sel{transform:translateY(-9px);box-shadow:0 3px 0 #b9925a,0 0 15px rgba(240,177,50,.85),0 8px 12px rgba(0,0,0,.45)}
+.kl-rtile.swap{transform:translateY(-4px);outline:2px solid #d6299a;outline-offset:-1px;opacity:.92}
+.kl-rtile.swap::after{content:'⇄';position:absolute;top:-2px;left:3px;font-size:11px;color:#d6299a}
+.kl-rtile.joker{background:linear-gradient(165deg,#f3e4ff,#c9aef0);color:#3a1a5e}
 .kl-rtile .p{position:absolute;right:4px;bottom:2px;font-size:9px;color:#9a6a1a}
-.kl-rtile.empty{background:rgba(255,255,255,.04);box-shadow:none;cursor:default}
+.kl-rtile.empty{background:rgba(255,255,255,.04);box-shadow:inset 0 2px 4px rgba(0,0,0,.25);cursor:default}
+.kl-rtile.dragging{opacity:.35}
+.kl-drag-ghost{position:fixed;z-index:9999;width:48px;height:54px;border-radius:9px;background:linear-gradient(165deg,#fdf6e3,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;pointer-events:none;box-shadow:0 8px 18px rgba(0,0,0,.6),inset 0 2px 1px rgba(255,255,255,.9);transform:translate(-50%,-50%) scale(1.12)}
 .kl-actions{display:flex;gap:6px;padding:6px 10px 12px}
 .kl-btn{flex:1;padding:12px 6px;border-radius:12px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.1);color:#efe7ff;font-weight:700;font-size:13px;cursor:pointer}
 .kl-btn:active{transform:scale(.96)}
@@ -132,9 +156,10 @@ export function openKelime(){
     <div class="kl-top">
       <div class="kl-gameicon">🔤</div>
       <div class="kl-brand">
-        <div class="kl-title">KELİME DÜELLOSU</div>
+        <div class="kl-title">KELİMECİK</div>
         <div class="kl-sub">Türkçe · 59.000 kelime</div>
       </div>
+      <button class="kl-icon" data-el="lettertable" title="Harf tablosu">📊</button>
       <button class="kl-icon" data-el="sound" title="Ses">🔊</button>
       <button class="kl-icon" data-act="close" title="Kapat">✕</button>
     </div>
@@ -143,29 +168,66 @@ export function openKelime(){
   document.body.appendChild(root);
   G = { root, sound:true };
   root.querySelector('[data-act="close"]').addEventListener('click', closeKelime);
+  root.querySelector('[data-el="lettertable"]').addEventListener('click', showLetterTable);
   const sb = root.querySelector('[data-el="sound"]');
   sb.addEventListener('click', ()=>{ G.sound=!G.sound; sb.textContent=G.sound?'🔊':'🔇'; });
   showStart();
 }
 
-function closeKelime(){ try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
   const c = G.root.querySelector('[data-el="content"]');
+  let recHtml = '';
+  try{
+    const A = (window.Hero && window.Hero.Auth) ? window.Hero.Auth.getState() : null;
+    const rec = A && A.profile && A.profile.kelimeRecords;
+    if(rec && (rec.bestScore || rec.longestLen)){
+      const parts = [];
+      if(rec.longestWord) parts.push(`📏 En uzun: <b>${esc(rec.longestWord)}</b> (${rec.longestLen} harf)`);
+      if(rec.bestWord) parts.push(`💎 En yüksek: <b>${esc(rec.bestWord)}</b> (${rec.bestScore} puan)`);
+      recHtml = `<div style="margin:0 0 12px;padding:9px 12px;border-radius:11px;background:rgba(240,177,50,.1);border:1px solid rgba(240,177,50,.25);font-size:12px;color:#ffe9b8;line-height:1.6">🏆 Rekorların<br>${parts.join('<br>')}</div>`;
+    }
+  }catch(e){}
   c.innerHTML = `
     <div class="kl-overlay" style="position:relative;background:transparent">
       <div class="kl-card">
-        <h3>🔤 Kelime Düellosu</h3>
+        <h3>🔤 Kelimecik</h3>
         <p>Türkçe kelime türetme oyunu · 15×15 tahta · 59.000 kelimelik TDK sözlüğü</p>
+        ${recHtml}
         <div class="kl-modes">
           <div class="kl-mode" data-mode="local"><span class="e">👥</span><div>2 Oyuncu<small>Aynı cihazda sırayla</small></div></div>
+          <div class="kl-mode" data-mode="ai"><span class="e">🤖</span><div>Yapay Zekâ<small>3 zorluk · bilgisayara karşı</small></div></div>
+          <div class="kl-mode" data-mode="seri"><span class="e">⏱️</span><div>Seri Mod (Süreli)<small>Hamle başına süre · hızlı oyun</small></div></div>
           <div class="kl-mode" data-mode="online"><span class="e">🌐</span><div>Çevrimiçi Rakip<small>Rastgele bir oyuncuyla eşleş</small></div></div>
-          <div class="kl-mode soon"><span class="e">🤖</span><div>Yapay Zekâ<small>Yakında</small></div></div>
+          <div class="kl-mode" data-mode="invite"><span class="e">📨</span><div>Arkadaşını Davet Et<small>Nick ile meydan oku</small></div></div>
         </div>
       </div>
     </div>`;
   c.querySelector('[data-mode="local"]').addEventListener('click', ()=>startLocal());
-  c.querySelector('[data-mode="online"]').addEventListener('click', ()=>startOnlineSearch());
+  c.querySelector('[data-mode="ai"]').addEventListener('click', ()=>showAIDifficulty());
+  c.querySelector('[data-mode="seri"]').addEventListener('click', ()=>showSeriOptions());
+  c.querySelector('[data-mode="online"]').addEventListener('click', ()=>showOnlineOptions());
+  c.querySelector('[data-mode="invite"]').addEventListener('click', ()=>showInviteScreen());
+}
+
+function showAIDifficulty(){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `
+    <div class="kl-overlay" style="position:relative;background:transparent">
+      <div class="kl-card">
+        <h3>🤖 Yapay Zekâ</h3>
+        <p>Zorluk seç — bilgisayara karşı oyna.</p>
+        <div class="kl-modes">
+          <div class="kl-mode" data-diff="kolay"><span class="e">🟢</span><div>Kolay<small>Kısa kelimeler, rahat tempo</small></div></div>
+          <div class="kl-mode" data-diff="orta"><span class="e">🟡</span><div>Orta<small>Dengeli rakip</small></div></div>
+          <div class="kl-mode" data-diff="zor"><span class="e">🔴</span><div>Zor<small>En yüksek puanı arar</small></div></div>
+        </div>
+        <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+      </div>
+    </div>`;
+  c.querySelectorAll('[data-diff]').forEach(el=>el.addEventListener('click', ()=>startAI(el.dataset.diff)));
+  c.querySelector('[data-x="back"]').addEventListener('click', showStart);
 }
 
 function startLocal(){
@@ -176,20 +238,79 @@ function startLocal(){
   G.pending = [];
   G.rackView = st.racks[G.who].slice();   // bu turdaki kullanılabilir taşlar
   G.selected = null;
+  G.ai = null;
+  G.seri = null; stopTurnTimer();
   G.surprises = buildSurprises((Math.random()*0x7fffffff)|0);   // sürpriz kareler
   G.bestWord = { text:'', score:0, who:'' };
+  G.lastMoveCells = new Set();
+  G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
   buildGameDOM();
   renderAll();
 }
 
+// ── YAPAY ZEKÂ ──
+let KA = null;   // kelime-ai.js (talep üzerine yüklenir)
+async function startAI(difficulty, turnTime){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 Hazırlanıyor…</h3><p>Sözlük yükleniyor</p></div></div>`;
+  try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
+  catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  const st = newGame();
+  G.state = st;
+  G.who = 'A';                                   // insan = A
+  G.ai = { difficulty, color:'B' };
+  G.seri = turnTime ? { turnTime } : null;        // süreli seri mod
+  const diffLbl = {kolay:'Kolay',orta:'Orta',zor:'Zor'}[difficulty];
+  G.names = { A:'Sen', B:(turnTime?'Seri AI':'Yapay Zekâ')+' ('+diffLbl+')' };
+  G.pending = []; G.selected = null;
+  G.rackView = st.racks.A.slice();
+  G.surprises = buildSurprises((Math.random()*0x7fffffff)|0);
+  G.bestWord = { text:'', score:0, who:'' };
+  G.lastMoveCells = new Set();
+  G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
+  G.aiThinking = false; G._over = false;
+  buildGameDOM();
+  renderAll();
+  if(G.seri) startTurnTimer();                    // ilk insan turu için sayaç
+}
+function startSeri(turnTime){ startAI('orta', turnTime); }
+
+function showSeriOptions(){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `
+    <div class="kl-overlay" style="position:relative;background:transparent">
+      <div class="kl-card">
+        <h3>⏱️ Seri Mod</h3>
+        <p>Her hamle için süre! Süre dolarsa otomatik pas. Orta seviye yapay zekâya karşı hızlı oyna.</p>
+        <div class="kl-modes">
+          <div class="kl-mode" data-t="20"><span class="e">⚡</span><div>Hızlı<small>Hamle başına 20 sn</small></div></div>
+          <div class="kl-mode" data-t="40"><span class="e">⏱️</span><div>Normal<small>Hamle başına 40 sn</small></div></div>
+          <div class="kl-mode" data-t="60"><span class="e">🐢</span><div>Rahat<small>Hamle başına 60 sn</small></div></div>
+        </div>
+        <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+      </div>
+    </div>`;
+  c.querySelectorAll('[data-t]').forEach(el=>el.addEventListener('click', ()=>startSeri(+el.dataset.t)));
+  c.querySelector('[data-x="back"]').addEventListener('click', showStart);
+}
+
+function flashStartError(msg){
+  const c = G.root.querySelector('[data-el="content"]');
+  const ov=document.createElement('div'); ov.className='kl-overlay';
+  ov.innerHTML=`<div class="kl-card"><h3>⚠️</h3><p>${msg}</p><button class="kl-btn primary" data-x="ok">Tamam</button></div>`;
+  c.appendChild(ov); ov.querySelector('[data-x="ok"]').addEventListener('click',()=>{ ov.remove(); showStart(); });
+}
+
 // ── ÇEVRİMİÇİ: rastgele eşleşme ──
-async function startOnlineSearch(){
+async function startOnlineSearch(opts){
+  opts = opts || {};
+  const async = opts.mode === 'async';
   const c = G.root.querySelector('[data-el="content"]');
   if(!document.getElementById('kl-spin-kf')){ const s=document.createElement('style'); s.id='kl-spin-kf'; s.textContent='@keyframes klspin{to{transform:rotate(360deg)}}'; document.head.appendChild(s); }
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent">
     <div class="kl-card">
       <h3>🌐 Rakip Aranıyor…</h3>
-      <p>Çevrimiçi bir oyuncu bekleniyor. Biri katılınca oyun otomatik başlar.</p>
+      <p>${async?'Süreli oyun için bir rakip bekleniyor. Eşleşince ilk hamleni yap; rakip sonra (saatler içinde) oynayabilir.':'Çevrimiçi bir oyuncu bekleniyor. Biri katılınca oyun otomatik başlar.'}</p>
       <div style="margin:6px auto 14px;width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:#ffd86b;border-radius:50%;animation:klspin 1s linear infinite"></div>
       <button class="kl-btn warn" data-x="cancel">İptal</button>
     </div></div>`;
@@ -202,7 +323,80 @@ async function startOnlineSearch(){
   KO.findMatch({
     onSearching: ()=>{},
     onError: (msg)=>{ if(!cancelled) flashCard('Eşleşme hatası', msg); },
-    onMatched: ({role, gameId, oppName, seed})=>{ if(!cancelled) startOnline(role, gameId, oppName, seed); }
+    onMatched: (d)=>{ if(!cancelled) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours }); }
+  }, async ? { mode:'async', turnHours: opts.turnHours||72 } : undefined);
+}
+
+// Çevrimiçi mod seçimi
+function showOnlineOptions(){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `
+    <div class="kl-overlay" style="position:relative;background:transparent">
+      <div class="kl-card">
+        <h3>🌐 Çevrimiçi Rakip</h3>
+        <p>Anlık oyna ya da süreli (rakip sonra oynar) bir oyun başlat.</p>
+        <div class="kl-modes">
+          <div class="kl-mode" data-on="live"><span class="e">⚡</span><div>Anlık<small>Gerçek zamanlı, aynı anda</small></div></div>
+          <div class="kl-mode" data-on="12"><span class="e">⏳</span><div>Süreli · 12 saat<small>Hamle başına 12 saat süre</small></div></div>
+          <div class="kl-mode" data-on="72"><span class="e">⏳</span><div>Süreli · 72 saat<small>Hamle başına 72 saat süre</small></div></div>
+          <div class="kl-mode" data-on="mygames"><span class="e">📂</span><div>Devam eden oyunlarım<small>Süreli oyunlarına dön</small></div></div>
+        </div>
+        <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+      </div>
+    </div>`;
+  c.querySelector('[data-on="live"]').addEventListener('click', ()=>startOnlineSearch());
+  c.querySelector('[data-on="12"]').addEventListener('click', ()=>startOnlineSearch({mode:'async',turnHours:12}));
+  c.querySelector('[data-on="72"]').addEventListener('click', ()=>startOnlineSearch({mode:'async',turnHours:72}));
+  c.querySelector('[data-on="mygames"]').addEventListener('click', ()=>showMyGames());
+  c.querySelector('[data-x="back"]').addEventListener('click', showStart);
+}
+
+function fmtRemain(ms){
+  if(ms<=0) return 'süre doldu';
+  const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000);
+  return h>0 ? `${h}s ${m}dk` : `${m}dk`;
+}
+
+async function showMyGames(){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>📂 Yükleniyor…</h3></div></div>`;
+  try{ if(!KO) KO = await import('./kelime-online.js'); }
+  catch(e){ flashCard('Yüklenemedi','Bağlantını kontrol et.'); return; }
+  let games=[]; try{ games = await KO.listMyGames(); }catch(e){}
+  const now = Date.now();
+  const rows = games.length ? games.map((g,i)=>{
+    const mine = g.scores[g.myRole], opp = g.scores[g.myRole==='A'?'B':'A'];
+    let badge, act;
+    if(g.over){ badge = `<small>Bitti · ${mine}-${opp}</small>`; act='view'; }
+    else if(g.myTurn){ badge = `<small style="color:#6cff9a">▶ Sıra sende · ${mine}-${opp}</small>`; act='play'; }
+    else {
+      const over = g.deadline && now > g.deadline;
+      badge = over
+        ? `<small style="color:#ff8fae">Rakibin süresi doldu · galibiyet alabilirsin</small>`
+        : `<small style="color:#bba8df">Rakipte · kalan ${fmtRemain((g.deadline||0)-now)} · ${mine}-${opp}</small>`;
+      act = over ? 'claim' : 'view';
+    }
+    return `<div class="kl-mode" data-i="${i}" data-act="${act}"><span class="e">${g.over?'🏁':(g.myTurn?'⚔️':'⌛')}</span><div>${esc(g.opp)}${badge}</div></div>`;
+  }).join('') : `<div style="font-size:12px;color:#8a7aae">Devam eden süreli oyunun yok.</div>`;
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
+      <h3>📂 Devam Eden Oyunlarım</h3>
+      <div class="kl-modes" data-el="mglist">${rows}</div>
+      <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+    </div></div>`;
+  const card = c.querySelector('.kl-card');
+  card.querySelector('[data-x="back"]').addEventListener('click', showOnlineOptions);
+  card.querySelectorAll('[data-i]').forEach(el=>{
+    const g = games[+el.dataset.i]; const act = el.dataset.act;
+    el.addEventListener('click', ()=>{
+      if(act==='claim'){
+        KO.claimTimeout(g.gameId, { onDone:()=>{ flashCard('🎉 Kazandın!', 'Rakibin süresi dolduğu için oyunu kazandın.'); }, onError:(m)=>flashCard('Olmadı', m) });
+      } else {
+        KO.resumeGame(g.gameId, {
+          onError:(m)=>flashCard('Açılamadı', m),
+          onResumed:({role,gameId,oppName,seed,room})=>startOnline(role,gameId,oppName,seed,{async:true,turnHours:room.turnHours,room})
+        });
+      }
+    });
   });
 }
 
@@ -212,20 +406,107 @@ function flashCard(title, msg){
   c.querySelector('[data-x="back"]').addEventListener('click', showStart);
 }
 
-function startOnline(role, gameId, oppName, seed){
-  G.online = true; G.role = role; G.gameId = gameId; G.oppName = oppName; G._over = false; G.oppPresent = true;
+function esc(s){ return String(s||'').replace(/[<>&"]/g, m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m])); }
+let _invOff = null;
+function stopInviteListen(){ try{ if(_invOff) _invOff(); }catch(e){} _invOff=null; }
+
+// ── ARKADAŞ / NİCK DAVETİ ──
+async function showInviteScreen(){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>📨 Hazırlanıyor…</h3></div></div>`;
+  try{ if(!KO) KO = await import('./kelime-online.js'); }
+  catch(e){ flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); return; }
+  let friends = []; try{ friends = await KO.listFriends(); }catch(e){}
+  const friendsHtml = friends.length
+    ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 Arkadaşların</div>${friends.map(f=>`<div class="kl-mode" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="e">🧑</span><div>${esc(f.name)}<small>Meydan oku</small></div></div>`).join('')}</div>`
+    : '';
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
+      <h3>📨 Arkadaşını Davet Et</h3>
+      <p>Nick yaz, meydan oku — rakip kabul edince oyun başlar.</p>
+      <div style="display:flex;gap:6px">
+        <input data-el="nickin" placeholder="Rakip nick…" autocomplete="off" style="flex:1;min-width:0;padding:11px;border-radius:11px;border:1px solid rgba(200,170,255,.25);background:rgba(168,85,247,.1);color:#efe7ff;font-size:14px">
+        <button class="kl-btn primary" style="flex:0 0 auto;width:auto;padding:11px 14px" data-x="send">Meydan Oku</button>
+      </div>
+      ${friendsHtml}
+      <div data-el="invites" style="margin-top:12px"></div>
+      <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+    </div></div>`;
+  const card = c.querySelector('.kl-card');
+  card.querySelector('[data-x="back"]').addEventListener('click', ()=>{ stopInviteListen(); showStart(); });
+  const sendBtn = card.querySelector('[data-x="send"]');
+  sendBtn.addEventListener('click', async ()=>{
+    const nick = card.querySelector('[data-el="nickin"]').value.trim();
+    if(!nick) return;
+    sendBtn.textContent='Aranıyor…';
+    let u=null; try{ u = await KO.resolveNick(nick); }catch(e){}
+    sendBtn.textContent='Meydan Oku';
+    if(!u){ flashCard('Bulunamadı', `"${esc(nick)}" bulunamadı. Nick birebir doğru olmalı ve rakip en az bir kez giriş yapmış olmalı.`); return; }
+    doSendInvite(u.uid, u.name);
+  });
+  card.querySelectorAll('[data-fuid]').forEach(el=>el.addEventListener('click', ()=>doSendInvite(el.dataset.fuid, el.dataset.fname)));
+  stopInviteListen();
+  _invOff = KO.listenInvites((list)=>{
+    const box = card.querySelector('[data-el="invites"]'); if(!box) return;
+    if(!list.length){ box.innerHTML = `<div style="font-size:12px;color:#8a7aae">📭 Bekleyen davet yok.</div>`; return; }
+    box.innerHTML = `<div style="font-size:12px;color:#ffe08a;margin-bottom:5px">📥 Gelen davetler</div>` +
+      list.map((inv,i)=>`<div class="kl-mode" data-acc="${i}"><span class="e">⚔️</span><div>${esc(inv.fromName||'Rakip')}<small>Seni Kelimecik'e çağırıyor · Kabul et</small></div></div>`).join('');
+    box.querySelectorAll('[data-acc]').forEach(el=>{ const inv=list[+el.dataset.acc]; el.addEventListener('click', ()=>doAcceptInvite(inv)); });
+  });
+}
+
+function doSendInvite(uid, name){
+  const c = G.root.querySelector('[data-el="content"]');
+  stopInviteListen();
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
+    <h3>⚔️ ${esc(name)}</h3>
+    <p>Davet gönderildi. Rakibin kabul etmesi bekleniyor…</p>
+    <div style="margin:6px auto 14px;width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:#ffd86b;border-radius:50%;animation:klspin 1s linear infinite"></div>
+    <button class="kl-btn warn" data-x="cancel">İptal</button></div></div>`;
+  let cancelled=false;
+  c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{ cancelled=true; try{ await KO.cancelInvite(); }catch(e){} showInviteScreen(); });
+  KO.sendInvite(uid, name, {
+    onSent: ()=>{},
+    onError: (msg)=>{ if(!cancelled) flashCard('Davet hatası', msg); },
+    onAccepted: ({role,gameId,oppName,seed})=>{ if(!cancelled) startOnline(role,gameId,oppName,seed); }
+  });
+}
+function doAcceptInvite(inv){
+  const c = G.root.querySelector('[data-el="content"]');
+  stopInviteListen();
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>⚔️ Katılıyorsun…</h3><p>${esc(inv.fromName||'Rakip')} ile oyun başlıyor</p></div></div>`;
+  KO.acceptInvite(inv, {
+    onError: (msg)=>flashCard('Kabul hatası', msg),
+    onMatched: ({role,gameId,oppName,seed})=>startOnline(role,gameId,oppName,seed)
+  });
+}
+
+function startOnline(role, gameId, oppName, seed, opts){
+  opts = opts || {};
+  G.online = true; G.ai = null; G.seri = null; stopTurnTimer(); G.role = role; G.gameId = gameId; G.oppName = oppName; G._over = false; G.oppPresent = true;
+  G.async = !!opts.async; G.turnHours = opts.turnHours || 0; G.deadline = opts.deadline || (opts.room && opts.room.deadline) || 0;
   G.bag = buildBagSeeded(seed);
-  const start = role === 'A' ? 0 : RACK_SIZE;     // A → [0..6], B → [7..13]
-  G.rackView = G.bag.slice(start, start+RACK_SIZE).map(t=>({letter:t.letter, points:t.points, joker:t.joker}));
-  G.state = {
-    board: Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)),
-    scores: { A:0, B:0 }, turn:'A', bagPointer:14, passStreak:0
-  };
+  if(opts.room){
+    // ── SÜRDÜRME: oda durumundan yükle ──
+    const room = opts.room;
+    let board; try{ board = JSON.parse(room.boardStr); }catch(e){ board = Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)); }
+    G.state = { board, scores: room.scores||{A:0,B:0}, turn: room.turn||'A', bagPointer: room.bagPointer!=null?room.bagPointer:14, passStreak: room.passStreak||0 };
+    const myRack = room.racks && room.racks[role];
+    G.rackView = Array.isArray(myRack)
+      ? myRack.map(t=>({letter:t.letter,points:t.points,joker:t.joker}))
+      : G.bag.slice(role==='A'?0:RACK_SIZE, (role==='A'?0:RACK_SIZE)+RACK_SIZE).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
+  } else {
+    const start = role === 'A' ? 0 : RACK_SIZE;     // A → [0..6], B → [7..13]
+    G.rackView = G.bag.slice(start, start+RACK_SIZE).map(t=>({letter:t.letter, points:t.points, joker:t.joker}));
+    G.state = { board: Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)), scores:{A:0,B:0}, turn:'A', bagPointer:14, passStreak:0 };
+    if(G.async && KO && KO.saveRack) KO.saveRack(G.rackView);   // sürdürme için rafımı kaydet
+  }
   G.who = role;
   G.names = { A: role==='A'?'Sen':oppName, B: role==='B'?'Sen':oppName };
   G.pending = []; G.selected = null;
-  G.surprises = buildSurprises(seed);     // online: seed'den aynı sürpriz kareler (iki taraf da aynı)
+  G.surprises = buildSurprises(seed);     // seed'den aynı sürpriz kareler
   G.bestWord = { text:'', score:0, who:'' };
+  G.lastMoveCells = new Set();
+  G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
   buildGameDOM();
   renderAll();
   if(KO) KO.subscribeRoom(applyRemote);
@@ -236,14 +517,26 @@ function isMyTurn(){ return G.online ? (G.state.turn === G.role) : true; }
 
 function applyRemote(room){
   if(!G || !G.online) return;
-  try{ if(room.boardStr) G.state.board = JSON.parse(room.boardStr); }catch(e){}
+  let newCells = [];
+  try{
+    if(room.boardStr){
+      const nb = JSON.parse(room.boardStr);
+      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){ if(nb[r][c] && !(G.state.board[r] && G.state.board[r][c])) newCells.push({r,c}); }
+      G.state.board = nb;
+    }
+  }catch(e){}
+  if(newCells.length) setLastMove(newCells);
   if(room.scores) G.state.scores = room.scores;
   if(room.turn) G.state.turn = room.turn;
   if(room.bagPointer != null) G.state.bagPointer = room.bagPointer;
   G.state.passStreak = room.passStreak || 0;
+  if(room.deadline != null) G.deadline = room.deadline;
   const oppRole = G.role==='A'?'B':'A';
-  const oppPres = room.presence ? room.presence[oppRole] : true;
-  if(oppPres === false && G.oppPresent && !G._over){ G.oppPresent=false; onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉'); return; }
+  // async oyunda rakibin ayrılması kayıp DEĞİL (oyun saatlerce sürer)
+  if(!G.async){
+    const oppPres = room.presence ? room.presence[oppRole] : true;
+    if(oppPres === false && G.oppPresent && !G._over){ G.oppPresent=false; onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉'); return; }
+  }
   if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti'); return; }
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
@@ -266,9 +559,12 @@ function onlineGameOver(msg){
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
   const verdict = mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔');
   if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
+  const stars = starsFor(mine);
+  saveRecordsIfBetter();
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3><p>${msg}</p>
+    <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
     <p>Sen: ${mine} · Rakip: ${opp}</p>
     <p style="color:#ffd86b;font-weight:700">${verdict}</p>${bw}
     <button class="kl-btn primary" data-x="menu">Menüye Dön</button></div>`;
@@ -291,15 +587,19 @@ function buildGameDOM(){
   c.innerHTML = `
     <div class="kl-scores">
       <div class="kl-score" data-el="scoreA"><div class="nm" data-el="nameA">Oyuncu 1</div><div class="pt" data-el="ptA">0</div></div>
-      <div class="kl-gem" title="Kelime Düellosu"></div>
+      <div class="kl-gem" title="Kelimecik"></div>
       <div class="kl-score" data-el="scoreB"><div class="nm" data-el="nameB">Oyuncu 2</div><div class="pt" data-el="ptB">0</div></div>
     </div>
+    <div class="kl-timerbar" data-el="timerbar"><div class="kl-timerfill" data-el="timerfill"></div></div>
     <div class="kl-status" data-el="status"></div>
-    <div class="kl-boardwrap"><div class="kl-board" data-el="board">${cells}</div></div>
-    <div class="kl-rackwrap"><div class="kl-rack" data-el="rack"></div></div>
+    <div class="kl-boardwrap"><button class="kl-zoom" data-act="zoom" title="Büyük/Uzak mod">🔍</button><div class="kl-board" data-el="board">${cells}</div></div>
+    <div class="kl-rackwrap">
+      <div class="kl-rack" data-el="rack"></div>
+      <button class="kl-shuffle" data-act="shuffle" title="Karıştır">🔀</button>
+    </div>
     <div class="kl-actions">
       <button class="kl-btn" data-act="recall">↩︎ Geri Al</button>
-      <button class="kl-btn warn" data-act="exchange">🔄 Değiştir</button>
+      <button class="kl-btn warn" data-act="exchange">🔄 Harf Değiş</button>
       <button class="kl-btn warn" data-act="pass">⏭️ Geç</button>
       <button class="kl-btn primary" data-act="submit">✓ Onayla</button>
     </div>`;
@@ -309,9 +609,30 @@ function buildGameDOM(){
     onCellTap(+cell.dataset.r, +cell.dataset.c);
   });
   c.querySelector('[data-act="recall"]').addEventListener('click', recallAll);
-  c.querySelector('[data-act="exchange"]').addEventListener('click', exchangeTiles);
+  c.querySelector('[data-act="exchange"]').addEventListener('click', toggleExchangeMode);
   c.querySelector('[data-act="pass"]').addEventListener('click', passTurn);
   c.querySelector('[data-act="submit"]').addEventListener('click', submitMove);
+  c.querySelector('[data-act="shuffle"]').addEventListener('click', shuffleRack);
+  c.querySelector('[data-act="zoom"]').addEventListener('click', toggleZoom);
+  applyZoom();
+}
+
+function toggleZoom(){
+  G.zoom = (G.zoom === 'large') ? 'fit' : 'large';
+  applyZoom();
+  if(G.zoom === 'large'){
+    // büyük modda ortala
+    const wrap = G.root.querySelector('.kl-boardwrap'), board = G.root.querySelector('[data-el="board"]');
+    setTimeout(()=>{ if(wrap&&board){ wrap.scrollLeft=(board.offsetWidth-wrap.clientWidth)/2; wrap.scrollTop=(board.offsetHeight-wrap.clientHeight)/2; } }, 30);
+  }
+}
+function applyZoom(){
+  const board = G.root.querySelector('[data-el="board"]');
+  const wrap = G.root.querySelector('.kl-boardwrap');
+  const btn = G.root.querySelector('[data-act="zoom"]');
+  if(!board || !wrap) return;
+  if(G.zoom === 'large'){ board.classList.add('large'); wrap.classList.add('large-scroll'); if(btn){ btn.textContent='🔭'; btn.title='Uzak (sığdır) mod'; } }
+  else { board.classList.remove('large'); wrap.classList.remove('large-scroll'); if(btn){ btn.textContent='🔍'; btn.title='Büyük mod'; } }
 }
 
 function renderAll(){ renderScores(); renderBoard(); renderRack(); if(G.pending && G.pending.length) previewMove(); }
@@ -355,8 +676,15 @@ function renderScores(){
   q('[data-el="scoreB"]').classList.toggle('active', ct==='B');
   if(G.online){
     const remain = Math.max(0, 100 - (G.state.bagPointer||0));
+    let dl = '';
+    if(G.async && G.deadline){
+      const left = G.deadline - Date.now();
+      dl = isMyTurn()
+        ? ` &nbsp; <span style="color:#ffd86b">⏳ ${left>0?fmtRemain(left)+' içinde oyna':'süren doldu!'}</span>`
+        : ` &nbsp; <span style="color:#bba8df">⏳ rakip: ${left>0?fmtRemain(left):'doldu'}</span>`;
+    }
     const pill = isMyTurn() ? `<span class="kl-turn me">▶ Senin sıran</span>` : `<span class="kl-turn opp">${G.oppName} oynuyor…</span>`;
-    q('[data-el="status"]').innerHTML = `${pill} &nbsp; Torbada ~${remain}`;
+    q('[data-el="status"]').innerHTML = `${pill} &nbsp; Torbada ~${remain}${dl}`;
   } else {
     q('[data-el="status"]').innerHTML = `<span class="kl-turn me">${G.names[G.who]}</span> &nbsp; Torbada ${G.state.bag.length} taş`;
   }
@@ -378,7 +706,8 @@ function renderBoard(){
       const letter = t.joker ? (t.assigned||'') : t.letter;
       const pts = t.joker ? 0 : (t.points!=null?t.points:letterPoints(t.letter));
       const div = document.createElement('div');
-      div.className = 'kl-tile'+(pend?' pending':'')+(t.joker?' joker':'');
+      const isLast = !pend && G.lastMoveCells && G.lastMoveCells.has(r+','+cc);
+      div.className = 'kl-tile'+(pend?' pending':'')+(t.joker?' joker':'')+(isLast?' lastmove':'');
       div.innerHTML = `<span class="l">${letter}</span><span class="p">${pts}</span>`;
       cell.appendChild(div);
     } else {
@@ -393,9 +722,10 @@ function renderRack(){
   rack.innerHTML = '';
   G.rackView.forEach((t, i)=>{
     const d = document.createElement('div');
-    d.className = 'kl-rtile'+(t.joker?' joker':'')+(G.selected===i?' sel':'');
+    const swapSel = G.exchangeMode && G.exchangeSel && G.exchangeSel.has(i);
+    d.className = 'kl-rtile'+(t.joker?' joker':'')+(!G.exchangeMode && G.selected===i?' sel':'')+(swapSel?' swap':'');
     d.innerHTML = t.joker ? `<span>★</span>` : `<span>${t.letter}</span><span class="p">${t.points}</span>`;
-    d.addEventListener('click', ()=>{ G.selected = (G.selected===i?null:i); renderRack(); });
+    d.addEventListener('pointerdown', (e)=> onRackPointerDown(e, i, t));
     rack.appendChild(d);
   });
   // boş yuvaları doldur (görsel hizalama)
@@ -404,10 +734,93 @@ function renderRack(){
   }
 }
 
+// ── Sürükle-bırak (pointer) + dokunma seçimi ──
+let _drag = null;
+function canPlayNow(){
+  if(G.online && !isMyTurn()) return false;
+  if(G.ai && (G.aiThinking || G.who!=='A')) return false;
+  return true;
+}
+function rackTileEl(i){ const rack=G.root.querySelector('[data-el="rack"]'); return rack ? rack.querySelectorAll('.kl-rtile:not(.empty)')[i] : null; }
+function onRackPointerDown(e, i, tile){
+  if(e.button!=null && e.button!==0) return;
+  _drag = { i, tile, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  window.addEventListener('pointermove', onRackPointerMove);
+  window.addEventListener('pointerup', onRackPointerUp);
+  window.addEventListener('pointercancel', onRackPointerUp);
+}
+function onRackPointerMove(e){
+  if(!_drag) return;
+  const dx=e.clientX-_drag.x0, dy=e.clientY-_drag.y0;
+  if(!_drag.moved){
+    if(Math.hypot(dx,dy) < 8) return;
+    if(G.exchangeMode || !canPlayNow()) return;   // değişim modunda / sıra değilse sürükleme yok
+    _drag.moved = true;
+    const g = document.createElement('div'); g.className='kl-drag-ghost';
+    g.textContent = _drag.tile.joker ? '★' : _drag.tile.letter;
+    G.root.appendChild(g); _drag.ghost = g;
+    const el = rackTileEl(_drag.i); if(el) el.classList.add('dragging');
+  }
+  if(!_drag.moved) return;
+  e.preventDefault();
+  if(_drag.ghost){ _drag.ghost.style.left=e.clientX+'px'; _drag.ghost.style.top=e.clientY+'px'; }
+  highlightDrop(e.clientX, e.clientY);
+}
+function onRackPointerUp(e){
+  window.removeEventListener('pointermove', onRackPointerMove);
+  window.removeEventListener('pointerup', onRackPointerUp);
+  window.removeEventListener('pointercancel', onRackPointerUp);
+  const d = _drag; _drag = null;
+  if(!d) return;
+  if(d.ghost) d.ghost.remove();
+  clearDropHighlight();
+  const el = rackTileEl(d.i); if(el) el.classList.remove('dragging');
+  if(d.moved){
+    const cell = cellUnder(e.clientX, e.clientY);
+    if(cell) dropTileOnCell(d.i, +cell.dataset.r, +cell.dataset.c);
+  } else {
+    // dokunma = seç / değişim seçimi
+    if(G.exchangeMode){
+      if(G.exchangeSel.has(d.i)) G.exchangeSel.delete(d.i); else G.exchangeSel.add(d.i);
+      updateExchangeBtn(); renderRack();
+    } else {
+      G.selected = (G.selected===d.i ? null : d.i); renderRack();
+    }
+  }
+}
+function cellUnder(x,y){
+  const el = document.elementFromPoint(x,y); if(!el || !el.closest) return null;
+  const cell = el.closest('.kl-cell');
+  if(!cell || !G.root.contains(cell)) return null;
+  const r=+cell.dataset.r, c=+cell.dataset.c;
+  if(G.state.board[r][c]) return null;
+  if(G.pending.find(p=>p.r===r&&p.c===c)) return null;
+  return cell;
+}
+let _dropHL = null;
+function highlightDrop(x,y){
+  const cell = cellUnder(x,y);
+  if(_dropHL && _dropHL!==cell) _dropHL.classList.remove('drop-target');
+  if(cell){ cell.classList.add('drop-target'); _dropHL=cell; } else _dropHL=null;
+}
+function clearDropHighlight(){ if(_dropHL){ _dropHL.classList.remove('drop-target'); _dropHL=null; } if(G&&G.root) G.root.querySelectorAll('.kl-cell.drop-target').forEach(c=>c.classList.remove('drop-target')); }
+function dropTileOnCell(i, r, c){
+  if(G.state.board[r][c]) return;
+  if(G.pending.find(p=>p.r===r&&p.c===c)) return;
+  G.selected = i;
+  onCellTap(r, c);   // yerleştirme + joker mantığı
+}
+function updateExchangeBtn(){
+  const b = G.root.querySelector('[data-act="exchange"]'); if(!b) return;
+  if(G.exchangeMode){ const n=G.exchangeSel?G.exchangeSel.size:0; b.textContent = n ? `✓ Değiştir (${n})` : '✓ Onayla'; }
+  else b.textContent = '🔄 Harf Değiş';
+}
+
 function onCellTap(r, c){
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
-  // doluysa (kalıcı) — bir şey yapma
-  if(G.state.board[r][c]) return;
+  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
+  // doluysa (kalıcı) — kelime anlamını göster
+  if(G.state.board[r][c]){ showWordMeaning(r, c); return; }
   const pendIdx = G.pending.findIndex(p=>p.r===r&&p.c===c);
   if(pendIdx>=0){
     // pending taşı rafa geri al
@@ -454,8 +867,17 @@ function flashStatus(msg){
 }
 
 function recallAll(){
+  if(G.exchangeMode){ exitExchangeMode(); flashStatus('Değişim iptal edildi'); return; }
   for(const p of G.pending) G.rackView.push({ letter:p.letter, points:p.points, joker:p.joker });
   G.pending=[]; G.selected=null; sndPick(); renderAll();
+}
+
+function shuffleRack(){
+  if(G.exchangeMode) return;
+  if(G.online && !isMyTurn()) return;
+  if(G.ai && (G.aiThinking || G.who!=='A')) return;
+  for(let i=G.rackView.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [G.rackView[i],G.rackView[j]]=[G.rackView[j],G.rackView[i]]; }
+  G.selected=null; sndPick(); haptic(10); renderRack();
 }
 
 // Sürpriz karelerin ödüllerini topla + tüket
@@ -477,6 +899,108 @@ function applySurprises(pending){
 function trackBest(words, who){
   for(const w of words) if(w.score > G.bestWord.score) G.bestWord = { text:w.text, score:w.score, who };
 }
+function setLastMove(cells){ G.lastMoveCells = new Set(cells.map(p=>p.r+','+p.c)); }
+// Cihaz sahibinin kişisel rekorları (en uzun + en yüksek kelime)
+function trackRecords(words){
+  if(!G.myRecord) G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
+  for(const w of words){
+    if(w.score > G.myRecord.best.score) G.myRecord.best = { text:w.text, score:w.score };
+    const len = (w.text||'').replace(/\\s/g,'').length;
+    if(len > G.myRecord.longest.len) G.myRecord.longest = { text:w.text, len };
+  }
+}
+// Oyun sonunda rekorları profile kaydet (giriş yapılmışsa, daha iyiyse)
+async function saveRecordsIfBetter(){
+  try{
+    const A = (window.Hero && window.Hero.Auth) ? window.Hero.Auth.getState() : null;
+    if(!A || !A.uid || !G.myRecord) return;
+    const prev = (A.profile && A.profile.kelimeRecords) || {};
+    const upd = {};
+    if(G.myRecord.best.score > (prev.bestScore||0)){ upd.bestWord = G.myRecord.best.text; upd.bestScore = G.myRecord.best.score; }
+    if(G.myRecord.longest.len > (prev.longestLen||0)){ upd.longestWord = G.myRecord.longest.text; upd.longestLen = G.myRecord.longest.len; }
+    if(!Object.keys(upd).length) return;
+    if(!KO) KO = await import('./kelime-online.js');
+    if(KO.saveKelimeRecords){ await KO.saveKelimeRecords(upd); if(A.profile){ A.profile.kelimeRecords = Object.assign({}, prev, upd); } }
+  }catch(e){}
+}
+// Oyuncunun toplam puanına göre yıldız (1–3)
+function starsFor(score){ return score>=220 ? 3 : score>=110 ? 2 : 1; }
+function starStr(n){ return '★★★'.slice(0,n) + '☆☆☆'.slice(0,3-n); }
+
+// ── TDK kelime anlamı ──
+const _tdkCache = {};
+async function fetchTDK(word){
+  const w = String(word||'').trim();
+  if(!w) return null;
+  if(_tdkCache[w] !== undefined) return _tdkCache[w];
+  try{
+    const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(w.toLocaleLowerCase('tr')));
+    const txt = await res.text();
+    const data = JSON.parse(txt.trim());
+    if(Array.isArray(data) && data[0] && data[0].anlamlarListe){
+      const anlam = data[0].anlamlarListe.map(a=>a.anlam).filter(Boolean);
+      _tdkCache[w] = anlam.length ? anlam : null;
+    } else { _tdkCache[w] = null; }
+  }catch(e){ _tdkCache[w] = undefined; return undefined; }   // undefined = ağ hatası (tekrar denenebilir)
+  return _tdkCache[w];
+}
+// Bir hücredeki taştan geçen yatay+dikey kelimeleri çöz
+function wordsThrough(r, c){
+  const B = G.state.board; if(!B[r][c]) return [];
+  const read=(dr,dc)=>{
+    let sr=r, sc=c;
+    while(sr-dr>=0 && sc-dc>=0 && B[sr-dr][sc-dc]){ sr-=dr; sc-=dc; }
+    let s=''; let rr=sr, cc=sc;
+    while(rr<SIZE && cc<SIZE && B[rr][cc]){ const t=B[rr][cc]; s += (t.joker?(t.assigned||'?'):t.letter); rr+=dr; cc+=dc; }
+    return s;
+  };
+  const out=[]; const h=read(0,1), v=read(1,0);
+  if(h.length>=2) out.push(h);
+  if(v.length>=2) out.push(v);
+  return out;
+}
+function showWordMeaning(r, c){
+  const words = wordsThrough(r, c);
+  if(!words.length) return;
+  const cEl = G.root.querySelector('[data-el="content"]');
+  const ov = document.createElement('div'); ov.className='kl-overlay';
+  ov.innerHTML = `<div class="kl-card"><h3>📖 ${esc(words[0])}</h3>
+    <div data-el="mbody" style="font-size:13px;color:#d9caf2;line-height:1.5;text-align:left;max-height:46vh;overflow:auto">Anlam yükleniyor…</div>
+    ${words.length>1?`<p style="font-size:11px;color:#bba8df;margin-top:8px">Diğer kelime: ${esc(words[1])}</p>`:''}
+    <button class="kl-btn primary" style="margin-top:14px" data-x="ok">Kapat</button></div>`;
+  cEl.appendChild(ov);
+  ov.querySelector('[data-x="ok"]').addEventListener('click', ()=>ov.remove());
+  const body = ov.querySelector('[data-el="mbody"]');
+  fetchTDK(words[0]).then(an=>{
+    if(an === undefined){ body.textContent='Anlam alınamadı (bağlantı). Tekrar dene.'; return; }
+    if(!an){ body.innerHTML = `<span style="color:#bba8df">TDK sözlüğünde anlam bulunamadı.</span>`; return; }
+    body.innerHTML = an.map((a,i)=>`<div style="padding:3px 0"><b style="color:#ffe08a">${i+1}.</b> ${esc(a)}</div>`).join('');
+  });
+}
+
+// ── Harf tablosu (torbada/görünmeyen kalan harfler) ──
+function showLetterTable(){
+  if(!G || !G.state) return;
+  const total = {}; for(const L in LETTERS) total[L] = LETTERS[L].n;
+  const used = {};
+  const bump=(L)=>{ if(L) used[L]=(used[L]||0)+1; };
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){ const t=G.state.board[r][c]; if(t && !t.joker) bump(t.letter); }
+  for(const t of G.rackView){ if(t && !t.joker) bump(t.letter); }
+  for(const p of G.pending){ if(p && !p.joker) bump(p.letter); }
+  const cEl = G.root.querySelector('[data-el="content"]');
+  const ov = document.createElement('div'); ov.className='kl-overlay';
+  const cells = Object.keys(total).map(L=>{
+    const rem = Math.max(0, total[L] - (used[L]||0));
+    return `<div class="kl-lt${rem===0?' zero':''}"><div class="ltl">${L}</div><div class="ltn">${rem}/${total[L]}</div><div class="ltp">${LETTERS[L].p}p</div></div>`;
+  }).join('');
+  const jokerRem = Math.max(0, JOKER_COUNT - G.rackView.filter(t=>t.joker).length - G.pending.filter(p=>p.joker).length);
+  ov.innerHTML = `<div class="kl-card" style="max-width:360px"><h3>📊 Harf Tablosu</h3>
+    <p style="font-size:11px;color:#bba8df">Henüz görünmeyen (torbada + rakipte olabilecek) harf sayısı</p>
+    <div class="kl-lt-grid">${cells}<div class="kl-lt"><div class="ltl">★</div><div class="ltn">${jokerRem}/${JOKER_COUNT}</div><div class="ltp">joker</div></div></div>
+    <button class="kl-btn primary" style="margin-top:14px" data-x="ok">Kapat</button></div>`;
+  cEl.appendChild(ov);
+  ov.querySelector('[data-x="ok"]').addEventListener('click', ()=>ov.remove());
+}
 function celebrate(moveScore, bingo, hits){
   scorePopup('+'+moveScore);
   haptic(bingo ? [30,40,30,40,70] : 20);
@@ -487,6 +1011,7 @@ function celebrate(moveScore, bingo, hits){
 
 function submitMove(){
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
+  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   const res = validatePlacement(G.state.board, G.pending);
   if(!res.ok){ sndErr(); haptic(60); flashStatus('✗ '+res.error); return; }
   const surp = applySurprises(G.pending);
@@ -494,6 +1019,8 @@ function submitMove(){
   const who = currentTurn();
   commitMove(G.state, G.pending, moveScore, who);
   trackBest(res.words, who);
+  trackRecords(res.words);          // cihaz sahibinin kişisel rekorları
+  setLastMove(G.pending);           // son kelime renklendirme
   celebrate(moveScore, !!res.bingo, surp.hits);
   const need = RACK_SIZE - G.rackView.length + surp.extraTiles;
   if(G.online){
@@ -508,16 +1035,132 @@ function submitMove(){
       bagPointer: G.state.bagPointer, passStreak:0,
       lastMove: { who:G.role, words:res.words, score:moveScore, bingo:!!res.bingo, surp:surp.hits.map(h=>h.label), ts:Date.now() }
     };
+    if(G.async) patch['racks/'+G.role] = G.rackView;   // sürdürme için rafımı kaydet
     G.pending=[]; G.selected=null;
     if(KO) KO.pushMove(patch);
     renderAll();
     return;
   }
-  // 2 oyuncu: rafı doldur, kutlama oynar, sonra sıra geçiş ekranı (kutlama modalın üstünde görünür)
+  // insan hamlesi bitti
   G.state.racks[who] = G.rackView.concat(drawFromBag(G.state.bag, need));
+  G.rackView = G.state.racks.A;     // AI modunda insanın rafı = A
   G.pending=[]; G.selected=null;
+  G.state.passStreak = 0;
   renderAll();
-  nextTurn();
+  if(G.ai){
+    if(checkGameOver()) return;
+    stopTurnTimer();
+    G.who = 'B'; G.aiThinking = true; renderScores();
+    flashStatus('🤖 Yapay zekâ düşünüyor…');
+    setTimeout(aiTurn, 850);
+  } else {
+    nextTurn();   // 2 oyuncu: sıra geçişi ekranı
+  }
+}
+
+// ── Süreli Seri mod sayacı ──
+function startTurnTimer(){
+  stopTurnTimer();
+  if(!G || !G.seri || G._over) return;
+  G.timeLeft = G.seri.turnTime;
+  updateTimerUI();
+  G.timer = setInterval(()=>{
+    if(!G || !G.seri){ stopTurnTimer(); return; }
+    G.timeLeft--;
+    if(G.who==='A' && !G.aiThinking && G.timeLeft>0 && G.timeLeft<=5) tone(940,0.05,'square',0.05);
+    updateTimerUI();
+    if(G.timeLeft<=0){ stopTurnTimer(); onTimeUp(); }
+  }, 1000);
+}
+function stopTurnTimer(){
+  if(G && G.timer){ clearInterval(G.timer); G.timer=null; }
+  const bar = G && G.root && G.root.querySelector('[data-el="timerbar"]'); if(bar) bar.classList.remove('on');
+}
+function updateTimerUI(){
+  if(!G || !G.root) return;
+  const bar = G.root.querySelector('[data-el="timerbar"]'), fill = G.root.querySelector('[data-el="timerfill"]');
+  if(!bar || !fill) return;
+  if(!G.seri || G.who!=='A' || G.aiThinking){ bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  fill.style.width = Math.max(0,(G.timeLeft/G.seri.turnTime)*100)+'%';
+  fill.classList.toggle('low', G.timeLeft<=5);
+}
+function onTimeUp(){
+  if(!G || !G.seri || G.who!=='A' || G._over) return;
+  sndErr(); flashStatus('⏱️ Süre doldu — pas!');
+  if(G.exchangeMode) exitExchangeMode();
+  if(G.pending.length){
+    const res = validatePlacement(G.state.board, G.pending);
+    if(res.ok){ submitMove(); return; }   // geçerli yerleşim → otomatik onayla
+    recallAll();                           // değilse taşları rafa geri al
+  }
+  passTurn();                              // pas → AI oynar → sayaç yeniden başlar
+}
+
+// Yapay zekânın hamlesi
+function aiTurn(){
+  if(!G.ai || G._over) return;
+  let mv = null;
+  try{ mv = KA.findBestMove(G.state.board, G.state.racks.B, G.ai.difficulty); }catch(e){ mv = null; }
+  if(mv && mv.pending && mv.pending.length){
+    const surp = applySurprises(mv.pending);
+    const moveScore = mv.score * surp.doubleMul + surp.extraPoints;
+    commitMove(G.state, mv.pending, moveScore, 'B');
+    trackBest(mv.words, 'B');
+    setLastMove(mv.pending);          // AI'ın son kelimesini renklendir
+    // AI rafını doldur
+    const need = RACK_SIZE - G.state.racks.B.length;
+    G.state.racks.B = G.state.racks.B.concat(drawFromBag(G.state.bag, need));
+    G.state.passStreak = 0;
+    G.who = 'A'; G.aiThinking = false;
+    G.rackView = G.state.racks.A;
+    renderAll();
+    celebrate(moveScore, !!(mv.words && mv.pending.length===RACK_SIZE), surp.hits);
+    flashStatus('🤖 ' + mv.words.map(w=>w.text).join(', ') + ' (+' + moveScore + ')');
+    setTimeout(()=>{ if(!checkGameOver() && G.seri) startTurnTimer(); }, 400);
+  } else {
+    // AI hamle bulamadı → pas
+    G.state.passStreak = (G.state.passStreak||0) + 1;
+    G.who = 'A'; G.aiThinking = false;
+    G.rackView = G.state.racks.A;
+    renderAll();
+    flashStatus('🤖 Yapay zekâ pas geçti');
+    if(!checkGameOver() && G.seri) startTurnTimer();
+  }
+}
+
+// AI modunda oyun sonu kontrolü
+function checkGameOver(){
+  if(!G.ai) return false;
+  const bagEmpty = G.state.bag.length === 0;
+  const someoneOut = G.state.racks.A.length === 0 || G.state.racks.B.length === 0;
+  if((bagEmpty && someoneOut) || (G.state.passStreak||0) >= 4){
+    endGameAI();
+    return true;
+  }
+  return false;
+}
+
+function endGameAI(){
+  if(G._over) return; G._over = true;
+  stopTurnTimer();
+  const c = G.root.querySelector('[data-el="content"]');
+  const a=G.state.scores.A, b=G.state.scores.B;
+  const verdict = a===b ? 'Berabere!' : (a>b ? 'Kazandın! 🎉' : 'Yapay zekâ kazandı 🤖');
+  if(a>b){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
+  const stars = starsFor(a);
+  saveRecordsIfBetter();
+  const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
+  const ov=document.createElement('div'); ov.className='kl-overlay';
+  ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
+    <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
+    <p>Sen: ${a} &nbsp;·&nbsp; ${G.names.B}: ${b}</p>
+    <p style="color:#ffd86b;font-weight:700">${verdict}</p>${bw}
+    <button class="kl-btn primary" data-x="again">Yeni Oyun</button>
+    <button class="kl-btn" style="margin-top:8px" data-x="menu">Menü</button></div>`;
+  c.appendChild(ov);
+  ov.querySelector('[data-x="again"]').addEventListener('click',()=>{ ov.remove(); G._over=false; startAI(G.ai.difficulty); });
+  ov.querySelector('[data-x="menu"]').addEventListener('click',()=>{ ov.remove(); G._over=false; G.ai=null; showStart(); });
 }
 
 function showMoveResult(res, cb){
@@ -534,6 +1177,7 @@ function showMoveResult(res, cb){
 
 function passTurn(){
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
+  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   if(G.pending.length>0){ flashStatus('Önce taşları geri al'); return; }
   if(G.online){
     const ps = (G.state.passStreak||0)+1;
@@ -547,30 +1191,60 @@ function passTurn(){
     else flashStatus('Pas geçtin · rakip bekleniyor');
     return;
   }
+  if(G.ai){
+    G.state.passStreak = (G.state.passStreak||0)+1;
+    if(checkGameOver()) return;
+    stopTurnTimer();
+    G.who='B'; G.aiThinking=true; renderScores();
+    flashStatus('🤖 Yapay zekâ düşünüyor…');
+    setTimeout(aiTurn, 700);
+    return;
+  }
   G.state.passStreak++;
   if(G.state.passStreak>=4){ endGame(); return; }
   nextTurn();
 }
 
-function exchangeTiles(){
+function toggleExchangeMode(){
   if(G.online){ flashStatus('Çevrimiçi modda harf değişimi kapalı'); return; }
-  if(G.pending.length>0){ flashStatus('Önce taşları geri al'); return; }
-  if(G.state.bag.length===0){ flashStatus('Torba boş, değişim yok'); return; }
-  // basit: seçili taşı değiştir; seçili yoksa tümünü
-  let toSwap;
-  if(G.selected!=null){ toSwap=[G.selected]; }
-  else { flashStatus('Değiştirilecek harfi seç (yoksa Geç kullan)'); return; }
-  const removed = toSwap.map(i=>G.rackView[i]);
-  G.rackView = G.rackView.filter((_,i)=>!toSwap.includes(i));
+  if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
+  if(!G.exchangeMode){
+    if(G.pending.length>0){ flashStatus('Önce yerleştirdiğin taşları geri al'); return; }
+    if(G.state.bag.length===0){ flashStatus('Torba boş, değişim yok'); return; }
+    G.exchangeMode=true; G.exchangeSel=new Set(); G.selected=null;
+    updateExchangeBtn(); renderRack();
+    flashStatus('Değiştirmek istediğin harflere dokun, sonra ✓ Onayla');
+    return;
+  }
+  // değişimi onayla
+  const idxs = Array.from(G.exchangeSel).sort((a,b)=>a-b);
+  if(!idxs.length){ exitExchangeMode(); flashStatus('Harf seçilmedi'); return; }
+  performExchange(idxs);
+}
+
+function exitExchangeMode(){ G.exchangeMode=false; G.exchangeSel=null; updateExchangeBtn(); renderRack(); }
+
+function performExchange(idxs){
+  const removed = idxs.map(i=>G.rackView[i]);
+  G.rackView = G.rackView.filter((_,i)=>!idxs.includes(i));
   const fresh = drawFromBag(G.state.bag, removed.length);
   G.rackView = G.rackView.concat(fresh);
   // çıkarılanları torbaya geri at + karıştır
   for(const t of removed) G.state.bag.unshift(t);
   for(let i=G.state.bag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [G.state.bag[i],G.state.bag[j]]=[G.state.bag[j],G.state.bag[i]]; }
   G.state.racks[G.who]=G.rackView.slice();
-  G.selected=null; sndPick();
-  G.state.passStreak=0;
-  nextTurn();
+  G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
+  G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
+  if(G.ai){
+    G.rackView = G.state.racks.A;
+    stopTurnTimer();
+    G.who='B'; G.aiThinking=true; renderAll(); renderScores();
+    flashStatus('🔄 '+removed.length+' harf değişti · 🤖 düşünüyor…');
+    setTimeout(aiTurn, 700);
+    return;
+  }
+  renderAll();
+  nextTurn();   // 2 oyuncu: sıra karşıya geçer
 }
 
 function nextTurn(){
@@ -590,9 +1264,11 @@ function endGame(){
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
   if(a!==b){ sndWin(); confetti(); } else sndLose();
+  const stars = starsFor(Math.max(a,b));
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
+    <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
     <p>${G.names.A}: ${a} &nbsp;·&nbsp; ${G.names.B}: ${b}</p>
     <p style="color:#ffd86b;font-weight:700">${win}</p>${bw}
     <button class="kl-btn primary" data-x="again">Yeni Oyun</button>
