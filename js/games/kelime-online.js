@@ -247,9 +247,15 @@ export async function leaveRoom(){
 export async function rejoinPresence(){
   if(!S || S.async || !S.roomRef) return;
   try{
-    await fdb.update(S.roomRef, { ['presence/'+S.role]: true });
+    await fdb.update(S.roomRef, { ['presence/'+S.role]: true, ['lastSeen/'+S.role]: Date.now() });
     try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${S.gameId}/presence/${S.role}`)).set(false); }catch(e){}
   }catch(e){}
+}
+
+// Kalp atışı: anlık oyunda "buradayım" zaman damgası. Rakip yalnız uzun sessizlikte ayrılmış sayılır.
+export async function heartbeat(){
+  if(!S || S.async || !S.roomRef) return;
+  try{ await fdb.update(S.roomRef, { ['lastSeen/'+S.role]: Date.now() }); }catch(e){}
 }
 
 export function getSession(){ return S; }
