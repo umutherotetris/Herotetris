@@ -9,6 +9,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
+import * as Resume from './resume.js';
 import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES, isHeroUnlocked, unlockText } from './tetris-heroes.js';
 import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
 import Sound from './tetris-audio.js';
@@ -42,6 +43,39 @@ const MODES = {
 };
 let SELECTED_MODE = (function(){ try{ return localStorage.getItem('hero_tetris_mode') || 'solo'; }catch(e){ return 'solo'; } })();
 let ADVENTURE_WORLD = null;   // Macera modunda seçili dünya id'si
+let RESUME_DATA = null;       // "kaldığın yerden devam" anlık görüntüsü (restore sırasında dolu)
+const RESUMABLE_MODES = ['solo','survival','sprint','zen','adventure'];
+
+// Tek-kişilik oyunda durumu kaydet (ai/versus hariç)
+function saveTetrisResume(){
+  if(!G || G.over || !G.board) return;
+  if(!RESUMABLE_MODES.includes(G.mode)) return;
+  try{
+    Resume.saveSnapshot('tetris', {
+      mode: G.mode, heroKey: SELECTED_HERO, theme: G.theme || SELECTED_THEME, advWorld: ADVENTURE_WORLD,
+      board: G.board, bag: G.bag, queue: G.queue, cur: G.cur,
+      holdType: G.holdType, canHold: G.canHold,
+      score: G.score, level: G.level, lines: G.lines, tetrisCount: G.tetrisCount,
+      charge: G.charge, powerReady: G.powerReady, gems: G.gems,
+      elapsed: G.elapsed, survStep: G.survStep,
+      combo: G.combo, b2b: G.b2b, maxComboThisGame: G.maxComboThisGame,
+      speedMult: G.speedMult, baseInterval: G.baseInterval, dropInterval: G.dropInterval,
+      shieldUsed: G.shieldUsed
+    });
+  }catch(e){}
+}
+// Kaydı yükleyip oyunu o moddan başlat
+function resumeTetris(){
+  const snap = Resume.loadSnapshot('tetris');
+  if(!snap) return;
+  const d = snap.data;
+  SELECTED_MODE = d.mode || 'solo';
+  if(d.heroKey) SELECTED_HERO = d.heroKey;
+  if(d.theme) SELECTED_THEME = d.theme;
+  ADVENTURE_WORLD = d.advWorld || null;
+  RESUME_DATA = d;
+  launchGame();
+}
 let AI_DIFFICULTY = 'normal'; // AI rakip zorluğu: easy/normal/hard
 const SPRINT_TARGET = 40;
 const LOCK_DELAY = 500;        // taş yere değince kilitlenmeden önce bekleme (ms)
@@ -951,6 +985,7 @@ function buildHeroSelect(onPick){
         <button class="t-icon" data-act="sound" title="Ses">${Sound.enabled ? '🔊' : '🔇'}</button>
       </div>
     </div>
+    ${(function(){ const s=Resume.loadSnapshot('tetris'); if(!s) return ''; const d=s.data; const mn=(MODES[d.mode]&&MODES[d.mode].label)||d.mode; return `<button class="hs-resume" data-act="resume">↩️ KALDIĞIN YERDEN DEVAM<small>${mn} · ${d.score||0} puan · ${Resume.fmtAge(s.age)}</small></button>`; })()}
     <div class="hs-modes">${modeBtns}</div>
     <div class="hs-modedesc" id="hsModeDesc"></div>
     <div class="hs-label">🎨 TAŞ TEMASI</div>
@@ -1021,6 +1056,8 @@ function buildHeroSelect(onPick){
     if(G) G.colorBlind = on;   // oyun açıksa anında uygula
   });
   ov.querySelector('[data-act="play"]').addEventListener('click', () => { ov.remove(); onPick(); });
+  const rb = ov.querySelector('[data-act="resume"]');
+  if(rb) rb.addEventListener('click', () => { ov.remove(); resumeTetris(); });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => { ov.remove(); });
   return ov;
 }
@@ -1539,6 +1576,7 @@ async function adventureWin(){
 async function endGame(isWin){
   if(G.over) return;
   G.over = true;
+  try{ Resume.clearSnapshot('tetris'); }catch(e){}
   cancelAnimationFrame(G.raf);
   try{ Sound.stopMusic(); }catch(e){}
   // Versus/AI: rakibe öldüğünü bildir
@@ -1909,6 +1947,7 @@ function togglePause(on){
 }
 
 function startGame(){
+  if(!RESUME_DATA && RESUMABLE_MODES.includes(SELECTED_MODE)) Resume.clearSnapshot('tetris');   // taze oyun → eski devam kaydını sil
   G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
   G.bag = newBag();
   G.queue = [];
@@ -1996,6 +2035,30 @@ function startGame(){
   G.el.gameover.classList.remove('show');
   G.el.pause.classList.remove('show');
   cancelAnimationFrame(G.raf);
+
+  // ── Kaldığın yerden devam: dinamik durumu geri yükle ──
+  if(RESUME_DATA){
+    const d = RESUME_DATA; RESUME_DATA = null;
+    try{
+      if(d.board) G.board = d.board;
+      if(d.bag) G.bag = d.bag;
+      if(d.queue) G.queue = d.queue;
+      if(d.cur) G.cur = d.cur;
+      G.holdType = d.holdType || null; G.canHold = d.canHold !== false;
+      G.score = d.score||0; G.level = d.level||1; G.lines = d.lines||0; G.tetrisCount = d.tetrisCount||0;
+      G.charge = d.charge||0; G.powerReady = !!d.powerReady;
+      if(Array.isArray(d.gems)) G.gems = d.gems;
+      G.elapsed = d.elapsed||0; G.survStep = d.survStep||0;
+      G.combo = d.combo||0; G.b2b = !!d.b2b; G.maxComboThisGame = d.maxComboThisGame||0;
+      if(d.speedMult) G.speedMult = d.speedMult;
+      if(d.baseInterval) G.baseInterval = d.baseInterval;
+      G.dropInterval = d.dropInterval || Math.round(G.baseInterval * G.speedMult);
+      G.shieldUsed = !!d.shieldUsed;
+      G.displayScore = G.score; G.visualY = G.cur ? G.cur.y : 0;
+      updateHUD(); drawSide(); updateHeroBar(); updatePowerBtn(); updateGemBtn(); updateModeUI();
+    }catch(e){ console.warn('[tetris] resume override', e); }
+  }
+
   try{ Sound.startMusic(); }catch(e){}
   startCountdown();
   G.raf = requestAnimationFrame(loop);
@@ -2027,10 +2090,12 @@ function restart(){
 
 function close(){
   if(!G) return;
+  try{ saveTetrisResume(); }catch(e){}
   cancelAnimationFrame(G.raf);
   try{ Sound.stopMusic(); }catch(e){}
   window.removeEventListener('keydown', G.keyHandler);
   window.removeEventListener('resize', G.resizeHandler);
+  if(G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} }
   if(G.versus && !G.ai){ try{ MP.close(); }catch(e){} }
   G.root.remove();
   G = null;
@@ -2066,6 +2131,8 @@ function launchGame(){
   };
   G.resizeHandler = () => { if(G){ fitCanvas(); drawBoard(); } };
   window.addEventListener('resize', G.resizeHandler);
+  G.vis = () => { if(document.hidden){ try{ saveTetrisResume(); }catch(e){} } };
+  document.addEventListener('visibilitychange', G.vis);
   bindControls();
   Sound.resume();   // ses bağlamını başlat (OYNA dokunuşuyla)
   startGame();
@@ -2700,6 +2767,14 @@ function injectCSS(){
   font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: 2px;
   border-radius: var(--r-lg); box-shadow: var(--glow-cyan);
 }
+.hs-resume{
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  width:100%; padding:12px; margin:4px 0 10px;
+  background:linear-gradient(135deg,#ffd86b,#e3a82f); color:#2a1c00;
+  font-family:var(--font-display); font-weight:800; font-size:14px; letter-spacing:1px;
+  border-radius:var(--r-lg); box-shadow:0 4px 16px rgba(240,177,50,.45);
+}
+.hs-resume small{ font-size:11px; font-weight:600; letter-spacing:0; opacity:.8; }
 
 /* Oyun içi kahraman rozeti */
 .t-herobadge{ display: inline-block; font-size: 15px; margin-left: 4px; padding: 0 4px; border-left: 2px solid var(--cyan); }
