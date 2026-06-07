@@ -7,6 +7,7 @@
 import Store from '../store.js';
 import Auth from '../auth.js';
 import { newGame, legalMoves, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, PIECE_NAMES } from './chess-engine.js';
+import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
 import { ChessMP } from './chess-mp.js';
@@ -215,6 +216,23 @@ export function openChess(){
   });
 
   G = { root, mode:null };
+  G.vis = ()=>{ if(document.hidden){ try{ saveChessResume(); }catch(e){} } };
+  document.addEventListener('visibilitychange', G.vis);
+
+  // Kaldığın yerden devam teklifi (AI oyunu yarıda kaldıysa)
+  const rsnap = Resume.loadSnapshot('chess');
+  if(rsnap){
+    const d = rsnap.data;
+    const sub = root.querySelector('.cm-sub');
+    const btn = document.createElement('button');
+    btn.className = 'cm-card';
+    btn.style.cssText = 'border:1px solid #f0b13266;background:linear-gradient(135deg,rgba(240,177,50,.18),rgba(240,177,50,.05))';
+    const moveN = Math.ceil((d.moveHistory ? d.moveHistory.length : 0) / 2);
+    btn.innerHTML = `<span class="cm-ic">↩️</span><div class="cm-name">KALDIĞIN YERDEN DEVAM</div><div class="cm-desc">Yapay Zekâ · ${moveN}. hamle · ${Resume.fmtAge(rsnap.age)}</div>`;
+    btn.addEventListener('click', ()=>{ const r = Resume.loadSnapshot('chess'); if(r) resumeChess(root, r.data); });
+    const cards = root.querySelector('.cm-cards');
+    if(cards) cards.insertBefore(btn, cards.firstChild);
+  }
 }
 
 // Çevrimiçi lobi: oda kur veya katıl
@@ -440,6 +458,8 @@ function showAISetup(root){
 }
 
 function closeAll(){
+  try{ saveChessResume(); }catch(e){}
+  try{ if(G && G.vis) document.removeEventListener('visibilitychange', G.vis); }catch(e){}
   try{ if(G && G.online) ChessMP.close(); }catch(e){}
   try{ stopClockTick(); }catch(e){}
   if(G && G.root){ G.root.remove(); }
@@ -478,6 +498,20 @@ function startGame(root, mode, opts){
   // AI modunda tahta sabit (insan rengine göre), 2 oyuncu modunda (autoFlip açıksa) döner
   G.flip = ((mode === 'ai' || mode === 'online') && G.playerColor === 'b');
   G.animating = false;
+
+  if(mode === 'ai' && !opts.restore) Resume.clearSnapshot('chess');   // taze AI oyunu → eski devam kaydını sil
+  // ── Kaldığın yerden devam: durumu geri yükle ──
+  if(opts.restore){
+    const r = opts.restore;
+    try{
+      if(r.state) G.state = r.state;
+      G.moveHistory = r.moveHistory || [];
+      G.posHistory = r.posHistory || [ positionKey(G.state) ];
+      G.captured = r.captured || { w:[], b:[] };
+      G.lastMove = r.lastMove || null;
+      G._restoreClock = r.clock || null;
+    }catch(e){}
+  }
 
   // Çevrimiçi mod: hamle senkronizasyonu
   if(mode === 'online'){
@@ -580,10 +614,33 @@ function startGame(root, mode, opts){
   // Süre kontrolü etkinse saati kur (misafir hariç — o config mesajıyla kurar)
   if(G.timeControl > 0 && !(mode === 'online' && G.playerColor === 'b')){
     setupClock(G.timeControl);
+    if(G._restoreClock){ G.clock = { w:G._restoreClock.w, b:G._restoreClock.b }; G._restoreClock=null; try{ updateClockDisplay(); }catch(e){} }
   }
+  if(opts.restore){ try{ updateCaptured(); draw(); }catch(e){} }
 
   // AI beyazsa ilk hamleyi AI yapar
   maybeAIMove();
+}
+
+// ── Satranç: kaldığın yerden devam (yalnız AI modu) ──
+function saveChessResume(){
+  if(!G || G.mode !== 'ai' || G.gameEnded || !G.state) return;
+  try{
+    Resume.saveSnapshot('chess', {
+      aiDifficulty: G.aiDifficulty, playerColor: G.playerColor, timeControl: G.timeControl || 0,
+      state: G.state, moveHistory: G.moveHistory, posHistory: G.posHistory,
+      captured: G.captured, lastMove: G.lastMove,
+      clock: G.clock ? { w: G.clock.w, b: G.clock.b } : null
+    });
+  }catch(e){}
+}
+function resumeChess(root, data){
+  startGame(root, 'ai', {
+    difficulty: data.aiDifficulty || 'medium',
+    playerColor: data.playerColor || 'w',
+    time: data.timeControl || 0,
+    restore: data
+  });
 }
 
 // AI'nın sırası mı? Öyleyse hamle yaptır (UI'yi bloklamadan)
@@ -1089,22 +1146,22 @@ function applyAndContinue(mv, isCapture){
   } else if(status === 'stalemate'){
     updateStatus('🤝 PAT — BERABERE', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true;
+    G.gameEnded = true; Resume.clearSnapshot('chess');
     return;
   } else if(status === 'insufficient'){
     updateStatus('🤝 BERABERE — Yetersiz materyal', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true;
+    G.gameEnded = true; Resume.clearSnapshot('chess');
     return;
   } else if(status === 'fiftymove'){
     updateStatus('🤝 BERABERE — 50 hamle kuralı', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true;
+    G.gameEnded = true; Resume.clearSnapshot('chess');
     return;
   } else if(repeats >= 3){
     updateStatus('🤝 BERABERE — 3 hamle tekrarı', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true;
+    G.gameEnded = true; Resume.clearSnapshot('chess');
     return;
   } else if(status === 'check'){
     updateStatus('⚠️ ŞAH!', 'check');
@@ -1120,10 +1177,12 @@ function applyAndContinue(mv, isCapture){
   }
 
   // AI modu: oyuncu hamle yaptıysa AI yanıt versin
+  saveChessResume();
   maybeAIMove();
 }
 
 async function onGameEnd(winner){
+  Resume.clearSnapshot('chess');
   // kaju ödülü (kazanan oyuncu varsa)
   try{ await Store.addKaju(60, 'chess'); }catch(e){}
 }
