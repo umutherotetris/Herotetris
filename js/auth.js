@@ -47,6 +47,7 @@ function emit(){ const s = getState(); listeners.forEach(fn => { try{ fn(s); }ca
 function statusOf(user){ if(!user) return 'offline'; return user.isAnonymous ? 'anon' : 'google'; }
 
 function deriveName(user, profile){
+  if(profile && profile.nick) return String(profile.nick);
   if(profile && (profile.name || profile.displayName)) return String(profile.name || profile.displayName);
   if(user && !user.isAnonymous && user.displayName) return user.displayName;
   return 'Misafir Oyuncu';
@@ -71,6 +72,8 @@ async function hydrate(user){
   }
   state.displayName = deriveName(user, state.profile);
   emit();
+  // Google kullanıcısının nick'i yoksa arka planda benzersiz bir nick üret (engellemeden)
+  if(user && !user.isAnonymous && !(state.profile && state.profile.nick)){ ensureNick(); }
 }
 
 onAuthStateChanged(auth, (user) => { hydrate(user); });
@@ -136,5 +139,90 @@ export const fdb = { ref, get, set, update, onValue, push, remove, runTransactio
 
 boot();
 
-export const Auth = { subscribe, getState, loginGoogle, logout, db, auth, ready };
+// ════════════════════════════════════════════════════════════════
+//  NICK — portal-geneli BENZERSİZ takma ad
+//  Kayıt defteri: nicks/{anahtar} = { uid, nick, ts }   (anahtar = TR-duyarlı küçük harf)
+//  users/{uid}/nick = tek doğruluk kaynağı.
+//  Atomik claim = runTransaction (yalnız boşsa veya zaten sahibiyse yazılır) → benzersizlik + spoof koruması.
+// ════════════════════════════════════════════════════════════════
+const NICK_MIN = 3, NICK_MAX = 16;
+const NICK_RE = /^[A-Za-z0-9_ğüşıöçĞÜŞİÖÇ]+$/;
+function nickKey(nick){ return String(nick||'').replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase(); }
+
+export function validateNick(nick){
+  const clean = String(nick||'').trim();
+  if(clean.length < NICK_MIN) return { ok:false, error:`En az ${NICK_MIN} karakter olmalı` };
+  if(clean.length > NICK_MAX) return { ok:false, error:`En fazla ${NICK_MAX} karakter olabilir` };
+  if(!NICK_RE.test(clean)) return { ok:false, error:'Sadece harf, rakam ve _ (boşluk/işaret yok)' };
+  return { ok:true, clean };
+}
+
+// Nick boşta mı? { available, clean } | { available:false, error }
+export async function checkNick(nick){
+  const v = validateNick(nick); if(!v.ok) return { available:false, error:v.error };
+  try{
+    const snap = await get(ref(db, 'nicks/' + nickKey(v.clean)));
+    if(snap.exists() && snap.val().uid !== state.uid) return { available:false, error:'Bu nick alınmış' };
+    return { available:true, clean:v.clean };
+  }catch(e){ return { available:false, error:'Şu an kontrol edilemedi' }; }
+}
+
+// Nick al/değiştir — ATOMİK. { ok, nick } | { ok:false, error }
+export async function setNick(desired){
+  if(!state.uid || state.status !== 'google') return { ok:false, error:'Nick için Google ile giriş gerekli' };
+  const v = validateNick(desired); if(!v.ok) return v;
+  const key = nickKey(v.clean);
+  const nref = ref(db, 'nicks/' + key);
+  let claimed = false;
+  try{
+    const res = await runTransaction(nref, (cur) => {
+      if(cur === null){ claimed = true; return { uid: state.uid, nick: v.clean, ts: Date.now() }; }
+      if(cur.uid === state.uid){ claimed = true; return { uid: state.uid, nick: v.clean, ts: cur.ts || Date.now() }; }
+      return;   // dolu (başkasının) → iptal
+    });
+    if(!res.committed || !claimed) return { ok:false, error:'Bu nick alınmış' };
+  }catch(e){ return { ok:false, error:'Nick alınamadı (bağlantı?)' }; }
+  // users/{uid}/nick güncelle (name'i de eşitle: eski displayName tabanlı listeler için)
+  try{ await update(ref(db, 'users/' + state.uid), { nick: v.clean, name: v.clean }); }catch(e){}
+  // Eski nick'i serbest bırak
+  const oldKey = (state.profile && state.profile.nick) ? nickKey(state.profile.nick) : null;
+  if(oldKey && oldKey !== key){ try{ await set(ref(db, 'nicks/' + oldKey), null); }catch(e){} }
+  if(!state.profile) state.profile = {};
+  state.profile.nick = v.clean; state.profile.name = v.clean;
+  state.displayName = v.clean; emit();
+  return { ok:true, nick: v.clean };
+}
+
+// Nick → { uid, nick } | null  (kayıt defterinden, hızlı + benzersiz)
+export async function resolveNick(nick){
+  const key = nickKey(nick);
+  if(!key) return null;
+  try{
+    const snap = await get(ref(db, 'nicks/' + key));
+    if(snap.exists()) return { uid: snap.val().uid, nick: snap.val().nick || String(nick).trim() };
+  }catch(e){}
+  return null;
+}
+
+export function getNick(){ return (state.profile && state.profile.nick) || ''; }
+
+// İlk girişte nick yoksa Google adından benzersiz bir nick türet + claim
+let _ensuringNick = false;
+async function ensureNick(){
+  if(_ensuringNick) return; _ensuringNick = true;
+  try{
+    if(!state.uid || state.status !== 'google') return;
+    if(state.profile && state.profile.nick) return;
+    let base = (state.user && state.user.displayName) ? state.user.displayName : 'Oyuncu';
+    base = base.replace(/\s+/g,'').replace(/[^A-Za-z0-9_ğüşıöçĞÜŞİÖÇ]/g,'').slice(0, NICK_MAX);
+    if(base.length < NICK_MIN) base = 'Oyuncu';
+    for(let i=0;i<30;i++){
+      const cand = i === 0 ? base : (base.slice(0, NICK_MAX - String(i).length) + i);
+      const r = await setNick(cand);
+      if(r.ok) return;
+    }
+  }finally{ _ensuringNick = false; }
+}
+
+export const Auth = { subscribe, getState, loginGoogle, logout, db, auth, ready, validateNick, checkNick, setNick, resolveNick, getNick };
 export default Auth;
