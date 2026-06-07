@@ -180,13 +180,16 @@ export function openKelime(){
   sb.addEventListener('click', ()=>{ G.sound=!G.sound; sb.textContent=G.sound?'🔊':'🔇'; });
   G.vis = ()=>{
     if(document.hidden){ try{ saveKelimeResume(); }catch(e){} }
-    else if(G && G.online && !G.async && !G._over && KO && KO.rejoinPresence){ KO.rejoinPresence(); }   // geri dön → varlığı tazele
+    else if(G && G.online && !G.async && !G._over && KO){    // geri dön → hemen "buradayım"
+      if(KO.rejoinPresence) KO.rejoinPresence();
+      if(KO.heartbeat) KO.heartbeat();
+    }
   };
   document.addEventListener('visibilitychange', G.vis);
   showStart();
 }
 
-function closeKelime(){ try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
   const c = G.root.querySelector('[data-el="content"]');
@@ -583,7 +586,27 @@ function startOnline(role, gameId, oppName, seed, opts){
   buildGameDOM();
   renderAll();
   if(KO) KO.subscribeRoom(applyRemote);
+  if(!G.async){
+    G._oppLastSeen = Date.now();          // başlangıçta rakip burada say
+    if(KO && KO.heartbeat) KO.heartbeat();
+    startOnlineHeartbeat();
+  }
 }
+
+// Anlık oyun kalp atışı: kendi "buradayım"ımı yaz + rakip uzun sessizse bitir
+function startOnlineHeartbeat(){
+  stopOnlineHeartbeat();
+  if(!G || !G.online || G.async) return;
+  G._hb = setInterval(()=>{
+    if(!G || !G.online || G._over){ stopOnlineHeartbeat(); return; }
+    if(document.hidden) return;            // arka plandayken (donmuş) yazma
+    if(KO && KO.heartbeat) KO.heartbeat();
+    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 55000)){   // ~55 sn sessizlik → ayrıldı
+      onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉');
+    }
+  }, 8000);
+}
+function stopOnlineHeartbeat(){ if(G && G._hb){ clearInterval(G._hb); G._hb = null; } }
 
 function currentTurn(){ return G.online ? G.state.turn : G.who; }
 function isMyTurn(){ return G.online ? (G.state.turn === G.role) : true; }
@@ -605,23 +628,9 @@ function applyRemote(room){
   G.state.passStreak = room.passStreak || 0;
   if(room.deadline != null) G.deadline = room.deadline;
   const oppRole = G.role==='A'?'B':'A';
-  // async oyunda rakibin ayrılması kayıp DEĞİL (oyun saatlerce sürer)
-  if(!G.async){
-    const oppPres = room.presence ? room.presence[oppRole] : true;
-    if(oppPres === false && !G._over){
-      // anında bitirme — ~45 sn bağışlama süresi (kısa kopmalarda oyun sürsün)
-      if(!G._oppGrace){
-        flashStatus('⚠️ Rakibin bağlantısı koptu, bekleniyor…');
-        G._oppGrace = setTimeout(()=>{
-          G._oppGrace = null;
-          if(!G._over && G.online) onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉');
-        }, 45000);
-      }
-    } else if(oppPres === true && G._oppGrace){
-      clearTimeout(G._oppGrace); G._oppGrace = null;
-      flashStatus('Rakip geri döndü');
-    }
-  }
+  // Anlık oyunda rakibin "ayrıldı" kararı artık presence'a göre DEĞİL, lastSeen sessizliğine göre
+  // (kısa kopmalar oyunu bitirmesin). Kalp atışı döngüsü sessizliği kontrol eder.
+  if(!G.async && room.lastSeen && room.lastSeen[oppRole]){ G._oppLastSeen = room.lastSeen[oppRole]; }
   if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti'); return; }
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
@@ -640,6 +649,7 @@ function applyRemote(room){
 function onlineGameOver(msg){
   if(G._over) return; G._over = true;
   if(G._oppGrace){ clearTimeout(G._oppGrace); G._oppGrace = null; }
+  stopOnlineHeartbeat();
   try{ if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
