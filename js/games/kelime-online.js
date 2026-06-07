@@ -242,6 +242,16 @@ export async function leaveRoom(){
   S = null;
 }
 
+// Uygulama/sekme öne gelince varlığı (presence) yeniden yaz + onDisconnect'i tazele.
+// Kısa süreli arka plana geçişlerde anlık oyunun bitmesini önler.
+export async function rejoinPresence(){
+  if(!S || S.async || !S.roomRef) return;
+  try{
+    await fdb.update(S.roomRef, { ['presence/'+S.role]: true });
+    try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${S.gameId}/presence/${S.role}`)).set(false); }catch(e){}
+  }catch(e){}
+}
+
 export function getSession(){ return S; }
 
 // Async oyunda rafımı odaya kaydet (sürdürme için)
