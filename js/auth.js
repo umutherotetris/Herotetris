@@ -23,7 +23,7 @@ const {
   signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
   GoogleAuthProvider, linkWithPopup, signOut
 } = await import(`${BASE}/firebase-auth.js`);
-const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child } = await import(`${BASE}/firebase-database.js`);
+const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst } = await import(`${BASE}/firebase-database.js`);
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -132,7 +132,7 @@ export async function logout(){ try { await signOut(auth); } catch(e){ console.e
 // RTDB erişimini diğer modüllere aç (friends/chat/shop sonraki aşamalarda kullanacak)
 export { db, auth };
 // Veritabanı yardımcıları — store.js ve oyunlar tekrar import etmeden kullanır
-export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child };
+export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst };
 
 boot();
 
