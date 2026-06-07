@@ -296,7 +296,7 @@ export function isEmptyBoard(board){
 // Hamleyi kalıcı uygula (doğrulama YAPILMIŞ olmalı)
 export function commitMove(state, pending, score, who){
   for(const p of pending){
-    state.board[p.r][p.c] = { letter: p.joker ? p.assigned : p.letter, points: p.joker?0:p.points, joker: p.joker };
+    state.board[p.r][p.c] = { letter: p.joker ? p.assigned : p.letter, points: p.joker?0:p.points, joker: p.joker, assigned: p.joker ? p.assigned : undefined };
   }
   state.scores[who] += score;
   state.moveCount++;
