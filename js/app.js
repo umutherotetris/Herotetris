@@ -53,7 +53,7 @@ function start(){
   bindCard('gameTetris', './games/tetris.js', 'openTetris', 'Tetris');
   bindCard('gameChess',  './games/chess.js',  'openChess',  'Satranç');
   bindCard('gameTavla',  './games/tavla.js',  'openTavla',  'Tavla');
-  bindCard('gameKelime', './games/kelime.js', 'openKelime', 'Kelime');
+  bindCard('gameKelime', './games/kelime.js', 'openKelime', 'Kelimecik');
 
   // Yakalanmayan hataları ekrana bas
   window.addEventListener('error', (e) => toast('HATA: ' + (e.message || '') + '\n' + (e.filename||'').split('/').pop() + ':' + (e.lineno||''), true));
@@ -65,7 +65,7 @@ function start(){
     openTetris: () => launchGame('./games/tetris.js', 'openTetris', 'Tetris'),
     openChess:  () => launchGame('./games/chess.js',  'openChess',  'Satranç'),
     openTavla:  () => launchGame('./games/tavla.js',  'openTavla',  'Tavla'),
-    openKelime: () => launchGame('./games/kelime.js', 'openKelime', 'Kelime')
+    openKelime: () => launchGame('./games/kelime.js', 'openKelime', 'Kelimecik')
   };
 }
 
