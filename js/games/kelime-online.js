@@ -30,7 +30,13 @@ function emptyBoardStr(){
 
 // ── Rastgele rakip bul ──
 // cb: { onSearching(), onMatched({role,gameId,oppName,seed}), onError(msg) }
-export async function findMatch(cb){
+const MYGAMES = 'kelimeMyGames';   // kullanıcı başına aktif async oyun indeksi
+
+export async function findMatch(cb, opts){
+  opts = opts || {};
+  const async = opts.mode === 'async';
+  const turnHours = opts.turnHours || 72;
+  const QP = async ? ('kelimeQueue/async' + turnHours) : QPATH;
   const st = await ensureAuth();
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   const myUid = st.uid, myName = st.displayName || 'Oyuncu';
@@ -39,34 +45,38 @@ export async function findMatch(cb){
   // Host olursam kullanacağım oda kimliği
   const myGameId = fdb.push(fdb.ref(db, GPATH)).key;
   const seed = rid();
+  const now0 = Date.now();
+  const baseRoom = {
+    seed, boardStr: emptyBoardStr(),
+    scores: { A:0, B:0 }, turn:'A', bagPointer:14,
+    players:{ A:myUid }, names:{ A:myName },
+    presence:{ A:true }, status:'waiting',
+    passStreak:0, createdAt: now0
+  };
+  if(async){ baseRoom.mode='async'; baseRoom.turnHours=turnHours; baseRoom.deadline = now0 + turnHours*3600000; baseRoom.lastMoveAt = now0; }
 
-  // Host adayı odayı ÖNCE kur (bir rakip kuyruğa bakınca hazır olsun)
+  // Host adayı odayı ÖNCE kur
   try{
-    await fdb.set(fdb.ref(db, `${GPATH}/${myGameId}`), {
-      seed, boardStr: emptyBoardStr(),
-      scores: { A:0, B:0 }, turn:'A', bagPointer:14,
-      players:{ A:myUid }, names:{ A:myName },
-      presence:{ A:true }, status:'waiting',
-      passStreak:0, createdAt: Date.now()
-    });
+    await fdb.set(fdb.ref(db, `${GPATH}/${myGameId}`), baseRoom);
   }catch(e){
     const denied = String(e && e.message||e).includes('PERMISSION_DENIED');
     cb.onError && cb.onError(denied ? 'Sunucu izni reddedildi. Çevrimiçi için Firebase kuralları güncellenmeli (yönetici).' : 'Sunucuya bağlanılamadı.');
     return;
   }
 
-  // Kuyruk işlemi: bekleyen taze rakip varsa kap (ben misafir/B); yoksa beklerim (ben host/A)
+  // Kuyruk işlemi
   let claimed = null;
   let res;
   try{
-    res = await fdb.runTransaction(fdb.ref(db, QPATH), (cur) => {
+    res = await fdb.runTransaction(fdb.ref(db, QP), (cur) => {
       const now = Date.now();
-      if(cur && cur.uid && cur.uid !== myUid && (now - (cur.ts||0)) < FRESH_MS){
-        claimed = cur;            // bu rakibi kapıyorum
-        return null;              // slotu boşalt
+      const fresh = async ? (turnHours*3600000) : FRESH_MS;
+      if(cur && cur.uid && cur.uid !== myUid && (now - (cur.ts||0)) < fresh){
+        claimed = cur;
+        return null;
       }
       claimed = null;
-      return { uid:myUid, name:myName, ts:now, gameId:myGameId };  // ben bekliyorum
+      return { uid:myUid, name:myName, ts:now, gameId:myGameId };
     });
   }catch(e){
     fdb.remove(fdb.ref(db, `${GPATH}/${myGameId}`)).catch(()=>{});
@@ -75,41 +85,102 @@ export async function findMatch(cb){
   }
 
   if(claimed){
-    // ── MİSAFİR (B) ── kendi boş odamı sil, rakibin odasına katıl
+    // ── MİSAFİR (B) ──
     fdb.remove(fdb.ref(db, `${GPATH}/${myGameId}`)).catch(()=>{});
     const gameId = claimed.gameId;
     const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
-    // odanın hazır (seed'li) olmasını bekle
     const snap = await waitForSeed(roomRef);
     if(!snap){ cb.onError && cb.onError('Oda bulunamadı, tekrar dene'); return; }
     const room = snap;
-    await fdb.update(roomRef, { 'players/B':myUid, 'names/B':myName, 'presence/B':true, status:'active' });
-    // bağlantı kopması izi
-    try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/B`)).set(false); }catch(e){}
-    S = { gameId, role:'B', roomRef, myUid };
-    cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', seed: room.seed });
+    const upd = { 'players/B':myUid, 'names/B':myName, 'presence/B':true, status:'active' };
+    await fdb.update(roomRef, upd);
+    const isAsync = room.mode === 'async';
+    if(!isAsync){ try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/B`)).set(false); }catch(e){} }
+    if(isAsync){ await indexBothGames(gameId, myUid, room.players.A, myName, room.names && room.names.A, room.mode, room.turnHours); }
+    S = { gameId, role:'B', roomRef, myUid, oppUid: room.players.A, async:isAsync };
+    cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', seed: room.seed, async:isAsync, turnHours:room.turnHours });
   } else {
-    // ── HOST (A) ── kuyrukta bekliyorum; rakip katılınca başlayacağım
+    // ── HOST (A) ──
     const gameId = myGameId;
     const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
     try{
-      fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/A`)).set(false);
-      fdb.onDisconnect(fdb.ref(db, QPATH)).remove();   // beklerken kopar/çıkarsam kuyruğu temizle
+      if(!async){ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/A`)).set(false); }
+      fdb.onDisconnect(fdb.ref(db, QP)).remove();
     }catch(e){}
-    S = { gameId, role:'A', roomRef, myUid, waiting:true };
-    // rakip B katılana kadar dinle
+    S = { gameId, role:'A', roomRef, myUid, waiting:true, async };
     const off = fdb.onValue(roomRef, (s) => {
       const room = s.val(); if(!room) return;
       if(room.players && room.players.B && S && S.waiting){
-        S.waiting = false;
+        S.waiting = false; S.oppUid = room.players.B;
         try{ off(); }catch(e){}
-        // kuyruktan kendimi kaldır (hâlâ benimse)
-        clearQueueIfMine(myUid);
-        cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', seed: room.seed });
+        clearQueueIfMine(myUid, QP);
+        if(async) indexBothGames(gameId, myUid, room.players.B, myName, room.names && room.names.B, 'async', turnHours);
+        cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', seed: room.seed, async, turnHours });
       }
     });
     S._offWait = off;
   }
+}
+
+// İki oyuncunun da "oyunlarım" indeksine yaz
+async function indexBothGames(gameId, uidA, uidB, nameA, nameB, mode, turnHours){
+  const ts = Date.now();
+  try{ await fdb.update(fdb.ref(db, `${MYGAMES}/${uidA}/${gameId}`), { opp:nameB||'Rakip', oppUid:uidB, mode, turnHours, ts }); }catch(e){}
+  try{ await fdb.update(fdb.ref(db, `${MYGAMES}/${uidB}/${gameId}`), { opp:nameA||'Rakip', oppUid:uidA, mode, turnHours, ts }); }catch(e){}
+}
+
+// Aktif async oyunlarımı listele
+export async function listMyGames(){
+  const st = Auth.getState(); if(!st || !st.uid) return [];
+  let idx;
+  try{ const s = await fdb.get(fdb.ref(db, `${MYGAMES}/${st.uid}`)); idx = s.exists()? s.val() : {}; }
+  catch(e){ return []; }
+  const out = [];
+  for(const gameId in idx){
+    try{
+      const rs = await fdb.get(fdb.ref(db, `${GPATH}/${gameId}`));
+      if(!rs.exists()){ fdb.remove(fdb.ref(db, `${MYGAMES}/${st.uid}/${gameId}`)).catch(()=>{}); continue; }
+      const room = rs.val();
+      const myRole = (room.players && room.players.A === st.uid) ? 'A' : 'B';
+      const over = room.status === 'over';
+      out.push({
+        gameId, opp: idx[gameId].opp, myRole,
+        myTurn: !over && room.turn === myRole,
+        deadline: room.deadline || 0, turnHours: room.turnHours || idx[gameId].turnHours,
+        scores: room.scores || {A:0,B:0}, over, status: room.status
+      });
+    }catch(e){}
+  }
+  out.sort((a,b)=> (b.myTurn-a.myTurn) || ((b.deadline||0)-(a.deadline||0)) );
+  return out;
+}
+
+// Bir async oyunu sürdür
+export async function resumeGame(gameId, cb){
+  const st = await ensureAuth();
+  if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
+  const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
+  let room; try{ const s = await fdb.get(roomRef); if(!s.exists()){ cb.onError && cb.onError('Oyun bulunamadı'); return; } room = s.val(); }
+  catch(e){ cb.onError && cb.onError('Oyun yüklenemedi'); return; }
+  const role = (room.players && room.players.A === st.uid) ? 'A' : 'B';
+  const oppUid = role==='A' ? (room.players.B) : (room.players.A);
+  S = { gameId, role, roomRef, myUid: st.uid, oppUid, async:true };
+  cb.onResumed && cb.onResumed({ role, gameId, oppName: (room.names && room.names[role==='A'?'B':'A']) || 'Rakip', seed: room.seed, room });
+}
+
+// Rakibin süresi dolduysa galibiyet talep et
+export async function claimTimeout(gameId, cb){
+  const st = Auth.getState(); if(!st || !st.uid){ cb && cb.onError && cb.onError('Giriş gerekli'); return; }
+  const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
+  try{
+    const s = await fdb.get(roomRef); if(!s.exists()) return;
+    const room = s.val();
+    const myRole = room.players.A === st.uid ? 'A' : 'B';
+    if(room.turn === myRole){ cb && cb.onError && cb.onError('Sıra sende, süre dolmadı'); return; }
+    if(!room.deadline || Date.now() < room.deadline){ cb && cb.onError && cb.onError('Rakibin süresi henüz dolmadı'); return; }
+    await fdb.update(roomRef, { status:'over', overMsg:'Rakibin süresi doldu — kazandın! 🎉', winnerByTimeout:myRole });
+    cb && cb.onDone && cb.onDone();
+  }catch(e){ cb && cb.onError && cb.onError('İşlem başarısız'); }
 }
 
 function waitForSeed(roomRef){
@@ -123,11 +194,11 @@ function waitForSeed(roomRef){
   });
 }
 
-async function clearQueueIfMine(myUid){
+async function clearQueueIfMine(myUid, qp){
   try{
-    await fdb.runTransaction(fdb.ref(db, QPATH), (cur) => {
-      if(cur && cur.uid === myUid) return null;   // benim kaydım → sil
-      return cur;                                  // başkasınınki → dokunma
+    await fdb.runTransaction(fdb.ref(db, qp || QPATH), (cur) => {
+      if(cur && cur.uid === myUid) return null;
+      return cur;
     });
   }catch(e){}
 }
@@ -149,18 +220,149 @@ export function subscribeRoom(onState){
   return off;
 }
 
-// Hamleyi odaya yaz (board + skor + sıra + pointer + lastMove)
+// Hamleyi odaya yaz. Async ise deadline + oyunlarım indeksini güncelle.
 export async function pushMove(patch){
   if(!S) return;
+  if(S.async){
+    const ts = Date.now();
+    if(S.turnHours) patch.deadline = ts + S.turnHours*3600000;
+    patch.lastMoveAt = ts;
+    // her iki oyuncunun indeks zaman damgasını güncelle (sıralama için)
+    try{ if(S.myUid) fdb.update(fdb.ref(db, `${MYGAMES}/${S.myUid}/${S.gameId}`), { ts }); }catch(e){}
+    try{ if(S.oppUid) fdb.update(fdb.ref(db, `${MYGAMES}/${S.oppUid}/${S.gameId}`), { ts }); }catch(e){}
+  }
   await fdb.update(S.roomRef, patch);
 }
 
-// Oyundan ayrıl
+// Oyundan ayrıl (async'te presence düşürme — oyun sürer)
 export async function leaveRoom(){
   if(!S) return;
   try{ if(S._offRoom) S._offRoom(); }catch(e){}
-  try{ await fdb.update(S.roomRef, { ['presence/'+S.role]: false }); }catch(e){}
+  if(!S.async){ try{ await fdb.update(S.roomRef, { ['presence/'+S.role]: false }); }catch(e){} }
   S = null;
 }
 
 export function getSession(){ return S; }
+
+// Async oyunda rafımı odaya kaydet (sürdürme için)
+export async function saveRack(rack){
+  if(!S || !S.async) return;
+  try{ await fdb.update(S.roomRef, { ['racks/'+S.role]: rack }); }catch(e){}
+}
+
+// Kişisel kelime rekorlarını profile yaz (yalnız giriş yapan kullanıcı)
+export async function saveKelimeRecords(upd){
+  const st = Auth.getState(); if(!st || !st.uid || !upd) return;
+  try{ await fdb.update(fdb.ref(db, `users/${st.uid}/kelimeRecords`), upd); }catch(e){}
+}
+
+// ════════════ NİCK / ARKADAŞ DAVETİ ════════════
+const INVPATH = 'gameInvites';
+function permMsg(e){ return String(e&&e.message||e).includes('PERMISSION_DENIED') ? 'Sunucu izni reddedildi (yönetici Firebase kurallarını güncellemeli).' : 'Sunucuya bağlanılamadı.'; }
+
+// Nick → kullanıcı çöz (displayName, sonra name alanına bak)
+export async function resolveNick(nick){
+  const qv = String(nick||'').trim();
+  if(!qv) return null;
+  for(const field of ['displayName','name']){
+    try{
+      const snap = await fdb.get(fdb.query(fdb.ref(db,'users'), fdb.orderByChild(field), fdb.equalTo(qv), fdb.limitToFirst(1)));
+      if(snap.exists()){
+        let found=null; snap.forEach(ch=>{ const v=ch.val(); found={ uid:ch.key, name:(v.name||v.displayName||qv) }; });
+        if(found) return found;
+      }
+    }catch(e){ /* index/izin yoksa diğer alanı dene */ }
+  }
+  return null;
+}
+
+// Arkadaş listesi (varsa)
+export async function listFriends(){
+  const st = Auth.getState(); if(!st||!st.uid) return [];
+  try{
+    const snap = await fdb.get(fdb.ref(db, `friends/${st.uid}`));
+    if(!snap.exists()) return [];
+    const v = snap.val(); const out=[];
+    for(const fuid in v){ const f=v[fuid]; if(f===false) continue; out.push({ uid:fuid, name:(f&&f.name)|| (typeof f==='string'?f:null) || ('Arkadaş') }); }
+    return out;
+  }catch(e){ return []; }
+}
+
+// Davet gönder (hedef uid'e). cb: { onSent(), onAccepted({role,gameId,oppName,seed}), onError(msg) }
+export async function sendInvite(targetUid, targetName, cb){
+  const st = await ensureAuth();
+  if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
+  if(targetUid === st.uid){ cb.onError && cb.onError('Kendine davet gönderemezsin'); return; }
+  const myUid = st.uid, myName = st.displayName || 'Oyuncu';
+  const gameId = fdb.push(fdb.ref(db, GPATH)).key;
+  const seed = rid();
+  try{
+    await fdb.set(fdb.ref(db, `${GPATH}/${gameId}`), {
+      seed, boardStr: emptyBoardStr(), scores:{A:0,B:0}, turn:'A', bagPointer:14,
+      players:{A:myUid}, names:{A:myName}, presence:{A:true}, status:'invited',
+      passStreak:0, createdAt:Date.now(), invited:targetUid
+    });
+  }catch(e){ cb.onError && cb.onError(permMsg(e)); return; }
+  const invId = fdb.push(fdb.ref(db, `${INVPATH}/${targetUid}`)).key;
+  try{
+    await fdb.set(fdb.ref(db, `${INVPATH}/${targetUid}/${invId}`), {
+      fromUid:myUid, fromName:myName, game:'kelime', gameId, seed, ts:Date.now()
+    });
+  }catch(e){ fdb.remove(fdb.ref(db,`${GPATH}/${gameId}`)).catch(()=>{}); cb.onError && cb.onError(permMsg(e)); return; }
+  const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
+  try{ fdb.onDisconnect(fdb.ref(db,`${GPATH}/${gameId}/presence/A`)).set(false); }catch(e){}
+  S = { gameId, role:'A', roomRef, myUid, waiting:true, invId, targetUid };
+  cb.onSent && cb.onSent();
+  const off = fdb.onValue(roomRef, (s)=>{
+    const room = s.val(); if(!room) return;
+    if(room.players && room.players.B && S && S.waiting){
+      S.waiting=false; try{off();}catch(e){}
+      fdb.remove(fdb.ref(db, `${INVPATH}/${targetUid}/${invId}`)).catch(()=>{});
+      cb.onAccepted && cb.onAccepted({ role:'A', gameId, oppName: room.names && room.names.B || targetName || 'Rakip', seed: room.seed });
+    }
+  });
+  S._offWait = off;
+}
+
+// Gelen davetleri dinle. cb(list) → [{id, fromUid, fromName, gameId, seed, ts}]
+export function listenInvites(cb){
+  const st = Auth.getState();
+  if(!st || !st.uid){ cb([]); return ()=>{}; }
+  const r = fdb.ref(db, `${INVPATH}/${st.uid}`);
+  const off = fdb.onValue(r, (s)=>{
+    const v = s.val()||{}; const list=[];
+    for(const id in v){ const inv=v[id]; if(inv && inv.game==='kelime' && inv.gameId) list.push({ id, ...inv }); }
+    list.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    cb(list);
+  });
+  return off;
+}
+
+// Daveti kabul et. cb: { onMatched({role,gameId,oppName,seed}), onError(msg) }
+export async function acceptInvite(invite, cb){
+  const st = await ensureAuth();
+  if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
+  const myUid=st.uid, myName=st.displayName||'Oyuncu';
+  const roomRef = fdb.ref(db, `${GPATH}/${invite.gameId}`);
+  const snap = await waitForSeed(roomRef);
+  if(!snap){ cb.onError && cb.onError('Oda bulunamadı (davet süresi dolmuş olabilir)'); fdb.remove(fdb.ref(db,`${INVPATH}/${myUid}/${invite.id}`)).catch(()=>{}); return; }
+  await fdb.update(roomRef, { 'players/B':myUid, 'names/B':myName, 'presence/B':true, status:'active' });
+  try{ fdb.onDisconnect(fdb.ref(db,`${GPATH}/${invite.gameId}/presence/B`)).set(false); }catch(e){}
+  fdb.remove(fdb.ref(db,`${INVPATH}/${myUid}/${invite.id}`)).catch(()=>{});
+  S = { gameId:invite.gameId, role:'B', roomRef, myUid };
+  cb.onMatched && cb.onMatched({ role:'B', gameId:invite.gameId, oppName: snap.names && snap.names.A || invite.fromName || 'Rakip', seed: snap.seed });
+}
+
+export async function declineInvite(invite){
+  const st = Auth.getState(); if(!st||!st.uid) return;
+  try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${st.uid}/${invite.id}`)); }catch(e){}
+}
+
+// Gönderilen daveti iptal et (host bekliyorken)
+export async function cancelInvite(){
+  if(!S) return;
+  try{ if(S._offWait) S._offWait(); }catch(e){}
+  if(S.invId && S.targetUid){ try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${S.targetUid}/${S.invId}`)); }catch(e){} }
+  if(S.role==='A' && S.waiting){ try{ await fdb.remove(S.roomRef); }catch(e){} }
+  S=null;
+}
