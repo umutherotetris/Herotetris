@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  KELİME DÜELLOSU — Oyun Motoru
+//  Kelimecik (Kelime DÜELLOSU) — Oyun Motoru
 //  15x15 tahta, Türkçe harf seti (100 taş), torba, yerleştirme
 //  doğrulama (hizalama/bağlantı/sözlük) ve puanlama (harf+kelime bonusları).
 // ════════════════════════════════════════════════════════════════
