@@ -178,12 +178,15 @@ export function openKelime(){
   root.querySelector('[data-el="lettertable"]').addEventListener('click', showLetterTable);
   const sb = root.querySelector('[data-el="sound"]');
   sb.addEventListener('click', ()=>{ G.sound=!G.sound; sb.textContent=G.sound?'🔊':'🔇'; });
-  G.vis = ()=>{ if(document.hidden){ try{ saveKelimeResume(); }catch(e){} } };
+  G.vis = ()=>{
+    if(document.hidden){ try{ saveKelimeResume(); }catch(e){} }
+    else if(G && G.online && !G.async && !G._over && KO && KO.rejoinPresence){ KO.rejoinPresence(); }   // geri dön → varlığı tazele
+  };
   document.addEventListener('visibilitychange', G.vis);
   showStart();
 }
 
-function closeKelime(){ try{ saveKelimeResume(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
   const c = G.root.querySelector('[data-el="content"]');
@@ -605,7 +608,19 @@ function applyRemote(room){
   // async oyunda rakibin ayrılması kayıp DEĞİL (oyun saatlerce sürer)
   if(!G.async){
     const oppPres = room.presence ? room.presence[oppRole] : true;
-    if(oppPres === false && G.oppPresent && !G._over){ G.oppPresent=false; onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉'); return; }
+    if(oppPres === false && !G._over){
+      // anında bitirme — ~45 sn bağışlama süresi (kısa kopmalarda oyun sürsün)
+      if(!G._oppGrace){
+        flashStatus('⚠️ Rakibin bağlantısı koptu, bekleniyor…');
+        G._oppGrace = setTimeout(()=>{
+          G._oppGrace = null;
+          if(!G._over && G.online) onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉');
+        }, 45000);
+      }
+    } else if(oppPres === true && G._oppGrace){
+      clearTimeout(G._oppGrace); G._oppGrace = null;
+      flashStatus('Rakip geri döndü');
+    }
   }
   if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti'); return; }
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
@@ -624,6 +639,7 @@ function applyRemote(room){
 
 function onlineGameOver(msg){
   if(G._over) return; G._over = true;
+  if(G._oppGrace){ clearTimeout(G._oppGrace); G._oppGrace = null; }
   try{ if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
