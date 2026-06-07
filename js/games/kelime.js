@@ -9,6 +9,7 @@ import {
   buildSurprises, SURPRISE_INFO, previewPlacement,
   SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT
 } from './kelime-engine.js';
+import * as Resume from './resume.js';
 
 let G = null;
 let stylesInjected = false;
@@ -177,10 +178,12 @@ export function openKelime(){
   root.querySelector('[data-el="lettertable"]').addEventListener('click', showLetterTable);
   const sb = root.querySelector('[data-el="sound"]');
   sb.addEventListener('click', ()=>{ G.sound=!G.sound; sb.textContent=G.sound?'🔊':'🔇'; });
+  G.vis = ()=>{ if(document.hidden){ try{ saveKelimeResume(); }catch(e){} } };
+  document.addEventListener('visibilitychange', G.vis);
   showStart();
 }
 
-function closeKelime(){ try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ saveKelimeResume(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
   const c = G.root.querySelector('[data-el="content"]');
@@ -195,11 +198,20 @@ function showStart(){
       recHtml = `<div style="margin:0 0 12px;padding:9px 12px;border-radius:11px;background:rgba(240,177,50,.1);border:1px solid rgba(240,177,50,.25);font-size:12px;color:#ffe9b8;line-height:1.6">🏆 Rekorların<br>${parts.join('<br>')}</div>`;
     }
   }catch(e){}
+  let resumeHtml = '';
+  const rsnap = Resume.loadSnapshot('kelime');
+  if(rsnap){
+    const d = rsnap.data;
+    const lbl = d.mode === 'seri' ? 'Seri Mod' : 'Yapay Zekâ';
+    const sc = d.scores ? `${d.scores.A||0}–${d.scores.B||0}` : '';
+    resumeHtml = `<button class="kl-btn primary" data-x="resume" style="width:100%;margin:0 0 12px;text-align:left;padding:12px 14px">↩️ Kaldığın yerden devam et<br><span style="font-size:11px;opacity:.85;font-weight:500">${lbl} · ${sc} · ${Resume.fmtAge(rsnap.age)}</span></button>`;
+  }
   c.innerHTML = `
     <div class="kl-overlay" style="position:relative;background:transparent">
       <div class="kl-card">
         <h3>🔤 Kelimecik</h3>
         <p>Türkçe kelime türetme oyunu · 15×15 tahta · 59.000 kelimelik TDK sözlüğü</p>
+        ${resumeHtml}
         ${recHtml}
         <div class="kl-modes">
           <div class="kl-mode" data-mode="local"><span class="e">👥</span><div>2 Oyuncu<small>Aynı cihazda sırayla</small></div></div>
@@ -212,6 +224,8 @@ function showStart(){
     </div>`;
   c.querySelector('[data-mode="local"]').addEventListener('click', ()=>startLocal());
   c.querySelector('[data-mode="ai"]').addEventListener('click', ()=>showAIDifficulty());
+  const rb = c.querySelector('[data-x="resume"]');
+  if(rb) rb.addEventListener('click', ()=>{ const r = Resume.loadSnapshot('kelime'); if(r) resumeKelime(r.data); else showStart(); });
   c.querySelector('[data-mode="seri"]').addEventListener('click', ()=>showSeriOptions());
   c.querySelector('[data-mode="online"]').addEventListener('click', ()=>showOnlineOptions());
   c.querySelector('[data-mode="invite"]').addEventListener('click', ()=>showInviteScreen());
@@ -261,6 +275,7 @@ async function startAI(difficulty, turnTime){
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 Hazırlanıyor…</h3><p>Sözlük yükleniyor</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
   catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  Resume.clearSnapshot('kelime');                // yeni oyun → eski devam kaydını sil
   const st = newGame();
   G.state = st;
   G.who = 'A';                                   // insan = A
@@ -280,6 +295,55 @@ async function startAI(difficulty, turnTime){
   if(G.seri) startTurnTimer();                    // ilk insan turu için sayaç
 }
 function startSeri(turnTime){ startAI('orta', turnTime); }
+
+// ── Kaldığın yerden devam (AI/Seri) ──
+function saveKelimeResume(){
+  if(!G || !G.state || G._over) return;
+  if(!(G.ai || G.seri)) return;   // yalnız AI/Seri modunda
+  try{
+    Resume.saveSnapshot('kelime', {
+      mode: G.seri ? 'seri' : 'ai',
+      difficulty: G.ai ? G.ai.difficulty : 'orta',
+      turnTime: G.seri ? G.seri.turnTime : 0,
+      board: G.state.board, bag: G.state.bag, racks: G.state.racks,
+      scores: G.state.scores, passStreak: G.state.passStreak || 0,
+      who: G.who, rackView: G.rackView, pending: G.pending,
+      surprises: G.surprises, names: G.names,
+      lastMoveCells: Array.from(G.lastMoveCells || []),
+      bestWord: G.bestWord, myRecord: G.myRecord
+    });
+  }catch(e){}
+}
+async function resumeKelime(snap){
+  const c = G.root.querySelector('[data-el="content"]');
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>↩️ Devam ediliyor…</h3><p>Oyun yükleniyor</p></div></div>`;
+  try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
+  catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  G.state = {
+    board: snap.board, bag: snap.bag, racks: snap.racks,
+    scores: snap.scores, turn: snap.who, moveCount: 0,
+    passStreak: snap.passStreak || 0, finished: false
+  };
+  G.who = snap.who;
+  G.ai = { difficulty: snap.difficulty || 'orta', color: 'B' };
+  G.seri = snap.mode === 'seri' ? { turnTime: snap.turnTime || 30 } : null;
+  G.names = snap.names || { A:'Sen', B:'Yapay Zekâ' };
+  G.pending = snap.pending || [];
+  G.selected = null;
+  G.rackView = snap.rackView || (G.state.racks.A ? G.state.racks.A.slice() : []);
+  G.surprises = snap.surprises || {};
+  G.bestWord = snap.bestWord || { text:'', score:0, who:'' };
+  G.lastMoveCells = new Set(snap.lastMoveCells || []);
+  G.myRecord = snap.myRecord || { best:{text:'',score:0}, longest:{text:'',len:0} };
+  G.aiThinking = false; G._over = false;
+  buildGameDOM();
+  renderAll();
+  flashStatus('↩️ Kaldığın yerden devam');
+  if(G.who === 'B'){           // sıra AI'daydı → oynat
+    G.aiThinking = true; renderScores();
+    setTimeout(aiTurn, 700);
+  } else if(G.seri){ startTurnTimer(); }
+}
 
 function showSeriOptions(){
   const c = G.root.querySelector('[data-el="content"]');
@@ -1221,6 +1285,7 @@ function submitMove(){
     stopTurnTimer();
     G.who = 'B'; G.aiThinking = true; renderScores();
     flashStatus('🤖 Yapay zekâ düşünüyor…');
+    saveKelimeResume();
     setTimeout(aiTurn, 850);
   } else {
     nextTurn();   // 2 oyuncu: sıra geçişi ekranı
@@ -1287,6 +1352,7 @@ function aiTurn(){
     celebrate(moveScore, !!(mv.words && mv.pending.length===RACK_SIZE), surp.hits);
     flashStatus('🤖 ' + mv.words.map(w=>w.text).join(', ') + ' (+' + moveScore + ')');
     setTimeout(()=>{ if(!checkGameOver() && G.seri) startTurnTimer(); }, 400);
+    saveKelimeResume();
   } else {
     // AI hamle bulamadı → pas
     G.state.passStreak = (G.state.passStreak||0) + 1;
@@ -1295,6 +1361,7 @@ function aiTurn(){
     renderAll();
     flashStatus('🤖 Yapay zekâ pas geçti');
     if(!checkGameOver() && G.seri) startTurnTimer();
+    saveKelimeResume();
   }
 }
 
@@ -1313,6 +1380,7 @@ function checkGameOver(){
 function endGameAI(){
   if(G._over) return; G._over = true;
   stopTurnTimer();
+  Resume.clearSnapshot('kelime');
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const verdict = a===b ? 'Berabere!' : (a>b ? 'Kazandın! 🎉' : 'Yapay zekâ kazandı 🤖');
