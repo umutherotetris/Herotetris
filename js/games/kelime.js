@@ -72,8 +72,14 @@ function injectStyles(){
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
 .kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
-.kl-zoom{position:absolute;top:6px;right:12px;z-index:20;width:40px;height:40px;border-radius:11px;border:1px solid rgba(255,255,255,.25);background:rgba(42,28,18,.9);color:#ffe08a;font-size:18px;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.5);touch-action:none;user-select:none}
+.kl-boardtools{display:flex;justify-content:flex-end;align-items:center;padding:0 14px 2px;flex:0 0 auto;min-height:30px}
+.kl-ztipwrap{position:relative;display:inline-flex}
+.kl-zoom{position:relative;z-index:30;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(42,28,18,.92);color:#ffe08a;font-size:17px;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.5);touch-action:none;user-select:none;display:flex;align-items:center;justify-content:center}
+.kl-zoom.parked{position:fixed;z-index:9998}
 .kl-zoom:active{cursor:grabbing;transform:scale(.94)}
+.kl-ztip{position:fixed;white-space:nowrap;background:#2a1c12;color:#ffe9b8;font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,220,170,.3);box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999}
+.kl-ztip.show{opacity:1}
+.kl-starbar{text-align:center;font-size:15px;letter-spacing:3px;color:#ffd86b;line-height:1;margin:-2px 0 3px;flex:0 0 auto;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .kl-zoom:active{transform:scale(.92)}
 .kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#6f5337,#4a3522);border:3px solid #36271a;border-radius:9px;padding:4px;box-shadow:0 12px 34px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,220,170,.12),inset 0 2px 4px rgba(0,0,0,.35)}
 .kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
@@ -591,9 +597,11 @@ function buildGameDOM(){
       <div class="kl-gem" title="Kelimecik"></div>
       <div class="kl-score" data-el="scoreB"><div class="nm" data-el="nameB">Oyuncu 2</div><div class="pt" data-el="ptB">0</div></div>
     </div>
+    <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
     <div class="kl-timerbar" data-el="timerbar"><div class="kl-timerfill" data-el="timerfill"></div></div>
     <div class="kl-status" data-el="status"></div>
-    <div class="kl-boardwrap"><button class="kl-zoom" data-act="zoom" title="Büyük/Uzak mod">🔍</button><div class="kl-board" data-el="board">${cells}</div></div>
+    <div class="kl-boardtools"><div class="kl-ztipwrap"><button class="kl-zoom" data-act="zoom">🔍</button><span class="kl-ztip" data-el="ztip">Yakınlaştır</span></div></div>
+    <div class="kl-boardwrap"><div class="kl-board" data-el="board">${cells}</div></div>
     <div class="kl-rackwrap">
       <div class="kl-rack" data-el="rack"></div>
       <button class="kl-shuffle" data-act="shuffle" title="Karıştır">🔀</button>
@@ -626,40 +634,56 @@ function sndZoom(zin){
   else { tone(760,0.06,'sine',0.06); setTimeout(()=>tone(420,0.09,'sine',0.06),55); }
 }
 
-// Büyüteç/teleskop butonu: sürüklenebilir (park) + dokun=zoom
+// Büyüteç/teleskop butonu: ekranda her yere sürüklenip park edilebilir + dokun=zoom + ipucu balonu
 function bindZoomButton(){
   const btn = G.root.querySelector('[data-act="zoom"]');
-  const wrap = G.root.querySelector('.kl-boardwrap');
-  if(!btn || !wrap) return;
-  if(G.zoomPos){ btn.style.left=G.zoomPos.left+'px'; btn.style.top=G.zoomPos.top+'px'; btn.style.right='auto'; }
+  if(!btn) return;
+  if(G.zoomPos){ parkZoom(btn, G.zoomPos.left, G.zoomPos.top); }
   let sx=0, sy=0, bx=0, by=0, moved=false, dragging=false;
   btn.addEventListener('pointerdown', e=>{
     e.preventDefault(); e.stopPropagation();
     dragging=true; moved=false;
-    const r=btn.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
-    sx=e.clientX; sy=e.clientY; bx=r.left-wr.left; by=r.top-wr.top;
+    const r=btn.getBoundingClientRect();
+    sx=e.clientX; sy=e.clientY; bx=r.left; by=r.top;
     try{ btn.setPointerCapture(e.pointerId); }catch(_){}
   });
   btn.addEventListener('pointermove', e=>{
     if(!dragging) return;
     const dx=e.clientX-sx, dy=e.clientY-sy;
-    if(Math.abs(dx)+Math.abs(dy)>6) moved=true;
+    if(Math.abs(dx)+Math.abs(dy)>6){ moved=true; hideZTip(); }
     if(moved){
-      const wr=wrap.getBoundingClientRect();
-      const nl=Math.max(0,Math.min(wr.width-btn.offsetWidth, bx+dx));
-      const nt=Math.max(0,Math.min(wr.height-btn.offsetHeight, by+dy));
-      btn.style.left=nl+'px'; btn.style.top=nt+'px'; btn.style.right='auto';
+      const nl=Math.max(2,Math.min(window.innerWidth-btn.offsetWidth-2, bx+dx));
+      const nt=Math.max(2,Math.min(window.innerHeight-btn.offsetHeight-2, by+dy));
+      parkZoom(btn, nl, nt);
     }
   });
   const end = e=>{
     if(!dragging) return; dragging=false;
     try{ btn.releasePointerCapture(e.pointerId); }catch(_){}
-    if(moved){ G.zoomPos={ left:parseFloat(btn.style.left)||0, top:parseFloat(btn.style.top)||0 }; }
+    if(moved){ const r=btn.getBoundingClientRect(); G.zoomPos={ left:r.left, top:r.top }; }
     else { toggleZoom(); }    // sürüklenmediyse = dokunma → zoom
   };
   btn.addEventListener('pointerup', end);
   btn.addEventListener('pointercancel', end);
+  // ipucu balonu (üzerine gelince)
+  btn.addEventListener('pointerenter', ()=>showZTip(btn));
+  btn.addEventListener('pointerleave', hideZTip);
+  btn.addEventListener('pointerdown', ()=>{ showZTip(btn); setTimeout(hideZTip, 1100); });
 }
+function parkZoom(btn, left, top){ btn.classList.add('parked'); btn.style.left=left+'px'; btn.style.top=top+'px'; }
+function showZTip(btn){
+  const tip = G.root.querySelector('[data-el="ztip"]'); if(!tip) return;
+  tip.textContent = (G.zoom==='large') ? 'Uzaklaştır' : 'Yakınlaştır';
+  const r = btn.getBoundingClientRect();
+  tip.classList.add('show');
+  // butonun soluna yerleştir; sığmazsa sağına
+  const tw = tip.offsetWidth || 90;
+  let left = r.left - tw - 8;
+  if(left < 4){ left = r.right + 8; }
+  tip.style.left = left+'px';
+  tip.style.top = (r.top + r.height/2 - (tip.offsetHeight||24)/2)+'px';
+}
+function hideZTip(){ const tip = G && G.root && G.root.querySelector('[data-el="ztip"]'); if(tip) tip.classList.remove('show'); }
 
 // Tahtaya çift dokunma → zoom (büyüteç/teleskop simgesi dışında da)
 function bindBoardDoubleTap(){
@@ -678,8 +702,9 @@ function toggleZoom(){
   G.zoom = (G.zoom === 'large') ? 'fit' : 'large';
   sndZoom(G.zoom === 'large');
   applyZoom();
+  const btn = G.root.querySelector('[data-act="zoom"]'); if(btn) showZTip(btn);   // yeni durumu göster
+  setTimeout(hideZTip, 900);
   if(G.zoom === 'large'){
-    // büyük modda ortala
     const wrap = G.root.querySelector('.kl-boardwrap'), board = G.root.querySelector('[data-el="board"]');
     setTimeout(()=>{ if(wrap&&board){ wrap.scrollLeft=(board.offsetWidth-wrap.clientWidth)/2; wrap.scrollTop=(board.offsetHeight-wrap.clientHeight)/2; } }, 30);
   }
@@ -689,8 +714,8 @@ function applyZoom(){
   const wrap = G.root.querySelector('.kl-boardwrap');
   const btn = G.root.querySelector('[data-act="zoom"]');
   if(!board || !wrap) return;
-  if(G.zoom === 'large'){ board.classList.add('large'); wrap.classList.add('large-scroll'); if(btn){ btn.textContent='🔭'; btn.title='Uzak (sığdır) mod'; } }
-  else { board.classList.remove('large'); wrap.classList.remove('large-scroll'); if(btn){ btn.textContent='🔍'; btn.title='Büyük mod'; } }
+  if(G.zoom === 'large'){ board.classList.add('large'); wrap.classList.add('large-scroll'); if(btn) btn.textContent='🔭'; }
+  else { board.classList.remove('large'); wrap.classList.remove('large-scroll'); if(btn) btn.textContent='🔍'; }
 }
 
 function renderAll(){ renderScores(); renderBoard(); renderRack(); if(G.pending && G.pending.length) previewMove(); }
@@ -733,6 +758,14 @@ function renderScores(){
   const ct = currentTurn();
   q('[data-el="scoreA"]').classList.toggle('active', ct==='A');
   q('[data-el="scoreB"]').classList.toggle('active', ct==='B');
+  const starEl = q('[data-el="stars"]');
+  if(starEl){
+    let myScore;
+    if(G.online) myScore = G.state.scores[G.role] || 0;
+    else if(G.ai || G.seri) myScore = G.state.scores.A;
+    else myScore = Math.max(G.state.scores.A, G.state.scores.B);
+    starEl.textContent = starStr(starsFor(myScore));
+  }
   if(G.online){
     const remain = Math.max(0, 100 - (G.state.bagPointer||0));
     let dl = '';
@@ -768,6 +801,7 @@ function renderBoard(){
       const isLast = !pend && G.lastMoveCells && G.lastMoveCells.has(r+','+cc);
       div.className = 'kl-tile'+(pend?' pending':'')+(t.joker?' joker':'')+(isLast?' lastmove':'');
       div.innerHTML = `<span class="l">${letter}</span><span class="p">${pts}</span>`;
+      if(pend){ div.style.touchAction='none'; div.addEventListener('pointerdown', (ev)=>onPendingPointerDown(ev, r, cc)); }
       cell.appendChild(div);
     } else {
       if(bl) bl.style.visibility='visible';
@@ -876,6 +910,7 @@ function updateExchangeBtn(){
 }
 
 function onCellTap(r, c){
+  if(G._suppressNextCellTap){ G._suppressNextCellTap=false; return; }   // pending sürükleme tıklamayı yutar
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
   if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   // doluysa (kalıcı) — kelime anlamını göster
@@ -900,8 +935,66 @@ function onCellTap(r, c){
   }
 }
 
+// ── Konan (pending) taşı sürükle: başka boş kareye taşı veya rafa geri al ──
+let _pdrag = null;
+function rawCellUnder(x,y){
+  const el = document.elementFromPoint(x,y); if(!el || !el.closest) return null;
+  const cell = el.closest('.kl-cell'); if(!cell || !G.root.contains(cell)) return null;
+  return { r:+cell.dataset.r, c:+cell.dataset.c };
+}
+function onPendingPointerDown(e, r, c){
+  if(e.button!=null && e.button!==0) return;
+  if(!canPlayNow()) return;
+  e.stopPropagation();
+  _pdrag = { r, c, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  window.addEventListener('pointermove', onPendingPointerMove);
+  window.addEventListener('pointerup', onPendingPointerUp);
+  window.addEventListener('pointercancel', onPendingPointerUp);
+}
+function onPendingPointerMove(e){
+  if(!_pdrag) return;
+  const dx=e.clientX-_pdrag.x0, dy=e.clientY-_pdrag.y0;
+  if(!_pdrag.moved){
+    if(Math.hypot(dx,dy) < 8) return;
+    _pdrag.moved = true;
+    const p = G.pending.find(x=>x.r===_pdrag.r && x.c===_pdrag.c);
+    const g = document.createElement('div'); g.className='kl-drag-ghost';
+    g.textContent = p ? (p.joker ? (p.assigned||'★') : p.letter) : '';
+    G.root.appendChild(g); _pdrag.ghost = g;
+    const tEl = G.root.querySelector(`.kl-cell[data-r="${_pdrag.r}"][data-c="${_pdrag.c}"] .kl-tile`);
+    if(tEl) tEl.style.opacity='0.3';
+  }
+  if(!_pdrag.moved) return;
+  e.preventDefault();
+  if(_pdrag.ghost){ _pdrag.ghost.style.left=e.clientX+'px'; _pdrag.ghost.style.top=e.clientY+'px'; }
+  highlightDrop(e.clientX, e.clientY);
+}
+function onPendingPointerUp(e){
+  window.removeEventListener('pointermove', onPendingPointerMove);
+  window.removeEventListener('pointerup', onPendingPointerUp);
+  window.removeEventListener('pointercancel', onPendingPointerUp);
+  const d = _pdrag; _pdrag = null;
+  if(!d) return;
+  if(d.ghost) d.ghost.remove();
+  clearDropHighlight();
+  G._suppressNextCellTap = true; setTimeout(()=>{ G._suppressNextCellTap=false; }, 400);
+  const idx = G.pending.findIndex(p=>p.r===d.r && p.c===d.c);
+  if(idx<0){ renderAll(); return; }
+  if(d.moved){
+    const rc = rawCellUnder(e.clientX, e.clientY);
+    if(rc && rc.r===d.r && rc.c===d.c){ /* aynı yer → bırak */ }
+    else if(rc && !G.state.board[rc.r][rc.c] && !G.pending.some((p,k)=>k!==idx && p.r===rc.r && p.c===rc.c)){
+      G.pending[idx].r = rc.r; G.pending[idx].c = rc.c; sndPlace(); haptic(10);   // başka kareye taşındı
+    } else {
+      const p = G.pending.splice(idx,1)[0]; G.rackView.push({ letter:p.letter, points:p.points, joker:p.joker }); sndPick();   // geçersiz hedef → rafa
+    }
+  } else {
+    const p = G.pending.splice(idx,1)[0]; G.rackView.push({ letter:p.letter, points:p.points, joker:p.joker }); sndPick();   // dokunma → rafa (tek tek)
+  }
+  G.selected=null; renderAll();
+}
+
 function placeTile(r,c,tileData){
-  // rafView'dan seçili taşı çıkar
   G.rackView.splice(G.selected,1);
   G.pending.push({ r, c, ...tileData });
   G.selected=null; sndPlace(); haptic(12); renderAll();
