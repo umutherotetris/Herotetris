@@ -49,7 +49,7 @@ function injectStyles(){
   if(stylesInjected) return; stylesInjected = true;
   const css = `
 .kl-root{position:fixed;inset:0;z-index:9000;background:radial-gradient(120% 80% at 50% -10%,#2a1550 0%,#1a0e30 45%,#120a22 100%);color:#efe7ff;display:flex;flex-direction:column;font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
-.kl-top{display:flex;align-items:center;gap:10px;padding:10px 12px;flex:0 0 auto}
+.kl-top{display:flex;align-items:center;gap:11px;padding:11px 14px 10px;flex:0 0 auto;border-bottom:1px solid rgba(200,170,255,.1);background:linear-gradient(180deg,rgba(168,85,247,.07),transparent)}
 .kl-gameicon{width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:linear-gradient(150deg,#a855f7,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 10px rgba(124,58,237,.5),inset 0 1px 0 rgba(255,255,255,.35)}
 .kl-brand{flex:1;min-width:0}
 .kl-title{font-weight:800;letter-spacing:.5px;font-size:17px;line-height:1.1;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -57,8 +57,8 @@ function injectStyles(){
 .kl-icon{width:38px;height:38px;flex:0 0 auto;border-radius:10px;border:1px solid rgba(200,170,255,.22);background:rgba(168,85,247,.12);color:#efe7ff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .kl-icon:active{transform:scale(.93)}
 .kl-scores{display:flex;align-items:center;gap:8px;padding:0 12px 8px;flex:0 0 auto}
-.kl-score{flex:1;background:rgba(168,85,247,.08);border:1px solid rgba(200,170,255,.16);border-radius:13px;padding:7px 10px;text-align:center;transition:.2s}
-.kl-score.active{border-color:#f0b132;background:rgba(240,177,50,.14);box-shadow:0 0 16px rgba(240,177,50,.28)}
+.kl-score{flex:1;background:linear-gradient(165deg,rgba(168,85,247,.15),rgba(124,58,237,.04));border:1px solid rgba(200,170,255,.18);border-radius:14px;padding:8px 10px;text-align:center;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 8px rgba(0,0,0,.22)}
+.kl-score.active{border-color:#f0b132;background:linear-gradient(165deg,rgba(240,177,50,.22),rgba(240,177,50,.05));box-shadow:0 0 18px rgba(240,177,50,.34),inset 0 1px 0 rgba(255,255,255,.14)}
 .kl-score .nm{font-size:11px;color:#cbb9ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kl-score .pt{font-size:21px;font-weight:800;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
 .kl-gem{width:30px;height:30px;flex:0 0 auto;border-radius:7px;transform:rotate(45deg);background:linear-gradient(135deg,#d8b4fe,#7c3aed);border:2px solid #e9c466;box-shadow:0 0 16px rgba(168,85,247,.6),inset 0 0 7px rgba(255,255,255,.45)}
@@ -72,16 +72,15 @@ function injectStyles(){
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
 .kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
-.kl-boardtools{display:flex;justify-content:flex-end;align-items:center;padding:0 14px 2px;flex:0 0 auto;min-height:30px}
-.kl-ztipwrap{position:relative;display:inline-flex}
-.kl-zoom{position:relative;z-index:30;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(42,28,18,.92);color:#ffe08a;font-size:17px;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.5);touch-action:none;user-select:none;display:flex;align-items:center;justify-content:center}
-.kl-zoom.parked{position:fixed;z-index:9998}
-.kl-zoom:active{cursor:grabbing;transform:scale(.94)}
+.kl-zoomdock{position:fixed;z-index:9998;display:flex;gap:5px;padding:4px;border-radius:13px;background:linear-gradient(165deg,rgba(60,42,26,.95),rgba(36,25,15,.95));border:1px solid rgba(255,220,170,.28);box-shadow:0 7px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,235,200,.18);touch-action:none;user-select:none;cursor:grab}
+.kl-zoomdock:active{cursor:grabbing}
+.kl-zbtn{width:29px;height:29px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#ffe08a;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:none;transition:.15s}
+.kl-zbtn.active{background:rgba(240,177,50,.32);border-color:#f0b132;box-shadow:0 0 9px rgba(240,177,50,.45)}
+.kl-zbtn:active{transform:scale(.88)}
 .kl-ztip{position:fixed;white-space:nowrap;background:#2a1c12;color:#ffe9b8;font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,220,170,.3);box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999}
 .kl-ztip.show{opacity:1}
 .kl-starbar{text-align:center;font-size:15px;letter-spacing:3px;color:#ffd86b;line-height:1;margin:-2px 0 3px;flex:0 0 auto;text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.kl-zoom:active{transform:scale(.92)}
-.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#6f5337,#4a3522);border:3px solid #36271a;border-radius:9px;padding:4px;box-shadow:0 12px 34px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,220,170,.12),inset 0 2px 4px rgba(0,0,0,.35)}
+.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#77583b,#48331f);border:3px solid #2c2013;border-radius:12px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 0 1px rgba(255,220,170,.16),inset 0 0 0 2px rgba(255,208,138,.18),inset 0 2px 5px rgba(0,0,0,.42)}
 .kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
 .kl-cell{position:relative;background:linear-gradient(160deg,#f1e8d6,#ddd0b5);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(95,72,45,.62);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
 .kl-cell.b-K3{background:linear-gradient(160deg,#ef5350,#c52f2a);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
@@ -105,7 +104,7 @@ function injectStyles(){
 .kl-lt .ltn{font-size:12px;font-weight:800;color:#ffe08a}
 .kl-lt .ltp{font-size:9px;color:#bba8df}
 .kl-rackwrap{flex:0 0 auto;padding:8px 10px 6px;display:flex;align-items:center;gap:8px}
-.kl-rack{display:flex;gap:6px;justify-content:center;flex:1;min-width:0;background:linear-gradient(180deg,rgba(168,85,247,.14),rgba(124,58,237,.05));border:1px solid rgba(200,170,255,.2);border-radius:15px;padding:9px;min-height:58px;box-shadow:inset 0 2px 5px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.kl-rack{display:flex;gap:6px;justify-content:center;flex:1;min-width:0;background:linear-gradient(180deg,#4c3a27,#352616);border:1px solid rgba(255,220,170,.22);border-radius:16px;padding:9px;min-height:58px;box-shadow:inset 0 3px 9px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,220,170,.14),0 2px 6px rgba(0,0,0,.3)}
 .kl-shuffle{flex:0 0 auto;width:46px;height:46px;border-radius:13px;border:1px solid rgba(200,170,255,.22);background:rgba(168,85,247,.14);color:#efe7ff;font-size:20px;cursor:pointer}
 .kl-shuffle:active{transform:scale(.92) rotate(180deg);transition:transform .2s}
 .kl-rtile{width:44px;height:50px;border-radius:9px;background:linear-gradient(165deg,#fdf6e3 0%,#f0e0b6 55%,#e6d3a4 100%);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;position:relative;cursor:grab;touch-action:none;box-shadow:0 3px 0 #b9925a,0 5px 7px rgba(0,0,0,.45),inset 0 2px 1px rgba(255,255,255,.9),inset 0 -2px 3px rgba(150,110,40,.3);transition:transform .1s}
@@ -119,7 +118,7 @@ function injectStyles(){
 .kl-rtile.dragging{opacity:.35}
 .kl-drag-ghost{position:fixed;z-index:9999;width:48px;height:54px;border-radius:9px;background:linear-gradient(165deg,#fdf6e3,#e6d3a4);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;pointer-events:none;box-shadow:0 8px 18px rgba(0,0,0,.6),inset 0 2px 1px rgba(255,255,255,.9);transform:translate(-50%,-50%) scale(1.12)}
 .kl-actions{display:flex;gap:6px;padding:6px 10px 12px}
-.kl-btn{flex:1;padding:12px 6px;border-radius:12px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.1);color:#efe7ff;font-weight:700;font-size:13px;cursor:pointer}
+.kl-btn{flex:1;padding:12px 6px;border-radius:13px;border:1px solid rgba(200,170,255,.22);background:linear-gradient(180deg,rgba(168,85,247,.17),rgba(124,58,237,.06));color:#efe7ff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 5px rgba(0,0,0,.25)}
 .kl-btn:active{transform:scale(.96)}
 .kl-btn.primary{background:linear-gradient(90deg,#b14de0,#7c3aed);border-color:transparent;box-shadow:0 3px 12px rgba(124,58,237,.45)}
 .kl-btn.warn{background:rgba(214,41,154,.16)}
@@ -600,7 +599,8 @@ function buildGameDOM(){
     <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
     <div class="kl-timerbar" data-el="timerbar"><div class="kl-timerfill" data-el="timerfill"></div></div>
     <div class="kl-status" data-el="status"></div>
-    <div class="kl-boardtools"><div class="kl-ztipwrap"><button class="kl-zoom" data-act="zoom">🔍</button><span class="kl-ztip" data-el="ztip">Yakınlaştır</span></div></div>
+    <div class="kl-zoomdock" data-el="zoomdock"><button class="kl-zbtn" data-act="zin" title="Yakınlaştır">🔎</button><button class="kl-zbtn" data-act="zout" title="Uzaklaştır">🔭</button></div>
+    <span class="kl-ztip" data-el="ztip"></span>
     <div class="kl-boardwrap"><div class="kl-board" data-el="board">${cells}</div></div>
     <div class="kl-rackwrap">
       <div class="kl-rack" data-el="rack"></div>
@@ -622,7 +622,7 @@ function buildGameDOM(){
   c.querySelector('[data-act="pass"]').addEventListener('click', passTurn);
   c.querySelector('[data-act="submit"]').addEventListener('click', submitMove);
   c.querySelector('[data-act="shuffle"]').addEventListener('click', shuffleRack);
-  bindZoomButton();
+  bindZoomDock();
   bindBoardDoubleTap();
   applyZoom();
 }
@@ -634,77 +634,90 @@ function sndZoom(zin){
   else { tone(760,0.06,'sine',0.06); setTimeout(()=>tone(420,0.09,'sine',0.06),55); }
 }
 
-// Büyüteç/teleskop butonu: ekranda her yere sürüklenip park edilebilir + dokun=zoom + ipucu balonu
-function bindZoomButton(){
-  const btn = G.root.querySelector('[data-act="zoom"]');
-  if(!btn) return;
-  if(G.zoomPos){ parkZoom(btn, G.zoomPos.left, G.zoomPos.top); }
-  let sx=0, sy=0, bx=0, by=0, moved=false, dragging=false;
-  btn.addEventListener('pointerdown', e=>{
-    e.preventDefault(); e.stopPropagation();
+// Büyüteç/teleskop dock'u: iki simge yan yana, ekranda her yere sürüklenip park edilebilir, dokun=zoom
+function bindZoomDock(){
+  const dock = G.root.querySelector('[data-el="zoomdock"]');
+  if(!dock) return;
+  // varsayılan konum: tahtanın hemen üstü (yoksa) — yan yana
+  if(G.zoomPos){ placeDock(dock, G.zoomPos.left, G.zoomPos.top); }
+  else { requestAnimationFrame(()=>defaultDockPos(dock)); }
+  let sx=0, sy=0, dx0=0, dy0=0, moved=false, dragging=false, startBtn=null;
+  dock.addEventListener('pointerdown', e=>{
+    e.preventDefault();
     dragging=true; moved=false;
-    const r=btn.getBoundingClientRect();
-    sx=e.clientX; sy=e.clientY; bx=r.left; by=r.top;
-    try{ btn.setPointerCapture(e.pointerId); }catch(_){}
+    startBtn = e.target.closest('.kl-zbtn');
+    const r=dock.getBoundingClientRect();
+    sx=e.clientX; sy=e.clientY; dx0=r.left; dy0=r.top;
+    try{ dock.setPointerCapture(e.pointerId); }catch(_){}
+    if(startBtn) showZTip(startBtn);
   });
-  btn.addEventListener('pointermove', e=>{
+  dock.addEventListener('pointermove', e=>{
     if(!dragging) return;
-    const dx=e.clientX-sx, dy=e.clientY-sy;
-    if(Math.abs(dx)+Math.abs(dy)>6){ moved=true; hideZTip(); }
+    const mx=e.clientX-sx, my=e.clientY-sy;
+    if(Math.abs(mx)+Math.abs(my)>6){ moved=true; hideZTip(); }
     if(moved){
-      const nl=Math.max(2,Math.min(window.innerWidth-btn.offsetWidth-2, bx+dx));
-      const nt=Math.max(2,Math.min(window.innerHeight-btn.offsetHeight-2, by+dy));
-      parkZoom(btn, nl, nt);
+      const nl=Math.max(2,Math.min(window.innerWidth-dock.offsetWidth-2, dx0+mx));
+      const nt=Math.max(2,Math.min(window.innerHeight-dock.offsetHeight-2, dy0+my));
+      placeDock(dock, nl, nt);
     }
   });
   const end = e=>{
     if(!dragging) return; dragging=false;
-    try{ btn.releasePointerCapture(e.pointerId); }catch(_){}
-    if(moved){ const r=btn.getBoundingClientRect(); G.zoomPos={ left:r.left, top:r.top }; }
-    else { toggleZoom(); }    // sürüklenmediyse = dokunma → zoom
+    try{ dock.releasePointerCapture(e.pointerId); }catch(_){}
+    if(moved){ const r=dock.getBoundingClientRect(); G.zoomPos={ left:r.left, top:r.top }; }
+    else if(startBtn){ doZoom(startBtn.dataset.act === 'zin'); }   // dokunma → o simgenin zoom'u
+    setTimeout(hideZTip, 700);
+    startBtn=null;
   };
-  btn.addEventListener('pointerup', end);
-  btn.addEventListener('pointercancel', end);
-  // ipucu balonu (üzerine gelince)
-  btn.addEventListener('pointerenter', ()=>showZTip(btn));
-  btn.addEventListener('pointerleave', hideZTip);
-  btn.addEventListener('pointerdown', ()=>{ showZTip(btn); setTimeout(hideZTip, 1100); });
+  dock.addEventListener('pointerup', end);
+  dock.addEventListener('pointercancel', end);
+  dock.querySelectorAll('.kl-zbtn').forEach(btn=>{
+    btn.addEventListener('pointerenter', ()=>{ if(!dragging) showZTip(btn); });
+    btn.addEventListener('pointerleave', ()=>{ if(!dragging) hideZTip(); });
+  });
 }
-function parkZoom(btn, left, top){ btn.classList.add('parked'); btn.style.left=left+'px'; btn.style.top=top+'px'; }
+function placeDock(dock, left, top){ dock.style.left=left+'px'; dock.style.top=top+'px'; }
+function defaultDockPos(dock){
+  const board = G.root.querySelector('[data-el="board"]');
+  if(!board){ placeDock(dock, window.innerWidth-90, 120); return; }
+  const r = board.getBoundingClientRect();
+  const left = r.left + r.width - dock.offsetWidth - 4;
+  const top  = Math.max(4, r.top - dock.offsetHeight - 10);   // tahtanın üstünün biraz daha üstü
+  placeDock(dock, left, top);
+}
 function showZTip(btn){
-  const tip = G.root.querySelector('[data-el="ztip"]'); if(!tip) return;
-  tip.textContent = (G.zoom==='large') ? 'Uzaklaştır' : 'Yakınlaştır';
-  const r = btn.getBoundingClientRect();
+  const tip = G.root.querySelector('[data-el="ztip"]'); if(!tip || !btn) return;
+  tip.textContent = btn.dataset.act === 'zin' ? 'Yakınlaştır' : 'Uzaklaştır';
   tip.classList.add('show');
-  // butonun soluna yerleştir; sığmazsa sağına
+  const r = btn.getBoundingClientRect();
   const tw = tip.offsetWidth || 90;
-  let left = r.left - tw - 8;
-  if(left < 4){ left = r.right + 8; }
+  let left = r.left + r.width/2 - tw/2;
+  left = Math.max(4, Math.min(window.innerWidth - tw - 4, left));
   tip.style.left = left+'px';
-  tip.style.top = (r.top + r.height/2 - (tip.offsetHeight||24)/2)+'px';
+  tip.style.top = Math.max(4, r.top - (tip.offsetHeight||26) - 6)+'px';   // simgenin üstünde
 }
 function hideZTip(){ const tip = G && G.root && G.root.querySelector('[data-el="ztip"]'); if(tip) tip.classList.remove('show'); }
 
-// Tahtaya çift dokunma → zoom (büyüteç/teleskop simgesi dışında da)
+// Tahtaya çift dokunma → zoom aç/kapa
 function bindBoardDoubleTap(){
   const board = G.root.querySelector('[data-el="board"]');
   if(!board) return;
   let lt=0, lx=0, ly=0;
   board.addEventListener('pointerup', e=>{
-    if(G.selected != null) return;   // taş yerleştirme modunda karışmasın
+    if(G.selected != null) return;
     const now=Date.now();
-    if(now-lt < 320 && Math.abs(e.clientX-lx)<30 && Math.abs(e.clientY-ly)<30){ toggleZoom(); lt=0; }
+    if(now-lt < 320 && Math.abs(e.clientX-lx)<30 && Math.abs(e.clientY-ly)<30){ doZoom(G.zoom!=='large'); lt=0; }
     else { lt=now; lx=e.clientX; ly=e.clientY; }
   });
 }
 
-function toggleZoom(){
-  G.zoom = (G.zoom === 'large') ? 'fit' : 'large';
-  sndZoom(G.zoom === 'large');
+function doZoom(zin){
+  const target = zin ? 'large' : 'fit';
+  if(G.zoom === target) return;
+  G.zoom = target;
+  sndZoom(zin);
   applyZoom();
-  const btn = G.root.querySelector('[data-act="zoom"]'); if(btn) showZTip(btn);   // yeni durumu göster
-  setTimeout(hideZTip, 900);
-  if(G.zoom === 'large'){
+  if(zin){
     const wrap = G.root.querySelector('.kl-boardwrap'), board = G.root.querySelector('[data-el="board"]');
     setTimeout(()=>{ if(wrap&&board){ wrap.scrollLeft=(board.offsetWidth-wrap.clientWidth)/2; wrap.scrollTop=(board.offsetHeight-wrap.clientHeight)/2; } }, 30);
   }
@@ -712,10 +725,12 @@ function toggleZoom(){
 function applyZoom(){
   const board = G.root.querySelector('[data-el="board"]');
   const wrap = G.root.querySelector('.kl-boardwrap');
-  const btn = G.root.querySelector('[data-act="zoom"]');
   if(!board || !wrap) return;
-  if(G.zoom === 'large'){ board.classList.add('large'); wrap.classList.add('large-scroll'); if(btn) btn.textContent='🔭'; }
-  else { board.classList.remove('large'); wrap.classList.remove('large-scroll'); if(btn) btn.textContent='🔍'; }
+  const large = G.zoom === 'large';
+  board.classList.toggle('large', large); wrap.classList.toggle('large-scroll', large);
+  const zin = G.root.querySelector('[data-act="zin"]'), zout = G.root.querySelector('[data-act="zout"]');
+  if(zin) zin.classList.toggle('active', large);
+  if(zout) zout.classList.toggle('active', !large);
 }
 
 function renderAll(){ renderScores(); renderBoard(); renderRack(); if(G.pending && G.pending.length) previewMove(); }
