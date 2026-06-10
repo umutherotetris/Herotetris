@@ -41,8 +41,26 @@ function render(state){
 
   // İsim + admin rozeti auth'tan; seviye/kaju store'dan (renderPlayer)
   setText('pName', displayName);
+  // Google kullanıcısı: isme dokununca nick değiştir
+  const pn = $('pName');
+  if(pn){
+    if(status === 'google'){ pn.style.cursor='pointer'; pn.title='Nick değiştir ✏️'; pn.onclick = openNickModal; }
+    else { pn.style.cursor=''; pn.title=''; pn.onclick = null; }
+  }
+  // Google kullanıcısı: Kaju bloğuna dokununca gönderim modalı
+  const ks = $('pcKajuSend'), kb = $('pcKaju');
+  if(ks) ks.style.display = (status === 'google') ? '' : 'none';
+  if(kb){
+    if(status === 'google'){ kb.style.cursor='pointer'; kb.onclick = openKajuModal; }
+    else { kb.style.cursor=''; kb.onclick = null; }
+  }
   // Admin rozeti — YALNIZCA gerçek /admins kaydı (güvenli)
   show($('adminBadge'), isAdmin === true);
+  const ab = $('adminBadge');
+  if(ab){
+    if(isAdmin === true){ ab.style.cursor='pointer'; ab.title='Kaju yönetimi 💸'; ab.onclick = openKajuModal; }
+    else { ab.style.cursor=''; ab.onclick = null; }
+  }
 
   // Durum satırı + bağlan butonu + misafir banner
   const dot = $('pStatusDot'), txt = $('pStatusText'), btn = $('connectBtn');
@@ -82,6 +100,145 @@ function bind(){
   if(btn && !btn.__bound){ btn.__bound = 1; btn.addEventListener('click', onConnect); }
   if(bannerBtn && !bannerBtn.__bound){ bannerBtn.__bound = 1; bannerBtn.addEventListener('click', onConnect); }
 }
+
+// ── Nick belirleme/değiştirme modalı ────────────────────────────
+function openNickModal(){
+  const st = Auth.getState();
+  if(st.status !== 'google'){ alert('Nick için önce Google ile giriş yapmalısın.'); return; }
+  if(document.getElementById('nickModal')) return;
+  const cur = (Auth.getNick && Auth.getNick()) || '';
+  const ov = document.createElement('div');
+  ov.id = 'nickModal'; ov.className = 'nick-modal-ov';
+  ov.innerHTML = `
+    <div class="nick-modal">
+      <div class="nm-title">✏️ Nick Belirle</div>
+      <div class="nm-sub">Portalda herkese görünen benzersiz adın.<br>3–16 karakter; harf, rakam ve _</div>
+      <input id="nmInput" class="nm-input" maxlength="16" value="${String(cur).replace(/"/g,'&quot;')}" placeholder="nick" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div id="nmMsg" class="nm-msg"></div>
+      <div class="nm-actions">
+        <button class="nm-btn nm-cancel" data-act="cancel">Vazgeç</button>
+        <button class="nm-btn nm-save" data-act="save" disabled>Kaydet</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const input = ov.querySelector('#nmInput');
+  const msg = ov.querySelector('#nmMsg');
+  const saveBtn = ov.querySelector('[data-act="save"]');
+  let checkT = null;
+  const setMsg = (t, ok) => { msg.textContent = t; msg.className = 'nm-msg ' + (ok ? 'ok' : 'bad'); };
+  input.addEventListener('input', () => {
+    const v = input.value.trim();
+    const val = Auth.validateNick(v);
+    if(!val.ok){ setMsg(val.error, false); saveBtn.disabled = true; return; }
+    if(v === cur){ setMsg('Mevcut nick', true); saveBtn.disabled = false; return; }
+    setMsg('Kontrol ediliyor…', true); saveBtn.disabled = true;
+    clearTimeout(checkT);
+    checkT = setTimeout(async () => {
+      const r = await Auth.checkNick(v);
+      if(input.value.trim() !== v) return;
+      if(r.available){ setMsg('✓ Uygun', true); saveBtn.disabled = false; }
+      else { setMsg('✗ ' + (r.error || 'Alınmış'), false); saveBtn.disabled = true; }
+    }, 350);
+  });
+  ov.querySelector('[data-act="cancel"]').addEventListener('click', () => ov.remove());
+  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  saveBtn.addEventListener('click', async () => {
+    saveBtn.disabled = true; setMsg('Kaydediliyor…', true);
+    const r = await Auth.setNick(input.value.trim());
+    if(r.ok){ setMsg('✓ Kaydedildi', true); setTimeout(() => ov.remove(), 700); }
+    else { setMsg('✗ ' + (r.error || 'Olmadı'), false); saveBtn.disabled = false; }
+  });
+  setTimeout(() => input.focus(), 50);
+}
+
+// ── Kaju gönderme modalı (nick'e gönder; admin: ± ayarlama da) ──
+function openKajuModal(){
+  const st = Auth.getState();
+  if(st.status !== 'google'){ alert('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
+  if(document.getElementById('kajuModal')) return;
+  const isAdmin = st.isAdmin === true;
+  const rem = Store.transferRemaining ? Store.transferRemaining() : { min:10, perTx:5000, hour:0, day:0, month:0 };
+  const ov = document.createElement('div');
+  ov.id = 'kajuModal'; ov.className = 'nick-modal-ov';
+  ov.innerHTML = `
+    <div class="nick-modal">
+      <div class="nm-title">💸 Kaju Gönder</div>
+      <div class="nm-sub">${isAdmin
+        ? 'Admin: sınırsız gönderim + bakiye ayarlama (− ile eksilt)'
+        : `Tek seferde ${rem.min}–${rem.perTx} · Kalan: saat ${fmt(rem.hour)} / gün ${fmt(rem.day)} / ay ${fmt(rem.month)}`}</div>
+      <input id="kjNick" class="nm-input" maxlength="16" placeholder="Alıcının nick'i" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input id="kjAmt" class="nm-input" style="margin-top:8px" inputmode="numeric" placeholder="Miktar${isAdmin ? ' ( − ile eksilt )' : ''}">
+      <div id="kjMsg" class="nm-msg"></div>
+      <div class="nm-actions">
+        <button class="nm-btn nm-cancel" data-act="cancel">Vazgeç</button>
+        <button class="nm-btn nm-save" data-act="send">Gönder</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const nickIn = ov.querySelector('#kjNick'), amtIn = ov.querySelector('#kjAmt');
+  const msg = ov.querySelector('#kjMsg'), sendBtn = ov.querySelector('[data-act="send"]');
+  const setMsg = (t, ok) => { msg.textContent = t; msg.className = 'nm-msg ' + (ok ? 'ok' : 'bad'); };
+  // Admin: nick yazarken hedefin mevcut bakiyesini göster
+  if(isAdmin){
+    let lookT = null;
+    nickIn.addEventListener('input', () => {
+      clearTimeout(lookT);
+      const v = nickIn.value.trim();
+      if(v.length < 3){ setMsg('', true); return; }
+      lookT = setTimeout(async () => {
+        const t = await Auth.resolveNick(v);
+        if(nickIn.value.trim() !== v) return;
+        if(!t){ setMsg('✗ Nick bulunamadı', false); return; }
+        try{
+          const cfg = await import('./firebase-config.js');
+          const fdb = await import(`https://www.gstatic.com/firebasejs/${cfg.FIREBASE_SDK}/firebase-database.js`);
+          const snap = await fdb.get(fdb.ref(fdb.getDatabase(), 'users/' + t.uid + '/kaju'));
+          setMsg(`${t.nick} · bakiye: ${fmt(Number(snap.val() || 0))}`, true);
+        }catch(e){ setMsg(t.nick + ' bulundu', true); }
+      }, 400);
+    });
+  }
+  ov.querySelector('[data-act="cancel"]').addEventListener('click', () => ov.remove());
+  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  sendBtn.addEventListener('click', async () => {
+    const nick = nickIn.value.trim();
+    const amt = Math.floor(Number(amtIn.value.trim()));
+    if(!nick){ setMsg('Nick gir', false); return; }
+    if(!Number.isFinite(amt) || amt === 0){ setMsg('Geçerli bir miktar gir', false); return; }
+    if(amt < 0 && !isAdmin){ setMsg('Negatif miktar sadece admin', false); return; }
+    sendBtn.disabled = true; setMsg('Alıcı aranıyor…', true);
+    const target = await Auth.resolveNick(nick);
+    if(!target){ setMsg('✗ Bu nick bulunamadı', false); sendBtn.disabled = false; return; }
+    let r;
+    if(amt < 0){
+      setMsg('Bakiye ayarlanıyor…', true);
+      r = await Store.adminAdjustKaju(target.uid, amt, 'admin-eksiltme');
+      if(r.ok){ setMsg(`✓ ${target.nick}: yeni bakiye ${fmt(r.newBalance)}`, true); setTimeout(() => ov.remove(), 1400); return; }
+    } else {
+      setMsg('Gönderiliyor…', true);
+      r = await Store.transferKaju(target.uid, target.nick, amt);
+      if(r.ok){ setMsg(`✓ ${fmt(amt)} Kaju ${target.nick} adlı oyuncuya gönderildi`, true); setTimeout(() => ov.remove(), 1400); return; }
+    }
+    setMsg('✗ ' + (r.error || 'Olmadı'), false); sendBtn.disabled = false;
+  });
+  setTimeout(() => nickIn.focus(), 50);
+}
+
+// Gelen Kaju bildirimi (claim sonrası küçük toast)
+function kajuToast(text){
+  const t = document.createElement('div');
+  t.className = 'kaju-toast'; t.textContent = text;
+  document.body.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 30);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4200);
+}
+// Store açılışta claim ediyor; sonuç olayla gelir → toast
+window.addEventListener('hero:kaju-claimed', (e) => {
+  const d = e.detail || {};
+  if(!d.total) return;
+  const who = (d.claimed || []).map(c => c.from).filter((v,i,a)=>a.indexOf(v)===i).slice(0,3).join(', ');
+  kajuToast(`💰 +${fmt(d.total)} Kaju geldi!${who ? ' (' + who + ')' : ''}`);
+});
 
 export function initUI(){
   bind();
