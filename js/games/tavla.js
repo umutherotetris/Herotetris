@@ -494,6 +494,10 @@ function draw(){
   // zarlar
   drawDice(ctx, t);
 
+  // vurulan pul (bar'a uçar)
+  if(G.hitChecker){
+    drawChecker(ctx, G.hitChecker.x, G.hitChecker.y, G.hitChecker.r, G.hitChecker.color, t);
+  }
   // hareket eden pul (AI animasyonu)
   if(G.movingChecker){
     drawChecker(ctx, G.movingChecker.x, G.movingChecker.y, G.movingChecker.r, G.movingChecker.color, t);
@@ -613,6 +617,7 @@ function drawCheckers(ctx, t){
     return Math.min(R * 2.05, vis > 1 ? span / (vis - 1) : 0);
   }
   for(let i=0;i<24;i++){
+    if(G.hideAt === i) continue;          // vuruş animasyonu: vurulan taş bar'a uçuyor
     const v = G.state.points[i];
     if(v === 0) continue;
     const color = v > 0 ? 'w' : 'b';
@@ -1663,21 +1668,49 @@ function animateMove(mv, onDone){
   if(!G){ if(onDone) onDone(); return; }
   const color = G.state.turn;
   const from = mv.from, to = mv.to;
-  // başlangıç ve bitiş piksel konumları
+  // VURUŞ mu? (hedefte rakibin TEK taşı) — görsel hatanın düzeltmesi:
+  // 1) vurulan taş animasyon boyunca noktada DURMASIN (gizle + bar'a uçur)
+  // 2) gelen taş rakip taşın ÜSTÜNE değil, zeminine (k=0) insin
+  let hit = false, oppColor = color === 'w' ? 'b' : 'w';
+  if(typeof to === 'number'){
+    const occ = G.state.points[to];
+    if((color === 'w' && occ === -1) || (color === 'b' && occ === 1)) hit = true;
+  }
   const start = checkerPixel(from, color, 'from');
-  const end = checkerPixel(to, color, 'to');
+  let end = checkerPixel(to, color, 'to');
+  if(hit && typeof to === 'number'){
+    const g = G.geo, pg = pointGeometry(to);
+    end = { x: pg.baseX, y: pg.y0 + pg.dir * (g.safe + g.checkerR) };   // k=0 zemini
+  }
   if(!start || !end){ if(onDone) onDone(); return; }
   const dur = 280, t0 = performance.now();
   G.movingChecker = { color, x: start.x, y: start.y, r: G.geo.checkerR };
+  // vurulan taş: noktadan bar'daki gerçek yuvasına uçar
+  if(hit && typeof to === 'number'){
+    const g = G.geo, pg = pointGeometry(to);
+    const hs = { x: pg.baseX, y: pg.y0 + pg.dir * (g.safe + g.checkerR) };
+    const whiteTop = G.flip, k = G.state.bar[oppColor];   // bar'da bir sonraki yuva
+    const gap = g.checkerR * 2.05;
+    const topY = g.innerY + g.safe + g.checkerR + k * gap;
+    const botY = g.innerY + g.innerH - g.safe - g.checkerR - k * gap;
+    const hy = (oppColor === 'w') ? (whiteTop ? topY : botY) : (whiteTop ? botY : topY);
+    G.hitChecker = { color: oppColor, x: hs.x, y: hs.y, sx: hs.x, sy: hs.y, ex: g.barX + g.barW/2, ey: hy, r: G.geo.checkerR };
+    G.hideAt = to;                                         // statik kopyayı gizle
+  }
   function frame(now){
     if(!G){ return; }
     const p = Math.min(1, (now - t0) / dur);
     const e = easeOutCubic(p);
     G.movingChecker.x = start.x + (end.x - start.x) * e;
     G.movingChecker.y = start.y + (end.y - start.y) * e;
+    if(G.hitChecker){
+      const he = easeOutCubic(Math.min(1, p * 1.15));      // vurulan taş hafif önde gider
+      G.hitChecker.x = G.hitChecker.sx + (G.hitChecker.ex - G.hitChecker.sx) * he;
+      G.hitChecker.y = G.hitChecker.sy + (G.hitChecker.ey - G.hitChecker.sy) * he;
+    }
     draw();
     if(p < 1){ requestAnimationFrame(frame); }
-    else { G.movingChecker = null; if(onDone) onDone(); }
+    else { G.movingChecker = null; G.hitChecker = null; G.hideAt = null; if(onDone) onDone(); }
   }
   requestAnimationFrame(frame);
 }
