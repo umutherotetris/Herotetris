@@ -49,6 +49,9 @@ function start(){
   try{ initUI(); }catch(e){ console.error('[UI]', e); toast('Arayüz hatası: ' + (e && e.message || e), true); }
   try{ initNav(); }catch(e){ console.error('[Nav]', e); }
 
+  // 💎 Sosyal Hub + 👑 Admin FAB (izole — hata olsa bile portal çalışır)
+  import('./social.js').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
+
   // Oyunlar dinamik yüklenir — biri eksikse diğerleri + login etkilenmez
   bindCard('gameTetris', './games/tetris.js', 'openTetris', 'Tetris');
   bindCard('gameChess',  './games/chess.js',  'openChess',  'Satranç');
