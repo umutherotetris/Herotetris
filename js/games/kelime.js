@@ -73,14 +73,19 @@ function injectStyles(){
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
 .kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
-.kl-zoomdock{position:fixed;z-index:9998;display:flex;gap:5px;padding:4px;border-radius:13px;background:linear-gradient(165deg,rgba(60,42,26,.95),rgba(36,25,15,.95));border:1px solid rgba(255,220,170,.28);box-shadow:0 7px 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,235,200,.18);touch-action:none;user-select:none;cursor:grab}
+.kl-zoomdock{position:fixed;z-index:9998;display:flex;align-items:center;gap:3px;padding:3px 3px 3px 9px;border-radius:999px;background:linear-gradient(165deg,rgba(52,37,23,.92),rgba(30,21,13,.92));backdrop-filter:blur(6px);border:1px solid rgba(255,220,170,.22);box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,235,200,.14);touch-action:none;user-select:none;cursor:grab}
+.kl-zoomdock::before{content:'';width:3px;height:14px;margin-right:4px;border-radius:2px;background:repeating-linear-gradient(180deg,rgba(255,225,170,.45) 0 2px,transparent 2px 4px)}
 .kl-zoomdock:active{cursor:grabbing}
-.kl-zbtn{width:29px;height:29px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#ffe08a;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:none;transition:.15s}
+.kl-zbtn{width:22px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.05);color:#ffe08a;font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:none;transition:transform .12s,background .12s}
+.kl-zbtn:active{transform:scale(.88);background:rgba(255,220,150,.18)}
 .kl-zbtn.active{background:rgba(240,177,50,.32);border-color:#f0b132;box-shadow:0 0 9px rgba(240,177,50,.45)}
 .kl-zbtn:active{transform:scale(.88)}
 .kl-ztip{position:fixed;white-space:nowrap;background:#2a1c12;color:#ffe9b8;font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,220,170,.3);box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999}
 .kl-ztip.show{opacity:1}
 .kl-starbar{text-align:center;font-size:15px;letter-spacing:3px;color:#ffd86b;line-height:1;margin:-2px 0 3px;flex:0 0 auto;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.kl-flagbtn{position:absolute;top:8px;right:10px;z-index:30;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,220,170,.25);background:linear-gradient(165deg,rgba(52,37,23,.9),rgba(30,21,13,.9));font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);transition:transform .12s}
+.kl-flagbtn:active{transform:scale(.9)}
+.kl-gm-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
 .kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#77583b,#48331f);border:3px solid #2c2013;border-radius:12px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 0 1px rgba(255,220,170,.16),inset 0 0 0 2px rgba(255,208,138,.18),inset 0 2px 5px rgba(0,0,0,.42)}
 .kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
 .kl-cell{position:relative;background:linear-gradient(160deg,#f1e8d6,#ddd0b5);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(95,72,45,.62);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
@@ -632,7 +637,8 @@ function applyRemote(room){
   // Anlık oyunda rakibin "ayrıldı" kararı artık presence'a göre DEĞİL, lastSeen sessizliğine göre
   // (kısa kopmalar oyunu bitirmesin). Kalp atışı döngüsü sessizliği kontrol eder.
   if(!G.async && room.lastSeen && room.lastSeen[oppRole]){ G._oppLastSeen = room.lastSeen[oppRole]; }
-  if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti'); return; }
+  if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti', room.draw ? 'Berabere 🤝' : null); return; }
+  handleDrawOffer(room);
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
     const lm = room.lastMove;
@@ -648,15 +654,87 @@ function applyRemote(room){
   renderAll();
 }
 
-function onlineGameOver(msg){
+
+// ── Oyun menüsü: pes etme / anlaşmalı beraberlik ────────────────
+function openGameMenu(){
+  if(!G || G._over) return;
+  const c = G.root.querySelector('[data-el="content"]');
+  if(c.querySelector('.kl-gamemenu')) return;
+  const isOnline = !!G.online;
+  const ov = document.createElement('div'); ov.className = 'kl-overlay kl-gamemenu';
+  ov.innerHTML = `<div class="kl-card"><h3>🏳️ Oyun Seçenekleri</h3>
+    <div class="kl-gm-list">
+      ${isOnline ? '<button class="kl-btn warn" data-x="draw">🤝 Beraberlik Teklif Et<br><small style="font-weight:400;opacity:.75">İki taraf da ceza almadan biter</small></button>' : ''}
+      <button class="kl-btn" style="border-color:#e0556b;color:#ff9aa8" data-x="resign">🏳️ Pes Et${isOnline?'<br><small style="font-weight:400;opacity:.75">Rakip kazanmış sayılır</small>':''}</button>
+      <button class="kl-btn" data-x="close">Vazgeç</button>
+    </div></div>`;
+  c.appendChild(ov);
+  ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.remove(); });
+  ov.querySelector('[data-x="close"]').addEventListener('click', ()=>ov.remove());
+  ov.querySelector('[data-x="resign"]').addEventListener('click', ()=>{ ov.remove(); resignGame(); });
+  const db_ = ov.querySelector('[data-x="draw"]');
+  if(db_) db_.addEventListener('click', ()=>{ ov.remove(); offerDraw(); });
+}
+
+function resignGame(){
+  if(!G || G._over) return;
+  if(!confirm('Pes etmek istediğine emin misin?' + (G.online?' Rakip kazanmış sayılacak.':''))) return;
+  if(G.online){
+    try{ if(KO) KO.pushMove({ status:'over', overMsg:'Rakip pes etti 🏳️ — kazandın! 🎉', resignedBy:G.role, drawOffer:null }); }catch(e){}
+    onlineGameOver('Pes ettin 🏳️', 'Kaybettin 😔');
+  } else {
+    G._resigned = true;
+    endGameAI();
+  }
+}
+
+function offerDraw(){
+  if(!G || !G.online || G._over) return;
+  if(G._myDrawOffer){ flashStatus('Teklifin zaten bekliyor…'); return; }
+  G._myDrawOffer = true;
+  try{ if(KO) KO.pushMove({ drawOffer: G.role }); }catch(e){}
+  flashStatus('🤝 Beraberlik teklifi gönderildi — rakip bekleniyor');
+}
+
+function handleDrawOffer(room){
+  if(!G || !G.online || G._over) return;
+  const offer = room.drawOffer || null;
+  // Benim teklifim reddedildi (alan silindi)
+  if(G._myDrawOffer && !offer){ G._myDrawOffer = false; flashStatus('Rakip beraberlik teklifini reddetti'); return; }
+  // Rakipten teklif geldi → sor
+  if(offer && offer !== G.role && !G._drawPrompt){
+    G._drawPrompt = true;
+    const c = G.root.querySelector('[data-el="content"]');
+    const ov = document.createElement('div'); ov.className = 'kl-overlay kl-gamemenu';
+    ov.innerHTML = `<div class="kl-card"><h3>🤝 Beraberlik Teklifi</h3>
+      <p>Rakip oyunu <b>anlaşmalı berabere</b> bitirmeyi öneriyor.<br><small style="opacity:.75">İki taraf da ceza puanı almadan biter.</small></p>
+      <div class="kl-gm-list">
+        <button class="kl-btn primary" data-x="acc">🤝 Kabul Et</button>
+        <button class="kl-btn" data-x="dec">Reddet, devam</button>
+      </div></div>`;
+    c.appendChild(ov);
+    ov.querySelector('[data-x="acc"]').addEventListener('click', ()=>{
+      ov.remove(); G._drawPrompt = false;
+      try{ if(KO) KO.pushMove({ status:'over', overMsg:'🤝 Anlaşmalı beraberlik', draw:true, drawOffer:null }); }catch(e){}
+      onlineGameOver('🤝 Anlaşmalı beraberlik', 'Berabere 🤝');
+    });
+    ov.querySelector('[data-x="dec"]').addEventListener('click', ()=>{
+      ov.remove(); G._drawPrompt = false;
+      try{ if(KO) KO.pushMove({ drawOffer: null }); }catch(e){}
+    });
+  }
+}
+
+function onlineGameOver(msg, verdictOverride){
   if(G._over) return; G._over = true;
   if(G._oppGrace){ clearTimeout(G._oppGrace); G._oppGrace = null; }
   stopOnlineHeartbeat();
   try{ if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
-  const verdict = mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔');
-  if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
+  const verdict = verdictOverride || (mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔'));
+  if(verdictOverride){ /* pes/anlaşma: skor sesi yerine nötr */ }
+  else if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
   const stars = starsFor(mine);
   saveRecordsIfBetter();
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
@@ -689,6 +767,7 @@ function buildGameDOM(){
       <div class="kl-score" data-el="scoreB"><div class="nm" data-el="nameB">Oyuncu 2</div><div class="pt" data-el="ptB">0</div></div>
     </div>
     <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
+    <button class="kl-flagbtn" data-act="gamemenu" title="Oyun seçenekleri">🏳️</button>
     <div class="kl-timerbar" data-el="timerbar"><div class="kl-timerfill" data-el="timerfill"></div></div>
     <div class="kl-status" data-el="status"></div>
     <div class="kl-zoomdock" data-el="zoomdock"><button class="kl-zbtn" data-act="zin" title="Yakınlaştır">🔎</button><button class="kl-zbtn" data-act="zout" title="Uzaklaştır">🔭</button></div>
@@ -714,6 +793,7 @@ function buildGameDOM(){
   c.querySelector('[data-act="pass"]').addEventListener('click', passTurn);
   c.querySelector('[data-act="submit"]').addEventListener('click', submitMove);
   c.querySelector('[data-act="shuffle"]').addEventListener('click', shuffleRack);
+  c.querySelector('[data-act="gamemenu"]').addEventListener('click', openGameMenu);
   bindZoomDock();
   bindBoardDoubleTap();
   applyZoom();
@@ -1422,8 +1502,8 @@ function endGameAI(){
   Resume.clearSnapshot('kelime');
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
-  const verdict = a===b ? 'Berabere!' : (a>b ? 'Kazandın! 🎉' : 'Yapay zekâ kazandı 🤖');
-  if(a>b){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
+  const verdict = G._resigned ? 'Pes ettin 🏳️' : (a===b ? 'Berabere!' : (a>b ? 'Kazandın! 🎉' : 'Yapay zekâ kazandı 🤖'));
+  if(G._resigned){ /* pes: kutlama yok */ } else if(a>b){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
   const stars = starsFor(a);
   saveRecordsIfBetter();
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
