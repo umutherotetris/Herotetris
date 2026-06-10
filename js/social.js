@@ -1,0 +1,345 @@
+// ════════════════════════════════════════════════════════════════
+//  Hero Oyun Portalı — SOSYAL HUB (💎 FAB) + 👑 ADMİN FAB
+//  Goodyedek monolitinden taşındı: sürüklenebilir FAB'lar, 3 sekmeli
+//  hub (CHAT / ÖZEL / BİLDİRİM), okunmamış rozetleri.
+//  Veri katmanı temiz: Auth/fdb (globalChat, messages, userNotifs).
+// ════════════════════════════════════════════════════════════════
+import { Auth, db, fdb } from './auth.js';
+
+const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tAgo = (ts) => { const d = Date.now()-ts; if(d<60e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk'; if(d<86400e3) return Math.floor(d/3600e3)+' sa'; return Math.floor(d/86400e3)+' g'; };
+
+let H = null;   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
+
+// ── Sürüklenebilir FAB (monolitten) ─────────────────────────────
+function makeFabDraggable(fab, onMove){
+  const st = { on:false, moved:false, sx:0, sy:0, sl:0, st:0 }, KEY = 'twFab_' + fab.id;
+  const TOP_MIN = 8;
+  try{
+    const p = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(p && p.left != null){
+      const safeTop = Math.max(TOP_MIN, Math.min(window.innerHeight - 54, p.top));
+      const safeLeft = Math.max(4, Math.min(window.innerWidth - 54, p.left));
+      fab.style.left = safeLeft+'px'; fab.style.top = safeTop+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
+    }
+  }catch(e){}
+  fab.addEventListener('pointerdown', (e) => { st.on = true; st.moved = false; st.sx = e.clientX; st.sy = e.clientY; const r = fab.getBoundingClientRect(); st.sl = r.left; st.st = r.top; if(fab.setPointerCapture) fab.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
+  fab.addEventListener('pointermove', (e) => {
+    if(!st.on) return;
+    const dx = e.clientX - st.sx, dy = e.clientY - st.sy;
+    if(Math.abs(dx) > 5 || Math.abs(dy) > 5) st.moved = true;
+    if(!st.moved) return;
+    const l = Math.max(4, Math.min(window.innerWidth - 54, st.sl + dx));
+    const t = Math.max(TOP_MIN, Math.min(window.innerHeight - 54, st.st + dy));
+    fab.style.left = l+'px'; fab.style.top = t+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
+    if(onMove) onMove(l, t);
+  });
+  fab.addEventListener('pointerup', () => { if(!st.on) return; st.on = false; const r = fab.getBoundingClientRect(); try{ localStorage.setItem(KEY, JSON.stringify({ left:r.left, top:r.top })); }catch(e){} });
+  return () => st.moved;
+}
+function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth; fab.classList.add('tw-press'); }
+
+// ── Kurulum ─────────────────────────────────────────────────────
+export function initSocial(){
+  if(document.getElementById('gemFloatBtn')) return;
+  // 💎 Gem FAB
+  const gem = document.createElement('button');
+  gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
+  gem.innerHTML = `<span class="tw-gem">💎</span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
+  document.body.appendChild(gem);
+  // 👑 Admin FAB (yalnız adminde görünür)
+  const adm = document.createElement('button');
+  adm.id = 'adminFloatBtn'; adm.className = 'twin-fab';
+  adm.style.display = 'none';
+  adm.innerHTML = `<span class="tw-crown">👑</span><i class="tw-spark tw-spark-gold-1"></i><i class="tw-spark tw-spark-gold-2"></i><i class="tw-spark tw-spark-gold-3"></i>`;
+  document.body.appendChild(adm);
+  // Hub paneli
+  const panel = document.createElement('div');
+  panel.id = 'gemHubPanel';
+  panel.innerHTML = `
+    <div class="ghp-drag" id="ghpDragHandle">
+      <div class="ghp-title"><span class="ghp-title-gem">💎</span> SOSYAL HUB</div>
+      <div class="ghp-acts"><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
+    </div>
+    <div class="ghp-tabs">
+      <button class="ghp-tab active" data-ghptab="chat">💬 CHAT</button>
+      <button class="ghp-tab" data-ghptab="ozel">✉️ ÖZEL<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
+      <button class="ghp-tab" data-ghptab="notif">🔔 BİLDİRİM<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
+    </div>
+    <div class="ghp-body">
+      <div class="ghp-pane active" id="ghpPane-chat">
+        <div class="ghp-list" id="ghpChatList"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">SOHBET YÜKLENİYOR…</div></div></div>
+        <div class="ghp-input-row"><input class="ghp-input" id="ghpChatInput" maxlength="200" placeholder="Mesaj yaz…" autocomplete="off"><button class="ghp-send" id="ghpChatSend">➤</button></div>
+      </div>
+      <div class="ghp-pane" id="ghpPane-ozel">
+        <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(66,165,245,.12)">
+          <input class="ghp-input" id="ghpDMNick" maxlength="16" placeholder="Nick ile yeni sohbet…" autocomplete="off"><button class="ghp-send" id="ghpDMOpen" style="color:#42A5F5;border-color:rgba(66,165,245,.4);background:linear-gradient(135deg,rgba(66,165,245,.22),rgba(66,165,245,.08))">＋</button>
+        </div>
+        <div class="ghp-list" id="ghpDMList"></div>
+        <div id="ghpDMThread" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+          <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(66,165,245,.12)">
+            <button class="ghp-act" id="ghpDMBack">←</button><div class="ghp-dm-name" id="ghpDMTitle" style="font-size:12px;flex:1"></div>
+          </div>
+          <div class="ghp-list" id="ghpDMMsgs"></div>
+          <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+        </div>
+      </div>
+      <div class="ghp-pane" id="ghpPane-notif">
+        <div class="ghp-list" id="ghpNotifList"></div>
+        <div class="ghp-input-row"><button class="ghp-act" id="ghpNotifClear" style="flex:1;padding:8px">🧹 Tümünü temizle</button></div>
+      </div>
+    </div>`;
+  document.body.appendChild(panel);
+
+  H = { open:false, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
+
+  // FAB davranışları
+  const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(); });
+  gem.addEventListener('click', () => { if(gemMoved()) return; pressAnim(gem); toggle(); });
+  const admMoved = makeFabDraggable(adm);
+  adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => alert('Panel yüklenemedi')); });
+  // Panel sürükleme + kapatma
+  makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
+  panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
+  document.addEventListener('pointerdown', (e) => { if(!H.open) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
+  // Sekmeler
+  panel.querySelectorAll('.ghp-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.ghptab)));
+  // Chat gönder
+  panel.querySelector('#ghpChatSend').addEventListener('click', sendChat);
+  panel.querySelector('#ghpChatInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChat(); });
+  // DM
+  panel.querySelector('#ghpDMOpen').addEventListener('click', dmOpenByNick);
+  panel.querySelector('#ghpDMNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmOpenByNick(); });
+  panel.querySelector('#ghpDMBack').addEventListener('click', dmBack);
+  panel.querySelector('#ghpDMSend').addEventListener('click', dmSend);
+  panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmSend(); });
+  // Bildirim temizle
+  panel.querySelector('#ghpNotifClear').addEventListener('click', clearNotifs);
+
+  // Auth durumuna göre: admin FAB + dinleyiciler
+  Auth.subscribe((st) => {
+    adm.style.display = (st.isAdmin === true) ? 'grid' : 'none';
+    teardownListeners();
+    if(st.uid){ listenChat(); listenNotifs(st.uid); watchDMThreads(); }
+  });
+}
+
+// ── Panel aç/kapa/konum ─────────────────────────────────────────
+function byId(id){ return document.getElementById(id); }
+function position(){
+  const panel = byId('gemHubPanel'), fab = byId('gemFloatBtn');
+  const fr = fab.getBoundingClientRect(), pw = panel.offsetWidth || 316, vw = window.innerWidth, vh = window.innerHeight;
+  const l = Math.max(8, Math.min(vw - pw - 8, fr.left + fr.width/2 - pw/2));
+  panel.style.left = l + 'px'; panel.style.right = 'auto';
+  if(fr.top > 260){ panel.style.bottom = (vh - fr.top + 8) + 'px'; panel.style.top = 'auto'; }
+  else { panel.style.top = (fr.bottom + 8) + 'px'; panel.style.bottom = 'auto'; }
+}
+function open(){ H.open = true; const p = byId('gemHubPanel'); p.classList.remove('ghp-closing'); position(); p.classList.add('ghp-open'); markTabSeen(H.tab); }
+function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); setTimeout(() => p.classList.remove('ghp-open','ghp-closing'), 260); }
+function toggle(){ H.open ? close() : open(); }
+function switchTab(tab){
+  H.tab = tab;
+  document.querySelectorAll('.ghp-tab').forEach(b => b.classList.toggle('active', b.dataset.ghptab === tab));
+  document.querySelectorAll('.ghp-pane').forEach(p => p.classList.toggle('active', p.id === 'ghpPane-' + tab));
+  markTabSeen(tab);
+}
+function markTabSeen(tab){
+  if(tab === 'ozel'){ H.dmUnread = 0; }
+  if(tab === 'notif'){ H.notifUnread = 0; H.seen.notif = Date.now(); saveSeen(); }
+  updateBadges();
+}
+function updateBadges(){
+  const set = (id, n) => { const el = byId(id); if(!el) return; el.textContent = n > 9 ? '9+' : n; el.style.display = n > 0 ? '' : 'none'; };
+  set('ghpDMBadge', H.dmUnread); set('ghpNotifBadge', H.notifUnread);
+  const total = H.dmUnread + H.notifUnread, gb = byId('gemFabBadge');
+  if(gb){ gb.textContent = total > 9 ? '9+' : total; gb.style.display = total > 0 ? 'grid' : 'none'; }
+}
+function loadSeen(){ try{ return JSON.parse(localStorage.getItem('hero_hub_seen') || '{}'); }catch(e){ return {}; } }
+function saveSeen(){ try{ localStorage.setItem('hero_hub_seen', JSON.stringify(H.seen)); }catch(e){} }
+
+// ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
+function listenChat(){
+  const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
+  H.offChat = fdb.onValue(ref, (snap) => {
+    const list = byId('ghpChatList'); if(!list) return;
+    if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
+    const me = Auth.getState().uid;
+    const rows = []; snap.forEach(ch => rows.push(ch.val()));
+    rows.sort((a,b) => (a.ts||0)-(b.ts||0));
+    list.innerHTML = rows.map(m => `
+      <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}">
+        <div class="ghp-chat-avatar">${m.uid === me ? '🙂' : '👤'}</div>
+        <div class="ghp-chat-body">
+          <div class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</div>
+          <div class="ghp-chat-text">${esc(m.text)}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
+        </div>
+      </div>`).join('');
+    list.scrollTop = list.scrollHeight;
+  });
+}
+async function sendChat(){
+  const st = Auth.getState();
+  const inp = byId('ghpChatInput'); const text = inp.value.trim();
+  if(!text) return;
+  if(!st.uid){ alert('Sohbet için giriş yapmalısın.'); return; }
+  const p = st.profile || {};
+  if(p.muted === true && (!p.muteUntil || p.muteUntil > Date.now())){ alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '')); return; }
+  inp.value = '';
+  try{
+    await fdb.push(fdb.ref(db, 'globalChat'), { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() });
+  }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
+}
+
+// ── ✉️ ÖZEL MESAJLAR ────────────────────────────────────────────
+function pairKey(a, b){ return [a, b].sort().join('_'); }
+function loadThreads(){ try{ return JSON.parse(localStorage.getItem('hero_dm_threads') || '[]'); }catch(e){ return []; } }
+function saveThreads(t){ try{ localStorage.setItem('hero_dm_threads', JSON.stringify(t.slice(0, 8))); }catch(e){} }
+function renderThreads(){
+  const list = byId('ghpDMList'); if(!list) return;
+  const t = loadThreads();
+  if(!t.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">NICK YAZIP YENİ SOHBET AÇ</div></div>'; return; }
+  list.innerHTML = t.map(x => `
+    <div class="ghp-dm-row" data-uid="${esc(x.uid)}" data-nick="${esc(x.nick)}">
+      <div class="ghp-dm-avatar">👤</div>
+      <div class="ghp-dm-info"><div class="ghp-dm-name">${esc(x.nick)}</div><div class="ghp-dm-text">${esc(x.last || '')}</div></div>
+      <div class="ghp-dm-ts">${x.ts ? tAgo(x.ts) : ''}</div>
+      ${x.unread ? '<div class="ghp-dm-dot"></div>' : ''}
+    </div>`).join('');
+  list.querySelectorAll('.ghp-dm-row').forEach(r => r.addEventListener('click', () => dmOpenThread(r.dataset.uid, r.dataset.nick)));
+}
+async function dmOpenByNick(){
+  const inp = byId('ghpDMNick'); const nick = inp.value.trim();
+  if(!nick) return;
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google'){ alert('Özel mesaj için Google ile giriş gerekli.'); return; }
+  const t = await Auth.resolveNick(nick);
+  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
+  if(t.uid === me.uid){ alert('Kendine mesaj atamazsın 🙂'); return; }
+  inp.value = '';
+  dmOpenThread(t.uid, t.nick || nick);
+}
+function dmOpenThread(uid, nick){
+  H.dmThread = { uid, nick };
+  byId('ghpDMList').style.display = 'none';
+  byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
+  const th = byId('ghpDMThread'); th.style.display = 'flex';
+  byId('ghpDMTitle').textContent = '✉️ ' + nick;
+  // okundu işaretle
+  const ts = loadThreads(); const i = ts.findIndex(x => x.uid === uid);
+  if(i >= 0){ ts[i].unread = false; saveThreads(ts); }
+  H.seen['dm_' + uid] = Date.now(); saveSeen();
+  const me = Auth.getState().uid;
+  const pk = pairKey(me, uid);
+  if(H.offDM){ try{ H.offDM(); }catch(e){} }
+  H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.limitToLast(30)), (snap) => {
+    const box = byId('ghpDMMsgs'); if(!box) return;
+    if(!snap.exists()){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
+    const rows = []; snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
+    rows.sort((a,b) => (a.ts||0)-(b.ts||0));
+    box.innerHTML = rows.map(m => `
+      <div class="ghp-chat-row${m.from === me ? ' mine' : ''}">
+        <div class="ghp-chat-body">
+          <div class="ghp-chat-text">${esc(m.text)}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
+        </div>
+      </div>`).join('');
+    box.scrollTop = box.scrollHeight;
+    H.seen['dm_' + uid] = Date.now(); saveSeen();
+  });
+}
+function dmBack(){
+  if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
+  H.dmThread = null;
+  byId('ghpDMThread').style.display = 'none';
+  byId('ghpDMList').style.display = '';
+  byId('ghpDMList').previousElementSibling.style.display = '';
+  renderThreads();
+}
+async function dmSend(){
+  if(!H.dmThread) return;
+  const inp = byId('ghpDMInput'); const text = inp.value.trim();
+  if(!text) return;
+  const me = Auth.getState();
+  const pk = pairKey(me.uid, H.dmThread.uid);
+  inp.value = '';
+  try{
+    await fdb.push(fdb.ref(db, 'messages/' + pk), { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now() });
+    // konu listesini güncelle
+    const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
+    const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
+    if(i >= 0) ts.splice(i, 1);
+    ts.unshift(item); saveThreads(ts);
+    watchDMThreads();
+  }catch(e){ alert('Gönderilemedi'); }
+}
+// Son konuşmaların yeni mesajlarını izle → rozet
+function watchDMThreads(){
+  Object.values(H.dmWatch).forEach(off => { try{ off(); }catch(e){} });
+  H.dmWatch = {};
+  const me = Auth.getState().uid; if(!me) return;
+  loadThreads().slice(0, 6).forEach(t => {
+    const pk = pairKey(me, t.uid);
+    H.dmWatch[t.uid] = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.limitToLast(1)), (snap) => {
+      if(!snap.exists()) return;
+      let last = null; snap.forEach(ch => last = ch.val());
+      if(!last || last.from === me) return;
+      const seen = H.seen['dm_' + t.uid] || 0;
+      if((last.ts || 0) > seen){
+        const ts = loadThreads(); const i = ts.findIndex(x => x.uid === t.uid);
+        if(i >= 0){ ts[i].last = (last.text || '').slice(0, 40); ts[i].ts = last.ts; ts[i].unread = true; saveThreads(ts); }
+        if(!(H.open && H.tab === 'ozel' && H.dmThread && H.dmThread.uid === t.uid)){
+          H.dmUnread = loadThreads().filter(x => x.unread).length; updateBadges();
+        }
+        if(H.open && H.tab === 'ozel' && !H.dmThread) renderThreads();
+      }
+    });
+  });
+  renderThreads();
+}
+
+// ── 🔔 BİLDİRİMLER ──────────────────────────────────────────────
+function listenNotifs(uid){
+  H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
+    const list = byId('ghpNotifList'); if(!list) return;
+    if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; H.notifUnread = 0; updateBadges(); return; }
+    const rows = []; snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    const seen = H.seen.notif || 0;
+    H.notifUnread = (H.open && H.tab === 'notif') ? 0 : rows.filter(r => (r.ts||0) > seen).length;
+    updateBadges();
+    list.innerHTML = rows.map(n => `
+      <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)">
+        <div class="ghp-notif-icon" style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.2)">${esc(n.icon || '🔔')}</div>
+        <div class="ghp-notif-body">
+          <div class="ghp-notif-text">${esc(n.text || n.msg || '')}</div>
+          <div class="ghp-chat-ts">${tAgo(n.ts || 0)}</div>
+        </div>
+      </div>`).join('');
+  });
+}
+async function clearNotifs(){
+  const uid = Auth.getState().uid; if(!uid) return;
+  try{ await fdb.set(fdb.ref(db, 'userNotifs/' + uid), null); }catch(e){}
+  H.notifUnread = 0; H.seen.notif = Date.now(); saveSeen(); updateBadges();
+}
+
+// ── Panel sürükleme ─────────────────────────────────────────────
+function makePanelDrag(panel, handle){
+  const st = { on:false, sx:0, sy:0, pl:0, pt:0 };
+  handle.addEventListener('pointerdown', (e) => { if(e.target.closest('button')) return; st.on = true; st.sx = e.clientX; st.sy = e.clientY; const r = panel.getBoundingClientRect(); st.pl = r.left; st.pt = r.top; if(handle.setPointerCapture) handle.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
+  handle.addEventListener('pointermove', (e) => { if(!st.on) return; const l = Math.max(8, Math.min(window.innerWidth - panel.offsetWidth - 8, st.pl + e.clientX - st.sx)); const t = Math.max(8, Math.min(window.innerHeight - 120, st.pt + e.clientY - st.sy)); panel.style.left = l+'px'; panel.style.right = 'auto'; panel.style.top = t+'px'; panel.style.bottom = 'auto'; });
+  handle.addEventListener('pointerup', () => { st.on = false; });
+  handle.addEventListener('pointercancel', () => { st.on = false; });
+}
+
+function teardownListeners(){
+  if(!H) return;
+  if(H.offChat){ try{ H.offChat(); }catch(e){} H.offChat = null; }
+  if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
+  if(H.offNotif){ try{ H.offNotif(); }catch(e){} H.offNotif = null; }
+  Object.values(H.dmWatch).forEach(off => { try{ off(); }catch(e){} });
+  H.dmWatch = {};
+}
+
+export default initSocial;
