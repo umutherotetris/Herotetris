@@ -55,10 +55,14 @@ function render(state){
     else { kb.style.cursor=''; kb.onclick = null; }
   }
   // Admin rozeti — YALNIZCA gerçek /admins kaydı (güvenli)
-  show($('adminBadge'), isAdmin === true);
+  // NOT: .pc-admin CSS'te display:none → show()'un boş inline'ı yetmez, açıkça ver
   const ab = $('adminBadge');
   if(ab){
-    if(isAdmin === true){ ab.style.cursor='pointer'; ab.title='Kaju yönetimi 💸'; ab.onclick = openKajuModal; }
+    ab.style.display = (isAdmin === true) ? 'inline-block' : 'none';
+    if(isAdmin === true){
+      ab.style.cursor='pointer'; ab.title='Admin yönetim paneli 👑';
+      ab.onclick = () => import('./admin.js').then(m => m.openAdminPanel()).catch(()=>alert('Panel yüklenemedi (admin.js yüklü mü?)'));
+    }
     else { ab.style.cursor=''; ab.onclick = null; }
   }
 
