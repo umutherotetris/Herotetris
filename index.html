@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#07070d">
   <title>Hero Oyun Portalı</title>
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/tetris.css">
+  <link rel="stylesheet" href="css/tokens.css?v=92">
+  <link rel="stylesheet" href="css/base.css?v=92">
+  <link rel="stylesheet" href="css/components.css?v=92">
+  <link rel="stylesheet" href="css/tetris.css?v=92">
 </head>
 <body>
   <div id="app">
@@ -101,10 +101,10 @@
     </section>
 
     <!-- ══════════════ DİĞER EKRANLAR (yer tutucu) ══════════════ -->
-    <section data-screen="friends"><div id="scrFriends" class="scr-pad"></div></section>
-    <section data-screen="leaderboard"><div id="scrLB" class="scr-pad"></div></section>
-    <section data-screen="profile"><div id="scrProfile" class="scr-pad"></div></section>
-    <section data-screen="notifications"><div id="scrNotif" class="scr-pad"></div></section>
+    <section data-screen="friends"><div id="scrFriends" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
+    <section data-screen="leaderboard"><div id="scrLB" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
+    <section data-screen="profile"><div id="scrProfile" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
+    <section data-screen="notifications"><div id="scrNotif" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
 
   </div>
 
@@ -125,6 +125,13 @@
   }
   if(window.caches && caches.keys){ caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{}); }
   </script>
-  <script type="module" src="js/app.js?v=86"></script>
+  <script type="module" src="js/app.js?v=92"></script>
+  <script type="module">
+  /* Ekranlar + Sosyal Hub: app.js'ten BAĞIMSIZ yedek başlatıcı (önbellek/eski app.js'e karşı) */
+  const V='92';
+  const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
+  import('./js/profile.js?v=' + V).then(m => m.initScreens()).catch(e => { ['scrProfile','scrLB','scrFriends','scrNotif'].forEach(id => err(id, e)); });
+  import('./js/social.js?v=' + V).then(m => m.initSocial()).catch(e => console.error('[SocialBoot]', e));
+  </script>
 </body>
 </html>
