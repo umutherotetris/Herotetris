@@ -72,7 +72,7 @@ export function initSocial(){
   panel.innerHTML = `
     <div class="ghp-drag" id="ghpDragHandle">
       <div class="ghp-title"><span class="ghp-title-gem">💎</span> SOSYAL HUB</div>
-      <div class="ghp-acts"><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
+      <div class="ghp-acts"><button class="ghp-act" id="ghpSizeBtn" title="Boyut: mini / midi / full">⤢</button><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
     </div>
     <div class="ghp-tabs">
       <button class="ghp-tab active" data-ghptab="chat">💬 CHAT</button>
@@ -121,6 +121,8 @@ export function initSocial(){
   // Panel sürükleme + kapatma
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
+  panel.querySelector('#ghpSizeBtn').addEventListener('click', cycleSize);
+  applySize();
   document.addEventListener('pointerdown', (e) => { if(!H.open) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
   // Sekmeler
   panel.querySelectorAll('.ghp-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.ghptab)));
@@ -150,7 +152,23 @@ export function initSocial(){
 
 // ── Panel aç/kapa/konum ─────────────────────────────────────────
 function byId(id){ return document.getElementById(id); }
+const SIZES = ['midi','mini','full'];
+function curSize(){ const v = localStorage.getItem('hero_hub_size'); return SIZES.includes(v) ? v : 'midi'; }
+function applySize(){
+  const p = byId('gemHubPanel'); if(!p) return;
+  const sz = curSize();
+  p.classList.toggle('ghp-mini', sz === 'mini');
+  p.classList.toggle('ghp-full', sz === 'full');
+  const btn = byId('ghpSizeBtn'); if(btn) btn.textContent = sz === 'full' ? '⤡' : (sz === 'mini' ? '▣' : '⤢');
+  if(H && H.open) position();
+}
+function cycleSize(){
+  const next = SIZES[(SIZES.indexOf(curSize()) + 1) % SIZES.length];
+  try{ localStorage.setItem('hero_hub_size', next); }catch(e){}
+  applySize();
+}
 function position(){
+  if(curSize() === 'full'){ const p = byId('gemHubPanel'); p.style.left = p.style.top = p.style.right = p.style.bottom = ''; return; }
   const panel = byId('gemHubPanel'), fab = byId('gemFloatBtn');
   const fr = fab.getBoundingClientRect(), pw = panel.offsetWidth || 316, vw = window.innerWidth, vh = window.innerHeight;
   const l = Math.max(8, Math.min(vw - pw - 8, fr.left + fr.width/2 - pw/2));
@@ -189,7 +207,7 @@ function listenChat(){
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
-    const rows = []; snap.forEach(ch => rows.push(ch.val()));
+    const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     list.innerHTML = rows.map(m => `
       <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}">
@@ -307,7 +325,7 @@ function watchDMThreads(){
     const pk = pairKey(me, t.uid);
     H.dmWatch[t.uid] = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.limitToLast(1)), (snap) => {
       if(!snap.exists()) return;
-      let last = null; snap.forEach(ch => last = ch.val());
+      let last = null; snap.forEach(ch => { last = ch.val(); });
       if(!last || last.from === me) return;
       const seen = H.seen['dm_' + t.uid] || 0;
       if((last.ts || 0) > seen){
@@ -352,14 +370,14 @@ function renderNotifPane(){
 }
 function listenNotifs(uid){
   H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
-    const rows = []; if(snap.exists()) snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
+    const rows = []; if(snap.exists()) snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
     H.notifRows = rows;
     renderNotifPane();
   });
 }
 function listenBroadcasts(){
   H.offBcast = fdb.onValue(fdb.query(fdb.ref(db, 'broadcasts'), fdb.limitToLast(3)), (snap) => {
-    const rows = []; if(snap.exists()) snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
+    const rows = []; if(snap.exists()) snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
     H.bcastRows = rows;
     renderNotifPane();
   });
