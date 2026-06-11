@@ -40,6 +40,19 @@ function makeFabDraggable(fab, onMove){
 function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth; fab.classList.add('tw-press'); }
 
 // ── Kurulum ─────────────────────────────────────────────────────
+// Ayar: FAB'lar gizlenebilir (profil > ayarlar)
+export function applyFabSetting(){
+  const on = localStorage.getItem('hero_set_fabs') !== '0';
+  const g = document.getElementById('gemFloatBtn');
+  if(g) g.style.visibility = on ? '' : 'hidden';
+}
+// Ekranlardan hub'ı belirli sekmede aç
+export function openHubTab(tab){
+  if(!H) return;
+  switchTab(tab || 'chat');
+  if(!H.open) open();
+}
+
 export function initSocial(){
   if(document.getElementById('gemFloatBtn')) return;
   // 💎 Gem FAB
@@ -127,6 +140,7 @@ export function initSocial(){
   panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') addFriendByNick(); });
 
   // Auth durumuna göre: admin FAB + dinleyiciler
+  applyFabSetting();
   Auth.subscribe((st) => {
     adm.style.display = (st.isAdmin === true) ? 'grid' : 'none';
     teardownListeners();
