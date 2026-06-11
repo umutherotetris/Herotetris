@@ -106,7 +106,7 @@ function bind(){
 }
 
 // ── Nick belirleme/değiştirme modalı ────────────────────────────
-function openNickModal(){
+export function openNickModal(){
   const st = Auth.getState();
   if(st.status !== 'google'){ alert('Nick için önce Google ile giriş yapmalısın.'); return; }
   if(document.getElementById('nickModal')) return;
@@ -156,7 +156,7 @@ function openNickModal(){
 }
 
 // ── Kaju gönderme modalı (nick'e gönder; admin: ± ayarlama da) ──
-function openKajuModal(){
+export function openKajuModal(){
   const st = Auth.getState();
   if(st.status !== 'google'){ alert('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
   if(document.getElementById('kajuModal')) return;
@@ -170,7 +170,10 @@ function openKajuModal(){
       <div class="nm-sub">${isAdmin
         ? 'Admin: sınırsız gönderim + bakiye ayarlama (− ile eksilt)'
         : `Tek seferde ${rem.min}–${rem.perTx} · Kalan: saat ${fmt(rem.hour)} / gün ${fmt(rem.day)} / ay ${fmt(rem.month)}`}</div>
-      <input id="kjNick" class="nm-input" maxlength="16" placeholder="Alıcının nick'i" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div style="position:relative">
+        <input id="kjNick" class="nm-input" maxlength="16" placeholder="Alıcının nick'i" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="adm-sug" id="kjSug" style="display:none"></div>
+      </div>
       <input id="kjAmt" class="nm-input" style="margin-top:8px" inputmode="numeric" placeholder="Miktar${isAdmin ? ' ( − ile eksilt )' : ''}">
       <div id="kjMsg" class="nm-msg"></div>
       <div class="nm-actions">
@@ -182,6 +185,26 @@ function openKajuModal(){
   const nickIn = ov.querySelector('#kjNick'), amtIn = ov.querySelector('#kjAmt');
   const msg = ov.querySelector('#kjMsg'), sendBtn = ov.querySelector('[data-act="send"]');
   const setMsg = (t, ok) => { msg.textContent = t; msg.className = 'nm-msg ' + (ok ? 'ok' : 'bad'); };
+  // Canlı öneri (harf duyarsız) — seçilen alıcının uid'si saklanır
+  let kjTarget = null, kjSugT = null;
+  const kjSug = ov.querySelector('#kjSug');
+  nickIn.addEventListener('input', () => {
+    kjTarget = null;
+    const v = nickIn.value.trim();
+    clearTimeout(kjSugT);
+    if(v.length < 2){ kjSug.style.display = 'none'; return; }
+    kjSugT = setTimeout(async () => {
+      const list = (Auth.searchNicks ? await Auth.searchNicks(v, 6) : []);
+      if(nickIn.value.trim() !== v) return;
+      if(!list.length){ kjSug.style.display = 'none'; return; }
+      kjSug.innerHTML = list.map(x => `<div class="adm-sug-it" data-uid="${String(x.uid).replace(/"/g,'')}" data-nick="${String(x.nick).replace(/"/g,'')}">👤 ${String(x.nick).replace(/</g,'&lt;')}</div>`).join('');
+      kjSug.style.display = '';
+      kjSug.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
+        kjTarget = { uid: it.dataset.uid, nick: it.dataset.nick };
+        nickIn.value = it.dataset.nick; kjSug.style.display = 'none';
+      }));
+    }, 220);
+  });
   // Admin: nick yazarken hedefin mevcut bakiyesini göster
   if(isAdmin){
     let lookT = null;
@@ -211,8 +234,12 @@ function openKajuModal(){
     if(!Number.isFinite(amt) || amt === 0){ setMsg('Geçerli bir miktar gir', false); return; }
     if(amt < 0 && !isAdmin){ setMsg('Negatif miktar sadece admin', false); return; }
     sendBtn.disabled = true; setMsg('Alıcı aranıyor…', true);
-    const target = await Auth.resolveNick(nick);
-    if(!target){ setMsg('✗ Bu nick bulunamadı', false); sendBtn.disabled = false; return; }
+    let target = (kjTarget && kjTarget.nick === nick) ? kjTarget : await Auth.resolveNick(nick);
+    if(!target && Auth.searchNicks){
+      const cand = await Auth.searchNicks(nick, 2);   // harf duyarsız tam eşleşme dene
+      if(cand.length === 1) target = cand[0];
+    }
+    if(!target){ setMsg('✗ Bu nick bulunamadı — öneri listesinden seç', false); sendBtn.disabled = false; return; }
     let r;
     if(amt < 0){
       setMsg('Bakiye ayarlanıyor…', true);
