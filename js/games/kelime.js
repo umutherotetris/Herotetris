@@ -277,6 +277,8 @@ function startLocal(){
   G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
   buildGameDOM();
   renderAll();
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
 }
 
 // ── YAPAY ZEKÂ ──
@@ -303,6 +305,8 @@ async function startAI(difficulty, turnTime){
   G.aiThinking = false; G._over = false;
   buildGameDOM();
   renderAll();
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
   if(G.seri) startTurnTimer();                    // ilk insan turu için sayaç
 }
 function startSeri(turnTime){ startAI('orta', turnTime); }
@@ -349,6 +353,8 @@ async function resumeKelime(snap){
   G.aiThinking = false; G._over = false;
   buildGameDOM();
   renderAll();
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
   flashStatus('↩️ Kaldığın yerden devam');
   if(G.who === 'B'){           // sıra AI'daydı → oynat
     G.aiThinking = true; renderScores();
@@ -590,6 +596,8 @@ function startOnline(role, gameId, oppName, seed, opts){
   G.myRecord = { best:{text:'',score:0}, longest:{text:'',len:0} };
   buildGameDOM();
   renderAll();
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
+  if(typeof window!=='undefined'){ window.__KL=()=>G; }
   if(KO) KO.subscribeRoom(applyRemote);
   if(!G.async){
     G._oppLastSeen = Date.now();          // başlangıçta rakip burada say
@@ -1451,6 +1459,7 @@ function onTimeUp(){
 
 // Yapay zekânın hamlesi
 function aiTurn(){
+  if(typeof window!=='undefined'){ window.__aiCalls=(window.__aiCalls||0)+1; }
   if(!G.ai || G._over) return;
   let mv = null;
   try{ mv = KA.findBestMove(G.state.board, G.state.racks.B, G.ai.difficulty); }catch(e){ mv = null; }
@@ -1461,6 +1470,12 @@ function aiTurn(){
     trackBest(mv.words, 'B');
     setLastMove(mv.pending);          // AI'ın son kelimesini renklendir
     recallConflictingPending();       // AI'ın koyduğu karedeki deneme taşlarımı rafa al
+    // KRİTİK: AI'ın oynadığı taşları rafından DÜŞ (yoksa raf hiç azalmaz,
+    // torba donar ve AI sınırsız taşla oynar — "tahta kendi kendine doldu" bug'ı)
+    for(const p of mv.pending){
+      const i = G.state.racks.B.findIndex(t => p.joker ? t.joker : (!t.joker && t.letter === p.letter));
+      if(i >= 0) G.state.racks.B.splice(i, 1);
+    }
     // AI rafını doldur
     const need = RACK_SIZE - G.state.racks.B.length;
     G.state.racks.B = G.state.racks.B.concat(drawFromBag(G.state.bag, need));
