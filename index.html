@@ -118,6 +118,13 @@
   </nav>
 
   <script defer src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script type="module" src="js/app.js"></script>
+  <script>
+  /* Eski (monolit) Service Worker + cache temizliği — bayat dosya servisini keser */
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
+  }
+  if(window.caches && caches.keys){ caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{}); }
+  </script>
+  <script type="module" src="js/app.js?v=86"></script>
 </body>
 </html>
