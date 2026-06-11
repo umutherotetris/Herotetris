@@ -118,7 +118,7 @@ async function renderLeaderboard(){
   try{
     const snap = await fdb.get(fdb.query(fdb.ref(db, 'leaderboard/kaju'), fdb.orderByChild('kaju'), fdb.limitToLast(20)));
     if(!snap.exists()){ body.innerHTML = '<i>Henüz veri yok</i>'; return; }
-    const rows = []; snap.forEach(ch => rows.push({ uid: ch.key, ...ch.val() }));
+    const rows = []; snap.forEach(ch => { rows.push({ uid: ch.key, ...ch.val() }); });
     rows.sort((a,b) => (b.kaju||0)-(a.kaju||0));
     // İsimleri nick'ten tazele (en iyi 20)
     const me = Auth.getState().uid;
