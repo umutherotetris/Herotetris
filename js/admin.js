@@ -39,12 +39,16 @@ export function openAdminPanel(){
         <button class="adm-x" data-a="close">✕</button>
       </div>
       <div class="adm-body">
-        <div class="adm-row">
+        <div class="adm-row" style="position:relative">
           <input class="adm-in" data-el="q" placeholder="Nick veya UID ara…" autocomplete="off" spellcheck="false">
           <button class="adm-btn p" data-a="search">🔍</button>
+          <div class="adm-sug" data-el="sug" style="display:none"></div>
         </div>
         <div class="adm-msg" data-el="msg"></div>
         <div data-el="result"></div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="rebuild">📇 Nick Defterini Onar <span style="opacity:.6;font-weight:400">— tüm oyuncuları aramaya ekler</span></button>
+        </div>
         <div class="adm-sec">
           <button class="adm-acc" data-a="loglist">📜 Son admin işlemleri <span data-el="logarrow">▾</span></button>
           <div class="adm-log" data-el="log" style="display:none"></div>
@@ -57,8 +61,62 @@ export function openAdminPanel(){
   $(ov,'[data-a="close"]').addEventListener('click', closePanel);
   $(ov,'[data-a="search"]').addEventListener('click', doSearch);
   $(ov,'[data-el="q"]').addEventListener('keydown', (e) => { if(e.key==='Enter') doSearch(); });
+  // Canlı öneri: 2+ harf yazınca kayıt defterini tara (harf duyarsız)
+  let sugT = null;
+  $(ov,'[data-el="q"]').addEventListener('input', () => {
+    const v = $(ov,'[data-el="q"]').value.trim();
+    const box = $(ov,'[data-el="sug"]');
+    clearTimeout(sugT);
+    if(v.length < 2 || (v.length >= 20 && !/\s/.test(v))){ box.style.display='none'; return; }
+    sugT = setTimeout(async () => {
+      const list = (Auth.searchNicks ? await Auth.searchNicks(v, 8) : []);
+      if($(ov,'[data-el="q"]').value.trim() !== v) return;
+      if(!list.length){ box.style.display='none'; return; }
+      box.innerHTML = list.map(x => `<div class="adm-sug-it" data-uid="${esc(x.uid)}">👤 ${esc(x.nick)}</div>`).join('');
+      box.style.display = '';
+      box.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
+        box.style.display = 'none';
+        $(ov,'[data-el="q"]').value = it.textContent.replace('👤 ','');
+        loadTarget(it.dataset.uid);
+      }));
+    }, 220);
+  });
   $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
+  $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
+}
+
+// ── Kayıt defteri onarımı: tüm users → nicks/ (admin yetkisiyle) ──
+function nickKeySafe(n){ return String(n||'').replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase().replace(/[.#$\[\]\/\s]/g,''); }
+async function rebuildRegistry(){
+  if(!confirm('Tüm oyuncular taranıp nick kayıt defteri (nicks/) doldurulacak. Devam?')) return;
+  msg('Oyuncular okunuyor…', true);
+  let users;
+  try{ const s = await fdb.get(fdb.ref(db, 'users')); users = s.exists() ? s.val() : {}; }
+  catch(e){ msg('✗ users okunamadı', false); return; }
+  const uids = Object.keys(users);
+  let added = 0, fixedProfile = 0, conflict = 0, skipped = 0, done = 0;
+  for(const uid of uids){
+    done++;
+    if(done % 10 === 0) msg(`Onarılıyor… ${done}/${uids.length}`, true);
+    const p = users[uid] || {};
+    const raw = p.nick || p.name || p.displayName || '';
+    const clean = String(raw).trim().slice(0, 16);
+    const key = nickKeySafe(clean);
+    if(!clean || key.length < 3){ skipped++; continue; }
+    try{
+      const reg = await fdb.get(fdb.ref(db, 'nicks/' + key));
+      if(reg.exists()){
+        if(reg.val().uid !== uid) conflict++;   // aynı nick başka uid'de — ilk gelen korunur
+      } else {
+        await fdb.set(fdb.ref(db, 'nicks/' + key), { uid, nick: clean, ts: Date.now() });
+        added++;
+      }
+      if(!p.nick){ await fdb.update(fdb.ref(db, 'users/' + uid), { nick: clean }); fixedProfile++; }
+    }catch(e){ skipped++; }
+  }
+  msg(`✓ Defter onarıldı: +${added} eklendi · ${fixedProfile} profile nick yazıldı · ${conflict} çakışma · ${skipped} atlandı (${uids.length} oyuncu)`, true);
+  logAdmin('nick-defter-onar', '', `+${added}, profil:${fixedProfile}, çakışma:${conflict}`);
 }
 function closePanel(){ if(P){ P.root.remove(); P = null; } }
 function msg(t, ok){ const m = $(P.root,'[data-el="msg"]'); m.textContent = t||''; m.className = 'adm-msg ' + (ok?'ok':'bad'); }
