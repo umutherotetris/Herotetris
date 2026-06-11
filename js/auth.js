@@ -23,7 +23,7 @@ const {
   signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
   GoogleAuthProvider, linkWithPopup, signOut
 } = await import(`${BASE}/firebase-auth.js`);
-const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst } = await import(`${BASE}/firebase-database.js`);
+const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt } = await import(`${BASE}/firebase-database.js`);
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -73,7 +73,7 @@ async function hydrate(user){
   state.displayName = deriveName(user, state.profile);
   emit();
   // Google kullanıcısının nick'i yoksa arka planda benzersiz bir nick üret (engellemeden)
-  if(user && !user.isAnonymous && !(state.profile && state.profile.nick)){ ensureNick(); }
+  if(user && !user.isAnonymous){ ensureNick(); }   // nick yoksa üret; varsa kayıt defterini onar
 }
 
 onAuthStateChanged(auth, (user) => { hydrate(user); });
@@ -135,7 +135,7 @@ export async function logout(){ try { await signOut(auth); } catch(e){ console.e
 // RTDB erişimini diğer modüllere aç (friends/chat/shop sonraki aşamalarda kullanacak)
 export { db, auth };
 // Veritabanı yardımcıları — store.js ve oyunlar tekrar import etmeden kullanır
-export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst };
+export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt };
 
 boot();
 
@@ -204,6 +204,19 @@ export async function resolveNick(nick){
   return null;
 }
 
+// Nick'leri ön ekle ara (canlı liste): 'ni' → NitrikOksit… Harf duyarsız (anahtarlar küçük).
+export async function searchNicks(prefix, limit){
+  const k = nickKey(String(prefix||'').trim());
+  if(k.length < 2) return [];
+  try{
+    const snap = await get(query(ref(db,'nicks'), orderByKey(), startAt(k), endAt(k + '\uf8ff'), limitToFirst(limit || 8)));
+    if(!snap.exists()) return [];
+    const out = [];
+    snap.forEach(ch => { const v = ch.val() || {}; if(v.uid) out.push({ uid: v.uid, nick: v.nick || ch.key }); });
+    return out;
+  }catch(e){ return []; }
+}
+
 export function getNick(){ return (state.profile && state.profile.nick) || ''; }
 
 // İlk girişte nick yoksa Google adından benzersiz bir nick türet + claim
@@ -212,8 +225,18 @@ async function ensureNick(){
   if(_ensuringNick) return; _ensuringNick = true;
   try{
     if(!state.uid || state.status !== 'google') return;
-    if(state.profile && state.profile.nick) return;
-    let base = (state.user && state.user.displayName) ? state.user.displayName : 'Oyuncu';
+    if(state.profile && state.profile.nick){
+      // Kendini onar: profilde nick var ama kayıt defterinde (nicks/) girdisi yoksa claim et
+      try{
+        const k = nickKey(state.profile.nick);
+        const reg = await get(ref(db, 'nicks/' + k));
+        if(!reg.exists()){ await setNick(state.profile.nick); }
+      }catch(e){}
+      return;
+    }
+    // Taban: önce PORTAL adı (monolitten gelen name/displayName) — Google adı en son çare
+    let base = (state.profile && (state.profile.name || state.profile.displayName)) ||
+               (state.user && state.user.displayName) || 'Oyuncu';
     base = base.replace(/\s+/g,'').replace(/[^A-Za-z0-9_ğüşıöçĞÜŞİÖÇ]/g,'').slice(0, NICK_MAX);
     if(base.length < NICK_MIN) base = 'Oyuncu';
     for(let i=0;i<30;i++){
@@ -221,8 +244,9 @@ async function ensureNick(){
       const r = await setNick(cand);
       if(r.ok) return;
     }
-  }finally{ _ensuringNick = false; }
+  }catch(e){ console.warn('[auth] ensureNick', e); }
+  finally{ _ensuringNick = false; }
 }
 
-export const Auth = { subscribe, getState, loginGoogle, logout, db, auth, ready, validateNick, checkNick, setNick, resolveNick, getNick };
+export const Auth = { subscribe, getState, loginGoogle, logout, db, auth, ready, validateNick, checkNick, setNick, resolveNick, getNick, searchNicks };
 export default Auth;
