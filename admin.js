@@ -1,0 +1,323 @@
+// ════════════════════════════════════════════════════════════════
+//  Hero Oyun Portalı — ADMİN YÖNETİM PANELİ
+//  👑 rozetinden açılır. Yalnız /admins kaydı olan hesaplar.
+//  Bölümler: oyuncu ara → profil + Kaju ± + geçmiş + nick zorla
+//  değiştir + ban/mute. Her işlem adminLog'a yazılır.
+// ════════════════════════════════════════════════════════════════
+import { Auth, db, fdb } from './auth.js';
+import Store from './store.js';
+
+const $ = (root, sel) => root.querySelector(sel);
+const fmt = (n) => Number(n||0).toLocaleString('tr-TR');
+const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let P = null;   // panel durumu { root, target:{uid,profile} }
+
+// ── adminLog kaydı ──────────────────────────────────────────────
+async function logAdmin(action, targetUid, detail){
+  try{
+    const me = Auth.getState();
+    const k = 'a' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    await fdb.set(fdb.ref(db, 'adminLog/' + k), {
+      ts: Date.now(), adminUid: me.uid, adminNick: me.displayName || 'Admin',
+      action, target: targetUid || '', detail: String(detail||'').slice(0, 200)
+    });
+  }catch(e){}
+}
+
+// ── Panel aç/kapa ───────────────────────────────────────────────
+export function openAdminPanel(){
+  const st = Auth.getState();
+  if(st.isAdmin !== true){ alert('Bu panel yalnız adminler içindir.'); return; }
+  if(document.getElementById('adminPanel')) return;
+  const ov = document.createElement('div');
+  ov.id = 'adminPanel'; ov.className = 'adm-ov';
+  ov.innerHTML = `
+    <div class="adm-panel">
+      <div class="adm-head">
+        <div class="adm-title">👑 ADMİN YÖNETİMİ</div>
+        <button class="adm-x" data-a="close">✕</button>
+      </div>
+      <div class="adm-body">
+        <div class="adm-row" style="position:relative">
+          <input class="adm-in" data-el="q" placeholder="Nick veya UID ara…" autocomplete="off" spellcheck="false">
+          <button class="adm-btn p" data-a="search">🔍</button>
+          <div class="adm-sug" data-el="sug" style="display:none"></div>
+        </div>
+        <div class="adm-msg" data-el="msg"></div>
+        <div data-el="result"></div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="rebuild">📇 Nick Defterini Onar <span style="opacity:.6;font-weight:400">— tüm oyuncuları aramaya ekler</span></button>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="loglist">📜 Son admin işlemleri <span data-el="logarrow">▾</span></button>
+          <div class="adm-log" data-el="log" style="display:none"></div>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  P = { root: ov, target: null };
+  ov.addEventListener('click', (e) => { if(e.target === ov) closePanel(); });
+  $(ov,'[data-a="close"]').addEventListener('click', closePanel);
+  $(ov,'[data-a="search"]').addEventListener('click', doSearch);
+  $(ov,'[data-el="q"]').addEventListener('keydown', (e) => { if(e.key==='Enter') doSearch(); });
+  // Canlı öneri: 2+ harf yazınca kayıt defterini tara (harf duyarsız)
+  let sugT = null;
+  $(ov,'[data-el="q"]').addEventListener('input', () => {
+    const v = $(ov,'[data-el="q"]').value.trim();
+    const box = $(ov,'[data-el="sug"]');
+    clearTimeout(sugT);
+    if(v.length < 2 || (v.length >= 20 && !/\s/.test(v))){ box.style.display='none'; return; }
+    sugT = setTimeout(async () => {
+      const list = (Auth.searchNicks ? await Auth.searchNicks(v, 8) : []);
+      if($(ov,'[data-el="q"]').value.trim() !== v) return;
+      if(!list.length){ box.style.display='none'; return; }
+      box.innerHTML = list.map(x => `<div class="adm-sug-it" data-uid="${esc(x.uid)}">👤 ${esc(x.nick)}</div>`).join('');
+      box.style.display = '';
+      box.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
+        box.style.display = 'none';
+        $(ov,'[data-el="q"]').value = it.textContent.replace('👤 ','');
+        loadTarget(it.dataset.uid);
+      }));
+    }, 220);
+  });
+  $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
+  $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
+  setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
+}
+
+// ── Kayıt defteri onarımı: tüm users → nicks/ (admin yetkisiyle) ──
+function nickKeySafe(n){ return String(n||'').replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase().replace(/[.#$\[\]\/\s]/g,''); }
+async function rebuildRegistry(){
+  if(!confirm('Tüm oyuncular taranıp nick kayıt defteri (nicks/) doldurulacak. Devam?')) return;
+  msg('Oyuncular okunuyor…', true);
+  let users;
+  try{ const s = await fdb.get(fdb.ref(db, 'users')); users = s.exists() ? s.val() : {}; }
+  catch(e){ msg('✗ users okunamadı', false); return; }
+  const uids = Object.keys(users);
+  let added = 0, fixedProfile = 0, conflict = 0, skipped = 0, done = 0;
+  for(const uid of uids){
+    done++;
+    if(done % 10 === 0) msg(`Onarılıyor… ${done}/${uids.length}`, true);
+    const p = users[uid] || {};
+    const raw = p.nick || p.name || p.displayName || '';
+    const clean = String(raw).trim().slice(0, 16);
+    const key = nickKeySafe(clean);
+    if(!clean || key.length < 3){ skipped++; continue; }
+    try{
+      const reg = await fdb.get(fdb.ref(db, 'nicks/' + key));
+      if(reg.exists()){
+        if(reg.val().uid !== uid) conflict++;   // aynı nick başka uid'de — ilk gelen korunur
+      } else {
+        await fdb.set(fdb.ref(db, 'nicks/' + key), { uid, nick: clean, ts: Date.now() });
+        added++;
+      }
+      if(!p.nick){ await fdb.update(fdb.ref(db, 'users/' + uid), { nick: clean }); fixedProfile++; }
+    }catch(e){ skipped++; }
+  }
+  msg(`✓ Defter onarıldı: +${added} eklendi · ${fixedProfile} profile nick yazıldı · ${conflict} çakışma · ${skipped} atlandı (${uids.length} oyuncu)`, true);
+  logAdmin('nick-defter-onar', '', `+${added}, profil:${fixedProfile}, çakışma:${conflict}`);
+}
+function closePanel(){ if(P){ P.root.remove(); P = null; } }
+function msg(t, ok){ const m = $(P.root,'[data-el="msg"]'); m.textContent = t||''; m.className = 'adm-msg ' + (ok?'ok':'bad'); }
+
+// ── Oyuncu ara ──────────────────────────────────────────────────
+async function doSearch(){
+  const q = $(P.root,'[data-el="q"]').value.trim();
+  if(!q){ msg('Nick veya UID gir', false); return; }
+  msg('Aranıyor…', true);
+  let uid = null;
+  if(q.length >= 20 && !/\s/.test(q)){ uid = q; }            // UID gibi görünüyor
+  else { const r = await Auth.resolveNick(q); uid = r ? r.uid : null; }
+  if(!uid){ msg('✗ Oyuncu bulunamadı', false); return; }
+  await loadTarget(uid);
+}
+
+async function loadTarget(uid){
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'users/' + uid));
+    if(!snap.exists()){ msg('✗ users/' + uid + ' yok', false); return; }
+    P.target = { uid, profile: snap.val() || {} };
+    msg('', true);
+    renderTarget();
+  }catch(e){ msg('✗ Okunamadı (izin?)', false); }
+}
+
+function renderTarget(){
+  const { uid, profile: p } = P.target;
+  const banned = p.banned === true;
+  const muted = p.muted === true;
+  const banInfo = banned ? (p.banType==='perma' ? 'KALICI' : ('→ ' + (p.banUntil ? new Date(p.banUntil).toLocaleString('tr-TR') : '?'))) : '';
+  const muteInfo = muted ? ('→ ' + (p.muteUntil ? new Date(p.muteUntil).toLocaleString('tr-TR') : '?')) : '';
+  $(P.root,'[data-el="result"]').innerHTML = `
+    <div class="adm-card">
+      <div class="adm-prow"><b>${esc(p.nick || p.name || p.displayName || '—')}</b>
+        ${banned?'<span class="adm-tag ban">🚫 BANLI '+esc(banInfo)+'</span>':''}
+        ${muted?'<span class="adm-tag mute">🔇 SUSTURULMUŞ '+esc(muteInfo)+'</span>':''}
+      </div>
+      <div class="adm-uid">${esc(uid)}</div>
+      <div class="adm-prow">💰 <b data-el="kaju">${fmt(p.kaju)}</b> Kaju · LV ${esc(p.level||1)} · XP ${fmt(p.xp||p.totalXP||0)}</div>
+
+      <div class="adm-sec"><div class="adm-lbl">💰 KAJU AYARLA</div>
+        <div class="adm-row">
+          <input class="adm-in" data-el="kAmt" inputmode="numeric" placeholder="+ekle / −eksilt (örn. -500)">
+          <button class="adm-btn p" data-a="kaju">Uygula</button>
+        </div>
+        <button class="adm-acc" data-a="khist">📒 Kaju geçmişi <span>▾</span></button>
+        <div class="adm-log" data-el="khist" style="display:none"></div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">✏️ NİCK ZORLA DEĞİŞTİR</div>
+        <div class="adm-row">
+          <input class="adm-in" data-el="nNick" maxlength="16" placeholder="Yeni nick" autocapitalize="off">
+          <button class="adm-btn p" data-a="forcenick">Değiştir</button>
+        </div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">🚫 BAN / 🔇 MUTE</div>
+        <div class="adm-row">
+          <select class="adm-in" data-el="dur">
+            <option value="3600000">1 saat</option><option value="86400000">1 gün</option>
+            <option value="604800000">7 gün</option><option value="0">KALICI</option>
+          </select>
+          <input class="adm-in" data-el="reason" placeholder="Sebep" maxlength="80">
+        </div>
+        <div class="adm-row">
+          ${banned
+            ? '<button class="adm-btn g" data-a="unban">✅ Banı Kaldır</button>'
+            : '<button class="adm-btn r" data-a="ban">🚫 Banla</button>'}
+          ${muted
+            ? '<button class="adm-btn g" data-a="unmute">✅ Susturmayı Kaldır</button>'
+            : '<button class="adm-btn r" data-a="mute">🔇 Sustur</button>'}
+        </div>
+      </div>
+    </div>`;
+  const R = $(P.root,'[data-el="result"]');
+  $(R,'[data-a="kaju"]').addEventListener('click', doKaju);
+  $(R,'[data-a="khist"]').addEventListener('click', toggleKHist);
+  $(R,'[data-a="forcenick"]').addEventListener('click', doForceNick);
+  const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
+  const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
+  if(bb) bb.addEventListener('click', () => doBan(true));
+  if(ub) ub.addEventListener('click', () => doBan(false));
+  if(mb) mb.addEventListener('click', () => doMute(true));
+  if(um) um.addEventListener('click', () => doMute(false));
+}
+
+// ── Kaju ± ──────────────────────────────────────────────────────
+async function doKaju(){
+  const v = Math.floor(Number($(P.root,'[data-el="kAmt"]').value.trim()));
+  if(!Number.isFinite(v) || v === 0){ msg('Geçerli miktar gir (örn. 500 veya -500)', false); return; }
+  msg('Uygulanıyor…', true);
+  const r = await Store.adminAdjustKaju(P.target.uid, v, 'admin-panel');
+  if(!r.ok){ msg('✗ ' + r.error, false); return; }
+  P.target.profile.kaju = r.newBalance;
+  $(P.root,'[data-el="kaju"]').textContent = fmt(r.newBalance);
+  msg(`✓ Yeni bakiye: ${fmt(r.newBalance)}`, true);
+  logAdmin(v > 0 ? 'kaju-ekle' : 'kaju-eksilt', P.target.uid, v + ' → ' + r.newBalance);
+}
+
+async function toggleKHist(){
+  const box = $(P.root,'[data-el="khist"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'users/' + P.target.uid + '/kaju_history'), fdb.limitToLast(15)));
+    if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
+    const rows = []; snap.forEach(ch => { const v = ch.val(); rows.push(v); });
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    box.innerHTML = rows.map(v =>
+      `<div class="adm-li"><span>${new Date(v.ts).toLocaleString('tr-TR')}</span> <b class="${v.amount>=0?'ok':'bad'}">${v.amount>=0?'+':''}${fmt(v.amount)}</b> <span>${esc(v.type||'')} · ${esc(v.reason||'')}</span></div>`
+    ).join('');
+  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+}
+
+// ── Nick zorla değiştir ─────────────────────────────────────────
+function nickKey(n){ return String(n||'').replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase(); }
+async function doForceNick(){
+  const want = $(P.root,'[data-el="nNick"]').value.trim();
+  const v = Auth.validateNick(want);
+  if(!v.ok){ msg('✗ ' + v.error, false); return; }
+  const uid = P.target.uid;
+  const newKey = nickKey(v.clean);
+  msg('Kontrol ediliyor…', true);
+  try{
+    const ex = await fdb.get(fdb.ref(db, 'nicks/' + newKey));
+    if(ex.exists() && ex.val().uid !== uid){ msg('✗ Bu nick başkasında', false); return; }
+    if(!confirm(`Oyuncunun nick'i "${v.clean}" yapılacak. Onaylıyor musun?`)) return;
+    // 1) yeni kayıt defteri girdisi (hedef uid adına — v524 kuralı admin'e izin verir)
+    await fdb.set(fdb.ref(db, 'nicks/' + newKey), { uid, nick: v.clean, ts: Date.now() });
+    // 2) eski kaydı serbest bırak
+    const oldNick = P.target.profile.nick;
+    if(oldNick && nickKey(oldNick) !== newKey){ try{ await fdb.set(fdb.ref(db, 'nicks/' + nickKey(oldNick)), null); }catch(e){} }
+    // 3) profil + zorlama işareti
+    await fdb.update(fdb.ref(db, 'users/' + uid), { nick: v.clean, name: v.clean });
+    await fdb.set(fdb.ref(db, 'adminForcedNick/' + uid), { nick: v.clean, by: Auth.getState().uid, ts: Date.now() });
+    P.target.profile.nick = v.clean;
+    msg(`✓ Nick "${v.clean}" yapıldı`, true);
+    logAdmin('nick-zorla', uid, (oldNick||'—') + ' → ' + v.clean);
+    renderTarget();
+  }catch(e){ msg('✗ Yapılamadı — kurallar v524 mü? (nicks admin izni)', false); }
+}
+
+// ── Ban / Mute ──────────────────────────────────────────────────
+function durReason(){
+  const d = Number($(P.root,'[data-el="dur"]').value);
+  const reason = $(P.root,'[data-el="reason"]').value.trim() || 'Belirtilmedi';
+  return { d, reason, until: d > 0 ? Date.now() + d : 0, label: d > 0 ? ($(P.root,'[data-el="dur"]').selectedOptions[0].textContent) : 'KALICI' };
+}
+async function doBan(on){
+  const uid = P.target.uid;
+  if(on){
+    const { reason, until, label } = durReason();
+    if(!confirm(`Oyuncu ${label} BANLANACAK.\nSebep: ${reason}\nOnaylıyor musun?`)) return;
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + uid), { banned: true, banType: until ? 'temp' : 'perma', banUntil: until || null, banMsg: reason });
+      msg('✓ Banlandı (' + label + ')', true); logAdmin('ban', uid, label + ' · ' + reason);
+    }catch(e){ msg('✗ Yapılamadı', false); return; }
+    P.target.profile.banned = true; P.target.profile.banType = until?'temp':'perma'; P.target.profile.banUntil = until;
+  } else {
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + uid), { banned: false, banType: null, banUntil: null, banMsg: null });
+      msg('✓ Ban kaldırıldı', true); logAdmin('unban', uid, '');
+    }catch(e){ msg('✗ Yapılamadı', false); return; }
+    P.target.profile.banned = false;
+  }
+  renderTarget();
+}
+async function doMute(on){
+  const uid = P.target.uid;
+  if(on){
+    const { reason, until, label } = durReason();
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + uid), { muted: true, muteUntil: until || null, muteReason: reason });
+      msg('✓ Susturuldu (' + label + ')', true); logAdmin('mute', uid, label + ' · ' + reason);
+    }catch(e){ msg('✗ Yapılamadı', false); return; }
+    P.target.profile.muted = true; P.target.profile.muteUntil = until;
+  } else {
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + uid), { muted: false, muteUntil: null, muteReason: null });
+      msg('✓ Susturma kaldırıldı', true); logAdmin('unmute', uid, '');
+    }catch(e){ msg('✗ Yapılamadı', false); return; }
+    P.target.profile.muted = false;
+  }
+  renderTarget();
+}
+
+// ── adminLog listesi ────────────────────────────────────────────
+async function toggleLog(){
+  const box = $(P.root,'[data-el="log"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'adminLog'), fdb.limitToLast(20)));
+    if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
+    const rows = []; snap.forEach(ch => rows.push(ch.val()));
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    box.innerHTML = rows.map(v =>
+      `<div class="adm-li"><span>${new Date(v.ts).toLocaleString('tr-TR')}</span> <b>${esc(v.adminNick||'?')}</b> <span>${esc(v.action)} → ${esc((v.target||'').slice(0,10))}… ${esc(v.detail||'')}</span></div>`
+    ).join('');
+  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+}
+
+export default openAdminPanel;
