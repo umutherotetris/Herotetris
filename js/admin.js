@@ -49,9 +49,14 @@ export function openAdminPanel(){
         <div class="adm-sec">
           <button class="adm-acc" data-a="rebuild">📇 Nick Defterini Onar <span style="opacity:.6;font-weight:400">— tüm oyuncuları aramaya ekler</span></button>
         </div>
+        <div class="adm-stats" data-el="stats">📊 yükleniyor…</div>
         <div class="adm-sec">
           <button class="adm-acc" data-a="onlinelist">🟢 Çevrimiçi Oyuncular <span data-el="oncount" style="color:#5fd38a;font-weight:800"></span> <span>▾</span></button>
           <div class="adm-log" data-el="online" style="display:none"></div>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="chatmod">💬 Sohbet Moderasyonu <span>▾</span></button>
+          <div class="adm-log" data-el="chatmod" style="display:none"></div>
         </div>
         <div class="adm-sec"><div class="adm-lbl">📣 PORTALA DUYURU GÖNDER</div>
           <div class="adm-row">
@@ -94,8 +99,49 @@ export function openAdminPanel(){
   $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
   $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
   $(ov,'[data-a="onlinelist"]').addEventListener('click', toggleOnline);
+  $(ov,'[data-a="chatmod"]').addEventListener('click', toggleChatMod);
+  loadStats();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
+}
+
+// ── 📊 İstatistik şeridi ────────────────────────────────────────
+async function loadStats(){
+  const el = $(P.root,'[data-el="stats"]'); if(!el) return;
+  let total = '?', online = 0;
+  try{ const s = await fdb.get(fdb.ref(db, 'users')); if(s.exists()) total = Object.keys(s.val()).length; }catch(e){}
+  try{
+    const s = await fdb.get(fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
+    if(s.exists()){ const now = Date.now(); s.forEach(ch => { const v = ch.val(); if(now - (v.lastSeen||0) < 180000) online++; }); }
+  }catch(e){}
+  el.innerHTML = `📊 Kayıtlı: <b>${fmt(total)}</b> · 🟢 Çevrimiçi: <b style="color:#5fd38a">${online}</b>`;
+}
+
+// ── 💬 Sohbet moderasyonu: son mesajlar + silme ─────────────────
+async function toggleChatMod(){
+  const box = $(P.root,'[data-el="chatmod"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(15)));
+    if(!snap.exists()){ box.innerHTML = '<i>Mesaj yok</i>'; return; }
+    const rows = []; snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    box.innerHTML = rows.map(m => `
+      <div class="adm-li" style="align-items:center">
+        <b>${esc(m.name || '?')}</b>
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.text || '')}</span>
+        <button class="adm-btn r" style="flex:0;padding:5px 9px;font-size:11px" data-del="${esc(m.key)}">🗑</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
+      if(!confirm('Bu mesaj silinsin mi?')) return;
+      try{
+        await fdb.set(fdb.ref(db, 'globalChat/' + btn.dataset.del), null);
+        btn.closest('.adm-li').remove();
+        logAdmin('chat-sil', '', 'mesaj silindi');
+      }catch(e){ msg('✗ Silinemedi', false); }
+    }));
+  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
 }
 
 // ── 🟢 Çevrimiçi oyuncular (presence) ───────────────────────────
@@ -106,7 +152,7 @@ async function toggleOnline(){
   try{
     const snap = await fdb.get(fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
     if(!snap.exists()){ box.innerHTML = '<i>Şu an çevrimiçi oyuncu yok</i>'; $(P.root,'[data-el="oncount"]').textContent = '(0)'; return; }
-    const rows = []; snap.forEach(ch => rows.push({ uid: ch.key, ...ch.val() }));
+    const rows = []; snap.forEach(ch => { rows.push({ uid: ch.key, ...ch.val() }); });
     // 3 dakikadan eski "online" kayıtları bayat say (kapanışta onDisconnect kaçmış olabilir)
     const fresh = rows.filter(r => (Date.now() - (r.lastSeen || 0)) < 180000);
     fresh.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
@@ -218,6 +264,12 @@ function renderTarget(){
         <div class="adm-log" data-el="khist" style="display:none"></div>
       </div>
 
+      <div class="adm-sec"><div class="adm-lbl">🔔 OYUNCUYA BİLDİRİM</div>
+        <div class="adm-row">
+          <input class="adm-in" data-el="ntfText" maxlength="150" placeholder="Bildirim metni">
+          <button class="adm-btn p" data-a="ntfSend">Gönder</button>
+        </div>
+      </div>
       <div class="adm-sec"><div class="adm-lbl">✏️ NİCK ZORLA DEĞİŞTİR</div>
         <div class="adm-row">
           <input class="adm-in" data-el="nNick" maxlength="16" placeholder="Yeni nick" autocapitalize="off">
@@ -247,12 +299,26 @@ function renderTarget(){
   $(R,'[data-a="kaju"]').addEventListener('click', doKaju);
   $(R,'[data-a="khist"]').addEventListener('click', toggleKHist);
   $(R,'[data-a="forcenick"]').addEventListener('click', doForceNick);
+  $(R,'[data-a="ntfSend"]').addEventListener('click', sendUserNotif);
   const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
   const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
   if(bb) bb.addEventListener('click', () => doBan(true));
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+}
+
+// ── 🔔 Oyuncuya bildirim gönder ─────────────────────────────────
+async function sendUserNotif(){
+  const inp = $(P.root,'[data-el="ntfText"]');
+  const text = inp.value.trim();
+  if(!text){ msg('Bildirim metni boş', false); return; }
+  try{
+    await fdb.push(fdb.ref(db, 'userNotifs/' + P.target.uid), { icon:'📩', text: text.slice(0,150), ts: Date.now(), from:'admin' });
+    inp.value = '';
+    msg('✓ Bildirim gönderildi 🔔', true);
+    logAdmin('bildirim', P.target.uid, text.slice(0, 60));
+  }catch(e){ msg('✗ Gönderilemedi', false); }
 }
 
 // ── Kaju ± ──────────────────────────────────────────────────────
@@ -363,7 +429,7 @@ async function toggleLog(){
   try{
     const snap = await fdb.get(fdb.query(fdb.ref(db, 'adminLog'), fdb.limitToLast(20)));
     if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
-    const rows = []; snap.forEach(ch => rows.push(ch.val()));
+    const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
     box.innerHTML = rows.map(v =>
       `<div class="adm-li"><span>${new Date(v.ts).toLocaleString('tr-TR')}</span> <b>${esc(v.adminNick||'?')}</b> <span>${esc(v.action)} → ${esc((v.target||'').slice(0,10))}… ${esc(v.detail||'')}</span></div>`
