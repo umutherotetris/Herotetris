@@ -63,8 +63,9 @@ export function initSocial(){
     </div>
     <div class="ghp-tabs">
       <button class="ghp-tab active" data-ghptab="chat">💬 CHAT</button>
-      <button class="ghp-tab" data-ghptab="ozel">✉️ ÖZEL<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
-      <button class="ghp-tab" data-ghptab="notif">🔔 BİLDİRİM<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
+      <button class="ghp-tab" data-ghptab="ozel">✉️<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
+      <button class="ghp-tab" data-ghptab="dost">👥</button>
+      <button class="ghp-tab" data-ghptab="notif">🔔<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
     </div>
     <div class="ghp-body">
       <div class="ghp-pane active" id="ghpPane-chat">
@@ -83,6 +84,12 @@ export function initSocial(){
           <div class="ghp-list" id="ghpDMMsgs"></div>
           <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
         </div>
+      </div>
+      <div class="ghp-pane" id="ghpPane-dost">
+        <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(105,240,174,.12)">
+          <input class="ghp-input" id="ghpFrNick" maxlength="16" placeholder="Nick ile arkadaş ekle…" autocomplete="off"><button class="ghp-send" id="ghpFrAdd" style="color:#69F0AE;border-color:rgba(105,240,174,.4);background:linear-gradient(135deg,rgba(105,240,174,.2),rgba(105,240,174,.07))">＋</button>
+        </div>
+        <div class="ghp-list" id="ghpFrList"></div>
       </div>
       <div class="ghp-pane" id="ghpPane-notif">
         <div class="ghp-list" id="ghpNotifList"></div>
@@ -115,12 +122,15 @@ export function initSocial(){
   panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmSend(); });
   // Bildirim temizle
   panel.querySelector('#ghpNotifClear').addEventListener('click', clearNotifs);
+  // Arkadaş ekle
+  panel.querySelector('#ghpFrAdd').addEventListener('click', addFriendByNick);
+  panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') addFriendByNick(); });
 
   // Auth durumuna göre: admin FAB + dinleyiciler
   Auth.subscribe((st) => {
     adm.style.display = (st.isAdmin === true) ? 'grid' : 'none';
     teardownListeners();
-    if(st.uid){ listenChat(); listenNotifs(st.uid); watchDMThreads(); }
+    if(st.uid){ listenChat(); listenNotifs(st.uid); listenBroadcasts(); watchDMThreads(); }
   });
 }
 
@@ -145,6 +155,7 @@ function switchTab(tab){
 }
 function markTabSeen(tab){
   if(tab === 'ozel'){ H.dmUnread = 0; }
+  if(tab === 'dost'){ renderFriends(); }
   if(tab === 'notif'){ H.notifUnread = 0; H.seen.notif = Date.now(); saveSeen(); }
   updateBadges();
 }
@@ -298,17 +309,25 @@ function watchDMThreads(){
   renderThreads();
 }
 
-// ── 🔔 BİLDİRİMLER ──────────────────────────────────────────────
-function listenNotifs(uid){
-  H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
-    const list = byId('ghpNotifList'); if(!list) return;
-    if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; H.notifUnread = 0; updateBadges(); return; }
-    const rows = []; snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
-    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
-    const seen = H.seen.notif || 0;
-    H.notifUnread = (H.open && H.tab === 'notif') ? 0 : rows.filter(r => (r.ts||0) > seen).length;
-    updateBadges();
-    list.innerHTML = rows.map(n => `
+// ── 🔔 BİLDİRİMLER (kişisel + 📣 duyurular birleşik) ───────────
+function renderNotifPane(){
+  const list = byId('ghpNotifList'); if(!list) return;
+  const all = [
+    ...(H.bcastRows || []).map(n => ({ ...n, _bc: true })),
+    ...(H.notifRows || [])
+  ].sort((a,b) => (b.ts||0)-(a.ts||0));
+  const seen = H.seen.notif || 0;
+  H.notifUnread = (H.open && H.tab === 'notif') ? 0 : all.filter(r => (r.ts||0) > seen).length;
+  updateBadges();
+  if(!all.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; return; }
+  list.innerHTML = all.map(n => n._bc ? `
+      <div class="ghp-notif-row" style="border-color:rgba(224,64,251,.25);background:linear-gradient(135deg,rgba(224,64,251,.08),transparent)">
+        <div class="ghp-notif-icon" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.3)">📣</div>
+        <div class="ghp-notif-body">
+          <div class="ghp-notif-text"><b style="color:#E040FB">DUYURU</b> · ${esc(n.text || '')}</div>
+          <div class="ghp-chat-ts">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
+        </div>
+      </div>` : `
       <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)">
         <div class="ghp-notif-icon" style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.2)">${esc(n.icon || '🔔')}</div>
         <div class="ghp-notif-body">
@@ -316,7 +335,70 @@ function listenNotifs(uid){
           <div class="ghp-chat-ts">${tAgo(n.ts || 0)}</div>
         </div>
       </div>`).join('');
+}
+function listenNotifs(uid){
+  H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
+    const rows = []; if(snap.exists()) snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
+    H.notifRows = rows;
+    renderNotifPane();
   });
+}
+function listenBroadcasts(){
+  H.offBcast = fdb.onValue(fdb.query(fdb.ref(db, 'broadcasts'), fdb.limitToLast(3)), (snap) => {
+    const rows = []; if(snap.exists()) snap.forEach(ch => rows.push({ key: ch.key, ...ch.val() }));
+    H.bcastRows = rows;
+    renderNotifPane();
+  });
+}
+
+// ── 👥 ARKADAŞLAR ───────────────────────────────────────────────
+async function renderFriends(){
+  const list = byId('ghpFrList'); if(!list) return;
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google'){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">👥</div><div class="ghp-empty-text">ARKADAŞLAR İÇİN GİRİŞ YAP</div></div>'; return; }
+  list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-text">YÜKLENİYOR…</div></div>';
+  let frs = {};
+  try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid)); frs = s.exists() ? s.val() : {}; }catch(e){}
+  const uids = Object.keys(frs).filter(k => frs[k] !== false);
+  if(!uids.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">👥</div><div class="ghp-empty-text">NICK YAZIP ARKADAŞ EKLE</div></div>'; return; }
+  // İsim + çevrimiçilik
+  const rows = await Promise.all(uids.slice(0, 20).map(async (fu) => {
+    const f = frs[fu] || {};
+    let name = (f && f.name) || null, online = false, last = 0;
+    try{ const u = await fdb.get(fdb.ref(db, 'users/' + fu + '/nick')); if(u.exists()) name = u.val(); }catch(e){}
+    try{ const pr = await fdb.get(fdb.ref(db, 'presence/' + fu)); if(pr.exists()){ const v = pr.val(); last = v.lastSeen||0; online = v.online === true && (Date.now()-last) < 180000; if(!name) name = v.name; } }catch(e){}
+    return { uid: fu, name: name || 'Arkadaş', online, last };
+  }));
+  rows.sort((a,b) => (b.online - a.online) || (b.last - a.last));
+  list.innerHTML = rows.map(r => `
+    <div class="ghp-dm-row" style="border-left-color:${r.online ? '#69F0AE' : '#546E7A'}">
+      <div class="ghp-dm-avatar" style="position:relative">👤${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
+      <div class="ghp-dm-info"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)}</div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
+      <button class="ghp-act" data-fdm="${esc(r.uid)}" data-fn="${esc(r.name)}">✉️</button>
+      <button class="ghp-act" data-frm="${esc(r.uid)}" style="color:#ff7a8a">✕</button>
+    </div>`).join('');
+  list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
+  list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
+    if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
+    try{ await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + b.dataset.frm), null); }catch(e){}
+    try{ await fdb.set(fdb.ref(db, 'friends/' + b.dataset.frm + '/' + me.uid), null); }catch(e){}
+    renderFriends();
+  }));
+}
+async function addFriendByNick(){
+  const inp = byId('ghpFrNick'); const nick = inp.value.trim();
+  if(!nick) return;
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google'){ alert('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
+  const t = await Auth.resolveNick(nick);
+  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
+  if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
+  try{
+    await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid), { name: t.nick, ts: Date.now() });
+    await fdb.set(fdb.ref(db, 'friends/' + t.uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
+    inp.value = '';
+    renderFriends();
+  }catch(e){ alert('Eklenemedi'); }
 }
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;
@@ -338,6 +420,7 @@ function teardownListeners(){
   if(H.offChat){ try{ H.offChat(); }catch(e){} H.offChat = null; }
   if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
   if(H.offNotif){ try{ H.offNotif(); }catch(e){} H.offNotif = null; }
+  if(H.offBcast){ try{ H.offBcast(); }catch(e){} H.offBcast = null; }
   Object.values(H.dmWatch).forEach(off => { try{ off(); }catch(e){} });
   H.dmWatch = {};
 }

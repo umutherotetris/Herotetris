@@ -50,6 +50,16 @@ export function openAdminPanel(){
           <button class="adm-acc" data-a="rebuild">📇 Nick Defterini Onar <span style="opacity:.6;font-weight:400">— tüm oyuncuları aramaya ekler</span></button>
         </div>
         <div class="adm-sec">
+          <button class="adm-acc" data-a="onlinelist">🟢 Çevrimiçi Oyuncular <span data-el="oncount" style="color:#5fd38a;font-weight:800"></span> <span>▾</span></button>
+          <div class="adm-log" data-el="online" style="display:none"></div>
+        </div>
+        <div class="adm-sec"><div class="adm-lbl">📣 PORTALA DUYURU GÖNDER</div>
+          <div class="adm-row">
+            <input class="adm-in" data-el="bcText" maxlength="200" placeholder="Duyuru metni (tüm oyunculara)">
+            <button class="adm-btn p" data-a="bcSend">Gönder</button>
+          </div>
+        </div>
+        <div class="adm-sec">
           <button class="adm-acc" data-a="loglist">📜 Son admin işlemleri <span data-el="logarrow">▾</span></button>
           <div class="adm-log" data-el="log" style="display:none"></div>
         </div>
@@ -83,7 +93,48 @@ export function openAdminPanel(){
   });
   $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
   $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
+  $(ov,'[data-a="onlinelist"]').addEventListener('click', toggleOnline);
+  $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
+}
+
+// ── 🟢 Çevrimiçi oyuncular (presence) ───────────────────────────
+async function toggleOnline(){
+  const box = $(P.root,'[data-el="online"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
+    if(!snap.exists()){ box.innerHTML = '<i>Şu an çevrimiçi oyuncu yok</i>'; $(P.root,'[data-el="oncount"]').textContent = '(0)'; return; }
+    const rows = []; snap.forEach(ch => rows.push({ uid: ch.key, ...ch.val() }));
+    // 3 dakikadan eski "online" kayıtları bayat say (kapanışta onDisconnect kaçmış olabilir)
+    const fresh = rows.filter(r => (Date.now() - (r.lastSeen || 0)) < 180000);
+    fresh.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
+    $(P.root,'[data-el="oncount"]').textContent = '(' + fresh.length + ')';
+    if(!fresh.length){ box.innerHTML = '<i>Şu an çevrimiçi oyuncu yok</i>'; return; }
+    box.innerHTML = fresh.map(r =>
+      `<div class="adm-li adm-online" data-uid="${esc(r.uid)}" style="cursor:pointer;align-items:center">
+        <span style="width:8px;height:8px;border-radius:50%;background:#5fd38a;box-shadow:0 0 6px #5fd38a;flex-shrink:0"></span>
+        <b>${esc(r.name || 'Oyuncu')}</b> <span>${tAgoA(r.lastSeen)}</span>
+      </div>`).join('');
+    box.querySelectorAll('.adm-online').forEach(el => el.addEventListener('click', () => loadTarget(el.dataset.uid)));
+  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+}
+function tAgoA(ts){ const d = Date.now()-(ts||0); if(d<90e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk önce'; return Math.floor(d/3600e3)+' sa önce'; }
+
+// ── 📣 Duyuru ───────────────────────────────────────────────────
+async function sendBroadcast(){
+  const inp = $(P.root,'[data-el="bcText"]');
+  const text = inp.value.trim();
+  if(!text){ msg('Duyuru metni boş', false); return; }
+  if(!confirm('Bu duyuru TÜM oyunculara gidecek:\n\n"' + text + '"\n\nGönderilsin mi?')) return;
+  try{
+    const me = Auth.getState();
+    await fdb.push(fdb.ref(db, 'broadcasts'), { text: text.slice(0,200), ts: Date.now(), by: me.displayName || 'Admin' });
+    inp.value = '';
+    msg('✓ Duyuru gönderildi 📣', true);
+    logAdmin('duyuru', '', text.slice(0, 80));
+  }catch(e){ msg('✗ Gönderilemedi', false); }
 }
 
 // ── Kayıt defteri onarımı: tüm users → nicks/ (admin yetkisiyle) ──

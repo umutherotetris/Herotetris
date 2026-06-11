@@ -72,8 +72,27 @@ async function hydrate(user){
   }
   state.displayName = deriveName(user, state.profile);
   emit();
+  startPresence();                                  // çevrimiçilik: presence/{uid}
   // Google kullanıcısının nick'i yoksa arka planda benzersiz bir nick üret (engellemeden)
   if(user && !user.isAnonymous){ ensureNick(); }   // nick yoksa üret; varsa kayıt defterini onar
+}
+
+// ── PRESENCE: çevrimiçi durumu (admin paneli + arkadaş listesi kullanır) ──
+let _presT = null, _presVis = null;
+function startPresence(){
+  stopPresence();
+  if(!state.uid) return;
+  const pref = ref(db, 'presence/' + state.uid);
+  const write = () => { try{ set(pref, { online:true, lastSeen: Date.now(), name: state.displayName || 'Oyuncu', uid: state.uid }); }catch(e){} };
+  try{ onDisconnect(pref).update({ online:false, lastSeen: Date.now() }); }catch(e){}
+  write();
+  _presT = setInterval(() => { if(!document.hidden) write(); }, 60000);
+  _presVis = () => { if(!document.hidden) write(); };
+  document.addEventListener('visibilitychange', _presVis);
+}
+function stopPresence(){
+  if(_presT){ clearInterval(_presT); _presT = null; }
+  if(_presVis){ try{ document.removeEventListener('visibilitychange', _presVis); }catch(e){} _presVis = null; }
 }
 
 onAuthStateChanged(auth, (user) => { hydrate(user); });
