@@ -4,13 +4,18 @@
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 import Store from './store.js';
-import { openNickModal, openKajuModal } from './ui.js';
+// ui.js modalları: önce normal kopya, export eksikse (eski önbellek) taze sürümlü kopya
+async function uiMod(){
+  try{ const m = await import('./ui.js'); if(m.openKajuModal && m.openNickModal) return m; }catch(e){}
+  return import('./ui.js?v=93');
+}
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = (n) => Number(n||0).toLocaleString('tr-TR');
 const byId = (id) => document.getElementById(id);
 
 export function initScreens(){
+  if(typeof window!=='undefined'){ if(window.__heroScreensInit) return; window.__heroScreensInit = true; }
   Auth.subscribe(renderProfile);
   Store.subscribe(renderProfile);
   renderBridges();
@@ -56,8 +61,8 @@ async function _renderProfile(){
     </div>
     <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>`;
   box.querySelector('[data-p="settings"]').addEventListener('click', openSettings);
-  const nb = box.querySelector('[data-p="nick"]'); if(nb) nb.addEventListener('click', openNickModal);
-  const kb = box.querySelector('[data-p="kaju"]'); if(kb) kb.addEventListener('click', openKajuModal);
+  const nb = box.querySelector('[data-p="nick"]'); if(nb) nb.addEventListener('click', async () => (await uiMod()).openNickModal());
+  const kb = box.querySelector('[data-p="kaju"]'); if(kb) kb.addEventListener('click', async () => (await uiMod()).openKajuModal());
   const lb = box.querySelector('[data-p="login"]'); if(lb) lb.addEventListener('click', () => Auth.loginGoogle && Auth.loginGoogle());
   renderRecords(st);
 }
