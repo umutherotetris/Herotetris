@@ -74,6 +74,7 @@ async function hydrate(user){
   emit();
   startPresence();                                  // çevrimiçilik: presence/{uid}
   startKickListener();                              // 🦵 admin atarsa oturumu yenile
+  checkIPAndBan();                                  // 🌐 IP kaydet + IP banı uygula
   // Google kullanıcısının nick'i yoksa arka planda benzersiz bir nick üret (engellemeden)
   if(user && !user.isAnonymous){ ensureNick(); }   // nick yoksa üret; varsa kayıt defterini onar
 }
@@ -83,6 +84,7 @@ let _presT = null, _presVis = null;
 function startPresence(){
   stopPresence();
   if(!state.uid) return;
+  if(isGhost() && state.isAdmin === true) return;   // 👻 ghost: presence yazma
   const pref = ref(db, 'presence/' + state.uid);
   const write = () => { try{ set(pref, { online:true, lastSeen: Date.now(), name: state.displayName || 'Oyuncu', uid: state.uid }); }catch(e){} };
   try{ onDisconnect(pref).update({ online:false, lastSeen: Date.now() }); }catch(e){}
@@ -91,6 +93,42 @@ function startPresence(){
   _presVis = () => { if(!document.hidden) write(); };
   document.addEventListener('visibilitychange', _presVis);
 }
+// 🌐 IP: yakala → users/{uid}/lastIP yaz → ipBans kontrolü (banlıysa kilitle)
+export function ipKey(ip){ return String(ip||'').replace(/[.:#$\[\]\/]/g,'-'); }
+let _ipDone = false;
+async function checkIPAndBan(){
+  if(_ipDone || !state.uid) return; _ipDone = true;
+  let ip = null;
+  try{
+    const r = await fetch('https://api.ipify.org?format=json', { cache:'no-store' });
+    ip = (await r.json()).ip || null;
+  }catch(e){}
+  if(!ip) return;
+  state.lastIP = ip;
+  try{ await update(ref(db, 'users/' + state.uid), { lastIP: ip, lastIPAt: Date.now() }); }catch(e){}
+  try{
+    const snap = await get(ref(db, 'ipBans/' + ipKey(ip)));
+    if(snap.exists()){
+      const v = snap.val() || {};
+      document.body.innerHTML = '<div style="position:fixed;inset:0;background:#0a0a14;color:#ff8fa0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:sans-serif;text-align:center;padding:24px"><div style="font-size:40px">🚫</div><b style="font-size:18px">IP adresin engellendi</b><div style="font-size:13px;color:#aab">' + String(v.reason||'').replace(/[<>]/g,'') + '</div></div>';
+      try{ await signOut(auth); }catch(e){}
+    }
+  }catch(e){ /* ipBans okunamadı (kural v526 değilse) — sessiz geç */ }
+}
+
+// 👻 GHOST modu (admin): presence yazımını kapat/aç — listelerde görünmez
+export async function setGhost(on){
+  try{ localStorage.setItem('hero_ghost', on ? '1' : '0'); }catch(e){}
+  if(on){
+    stopPresence();
+    try{ await set(ref(db, 'presence/' + state.uid), { online:false, lastSeen: Date.now() }); }catch(e){}
+  } else {
+    startPresence();
+  }
+  return on;
+}
+export function isGhost(){ try{ return localStorage.getItem('hero_ghost') === '1'; }catch(e){ return false; } }
+
 // 🦵 Kick dinleyici: kicks/{uid} taze bir kayıt alırsa kullanıcıyı bilgilendir + yenile
 let _kickOff = null, _kickBootTs = Date.now();
 function startKickListener(){
@@ -198,6 +236,8 @@ export function validateNick(nick){
 export async function checkNick(nick){
   const v = validateNick(nick); if(!v.ok) return { available:false, error:v.error };
   try{
+    const nb = await get(ref(db, 'nickBans/' + nickKey(v.clean)));
+    if(nb.exists() && state.isAdmin !== true) return { available:false, error:'Bu nick yasaklı' };
     const snap = await get(ref(db, 'nicks/' + nickKey(v.clean)));
     if(snap.exists() && snap.val().uid !== state.uid) return { available:false, error:'Bu nick alınmış' };
     return { available:true, clean:v.clean };
@@ -209,6 +249,10 @@ export async function setNick(desired){
   if(!state.uid || state.status !== 'google') return { ok:false, error:'Nick için Google ile giriş gerekli' };
   const v = validateNick(desired); if(!v.ok) return v;
   const key = nickKey(v.clean);
+  try{
+    const nb = await get(ref(db, 'nickBans/' + key));
+    if(nb.exists() && state.isAdmin !== true) return { ok:false, error:'Bu nick yasaklı' };
+  }catch(e){}
   const nref = ref(db, 'nicks/' + key);
   let claimed = false;
   try{

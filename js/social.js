@@ -216,6 +216,7 @@ function saveSeen(){ try{ localStorage.setItem('hero_hub_seen', JSON.stringify(H
 // Admin uid seti (/admins okunur — herkese açık okuma) → şaşalı nick
 async function loadAdminsSet(){
   try{ const s = await fdb.get(fdb.ref(db, 'admins')); H.admins = s.exists() ? s.val() : {}; }catch(e){ H.admins = {}; }
+  try{ const s = await fdb.get(fdb.ref(db, 'gcOperators')); H.ops = s.exists() ? s.val() : {}; }catch(e){ H.ops = {}; }
 }
 // 🔒 Sohbet kilidi (chatModeration/locked) — admin panelden açılıp kapanır
 function listenChatLock(){
@@ -240,9 +241,12 @@ function listenChat(){
     const gcl = glowClass();
     list.innerHTML = rows.map(m => {
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
+      const op = !adm && H.ops && H.ops[m.uid] === true;
       const nameHtml = adm
         ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span>`
-        : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`;
+        : (op
+          ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
+          : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
       <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
         <div class="ghp-chat-avatar">${adm ? '👑' : (m.uid === me ? '🙂' : '👤')}</div>

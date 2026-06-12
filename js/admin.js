@@ -69,6 +69,26 @@ export function openAdminPanel(){
           <button class="adm-acc" data-a="allusers">👥 Tüm Kullanıcılar <span>▾</span></button>
           <div class="adm-log" data-el="allusers" style="display:none"></div>
         </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="ghost">👻 Ghost Modu: <b data-el="ghostState">…</b> <span style="opacity:.6;font-weight:400">— listelerde görünmezsin</span></button>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="ipbans">🌐 IP Yasakları <span>▾</span></button>
+          <div class="adm-log" data-el="ipbans" style="display:none"></div>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="nickbans">🚷 Nick Yasakları <span>▾</span></button>
+          <div class="adm-log" data-el="nickbans" style="display:none">
+            <div class="adm-row">
+              <input class="adm-in" data-el="nbText" maxlength="16" placeholder="Yasaklanacak nick" autocapitalize="off">
+              <button class="adm-btn r" data-a="nbAdd">Yasakla</button>
+            </div>
+            <div data-el="nbList"></div>
+          </div>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="dupclean">🧹 Kopya/Yetim Defter Temizliği <span style="opacity:.6;font-weight:400">— nicks/ düzenler</span></button>
+        </div>
         <div class="adm-sec"><div class="adm-lbl">📣 PORTALA DUYURU GÖNDER</div>
           <div class="adm-row">
             <input class="adm-in" data-el="bcText" maxlength="200" placeholder="Duyuru metni (tüm oyunculara)">
@@ -114,7 +134,12 @@ export function openAdminPanel(){
   $(ov,'[data-a="chatlock"]').addEventListener('click', toggleChatLock);
   $(ov,'[data-a="glow"]').addEventListener('click', toggleGlowPicker);
   $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
-  loadStats(); loadLockState();
+  $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
+  $(ov,'[data-a="ipbans"]').addEventListener('click', toggleIPBans);
+  $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
+  $(ov,'[data-a="nbAdd"]').addEventListener('click', addNickBan);
+  $(ov,'[data-a="dupclean"]').addEventListener('click', cleanRegistry);
+  loadStats(); loadLockState(); loadGhostState();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
 }
@@ -332,6 +357,10 @@ function renderTarget(){
       </div>
       <div class="adm-uid">${esc(uid)}</div>
       <div class="adm-prow">💰 <b data-el="kaju">${fmt(p.kaju)}</b> Kaju · LV ${esc(p.level||1)} · XP ${fmt(p.xp||p.totalXP||0)}</div>
+      <div class="adm-prow" style="font-size:11px;color:#9fb0d8">🌐 IP: <b data-el="ipTxt">${esc(p.lastIP || 'bilinmiyor')}</b>
+        ${p.lastIP ? '<button class="adm-btn r" style="padding:4px 9px;font-size:10px" data-a="ipban">IP Banla</button>' : ''}
+        <span data-el="ipBanState"></span>
+      </div>
 
       <div class="adm-sec"><div class="adm-lbl">💰 KAJU AYARLA</div>
         <div class="adm-row">
@@ -366,6 +395,7 @@ function renderTarget(){
         <div class="adm-row">
           <button class="adm-btn p" style="flex:1" data-a="kick">🦵 Oyundan At</button>
           <button class="adm-btn ${p.isVice?'g':'p'}" style="flex:1" data-a="vice">${p.isVice?'⭐ Vice Kaldır':'⭐ Vice Yap'}</button>
+          <button class="adm-btn p" style="flex:1" data-a="op" data-el="opBtn">🔧 OP…</button>
         </div>
         <div class="adm-row">
           ${banned
@@ -384,12 +414,174 @@ function renderTarget(){
   $(R,'[data-a="ntfSend"]').addEventListener('click', sendUserNotif);
   $(R,'[data-a="kick"]').addEventListener('click', doKick);
   $(R,'[data-a="vice"]').addEventListener('click', doVice);
+  const ipb = $(R,'[data-a="ipban"]'); if(ipb) ipb.addEventListener('click', doIPBan);
+  checkTargetIPBan();
+  const opb = $(R,'[data-a="op"]'); if(opb){ opb.addEventListener('click', doOP); refreshOPBtn(); }
   const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
   const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
   if(bb) bb.addEventListener('click', () => doBan(true));
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+}
+
+// ── 👻 Ghost ────────────────────────────────────────────────────
+async function loadGhostState(){
+  try{
+    const m = await import('./auth.js');
+    const on = m.isGhost && m.isGhost();
+    const el = $(P.root,'[data-el="ghostState"]'); if(el){ el.textContent = on ? 'AÇIK 👻' : 'KAPALI'; el.style.color = on ? '#CE93D8' : '#5fd38a'; }
+    return on;
+  }catch(e){ return false; }
+}
+async function toggleGhost(){
+  try{
+    const m = await import('./auth.js');
+    const on = !(m.isGhost && m.isGhost());
+    await m.setGhost(on);
+    await loadGhostState();
+    msg(on ? '✓ Ghost AÇIK — çevrimiçi listelerde görünmezsin 👻' : '✓ Ghost kapalı — tekrar görünürsün', true);
+    logAdmin(on ? 'ghost-ac' : 'ghost-kapat', '', '');
+  }catch(e){ msg('✗ Yapılamadı', false); }
+}
+
+// ── 🌐 IP ban / liste ───────────────────────────────────────────
+let _ipKey = null;
+async function ipKeyOf(ip){ const m = await import('./auth.js'); return m.ipKey(ip); }
+async function checkTargetIPBan(){
+  const p = P.target && P.target.profile; if(!p || !p.lastIP) return;
+  try{
+    const k = await ipKeyOf(p.lastIP);
+    const snap = await fdb.get(fdb.ref(db, 'ipBans/' + k));
+    const el = $(P.root,'[data-el="ipBanState"]'); const btn = $(P.root,'[data-a="ipban"]');
+    if(snap.exists()){
+      if(el) el.innerHTML = '<span class="adm-tag ban">IP BANLI</span>';
+      if(btn){ btn.textContent = 'IP Banı Kaldır'; btn.className = 'adm-btn g'; btn.style.cssText='padding:4px 9px;font-size:10px'; _ipKey = k; }
+    } else { _ipKey = null; }
+  }catch(e){}
+}
+async function doIPBan(){
+  const p = P.target.profile; if(!p.lastIP) return;
+  const k = await ipKeyOf(p.lastIP);
+  try{
+    if(_ipKey){   // kaldır
+      await fdb.set(fdb.ref(db, 'ipBans/' + k), null);
+      msg('✓ IP banı kaldırıldı', true); logAdmin('ipban-kaldir', P.target.uid, p.lastIP);
+    } else {
+      const reason = $(P.root,'[data-el="reason"]').value.trim() || 'Yönetici kararı';
+      if(!confirm('Bu IP ENGELLENECEK: ' + p.lastIP + '\n(Bu IP\'den giren TÜM hesaplar kilitlenir)\nSebep: ' + reason)) return;
+      await fdb.set(fdb.ref(db, 'ipBans/' + k), { ip: p.lastIP, reason, by: Auth.getState().uid, ts: Date.now() });
+      msg('✓ IP banlandı 🌐', true); logAdmin('ipban', P.target.uid, p.lastIP + ' · ' + reason);
+    }
+    renderTarget();
+  }catch(e){ msg('✗ Yapılamadı — kurallar v526 mı?', false); }
+}
+async function toggleIPBans(){
+  const box = $(P.root,'[data-el="ipbans"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'ipBans'));
+    if(!snap.exists()){ box.innerHTML = '<i>IP yasağı yok</i>'; return; }
+    const rows = []; snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
+    rows.sort((a,b) => (b.ts||0)-(a.ts||0));
+    box.innerHTML = rows.map(r => `
+      <div class="adm-li" style="align-items:center">
+        <b>${esc(r.ip || r.key)}</b><span style="flex:1">${esc(r.reason || '')}</span>
+        <button class="adm-btn g" style="flex:0;padding:4px 9px;font-size:10px" data-ipun="${esc(r.key)}">Kaldır</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-ipun]').forEach(btn => btn.addEventListener('click', async () => {
+      try{ await fdb.set(fdb.ref(db, 'ipBans/' + btn.dataset.ipun), null); btn.closest('.adm-li').remove(); logAdmin('ipban-kaldir', '', btn.dataset.ipun); }catch(e){ msg('✗ Kaldırılamadı', false); }
+    }));
+  }catch(e){ box.innerHTML = '<i>Okunamadı — kurallar v526 mı?</i>'; }
+}
+
+// ── 🚷 Nick yasakları ───────────────────────────────────────────
+function nbKey(n){ return nickKeySafe(n); }
+async function toggleNickBans(){
+  const box = $(P.root,'[data-el="nickbans"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = '';
+  refreshNickBans();
+}
+async function refreshNickBans(){
+  const list = $(P.root,'[data-el="nbList"]'); if(!list) return;
+  list.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'nickBans'));
+    if(!snap.exists()){ list.innerHTML = '<i>Yasaklı nick yok</i>'; return; }
+    const rows = []; snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
+    list.innerHTML = rows.map(r => `
+      <div class="adm-li" style="align-items:center">
+        <b>${esc(r.nick || r.key)}</b>
+        <button class="adm-btn g" style="flex:0;margin-left:auto;padding:4px 9px;font-size:10px" data-nbun="${esc(r.key)}">Kaldır</button>
+      </div>`).join('');
+    list.querySelectorAll('[data-nbun]').forEach(btn => btn.addEventListener('click', async () => {
+      try{ await fdb.set(fdb.ref(db, 'nickBans/' + btn.dataset.nbun), null); btn.closest('.adm-li').remove(); logAdmin('nickban-kaldir', '', btn.dataset.nbun); }catch(e){ msg('✗ Kaldırılamadı', false); }
+    }));
+  }catch(e){ list.innerHTML = '<i>Okunamadı — kurallar v526 mı?</i>'; }
+}
+async function addNickBan(){
+  const inp = $(P.root,'[data-el="nbText"]'); const nick = inp.value.trim();
+  if(!nick || nbKey(nick).length < 3){ msg('Geçerli bir nick yaz', false); return; }
+  try{
+    await fdb.set(fdb.ref(db, 'nickBans/' + nbKey(nick)), { nick, by: Auth.getState().uid, ts: Date.now() });
+    try{ await fdb.set(fdb.ref(db, 'nicks/' + nbKey(nick)), null); }catch(e){}   // defterden de düşür
+    inp.value = '';
+    msg('✓ Nick yasaklandı: ' + nick, true); logAdmin('nickban', '', nick);
+    refreshNickBans();
+  }catch(e){ msg('✗ Yapılamadı — kurallar v526 mı?', false); }
+}
+
+// ── 🔧 Sohbet operatörü ─────────────────────────────────────────
+async function refreshOPBtn(){
+  const btn = $(P.root,'[data-el="opBtn"]'); if(!btn) return;
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'gcOperators/' + P.target.uid));
+    const on = snap.exists() && snap.val() === true;
+    btn.textContent = on ? '🔧 OP Kaldır' : '🔧 OP Yap';
+    btn.className = 'adm-btn ' + (on ? 'g' : 'p');
+    btn.dataset.on = on ? '1' : '0';
+  }catch(e){ btn.textContent = '🔧 OP?'; }
+}
+async function doOP(){
+  const btn = $(P.root,'[data-el="opBtn"]');
+  const on = btn && btn.dataset.on === '1';
+  try{
+    await fdb.set(fdb.ref(db, 'gcOperators/' + P.target.uid), on ? null : true);
+    msg(on ? '✓ OP yetkisi kaldırıldı' : '✓ Sohbet operatörü yapıldı 🔧', true);
+    logAdmin(on ? 'op-kaldir' : 'op-yap', P.target.uid, '');
+    refreshOPBtn();
+  }catch(e){ msg('✗ Yapılamadı', false); }
+}
+
+// ── 🧹 Kopya/Yetim defter temizliği ─────────────────────────────
+async function cleanRegistry(){
+  if(!confirm('nicks/ defteri taranacak:\n• Aynı oyuncunun KOPYA kayıtları (eski nickler) silinir\n• Sahibi olmayan YETİM kayıtlar silinir\nDevam?')) return;
+  msg('Defter taranıyor…', true);
+  let nicks = {}, users = {};
+  try{
+    const ns = await fdb.get(fdb.ref(db, 'nicks')); nicks = ns.exists() ? ns.val() : {};
+    const us = await fdb.get(fdb.ref(db, 'users')); users = us.exists() ? us.val() : {};
+  }catch(e){ msg('✗ Okunamadı', false); return; }
+  const keys = Object.keys(nicks);
+  const byUid = {};
+  keys.forEach(k => { const u = nicks[k] && nicks[k].uid; if(u){ (byUid[u] = byUid[u] || []).push(k); } });
+  let dupDel = 0, orphanDel = 0;
+  for(const uid of Object.keys(byUid)){
+    const ks = byUid[uid];
+    const prof = users[uid];
+    if(!prof){   // yetim: kullanıcı yok
+      for(const k of ks){ try{ await fdb.set(fdb.ref(db, 'nicks/' + k), null); orphanDel++; }catch(e){} }
+      continue;
+    }
+    if(ks.length <= 1) continue;
+    const want = nickKeySafe(prof.nick || prof.name || prof.displayName || '');
+    const keep = ks.includes(want) ? want : ks[0];
+    for(const k of ks){ if(k !== keep){ try{ await fdb.set(fdb.ref(db, 'nicks/' + k), null); dupDel++; }catch(e){} } }
+  }
+  msg(`✓ Temizlik bitti: ${dupDel} kopya + ${orphanDel} yetim silindi (${keys.length} kayıt tarandı)`, true);
+  logAdmin('defter-temizlik', '', `kopya:${dupDel} yetim:${orphanDel}`);
 }
 
 // ── 🦵 Oyuncuyu at + ⭐ Vice ─────────────────────────────────────
