@@ -58,6 +58,17 @@ export function openAdminPanel(){
           <button class="adm-acc" data-a="chatmod">💬 Sohbet Moderasyonu <span>▾</span></button>
           <div class="adm-log" data-el="chatmod" style="display:none"></div>
         </div>
+        <div class="adm-sec">
+          <div class="adm-row">
+            <button class="adm-acc" style="flex:1" data-a="chatlock">🔒 Sohbet Kilidi: <b data-el="lockState">…</b></button>
+            <button class="adm-acc" style="flex:1" data-a="glow">✨ Nick Işıltısı</button>
+          </div>
+          <div class="adm-log" data-el="glowbox" style="display:none"></div>
+        </div>
+        <div class="adm-sec">
+          <button class="adm-acc" data-a="allusers">👥 Tüm Kullanıcılar <span>▾</span></button>
+          <div class="adm-log" data-el="allusers" style="display:none"></div>
+        </div>
         <div class="adm-sec"><div class="adm-lbl">📣 PORTALA DUYURU GÖNDER</div>
           <div class="adm-row">
             <input class="adm-in" data-el="bcText" maxlength="200" placeholder="Duyuru metni (tüm oyunculara)">
@@ -100,7 +111,10 @@ export function openAdminPanel(){
   $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
   $(ov,'[data-a="onlinelist"]').addEventListener('click', toggleOnline);
   $(ov,'[data-a="chatmod"]').addEventListener('click', toggleChatMod);
-  loadStats();
+  $(ov,'[data-a="chatlock"]').addEventListener('click', toggleChatLock);
+  $(ov,'[data-a="glow"]').addEventListener('click', toggleGlowPicker);
+  $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
+  loadStats(); loadLockState();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
 }
@@ -141,6 +155,70 @@ async function toggleChatMod(){
         logAdmin('chat-sil', '', 'mesaj silindi');
       }catch(e){ msg('✗ Silinemedi', false); }
     }));
+  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+}
+
+// ── 🔒 Sohbet kilidi ────────────────────────────────────────────
+async function loadLockState(){
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'chatModeration/locked'));
+    const on = snap.exists() && snap.val() && snap.val().locked === true;
+    const el = $(P.root,'[data-el="lockState"]'); if(el){ el.textContent = on ? 'KİLİTLİ 🔒' : 'AÇIK 🔓'; el.style.color = on ? '#ff8fa0' : '#5fd38a'; }
+    return on;
+  }catch(e){ return false; }
+}
+async function toggleChatLock(){
+  const on = await loadLockState();
+  const next = !on;
+  if(!confirm(next ? 'Global sohbet TÜM oyunculara kilitlensin mi?' : 'Sohbet kilidi açılsın mı?')) return;
+  try{
+    await fdb.set(fdb.ref(db, 'chatModeration/locked'), next ? { locked:true, by: Auth.getState().uid, ts: Date.now() } : null);
+    await loadLockState();
+    msg(next ? '✓ Sohbet kilitlendi 🔒' : '✓ Sohbet açıldı 🔓', true);
+    logAdmin(next ? 'sohbet-kilit' : 'sohbet-ac', '', '');
+  }catch(e){ msg('✗ Yapılamadı', false); }
+}
+
+// ── ✨ Nick Işıltısı seçici ─────────────────────────────────────
+async function toggleGlowPicker(){
+  const box = $(P.root,'[data-el="glowbox"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  let GS = {}, cur = localStorage.getItem('hero_glow_style') || 'classic';
+  try{ const m = await import('./social.js'); GS = m.GLOW_STYLES || {}; }catch(e){}
+  box.style.display = '';
+  box.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px 0">' +
+    Object.keys(GS).map(k => `
+      <button class="adm-acc" data-glow="${k}" style="${k===cur?'border-color:#ffd86b;':''}">
+        <span class="${GS[k].cls}" style="font-weight:900;color:#FFD740">NitrikOksit</span><br><small style="opacity:.7">${GS[k].label}</small>
+      </button>`).join('') + '</div>';
+  box.querySelectorAll('[data-glow]').forEach(btn => btn.addEventListener('click', () => {
+    localStorage.setItem('hero_glow_style', btn.dataset.glow);
+    msg('✓ Işıltı: ' + btn.dataset.glow + ' (sohbette admin nicklerinde)', true);
+    toggleGlowPicker(); toggleGlowPicker();   // yeniden çiz (seçim çerçevesi)
+  }));
+}
+
+// ── 👥 Tüm kullanıcılar ─────────────────────────────────────────
+async function toggleAllUsers(){
+  const box = $(P.root,'[data-el="allusers"]');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.ref(db, 'users'));
+    if(!snap.exists()){ box.innerHTML = '<i>Kullanıcı yok</i>'; return; }
+    const v = snap.val();
+    const rows = Object.keys(v).map(uid => ({ uid, ...v[uid] }));
+    rows.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
+    box.innerHTML = rows.slice(0, 60).map(u => `
+      <div class="adm-li" data-uid="${esc(u.uid)}" style="cursor:pointer;align-items:center">
+        <b>${esc(u.nick || u.name || u.displayName || '—')}</b>
+        ${u.isAdmin?'<span class="adm-tag" style="background:rgba(255,215,64,.15);color:#ffd86b;border:1px solid rgba(255,215,64,.35)">👑</span>':''}
+        ${u.isVice?'<span class="adm-tag" style="background:rgba(206,147,216,.15);color:#CE93D8;border:1px solid rgba(206,147,216,.35)">⭐</span>':''}
+        ${u.banned===true?'<span class="adm-tag ban">🚫</span>':''}
+        ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
+        <span style="margin-left:auto">💰 ${fmt(u.kaju)}</span>
+      </div>`).join('');
+    box.querySelectorAll('[data-uid]').forEach(el => el.addEventListener('click', () => loadTarget(el.dataset.uid)));
   }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
 }
 
@@ -286,6 +364,10 @@ function renderTarget(){
           <input class="adm-in" data-el="reason" placeholder="Sebep" maxlength="80">
         </div>
         <div class="adm-row">
+          <button class="adm-btn p" style="flex:1" data-a="kick">🦵 Oyundan At</button>
+          <button class="adm-btn ${p.isVice?'g':'p'}" style="flex:1" data-a="vice">${p.isVice?'⭐ Vice Kaldır':'⭐ Vice Yap'}</button>
+        </div>
+        <div class="adm-row">
           ${banned
             ? '<button class="adm-btn g" data-a="unban">✅ Banı Kaldır</button>'
             : '<button class="adm-btn r" data-a="ban">🚫 Banla</button>'}
@@ -300,12 +382,34 @@ function renderTarget(){
   $(R,'[data-a="khist"]').addEventListener('click', toggleKHist);
   $(R,'[data-a="forcenick"]').addEventListener('click', doForceNick);
   $(R,'[data-a="ntfSend"]').addEventListener('click', sendUserNotif);
+  $(R,'[data-a="kick"]').addEventListener('click', doKick);
+  $(R,'[data-a="vice"]').addEventListener('click', doVice);
   const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
   const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
   if(bb) bb.addEventListener('click', () => doBan(true));
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+}
+
+// ── 🦵 Oyuncuyu at + ⭐ Vice ─────────────────────────────────────
+async function doKick(){
+  const reason = $(P.root,'[data-el="reason"]').value.trim() || 'Yönetici kararı';
+  if(!confirm('Oyuncu OYUNDAN ATILACAK (oturumu yenilenir).\nSebep: ' + reason + '\nOnaylıyor musun?')) return;
+  try{
+    await fdb.set(fdb.ref(db, 'kicks/' + P.target.uid), { ts: Date.now(), by: Auth.getState().uid, reason });
+    msg('✓ Atıldı 🦵', true); logAdmin('kick', P.target.uid, reason);
+  }catch(e){ msg('✗ Yapılamadı', false); }
+}
+async function doVice(){
+  const now = P.target.profile.isVice === true;
+  try{
+    await fdb.set(fdb.ref(db, 'users/' + P.target.uid + '/isVice'), now ? null : true);
+    P.target.profile.isVice = !now;
+    msg(now ? '✓ Vice kaldırıldı' : '✓ Vice yapıldı ⭐', true);
+    logAdmin(now ? 'vice-kaldir' : 'vice-yap', P.target.uid, '');
+    renderTarget();
+  }catch(e){ msg('✗ Yapılamadı', false); }
 }
 
 // ── 🔔 Oyuncuya bildirim gönder ─────────────────────────────────

@@ -73,6 +73,7 @@ async function hydrate(user){
   state.displayName = deriveName(user, state.profile);
   emit();
   startPresence();                                  // çevrimiçilik: presence/{uid}
+  startKickListener();                              // 🦵 admin atarsa oturumu yenile
   // Google kullanıcısının nick'i yoksa arka planda benzersiz bir nick üret (engellemeden)
   if(user && !user.isAnonymous){ ensureNick(); }   // nick yoksa üret; varsa kayıt defterini onar
 }
@@ -90,6 +91,23 @@ function startPresence(){
   _presVis = () => { if(!document.hidden) write(); };
   document.addEventListener('visibilitychange', _presVis);
 }
+// 🦵 Kick dinleyici: kicks/{uid} taze bir kayıt alırsa kullanıcıyı bilgilendir + yenile
+let _kickOff = null, _kickBootTs = Date.now();
+function startKickListener(){
+  if(_kickOff){ try{ _kickOff(); }catch(e){} _kickOff = null; }
+  if(!state.uid) return;
+  try{
+    _kickOff = onValue(ref(db, 'kicks/' + state.uid), (snap) => {
+      if(!snap.exists()) return;
+      const v = snap.val() || {};
+      if((v.ts || 0) < _kickBootTs) return;          // eski kayıt — yok say
+      try{ set(ref(db, 'kicks/' + state.uid), null); }catch(e){}
+      alert('🦵 Yönetici tarafından oyundan atıldın.' + (v.reason ? '\nSebep: ' + v.reason : ''));
+      location.reload();
+    });
+  }catch(e){}
+}
+
 function stopPresence(){
   if(_presT){ clearInterval(_presT); _presT = null; }
   if(_presVis){ try{ document.removeEventListener('visibilitychange', _presVis); }catch(e){} _presVis = null; }
