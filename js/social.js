@@ -76,7 +76,7 @@ export async function openPlayerCard(uid){
       } else {
         await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), { name: nick, ts: Date.now() });
         await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
-        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now() }); }catch(e){}
+        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now(), fromUid: me.uid }); }catch(e){}
       }
       ov.remove();
       if(H && H.open && H.tab === 'dost') renderFriends();
@@ -354,12 +354,16 @@ function renderThreads(){
   if(!t.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">NICK YAZIP YENİ SOHBET AÇ</div></div>'; return; }
   list.innerHTML = t.map(x => `
     <div class="ghp-dm-row" data-uid="${esc(x.uid)}" data-nick="${esc(x.nick)}">
-      <div class="ghp-dm-avatar">👤</div>
+      <div class="ghp-dm-avatar" data-dmpc="${esc(x.uid)}" style="cursor:pointer">👤</div>
       <div class="ghp-dm-info"><div class="ghp-dm-name">${esc(x.nick)}</div><div class="ghp-dm-text">${esc(x.last || '')}</div></div>
       <div class="ghp-dm-ts">${x.ts ? tAgo(x.ts) : ''}</div>
       ${x.unread ? '<div class="ghp-dm-dot"></div>' : ''}
     </div>`).join('');
-  list.querySelectorAll('.ghp-dm-row').forEach(r => r.addEventListener('click', () => dmOpenThread(r.dataset.uid, r.dataset.nick)));
+  list.querySelectorAll('.ghp-dm-row').forEach(r => r.addEventListener('click', (e) => {
+    const pc = e.target.closest('[data-dmpc]');
+    if(pc){ openPlayerCard(pc.dataset.dmpc); return; }
+    dmOpenThread(r.dataset.uid, r.dataset.nick);
+  }));
 }
 async function dmOpenByNick(){
   const inp = byId('ghpDMNick'); const nick = inp.value.trim();
@@ -377,7 +381,10 @@ function dmOpenThread(uid, nick){
   byId('ghpDMList').style.display = 'none';
   byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
   const th = byId('ghpDMThread'); th.style.display = 'flex';
-  byId('ghpDMTitle').textContent = '✉️ ' + nick;
+  const tEl = byId('ghpDMTitle');
+  tEl.textContent = '✉️ ' + nick;
+  tEl.style.cursor = 'pointer';
+  tEl.onclick = () => openPlayerCard(uid);
   // okundu işaretle
   const ts = loadThreads(); const i = ts.findIndex(x => x.uid === uid);
   if(i >= 0){ ts[i].unread = false; saveThreads(ts); }
@@ -470,13 +477,14 @@ function renderNotifPane(){
           <div class="ghp-chat-ts">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
         </div>
       </div>` : `
-      <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)">
+      <div class="ghp-notif-row" ${n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"` : 'style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"'}>
         <div class="ghp-notif-icon" style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.2)">${esc(n.icon || '🔔')}</div>
         <div class="ghp-notif-body">
           <div class="ghp-notif-text">${esc(n.text || n.msg || '')}</div>
           <div class="ghp-chat-ts">${tAgo(n.ts || 0)}</div>
         </div>
       </div>`).join('');
+  list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
 }
 function listenNotifs(uid){
   H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
@@ -539,7 +547,7 @@ async function addFriendByNick(){
   try{
     await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid), { name: t.nick, ts: Date.now() });
     await fdb.set(fdb.ref(db, 'friends/' + t.uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
-    try{ await fdb.push(fdb.ref(db, 'userNotifs/' + t.uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now() }); }catch(e){}
+    try{ await fdb.push(fdb.ref(db, 'userNotifs/' + t.uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now(), fromUid: me.uid }); }catch(e){}
     inp.value = '';
     renderFriends();
   }catch(e){ alert('Eklenemedi'); }
