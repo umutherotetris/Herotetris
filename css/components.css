@@ -354,3 +354,29 @@
 .ng-ice{animation:nickGlowIce 2s ease-in-out infinite;}
 .ng-purple{animation:nickGlowPurple 2s ease-in-out infinite;}
 .ng-gold{animation:nickGlowGold 1.8s ease-in-out infinite;}
+.chat-op-badge{display:inline-block;font-size:9px;color:#CE93D8;background:rgba(206,147,216,.12);border:1px solid rgba(206,147,216,.25);border-radius:5px;padding:0 5px;font-weight:900;flex-shrink:0;}
+
+/* ── 👤 Oyuncu kartı popup ── */
+.pcp-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px; }
+.pcp-card{ width:100%; max-width:330px; background:linear-gradient(165deg,#1a2142,#0d1024); border:1.5px solid rgba(0,229,255,.25); border-radius:18px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.05); animation:ghpOpen .3s cubic-bezier(.34,1.56,.64,1); }
+.pcp-load{ text-align:center; font-size:24px; padding:20px; }
+.pcp-top{ display:flex; gap:12px; align-items:center; }
+.pcp-ava{ position:relative; width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(0,229,255,.3); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+.pcp-dot{ position:absolute; bottom:-2px; right:-2px; width:13px; height:13px; border-radius:50%; background:#69F0AE; border:2.5px solid #131736; box-shadow:0 0 6px #69F0AE; }
+.pcp-name{ font-size:16px; font-weight:900; color:#eef2ff; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.pcp-sub{ font-size:11px; color:#8d9ac4; margin-top:3px; }
+.pcp-stats{ display:flex; gap:7px; margin:13px 0 4px; }
+.pcp-stat{ flex:1; text-align:center; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:8px 3px; }
+.pcp-stat b{ display:block; font-size:12.5px; color:#ffd86b; }
+.pcp-stat span{ font-size:8px; letter-spacing:1px; color:#7d8ab8; }
+.pcp-acts{ display:flex; gap:8px; margin-top:10px; }
+.pcp-btn{ flex:1; padding:11px 6px; font-size:12.5px; font-weight:800; border-radius:11px; border:1px solid rgba(0,229,255,.3); background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(0,229,255,.05)); color:#bfeaff; cursor:pointer; }
+.pcp-x{ width:100%; margin-top:9px; padding:9px; font-size:12px; font-weight:700; border-radius:10px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); color:#9aa6cc; cursor:pointer; }
+
+/* ── 🎭 Avatar seçici ── */
+.prf-ava-edit{ position:absolute; bottom:-4px; right:-4px; font-size:11px; background:#1d2444; border:1px solid rgba(255,255,255,.2); border-radius:7px; padding:1px 3px; }
+.prf-ava{ position:relative; }
+.ava-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin:10px 0 4px; }
+.ava-opt{ aspect-ratio:1; font-size:21px; border-radius:11px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.ava-opt:active{ transform:scale(.88); }
+.ava-opt.on{ border-color:#00E5FF; background:rgba(0,229,255,.14); box-shadow:0 0 9px rgba(0,229,255,.3); }
