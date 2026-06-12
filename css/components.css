@@ -336,3 +336,21 @@
 #gemHubPanel.ghp-full .ghp-body, #gemHubPanel.ghp-full .ghp-pane{ flex:1; }
 .adm-stats{ font-size:12px; color:#aab6da; padding:8px 11px; margin:4px 0 8px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; }
 .adm-stats b{ color:#ffd86b; }
+
+/* ── 👑 Şaşalı admin nick (Goodyedek'ten) + ışıltılar ── */
+.chat-admin-badge{display:inline-block;font-size:9px;color:#FFD740;background:rgba(255,215,64,.12);border:1px solid rgba(255,215,64,.3);border-radius:5px;padding:0 5px;font-weight:900;flex-shrink:0;}
+.ghp-chat-row.ghp-adm{border-color:rgba(255,215,64,.35);background:linear-gradient(135deg,rgba(255,215,64,.07),rgba(255,150,0,.02));box-shadow:0 0 10px rgba(255,200,0,.08) inset;}
+@keyframes nickNeonGlow{0%,100%{text-shadow:0 0 6px currentColor,0 0 12px currentColor}50%{text-shadow:0 0 12px currentColor,0 0 24px currentColor,0 0 36px currentColor}}
+@keyframes nickGlowRainbow{0%{color:#FF5252;text-shadow:0 0 8px #FF5252}16%{color:#FF9800;text-shadow:0 0 8px #FF9800}33%{color:#FFD740;text-shadow:0 0 8px #FFD740}50%{color:#69F0AE;text-shadow:0 0 8px #69F0AE}66%{color:#00E5FF;text-shadow:0 0 8px #00E5FF}83%{color:#E040FB;text-shadow:0 0 8px #E040FB}100%{color:#FF5252;text-shadow:0 0 8px #FF5252}}
+@keyframes nickGlowPolice{0%,49%{color:#FF5252;text-shadow:0 0 10px #FF5252,0 0 20px #FF1744}50%,100%{color:#42A5F5;text-shadow:0 0 10px #42A5F5,0 0 20px #0D47A1}}
+@keyframes nickGlowFire{0%{color:#FF5252;text-shadow:0 0 8px #FF5252}50%{color:#FFD740;text-shadow:0 0 14px #FFD740,0 0 28px #FF9800}100%{color:#FF5252;text-shadow:0 0 8px #FF5252}}
+@keyframes nickGlowIce{0%{color:#B3E5FC;text-shadow:0 0 8px #B3E5FC}50%{color:#E0F7FA;text-shadow:0 0 14px #00E5FF,0 0 28px #B3E5FC}100%{color:#B3E5FC;text-shadow:0 0 8px #B3E5FC}}
+@keyframes nickGlowPurple{0%{color:#CE93D8;text-shadow:0 0 8px #CE93D8}50%{color:#E040FB;text-shadow:0 0 14px #E040FB,0 0 28px #7B1FA2}100%{color:#CE93D8;text-shadow:0 0 8px #CE93D8}}
+@keyframes nickGlowGold{0%{color:#FFD740;text-shadow:0 0 8px #FFD740}50%{color:#FFFF00;text-shadow:0 0 14px #FFD740,0 0 28px #FF9800}100%{color:#FFD740;text-shadow:0 0 8px #FFD740}}
+.ng-classic{animation:nickNeonGlow 2s ease-in-out infinite;}
+.ng-rainbow{animation:nickGlowRainbow 2s linear infinite;}
+.ng-police{animation:nickGlowPolice .8s steps(1) infinite;}
+.ng-fire{animation:nickGlowFire 1.5s ease-in-out infinite;}
+.ng-ice{animation:nickGlowIce 2s ease-in-out infinite;}
+.ng-purple{animation:nickGlowPurple 2s ease-in-out infinite;}
+.ng-gold{animation:nickGlowGold 1.8s ease-in-out infinite;}
