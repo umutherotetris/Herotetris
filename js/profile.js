@@ -42,7 +42,7 @@ async function _renderProfile(){
   box.innerHTML = `
     <div class="prf-card">
       <div class="prf-top">
-        <div class="prf-ava">${isGoogle ? '🦸' : '👤'}</div>
+        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer">${esc((st.profile && st.profile.avatar) || (isGoogle ? '🦸' : '👤'))}<span class="prf-ava-edit">✏️</span></div>
         <div class="prf-id">
           <div class="prf-name">${esc(nick)} ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
           <div class="prf-sub">${isGoogle ? (st.isAdmin ? '👑 ADMİN · ' : '') + 'UID: ' + esc((st.uid||'').slice(0,10)) + '…' : 'Misafir hesabı — kaydetmek için bağlan'}</div>
@@ -61,6 +61,7 @@ async function _renderProfile(){
     </div>
     <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>`;
   box.querySelector('[data-p="settings"]').addEventListener('click', openSettings);
+  const av = box.querySelector('[data-p="avatar"]'); if(av && isGoogle) av.addEventListener('click', openAvatarPicker);
   const nb = box.querySelector('[data-p="nick"]'); if(nb) nb.addEventListener('click', async () => (await uiMod()).openNickModal());
   const kb = box.querySelector('[data-p="kaju"]'); if(kb) kb.addEventListener('click', async () => (await uiMod()).openKajuModal());
   const lb = box.querySelector('[data-p="login"]'); if(lb) lb.addEventListener('click', () => Auth.loginGoogle && Auth.loginGoogle());
@@ -79,6 +80,34 @@ async function renderRecords(st){
   if(kr.best && kr.best.text) rows.push(`<div class="prf-rec"><span>🔤 En değerli kelime</span><b>${esc(kr.best.text)} (${kr.best.score})</b></div>`);
   if(kr.longest && kr.longest.text) rows.push(`<div class="prf-rec"><span>🔤 En uzun kelime</span><b>${esc(kr.longest.text)}</b></div>`);
   body.innerHTML = rows.length ? rows.join('') : '<i>Henüz rekor yok — oynamaya başla! 🎮</i>';
+}
+
+// ── 🎭 AVATAR SEÇİCİ ────────────────────────────────────────────
+async function openAvatarPicker(){
+  if(byId('avaModal')) return;
+  let AV = ['🦸','🤖','🐉','🦊','⚡','💎'];
+  try{ const m = await import('./social.js'); if(m.AVATARS) AV = m.AVATARS; }catch(e){}
+  const st = Auth.getState();
+  const cur = (st.profile && st.profile.avatar) || '🦸';
+  const ov = document.createElement('div');
+  ov.id = 'avaModal'; ov.className = 'nick-modal-ov';
+  ov.innerHTML = `
+    <div class="nick-modal">
+      <div class="nm-title">🎭 Avatarını Seç</div>
+      <div class="ava-grid">${AV.map(a => `<button class="ava-opt${a===cur?' on':''}" data-av="${a}">${a}</button>`).join('')}</div>
+      <div class="nm-actions"><button class="nm-btn nm-cancel" data-av-close>Kapat</button></div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  ov.querySelector('[data-av-close]').addEventListener('click', () => ov.remove());
+  ov.querySelectorAll('.ava-opt').forEach(btn => btn.addEventListener('click', async () => {
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + st.uid), { avatar: btn.dataset.av });
+      if(st.profile) st.profile.avatar = btn.dataset.av;
+      ov.remove();
+      _renderProfile();
+    }catch(e){ alert('Kaydedilemedi'); }
+  }));
 }
 
 // ── ⚙️ AYARLAR ──────────────────────────────────────────────────
@@ -128,12 +157,15 @@ async function renderLeaderboard(){
     // İsimleri nick'ten tazele (en iyi 20)
     const me = Auth.getState().uid;
     const out = await Promise.all(rows.map(async (r, i) => {
-      let name = r.name;
-      try{ const u = await fdb.get(fdb.ref(db, 'users/' + r.uid + '/nick')); if(u.exists()) name = u.val(); }catch(e){}
+      let name = r.name, ava = '👤';
+      try{ const u = await fdb.get(fdb.ref(db, 'users/' + r.uid)); if(u.exists()){ const v = u.val(); name = v.nick || v.name || name; ava = v.avatar || '👤'; } }catch(e){}
       const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-      return `<div class="prf-rec${r.uid===me?' me':''}"><span>${medal} ${esc(name || 'Oyuncu')}</span><b>💰 ${fmt(r.kaju)}</b></div>`;
+      return `<div class="prf-rec${r.uid===me?' me':''}" data-lbuid="${esc(r.uid)}" style="cursor:pointer"><span>${medal} ${ava} ${esc(name || 'Oyuncu')}</span><b>💰 ${fmt(r.kaju)}</b></div>`;
     }));
     body.innerHTML = out.join('');
+    body.querySelectorAll('[data-lbuid]').forEach(el => el.addEventListener('click', async () => {
+      try{ const m = await import('./social.js'); m.openPlayerCard(el.dataset.lbuid); }catch(e){}
+    }));
   }catch(e){ body.innerHTML = '<i>Liderlik okunamadı</i>'; }
 }
 

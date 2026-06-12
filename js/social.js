@@ -18,7 +18,71 @@ export const GLOW_STYLES = {
   ice:{label:'❄️ Buz', cls:'ng-ice'},           purple:{label:'💜 Mor', cls:'ng-purple'},
   gold:{label:'👑 Altın', cls:'ng-gold'}
 };
-export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
+export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }
+
+// Seçilebilir avatarlar (profil > değiştir)
+export const AVATARS = ['🦸','🦸‍♀️','🦹','🥷','🧙‍♂️','🧛','🤖','👾','👽','👻','🐉','🦊','🐺','🦁','🐯','🐼','🐸','🦄','🎃','🤡','⚡','🔥','❄️','💎'];
+export function avatarOf(p){ return (p && p.avatar) || '👤'; }
+
+// ── 👤 OYUNCU KARTI: her yerden açılan mini profil ─────────────
+export async function openPlayerCard(uid){
+  if(!uid || document.getElementById('pcPop')) return;
+  const ov = document.createElement('div');
+  ov.id = 'pcPop'; ov.className = 'pcp-ov';
+  ov.innerHTML = '<div class="pcp-card"><div class="pcp-load">⏳</div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  let p = {}, pr = {};
+  try{ const s = await fdb.get(fdb.ref(db, 'users/' + uid)); p = s.exists() ? s.val() : {}; }catch(e){}
+  try{ const s = await fdb.get(fdb.ref(db, 'presence/' + uid)); pr = s.exists() ? s.val() : {}; }catch(e){}
+  const me = Auth.getState();
+  const online = pr.online === true && (Date.now() - (pr.lastSeen||0)) < 180000;
+  const isAdm = (H && H.admins && H.admins[uid]) || p.isAdmin === true;
+  const isOp = H && H.ops && H.ops[uid] === true;
+  let isFriend = false;
+  try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
+  const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
+  const self = uid === me.uid;
+  ov.querySelector('.pcp-card').innerHTML = `
+    <div class="pcp-top">
+      <div class="pcp-ava">${avatarOf(p)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
+      <div class="pcp-id">
+        <div class="pcp-name ${isAdm ? glowClass() : ''}" style="${isAdm?'color:#FFD740':''}">${esc(nick)}
+          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
+        </div>
+        <div class="pcp-sub">${online ? '<b style="color:#69F0AE">● Çevrimiçi</b>' : (pr.lastSeen ? tAgo(pr.lastSeen) + ' önce görüldü' : 'Çevrimdışı')}</div>
+      </div>
+    </div>
+    <div class="pcp-stats">
+      <div class="pcp-stat"><b>⭐ ${esc(p.level || 1)}</b><span>SEVİYE</span></div>
+      <div class="pcp-stat"><b>💰 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
+      <div class="pcp-stat"><b>✨ ${Number(p.totalXP||p.xp||0).toLocaleString('tr-TR')}</b><span>XP</span></div>
+    </div>
+    ${self ? '' : `<div class="pcp-acts">
+      <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
+      <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
+    </div>`}
+    <button class="pcp-x">Kapat</button>`;
+  ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  const dmB = ov.querySelector('[data-pc="dm"]');
+  if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
+  const frB = ov.querySelector('[data-pc="fr"]');
+  if(frB) frB.addEventListener('click', async () => {
+    if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
+    try{
+      if(isFriend){
+        await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
+        await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), null);
+      } else {
+        await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), { name: nick, ts: Date.now() });
+        await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
+        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now() }); }catch(e){}
+      }
+      ov.remove();
+      if(H && H.open && H.tab === 'dost') renderFriends();
+    }catch(e){ alert('Yapılamadı'); }
+  });
+}   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 
 // ── Sürüklenebilir FAB (monolitten) ─────────────────────────────
 function makeFabDraggable(fab, onMove){
@@ -138,6 +202,10 @@ export function initSocial(){
   panel.querySelectorAll('.ghp-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.ghptab)));
   // Chat gönder
   panel.querySelector('#ghpChatSend').addEventListener('click', sendChat);
+  panel.querySelector('#ghpChatList').addEventListener('click', (e) => {
+    const n = e.target.closest('[data-pcuid]');
+    if(n) openPlayerCard(n.dataset.pcuid);
+  });
   panel.querySelector('#ghpChatInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChat(); });
   // DM
   panel.querySelector('#ghpDMOpen').addEventListener('click', dmOpenByNick);
@@ -251,7 +319,7 @@ function listenChat(){
       <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
         <div class="ghp-chat-avatar">${adm ? '👑' : (m.uid === me ? '🙂' : '👤')}</div>
         <div class="ghp-chat-body">
-          <div style="display:flex;align-items:center;gap:3px">${nameHtml}</div>
+          <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
           <div class="ghp-chat-text">${esc(m.text)}</div>
           <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
         </div>
@@ -438,20 +506,21 @@ async function renderFriends(){
   // İsim + çevrimiçilik
   const rows = await Promise.all(uids.slice(0, 20).map(async (fu) => {
     const f = frs[fu] || {};
-    let name = (f && f.name) || null, online = false, last = 0;
-    try{ const u = await fdb.get(fdb.ref(db, 'users/' + fu + '/nick')); if(u.exists()) name = u.val(); }catch(e){}
+    let name = (f && f.name) || null, online = false, last = 0, ava = '👤', lvl = '';
+    try{ const u = await fdb.get(fdb.ref(db, 'users/' + fu)); if(u.exists()){ const uv = u.val(); name = uv.nick || uv.name || name; ava = avatarOf(uv); lvl = uv.level || 1; } }catch(e){}
     try{ const pr = await fdb.get(fdb.ref(db, 'presence/' + fu)); if(pr.exists()){ const v = pr.val(); last = v.lastSeen||0; online = v.online === true && (Date.now()-last) < 180000; if(!name) name = v.name; } }catch(e){}
-    return { uid: fu, name: name || 'Arkadaş', online, last };
+    return { uid: fu, name: name || 'Arkadaş', online, last, ava, lvl };
   }));
   rows.sort((a,b) => (b.online - a.online) || (b.last - a.last));
   list.innerHTML = rows.map(r => `
     <div class="ghp-dm-row" style="border-left-color:${r.online ? '#69F0AE' : '#546E7A'}">
-      <div class="ghp-dm-avatar" style="position:relative">👤${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
-      <div class="ghp-dm-info"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)}</div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
+      <div class="ghp-dm-avatar" data-pcfr="${esc(r.uid)}" style="position:relative;cursor:pointer">${r.ava}${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
+      <div class="ghp-dm-info" data-pcfr="${esc(r.uid)}" style="cursor:pointer"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)} <small style="opacity:.65;font-weight:700">LV ${esc(r.lvl)}</small></div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
       <button class="ghp-act" data-fdm="${esc(r.uid)}" data-fn="${esc(r.name)}">✉️</button>
       <button class="ghp-act" data-frm="${esc(r.uid)}" style="color:#ff7a8a">✕</button>
     </div>`).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
+  list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
     if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
     try{ await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + b.dataset.frm), null); }catch(e){}
@@ -470,6 +539,7 @@ async function addFriendByNick(){
   try{
     await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid), { name: t.nick, ts: Date.now() });
     await fdb.set(fdb.ref(db, 'friends/' + t.uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
+    try{ await fdb.push(fdb.ref(db, 'userNotifs/' + t.uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now() }); }catch(e){}
     inp.value = '';
     renderFriends();
   }catch(e){ alert('Eklenemedi'); }
