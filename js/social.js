@@ -317,7 +317,7 @@ function listenChat(){
           : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
       <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
-        <div class="ghp-chat-avatar">${adm ? '👑' : (m.uid === me ? '🙂' : '👤')}</div>
+        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : (m.uid === me ? '🙂' : '👤')))}</div>
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
           <div class="ghp-chat-text">${esc(m.text)}</div>
@@ -339,6 +339,7 @@ async function sendChat(){
   inp.value = '';
   try{
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
+    const av = st.profile && st.profile.avatar; if(av) m.avatar = av;
     if(st.isAdmin === true) m.isAdmin = true;
     await fdb.push(fdb.ref(db, 'globalChat'), m);
   }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
@@ -392,24 +393,58 @@ function dmOpenThread(uid, nick){
   const me = Auth.getState().uid;
   const pk = pairKey(me, uid);
   if(H.offDM){ try{ H.offDM(); }catch(e){} }
-  H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.limitToLast(30)), (snap) => {
+  H.dmOppSeen = 0;
+  H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(30)), (snap) => {
     const box = byId('ghpDMMsgs'); if(!box) return;
-    if(!snap.exists()){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
-    const rows = []; snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
+    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
+    if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
+    renderDMRows(rows);
+    H.dmRows = rows;
+    H.seen['dm_' + uid] = Date.now(); saveSeen();
+    // 👁 okundu: en son mesajın ts'ini _seen'e yaz (rakip ✓✓ görsün)
+    try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_seen/' + me), Date.now()); }catch(e){}
+  });
+  // rakibin okundu zamanı → ✓✓
+  H.offSeen = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_seen/' + uid), (snap) => {
+    H.dmOppSeen = snap.exists() ? (snap.val() || 0) : 0;
+    if(H.dmRows) renderDMRows(H.dmRows);
+  });
+  // ✍️ rakip yazıyor mu
+  H.offTyping = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_typing/' + uid), (snap) => {
+    const t = snap.exists() ? (snap.val() || 0) : 0;
+    const el = byId('ghpDMTitle');
+    if(!el) return;
+    const fresh = Date.now() - t < 4500;
+    el.textContent = '✉️ ' + nick + (fresh ? ' · yazıyor…' : '');
+    if(fresh){ clearTimeout(H._typT); H._typT = setTimeout(() => { if(byId('ghpDMTitle')) byId('ghpDMTitle').textContent = '✉️ ' + nick; }, 4600); }
+  });
+  // kendi yazışını bildir (1.2 sn'de bir)
+  const dmInp = byId('ghpDMInput');
+  if(dmInp){
+    dmInp.oninput = () => {
+      const now = Date.now();
+      if(now - (H._typeSent || 0) < 1200) return;
+      H._typeSent = now;
+      try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_typing/' + me), now); }catch(e){}
+    };
+  }
+  function renderDMRows(rows){
+    const box = byId('ghpDMMsgs'); if(!box) return;
     box.innerHTML = rows.map(m => `
       <div class="ghp-chat-row${m.from === me ? ' mine' : ''}">
         <div class="ghp-chat-body">
           <div class="ghp-chat-text">${esc(m.text)}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}${m.from === me ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : ''}</div>
         </div>
       </div>`).join('');
     box.scrollTop = box.scrollHeight;
-    H.seen['dm_' + uid] = Date.now(); saveSeen();
-  });
+  }
 }
 function dmBack(){
   if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
+  if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }
+  if(H.offTyping){ try{ H.offTyping(); }catch(e){} H.offTyping = null; }
   H.dmThread = null;
   byId('ghpDMThread').style.display = 'none';
   byId('ghpDMList').style.display = '';
@@ -440,10 +475,10 @@ function watchDMThreads(){
   const me = Auth.getState().uid; if(!me) return;
   loadThreads().slice(0, 6).forEach(t => {
     const pk = pairKey(me, t.uid);
-    H.dmWatch[t.uid] = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.limitToLast(1)), (snap) => {
+    H.dmWatch[t.uid] = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(1)), (snap) => {
       if(!snap.exists()) return;
       let last = null; snap.forEach(ch => { last = ch.val(); });
-      if(!last || last.from === me) return;
+      if(!last || !last.text || last.from === me) return;
       const seen = H.seen['dm_' + t.uid] || 0;
       if((last.ts || 0) > seen){
         const ts = loadThreads(); const i = ts.findIndex(x => x.uid === t.uid);
@@ -544,13 +579,13 @@ async function addFriendByNick(){
   const t = await Auth.resolveNick(nick);
   if(!t){ alert('Nick bulunamadı: ' + nick); return; }
   if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
+  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ alert('Zaten arkadaşsınız.'); return; } }catch(e){}
   try{
-    await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid), { name: t.nick, ts: Date.now() });
-    await fdb.set(fdb.ref(db, 'friends/' + t.uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
-    try{ await fdb.push(fdb.ref(db, 'userNotifs/' + t.uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now(), fromUid: me.uid }); }catch(e){}
+    await sendFriendRequest(t.uid, t.nick);
     inp.value = '';
+    alert('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
     renderFriends();
-  }catch(e){ alert('Eklenemedi'); }
+  }catch(e){ alert('Gönderilemedi'); }
 }
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;
@@ -574,6 +609,8 @@ function teardownListeners(){
   if(H.offNotif){ try{ H.offNotif(); }catch(e){} H.offNotif = null; }
   if(H.offBcast){ try{ H.offBcast(); }catch(e){} H.offBcast = null; }
   if(H.offLock){ try{ H.offLock(); }catch(e){} H.offLock = null; }
+  if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }
+  if(H.offTyping){ try{ H.offTyping(); }catch(e){} H.offTyping = null; }
   Object.values(H.dmWatch).forEach(off => { try{ off(); }catch(e){} });
   H.dmWatch = {};
 }
