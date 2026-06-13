@@ -44,7 +44,8 @@ async function _renderProfile(){
       <div class="prf-top">
         <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer">${esc((st.profile && st.profile.avatar) || (isGoogle ? '🦸' : '👤'))}<span class="prf-ava-edit">✏️</span></div>
         <div class="prf-id">
-          <div class="prf-name">${esc(nick)} ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
+          <div class="prf-name"><span data-el="prfNick">${esc(nick)}</span> ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
+          <div class="prf-badges" data-el="prfBadges"></div>
           <div class="prf-sub">${isGoogle ? (st.isAdmin ? '👑 ADMİN · ' : '') + 'UID: ' + esc((st.uid||'').slice(0,10)) + '…' : 'Misafir hesabı — kaydetmek için bağlan'}</div>
         </div>
       </div>
@@ -57,16 +58,78 @@ async function _renderProfile(){
       <div class="prf-acts">
         ${isGoogle ? '<button class="prf-btn" data-p="kaju">💸 Kaju Gönder</button>' : '<button class="prf-btn" data-p="login">🔗 Hesabı Bağla</button>'}
         <button class="prf-btn" data-p="settings">⚙️ Ayarlar</button>
+        ${isGoogle ? '<button class="prf-btn" data-p="mycard">🪪 Kartım</button>' : ''}
       </div>
     </div>
-    <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>`;
+    <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>
+    <div class="prf-card" id="prfTrophies"><div class="prf-lbl">🏅 KUPA VİTRİNİ</div><div class="prf-trbody">Yükleniyor…</div></div>`;
   box.querySelector('[data-p="settings"]').addEventListener('click', openSettings);
   const av = box.querySelector('[data-p="avatar"]'); if(av && isGoogle) av.addEventListener('click', openAvatarPicker);
   const nb = box.querySelector('[data-p="nick"]'); if(nb) nb.addEventListener('click', async () => (await uiMod()).openNickModal());
   const kb = box.querySelector('[data-p="kaju"]'); if(kb) kb.addEventListener('click', async () => (await uiMod()).openKajuModal());
   const lb = box.querySelector('[data-p="login"]'); if(lb) lb.addEventListener('click', () => Auth.loginGoogle && Auth.loginGoogle());
+  const mc = box.querySelector('[data-p="mycard"]'); if(mc) mc.addEventListener('click', async () => { try{ const m = await import('./social.js'); m.openPlayerCard(st.uid); }catch(e){} });
+  renderBadgesAndRank(st);
   renderRecords(st);
+  renderTrophies(st);
 }
+
+// ── 🏅 Kupa vitrini: mevcut verilerden türetilen başarımlar ─────
+async function renderTrophies(st){
+  const body = document.querySelector('#prfTrophies .prf-trbody'); if(!body) return;
+  if(!st.uid){ body.innerHTML = '<i>Giriş yapınca kupaların burada görünür</i>'; return; }
+  let p = st.profile || {};
+  try{ const s = await fdb.get(fdb.ref(db, 'users/' + st.uid)); if(s.exists()) p = s.val(); }catch(e){}
+  let frCount = 0;
+  try{ const s = await fdb.get(fdb.ref(db, 'friends/' + st.uid)); if(s.exists()) frCount = Object.keys(s.val()).length; }catch(e){}
+  const lvl = p.level || 1, kaju = p.kaju || 0;
+  const best = p.bestScores || {}, kr = p.kelimeRecords || {};
+  const T = [
+    { icon:'👣', name:'İlk Adım',      desc:'Seviye 2 ol',            ok: lvl >= 2 },
+    { icon:'🚀', name:'Yükselen',      desc:'Seviye 5 ol',            ok: lvl >= 5 },
+    { icon:'🌟', name:'Usta',          desc:'Seviye 10 ol',           ok: lvl >= 10 },
+    { icon:'💰', name:'Birikimci',     desc:'10.000 Kaju',            ok: kaju >= 10000 },
+    { icon:'🤑', name:'Zengin',        desc:'100.000 Kaju',           ok: kaju >= 100000 },
+    { icon:'💎', name:'Milyoner',      desc:'1.000.000 Kaju',         ok: kaju >= 1000000 },
+    { icon:'👥', name:'Sosyal',        desc:'3 arkadaş edin',         ok: frCount >= 3 },
+    { icon:'🦋', name:'Popüler',       desc:'10 arkadaş edin',        ok: frCount >= 10 },
+    { icon:'🎭', name:'Karakterli',    desc:'Avatar seç',             ok: !!p.avatar },
+    { icon:'🧱', name:'Tetrisçi',      desc:'Tetris rekoru kır',      ok: !!best.tetris },
+    { icon:'♟️', name:'Stratejist',    desc:'Satranç rekoru kır',     ok: !!best.chess },
+    { icon:'🎲', name:'Tavlacı',       desc:'Tavla rekoru kır',       ok: !!best.tavla },
+    { icon:'🔤', name:'Kelime Kurdu',  desc:'30+ puanlık kelime',     ok: !!(kr.best && kr.best.score >= 30) },
+  ];
+  const got = T.filter(t => t.ok).length;
+  body.innerHTML = `<div class="tr-count">${got}/${T.length} kupa</div><div class="tr-grid">` + T.map(t => `
+    <div class="tr-item${t.ok ? ' on' : ''}" title="${t.desc}">
+      <div class="tr-ico">${t.ok ? t.icon : '🔒'}</div>
+      <div class="tr-name">${t.name}</div>
+    </div>`).join('') + '</div>';
+}
+async function renderBadgesAndRank(st){
+  const box = byId('scrProfile'); if(!box || !st.uid) return;
+  const bEl = box.querySelector('[data-el="prfBadges"]'); if(!bEl) return;
+  const badges = [];
+  if(st.isAdmin === true){
+    badges.push('<span class="chat-admin-badge">👑 ADMİN</span>');
+    // admin nick ışıltısı (sohbettekiyle aynı stil)
+    try{ const m = await import('./social.js'); const n = box.querySelector('[data-el="prfNick"]'); if(n){ n.classList.add(m.glowClass()); n.style.color = '#FFD740'; } }catch(e){}
+  }
+  if(st.profile && st.profile.isVice) badges.push('<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>');
+  try{ const o = await fdb.get(fdb.ref(db, 'gcOperators/' + st.uid)); if(o.exists() && o.val() === true) badges.push('<span class="chat-op-badge">🔧 OP</span>'); }catch(e){}
+  // Kaju liderlik sırası (top 100 içinde)
+  try{
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'leaderboard/kaju'), fdb.orderByChild('kaju'), fdb.limitToLast(100)));
+    if(snap.exists()){
+      const rows = []; snap.forEach(ch => { rows.push({ uid: ch.key, kaju: (ch.val()||{}).kaju || 0 }); });
+      rows.sort((a,b) => b.kaju - a.kaju);
+      const i = rows.findIndex(r => r.uid === st.uid);
+      if(i >= 0) badges.push(`<span class="prf-rank">🏆 Liderlik #${i+1}</span>`);
+    }
+  }catch(e){}
+  bEl.innerHTML = badges.join(' ');
+}
+
 async function renderRecords(st){
   const body = document.querySelector('#prfRecords .prf-recbody'); if(!body) return;
   if(!st.uid){ body.innerHTML = '<i>Giriş yapınca rekorların burada görünür</i>'; return; }
