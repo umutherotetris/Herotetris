@@ -380,3 +380,20 @@
 .ava-opt{ aspect-ratio:1; font-size:21px; border-radius:11px; border:1.5px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
 .ava-opt:active{ transform:scale(.88); }
 .ava-opt.on{ border-color:#00E5FF; background:rgba(0,229,255,.14); box-shadow:0 0 9px rgba(0,229,255,.3); }
+.prf-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; min-height:16px; }
+.prf-rank{ display:inline-block; font-size:9px; color:#00E5FF; background:rgba(0,229,255,.1); border:1px solid rgba(0,229,255,.28); border-radius:5px; padding:1px 6px; font-weight:900; }
+.dm-tick{ font-size:9px; color:#7d8ab8; font-weight:900; }
+.dm-tick.seen{ color:#00E5FF; }
+.tr-count{ font-size:11px; font-weight:800; color:#ffd86b; margin-bottom:7px; }
+.tr-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:7px; }
+.tr-item{ text-align:center; padding:9px 3px; border-radius:11px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); opacity:.45; filter:grayscale(.6); }
+.tr-item.on{ opacity:1; filter:none; background:linear-gradient(160deg,rgba(255,215,64,.1),rgba(255,150,0,.03)); border-color:rgba(255,215,64,.3); box-shadow:0 0 8px rgba(255,200,0,.1); }
+.tr-ico{ font-size:20px; }
+.tr-name{ font-size:8.5px; font-weight:800; color:#cdd8f5; margin-top:3px; letter-spacing:.2px; }
+.fr-reqbox{ background:linear-gradient(160deg,rgba(105,240,174,.08),transparent); border:1px solid rgba(105,240,174,.22); border-radius:11px; padding:9px; margin-bottom:9px; }
+.fr-reqlbl{ font-size:10px; font-weight:900; letter-spacing:.5px; color:#69F0AE; margin-bottom:6px; }
+.fr-req{ display:flex; align-items:center; gap:6px; padding:5px 2px; }
+.fr-reqname{ flex:1; font-size:12.5px; font-weight:700; color:#dfe7ff; }
+.fr-acc,.fr-rej{ width:30px; height:30px; border-radius:9px; border:none; cursor:pointer; font-size:13px; font-weight:900; }
+.fr-acc{ background:linear-gradient(135deg,#3ec97e,#1f9d5c); color:#fff; }
+.fr-rej{ background:rgba(255,255,255,.08); color:#ff8fa0; border:1px solid rgba(255,122,138,.3); }
