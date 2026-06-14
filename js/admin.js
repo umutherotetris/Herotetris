@@ -84,6 +84,9 @@ export function openAdminPanel(){
           <button class="adm-acc" data-a="ghost">👻 Ghost Modu: <b data-el="ghostState">…</b> <span style="opacity:.6;font-weight:400">— listelerde görünmezsin</span></button>
         </div>
         <div class="adm-sec">
+          <button class="adm-acc" data-a="toggleAdmFab">👑 Admin FAB Görünürlüğü: <b data-el="admFabState">…</b> <span style="opacity:.6;font-weight:400">— ekrandaki admin butonu</span></button>
+        </div>
+        <div class="adm-sec">
           <button class="adm-acc" data-a="ipbans">🌐 IP Yasakları <span>▾</span></button>
           <div class="adm-log" data-el="ipbans" style="display:none"></div>
         </div>
@@ -156,11 +159,12 @@ export function openAdminPanel(){
   const usrSearch = $(ov,'[data-el="userSearch"]');
   if(usrSearch) usrSearch.addEventListener('input', () => applyUserFilter('search', usrSearch.value));
   $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
+  $(ov,'[data-a="toggleAdmFab"]').addEventListener('click', toggleAdminFab);
   $(ov,'[data-a="ipbans"]').addEventListener('click', toggleIPBans);
   $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
   $(ov,'[data-a="nbAdd"]').addEventListener('click', addNickBan);
   $(ov,'[data-a="dupclean"]').addEventListener('click', cleanRegistry);
-  loadStats(); loadLockState(); loadGhostState();
+  loadStats(); loadLockState(); loadGhostState(); loadAdminFabState();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
 }
@@ -618,6 +622,23 @@ async function loadGhostState(){
     return on;
   }catch(e){ return false; }
 }
+// ── 👑 Admin FAB görünürlük toggle ─────────────────────────────
+function loadAdminFabState(){
+  const hidden = localStorage.getItem('hero_admfab_hidden') === '1';
+  const el = $(P.root,'[data-el="admFabState"]');
+  if(el){ el.textContent = hidden ? 'GİZLİ 🙈' : 'GÖRÜNÜR 👁'; el.style.color = hidden ? '#ff8fa0' : '#5fd38a'; }
+  // Gerçek FAB'ı da güncelle
+  const fab = document.getElementById('adminFloatBtn');
+  if(fab) fab.style.display = hidden ? 'none' : 'grid';
+  return hidden;
+}
+function toggleAdminFab(){
+  const hidden = !( localStorage.getItem('hero_admfab_hidden') === '1' );
+  localStorage.setItem('hero_admfab_hidden', hidden ? '1' : '0');
+  loadAdminFabState();
+  msg(hidden ? '👑 Admin FAB gizlendi' : '👑 Admin FAB gösteriliyor', true);
+}
+
 async function toggleGhost(){
   try{
     const m = await import('./auth.js');

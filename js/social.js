@@ -64,7 +64,7 @@ export async function openPlayerCard(uid){
       <div class="pcp-ava">${avatarOf(p, uid)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
       <div class="pcp-id">
         <div class="pcp-name ${isAdm ? glowClass() : ''}" style="${isAdm?'color:#FFD740':''}">${esc(nick)}
-          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
+          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN 👑</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
         </div>
         <div class="pcp-sub">${online ? '<b style="color:#69F0AE">● Çevrimiçi</b>' : (pr.lastSeen ? tAgo(pr.lastSeen) + ' önce görüldü' : 'Çevrimdışı')}</div>
       </div>
@@ -143,6 +143,18 @@ export function openHubTab(tab){
 }
 
 export function initSocial(){
+  // Duyuru pulse animasyonu
+  if(!document.getElementById('ghp-bc-style')){
+    const st = document.createElement('style');
+    st.id = 'ghp-bc-style';
+    st.textContent = `
+      @keyframes ghp-pulse-bc {
+        0%,100% { box-shadow: 0 0 10px rgba(255,215,64,.12); }
+        50%      { box-shadow: 0 0 22px rgba(255,215,64,.35), 0 0 8px rgba(224,64,251,.2); }
+      }
+    `;
+    document.head.appendChild(st);
+  }
   if(typeof window!=='undefined'){ if(window.__heroSocialInit) return; window.__heroSocialInit = true; }
   if(document.getElementById('gemFloatBtn')) return;
   // 💎 Gem FAB
@@ -238,7 +250,8 @@ export function initSocial(){
   // Auth durumuna göre: admin FAB + dinleyiciler
   applyFabSetting();
   Auth.subscribe((st) => {
-    adm.style.display = (st.isAdmin === true) ? 'grid' : 'none';
+    const _fabHid = localStorage.getItem('hero_admfab_hidden') === '1';
+    adm.style.display = (st.isAdmin === true && !_fabHid) ? 'grid' : 'none';
     teardownListeners();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
@@ -327,7 +340,7 @@ function listenChat(){
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
       const op = !adm && H.ops && H.ops[m.uid] === true;
       const nameHtml = adm
-        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span>`
+        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
         : (op
           ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
           : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
@@ -399,6 +412,19 @@ function dmOpenThread(uid, nick){
   byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
   const th = byId('ghpDMThread'); th.style.display = 'flex';
   const tEl = byId('ghpDMTitle');
+  // Karşı tarafın admin bilgisini çek
+  fdb.get(fdb.ref(db, 'users/' + uid)).then(s => {
+    if(!s.exists()) return;
+    const uv = s.val();
+    const isAdmUser = uv.isAdmin === true || (H.admins && H.admins[uid]);
+    H.dmThread.isAdmin = isAdmUser;
+    H.dmThread.avatar = avatarOf(uv, uid);
+    if(isAdmUser){
+      tEl.innerHTML = '✉️ <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span> ' + esc(uv.nick||uv.displayName||nick) + ' <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span>';
+    } else {
+      tEl.textContent = '✉️ ' + (uv.nick || uv.displayName || nick);
+    }
+  }).catch(()=>{});
   tEl.textContent = '✉️ ' + nick;
   tEl.style.cursor = 'pointer';
   tEl.onclick = () => openPlayerCard(uid);
@@ -447,13 +473,58 @@ function dmOpenThread(uid, nick){
   }
   function renderDMRows(rows){
     const box = byId('ghpDMMsgs'); if(!box) return;
-    box.innerHTML = rows.map(m => `
-      <div class="ghp-chat-row${m.from === me ? ' mine' : ''}">
-        <div class="ghp-chat-body">
-          <div class="ghp-chat-text">${esc(m.text)}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}${m.from === me ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : ''}</div>
+    const threadIsAdmin = H.dmThread && H.dmThread.isAdmin === true;
+    const myIsAdmin = Auth.getState().isAdmin === true;
+    let prevDate = '';
+    box.innerHTML = rows.map(m => {
+      const isMine = m.from === me;
+      const isAdmMsg = m.isAdmin === true;
+      // Tarih ayırıcı
+      const d = m.ts ? new Date(m.ts) : null;
+      const dateStr = d ? d.toLocaleDateString('tr-TR', {day:'numeric',month:'long'}) : '';
+      const dateSep = (dateStr && dateStr !== prevDate)
+        ? `<div style="text-align:center;margin:8px 0;font-size:9px;color:#50506e;letter-spacing:.5px">${dateStr}</div>`
+        : '';
+      prevDate = dateStr;
+      // Avatar
+      const av = isMine
+        ? ((Auth.getState().profile && Auth.getState().profile.avatar) || defaultAvatar(me))
+        : (m.fromAvatar || defaultAvatar(m.from || ''));
+      // İsim + admin rozeti
+      const nameHtml = isMine ? '' : (() => {
+        const n = esc(m.fromName || H.dmThread.nick || 'Oyuncu');
+        if(isAdmMsg || threadIsAdmin){
+          const gcl = glowClass();
+          return \`<div class="ghp-dm-sender-name \${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> \${n} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>\`;
+        }
+        return \`<div style="color:#A78BFA;font-size:10px;font-weight:800;margin-bottom:2px">\${n}</div>\`;
+      })();
+      // Tick durumu (iletildi / görüldü)
+      const tickHtml = isMine ? (() => {
+        const seen = H.dmOppSeen >= (m.ts||0);
+        return seen
+          ? \` <span class="dm-tick seen" title="Görüldü" style="color:#4FC3F7">✓✓</span>\`
+          : \` <span class="dm-tick" title="İletildi" style="color:#546e7a">✓</span>\`;
+      })() : '';
+      // Mesaj balonu stili
+      const bubbleBg = isMine
+        ? 'linear-gradient(135deg,rgba(103,80,164,.6),rgba(81,45,168,.4))'
+        : isAdmMsg || threadIsAdmin
+          ? 'linear-gradient(135deg,rgba(255,180,0,.18),rgba(224,64,251,.1))'
+          : 'linear-gradient(135deg,rgba(30,30,60,.8),rgba(20,20,50,.6))';
+      const bubbleBdr = isMine ? 'rgba(103,80,164,.4)' : isAdmMsg || threadIsAdmin ? 'rgba(255,215,64,.35)' : 'rgba(60,60,100,.5)';
+      return \`\${dateSep}<div class="ghp-chat-row\${isMine ? ' mine' : ''}" style="align-items:flex-end;gap:6px">
+        \${!isMine ? \`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid \${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">\${av}</div>\` : ''}
+        <div style="flex:1;min-width:0">
+          \${nameHtml}
+          <div style="background:\${bubbleBg};border:1px solid \${bubbleBdr};border-radius:\${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;\${isMine?'margin-left:auto':''}">
+            <div class="ghp-chat-text" style="margin:0">\${esc(m.text)}</div>
+          </div>
+          <div class="ghp-chat-ts" style="\${isMine?'text-align:right':''}margin-top:2px">\${tAgo(m.ts || 0)}\${tickHtml}</div>
         </div>
-      </div>`).join('');
+        \${isMine ? \`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">\${av}</div>\` : ''}
+      </div>\`;
+    }).join('');
     box.scrollTop = box.scrollHeight;
   }
 }
@@ -475,7 +546,10 @@ async function dmSend(){
   const pk = pairKey(me.uid, H.dmThread.uid);
   inp.value = '';
   try{
-    await fdb.push(fdb.ref(db, 'messages/' + pk), { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now() });
+    const _dmAvatar = (me.profile && me.profile.avatar) ? me.profile.avatar : defaultAvatar(me.uid);
+    const _dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now(), fromAvatar: _dmAvatar };
+    if(me.isAdmin === true) _dmMsg.isAdmin = true;
+    await fdb.push(fdb.ref(db, 'messages/' + pk), _dmMsg);
     // konu listesini güncelle
     const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
     const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
@@ -521,20 +595,37 @@ function renderNotifPane(){
   updateBadges();
   if(!all.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; return; }
   list.innerHTML = all.map(n => n._bc ? `
-      <div class="ghp-notif-row" style="border-color:rgba(224,64,251,.25);background:linear-gradient(135deg,rgba(224,64,251,.08),transparent)">
-        <div class="ghp-notif-icon" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.3)">📣</div>
+      <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.5);background:linear-gradient(135deg,rgba(255,180,0,.13),rgba(224,64,251,.07));box-shadow:0 0 12px rgba(255,215,64,.12);animation:ghp-pulse-bc 2s ease-in-out infinite">
+        <div class="ghp-notif-icon" style="background:rgba(255,215,64,.18);border:1px solid rgba(255,215,64,.5);font-size:20px">📣</div>
         <div class="ghp-notif-body">
-          <div class="ghp-notif-text"><b style="color:#E040FB">DUYURU</b> · ${esc(n.text || '')}</div>
-          <div class="ghp-chat-ts">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
+          <div class="ghp-notif-text" style="font-weight:800"><span style="color:#FFD740">👑 ADMİN DUYURUSU 👑</span><br><span style="color:#fff;font-size:12px">${esc(n.text || '')}</span></div>
+          <div class="ghp-chat-ts" style="color:#FFD740;opacity:.8">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
         </div>
       </div>` : `
-      <div class="ghp-notif-row" ${n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"` : 'style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"'}>
-        <div class="ghp-notif-icon" style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.2)">${esc(n.icon || '🔔')}</div>
-        <div class="ghp-notif-body">
-          <div class="ghp-notif-text">${esc(n.text || n.msg || '')}</div>
-          <div class="ghp-chat-ts">${tAgo(n.ts || 0)}</div>
-        </div>
-      </div>`).join('');
+      ${(()=>{
+        const isKick  = (n.icon==='🦵') || (n.text||'').includes('atıldın') || n.type==='kick';
+        const isAdmin = n.from==='admin' || n.from==='system';
+        const bdr  = isKick  ? 'rgba(255,82,82,.5)'         : isAdmin ? 'rgba(255,215,64,.45)'        : 'rgba(255,215,64,.18)';
+        const bg   = isKick  ? 'linear-gradient(135deg,rgba(255,82,82,.13),rgba(180,0,0,.07))'
+                             : isAdmin ? 'linear-gradient(135deg,rgba(255,215,64,.1),rgba(224,64,251,.06))'
+                             : 'linear-gradient(135deg,rgba(255,215,64,.05),transparent)';
+        const glow = isKick  ? '0 0 14px rgba(255,82,82,.2)'
+                             : isAdmin ? '0 0 14px rgba(255,215,64,.15)' : 'none';
+        const iconBg  = isKick ? 'rgba(255,82,82,.18)' : isAdmin ? 'rgba(255,215,64,.15)' : 'rgba(255,215,64,.1)';
+        const iconBdr = isKick ? '1px solid rgba(255,82,82,.4)' : isAdmin ? '1px solid rgba(255,215,64,.4)' : '1px solid rgba(255,215,64,.2)';
+        const ic   = esc(n.icon || '🔔');
+        const txt  = esc(n.text || n.msg || '');
+        const hdr  = isKick  ? '<b style="color:#ff8fa0;font-size:11px">🦵 SOHBETTEN ATILDIN</b><br>'
+                             : isAdmin ? '<b style="color:#FFD740;font-size:11px">👑 ADMİN BİLDİRİMİ 👑</b><br>' : '';
+        const fromAttr = n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:${bdr};background:${bg};box-shadow:${glow}"` : `style="border-color:${bdr};background:${bg};box-shadow:${glow}"`;
+        return \`<div class="ghp-notif-row" \${fromAttr}>
+          <div class="ghp-notif-icon" style="background:\${iconBg};border:\${iconBdr};font-size:20px">\${ic}</div>
+          <div class="ghp-notif-body">
+            <div class="ghp-notif-text">\${hdr}<span style="color:#e8eaf6">\${txt}</span></div>
+            <div class="ghp-chat-ts" style="color:\${isKick?'#ff8fa0':isAdmin?'#FFD740':'inherit'}">\${tAgo(n.ts || 0)}</div>
+          </div>
+        </div>\`;
+      })()}`).join('');
   list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
 }
 function listenNotifs(uid){
