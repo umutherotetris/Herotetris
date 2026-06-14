@@ -133,7 +133,19 @@ function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth;
 export function applyFabSetting(){
   const on = localStorage.getItem('hero_set_fabs') !== '0';
   const g = document.getElementById('gemFloatBtn');
-  if(g) g.style.visibility = on ? '' : 'hidden';
+  if(g){
+    g.style.visibility = on ? '' : 'hidden';
+    g.style.opacity = '';
+    g.style.transform = '';
+    g.style.display = '';
+  }
+  // Admin FAB — gizli modda küçük+şeffaf ama görünür
+  const a = document.getElementById('adminFloatBtn');
+  if(a){
+    const admHid = localStorage.getItem('hero_admfab_hidden') === '1';
+    a.style.opacity = admHid ? '0.18' : '';
+    a.style.transform = admHid ? 'scale(0.52)' : '';
+  }
 }
 // Ekranlardan hub'ı belirli sekmede aç
 export function openHubTab(tab){
@@ -252,21 +264,14 @@ export function initSocial(){
   Auth.subscribe((st) => {
     const _fabHid = localStorage.getItem('hero_admfab_hidden') === '1';
     if(st.isAdmin === true){
-      if(_fabHid){
-        // Gizli modda: küçük, şeffaf ⚙️ butonu — hâlâ tıklanabilir ama göze çarpmaz
-        adm.style.display = 'grid';
-        adm.style.opacity = '0.18';
-        adm.style.transform = 'scale(0.52)';
-        adm.style.pointerEvents = 'auto';
-        adm.title = 'Admin paneli (gizli mod)';
-      } else {
-        adm.style.display = 'grid';
-        adm.style.opacity = '';
-        adm.style.transform = '';
-        adm.title = '';
-      }
+      adm.style.display = 'grid';
+      adm.style.opacity = _fabHid ? '0.18' : '';
+      adm.style.transform = _fabHid ? 'scale(0.52)' : '';
+      adm.title = _fabHid ? 'Admin paneli (gizli mod)' : '';
     } else {
       adm.style.display = 'none';
+      adm.style.opacity = '';
+      adm.style.transform = '';
     }
     teardownListeners();
     if(st.uid){
