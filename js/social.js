@@ -321,27 +321,46 @@ function listenChat(){
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
-    const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
+    const rows = []; snap.forEach(ch => { const v=ch.val(); if(v) rows.push({...v, _key:ch.key}); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
     list.innerHTML = rows.map(m => {
+      // Sistem mesajı — renkli pill (kick/ban/duyuru)
+      const isSys = m.uid === 'system' || m.isSystem === true;
+      if(isSys){
+        const t=esc(m.text||''), tx=m.text||'';
+        const isKick=tx.includes('atıldı')||tx.includes('kick')||tx.includes('🦵');
+        const isBan =tx.includes('banlı')||tx.includes('banlandı')||tx.includes('🚫');
+        const isUnban=tx.includes('ban kaldır')||tx.includes('serbest')||tx.includes('✅');
+        const isWarn=tx.includes('uyar')||tx.includes('⚠');
+        const isAnn =tx.includes('📣')||tx.includes('DUYURU');
+        const bg=isKick?'rgba(255,82,82,.1)':isBan?'rgba(255,50,50,.12)':isUnban?'rgba(105,240,174,.08)':isWarn?'rgba(255,152,0,.09)':isAnn?'rgba(255,215,64,.09)':'rgba(206,147,216,.06)';
+        const br=isKick?'rgba(255,82,82,.4)':isBan?'rgba(255,50,50,.45)':isUnban?'rgba(105,240,174,.35)':isWarn?'rgba(255,152,0,.4)':isAnn?'rgba(255,215,64,.4)':'rgba(206,147,216,.2)';
+        const cl=isKick?'#FF9090':isBan?'#FF5252':isUnban?'#69F0AE':isWarn?'#FFB74D':isAnn?'#FFD740':'#CE93D8';
+        const ic=isKick?'🦵':isBan?'🚫':isUnban?'✅':isWarn?'⚠️':isAnn?'📣':'🔔';
+        return `<div class="ghp-sys-msg" style="background:${bg};border:1px solid ${br};color:${cl}">${ic} ${t} <span class="ghp-chat-ts" style="color:${cl}66;margin-left:4px">${tAgo(m.ts||0)}</span></div>`;
+      }
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
       const op = !adm && H.ops && H.ops[m.uid] === true;
+      const isMe = m.uid === me;
       const nameHtml = adm
         ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span>`
         : (op
           ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
-          : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
+          : `<span class="ghp-chat-name" style="color:${isMe ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
-      <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
-        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : defaultAvatar(m.uid)))}</div>
+      <div class="ghp-chat-row${isMe?' mine':''}${adm?' ghp-adm':''}" data-mkey="${esc(m._key||'')}">
+        <div class="ghp-chat-avatar" data-pcuid="${esc(m.uid||'')}" style="cursor:pointer">${esc(m.avatar||(adm?'👑':defaultAvatar(m.uid)))}</div>
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
-          <div class="ghp-chat-text">${esc(m.text)}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
+          <div class="ghp-chat-text">${esc(m.text)}${m.edited?'<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>':''}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts||0)}${isMe&&m._key?` <span class="gc-act" data-del="${esc(m._key)}">🗑</span> <span class="gc-act" data-edit="${esc(m._key)}" data-txt="${esc(m.text||'')}">✏️</span>`:''}</div>
         </div>
       </div>`;
     }).join('');
+    // düzenle/sil
+    list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const k=b.dataset.del;if(k&&confirm('Mesaj silinsin mi?'))fdb.set(fdb.ref(db,'globalChat/'+k),null).catch(()=>{});}));
+    list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const cur=b.dataset.txt;const txt=prompt('Mesajı düzenle:',cur);if(txt&&txt.trim()&&txt.trim()!==cur)fdb.update(fdb.ref(db,'globalChat/'+b.dataset.edit),{text:txt.trim(),edited:true}).catch(()=>{});}));
     list.scrollTop = list.scrollHeight;
   });
 }

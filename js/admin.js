@@ -70,6 +70,10 @@ export function openAdminPanel(){
           <div class="adm-log" data-el="allusers" style="display:none"></div>
         </div>
         <div class="adm-sec">
+          <button class="adm-acc" data-a="clanmgmt">🏰 Klan Yönetimi <span>▾</span></button>
+          <div class="adm-log" data-el="clanmgmt" style="display:none"></div>
+        </div>
+        <div class="adm-sec">
           <button class="adm-acc" data-a="ghost">👻 Ghost Modu: <b data-el="ghostState">…</b> <span style="opacity:.6;font-weight:400">— listelerde görünmezsin</span></button>
         </div>
         <div class="adm-sec">
@@ -134,6 +138,7 @@ export function openAdminPanel(){
   $(ov,'[data-a="chatlock"]').addEventListener('click', toggleChatLock);
   $(ov,'[data-a="glow"]').addEventListener('click', toggleGlowPicker);
   $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
+  $(ov,'[data-a="clanmgmt"]').addEventListener('click', toggleClanMgmt);
   $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
   $(ov,'[data-a="ipbans"]').addEventListener('click', toggleIPBans);
   $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
@@ -444,6 +449,49 @@ function renderTarget(){
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+}
+
+// ── 🏰 Klan Yönetimi ────────────────────────────────────────────
+async function toggleClanMgmt(){
+  const box = $(P.root,'[data-el="clanmgmt"]');
+  if(box.style.display !== 'none'){ box.style.display='none'; return; }
+  box.style.display=''; box.innerHTML='Yükleniyor…';
+  try{
+    const snap = await fdb.get(fdb.ref(db,'clans'));
+    if(!snap.exists()){ box.innerHTML='<i>Klan yok</i>'; return; }
+    const clans=[]; snap.forEach(ch=>{ clans.push({id:ch.key,...(ch.val()||{})}); });
+    clans.sort((a,b)=>Object.keys(b.members||{}).length-Object.keys(a.members||{}).length);
+    box.innerHTML = clans.slice(0,30).map(c=>{
+      const cnt=Object.keys(c.members||{}).length;
+      const varis=Object.values(c.members||{}).find(m=>m&&m.role==='vice');
+      const ldrName=c.members&&c.leader?(c.members[c.leader]&&c.members[c.leader].name)||c.leader.slice(0,8):'?';
+      return `<div class="adm-li" style="flex-direction:column;align-items:stretch;gap:4px;padding:9px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <b style="color:#ffd86b">[${esc(c.tag||'?')}] ${esc(c.name||'Klan')}</b>
+          <span style="font-size:10px;color:#7d8ab8">👥${cnt} · 💰${fmt(c.kaju||0)}</span>
+        </div>
+        <div style="font-size:10px;color:#9fb0d8">Lider: ${esc(ldrName)} · Varis: ${varis?esc(varis.name||'?'):'<i>yok</i>'}</div>
+        <div style="display:flex;gap:5px">
+          <button class="adm-btn p" style="flex:1;padding:5px;font-size:10px" data-clan-load="${esc(c.leader||'')}">Lideri Yönet</button>
+          <button class="adm-btn r" style="flex:0;padding:5px 9px;font-size:10px" data-clan-del="${esc(c.id)}">Dağıt</button>
+        </div>
+      </div>`;
+    }).join('');
+    box.querySelectorAll('[data-clan-load]').forEach(btn=>btn.addEventListener('click',()=>{ if(btn.dataset.clanLoad) loadTarget(btn.dataset.clanLoad); }));
+    box.querySelectorAll('[data-clan-del]').forEach(btn=>btn.addEventListener('click', async()=>{
+      if(!confirm('Bu klan KALICI OLARAK silinecek!')) return;
+      try{
+        const cs=await fdb.get(fdb.ref(db,'clans/'+btn.dataset.clanDel));
+        if(cs.exists()){
+          const mems=Object.keys((cs.val()&&cs.val().members)||{});
+          for(const uid of mems) await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null).catch(()=>{});
+        }
+        await fdb.set(fdb.ref(db,'clans/'+btn.dataset.clanDel),null);
+        btn.closest('.adm-li').remove();
+        logAdmin('clan-dagit','',btn.dataset.clanDel);
+      }catch(e){ msg('✗ Yapılamadı',false); }
+    }));
+  }catch(e){ box.innerHTML='<i>Okunamadı</i>'; }
 }
 
 // ── 👻 Ghost ────────────────────────────────────────────────────

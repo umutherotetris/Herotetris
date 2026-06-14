@@ -225,26 +225,61 @@ async function renderClanMembers(){
     return m;
   }));
 
+  // Portal admin seti
+  let clanAdmins = {}; try{ const as=await fdb.get(fdb.ref(db,'admins')); clanAdmins=as.exists()?as.val():{}; }catch(e){}
+  const meIsLeader = C.myRole==='leader', meIsVice = C.myRole==='vice', canManage=meIsLeader||meIsVice;
   box.innerHTML = `<div class="clan-card">` + enriched.map(m => {
-    const isLeaderOrVice = C.myRole==='leader' || C.myRole==='vice';
-    const canKick = isLeaderOrVice && m.uid !== st.uid && m.role !== 'leader';
+    const isPortalAdmin=!!clanAdmins[m.uid], isLeader=m.role==='leader', isVice=m.role==='vice';
+    const gc = isPortalAdmin||isLeader ? 'ng-gold' : isVice ? 'ng-classic' : '';
+    const nc = isLeader||isPortalAdmin ? '#FFD740' : isVice ? '#00E5FF' : '#cdd8f5';
+    const canKick = canManage && m.uid!==st.uid && !isLeader;
+    const badges = [
+      isPortalAdmin ? '<span class="chat-admin-badge">👑 Admin</span>' : '',
+      isLeader ? '<span class="chat-admin-badge" style="color:#FFD740;background:rgba(255,215,64,.12);border-color:rgba(255,215,64,.3)">👑 Lider</span>' : '',
+      isVice ? '<span class="chat-admin-badge" style="color:#00E5FF;background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.3)">⭐ Varis</span>' : '',
+    ].filter(Boolean).join('');
     return `<div class="clan-member" data-muid="${esc(m.uid)}">
-      <div class="clan-mava">${esc(m.avatar)}</div>
-      <div style="flex:1"><b style="color:${roleColor[m.role]||'#cdd8f5'}">${esc(m.name)}</b>
-        <div style="font-size:9px;color:#6d7aa8">${roleLabel[m.role]||'👤 Üye'} · ${tAgo(m.joinedAt)}</div></div>
-      ${canKick ? `<button class="clan-btn r" style="padding:4px 9px;font-size:10px" data-kick="${esc(m.uid)}">Çıkar</button>` : ''}
+      <div class="clan-mava" style="font-size:${isLeader?'20':'16'}px">${esc(m.avatar)}</div>
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;min-width:0">
+          <b class="${gc}" style="color:${nc};max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.name)}</b>${badges}
+        </div>
+        <div style="font-size:9px;color:#6d7aa8;white-space:nowrap">${roleLabel[m.role]||'👤 Üye'} · ${tAgo(m.joinedAt)}</div>
+      </div>
+      <div style="display:flex;gap:3px;flex-shrink:0">
+        ${meIsLeader&&!isLeader&&!isVice?`<button class="clan-btn p" style="padding:4px 7px;font-size:9px" data-vice="${esc(m.uid)}" title="Varis Yap">⭐</button>`:''}
+        ${meIsLeader&&isVice?`<button class="clan-btn" style="padding:4px 7px;font-size:9px;background:rgba(255,255,255,.07)" data-rmvice="${esc(m.uid)}" title="Varislikten Al">✕⭐</button>`:''}
+        ${canKick?`<button class="clan-btn r" style="padding:4px 7px;font-size:10px" data-kick="${esc(m.uid)}">✕</button>`:''}
+      </div>
     </div>`;
   }).join('') + `</div>`;
   box.querySelectorAll('[data-muid]').forEach(el => el.addEventListener('click', async (e) => {
-    if(e.target.closest('[data-kick]')) return;
-    try{ const m = await import('./social.js'); m.openPlayerCard(el.dataset.muid); }catch(err){}
+    if(e.target.closest('[data-kick],[data-vice],[data-rmvice]')) return;
+    try{ const m=await import('./social.js'); m.openPlayerCard(el.dataset.muid); }catch(err){}
   }));
   box.querySelectorAll('[data-kick]').forEach(btn => btn.addEventListener('click', async () => {
     if(!confirm('Bu üye klandan çıkarılsın mı?')) return;
     try{
-      await fdb.set(fdb.ref(db, 'clans/' + C.myClanId + '/members/' + btn.dataset.kick), null);
-      await fdb.set(fdb.ref(db, 'users/' + btn.dataset.kick + '/clanId'), null);
+      await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/members/'+btn.dataset.kick),null);
+      await fdb.set(fdb.ref(db,'users/'+btn.dataset.kick+'/clanId'),null);
+      renderClanMembers();
     }catch(e){ alert('Çıkarılamadı'); }
+  }));
+  box.querySelectorAll('[data-vice]').forEach(btn => btn.addEventListener('click', async () => {
+    if(!confirm('Bu üye VARİS yapılsın mı?')) return;
+    try{
+      const mems=_clanData&&_clanData.members?_clanData.members:{};
+      for(const uid of Object.keys(mems)){
+        if(mems[uid]&&mems[uid].role==='vice')
+          await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid),{role:'member'});
+      }
+      await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+btn.dataset.vice),{role:'vice'});
+      renderClanMembers();
+    }catch(e){ alert('Yapılamadı'); }
+  }));
+  box.querySelectorAll('[data-rmvice]').forEach(btn => btn.addEventListener('click', async () => {
+    if(!confirm('Varislik kaldırılsın mı?')) return;
+    try{ await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+btn.dataset.rmvice),{role:'member'}); renderClanMembers(); }catch(e){}
   }));
 }
 
@@ -311,6 +346,9 @@ async function renderClanLeaderboard(){
 // ── Lider yönetim sekmesi ───────────────────────────────────────
 function renderClanManage(){
   const box = document.getElementById('clanTabBody'); if(!box) return;
+  const mems2 = _clanData&&_clanData.members?_clanData.members:{};
+  const varisEntry = Object.entries(mems2).find(([,v])=>v&&v.role==='vice');
+  const varisName = varisEntry ? esc((varisEntry[1]&&varisEntry[1].name)||'?') : null;
   box.innerHTML = `
     <div class="clan-card">
       <div class="clan-lbl">📣 KLAN DUYURUSU</div>
@@ -318,7 +356,41 @@ function renderClanManage(){
         <input class="clan-in" id="clanAnnInp" maxlength="150" placeholder="Klan üyelerine duyuru…">
         <button class="clan-btn p" id="clanAnnSend">Gönder</button>
       </div>
+    </div>
+    <div class="clan-card">
+      <div class="clan-lbl">⭐ LİDERLİĞİ DEVRET</div>
+      <div style="font-size:11px;color:#9fb0d8;margin-bottom:8px">${varisName?'Varis: <b style="color:#00E5FF">'+varisName+'</b>':'Henüz varis atanmamış — Üyeler sekmesinden ⭐ ile ata'}</div>
+      <button class="clan-btn p" id="clanTransferBtn" style="width:100%;${!varisEntry?'opacity:.4':''}" ${!varisEntry?'disabled':''}>👑 Liderliği Varise Devret</button>
+    </div>
+    <div class="clan-card">
+      <div class="clan-lbl" style="color:#ff8fa0">⚠️ TEHLİKELİ BÖLGE</div>
+      <button class="clan-btn r" id="clanDisbandBtn" style="width:100%">💀 Klanı Dağıt</button>
     </div>`;
+  const tb = box.querySelector('#clanTransferBtn');
+  if(tb) tb.addEventListener('click', async () => {
+    if(!varisEntry){ alert('Önce varis atayın'); return; }
+    if(!confirm(`Liderlik ${varisName} adlı üyeye devredilsin mi?`)) return;
+    try{
+      const st = Auth.getState();
+      await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+varisEntry[0]),{role:'leader'});
+      await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+st.uid),{role:'member'});
+      await fdb.update(fdb.ref(db,'clans/'+C.myClanId),{leader:varisEntry[0]});
+      await loadMyClan();
+    }catch(e){ alert('Yapılamadı'); }
+  });
+  const disbBtn = box.querySelector('#clanDisbandBtn');
+  if(disbBtn) disbBtn.addEventListener('click', async () => {
+    const cn = _clanData&&_clanData.name?_clanData.name:'?';
+    if(!confirm(`Klan "${cn}" KALICI OLARAK dağıtılacak!`)) return;
+    const inp2 = prompt(`Onaylamak için klan adını yaz: "${cn}"`);
+    if(inp2 !== cn){ alert('Klan adı eşleşmedi'); return; }
+    try{
+      const mems3 = _clanData&&_clanData.members?Object.keys(_clanData.members):[];
+      for(const uid of mems3) await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null).catch(()=>{});
+      await fdb.set(fdb.ref(db,'clans/'+C.myClanId),null);
+      C.myClanId=null; _clanData=null; renderNoClan();
+    }catch(e){ alert('Yapılamadı'); }
+  });
   box.querySelector('#clanAnnSend').addEventListener('click', async () => {
     const inp = box.querySelector('#clanAnnInp'); const text = inp.value.trim(); if(!text) return;
     const st = Auth.getState();
