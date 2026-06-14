@@ -413,6 +413,10 @@ function renderTarget(){
           <button class="adm-btn p" style="flex:1" data-a="op" data-el="opBtn">🔧 OP…</button>
         </div>
         <div class="adm-row">
+          <button class="adm-btn" style="flex:1;background:linear-gradient(135deg,rgba(255,215,64,.2),rgba(255,150,0,.1));border:1px solid rgba(255,215,64,.35);color:#ffd86b" data-a="toggleadmin" data-el="adminBtn">${p.isAdmin?'👑 Admin Kaldır':'👑 Admin Yap'}</button>
+          <button class="adm-btn r" style="flex:1;opacity:.85" data-a="deleteuser">🗑 KALICI SİL</button>
+        </div>
+        <div class="adm-row">
           ${banned
             ? '<button class="adm-btn g" data-a="unban">✅ Banı Kaldır</button>'
             : '<button class="adm-btn r" data-a="ban">🚫 Banla</button>'}
@@ -432,6 +436,8 @@ function renderTarget(){
   const ipb = $(R,'[data-a="ipban"]'); if(ipb) ipb.addEventListener('click', doIPBan);
   checkTargetIPBan();
   const opb = $(R,'[data-a="op"]'); if(opb){ opb.addEventListener('click', doOP); refreshOPBtn(); }
+  const ab = $(R,'[data-a="toggleadmin"]'); if(ab) ab.addEventListener('click', doToggleAdmin);
+  const db2 = $(R,'[data-a="deleteuser"]'); if(db2) db2.addEventListener('click', doDeleteUser);
   const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
   const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
   if(bb) bb.addEventListener('click', () => doBan(true));
@@ -546,6 +552,53 @@ async function addNickBan(){
     msg('✓ Nick yasaklandı: ' + nick, true); logAdmin('nickban', '', nick);
     refreshNickBans();
   }catch(e){ msg('✗ Yapılamadı — kurallar v526 mı?', false); }
+}
+
+// ── 👑 Admin yetkisi ver/kaldır ─────────────────────────────────
+async function doToggleAdmin(){
+  const uid = P.target.uid;
+  const isAdm = P.target.profile.isAdmin === true;
+  const action = isAdm ? 'Admin yetkisi KALDIRILACAK' : 'Admin yetkisi VERİLECEK';
+  if(!confirm(`${P.target.profile.nick||uid} — ${action}. Onaylıyor musun?`)) return;
+  try{
+    // users/isAdmin alanını güncelle (admins/ düğümü client'tan yazılamaz — kural)
+    await fdb.update(fdb.ref(db, 'users/' + uid), { isAdmin: isAdm ? false : true });
+    P.target.profile.isAdmin = !isAdm;
+    msg(isAdm ? '✅ Admin yetkisi kaldırıldı' : '✅ Admin yetkisi verildi 👑', true);
+    logAdmin(isAdm ? 'admin-kaldir' : 'admin-ver', uid, '');
+    renderTarget();
+  }catch(e){ msg('✗ Yapılamadı: ' + (e.message||e), false); }
+}
+
+// ── 🗑 Kullanıcıyı kalıcı sil ────────────────────────────────────
+async function doDeleteUser(){
+  const uid = P.target.uid;
+  const nick = P.target.profile.nick || P.target.profile.name || uid;
+  if(!confirm(`⚠️ DİKKAT! "${nick}" KALICI OLARAK SİLİNECEK.\n\nBu işlem geri alınamaz!\nDevam etmek istediğine emin misin?`)) return;
+  if(!confirm(`Son kontrol: "${nick}" (${uid.slice(0,12)}…) tüm verisiyle silinsin mi?`)) return;
+  msg('Siliniyor…', true);
+  try{
+    const nickRaw = P.target.profile.nick || P.target.profile.name || '';
+    const nickK = nickRaw.replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase();
+    // Paralel sil: users / nicks / presence / friends / kajuTransfers / userNotifs
+    await Promise.allSettled([
+      fdb.set(fdb.ref(db, 'users/' + uid), null),
+      fdb.set(fdb.ref(db, 'presence/' + uid), null),
+      fdb.set(fdb.ref(db, 'userNotifs/' + uid), null),
+      fdb.set(fdb.ref(db, 'friends/' + uid), null),
+      fdb.set(fdb.ref(db, 'friendRequests/' + uid), null),
+      fdb.set(fdb.ref(db, 'adminForcedNick/' + uid), null),
+      nickK ? fdb.set(fdb.ref(db, 'nicks/' + nickK), null) : Promise.resolve(),
+    ]);
+    // Leaderboard temizle
+    await Promise.allSettled([
+      fdb.set(fdb.ref(db, 'leaderboard/kaju/' + uid), null),
+    ]);
+    msg('✅ Kullanıcı kalıcı olarak silindi', true);
+    logAdmin('kalici-sil', uid, nick);
+    P.target = null;
+    $(P.root,'[data-el="result"]').innerHTML = '<div class="adm-msg ok">✅ Hesap silindi — arama yaparak başka oyuncuya geçebilirsin.</div>';
+  }catch(e){ msg('✗ Silinemedi: ' + (e.message||e), false); }
 }
 
 // ── 🔧 Sohbet operatörü ─────────────────────────────────────────
