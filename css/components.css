@@ -437,3 +437,6 @@
 .clan-chat-row.mine{ flex-direction:row-reverse; }
 .clan-chat-ava{ font-size:16px; flex-shrink:0; }
 .clan-season-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:4px; margin-top:9px; overflow:hidden; }
+.ghp-sys-msg{ text-align:center; padding:4px 12px; margin:3px 0; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:5px; }
+.gc-act{ font-size:9px; cursor:pointer; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); user-select:none; opacity:.7; }
+.gc-act:hover{ opacity:1; }
