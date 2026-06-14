@@ -42,7 +42,7 @@ async function _renderProfile(){
   box.innerHTML = `
     <div class="prf-card">
       <div class="prf-top">
-        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer">${esc((st.profile && st.profile.avatar) || (isGoogle ? '🦸' : '👤'))}<span class="prf-ava-edit">✏️</span></div>
+        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer;border:3px solid ${esc((st.profile&&st.profile.frame)||'transparent')}">${esc((st.profile && st.profile.avatar) || (isGoogle ? '🦸' : '👤'))}<span class="prf-ava-edit">✏️</span></div>
         <div class="prf-id">
           <div class="prf-name"><span data-el="prfNick">${esc(nick)}</span> ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
           <div class="prf-badges" data-el="prfBadges"></div>
@@ -59,6 +59,9 @@ async function _renderProfile(){
         ${isGoogle ? '<button class="prf-btn" data-p="kaju">💸 Kaju Gönder</button>' : '<button class="prf-btn" data-p="login">🔗 Hesabı Bağla</button>'}
         <button class="prf-btn" data-p="settings">⚙️ Ayarlar</button>
         ${isGoogle ? '<button class="prf-btn" data-p="mycard">🪪 Kartım</button>' : ''}
+        ${isGoogle ? '<button class="prf-btn" data-p="clan">🏰 Klan</button>' : ''}
+        <button class="prf-btn" data-p="season">👑 Sezon</button>
+        ${isGoogle ? '<button class="prf-btn" data-p="frame">🖼️ Çerçeve</button>' : ''}
       </div>
     </div>
     <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>
@@ -69,7 +72,57 @@ async function _renderProfile(){
   const kb = box.querySelector('[data-p="kaju"]'); if(kb) kb.addEventListener('click', async () => (await uiMod()).openKajuModal());
   const lb = box.querySelector('[data-p="login"]'); if(lb) lb.addEventListener('click', () => Auth.loginGoogle && Auth.loginGoogle());
   const mc = box.querySelector('[data-p="mycard"]'); if(mc) mc.addEventListener('click', async () => { try{ const m = await import('./social.js'); m.openPlayerCard(st.uid); }catch(e){} });
+  const cb = box.querySelector('[data-p="clan"]'); if(cb) cb.addEventListener('click', async () => { try{ const m = await import('./clan.js'); m.default(); }catch(e){ alert('Klan yüklenemedi: '+e.message); } });
+
+// ── 🖼️ Çerçeve + Arka Plan Seçici ─────────────────────────────
+const FRAMES = [{"id": "none", "label": "\u00c7er\u00e7eve Yok", "color": "transparent"}, {"id": "gold", "label": "\ud83d\udc51 Alt\u0131n", "color": "#FFD740"}, {"id": "cyan", "label": "\ud83d\udc8e Mavi", "color": "#00E5FF"}, {"id": "fire", "label": "\ud83d\udd25 Ate\u015f", "color": "#FF5722"}, {"id": "green", "label": "\ud83c\udf3f Ye\u015fil", "color": "#69F0AE"}, {"id": "purple", "label": "\ud83d\udc9c Mor", "color": "#CE93D8"}, {"id": "silver", "label": "\ud83e\udd48 G\u00fcm\u00fc\u015f", "color": "#B0BEC5"}];
+const BG_THEMES = [{"id": "default", "label": "\ud83c\udf0c Varsay\u0131lan", "bg": ""}, {"id": "space", "label": "\ud83d\ude80 Uzay", "bg": "radial-gradient(ellipse at top,#1a1040 0%,#0a0a1e 100%)"}, {"id": "ocean", "label": "\ud83c\udf0a Okyanus", "bg": "linear-gradient(160deg,#0d1b4b 0%,#0a3060 50%,#062040 100%)"}, {"id": "forest", "label": "\ud83c\udf32 Orman", "bg": "linear-gradient(160deg,#0d2b1a 0%,#1a3a20 50%,#0a1e12 100%)"}, {"id": "sunset", "label": "\ud83c\udf05 G\u00fcn Bat\u0131m\u0131", "bg": "linear-gradient(160deg,#3a0a20 0%,#6b1a2a 40%,#2a0a40 100%)"}, {"id": "ice", "label": "\u2744\ufe0f Buz", "bg": "linear-gradient(160deg,#0d2040 0%,#1a3060 50%,#0a1830 100%)"}];
+async function openFramePicker(){
+  if(byId('framePicker')) return;
+  const st = Auth.getState(); if(!st.uid || st.status!=='google'){ alert('Çerçeve/tema için giriş gerekli'); return; }
+  const cur = (st.profile&&st.profile.frame)||'none';
+  const curBg = (st.profile&&st.profile.profileBg)||'default';
+  const ov = document.createElement('div'); ov.id='framePicker'; ov.className='nick-modal-ov';
+  ov.innerHTML = '<div class="nick-modal"><div class="nm-title">🖼️ Çerçeve \u0026 Tema</div>' +
+    '<div class="prf-lbl" style="margin-top:8px">AVATAR ÇERÇEVESİ</div>' +
+    '<div class="ava-grid" style="grid-template-columns:repeat(4,1fr)">' +
+    FRAMES.map(f=>'<button class="ava-opt frame-opt'+(f.id===cur?' on':'')
+      +'" data-fid="'+f.id+'" title="'+f.label+'" style="font-size:10px;font-weight:800;padding:7px 2px">'+f.label+'</button>').join('') + '</div>' +
+    '<div class="prf-lbl" style="margin-top:10px">PROFİL ARKA PLANI</div>' +
+    '<div class="ava-grid" style="grid-template-columns:repeat(3,1fr)">' +
+    BG_THEMES.map(b=>'<button class="ava-opt frame-opt'+(b.id===curBg?' on':'')
+      +'" data-bid="'+b.id+'" style="font-size:10px;font-weight:700;padding:8px 2px;'+(b.bg?'background:'+b.bg+';':'')+'">'+b.label+'</button>').join('') + '</div>' +
+    '<div class="nm-actions"><button class="nm-btn nm-cancel" data-fp-close>Kapat</button></div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  ov.querySelector('[data-fp-close]').addEventListener('click', ()=>ov.remove());
+  ov.querySelectorAll('[data-fid]').forEach(btn=>btn.addEventListener('click', async()=>{
+    try{
+      await fdb.update(fdb.ref(db, 'users/'+st.uid), {frame: btn.dataset.fid});
+      if(st.profile) st.profile.frame = btn.dataset.fid;
+      ov.querySelectorAll('[data-fid]').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+      _renderProfile();
+    }catch(e){ alert('Kaydedilemedi'); }
+  }));
+  ov.querySelectorAll('[data-bid]').forEach(btn=>btn.addEventListener('click', async()=>{
+    try{
+      await fdb.update(fdb.ref(db, 'users/'+st.uid), {profileBg: btn.dataset.bid});
+      if(st.profile) st.profile.profileBg = btn.dataset.bid;
+      ov.querySelectorAll('[data-bid]').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+      applyProfileBg(btn.dataset.bid);
+    }catch(e){ alert('Kaydedilemedi'); }
+  }));
+}
+function applyProfileBg(id){
+  const theme = BG_THEMES.find(b=>b.id===id);
+  const scr = document.querySelector('[data-screen="profile"]');
+  if(scr) scr.style.background = theme && theme.bg ? theme.bg : '';
+}
+
+  const fb2 = box.querySelector('[data-p="frame"]'); if(fb2) fb2.addEventListener('click', openFramePicker);
+  const sb = box.querySelector('[data-p="season"]'); if(sb) sb.addEventListener('click', async () => { try{ const m = await import('./season.js'); m.openSeason(); }catch(e){ alert('Sezon yüklenemedi: '+e.message); } });
   renderBadgesAndRank(st);
+  applyProfileBg((st.profile&&st.profile.profileBg)||'default');
   renderRecords(st);
   renderTrophies(st);
 }
