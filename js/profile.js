@@ -35,7 +35,7 @@ export function applyProfileBg(id){
       for(let gy=0;gy<cv.height;gy+=gs){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(cv.width,gy);ctx.stroke();}
       bgS.forEach(function(s,i){
         const x=i*13+6;
-        s.y=(s.y+s.sp*4+2.5)%(cv.height*1.4);
+        s.y=(s.y+s.sp*2+1.2)%(cv.height*1.4);
         const y=s.y-cv.height*0.4;
         ctx.globalAlpha=0.98; ctx.fillStyle='#afffaf'; ctx.font='bold 12px monospace';
         ctx.fillText(String.fromCharCode(33+Math.floor(Math.random()*93)),x,y);
@@ -55,7 +55,7 @@ export function applyProfileBg(id){
         sg.addColorStop(0,'rgba(0,255,70,0)'); sg.addColorStop(0.5,'rgba(0,255,70,'+cp+')'); sg.addColorStop(1,'rgba(0,255,70,0)');
         ctx.fillStyle=sg; ctx.globalAlpha=1; ctx.fillRect(c*13,0,11,cv.height);
       }
-      const scanY=(t*90)%cv.height;
+      const scanY=(t*45)%cv.height;
       ctx.globalAlpha=0.2; ctx.fillStyle='rgba(0,255,80,1)'; ctx.fillRect(0,scanY-1,cv.width,3);
       ctx.globalAlpha=0.06; ctx.fillStyle='rgba(0,255,80,1)'; ctx.fillRect(0,scanY-20,cv.width,22);
       const vg=ctx.createRadialGradient(cv.width/2,cv.height/2,cv.width*0.25,cv.width/2,cv.height/2,cv.width*0.85);
@@ -108,7 +108,7 @@ function _renderProfile(st){
   box.innerHTML = ''
     +'<div class="prf-card">'
       +'<div class="prf-top">'
-        +'<div class="prf-ava" data-p="avatar" title="Fotoğraf/Avatar" style="cursor:pointer;border:3px solid '+frameColor+';overflow:hidden;position:relative">'
+        +'<div class="prf-ava" data-p="avatar" title="Fotoğraf/Avatar" style="cursor:pointer;border:3px solid '+frameColor+';overflow:hidden;position:relative;border-radius:50%">'
           +avaHtml
           +'<span class="prf-ava-edit">📷</span>'
         +'</div>'
