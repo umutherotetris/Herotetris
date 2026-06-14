@@ -66,7 +66,18 @@ export function openAdminPanel(){
           <div class="adm-log" data-el="glowbox" style="display:none"></div>
         </div>
         <div class="adm-sec">
-          <button class="adm-acc" data-a="allusers">👥 Tüm Kullanıcılar <span>▾</span></button>
+          <div class="adm-row" style="gap:6px;flex-wrap:wrap">
+            <button class="adm-acc" style="flex:1" data-a="allusers">👥 Tüm Kullanıcılar <span data-el="ucount" style="color:#5fd38a;font-weight:800"></span> <span>▾</span></button>
+            <button class="adm-btn r" style="flex:0;white-space:nowrap" data-a="cleanAnon">🧹 Nick'siz Temizle</button>
+            <button class="adm-btn r" style="flex:0;white-space:nowrap" data-a="cleanDup">🔁 Duplicate Temizle</button>
+          </div>
+          <div class="adm-row" style="gap:4px;flex-wrap:wrap;margin-top:4px" id="userFilterRow" style="display:none">
+            <button class="adm-btn p" data-filter="all" style="font-size:10px;padding:4px 8px">Tümü</button>
+            <button class="adm-btn" data-filter="nonick" style="font-size:10px;padding:4px 8px">Nick'siz</button>
+            <button class="adm-btn" data-filter="anon" style="font-size:10px;padding:4px 8px">Anonim</button>
+            <button class="adm-btn" data-filter="dup" style="font-size:10px;padding:4px 8px">Duplicate</button>
+            <input class="adm-in" data-el="userSearch" placeholder="Nick ara…" style="flex:1;min-width:80px;padding:4px 8px;font-size:11px">
+          </div>
           <div class="adm-log" data-el="allusers" style="display:none"></div>
         </div>
         <div class="adm-sec">
@@ -134,6 +145,16 @@ export function openAdminPanel(){
   $(ov,'[data-a="chatlock"]').addEventListener('click', toggleChatLock);
   $(ov,'[data-a="glow"]').addEventListener('click', toggleGlowPicker);
   $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
+  $(ov,'[data-a="cleanAnon"]').addEventListener('click', cleanAnonUsers);
+  $(ov,'[data-a="cleanDup"]').addEventListener('click', cleanDupNicks);
+  // Filtre butonları
+  ov.querySelectorAll('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
+    ov.querySelectorAll('[data-filter]').forEach(b => b.className = 'adm-btn');
+    btn.className = 'adm-btn p';
+    applyUserFilter(btn.dataset.filter);
+  }));
+  const usrSearch = $(ov,'[data-el="userSearch"]');
+  if(usrSearch) usrSearch.addEventListener('input', () => applyUserFilter('search', usrSearch.value));
   $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
   $(ov,'[data-a="ipbans"]').addEventListener('click', toggleIPBans);
   $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
@@ -224,27 +245,155 @@ async function toggleGlowPicker(){
 }
 
 // ── 👥 Tüm kullanıcılar ─────────────────────────────────────────
+// Tüm kullanıcılar listesi için global cache
+let _allUsersCache = [];
+let _dupNickMap = {};  // nick → [uid1, uid2, ...]
+
 async function toggleAllUsers(){
   const box = $(P.root,'[data-el="allusers"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  const filterRow = P.root.querySelector('#userFilterRow');
+  if(box.style.display !== 'none'){ box.style.display = 'none'; if(filterRow) filterRow.style.display='none'; return; }
+  box.style.display = ''; if(filterRow) filterRow.style.display='';
+  box.innerHTML = 'Yükleniyor…';
   try{
     const snap = await fdb.get(fdb.ref(db, 'users'));
     if(!snap.exists()){ box.innerHTML = '<i>Kullanıcı yok</i>'; return; }
     const v = snap.val();
-    const rows = Object.keys(v).map(uid => ({ uid, ...v[uid] }));
-    rows.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
-    box.innerHTML = rows.slice(0, 60).map(u => `
-      <div class="adm-li" data-uid="${esc(u.uid)}" style="cursor:pointer;align-items:center">
-        <b>${esc(u.nick || u.name || u.displayName || '—')}</b>
-        ${u.isAdmin?'<span class="adm-tag" style="background:rgba(255,215,64,.15);color:#ffd86b;border:1px solid rgba(255,215,64,.35)">👑</span>':''}
-        ${u.isVice?'<span class="adm-tag" style="background:rgba(206,147,216,.15);color:#CE93D8;border:1px solid rgba(206,147,216,.35)">⭐</span>':''}
-        ${u.banned===true?'<span class="adm-tag ban">🚫</span>':''}
-        ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
-        <span style="margin-left:auto">💰 ${fmt(u.kaju)}</span>
-      </div>`).join('');
-    box.querySelectorAll('[data-uid]').forEach(el => el.addEventListener('click', () => loadTarget(el.dataset.uid)));
+    _allUsersCache = Object.keys(v).map(uid => ({ uid, ...v[uid] }));
+    _allUsersCache.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
+
+    // Duplicate nick tespiti
+    _dupNickMap = {};
+    _allUsersCache.forEach(u => {
+      const n = (u.nick||u.name||u.displayName||'').toLowerCase().trim();
+      if(n){ (_dupNickMap[n] = _dupNickMap[n]||[]).push(u.uid); }
+    });
+
+    const countEl = $(P.root,'[data-el="ucount"]');
+    if(countEl) countEl.textContent = '(' + _allUsersCache.length + ')';
+
+    renderUserList(_allUsersCache);
+    // İlk filtre butonunu aktif et
+    const firstFilter = P.root.querySelector('[data-filter="all"]');
+    if(firstFilter){ P.root.querySelectorAll('[data-filter]').forEach(b => b.className='adm-btn'); firstFilter.className='adm-btn p'; }
   }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+}
+
+function renderUserList(rows){
+  const box = $(P.root,'[data-el="allusers"]');
+  if(!box) return;
+  const dupSet = new Set(Object.values(_dupNickMap).filter(a=>a.length>1).flat());
+  const display = rows.slice(0, 100);
+  if(!display.length){ box.innerHTML = '<i style="color:#9fb0d8">Sonuç yok</i>'; return; }
+  box.innerHTML = display.map(u => {
+    const nick = u.nick || u.name || u.displayName || '';
+    const isDup = nick && dupSet.has(u.uid);
+    const isAnon = !nick || nick.startsWith('Misafir') || nick.startsWith('Oyuncu');
+    const noNick = !nick;
+    return `<div class="adm-li" data-uid="${esc(u.uid)}" style="cursor:pointer;align-items:center;${noNick?'opacity:.5':''}">
+      <b style="${isDup?'color:#FFD740':''}">${esc(nick||'—')} ${isDup?'<span title="Duplicate nick">⚠️</span>':''}</b>
+      ${u.isAdmin?'<span class="adm-tag" style="background:rgba(255,215,64,.15);color:#ffd86b;border:1px solid rgba(255,215,64,.35)">👑</span>':''}
+      ${u.isVice?'<span class="adm-tag" style="background:rgba(206,147,216,.15);color:#CE93D8;border:1px solid rgba(206,147,216,.35)">⭐</span>':''}
+      ${u.banned===true?'<span class="adm-tag ban">🚫</span>':''}
+      ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
+      ${isAnon&&nick?'<span class="adm-tag" style="background:rgba(150,150,150,.15);color:#9fb0d8;border:1px solid rgba(150,150,150,.3);font-size:9px">ANONİM</span>':''}
+      <span style="margin-left:auto">💰 ${fmt(u.kaju)}</span>
+    </div>`;
+  }).join('');
+  if(rows.length > 100) box.innerHTML += `<div style="padding:6px;color:#6d7aa8;font-size:10px;text-align:center">+${rows.length-100} daha… Aramayı daralt</div>`;
+  box.querySelectorAll('[data-uid]').forEach(el => el.addEventListener('click', () => loadTarget(el.dataset.uid)));
+}
+
+function applyUserFilter(filter, searchVal){
+  if(!_allUsersCache.length) return;
+  const dupSet = new Set(Object.values(_dupNickMap).filter(a=>a.length>1).flat());
+  let rows = _allUsersCache;
+  if(filter === 'nonick'){
+    rows = _allUsersCache.filter(u => !(u.nick||u.name||u.displayName||'').trim());
+  } else if(filter === 'anon'){
+    rows = _allUsersCache.filter(u => {
+      const n = (u.nick||u.name||u.displayName||'').trim();
+      return !n || n.startsWith('Misafir') || n.startsWith('Oyuncu') || n.startsWith('Anonim');
+    });
+  } else if(filter === 'dup'){
+    rows = _allUsersCache.filter(u => dupSet.has(u.uid));
+  } else if(filter === 'search' && searchVal){
+    const q = searchVal.toLowerCase().trim();
+    rows = _allUsersCache.filter(u => {
+      const n = (u.nick||u.name||u.displayName||'').toLowerCase();
+      return n.includes(q) || u.uid.toLowerCase().includes(q);
+    });
+  }
+  renderUserList(rows);
+}
+
+// 🧹 Nick'siz (boş isimli) anonim kullanıcıları sil
+async function cleanAnonUsers(){
+  if(!_allUsersCache.length){ msg('Önce "Tüm Kullanıcılar" listesini aç', false); return; }
+  const toDelete = _allUsersCache.filter(u => {
+    const n = (u.nick||u.name||u.displayName||'').trim();
+    return !n && !u.kaju && !u.isAdmin && !u.isVice;  // nick yok + kaju yok + admin değil
+  });
+  if(!toDelete.length){ msg('Temizlenecek kayıt yok', true); return; }
+  if(!confirm(`Nick'i VE kajusu olmayan ${toDelete.length} anonim kullanıcı silinecek. Onaylıyor musun?`)) return;
+  msg(`Temizleniyor… (0/${toDelete.length})`, true);
+  let done = 0, failed = 0;
+  for(const u of toDelete){
+    try{
+      await fdb.set(fdb.ref(db, 'users/' + u.uid), null);
+      done++;
+      if(done % 5 === 0) msg(`Temizleniyor… (${done}/${toDelete.length})`, true);
+    }catch(e){ failed++; }
+  }
+  _allUsersCache = _allUsersCache.filter(u => !toDelete.find(d => d.uid === u.uid));
+  const countEl = $(P.root,'[data-el="ucount"]');
+  if(countEl) countEl.textContent = '(' + _allUsersCache.length + ')';
+  renderUserList(_allUsersCache);
+  msg(`✓ ${done} kullanıcı silindi${failed ? ' · ' + failed + ' başarısız' : ''}`, true);
+  logAdmin('anon-temizle', '', `${done} kullanıcı silindi`);
+}
+
+// 🔁 Duplicate nick temizliği — aynı nick'teki en yeni UID dışındakileri temizle
+async function cleanDupNicks(){
+  if(!_allUsersCache.length){ msg('Önce "Tüm Kullanıcılar" listesini aç', false); return; }
+  const dups = Object.entries(_dupNickMap).filter(([,uids]) => uids.length > 1);
+  if(!dups.length){ msg('Duplicate nick bulunamadı', true); return; }
+  const summary = dups.map(([nick, uids]) => `• "${nick}" → ${uids.length} hesap`).join('\n');
+  if(!confirm(`${dups.length} duplicate nick bulundu:\n${summary}\n\nHer grup için en son aktif hesap KORUNUR, diğerlerinin nick'i silinir (hesap silinmez). Devam?`)) return;
+  msg('Duplicate temizleniyor…', true);
+  let fixed = 0;
+  for(const [, uids] of dups){
+    // En son lastSeen olan UID'yi koru
+    const withTs = uids.map(uid => {
+      const u = _allUsersCache.find(x => x.uid === uid);
+      return { uid, lastSeen: u ? (u.lastSeen||0) : 0, kaju: u ? (u.kaju||0) : 0, isAdmin: u && u.isAdmin };
+    });
+    withTs.sort((a,b) => {
+      if(a.isAdmin) return -1; if(b.isAdmin) return 1;  // admin her zaman korunur
+      if(b.kaju !== a.kaju) return b.kaju - a.kaju;      // daha fazla kajusu olan korunur
+      return b.lastSeen - a.lastSeen;
+    });
+    const keep = withTs[0].uid;
+    const remove = withTs.slice(1).map(x => x.uid);
+    for(const uid of remove){
+      try{
+        // Nick'i sil ama hesabı koru
+        await fdb.update(fdb.ref(db, 'users/' + uid), { nick: null, name: null });
+        const u = _allUsersCache.find(x => x.uid === uid);
+        if(u){ u.nick = null; u.name = null; }
+        fixed++;
+      }catch(e){}
+    }
+  }
+  // Cache'i güncelle ve yeniden render et
+  _dupNickMap = {};
+  _allUsersCache.forEach(u => {
+    const n = (u.nick||u.name||u.displayName||'').toLowerCase().trim();
+    if(n){ (_dupNickMap[n] = _dupNickMap[n]||[]).push(u.uid); }
+  });
+  renderUserList(_allUsersCache);
+  msg(`✓ ${fixed} duplicate kayıt temizlendi (hesaplar korundu, nickleri boşaltıldı)`, true);
+  logAdmin('dup-temizle', '', `${fixed} duplicate`);
 }
 
 // ── 🟢 Çevrimiçi oyuncular (presence) ───────────────────────────
