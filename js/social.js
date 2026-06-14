@@ -21,8 +21,15 @@ export const GLOW_STYLES = {
 export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }
 
 // Seçilebilir avatarlar (profil > değiştir)
-export const AVATARS = ['🦸','🦸‍♀️','🦹','🥷','🧙‍♂️','🧛','🤖','👾','👽','👻','🐉','🦊','🐺','🦁','🐯','🐼','🐸','🦄','🎃','🤡','⚡','🔥','❄️','💎'];
-export function avatarOf(p){ return (p && p.avatar) || '👤'; }
+// Basit, her cihazda çalışan avatarlar (ZWJ sekansı yok)
+export const AVATARS = ['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈'];
+// UID'den deterministik varsayılan avatar seç
+export function defaultAvatar(uid){
+  if(!uid) return '⭐';
+  let h = 0; for(let i=0;i<uid.length;i++) h = ((h<<5)-h) + uid.charCodeAt(i);
+  return AVATARS[Math.abs(h) % AVATARS.length];
+}
+export function avatarOf(p, uid){ return (p && p.avatar) || defaultAvatar(uid); }
 
 // ── 👤 OYUNCU KARTI: her yerden açılan mini profil ─────────────
 export async function openPlayerCard(uid){
@@ -45,7 +52,7 @@ export async function openPlayerCard(uid){
   const self = uid === me.uid;
   ov.querySelector('.pcp-card').innerHTML = `
     <div class="pcp-top">
-      <div class="pcp-ava">${avatarOf(p)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
+      <div class="pcp-ava">${avatarOf(p, uid)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
       <div class="pcp-id">
         <div class="pcp-name ${isAdm ? glowClass() : ''}" style="${isAdm?'color:#FFD740':''}">${esc(nick)}
           ${isAdm?'<span class="chat-admin-badge">👑 ADMİN</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
@@ -317,7 +324,7 @@ function listenChat(){
           : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
       <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
-        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : (m.uid === me ? '🙂' : '👤')))}</div>
+        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : defaultAvatar(m.uid)))}</div>
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
           <div class="ghp-chat-text">${esc(m.text)}</div>
@@ -550,7 +557,7 @@ async function renderFriends(){
   const rows = await Promise.all(uids.slice(0, 20).map(async (fu) => {
     const f = frs[fu] || {};
     let name = (f && f.name) || null, online = false, last = 0, ava = '👤', lvl = '';
-    try{ const u = await fdb.get(fdb.ref(db, 'users/' + fu)); if(u.exists()){ const uv = u.val(); name = uv.nick || uv.name || name; ava = avatarOf(uv); lvl = uv.level || 1; } }catch(e){}
+    try{ const u = await fdb.get(fdb.ref(db, 'users/' + fu)); if(u.exists()){ const uv = u.val(); name = uv.nick || uv.name || name; ava = avatarOf(uv, fu); lvl = uv.level || 1; } }catch(e){}
     try{ const pr = await fdb.get(fdb.ref(db, 'presence/' + fu)); if(pr.exists()){ const v = pr.val(); last = v.lastSeen||0; online = v.online === true && (Date.now()-last) < 180000; if(!name) name = v.name; } }catch(e){}
     return { uid: fu, name: name || 'Arkadaş', online, last, ava, lvl };
   }));

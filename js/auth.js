@@ -306,6 +306,16 @@ async function ensureNick(){
   if(_ensuringNick) return; _ensuringNick = true;
   try{
     if(!state.uid || state.status !== 'google') return;
+    // Varsayılan avatar: yoksa UID'den deterministik seç ve yaz
+    if(state.profile && !state.profile.avatar && state.uid){
+      try{
+        const A=['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈'];
+        let h=0; for(let i=0;i<state.uid.length;i++) h=((h<<5)-h)+state.uid.charCodeAt(i);
+        const av = A[Math.abs(h)%A.length];
+        await update(ref(db,'users/'+state.uid), {avatar: av});
+        if(state.profile) state.profile.avatar = av;
+      }catch(e){}
+    }
     if(state.profile && state.profile.nick){
       // Kendini onar: profilde nick var ama kayıt defterinde (nicks/) girdisi yoksa claim et
       try{

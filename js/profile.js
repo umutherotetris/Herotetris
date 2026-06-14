@@ -11,7 +11,8 @@ async function uiMod(){
 }
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt = (n) => Number(n||0).toLocaleString('tr-TR');
+function defaultAvatar(uid){ if(!uid) return '⭐'; let h=0; for(let i=0;i<uid.length;i++) h=((h<<5)-h)+uid.charCodeAt(i); const A=['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈']; return A[Math.abs(h)%A.length]; }
+const fmt = (n) => { const v = Number(n); return (Number.isFinite(v) ? v : 0).toLocaleString('tr-TR'); };
 const byId = (id) => document.getElementById(id);
 
 export function initScreens(){
@@ -36,13 +37,16 @@ async function _renderProfile(){
   const pl = Store.getState ? Store.getState() : {};
   const isGoogle = st.status === 'google';
   const nick = st.displayName || 'Misafir Oyuncu';
-  const lvl = pl.level || 1, xp = pl.xp || 0;
-  const need = (Store.xpForLevel ? Store.xpForLevel(lvl) : 100) || 100;
-  const pct = Math.max(0, Math.min(100, Math.round(xp / need * 100)));
+  const lvl = Math.max(1, Number(pl.level)||1);
+  const _xpRaw = Number(pl.xp); const xp = Number.isFinite(_xpRaw) ? _xpRaw : 0;
+  const _txRaw = Number(pl.totalXP); const totalXPv = Number.isFinite(_txRaw) ? _txRaw : xp;
+  const need = Math.max(1, (Store.xpForLevel ? Store.xpForLevel(lvl) : 300+lvl*200)||100);
+  const _raw = xp / need * 100;
+  const pct = Number.isFinite(_raw) ? Math.max(0, Math.min(100, Math.round(_raw))) : 0;
   box.innerHTML = `
     <div class="prf-card">
       <div class="prf-top">
-        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer;border:3px solid ${esc((st.profile&&st.profile.frame)||'transparent')}">${esc((st.profile && st.profile.avatar) || (isGoogle ? '🦸' : '👤'))}<span class="prf-ava-edit">✏️</span></div>
+        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer;border:3px solid ${esc((st.profile&&st.profile.frame)||'transparent')}">${esc((st.profile && st.profile.avatar) || defaultAvatar(st.uid))}<span class="prf-ava-edit">✏️</span></div>
         <div class="prf-id">
           <div class="prf-name"><span data-el="prfNick">${esc(nick)}</span> ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
           <div class="prf-badges" data-el="prfBadges"></div>
@@ -52,7 +56,7 @@ async function _renderProfile(){
       <div class="prf-stats">
         <div class="prf-stat"><b>💰 ${fmt(pl.kaju)}</b><span>KAJU</span></div>
         <div class="prf-stat"><b>⭐ ${lvl}</b><span>SEVİYE</span></div>
-        <div class="prf-stat"><b>✨ ${fmt(pl.totalXP || xp)}</b><span>TOPLAM XP</span></div>
+        <div class="prf-stat"><b>✨ ${fmt(totalXPv)}</b><span>TOPLAM XP</span></div>
       </div>
       <div class="prf-xpbar"><div class="prf-xpfill" style="width:${pct}%"></div><span>LV ${lvl} → ${lvl+1} · %${pct}</span></div>
       <div class="prf-acts">
@@ -201,10 +205,10 @@ async function renderRecords(st){
 // ── 🎭 AVATAR SEÇİCİ ────────────────────────────────────────────
 async function openAvatarPicker(){
   if(byId('avaModal')) return;
-  let AV = ['🦸','🤖','🐉','🦊','⚡','💎'];
+  let AV = ['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈'];
   try{ const m = await import('./social.js'); if(m.AVATARS) AV = m.AVATARS; }catch(e){}
   const st = Auth.getState();
-  const cur = (st.profile && st.profile.avatar) || '🦸';
+  const cur = (st.profile && st.profile.avatar) || defaultAvatar(st.uid);
   const ov = document.createElement('div');
   ov.id = 'avaModal'; ov.className = 'nick-modal-ov';
   ov.innerHTML = `
