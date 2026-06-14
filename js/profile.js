@@ -38,8 +38,12 @@ async function _renderProfile(){
   const isGoogle = st.status === 'google';
   const nick = st.displayName || 'Misafir Oyuncu';
   const lvl = Math.max(1, Number(pl.level)||1);
-  const _xpRaw = Number(pl.xp); const xp = Number.isFinite(_xpRaw) ? _xpRaw : 0;
-  const _txRaw = Number(pl.totalXP); const totalXPv = Number.isFinite(_txRaw) ? _txRaw : xp;
+  // pl.xp Firebase'de obje olabilir: { level, xp, totalXP }
+  const _xpObj = pl.xp;
+  const _xpRaw = (_xpObj && typeof _xpObj === 'object') ? Number(_xpObj.xp ?? 0) : Number(_xpObj ?? 0);
+  const xp = Number.isFinite(_xpRaw) ? _xpRaw : 0;
+  const _txRaw = (_xpObj && typeof _xpObj === 'object') ? Number(_xpObj.totalXP ?? 0) : Number(pl.totalXP ?? xp);
+  const totalXPv = Number.isFinite(_txRaw) ? _txRaw : xp;
   const need = Math.max(1, (Store.xpForLevel ? Store.xpForLevel(lvl) : 300+lvl*200)||100);
   const _raw = xp / need * 100;
   const pct = Number.isFinite(_raw) ? Math.max(0, Math.min(100, Math.round(_raw))) : 0;

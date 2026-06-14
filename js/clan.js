@@ -116,9 +116,12 @@ async function createClan(){
   const st = Auth.getState();
   msgEl.textContent = 'Oluşturuluyor…'; msgEl.className='clan-msg ok';
   try{
+    // Taze nick al
+    let nick = st.displayName || 'Oyuncu';
+    try{ const us = await fdb.get(fdb.ref(db,'users/'+st.uid)); if(us.exists()){ const u=us.val(); nick = u.nick||u.displayName||u.name||nick; } }catch(e){}
     const clanId = 'c' + Date.now() + '_' + Math.floor(Math.random()*10000);
     const now = Date.now();
-    const clanData = { name, tag, leader: st.uid, members:{ [st.uid]: { name: st.displayName||'Oyuncu', role:'leader', joinedAt: now } }, kaju:0, wins:0, createdAt: now };
+    const clanData = { name, tag, leader: st.uid, members:{ [st.uid]: { name: nick, role:'leader', joinedAt: now } }, kaju:0, wins:0, createdAt: now };
     await fdb.set(fdb.ref(db, 'clans/' + clanId), clanData);
     await fdb.update(fdb.ref(db, 'users/' + st.uid), { clanId });
     C.myClanId = clanId;
@@ -129,8 +132,11 @@ async function createClan(){
 async function joinClan(clanId){
   const st = Auth.getState();
   try{
+    // Taze nick al
+    let nick = st.displayName || 'Oyuncu';
+    try{ const us = await fdb.get(fdb.ref(db,'users/'+st.uid)); if(us.exists()){ const u=us.val(); nick = u.nick||u.displayName||u.name||nick; } }catch(e){}
     const now = Date.now();
-    await fdb.update(fdb.ref(db, 'clans/' + clanId + '/members/' + st.uid), { name: st.displayName||'Oyuncu', role:'member', joinedAt: now });
+    await fdb.update(fdb.ref(db, 'clans/' + clanId + '/members/' + st.uid), { name: nick, role:'member', joinedAt: now });
     await fdb.update(fdb.ref(db, 'users/' + st.uid), { clanId });
     C.myClanId = clanId;
     renderMyClan();
@@ -195,7 +201,7 @@ function listenClanMembers(){
   });
 }
 
-function renderClanMembers(){
+async function renderClanMembers(){
   const box = document.getElementById('clanTabBody'); if(!box) return;
   const st = Auth.getState();
   const members = _clanData && _clanData.members ? _clanData.members : {};
@@ -203,13 +209,29 @@ function renderClanMembers(){
   rows.sort((a,b) => { const ro = {leader:0,vice:1,member:2}; return (ro[a.role]||2)-(ro[b.role]||2); });
   const roleLabel = { leader:'👑 Lider', vice:'💎 Yardımcı', member:'👤 Üye' };
   const roleColor = { leader:'#FFD740', vice:'#00E5FF', member:'#7d8ab8' };
-  box.innerHTML = `<div class="clan-card">` + rows.map(m => {
+
+  // Firebase'den taze nick + avatar çek
+  const enriched = await Promise.all(rows.map(async (m) => {
+    try{
+      const snap = await fdb.get(fdb.ref(db, 'users/' + m.uid));
+      if(snap.exists()){
+        const u = snap.val();
+        m.name   = u.nick || u.displayName || u.name || m.name || 'Oyuncu';
+        m.avatar = u.avatar || m.avatar || '👤';
+      }
+    }catch(e){}
+    if(!m.name) m.name = 'Oyuncu';
+    if(!m.avatar) m.avatar = '👤';
+    return m;
+  }));
+
+  box.innerHTML = `<div class="clan-card">` + enriched.map(m => {
     const isLeaderOrVice = C.myRole==='leader' || C.myRole==='vice';
     const canKick = isLeaderOrVice && m.uid !== st.uid && m.role !== 'leader';
     return `<div class="clan-member" data-muid="${esc(m.uid)}">
-      <div class="clan-mava">${m.avatar||'👤'}</div>
-      <div style="flex:1"><b style="color:${roleColor[m.role]||'#cdd8f5'}">${esc(m.name||'Üye')}</b>
-        <div style="font-size:9px;color:#6d7aa8">${roleLabel[m.role]||'Üye'} · ${tAgo(m.joinedAt)}</div></div>
+      <div class="clan-mava">${esc(m.avatar)}</div>
+      <div style="flex:1"><b style="color:${roleColor[m.role]||'#cdd8f5'}">${esc(m.name)}</b>
+        <div style="font-size:9px;color:#6d7aa8">${roleLabel[m.role]||'👤 Üye'} · ${tAgo(m.joinedAt)}</div></div>
       ${canKick ? `<button class="clan-btn r" style="padding:4px 9px;font-size:10px" data-kick="${esc(m.uid)}">Çıkar</button>` : ''}
     </div>`;
   }).join('') + `</div>`;

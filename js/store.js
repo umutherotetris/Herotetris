@@ -58,8 +58,8 @@ function hydrate(state){
   const p = state.profile || {};
   player.kaju    = Number(p.kaju || 0);
   player.level   = Number(p.level || (p.xp && p.xp.level) || 1);
-  player.xp      = Number((p.xp && p.xp.xp) || 0);
-  player.totalXP = Number((p.xp && p.xp.totalXP) || 0);
+  player.xp      = Number((p.xp && typeof p.xp === 'object' ? p.xp.xp : p.xp) ?? 0);
+  player.totalXP = Number((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
   player.best    = p.bestScores || {};
   player.kajuSent = p.kajuSent || {};
   player.kajuToday = loadKajuToday();

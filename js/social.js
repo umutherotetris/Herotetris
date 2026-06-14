@@ -29,7 +29,16 @@ export function defaultAvatar(uid){
   let h = 0; for(let i=0;i<uid.length;i++) h = ((h<<5)-h) + uid.charCodeAt(i);
   return AVATARS[Math.abs(h) % AVATARS.length];
 }
-export function avatarOf(p, uid){ return (p && p.avatar) || defaultAvatar(uid); }
+// Avatar değeri emoji mi yoksa yanlış kaydedilmiş metin mi kontrol et
+function isValidAvatar(v){
+  if(!v || typeof v !== 'string') return false;
+  if(AVATARS.includes(v)) return true;
+  try{ return /^\p{Emoji}/u.test(v) && v.length <= 8; }catch(e){ return false; }
+}
+export function avatarOf(p, uid){
+  const av = p && p.avatar;
+  return isValidAvatar(av) ? av : defaultAvatar(uid);
+}
 
 // ── 👤 OYUNCU KARTI: her yerden açılan mini profil ─────────────
 export async function openPlayerCard(uid){
@@ -63,7 +72,7 @@ export async function openPlayerCard(uid){
     <div class="pcp-stats">
       <div class="pcp-stat"><b>⭐ ${esc(p.level || 1)}</b><span>SEVİYE</span></div>
       <div class="pcp-stat"><b>💰 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
-      <div class="pcp-stat"><b>✨ ${Number(p.totalXP||p.xp||0).toLocaleString('tr-TR')}</b><span>XP</span></div>
+      <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
