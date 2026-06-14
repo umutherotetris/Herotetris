@@ -397,3 +397,39 @@
 .fr-acc,.fr-rej{ width:30px; height:30px; border-radius:9px; border:none; cursor:pointer; font-size:13px; font-weight:900; }
 .fr-acc{ background:linear-gradient(135deg,#3ec97e,#1f9d5c); color:#fff; }
 .fr-rej{ background:rgba(255,255,255,.08); color:#ff8fa0; border:1px solid rgba(255,122,138,.3); }
+
+/* ── 🏰 Klan + 👑 Sezon ── */
+.clan-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.65); backdrop-filter:blur(5px); display:flex; align-items:flex-end; justify-content:center; }
+.clan-panel{ width:100%; max-width:480px; max-height:92vh; display:flex; flex-direction:column; background:linear-gradient(170deg,#151c38,#0c1022); border:1.5px solid rgba(255,215,64,.2); border-bottom:none; border-radius:20px 20px 0 0; box-shadow:0 -16px 50px rgba(0,0,0,.6); }
+.clan-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px 10px; border-bottom:1px solid rgba(255,255,255,.07); }
+.clan-title{ font-weight:900; font-size:14px; letter-spacing:1.5px; color:#ffd86b; }
+.clan-x{ width:30px; height:30px; border-radius:999px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:#fff; font-size:13px; }
+.clan-body{ overflow-y:auto; padding:12px 13px 24px; display:flex; flex-direction:column; gap:10px; }
+.clan-card{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px; }
+.clan-banner{ border-color:rgba(255,215,64,.25); background:linear-gradient(160deg,rgba(255,215,64,.06),transparent); }
+.clan-badge{ width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; color:#ffd86b; letter-spacing:1px; flex-shrink:0; }
+.clan-lbl{ font-size:10px; font-weight:900; letter-spacing:1.2px; color:#9fb0d8; margin-bottom:7px; }
+.clan-tabs{ display:flex; gap:4px; flex-wrap:wrap; }
+.clan-tab{ padding:7px 11px; font-size:11px; font-weight:800; border-radius:9px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#7d8ab8; cursor:pointer; }
+.clan-tab.active{ color:#ffd86b; border-color:rgba(255,215,64,.35); background:rgba(255,215,64,.08); }
+.clan-row{ display:flex; gap:7px; }
+.clan-in{ flex:1; min-width:0; padding:10px 12px; font-size:13px; color:#fff; background:rgba(255,255,255,.06); border:1px solid rgba(140,160,255,.25); border-radius:11px; outline:none; font-family:inherit; }
+.clan-in:focus{ border-color:rgba(255,215,64,.45); }
+.clan-btn{ padding:10px 14px; font-size:12px; font-weight:800; border-radius:11px; border:none; cursor:pointer; font-family:inherit; }
+.clan-btn.p{ background:linear-gradient(135deg,#5b8cff,#7b5bff); color:#fff; }
+.clan-btn.r{ background:linear-gradient(135deg,#e0556b,#b03048); color:#fff; }
+.clan-msg{ font-size:11px; font-weight:700; min-height:14px; margin:3px 0; }
+.clan-msg.ok{ color:#5fd38a; } .clan-msg.bad{ color:#ff7a8a; }
+.clan-load{ text-align:center; color:#5d6890; font-size:12px; padding:14px 0; }
+.clan-empty-ico{ font-size:32px; text-align:center; margin:8px 0 4px; opacity:.5; }
+.clan-empty-txt{ text-align:center; font-size:12px; color:#7d8ab8; }
+.clan-res{ display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:9px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05); margin-bottom:5px; font-size:12.5px; color:#cdd8f5; }
+.clan-res.mine{ border-color:rgba(0,229,255,.35); background:rgba(0,229,255,.06); }
+.clan-member{ display:flex; align-items:center; gap:9px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.05); cursor:pointer; }
+.clan-member:last-child{ border-bottom:none; }
+.clan-mava{ width:32px; height:32px; border-radius:9px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.clan-chat{ max-height:240px; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; }
+.clan-chat-row{ display:flex; gap:7px; }
+.clan-chat-row.mine{ flex-direction:row-reverse; }
+.clan-chat-ava{ font-size:16px; flex-shrink:0; }
+.clan-season-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:4px; margin-top:9px; overflow:hidden; }
