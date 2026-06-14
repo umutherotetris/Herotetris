@@ -555,6 +555,31 @@ function renderTarget(){
             : '<button class="adm-btn r" data-a="mute">🔇 Sustur</button>'}
         </div>
       </div>
+
+      <div class="adm-sec" style="border:1px solid rgba(255,82,82,.25);border-radius:10px;padding:8px">
+        <div class="adm-lbl" style="color:#ff8fa0">☢️ TEHLİKELİ BÖLGE — KALICI SİLME</div>
+        <div style="font-size:10px;color:#6d7aa8;margin-bottom:6px">Bu işlemler GERİ ALINAMAZ. Silinen veriler kurtarılamaz.</div>
+        <button class="adm-acc" data-a="deldetail" style="width:100%;margin-bottom:4px">🗂 Silinecekler <span>▾</span></button>
+        <div data-el="deldetail" style="display:none;font-size:10px;color:#9fb0d8;padding:4px 0;line-height:1.8">
+          ☑ users/${esc(uid)} (profil, nick, kaju, avatar…)<br>
+          ☑ nicks/ (nick kayıt defteri)<br>
+          ☑ presence/${esc(uid)} (çevrimiçi durum)<br>
+          ☑ friends/${esc(uid)} (arkadaş listesi)<br>
+          ☑ userNotifs/${esc(uid)} (bildirimler)<br>
+          ☑ gameLB/${esc(uid)} (oyun liderliği)<br>
+          ☑ leaderboard/kaju/${esc(uid)}<br>
+          ☑ seasons/* (sezon puanları)<br>
+          ☑ shopInventory/${esc(uid)} (envanter)<br>
+          ☑ kozmos/${esc(uid)} (kozmos)<br>
+          ☑ outbox/${esc(uid)}<br>
+          ☑ adminForcedNick/${esc(uid)}<br>
+          ☑ kicks/${esc(uid)}<br>
+        </div>
+        <div class="adm-row" style="gap:6px;margin-top:4px">
+          <button class="adm-btn r" style="flex:1" data-a="resetProgress">🔄 İlerlemeyi Sıfırla</button>
+          <button class="adm-btn r" style="flex:1;background:rgba(255,50,50,.2);border-color:#ff5252" data-a="deleteUser">🗑 Hesabı Komple Sil</button>
+        </div>
+      </div>
     </div>`;
   const R = $(P.root,'[data-el="result"]');
   $(R,'[data-a="kaju"]').addEventListener('click', doKaju);
@@ -572,6 +597,16 @@ function renderTarget(){
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+  // Silme butonları
+  const delBtn = $(R,'[data-a="deleteUser"]');
+  const resetBtn = $(R,'[data-a="resetProgress"]');
+  const detailBtn = $(R,'[data-a="deldetail"]');
+  if(detailBtn) detailBtn.addEventListener('click', () => {
+    const d = $(R,'[data-el="deldetail"]');
+    if(d) d.style.display = d.style.display === 'none' ? '' : 'none';
+  });
+  if(resetBtn) resetBtn.addEventListener('click', doResetProgress);
+  if(delBtn) delBtn.addEventListener('click', doDeleteUser);
 }
 
 // ── 👻 Ghost ────────────────────────────────────────────────────
@@ -731,6 +766,117 @@ async function cleanRegistry(){
   }
   msg(`✓ Temizlik bitti: ${dupDel} kopya + ${orphanDel} yetim silindi (${keys.length} kayıt tarandı)`, true);
   logAdmin('defter-temizlik', '', `kopya:${dupDel} yetim:${orphanDel}`);
+}
+
+// ── 🗑 Hesap Silme + 🔄 İlerleme Sıfırlama ──────────────────────
+
+// Silinecek tüm node'lar
+function _deleteNodes(uid){
+  return [
+    'users/' + uid,
+    'presence/' + uid,
+    'friends/' + uid,
+    'userNotifs/' + uid,
+    'outbox/' + uid,
+    'adminForcedNick/' + uid,
+    'kicks/' + uid,
+    'shopInventory/' + uid,
+    'shopPurchases/' + uid,
+    'kozmos/' + uid,
+    'kozmoPending/' + uid,
+    'leaderboard/kaju/' + uid,
+    'leaderboard/games/' + uid,
+    'gameLB/' + uid,
+    'gameLeaderboard/all/' + uid,
+    'userInbox/' + uid,
+  ];
+}
+
+async function doResetProgress(){
+  const { uid, profile: p } = P.target;
+  if(p.isAdmin){ msg('✗ Admin hesabının ilerlemesi sıfırlanamaz', false); return; }
+  const nick = p.nick || p.name || p.displayName || uid.slice(0,8);
+  if(!confirm(`"${nick}" kullanıcısının İLERLEMESİ sıfırlanacak:\n\n• Kaju: 0\n• Level: 1 / XP: 0\n• Kaju geçmişi silinir\n• Oyun liderliği silinir\n• Sezon puanları silinir\n\nProfil ve nick KORUNUR. GERİ ALINAMAZ!`)) return;
+  msg('Sıfırlanıyor…', true);
+  try{
+    // users/{uid} içindeki ilerleme alanlarını sıfırla
+    await fdb.update(fdb.ref(db, 'users/' + uid), {
+      kaju: 0, kajuUpdAt: null, kajuSent: null,
+      level: 1, xp: { level:1, xp:0, totalXP:0 },
+      bestScores: null, kelimeRecords: null,
+      lastSeen: null
+    });
+    // kaju_history sil
+    await fdb.set(fdb.ref(db, 'users/' + uid + '/kaju_history'), null);
+    // Liderlik kayıtları sil
+    const lbNodes = [
+      'leaderboard/kaju/' + uid,
+      'leaderboard/games/' + uid,
+      'gameLB/' + uid,
+      'gameLeaderboard/all/' + uid,
+    ];
+    await Promise.all(lbNodes.map(n => fdb.set(fdb.ref(db, n), null).catch(()=>{})));
+    // Sezon puanları sil (tüm sezonlar)
+    try{
+      const seasons = await fdb.get(fdb.ref(db, 'seasons'));
+      if(seasons.exists()){
+        const dels = [];
+        seasons.forEach(s => { dels.push(fdb.set(fdb.ref(db, 'seasons/' + s.key + '/' + uid), null)); });
+        await Promise.all(dels.map(d => d.catch(()=>{})));
+      }
+    }catch(e){}
+    P.target.profile.kaju = 0;
+    P.target.profile.level = 1;
+    P.target.profile.xp = { level:1, xp:0, totalXP:0 };
+    msg(`✓ "${nick}" ilerlemesi sıfırlandı`, true);
+    logAdmin('ilerleme-sifirla', uid, nick);
+    renderTarget();
+  }catch(e){ msg('✗ Sıfırlanamadı: ' + (e.message||e), false); }
+}
+
+async function doDeleteUser(){
+  const { uid, profile: p } = P.target;
+  if(p.isAdmin){ msg('✗ Admin hesabı silinemez', false); return; }
+  const nick = p.nick || p.name || p.displayName || uid.slice(0,8);
+  if(!confirm(`"${nick}" KOMPLE SİLİNECEK!\n\nProfil, kaju, level, XP, arkadaş listesi,\nbildirimler, envanter, kozmos, liderlik\nkayıtları dahil TÜM veriler silinir.\n\nBu işlem GERİ ALINAMAZ!\n\nEmin misin?`)) return;
+  if(!confirm(`SON ONAY: "${nick}" (${uid.slice(0,12)}…) silinsin mi?`)) return;
+  msg('Siliniyor…', true);
+  try{
+    // Nick'i kayıt defterinden sil
+    if(p.nick){
+      const nk = String(p.nick).replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase();
+      await fdb.set(fdb.ref(db, 'nicks/' + nk), null).catch(()=>{});
+    }
+    if(p.name && p.name !== p.nick){
+      const nk2 = String(p.name).replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase();
+      await fdb.set(fdb.ref(db, 'nicks/' + nk2), null).catch(()=>{});
+    }
+    // Klan üyeliğini sil
+    if(p.clanId){
+      await fdb.set(fdb.ref(db, 'clans/' + p.clanId + '/members/' + uid), null).catch(()=>{});
+    }
+    // Sezon puanlarını sil
+    try{
+      const seasons = await fdb.get(fdb.ref(db, 'seasons'));
+      if(seasons.exists()){
+        const dels = [];
+        seasons.forEach(s => { dels.push(fdb.set(fdb.ref(db, 'seasons/' + s.key + '/' + uid), null)); });
+        await Promise.all(dels.map(d => d.catch(()=>{})));
+      }
+    }catch(e){}
+    // Tüm node'ları sil
+    const nodes = _deleteNodes(uid);
+    await Promise.all(nodes.map(n => fdb.set(fdb.ref(db, n), null).catch(()=>{})));
+    // Cache'den kaldır
+    _allUsersCache = _allUsersCache.filter(u => u.uid !== uid);
+    const countEl = $(P.root,'[data-el="ucount"]');
+    if(countEl) countEl.textContent = '(' + _allUsersCache.length + ')';
+    // Sonuç panelini temizle
+    $(P.root,'[data-el="result"]').innerHTML = `<div style="padding:12px;color:#5fd38a;text-align:center">✓ "${esc(nick)}" silindi</div>`;
+    P.target = null;
+    msg(`✓ "${nick}" komple silindi`, true);
+    logAdmin('kullanici-sil', uid, nick + ' · ' + uid);
+  }catch(e){ msg('✗ Silinemedi: ' + (e.message||e), false); }
 }
 
 // ── 🦵 Oyuncuyu at + ⭐ Vice ─────────────────────────────────────
