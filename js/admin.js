@@ -627,9 +627,14 @@ function loadAdminFabState(){
   const hidden = localStorage.getItem('hero_admfab_hidden') === '1';
   const el = $(P.root,'[data-el="admFabState"]');
   if(el){ el.textContent = hidden ? 'GİZLİ 🙈' : 'GÖRÜNÜR 👁'; el.style.color = hidden ? '#ff8fa0' : '#5fd38a'; }
-  // Gerçek FAB'ı da güncelle
+  // FAB gizlenince tamamen kaybolmaz — %18 opak küçük buton olarak kalır (panele girebilmek için)
   const fab = document.getElementById('adminFloatBtn');
-  if(fab) fab.style.display = hidden ? 'none' : 'grid';
+  if(fab){
+    fab.style.display = 'grid';
+    fab.style.opacity = hidden ? '0.18' : '';
+    fab.style.transform = hidden ? 'scale(0.52)' : '';
+    fab.title = hidden ? 'Admin paneli (gizli mod)' : '';
+  }
   return hidden;
 }
 function toggleAdminFab(){

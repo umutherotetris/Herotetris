@@ -251,7 +251,23 @@ export function initSocial(){
   applyFabSetting();
   Auth.subscribe((st) => {
     const _fabHid = localStorage.getItem('hero_admfab_hidden') === '1';
-    adm.style.display = (st.isAdmin === true && !_fabHid) ? 'grid' : 'none';
+    if(st.isAdmin === true){
+      if(_fabHid){
+        // Gizli modda: küçük, şeffaf ⚙️ butonu — hâlâ tıklanabilir ama göze çarpmaz
+        adm.style.display = 'grid';
+        adm.style.opacity = '0.18';
+        adm.style.transform = 'scale(0.52)';
+        adm.style.pointerEvents = 'auto';
+        adm.title = 'Admin paneli (gizli mod)';
+      } else {
+        adm.style.display = 'grid';
+        adm.style.opacity = '';
+        adm.style.transform = '';
+        adm.title = '';
+      }
+    } else {
+      adm.style.display = 'none';
+    }
     teardownListeners();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
