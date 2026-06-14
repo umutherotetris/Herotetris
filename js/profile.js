@@ -59,13 +59,15 @@ async function _renderProfile(){
         <div class="prf-stat"><b>✨ ${fmt(totalXPv)}</b><span>TOPLAM XP</span></div>
       </div>
       <div class="prf-xpbar"><div class="prf-xpfill" style="width:${pct}%"></div><span>LV ${lvl} → ${lvl+1} · %${pct}</span></div>
-      <div class="prf-acts">
-        ${isGoogle ? '<button class="prf-btn" data-p="kaju">💸 Kaju Gönder</button>' : '<button class="prf-btn" data-p="login">🔗 Hesabı Bağla</button>'}
-        <button class="prf-btn" data-p="settings">⚙️ Ayarlar</button>
-        ${isGoogle ? '<button class="prf-btn" data-p="mycard">🪪 Kartım</button>' : ''}
-        ${isGoogle ? '<button class="prf-btn" data-p="clan">🏰 Klan</button>' : ''}
-        <button class="prf-btn" data-p="season">👑 Sezon</button>
-        ${isGoogle ? '<button class="prf-btn" data-p="frame">🖼️ Çerçeve</button>' : ''}
+      <div class="prf-acts-grid">
+        ${isGoogle
+          ? '<button class="prf-act-btn prf-act-primary" data-p="kaju">💸 Kaju Gönder</button>'
+          : '<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>'}
+        ${isGoogle ? '<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>' : ''}
+        ${isGoogle ? '<button class="prf-act-btn" data-p="clan">🏰 Klan</button>' : ''}
+        <button class="prf-act-btn" data-p="season">👑 Sezon</button>
+        ${isGoogle ? '<button class="prf-act-btn" data-p="frame">🖼️ Çerçeve & Tema</button>' : ''}
+        <button class="prf-act-btn" data-p="settings">⚙️ Ayarlar</button>
       </div>
     </div>
     <div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>
