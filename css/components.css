@@ -440,3 +440,32 @@
 .ghp-sys-msg{ text-align:center; padding:4px 12px; margin:3px 0; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:5px; }
 .gc-act{ font-size:9px; cursor:pointer; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); user-select:none; opacity:.7; }
 .gc-act:hover{ opacity:1; }
+
+/* ── 🛍️ Mağaza ── */
+.shop-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.shop-item{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:10px; text-align:center; transition:all .2s; }
+.shop-item.active{ border-color:#00E5FF; background:rgba(0,229,255,.07); }
+.shop-item.owned{ border-color:rgba(105,240,174,.3); }
+.shop-icon{ font-size:24px; margin-bottom:4px; }
+.shop-name{ font-size:11px; font-weight:800; color:#dfe7ff; margin-bottom:2px; }
+.shop-desc{ font-size:9px; color:#7d8ab8; margin-bottom:7px; }
+.shop-btn{ width:100%; padding:7px; border-radius:8px; font-size:11px; font-weight:800; border:none; cursor:pointer; }
+.shop-btn.buy{ background:linear-gradient(135deg,rgba(255,215,64,.25),rgba(255,150,0,.15)); color:#FFD740; border:1px solid rgba(255,215,64,.3); }
+.shop-btn.buy.locked{ opacity:.4; cursor:not-allowed; }
+.shop-btn.use{ background:linear-gradient(135deg,rgba(0,229,255,.2),rgba(0,229,255,.08)); color:#00E5FF; border:1px solid rgba(0,229,255,.3); }
+
+/* ── 🥚 Kozmos ── */
+.koz-egg{ background:linear-gradient(160deg,rgba(180,130,255,.08),rgba(124,77,255,.04)); border:1px solid rgba(180,130,255,.25); border-radius:12px; padding:10px; text-align:center; }
+.koz-egg-ico{ font-size:32px; margin-bottom:5px; }
+.koz-phase{ font-size:10px; font-weight:800; color:#CE93D8; margin-bottom:4px; }
+.koz-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:3px; margin-bottom:4px; overflow:hidden; }
+.koz-creature{ background:rgba(255,255,255,.04); border:1px solid; border-radius:12px; padding:10px; text-align:center; }
+
+/* ── 🖼️ Profil fotoğraf ── */
+.prf-ava-edit{ position:absolute; bottom:-4px; right:-4px; font-size:11px; background:#1d2444; border:1px solid rgba(255,255,255,.2); border-radius:7px; padding:1px 3px; z-index:2; }
+
+/* ── 💚 Matrix profil tema animasyonu ── */
+@keyframes matrixDrop{ 0%{ transform:translateY(-100%); opacity:0; } 10%{ opacity:1; } 90%{ opacity:.7; } 100%{ transform:translateY(100vh); opacity:0; } }
+.prf-matrix-col{ position:absolute; top:0; font-family:monospace; font-size:12px; color:#00ff44; animation:matrixDrop linear infinite; pointer-events:none; z-index:0; white-space:pre; }
+[data-screen="profile"].matrix-bg{ overflow:hidden; }
+[data-screen="profile"].matrix-bg::before{ content:''; position:absolute; inset:0; background:#000800; z-index:-1; }
