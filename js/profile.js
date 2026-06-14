@@ -17,12 +17,12 @@ const byId = (id) => document.getElementById(id);
 
 export function initScreens(){
   if(typeof window!=='undefined'){ if(window.__heroScreensInit) return; window.__heroScreensInit = true; }
-  Auth.subscribe(renderProfile);
-  Store.subscribe(renderProfile);
-  renderBridges();
-  // Liderlik: sekmeye her geçişte taze çek
+  try{ Auth.subscribe(st => { try{ renderProfile(st); }catch(e){ console.error('[Profile]',e); const b=document.getElementById('scrProfile'); if(b) b.innerHTML='<div class="placeholder">⚠️ '+e.message+'</div>'; } }); }catch(e){ console.error('[AuthSub]',e); }
+  try{ Store.subscribe(renderProfile); }catch(e){}
+  try{ renderBridges(); }catch(e){ console.error('[Bridges]',e); }
+  try{ renderLeaderboard(); }catch(e){}
   document.querySelectorAll('[data-nav="leaderboard"]').forEach(el => el.addEventListener('click', () => setTimeout(renderLeaderboard, 50)));
-  renderLeaderboard();
+  document.querySelectorAll('[data-nav="profile"]').forEach(el => el.addEventListener('click', () => setTimeout(()=>renderProfile(Auth.getState()), 50)));
 }
 
 // ── 👤 PROFİL ───────────────────────────────────────────────────
@@ -130,7 +130,7 @@ async function openFramePicker(){
     }catch(e){ alert('Kaydedilemedi'); }
   }));
 }
-function applyProfileBg(id){
+export function applyProfileBg(id){
   const scr = document.querySelector('[data-screen="profile"]'); if(!scr) return;
   // Matrix: özel canvas animasyonu
   scr.classList.remove('matrix-bg');
@@ -144,7 +144,7 @@ function applyProfileBg(id){
       const left=Math.random()*100; const delay=Math.random()*4; const dur=3+Math.random()*5;
       col.style.cssText=`left:${left}%;animation-duration:${dur}s;animation-delay:-${delay}s;opacity:${0.4+Math.random()*.6}`;
       const len=8+Math.floor(Math.random()*12);
-      col.textContent=Array.from({length:len},()=>chars[Math.floor(Math.random()*chars.length)]).join('\n');
+      const colChars=Array.from({length:len},()=>chars[Math.floor(Math.random()*chars.length)]); col.textContent=colChars.join(String.fromCharCode(10));
       scr.appendChild(col);
     }
     return;
@@ -160,13 +160,14 @@ function applyProfileBg(id){
   const avb = box.querySelector('[data-p="avatar"]'); if(avb) avb.addEventListener('click', ()=>{
     if(!isGoogle){ openAvatarPicker(); return; }
     const menu = document.createElement('div'); menu.id='avMenu'; menu.className='nick-modal-ov';
-    menu.innerHTML=`<div class="nick-modal" style="max-width:280px"><div class="nm-title">👤 Profil Görseli</div>
-      <div class="nm-actions" style="flex-direction:column;gap:8px">
-        <button class="nm-btn nm-ok" id="avPickEmoji">🎭 Emoji Avatar Seç</button>
-        <button class="nm-btn nm-ok" id="avPickPhoto">📷 Fotoğraf Yükle</button>
-        ${photoDataUrl?'<button class="nm-btn nm-cancel" id="avClearPhoto">🗑 Fotoğrafı Kaldır</button>':''}
-        <button class="nm-btn nm-cancel" id="avClose">İptal</button>
-      </div></div>`;
+    const clearBtn = photoDataUrl ? '<button class="nm-btn nm-cancel" id="avClearPhoto">🗑 Fotoğrafı Kaldır</button>' : '';
+    menu.innerHTML = '<div class="nick-modal" style="max-width:280px"><div class="nm-title">👤 Profil Görseli</div>'
+      + '<div class="nm-actions" style="flex-direction:column;gap:8px">'
+      + '<button class="nm-btn nm-ok" id="avPickEmoji">🎭 Emoji Avatar Seç</button>'
+      + '<button class="nm-btn nm-ok" id="avPickPhoto">📷 Fotoğraf Yükle</button>'
+      + clearBtn
+      + '<button class="nm-btn nm-cancel" id="avClose">İptal</button>'
+      + '</div></div>';
     document.body.appendChild(menu);
     menu.querySelector('#avClose').addEventListener('click',()=>menu.remove());
     menu.addEventListener('click',e=>{if(e.target===menu)menu.remove();});
