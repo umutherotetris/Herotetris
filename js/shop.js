@@ -201,7 +201,7 @@ async function showEggGiftModal(item,st,pl){
       +'<button class="shop-gift-opt" id="eggSelf" style="border-color:rgba(0,229,255,.35);background:rgba(0,229,255,.06)">'
         +'<div style="font-size:24px;margin-bottom:5px">🥚</div>'
         +'<div style="font-size:11px;font-weight:800;color:#00E5FF">Kendime Al</div>'
-        +'<div style="font-size:9px;color:#7d8ab8;margin-top:3px">Kozmos'uma ekle</div>'
+        +'<div style="font-size:9px;color:#7d8ab8;margin-top:3px">Kozmos\u2019uma ekle</div>'
       +'</button>'
       +'<button class="shop-gift-opt" id="eggGift" style="border-color:rgba(224,64,251,.35);background:rgba(224,64,251,.06)">'
         +'<div style="font-size:24px;margin-bottom:5px">🎁</div>'
