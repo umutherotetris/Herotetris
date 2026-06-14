@@ -296,21 +296,25 @@
 .adm-sug-it:active{ background:rgba(109,139,255,.18); }
 
 /* ── 👤 Profil / 🏆 Liderlik / ekranlar ── */
-.scr-pad{ padding:14px 14px 90px; }
-.prf-card{ background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid rgba(140,160,255,.18); border-radius:16px; padding:15px; margin-bottom:13px; }
-.prf-top{ display:flex; gap:12px; align-items:center; }
-.prf-ava{ width:54px; height:54px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(140,160,255,.3); display:flex; align-items:center; justify-content:center; font-size:27px; }
-.prf-name{ font-size:17px; font-weight:900; color:#eef2ff; display:flex; align-items:center; gap:6px; }
+.scr-pad{ padding:12px 12px 96px; overflow-x:hidden; }
+.prf-card{ background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid rgba(140,160,255,.18); border-radius:16px; padding:15px; margin-bottom:13px; overflow:visible; }
+.prf-top{ display:flex; gap:12px; align-items:flex-start; }
+.prf-ava{ width:54px; height:54px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:2px solid rgba(140,160,255,.3); display:flex; align-items:center; justify-content:center; font-size:27px; box-sizing:border-box; flex-shrink:0; position:relative; overflow:visible; transition:border-color .25s; }
+.prf-name{ font-size:15px; font-weight:900; color:#eef2ff; display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-width:0; word-break:break-word; }
 .prf-mini{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:3px 7px; font-size:11px; cursor:pointer; }
 .prf-sub{ font-size:10.5px; color:#8d9ac4; margin-top:2px; }
 .prf-stats{ display:flex; gap:8px; margin:13px 0 9px; }
-.prf-stat{ flex:1; text-align:center; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:11px; padding:9px 4px; }
-.prf-stat b{ display:block; font-size:14px; color:#ffd86b; }
+.prf-stat{ flex:1; min-width:0; text-align:center; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:11px; padding:9px 3px; }
+.prf-stat b{ display:block; font-size:13px; color:#ffd86b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .prf-stat span{ font-size:8.5px; letter-spacing:1px; color:#7d8ab8; }
 .prf-xpbar{ position:relative; height:18px; border-radius:9px; background:rgba(255,255,255,.06); overflow:hidden; border:1px solid rgba(255,255,255,.08); }
 .prf-xpfill{ position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg,#5b8cff,#9b5bff); border-radius:9px; }
 .prf-xpbar span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.6); }
-.prf-acts{ display:flex; gap:8px; margin-top:12px; }
+.prf-acts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+.prf-act-btn{ padding:12px 8px; font-size:12px; font-weight:800; border-radius:11px; border:1px solid rgba(140,160,255,.2); background:rgba(255,255,255,.04); color:#dfe7ff; cursor:pointer; text-align:center; transition:background .15s; }
+.prf-act-btn:active{ background:rgba(140,160,255,.15); }
+.prf-act-primary{ grid-column:1/-1; background:linear-gradient(135deg,rgba(91,140,255,.25),rgba(123,91,255,.15)); border-color:rgba(140,160,255,.35); font-size:13px; }
+/* Eski .prf-btn (kaju modal vs için geriye uyum) */
 .prf-btn{ flex:1; padding:11px; font-size:13px; font-weight:800; border-radius:11px; border:1px solid rgba(140,160,255,.3); background:linear-gradient(135deg,rgba(91,140,255,.2),rgba(123,91,255,.1)); color:#dfe7ff; cursor:pointer; }
 .prf-lbl{ font-size:10px; font-weight:900; letter-spacing:1.5px; color:#9fb0d8; margin-bottom:8px; }
 .prf-rec{ display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:9px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05); margin-bottom:5px; font-size:12.5px; color:#cdd8f5; }
