@@ -167,8 +167,11 @@ export function initSocial(){
     `;
     document.head.appendChild(st);
   }
-  if(typeof window!=='undefined'){ if(window.__heroSocialInit) return; window.__heroSocialInit = true; }
-  if(document.getElementById('gemFloatBtn')) return;
+  // FAB zaten varsa tekrar oluşturma (çift init koruması) — ama style ekleme devam etsin
+  if(document.getElementById('gemFloatBtn')){
+    applyFabSetting();
+    return;
+  }
   // 💎 Gem FAB
   const gem = document.createElement('button');
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
