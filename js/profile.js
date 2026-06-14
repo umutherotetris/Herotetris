@@ -37,6 +37,8 @@ async function _renderProfile(){
   const pl = Store.getState ? Store.getState() : {};
   const isGoogle = st.status === 'google';
   const nick = st.displayName || 'Misafir Oyuncu';
+  let photoDataUrl = null;
+  try{ if(st.uid) photoDataUrl = localStorage.getItem('hero_photo_'+st.uid); }catch(e){}
   const lvl = Math.max(1, Number(pl.level)||1);
   // pl.xp Firebase'de obje olabilir: { level, xp, totalXP }
   const _xpObj = pl.xp;
@@ -50,7 +52,10 @@ async function _renderProfile(){
   box.innerHTML = `
     <div class="prf-card">
       <div class="prf-top">
-        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer;border:3px solid ${esc((st.profile&&st.profile.frame)||'transparent')}">${esc((st.profile && st.profile.avatar) || defaultAvatar(st.uid))}<span class="prf-ava-edit">✏️</span></div>
+        <div class="prf-ava" data-p="avatar" title="Avatar değiştir" style="cursor:pointer;border:3px solid ${esc((st.profile&&st.profile.frame)||'transparent')};overflow:hidden;position:relative">
+          ${photoDataUrl ? `<img src="${photoDataUrl}" alt="profil" style="width:100%;height:100%;object-fit:cover;border-radius:13px;position:absolute;inset:0">` : `<span style="font-size:28px">${esc((st.profile && st.profile.avatar) || defaultAvatar(st.uid))}</span>`}
+          <span class="prf-ava-edit">📷</span>
+        </div>
         <div class="prf-id">
           <div class="prf-name"><span data-el="prfNick">${esc(nick)}</span> ${isGoogle ? '<button class="prf-mini" data-p="nick">✏️</button>' : ''}</div>
           <div class="prf-badges" data-el="prfBadges"></div>
@@ -70,6 +75,8 @@ async function _renderProfile(){
         ${isGoogle ? '<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>' : ''}
         ${isGoogle ? '<button class="prf-act-btn" data-p="clan">🏰 Klan</button>' : ''}
         <button class="prf-act-btn" data-p="season">👑 Sezon</button>
+        ${isGoogle ? '<button class="prf-act-btn" data-p="shop">🛍️ Mağaza</button>' : ''}
+        ${isGoogle ? '<button class="prf-act-btn" data-p="kozmos">🥚 Kozmos</button>' : ''}
         ${isGoogle ? '<button class="prf-act-btn" data-p="frame">🖼️ Çerçeve & Tema</button>' : ''}
         <button class="prf-act-btn" data-p="settings">⚙️ Ayarlar</button>
       </div>
@@ -124,12 +131,71 @@ async function openFramePicker(){
   }));
 }
 function applyProfileBg(id){
+  const scr = document.querySelector('[data-screen="profile"]'); if(!scr) return;
+  // Matrix: özel canvas animasyonu
+  scr.classList.remove('matrix-bg');
+  [...scr.querySelectorAll('.prf-matrix-col')].forEach(e=>e.remove());
+  if(window._matrixAnim){ clearInterval(window._matrixAnim); window._matrixAnim=null; }
+  if(id==='matrix'){
+    scr.style.background='#000800'; scr.classList.add('matrix-bg');
+    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+    for(let i=0;i<18;i++){
+      const col=document.createElement('div'); col.className='prf-matrix-col';
+      const left=Math.random()*100; const delay=Math.random()*4; const dur=3+Math.random()*5;
+      col.style.cssText=`left:${left}%;animation-duration:${dur}s;animation-delay:-${delay}s;opacity:${0.4+Math.random()*.6}`;
+      const len=8+Math.floor(Math.random()*12);
+      col.textContent=Array.from({length:len},()=>chars[Math.floor(Math.random()*chars.length)]).join('\n');
+      scr.appendChild(col);
+    }
+    return;
+  }
   const theme = BG_THEMES.find(b=>b.id===id);
-  const scr = document.querySelector('[data-screen="profile"]');
-  if(scr) scr.style.background = theme && theme.bg ? theme.bg : '';
+  scr.style.background = theme && theme.bg ? theme.bg : '';
 }
 
   const fb2 = box.querySelector('[data-p="frame"]'); if(fb2) fb2.addEventListener('click', openFramePicker);
+  const shb = box.querySelector('[data-p="shop"]'); if(shb) shb.addEventListener('click', async()=>{ try{const m=await import('./shop.js');m.openShop();}catch(e){alert('Mağaza: '+(e.message||e));} });
+  const kzb = box.querySelector('[data-p="kozmos"]'); if(kzb) kzb.addEventListener('click', async()=>{ try{const m=await import('./kozmos.js');m.openKozmos();}catch(e){alert('Kozmos: '+(e.message||e));} });
+  // Fotoğraf seç
+  const avb = box.querySelector('[data-p="avatar"]'); if(avb) avb.addEventListener('click', ()=>{
+    if(!isGoogle){ openAvatarPicker(); return; }
+    const menu = document.createElement('div'); menu.id='avMenu'; menu.className='nick-modal-ov';
+    menu.innerHTML=`<div class="nick-modal" style="max-width:280px"><div class="nm-title">👤 Profil Görseli</div>
+      <div class="nm-actions" style="flex-direction:column;gap:8px">
+        <button class="nm-btn nm-ok" id="avPickEmoji">🎭 Emoji Avatar Seç</button>
+        <button class="nm-btn nm-ok" id="avPickPhoto">📷 Fotoğraf Yükle</button>
+        ${photoDataUrl?'<button class="nm-btn nm-cancel" id="avClearPhoto">🗑 Fotoğrafı Kaldır</button>':''}
+        <button class="nm-btn nm-cancel" id="avClose">İptal</button>
+      </div></div>`;
+    document.body.appendChild(menu);
+    menu.querySelector('#avClose').addEventListener('click',()=>menu.remove());
+    menu.addEventListener('click',e=>{if(e.target===menu)menu.remove();});
+    menu.querySelector('#avPickEmoji').addEventListener('click',()=>{menu.remove();openAvatarPicker();});
+    menu.querySelector('#avPickPhoto').addEventListener('click',()=>{
+      menu.remove();
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+      inp.addEventListener('change',e=>{
+        const file=e.target.files[0]; if(!file) return;
+        if(file.size>2*1024*1024){ alert('Fotoğraf 2MB'den küçük olmalı'); return; }
+        const reader=new FileReader();
+        reader.onload=async(ev)=>{
+          try{
+            localStorage.setItem('hero_photo_'+st.uid, ev.target.result);
+            // Firebase'e de yaz (sync)
+            await fdb.update(fdb.ref(db,'users/'+st.uid),{photo:ev.target.result.slice(0,50000)});
+            _renderProfile();
+          }catch(err){ alert('Fotoğraf kaydedilemedi (çok büyük olabilir)'); }
+        };
+        reader.readAsDataURL(file);
+      });
+      inp.click();
+    });
+    const clrb=menu.querySelector('#avClearPhoto');
+    if(clrb) clrb.addEventListener('click',async()=>{
+      try{ localStorage.removeItem('hero_photo_'+st.uid); await fdb.update(fdb.ref(db,'users/'+st.uid),{photo:null}); }catch(e){}
+      menu.remove(); _renderProfile();
+    });
+  });
   const sb = box.querySelector('[data-p="season"]'); if(sb) sb.addEventListener('click', async () => { try{ const m = await import('./season.js'); m.openSeason(); }catch(e){ alert('Sezon yüklenemedi: '+e.message); } });
   renderBadgesAndRank(st);
   applyProfileBg((st.profile&&st.profile.profileBg)||'default');
@@ -250,6 +316,7 @@ function openSettings(){
       <div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl ${fabs?'on':''}" data-s="fabs">${fabs?'AÇIK':'KAPALI'}</button></div>
       <div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" data-s="cache">TEMİZLE</button></div>
       ${st.status==='google' ? '<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" data-s="logout">ÇIKIŞ</button></div>' : ''}
+      <div class="set-row"><span>👥 Arkadaş listemi gizle</span><button class="set-tgl ${setOn('hero_set_hidefriends',false)?'on':''}" data-s="hidefriends">${setOn('hero_set_hidefriends',false)?'AÇIK':'KAPALI'}</button></div>
       <div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>
       <div class="nm-actions"><button class="nm-btn nm-cancel" data-s="close">Kapat</button></div>
     </div>`;
@@ -262,6 +329,8 @@ function openSettings(){
     e.target.classList.toggle('on', now); e.target.textContent = now ? 'AÇIK' : 'KAPALI';
     try{ const m = await import('./social.js'); m.applyFabSetting(); }catch(err){}
   });
+  const hfb = ov.querySelector('[data-s="hidefriends"]');
+  if(hfb) hfb.addEventListener('click', e=>{ const now=!setOn('hero_set_hidefriends',false); localStorage.setItem('hero_set_hidefriends',now?'1':'0'); e.target.classList.toggle('on',now); e.target.textContent=now?'AÇIK':'KAPALI'; });
   ov.querySelector('[data-s="cache"]').addEventListener('click', async () => {
     try{ if(window.caches && caches.keys){ const ks = await caches.keys(); for(const k of ks) await caches.delete(k); } }catch(e){}
     location.reload();
