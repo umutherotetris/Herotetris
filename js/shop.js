@@ -42,8 +42,9 @@ async function buyItem(item){
   if((pl.kaju||0) < item.price){ alert(`💰 Yetersiz Kaju! Gerekli: ${fmt(item.price)} · Mevcut: ${fmt(pl.kaju)}`); return false; }
   if(!confirm(`${item.icon} "${item.name}" → ${fmt(item.price)} Kaju harcanacak. Satın al?`)) return false;
   try{
-    const ok = await Store.addKaju(-item.price, 'shop', item.id);
-    if(!ok){ alert('Kaju düşülemedi'); return false; }
+    // Store.addKaju negatif değer alır (harcama)
+    try{ await Store.addKaju(-item.price, 'shop', item.id); }
+    catch(e){ alert('Kaju düşülemedi: '+(e.message||e)); return false; }
     await fdb.update(fdb.ref(db,'shopInventory/'+st.uid+'/ownedItems'),{[item.id]:true});
     return true;
   }catch(e){ alert('Satın alınamadı: '+(e.message||e)); return false; }
