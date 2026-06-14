@@ -17,14 +17,53 @@ export function applyProfileBg(id){
   if(window._matrixAnim){clearInterval(window._matrixAnim);window._matrixAnim=null;}
   if(id==='matrix'){
     scr.style.background='#000800'; scr.classList.add('matrix-bg');
-    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
-    const nl=String.fromCharCode(10);
-    for(let i=0;i<18;i++){
-      const col=document.createElement('div'); col.className='prf-matrix-col';
-      col.style.cssText='left:'+Math.random()*100+'%;animation-duration:'+(3+Math.random()*5)+'s;animation-delay:-'+(Math.random()*4)+'s;opacity:'+(0.4+Math.random()*.6);
-      col.textContent=Array.from({length:8+Math.floor(Math.random()*12)},()=>chars[Math.floor(Math.random()*chars.length)]).join(nl);
-      scr.appendChild(col);
+    // Canvas tabanlı matrix (Goodyedek bgMatrix birebir)
+    let cv=scr.querySelector('canvas.matrix-cv');
+    if(!cv){ cv=document.createElement('canvas'); cv.className='matrix-cv'; cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'; scr.insertBefore(cv,scr.firstChild); }
+    cv.width=scr.offsetWidth||360; cv.height=scr.offsetHeight||600;
+    const ctx=cv.getContext('2d');
+    const cols=Math.floor(cv.width/13);
+    const bgS=Array.from({length:cols},(_,i)=>({ y:Math.random()*cv.height*1.4, sp:Math.random()*.8+.3 }));
+    if(window._matrixAnim) cancelAnimationFrame(window._matrixAnim);
+    function matrixFrame(){
+      if(!scr.classList.contains('matrix-bg')){ ctx.clearRect(0,0,cv.width,cv.height); return; }
+      const t=Date.now()/1000;
+      ctx.fillStyle='rgba(0,8,4,0.22)'; ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.globalAlpha=0.04; ctx.strokeStyle='#00ff44'; ctx.lineWidth=0.5;
+      const gs=28;
+      for(let gx=0;gx<cv.width;gx+=gs){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,cv.height);ctx.stroke();}
+      for(let gy=0;gy<cv.height;gy+=gs){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(cv.width,gy);ctx.stroke();}
+      bgS.forEach(function(s,i){
+        const x=i*13+6;
+        s.y=(s.y+s.sp*4+2.5)%(cv.height*1.4);
+        const y=s.y-cv.height*0.4;
+        ctx.globalAlpha=0.98; ctx.fillStyle='#afffaf'; ctx.font='bold 12px monospace';
+        ctx.fillText(String.fromCharCode(33+Math.floor(Math.random()*93)),x,y);
+        const hg=ctx.createRadialGradient(x,y,0,x,y,8);
+        hg.addColorStop(0,'rgba(100,255,100,0.35)'); hg.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fill();
+        for(let k=1;k<16;k++){
+          const fade=1-k/16; ctx.globalAlpha=fade*0.75;
+          const bright=30+fade*50; ctx.fillStyle='hsl(120,100%,'+bright+'%)';
+          ctx.font=(11-k*0.25)+'px monospace';
+          ctx.fillText(String.fromCharCode(33+Math.floor(Math.random()*93)),x,y-k*12);
+        }
+      });
+      for(let c=0;c<cols;c+=5){
+        const cp=0.03+Math.abs(Math.sin(t*0.7+c*0.4))*0.07;
+        const sg=ctx.createLinearGradient(c*13,0,c*13,cv.height);
+        sg.addColorStop(0,'rgba(0,255,70,0)'); sg.addColorStop(0.5,'rgba(0,255,70,'+cp+')'); sg.addColorStop(1,'rgba(0,255,70,0)');
+        ctx.fillStyle=sg; ctx.globalAlpha=1; ctx.fillRect(c*13,0,11,cv.height);
+      }
+      const scanY=(t*90)%cv.height;
+      ctx.globalAlpha=0.2; ctx.fillStyle='rgba(0,255,80,1)'; ctx.fillRect(0,scanY-1,cv.width,3);
+      ctx.globalAlpha=0.06; ctx.fillStyle='rgba(0,255,80,1)'; ctx.fillRect(0,scanY-20,cv.width,22);
+      const vg=ctx.createRadialGradient(cv.width/2,cv.height/2,cv.width*0.25,cv.width/2,cv.height/2,cv.width*0.85);
+      vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,8,2,0.6)');
+      ctx.globalAlpha=1; ctx.fillStyle=vg; ctx.fillRect(0,0,cv.width,cv.height);
+      window._matrixAnim=requestAnimationFrame(matrixFrame);
     }
+    matrixFrame();
     return;
   }
   const BG={'ocean':'linear-gradient(160deg,#0d1b4b 0%,#0a3060 50%,#062040 100%)','space':'radial-gradient(ellipse at top,#1a1040 0%,#0a0a1e 100%)','forest':'linear-gradient(160deg,#0d2b1a 0%,#1a3a20 50%,#0a1e12 100%)','sunset':'linear-gradient(160deg,#3a0a20 0%,#6b1a2a 40%,#2a0a40 100%)','ice':'linear-gradient(160deg,#0d2040 0%,#1a3060 50%,#0a1830 100%)'};
