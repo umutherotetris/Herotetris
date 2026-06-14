@@ -6,6 +6,54 @@ import { Store } from './store.js';
 
 const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+
+// ── 🔊 Ses sistemi (WebAudio) ─────────────────────────────────
+let _ac=null;
+function getAC(){
+  if(!_ac){ try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){} }
+  if(_ac&&_ac.state==='suspended') try{_ac.resume();}catch(e){}
+  return _ac;
+}
+function tone(freq,type,dur,vol,delay){
+  const ac=getAC();if(!ac)return;
+  try{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type||'sine';o.frequency.value=freq||440;
+    const s=ac.currentTime+(delay||0);
+    g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(vol||0.12,s+0.005);
+    g.gain.exponentialRampToValueAtTime(0.001,s+(dur||0.12));
+    o.start(s);o.stop(s+(dur||0.12)+0.02);
+  }catch(e){}
+}
+function sfxFeed(){
+  [[523,'sine',0.12,0.15,0],[659,'sine',0.10,0.12,0.08],[784,'triangle',0.14,0.18,0.16],[1047,'sine',0.10,0.10,0.26]]
+  .forEach(([f,t,d,v,dl])=>tone(f,t,d,v,dl));
+}
+function sfxCrack(){
+  const ac=getAC();if(!ac)return;
+  try{
+    const dur=0.07+Math.random()*0.05;
+    const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*dur),ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,0.8);
+    const src=ac.createBufferSource();src.buffer=buf;
+    const filt=ac.createBiquadFilter();filt.type='bandpass';filt.frequency.value=1800;filt.Q.value=0.6;
+    const g=ac.createGain();g.gain.setValueAtTime(0.22,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+    src.connect(filt);filt.connect(g);g.connect(ac.destination);
+    src.start();src.stop(ac.currentTime+dur+0.02);
+    setTimeout(()=>tone(2200+Math.random()*400,'square',0.025,0.06),dur*500);
+    setTimeout(()=>tone(1600+Math.random()*300,'square',0.03,0.05),dur*800);
+  }catch(e){}
+}
+function sfxHatch(){
+  [[392,'triangle',0.15,0.18,0],[523,'triangle',0.13,0.20,0.12],[659,'sine',0.14,0.22,0.22],[784,'sine',0.13,0.20,0.34],[1047,'triangle',0.20,0.28,0.46],[1319,'sine',0.25,0.30,0.62]]
+  .forEach(([f,t,d,v,dl])=>tone(f,t,d,v,dl));
+}
+function sfxReject(){
+  [440,350,260].forEach((f,i)=>setTimeout(()=>tone(f,'sawtooth',0.10,0.09),i*55));
+}
+
 // ── Faz (Goodyedek birebir) ──────────────────────────────────
 const PHASE_INFO=[
   {label:'Karanlık',   color:'#b090f0',mystery:true,  desc:'Nabız gibi titreşiyor…'},
@@ -194,12 +242,15 @@ async function renderKozmos(st,box){
         try{
           await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k+'/feedCount'),c=>(c||0)+1);
           localStorage.setItem(todayKey,String(fedToday+1));
-          feedAnim(); await renderKozmos(st,box);
+          sfxFeed(); feedAnim(); await renderKozmos(st,box);
         }catch(err){alert('Beslenemedi');}
       });
       const hb=card.querySelector('[data-hatch]');
       if(hb) hb.addEventListener('click',async e=>{e.stopPropagation();await hatchEgg(k,egg,st,box);});
-      card.addEventListener('click',()=>showEggModal(k,egg,phase,st,box));
+      const eDelB=document.createElement('button');eDelB.className='koz-del-btn';eDelB.style.cssText='position:absolute;top:4px;right:4px;font-size:9px;padding:1px 5px;';eDelB.textContent='🗑';
+      card.style.position='relative';card.appendChild(eDelB);
+      eDelB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yumurta silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k),null);await renderKozmos(st,box);}catch(err){}});
+      card.addEventListener('click',()=>{sfxCrack();showEggModal(k,egg,phase,st,box);});
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -220,7 +271,10 @@ async function renderKozmos(st,box){
         +'<div class="koz-cre-rarity" style="color:'+rc+'">'+esc(RARITY_LABEL[t.r]||t.r)+'</div>'
         +'<div class="koz-cre-lv">LV '+(c.level||1)+'</div>'
         +'<div class="koz-cre-from">💝 '+esc(c.fromName||'Mağaza')+'</div>';
-      card.addEventListener('click',()=>alert('✨ '+esc(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' · '+esc(t.n)+'\nLV '+(c.level||1)));
+      const delB=document.createElement('button');delB.className='koz-del-btn';delB.textContent='🗑';delB.title='Sil';
+      delB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yaratık silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+k),null);await renderKozmos(st,box);}catch(err){}});
+      card.appendChild(delB);
+      card.addEventListener('click',()=>alert('✨ 'c(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' · '+esc(t.n)+'\nLV '+(c.level||1)));
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -237,6 +291,7 @@ async function renderKozmos(st,box){
 
 async function hatchEgg(eggId,egg,st,box){
   if(!confirm('🎊 Yumurta doğurulsun mu?'))return;
+  sfxCrack(); setTimeout(()=>sfxCrack(),180); setTimeout(()=>sfxHatch(),350);
   try{
     const t=randomType(egg.seed||0,egg.minRarity);
     const creId='cre_'+Date.now()+'_'+eggId.slice(0,6);

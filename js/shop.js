@@ -186,20 +186,76 @@ async function buyEgg(item){
   const pl=Store.getState?Store.getState():{};
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
-  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju!');return;}
-  if(!confirm(item.icon+' "'+item.name+'" → '+fmt(item.price)+' Kaju. Satın al?'))return;
-  try{
-    await Store.addKaju(-item.price,'shop',item.id);
-    const eggId='egg_'+Date.now()+'_shop';
-    const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
-    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),{
-      fromUid:'shop',fromName:'Mağaza',fromAvatar:'🛍️',
-      toUid:st.uid,sentAt:Date.now(),acceptedAt:Date.now(),
-      seed:Math.floor(Math.random()*999),feedCount:0,
-      minRarity:rarity,source:'shop'
-    });
-    alert('🥚 Yumurta kozmos koleksiyonuna eklendi!');
-  }catch(e){alert('Satın alınamadı: '+(e.message||e));}
+  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  // Kendine mi hediye mi?
+  await showEggGiftModal(item,st,pl);
+}
+
+async function showEggGiftModal(item,st,pl){
+  const ov=document.createElement('div'); ov.className='nick-modal-ov';
+  const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='300px';
+  inn.innerHTML=''
+    +'<div class="nm-title">'+item.icon+' '+esc(item.name)+'</div>'
+    +'<div style="font-size:12px;color:#9fb0d8;text-align:center;margin-bottom:14px">Kime gönderilsin?</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px">'
+      +'<button class="shop-gift-opt" id="eggSelf" style="border-color:rgba(0,229,255,.35);background:rgba(0,229,255,.06)">'
+        +'<div style="font-size:24px;margin-bottom:5px">🥚</div>'
+        +'<div style="font-size:11px;font-weight:800;color:#00E5FF">Kendime Al</div>'
+        +'<div style="font-size:9px;color:#7d8ab8;margin-top:3px">Kozmos'uma ekle</div>'
+      +'</button>'
+      +'<button class="shop-gift-opt" id="eggGift" style="border-color:rgba(224,64,251,.35);background:rgba(224,64,251,.06)">'
+        +'<div style="font-size:24px;margin-bottom:5px">🎁</div>'
+        +'<div style="font-size:11px;font-weight:800;color:#E040FB">Arkadaşa Hediye</div>'
+        +'<div style="font-size:9px;color:#7d8ab8;margin-top:3px">Nick ile gönder</div>'
+      +'</button>'
+    +'</div>'
+    +'<div id="eggGiftForm" style="display:none;margin-bottom:10px">'
+      +'<input class="clan-in" id="eggGiftNick" placeholder="Alıcı nick" maxlength="20" style="width:100%;margin-bottom:7px">'
+      +'<div class="clan-msg" id="eggGiftMsg"></div>'
+    +'</div>'
+    +'<div class="nm-actions">'
+      +'<button class="nm-btn nm-ok" id="eggConfirm">💰 '+fmt(item.price)+' Kaju Öde</button>'
+      +'<button class="nm-btn nm-cancel" id="eggCancel">İptal</button>'
+    +'</div>';
+  ov.appendChild(inn); document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  inn.querySelector('#eggCancel').addEventListener('click',()=>ov.remove());
+  let mode='self';
+  inn.querySelector('#eggSelf').addEventListener('click',()=>{mode='self';inn.querySelector('#eggGiftForm').style.display='none';inn.querySelector('#eggSelf').style.borderColor='rgba(0,229,255,.6)';inn.querySelector('#eggGift').style.borderColor='rgba(224,64,251,.35)';});
+  inn.querySelector('#eggGift').addEventListener('click',()=>{mode='gift';inn.querySelector('#eggGiftForm').style.display='block';inn.querySelector('#eggGift').style.borderColor='rgba(224,64,251,.6)';inn.querySelector('#eggSelf').style.borderColor='rgba(0,229,255,.35)';});
+  inn.querySelector('#eggConfirm').addEventListener('click',async()=>{
+    if((pl.kaju||0)<item.price){alert('Yetersiz Kaju!');return;}
+    if(mode==='gift'){
+      const nick=(inn.querySelector('#eggGiftNick').value||'').trim();
+      const msgEl=inn.querySelector('#eggGiftMsg');
+      if(!nick){msgEl.textContent='Nick gerekli';msgEl.className='clan-msg bad';return;}
+      // Nick → uid bul
+      try{
+        const snap=await fdb.get(fdb.ref(db,'nicks/'+nick.toLowerCase()));
+        if(!snap.exists()){msgEl.textContent='Bu nick bulunamadı';msgEl.className='clan-msg bad';return;}
+        const toUid=snap.val().uid; const toName=snap.val().nick||nick;
+        if(toUid===st.uid){msgEl.textContent='Kendine hediye için "Kendime Al" seç';msgEl.className='clan-msg bad';return;}
+        try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){alert('Ödeme hatası');return;}
+        const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
+        await fdb.set(fdb.ref(db,'kozmoPending/'+toUid+'/'+st.uid+'_shop_'+Date.now()),{
+          fromUid:st.uid,fromName:st.displayName||'Oyuncu',fromAvatar:(st.profile&&st.profile.avatar)||'🎁',
+          toUid,toName,sentAt:Date.now(),seed:Math.floor(Math.random()*999),status:'pending',minRarity:rarity,source:'gift'
+        });
+        try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🎁',text:(st.displayName||'Bir oyuncu')+' sana '+esc(item.name)+' hediye etti! 🥚',ts:Date.now()});}catch(e){}
+        ov.remove(); alert('🎁 '+esc(item.name)+' → '+toName+' hediye edildi!');
+      }catch(e){msgEl.textContent='Hata: '+(e.message||e);msgEl.className='clan-msg bad';}
+    } else {
+      try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){alert('Ödeme hatası');return;}
+      const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
+      const eggId='egg_'+Date.now()+'_shop';
+      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),{
+        fromUid:'shop',fromName:'Mağaza',fromAvatar:'🛍️',
+        toUid:st.uid,sentAt:Date.now(),acceptedAt:Date.now(),
+        seed:Math.floor(Math.random()*999),feedCount:0,minRarity:rarity,source:'shop'
+      });
+      ov.remove(); alert('🥚 Yumurta kozmos koleksiyonuna eklendi!');
+    }
+  });
 }
 
 export default openShop;

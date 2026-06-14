@@ -422,6 +422,9 @@ function renderTarget(){
           <button class="adm-btn r" style="flex:1;opacity:.85" data-a="deleteuser">🗑 KALICI SİL</button>
         </div>
         <div class="adm-row">
+          <button class="adm-btn" style="flex:1;background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(192,132,252,.06));border:1px solid rgba(224,64,251,.3);color:#c084fc" data-a="kozmomgmt">🥚 Kozmo Yönet</button>
+        </div>
+        <div class="adm-row">
           ${banned
             ? '<button class="adm-btn g" data-a="unban">✅ Banı Kaldır</button>'
             : '<button class="adm-btn r" data-a="ban">🚫 Banla</button>'}
@@ -442,6 +445,7 @@ function renderTarget(){
   checkTargetIPBan();
   const opb = $(R,'[data-a="op"]'); if(opb){ opb.addEventListener('click', doOP); refreshOPBtn(); }
   const ab = $(R,'[data-a="toggleadmin"]'); if(ab) ab.addEventListener('click', doToggleAdmin);
+  const kozb = $(R,'[data-a="kozmomgmt"]'); if(kozb) kozb.addEventListener('click', doKozmoMgmt);
   const db2 = $(R,'[data-a="deleteuser"]'); if(db2) db2.addEventListener('click', doDeleteUser);
   const bb = $(R,'[data-a="ban"]'), ub = $(R,'[data-a="unban"]');
   const mb = $(R,'[data-a="mute"]'), um = $(R,'[data-a="unmute"]');
@@ -616,6 +620,65 @@ async function doToggleAdmin(){
     logAdmin(isAdm ? 'admin-kaldir' : 'admin-ver', uid, '');
     renderTarget();
   }catch(e){ msg('✗ Yapılamadı: ' + (e.message||e), false); }
+}
+
+// ── 🥚 Kozmo Yönetimi ────────────────────────────────────────────
+async function doKozmoMgmt(){
+  const uid = P.target.uid; const nick = P.target.profile.nick || P.target.profile.name || uid;
+  const el = $(P.root,'[data-el="result"]');
+  el.innerHTML = '<div class="adm-msg ok">⏳ Kozmos yükleniyor…</div>';
+  try{
+    const [eSnap,cSnap,pSnap] = await Promise.all([
+      fdb.get(fdb.ref(db,'kozmos/'+uid+'/eggs')),
+      fdb.get(fdb.ref(db,'kozmos/'+uid+'/creatures')),
+      fdb.get(fdb.ref(db,'kozmoPending/'+uid)),
+    ]);
+    const eggs=eSnap.exists()?eSnap.val():{};
+    const cres=cSnap.exists()?cSnap.val():{};
+    const pend=pSnap.exists()?pSnap.val():{};
+    const eKeys=Object.keys(eggs); const cKeys=Object.keys(cres); const pKeys=Object.keys(pend);
+    let html='<div class="adm-card"><div class="adm-lbl" style="color:#c084fc">🥚 KOZMOS: '+esc(nick)+'</div>'
+      +'<div class="adm-sub">Yumurta: '+eKeys.length+' · Yaratık: '+cKeys.length+' · Bekleyen: '+pKeys.length+'</div>';
+    if(eKeys.length){
+      html+='<div class="adm-lbl" style="margin-top:8px">Yumurtalar</div>';
+      eKeys.forEach(k=>{const e=eggs[k]; html+='<div class="adm-koz-row">🥚 Faz '+(0)+' · '+esc(e.fromName||'?')+'<button class="adm-btn r" style="padding:3px 8px;font-size:9px" data-del-egg="'+esc(k)+'">Sil</button></div>';});
+    }
+    if(cKeys.length){
+      html+='<div class="adm-lbl" style="margin-top:8px">Yaratıklar</div>';
+      cKeys.forEach(k=>{const c=cres[k]; html+='<div class="adm-koz-row">✨ '+esc(c.name||c.typeKey||'?')+' · '+esc(c.rarity||'')+' · LV'+(c.level||1)+'<button class="adm-btn r" style="padding:3px 8px;font-size:9px" data-del-cre="'+esc(k)+'">Sil</button></div>';});
+    }
+    if(pKeys.length){
+      html+='<div class="adm-lbl" style="margin-top:8px">Bekleyen istekler</div>';
+      pKeys.forEach(k=>{const p2=pend[k]; html+='<div class="adm-koz-row">📬 '+esc((p2&&p2.fromName)||k.slice(0,12))+'<button class="adm-btn r" style="padding:3px 8px;font-size:9px" data-del-pend="'+esc(k)+'">Reddet</button></div>';});
+    }
+    if(!eKeys.length&&!cKeys.length&&!pKeys.length) html+='<i style="color:#5d6890">Kozmos boş</i>';
+    html+='<div style="display:flex;gap:6px;margin-top:10px">'
+      +'<button class="adm-btn r" style="flex:1;font-size:10px" id="admClearAllKoz">💀 Tümünü Sil</button>'
+      +'</div></div>';
+    el.innerHTML=html;
+    el.querySelectorAll('[data-del-egg]').forEach(btn=>btn.addEventListener('click',async()=>{
+      if(!confirm('Yumurta silinsin mi?'))return;
+      await fdb.set(fdb.ref(db,'kozmos/'+uid+'/eggs/'+btn.dataset.delEgg),null).catch(()=>{});
+      btn.closest('.adm-koz-row').remove(); msg('✅ Yumurta silindi',true);
+    }));
+    el.querySelectorAll('[data-del-cre]').forEach(btn=>btn.addEventListener('click',async()=>{
+      if(!confirm('Yaratık silinsin mi?'))return;
+      await fdb.set(fdb.ref(db,'kozmos/'+uid+'/creatures/'+btn.dataset.delCre),null).catch(()=>{});
+      btn.closest('.adm-koz-row').remove(); msg('✅ Yaratık silindi',true);
+    }));
+    el.querySelectorAll('[data-del-pend]').forEach(btn=>btn.addEventListener('click',async()=>{
+      await fdb.set(fdb.ref(db,'kozmoPending/'+uid+'/'+btn.dataset.delPend),null).catch(()=>{});
+      btn.closest('.adm-koz-row').remove(); msg('✅ İstek reddedildi',true);
+    }));
+    const clearAll=el.querySelector('#admClearAllKoz');
+    if(clearAll) clearAll.addEventListener('click',async()=>{
+      if(!confirm('Tüm kozmos verisi silinsin mi?'))return;
+      await Promise.allSettled([fdb.set(fdb.ref(db,'kozmos/'+uid),null),fdb.set(fdb.ref(db,'kozmoPending/'+uid),null)]);
+      msg('✅ Kozmos temizlendi',true); el.querySelector('.adm-card').remove();
+      logAdmin('kozmo-clear',uid,'');
+    });
+    logAdmin('kozmo-mgmt',uid,'');
+  }catch(e){ el.innerHTML='<div class="adm-msg bad">✗ Okunamadı: '+esc(e.message||e)+'</div>'; }
 }
 
 // ── 🗑 Kullanıcıyı kalıcı sil ────────────────────────────────────
