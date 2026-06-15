@@ -127,7 +127,7 @@ function _renderProfile(st){
       +'</div>'
       +'<div class="prf-xpbar"><div class="prf-xpfill" style="width:'+pct+'%"></div><span>LV '+lvl+' → '+(lvl+1)+' · %'+pct+'</span></div>'
       +'<div class="prf-acts-grid">'
-        +(isGoogle?'<button class="prf-act-btn prf-act-primary" data-p="kaju">💸 Kaju Gönder</button>':'<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>')
+        +(isGoogle?'<button class="prf-act-btn prf-act-primary" data-p="kaju">🥜 Kaju Gönder</button>':'<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>')
         +(isGoogle?'<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>':'')
         +(isGoogle?'<button class="prf-act-btn" data-p="clan">🏰 Klan</button>':'')
         +'<button class="prf-act-btn" data-p="season">👑 Sezon</button>'
@@ -282,6 +282,7 @@ function openSettings(){
   inner.innerHTML='<div class="nm-title">⚙️ Ayarlar</div>'
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
     +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
+    +'<div class="set-row"><span>🔔 Push bildirimleri</span><button class="set-tgl" id="stNotif">YÜKLENİYOR</button></div>'
     +'<div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" id="stCache">TEMİZLE</button></div>'
     +(st.status==='google'?'<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" id="stLogout">ÇIKIŞ</button></div>':'')
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
@@ -292,6 +293,28 @@ function openSettings(){
     e.target.classList.toggle('on',now); e.target.textContent=now?'AÇIK':'KAPALI';
     try{const m=await import('./social.js');m.applyFabSetting();}catch(err){}
   });
+  // 🔔 Push bildirim toggle
+  (async()=>{
+    const nb=inner.querySelector('#stNotif'); if(!nb) return;
+    try{
+      const pm=await import('./push.js');
+      const perm=pm.notifPermission();
+      if(perm==='unsupported'){ nb.textContent='DESTEKLENMİYOR'; nb.style.opacity='.4'; nb.disabled=true; return; }
+      if(perm==='granted'){ nb.textContent='AÇIK'; nb.classList.add('on'); }
+      else if(perm==='denied'){ nb.textContent='ENGELLİ'; nb.style.opacity='.5'; }
+      else { nb.textContent='KAPALI'; }
+      nb.addEventListener('click',async()=>{
+        const cur=pm.notifPermission();
+        if(cur==='granted'){
+          alert('Bildirimler açık. Kapatmak için tarayıcı ayarlarını kullan.');
+          return;
+        }
+        const ok=await pm.requestNotifPermission();
+        if(ok){ nb.textContent='AÇIK'; nb.classList.add('on'); }
+        else { nb.textContent=pm.notifPermission()==='denied'?'ENGELLİ':'KAPALI'; }
+      });
+    }catch(e){ nb.textContent='HATA'; }
+  })();
   inner.querySelector('#stHF').addEventListener('click',async e=>{
     const now=!setOn('hero_set_hidefriends',false); localStorage.setItem('hero_set_hidefriends',now?'1':'0');
     e.target.classList.toggle('on',now); e.target.textContent=now?'GİZLİ':'HERKES';
