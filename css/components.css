@@ -609,3 +609,29 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .fusion-result{ text-align:center;transition:opacity .6s,transform .6s; }
 /* ── 🥜 Kaju + Arkadaş gizli ── */
 .pcp-friends-hidden{ font-size:10px;color:#5d6890;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:6px 10px;text-align:center;margin:4px 0; }
+
+/* ── 🐾 Animasyonlu Yaratık SVG ── */
+@keyframes creatureBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes creatureBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(0.1)}}
+@keyframes creatureWing{0%,100%{transform:scaleX(1) rotate(0)}50%{transform:scaleX(0.7) rotate(-8deg)}}
+.koz-cre-svg{ min-height:54px;display:flex;align-items:center;justify-content:center;margin-bottom:5px; }
+/* ── 🥚 Yumurta sil butonu (kartın altına) ── */
+.koz-egg-del{ width:100%;padding:5px;border-radius:8px;border:1px solid rgba(255,82,82,.28);background:rgba(255,82,82,.07);color:#FF9090;font-size:8.5px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:5px; }
+.koz-egg-del:hover{ background:rgba(255,82,82,.16); }
+/* ── 👑 Oyuncu kartı moderasyon ── */
+.pcp-admin-mod{ margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,215,64,.15); }
+.pcp-mod-lbl{ font-size:9px;font-weight:800;color:#FFD740;margin-bottom:7px;letter-spacing:.5px; }
+.pcp-mod-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:5px; }
+.pcp-mod-btn{ padding:7px 4px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#cdd8f5;font-size:9.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
+.pcp-mod-btn:hover{ background:rgba(255,255,255,.1); }
+.pcp-mod-btn.ban{ border-color:rgba(255,82,82,.3);color:#FF7043; }
+.pcp-mod-btn.mute{ border-color:rgba(255,152,0,.3);color:#FFB74D; }
+.pcp-mod-btn.kick{ border-color:rgba(206,147,216,.3);color:#CE93D8; }
+/* ── 💬 Klan sohbet düzenle/sil ── */
+.clan-chat-act{ cursor:pointer;opacity:.6;margin-left:4px;transition:opacity .15s; }
+.clan-chat-act:hover{ opacity:1; }
+.clan-ann-current{ background:rgba(255,215,64,.06);border:1px solid rgba(255,215,64,.2);border-radius:10px;padding:10px;margin-top:8px; }
+/* ── Sistem mesajı (sohbette kick) ── */
+.ghp-sys-msg{ text-align:center;padding:6px 12px;margin:4px auto;max-width:90%;font-size:10px;font-weight:700;border-radius:10px; }
+.ghp-sys-msg.kick{ color:#CE93D8;background:rgba(206,147,216,.08);border:1px solid rgba(206,147,216,.25); }
+.ghp-sys-msg.ban{ color:#FF5252;background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.25); }
