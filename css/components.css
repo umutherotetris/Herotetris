@@ -637,3 +637,6 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .ghp-sys-msg.ban{ color:#FF5252;background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.25); }
 
 .koz-feed-btn:hover{ background:rgba(105,240,174,.2); }
+/* ── 🔧 Operatör butonu (oyuncu kartı moderasyon) ── */
+.pcp-mod-btn.op{ border-color:rgba(206,147,216,.35);color:#CE93D8; }
+.pcp-mod-btn.op:hover{ background:rgba(206,147,216,.12); }
