@@ -357,6 +357,7 @@ async function renderKozmos(st,box){
         +'<div class="koz-phase-label" style="color:'+info.color+'">'+esc(info.label)+'</div>'
         +'<div class="koz-phase-desc">'+esc(info.desc)+'</div>'
         +'<div class="koz-egg-from">'+esc(egg.fromName||'?')+'\u2019den</div>'
+        +'<button class="koz-egg-del" data-del="'+k+'">🗑 Sil</button>'
         +'<div class="koz-bar"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,'+info.color+',#818cf8);border-radius:3px;transition:width .5s"></div></div>'
         +'<div class="koz-bar-txt">%'+pct+' · '+fed+' beslenme</div>'
         +'<button class="koz-feed-btn" data-feed="'+k+'">🍎 Besle</button>'
@@ -374,9 +375,8 @@ async function renderKozmos(st,box){
       });
       const hb=card.querySelector('[data-hatch]');
       if(hb) hb.addEventListener('click',async e=>{e.stopPropagation();await hatchEgg(k,egg,st,box);});
-      const eDelB=document.createElement('button');eDelB.className='koz-egg-del';eDelB.textContent='🗑 Sil';eDelB.title='Yumurtayı sil';
-      card.appendChild(eDelB);
-      eDelB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yumurta silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k),null);await renderKozmos(st,box);}catch(err){}});
+      const eDelB=card.querySelector('[data-del]');
+      if(eDelB) eDelB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yumurta silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k),null);await renderKozmos(st,box);}catch(err){}});
       card.addEventListener('click',()=>{sfxCrack();showEggModal(k,egg,phase,st,box);});
       grid.appendChild(card);
     });
