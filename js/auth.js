@@ -23,7 +23,7 @@ const {
   signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
   GoogleAuthProvider, linkWithPopup, signOut
 } = await import(`${BASE}/firebase-auth.js`);
-const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt } = await import(`${BASE}/firebase-database.js`);
+const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt, onChildAdded } = await import(`${BASE}/firebase-database.js`);
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -75,6 +75,7 @@ async function hydrate(user){
   // Günlük giriş kontrolü (Google girişinde)
   if(state.status==='google'&&state.uid){
     setTimeout(async()=>{try{const m=await import('./daily.js');await m.checkDailyLogin();}catch(e){}},1500);
+    setTimeout(async()=>{try{const m=await import('./push.js');m.startNotifListener();}catch(e){}},2500);
   }
   startPresence();                                  // çevrimiçilik: presence/{uid}
   startKickListener();                              // 🦵 admin atarsa oturumu yenile
@@ -214,7 +215,7 @@ export async function logout(){ try { await signOut(auth); } catch(e){ console.e
 // RTDB erişimini diğer modüllere aç (friends/chat/shop sonraki aşamalarda kullanacak)
 export { db, auth };
 // Veritabanı yardımcıları — store.js ve oyunlar tekrar import etmeden kullanır
-export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt };
+export const fdb = { ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt, onChildAdded };
 
 boot();
 
