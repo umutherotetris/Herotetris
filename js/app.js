@@ -50,7 +50,15 @@ function start(){
   try{ initNav(); }catch(e){ console.error('[Nav]', e); }
 
   // 💎 Sosyal Hub + 👑 Admin FAB (izole — hata olsa bile portal çalışır)
-  import('./social.js?v=94').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
+  import('./social.js?v=95').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
+  // Günlük giriş ödülü — auth hazır olunca çalıştır
+  import('./daily.js').then(m => {
+    const { Auth } = { Auth: window.__heroAuth };
+    // Auth state hazır olunca kontrol et
+    setTimeout(async()=>{
+      try{ const d=await import('./daily.js'); await d.checkDailyLogin(); }catch(e){}
+    }, 2000);
+  }).catch(()=>{});
   // 👤 Profil + ⚙️ Ayarlar + 🏆 Liderlik ekranları (izole)
   import('./profile.js?v=94').then(m => m.initScreens()).catch(e => console.error('[Screens]', e));
 

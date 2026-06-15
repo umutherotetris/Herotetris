@@ -404,9 +404,7 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
 }
 
 async function doMerge(id1,c1,id2,c2,resultType,st,box){
-  if(!confirm('💥 '+esc(c1.name||'?')+' + '+esc(c2.name||'?')+' → '+esc(resultType.name||resultType.n||'?')+'
-
-Bu işlem geri alınamaz!'))return;
+  if(!confirm('Birleştirme: '+esc(c1.name||'?')+' + '+esc(c2.name||'?')+' → '+esc(resultType.name||resultType.n||'?')+'\n\nBu işlem geri alınamaz!'))return;
   try{
     sfxHatch();
     // Fusion animasyonu

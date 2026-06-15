@@ -18,6 +18,13 @@ export const GLOW_STYLES = {
   ice:{label:'❄️ Buz', cls:'ng-ice'},           purple:{label:'💜 Mor', cls:'ng-purple'},
   gold:{label:'👑 Altın', cls:'ng-gold'}
 };
+function showToast(msg,dur){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(20,30,60,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 18px;font-size:12px;font-weight:700;color:#dfe7ff;z-index:99999;pointer-events:none;animation:dailyToastIn .3s ease';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), dur||2200);
+}
 export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }
 
 // Seçilebilir avatarlar (profil > değiştir)
@@ -84,9 +91,35 @@ export async function openPlayerCard(uid){
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
       <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
+      <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Poke</button>
+      <button class="pcp-btn" style="background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.3);color:#FF7043" data-pc="challenge">⚔️ Meydan Oku</button>
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  // 👉 Poke
+  const pokeB = ov.querySelector('[data-pc="poke"]');
+  if(pokeB) pokeB.addEventListener('click', async()=>{
+    try{
+      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'👉',text:(me.displayName||'Biri')+' seni poke etti!',ts:Date.now(),fromUid:me.uid});
+      // Kısa vibrasyon
+      if(navigator.vibrate) navigator.vibrate([30,20,30]);
+      ov.remove();
+      showToast('👉 Poke gönderildi!');
+    }catch(e){}
+  });
+  // ⚔️ Meydan okuma
+  const chalB = ov.querySelector('[data-pc="challenge"]');
+  if(chalB) chalB.addEventListener('click', async()=>{
+    if(!confirm('⚔️ '+nick+' adlı oyuncuya meydan okuyacaksın. Devam?'))return;
+    try{
+      await fdb.set(fdb.ref(db,'gameInvites/'+uid+'/chall_'+Date.now()),{
+        fromUid:me.uid,fromName:me.displayName||'Oyuncu',fromAvatar:(me.profile&&me.profile.avatar)||'👤',
+        toUid:uid,type:'challenge',game:'tetris',ts:Date.now(),status:'pending'
+      });
+      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'⚔️',text:(me.displayName||'Biri')+' sana meydan okudu! (Tetris)',ts:Date.now(),fromUid:me.uid});
+      ov.remove(); showToast('⚔️ Meydan okuma gönderildi!');
+    }catch(e){alert('Gönderilemedi');}
+  });
   const eggPcB = ov.querySelector('[data-pc="egg"]');
   if(eggPcB) eggPcB.addEventListener('click', async() => {
     ov.remove();

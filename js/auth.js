@@ -72,6 +72,10 @@ async function hydrate(user){
   }
   state.displayName = deriveName(user, state.profile);
   emit();
+  // Günlük giriş kontrolü (Google girişinde)
+  if(state.status==='google'&&state.uid){
+    setTimeout(async()=>{try{const m=await import('./daily.js');await m.checkDailyLogin();}catch(e){}},1500);
+  }
   startPresence();                                  // çevrimiçilik: presence/{uid}
   startKickListener();                              // 🦵 admin atarsa oturumu yenile
   checkIPAndBan();                                  // 🌐 IP kaydet + IP banı uygula
