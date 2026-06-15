@@ -71,9 +71,15 @@ export async function openPlayerCard(uid){
     </div>
     <div class="pcp-stats">
       <div class="pcp-stat"><b>⭐ ${esc(p.level || 1)}</b><span>SEVİYE</span></div>
-      <div class="pcp-stat"><b>💰 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
+      <div class="pcp-stat"><b>🥜 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
       <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
+    ${(()=>{
+      const meAdm=(H&&H.admins&&H.admins[me.uid])||me.isAdmin===true;
+      const hidden=p.friendsHidden===true;
+      if(hidden&&!meAdm) return '<div class="pcp-friends-hidden">🔒 Arkadaş listesi gizli</div>';
+      return '';
+    })()}
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>

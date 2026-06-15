@@ -121,7 +121,7 @@ function _renderProfile(st){
         +'</div>'
       +'</div>'
       +'<div class="prf-stats">'
-        +'<div class="prf-stat"><b>💰 '+fmt(pl.kaju)+'</b><span>KAJU</span></div>'
+        +'<div class="prf-stat"><b>🥜 '+fmt(pl.kaju)+'</b><span>KAJU</span></div>'
         +'<div class="prf-stat"><b>⭐ '+lvl+'</b><span>SEVİYE</span></div>'
         +'<div class="prf-stat"><b>✨ '+fmt(totalXPv)+'</b><span>TOPLAM XP</span></div>'
       +'</div>'
@@ -281,7 +281,7 @@ function openSettings(){
   const hfOn=setOn('hero_set_hidefriends',false);
   inner.innerHTML='<div class="nm-title">⚙️ Ayarlar</div>'
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
-    +'<div class="set-row"><span>👥 Arkadaş listemi gizle</span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'AÇIK':'KAPALI')+'</button></div>'
+    +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
     +'<div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" id="stCache">TEMİZLE</button></div>'
     +(st.status==='google'?'<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" id="stLogout">ÇIKIŞ</button></div>':'')
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
@@ -292,9 +292,10 @@ function openSettings(){
     e.target.classList.toggle('on',now); e.target.textContent=now?'AÇIK':'KAPALI';
     try{const m=await import('./social.js');m.applyFabSetting();}catch(err){}
   });
-  inner.querySelector('#stHF').addEventListener('click',e=>{
+  inner.querySelector('#stHF').addEventListener('click',async e=>{
     const now=!setOn('hero_set_hidefriends',false); localStorage.setItem('hero_set_hidefriends',now?'1':'0');
-    e.target.classList.toggle('on',now); e.target.textContent=now?'AÇIK':'KAPALI';
+    e.target.classList.toggle('on',now); e.target.textContent=now?'GİZLİ':'HERKES';
+    const st2=Auth.getState(); if(st2.uid) try{await fdb.update(fdb.ref(db,'users/'+st2.uid),{friendsHidden:now});}catch(ex){}
   });
   inner.querySelector('#stCache').addEventListener('click',async()=>{
     try{if(window.caches&&caches.keys){const ks=await caches.keys();for(const k of ks)await caches.delete(k);}}catch(e){}
@@ -352,7 +353,7 @@ async function renderTrophies(st){
     {icon:'👣',name:'İlk Adım',desc:'Seviye 2 ol',ok:lvl>=2},
     {icon:'🚀',name:'Yükselen',desc:'Seviye 5 ol',ok:lvl>=5},
     {icon:'🌟',name:'Usta',desc:'Seviye 10 ol',ok:lvl>=10},
-    {icon:'💰',name:'Birikimci',desc:'10.000 Kaju',ok:kaju>=10000},
+    {icon:'🥜',name:'Birikimci',desc:'10.000 Kaju',ok:kaju>=10000},
     {icon:'🤑',name:'Zengin',desc:'100.000 Kaju',ok:kaju>=100000},
     {icon:'💎',name:'Milyoner',desc:'1.000.000 Kaju',ok:kaju>=1000000},
     {icon:'👥',name:'Sosyal',desc:'3 arkadaş edin',ok:frCount>=3},
@@ -383,7 +384,7 @@ async function renderLeaderboard(){
       try{const u=await fdb.get(fdb.ref(db,'users/'+r.uid));if(u.exists()){const v=u.val();name=v.nick||v.name||name;ava=v.avatar||'👤';}}catch(e){}
       const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
       const mine=r.uid===me;
-      return '<div class="prf-rec'+(mine?' me':'')+'" data-lbuid="'+esc(r.uid)+'" style="cursor:pointer"><span>'+medal+' '+esc(ava)+' '+esc(name||'Oyuncu')+'</span><b>💰 '+fmt(r.kaju)+'</b></div>';
+      return '<div class="prf-rec'+(mine?' me':'')+'" data-lbuid="'+esc(r.uid)+'" style="cursor:pointer"><span>'+medal+' '+esc(ava)+' '+esc(name||'Oyuncu')+'</span><b>🥜 '+fmt(r.kaju)+'</b></div>';
     }));
     body.innerHTML=out.join('');
     body.querySelectorAll('[data-lbuid]').forEach(el=>el.addEventListener('click',async()=>{
