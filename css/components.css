@@ -557,3 +557,13 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 /* ── 🛍️ Hediye seçim modal ── */
 .shop-gift-opt{ padding:12px 8px;border-radius:12px;border:1.5px solid;background:transparent;cursor:pointer;font-family:inherit;transition:transform .15s,border-color .15s; }
 .shop-gift-opt:hover{ transform:scale(1.04); }
+/* ── 🥚 Kozmo hediye + arkadaş seç ── */
+.egg-friend-list{ display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;padding:4px 0; }
+.egg-friend-btn{ display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:10px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);color:#dfe7ff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
+.egg-friend-btn:hover{ border-color:rgba(192,132,252,.5);background:rgba(192,132,252,.14); }
+.egg-friend-btn.selected{ border-color:rgba(224,64,251,.6);background:rgba(224,64,251,.14);color:#E040FB; }
+/* Arkadaş satırında kozmo butonu */
+.ghp-act[data-fegg]{ color:#c084fc;border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.07); }
+.ghp-act[data-fegg]:hover{ background:rgba(192,132,252,.18); }
+/* Oyuncu kartı kozmo butonu */
+.pcp-btn[data-pc="egg"]{ background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.3);color:#c084fc; }
