@@ -255,7 +255,7 @@ async function toggleAllUsers(){
               ${u.banned===true?'<span class="adm-tag ban">🚫 BANLI</span>':''}
               ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
             </div>
-            <div style="font-size:10px;color:#7d8ab8;margin-top:2px">LV ${lvl} · 💰 ${fmt(u.kaju)} · ${lastS}</div>
+            <div style="font-size:10px;color:#7d8ab8;margin-top:2px">LV ${lvl} · 🥜 ${fmt(u.kaju)} · ${lastS}</div>
             <div style="font-size:9px;color:#555070;word-break:break-all">${esc(u.uid)}</div>
           </div>
           <button class="adm-btn p" data-load="${esc(u.uid)}" style="padding:6px 10px;font-size:11px;flex-shrink:0">Yönet →</button>
@@ -376,13 +376,13 @@ function renderTarget(){
         ${muted?'<span class="adm-tag mute">🔇 SUSTURULMUŞ '+esc(muteInfo)+'</span>':''}
       </div>
       <div class="adm-uid">${esc(uid)}</div>
-      <div class="adm-prow">💰 <b data-el="kaju">${fmt(p.kaju)}</b> Kaju · LV ${esc(p.level||1)} · XP ${(()=>{ const x=p.xp; const v=Number((x&&typeof x==='object')?(x.totalXP??x.xp??0):(p.totalXP??x??0)); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</div>
+      <div class="adm-prow">🥜 <b data-el="kaju">${fmt(p.kaju)}</b> Kaju · LV ${esc(p.level||1)} · XP ${(()=>{ const x=p.xp; const v=Number((x&&typeof x==='object')?(x.totalXP??x.xp??0):(p.totalXP??x??0)); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</div>
       <div class="adm-prow" style="font-size:11px;color:#9fb0d8">🌐 IP: <b data-el="ipTxt">${esc(p.lastIP || 'bilinmiyor')}</b>
         ${p.lastIP ? '<button class="adm-btn r" style="padding:4px 9px;font-size:10px" data-a="ipban">IP Banla</button>' : ''}
         <span data-el="ipBanState"></span>
       </div>
 
-      <div class="adm-sec"><div class="adm-lbl">💰 KAJU AYARLA</div>
+      <div class="adm-sec"><div class="adm-lbl">🥜 KAJU AYARLA</div>
         <div class="adm-row">
           <input class="adm-in" data-el="kAmt" inputmode="numeric" placeholder="+ekle / −eksilt (örn. -500)">
           <button class="adm-btn p" data-a="kaju">Uygula</button>
@@ -472,7 +472,7 @@ async function toggleClanMgmt(){
       return `<div class="adm-li" style="flex-direction:column;align-items:stretch;gap:4px;padding:9px">
         <div style="display:flex;align-items:center;gap:6px">
           <b style="color:#ffd86b">[${esc(c.tag||'?')}] ${esc(c.name||'Klan')}</b>
-          <span style="font-size:10px;color:#7d8ab8">👥${cnt} · 💰${fmt(c.kaju||0)}</span>
+          <span style="font-size:10px;color:#7d8ab8">👥${cnt} · 🥜${fmt(c.kaju||0)}</span>
         </div>
         <div style="font-size:10px;color:#9fb0d8">Lider: ${esc(ldrName)} · Varis: ${varis?esc(varis.name||'?'):'<i>yok</i>'}</div>
         <div style="display:flex;gap:5px">

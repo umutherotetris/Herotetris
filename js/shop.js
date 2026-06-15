@@ -46,10 +46,10 @@ const BG_MAP={
 };
 
 const UNIQUE_KOZMOS=[
-  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, desc:'Evrenin ilk nefesi. Sadece 1 üretildi. Mağazadan satın alınabilir, birleştirilerek elde edilemez.', rarity:'mythical'},
-  {id:'uniq_void',    name:'Void Ejderi',   icon:'🐉',color:'#00ffc8',price:50000, desc:'Karanlığın derinliklerinden. Ultra nadir, benzersiz baskı.', rarity:'mythical'},
-  {id:'uniq_aurora',  name:'Aurora Işığı',   icon:'🌠',color:'#f0a0f8',price:35000, desc:'Kuzey ışıklarının çocuğu. El sanatı, tek nüsha.', rarity:'legendary'},
-  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, desc:'Külünden yeniden doğar. Efsanevi güç, mağazada yalnızca bu kopya.', rarity:'legendary'},
+  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, desc:'Uzak galaksilerin gizemli yaratığı. Tek üretim, koleksiyonluk.', rarity:'mythical'},
+  {id:'uniq_void',    name:'Karanlık Ejder',    icon:'🐉',color:'#00ffc8',price:50000, desc:'Karanlık bölgelerin nadir sakinlerinden. Ultra nadir, benzersiz baskı.', rarity:'mythical'},
+  {id:'uniq_aurora',  name:'Kutup Dansçısı',    icon:'🌠',color:'#f0a0f8',price:35000, desc:'Kuzey ışıklarıyla dans eden efsanevi yaratık. Tek nüsha.', rarity:'legendary'},
+  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, desc:'Ateşin içinden çıkan güçlü bir kanat. Koleksiyonda yalnızca bu kopya.', rarity:'legendary'},
 ];
 
 let _inv={}, _tab='frames';
@@ -70,7 +70,7 @@ export async function openShop(){
   panel.innerHTML=''
     +'<div class="clan-head">'
       +'<div class="clan-title">🛍️ MAĞAZA</div>'
-      +'<div class="shop-kaju-badge">💰 '+fmt(pl.kaju)+' Kaju</div>'
+      +'<div class="shop-kaju-badge">🥜 '+fmt(pl.kaju)+' Kaju</div>'
       +'<button class="clan-x" id="shopClose">✕</button>'
     +'</div>'
     +'<div class="shop-tabs" id="shopTabs"></div>'
@@ -119,7 +119,7 @@ function renderShop(){
       card.innerHTML='<div class="shop-anim-egg">'+item.icon+'</div>'
         +'<div style="font-size:10px;font-weight:900;color:#dfe7ff;margin:5px 0 2px">'+esc(item.name)+'</div>'
         +'<div style="font-size:8px;color:#7d8ab8;margin-bottom:8px">'+esc(item.desc)+'</div>'
-        +'<button class="shop-buy-btn" data-buy="'+esc(item.id)+'">💰 '+fmt(item.price)+'</button>';
+        +'<button class="shop-buy-btn" data-buy="'+esc(item.id)+'">🥜 '+fmt(item.price)+'</button>';
       card.querySelector('[data-buy]').addEventListener('click',async()=>buyEgg(item));
       eggGrid.appendChild(card);
     });
@@ -140,7 +140,7 @@ function renderShop(){
         +'<div style="font-size:8px;color:#7d8ab8;margin:3px 0 8px;line-height:1.4">'+esc(item.desc)+'</div>'
         +(owned
           ?'<div style="font-size:10px;color:#69F0AE;font-weight:800">✓ Sahibisin</div>'
-          :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">💰 '+fmt(item.price)+'</button>');
+          :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(item.price)+'</button>');
       if(!owned){ const btn=card.querySelector('button'); if(btn) btn.addEventListener('click',()=>buyUniqueKozmo(item)); }
       uGrid.appendChild(card);
     });
@@ -177,7 +177,7 @@ function renderShop(){
         ?'<button class="shop-btn-use'+(isActive?' is-active':'')+'">'+  (isActive?'✓ Aktif':'Kullan')+'</button>'
         :item.free
           ?'<button class="shop-btn-use">Kullan</button>'
-          :'<button class="shop-btn-buy'+(canBuy?'':' locked')+'">💰 '+fmt(item.price)+'</button>');
+          :'<button class="shop-btn-buy'+(canBuy?'':' locked')+'">🥜 '+fmt(item.price)+'</button>');
     if(owned||item.free){
       card.querySelector('button').addEventListener('click',()=>useItem(item));
     } else {
@@ -190,7 +190,7 @@ function renderShop(){
 
 async function buyItem(item){
   const pl=Store.getState?Store.getState():{};
-  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   if(!confirm(item.icon+' "'+item.name+'" → '+fmt(item.price)+' Kaju harcanacak. Satın al?'))return;
   try{
     await Store.addKaju(-item.price,'shop',item.id);
@@ -223,7 +223,7 @@ async function buyEgg(item){
   const pl=Store.getState?Store.getState():{};
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
-  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   // Kendine mi hediye mi?
   await showEggGiftModal(item,st,pl);
 }
@@ -254,7 +254,7 @@ async function showEggGiftModal(item,st,pl){
       +'<div id="eggFriendList" class="egg-friend-list">⏳ Yükleniyor…</div>'
     +'</div>'
     +'<div class="nm-actions">'
-      +'<button class="nm-btn nm-ok" id="eggConfirm">💰 '+fmt(item.price)+' Kaju Öde</button>'
+      +'<button class="nm-btn nm-ok" id="eggConfirm">🥜 '+fmt(item.price)+' Kaju Öde</button>'
       +'<button class="nm-btn nm-cancel" id="eggCancel">İptal</button>'
     +'</div>';
   ov.appendChild(inn); document.body.appendChild(ov);
@@ -341,7 +341,7 @@ async function loadFriendsForGift(modal, st){
 async function buyUniqueKozmo(item){
   const st=Auth.getState(); const pl=Store.getState?Store.getState():{};
   if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
-  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   if(!confirm('⭐ "'+item.name+'" → '+fmt(item.price)+' Kaju. Bu UNIQUE kozmoyu satın al?'))return;
   try{
     await Store.addKaju(-item.price,'shop',item.id);

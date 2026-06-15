@@ -113,7 +113,7 @@ async function searchClans(){
     hits.slice(0,8).forEach(c=>{
       const cnt=Object.keys(c.members||{}).length;
       const row=document.createElement('div'); row.className='clan-res';
-      row.innerHTML='<div style="min-width:0;flex:1;overflow:hidden"><b style="color:#ffd86b;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display:block">['+esc(c.tag||'?')+'] '+esc(c.name||'Klan')+'</b><div style="font-size:9px;color:#7d8ab8">👥 '+cnt+' üye · 💰 '+fmt(c.kaju)+'</div></div>'
+      row.innerHTML='<div style="min-width:0;flex:1;overflow:hidden"><b style="color:#ffd86b;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display:block">['+esc(c.tag||'?')+'] '+esc(c.name||'Klan')+'</b><div style="font-size:9px;color:#7d8ab8">👥 '+cnt+' üye · 🥜 '+fmt(c.kaju)+'</div></div>'
         +'<button class="clan-btn p" style="padding:6px 11px;flex-shrink:0" data-join="'+esc(c.id)+'">Katıl</button>';
       row.querySelector('[data-join]').addEventListener('click',()=>joinClan(c.id));
       res.appendChild(row);
@@ -167,7 +167,7 @@ async function renderMyClan(){
         +'<div class="clan-badge-box">'+esc(_clan.tag||'?')+'</div>'
         +'<div class="clan-banner-info">'
           +'<div class="clan-banner-name">'+esc(_clan.name||'Klan')+'</div>'
-          +'<div class="clan-banner-meta">👥 '+cnt+' üye · 💰 '+fmt(_clan.kaju)+'</div>'
+          +'<div class="clan-banner-meta">👥 '+cnt+' üye · 🥜 '+fmt(_clan.kaju)+'</div>'
         +'</div>'
       +'</div>'
       +'<div class="clan-tabs" style="margin-top:10px" id="clanTabs"></div>';
@@ -364,7 +364,7 @@ async function renderLeader(){
       const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
       const row=document.createElement('div'); row.className='clan-res'+(c.id===C.myClanId?' mine':'');
       row.innerHTML=medal+' <b style="color:'+(c.id===C.myClanId?'#00E5FF':'#ffd86b')+'">['+esc(c.tag||'?')+'] '+esc(c.name||'Klan')+'</b>'
-        +'<span style="font-size:11px;color:#ffd86b;margin-left:auto">💰 '+fmt(c.kaju)+'</span>';
+        +'<span style="font-size:11px;color:#ffd86b;margin-left:auto">🥜 '+fmt(c.kaju)+'</span>';
       card.appendChild(row);
     });
     box.appendChild(card);
