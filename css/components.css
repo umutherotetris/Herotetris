@@ -411,7 +411,7 @@
 .clan-body{ overflow-y:auto; padding:12px 13px 24px; display:flex; flex-direction:column; gap:10px; }
 .clan-card{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px; }
 .clan-banner{ border-color:rgba(255,215,64,.25); background:linear-gradient(160deg,rgba(255,215,64,.06),transparent); }
-.clan-badge{ width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; color:#ffd86b; letter-spacing:1px; flex-shrink:0; }
+.clan-badge-box{ flex-shrink:0; min-width:40px; max-width:64px; height:40px; border-radius:10px; background:linear-gradient(135deg,#2a3158,#171c38); border:1.5px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#ffd86b; letter-spacing:.5px; word-break:break-all; text-align:center; padding:2px 6px; line-height:1.2; }
 .clan-lbl{ font-size:10px; font-weight:900; letter-spacing:1.2px; color:#9fb0d8; margin-bottom:7px; }
 .clan-tabs{ display:flex; gap:4px; flex-wrap:wrap; }
 .clan-tab{ padding:7px 11px; font-size:11px; font-weight:800; border-radius:9px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#7d8ab8; cursor:pointer; }
@@ -567,3 +567,14 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .ghp-act[data-fegg]:hover{ background:rgba(192,132,252,.18); }
 /* Oyuncu kartı kozmo butonu */
 .pcp-btn[data-pc="egg"]{ background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.3);color:#c084fc; }
+
+/* ── Klan Banner temiz düzen ── */
+.clan-banner-row{ display:flex; align-items:center; gap:10px; }
+.clan-banner-info{ flex:1; min-width:0; overflow:hidden; }
+.clan-banner-name{ font-size:15px; font-weight:900; color:#ffd86b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.clan-banner-meta{ font-size:10px; color:#aab6da; margin-top:2px; white-space:nowrap; }
+/* Eski .clan-badge geriye uyum */
+.clan-badge{ flex-shrink:0; min-width:40px; max-width:64px; height:40px; border-radius:10px; background:linear-gradient(135deg,#2a3158,#171c38); border:1.5px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#ffd86b; letter-spacing:.5px; word-break:break-all; text-align:center; padding:2px 6px; }
+/* Renkli bildirim row */
+.ghp-notif-row{ display:flex; align-items:flex-start; gap:9px; padding:9px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.07); margin-bottom:5px; transition:background .15s; }
+.ghp-notif-announce{ background:linear-gradient(135deg,rgba(224,64,251,.08),transparent)!important; border-color:rgba(224,64,251,.3)!important; }
