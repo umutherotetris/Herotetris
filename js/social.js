@@ -93,7 +93,42 @@ export async function openPlayerCard(uid){
       <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
       <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Poke</button>
       <button class="pcp-btn" style="background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.3);color:#FF7043" data-pc="challenge">⚔️ Meydan Oku</button>
-      ${(Auth.getState().isAdmin===true && uid!==me.uid)?'<div class="pcp-admin-mod"><div class="pcp-mod-lbl">👑 Yönetici İşlemleri</div><div class="pcp-mod-grid"><button class="pcp-mod-btn ban" data-mod="ban">🚫 Ban</button><button class="pcp-mod-btn" data-mod="unban">✅ Unban</button><button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button><button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button><button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button></div></div>':''}
+      ${(()=>{
+        if(uid===me.uid) return '';
+        const meAdmin = me.isAdmin === true;
+        const meOp = (H && H.ops && H.ops[me.uid] === true);
+        if(!meAdmin && !meOp) return '';
+        const targetIsOp = (H && H.ops && H.ops[uid] === true);
+        let html = '<div class="pcp-admin-mod">';
+        if(meAdmin){
+          // ── ADMİN: tüm yetkiler ──
+          html += '<div class="pcp-mod-lbl">👑 Yönetici İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn ban" data-mod="ban">🚫 Ban</button>'
+              + '<button class="pcp-mod-btn" data-mod="unban">✅ Unban</button>'
+              + '<button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button>'
+              + '<button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button>'
+              + '<button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button>'
+              + '<button class="pcp-mod-btn op" data-mod="'+(targetIsOp?'unop':'op')+'">'+(targetIsOp?'🔧 OP Al':'🔧 OP Yap')+'</button>'
+            + '</div>'
+            + '<div class="pcp-mod-lbl" style="margin-top:8px;color:#FF7043">🌐 IP İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn" data-mod="showip">👁️ IP Gör</button>'
+              + '<button class="pcp-mod-btn ban" data-mod="ipban">🌐 IP Ban</button>'
+              + '<button class="pcp-mod-btn" data-mod="ipunban">✅ IP Unban</button>'
+            + '</div>';
+        } else if(meOp){
+          // ── OPERATÖR: sınırlı yetkiler ──
+          html += '<div class="pcp-mod-lbl" style="color:#CE93D8">🔧 Operatör İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button>'
+              + '<button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button>'
+              + '<button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button>'
+            + '</div>';
+        }
+        html += '</div>';
+        return html;
+      })()}
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
@@ -121,22 +156,46 @@ export async function openPlayerCard(uid){
       ov.remove(); showToast('⚔️ Meydan okuma gönderildi!');
     }catch(e){alert('Gönderilemedi');}
   });
-  // 👑 Admin moderasyon butonları
+  // 👑/🔧 Moderasyon butonları (rol bazlı)
   ov.querySelectorAll('[data-mod]').forEach(btn=>btn.addEventListener('click',async()=>{
     const action=btn.dataset.mod;
     const mod=await import('./moderation.js');
+    // Neden sorulacak aksiyonlar
+    const needsReason=['ban','mute','kick','unban','unmute','ipban','ipunban'];
     let reason='';
-    if(['ban','mute','kick','unban','unmute'].includes(action)){
-      reason=prompt('Neden? (boş = "Kural İhlali")','')||'';
+    if(needsReason.includes(action)){
+      reason=prompt('Neden? (boş bırakırsan "Kural İhlali")','')||'';
     }
     let ok=false, msg='';
-    if(action==='ban'){ if(!confirm('🚫 '+nick+' oyundan banlansın mı?'))return; ok=await mod.globalBan(uid,nick,reason); msg='Banlandı'; }
-    else if(action==='unban'){ ok=await mod.globalUnban(uid,nick,reason); msg='Ban kaldırıldı'; }
-    else if(action==='mute'){ const dur=prompt('Kaç dakika? (boş = süresiz)','60'); const d=dur?parseInt(dur):null; if(!confirm('🔇 '+nick+' susturulsun mu?'))return; ok=await mod.globalMute(uid,nick,reason,d); msg='Susturuldu'; }
-    else if(action==='unmute'){ ok=await mod.globalUnmute(uid,nick,reason); msg='Susturma kaldırıldı'; }
-    else if(action==='kick'){ if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return; ok=await mod.globalKick(uid,nick,reason); msg='Atıldı'; }
-    if(ok){ showToast('✅ '+nick+': '+msg); }
-    else { alert('İşlem başarısız'); }
+    try{
+      if(action==='ban'){ if(!confirm('🚫 '+nick+' oyundan banlansın mı?'))return; ok=await mod.globalBan(uid,nick,reason); msg='Banlandı'; }
+      else if(action==='unban'){ ok=await mod.globalUnban(uid,nick,reason); msg='Ban kaldırıldı'; }
+      else if(action==='mute'){ const dur=prompt('Kaç dakika? (boş = süresiz)','60'); const d=dur?parseInt(dur):null; if(!confirm('🔇 '+nick+' susturulsun mu?'))return; ok=await mod.globalMute(uid,nick,reason,d); msg='Susturuldu'; }
+      else if(action==='unmute'){ ok=await mod.globalUnmute(uid,nick,reason); msg='Susturma kaldırıldı'; }
+      else if(action==='kick'){ if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return; ok=await mod.globalKick(uid,nick,reason); msg='Atıldı'; }
+      else if(action==='op'){ if(!confirm('🔧 '+nick+' operatör yapılsın mı?'))return; ok=await mod.makeOperator(uid,nick); msg='Operatör yapıldı'; if(H&&H.ops)H.ops[uid]=true; }
+      else if(action==='unop'){ if(!confirm('🔧 '+nick+' operatörlüğü kaldırılsın mı?'))return; ok=await mod.removeOperator(uid,nick); msg='Operatörlük kaldırıldı'; if(H&&H.ops)delete H.ops[uid]; }
+      else if(action==='showip'){
+        const ip=await mod.getUserIP(uid);
+        alert(ip?('🌐 '+nick+' IP adresi:\n'+ip):'IP bilgisi bulunamadı (kullanıcı henüz kaydetmemiş olabilir)');
+        return;
+      }
+      else if(action==='ipban'){
+        if(!confirm('🌐 '+nick+' IP adresi yasaklansın mı? (Bu IP ile giriş engellenir)'))return;
+        const res=await mod.ipBan(uid,nick,reason);
+        if(res.ok){ showToast('✅ IP banlandı: '+res.ip); }
+        else { alert('IP ban başarısız: '+(res.error||'bilinmeyen')); }
+        return;
+      }
+      else if(action==='ipunban'){
+        const res=await mod.ipUnban(uid,nick,reason);
+        if(res.ok){ showToast('✅ IP yasağı kaldırıldı'); }
+        else { alert('Başarısız: '+(res.error||'bilinmeyen')); }
+        return;
+      }
+      if(ok){ showToast('✅ '+nick+': '+msg); btn.textContent='✓'; setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
+      else { alert('İşlem başarısız'); }
+    }catch(e){ alert('Hata: '+(e.message||e)); }
   }));
   const eggPcB = ov.querySelector('[data-pc="egg"]');
   if(eggPcB) eggPcB.addEventListener('click', async() => {
@@ -513,7 +572,7 @@ function dmOpenThread(uid, nick){
   H.dmOppSeen = 0;
   H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(30)), (snap) => {
     const box = byId('ghpDMMsgs'); if(!box) return;
-    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
+    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text && ch.key !== '_seen' && ch.key !== '_typing') rows.push({...v, _key:ch.key}); });
     if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     renderDMRows(rows);
@@ -548,13 +607,39 @@ function dmOpenThread(uid, nick){
   }
   function renderDMRows(rows){
     const box = byId('ghpDMMsgs'); if(!box) return;
-    box.innerHTML = rows.map(m => `
-      <div class="ghp-chat-row${m.from === me ? ' mine' : ''}">
-        <div class="ghp-chat-body">
-          <div class="ghp-chat-text">${esc(m.text)}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}${m.from === me ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : ''}</div>
-        </div>
-      </div>`).join('');
+    const meAdmin = Auth.getState().isAdmin === true;
+    const pk = H.dmThread ? pairKey(me, H.dmThread.uid) : null;
+    box.innerHTML = rows.map(m => {
+      const isMine = m.from === me;
+      const within5 = (Date.now() - (m.ts||0)) < 300000;
+      const canEdit = (isMine && within5) || meAdmin;
+      const canDel = isMine || meAdmin;
+      let acts = '';
+      if(m._key){
+        if(canDel) acts += ' <span class="gc-act" data-dmdel="'+esc(m._key)+'">🗑</span>';
+        if(canEdit) acts += ' <span class="gc-act" data-dmedit="'+esc(m._key)+'" data-dmtxt="'+esc(m.text||'')+'">✏️</span>';
+      }
+      const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : '';
+      const editedTag = m.edited ? '<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>' : '';
+      return '<div class="ghp-chat-row'+(isMine ? ' mine' : '')+'">'
+        + '<div class="ghp-chat-body">'
+          + '<div class="ghp-chat-text">'+esc(m.text)+editedTag+'</div>'
+          + '<div class="ghp-chat-ts">'+tAgo(m.ts || 0)+tick+acts+'</div>'
+        + '</div></div>';
+    }).join('');
+    // Düzenle/sil listener
+    box.querySelectorAll('[data-dmdel]').forEach(b => b.addEventListener('click', async (e) => {
+      e.stopPropagation(); const k = b.dataset.dmdel; if(!k || !pk) return;
+      if(!confirm('Mesaj silinsin mi?')) return;
+      try{ await fdb.set(fdb.ref(db, 'messages/' + pk + '/' + k), null); }catch(err){}
+    }));
+    box.querySelectorAll('[data-dmedit]').forEach(b => b.addEventListener('click', async (e) => {
+      e.stopPropagation(); const k = b.dataset.dmedit; if(!k || !pk) return;
+      const cur = b.dataset.dmtxt; const nt = prompt('Mesajı düzenle:', cur);
+      if(nt && nt.trim() && nt.trim() !== cur){
+        try{ await fdb.update(fdb.ref(db, 'messages/' + pk + '/' + k), { text: nt.trim().slice(0,300), edited: true }); }catch(err){}
+      }
+    }));
     box.scrollTop = box.scrollHeight;
   }
 }

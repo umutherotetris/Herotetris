@@ -340,7 +340,7 @@ function renderChat(){
   const offC=fdb.onValue(fdb.query(fdb.ref(db,'clans/'+C.myClanId+'/chat'),fdb.limitToLast(40)),snap=>{
     const list=document.getElementById('clanChatList'); if(!list)return;
     const me=Auth.getState().uid;
-    const rows=[]; if(snap.exists())snap.forEach(ch=>{rows.push(ch.val());});
+    const rows=[]; if(snap.exists())snap.forEach(ch=>{const v=ch.val(); if(v) rows.push({...v, _key:ch.key});});
     rows.sort((a,b)=>(a.ts||0)-(b.ts||0));
     if(!rows.length){list.innerHTML='<div class="clan-load" style="color:#5d6890">İlk mesajı sen yaz! 🏰</div>';return;}
     const meAdmin=Auth.getState().isAdmin===true;

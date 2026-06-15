@@ -115,6 +115,65 @@ export async function chatKick(targetUid, targetName, reason, activeChatUids){
   }catch(e){ return false; }
 }
 
+// ── 🔧 OPERATÖR YÖNETİMİ (sadece admin) ──────────────────────
+export async function makeOperator(targetUid, targetName){
+  const me = Auth.getState();
+  try{
+    await fdb.set(fdb.ref(db,'gcOperators/'+targetUid), true);
+    await notify(targetUid, '🔧', 'Sohbet OPERATÖRÜ yapıldın! Artık sohbeti yönetebilirsin.');
+    await notifyStaff('🔧', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' OPERATÖR yapıldı.', me.uid);
+    return true;
+  }catch(e){ return false; }
+}
+export async function removeOperator(targetUid, targetName){
+  const me = Auth.getState();
+  try{
+    await fdb.set(fdb.ref(db,'gcOperators/'+targetUid), null);
+    await notify(targetUid, '🔧', 'Sohbet operatörlüğün kaldırıldı.');
+    await notifyStaff('🔧', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' operatörlüğü kaldırıldı.', me.uid);
+    return true;
+  }catch(e){ return false; }
+}
+
+// ── 🌐 IP YÖNETİMİ (sadece admin) ────────────────────────────
+export async function getUserIP(targetUid){
+  try{
+    const s = await fdb.get(fdb.ref(db,'users/'+targetUid+'/lastIP'));
+    return s.exists() ? s.val() : null;
+  }catch(e){ return null; }
+}
+export async function ipBan(targetUid, targetName, reason){
+  const r = (reason||'').trim() || DEFAULT_REASON;
+  const me = Auth.getState();
+  try{
+    const ip = await getUserIP(targetUid);
+    if(!ip){ return { ok:false, error:'IP bilgisi yok' }; }
+    // IP'yi yasak listesine ekle (nokta → alt çizgi Firebase key uyumu)
+    const ipKey = String(ip).replace(/\./g,'_');
+    await fdb.set(fdb.ref(db,'ipBans/'+ipKey), { ip, reason:r, bannedAt:Date.now(), bannedBy:me.uid, targetUid, targetName:targetName||'' });
+    // Kullanıcıyı da banla
+    await fdb.update(fdb.ref(db,'users/'+targetUid),{ banned:true, banReason:'IP Ban: '+r, bannedAt:Date.now() });
+    await notify(targetUid, '🚫', 'IP adresin yasaklandı! Neden: '+r);
+    await notifyStaff('🌐', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' IP BANLANDI ('+ip+'). Neden: '+r, me.uid);
+    return { ok:true, ip };
+  }catch(e){ return { ok:false, error:e.message||'Hata' }; }
+}
+export async function ipUnban(targetUid, targetName, reason){
+  const r = (reason||'').trim() || DEFAULT_REASON;
+  const me = Auth.getState();
+  try{
+    const ip = await getUserIP(targetUid);
+    if(ip){
+      const ipKey = String(ip).replace(/\./g,'_');
+      await fdb.set(fdb.ref(db,'ipBans/'+ipKey), null);
+    }
+    await fdb.update(fdb.ref(db,'users/'+targetUid),{ banned:false, banReason:null });
+    await notify(targetUid, '✅', 'IP yasağın kaldırıldı! ('+r+')');
+    await notifyStaff('🌐', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' IP YASAĞI KALDIRILDI. ('+r+')', me.uid);
+    return { ok:true };
+  }catch(e){ return { ok:false, error:e.message||'Hata' }; }
+}
+
 // ── Yetki kontrolü: efektif admin (gizli mod dahil) ──────────
 export function isEffectiveAdmin(){
   const st = Auth.getState();
@@ -122,4 +181,4 @@ export function isEffectiveAdmin(){
 }
 
 export { DEFAULT_REASON };
-export default { globalBan, globalUnban, globalMute, globalUnmute, globalKick, chatKick };
+export default { globalBan, globalUnban, globalMute, globalUnmute, globalKick, chatKick, makeOperator, removeOperator, getUserIP, ipBan, ipUnban };
