@@ -45,6 +45,13 @@ const BG_MAP={
   matrix:'#000800',
 };
 
+const UNIQUE_KOZMOS=[
+  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, desc:'Evrenin ilk nefesi. Sadece 1 üretildi. Mağazadan satın alınabilir, birleştirilerek elde edilemez.', rarity:'mythical'},
+  {id:'uniq_void',    name:'Void Ejderi',   icon:'🐉',color:'#00ffc8',price:50000, desc:'Karanlığın derinliklerinden. Ultra nadir, benzersiz baskı.', rarity:'mythical'},
+  {id:'uniq_aurora',  name:'Aurora Işığı',   icon:'🌠',color:'#f0a0f8',price:35000, desc:'Kuzey ışıklarının çocuğu. El sanatı, tek nüsha.', rarity:'legendary'},
+  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, desc:'Külünden yeniden doğar. Efsanevi güç, mağazada yalnızca bu kopya.', rarity:'legendary'},
+];
+
 let _inv={}, _tab='frames';
 
 async function loadInv(){
@@ -95,19 +102,49 @@ function renderShop(){
   box.innerHTML='';
 
   if(_tab==='eggs'){
-    const sec=document.createElement('div'); sec.className='shop-egg-info';
-    sec.innerHTML='<div class="clan-lbl" style="color:#E040FB;margin-bottom:8px">🥚 KOZMO YUMURTASI</div>'
-      +'<div style="font-size:11px;color:#9fb0d8;line-height:1.6">Bir yumurta satın al → kozmos koleksiyonuna eklenir. Her fazda büyür, 120 saatte doğar!</div>';
-    box.appendChild(sec);
+    const intro=document.createElement('div'); intro.className='shop-egg-info';
+    intro.innerHTML='<div class="clan-lbl" style="color:#E040FB;margin-bottom:5px">🥚 KOZMO YUMURTASI</div>'
+      +'<div style="font-size:10.5px;color:#9fb0d8;line-height:1.6">Satın al → kozmos koleksiyonuna ekle. 120 saatte yavaşça büyür, besleyerek hızlandır!</div>';
+    box.appendChild(intro);
+    // Normal yumurtalar
+    const eggGrid=document.createElement('div'); eggGrid.style.cssText='display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px';
     items.forEach(item=>{
-      const card=document.createElement('div'); card.className='shop-egg-card';
-      card.innerHTML='<div class="shop-egg-ico">'+item.icon+'</div>'
-        +'<div class="shop-egg-name">'+esc(item.name)+'</div>'
-        +'<div class="shop-egg-desc">'+esc(item.desc)+'</div>'
+      // Animasyonlu SVG yumurta
+      const phase=item.id==='egg_basic'?0:item.id==='egg_rare'?4:8;
+      import('./kozmos.js').then(kz=>{
+        const svg=kz.kozmoEggSVG(phase,52);
+        card.querySelector('.shop-anim-egg').innerHTML=svg;
+      }).catch(()=>{});
+      const card=document.createElement('div'); card.className='shop-anim-egg-card';
+      card.innerHTML='<div class="shop-anim-egg">'+item.icon+'</div>'
+        +'<div style="font-size:10px;font-weight:900;color:#dfe7ff;margin:5px 0 2px">'+esc(item.name)+'</div>'
+        +'<div style="font-size:8px;color:#7d8ab8;margin-bottom:8px">'+esc(item.desc)+'</div>'
         +'<button class="shop-buy-btn" data-buy="'+esc(item.id)+'">💰 '+fmt(item.price)+'</button>';
       card.querySelector('[data-buy]').addEventListener('click',async()=>buyEgg(item));
-      box.appendChild(card);
+      eggGrid.appendChild(card);
     });
+    box.appendChild(eggGrid);
+    // Unique / Benzersiz kozmolar
+    const uniqSec=document.createElement('div'); uniqSec.innerHTML='<div class="clan-lbl" style="color:#FFD740;margin-bottom:8px">⭐ BENZERSİZ KOZMO (Tek Üretim)</div>';
+    box.appendChild(uniqSec);
+    const uGrid=document.createElement('div'); uGrid.style.cssText='display:grid;grid-template-columns:repeat(2,1fr);gap:10px';
+    UNIQUE_KOZMOS.forEach(item=>{
+      const pl=Store.getState?Store.getState():{};
+      const owned=!!_inv[item.id];
+      const canBuy=!owned&&(pl.kaju||0)>=item.price;
+      const card=document.createElement('div'); card.className='shop-unique-card';
+      card.style.setProperty('--uc',item.color);
+      card.innerHTML='<div class="shop-unique-badge">✦ UNIQUE</div>'
+        +'<div class="shop-unique-creature">'+item.icon+'</div>'
+        +'<div class="shop-unique-name" style="color:'+item.color+'">'+esc(item.name)+'</div>'
+        +'<div style="font-size:8px;color:#7d8ab8;margin:3px 0 8px;line-height:1.4">'+esc(item.desc)+'</div>'
+        +(owned
+          ?'<div style="font-size:10px;color:#69F0AE;font-weight:800">✓ Sahibisin</div>'
+          :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">💰 '+fmt(item.price)+'</button>');
+      if(!owned){ const btn=card.querySelector('button'); if(btn) btn.addEventListener('click',()=>buyUniqueKozmo(item)); }
+      uGrid.appendChild(card);
+    });
+    box.appendChild(uGrid);
     return;
   }
 
@@ -299,6 +336,28 @@ async function loadFriendsForGift(modal, st){
       box.appendChild(btn);
     });
   }catch(e){ box.innerHTML='<div style="font-size:10px;color:#5d6890">Yüklenemedi</div>'; }
+}
+
+async function buyUniqueKozmo(item){
+  const st=Auth.getState(); const pl=Store.getState?Store.getState():{};
+  if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
+  if((pl.kaju||0)<item.price){alert('💰 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if(!confirm('⭐ "'+item.name+'" → '+fmt(item.price)+' Kaju. Bu UNIQUE kozmoyu satın al?'))return;
+  try{
+    await Store.addKaju(-item.price,'shop',item.id);
+    await fdb.update(fdb.ref(db,'shopInventory/'+st.uid+'/ownedItems'),{[item.id]:true});
+    _inv[item.id]=true;
+    // Kozmos koleksiyonuna ekle
+    const creId='cre_uniq_'+Date.now();
+    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
+      typeKey:'unique_'+item.id, name:item.name, rarity:item.rarity,
+      fromUid:'shop', fromName:'Mağaza', bornAt:Date.now(),
+      level:1, xp:0, unique:true, uniqueId:item.id,
+      icon:item.icon, color:item.color,
+    });
+    renderShop();
+    alert('✨ '+item.icon+' '+item.name+' kozmos koleksiyonuna eklendi!');
+  }catch(e){alert('Satın alınamadı: '+(e.message||e));}
 }
 
 export default openShop;
