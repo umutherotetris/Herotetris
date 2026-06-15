@@ -546,21 +546,36 @@ function renderNotifPane(){
   H.notifUnread = (H.open && H.tab === 'notif') ? 0 : all.filter(r => (r.ts||0) > seen).length;
   updateBadges();
   if(!all.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; return; }
-  list.innerHTML = all.map(n => n._bc ? `
-      <div class="ghp-notif-row" style="border-color:rgba(224,64,251,.25);background:linear-gradient(135deg,rgba(224,64,251,.08),transparent)">
-        <div class="ghp-notif-icon" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.3)">📣</div>
-        <div class="ghp-notif-body">
-          <div class="ghp-notif-text"><b style="color:#E040FB">DUYURU</b> · ${esc(n.text || '')}</div>
-          <div class="ghp-chat-ts">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
-        </div>
-      </div>` : `
-      <div class="ghp-notif-row" ${n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"` : 'style="border-color:rgba(255,215,64,.18);background:linear-gradient(135deg,rgba(255,215,64,.05),transparent)"'}>
-        <div class="ghp-notif-icon" style="background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.2)">${esc(n.icon || '🔔')}</div>
-        <div class="ghp-notif-body">
-          <div class="ghp-notif-text">${esc(n.text || n.msg || '')}</div>
-          <div class="ghp-chat-ts">${tAgo(n.ts || 0)}</div>
-        </div>
-      </div>`).join('');
+  list.innerHTML = all.map(n => {
+    const ico  = n.icon||'🔔'; const txt = n.text||n.msg||'';
+    if(n._bc){
+      return '<div class="ghp-notif-row ghp-notif-announce">'
+        +'<div class="ghp-notif-icon" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.35);color:#E040FB">📣</div>'
+        +'<div class="ghp-notif-body">'
+          +'<div class="ghp-notif-text"><b style="color:#E040FB">DUYURU</b> · '+esc(txt)+'</div>'
+          +'<div class="ghp-chat-ts">'+esc(n.by||'Admin')+' · '+tAgo(n.ts||0)+'</div>'
+        +'</div></div>';
+    }
+    const isKick  = ico==='🦵'||ico==='🔨'||txt.includes('atıldın')||txt.includes('atıldı');
+    const isBan   = ico==='🚫'||txt.includes('banlandın')||txt.includes('banlandı');
+    const isUnban = ico==='✅'&&(txt.includes('ban')||txt.includes('serbest'));
+    const isWarn  = ico==='⚠️'||txt.includes('uyarıldın');
+    const isAnn   = ico==='📣'||txt.includes('DUYURU');
+    const isClan  = ico==='🏰'||txt.includes('klana')||txt.includes('kland');
+    const isKozmo = ico==='🥚'||ico==='🎁';
+    const isFr    = ico==='👥'||ico==='🤝'||ico==='👋';
+    const bg    = isKick?'rgba(255,82,82,.09)'  :isBan?'rgba(220,30,30,.11)'  :isUnban?'rgba(105,240,174,.07)':isWarn?'rgba(255,152,0,.08)':isAnn?'rgba(255,215,64,.07)':isClan?'rgba(255,215,64,.05)':isKozmo?'rgba(192,132,252,.07)':isFr?'rgba(0,229,255,.05)':'rgba(255,255,255,.03)';
+    const bc    = isKick?'rgba(255,82,82,.4)'   :isBan?'rgba(220,30,30,.45)'  :isUnban?'rgba(105,240,174,.3)' :isWarn?'rgba(255,152,0,.38)':isAnn?'rgba(255,215,64,.4)' :isClan?'rgba(255,215,64,.28)':isKozmo?'rgba(192,132,252,.32)':isFr?'rgba(0,229,255,.28)':'rgba(255,255,255,.07)';
+    const ic    = isKick?'#FF5252'              :isBan?'#FF1744'              :isUnban?'#69F0AE'             :isWarn?'#FFB74D'            :isAnn?'#FFD740'            :isClan?'#ffd86b'           :isKozmo?'#c084fc'          :isFr?'#00E5FF'          :'#9fb0d8';
+    const prefix= isKick?'<b style="color:'+ic+'">🦵 SOHBET KICK</b> · ':isBan?'<b style="color:'+ic+'">🚫 BANLANDIN</b> · ':isUnban?'<b style="color:'+ic+'">✅ UNBAN</b> · ':isWarn?'<b style="color:'+ic+'">⚠️ UYARI</b> · ':'';
+    const pFrom = n.fromUid ? ' data-nfrom="'+esc(n.fromUid)+'" style="cursor:pointer;' : ' style="';
+    return '<div class="ghp-notif-row" '+pFrom+'background:'+bg+';border-color:'+bc+'">'
+      +'<div class="ghp-notif-icon" style="background:'+ic+'22;border:1px solid '+ic+'55;color:'+ic+'">'+esc(ico)+'</div>'
+      +'<div class="ghp-notif-body">'
+        +'<div class="ghp-notif-text" style="color:'+(isKick||isBan?ic:'#dfe7ff')+'">'+prefix+esc(txt)+'</div>'
+        +'<div class="ghp-chat-ts">'+tAgo(n.ts||0)+'</div>'
+      +'</div></div>';
+  }).join('');
   list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
 }
 function listenNotifs(uid){

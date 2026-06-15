@@ -163,11 +163,11 @@ async function renderMyClan(){
     b.innerHTML='';
     const banner=document.createElement('div'); banner.className='clan-card clan-banner';
     banner.innerHTML=''
-      +'<div style="display:flex;align-items:center;gap:10px">'
-        +'<div class="clan-badge" style="min-width:42px;font-size:11px">'+esc(_clan.tag||'?')+'</div>'
-        +'<div style="flex:1;min-width:0">'
-          +'<div style="font-size:15px;font-weight:900;color:#ffd86b;word-break:break-word;overflow-wrap:anywhere">'+esc(_clan.name||'Klan')+'</div>'
-          +'<div style="font-size:10px;color:#aab6da;margin-top:2px">👥 '+cnt+' üye · 💰 '+fmt(_clan.kaju)+'</div>'
+      +'<div class="clan-banner-row">'
+        +'<div class="clan-badge-box">'+esc(_clan.tag||'?')+'</div>'
+        +'<div class="clan-banner-info">'
+          +'<div class="clan-banner-name">'+esc(_clan.name||'Klan')+'</div>'
+          +'<div class="clan-banner-meta">👥 '+cnt+' üye · 💰 '+fmt(_clan.kaju)+'</div>'
         +'</div>'
       +'</div>'
       +'<div class="clan-tabs" style="margin-top:10px" id="clanTabs"></div>';
@@ -382,19 +382,25 @@ async function renderManage(){
   box.innerHTML='';
   // Klan adı değiştir
   const renCard=document.createElement('div'); renCard.className='clan-card';
-  renCard.innerHTML='<div class="clan-lbl">✏️ KLAN ADI DEĞİŞTİR ('+nameChanges+'/3 hak kullanıldı)</div>'
-    +'<div class="clan-row"><input class="clan-in" id="clanNewName2" placeholder="Yeni ad (3–20 harf)" maxlength="20"><button class="clan-btn p" id="clanRenameBtn" '+(nameChanges>=3?'disabled style="opacity:.4"':'')+'>Değiştir</button></div>';
-  if(nameChanges>=3){const warn=document.createElement('div');warn.className='clan-msg bad';warn.textContent='Ad değiştirme hakkı doldu (3/3)';renCard.appendChild(warn);}
+  const isAdminUser = Auth.getState().isAdmin === true;
+  const renLocked = !isAdminUser && nameChanges >= 3;
+  renCard.innerHTML='<div class="clan-lbl">✏️ KLAN ADI DEĞİŞTİR'+(isAdminUser?' <span style="font-size:9px;color:#FFD740">(👑 Admin - Sınırsız)</span>':'('+nameChanges+'/3 hak)')+'</div>'
+    +'<div class="clan-row"><input class="clan-in" id="clanNewName2" placeholder="Yeni ad (3–20 harf)" maxlength="20"><input class="clan-in" id="clanNewTag2" placeholder="[ETİKET]" maxlength="5" style="max-width:80px;text-transform:uppercase"><button class="clan-btn p" id="clanRenameBtn" '+(renLocked?'disabled style="opacity:.4"':'')+'>Değiştir</button></div>';
+  if(renLocked){const warn=document.createElement('div');warn.className='clan-msg bad';warn.textContent='Ad değiştirme hakkı doldu (3/3) — Admin olmak için iletişime geçin';renCard.appendChild(warn);}
   box.appendChild(renCard);
-  if(nameChanges<3){
+  if(!renLocked){
     renCard.querySelector('#clanRenameBtn').addEventListener('click',async()=>{
       const nn=(renCard.querySelector('#clanNewName2').value||'').trim();
+      const nt=(renCard.querySelector('#clanNewTag2').value||'').trim().toUpperCase().replace(/[^A-Z0-9İÇŞĞÜÖ]/gi,'');
       if(nn.length<3){alert('En az 3 harf');return;}
-      if(!confirm('Klan adı "'+nn+'" olarak değişsin? ('+(nameChanges+1)+'/3)'))return;
+      const newCount = isAdminUser ? nameChanges : nameChanges+1;
+      if(!confirm('Klan adı "'+nn+'" olarak değişsin?'+(isAdminUser?'':' ('+(nameChanges+1)+'/3)')))return;
+      const updates={name:nn,nameChanges:newCount};
+      if(nt.length>=2&&nt.length<=5) updates.tag=nt;
       try{
-        await fdb.update(fdb.ref(db,'clans/'+C.myClanId),{name:nn.toUpperCase(),nameChanges:nameChanges+1});
-        _clan.name=nn.toUpperCase();_clan.nameChanges=nameChanges+1;
-        alert('✅ Klan adı değiştirildi! ('+(nameChanges+1)+'/3)');
+        await fdb.update(fdb.ref(db,'clans/'+C.myClanId),updates);
+        _clan.name=nn;if(nt.length>=2)_clan.tag=nt;_clan.nameChanges=newCount;
+        alert('✅ Klan adı değiştirildi!'+(isAdminUser?'':' ('+(nameChanges+1)+'/3)'));
         await renderMyClan();
       }catch(e){alert('Değiştirilemedi');}
     });

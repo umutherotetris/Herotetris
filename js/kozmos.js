@@ -229,7 +229,7 @@ async function renderKozmos(st,box){
       card.innerHTML=kozmoEggSVG(phase,54)
         +'<div class="koz-phase-label" style="color:'+info.color+'">'+esc(info.label)+'</div>'
         +'<div class="koz-phase-desc">'+esc(info.desc)+'</div>'
-        +'<div class="koz-egg-from">'+esc(egg.fromName||'?')+'\'den</div>'
+        +'<div class="koz-egg-from">'+esc(egg.fromName||'?')+'\u2019den</div>'
         +'<div class="koz-bar"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,'+info.color+',#818cf8);border-radius:3px;transition:width .5s"></div></div>'
         +'<div class="koz-bar-txt">%'+pct+' · '+fed+' beslenme</div>'
         +'<button class="koz-feed-btn" data-feed="'+k+'">🍎 Besle</button>'
@@ -315,7 +315,7 @@ function showEggModal(eggId,egg,phase,st,box){
   inn.innerHTML=''
     +'<div style="text-align:center;margin-bottom:10px">'+kozmoEggSVG(phase,72)+'</div>'
     +'<div style="font-size:15px;font-weight:900;color:'+info.color+';text-align:center;margin-bottom:4px">'+esc(info.label)+'</div>'
-    +'<div style="font-size:10px;color:#7d8ab8;text-align:center;margin-bottom:12px">Faz '+phase+' · '+esc(egg.fromName||'?')+"'den"+'</div>'
+    +'<div style="font-size:10px;color:#7d8ab8;text-align:center;margin-bottom:12px">Faz '+phase+' · '+esc(egg.fromName||'?')+'\u2019den</div>'
     +'<div class="koz-info-box"><div style="font-size:11px;color:#b8b8d8">'+esc(info.desc)+'</div></div>'
     +'<div class="koz-time-box">'+(hoursLeft>0?'Sonraki faz: ~'+hoursLeft+' saat':'<span style="color:#69F0AE">Sonraki faz hazır!</span>')+'</div>'
     +'<div class="nm-actions" style="gap:8px;margin-top:12px"></div>';
