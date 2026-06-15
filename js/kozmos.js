@@ -274,7 +274,7 @@ async function renderKozmos(st,box){
       const delB=document.createElement('button');delB.className='koz-del-btn';delB.textContent='🗑';delB.title='Sil';
       delB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yaratık silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+k),null);await renderKozmos(st,box);}catch(err){}});
       card.appendChild(delB);
-      card.addEventListener('click',()=>alert('✨ 'c(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' · '+esc(t.n)+'\nLV '+(c.level||1)));
+      card.addEventListener('click',()=>alert('\u2728 '+esc(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' \u00b7 '+esc(t.n)+'\nLV '+(c.level||1)));
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -284,7 +284,7 @@ async function renderKozmos(st,box){
     const empty=document.createElement('div'); empty.style.cssText='text-align:center;padding:32px 16px';
     empty.innerHTML='<div style="font-size:52px;margin-bottom:12px">🥚</div>'
       +'<div style="font-size:14px;font-weight:800;color:#7d8ab8">Henüz kozmo yok</div>'
-      +'<div style="font-size:11px;color:#4a5078;margin-top:8px;line-height:1.6">Arkadaş profilinden yumurta gönder<br>ya da 🛍️ Mağaza\'dan satın al!</div>';
+      +'<div style="font-size:11px;color:#4a5078;margin-top:8px;line-height:1.6">Arkadaş profilinden yumurta gönder<br>ya da Mağaza\u2019dan sat\u0131n al!</div>';
     box.appendChild(empty);
   }
 }
