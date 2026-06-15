@@ -51,6 +51,8 @@ function start(){
 
   // 💎 Sosyal Hub + 👑 Admin FAB (izole — hata olsa bile portal çalışır)
   import('./social.js?v=95').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
+  // PWA push bildirimleri — SW kaydet + dinlemeyi başlat
+  import('./push.js').then(m => m.initPush()).catch(e => console.warn('[Push]', e));
   // Günlük giriş ödülü — auth hazır olunca çalıştır
   import('./daily.js').then(m => {
     const { Auth } = { Auth: window.__heroAuth };
