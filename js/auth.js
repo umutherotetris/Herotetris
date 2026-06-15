@@ -41,7 +41,10 @@ const state = {
 
 const listeners = new Set();
 export function subscribe(fn){ listeners.add(fn); try{ fn(getState()); }catch(e){ console.error(e); } return () => listeners.delete(fn); }
-export function getState(){ const um=isUserMode(); return Object.assign({}, state, { isVisibleAdmin: state.isAdmin===true && !um, isUserMode: um }); }
+export function getState(){
+  let um=false; try{ um = localStorage.getItem('hero_usermode')==='1'; }catch(e){}
+  return Object.assign({}, state, { isVisibleAdmin: state.isAdmin===true && !um, isUserMode: um });
+}
 function emit(){ const s = getState(); listeners.forEach(fn => { try{ fn(s); }catch(e){ console.error('[auth] listener', e); } }); }
 
 function statusOf(user){ if(!user) return 'offline'; return user.isAnonymous ? 'anon' : 'google'; }

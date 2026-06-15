@@ -403,7 +403,7 @@ function listenChat(){
         const ic=isKick?'🦵':isBan?'🚫':isUnban?'✅':isWarn?'⚠️':isAnn?'📣':'🔔';
         return `<div class="ghp-sys-msg" style="background:${bg};border:1px solid ${br};color:${cl}">${ic} ${t} <span class="ghp-chat-ts" style="color:${cl}66;margin-left:4px">${tAgo(m.ts||0)}</span></div>`;
       }
-      const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
+      const adm = m.isAdmin === true; // mesaj gönderilirken kaydedilen flag (userMode'da false)
       const op = !adm && H.ops && H.ops[m.uid] === true;
       const isMe = m.uid === me;
       const me_isAdmin = (H && H.admins && H.admins[me]) || Auth.getState().isAdmin === true;

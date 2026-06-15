@@ -148,7 +148,7 @@ export function openAdminPanel(){
   $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
   $(ov,'[data-a="nbAdd"]').addEventListener('click', addNickBan);
   $(ov,'[data-a="dupclean"]').addEventListener('click', cleanRegistry);
-  loadStats(); loadLockState(); loadGhostState();
+  loadStats(); loadLockState(); loadGhostState(); refreshUserModeState();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
   setTimeout(() => $(ov,'[data-el="q"]').focus(), 60);
 }
