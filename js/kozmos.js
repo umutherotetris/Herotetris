@@ -82,17 +82,66 @@ const TYPES={
   nebula_kedi:  {n:'Nebula Kedi',  e:'🐱',c:'#93c5fd',r:'common'},
   lav_tilkisi:  {n:'Lav Tilkisi',  e:'🦊',c:'#fb923c',r:'rare'},
   mandalina_tav:{n:'Mandalina Tav',e:'🐇',c:'#fbbf24',r:'common'},
-  bulut_ruhu:   {n:'Bulut Ruhu',   e:'☁️',c:'#e0f2fe',r:'rare'},
-  gokk_ruhu:    {n:'Gökk Ruhu',    e:'🌈',c:'#e879f9',r:'legendary'},
+  bulut_ruhu:   {n:'Bulut Kaplanı',   e:'☁️',c:'#e0f2fe',r:'rare'},
+  gokk_ruhu:    {n:'Gök Fırtınası',    e:'🌈',c:'#e879f9',r:'legendary'},
   kristal_boc:  {n:'Kristal Böcek',e:'🦋',c:'#67e8f9',r:'rare'},
   nova_kitsune: {n:'Nova Kitsune', e:'✨',c:'#c084fc',r:'rare'},
   kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',r:'epic'},
   derin_ejder:  {n:'Derin Ejder',  e:'🐲',c:'#00ffc8',r:'legendary'},
-  peri_ruhu:    {n:'Peri Ruhu',    e:'🧚',c:'#ffb8ff',r:'mythical'},
+  peri_ruhu:    {n:'Peri Kelebeği',    e:'🧚',c:'#ffb8ff',r:'mythical'},
 };
 const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff'};
 const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Efsanevi',mythical:'Mitolojik'};
 const TYPE_KEYS=Object.keys(TYPES);
+
+// ── Birleştirme tablosu (Goodyedek birebir) ──────────────────
+const MERGE_TABLE={
+  'nebula_kedi+mandalina_tav':'nova_kitsune',
+  'mandalina_tav+nebula_kedi':'nova_kitsune',
+  'nebula_kedi+lav_tilkisi':'nova_kitsune',
+  'lav_tilkisi+nebula_kedi':'nova_kitsune',
+  'bulut_ruhu+nebula_kedi':'gokk_ruhu',
+  'nebula_kedi+bulut_ruhu':'gokk_ruhu',
+  'lav_tilkisi+bulut_ruhu':'kristal_boc',
+  'bulut_ruhu+lav_tilkisi':'kristal_boc',
+  'lav_tilkisi+mandalina_tav':'kozmik_unicorn',
+  'mandalina_tav+lav_tilkisi':'kozmik_unicorn',
+  'mandalina_tav+bulut_ruhu':'kozmik_unicorn',
+  'bulut_ruhu+mandalina_tav':'kozmik_unicorn',
+  'gokk_ruhu+kristal_boc':'derin_ejder',
+  'kristal_boc+gokk_ruhu':'derin_ejder',
+  'nova_kitsune+bulut_ruhu':'peri_ruhu',
+  'bulut_ruhu+nova_kitsune':'peri_ruhu',
+  'gokk_ruhu+nova_kitsune':'derin_ejder',
+  'nova_kitsune+gokk_ruhu':'derin_ejder',
+  'kozmik_unicorn+gokk_ruhu':'peri_ruhu',
+  'gokk_ruhu+kozmik_unicorn':'peri_ruhu',
+  'derin_ejder+peri_ruhu':'gokk_ruhu',
+  'peri_ruhu+derin_ejder':'gokk_ruhu',
+  'kristal_boc+nova_kitsune':'kozmik_unicorn',
+  'nova_kitsune+kristal_boc':'kozmik_unicorn',
+};
+// Tabloda olmayan kombinasyonlar → Epic benzersiz "Efsane Kaynaşım"
+const FUSION_TYPES=[
+  {key:'fusion_nebula',  name:'Nebula Kaynağı',  e:'💠', c:'#818cf8', r:'legendary'},
+  {key:'fusion_void',    name:'Void Birliği',     e:'🌑', c:'#c084fc', r:'legendary'},
+  {key:'fusion_cosmic',  name:'Kozmik Fırtına',   e:'⚡', c:'#fbbf24', r:'epic'},
+  {key:'fusion_aurora',  name:'Aurora Dansı',     e:'🌈', c:'#f9a8d4', r:'legendary'},
+  {key:'fusion_crystal', name:'Kristal Kalp',     e:'💎', c:'#67e8f9', r:'epic'},
+];
+function getMergeResult(key1,key2){
+  const combo=key1+'+'+key2;
+  const direct=MERGE_TABLE[combo];
+  if(direct&&TYPES[direct]) return {key:direct,...TYPES[direct]};
+  // Bilinmeyen → rastgele fusion (epic+)
+  const roll=Math.floor(Math.random()*100);
+  if(roll===0){
+    // %1 çok nadir: gokk_ruhu
+    return {key:'gokk_ruhu',...TYPES.gokk_ruhu};
+  }
+  const ft=FUSION_TYPES[Math.floor(Math.random()*FUSION_TYPES.length)];
+  return {...ft};
+}
 export function randomType(seed,minRarity){
   const w={common:6,rare:3,epic:1.2,legendary:0.6,mythical:0.2};
   const bump={rare:[1,0,1,2],epic:[2,1,0,1],legendary:[3,2,1,0]}; // minRarity başlangıç indeksi
@@ -274,6 +323,16 @@ async function renderKozmos(st,box){
       const delB=document.createElement('button');delB.className='koz-del-btn';delB.textContent='🗑';delB.title='Sil';
       delB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yaratık silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+k),null);await renderKozmos(st,box);}catch(err){}});
       card.appendChild(delB);
+      // Merge butonu (yalnızca fusion_* veya unique olmayan yaratıklar birleşebilir)
+      if(!c.unique){
+        const mergeBtn=document.createElement('button'); mergeBtn.className='koz-merge-btn'; mergeBtn.textContent='💥 Birleştir';
+        mergeBtn.title='Başka bir kozmoyla birleştir';
+        mergeBtn.addEventListener('click',async e=>{
+          e.stopPropagation();
+          openMergeSelector(k,c,creatures,st,box);
+        });
+        card.appendChild(mergeBtn);
+      }
       card.addEventListener('click',()=>alert('\u2728 '+esc(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' \u00b7 '+esc(t.n)+'\nLV '+(c.level||1)));
       grid.appendChild(card);
     });
@@ -301,8 +360,103 @@ async function hatchEgg(eggId,egg,st,box){
     });
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
     feedAnim(); alert('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
+    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c2._id),null).catch(()=>{});
     await renderKozmos(st,box);
   }catch(e){alert('Doğurtulamadı: '+(e.message||e));}
+}
+
+// ── 💥 Birleştirme Seçici ────────────────────────────────────────
+function openMergeSelector(srcId,src,allCreatures,st,box){
+  const others=Object.entries(allCreatures).filter(([k,c])=>k!==srcId&&!c.unique);
+  if(!others.length){alert('Birleştirmek için en az 2 kozmo gerekli!');return;}
+  const srcType=TYPES[src.typeKey]||{n:src.name||'?',e:'✨',c:'#c084fc',r:'common'};
+  const ov=document.createElement('div'); ov.className='nick-modal-ov';
+  const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='310px';
+  inn.innerHTML='<div class="nm-title">💥 Birleştirme Seç</div>'
+    +'<div style="text-align:center;margin-bottom:10px">'
+      +'<span style="font-size:22px">'+srcType.e+'</span>'
+      +'<span style="font-size:12px;color:'+srcType.c+';font-weight:800;margin-left:6px">'+esc(src.name||srcType.n)+'</span>'
+      +'<span style="color:#c084fc;font-size:16px;margin:0 8px">+</span>'
+      +'<span style="font-size:13px;color:#7d8ab8">?</span>'
+    +'</div>'
+    +'<div style="font-size:9px;color:#5d6890;text-align:center;margin-bottom:10px">Birleştirince ebeveynler kaybolur — geri alınamaz!</div>'
+    +'<div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto" id="mergeTargetList"></div>'
+    +'<div class="nm-actions" style="margin-top:12px"><button class="nm-btn nm-cancel" id="mergeClose">İptal</button></div>';
+  ov.appendChild(inn); document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  inn.querySelector('#mergeClose').addEventListener('click',()=>ov.remove());
+  const list=inn.querySelector('#mergeTargetList');
+  others.forEach(([k2,c2])=>{
+    const t2=TYPES[c2.typeKey]||{n:c2.name||'?',e:'✨',c:'#c084fc',r:'common'};
+    const result=getMergeResult(src.typeKey||'',c2.typeKey||'');
+    const rc=RARITY_COLOR[result.r]||'#aaa';
+    const row=document.createElement('button'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);cursor:pointer;font-family:inherit;width:100%;text-align:left';
+    row.innerHTML='<span style="font-size:16px">'+t2.e+'</span>'
+      +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+result.e+' '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
+    row.addEventListener('click',async()=>{
+      ov.remove();
+      src._id=srcId; c2._id=k2;
+    await doMerge(srcId,src,k2,c2,result,st,box);
+    });
+    list.appendChild(row);
+  });
+}
+
+async function doMerge(id1,c1,id2,c2,resultType,st,box){
+  if(!confirm('💥 '+esc(c1.name||'?')+' + '+esc(c2.name||'?')+' → '+esc(resultType.name||resultType.n||'?')+'
+
+Bu işlem geri alınamaz!'))return;
+  try{
+    sfxHatch();
+    // Fusion animasyonu
+    showFusionAnimation(c1,c2,resultType,st,box);
+  }catch(e){alert('Birleştirme hatası: '+(e.message||e));}
+}
+async function showFusionAnimation(c1,c2,resultType,st,box){
+  const ov=document.createElement('div'); ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+  const t1=TYPES[c1.typeKey]||{e:'✨',c:'#c084fc'}, t2=TYPES[c2.typeKey]||{e:'⚡',c:'#fb923c'};
+  ov.innerHTML='<div style="text-align:center">'
+    +'<div class="fusion-row">'
+      +'<div class="fusion-parent" style="--fc:'+t1.c+'">'+t1.e+'<div style="font-size:9px;color:'+t1.c+';margin-top:4px">'+esc(c1.name||t1.n||'?')+'</div></div>'
+      +'<div class="fusion-plus">💥</div>'
+      +'<div class="fusion-parent" style="--fc:'+t2.c+'">'+t2.e+'<div style="font-size:9px;color:'+t2.c+';margin-top:4px">'+esc(c2.name||t2.n||'?')+'</div></div>'
+    +'</div>'
+    +'<div class="fusion-result" id="fusionResult" style="opacity:0;margin-top:20px">'
+      +'<div style="font-size:52px">'+esc(resultType.e||'🌌')+'</div>'
+      +'<div style="font-size:16px;font-weight:900;color:'+(resultType.c||'#c084fc')+';margin-top:8px">'+esc(resultType.name||resultType.n||'Yeni Kozmo')+'</div>'
+      +'<div style="font-size:11px;color:'+( RARITY_COLOR[resultType.r]||'#aaa')+';margin-top:4px">'+esc(RARITY_LABEL[resultType.r]||resultType.r||'')+'</div>'
+    +'</div>'
+    +'<div style="font-size:13px;color:#c084fc;font-weight:900;margin-top:8px;letter-spacing:2px" id="fusionLabel">⚗️ BİRLEŞİYOR…</div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  sfxCrack(); setTimeout(()=>sfxCrack(),200); setTimeout(()=>sfxHatch(),500);
+  // Animasyon: 2 saniye bekle → sonuç göster
+  setTimeout(()=>{
+    const res=ov.querySelector('#fusionResult');
+    const lbl=ov.querySelector('#fusionLabel');
+    if(res){res.style.cssText='opacity:1;transition:opacity .6s,transform .6s;transform:scale(1.1)';}
+    if(lbl) lbl.textContent='✨ DOĞDU!';
+  },1800);
+  setTimeout(async()=>{
+    ov.remove();
+    // Firebase: yeni yaratık ekle, ebeveynleri sil
+    const creId='cre_fusion_'+Date.now();
+    await Promise.allSettled([
+      fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
+        typeKey:resultType.key||'unknown', name:resultType.name||resultType.n||'Fusion',
+        rarity:resultType.r||'epic', e:resultType.e||'✨', color:resultType.c||'#c084fc',
+        fromUid:st.uid, fromName:'Birleştirme', bornAt:Date.now(), level:1, xp:0,
+        parents:[c1.typeKey,c2.typeKey], isFusion:true,
+      }),
+      fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c1._id),null),
+    ]);
+    // Yaratık ID'lerini doğrudan sil (biz store'da tutmuyoruz → yeniden yükle)
+    await renderKozmos(st,box);
+    feedAnim();
+  },3500);
+  // ebeveyn ID'lerini saklama (ov dışında)
+  st._fusionIds=[c1._id,c2._id]; // daha doğru yöntem aşağıda
 }
 
 function showEggModal(eggId,egg,phase,st,box){
