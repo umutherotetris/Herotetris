@@ -177,7 +177,7 @@ function openPhotoMenu(st, photoDataUrl){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
     inp.addEventListener('change',e=>{
       const file=e.target.files[0]; if(!file) return;
-      if(file.size>2*1024*1024){ alert('Fotoğraf 2MB\'den küçük olmalı'); return; }
+      if(file.size>2*1024*1024){ alert('Fotoğraf 2MB’den küçük olmalı'); return; }
       const reader=new FileReader();
       reader.onload=async ev=>{
         try{
@@ -402,7 +402,7 @@ async function _buildFriendsBridge(){
   const st=Auth.getState();
   fr.innerHTML='<div class="prf-card"><div class="prf-lbl">👥 ARKADAŞLAR</div>'
     +'<div id="bridgeFrList" style="display:flex;flex-direction:column;gap:6px;margin:8px 0"><div class="clan-load">⏳</div></div>'
-    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="dost">💎 Hub'da Aç</button></div>';
+    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="dost">Hub’da Aç</button></div>';
   fr.querySelector('[data-hub]').addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('dost');}catch(e){}});
   if(!st.uid){document.getElementById('bridgeFrList').innerHTML='<div style="color:#5d6890;font-size:11px">Giriş gerekli</div>';return;}
   try{
@@ -439,7 +439,7 @@ async function _buildNotifBridge(){
   const st=Auth.getState();
   nt.innerHTML='<div class="prf-card"><div class="prf-lbl">🔔 BİLDİRİMLER</div>'
     +'<div id="bridgeNotifList" style="display:flex;flex-direction:column;gap:5px;margin:8px 0"><div class="clan-load">⏳</div></div>'
-    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="notif">🔔 Hub'da Aç</button></div>';
+    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="notif">🔔 Hub’da Aç</button></div>';
   nt.querySelector('[data-hub]').addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('notif');}catch(e){}});
   if(!st.uid){document.getElementById('bridgeNotifList').innerHTML='<div style="color:#5d6890;font-size:11px">Giriş gerekli</div>';return;}
   try{
