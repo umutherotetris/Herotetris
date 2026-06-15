@@ -77,9 +77,15 @@ export async function openPlayerCard(uid){
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
+      <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  const eggPcB = ov.querySelector('[data-pc="egg"]');
+  if(eggPcB) eggPcB.addEventListener('click', async() => {
+    ov.remove();
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(uid, nick); }catch(e){ alert('Kozmo gönderilemedi: '+(e.message||e)); }
+  });
   const dmB = ov.querySelector('[data-pc="dm"]');
   if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
   const frB = ov.querySelector('[data-pc="fr"]');
@@ -600,6 +606,9 @@ async function renderFriends(){
     </div>`).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
+  list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(b.dataset.fegg, b.dataset.fn); }catch(e){ alert('Kozmo gönderilemedi'); }
+  }));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
     if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
     try{ await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + b.dataset.frm), null); }catch(e){}

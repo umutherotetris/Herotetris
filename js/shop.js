@@ -210,8 +210,11 @@ async function showEggGiftModal(item,st,pl){
       +'</button>'
     +'</div>'
     +'<div id="eggGiftForm" style="display:none;margin-bottom:10px">'
-      +'<input class="clan-in" id="eggGiftNick" placeholder="Alıcı nick" maxlength="20" style="width:100%;margin-bottom:7px">'
+      +'<div class="clan-lbl" style="margin-bottom:5px">Nick ile gönder:</div>'
+      +'<input class="clan-in" id="eggGiftNick" placeholder="Alıcı nicknick" maxlength="20" style="width:100%;margin-bottom:7px">'
       +'<div class="clan-msg" id="eggGiftMsg"></div>'
+      +'<div class="clan-lbl" style="margin-top:8px;margin-bottom:5px">Veya arkadaşlardan seç:</div>'
+      +'<div id="eggFriendList" class="egg-friend-list">⏳ Yükleniyor…</div>'
     +'</div>'
     +'<div class="nm-actions">'
       +'<button class="nm-btn nm-ok" id="eggConfirm">💰 '+fmt(item.price)+' Kaju Öde</button>'
@@ -222,18 +225,29 @@ async function showEggGiftModal(item,st,pl){
   inn.querySelector('#eggCancel').addEventListener('click',()=>ov.remove());
   let mode='self';
   inn.querySelector('#eggSelf').addEventListener('click',()=>{mode='self';inn.querySelector('#eggGiftForm').style.display='none';inn.querySelector('#eggSelf').style.borderColor='rgba(0,229,255,.6)';inn.querySelector('#eggGift').style.borderColor='rgba(224,64,251,.35)';});
-  inn.querySelector('#eggGift').addEventListener('click',()=>{mode='gift';inn.querySelector('#eggGiftForm').style.display='block';inn.querySelector('#eggGift').style.borderColor='rgba(224,64,251,.6)';inn.querySelector('#eggSelf').style.borderColor='rgba(0,229,255,.35)';});
+  inn.querySelector('#eggGift').addEventListener('click',()=>{
+    mode='gift';
+    inn.querySelector('#eggGiftForm').style.display='block';
+    inn.querySelector('#eggGift').style.borderColor='rgba(224,64,251,.6)';
+    inn.querySelector('#eggSelf').style.borderColor='rgba(0,229,255,.35)';
+    loadFriendsForGift(inn,st);
+  });
   inn.querySelector('#eggConfirm').addEventListener('click',async()=>{
     if((pl.kaju||0)<item.price){alert('Yetersiz Kaju!');return;}
     if(mode==='gift'){
       const nick=(inn.querySelector('#eggGiftNick').value||'').trim();
       const msgEl=inn.querySelector('#eggGiftMsg');
-      if(!nick){msgEl.textContent='Nick gerekli';msgEl.className='clan-msg bad';return;}
-      // Nick → uid bul
+      if(!nick){msgEl.textContent='Nick gerekli veya listeden arkadaş seç';msgEl.className='clan-msg bad';return;}
+      // Önce seçili uid var mı (arkadaş listesinden)
+      const frBox=inn.querySelector('#eggFriendList');
+      const selUid=frBox&&frBox.dataset.selUid&&frBox.dataset.selName===nick?frBox.dataset.selUid:null;
       try{
-        const snap=await fdb.get(fdb.ref(db,'nicks/'+nick.toLowerCase()));
-        if(!snap.exists()){msgEl.textContent='Bu nick bulunamadı';msgEl.className='clan-msg bad';return;}
-        const toUid=snap.val().uid; const toName=snap.val().nick||nick;
+        let toUid=selUid, toName=nick;
+        if(!selUid){
+          const snap=await fdb.get(fdb.ref(db,'nicks/'+nick.toLowerCase()));
+          if(!snap.exists()){msgEl.textContent='Bu nick bulunamadı';msgEl.className='clan-msg bad';return;}
+          toUid=snap.val().uid; toName=snap.val().nick||nick;
+        }
         if(toUid===st.uid){msgEl.textContent='Kendine hediye için "Kendime Al" seç';msgEl.className='clan-msg bad';return;}
         try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){alert('Ödeme hatası');return;}
         const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
@@ -256,6 +270,35 @@ async function showEggGiftModal(item,st,pl){
       ov.remove(); alert('🥚 Yumurta kozmos koleksiyonuna eklendi!');
     }
   });
+}
+
+async function loadFriendsForGift(modal, st){
+  const box = modal.querySelector('#eggFriendList'); if(!box) return;
+  try{
+    const snap = await fdb.get(fdb.ref(db,'friends/'+st.uid));
+    if(!snap.exists()||!Object.keys(snap.val()).length){ box.innerHTML='<div style="font-size:10px;color:#5d6890">Henüz arkadaşın yok</div>'; return; }
+    const uids = Object.keys(snap.val()).slice(0,15);
+    const rows = await Promise.all(uids.map(async uid=>{
+      let name='Arkadaş', ava='👤';
+      try{ const u=await fdb.get(fdb.ref(db,'users/'+uid)); if(u.exists()){const v=u.val();name=v.nick||v.name||name;ava=v.avatar||'👤';} }catch(e){}
+      return {uid,name,ava};
+    }));
+    box.innerHTML='';
+    rows.forEach(r=>{
+      const btn=document.createElement('button'); btn.className='egg-friend-btn';
+      btn.innerHTML='<span>'+esc(r.ava)+'</span> <span>'+esc(r.name)+'</span>';
+      btn.addEventListener('click',()=>{
+        // Nick inputa yaz + vurgula
+        const inp=modal.querySelector('#eggGiftNick'); if(inp) inp.value=r.name;
+        box.querySelectorAll('.egg-friend-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        // uid'yi sakla
+        btn.closest('#eggFriendList').dataset.selUid=r.uid;
+        btn.closest('#eggFriendList').dataset.selName=r.name;
+      });
+      box.appendChild(btn);
+    });
+  }catch(e){ box.innerHTML='<div style="font-size:10px;color:#5d6890">Yüklenemedi</div>'; }
 }
 
 export default openShop;
