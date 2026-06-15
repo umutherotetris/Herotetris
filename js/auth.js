@@ -41,7 +41,7 @@ const state = {
 
 const listeners = new Set();
 export function subscribe(fn){ listeners.add(fn); try{ fn(getState()); }catch(e){ console.error(e); } return () => listeners.delete(fn); }
-export function getState(){ return Object.assign({}, state); }
+export function getState(){ const um=isUserMode(); return Object.assign({}, state, { isVisibleAdmin: state.isAdmin===true && !um, isUserMode: um }); }
 function emit(){ const s = getState(); listeners.forEach(fn => { try{ fn(s); }catch(e){ console.error('[auth] listener', e); } }); }
 
 function statusOf(user){ if(!user) return 'offline'; return user.isAnonymous ? 'anon' : 'google'; }
@@ -133,6 +133,11 @@ export async function setGhost(on){
   return on;
 }
 export function isGhost(){ try{ return localStorage.getItem('hero_ghost') === '1'; }catch(e){ return false; } }
+// 🥸 Kullanıcı Modu: admin yetkileri korunur ama rozet/görünürlük gizlenir
+export function setUserMode(on){ try{ localStorage.setItem('hero_usermode', on?'1':'0'); }catch(e){} emit(); }
+export function isUserMode(){ try{ return localStorage.getItem('hero_usermode')==='1'; }catch(e){ return false; } }
+// Görünür admin mi? (isAdmin && !userMode) — başkalarının gördüğü
+export function isVisibleAdmin(){ return state.isAdmin === true && !isUserMode(); }
 
 // 🦵 Kick dinleyici: kicks/{uid} taze bir kayıt alırsa kullanıcıyı bilgilendir + yenile
 let _kickOff = null, _kickBootTs = Date.now();

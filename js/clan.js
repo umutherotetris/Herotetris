@@ -327,17 +327,44 @@ function renderChat(){
   const box=document.getElementById('clanTabBody'); if(!box)return;
   box.innerHTML='';
   const card=document.createElement('div'); card.className='clan-card'; card.style.padding='0;overflow:hidden';
-  card.innerHTML='<div class="clan-chat" id="clanChatList"><div class="clan-load">Yükleniyor…</div></div><div class="clan-row" style="padding:8px;border-top:1px solid rgba(255,255,255,.06)"><input class="clan-in" id="clanChatInp" placeholder="Klan sohbetine yaz…" maxlength="200"><button class="clan-btn p" id="clanChatSend">➤</button></div>';
+  const meAdm=Auth.getState().isAdmin===true;
+  card.innerHTML=(meAdm?'<div style="padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.06)"><button class="clan-btn r" style="width:100%;font-size:10px;padding:6px" id="clanChatClear">🧹 Admin: Sohbeti Temizle</button></div>':'')+'<div class="clan-chat" id="clanChatList"><div class="clan-load">Yükleniyor…</div></div><div class="clan-row" style="padding:8px;border-top:1px solid rgba(255,255,255,.06)"><input class="clan-in" id="clanChatInp" placeholder="Klan sohbetine yaz…" maxlength="200"><button class="clan-btn p" id="clanChatSend">➤</button></div>';
   box.appendChild(card);
   card.querySelector('#clanChatSend').addEventListener('click',sendChat);
   card.querySelector('#clanChatInp').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
+  const clrBtn=card.querySelector('#clanChatClear');
+  if(clrBtn) clrBtn.addEventListener('click',async()=>{
+    if(!confirm('⚠️ Tüm klan sohbeti silinsin mi? (Admin işlemi)'))return;
+    try{await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/chat'),null);}catch(e){alert('Yapılamadı');}
+  });
   const offC=fdb.onValue(fdb.query(fdb.ref(db,'clans/'+C.myClanId+'/chat'),fdb.limitToLast(40)),snap=>{
     const list=document.getElementById('clanChatList'); if(!list)return;
     const me=Auth.getState().uid;
     const rows=[]; if(snap.exists())snap.forEach(ch=>{rows.push(ch.val());});
     rows.sort((a,b)=>(a.ts||0)-(b.ts||0));
     if(!rows.length){list.innerHTML='<div class="clan-load" style="color:#5d6890">İlk mesajı sen yaz! 🏰</div>';return;}
-    list.innerHTML=rows.map(m=>'<div class="clan-chat-row'+(m.uid===me?' mine':'')+'"><div class="clan-chat-ava">'+(m.avatar||'👤')+'</div><div><div style="font-size:10px;font-weight:800;color:'+(m.uid===me?'#00E5FF':'#A78BFA')+'">'+esc(m.name||'Üye')+'</div><div style="font-size:12px;color:#c4c4e0">'+esc(m.text)+'</div><div style="font-size:8px;color:#505074">'+tAgo(m.ts)+'</div></div></div>').join('');
+    const meAdmin=Auth.getState().isAdmin===true;
+    const meLeader=C.myRole==='leader'||C.myRole==='vice';
+    list.innerHTML=rows.map(m=>{
+      const within5=(Date.now()-(m.ts||0))<300000;
+      const canEdit=(m.uid===me&&within5)||meAdmin;
+      const canDel=m.uid===me||meAdmin||meLeader;
+      let acts='';
+      if(canDel) acts+=' <span class="clan-chat-act" data-cdel="'+esc(m._key||'')+'">🗑</span>';
+      if(canEdit) acts+=' <span class="clan-chat-act" data-cedit="'+esc(m._key||'')+'" data-ctxt="'+esc(m.text||'')+'">✏️</span>';
+      return '<div class="clan-chat-row'+(m.uid===me?' mine':'')+'"><div class="clan-chat-ava">'+(m.avatar||'👤')+'</div><div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+(m.uid===me?'#00E5FF':'#A78BFA')+'">'+esc(m.name||'Üye')+(m.edited?' <span style="font-size:7px;opacity:.5">(düzenlendi)</span>':'')+'</div><div style="font-size:12px;color:#c4c4e0">'+esc(m.text)+'</div><div style="font-size:8px;color:#505074">'+tAgo(m.ts)+acts+'</div></div></div>';
+    }).join('');
+    // Düzenle/sil listener
+    list.querySelectorAll('[data-cdel]').forEach(b=>b.addEventListener('click',async e=>{
+      e.stopPropagation(); const k=b.dataset.cdel; if(!k)return;
+      if(!confirm('Mesaj silinsin mi?'))return;
+      try{await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/chat/'+k),null);}catch(err){}
+    }));
+    list.querySelectorAll('[data-cedit]').forEach(b=>b.addEventListener('click',async e=>{
+      e.stopPropagation(); const k=b.dataset.cedit; if(!k)return;
+      const cur=b.dataset.ctxt; const nt=prompt('Mesajı düzenle:',cur);
+      if(nt&&nt.trim()&&nt.trim()!==cur){try{await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/chat/'+k),{text:nt.trim().slice(0,200),edited:true});}catch(err){}}
+    }));
     list.scrollTop=list.scrollHeight;
   });
   if(C)C.off.push(offC);
@@ -405,18 +432,44 @@ async function renderManage(){
       }catch(e){alert('Değiştirilemedi');}
     });
   }
-  // Duyuru
+  // Duyuru — mevcut duyuruyu göster + düzenle/sil
+  const curAnn=_clan.announcement||null;
   const annCard=document.createElement('div'); annCard.className='clan-card';
-  annCard.innerHTML='<div class="clan-lbl">📣 KLAN DUYURUSU</div>'
-    +'<div class="clan-row"><input class="clan-in" id="clanAnnInp" maxlength="150" placeholder="Tüm üyelere duyuru…"><button class="clan-btn p" id="clanAnnSend">Gönder</button></div>';
+  let annHtml='<div class="clan-lbl">📣 KLAN DUYURUSU</div>';
+  if(curAnn&&curAnn.text){
+    annHtml+='<div class="clan-ann-current"><div style="font-size:11px;color:#ffd86b;line-height:1.5">'+esc(curAnn.text)+'</div><div style="font-size:8px;color:#7d8ab8;margin-top:4px">'+tAgo(curAnn.ts)+' önce</div><div style="display:flex;gap:5px;margin-top:7px"><button class="clan-btn" style="flex:1;font-size:10px;padding:5px;background:rgba(0,229,255,.08);color:#00E5FF;border-color:rgba(0,229,255,.3)" id="annEdit">✏️ Düzenle</button><button class="clan-btn r" style="flex:1;font-size:10px;padding:5px" id="annDel">🗑 Sil</button></div></div>';
+  }
+  annHtml+='<div class="clan-row" style="margin-top:8px"><input class="clan-in" id="clanAnnInp" maxlength="150" placeholder="'+(curAnn?'Yeni duyuru…':'Tüm üyelere duyuru…')+'"><button class="clan-btn p" id="clanAnnSend">Gönder</button></div>';
+  annCard.innerHTML=annHtml;
   box.appendChild(annCard);
+  // Gönder
   annCard.querySelector('#clanAnnSend').addEventListener('click',async()=>{
     const text=(annCard.querySelector('#clanAnnInp').value||'').trim();if(!text)return;
     const st=Auth.getState();
-    const uids=Object.keys(mems);
-    for(const uid of uids){if(uid===st.uid)continue;try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'🏰',text:'['+esc(_clan.tag||'KLAN')+'] '+text.slice(0,140),ts:Date.now()});}catch(e){}}
-    annCard.querySelector('#clanAnnInp').value='';
-    alert('✓ Duyuru gönderildi ('+( uids.length-1)+' üye)');
+    try{
+      // Duyuruyu kalıcı sakla
+      await fdb.update(fdb.ref(db,'clans/'+C.myClanId),{announcement:{text:text.slice(0,140),ts:Date.now(),by:st.uid,byName:st.displayName||'Yönetici'}});
+      _clan.announcement={text:text.slice(0,140),ts:Date.now(),by:st.uid};
+      // Bildirim gönder
+      const uids=Object.keys(mems);
+      for(const uid of uids){if(uid===st.uid)continue;try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'📣',text:'['+esc(_clan.tag||'KLAN')+'] '+text.slice(0,130),ts:Date.now()});}catch(e){}}
+      annCard.querySelector('#clanAnnInp').value='';
+      await renderManage();
+    }catch(e){alert('Gönderilemedi');}
+  });
+  // Düzenle
+  const annEditBtn=annCard.querySelector('#annEdit');
+  if(annEditBtn) annEditBtn.addEventListener('click',async()=>{
+    const nt=prompt('Duyuruyu düzenle:',curAnn.text);
+    if(nt&&nt.trim()){
+      try{await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/announcement'),{text:nt.trim().slice(0,140),edited:true});_clan.announcement.text=nt.trim();await renderManage();}catch(e){}
+    }
+  });
+  // Sil
+  const annDelBtn=annCard.querySelector('#annDel');
+  if(annDelBtn) annDelBtn.addEventListener('click',async()=>{
+    if(!confirm('Duyuru silinsin mi?'))return;
+    try{await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/announcement'),null);_clan.announcement=null;await renderManage();}catch(e){}
   });
   // Banlı üyeler + unban
   if(bannedList.length){

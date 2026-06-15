@@ -77,6 +77,9 @@ export function openAdminPanel(){
           <button class="adm-acc" data-a="ghost">👻 Ghost Modu: <b data-el="ghostState">…</b> <span style="opacity:.6;font-weight:400">— listelerde görünmezsin</span></button>
         </div>
         <div class="adm-sec">
+          <button class="adm-acc" data-a="usermode">🥸 Kullanıcı Modu: <b data-el="userModeState">…</b> <span style="opacity:.6;font-weight:400">— admin rozetin gizlenir, yetkiler saklı kalır</span></button>
+        </div>
+        <div class="adm-sec">
           <button class="adm-acc" data-a="ipbans">🌐 IP Yasakları <span>▾</span></button>
           <div class="adm-log" data-el="ipbans" style="display:none"></div>
         </div>
@@ -140,6 +143,7 @@ export function openAdminPanel(){
   $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
   $(ov,'[data-a="clanmgmt"]').addEventListener('click', toggleClanMgmt);
   $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
+  $(ov,'[data-a="usermode"]').addEventListener('click', toggleUserMode);
   $(ov,'[data-a="ipbans"]').addEventListener('click', toggleIPBans);
   $(ov,'[data-a="nickbans"]').addEventListener('click', toggleNickBans);
   $(ov,'[data-a="nbAdd"]').addEventListener('click', addNickBan);
@@ -496,6 +500,23 @@ async function toggleClanMgmt(){
       }catch(e){ msg('✗ Yapılamadı',false); }
     }));
   }catch(e){ box.innerHTML='<i>Okunamadı</i>'; }
+}
+
+// ── 🥸 Kullanıcı Modu ────────────────────────────────────────────
+function refreshUserModeState(){
+  try{
+    const on = localStorage.getItem('hero_usermode')==='1';
+    const el = $(P.root,'[data-el="userModeState"]'); if(el){ el.textContent = on?'AÇIK 🥸':'KAPALI'; el.style.color = on?'#FFB74D':'#5fd38a'; }
+  }catch(e){}
+}
+async function toggleUserMode(){
+  try{
+    const now = localStorage.getItem('hero_usermode')!=='1';
+    const authMod = await import('./auth.js');
+    authMod.setUserMode(now);
+    refreshUserModeState();
+    msg(now ? '✓ Kullanıcı Modu AÇIK 🥸 — diğerleri seni normal kullanıcı görür, yetkilerin saklı' : '✓ Kullanıcı Modu kapalı — admin rozetin tekrar görünür', true);
+  }catch(e){ msg('Hata', false); }
 }
 
 // ── 👻 Ghost ────────────────────────────────────────────────────
@@ -865,12 +886,16 @@ async function doBan(on){
     if(!confirm(`Oyuncu ${label} BANLANACAK.\nSebep: ${reason}\nOnaylıyor musun?`)) return;
     try{
       await fdb.update(fdb.ref(db, 'users/' + uid), { banned: true, banType: until ? 'temp' : 'perma', banUntil: until || null, banMsg: reason });
+      const tName=P.target.profile.nick||P.target.profile.name||'oyuncu';
+      try{ const mod=await import('./moderation.js'); await mod.globalBan(uid,tName,reason); }catch(ex){}
       msg('✓ Banlandı (' + label + ')', true); logAdmin('ban', uid, label + ' · ' + reason);
     }catch(e){ msg('✗ Yapılamadı', false); return; }
     P.target.profile.banned = true; P.target.profile.banType = until?'temp':'perma'; P.target.profile.banUntil = until;
   } else {
     try{
       await fdb.update(fdb.ref(db, 'users/' + uid), { banned: false, banType: null, banUntil: null, banMsg: null });
+      const tName2=P.target.profile.nick||P.target.profile.name||'oyuncu';
+      try{ const mod=await import('./moderation.js'); await mod.globalUnban(uid,tName2,''); }catch(ex){}
       msg('✓ Ban kaldırıldı', true); logAdmin('unban', uid, '');
     }catch(e){ msg('✗ Yapılamadı', false); return; }
     P.target.profile.banned = false;
@@ -883,13 +908,16 @@ async function doMute(on){
     const { reason, until, label } = durReason();
     try{
       await fdb.update(fdb.ref(db, 'users/' + uid), { muted: true, muteUntil: until || null, muteReason: reason });
+      const tNameM=P.target.profile.nick||P.target.profile.name||'oyuncu';
+      const durMin=until?Math.round((until-Date.now())/60000):null;
+      try{ const mod=await import('./moderation.js'); await mod.globalMute(uid,tNameM,reason,durMin); }catch(ex){}
       msg('✓ Susturuldu (' + label + ')', true); logAdmin('mute', uid, label + ' · ' + reason);
     }catch(e){ msg('✗ Yapılamadı', false); return; }
     P.target.profile.muted = true; P.target.profile.muteUntil = until;
   } else {
     try{
       await fdb.update(fdb.ref(db, 'users/' + uid), { muted: false, muteUntil: null, muteReason: null });
-      msg('✓ Susturma kaldırıldı', true); logAdmin('unmute', uid, '');
+      const tNameU=P.target.profile.nick||P.target.profile.name||'oyuncu'; try{ const mod=await import('./moderation.js'); await mod.globalUnmute(uid,tNameU,''); }catch(ex){} msg('✓ Susturma kaldırıldı', true); logAdmin('unmute', uid, '');
     }catch(e){ msg('✗ Yapılamadı', false); return; }
     P.target.profile.muted = false;
   }

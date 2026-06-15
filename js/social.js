@@ -93,6 +93,7 @@ export async function openPlayerCard(uid){
       <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
       <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Poke</button>
       <button class="pcp-btn" style="background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.3);color:#FF7043" data-pc="challenge">⚔️ Meydan Oku</button>
+      ${(Auth.getState().isAdmin===true && uid!==me.uid)?'<div class="pcp-admin-mod"><div class="pcp-mod-lbl">👑 Yönetici İşlemleri</div><div class="pcp-mod-grid"><button class="pcp-mod-btn ban" data-mod="ban">🚫 Ban</button><button class="pcp-mod-btn" data-mod="unban">✅ Unban</button><button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button><button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button><button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button></div></div>':''}
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
@@ -120,6 +121,23 @@ export async function openPlayerCard(uid){
       ov.remove(); showToast('⚔️ Meydan okuma gönderildi!');
     }catch(e){alert('Gönderilemedi');}
   });
+  // 👑 Admin moderasyon butonları
+  ov.querySelectorAll('[data-mod]').forEach(btn=>btn.addEventListener('click',async()=>{
+    const action=btn.dataset.mod;
+    const mod=await import('./moderation.js');
+    let reason='';
+    if(['ban','mute','kick','unban','unmute'].includes(action)){
+      reason=prompt('Neden? (boş = "Kural İhlali")','')||'';
+    }
+    let ok=false, msg='';
+    if(action==='ban'){ if(!confirm('🚫 '+nick+' oyundan banlansın mı?'))return; ok=await mod.globalBan(uid,nick,reason); msg='Banlandı'; }
+    else if(action==='unban'){ ok=await mod.globalUnban(uid,nick,reason); msg='Ban kaldırıldı'; }
+    else if(action==='mute'){ const dur=prompt('Kaç dakika? (boş = süresiz)','60'); const d=dur?parseInt(dur):null; if(!confirm('🔇 '+nick+' susturulsun mu?'))return; ok=await mod.globalMute(uid,nick,reason,d); msg='Susturuldu'; }
+    else if(action==='unmute'){ ok=await mod.globalUnmute(uid,nick,reason); msg='Susturma kaldırıldı'; }
+    else if(action==='kick'){ if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return; ok=await mod.globalKick(uid,nick,reason); msg='Atıldı'; }
+    if(ok){ showToast('✅ '+nick+': '+msg); }
+    else { alert('İşlem başarısız'); }
+  }));
   const eggPcB = ov.querySelector('[data-pc="egg"]');
   if(eggPcB) eggPcB.addEventListener('click', async() => {
     ov.remove();
@@ -388,6 +406,7 @@ function listenChat(){
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
       const op = !adm && H.ops && H.ops[m.uid] === true;
       const isMe = m.uid === me;
+      const me_isAdmin = (H && H.admins && H.admins[me]) || Auth.getState().isAdmin === true;
       const nameHtml = adm
         ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span>`
         : (op
@@ -399,7 +418,16 @@ function listenChat(){
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
           <div class="ghp-chat-text">${esc(m.text)}${m.edited?'<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>':''}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts||0)}${isMe&&m._key?` <span class="gc-act" data-del="${esc(m._key)}">🗑</span> <span class="gc-act" data-edit="${esc(m._key)}" data-txt="${esc(m.text||'')}">✏️</span>`:''}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts||0)}${(()=>{
+            if(!m._key) return '';
+            const within5min = (Date.now()-(m.ts||0)) < 300000;
+            const canEdit = (isMe && within5min) || me_isAdmin;
+            const canDel = isMe || me_isAdmin;
+            let acts='';
+            if(canDel) acts+=' <span class="gc-act" data-del="'+esc(m._key)+'">🗑</span>';
+            if(canEdit) acts+=' <span class="gc-act" data-edit="'+esc(m._key)+'" data-txt="'+esc(m.text||'')+'">✏️</span>';
+            return acts;
+          })()}</div>
         </div>
       </div>`;
     }).join('');
@@ -415,13 +443,21 @@ async function sendChat(){
   if(!text) return;
   if(!st.uid){ alert('Sohbet için giriş yapmalısın.'); return; }
   const p = st.profile || {};
-  if(p.muted === true && (!p.muteUntil || p.muteUntil > Date.now())){ alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '')); return; }
+  if(p.muted === true){
+    if(p.muteUntil && p.muteUntil <= Date.now()){
+      // Süre dolmuş — otomatik kaldır
+      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{muted:false,muteReason:null,muteUntil:null}); }catch(e){}
+    } else {
+      alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '') + (p.muteUntil ? ' (' + Math.ceil((p.muteUntil-Date.now())/60000) + ' dk kaldı)' : '')); return;
+    }
+  }
   if(H.chatLocked && st.isAdmin !== true){ alert('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
   inp.value = '';
   try{
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
     const av = st.profile && st.profile.avatar; if(av) m.avatar = av;
-    if(st.isAdmin === true) m.isAdmin = true;
+    // Admin badge: SADECE görünür admin modunda (userMode'da gizle)
+    if(st.isVisibleAdmin === true) m.isAdmin = true;
     await fdb.push(fdb.ref(db, 'globalChat'), m);
   }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
 }
