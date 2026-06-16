@@ -86,7 +86,7 @@ export async function globalKick(targetUid, targetName, reason){
     const pr = await fdb.get(fdb.ref(db,'presence/'+targetUid));
     const online = pr.exists() && pr.val().online === true && (Date.now()-(pr.val().lastSeen||0))<180000;
     if(!online){
-      return { ok:false, notOnline:true, error:(targetName||'Bu oyuncu')+' şu an çevrimdışı, oyundan atılamaz (zaten oyunda değil).' };
+      return { ok:false, notOnline:true, error:(targetName||'Bu oyuncu')+' şu an sohbette/oyunda değil. Çevrimdışı bir oyuncu atılamaz.' };
     }
   }catch(e){}
   try{

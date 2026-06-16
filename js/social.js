@@ -64,6 +64,19 @@ export async function openPlayerCard(uid){
   const isOp = H && H.ops && H.ops[uid] === true;
   let isFriend = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
+  // Engelleme durumu
+  let isBlocked = false;
+  try{ const s = await fdb.get(fdb.ref(db, 'blocks/' + me.uid + '/' + uid)); isBlocked = s.exists() && s.val() === true; }catch(e){}
+  // Arkadaş sayısı + liste (gizlilik kontrolü)
+  const meAdmGlobal = (H&&H.admins&&H.admins[me.uid]) || me.isAdmin===true;
+  const frHidden = p.friendsHidden === true;
+  let frList = [], frCount = 0;
+  if(!frHidden || meAdmGlobal){
+    try{
+      const fs = await fdb.get(fdb.ref(db,'friends/'+uid));
+      if(fs.exists()){ const fv=fs.val()||{}; frCount=Object.keys(fv).length; frList=Object.keys(fv).slice(0,6); }
+    }catch(e){}
+  }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
   ov.querySelector('.pcp-card').innerHTML = `
@@ -82,17 +95,18 @@ export async function openPlayerCard(uid){
       <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
     ${(()=>{
-      const meAdm=(H&&H.admins&&H.admins[me.uid])||me.isAdmin===true;
-      const hidden=p.friendsHidden===true;
-      if(hidden&&!meAdm) return '<div class="pcp-friends-hidden">🔒 Arkadaş listesi gizli</div>';
-      return '';
+      // Arkadaş listesi gösterimi
+      if(frHidden && !meAdmGlobal) return '<div class="pcp-friends-box"><div class="pcp-fr-hidden">🔒 Arkadaş listesi gizli</div></div>';
+      if(frCount===0) return '';
+      return '<div class="pcp-friends-box"><div class="pcp-fr-title">👥 Arkadaşlar ('+frCount+')'+(frHidden?' <span style="color:#FFB74D;font-size:8px">🔒 admin görünümü</span>':'')+'</div><div class="pcp-fr-list" id="pcpFrList">'+frList.map(fu=>'<div class="pcp-fr-chip" data-frgo="'+esc(fu)+'">⏳</div>').join('')+'</div></div>';
     })()}
-    ${self ? '' : `<div class="pcp-acts">
-      <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
-      <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
-      <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
-      <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Dürt</button>
-      <button class="pcp-btn" style="background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.3);color:#FF7043" data-pc="challenge">⚔️ Meydan Oku</button>
+    ${self ? '' : `<div class="pcp-acts-grid">
+      <button class="pcp-act-ico" data-pc="dm" title="Mesaj Gönder">✉️<span>Mesaj</span></button>
+      <button class="pcp-act-ico" data-pc="egg" title="Kozmo Gönder" style="color:#c084fc">🥚<span>Kozmo</span></button>
+      <button class="pcp-act-ico" data-pc="poke" title="Dürt" style="color:#FFB74D">👉<span>Dürt</span></button>
+      <button class="pcp-act-ico" data-pc="challenge" title="Meydan Oku" style="color:#FF7043">⚔️<span>Meydan</span></button>
+      <button class="pcp-act-ico" data-pc="fr" title="${isFriend ? 'Çıkar' : 'Ekle'}" style="color:${isFriend?'#FF7043':'#69F0AE'}">${isFriend ? '✕' : '👥'}<span>${isFriend ? 'Çıkar' : 'Arkadaş'}</span></button>
+      <button class="pcp-act-ico" data-pc="block" title="${isBlocked ? 'Engeli Kaldır' : 'Engelle'}" style="color:${isBlocked?'#69F0AE':'#FF5252'}">${isBlocked ? '🔓' : '🚫'}<span>${isBlocked ? 'Engel Kaldır' : 'Engelle'}</span></button>
       ${(()=>{
         if(uid===me.uid) return '';
         const meAdmin = me.isAdmin === true;
@@ -132,6 +146,40 @@ export async function openPlayerCard(uid){
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  // 🚫 Engelle / Engeli kaldır
+  const blockB = ov.querySelector('[data-pc="block"]');
+  if(blockB) blockB.addEventListener('click', async () => {
+    if(me.status !== 'google'){ alert('Engelleme için giriş gerekli.'); return; }
+    try{
+      if(isBlocked){
+        await fdb.set(fdb.ref(db,'blocks/'+me.uid+'/'+uid), null);
+        showToast('🔓 '+nick+' engeli kaldırıldı');
+      } else {
+        if(!confirm('🚫 '+nick+' engellensin mi?\n\nEngellenen kişi sana mesaj gönderemez, sen de onun mesajlarını görmezsin.'))return;
+        await fdb.set(fdb.ref(db,'blocks/'+me.uid+'/'+uid), true);
+        // Arkadaşlıktan da çıkar
+        try{ await fdb.set(fdb.ref(db,'friends/'+me.uid+'/'+uid), null); await fdb.set(fdb.ref(db,'friends/'+uid+'/'+me.uid), null); }catch(e){}
+        showToast('🚫 '+nick+' engellendi');
+      }
+      ov.remove();
+    }catch(e){ alert('Yapılamadı'); }
+  });
+  // 👥 Arkadaş chip'lerine tıklama (o kişinin profilini aç)
+  ov.querySelectorAll('[data-frgo]').forEach(chip => chip.addEventListener('click', () => {
+    const fu = chip.dataset.frgo;
+    ov.remove();
+    setTimeout(() => openPlayerCard(fu), 100);
+  }));
+  // Arkadaş chip avatarlarını yükle
+  (async () => {
+    for(const fu of frList){
+      try{
+        const u = await fdb.get(fdb.ref(db,'users/'+fu));
+        const chip = ov.querySelector('[data-frgo="'+fu+'"]');
+        if(chip && u.exists()){ const v=u.val(); chip.textContent = v.avatar || '👤'; chip.title = v.nick||v.name||'Arkadaş'; }
+      }catch(e){}
+    }
+  })();
   // 👉 Poke
   const pokeB = ov.querySelector('[data-pc="poke"]');
   if(pokeB) pokeB.addEventListener('click', async()=>{
@@ -217,9 +265,21 @@ export async function openPlayerCard(uid){
   if(dmB) dmB.addEventListener('click', () => {
     ov.remove();
     applyFabSetting();
+    // Hub'ı aç ve özel sekmeye geç
     openHubTab('ozel');
-    // Hub DOM'u render olduktan sonra thread aç (yoksa elementler yok)
-    setTimeout(() => { try{ dmOpenThread(uid, nick); }catch(e){ console.warn('[DM]',e); } }, 150);
+    // DM thread'i aç — element hazır olana kadar dene (retry)
+    let tries = 0;
+    const tryOpen = () => {
+      tries++;
+      const dmListEl = byId('ghpDMList');
+      const dmThreadEl = byId('ghpDMThread');
+      if(dmListEl && dmThreadEl){
+        try{ dmOpenThread(uid, nick); }catch(e){ console.warn('[DM]', e); }
+      } else if(tries < 15){
+        setTimeout(tryOpen, 80);
+      }
+    };
+    setTimeout(tryOpen, 100);
   });
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
@@ -675,6 +735,15 @@ async function dmSend(){
   const inp = byId('ghpDMInput'); const text = inp.value.trim();
   if(!text) return;
   const me = Auth.getState();
+  // Engelleme kontrolü — karşı taraf beni engellemişse veya ben onu engellemişsem
+  try{
+    const [iBlock, theyBlock] = await Promise.all([
+      fdb.get(fdb.ref(db,'blocks/'+me.uid+'/'+H.dmThread.uid)),
+      fdb.get(fdb.ref(db,'blocks/'+H.dmThread.uid+'/'+me.uid)),
+    ]);
+    if(iBlock.exists() && iBlock.val()===true){ alert('🚫 Bu kişiyi engelledin. Mesaj göndermek için engeli kaldır.'); return; }
+    if(theyBlock.exists() && theyBlock.val()===true){ alert('🚫 Bu kişi seni engellemiş, mesaj gönderemezsin.'); return; }
+  }catch(e){}
   const pk = pairKey(me.uid, H.dmThread.uid);
   inp.value = '';
   try{
