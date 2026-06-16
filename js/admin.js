@@ -232,43 +232,87 @@ async function toggleGlowPicker(){
   }));
 }
 
-// ── 👥 Tüm kullanıcılar ─────────────────────────────────────────
+// ── 👥 Tüm kullanıcılar (online durumlu, aranabilir) ────────────
+let _aulData = [];
 async function toggleAllUsers(){
   const box = $(P.root,'[data-el="allusers"]');
   if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  box.style.display = '';
+  box.innerHTML = '<div class="aul-search-bar">'
+    + '<input class="aul-search" id="aulSearch" placeholder="🔍 Nick veya UID ara…" autocomplete="off">'
+    + '<button class="aul-refresh" id="aulRefresh" title="Yenile">🔄</button>'
+    + '</div>'
+    + '<div class="aul-stats" id="aulStats"></div>'
+    + '<div class="aul-list" id="aulList"><div class="aul-loading">⏳ Yükleniyor…</div></div>';
+  const sInp = box.querySelector('#aulSearch');
+  if(sInp) sInp.addEventListener('input', aulFilter);
+  const rBtn = box.querySelector('#aulRefresh');
+  if(rBtn) rBtn.addEventListener('click', aulLoad);
+  await aulLoad();
+}
+
+async function aulLoad(){
+  const list = document.getElementById('aulList');
+  if(list) list.innerHTML = '<div class="aul-loading">⏳ Yükleniyor…</div>';
   try{
     const snap = await fdb.get(fdb.ref(db, 'users'));
-    if(!snap.exists()){ box.innerHTML = '<i>Kullanıcı yok</i>'; return; }
+    if(!snap.exists()){ if(list) list.innerHTML = '<div class="aul-empty">Kullanıcı yok</div>'; return; }
     const v = snap.val();
-    const rows = Object.keys(v).map(uid => ({ uid, ...v[uid] }));
-    rows.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
-    box.innerHTML = rows.slice(0, 60).map(u => {
-      const nick = esc(u.nick || u.name || u.displayName || '—');
-      const lastS = u.lastSeen ? tAgoA(u.lastSeen) + ' önce' : '';
-      const lvl = u.level || 1;
-      const av = u.avatar || '👤';
-      return `<div class="adm-li adm-user-row" data-uid="${esc(u.uid)}" style="cursor:pointer;flex-direction:column;align-items:stretch;padding:9px 10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="font-size:18px;flex-shrink:0">${av}</div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
-              <b style="color:${u.isAdmin?'#FFD740':'#dfe7ff'}">${nick}</b>
-              ${u.isAdmin?'<span class="adm-tag" style="background:rgba(255,215,64,.15);color:#ffd86b;border:1px solid rgba(255,215,64,.35)">👑 ADMİN</span>':''}
-              ${u.isVice?'<span class="adm-tag" style="background:rgba(206,147,216,.15);color:#CE93D8;border:1px solid rgba(206,147,216,.35)">⭐ VICE</span>':''}
-              ${u.banned===true?'<span class="adm-tag ban">🚫 BANLI</span>':''}
-              ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
-            </div>
-            <div style="font-size:10px;color:#7d8ab8;margin-top:2px">LV ${lvl} · 🥜 ${fmt(u.kaju)} · ${lastS}</div>
-            <div style="font-size:9px;color:#555070;word-break:break-all">${esc(u.uid)}</div>
-          </div>
-          <button class="adm-btn p" data-load="${esc(u.uid)}" style="padding:6px 10px;font-size:11px;flex-shrink:0">Yönet →</button>
-        </div>
-      </div>`;
-    }).join('');
-    box.querySelectorAll('[data-load]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); loadTarget(btn.dataset.load); }));
-    box.querySelectorAll('.adm-user-row').forEach(el => el.addEventListener('click', (e) => { if(e.target.closest('[data-load]')) return; loadTarget(el.dataset.uid); }));
-  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+    const now = Date.now();
+    _aulData = Object.keys(v).map(uid => {
+      const u = v[uid];
+      const online = u.online === true && (now - (u.lastSeen||0)) < 180000;
+      return {
+        uid, nick: u.nick || u.name || u.displayName || '—',
+        avatar: u.avatar || '👤', level: u.level || 1, kaju: u.kaju || 0,
+        online, lastSeen: u.lastSeen || 0,
+        isAdmin: u.isAdmin === true, isVice: u.isVice === true,
+        banned: u.banned === true, muted: u.muted === true,
+      };
+    });
+    // Sıralama: önce online, sonra seviye, sonra isim
+    _aulData.sort((a,b) => (b.online - a.online) || (b.level - a.level) || a.nick.localeCompare(b.nick));
+    aulRender(_aulData);
+  }catch(e){ if(list) list.innerHTML = '<div class="aul-empty">Okunamadı</div>'; }
+}
+
+function aulFilter(){
+  const q = ((document.getElementById('aulSearch')||{}).value || '').toLowerCase().trim();
+  const filtered = q ? _aulData.filter(u => u.nick.toLowerCase().includes(q) || u.uid.toLowerCase().includes(q)) : _aulData;
+  aulRender(filtered);
+}
+
+function aulRender(data){
+  const list = document.getElementById('aulList');
+  const stats = document.getElementById('aulStats');
+  if(!list) return;
+  const onlineCount = _aulData.filter(u => u.online).length;
+  const adminCount = _aulData.filter(u => u.isAdmin).length;
+  const bannedCount = _aulData.filter(u => u.banned).length;
+  if(stats){
+    stats.innerHTML = '<span class="aul-stat"><b style="color:#69F0AE">'+onlineCount+'</b> çevrimiçi</span>'
+      + '<span class="aul-stat"><b style="color:#dfe7ff">'+_aulData.length+'</b> toplam</span>'
+      + '<span class="aul-stat"><b style="color:#FFD740">'+adminCount+'</b> admin</span>'
+      + (bannedCount?'<span class="aul-stat"><b style="color:#FF5252">'+bannedCount+'</b> banlı</span>':'');
+  }
+  if(!data.length){ list.innerHTML = '<div class="aul-empty">Sonuç bulunamadı</div>'; return; }
+  list.innerHTML = data.slice(0, 100).map(u => {
+    const tags = (u.isAdmin?'<span class="aul-tag adm">👑</span>':'')
+      + (u.isVice?'<span class="aul-tag vice">⭐</span>':'')
+      + (u.banned?'<span class="aul-tag ban">🚫</span>':'')
+      + (u.muted?'<span class="aul-tag mute">🔇</span>':'');
+    const status = u.online ? '<span class="aul-online">● Çevrimiçi</span>' : '<span class="aul-offline">'+(u.lastSeen?tAgoA(u.lastSeen)+' önce':'Çevrimdışı')+'</span>';
+    return '<div class="aul-row'+(u.banned?' banned':u.isAdmin?' admin':'')+'" data-uid="'+esc(u.uid)+'">'
+      + '<div class="aul-ava">'+u.avatar+(u.online?'<span class="aul-dot"></span>':'')+'</div>'
+      + '<div class="aul-info">'
+        + '<div class="aul-name" style="color:'+(u.isAdmin?'#FFD740':'#eef2ff')+'">'+esc(u.nick)+tags+'</div>'
+        + '<div class="aul-meta">'+status+' · Lv '+u.level+' · 🥜 '+fmt(u.kaju)+'</div>'
+      + '</div>'
+      + '<button class="aul-manage" data-load="'+esc(u.uid)+'">Yönet ›</button>'
+    + '</div>';
+  }).join('');
+  list.querySelectorAll('[data-load]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); loadTarget(btn.dataset.load); }));
+  list.querySelectorAll('.aul-row').forEach(el => el.addEventListener('click', (e) => { if(e.target.closest('[data-load]')) return; loadTarget(el.dataset.uid); }));
 }
 
 // ── 🟢 Çevrimiçi oyuncular (presence) ───────────────────────────

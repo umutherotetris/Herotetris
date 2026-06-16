@@ -70,11 +70,31 @@ export async function openPlayerCard(uid){
   // Arkadaş sayısı + liste (gizlilik kontrolü)
   const meAdmGlobal = (H&&H.admins&&H.admins[me.uid]) || me.isAdmin===true;
   const frHidden = p.friendsHidden === true;
-  let frList = [], frCount = 0;
+  let frList = [], frCount = 0, frData = [];
   if(!frHidden || meAdmGlobal){
     try{
       const fs = await fdb.get(fdb.ref(db,'friends/'+uid));
-      if(fs.exists()){ const fv=fs.val()||{}; frCount=Object.keys(fv).length; frList=Object.keys(fv).slice(0,6); }
+      if(fs.exists()){
+        const fv=fs.val()||{};
+        const allUids=Object.keys(fv);
+        frCount=allUids.length;
+        frList=allUids.slice(0,8);
+        // Her arkadaşın detayını çek (isim, avatar, online, level)
+        frData = await Promise.all(frList.map(async fu=>{
+          let nm='Arkadaş', av='👤', ol=false, lv=1;
+          try{
+            const u=await fdb.get(fdb.ref(db,'users/'+fu));
+            if(u.exists()){ const v=u.val(); nm=v.nick||v.name||nm; av=v.avatar||'👤'; lv=v.level||1; }
+          }catch(e){}
+          try{
+            const pr=await fdb.get(fdb.ref(db,'presence/'+fu));
+            if(pr.exists()){ const pv=pr.val(); ol=pv.online===true && (Date.now()-(pv.lastSeen||0))<180000; }
+          }catch(e){}
+          return { uid:fu, nm, av, ol, lv };
+        }));
+        // Online olanlar üstte
+        frData.sort((a,b)=>(b.ol-a.ol)||0);
+      }
     }catch(e){}
   }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
@@ -98,7 +118,23 @@ export async function openPlayerCard(uid){
       // Arkadaş listesi gösterimi
       if(frHidden && !meAdmGlobal) return '<div class="pcp-friends-box"><div class="pcp-fr-hidden">🔒 Arkadaş listesi gizli</div></div>';
       if(frCount===0) return '';
-      return '<div class="pcp-friends-box"><div class="pcp-fr-title">👥 Arkadaşlar ('+frCount+')'+(frHidden?' <span style="color:#FFB74D;font-size:8px">🔒 admin görünümü</span>':'')+'</div><div class="pcp-fr-list" id="pcpFrList">'+frList.map(fu=>'<div class="pcp-fr-chip" data-frgo="'+esc(fu)+'">⏳</div>').join('')+'</div></div>';
+      const onlineCount = frData.filter(f=>f.ol).length;
+      const rows = frData.map(fr=>
+        '<div class="pcp-fr-row" data-frgo="'+esc(fr.uid)+'">'
+          +'<div class="pcp-fr-avawrap">'+esc(fr.av)+(fr.ol?'<span class="pcp-fr-dot"></span>':'')+'</div>'
+          +'<div class="pcp-fr-info"><div class="pcp-fr-nm">'+esc(fr.nm)+'</div><div class="pcp-fr-meta">'+(fr.ol?'<span style="color:#69F0AE">● Çevrimiçi</span>':'<span style="color:#5d6890">Çevrimdışı</span>')+' · Lv '+fr.lv+'</div></div>'
+          +'<div class="pcp-fr-go">›</div>'
+        +'</div>'
+      ).join('');
+      const moreTxt = frCount>frData.length ? '<div class="pcp-fr-more">+'+(frCount-frData.length)+' arkadaş daha</div>' : '';
+      return '<div class="pcp-friends-box">'
+        +'<div class="pcp-fr-title">👥 Arkadaşlar <span class="pcp-fr-count">'+frCount+'</span>'
+          +(onlineCount>0?'<span class="pcp-fr-online-badge">'+onlineCount+' çevrimiçi</span>':'')
+          +(frHidden?' <span style="color:#FFB74D;font-size:8px">🔒 admin</span>':'')
+        +'</div>'
+        +'<div class="pcp-fr-rows">'+rows+'</div>'
+        +moreTxt
+      +'</div>';
     })()}
     ${self ? '' : `<div class="pcp-acts-grid">
       <button class="pcp-act-ico" data-pc="dm" title="Mesaj Gönder">✉️<span>Mesaj</span></button>
@@ -170,16 +206,6 @@ export async function openPlayerCard(uid){
     ov.remove();
     setTimeout(() => openPlayerCard(fu), 100);
   }));
-  // Arkadaş chip avatarlarını yükle
-  (async () => {
-    for(const fu of frList){
-      try{
-        const u = await fdb.get(fdb.ref(db,'users/'+fu));
-        const chip = ov.querySelector('[data-frgo="'+fu+'"]');
-        if(chip && u.exists()){ const v=u.val(); chip.textContent = v.avatar || '👤'; chip.title = v.nick||v.name||'Arkadaş'; }
-      }catch(e){}
-    }
-  })();
   // 👉 Poke
   const pokeB = ov.querySelector('[data-pc="poke"]');
   if(pokeB) pokeB.addEventListener('click', async()=>{
@@ -560,8 +586,8 @@ function listenChat(){
             const canEdit = (isMe && within5min) || me_isAdmin;
             const canDel = isMe || me_isAdmin;
             let acts='';
-            if(canDel) acts+=' <span class="gc-act" data-del="'+esc(m._key)+'">🗑</span>';
-            if(canEdit) acts+=' <span class="gc-act" data-edit="'+esc(m._key)+'" data-txt="'+esc(m.text||'')+'">✏️</span>';
+            if(canEdit) acts+=' <span class="gc-act edit" data-edit="'+esc(m._key)+'" data-txt="'+esc(m.text||'')+'">✏️ Düzenle</span>';
+            if(canDel) acts+=' <span class="gc-act del" data-del="'+esc(m._key)+'">🗑 Sil</span>';
             return acts;
           })()}</div>
         </div>
@@ -693,8 +719,8 @@ function dmOpenThread(uid, nick){
       const canDel = isMine || meAdmin;
       let acts = '';
       if(m._key){
-        if(canDel) acts += ' <span class="gc-act" data-dmdel="'+esc(m._key)+'">🗑</span>';
-        if(canEdit) acts += ' <span class="gc-act" data-dmedit="'+esc(m._key)+'" data-dmtxt="'+esc(m.text||'')+'">✏️</span>';
+        if(canEdit) acts += ' <span class="gc-act edit" data-dmedit="'+esc(m._key)+'" data-dmtxt="'+esc(m.text||'')+'">✏️ Düzenle</span>';
+        if(canDel) acts += ' <span class="gc-act del" data-dmdel="'+esc(m._key)+'">🗑 Sil</span>';
       }
       const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : '';
       const editedTag = m.edited ? '<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>' : '';
@@ -858,13 +884,24 @@ async function renderFriends(){
     return { uid: fu, name: name || 'Arkadaş', online, last, ava, lvl };
   }));
   rows.sort((a,b) => (b.online - a.online) || (b.last - a.last));
-  list.innerHTML = rows.map(r => `
-    <div class="ghp-dm-row" style="border-left-color:${r.online ? '#69F0AE' : '#546E7A'}">
-      <div class="ghp-dm-avatar" data-pcfr="${esc(r.uid)}" style="position:relative;cursor:pointer">${r.ava}${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
-      <div class="ghp-dm-info" data-pcfr="${esc(r.uid)}" style="cursor:pointer"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)} <small style="opacity:.65;font-weight:700">LV ${esc(r.lvl)}</small></div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
-      <button class="ghp-act" data-fdm="${esc(r.uid)}" data-fn="${esc(r.name)}">✉️</button>
-      <button class="ghp-act" data-frm="${esc(r.uid)}" style="color:#ff7a8a">✕</button>
-    </div>`).join('');
+  const onlineCount = rows.filter(r => r.online).length;
+  // Başlık: çevrimiçi sayacı
+  const header = '<div class="fr-list-header">'
+    + '<span class="fr-hdr-total">👥 '+rows.length+' Arkadaş</span>'
+    + (onlineCount>0 ? '<span class="fr-hdr-online">🟢 '+onlineCount+' çevrimiçi</span>' : '<span class="fr-hdr-offline">Kimse çevrimiçi değil</span>')
+    + '</div>';
+  list.innerHTML = header + rows.map(r => 
+    '<div class="fr-row'+(r.online?' online':'')+'" data-frrow="'+esc(r.uid)+'">'
+      + '<div class="fr-ava" data-pcfr="'+esc(r.uid)+'">'+r.ava+(r.online?'<span class="fr-dot"></span>':'')+'</div>'
+      + '<div class="fr-info" data-pcfr="'+esc(r.uid)+'">'
+        + '<div class="fr-name">'+esc(r.name)+' <span class="fr-lv">LV '+esc(r.lvl)+'</span></div>'
+        + '<div class="fr-status">'+(r.online?'<span class="fr-on">● Çevrimiçi</span>':'<span class="fr-off">'+(r.last?tAgo(r.last)+' önce':'Çevrimdışı')+'</span>')+'</div>'
+      + '</div>'
+      + '<button class="fr-btn dm" data-fdm="'+esc(r.uid)+'" data-fn="'+esc(r.name)+'" title="Mesaj">✉️</button>'
+      + '<button class="fr-btn egg" data-fegg="'+esc(r.uid)+'" data-fn="'+esc(r.name)+'" title="Kozmo">🥚</button>'
+      + '<button class="fr-btn rm" data-frm="'+esc(r.uid)+'" title="Çıkar">✕</button>'
+    + '</div>'
+  ).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {
