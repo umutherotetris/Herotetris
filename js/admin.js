@@ -68,6 +68,8 @@ export function openAdminPanel(){
         <div class="adm-sec">
           <button class="adm-acc" data-a="allusers">👥 Tüm Kullanıcılar <span>▾</span></button>
           <div class="adm-log" data-el="allusers" style="display:none"></div>
+          <div class="adm-log" data-el="watchlist" style="display:none"></div>
+          <div class="adm-log" data-el="fbstats" style="display:none"></div>
         </div>
         <div class="adm-sec">
           <button class="adm-acc" data-a="clanmgmt">🏰 Klan Yönetimi <span>▾</span></button>
@@ -103,6 +105,13 @@ export function openAdminPanel(){
           </div>
         </div>
         <div class="adm-sec">
+          <button class="adm-acc" data-a="watchlist">⭐ İzleme Listesi <span>▾</span></button>
+        </div>
+        <div class="adm-sec" style="display:flex;gap:6px">
+          <button class="adm-acc" style="flex:1" data-a="fbstats">📊 FB İstatistik</button>
+          <button class="adm-acc" style="flex:1" data-a="exportdata">📦 Veri Export</button>
+        </div>
+        <div class="adm-sec">
           <button class="adm-acc" data-a="loglist">📜 Son admin işlemleri <span data-el="logarrow">▾</span></button>
           <div class="adm-log" data-el="log" style="display:none"></div>
         </div>
@@ -135,6 +144,9 @@ export function openAdminPanel(){
     }, 220);
   });
   $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
+  $(ov,'[data-a="watchlist"]').addEventListener('click', toggleWatchlist);
+  $(ov,'[data-a="fbstats"]').addEventListener('click', showFBStats);
+  $(ov,'[data-a="exportdata"]').addEventListener('click', exportData);
   $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
   $(ov,'[data-a="onlinelist"]').addEventListener('click', toggleOnline);
   $(ov,'[data-a="chatmod"]').addEventListener('click', toggleChatMod);
@@ -480,6 +492,41 @@ function renderTarget(){
             ? '<button class="adm-btn g" data-a="unmute">✅ Susturmayı Kaldır</button>'
             : '<button class="adm-btn r" data-a="mute">🔇 Sustur</button>'}
         </div>
+        <div class="adm-row" style="margin-top:5px">
+          ${p.frozen ? '<button class="adm-btn g" style="flex:1" data-a="unfreeze">▶️ Çöz</button>' : '<button class="adm-btn" style="flex:1;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);color:#ffd166" data-a="freeze">⏸️ Dondur</button>'}
+          <button class="adm-btn" style="flex:1;background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.25);color:#FFD740" data-a="watchadd">⭐ İzle/Not</button>
+        </div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">💬 ADMİN MESAJI GÖNDER</div>
+        <div class="adm-row">
+          <input class="adm-in" data-el="dmText" maxlength="300" placeholder="Özel mesaj…">
+          <button class="adm-btn p" data-a="dmSend">📩 DM</button>
+        </div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">🏅 ROZET YÖNET</div>
+        <div class="adm-row">
+          <select class="adm-in" data-el="badgeSel"></select>
+          <button class="adm-btn p" data-a="badgeAdd">+ Ver</button>
+        </div>
+        <div class="adm-row" style="margin-top:4px">
+          <button class="adm-btn r" style="flex:1" data-a="badgeRemove">− Rozet Al</button>
+          <button class="adm-btn" style="flex:1;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);color:#ffd166" data-a="badgeReset">🔄 Sıfırla</button>
+        </div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">🥜 KAJU SIFIRDAN AYARLA (SET)</div>
+        <div class="adm-row">
+          <input class="adm-in" data-el="kSet" inputmode="numeric" placeholder="Tam değer (örn. 50000)">
+          <button class="adm-btn" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.3);color:#c084fc" data-a="kajuSet">Ayarla</button>
+        </div>
+      </div>
+
+      <div class="adm-sec"><div class="adm-lbl">💌 ZORLA ARKADAŞ EKLE</div>
+        <div class="adm-row">
+          <button class="adm-btn p" style="width:100%" data-a="forceFriend">💌 Beni bu kullanıcıya ekle</button>
+        </div>
       </div>
     </div>`;
   const R = $(P.root,'[data-el="result"]');
@@ -501,6 +548,233 @@ function renderTarget(){
   if(ub) ub.addEventListener('click', () => doBan(false));
   if(mb) mb.addEventListener('click', () => doMute(true));
   if(um) um.addEventListener('click', () => doMute(false));
+  // Yeni özellikler
+  const fz=$(R,'[data-a="freeze"]'); if(fz) fz.addEventListener('click', ()=>doFreeze(true));
+  const ufz=$(R,'[data-a="unfreeze"]'); if(ufz) ufz.addEventListener('click', ()=>doFreeze(false));
+  const wa=$(R,'[data-a="watchadd"]'); if(wa) wa.addEventListener('click', doWatchAdd);
+  const dms=$(R,'[data-a="dmSend"]'); if(dms) dms.addEventListener('click', doAdminDM);
+  const bAdd=$(R,'[data-a="badgeAdd"]'); if(bAdd) bAdd.addEventListener('click', doBadgeAdd);
+  const bRem=$(R,'[data-a="badgeRemove"]'); if(bRem) bRem.addEventListener('click', doBadgeRemove);
+  const bRes=$(R,'[data-a="badgeReset"]'); if(bRes) bRes.addEventListener('click', doBadgeReset);
+  const kSet=$(R,'[data-a="kajuSet"]'); if(kSet) kSet.addEventListener('click', doKajuSet);
+  const ff=$(R,'[data-a="forceFriend"]'); if(ff) ff.addEventListener('click', doForceFriend);
+  fillBadgeSelect();
+}
+
+// ── 🏅 Rozet select doldur ──
+async function fillBadgeSelect(){
+  const sel=$(P.root,'[data-el="badgeSel"]'); if(!sel) return;
+  try{
+    const bm=await import('./badges.js');
+    sel.innerHTML=Object.keys(bm.BADGES).map(k=>{
+      const b=bm.BADGES[k];
+      return '<option value="'+k+'">'+b.icon+' '+b.name+(b.adminOnly?' ⭐':'')+'</option>';
+    }).join('');
+  }catch(e){}
+}
+
+// ── ⏸️ Freeze (dondur) ──
+async function doFreeze(on){
+  const uid=P.target.uid;
+  const tName=P.target.profile.nick||P.target.profile.name||'oyuncu';
+  try{
+    await fdb.update(fdb.ref(db,'users/'+uid),{ frozen:on, frozenAt:on?Date.now():null });
+    try{ await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:on?'⏸️':'▶️',text:on?'Hesabın geçici olarak donduruldu.':'Hesabın çözüldü, tekrar oynayabilirsin.',ts:Date.now()}); }catch(e){}
+    P.target.profile.frozen=on;
+    msg(on?'⏸️ Donduruldu':'▶️ Çözüldü', true);
+    logAdmin(on?'freeze':'unfreeze', uid, tName);
+    loadTarget(uid);
+  }catch(e){ msg('Hata', false); }
+}
+
+// ── ⭐ Watchlist (izleme listesi) ──
+async function doWatchAdd(){
+  const uid=P.target.uid;
+  const tName=P.target.profile.nick||P.target.profile.name||'oyuncu';
+  const note=prompt('İzleme notu (bu kullanıcı hakkında):','');
+  if(note===null) return;
+  try{
+    await fdb.set(fdb.ref(db,'watchlist/'+uid),{ name:tName, note:note||'', by:Auth.getState().uid, ts:Date.now() });
+    msg('⭐ İzleme listesine eklendi', true);
+    logAdmin('watchlist', uid, note||'(not yok)');
+  }catch(e){ msg('Hata', false); }
+}
+
+// ── 💬 Admin DM ──
+async function doAdminDM(){
+  const uid=P.target.uid;
+  const inp=$(P.root,'[data-el="dmText"]'); const text=(inp.value||'').trim();
+  if(!text){ msg('Mesaj boş', false); return; }
+  const me=Auth.getState();
+  try{
+    // pairKey: iki uid sıralı
+    const pk=[me.uid,uid].sort().join('_');
+    await fdb.push(fdb.ref(db,'messages/'+pk),{ from:me.uid, fromName:(me.displayName||'Admin')+' 👑', text:text.slice(0,300), ts:Date.now() });
+    await fdb.push(fdb.ref(db,'userNotifs/'+uid),{ icon:'💬', text:'👑 Adminden mesaj: '+text.slice(0,60), ts:Date.now(), fromUid:me.uid });
+    inp.value='';
+    msg('📩 DM gönderildi', true);
+    logAdmin('admin-dm', uid, text.slice(0,40));
+  }catch(e){ msg('Gönderilemedi', false); }
+}
+
+// ── 🏅 Rozet ver/al/sıfırla ──
+async function doBadgeAdd(){
+  const uid=P.target.uid; const tName=P.target.profile.nick||'oyuncu';
+  const sel=$(P.root,'[data-el="badgeSel"]'); const key=sel.value;
+  try{
+    const bm=await import('./badges.js');
+    const res=await bm.awardBadge(uid,key,tName);
+    if(res.ok){ msg('🏅 Rozet verildi: '+bm.BADGES[key].name, true); logAdmin('badge-add', uid, key); }
+    else msg(res.error||'Hata', false);
+  }catch(e){ msg('Hata', false); }
+}
+async function doBadgeRemove(){
+  const uid=P.target.uid;
+  const sel=$(P.root,'[data-el="badgeSel"]'); const key=sel.value;
+  try{
+    const bm=await import('./badges.js');
+    const res=await bm.revokeBadge(uid,key);
+    if(res.ok){ msg('🏅 Rozet alındı', true); logAdmin('badge-remove', uid, key); }
+    else msg(res.error||'Hata', false);
+  }catch(e){ msg('Hata', false); }
+}
+async function doBadgeReset(){
+  const uid=P.target.uid;
+  if(!confirm('Bu kullanıcının TÜM verilen rozetleri sıfırlansın mı? (Otomatik kazanılanlar etkilenmez)'))return;
+  try{
+    const bm=await import('./badges.js');
+    const res=await bm.resetBadges(uid);
+    if(res.ok){ msg('🔄 Rozetler sıfırlandı', true); logAdmin('badge-reset', uid, ''); }
+    else msg(res.error||'Hata', false);
+  }catch(e){ msg('Hata', false); }
+}
+
+// ── 🥜 Kaju SET (sıfırdan ayarla) ──
+async function doKajuSet(){
+  const uid=P.target.uid;
+  const inp=$(P.root,'[data-el="kSet"]'); const val=parseInt((inp.value||'').replace(/[^0-9]/g,''));
+  if(isNaN(val)){ msg('Geçersiz değer', false); return; }
+  if(!confirm('Kaju tam olarak '+val.toLocaleString('tr-TR')+' yapılsın mı?'))return;
+  try{
+    await fdb.update(fdb.ref(db,'users/'+uid),{ kaju:val });
+    P.target.profile.kaju=val;
+    const ke=$(P.root,'[data-el="kaju"]'); if(ke) ke.textContent=fmt(val);
+    inp.value='';
+    msg('🥜 Kaju ayarlandı: '+fmt(val), true);
+    logAdmin('kaju-set', uid, String(val));
+  }catch(e){ msg('Hata', false); }
+}
+
+// ── 💌 Zorla arkadaş ──
+async function doForceFriend(){
+  const uid=P.target.uid; const tName=P.target.profile.nick||'oyuncu';
+  const me=Auth.getState();
+  try{
+    await fdb.set(fdb.ref(db,'friends/'+me.uid+'/'+uid),{ name:tName, ts:Date.now() });
+    await fdb.set(fdb.ref(db,'friends/'+uid+'/'+me.uid),{ name:me.displayName||'Admin', ts:Date.now() });
+    msg('💌 Arkadaş eklendi', true);
+    logAdmin('force-friend', uid, '');
+  }catch(e){ msg('Hata', false); }
+}
+
+// ── ⭐ İzleme Listesi ────────────────────────────────────────────
+async function toggleWatchlist(){
+  const box=$(P.root,'[data-el="watchlist"]');
+  if(box.style.display!=='none'){ box.style.display='none'; return; }
+  box.style.display=''; box.innerHTML='Yükleniyor…';
+  try{
+    const snap=await fdb.get(fdb.ref(db,'watchlist'));
+    if(!snap.exists()){ box.innerHTML='<i>İzleme listesi boş</i>'; return; }
+    const v=snap.val();
+    const rows=Object.keys(v).map(uid=>({uid,...v[uid]}));
+    rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    box.innerHTML=rows.map(r=>
+      '<div class="adm-li" style="flex-direction:column;align-items:stretch;cursor:pointer" data-wuid="'+esc(r.uid)+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center">'
+          +'<b style="color:#FFD740">⭐ '+esc(r.name||'?')+'</b>'
+          +'<button class="adm-btn r" style="padding:3px 8px;font-size:9px" data-wdel="'+esc(r.uid)+'">Kaldır</button>'
+        +'</div>'
+        +(r.note?'<div style="font-size:10px;color:#9fb0d8;margin-top:3px">📝 '+esc(r.note)+'</div>':'')
+        +'<div style="font-size:8px;color:#555070;margin-top:2px">'+esc(r.uid)+'</div>'
+      +'</div>'
+    ).join('');
+    box.querySelectorAll('[data-wdel]').forEach(b=>b.addEventListener('click',async e=>{
+      e.stopPropagation();
+      if(!confirm('İzlemeden çıkar?'))return;
+      try{ await fdb.set(fdb.ref(db,'watchlist/'+b.dataset.wdel),null); toggleWatchlist(); toggleWatchlist(); }catch(err){}
+    }));
+    box.querySelectorAll('[data-wuid]').forEach(el=>el.addEventListener('click',e=>{
+      if(e.target.closest('[data-wdel]'))return;
+      loadTarget(el.dataset.wuid);
+    }));
+  }catch(e){ box.innerHTML='<i>Okunamadı</i>'; }
+}
+
+// ── 📊 Firebase İstatistik ──────────────────────────────────────
+async function showFBStats(){
+  const box=$(P.root,'[data-el="fbstats"]');
+  if(box.style.display!=='none'){ box.style.display='none'; return; }
+  box.style.display=''; box.innerHTML='⏳ Hesaplanıyor…';
+  try{
+    const [users,clans,gchat,kozmos]=await Promise.all([
+      fdb.get(fdb.ref(db,'users')),
+      fdb.get(fdb.ref(db,'clans')),
+      fdb.get(fdb.ref(db,'globalChat')),
+      fdb.get(fdb.ref(db,'kozmos')),
+    ]);
+    const uCount=users.exists()?Object.keys(users.val()).length:0;
+    const uVal=users.exists()?users.val():{};
+    const now=Date.now();
+    const onlineCount=Object.values(uVal).filter(u=>u.online===true&&(now-(u.lastSeen||0))<180000).length;
+    const adminCount=Object.values(uVal).filter(u=>u.isAdmin===true).length;
+    const bannedCount=Object.values(uVal).filter(u=>u.banned===true).length;
+    const totalKaju=Object.values(uVal).reduce((s,u)=>s+(u.kaju||0),0);
+    const cCount=clans.exists()?Object.keys(clans.val()).length:0;
+    const gcCount=gchat.exists()?Object.keys(gchat.val()).length:0;
+    let creatureTotal=0,eggTotal=0;
+    if(kozmos.exists()){ const kv=kozmos.val(); Object.values(kv).forEach(u=>{ if(u.creatures)creatureTotal+=Object.keys(u.creatures).length; if(u.eggs)eggTotal+=Object.keys(u.eggs).length; }); }
+    box.innerHTML='<div class="fbstat-grid">'
+      +'<div class="fbstat"><div class="fbstat-n">'+uCount+'</div><div class="fbstat-l">👥 Kullanıcı</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#69F0AE">'+onlineCount+'</div><div class="fbstat-l">🟢 Çevrimiçi</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#FFD740">'+adminCount+'</div><div class="fbstat-l">👑 Admin</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#FF5252">'+bannedCount+'</div><div class="fbstat-l">🚫 Banlı</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#42A5F5">'+cCount+'</div><div class="fbstat-l">🏰 Klan</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#c084fc">'+creatureTotal+'</div><div class="fbstat-l">🦄 Kozmo</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#c084fc">'+eggTotal+'</div><div class="fbstat-l">🥚 Yumurta</div></div>'
+      +'<div class="fbstat"><div class="fbstat-n" style="color:#FFB74D">'+gcCount+'</div><div class="fbstat-l">💬 Mesaj</div></div>'
+      +'</div>'
+      +'<div style="text-align:center;margin-top:10px;padding:10px;background:rgba(255,215,64,.06);border-radius:10px"><div style="font-size:9px;color:#9fb0d8">TOPLAM EKONOMİ</div><div style="font-size:18px;font-weight:900;color:#FFD740">🥜 '+totalKaju.toLocaleString('tr-TR')+'</div></div>';
+  }catch(e){ box.innerHTML='<i>İstatistik alınamadı: '+(e.message||e)+'</i>'; }
+}
+
+// ── 📦 Veri Export ──────────────────────────────────────────────
+async function exportData(){
+  if(!confirm('Tüm portal verisi JSON olarak indirilsin mi? (Büyük olabilir)'))return;
+  msg('⏳ Veri toplanıyor…', true);
+  try{
+    const [users,clans,kozmos,seasons]=await Promise.all([
+      fdb.get(fdb.ref(db,'users')),
+      fdb.get(fdb.ref(db,'clans')),
+      fdb.get(fdb.ref(db,'kozmos')),
+      fdb.get(fdb.ref(db,'seasons')),
+    ]);
+    const data={
+      exportedAt:new Date().toISOString(),
+      exportedBy:Auth.getState().displayName||'Admin',
+      users:users.exists()?users.val():{},
+      clans:clans.exists()?clans.val():{},
+      kozmos:kozmos.exists()?kozmos.val():{},
+      seasons:seasons.exists()?seasons.val():{},
+    };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download='hero-portal-yedek-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    msg('📦 Veri indirildi!', true);
+    logAdmin('export-data', '', 'JSON yedek');
+  }catch(e){ msg('Export hatası: '+(e.message||e), false); }
 }
 
 // ── 🏰 Klan Yönetimi ────────────────────────────────────────────

@@ -99,6 +99,16 @@ export async function openPlayerCard(uid){
   }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
+  // En iyi rozetleri çek (ilk 5)
+  let topBadges = [];
+  try{
+    const bm = await import('./badges.js');
+    const all = await bm.getUserBadges(uid, p);
+    const earned = all.filter(b=>b.earned);
+    const rarOrder={mythic:0,legendary:1,epic:2,special:3,rare:4,common:5};
+    earned.sort((a,b)=>(rarOrder[a.rarity]??9)-(rarOrder[b.rarity]??9));
+    topBadges = earned.slice(0,5).map(b=>({icon:b.icon,name:b.name,rarity:b.rarity,color:(bm.BADGE_RARITY[b.rarity]||{}).color||'#9fb0d8'}));
+  }catch(e){}
   ov.querySelector('.pcp-card').innerHTML = `
     <div class="pcp-top">
       <div class="pcp-ava">${avatarOf(p, uid)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
@@ -114,6 +124,7 @@ export async function openPlayerCard(uid){
       <div class="pcp-stat"><b>🥜 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
       <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
+    ${topBadges.length ? '<div class="pcp-badges"><div class="pcp-badges-lbl">🏅 Rozetler</div><div class="pcp-badges-row">'+topBadges.map(b=>'<div class="pcp-badge-chip" title="'+esc(b.name)+'" style="--bc:'+b.color+'">'+b.icon+'</div>').join('')+'</div></div>' : ''}
     ${(()=>{
       // Arkadaş listesi gösterimi
       if(frHidden && !meAdmGlobal) return '<div class="pcp-friends-box"><div class="pcp-fr-hidden">🔒 Arkadaş listesi gizli</div></div>';

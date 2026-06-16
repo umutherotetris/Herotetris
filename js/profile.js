@@ -138,7 +138,7 @@ function _renderProfile(st){
       +'</div>'
     +'</div>'
     +'<div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>'
-    +'<div class="prf-card" id="prfTrophies"><div class="prf-lbl">🏅 KUPA VİTRİNİ</div><div class="prf-trbody">Yükleniyor…</div></div>';
+    +'<div class="prf-card" id="prfTrophies"><div class="prf-lbl">🏅 ROZET VİTRİNİ</div><div class="prf-trbody">Yükleniyor…</div></div>';
   // Buton dinleyicileri
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
@@ -363,32 +363,36 @@ async function renderRecords(st){
   body.innerHTML=rows.length?rows.join(''):'<i>Henüz rekor yok — oynamaya başla! 🎮</i>';
 }
 
-// ── Kupa Vitrini ─────────────────────────────────────────────
+// ── 🏅 Rozet Vitrini ─────────────────────────────────────────
 async function renderTrophies(st){
   const body=document.querySelector('#prfTrophies .prf-trbody'); if(!body) return;
-  if(!st.uid){body.innerHTML='<i>Giriş yapınca kupaların burada görünür</i>';return;}
-  let p=st.profile||{};
-  try{const s=await fdb.get(fdb.ref(db,'users/'+st.uid));if(s.exists())p=s.val();}catch(e){}
-  let frCount=0;
-  try{const s=await fdb.get(fdb.ref(db,'friends/'+st.uid));if(s.exists())frCount=Object.keys(s.val()).length;}catch(e){}
-  const lvl=p.level||1,kaju=p.kaju||0,best=p.bestScores||{},kr=p.kelimeRecords||{};
-  const T=[
-    {icon:'👣',name:'İlk Adım',desc:'Seviye 2 ol',ok:lvl>=2},
-    {icon:'🚀',name:'Yükselen',desc:'Seviye 5 ol',ok:lvl>=5},
-    {icon:'🌟',name:'Usta',desc:'Seviye 10 ol',ok:lvl>=10},
-    {icon:'🥜',name:'Birikimci',desc:'10.000 Kaju',ok:kaju>=10000},
-    {icon:'🤑',name:'Zengin',desc:'100.000 Kaju',ok:kaju>=100000},
-    {icon:'💎',name:'Milyoner',desc:'1.000.000 Kaju',ok:kaju>=1000000},
-    {icon:'👥',name:'Sosyal',desc:'3 arkadaş edin',ok:frCount>=3},
-    {icon:'🦋',name:'Popüler',desc:'10 arkadaş edin',ok:frCount>=10},
-    {icon:'🎭',name:'Karakterli',desc:'Avatar seç',ok:!!p.avatar},
-    {icon:'🧱',name:'Tetrisçi',desc:'Tetris rekoru kır',ok:!!best.tetris},
-    {icon:'♟️',name:'Stratejist',desc:'Satranç rekoru kır',ok:!!best.chess},
-    {icon:'🎲',name:'Tavlacı',desc:'Tavla rekoru kır',ok:!!best.tavla},
-    {icon:'🔤',name:'Kelime Kurdu',desc:'30+ puanlık kelime',ok:!!(kr.best&&kr.best.score>=30)},
-  ];
-  const got=T.filter(t=>t.ok).length;
-  body.innerHTML='<div class="tr-count">'+got+'/'+T.length+' kupa</div><div class="tr-grid">'+T.map(t=>'<div class="tr-item'+(t.ok?' on':'')+'" title="'+esc(t.desc)+'"><div class="tr-ico">'+(t.ok?t.icon:'🔒')+'</div><div class="tr-name">'+esc(t.name)+'</div></div>').join('')+'</div>';
+  if(!st.uid){body.innerHTML='<i>Giriş yapınca rozetlerin burada görünür</i>';return;}
+  body.innerHTML='<div class="badge-loading">⏳ Rozetler yükleniyor…</div>';
+  try{
+    const bm=await import('./badges.js');
+    const badges=await bm.getUserBadges(st.uid, st.profile);
+    const RAR=bm.BADGE_RARITY;
+    const earned=badges.filter(b=>b.earned);
+    const locked=badges.filter(b=>!b.earned);
+    // Kalite sırası
+    const rarOrder={mythic:0,legendary:1,epic:2,special:3,rare:4,common:5};
+    earned.sort((a,b)=>(rarOrder[a.rarity]??9)-(rarOrder[b.rarity]??9));
+    const renderBadge=(b,isLocked)=>{
+      const r=RAR[b.rarity]||RAR.common;
+      return '<div class="badge-item'+(isLocked?' locked':'')+' rar-'+b.rarity+'" title="'+esc(b.name)+' — '+esc(b.desc)+'" style="--bc:'+r.color+';--bg:'+r.glow+'">'
+        +'<div class="badge-ico">'+(isLocked?'🔒':b.icon)+'</div>'
+        +'<div class="badge-name">'+esc(b.name)+'</div>'
+        +'<div class="badge-rar" style="color:'+r.color+'">'+r.label+'</div>'
+      +'</div>';
+    };
+    body.innerHTML='<div class="badge-summary">'
+        +'<span class="badge-count">🏅 '+earned.length+'/'+badges.length+' Rozet</span>'
+      +'</div>'
+      +'<div class="badge-grid">'
+        +earned.map(b=>renderBadge(b,false)).join('')
+        +locked.map(b=>renderBadge(b,true)).join('')
+      +'</div>';
+  }catch(e){ body.innerHTML='<i>Rozetler yüklenemedi</i>'; }
 }
 
 // ── 🏆 Liderlik ──────────────────────────────────────────────
