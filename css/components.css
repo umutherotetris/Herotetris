@@ -731,3 +731,32 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .fr-btn.dm{ color:#00E5FF; }
 .fr-btn.egg{ color:#c084fc; }
 .fr-btn.rm{ color:#FF7043; font-size:13px; }
+
+/* ═══ 🏅 ROZET SİSTEMİ ═══════════════════════════════════════ */
+.badge-loading{ text-align:center;color:#7d8ab8;font-size:11px;padding:16px; }
+.badge-summary{ display:flex;align-items:center;justify-content:center;margin-bottom:12px; }
+.badge-count{ background:linear-gradient(135deg,rgba(255,215,64,.15),rgba(255,150,0,.08));border:1px solid rgba(255,215,64,.3);color:#FFD740;font-size:12px;font-weight:800;padding:6px 16px;border-radius:12px; }
+.badge-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:9px; }
+.badge-item{ position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px;border-radius:14px;border:1.5px solid var(--bc,#9fb0d8);background:linear-gradient(160deg,rgba(255,255,255,.04),transparent);transition:transform .15s; }
+.badge-item:not(.locked){ box-shadow:0 0 14px var(--bg,rgba(159,176,216,.3)); }
+.badge-item:not(.locked):hover{ transform:translateY(-3px) scale(1.03); }
+.badge-item.locked{ border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.02);opacity:.45;box-shadow:none; }
+.badge-ico{ font-size:30px;line-height:1; }
+.badge-name{ font-size:9px;font-weight:800;color:#eef2ff;text-align:center;line-height:1.2; }
+.badge-rar{ font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px; }
+.badge-item.locked .badge-rar{ color:#5d6890!important; }
+/* Mitik/efsanevi rozet parıltısı */
+.badge-item.rar-mythic:not(.locked){ animation:badgeMythic 2.5s ease-in-out infinite; }
+.badge-item.rar-legendary:not(.locked){ animation:badgeLegend 3s ease-in-out infinite; }
+@keyframes badgeMythic{ 0%,100%{ box-shadow:0 0 14px rgba(255,82,82,.5) } 50%{ box-shadow:0 0 24px rgba(255,82,82,.85) } }
+@keyframes badgeLegend{ 0%,100%{ box-shadow:0 0 12px rgba(255,179,0,.5) } 50%{ box-shadow:0 0 22px rgba(255,179,0,.8) } }
+/* Oyuncu kartında rozet şeridi */
+.pcp-badges{ margin-top:12px;padding:10px;background:linear-gradient(135deg,rgba(255,215,64,.05),transparent);border:1px solid rgba(255,215,64,.15);border-radius:12px; }
+.pcp-badges-lbl{ font-size:10px;font-weight:800;color:#FFD740;margin-bottom:7px; }
+.pcp-badges-row{ display:flex;gap:7px;flex-wrap:wrap; }
+.pcp-badge-chip{ width:38px;height:38px;border-radius:11px;border:1.5px solid var(--bc,#9fb0d8);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 8px var(--bc,#9fb0d8)33; }
+/* ═══ 📊 FB İstatistik ═══ */
+.fbstat-grid{ display:grid;grid-template-columns:repeat(4,1fr);gap:7px; }
+.fbstat{ text-align:center;padding:10px 4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px; }
+.fbstat-n{ font-size:20px;font-weight:900;color:#dfe7ff; }
+.fbstat-l{ font-size:8px;color:#9fb0d8;margin-top:2px; }
