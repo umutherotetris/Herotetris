@@ -361,8 +361,8 @@
 .chat-op-badge{display:inline-block;font-size:9px;color:#CE93D8;background:rgba(206,147,216,.12);border:1px solid rgba(206,147,216,.25);border-radius:5px;padding:0 5px;font-weight:900;flex-shrink:0;}
 
 /* ── 👤 Oyuncu kartı popup ── */
-.pcp-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px; }
-.pcp-card{ width:100%; max-width:330px; background:linear-gradient(165deg,#1a2142,#0d1024); border:1.5px solid rgba(0,229,255,.25); border-radius:18px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.05); animation:ghpOpen .3s cubic-bezier(.34,1.56,.64,1); }
+.pcp-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:flex; align-items:flex-start; justify-content:center; padding:16px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.pcp-card{ width:100%; max-width:330px; max-height:calc(100vh - 32px); overflow-y:auto; -webkit-overflow-scrolling:touch; background:linear-gradient(165deg,#1a2142,#0d1024); border:1.5px solid rgba(0,229,255,.25); border-radius:18px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.05); animation:ghpOpen .3s cubic-bezier(.34,1.56,.64,1); margin:auto; }
 .pcp-load{ text-align:center; font-size:24px; padding:20px; }
 .pcp-top{ display:flex; gap:12px; align-items:center; }
 .pcp-ava{ position:relative; width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(0,229,255,.3); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
