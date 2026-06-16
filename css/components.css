@@ -760,3 +760,11 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .fbstat{ text-align:center;padding:10px 4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px; }
 .fbstat-n{ font-size:20px;font-weight:900;color:#dfe7ff; }
 .fbstat-l{ font-size:8px;color:#9fb0d8;margin-top:2px; }
+
+/* ═══ 🔔 NAV BİLDİRİM LİSTESİ (Hub kalitesinde) ═══════════════ */
+.nav-notif-item{ display:flex; align-items:flex-start; gap:10px; padding:11px 12px; margin-bottom:6px; border-radius:11px; transition:background .15s; }
+.nav-notif-item:hover{ filter:brightness(1.15); }
+.nav-notif-ico{ font-size:18px; flex-shrink:0; width:24px; text-align:center; }
+.nav-notif-body{ flex:1; min-width:0; }
+.nav-notif-txt{ font-size:11.5px; color:#dfe7ff; line-height:1.4; }
+.nav-notif-time{ font-size:8.5px; color:#5d6890; margin-top:3px; }
