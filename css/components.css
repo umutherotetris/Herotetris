@@ -438,8 +438,8 @@
 .clan-chat-ava{ font-size:16px; flex-shrink:0; }
 .clan-season-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:4px; margin-top:9px; overflow:hidden; }
 .ghp-sys-msg{ text-align:center; padding:4px 12px; margin:3px 0; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:5px; }
-.gc-act{ font-size:9px; cursor:pointer; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); user-select:none; opacity:.7; }
-.gc-act:hover{ opacity:1; }
+.gc-act{ display:inline-block;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);user-select:none;opacity:.75;margin-left:8px;line-height:1; }
+.gc-act:hover{ opacity:1;background:rgba(255,255,255,.15); }
 
 /* ── 🛍️ Mağaza ── */
 .shop-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
@@ -628,7 +628,7 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .pcp-mod-btn.mute{ border-color:rgba(255,152,0,.3);color:#FFB74D; }
 .pcp-mod-btn.kick{ border-color:rgba(206,147,216,.3);color:#CE93D8; }
 /* ── 💬 Klan sohbet düzenle/sil ── */
-.clan-chat-act{ cursor:pointer;opacity:.6;margin-left:4px;transition:opacity .15s; }
+.clan-chat-act{ display:inline-block;cursor:pointer;font-size:13px;opacity:.75;margin-left:8px;padding:3px 7px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);transition:opacity .15s;line-height:1; }
 .clan-chat-act:hover{ opacity:1; }
 .clan-ann-current{ background:rgba(255,215,64,.06);border:1px solid rgba(255,215,64,.2);border-radius:10px;padding:10px;margin-top:8px; }
 /* ── Sistem mesajı (sohbette kick) ── */
@@ -640,3 +640,19 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 /* ── 🔧 Operatör butonu (oyuncu kartı moderasyon) ── */
 .pcp-mod-btn.op{ border-color:rgba(206,147,216,.35);color:#CE93D8; }
 .pcp-mod-btn.op:hover{ background:rgba(206,147,216,.12); }
+
+/* ═══ 🪪 KOMPAKT OYUNCU KARTI ═══════════════════════════════ */
+/* Eylem grid: ikonlu kompakt butonlar */
+.pcp-acts-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:12px; }
+.pcp-act-ico{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px 4px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#dfe7ff; font-size:18px; cursor:pointer; font-family:inherit; transition:transform .15s,background .15s; }
+.pcp-act-ico:hover{ transform:translateY(-2px); background:rgba(255,255,255,.09); }
+.pcp-act-ico span{ font-size:8.5px; font-weight:700; opacity:.85; }
+/* Arkadaş listesi kutusu */
+.pcp-friends-box{ margin-top:12px; padding:10px; background:rgba(0,229,255,.04); border:1px solid rgba(0,229,255,.15); border-radius:12px; }
+.pcp-fr-title{ font-size:10px; font-weight:800; color:#00E5FF; margin-bottom:8px; }
+.pcp-fr-list{ display:flex; flex-wrap:wrap; gap:6px; }
+.pcp-fr-chip{ width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:17px; cursor:pointer; transition:transform .15s,border-color .15s; }
+.pcp-fr-chip:hover{ transform:scale(1.12); border-color:rgba(0,229,255,.5); }
+.pcp-fr-hidden{ font-size:11px; color:#7d8ab8; text-align:center; padding:4px; }
+/* Admin moderasyon: kart içinde scroll'lu, ayrı bölüm */
+.pcp-admin-mod{ margin-top:12px; padding:12px; background:rgba(255,215,64,.04); border:1px solid rgba(255,215,64,.15); border-radius:12px; }
