@@ -81,13 +81,21 @@ export async function globalUnmute(targetUid, targetName, reason){
 export async function globalKick(targetUid, targetName, reason){
   const r = (reason||'').trim() || DEFAULT_REASON;
   const me = Auth.getState();
+  // Online kontrolü
+  try{
+    const pr = await fdb.get(fdb.ref(db,'presence/'+targetUid));
+    const online = pr.exists() && pr.val().online === true && (Date.now()-(pr.val().lastSeen||0))<180000;
+    if(!online){
+      return { ok:false, notOnline:true, error:(targetName||'Bu oyuncu')+' şu an çevrimdışı, oyundan atılamaz (zaten oyunda değil).' };
+    }
+  }catch(e){}
   try{
     // Kick sinyali: kullanıcı bunu görünce çıkış yapar
     await fdb.update(fdb.ref(db,'users/'+targetUid),{ kickSignal:{ ts:Date.now(), reason:r, by:me.uid } });
     await notify(targetUid, '🦵', 'OYUNDAN ATILDIN! Neden: '+r);
     await notifyStaff('🦵', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' OYUNDAN ATILDI. Neden: '+r, me.uid);
-    return true;
-  }catch(e){ return false; }
+    return { ok:true };
+  }catch(e){ return { ok:false, error:e.message||'Hata' }; }
 }
 
 // ── 💬 SOHBET KICK (sadece sohbetten at) ─────────────────────
@@ -95,6 +103,10 @@ export async function globalKick(targetUid, targetName, reason){
 export async function chatKick(targetUid, targetName, reason, activeChatUids){
   const r = (reason||'').trim() || DEFAULT_REASON;
   const me = Auth.getState();
+  // Sohbette mi kontrol et (liste verildiyse)
+  if(Array.isArray(activeChatUids) && activeChatUids.length && !activeChatUids.includes(targetUid)){
+    return { ok:false, notPresent:true, error:(targetName||'Bu oyuncu')+' şu an sohbette değil, atılamaz.' };
+  }
   try{
     // Sohbet kick işareti
     await fdb.update(fdb.ref(db,'users/'+targetUid),{ chatKick:{ ts:Date.now(), reason:r, by:me.uid } });
@@ -111,8 +123,8 @@ export async function chatKick(targetUid, targetName, reason, activeChatUids){
     await notifyStaff('🦵', (me.displayName||'Admin')+' → '+(targetName||'bir oyuncu')+' SOHBETTEN ATILDI. Neden: '+r, me.uid);
     // Sistem mesajı (sohbete)
     await fdb.push(fdb.ref(db,'globalChat'),{ _system:true, sysType:'kick', text:esc(targetName||'Bir oyuncu')+' sohbetten atıldı ('+r+')', ts:Date.now() });
-    return true;
-  }catch(e){ return false; }
+    return { ok:true };
+  }catch(e){ return { ok:false, error:e.message||'Hata' }; }
 }
 
 // ── 🔧 OPERATÖR YÖNETİMİ (sadece admin) ──────────────────────

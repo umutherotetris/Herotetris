@@ -265,6 +265,8 @@ export async function sendEgg(toUid,toName){
       sentAt:Date.now(),seed:Math.floor(Date.now()/1000)%997,status:'pending'
     });
     try{localStorage.setItem(todayKey,String(sentToday+1));}catch(e){}
+    // Alıcıya bildirim
+    try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi!',ts:Date.now(),fromUid:st.uid});}catch(e){}
     alert('🥚 Yumurta gönderildi → '+toName+'!');
   }catch(e){alert('Gönderilemedi: '+(e.message||e));}
 }

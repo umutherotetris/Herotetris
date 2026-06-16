@@ -286,7 +286,12 @@ function showKickMenu(uid,name){
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#kickClose').addEventListener('click',()=>ov.remove());
   inn.querySelector('#doKick').addEventListener('click',async()=>{
-    const reason=(inn.querySelector('#kickReason').value||'').trim();
+    const reason=(inn.querySelector('#kickReason').value||'').trim() || 'Kural İhlali';
+    // Üyelik kontrolü
+    try{
+      const mem=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid));
+      if(!mem.exists()||!mem.val()){ alert('⚠️ '+esc(name)+' artık klanda değil, atılamaz.'); ov.remove(); renderMembers(); return; }
+    }catch(e){}
     if(!confirm('Klandan at?'))return;
     try{
       await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid),null);
@@ -296,7 +301,11 @@ function showKickMenu(uid,name){
     }catch(e){alert('Yapılamadı');}
   });
   inn.querySelector('#doBan').addEventListener('click',async()=>{
-    const reason=(inn.querySelector('#kickReason').value||'').trim();
+    const reason=(inn.querySelector('#kickReason').value||'').trim() || 'Kural İhlali';
+    try{
+      const mem=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid));
+      if(!mem.exists()||!mem.val()){ alert('⚠️ '+esc(name)+' artık klanda değil. Yine de ban listesine eklensin mi?'); }
+    }catch(e){}
     if(!confirm('Banla?'))return;
     try{
       await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid),null);

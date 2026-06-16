@@ -91,7 +91,7 @@ export async function openPlayerCard(uid){
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
       <button class="pcp-btn" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc" data-pc="egg">🥚 Kozmo Gönder</button>
-      <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Poke</button>
+      <button class="pcp-btn" style="background:rgba(255,152,0,.08);border-color:rgba(255,152,0,.3);color:#FFB74D" data-pc="poke">👉 Dürt</button>
       <button class="pcp-btn" style="background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.3);color:#FF7043" data-pc="challenge">⚔️ Meydan Oku</button>
       ${(()=>{
         if(uid===me.uid) return '';
@@ -136,16 +136,21 @@ export async function openPlayerCard(uid){
   const pokeB = ov.querySelector('[data-pc="poke"]');
   if(pokeB) pokeB.addEventListener('click', async()=>{
     try{
-      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'👉',text:(me.displayName||'Biri')+' seni poke etti!',ts:Date.now(),fromUid:me.uid});
+      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'👉',text:(me.displayName||'Biri')+' seni dürttü!',ts:Date.now(),fromUid:me.uid});
       // Kısa vibrasyon
       if(navigator.vibrate) navigator.vibrate([30,20,30]);
       ov.remove();
-      showToast('👉 Poke gönderildi!');
+      showToast('👉 Dürtüldü!');
     }catch(e){}
   });
   // ⚔️ Meydan okuma
   const chalB = ov.querySelector('[data-pc="challenge"]');
   if(chalB) chalB.addEventListener('click', async()=>{
+    // Online kontrolü — çevrimdışı oyuncuya meydan okunamaz
+    if(!online){
+      alert('⚠️ '+nick+' şu an çevrimdışı. Meydan okuma sadece çevrimiçi oyunculara gönderilebilir.');
+      return;
+    }
     if(!confirm('⚔️ '+nick+' adlı oyuncuya meydan okuyacaksın. Devam?'))return;
     try{
       await fdb.set(fdb.ref(db,'gameInvites/'+uid+'/chall_'+Date.now()),{
@@ -172,7 +177,13 @@ export async function openPlayerCard(uid){
       else if(action==='unban'){ ok=await mod.globalUnban(uid,nick,reason); msg='Ban kaldırıldı'; }
       else if(action==='mute'){ const dur=prompt('Kaç dakika? (boş = süresiz)','60'); const d=dur?parseInt(dur):null; if(!confirm('🔇 '+nick+' susturulsun mu?'))return; ok=await mod.globalMute(uid,nick,reason,d); msg='Susturuldu'; }
       else if(action==='unmute'){ ok=await mod.globalUnmute(uid,nick,reason); msg='Susturma kaldırıldı'; }
-      else if(action==='kick'){ if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return; ok=await mod.globalKick(uid,nick,reason); msg='Atıldı'; }
+      else if(action==='kick'){
+        if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return;
+        const res=await mod.globalKick(uid,nick,reason);
+        if(res&&res.ok){ showToast('✅ '+nick+': Oyundan atıldı'); setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
+        else { alert(res&&res.error?res.error:'Atılamadı'); }
+        return;
+      }
       else if(action==='op'){ if(!confirm('🔧 '+nick+' operatör yapılsın mı?'))return; ok=await mod.makeOperator(uid,nick); msg='Operatör yapıldı'; if(H&&H.ops)H.ops[uid]=true; }
       else if(action==='unop'){ if(!confirm('🔧 '+nick+' operatörlüğü kaldırılsın mı?'))return; ok=await mod.removeOperator(uid,nick); msg='Operatörlük kaldırıldı'; if(H&&H.ops)delete H.ops[uid]; }
       else if(action==='showip'){
@@ -203,7 +214,13 @@ export async function openPlayerCard(uid){
     try{ const m = await import('./kozmos.js'); await m.sendEgg(uid, nick); }catch(e){ alert('Kozmo gönderilemedi: '+(e.message||e)); }
   });
   const dmB = ov.querySelector('[data-pc="dm"]');
-  if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
+  if(dmB) dmB.addEventListener('click', () => {
+    ov.remove();
+    applyFabSetting();
+    openHubTab('ozel');
+    // Hub DOM'u render olduktan sonra thread aç (yoksa elementler yok)
+    setTimeout(() => { try{ dmOpenThread(uid, nick); }catch(e){ console.warn('[DM]',e); } }, 150);
+  });
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
     if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
@@ -260,8 +277,8 @@ export function applyFabSetting(){
 // Ekranlardan hub'ı belirli sekmede aç
 export function openHubTab(tab){
   if(!H) return;
-  switchTab(tab || 'chat');
   if(!H.open) open();
+  switchTab(tab || 'chat');
 }
 
 export function initSocial(){
