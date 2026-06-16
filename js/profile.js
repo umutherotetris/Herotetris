@@ -428,64 +428,105 @@ function renderBridges(){
 async function _buildFriendsBridge(){
   const fr=byId('scrFriends'); if(!fr) return;
   const st=Auth.getState();
-  fr.innerHTML='<div class="prf-card"><div class="prf-lbl">👥 ARKADAŞLAR</div>'
-    +'<div id="bridgeFrList" style="display:flex;flex-direction:column;gap:6px;margin:8px 0"><div class="clan-load">⏳</div></div>'
-    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="dost">Hub’da Aç</button></div>';
-  fr.querySelector('[data-hub]').addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('dost');}catch(e){}});
-  if(!st.uid){document.getElementById('bridgeFrList').innerHTML='<div style="color:#5d6890;font-size:11px">Giriş gerekli</div>';return;}
+  if(!st.uid || st.status!=='google'){
+    fr.innerHTML='<div class="prf-card" style="text-align:center;padding:30px 16px"><div style="font-size:42px;margin-bottom:12px">👥</div><div style="font-size:14px;font-weight:800;color:#dfe7ff;margin-bottom:6px">Arkadaşların burada</div><div style="font-size:11px;color:#9fb0d8;margin-bottom:16px">Arkadaş eklemek, mesajlaşmak ve sosyalleşmek için giriş yap</div><button class="clan-btn p" style="width:100%" id="frLoginBtn">🔑 Google ile Giriş</button></div>';
+    const lb=fr.querySelector('#frLoginBtn');
+    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){alert('Giriş başlatılamadı');}});
+    return;
+  }
+  fr.innerHTML='<div class="prf-card"><div id="navFrContent"><div class="clan-load">⏳ Yükleniyor…</div></div></div>';
+  await _renderNavFriends();
+}
+
+async function _renderNavFriends(){
+  const box=byId('navFrContent'); if(!box) return;
+  const st=Auth.getState();
   try{
     const snap=await fdb.get(fdb.ref(db,'friends/'+st.uid));
-    const box=document.getElementById('bridgeFrList'); if(!box) return;
-    if(!snap.exists()||!Object.keys(snap.val()||{}).length){box.innerHTML='<div style="color:#5d6890;font-size:11px">Henüz arkadaş yok</div>';return;}
-    const uids=Object.keys(snap.val()).slice(0,8);
+    if(!snap.exists()||!Object.keys(snap.val()||{}).length){
+      box.innerHTML='<div class="prf-lbl">👥 ARKADAŞLAR</div><div style="text-align:center;padding:20px;color:#7d8ab8;font-size:12px">Henüz arkadaşın yok.<br><br>Sohbette birinin adına tıklayıp <b>👥 Arkadaş Ekle</b> diyebilirsin.</div><button class="clan-btn p" style="width:100%;margin-top:8px" data-gohub="dost">💎 Sosyal Hub\'a Git</button>';
+      const gh=box.querySelector('[data-gohub]'); if(gh) gh.addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('dost');}catch(e){}});
+      return;
+    }
+    const uids=Object.keys(snap.val());
     const rows=await Promise.all(uids.map(async uid=>{
-      let n='Arkadaş',a='👤',ol=false;
-      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;a=v.avatar||'👤';ol=!!v.online;}}catch(e){}
-      return {uid,n,a,ol};
+      let n='Arkadaş',a='👤',ol=false,lv=1,last=0;
+      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;a=v.avatar||'👤';lv=v.level||1;}}catch(e){}
+      try{const pr=await fdb.get(fdb.ref(db,'presence/'+uid));if(pr.exists()){const pv=pr.val();last=pv.lastSeen||0;ol=pv.online===true&&(Date.now()-last)<180000;}}catch(e){}
+      return {uid,n,a,ol,lv,last};
     }));
-    box.innerHTML=rows.map(r=>'<div class="bridge-fr-row" data-bfuid="'+esc(r.uid)+'">'
-      +'<div class="bridge-fr-ava" style="position:relative">'+esc(r.a)+(r.ol?'<div class="pcp-dot" style="top:-1px;right:-1px;width:7px;height:7px"></div>':'')+'</div>'
-      +'<div class="bridge-fr-name">'+esc(r.n)+'</div>'
-      +'<button class="clan-btn p" style="padding:4px 9px;font-size:10px" data-bfdm="'+esc(r.uid)+'" data-bfnm="'+esc(r.n)+'">✉️</button>'
-      +'<button class="clan-btn" style="padding:4px 8px;font-size:10px;background:rgba(192,132,252,.09);border-color:rgba(192,132,252,.3);color:#c084fc" data-bfegg="'+esc(r.uid)+'" data-bfnm="'+esc(r.n)+'">🥚</button>'
-    +'</div>').join('');
-    box.querySelectorAll('[data-bfuid]').forEach(el=>el.addEventListener('click',async e=>{
-      if(e.target.closest('[data-bfdm],[data-bfegg]'))return;
-      try{const m=await import('./social.js');m.openPlayerCard(el.dataset.bfuid);}catch(e){}
+    rows.sort((x,y)=>(y.ol-x.ol)||(y.last-x.last));
+    const onlineCount=rows.filter(r=>r.ol).length;
+    const tAgoN=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
+    box.innerHTML='<div class="fr-list-header"><span class="fr-hdr-total">👥 '+rows.length+' Arkadaş</span>'
+      +(onlineCount>0?'<span class="fr-hdr-online">🟢 '+onlineCount+' çevrimiçi</span>':'<span class="fr-hdr-offline">Kimse çevrimiçi değil</span>')+'</div>'
+      +rows.map(r=>'<div class="fr-row'+(r.ol?' online':'')+'">'
+        +'<div class="fr-ava" data-navpc="'+esc(r.uid)+'">'+esc(r.a)+(r.ol?'<span class="fr-dot"></span>':'')+'</div>'
+        +'<div class="fr-info" data-navpc="'+esc(r.uid)+'"><div class="fr-name">'+esc(r.n)+' <span class="fr-lv">LV '+r.lv+'</span></div><div class="fr-status">'+(r.ol?'<span class="fr-on">● Çevrimiçi</span>':'<span class="fr-off">'+tAgoN(r.last)+'</span>')+'</div></div>'
+        +'<button class="fr-btn dm" data-navdm="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" title="Mesaj">✉️</button>'
+        +'<button class="fr-btn egg" data-navegg="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" title="Kozmo">🥚</button>'
+      +'</div>').join('');
+    box.querySelectorAll('[data-navpc]').forEach(el=>el.addEventListener('click',async e=>{
+      if(e.target.closest('[data-navdm],[data-navegg]'))return;
+      try{const m=await import('./social.js');m.openPlayerCard(el.dataset.navpc);}catch(e){}
     }));
-    box.querySelectorAll('[data-bfdm]').forEach(b=>b.addEventListener('click',async e=>{
+    box.querySelectorAll('[data-navdm]').forEach(b=>b.addEventListener('click',async e=>{
       e.stopPropagation();
-      try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('ozel');}catch(e){}
+      try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('ozel');setTimeout(()=>{if(m.dmOpenThreadExternal)m.dmOpenThreadExternal(b.dataset.navdm,b.dataset.navnm);},250);}catch(e){}
     }));
-    box.querySelectorAll('[data-bfegg]').forEach(b=>b.addEventListener('click',async e=>{
-      e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.bfegg,b.dataset.bfnm);}catch(err){}
+    box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
+      e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}
     }));
-  }catch(e){}
+  }catch(e){ box.innerHTML='<div class="prf-lbl">👥 ARKADAŞLAR</div><i style="color:#7d8ab8">Yüklenemedi</i>'; }
 }
 async function _buildNotifBridge(){
   const nt=byId('scrNotif'); if(!nt) return;
   const st=Auth.getState();
-  nt.innerHTML='<div class="prf-card"><div class="prf-lbl">🔔 BİLDİRİMLER</div>'
-    +'<div id="bridgeNotifList" style="display:flex;flex-direction:column;gap:5px;margin:8px 0"><div class="clan-load">⏳</div></div>'
-    +'<button class="clan-btn p" style="width:100%;margin-top:8px" data-hub="notif">🔔 Hub’da Aç</button></div>';
-  nt.querySelector('[data-hub]').addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('notif');}catch(e){}});
-  if(!st.uid){document.getElementById('bridgeNotifList').innerHTML='<div style="color:#5d6890;font-size:11px">Giriş gerekli</div>';return;}
+  if(!st.uid || st.status!=='google'){
+    nt.innerHTML='<div class="prf-card" style="text-align:center;padding:30px 16px"><div style="font-size:42px;margin-bottom:12px">🔔</div><div style="font-size:14px;font-weight:800;color:#dfe7ff;margin-bottom:6px">Bildirimlerin burada</div><div style="font-size:11px;color:#9fb0d8;margin-bottom:16px">Arkadaş istekleri, mesajlar ve duyuruları görmek için giriş yap</div><button class="clan-btn p" style="width:100%" id="ntfLoginBtn">🔑 Google ile Giriş</button></div>';
+    const lb=nt.querySelector('#ntfLoginBtn');
+    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){alert('Giriş başlatılamadı');}});
+    return;
+  }
+  nt.innerHTML='<div class="prf-card"><div id="navNotifContent"><div class="clan-load">⏳ Yükleniyor…</div></div></div>';
+  await _renderNavNotifs();
+}
+
+async function _renderNavNotifs(){
+  const box=byId('navNotifContent'); if(!box) return;
+  const st=Auth.getState();
   try{
-    const snap=await fdb.get(fdb.query(fdb.ref(db,'userNotifs/'+st.uid),fdb.limitToLast(5)));
-    const box=document.getElementById('bridgeNotifList'); if(!box) return;
-    if(!snap.exists()){box.innerHTML='<div style="color:#5d6890;font-size:11px">Bildirim yok</div>';return;}
-    const rows=[]; snap.forEach(ch=>{rows.push(ch.val());});
+    const snap=await fdb.get(fdb.query(fdb.ref(db,'userNotifs/'+st.uid),fdb.limitToLast(30)));
+    if(!snap.exists()){
+      box.innerHTML='<div class="prf-lbl">🔔 BİLDİRİMLER</div><div style="text-align:center;padding:24px;color:#7d8ab8;font-size:12px">📭 Henüz bildirimin yok</div>';
+      return;
+    }
+    const rows=[]; snap.forEach(ch=>{rows.push({key:ch.key,...ch.val()});});
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    const tAgoS=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk';return Math.floor(d/3600e3)+' sa';};
-    const clr={'🦵':'#FF5252','🚫':'#FF1744','✅':'#69F0AE','⚠️':'#FFB74D','📣':'#FFD740','🏰':'#ffd86b','🥚':'#c084fc','🎁':'#c084fc','👥':'#00E5FF','🤝':'#00E5FF'};
-    box.innerHTML=rows.map(n=>{
-      const c=clr[n.icon||'']||'#9fb0d8';
-      return '<div class="bridge-notif-row" style="border-left:3px solid '+c+'">'
-        +'<span style="font-size:14px">'+esc(n.icon||'🔔')+'</span>'
-        +'<div><div style="font-size:10px;color:#dfe7ff">'+esc((n.text||n.msg||'').slice(0,55))+'</div><div style="font-size:8px;color:#5d6890">'+tAgoS(n.ts)+'</div></div>'
-      +'</div>';
-    }).join('');
-  }catch(e){}
+    const tAgoN=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
+    box.innerHTML='<div class="fr-list-header"><span class="fr-hdr-total">🔔 '+rows.length+' Bildirim</span><button class="clan-btn" style="padding:4px 10px;font-size:9px;background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.25);color:#FF7043" id="navNotifClear">🗑 Temizle</button></div>'
+      +rows.map(n=>{
+        const ico=n.icon||'🔔'; const txt=n.text||n.msg||'';
+        const isKick=ico==='🦵'||txt.includes('atıldın');
+        const isBan=ico==='🚫'||txt.includes('banland');
+        const isUnban=ico==='✅';
+        const isWarn=ico==='⚠️';
+        const isAnn=ico==='📣'||ico==='🏰';
+        const isKozmo=ico==='🥚'||ico==='🎁';
+        const isFr=ico==='👥'||ico==='🤝'||ico==='👉';
+        const c=isKick?'#FF5252':isBan?'#FF1744':isUnban?'#69F0AE':isWarn?'#FFB74D':isAnn?'#FFD740':isKozmo?'#c084fc':isFr?'#00E5FF':'#9fb0d8';
+        const bg=isKick?'rgba(255,82,82,.07)':isBan?'rgba(220,30,30,.08)':isAnn?'rgba(255,215,64,.05)':isKozmo?'rgba(192,132,252,.06)':isFr?'rgba(0,229,255,.05)':'rgba(255,255,255,.03)';
+        return '<div class="nav-notif-item" style="background:'+bg+';border-left:3px solid '+c+'">'
+          +'<div class="nav-notif-ico" style="color:'+c+'">'+esc(ico)+'</div>'
+          +'<div class="nav-notif-body"><div class="nav-notif-txt">'+esc(txt)+'</div><div class="nav-notif-time">'+tAgoN(n.ts)+'</div></div>'
+        +'</div>';
+      }).join('');
+    const clr=box.querySelector('#navNotifClear');
+    if(clr) clr.addEventListener('click',async()=>{
+      if(!confirm('Tüm bildirimler silinsin mi?'))return;
+      try{await fdb.set(fdb.ref(db,'userNotifs/'+st.uid),null);await _renderNavNotifs();}catch(e){}
+    });
+  }catch(e){ box.innerHTML='<div class="prf-lbl">🔔 BİLDİRİMLER</div><i style="color:#7d8ab8">Yüklenemedi</i>'; }
 }
 
 export default initScreens;

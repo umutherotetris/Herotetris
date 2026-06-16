@@ -377,6 +377,15 @@ export function openHubTab(tab){
   if(!H.open) open();
   switchTab(tab || 'chat');
 }
+// Dışarıdan (nav menü) DM thread açmak için
+export function dmOpenThreadExternal(uid, nick){
+  if(!H) return;
+  if(!H.open) open();
+  switchTab('ozel');
+  let tries=0;
+  const t=()=>{ tries++; const el=byId('ghpDMThread'); if(el){ try{ dmOpenThread(uid,nick); }catch(e){} } else if(tries<15){ setTimeout(t,80); } };
+  setTimeout(t,120);
+}
 
 export function initSocial(){
   if(typeof window!=='undefined'){ if(window.__heroSocialInit) return; window.__heroSocialInit = true; }
