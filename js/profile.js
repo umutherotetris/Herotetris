@@ -612,7 +612,19 @@ async function _renderNavFriends(){
     }));
     box.querySelectorAll('[data-navdm]').forEach(b=>b.addEventListener('click',async e=>{
       e.stopPropagation();
-      try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('ozel');setTimeout(()=>{if(m.dmOpenThreadExternal)m.dmOpenThreadExternal(b.dataset.navdm,b.dataset.navnm);},250);}catch(e){}
+      try{
+        const m=await import('./social.js');
+        const _uid=b.dataset.navdm, _nm=b.dataset.navnm;
+        m.applyFabSetting(); m.openHubTab('ozel');
+        let _t=0;
+        const _try=()=>{ _t++;
+          const el=document.getElementById('ghpDMThread');
+          if(el&&el.closest('.ghp-pane.active')){ try{m.dmOpenThreadExternal(_uid,_nm);}catch(e){} }
+          else if(el){ m.dmOpenThreadExternal(_uid,_nm); }
+          else if(_t<20){ setTimeout(_try,100); }
+        };
+        setTimeout(_try,200);
+      }catch(e){}
     }));
     box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
       e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}

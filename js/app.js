@@ -7,6 +7,7 @@
 import Auth from './auth.js';
 import initUI from './ui.js';
 import initNav from './nav.js';
+import Store from './store.js';
 
 // Mobilde hata görmek için: ekranın üstüne kısa bir uyarı bas
 function toast(msg, isErr){
@@ -76,7 +77,7 @@ function start(){
 
   console.info('[Hero] Stage 2 — Auth hazır, oyunlar dinamik yüklenecek.');
   window.Hero = {
-    Auth, toast,
+    Auth, Store, toast,
     openTetris: () => launchGame('./games/tetris.js', 'openTetris', 'Tetris'),
     openChess:  () => launchGame('./games/chess.js',  'openChess',  'Satranç'),
     openTavla:  () => launchGame('./games/tavla.js',  'openTavla',  'Tavla'),

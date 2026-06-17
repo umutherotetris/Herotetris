@@ -933,7 +933,15 @@ async function renderFriends(){
       + '<button class="fr-btn rm" data-frm="'+esc(r.uid)+'" title="Çıkar">✕</button>'
     + '</div>'
   ).join('');
-  list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
+  list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => {
+    const _uid=b.dataset.fdm, _nick=b.dataset.fn;
+    if(!H.open) open();
+    switchTab('ozel');
+    // DOM hazır olana kadar retry
+    let _t=0;
+    const _try=()=>{ _t++; const el=byId('ghpDMThread'); if(el){ try{dmOpenThread(_uid,_nick);}catch(e){} } else if(_t<15){ setTimeout(_try,80); } };
+    setTimeout(_try, 100);
+  }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {
     try{ const m = await import('./kozmos.js'); await m.sendEgg(b.dataset.fegg, b.dataset.fn); }catch(e){ alert('Kozmo gönderilemedi'); }
