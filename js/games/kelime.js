@@ -58,9 +58,15 @@ function injectStyles(){
 .kl-icon{width:38px;height:38px;flex:0 0 auto;border-radius:10px;border:1px solid rgba(200,170,255,.22);background:rgba(168,85,247,.12);color:#efe7ff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .kl-icon:active{transform:scale(.93)}
 .kl-scores{display:flex;align-items:center;gap:8px;padding:0 12px 8px;flex:0 0 auto}
-.kl-score{flex:1;background:linear-gradient(165deg,rgba(168,85,247,.15),rgba(124,58,237,.04));border:1px solid rgba(200,170,255,.18);border-radius:14px;padding:8px 10px;text-align:center;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 8px rgba(0,0,0,.22)}
+.kl-score{flex:1;background:linear-gradient(165deg,rgba(168,85,247,.15),rgba(124,58,237,.04));border:1px solid rgba(200,170,255,.18);border-radius:14px;padding:6px 8px;text-align:center;transition:.2s;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 8px rgba(0,0,0,.22)}
 .kl-score.active{border-color:#f0b132;background:linear-gradient(165deg,rgba(240,177,50,.22),rgba(240,177,50,.05));box-shadow:0 0 18px rgba(240,177,50,.34),inset 0 1px 0 rgba(255,255,255,.14)}
 .kl-score .nm{font-size:11px;color:#cbb9ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kl-nm-click{cursor:pointer;transition:color .15s}
+.kl-nm-click:hover{color:#fff;text-decoration:underline dotted rgba(200,170,255,.5)}
+.kl-score-top{display:flex;align-items:center;gap:4px;justify-content:center;margin-bottom:3px}
+.kl-lv{font-size:8px;font-weight:800;background:rgba(192,132,252,.2);color:#c084fc;padding:1px 5px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.kl-xpbar{height:3px;background:rgba(255,255,255,.1);border-radius:3px;margin:2px 0 3px;overflow:hidden}
+.kl-xpfill{height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:3px;transition:width .8s ease}
 .kl-score .pt{font-size:21px;font-weight:800;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
 .kl-gem{width:30px;height:30px;flex:0 0 auto;border-radius:7px;transform:rotate(45deg);background:linear-gradient(135deg,#d8b4fe,#7c3aed);border:2px solid #e9c466;box-shadow:0 0 16px rgba(168,85,247,.6),inset 0 0 7px rgba(255,255,255,.45)}
 .kl-status{text-align:center;font-size:13px;padding:0 12px 6px;min-height:18px;color:#d9caf2;flex:0 0 auto}
@@ -811,9 +817,23 @@ function buildGameDOM(){
   }
   c.innerHTML = `
     <div class="kl-scores">
-      <div class="kl-score" data-el="scoreA"><div class="nm" data-el="nameA">Oyuncu 1</div><div class="pt" data-el="ptA">0</div></div>
+      <div class="kl-score" data-el="scoreA">
+        <div class="kl-score-top">
+          <span class="kl-lv" data-el="lvA">LV.1</span>
+          <div class="nm kl-nm-click" data-el="nameA" data-pcuid="" title="Profile git">Oyuncu 1</div>
+        </div>
+        <div class="kl-xpbar"><div class="kl-xpfill" data-el="xpA" style="width:0%"></div></div>
+        <div class="pt" data-el="ptA">0</div>
+      </div>
       <div class="kl-gem" title="Kelimecik"></div>
-      <div class="kl-score" data-el="scoreB"><div class="nm" data-el="nameB">Oyuncu 2</div><div class="pt" data-el="ptB">0</div></div>
+      <div class="kl-score" data-el="scoreB">
+        <div class="kl-score-top">
+          <span class="kl-lv" data-el="lvB">LV.1</span>
+          <div class="nm kl-nm-click" data-el="nameB" data-pcuid="" title="Profile git">Oyuncu 2</div>
+        </div>
+        <div class="kl-xpbar"><div class="kl-xpfill" data-el="xpB" style="width:0%"></div></div>
+        <div class="pt" data-el="ptB">0</div>
+      </div>
     </div>
     <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
     <button class="kl-flagbtn" data-act="gamemenu" title="Oyun seçenekleri">🏳️</button>
@@ -833,6 +853,12 @@ function buildGameDOM(){
       <button class="kl-btn primary" data-act="submit">✓ Onayla</button>
     </div>`;
   // tahta hücre tıklama
+  // Nick tıklanabilir → profil kartı
+  c.querySelectorAll('.kl-nm-click').forEach(nm => nm.addEventListener('click', async e => {
+    const uid = nm.dataset.pcuid;
+    if(!uid) return;
+    try{ const m=await import('../social.js'); m.openPlayerCard(uid); }catch(e){}
+  }));
   c.querySelector('[data-el="board"]').addEventListener('click', (e)=>{
     const cell = e.target.closest('.kl-cell'); if(!cell) return;
     onCellTap(+cell.dataset.r, +cell.dataset.c);
@@ -986,7 +1012,7 @@ function confetti(){
 
 function renderScores(){
   const q = s => G.root.querySelector(s);
-  if(!G.state || !G.names || !q('[data-el="nameA"]')) return;   // menü/geçiş anında çağrılırsa çök
+  if(!G.state || !G.names || !q('[data-el="nameA"]')) return;
   q('[data-el="nameA"]').textContent = G.names.A;
   q('[data-el="nameB"]').textContent = G.names.B;
   q('[data-el="ptA"]').textContent = G.state.scores.A;
@@ -994,6 +1020,26 @@ function renderScores(){
   const ct = currentTurn();
   q('[data-el="scoreA"]').classList.toggle('active', ct==='A');
   q('[data-el="scoreB"]').classList.toggle('active', ct==='B');
+  // XP + Level (kendi profilimizden)
+  try{
+    const _ps = window.Hero&&window.Hero.Store&&window.Hero.Store.getState&&window.Hero.Store.getState();
+    if(_ps){
+      const lv=_ps.level||1, xp=_ps.xp||0, need=300+lv*200;
+      const pct=Math.min(100,Math.round(xp/need*100));
+      const lvEl=q('[data-el="lvA"]'); if(lvEl) lvEl.textContent='LV.'+lv;
+      const xpEl=q('[data-el="xpA"]'); if(xpEl) xpEl.style.width=pct+'%';
+    }
+    // UID'leri data-pcuid'ye set et (ilk render'da)
+    const nmA=q('[data-el="nameA"]'); const nmB=q('[data-el="nameB"]');
+    if(nmA&&!nmA.dataset.pcuid){
+      const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
+      if(_as&&_as.uid) nmA.dataset.pcuid=_as.uid;
+    }
+    if(nmB&&!nmB.dataset.pcuid&&G.oppUid) nmB.dataset.pcuid=G.oppUid;
+    // Rakip level (varsa)
+    if(G.oppLevel){ const lvB=q('[data-el="lvB"]'); if(lvB) lvB.textContent='LV.'+(G.oppLevel||1); }
+    if(G.oppXP&&G.oppLevel){ const xpB=q('[data-el="xpB"]'); if(xpB){ const pctB=Math.min(100,Math.round((G.oppXP||0)/(300+(G.oppLevel||1)*200)*100)); xpB.style.width=pctB+'%'; } }
+  }catch(e){}
   const starEl = q('[data-el="stars"]');
   if(starEl){
     let myScore;
