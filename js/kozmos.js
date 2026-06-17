@@ -93,17 +93,30 @@ export function kozmoGetPhase(sentAt,feedBonus){
 }
 
 // ── Yaratık türleri ──────────────────────────────────────────
+// ── ULTRA PREMIUM KOZMO TANIMLARI ────────────────────────────
+// shape: SVG gövde tipi · c1/c2: gradyan renkleri · acc: aksan rengi
+// power: yetenek · element: tür · sound: ses karakteri · particle: parçacık
 const TYPES={
-  nebula_kedi:  {n:'Nebula Kedi',  e:'🐱',c:'#93c5fd',r:'common'},
-  lav_tilkisi:  {n:'Lav Tilkisi',  e:'🦊',c:'#fb923c',r:'rare'},
-  mandalina_tav:{n:'Mandalina Tav',e:'🐇',c:'#fbbf24',r:'common'},
-  bulut_ruhu:   {n:'Bulut Kaplanı',   e:'☁️',c:'#e0f2fe',r:'rare'},
-  gokk_ruhu:    {n:'Gök Fırtınası',    e:'🌈',c:'#e879f9',r:'legendary'},
-  kristal_boc:  {n:'Kristal Böcek',e:'🦋',c:'#67e8f9',r:'rare'},
-  nova_kitsune: {n:'Nova Kitsune', e:'✨',c:'#c084fc',r:'rare'},
-  kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',r:'epic'},
-  derin_ejder:  {n:'Derin Ejder',  e:'🐲',c:'#00ffc8',r:'legendary'},
-  peri_ruhu:    {n:'Peri Kelebeği',    e:'🧚',c:'#ffb8ff',r:'mythical'},
+  nebula_kedi:  {n:'Nebula Kedi',   e:'🐱',c:'#7dd3fc',c1:'#93c5fd',c2:'#3b82f6',acc:'#e0f2fe',r:'common',
+                 shape:'cat',    element:'Yıldız',  power:'Yıldız Tozu Saçar', sound:'soft',   particle:'stars',   desc:'Gece göğünün küçük avcısı'},
+  lav_tilkisi:  {n:'Lav Tilkisi',   e:'🦊',c:'#fb923c',c1:'#fdba74',c2:'#ea580c',acc:'#fef08a',r:'rare',
+                 shape:'fox',    element:'Ateş',    power:'Alev Püskürtür',    sound:'fierce', particle:'fire',    desc:'Volkanların ateşli sakini'},
+  mandalina_tav:{n:'Mandalina Tavşan',e:'🐇',c:'#fbbf24',c1:'#fde047',c2:'#f59e0b',acc:'#fff7cd',r:'common',
+                 shape:'bunny',  element:'Doğa',    power:'Şans Getirir',      sound:'cute',   particle:'leaves',  desc:'Bahçelerin neşeli zıplayıcısı'},
+  bulut_ruhu:   {n:'Bulut Kaplanı', e:'🐯',c:'#e0f2fe',c1:'#f0f9ff',c2:'#7dd3fc',acc:'#bae6fd',r:'rare',
+                 shape:'tiger',  element:'Hava',    power:'Bulut Çağırır',     sound:'majestic',particle:'clouds', desc:'Gökyüzünde süzülen heybetli kaplan'},
+  gokk_ruhu:    {n:'Gök Fırtınası', e:'⚡',c:'#e879f9',c1:'#f0abfc',c2:'#a21caf',acc:'#fae8ff',r:'legendary',
+                 shape:'storm',  element:'Şimşek',  power:'Yıldırım Düşürür',  sound:'epic',   particle:'lightning',desc:'Fırtınaların efsanevi ruhu'},
+  kristal_boc:  {n:'Kristal Böcek', e:'🦋',c:'#67e8f9',c1:'#a5f3fc',c2:'#0891b2',acc:'#cffafe',r:'rare',
+                 shape:'beetle', element:'Kristal', power:'Işık Kırar',        sound:'crystal',particle:'crystals',desc:'Işıltılı kanatların sahibi'},
+  nova_kitsune: {n:'Nova Kitsune', e:'🦊',c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#f3e8ff',r:'rare',
+                 shape:'kitsune',element:'Ruh',     power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'spirits', desc:'Üç kuyruklu gizemli ruh tilkisi'},
+  kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',c1:'#fbcfe8',c2:'#db2777',acc:'#fdf2f8',r:'epic',
+                 shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Yaratır', sound:'magical',particle:'rainbow', desc:'Evrenin büyülü tek boynuzlusu'},
+  derin_ejder:  {n:'Derin Ejder',   e:'🐲',c:'#00ffc8',c1:'#5eead4',c2:'#0d9488',acc:'#ccfbf1',r:'legendary',
+                 shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin kadim ejderhası'},
+  peri_ruhu:    {n:'Peri Kelebeği', e:'🧚',c:'#ffb8ff',c1:'#fbcfe8',c2:'#e879f9',acc:'#fdf4ff',r:'mythical',
+                 shape:'fairy',  element:'Işık',    power:'Dilek Tutturur',    sound:'fairy',  particle:'sparkles',desc:'Işığın saf periler kraliçesi'},
 };
 const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff'};
 const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Efsanevi',mythical:'Mitolojik'};
@@ -136,13 +149,13 @@ const MERGE_TABLE={
   'kristal_boc+nova_kitsune':'kozmik_unicorn',
   'nova_kitsune+kristal_boc':'kozmik_unicorn',
 };
-// Tabloda olmayan kombinasyonlar → Epic benzersiz "Efsane Kaynaşım"
+// Tabloda olmayan kombinasyonlar → benzersiz füzyon yaratıkları
 const FUSION_TYPES=[
-  {key:'fusion_nebula',  name:'Nebula Kaynağı',  e:'💠', c:'#818cf8', r:'legendary'},
-  {key:'fusion_void',    name:'Void Birliği',     e:'🌑', c:'#c084fc', r:'legendary'},
-  {key:'fusion_cosmic',  name:'Kozmik Fırtına',   e:'⚡', c:'#fbbf24', r:'epic'},
-  {key:'fusion_aurora',  name:'Aurora Dansı',     e:'🌈', c:'#f9a8d4', r:'legendary'},
-  {key:'fusion_crystal', name:'Kristal Kalp',     e:'💎', c:'#67e8f9', r:'epic'},
+  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Doğurur',  sound:'epic',   particle:'galaxy',  desc:'İki ruhun kozmik birleşimi'},
+  {key:'fusion_void',    name:'Void Birliği',    e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Boşluk',  power:'Karanlığı Yutar',  sound:'mystic', particle:'void',    desc:'Boşluğun kara enerjisi'},
+  {key:'fusion_cosmic',  name:'Kozmik Fırtına',  e:'⚡',c:'#fbbf24',c1:'#fde047',c2:'#d97706',acc:'#fef9c3',r:'epic',     shape:'storm',  element:'Enerji',  power:'Enerji Patlatır',  sound:'epic',   particle:'energy',  desc:'Saf enerjinin fırtınası'},
+  {key:'fusion_aurora',  name:'Aurora Dansı',    e:'🌈',c:'#f9a8d4',c1:'#fbcfe8',c2:'#db2777',acc:'#fce7f3',r:'legendary',shape:'aurora', element:'Aurora',  power:'Renk Cümbüşü',     sound:'magical',particle:'aurora',  desc:'Kuzey ışıklarının dansı'},
+  {key:'fusion_crystal', name:'Kristal Kalp',    e:'💎',c:'#67e8f9',c1:'#a5f3fc',c2:'#0e7490',acc:'#cffafe',r:'epic',     shape:'crystal',element:'Elmas',   power:'Prizma Işığı',     sound:'crystal',particle:'prism',   desc:'Saf kristalin kalbi'},
 ];
 function getMergeResult(key1,key2){
   const combo=key1+'+'+key2;
@@ -195,55 +208,206 @@ export function kozmoEggSVG(phase,size){
 }
 
 // ── 🐾 Animasyonlu sevimli yaratık SVG'leri ──────────────────
-export function creatureSVG(typeKey, size){
+export function creatureSVG(typeKey, size, opts){
   size = size || 56;
-  const t = TYPES[typeKey] || {c:'#c084fc'};
-  const c = t.c;
-  // Yumuşak gövde + sallanan animasyon + parlayan gözler
-  const bob = 'creatureBob '+(2+Math.random()*1).toFixed(1)+'s ease-in-out infinite';
-  const blink = 'creatureBlink '+(3+Math.random()*2).toFixed(1)+'s ease-in-out infinite';
-  const cx=size/2, cy=size/2;
-  // Her türe özel şekil
-  let shape='';
-  if(typeKey==='nebula_kedi'||typeKey==='nova_kitsune'){
-    // Kedi/tilki: üçgen kulaklar
-    shape='<path d="M'+(cx-size*.28)+' '+(cy-size*.15)+' L'+(cx-size*.36)+' '+(cy-size*.4)+' L'+(cx-size*.14)+' '+(cy-size*.28)+' Z" fill="'+c+'"/>'
-      +'<path d="M'+(cx+size*.28)+' '+(cy-size*.15)+' L'+(cx+size*.36)+' '+(cy-size*.4)+' L'+(cx+size*.14)+' '+(cy-size*.28)+' Z" fill="'+c+'"/>';
-  } else if(typeKey==='lav_tilkisi'||typeKey==='derin_ejder'){
-    // Ejder/tilki: sivri kulaklar + boynuz
-    shape='<path d="M'+(cx-size*.22)+' '+(cy-size*.22)+' L'+(cx-size*.3)+' '+(cy-size*.44)+' L'+(cx-size*.1)+' '+(cy-size*.3)+' Z" fill="'+c+'"/>'
-      +'<path d="M'+(cx+size*.22)+' '+(cy-size*.22)+' L'+(cx+size*.3)+' '+(cy-size*.44)+' L'+(cx+size*.1)+' '+(cy-size*.3)+' Z" fill="'+c+'"/>';
-  } else if(typeKey==='mandalina_tav'){
-    // Tavşan: uzun kulaklar
-    shape='<ellipse cx="'+(cx-size*.14)+'" cy="'+(cy-size*.38)+'" rx="'+(size*.07)+'" ry="'+(size*.2)+'" fill="'+c+'"/>'
-      +'<ellipse cx="'+(cx+size*.14)+'" cy="'+(cy-size*.38)+'" rx="'+(size*.07)+'" ry="'+(size*.2)+'" fill="'+c+'"/>';
-  } else if(typeKey==='kozmik_unicorn'){
-    // Unicorn: boynuz
-    shape='<path d="M'+cx+' '+(cy-size*.45)+' L'+(cx-size*.06)+' '+(cy-size*.2)+' L'+(cx+size*.06)+' '+(cy-size*.2)+' Z" fill="#ffd86b"/>';
-  } else if(typeKey==='peri_ruhu'||typeKey==='kristal_boc'){
-    // Peri/böcek: kanatlar
-    shape='<ellipse cx="'+(cx-size*.32)+'" cy="'+cy+'" rx="'+(size*.16)+'" ry="'+(size*.24)+'" fill="'+c+'" opacity=".5" style="animation:creatureWing 1s ease-in-out infinite"/>'
-      +'<ellipse cx="'+(cx+size*.32)+'" cy="'+cy+'" rx="'+(size*.16)+'" ry="'+(size*.24)+'" fill="'+c+'" opacity=".5" style="animation:creatureWing 1s ease-in-out infinite .2s"/>';
-  } else if(typeKey==='bulut_ruhu'||typeKey==='gokk_ruhu'){
-    // Bulut: küçük top kümeleri
-    shape='<circle cx="'+(cx-size*.2)+'" cy="'+(cy-size*.05)+'" r="'+(size*.14)+'" fill="'+c+'" opacity=".7"/>'
-      +'<circle cx="'+(cx+size*.2)+'" cy="'+(cy-size*.05)+'" r="'+(size*.14)+'" fill="'+c+'" opacity=".7"/>';
+  opts = opts || {};
+  const t = TYPES[typeKey] || FUSION_TYPES.find(x=>x.key===typeKey) || {c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#fff',shape:'blob'};
+  const c1=t.c1||t.c||'#c084fc', c2=t.c2||t.c||'#7c3aed', acc=t.acc||'#fff';
+  const shape=t.shape||'blob';
+  const uid='cr'+Math.floor(Math.random()*99999);
+  const W=size, H=size, cx=W/2, cy=H/2;
+  const bob='creatureBob '+(2.2+Math.random()*0.8).toFixed(2)+'s ease-in-out infinite';
+  const blinkD=(3+Math.random()*2).toFixed(1);
+
+  // Gradyan tanımları (3D hacim hissi)
+  const defs='<defs>'
+    +'<radialGradient id="body'+uid+'" cx="38%" cy="32%" r="75%"><stop offset="0%" stop-color="'+lighten(c1)+'"/><stop offset="55%" stop-color="'+c1+'"/><stop offset="100%" stop-color="'+c2+'"/></radialGradient>'
+    +'<radialGradient id="belly'+uid+'" cx="50%" cy="40%" r="65%"><stop offset="0%" stop-color="'+acc+'" stop-opacity=".95"/><stop offset="100%" stop-color="'+acc+'" stop-opacity=".4"/></radialGradient>'
+    +'<radialGradient id="glow'+uid+'" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="'+c1+'" stop-opacity=".5"/><stop offset="100%" stop-color="'+c1+'" stop-opacity="0"/></radialGradient>'
+    +'<linearGradient id="wing'+uid+'" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="'+lighten(c1)+'" stop-opacity=".85"/><stop offset="100%" stop-color="'+c2+'" stop-opacity=".5"/></linearGradient>'
+    +'</defs>';
+
+  // Aura/glow arkası
+  const aura='<circle cx="'+cx+'" cy="'+cy+'" r="'+(W*.48)+'" fill="url(#glow'+uid+')"/>';
+
+  // Şekle özel ekstra parçalar (kulak, kanat, boynuz, kuyruk)
+  let back='', front='', special='';
+
+  if(shape==='cat'||shape==='kitsune'||shape==='fox'){
+    // Sivri kulaklar (içi açık renkli)
+    const ew=W*.16, eh=W*.22;
+    back='<path d="M'+(cx-W*.26)+' '+(cy-H*.08)+' L'+(cx-W*.34)+' '+(cy-H*.42)+' L'+(cx-W*.06)+' '+(cy-H*.22)+' Z" fill="'+c2+'"/>'
+        +'<path d="M'+(cx+W*.26)+' '+(cy-H*.08)+' L'+(cx+W*.34)+' '+(cy-H*.42)+' L'+(cx+W*.06)+' '+(cy-H*.22)+' Z" fill="'+c2+'"/>'
+        +'<path d="M'+(cx-W*.24)+' '+(cy-H*.12)+' L'+(cx-W*.29)+' '+(cy-H*.34)+' L'+(cx-W*.12)+' '+(cy-H*.22)+' Z" fill="'+acc+'" opacity=".7"/>'
+        +'<path d="M'+(cx+W*.24)+' '+(cy-H*.12)+' L'+(cx+W*.29)+' '+(cy-H*.34)+' L'+(cx+W*.12)+' '+(cy-H*.22)+' Z" fill="'+acc+'" opacity=".7"/>';
+    if(shape==='kitsune'){
+      // Üç kuyruk (sallanan)
+      special='<g style="animation:creatureTail 2.2s ease-in-out infinite;transform-origin:'+(cx+W*.3)+'px '+(cy+H*.2)+'px">'
+        +'<ellipse cx="'+(cx+W*.34)+'" cy="'+(cy+H*.12)+'" rx="'+(W*.13)+'" ry="'+(W*.06)+'" fill="'+c1+'" transform="rotate(-20 '+(cx+W*.34)+' '+(cy+H*.12)+')"/>'
+        +'<ellipse cx="'+(cx+W*.36)+'" cy="'+(cy+H*.2)+'" rx="'+(W*.14)+'" ry="'+(W*.06)+'" fill="'+c2+'" transform="rotate(0 '+(cx+W*.36)+' '+(cy+H*.2)+')"/>'
+        +'<ellipse cx="'+(cx+W*.34)+'" cy="'+(cy+H*.28)+'" rx="'+(W*.13)+'" ry="'+(W*.06)+'" fill="'+c1+'" transform="rotate(20 '+(cx+W*.34)+' '+(cy+H*.28)+')"/>'
+        +'<circle cx="'+(cx+W*.46)+'" cy="'+(cy+H*.2)+'" r="'+(W*.04)+'" fill="'+acc+'"/></g>';
+    }
+  } else if(shape==='bunny'){
+    // Uzun tavşan kulakları
+    back='<ellipse cx="'+(cx-W*.13)+'" cy="'+(cy-H*.36)+'" rx="'+(W*.075)+'" ry="'+(W*.26)+'" fill="'+c1+'" transform="rotate(-8 '+(cx-W*.13)+' '+(cy-H*.36)+')"/>'
+        +'<ellipse cx="'+(cx+W*.13)+'" cy="'+(cy-H*.36)+'" rx="'+(W*.075)+'" ry="'+(W*.26)+'" fill="'+c1+'" transform="rotate(8 '+(cx+W*.13)+' '+(cy-H*.36)+')"/>'
+        +'<ellipse cx="'+(cx-W*.13)+'" cy="'+(cy-H*.34)+'" rx="'+(W*.035)+'" ry="'+(W*.2)+'" fill="'+acc+'" opacity=".75" transform="rotate(-8 '+(cx-W*.13)+' '+(cy-H*.34)+')"/>'
+        +'<ellipse cx="'+(cx+W*.13)+'" cy="'+(cy-H*.34)+'" rx="'+(W*.035)+'" ry="'+(W*.2)+'" fill="'+acc+'" opacity=".75" transform="rotate(8 '+(cx+W*.13)+' '+(cy-H*.34)+')"/>';
+  } else if(shape==='tiger'){
+    // Yuvarlak kaplan kulakları + çizgiler
+    back='<circle cx="'+(cx-W*.24)+'" cy="'+(cy-H*.24)+'" r="'+(W*.11)+'" fill="'+c2+'"/>'
+        +'<circle cx="'+(cx+W*.24)+'" cy="'+(cy-H*.24)+'" r="'+(W*.11)+'" fill="'+c2+'"/>'
+        +'<circle cx="'+(cx-W*.24)+'" cy="'+(cy-H*.24)+'" r="'+(W*.06)+'" fill="'+acc+'" opacity=".6"/>'
+        +'<circle cx="'+(cx+W*.24)+'" cy="'+(cy-H*.24)+'" r="'+(W*.06)+'" fill="'+acc+'" opacity=".6"/>';
+    front='<path d="M'+(cx-W*.05)+' '+(cy-H*.22)+' q'+(W*.05)+' '+(W*.06)+' 0 '+(W*.12)+'" stroke="'+c2+'" stroke-width="1.5" fill="none" opacity=".6"/>'
+         +'<path d="M'+(cx+W*.05)+' '+(cy-H*.22)+' q'+(-W*.05)+' '+(W*.06)+' 0 '+(W*.12)+'" stroke="'+c2+'" stroke-width="1.5" fill="none" opacity=".6"/>';
+  } else if(shape==='unicorn'){
+    // Altın boynuz (parlayan) + yele
+    special='<path d="M'+cx+' '+(cy-H*.5)+' L'+(cx-W*.055)+' '+(cy-H*.2)+' L'+(cx+W*.055)+' '+(cy-H*.2)+' Z" fill="#ffd86b" stroke="#fbbf24" stroke-width="1"/>'
+      +'<path d="M'+(cx-W*.03)+' '+(cy-H*.42)+' L'+(cx+W*.03)+' '+(cy-H*.42)+'" stroke="#fff8dc" stroke-width="1" opacity=".8"/>'
+      +'<path d="M'+(cx-W*.03)+' '+(cy-H*.32)+' L'+(cx+W*.03)+' '+(cy-H*.32)+'" stroke="#fff8dc" stroke-width="1" opacity=".8"/>'
+      +'<circle cx="'+cx+'" cy="'+(cy-H*.5)+'" r="'+(W*.025)+'" fill="#fff" style="animation:creatureSparkle 1.5s ease-in-out infinite"/>';
+    back='<path d="M'+(cx-W*.22)+' '+(cy-H*.18)+' Q'+(cx-W*.34)+' '+(cy-H*.02)+' '+(cx-W*.26)+' '+(cy+H*.18)+'" stroke="'+lighten(c1)+'" stroke-width="'+(W*.08)+'" fill="none" stroke-linecap="round" opacity=".8"/>';
+  } else if(shape==='dragon'){
+    // Ejder boynuzları + kanatlar + sırt dikenleri
+    back='<path d="M'+(cx-W*.34)+' '+(cy+H*.02)+' Q'+(cx-W*.5)+' '+(cy-H*.16)+' '+(cx-W*.42)+' '+(cy+H*.2)+' Q'+(cx-W*.3)+' '+(cy+H*.16)+' '+(cx-W*.2)+' '+(cy+H*.1)+' Z" fill="url(#wing'+uid+')" style="animation:creatureWing 1.3s ease-in-out infinite;transform-origin:'+(cx-W*.2)+'px '+cy+'px"/>'
+        +'<path d="M'+(cx+W*.34)+' '+(cy+H*.02)+' Q'+(cx+W*.5)+' '+(cy-H*.16)+' '+(cx+W*.42)+' '+(cy+H*.2)+' Q'+(cx+W*.3)+' '+(cy+H*.16)+' '+(cx+W*.2)+' '+(cy+H*.1)+' Z" fill="url(#wing'+uid+')" style="animation:creatureWing 1.3s ease-in-out infinite .15s;transform-origin:'+(cx+W*.2)+'px '+cy+'px"/>';
+    special='<path d="M'+(cx-W*.14)+' '+(cy-H*.26)+' L'+(cx-W*.18)+' '+(cy-H*.42)+' L'+(cx-W*.08)+' '+(cy-H*.3)+' Z" fill="'+c2+'"/>'
+      +'<path d="M'+(cx+W*.14)+' '+(cy-H*.26)+' L'+(cx+W*.18)+' '+(cy-H*.42)+' L'+(cx+W*.08)+' '+(cy-H*.3)+' Z" fill="'+c2+'"/>';
+    front='<path d="M'+cx+' '+(cy-H*.18)+' L'+(cx-W*.03)+' '+(cy-H*.08)+' L'+(cx+W*.03)+' '+(cy-H*.08)+' Z" fill="'+acc+'" opacity=".7"/>';
+  } else if(shape==='beetle'||shape==='fairy'||shape==='crystal'){
+    // Şeffaf parlak kanatlar (çırpan)
+    back='<ellipse cx="'+(cx-W*.28)+'" cy="'+(cy-H*.04)+'" rx="'+(W*.2)+'" ry="'+(W*.28)+'" fill="url(#wing'+uid+')" style="animation:creatureWing .9s ease-in-out infinite;transform-origin:'+(cx-W*.1)+'px '+cy+'px"/>'
+        +'<ellipse cx="'+(cx+W*.28)+'" cy="'+(cy-H*.04)+'" rx="'+(W*.2)+'" ry="'+(W*.28)+'" fill="url(#wing'+uid+')" style="animation:creatureWing .9s ease-in-out infinite .1s;transform-origin:'+(cx+W*.1)+'px '+cy+'px"/>'
+        +'<ellipse cx="'+(cx-W*.26)+'" cy="'+(cy+H*.06)+'" rx="'+(W*.13)+'" ry="'+(W*.16)+'" fill="url(#wing'+uid+')" opacity=".7" style="animation:creatureWing .9s ease-in-out infinite .2s;transform-origin:'+(cx-W*.1)+'px '+cy+'px"/>'
+        +'<ellipse cx="'+(cx+W*.26)+'" cy="'+(cy+H*.06)+'" rx="'+(W*.13)+'" ry="'+(W*.16)+'" fill="url(#wing'+uid+')" opacity=".7" style="animation:creatureWing .9s ease-in-out infinite .3s;transform-origin:'+(cx+W*.1)+'px '+cy+'px"/>';
+    if(shape==='fairy'){
+      special='<circle cx="'+(cx-W*.04)+'" cy="'+(cy-H*.32)+'" r="'+(W*.03)+'" fill="#fff" style="animation:creatureSparkle 1.2s ease-in-out infinite"/>'
+        +'<circle cx="'+(cx+W*.06)+'" cy="'+(cy-H*.36)+'" r="'+(W*.02)+'" fill="'+acc+'" style="animation:creatureSparkle 1.6s ease-in-out infinite .3s"/>';
+    }
+  } else if(shape==='storm'){
+    // Şimşek bulutu — gövde üstü yıldırım
+    special='<path d="M'+(cx+W*.04)+' '+(cy-H*.4)+' L'+(cx-W*.06)+' '+(cy-H*.22)+' L'+(cx+W*.02)+' '+(cy-H*.22)+' L'+(cx-W*.04)+' '+(cy-H*.06)+' L'+(cx+W*.1)+' '+(cy-H*.28)+' L'+(cx+W*.02)+' '+(cy-H*.28)+' Z" fill="#fde047" stroke="#f59e0b" stroke-width=".5" style="animation:creatureSparkle 0.8s ease-in-out infinite"/>';
+  } else if(shape==='cosmic'||shape==='void'||shape==='aurora'){
+    // Kozmik halka (dönen)
+    back='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(W*.44)+'" ry="'+(W*.16)+'" fill="none" stroke="url(#wing'+uid+')" stroke-width="2" opacity=".7" style="animation:creatureRing 4s linear infinite;transform-origin:'+cx+'px '+cy+'px"/>';
+    special='<circle cx="'+(cx-W*.3)+'" cy="'+(cy-H*.2)+'" r="'+(W*.025)+'" fill="'+acc+'" style="animation:creatureSparkle 1.5s ease-in-out infinite"/>'
+      +'<circle cx="'+(cx+W*.32)+'" cy="'+(cy+H*.1)+'" r="'+(W*.02)+'" fill="#fff" style="animation:creatureSparkle 2s ease-in-out infinite .5s"/>';
   }
-  // Gövde (yumuşak yuvarlak)
-  const body='<ellipse cx="'+cx+'" cy="'+(cy+size*.05)+'" rx="'+(size*.32)+'" ry="'+(size*.3)+'" fill="'+c+'"/>';
-  // Parlak gözler
-  const eyes='<circle cx="'+(cx-size*.12)+'" cy="'+cy+'" r="'+(size*.07)+'" fill="#fff"/>'
-    +'<circle cx="'+(cx-size*.1)+'" cy="'+(cy+size*.01)+'" r="'+(size*.035)+'" fill="#1a1a2e" style="animation:'+blink+'"/>'
-    +'<circle cx="'+(cx+size*.12)+'" cy="'+cy+'" r="'+(size*.07)+'" fill="#fff"/>'
-    +'<circle cx="'+(cx+size*.14)+'" cy="'+(cy+size*.01)+'" r="'+(size*.035)+'" fill="#1a1a2e" style="animation:'+blink+'"/>';
-  // Pembe yanak
-  const cheeks='<circle cx="'+(cx-size*.22)+'" cy="'+(cy+size*.1)+'" r="'+(size*.05)+'" fill="#ff9ec4" opacity=".5"/>'
-    +'<circle cx="'+(cx+size*.22)+'" cy="'+(cy+size*.1)+'" r="'+(size*.05)+'" fill="#ff9ec4" opacity=".5"/>';
-  // Gülümseme
-  const mouth='<path d="M'+(cx-size*.06)+' '+(cy+size*.14)+' Q'+cx+' '+(cy+size*.2)+' '+(cx+size*.06)+' '+(cy+size*.14)+'" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/>';
-  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" style="display:block;margin:0 auto;filter:drop-shadow(0 2px 8px '+c+'55);animation:'+bob+'">'
-    +shape+body+eyes+cheeks+mouth+'</svg>';
+
+  // Ana gövde (3D gradyanlı, yumuşak)
+  const bodyShape='<ellipse cx="'+cx+'" cy="'+(cy+H*.06)+'" rx="'+(W*.33)+'" ry="'+(W*.32)+'" fill="url(#body'+uid+')"/>';
+  // Karın/göğüs (açık renk)
+  const belly='<ellipse cx="'+cx+'" cy="'+(cy+H*.14)+'" rx="'+(W*.2)+'" ry="'+(W*.2)+'" fill="url(#belly'+uid+')"/>';
+  // Parlama noktası (3D highlight)
+  const shine='<ellipse cx="'+(cx-W*.12)+'" cy="'+(cy-H*.06)+'" rx="'+(W*.1)+'" ry="'+(W*.08)+'" fill="#fff" opacity=".35"/>';
+
+  // Büyük parlak gözler (anime tarzı)
+  const eyeY=cy+H*.02, eyeR=W*.085, pupR=W*.045;
+  const eyes='<ellipse cx="'+(cx-W*.13)+'" cy="'+eyeY+'" rx="'+eyeR+'" ry="'+(eyeR*1.1)+'" fill="#fff"/>'
+    +'<ellipse cx="'+(cx+W*.13)+'" cy="'+eyeY+'" rx="'+eyeR+'" ry="'+(eyeR*1.1)+'" fill="#fff"/>'
+    +'<circle cx="'+(cx-W*.12)+'" cy="'+(eyeY+W*.01)+'" r="'+pupR+'" fill="'+c2+'" style="animation:creatureBlink '+blinkD+'s ease-in-out infinite"/>'
+    +'<circle cx="'+(cx+W*.14)+'" cy="'+(eyeY+W*.01)+'" r="'+pupR+'" fill="'+c2+'" style="animation:creatureBlink '+blinkD+'s ease-in-out infinite"/>'
+    +'<circle cx="'+(cx-W*.105)+'" cy="'+(eyeY-W*.012)+'" r="'+(W*.018)+'" fill="#fff"/>'
+    +'<circle cx="'+(cx+W*.155)+'" cy="'+(eyeY-W*.012)+'" r="'+(W*.018)+'" fill="#fff"/>';
+  // Pembe yanaklar
+  const cheeks='<circle cx="'+(cx-W*.22)+'" cy="'+(cy+H*.12)+'" r="'+(W*.045)+'" fill="#ff9ec4" opacity=".55"/>'
+    +'<circle cx="'+(cx+W*.22)+'" cy="'+(cy+H*.12)+'" r="'+(W*.045)+'" fill="#ff9ec4" opacity=".55"/>';
+  // Tatlı gülümseme
+  const mouth='<path d="M'+(cx-W*.05)+' '+(cy+H*.16)+' Q'+cx+' '+(cy+H*.23)+' '+(cx+W*.05)+' '+(cy+H*.16)+'" stroke="'+c2+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block;margin:0 auto;overflow:visible;filter:drop-shadow(0 3px 10px '+c1+'77);animation:'+bob+'">'
+    +defs+aura+back+bodyShape+belly+shine+special+front+eyes+cheeks+mouth+'</svg>';
 }
+
+// ── Element ikonu ──
+function elementIcon(el){
+  const m={'Yıldız':'⭐','Ateş':'🔥','Doğa':'🌿','Hava':'💨','Şimşek':'⚡','Kristal':'💎','Ruh':'👻','Gökkuşağı':'🌈','Derinlik':'🌊','Işık':'✨','Kozmos':'🌌','Boşluk':'🕳️','Enerji':'⚡','Aurora':'🌈','Elmas':'💠'};
+  return m[el]||'✨';
+}
+
+// ── 🔊 Türe özel premium sesler ──
+function creatureSound(soundType){
+  const ac=getAC(); if(!ac) return;
+  const now=ac.currentTime;
+  const play=(freq,start,dur,type,vol)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type||'sine';o.frequency.value=freq;
+    const t=now+start;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||0.12,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur+0.02);
+  };
+  const slide=(f1,f2,start,dur,type,vol)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type=type||'sine';
+    const t=now+start;
+    o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||0.12,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur+0.02);
+  };
+  switch(soundType){
+    case 'soft':    // kedi mırıltısı
+      play(330,0,0.15,'sine',0.1);play(392,0.1,0.15,'sine',0.1);play(440,0.2,0.2,'sine',0.08); break;
+    case 'fierce':  // ateş kükremesi
+      slide(180,90,0,0.35,'sawtooth',0.14);play(120,0.1,0.25,'square',0.06); break;
+    case 'cute':    // tavşan cıvıltısı
+      play(880,0,0.06,'sine',0.1);play(1100,0.06,0.05,'sine',0.1);play(990,0.12,0.07,'sine',0.09); break;
+    case 'majestic':// kaplan heybeti
+      slide(220,165,0,0.4,'triangle',0.13);play(330,0.15,0.3,'sine',0.07); break;
+    case 'epic':    // şimşek/fırtına
+      slide(800,200,0,0.15,'sawtooth',0.12);play(100,0.1,0.3,'square',0.1);play(1200,0.05,0.1,'sine',0.08); break;
+    case 'crystal': // kristal çınlama
+      play(1318,0,0.3,'sine',0.1);play(1568,0.08,0.3,'sine',0.08);play(2093,0.16,0.4,'sine',0.06); break;
+    case 'mystic':  // ruh ürpertisi
+      slide(440,660,0,0.4,'sine',0.1);slide(660,440,0.2,0.4,'sine',0.07); break;
+    case 'magical': // unicorn büyüsü
+      [523,659,784,1047,1319].forEach((fr,i)=>play(fr,i*0.07,0.25,'sine',0.09)); break;
+    case 'roar':    // ejder kükremesi
+      slide(150,70,0,0.5,'sawtooth',0.15);play(90,0.2,0.35,'square',0.08); break;
+    case 'fairy':   // peri ışıltısı
+      [1047,1319,1568,2093].forEach((fr,i)=>play(fr,i*0.05,0.2,'sine',0.08)); break;
+    default:
+      play(523,0,0.1,'sine',0.1);play(784,0.08,0.15,'sine',0.08);
+  }
+}
+
+// ── ✨ Yaratık detay modalı ──
+function showCreatureDetail(c,t,rc){
+  const ov=document.createElement('div'); ov.className='nick-modal-ov';
+  const inn=document.createElement('div'); inn.className='nick-modal koz-detail'; inn.style.maxWidth='300px';
+  inn.style.setProperty('--cc',t.c||'#c084fc');
+  inn.innerHTML='<div class="koz-detail-hero">'+(c.unique?'<div style="font-size:64px">'+(c.icon||t.e)+'</div>':creatureSVG(c.typeKey,96))+'</div>'
+    +'<div class="koz-detail-name" style="color:'+(t.c||'#c084fc')+'">'+esc(c.name||t.n)+'</div>'
+    +'<div class="koz-detail-rar" style="color:'+rc+'">'+(RARITY_LABEL[t.r]||t.r)+'</div>'
+    +'<div class="koz-detail-desc">'+esc(t.desc||'Gizemli bir kozmo')+'</div>'
+    +'<div class="koz-detail-stats">'
+      +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(t.element||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">✨</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(t.power||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">⭐</span><span class="koz-stat-lbl">Seviye</span><span class="koz-stat-val">LV '+(c.level||1)+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">💝</span><span class="koz-stat-lbl">Kaynak</span><span class="koz-stat-val">'+esc(c.fromName||'Mağaza')+'</span></div>'
+    +'</div>'
+    +'<button class="koz-detail-sound" id="kozPlaySound">🔊 Sesini Dinle</button>'
+    +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="kozDetClose">Kapat</button></div>';
+  ov.appendChild(inn); document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  inn.querySelector('#kozDetClose').addEventListener('click',()=>ov.remove());
+  inn.querySelector('#kozPlaySound').addEventListener('click',()=>creatureSound(t.sound));
+}
+
+// Rengi açma yardımcısı (3D highlight için)
+function lighten(hex){
+  try{
+    const h=hex.replace('#',''); const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    const lr=Math.min(255,Math.round(r+(255-r)*.4)),lg=Math.min(255,Math.round(g+(255-g)*.4)),lb=Math.min(255,Math.round(b+(255-b)*.4));
+    return '#'+lr.toString(16).padStart(2,'0')+lg.toString(16).padStart(2,'0')+lb.toString(16).padStart(2,'0');
+  }catch(e){ return hex; }
+}
+
 
 // ── Yumurta gönder (arkadaş profilinden) ─────────────────────
 export async function sendEgg(toUid,toName){
@@ -317,7 +481,9 @@ async function renderKozmos(st,box){
           +'<button class="koz-btn-acc" data-acc="'+uid+'">✅ Kabul</button>'
           +'<button class="koz-btn-rej" data-rej="'+uid+'">✕ Reddet</button>'
         +'</div>';
-      row.querySelector('[data-acc]').addEventListener('click',async()=>{
+      row.querySelector('[data-acc]').addEventListener('click',async(ev)=>{
+        if(ev.target.disabled) return;
+        ev.target.disabled=true; ev.target.textContent='⏳';
         const id='egg_'+Date.now()+'_'+uid.slice(0,6);
         try{
           await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+id),{...e,acceptedAt:Date.now(),feedCount:0,ownerId:st.uid});
@@ -392,14 +558,14 @@ async function renderKozmos(st,box){
     creList.forEach(([k,c])=>{
       const t=TYPES[c.typeKey]||{n:'?',e:'🌟',c:'#c084fc',r:'common'};
       const rc=RARITY_COLOR[t.r]||'#aaa';
-      const card=document.createElement('div'); card.className='kozmo-card';
-      card.style.cssText='border-color:'+t.c+'33;background:linear-gradient(160deg,rgba(20,10,40,.98),rgba('+hexToRgb(t.c)+', .05))';
+      const card=document.createElement('div'); card.className='kozmo-card rar-'+(t.r||'common');
+      card.style.cssText='border-color:'+t.c+'44;background:linear-gradient(160deg,rgba(20,10,40,.98),rgba('+hexToRgb(t.c)+', .08))';
       card.innerHTML=''
-        +'<div class="koz-cre-svg">'+(c.unique?'<div style="font-size:36px">'+(c.icon||t.e||'🌟')+'</div>':creatureSVG(c.typeKey,52))+'</div>'
+        +'<div class="koz-cre-svg">'+(c.unique?'<div style="font-size:40px">'+(c.icon||t.e||'🌟')+'</div>':creatureSVG(c.typeKey,58))+'</div>'
         +'<div class="koz-cre-name" style="color:'+t.c+'">'+esc(c.name||t.n)+'</div>'
         +'<div class="koz-cre-rarity" style="color:'+rc+'">'+esc(RARITY_LABEL[t.r]||t.r)+'</div>'
-        +'<div class="koz-cre-lv">LV '+(c.level||1)+'</div>'
-        +'<div class="koz-cre-from">💝 '+esc(c.fromName||'Mağaza')+'</div>';
+        +(t.element?'<div class="koz-cre-element">'+elementIcon(t.element)+' '+esc(t.element)+'</div>':'')
+        +'<div class="koz-cre-lv">LV '+(c.level||1)+'</div>';
       const delB=document.createElement('button');delB.className='koz-del-btn';delB.textContent='🗑';delB.title='Sil';
       delB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yaratık silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+k),null);await renderKozmos(st,box);}catch(err){}});
       card.appendChild(delB);
@@ -413,7 +579,8 @@ async function renderKozmos(st,box){
         });
         card.appendChild(mergeBtn);
       }
-      card.addEventListener('click',()=>alert('\u2728 '+esc(c.name||t.n)+'\n'+esc(RARITY_LABEL[t.r]||t.r)+' \u00b7 '+esc(t.n)+'\nLV '+(c.level||1)));
+      // Karta tıkla → detay modalı (yetenek + ses çal)
+      card.addEventListener('click',()=>{ creatureSound(t.sound); showCreatureDetail(c,t,rc); });
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -428,8 +595,12 @@ async function renderKozmos(st,box){
   }
 }
 
+let _hatchLock=false;
 async function hatchEgg(eggId,egg,st,box){
+  if(_hatchLock){ return; }  // çift tıklama koruması
   if(!confirm('🎊 Yumurta doğurulsun mu?'))return;
+  _hatchLock=true;
+  setTimeout(()=>{_hatchLock=false;},2000);
   sfxCrack(); setTimeout(()=>sfxCrack(),180); setTimeout(()=>sfxHatch(),350);
   try{
     const t=randomType(egg.seed||0,egg.minRarity);
@@ -439,9 +610,9 @@ async function hatchEgg(eggId,egg,st,box){
       bornAt:Date.now(), sentAt:egg.sentAt, level:1, xp:0,
     });
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
-    feedAnim(); alert('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
-    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c2._id),null).catch(()=>{});
+    feedAnim(); sfxChirp();
     await renderKozmos(st,box);
+    alert('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
   }catch(e){alert('Doğurtulamadı: '+(e.message||e));}
 }
 
@@ -453,11 +624,11 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
   const ov=document.createElement('div'); ov.className='nick-modal-ov';
   const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='310px';
   inn.innerHTML='<div class="nm-title">💥 Birleştirme Seç</div>'
-    +'<div style="text-align:center;margin-bottom:10px">'
-      +'<span style="font-size:22px">'+srcType.e+'</span>'
-      +'<span style="font-size:12px;color:'+srcType.c+';font-weight:800;margin-left:6px">'+esc(src.name||srcType.n)+'</span>'
-      +'<span style="color:#c084fc;font-size:16px;margin:0 8px">+</span>'
-      +'<span style="font-size:13px;color:#7d8ab8">?</span>'
+    +'<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">'
+      +'<div>'+(src.unique?'<span style="font-size:28px">'+(src.icon||srcType.e)+'</span>':creatureSVG(src.typeKey,44))+'</div>'
+      +'<span style="font-size:11px;color:'+srcType.c+';font-weight:800">'+esc(src.name||srcType.n)+'</span>'
+      +'<span style="color:#c084fc;font-size:18px">+</span>'
+      +'<span style="font-size:22px;color:#7d8ab8">❓</span>'
     +'</div>'
     +'<div style="font-size:9px;color:#5d6890;text-align:center;margin-bottom:10px">Birleştirince ebeveynler kaybolur — geri alınamaz!</div>'
     +'<div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto" id="mergeTargetList"></div>'
@@ -471,9 +642,9 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
     const result=getMergeResult(src.typeKey||'',c2.typeKey||'');
     const rc=RARITY_COLOR[result.r]||'#aaa';
     const row=document.createElement('button'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);cursor:pointer;font-family:inherit;width:100%;text-align:left';
-    row.innerHTML='<span style="font-size:16px">'+t2.e+'</span>'
-      +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+'</div></div>'
-      +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+result.e+' '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
+    row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?'<span style="font-size:24px">'+(c2.icon||t2.e)+'</span>':creatureSVG(c2.typeKey,36))+'</div>'
+      +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+' · '+esc(t2.element||'')+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
     row.addEventListener('click',async()=>{
       ov.remove();
       src._id=srcId; c2._id=k2;
@@ -485,56 +656,62 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
 
 async function doMerge(id1,c1,id2,c2,resultType,st,box){
   if(!confirm('Birleştirme: '+esc(c1.name||'?')+' + '+esc(c2.name||'?')+' → '+esc(resultType.name||resultType.n||'?')+'\n\nBu işlem geri alınamaz!'))return;
+  // ID'leri güvenceye al
+  c1._id=c1._id||id1; c2._id=c2._id||id2;
   try{
-    sfxHatch();
-    // Fusion animasyonu
     showFusionAnimation(c1,c2,resultType,st,box);
   }catch(e){alert('Birleştirme hatası: '+(e.message||e));}
 }
 async function showFusionAnimation(c1,c2,resultType,st,box){
-  const ov=document.createElement('div'); ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-  const t1=TYPES[c1.typeKey]||{e:'✨',c:'#c084fc'}, t2=TYPES[c2.typeKey]||{e:'⚡',c:'#fb923c'};
-  ov.innerHTML='<div style="text-align:center">'
-    +'<div class="fusion-row">'
-      +'<div class="fusion-parent" style="--fc:'+t1.c+'">'+t1.e+'<div style="font-size:9px;color:'+t1.c+';margin-top:4px">'+esc(c1.name||t1.n||'?')+'</div></div>'
-      +'<div class="fusion-plus">💥</div>'
-      +'<div class="fusion-parent" style="--fc:'+t2.c+'">'+t2.e+'<div style="font-size:9px;color:'+t2.c+';margin-top:4px">'+esc(c2.name||t2.n||'?')+'</div></div>'
+  const ov=document.createElement('div'); ov.className='koz-fusion-ov';
+  const t1=TYPES[c1.typeKey]||{e:'✨',c:'#c084fc',sound:'soft'}, t2=TYPES[c2.typeKey]||{e:'⚡',c:'#fb923c',sound:'soft'};
+  const rc=RARITY_COLOR[resultType.r]||'#FFD740';
+  ov.innerHTML='<div class="koz-fusion-stage">'
+    +'<div class="koz-fusion-pair">'
+      +'<div class="koz-fusion-p left">'+(c1.unique?'<div style="font-size:48px">'+(c1.icon||t1.e)+'</div>':creatureSVG(c1.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t1.c+'">'+esc(c1.name||t1.n||'?')+'</div></div>'
+      +'<div class="koz-fusion-spark">✦</div>'
+      +'<div class="koz-fusion-p right">'+(c2.unique?'<div style="font-size:48px">'+(c2.icon||t2.e)+'</div>':creatureSVG(c2.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t2.c+'">'+esc(c2.name||t2.n||'?')+'</div></div>'
     +'</div>'
-    +'<div class="fusion-result" id="fusionResult" style="opacity:0;margin-top:20px">'
-      +'<div style="font-size:52px">'+esc(resultType.e||'🌌')+'</div>'
-      +'<div style="font-size:16px;font-weight:900;color:'+(resultType.c||'#c084fc')+';margin-top:8px">'+esc(resultType.name||resultType.n||'Yeni Kozmo')+'</div>'
-      +'<div style="font-size:11px;color:'+( RARITY_COLOR[resultType.r]||'#aaa')+';margin-top:4px">'+esc(RARITY_LABEL[resultType.r]||resultType.r||'')+'</div>'
+    +'<div class="koz-fusion-result" id="fusionResult">'
+      +'<div class="koz-fusion-burst" style="--rc:'+rc+'"></div>'
+      +'<div class="koz-fusion-hero">'+creatureSVG(resultType.key,110)+'</div>'
+      +'<div class="koz-fusion-rn" style="color:'+(resultType.c||'#c084fc')+'">'+esc(resultType.name||resultType.n||'Yeni Kozmo')+'</div>'
+      +'<div class="koz-fusion-rr" style="color:'+rc+'">'+esc(RARITY_LABEL[resultType.r]||resultType.r||'')+'</div>'
+      +(resultType.power?'<div class="koz-fusion-power">✨ '+esc(resultType.power)+'</div>':'')
     +'</div>'
-    +'<div style="font-size:13px;color:#c084fc;font-weight:900;margin-top:8px;letter-spacing:2px" id="fusionLabel">⚗️ BİRLEŞİYOR…</div>'
-    +'</div>';
+    +'<div class="koz-fusion-label" id="fusionLabel">⚗️ BİRLEŞİYOR…</div>'
+  +'</div>';
   document.body.appendChild(ov);
-  sfxCrack(); setTimeout(()=>sfxCrack(),200); setTimeout(()=>sfxHatch(),500);
-  // Animasyon: 2 saniye bekle → sonuç göster
+  // Birleşme sesleri (iki ebeveyn sesi → sonuç sesi)
+  creatureSound(t1.sound); setTimeout(()=>creatureSound(t2.sound),300);
+  sfxCrack(); setTimeout(()=>sfxCrack(),600);
+  // 1.8s: sonucu göster + premium ses
   setTimeout(()=>{
     const res=ov.querySelector('#fusionResult');
     const lbl=ov.querySelector('#fusionLabel');
-    if(res){res.style.cssText='opacity:1;transition:opacity .6s,transform .6s;transform:scale(1.1)';}
-    if(lbl) lbl.textContent='✨ DOĞDU!';
+    if(res) res.classList.add('show');
+    if(lbl) lbl.textContent='✨ YENİ KOZMO DOĞDU!';
+    sfxHatch(); creatureSound(resultType.sound||'magical');
   },1800);
+  // 3.5s: kapat + Firebase
   setTimeout(async()=>{
     ov.remove();
-    // Firebase: yeni yaratık ekle, ebeveynleri sil
     const creId='cre_fusion_'+Date.now();
-    await Promise.allSettled([
-      fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
-        typeKey:resultType.key||'unknown', name:resultType.name||resultType.n||'Fusion',
-        rarity:resultType.r||'epic', e:resultType.e||'✨', color:resultType.c||'#c084fc',
-        fromUid:st.uid, fromName:'Birleştirme', bornAt:Date.now(), level:1, xp:0,
-        parents:[c1.typeKey,c2.typeKey], isFusion:true,
-      }),
-      fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c1._id),null),
-    ]);
-    // Yaratık ID'lerini doğrudan sil (biz store'da tutmuyoruz → yeniden yükle)
-    await renderKozmos(st,box);
+    const newCre={
+      typeKey:resultType.key||'fusion_cosmic', name:resultType.name||resultType.n||'Fusion',
+      rarity:resultType.r||'epic', color:resultType.c||'#c084fc',
+      fromUid:st.uid, fromName:'Birleştirme', bornAt:Date.now(), level:Math.max(c1.level||1,c2.level||1),
+      xp:0, parents:[c1.typeKey,c2.typeKey], isFusion:true,
+    };
+    try{
+      // Önce ebeveynleri sil, sonra yeni yaratığı ekle (atomik benzeri)
+      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c1._id),null);
+      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c2._id),null);
+      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),newCre);
+    }catch(e){ console.warn('[fusion]',e); }
     feedAnim();
+    await renderKozmos(st,box);
   },3500);
-  // ebeveyn ID'lerini saklama (ov dışında)
-  st._fusionIds=[c1._id,c2._id]; // daha doğru yöntem aşağıda
 }
 
 function showEggModal(eggId,egg,phase,st,box){

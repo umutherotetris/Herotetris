@@ -609,7 +609,9 @@ async function doAdminDM(){
   try{
     // pairKey: iki uid sıralı
     const pk=[me.uid,uid].sort().join('_');
-    await fdb.push(fdb.ref(db,'messages/'+pk),{ from:me.uid, fromName:(me.displayName||'Admin')+' 👑', text:text.slice(0,300), ts:Date.now() });
+    const aMsg={ from:me.uid, fromName:me.displayName||'Admin', text:text.slice(0,300), ts:Date.now() };
+    if(me.isVisibleAdmin!==false) aMsg.isAdmin=true;
+    await fdb.push(fdb.ref(db,'messages/'+pk),aMsg);
     await fdb.push(fdb.ref(db,'userNotifs/'+uid),{ icon:'💬', text:'👑 Adminden mesaj: '+text.slice(0,60), ts:Date.now(), fromUid:me.uid });
     inp.value='';
     msg('📩 DM gönderildi', true);
@@ -716,12 +718,16 @@ async function showFBStats(){
   if(box.style.display!=='none'){ box.style.display='none'; return; }
   box.style.display=''; box.innerHTML='⏳ Hesaplanıyor…';
   try{
-    const [users,clans,gchat,kozmos]=await Promise.all([
+    const results=await Promise.allSettled([
       fdb.get(fdb.ref(db,'users')),
       fdb.get(fdb.ref(db,'clans')),
       fdb.get(fdb.ref(db,'globalChat')),
       fdb.get(fdb.ref(db,'kozmos')),
     ]);
+    const users=results[0].status==='fulfilled'?results[0].value:{exists:()=>false,val:()=>({})};
+    const clans=results[1].status==='fulfilled'?results[1].value:{exists:()=>false,val:()=>({})};
+    const gchat=results[2].status==='fulfilled'?results[2].value:{exists:()=>false,val:()=>({})};
+    const kozmos=results[3].status==='fulfilled'?results[3].value:{exists:()=>false,val:()=>({})};
     const uCount=users.exists()?Object.keys(users.val()).length:0;
     const uVal=users.exists()?users.val():{};
     const now=Date.now();

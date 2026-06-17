@@ -359,9 +359,12 @@ function renderChat(){
       const canEdit=(m.uid===me&&within5)||meAdmin;
       const canDel=m.uid===me||meAdmin||meLeader;
       let acts='';
-      if(canDel) acts+=' <span class="clan-chat-act" data-cdel="'+esc(m._key||'')+'">🗑</span>';
-      if(canEdit) acts+=' <span class="clan-chat-act" data-cedit="'+esc(m._key||'')+'" data-ctxt="'+esc(m.text||'')+'">✏️</span>';
-      return '<div class="clan-chat-row'+(m.uid===me?' mine':'')+'"><div class="clan-chat-ava">'+(m.avatar||'👤')+'</div><div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+(m.uid===me?'#00E5FF':'#A78BFA')+'">'+esc(m.name||'Üye')+(m.edited?' <span style="font-size:7px;opacity:.5">(düzenlendi)</span>':'')+'</div><div style="font-size:12px;color:#c4c4e0">'+esc(m.text)+'</div><div style="font-size:8px;color:#505074">'+tAgo(m.ts)+acts+'</div></div></div>';
+      if(canEdit) acts+=' <span class="clan-chat-act edit" data-cedit="'+esc(m._key||'')+'" data-ctxt="'+esc(m.text||'')+'">✏️ Düzenle</span>';
+      if(canDel) acts+=' <span class="clan-chat-act del" data-cdel="'+esc(m._key||'')+'">🗑 Sil</span>';
+      const nameHtml=m.isAdmin===true
+        ? '<span class="admin-crown">👑</span><span class="admin-nick-glow" style="font-size:10px">'+esc(m.name||'Admin')+'</span>'
+        : '<span style="font-size:10px;font-weight:800;color:'+(m.uid===me?'#00E5FF':'#A78BFA')+'">'+esc(m.name||'Üye')+'</span>';
+      return '<div class="clan-chat-row'+(m.uid===me?' mine':'')+(m.isAdmin?' admin-msg':'')+'"><div class="clan-chat-ava">'+(m.avatar||'👤')+'</div><div style="flex:1"><div>'+nameHtml+(m.edited?' <span style="font-size:7px;opacity:.5">(düzenlendi)</span>':'')+'</div><div style="font-size:12px;color:#c4c4e0">'+esc(m.text)+'</div><div style="font-size:8px;color:#505074">'+tAgo(m.ts)+acts+'</div></div></div>';
     }).join('');
     // Düzenle/sil listener
     list.querySelectorAll('[data-cdel]').forEach(b=>b.addEventListener('click',async e=>{
@@ -382,7 +385,9 @@ async function sendChat(){
   const inp=document.getElementById('clanChatInp'); if(!inp)return;
   const text=inp.value.trim(); if(!text)return;
   const st=Auth.getState(); inp.value='';
-  try{await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),{uid:st.uid,name:st.displayName||'Üye',avatar:(st.profile&&st.profile.avatar)||'👤',text:text.slice(0,200),ts:Date.now()});}catch(e){alert('Gönderilemedi');}
+  const cMsg={uid:st.uid,name:st.displayName||'Üye',avatar:(st.profile&&st.profile.avatar)||'👤',text:text.slice(0,200),ts:Date.now()};
+  if(st.isVisibleAdmin===true) cMsg.isAdmin=true;
+  try{await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),cMsg);}catch(e){alert('Gönderilemedi');}
 }
 
 // ── Klan Liderliği ────────────────────────────────────────────

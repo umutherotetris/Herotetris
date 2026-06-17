@@ -8,6 +8,8 @@ import { Auth, db, fdb } from './auth.js';
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tAgo = (ts) => { const d = Date.now()-ts; if(d<60e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk'; if(d<86400e3) return Math.floor(d/3600e3)+' sa'; return Math.floor(d/86400e3)+' g'; };
+// Minik tam tarih+saat (tooltip + altta gösterim)
+const tFull = (ts) => { if(!ts) return ''; const dt=new Date(ts); const bugun=new Date(); const ayni=dt.toDateString()===bugun.toDateString(); const saat=dt.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); if(ayni) return saat; return dt.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})+' '+saat; };
 
 let H = null;   // hub durumu
 
@@ -590,7 +592,7 @@ function listenChat(){
       const isMe = m.uid === me;
       const me_isAdmin = (H && H.admins && H.admins[me]) || Auth.getState().isAdmin === true;
       const nameHtml = adm
-        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span>`
+        ? `<span class="admin-crown">👑</span><span class="admin-nick-glow ghp-chat-name ${gcl}">${esc(m.name || 'Admin')}</span>`
         : (op
           ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
           : `<span class="ghp-chat-name" style="color:${isMe ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
@@ -600,7 +602,7 @@ function listenChat(){
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
           <div class="ghp-chat-text">${esc(m.text)}${m.edited?'<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>':''}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts||0)}${(()=>{
+          <div class="ghp-chat-ts" title="${tFull(m.ts||0)}">${tAgo(m.ts||0)} <span class="chat-date-mini">${tFull(m.ts||0)}</span>${(()=>{
             if(!m._key) return '';
             const within5min = (Date.now()-(m.ts||0)) < 300000;
             const canEdit = (isMe && within5min) || me_isAdmin;
@@ -744,10 +746,12 @@ function dmOpenThread(uid, nick){
       }
       const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : '';
       const editedTag = m.edited ? '<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>' : '';
+      const adminName = m.isAdmin===true ? '<div class="dm-admin-name"><span class="admin-crown">👑</span><span class="admin-nick-glow">'+esc(m.fromName||'Admin')+'</span></div>' : '';
       return '<div class="ghp-chat-row'+(isMine ? ' mine' : '')+'">'
         + '<div class="ghp-chat-body">'
+          + adminName
           + '<div class="ghp-chat-text">'+esc(m.text)+editedTag+'</div>'
-          + '<div class="ghp-chat-ts">'+tAgo(m.ts || 0)+tick+acts+'</div>'
+          + '<div class="ghp-chat-ts" title="'+tFull(m.ts||0)+'">'+tAgo(m.ts || 0)+' <span class="chat-date-mini">'+tFull(m.ts||0)+'</span>'+tick+acts+'</div>'
         + '</div></div>';
     }).join('');
     // Düzenle/sil listener
@@ -789,11 +793,18 @@ async function dmSend(){
     ]);
     if(iBlock.exists() && iBlock.val()===true){ alert('🚫 Bu kişiyi engelledin. Mesaj göndermek için engeli kaldır.'); return; }
     if(theyBlock.exists() && theyBlock.val()===true){ alert('🚫 Bu kişi seni engellemiş, mesaj gönderemezsin.'); return; }
+    // DM kapatma kontrolü — gönderen admin değilse ve alıcı DM kapatmışsa engelle
+    if(me.isAdmin !== true){
+      const tu = await fdb.get(fdb.ref(db,'users/'+H.dmThread.uid+'/dmClosed'));
+      if(tu.exists() && tu.val()===true){ alert('✉️ Bu kullanıcı herkesten mesaj almayı kapatmış.'); return; }
+    }
   }catch(e){}
   const pk = pairKey(me.uid, H.dmThread.uid);
   inp.value = '';
   try{
-    await fdb.push(fdb.ref(db, 'messages/' + pk), { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now() });
+    const dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now() };
+    if(me.isVisibleAdmin === true) dmMsg.isAdmin = true;
+    await fdb.push(fdb.ref(db, 'messages/' + pk), dmMsg);
     // konu listesini güncelle
     const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
     const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };

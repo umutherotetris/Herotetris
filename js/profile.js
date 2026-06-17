@@ -279,6 +279,46 @@ function openFramePicker(){
 }
 
 // ── ⚙️ Ayarlar ──────────────────────────────────────────────
+// ── 🚫 Engellediklerim Listesi ───────────────────────────────
+async function openBlockedList(){
+  const st=Auth.getState();
+  if(!st.uid) return;
+  const ov=document.createElement('div'); ov.className='nick-modal-ov';
+  const inner=document.createElement('div'); inner.className='nick-modal'; inner.style.maxWidth='340px';
+  inner.innerHTML='<div class="nm-title">🚫 Engellediklerim</div><div id="blkList" style="max-height:50vh;overflow-y:auto"><div class="clan-load">⏳ Yükleniyor…</div></div><div class="nm-actions"><button class="nm-btn nm-cancel" id="blkClose">Kapat</button></div>';
+  ov.appendChild(inner); document.body.appendChild(ov);
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  inner.querySelector('#blkClose').addEventListener('click',()=>ov.remove());
+  const box=inner.querySelector('#blkList');
+  try{
+    const snap=await fdb.get(fdb.ref(db,'blocks/'+st.uid));
+    if(!snap.exists()||!Object.keys(snap.val()||{}).length){
+      box.innerHTML='<div style="text-align:center;padding:24px;color:#7d8ab8;font-size:12px">✅ Kimseyi engellemiyorsun</div>';
+      return;
+    }
+    const uids=Object.keys(snap.val()).filter(u=>snap.val()[u]===true);
+    if(!uids.length){ box.innerHTML='<div style="text-align:center;padding:24px;color:#7d8ab8;font-size:12px">✅ Kimseyi engellemiyorsun</div>'; return; }
+    const rows=await Promise.all(uids.map(async uid=>{
+      let n='Kullanıcı',a='👤';
+      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;a=v.avatar||'👤';}}catch(e){}
+      return {uid,n,a};
+    }));
+    box.innerHTML=rows.map(r=>'<div class="blk-row">'
+      +'<div class="blk-ava">'+esc(r.a)+'</div>'
+      +'<div class="blk-name">'+esc(r.n)+'</div>'
+      +'<button class="blk-unblock" data-unblock="'+esc(r.uid)+'">🔓 Engeli Kaldır</button>'
+    +'</div>').join('');
+    box.querySelectorAll('[data-unblock]').forEach(b=>b.addEventListener('click',async()=>{
+      const uid=b.dataset.unblock;
+      try{
+        await fdb.set(fdb.ref(db,'blocks/'+st.uid+'/'+uid),null);
+        b.closest('.blk-row').style.opacity='.4';
+        b.textContent='✓ Kaldırıldı'; b.disabled=true;
+      }catch(e){alert('Yapılamadı');}
+    }));
+  }catch(e){ box.innerHTML='<i style="color:#ff7a8a">Yüklenemedi</i>'; }
+}
+
 function openSettings(){
   if(byId('setModal')) return;
   const ov=document.createElement('div'); ov.id='setModal'; ov.className='nick-modal-ov';
@@ -290,6 +330,8 @@ function openSettings(){
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
     +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
     +'<div class="set-row"><span>🔔 Push bildirimleri</span><button class="set-tgl" id="stNotif">YÜKLENİYOR</button></div>'
+    +(st.status==='google'?'<div class="set-row"><span>✉️ Herkesten DM al <small style="opacity:.45;font-size:9px">(adminler hariç)</small></span><button class="set-tgl'+(setOn('hero_set_dmclosed',false)?'':' on')+'" id="stDM">'+(setOn('hero_set_dmclosed',false)?'KAPALI':'AÇIK')+'</button></div>':'')
+    +(st.status==='google'?'<div class="set-row"><span>🚫 Engellediklerim</span><button class="set-tgl" id="stBlocked">GÖSTER</button></div>':'')
     +'<div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" id="stCache">TEMİZLE</button></div>'
     +(st.status==='google'?'<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" id="stLogout">ÇIKIŞ</button></div>':'')
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
@@ -327,6 +369,19 @@ function openSettings(){
     e.target.classList.toggle('on',now); e.target.textContent=now?'GİZLİ':'HERKES';
     const st2=Auth.getState(); if(st2.uid) try{await fdb.update(fdb.ref(db,'users/'+st2.uid),{friendsHidden:now});}catch(ex){}
   });
+  // ✉️ DM kapatma toggle (Firebase'e yaz, başkaları kontrol etsin)
+  const dmBtn=inner.querySelector('#stDM');
+  if(dmBtn) dmBtn.addEventListener('click',async e=>{
+    const nowClosed=!setOn('hero_set_dmclosed',false);
+    localStorage.setItem('hero_set_dmclosed',nowClosed?'1':'0');
+    e.target.classList.toggle('on',!nowClosed);
+    e.target.textContent=nowClosed?'KAPALI':'AÇIK';
+    const st2=Auth.getState();
+    if(st2.uid) try{await fdb.update(fdb.ref(db,'users/'+st2.uid),{dmClosed:nowClosed});}catch(ex){}
+  });
+  // 🚫 Engellediklerim listesi
+  const blkBtn=inner.querySelector('#stBlocked');
+  if(blkBtn) blkBtn.addEventListener('click',async()=>{ ov.remove(); openBlockedList(); });
   inner.querySelector('#stCache').addEventListener('click',async()=>{
     try{if(window.caches&&caches.keys){const ks=await caches.keys();for(const k of ks)await caches.delete(k);}}catch(e){}
     location.reload();
