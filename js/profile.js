@@ -107,6 +107,7 @@ function _renderProfile(st){
   const txR=Number(pl.totalXP); const totalXPv=Number.isFinite(txR)?txR:xp;
   const need=Math.max(1,(Store.xpForLevel?Store.xpForLevel(lvl):300+lvl*200)||100);
   const rawPct=xp/need*100; const pct=Number.isFinite(rawPct)?Math.max(0,Math.min(100,Math.round(rawPct))):0;
+  const curXPv=xp, needed=need;
   let photoDataUrl=null; try{ if(st.uid) photoDataUrl=localStorage.getItem('hero_photo_'+st.uid); }catch(e){}
   const avaHtml = photoDataUrl
     ? '<img src="'+photoDataUrl+'" alt="profil foto" style="width:100%;height:100%;object-fit:cover;border-radius:13px;position:absolute;inset:0">'
@@ -132,7 +133,25 @@ function _renderProfile(st){
         +'<div class="prf-stat"><b>⭐ '+lvl+'</b><span>SEVİYE</span></div>'
         +'<div class="prf-stat"><b>✨ '+fmt(totalXPv)+'</b><span>TOPLAM XP</span></div>'
       +'</div>'
-      +'<div class="prf-xpbar"><div class="prf-xpfill" style="width:'+pct+'%"></div><span>LV '+lvl+' → '+(lvl+1)+' · %'+pct+'</span></div>'
+      +'<div class="prf-xp-premium">'
+        +'<div class="prf-xp-header">'
+          +'<div class="prf-xp-lv-badge" data-rank="'+(lvl>=50?'mythic':lvl>=25?'legend':lvl>=10?'epic':lvl>=5?'rare':'common')+'">LV '+lvl+'</div>'
+          +'<div class="prf-xp-mid">'
+            +'<div class="prf-xp-title">⚡ DENEYİM PUANI</div>'
+            +'<div class="prf-xp-pct" style="color:'+(pct>=75?'#69F0AE':pct>=40?'#FFD740':'#c084fc')+'">%'+pct+' tamamlandı</div>'
+          +'</div>'
+          +'<div class="prf-xp-next-lv">LV '+(lvl+1)+' →</div>'
+        +'</div>'
+        +'<div class="prf-xp-track">'
+          +'<div class="prf-xp-fill-bar" style="width:'+pct+'%"></div>'
+          +'<div class="prf-xp-glow-dot" style="left:'+Math.max(0,pct-1)+'%"></div>'
+        +'</div>'
+        +'<div class="prf-xp-footer">'
+          +'<span class="prf-xp-cur">'+fmt(curXPv)+' XP</span>'
+          +'<span class="prf-xp-remain">'+fmt(needed-curXPv)+' XP kaldı</span>'
+          +'<span class="prf-xp-max">'+fmt(needed)+' XP</span>'
+        +'</div>'
+      +'</div>'
       +'<div class="prf-acts-grid">'
         +(isGoogle?'<button class="prf-act-btn prf-act-primary" data-p="kaju">🥜 Kaju Gönder</button>':'<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>')
         +(isGoogle?'<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>':'')
