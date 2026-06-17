@@ -888,10 +888,9 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .sec-title-line{ flex:1; height:1px; background:linear-gradient(90deg,color-mix(in srgb,var(--logo-c1,#00E5FF) 40%,transparent),transparent); }
 /* Premium oyun kartları */
 .games-premium{ display:flex; flex-direction:column; gap:13px; }
-.game-pc{ position:relative; border-radius:20px; padding:16px; cursor:pointer; overflow:hidden; background:linear-gradient(135deg,var(--gc-bg1),var(--gc-bg2)); border:1.5px solid var(--gc-bd); transition:transform .25s cubic-bezier(.34,1.56,.64,1); display:flex; align-items:center; gap:15px; animation:gamePcEnter .5s ease both; }
+.game-pc{ position:relative; border-radius:20px; padding:16px; cursor:pointer; overflow:hidden; background:linear-gradient(135deg,var(--gc-bg1),var(--gc-bg2)); border:1.5px solid var(--gc-bd); transition:transform .25s cubic-bezier(.34,1.56,.64,1); display:flex; align-items:center; gap:15px; }
 .game-pc:active{ transform:scale(.97); }
 @keyframes gamePcEnter{ 0%{ opacity:0; transform:translateX(-18px) } 100%{ opacity:1; transform:translateX(0) } }
-.game-pc:nth-child(1){ animation-delay:.05s }.game-pc:nth-child(2){ animation-delay:.12s }.game-pc:nth-child(3){ animation-delay:.19s }.game-pc:nth-child(4){ animation-delay:.26s }
 .game-pc::before{ content:''; position:absolute; top:-50%; right:-30%; width:110px; height:200%; background:radial-gradient(ellipse,var(--gc) 0%,transparent 65%); opacity:.1; animation:gamePcGlow 4s ease-in-out infinite; pointer-events:none; }
 @keyframes gamePcGlow{ 0%,100%{ transform:translateX(0) rotate(0) } 50%{ transform:translateX(-25px) rotate(8deg) } }
 .game-pc::after{ content:''; position:absolute; top:0; left:0; width:100%; height:1.5px; background:linear-gradient(90deg,transparent,var(--gc),transparent); opacity:.6; }
