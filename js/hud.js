@@ -46,12 +46,12 @@ function injectHudCSS(){
 
 // ── Yardımcı: portal nickini al ──────────────────────────────
 export function getPortalNick(st){
-  if(!st) st = Auth.getState();
-  return (st.profile && st.profile.nick) || st.displayName || 'Oyuncu';
+  if(!st){ try{ st=Auth.getState(); }catch(e){ st=(window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState())||{}; } }
+  return (st.profile&&st.profile.nick) || st.displayName || 'Oyuncu';
 }
 export function getPortalAvatar(st){
-  if(!st) st = Auth.getState();
-  return (st.profile && st.profile.avatar) || '👤';
+  if(!st){ try{ st=Auth.getState(); }catch(e){ st=(window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState())||{}; } }
+  return (st.profile&&st.profile.avatar) || '👤';
 }
 
 // ── Rakip verisini Firebase'den çek ───────────────────────────
@@ -202,12 +202,13 @@ export async function createVsHUD(opts={}){
 export function createSoloHUD(opts={}){
   injectHudCSS();
   const st = Auth.getState();
+  let _sp={level:1,xp:0}; try{ _sp=Store.getState(); }catch(e){ _sp=(window.Hero&&window.Hero.Store&&window.Hero.Store.getState())||{level:1,xp:0}; }
   const me = {
     nick: getPortalNick(st),
     avatar: getPortalAvatar(st),
     uid: st.uid || '',
-    level: Store.getState().level || 1,
-    xp: Store.getState().xp || 0,
+    level: _sp.level || 1,
+    xp: _sp.xp || 0,
     isAdmin: st.isAdmin === true,
   };
   const acc = opts.accentColor || '#00E5FF';
