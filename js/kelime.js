@@ -86,9 +86,9 @@ function injectStyles(){
 .kl-flagbtn{position:absolute;top:8px;right:10px;z-index:30;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,220,170,.25);background:linear-gradient(165deg,rgba(52,37,23,.9),rgba(30,21,13,.9));font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);transition:transform .12s}
 .kl-flagbtn:active{transform:scale(.9)}
 .kl-gm-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
-.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#77583b,#48331f);border:3px solid #2c2013;border-radius:12px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 0 1px rgba(255,220,170,.16),inset 0 0 0 2px rgba(255,208,138,.18),inset 0 2px 5px rgba(0,0,0,.42)}
+.kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#77583b,#48331f);border:3px solid #2c2013;border-radius:12px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 0 1px rgba(255,220,170,.16),inset 0 0 0 2px rgba(255,208,138,.18),inset 0 2px 5px rgba(0,0,0,.42);isolation:isolate;color:#5f482d}
 .kl-board.large{width:min(168vw,780px);max-width:none;flex:0 0 auto}
-.kl-cell{position:relative;background:linear-gradient(160deg,#f1e8d6,#ddd0b5);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(95,72,45,.62);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
+.kl-cell{position:relative;background:linear-gradient(160deg,#f1e8d6,#ddd0b5);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:rgba(95,72,45,.72);-webkit-text-fill-color:rgba(95,72,45,.72);user-select:none;cursor:pointer;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(0,0,0,.08)}
 .kl-cell.b-K3{background:linear-gradient(160deg,#ef5350,#c52f2a);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
 .kl-cell.b-K2{background:linear-gradient(160deg,#f7a64d,#e07d22);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35)}
 .kl-cell.b-H3{background:linear-gradient(160deg,#3f86cc,#1f5996);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.4)}
@@ -144,6 +144,7 @@ function injectStyles(){
 .kl-words{margin:6px 0 0;font-size:13px;text-align:left;color:#e3d3ff}
 .kl-words div{padding:2px 0}
 .kl-cell.b-surprise{background:linear-gradient(160deg,#fff0c0,#f3d484);box-shadow:inset 0 0 6px rgba(240,177,50,.7);animation:klpulse 1.5s ease-in-out infinite}
+.kl-cell .bl{color:rgba(95,72,45,.72);-webkit-text-fill-color:initial;text-fill-color:initial;display:block;line-height:1.1}
 .kl-cell.b-surprise .bl{font-size:12px}
 @keyframes klpulse{0%,100%{box-shadow:inset 0 0 5px rgba(240,177,50,.5)}50%{box-shadow:inset 0 0 12px rgba(255,205,70,.95)}}
 .kl-scorepop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-size:42px;font-weight:900;color:#ffe08a;text-shadow:0 2px 12px rgba(0,0,0,.7),0 0 22px rgba(240,177,50,.7);pointer-events:none;z-index:62;animation:klpop 1.2s ease-out forwards}
@@ -297,7 +298,9 @@ async function startAI(difficulty, turnTime){
   G.ai = { difficulty, color:'B' };
   G.seri = turnTime ? { turnTime } : null;        // süreli seri mod
   const diffLbl = {kolay:'Kolay',orta:'Orta',zor:'Zor'}[difficulty];
-  G.names = { A:'Sen', B:(turnTime?'Seri AI':'Yapay Zekâ')+' ('+diffLbl+')' };
+  let _klAiNick='Oyuncu';
+  try{const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();if(_as&&(_as.profile&&_as.profile.nick||_as.displayName))_klAiNick=_as.profile&&_as.profile.nick||_as.displayName;}catch(e){}
+  G.names = { A:_klAiNick, B:(turnTime?'Seri AI':'Yapay Zekâ')+' ('+diffLbl+')' };
   G.pending = []; G.selected = null;
   G.rackView = st.racks.A.slice();
   G.surprises = buildSurprises((Math.random()*0x7fffffff)|0);

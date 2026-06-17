@@ -169,6 +169,14 @@ function _renderProfile(st){
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
   if(q('dm')&&isGoogle) q('dm').addEventListener('click',async()=>{
+    const stNow=Auth.getState();
+    if(!stNow||!stNow.uid){ return; }
+    // Kendi profilinde - kendine mesaj engellensin
+    const viewedUid=document.querySelector('[data-viewed-uid]')&&document.querySelector('[data-viewed-uid]').dataset.viewedUid;
+    if(!viewedUid||viewedUid===stNow.uid){
+      import('./daily.js').then(d=>{ if(d.showToast) d.showToast('📭 Kendinize mesaj gönderemezsiniz'); }).catch(()=>{ alert('📭 Kendinize mesaj gönderemezsiniz'); });
+      return;
+    }
     try{
       const m=await import('./social.js');
       m.applyFabSetting(); m.openHubTab('ozel');
