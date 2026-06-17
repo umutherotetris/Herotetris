@@ -23,9 +23,7 @@ function renderPlayer(p){
   _player = p;
   setText('pLevel', 'LV.' + (p.level || 1));
   setText('pKaju', fmt(p.kaju));
-  // Ana sayfa istatistik şeridi
-  setText('statLvl', 'LV.' + (p.level || 1));
-  // Ana sayfa istatistik şeridi (kompakt format — bloğa sığsın)
+  // Kompakt Kaju
   const kj = p.kaju || 0;
   let kjShort;
   if(kj >= 999500000) kjShort = (kj/1e9).toFixed(kj>=1e10?0:1)+'B';
@@ -34,8 +32,28 @@ function renderPlayer(p){
   else if(kj >= 1000) kjShort = (kj/1e3).toFixed(1)+'K';
   else kjShort = String(kj);
   setText('statKaju', kjShort);
+  setText('statLvl', 'LV.' + (p.level || 1));
   const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
   if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
+  // ── XP İlerleme Çubuğu ──
+  const lv = p.level || 1;
+  const xp = p.xp || 0;
+  const needed = 300 + lv * 200;
+  const pct = Math.min(100, Math.round(xp / needed * 100));
+  setText('xpLvBadge', 'LV.' + lv);
+  setText('xpNext', 'LV.' + (lv+1) + ' →');
+  setText('xpCur', fmt(xp) + ' XP');
+  setText('xpPct', pct + '%');
+  setText('xpMax', fmt(needed) + ' XP');
+  const fill = document.getElementById('xpBarFill');
+  const glow = document.getElementById('xpBarGlow');
+  if(fill) fill.style.width = pct + '%';
+  if(glow) glow.style.left = Math.max(0, pct - 1) + '%';
+  const badge = document.getElementById('xpLvBadge');
+  if(badge){
+    const rank = lv >= 50 ? 'mythic' : lv >= 25 ? 'legend' : lv >= 10 ? 'epic' : lv >= 5 ? 'rare' : 'common';
+    badge.setAttribute('data-rank', rank);
+  }
 }
 
 // ── Tek render fonksiyonu ───────────────────────────────────────

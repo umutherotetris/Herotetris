@@ -141,7 +141,7 @@ function _renderProfile(st){
         +(isGoogle?'<button class="prf-act-btn" data-p="shop">🛍️ Mağaza</button>':'')
         +(isGoogle?'<button class="prf-act-btn" data-p="kozmos">🥚 Kozmos</button>':'')
         +(isGoogle?'<button class="prf-act-btn" data-p="frame">🖼️ Çerçeve</button>':'')
-        +'<button class="prf-act-btn" data-p="settings">⚙️ Ayarlar</button>'
+        +(isGoogle?'<button class="prf-act-btn prf-act-dm" data-p="dm">✉️ Mesaj</button>':'')        +'<button class="prf-act-btn" data-p="settings">⚙️ Ayarlar</button>'
       +'</div>'
     +'</div>'
     +'<div class="prf-card" id="prfRecords"><div class="prf-lbl">🏆 REKORLARIN</div><div class="prf-recbody">Yükleniyor…</div></div>'
@@ -149,6 +149,12 @@ function _renderProfile(st){
   // Buton dinleyicileri
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
+  if(q('dm')&&isGoogle) q('dm').addEventListener('click',async()=>{
+    try{
+      const m=await import('./social.js');
+      m.applyFabSetting(); m.openHubTab('ozel');
+    }catch(e){}
+  });
   if(q('nick')&&isGoogle) q('nick').addEventListener('click',async()=>(await uiMod()).openNickModal());
   if(q('kaju')&&isGoogle) q('kaju').addEventListener('click',async()=>(await uiMod()).openKajuModal());
   if(q('login')) q('login').addEventListener('click',()=>Auth.loginGoogle&&Auth.loginGoogle());
