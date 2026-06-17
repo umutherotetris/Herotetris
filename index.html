@@ -10,11 +10,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hero Portal">
-  <link rel="stylesheet" href="css/tokens.css?v=96">
-  <link rel="stylesheet" href="css/base.css?v=96">
-  <link rel="stylesheet" href="css/components.css?v=96">
-  <link rel="stylesheet" href="css/tetris.css?v=96">
-  <link rel="stylesheet" href="css/themes.css?v=96">
+  <link rel="stylesheet" href="css/tokens.css?v=101">
+  <link rel="stylesheet" href="css/base.css?v=101">
+  <link rel="stylesheet" href="css/components.css?v=101">
+  <link rel="stylesheet" href="css/tetris.css?v=101">
+  <link rel="stylesheet" href="css/themes.css?v=101">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -77,6 +77,23 @@
         <div class="stat" style="--sc:#FFD740"><div class="stat-v" id="statLvl">LV.1</div><div class="stat-l">SEVİYE</div></div>
         <div class="stat" style="--sc:#69F0AE"><div class="stat-v" id="statKaju">0</div><div class="stat-l">🥜 KAJU</div></div>
         <div class="stat" style="--sc:#E040FB"><div class="stat-v" id="statRank">-</div><div class="stat-l">SIRA</div></div>
+      </div>
+      <!-- XP İlerleme Çubuğu -->
+      <div class="xp-bar-wrap" id="xpBarWrap">
+        <div class="xp-bar-header">
+          <span class="xp-lv-badge" id="xpLvBadge">LV.1</span>
+          <span class="xp-label">⚡ DENEYIM PUANI</span>
+          <span class="xp-next" id="xpNext">LV.2 →</span>
+        </div>
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+          <div class="xp-bar-glow" id="xpBarGlow" style="left:0%"></div>
+        </div>
+        <div class="xp-bar-footer">
+          <span class="xp-cur" id="xpCur">0 XP</span>
+          <span class="xp-pct" id="xpPct">0%</span>
+          <span class="xp-max" id="xpMax">500 XP</span>
+        </div>
       </div>
 
       <!-- Oyunlar -->
@@ -263,10 +280,10 @@
   /* FAB görünürlük sıfırlama */
   try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
   </script>
-  <script type="module" src="js/app.js?v=96"></script>
+  <script type="module" src="js/app.js?v=101"></script>
   <script type="module">
   /* Ekranlar + Sosyal Hub: app.js'ten BAĞIMSIZ yedek başlatıcı (önbellek/eski app.js'e karşı) */
-  const V='96';
+  const V='101';
   const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
   import('./js/profile.js?v=' + V).then(m => m.initScreens()).catch(e => { ['scrProfile','scrLB','scrFriends','scrNotif'].forEach(id => err(id, e)); });
   import('./js/social.js?v=' + V).then(m => m.initSocial()).catch(e => console.error('[SocialBoot]', e));
