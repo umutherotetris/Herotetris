@@ -28,7 +28,8 @@ function renderPlayer(p){
   // Ana sayfa istatistik şeridi (kompakt format — bloğa sığsın)
   const kj = p.kaju || 0;
   let kjShort;
-  if(kj >= 999500) kjShort = (kj/1e6).toFixed(kj>=1e7?0:1)+'M';
+  if(kj >= 999500000) kjShort = (kj/1e9).toFixed(kj>=1e10?0:1)+'B';
+  else if(kj >= 1e6) kjShort = (kj/1e6).toFixed(kj>=1e7?0:1)+'M';
   else if(kj >= 10000) kjShort = Math.round(kj/1e3)+'K';
   else if(kj >= 1000) kjShort = (kj/1e3).toFixed(1)+'K';
   else kjShort = String(kj);
