@@ -25,7 +25,10 @@ function renderPlayer(p){
   setText('pKaju', fmt(p.kaju));
   // Ana sayfa istatistik şeridi
   setText('statLvl', 'LV.' + (p.level || 1));
-  setText('statKaju', fmt(p.kaju));
+  // Ana sayfa istatistik şeridi (kompakt format — bloğa sığsın)
+  const kj = p.kaju || 0;
+  const kjShort = kj >= 1e6 ? (kj/1e6).toFixed(1)+'M' : kj >= 1e4 ? (kj/1e3).toFixed(0)+'K' : fmt(kj);
+  setText('statKaju', kjShort);
   const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
   if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
 }
