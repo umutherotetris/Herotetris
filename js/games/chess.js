@@ -425,7 +425,11 @@ function showAISetup(root){
   const ov = document.createElement('div');
   ov.className = 'chess-ai-setup';
   ov.innerHTML = `<div class="cas-box">
-    <div class="cas-title">🤖 YAPAY ZEKÂ AYARLARI</div>
+    <div class="cas-head-row">
+      <button class="cas-back" data-act="back">← Geri</button>
+      <div class="cas-title">🤖 YAPAY ZEKÂ</div>
+      <button class="cas-close" data-act="close">✕</button>
+    </div>
     <div class="cas-label">ZORLUK</div>
     <div class="cas-row" data-group="diff">
       <button class="cas-opt" data-v="easy">😊 KOLAY</button>
@@ -452,6 +456,8 @@ function showAISetup(root){
     ov.querySelectorAll('[data-group="color"] .cas-opt').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); color = b.dataset.v;
   }));
+  const backB=ov.querySelector('[data-act="back"]'); if(backB) backB.addEventListener('click',()=>ov.remove());
+  const closeB=ov.querySelector('[data-act="close"]'); if(closeB) closeB.addEventListener('click',()=>{ ov.remove(); if(root&&root.parentNode) root.remove(); });
   ov.querySelector('.cas-start').addEventListener('click', () => {
     ov.remove();
     startGame(root, 'ai', { difficulty: diff, playerColor: color, time: sel.time });
@@ -1715,6 +1721,9 @@ function injectCSS(){
 /* AI kurulum ekranı */
 .chess-ai-setup{ position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center;
   background:rgba(5,10,20,.8); backdrop-filter:blur(6px); padding:16px; }
+.cas-head-row{ display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
+.cas-back{ background:rgba(255,255,255,.07);border:1px solid rgba(200,165,87,.3);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:700;color:#c8a557;cursor:pointer;font-family:inherit; }
+.cas-close{ background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.25);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:700;color:#ff8080;cursor:pointer;font-family:inherit; }
 .cas-box{ background:linear-gradient(135deg, #16294a, #0a1428); border:2px solid #c8a557; border-radius:20px;
   padding:22px; max-width:400px; width:100%; }
 .cas-title{ text-align:center; font-size:16px; font-weight:800; letter-spacing:.5px; color:#c8a557; margin-bottom:18px; }
