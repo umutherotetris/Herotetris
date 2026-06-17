@@ -327,6 +327,7 @@ function openSettings(){
   const fabOn=setOn('hero_set_fabs',true);
   const hfOn=setOn('hero_set_hidefriends',false);
   inner.innerHTML='<div class="nm-title">⚙️ Ayarlar</div>'
+    +'<div class="set-theme-section"><div class="set-theme-lbl">🎨 TEMA & RENK</div><div class="set-theme-grid" id="themeGrid"></div></div>'
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
     +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
     +'<div class="set-row"><span>🔔 Push bildirimleri</span><button class="set-tgl" id="stNotif">YÜKLENİYOR</button></div>'
@@ -337,6 +338,44 @@ function openSettings(){
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="stClose">Kapat</button></div>';
   inner.querySelector('#stClose').addEventListener('click',()=>ov.remove());
+  // 🎨 Tema seçici
+  const THEMES=[
+    {key:'neon',    name:'Neon',    c1:'#00E5FF',c2:'#FF4081'},
+    {key:'cosmic',  name:'Kozmik',  c1:'#c084fc',c2:'#22d3ee'},
+    {key:'sunset',  name:'Gün Batımı',c1:'#FF9800',c2:'#FF4081'},
+    {key:'emerald', name:'Zümrüt',  c1:'#69F0AE',c2:'#22d3ee'},
+    {key:'golden',  name:'Altın',   c1:'#FFD740',c2:'#FF9800'},
+    {key:'crimson', name:'Kızıl',   c1:'#FF5252',c2:'#E040FB'},
+    {key:'ocean',   name:'Okyanus', c1:'#42A5F5',c2:'#26C6DA'},
+    {key:'mono',    name:'Gümüş',   c1:'#E0E0FF',c2:'#B0B0D0'},
+  ];
+  let curTheme='neon';
+  try{ curTheme=localStorage.getItem('hero_theme')||'neon'; }catch(e){}
+  const tg=inner.querySelector('#themeGrid');
+  if(tg){
+    tg.innerHTML=THEMES.map(t=>
+      '<button class="theme-chip'+(t.key===curTheme?' active':'')+'" data-theme="'+t.key+'">'
+        +'<div class="theme-swatch" style="background:linear-gradient(135deg,'+t.c1+','+t.c2+')"></div>'
+        +'<div class="theme-name">'+t.name+'</div>'
+      +'</button>'
+    ).join('');
+    tg.querySelectorAll('[data-theme]').forEach(btn=>btn.addEventListener('click',()=>{
+      const key=btn.dataset.theme;
+      try{ localStorage.setItem('hero_theme',key); }catch(e){}
+      document.documentElement.setAttribute('data-theme',key);
+      tg.querySelectorAll('.theme-chip').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      // Parçacık renklerini yenile
+      try{
+        const c=document.getElementById('bgParticles');
+        if(c){
+          const cs=getComputedStyle(document.documentElement);
+          const cols=[(cs.getPropertyValue('--logo-c1')||'#00E5FF').trim(),(cs.getPropertyValue('--logo-c2')||'#FF4081').trim(),(cs.getPropertyValue('--logo-x')||'#FFD740').trim()];
+          c.querySelectorAll('.bg-particle').forEach((p,i)=>{ const col=cols[i%cols.length]; p.style.background=col; p.style.color=col; });
+        }
+      }catch(e){}
+    }));
+  }
   inner.querySelector('#stFab').addEventListener('click',async e=>{
     const now=!setOn('hero_set_fabs',true); localStorage.setItem('hero_set_fabs',now?'1':'0');
     e.target.classList.toggle('on',now); e.target.textContent=now?'AÇIK':'KAPALI';

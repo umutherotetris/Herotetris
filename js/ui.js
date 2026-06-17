@@ -23,6 +23,11 @@ function renderPlayer(p){
   _player = p;
   setText('pLevel', 'LV.' + (p.level || 1));
   setText('pKaju', fmt(p.kaju));
+  // Ana sayfa istatistik şeridi
+  setText('statLvl', 'LV.' + (p.level || 1));
+  setText('statKaju', fmt(p.kaju));
+  const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
+  if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
 }
 
 // ── Tek render fonksiyonu ───────────────────────────────────────
@@ -166,7 +171,7 @@ export function openKajuModal(){
   ov.id = 'kajuModal'; ov.className = 'nick-modal-ov';
   ov.innerHTML = `
     <div class="nick-modal">
-      <div class="nm-title">💸 Kaju Gönder</div>
+      <div class="nm-title">🥜 Kaju Gönder</div>
       <div class="nm-sub">${isAdmin
         ? 'Admin: sınırsız gönderim + bakiye ayarlama (− ile eksilt)'
         : `Tek seferde ${rem.min}–${rem.perTx} · Kalan: saat ${fmt(rem.hour)} / gün ${fmt(rem.day)} / ay ${fmt(rem.month)}`}</div>
@@ -268,7 +273,7 @@ window.addEventListener('hero:kaju-claimed', (e) => {
   const d = e.detail || {};
   if(!d.total) return;
   const who = (d.claimed || []).map(c => c.from).filter((v,i,a)=>a.indexOf(v)===i).slice(0,3).join(', ');
-  kajuToast(`💰 +${fmt(d.total)} Kaju geldi!${who ? ' (' + who + ')' : ''}`);
+  kajuToast(`🥜 +${fmt(d.total)} Kaju geldi!${who ? ' (' + who + ')' : ''}`);
 });
 
 export function initUI(){
