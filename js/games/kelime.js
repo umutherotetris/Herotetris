@@ -10,7 +10,6 @@ import {
   SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT
 } from './kelime-engine.js';
 import * as Resume from './resume.js';
-let _Hud=null; async function getHud(){ if(!_Hud) _Hud=await import('../hud.js'); return _Hud; }
 
 let G = null;
 let stylesInjected = false;
@@ -267,7 +266,7 @@ function startLocal(){
   G.state = st;
   G.who = 'A';
   let _kme='Oyuncu 1';
-  try{ const H=await getHud(); _kme=H.getPortalNick(); }catch(e){}
+  try{ const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState(); if(_as&&(_as.profile&&_as.profile.nick||_as.displayName)) _kme=_as.profile&&_as.profile.nick||_as.displayName; }catch(e){}
   G.names = { A:_kme, B:'Oyuncu 2' };
   G.pending = [];
   G.rackView = st.racks[G.who].slice();   // bu turdaki kullanılabilir taşlar

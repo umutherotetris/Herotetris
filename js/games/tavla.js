@@ -280,6 +280,22 @@ function startGame(root, mode, opts){
   else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
 
   fitCanvas();
+  // Portal HUD enjekte et
+  try{
+    const _st=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState();
+    const _p=window.Hero&&window.Hero.Store&&window.Hero.Store.getState();
+    const _myNick=(_st&&(_st.profile&&_st.profile.nick||_st.displayName))||'Oyuncu';
+    const _myAva=(_st&&_st.profile&&_st.profile.avatar)||'👤';
+    const _myLv=(_p&&_p.level)||1;
+    const _myXp=(_p&&_p.xp)||0;
+    const oppN=G.oppName||'Rakip'; const oppA=G.oppAvatar||'🎲';
+    const oppL=G.oppLevel||1; const oppX=G.oppXP||0;
+    createVsHUD({
+      root: gameEl, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
+      oppUid: G.oppUid||null, oppNick:oppN, oppAvatar:oppA, oppLevel:oppL, oppXP:oppX,
+      myScore: ()=>0, oppScore: ()=>0,
+    }).then(h=>{ G._hud=h; }).catch(()=>{});
+  }catch(e){ console.warn('[tavla hud]',e); }
   // Oyun ekranı yeni açıldı — board-wrap boyutu reflow sonrası kesinleşince
   // canvas ve taşların tam oturması için yeniden boyutlandır (özellikle flip=true)
   requestAnimationFrame(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); });
