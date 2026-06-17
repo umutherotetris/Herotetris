@@ -10,6 +10,7 @@
 import Store from '../store.js';
 import Auth from '../auth.js';
 import * as Resume from './resume.js';
+import { createSoloHUD, createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import { HEROES, HERO_KEYS, DEFAULT_HERO, resetHeroMods, POWER_CHARGE_LINES, isHeroUnlocked, unlockText } from './tetris-heroes.js';
 import { GEMS, rollGem, GEM_MAX, GEM_BASE_CHANCE, FUSION_COUNT } from './tetris-gems.js';
 import Sound from './tetris-audio.js';
@@ -1615,8 +1616,22 @@ async function endGame(isWin){
     if(xp > 0)   await Store.addXP(xp);
   }catch(e){ console.warn('[tetris] ödül', e); }
 
+  // Premium ödül ekranı
+  try{
+    const Reward = await import('../reward.js');
+    const extraLine = G.mode==='sprint'||G.mode==='survival' ? G.lines+' satır · '+fmtTime(G.elapsed) : G.lines+' satır';
+    const bossTxt = isWin&&G.mode==='adventure'&&G.advWorld ? '👹 '+G.advWorld.boss+' YENİLDİ!' : '';
+    const action = await Reward.showReward({
+      won: isWin, game:'tetris', score, kaju, xp,
+      isRecord, writeReward:false,
+      title: bossTxt || (isWin?'🏆 KAZANDIN!':'💀 OYUN BİTTİ'),
+      subtitle: extraLine,
+    });
+    if(action==='replay') G.el.gameover && G.el.gameover.querySelector('[data-x="restart"]') && G.el.gameover.querySelector('[data-x="restart"]').click();
+    return;
+  }catch(e){ console.warn('[reward]',e); }
+
   const ov = G.el.gameover;
-  // Macera kazanınca özel başlık (boss yenildi + yıldızlar)
   if(isWin && G.mode === 'adventure' && G.advWorld){
     ov.querySelector('.go-title').textContent = '👹 ' + G.advWorld.boss + ' YENİLDİ!';
   } else {
@@ -2134,7 +2149,16 @@ function launchGame(){
   G.vis = () => { if(document.hidden){ try{ saveTetrisResume(); }catch(e){} } };
   document.addEventListener('visibilitychange', G.vis);
   bindControls();
-  Sound.resume();   // ses bağlamını başlat (OYNA dokunuşuyla)
+  Sound.resume();
+  // Portal HUD enjekte et
+  try{
+    G._hud = createSoloHUD({
+      root, game:'tetris', accentColor:'#00E5FF',
+      score: ()=> G ? G.score : 0,
+      lines: ()=> G ? G.lines : 0,
+      level: ()=> G ? G.level : 1,
+    });
+  }catch(e){}
   startGame();
   // DOM yerleştikten sonra gerçek ölçüyle yeniden boyutlandır (mod barı dahil)
   requestAnimationFrame(() => { if(G){ fitCanvas(); drawBoard(); } });

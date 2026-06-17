@@ -6,6 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
+import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import {
   newGame, allLegalMoves, legalMovesFrom, applyMove, remainingDice,
   turnComplete, gameStatus, winType, rollDice, openingRoll, pipCount, canBearOff
@@ -225,7 +226,14 @@ function startGame(root, mode, opts){
   G.oppLeft = false;
   G.unreadChat = 0; G.chatOpen = false;
 
-  if(G.online){ TavlaMP.__setHandler(onRemoteMessage); }
+  if(G.online){
+    TavlaMP.__setHandler((type, data) => {
+      if(type === 'message' && data && data.type === 'hello'){ onHello(data); return; }
+      onRemoteMessage(type, data);
+    });
+    G._helloSent = false;
+    setTimeout(() => { if(G && G.online){ G._helloSent = true; sendHello(); } }, 900);
+  }
 
   // Açılış zarı — online'da host belirler+gönderir; diğer modlarda yerel
   if(G.online && !G.isHost){
@@ -1010,6 +1018,28 @@ function playAISequence(seq, i){
 }
 
 // ════════════ ÇEVRİMİÇİ MESAJ ════════════
+function sendHello(){
+  try{
+    import('../auth.js').then(m => {
+      const st = m.Auth.getState();
+      TavlaMP.send({ type:'hello', uid: st.uid || null, name: getPortalNick(st) });
+    });
+  }catch(e){}
+}
+function onHello(d){
+  if(!G) return;
+  G.oppUid = d.uid || null;
+  G.oppRealName = d.name || null;
+  const el = G.root && G.root.querySelector('[data-el="status"]');
+  if(el && G.oppUid && !G.root.querySelector('[data-opc]')){
+    const tag = document.createElement('span');
+    tag.dataset.opc = G.oppUid;
+    tag.style.cssText = 'margin-left:8px;cursor:pointer;text-decoration:underline dotted;font-weight:800;color:#90CAF9';
+    tag.textContent = '👤 ' + (d.name || 'Rakip');
+    el.parentNode.insertBefore(tag, el.nextSibling);
+  }
+  if(!G._helloSent){ G._helloSent = true; sendHello(); }
+}
 function onRemoteMessage(type, data){
   if(!G) return;
   if(type === 'disconnected'){
@@ -1423,7 +1453,16 @@ async function onWin(status){
   updateStatus(label, 'win');
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
-  try{ await Store.addKaju(50 * wt, 'tavla'); }catch(e){}
+  const tavlaKaju = 50 * wt; const tavlaXp = playerWon ? 55 : 20;
+  try{ await Store.addKaju(tavlaKaju, 'tavla'); await Store.addXP(tavlaXp); }catch(e){}
+  try{
+    const Reward = await import('../reward.js');
+    await Reward.showReward({
+      won: playerWon||false, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false,
+      title: playerWon ? '🎲 KAZANDIN!' : '😔 Rakip kazandı',
+      subtitle: 'Tavla oyunu tamamlandı',
+    });
+  }catch(e){ console.warn('[reward]',e); }
 }
 
 // ════════════ HUD ════════════
@@ -1890,4 +1929,13 @@ function injectCSS(){
 .tvc-send:active{ transform:scale(.94); }
 `;
   document.head.appendChild(s);
+}
+
+// Rakip adına dokun → oyuncu kartı (online kimlik el sıkışması)
+if(typeof document !== 'undefined' && !window.__klOppClick){
+  window.__klOppClick = true;
+  document.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-opc]');
+    if(o && o.dataset.opc){ import('../social.js').then(m => m.openPlayerCard(o.dataset.opc)).catch(()=>{}); }
+  });
 }

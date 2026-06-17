@@ -10,6 +10,7 @@ import {
   SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT
 } from './kelime-engine.js';
 import * as Resume from './resume.js';
+let _Hud=null; async function getHud(){ if(!_Hud) _Hud=await import('../hud.js'); return _Hud; }
 
 let G = null;
 let stylesInjected = false;
@@ -265,7 +266,9 @@ function startLocal(){
   const st = newGame();
   G.state = st;
   G.who = 'A';
-  G.names = { A:'Oyuncu 1', B:'Oyuncu 2' };
+  let _kme='Oyuncu 1';
+  try{ const H=await getHud(); _kme=H.getPortalNick(); }catch(e){}
+  G.names = { A:_kme, B:'Oyuncu 2' };
   G.pending = [];
   G.rackView = st.racks[G.who].slice();   // bu turdaki kullanılabilir taşlar
   G.selected = null;
@@ -410,7 +413,7 @@ async function startOnlineSearch(opts){
   KO.findMatch({
     onSearching: ()=>{},
     onError: (msg)=>{ if(!cancelled) flashCard('Eşleşme hatası', msg); },
-    onMatched: (d)=>{ if(!cancelled) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours }); }
+    onMatched: (d)=>{ if(!cancelled) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours, oppUid:d.oppUid }); }
   }, async ? { mode:'async', turnHours: opts.turnHours||72 } : undefined);
 }
 
@@ -480,7 +483,7 @@ async function showMyGames(){
       } else {
         KO.resumeGame(g.gameId, {
           onError:(m)=>flashCard('Açılamadı', m),
-          onResumed:({role,gameId,oppName,seed,room})=>startOnline(role,gameId,oppName,seed,{async:true,turnHours:room.turnHours,room})
+          onResumed:({role,gameId,oppName,oppUid,seed,room})=>startOnline(role,gameId,oppName,seed,{async:true,turnHours:room.turnHours,room,oppUid})
         });
       }
     });
@@ -554,7 +557,7 @@ function doSendInvite(uid, name){
   KO.sendInvite(uid, name, {
     onSent: ()=>{},
     onError: (msg)=>{ if(!cancelled) flashCard('Davet hatası', msg); },
-    onAccepted: ({role,gameId,oppName,seed})=>{ if(!cancelled) startOnline(role,gameId,oppName,seed); }
+    onAccepted: ({role,gameId,oppName,oppUid,seed})=>{ if(!cancelled) startOnline(role,gameId,oppName,seed,{oppUid}); }
   });
 }
 function doAcceptInvite(inv){
@@ -563,13 +566,14 @@ function doAcceptInvite(inv){
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>⚔️ Katılıyorsun…</h3><p>${esc(inv.fromName||'Rakip')} ile oyun başlıyor</p></div></div>`;
   KO.acceptInvite(inv, {
     onError: (msg)=>flashCard('Kabul hatası', msg),
-    onMatched: ({role,gameId,oppName,seed})=>startOnline(role,gameId,oppName,seed)
+    onMatched: ({role,gameId,oppName,oppUid,seed})=>startOnline(role,gameId,oppName,seed,{oppUid})
   });
 }
 
 function startOnline(role, gameId, oppName, seed, opts){
+  const _oppUid = (opts && opts.oppUid) || null;
   opts = opts || {};
-  G.online = true; G.ai = null; G.seri = null; stopTurnTimer(); G.role = role; G.gameId = gameId; G.oppName = oppName; G._over = false; G.oppPresent = true;
+  G.online = true; G.ai = null; G.seri = null; stopTurnTimer(); G.role = role; G.gameId = gameId; G.oppName = oppName; G.oppUid = _oppUid; G._over = false; G.oppPresent = true;
   G.async = !!opts.async; G.turnHours = opts.turnHours || 0; G.deadline = opts.deadline || (opts.room && opts.room.deadline) || 0;
   G.bag = buildBagSeeded(seed);
   if(opts.room){
@@ -970,7 +974,7 @@ function renderScores(){
         ? ` &nbsp; <span style="color:#ffd86b">⏳ ${left>0?fmtRemain(left)+' içinde oyna':'süren doldu!'}</span>`
         : ` &nbsp; <span style="color:#bba8df">⏳ rakip: ${left>0?fmtRemain(left):'doldu'}</span>`;
     }
-    const pill = isMyTurn() ? `<span class="kl-turn me">▶ Senin sıran</span>` : `<span class="kl-turn opp">${G.oppName} oynuyor…</span>`;
+    const pill = isMyTurn() ? `<span class="kl-turn me">▶ Senin sıran</span>` : `<span class="kl-turn opp" data-opc="${G.oppUid||''}" style="${G.oppUid?'cursor:pointer;text-decoration:underline dotted':''}">${G.oppName} oynuyor…</span>`;
     q('[data-el="status"]').innerHTML = `${pill} &nbsp; Torbada ~${remain}${dl}`;
   } else {
     q('[data-el="status"]').innerHTML = `<span class="kl-turn me">${G.names[G.who]}</span> &nbsp; Torbada ${G.state.bag.length} taş`;
@@ -1649,11 +1653,25 @@ function nextTurn(){
   ov.querySelector('[data-x="go"]').addEventListener('click',()=>{ ov.remove(); renderAll(); });
 }
 
-function endGame(){
+async function endGame(){
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
+  const playerWon = a > b;
+  const klKaju = playerWon ? 70 : a===b ? 30 : 10;
+  const klXp = playerWon ? 50 : a===b ? 20 : 15;
+  try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
   if(a!==b){ sndWin(); confetti(); } else sndLose();
+  try{
+    const Reward = await import('../reward.js');
+    const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
+    await Reward.showReward({
+      won:playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
+      title: playerWon ? '🔤 KAZANDIN!' : (a===b?'🤝 BERABERLİK':'📚 Rakip kazandı'),
+      subtitle: G.names.A+': '+a+' puan · '+G.names.B+': '+b+' puan',
+      extra: bwText,
+    }); return;
+  }catch(e){ console.warn('[reward]',e); }
   const stars = starsFor(Math.max(a,b));
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
@@ -1666,4 +1684,13 @@ function endGame(){
   c.appendChild(ov);
   ov.querySelector('[data-x="again"]').addEventListener('click',()=>{ ov.remove(); startLocal(); });
   ov.querySelector('[data-x="close"]').addEventListener('click', closeKelime);
+}
+
+// Rakip adına dokun → oyuncu kartı (online)
+if(typeof document !== 'undefined' && !window.__klOppClick){
+  window.__klOppClick = true;
+  document.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-opc]');
+    if(o && o.dataset.opc){ import('../social.js').then(m => m.openPlayerCard(o.dataset.opc)).catch(()=>{}); }
+  });
 }

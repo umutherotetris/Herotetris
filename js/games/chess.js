@@ -6,6 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
+import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import { newGame, legalMoves, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, PIECE_NAMES } from './chess-engine.js';
 import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
@@ -481,6 +482,16 @@ function startGame(root, mode, opts){
   G.aiColor = G.playerColor === 'w' ? 'b' : 'w';
   G.aiThinking = false;
   G.state = newGame();
+  // Portal HUD enjekte et (her oyun modunda)
+  try{
+    const oppNm = G.oppName || (G.mode==='ai'?'Yapay Zekâ':'Rakip');
+    const oppUid = G.oppUid || null;
+    createVsHUD({
+      root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
+      oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
+      myScore: ()=>0, oppScore: ()=>0,
+    }).then(h=>{ G._hud=h; }).catch(()=>{});
+  }catch(e){}
   G.selected = null;        // {r,c}
   G.legalForSelected = [];  // o taşın geçerli hamleleri
   G.canvas = canvas;
@@ -516,6 +527,8 @@ function startGame(root, mode, opts){
   // Çevrimiçi mod: hamle senkronizasyonu
   if(mode === 'online'){
     G.online = true;
+    G._helloSent = false;
+    setTimeout(() => { if(G && G.online){ G._helloSent = true; sendHello(); } }, 900);
     // Oyuncu panellerini göster (üst = rakip, alt = sen)
     const oppPanel = root.querySelector('[data-el="oppPanel"]');
     const mePanel = root.querySelector('[data-el="mePanel"]');
@@ -531,7 +544,10 @@ function startGame(root, mode, opts){
     root.querySelector('[data-el="oppDot"]').classList.add('online');
     setupChat(root);
     ChessMP.__setHandler((type, data) => {
-      if(type === 'message'){ onRemoteMessage(data); }
+      if(type === 'message'){
+        if(data && data.type === 'hello'){ onHello(data); return; }
+        onRemoteMessage(data);
+      }
       else if(type === 'disconnected'){
         updateStatus('🔌 Rakip ayrıldı', 'draw'); G.oppLeft = true;
         root.querySelector('[data-el="oppStatus"]').textContent = 'ayrıldı';
@@ -544,7 +560,17 @@ function startGame(root, mode, opts){
   // Kontroller
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => {
-    G.state = newGame(); G.selected=null; G.legalForSelected=[]; G.lastMove=null;
+    G.state = newGame();
+  // Portal HUD enjekte et (her oyun modunda)
+  try{
+    const oppNm = G.oppName || (G.mode==='ai'?'Yapay Zekâ':'Rakip');
+    const oppUid = G.oppUid || null;
+    createVsHUD({
+      root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
+      oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
+      myScore: ()=>0, oppScore: ()=>0,
+    }).then(h=>{ G._hud=h; }).catch(()=>{});
+  }catch(e){} G.selected=null; G.legalForSelected=[]; G.lastMove=null;
     G.captured={w:[],b:[]}; G.aiThinking=false; G.gameEnded=false;
     G.moveHistory=[]; G.posHistory=[positionKey(G.state)];
     clearHistoryUI();
@@ -1027,6 +1053,24 @@ function sendMoveOnline(mv){
 }
 
 // Rakipten gelen mesaj
+function sendHello(){
+  try{
+    import('../auth.js').then(m => {
+      const st = m.Auth.getState();
+      ChessMP.send({ type:'hello', uid: st.uid || null, name: getPortalNick(st) });
+    });
+  }catch(e){}
+}
+function onHello(d){
+  if(!G) return;
+  G.oppUid = d.uid || null;
+  const el = G.root && G.root.querySelector('[data-el="oppName"]');
+  if(el){
+    if(d.name) el.textContent = d.name;
+    if(G.oppUid){ el.dataset.opc = G.oppUid; el.style.cursor = 'pointer'; el.style.textDecoration = 'underline dotted'; }
+  }
+  if(!G._helloSent){ G._helloSent = true; sendHello(); }   // karşılık ver (1 kez)
+}
 function onRemoteMessage(data){
   if(!data || !G) return;
   if(data.type === 'move' && data.move){
@@ -1183,8 +1227,18 @@ function applyAndContinue(mv, isCapture){
 
 async function onGameEnd(winner){
   Resume.clearSnapshot('chess');
-  // kaju ödülü (kazanan oyuncu varsa)
-  try{ await Store.addKaju(60, 'chess'); }catch(e){}
+  const won = winner === 'w'; // Oyuncu beyaz
+  const kaju = won ? 80 : 20;
+  const xp = won ? 60 : 25;
+  try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
+  try{
+    const Reward = await import('../reward.js');
+    await Reward.showReward({
+      won, game:'chess', kaju, xp, writeReward:false,
+      title: won ? '♛ KAZANDIN!' : '♟ Rakip kazandı',
+      subtitle: 'Satranç partisi tamamlandı',
+    });
+  }catch(e){ console.warn('[reward]',e); }
 }
 
 // ════════════ HUD GÜNCELLEME ════════════
@@ -1858,4 +1912,13 @@ function injectCSS(){
   border-radius:10px; color:#c8a557; font-weight:700; cursor:pointer; }
 `;
   document.head.appendChild(s);
+}
+
+// Rakip adına dokun → oyuncu kartı (online kimlik el sıkışması)
+if(typeof document !== 'undefined' && !window.__klOppClick){
+  window.__klOppClick = true;
+  document.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-opc]');
+    if(o && o.dataset.opc){ import('../social.js').then(m => m.openPlayerCard(o.dataset.opc)).catch(()=>{}); }
+  });
 }
