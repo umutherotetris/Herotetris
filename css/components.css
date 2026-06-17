@@ -861,3 +861,74 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .koz-fusion-power{ font-size:11px; color:#FFD740; margin-top:8px; background:rgba(255,215,64,.1); padding:5px 14px; border-radius:12px; display:inline-block; }
 .koz-fusion-label{ font-size:14px; color:#c084fc; font-weight:900; margin-top:18px; letter-spacing:2px; animation:fusionLabelPulse 1s ease-in-out infinite; }
 @keyframes fusionLabelPulse{ 0%,100%{ opacity:.7 } 50%{ opacity:1 } }
+
+/* ═══════════ 🎬 PREMIUM ANA SAYFA ═══════════ */
+/* Sinematik logo */
+.hero-logo{ text-align:center; padding:14px 0 4px; }
+.logo-main{ font-family:'Orbitron',var(--font-display); font-weight:900; font-size:clamp(34px,11vw,50px); letter-spacing:2px; line-height:.95; position:relative; display:inline-block; }
+.logo-hero-txt{ background:linear-gradient(180deg,var(--logo-c1-lt,#7df9ff),var(--logo-c1,#00E5FF) 45%,var(--logo-c1-dk,#0088aa)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 22px color-mix(in srgb,var(--logo-c1,#00E5FF) 55%,transparent)); animation:logoFloat 3s ease-in-out infinite; }
+.logo-x{ display:inline-block; color:var(--logo-x,#FFD740); filter:drop-shadow(0 0 16px color-mix(in srgb,var(--logo-x,#FFD740) 70%,transparent)); animation:logoSpin 4s ease-in-out infinite; margin:0 4px; font-size:.8em; }
+.logo-portal-txt{ background:linear-gradient(180deg,var(--logo-c2-lt,#ff9ec4),var(--logo-c2,#FF4081) 45%,var(--logo-c2-dk,#c2185b)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 22px color-mix(in srgb,var(--logo-c2,#FF4081) 55%,transparent)); animation:logoFloat 3s ease-in-out infinite .3s; }
+@keyframes logoFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-5px) } }
+@keyframes logoSpin{ 0%,100%{ transform:rotateY(0) scale(1) } 50%{ transform:rotateY(180deg) scale(1.12) } }
+.logo-sweep{ position:absolute; top:0; left:-100%; width:55%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent); animation:logoSweep 4.5s ease-in-out infinite; pointer-events:none; }
+@keyframes logoSweep{ 0%,55%{ left:-100% } 80%,100%{ left:200% } }
+.hero-sub{ font-family:'Orbitron',var(--font-display); font-size:10px; letter-spacing:7px; color:var(--logo-x,#FFD740); margin-top:7px; text-shadow:0 0 12px color-mix(in srgb,var(--logo-x,#FFD740) 40%,transparent); animation:heroSubGlow 2.5s ease-in-out infinite; }
+@keyframes heroSubGlow{ 0%,100%{ opacity:.7; letter-spacing:7px } 50%{ opacity:1; letter-spacing:9px } }
+/* İstatistik şeridi */
+.stats-bar{ display:flex; gap:8px; margin:18px 0; }
+.stats-bar .stat{ flex:1; text-align:center; padding:11px 5px; background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08); border-radius:14px; position:relative; overflow:hidden; }
+.stats-bar .stat::before{ content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--sc),transparent); }
+.stats-bar .stat-v{ font-family:'Orbitron',var(--font-display); font-size:16px; font-weight:800; color:var(--sc); }
+.stats-bar .stat-l{ font-size:7.5px; color:#7070A0; letter-spacing:1px; margin-top:3px; }
+/* Bölüm başlığı */
+.sec-title{ display:flex; align-items:center; gap:12px; margin:22px 4px 14px; }
+.sec-title-icon{ font-size:16px; filter:drop-shadow(0 0 8px rgba(0,229,255,.5)); }
+.sec-title-txt{ font-family:'Orbitron',var(--font-display); font-size:13px; font-weight:700; letter-spacing:3px; color:#c0c0e0; }
+.sec-title-line{ flex:1; height:1px; background:linear-gradient(90deg,color-mix(in srgb,var(--logo-c1,#00E5FF) 40%,transparent),transparent); }
+/* Premium oyun kartları */
+.games-premium{ display:flex; flex-direction:column; gap:13px; }
+.game-pc{ position:relative; border-radius:20px; padding:16px; cursor:pointer; overflow:hidden; background:linear-gradient(135deg,var(--gc-bg1),var(--gc-bg2)); border:1.5px solid var(--gc-bd); transition:transform .25s cubic-bezier(.34,1.56,.64,1); display:flex; align-items:center; gap:15px; animation:gamePcEnter .5s ease both; }
+.game-pc:active{ transform:scale(.97); }
+@keyframes gamePcEnter{ 0%{ opacity:0; transform:translateX(-18px) } 100%{ opacity:1; transform:translateX(0) } }
+.game-pc:nth-child(1){ animation-delay:.05s }.game-pc:nth-child(2){ animation-delay:.12s }.game-pc:nth-child(3){ animation-delay:.19s }.game-pc:nth-child(4){ animation-delay:.26s }
+.game-pc::before{ content:''; position:absolute; top:-50%; right:-30%; width:110px; height:200%; background:radial-gradient(ellipse,var(--gc) 0%,transparent 65%); opacity:.1; animation:gamePcGlow 4s ease-in-out infinite; pointer-events:none; }
+@keyframes gamePcGlow{ 0%,100%{ transform:translateX(0) rotate(0) } 50%{ transform:translateX(-25px) rotate(8deg) } }
+.game-pc::after{ content:''; position:absolute; top:0; left:0; width:100%; height:1.5px; background:linear-gradient(90deg,transparent,var(--gc),transparent); opacity:.6; }
+.game-pc-logo{ width:66px; height:66px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:18px; background:radial-gradient(circle at 38% 28%,color-mix(in srgb,var(--gc) 20%,transparent),rgba(0,0,0,.3)); position:relative; box-shadow:0 0 18px color-mix(in srgb,var(--gc) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.1); }
+.game-pc-logo::after{ content:''; position:absolute; inset:0; border-radius:18px; border:1.5px solid color-mix(in srgb,var(--gc) 32%,transparent); }
+.game-pc-info{ flex:1; min-width:0; }
+.game-pc-name{ font-family:'Orbitron',var(--font-display); font-size:17px; font-weight:800; color:var(--gc); letter-spacing:.5px; text-shadow:0 0 14px color-mix(in srgb,var(--gc) 50%,transparent); }
+.game-pc-modes{ font-size:9px; color:#8b8ba8; margin-top:4px; line-height:1.4; }
+.game-pc-play{ flex-shrink:0; padding:9px 14px; border-radius:22px; background:linear-gradient(135deg,color-mix(in srgb,var(--gc) 25%,transparent),color-mix(in srgb,var(--gc) 8%,transparent)); border:1.5px solid color-mix(in srgb,var(--gc) 50%,transparent); font-family:'Orbitron',var(--font-display); font-size:10px; font-weight:800; color:var(--gc); letter-spacing:1px; white-space:nowrap; text-shadow:0 0 10px color-mix(in srgb,var(--gc) 50%,transparent); animation:gamePcPlayPulse 2s ease-in-out infinite; }
+.gpc-arrow{ font-size:8px; }
+@keyframes gamePcPlayPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb,var(--gc) 35%,transparent) } 50%{ box-shadow:0 0 12px 2px color-mix(in srgb,var(--gc) 28%,transparent) } }
+/* SVG logo animasyonları */
+@keyframes tetrisFall{ 0%{ transform:translateY(-3px) } 50%{ transform:translateY(2px) } 100%{ transform:translateY(-3px) } }
+@keyframes chessGlow{ 0%,100%{ filter:drop-shadow(0 0 3px rgba(255,215,64,.5)) } 50%{ filter:drop-shadow(0 0 8px rgba(255,215,64,.9)) } }
+@keyframes spinSlow{ 0%{ transform:rotate(0) } 100%{ transform:rotate(360deg) } }
+@keyframes diceShake{ 0%,100%{ transform:rotate(0) } 25%{ transform:rotate(-4deg) } 75%{ transform:rotate(4deg) } }
+@keyframes letterPop{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
+/* Parçacık zemin + glow orb */
+.bg-particles{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.bg-particle{ position:absolute; border-radius:50%; opacity:0; animation:bgFloatUp linear infinite; }
+@keyframes bgFloatUp{ 0%{ transform:translateY(100vh) scale(0); opacity:0 } 10%{ opacity:.6 } 90%{ opacity:.4 } 100%{ transform:translateY(-10vh) scale(1); opacity:0 } }
+.bg-glow-orb{ position:fixed; border-radius:50%; filter:blur(60px); z-index:0; pointer-events:none; animation:bgOrbDrift 12s ease-in-out infinite; }
+.bg-orb1{ width:260px; height:260px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-c1,#00E5FF) 15%,transparent),transparent 70%); top:-60px; left:-80px; }
+.bg-orb2{ width:220px; height:220px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-c2,#E040FB) 12%,transparent),transparent 70%); top:35%; right:-90px; animation-delay:-4s; }
+.bg-orb3{ width:180px; height:180px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-x,#FFD740) 8%,transparent),transparent 70%); bottom:12%; left:-60px; animation-delay:-8s; }
+@keyframes bgOrbDrift{ 0%,100%{ transform:translate(0,0) } 33%{ transform:translate(25px,-18px) } 66%{ transform:translate(-18px,25px) } }
+/* app içeriği orb'ların üstünde */
+#app{ position:relative; z-index:2; }
+
+/* ═══ 🎨 TEMA SEÇİCİ (ayarlar) ═══ */
+.set-theme-section{ margin:8px 0 14px; padding:12px; background:linear-gradient(160deg,rgba(255,255,255,.04),transparent); border:1px solid rgba(255,255,255,.08); border-radius:14px; }
+.set-theme-lbl{ font-size:10px; font-weight:800; letter-spacing:2px; color:#c0c0e0; margin-bottom:10px; }
+.set-theme-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.theme-chip{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px; border-radius:12px; background:rgba(255,255,255,.03); border:1.5px solid rgba(255,255,255,.08); cursor:pointer; font-family:inherit; transition:transform .15s,border-color .15s; }
+.theme-chip:active{ transform:scale(.95); }
+.theme-chip.active{ border-color:var(--logo-c1,#00E5FF); background:color-mix(in srgb,var(--logo-c1,#00E5FF) 10%,transparent); box-shadow:0 0 12px color-mix(in srgb,var(--logo-c1,#00E5FF) 25%,transparent); }
+.theme-swatch{ width:34px; height:34px; border-radius:50%; border:2px solid rgba(255,255,255,.15); box-shadow:0 2px 8px rgba(0,0,0,.3); }
+.theme-chip.active .theme-swatch{ border-color:rgba(255,255,255,.4); }
+.theme-name{ font-size:8.5px; font-weight:700; color:#b0b0d0; }
+.theme-chip.active .theme-name{ color:#fff; }
