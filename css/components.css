@@ -931,3 +931,26 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .theme-chip.active .theme-swatch{ border-color:rgba(255,255,255,.4); }
 .theme-name{ font-size:8.5px; font-weight:700; color:#b0b0d0; }
 .theme-chip.active .theme-name{ color:#fff; }
+
+/* ═══ ⚡ ANASAYFA XP ÇUBUĞU ═══════════════════════════════════ */
+.xp-bar-wrap{ margin:0 0 14px; padding:12px 14px; background:linear-gradient(160deg,rgba(192,132,252,.06),rgba(0,229,255,.03)); border:1px solid rgba(192,132,252,.2); border-radius:16px; }
+.xp-bar-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.xp-lv-badge{ font-family:'Orbitron',var(--font-display); font-size:12px; font-weight:900; padding:3px 11px; border-radius:20px; }
+.xp-lv-badge[data-rank="common"]{ background:rgba(255,255,255,.06); color:#dfe7ff; border:1px solid rgba(255,255,255,.12); }
+.xp-lv-badge[data-rank="rare"]{ background:rgba(66,165,245,.12); color:#42A5F5; border:1px solid rgba(66,165,245,.3); }
+.xp-lv-badge[data-rank="epic"]{ background:rgba(171,71,188,.14); color:#AB47BC; border:1px solid rgba(171,71,188,.35); }
+.xp-lv-badge[data-rank="legend"]{ background:rgba(255,215,64,.13); color:#FFD740; border:1px solid rgba(255,215,64,.35); box-shadow:0 0 10px rgba(255,215,64,.2); }
+.xp-lv-badge[data-rank="mythic"]{ background:rgba(255,82,82,.14); color:#FF5252; border:1px solid rgba(255,82,82,.4); box-shadow:0 0 12px rgba(255,82,82,.3); animation:xpMythicPulse 2s ease-in-out infinite; }
+@keyframes xpMythicPulse{ 0%,100%{ box-shadow:0 0 10px rgba(255,82,82,.3) } 50%{ box-shadow:0 0 18px rgba(255,82,82,.6) } }
+.xp-label{ font-size:9px; font-weight:700; letter-spacing:2px; color:#8080b0; }
+.xp-next{ font-size:10px; font-weight:700; color:#c084fc; }
+.xp-bar-track{ position:relative; height:12px; background:rgba(255,255,255,.05); border-radius:12px; overflow:visible; border:1px solid rgba(255,255,255,.07); margin-bottom:6px; }
+.xp-bar-fill{ height:100%; border-radius:12px; background:linear-gradient(90deg,#7c3aed,#c084fc,#00E5FF); transition:width 1.4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 10px rgba(192,132,252,.4); position:relative; }
+.xp-bar-fill::after{ content:''; position:absolute; top:0; right:0; width:3px; height:100%; background:#fff; border-radius:2px; opacity:.8; box-shadow:0 0 6px #fff; }
+.xp-bar-glow{ position:absolute; top:-3px; width:6px; height:18px; background:radial-gradient(circle,#fff 0%,rgba(192,132,252,.6) 60%,transparent 100%); border-radius:50%; transition:left 1.4s cubic-bezier(.4,0,.2,1); pointer-events:none; }
+.xp-bar-footer{ display:flex; justify-content:space-between; align-items:center; }
+.xp-cur{ font-family:'Orbitron',var(--font-display); font-size:10px; font-weight:700; color:#c084fc; }
+.xp-pct{ font-size:11px; font-weight:800; color:#dfe7ff; }
+.xp-max{ font-size:10px; color:#7070A0; }
+/* Profil DM butonu */
+.prf-act-dm{ background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,229,255,.04)) !important; border-color:rgba(0,229,255,.35) !important; color:#00E5FF !important; }
