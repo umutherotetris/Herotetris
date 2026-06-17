@@ -374,7 +374,18 @@ function fitCanvas(){
   if(!G || !G.canvas) return;
   const wrap = G.boardWrap;
   const availW = wrap.clientWidth || (window.innerWidth - 12);
-  const availH = wrap.clientHeight || (window.innerHeight - 180);
+  // Sabit rezerv: header(~52) + status(~0) + controls(~46) + actions(~36) + HUD(~60) + padding
+  const ctrl = G.root && G.root.querySelector('.tg-controls');
+  const acts = G.root && G.root.querySelector('.tg-actions');
+  const top  = G.root && G.root.querySelector('.tg-top');
+  const hud  = G.root && G.root.querySelector('#heroGameHud');
+  const reservedH = (ctrl ? ctrl.offsetHeight : 46)
+                  + (acts ? acts.offsetHeight : 36)
+                  + (top  ? top.offsetHeight  : 52)
+                  + (hud  ? hud.offsetHeight  : 0)
+                  + 28; // padding + güvenlik marjı
+  const winH = window.innerHeight || window.screen.height;
+  const availH = Math.max(80, winH - reservedH);
   // Tavla tahtası DİKEY-UZUN ama dengeli (gerçek tavla oranı ~1.40).
   // Aşırı uzamayı önlemek için 1.36–1.48 arasına sabitlenir.
   let ratio = availH / availW;
@@ -1534,7 +1545,11 @@ function showAISetup(root){
   const ov = document.createElement('div');
   ov.className = 'tavla-theme-picker';
   ov.innerHTML = `<div class="ttp-box">
-    <div class="ttp-title">🤖 YAPAY ZEKÂ AYARLARI</div>
+    <div class="ttp-head-row">
+      <button class="ttp-back-btn" data-act="back">← Geri</button>
+      <div class="ttp-title">🤖 YAPAY ZEKÂ</div>
+      <button class="ttp-close-btn" data-act="close">✕</button>
+    </div>
     <div class="tas-label">ZORLUK</div>
     <div class="tas-row" data-group="diff">
       <button class="tas-opt" data-v="easy">😊 KOLAY</button>
@@ -1561,6 +1576,12 @@ function showAISetup(root){
   ov.querySelector('.tas-start').addEventListener('click', () => {
     ov.remove();
     startGame(root, 'ai', { difficulty: diff, playerColor: color });
+  });
+  ov.querySelector('[data-act="back"]').addEventListener('click', () => { ov.remove(); });
+  ov.querySelector('[data-act="close"]').addEventListener('click', () => {
+    ov.remove();
+    // Ana menüye dön (tavla root'u kapat)
+    if(G && G.root) G.root.remove(); G=null;
   });
 }
 
@@ -1838,8 +1859,8 @@ function injectCSS(){
 .tvm-name{ font-size:15px; font-weight:800; letter-spacing:.5px; }
 .tvm-desc{ font-size:11px; color:#8a9bb5; }
 
-.tv-game{ flex:1; display:flex; flex-direction:column; padding:10px; max-width:640px; margin:0 auto; width:100%; box-sizing:border-box; }
-.tg-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.tv-game{ display:flex; flex-direction:column; padding:4px 6px 2px; max-width:640px; margin:0 auto; width:100%; box-sizing:border-box; height:100svh; height:100vh; max-height:100svh; overflow:hidden; }
+.tg-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; flex-shrink:0; }
 .tg-turn{ font-size:15px; font-weight:800; letter-spacing:1px; padding:6px 16px; border-radius:20px; border:1.5px solid rgba(200,165,87,.4); }
 .tg-turn.white{ background:rgba(245,239,224,.15); color:#f5efe0; }
 .tg-turn.black{ background:rgba(60,80,120,.25); color:#9fc0e8; }
@@ -1848,11 +1869,11 @@ function injectCSS(){
 .tg-status{ text-align:center; font-size:13px; font-weight:700; min-height:0; height:0; overflow:hidden; opacity:0; transition:all .2s; }
 .tg-status.show{ height:auto; min-height:22px; opacity:1; margin:2px 0 6px; padding:6px; border-radius:10px; background:rgba(255,255,255,.05); }
 .tg-status.win{ background:linear-gradient(90deg, rgba(200,165,87,.25), rgba(255,215,64,.15)); color:#ffd740; font-size:15px; }
-.tg-board-wrap{ flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
+.tg-board-wrap{ flex:1 1 0; display:flex; align-items:center; justify-content:center; min-height:0; overflow:hidden; }
 .tg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; }
-.tg-controls{ display:flex; gap:8px; justify-content:center; align-items:center; padding:8px 0 4px; }
-.tg-actions{ display:flex; gap:10px; justify-content:center; align-items:center; padding:0 0 6px; }
-.tg-act-btn{ padding:8px 16px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:12px; font-weight:700; cursor:pointer; transition:transform .1s; }
+.tg-controls{ display:flex; gap:6px; justify-content:center; align-items:center; padding:5px 0 3px; flex-shrink:0; position:relative; z-index:5; }
+.tg-actions{ display:flex; gap:6px; justify-content:center; align-items:center; padding:0 0 4px; flex-shrink:0; flex-wrap:wrap; position:relative; z-index:5; }
+.tg-act-btn{ padding:7px 11px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:11px; font-weight:700; cursor:pointer; transition:transform .1s; white-space:nowrap; }
 .tg-act-btn:active{ transform:scale(.95); }
 .tg-act-btn.danger{ border-color:rgba(255,90,90,.4); color:#ff8080; }
 .tavla-confirm{ position:fixed; inset:0; z-index:9300; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(5px); padding:20px; box-sizing:border-box; }
@@ -1878,6 +1899,9 @@ function injectCSS(){
 .tg-roll{ background:linear-gradient(135deg, #c8a557, #a07d2f); color:#0a1428; font-size:16px; font-weight:800; letter-spacing:1px; padding:14px 32px; box-shadow:0 0 16px rgba(200,165,87,.3); }
 
 .tavla-theme-picker{ position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(6px); padding:16px; box-sizing:border-box; }
+.ttp-head-row{ display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
+.ttp-back-btn{ background:rgba(255,255,255,.07);border:1px solid rgba(200,165,87,.3);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:700;color:#c8a557;cursor:pointer;font-family:inherit; }
+.ttp-close-btn{ background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.25);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:700;color:#ff8080;cursor:pointer;font-family:inherit; }
 .ttp-box{ background:linear-gradient(135deg, #16294a, #0a1428); border:2px solid #c8a557; border-radius:20px; padding:20px; max-width:440px; width:100%; box-sizing:border-box; }
 .ttp-box *{ box-sizing:border-box; }
 .ttp-title{ text-align:center; font-size:16px; font-weight:800; letter-spacing:1px; color:#c8a557; margin-bottom:16px; }
