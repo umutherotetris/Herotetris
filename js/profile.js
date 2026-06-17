@@ -80,12 +80,19 @@ async function uiMod(){
 let _profT=null;
 export function initScreens(){
   if(typeof window!=='undefined'){ if(window.__heroScreensInit) return; window.__heroScreensInit=true; }
-  try{ Auth.subscribe(st=>{ try{ _renderProfile(st); }catch(e){ console.error('[PRF]',e); const b=byId('scrProfile'); if(b) b.innerHTML='<div class="placeholder">⚠️ '+esc(e.message)+'</div>'; } }); }catch(e){}
+  // Auth değişince hem profili hem nav köprülerini yeniden render et
+  try{ Auth.subscribe(st=>{
+    try{ _renderProfile(st); }catch(e){ console.error('[PRF]',e); const b=byId('scrProfile'); if(b) b.innerHTML='<div class="placeholder">⚠️ '+esc(e.message)+'</div>'; }
+    try{ renderBridges(); }catch(e){}  // ← auth değişince köprüler de güncellensin
+  }); }catch(e){}
   try{ Store.subscribe(()=>_renderProfile(Auth.getState())); }catch(e){}
   try{ renderBridges(); }catch(e){}
   try{ renderLeaderboard(); }catch(e){}
   document.querySelectorAll('[data-nav="leaderboard"]').forEach(el=>el.addEventListener('click',()=>setTimeout(renderLeaderboard,80)));
   document.querySelectorAll('[data-nav="profile"]').forEach(el=>el.addEventListener('click',()=>setTimeout(()=>_renderProfile(Auth.getState()),80)));
+  // Nav arkadaş/bildirim sekmelerine tıklanınca taze veri çek
+  document.querySelectorAll('[data-nav="friends"]').forEach(el=>el.addEventListener('click',()=>setTimeout(()=>{try{_buildFriendsBridge();}catch(e){}},80)));
+  document.querySelectorAll('[data-nav="notifications"]').forEach(el=>el.addEventListener('click',()=>setTimeout(()=>{try{_buildNotifBridge();}catch(e){}},80)));
 }
 export function renderProfile(st){ if(!st) st=Auth.getState(); _renderProfile(st); }
 
@@ -421,7 +428,13 @@ async function renderLeaderboard(){
 }
 
 // ── 👥 / 🔔 köprüleri ─────────────────────────────────────────
+let _lastBridgeAuthState = null;
 function renderBridges(){
+  // Sadece giriş durumu değişince yeniden render (gereksiz tekrarları önle)
+  const st = Auth.getState();
+  const key = (st.uid||'') + ':' + (st.status||'');
+  if(key === _lastBridgeAuthState) return;
+  _lastBridgeAuthState = key;
   _buildFriendsBridge();
   _buildNotifBridge();
 }
