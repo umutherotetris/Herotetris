@@ -27,7 +27,11 @@ function renderPlayer(p){
   setText('statLvl', 'LV.' + (p.level || 1));
   // Ana sayfa istatistik şeridi (kompakt format — bloğa sığsın)
   const kj = p.kaju || 0;
-  const kjShort = kj >= 1e6 ? (kj/1e6).toFixed(1)+'M' : kj >= 1e4 ? (kj/1e3).toFixed(0)+'K' : fmt(kj);
+  let kjShort;
+  if(kj >= 999500) kjShort = (kj/1e6).toFixed(kj>=1e7?0:1)+'M';
+  else if(kj >= 10000) kjShort = Math.round(kj/1e3)+'K';
+  else if(kj >= 1000) kjShort = (kj/1e3).toFixed(1)+'K';
+  else kjShort = String(kj);
   setText('statKaju', kjShort);
   const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
   if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
