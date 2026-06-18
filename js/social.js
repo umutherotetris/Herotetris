@@ -29,6 +29,40 @@ function showToast(msg,dur){
 }
 export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }
 
+// ── 🔔 Yeni mesaj bildirimi (ekran üstü kayan toast + ses) ──
+function dmNotifSound(){
+  try{
+    const ac = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type='sine'; o.frequency.setValueAtTime(880, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(1320, ac.currentTime+0.08);
+    g.gain.setValueAtTime(0.0001, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12, ac.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+0.3);
+    o.start(ac.currentTime); o.stop(ac.currentTime+0.32);
+  }catch(e){}
+}
+function showDMNotifToast(uid, nick, text){
+  dmNotifSound();
+  // Avatar çek
+  let ava='👤';
+  (async()=>{ try{ const u=await fdb.get(fdb.ref(db,'users/'+uid+'/avatar')); if(u.exists()) ava=u.val(); const el=document.querySelector('#dmNT_'+CSS.escape(uid)+' .dm-nt-ava'); if(el) el.textContent=ava; }catch(e){} })();
+  const ex=document.getElementById('dmNT_'+uid); if(ex) ex.remove();
+  const t=document.createElement('div'); t.id='dmNT_'+uid; t.className='dm-notif-toast';
+  t.innerHTML='<div class="dm-nt-ava">'+ava+'</div>'
+    +'<div class="dm-nt-body"><div class="dm-nt-name">✉️ '+esc(nick)+'</div><div class="dm-nt-text">'+esc((text||'').slice(0,48))+'</div></div>';
+  document.body.appendChild(t);
+  // Tıkla → sohbeti aç
+  t.addEventListener('click', ()=>{
+    t.remove();
+    applyFabSetting(); openHubTab('ozel');
+    let _t=0; const _try=()=>{ _t++; const el=byId('ghpDMThread'); if(el){ try{dmOpenThread(uid,nick);}catch(e){} } else if(_t<15){ setTimeout(_try,80); } };
+    setTimeout(_try,120);
+  });
+  setTimeout(()=>{ t.classList.add('dm-nt-out'); setTimeout(()=>t.remove(),350); }, 4200);
+}
+
 // Seçilebilir avatarlar (profil > değiştir)
 // Basit, her cihazda çalışan avatarlar (ZWJ sekansı yok)
 export const AVATARS = ['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈'];
@@ -380,6 +414,64 @@ export function openHubTab(tab){
   switchTab(tab || 'chat');
 }
 // Dışarıdan (nav menü) DM thread açmak için
+// ── 🎮 OYUN İÇİ MİNİ DM ──
+// Oyun ekranındayken rakibe/arkadaşa hızlı mesaj gönderme paneli
+export function openInGameDM(uid, nick){
+  if(!uid){ showToast('Rakip bilgisi yok'); return; }
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
+  if(uid === me.uid){ showToast('🙂 Kendine mesaj atamazsın'); return; }
+  const ex=document.getElementById('inGameDM'); if(ex){ ex.remove(); return; }
+  const ov=document.createElement('div'); ov.id='inGameDM'; ov.className='igdm-ov';
+  const pk = pairKey(me.uid, uid);
+  ov.innerHTML='<div class="igdm-box">'
+    +'<div class="igdm-head"><span class="igdm-title">✉️ '+esc(nick||'Rakip')+'</span><button class="igdm-close">✕</button></div>'
+    +'<div class="igdm-msgs" id="igdmMsgs"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">Hızlı mesaj gönder</div></div></div>'
+    +'<div class="igdm-quick">'
+      +['👋 Selam','İyi oyun! 👏','Bravo! 🎉','Hamlene hayran kaldım 😎','Tekrar? 🔄','Bol şans! 🍀','Yenildim 😅','Rövanş! ⚔️'].map(q=>'<button class="igdm-chip" data-q="'+esc(q)+'">'+esc(q)+'</button>').join('')
+    +'</div>'
+    +'<div class="igdm-input-row"><input class="igdm-input" id="igdmInput" maxlength="200" placeholder="Mesaj…" autocomplete="off"><button class="igdm-send" id="igdmSend">➤</button></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  ov.querySelector('.igdm-close').addEventListener('click', ()=>{ if(_off){try{_off();}catch(e){}} ov.remove(); });
+  ov.addEventListener('click', e=>{ if(e.target===ov){ if(_off){try{_off();}catch(e){}} ov.remove(); } });
+
+  async function send(text){
+    if(!text || !text.trim()) return;
+    try{
+      const theyBlock=await fdb.get(fdb.ref(db,'blocks/'+uid+'/'+me.uid));
+      if(theyBlock.exists()&&theyBlock.val()===true){ showToast('🚫 Bu kişi seni engellemiş'); return; }
+      const msg={ from:me.uid, fromName:me.displayName||'Oyuncu', text:text.trim().slice(0,200), ts:Date.now() };
+      if(me.isVisibleAdmin===true) msg.isAdmin=true;
+      await fdb.push(fdb.ref(db,'messages/'+pk), msg);
+      // konu listesine ekle
+      const ts=loadThreads(); const i=ts.findIndex(x=>x.uid===uid);
+      const item={ uid, nick:nick||'Rakip', last:text.trim().slice(0,40), ts:Date.now(), unread:false };
+      if(i>=0) ts.splice(i,1); ts.unshift(item); saveThreads(ts);
+    }catch(e){ showToast('⚠️ Gönderilemedi'); }
+  }
+  const inp=ov.querySelector('#igdmInput');
+  ov.querySelector('#igdmSend').addEventListener('click', ()=>{ send(inp.value); inp.value=''; });
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ send(inp.value); inp.value=''; } });
+  ov.querySelectorAll('.igdm-chip').forEach(c=>c.addEventListener('click', ()=>{ send(c.dataset.q); }));
+
+  // Mesajları canlı dinle
+  let _off=null;
+  try{
+    _off = fdb.onValue(fdb.query(fdb.ref(db,'messages/'+pk), fdb.orderByChild('ts'), fdb.limitToLast(15)), snap=>{
+      const box=document.getElementById('igdmMsgs'); if(!box) return;
+      const rows=[]; if(snap.exists()) snap.forEach(ch=>{ const v=ch.val(); if(v&&v.text&&ch.key!=='_seen'&&ch.key!=='_typing') rows.push(v); });
+      if(!rows.length) return;
+      rows.sort((a,b)=>(a.ts||0)-(b.ts||0));
+      box.innerHTML=rows.map(m=>{
+        const mine=m.from===me.uid;
+        return '<div class="igdm-msg'+(mine?' mine':'')+'">'+esc(m.text)+'</div>';
+      }).join('');
+      box.scrollTop=box.scrollHeight;
+    });
+  }catch(e){}
+}
+
 export function dmOpenThreadExternal(uid, nick){
   if(!H) return;
   if(!H.open) open();
@@ -433,7 +525,16 @@ export function initSocial(){
             <button class="ghp-act" id="ghpDMBack">←</button><div class="ghp-dm-name" id="ghpDMTitle" style="font-size:12px;flex:1"></div>
           </div>
           <div class="ghp-list" id="ghpDMMsgs"></div>
-          <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+          <div class="dm-quick-row" id="dmQuickRow">
+            <button class="dm-quick-chip" data-q="Selam 👋">Selam 👋</button>
+            <button class="dm-quick-chip" data-q="Nasılsın?">Nasılsın?</button>
+            <button class="dm-quick-chip" data-q="Oynayalım mı? 🎮">Oynayalım mı? 🎮</button>
+            <button class="dm-quick-chip" data-q="İyi oyundu! 👏">İyi oyundu! 👏</button>
+            <button class="dm-quick-chip" data-q="Tebrikler 🎉">Tebrikler 🎉</button>
+            <button class="dm-quick-chip" data-q="Görüşürüz 👋">Görüşürüz 👋</button>
+          </div>
+          <div class="ghp-input-row"><button class="dm-emoji-btn" id="ghpDMEmoji" title="Emoji">😊</button><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+          <div class="dm-emoji-panel" id="dmEmojiPanel" style="display:none"></div>
         </div>
       </div>
       <div class="ghp-pane" id="ghpPane-dost">
@@ -477,6 +578,27 @@ export function initSocial(){
   panel.querySelector('#ghpDMBack').addEventListener('click', dmBack);
   panel.querySelector('#ghpDMSend').addEventListener('click', dmSend);
   panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmSend(); });
+  // Hazır mesaj kalıpları
+  panel.querySelectorAll('#dmQuickRow .dm-quick-chip').forEach(chip => chip.addEventListener('click', () => {
+    const inp = byId('ghpDMInput'); if(!inp) return;
+    inp.value = chip.dataset.q; inp.focus();
+    dmSend();
+  }));
+  // Emoji picker
+  const EMOJIS = ['😀','😂','🥹','😍','😎','🤔','😮','😢','😭','😡','👍','👎','👏','🙏','💪','🔥','✨','🎉','❤️','💔','💯','🎮','⚽','🏆','🎯','🥜','⭐','🌙','☀️','🌈','🚀','👋','🤝','😴','🤩','😇','🥳','😅','🙈','💀'];
+  const emojiBtn = panel.querySelector('#ghpDMEmoji');
+  const emojiPanel = panel.querySelector('#dmEmojiPanel');
+  if(emojiBtn && emojiPanel){
+    emojiPanel.innerHTML = EMOJIS.map(e=>'<button class="dm-emoji-item" data-emoji="'+e+'">'+e+'</button>').join('');
+    emojiBtn.addEventListener('click', () => {
+      const vis = emojiPanel.style.display !== 'none';
+      emojiPanel.style.display = vis ? 'none' : 'flex';
+    });
+    emojiPanel.querySelectorAll('.dm-emoji-item').forEach(b => b.addEventListener('click', () => {
+      const inp = byId('ghpDMInput'); if(!inp) return;
+      inp.value += b.dataset.emoji; inp.focus();
+    }));
+  }
   // Bildirim temizle
   panel.querySelector('#ghpNotifClear').addEventListener('click', clearNotifs);
   // Arkadaş ekle
@@ -656,11 +778,23 @@ function renderThreads(){
   if(!t.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">NICK YAZIP YENİ SOHBET AÇ</div></div>'; return; }
   list.innerHTML = t.map(x => `
     <div class="ghp-dm-row" data-uid="${esc(x.uid)}" data-nick="${esc(x.nick)}">
-      <div class="ghp-dm-avatar" data-dmpc="${esc(x.uid)}" style="cursor:pointer">👤</div>
+      <div class="ghp-dm-avatar" data-dmpc="${esc(x.uid)}" data-avauid="${esc(x.uid)}" style="cursor:pointer">${esc(x.avatar||'👤')}</div>
       <div class="ghp-dm-info"><div class="ghp-dm-name">${esc(x.nick)}</div><div class="ghp-dm-text">${esc(x.last || '')}</div></div>
       <div class="ghp-dm-ts">${x.ts ? tAgo(x.ts) : ''}</div>
       ${x.unread ? '<div class="ghp-dm-dot"></div>' : ''}
     </div>`).join('');
+  // Avatarları Firebase'den yükle (cache'le)
+  t.forEach(x => {
+    if(x.avatar) return;
+    fdb.get(fdb.ref(db,'users/'+x.uid+'/avatar')).then(snap=>{
+      if(snap.exists()){
+        const ava=snap.val();
+        const el=list.querySelector('[data-avauid="'+x.uid+'"]'); if(el) el.textContent=ava;
+        // threads cache'e yaz
+        const ts=loadThreads(); const i=ts.findIndex(z=>z.uid===x.uid); if(i>=0){ ts[i].avatar=ava; saveThreads(ts); }
+      }
+    }).catch(()=>{});
+  });
   list.querySelectorAll('.ghp-dm-row').forEach(r => r.addEventListener('click', (e) => {
     const pc = e.target.closest('[data-dmpc]');
     if(pc){ openPlayerCard(pc.dataset.dmpc); return; }
@@ -671,22 +805,44 @@ async function dmOpenByNick(){
   const inp = byId('ghpDMNick'); const nick = inp.value.trim();
   if(!nick) return;
   const me = Auth.getState();
-  if(!me.uid || me.status !== 'google'){ alert('Özel mesaj için Google ile giriş gerekli.'); return; }
+  if(!me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
   const t = await Auth.resolveNick(nick);
-  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
-  if(t.uid === me.uid){ alert('Kendine mesaj atamazsın 🙂'); return; }
+  if(!t){ showToast('🔍 Nick bulunamadı: ' + nick); return; }
+  if(t.uid === me.uid){ showToast('🙂 Kendine mesaj atamazsın'); return; }
   inp.value = '';
   dmOpenThread(t.uid, t.nick || nick);
 }
 function dmOpenThread(uid, nick){
-  H.dmThread = { uid, nick };
+  H.dmThread = { uid, nick, avatar:'👤' };
   byId('ghpDMList').style.display = 'none';
   byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
   const th = byId('ghpDMThread'); th.style.display = 'flex';
   const tEl = byId('ghpDMTitle');
-  tEl.textContent = '✉️ ' + nick;
+  tEl.innerHTML = '<span class="dm-title-ava">👤</span><span class="dm-title-info"><span class="dm-title-nick">'+esc(nick)+'</span><span class="dm-title-status" id="dmTitleStatus">·····</span></span>';
   tEl.style.cursor = 'pointer';
   tEl.onclick = () => openPlayerCard(uid);
+  // Avatar + çevrimiçi durumu çek
+  (async()=>{
+    try{
+      const [uSnap,pSnap]=await Promise.all([
+        fdb.get(fdb.ref(db,'users/'+uid)),
+        fdb.get(fdb.ref(db,'presence/'+uid)),
+      ]);
+      const u=uSnap.exists()?uSnap.val():{};
+      const pr=pSnap.exists()?pSnap.val():{};
+      const ava=u.avatar||'👤';
+      H.dmThread.avatar=ava;
+      const avaEl=tEl.querySelector('.dm-title-ava'); if(avaEl) avaEl.textContent=ava;
+      const online=pr.online===true && (Date.now()-(pr.lastSeen||0))<180000;
+      const stEl=byId('dmTitleStatus');
+      if(stEl){
+        if(online){ stEl.innerHTML='<span class="dm-online-dot"></span> çevrimiçi'; stEl.className='dm-title-status online'; }
+        else if(pr.lastSeen){ stEl.textContent='son görülme '+tAgo(pr.lastSeen); stEl.className='dm-title-status'; }
+        else { stEl.textContent=''; }
+      }
+      if(H.dmRows) { /* avatar baloncukları güncelle */ const ev=byId('ghpDMMsgs'); }
+    }catch(e){}
+  })();
   // okundu işaretle
   const ts = loadThreads(); const i = ts.findIndex(x => x.uid === uid);
   if(i >= 0){ ts[i].unread = false; saveThreads(ts); }
@@ -734,42 +890,128 @@ function dmOpenThread(uid, nick){
     const box = byId('ghpDMMsgs'); if(!box) return;
     const meAdmin = Auth.getState().isAdmin === true;
     const pk = H.dmThread ? pairKey(me, H.dmThread.uid) : null;
+    const oppAva = (H.dmThread && H.dmThread.avatar) || '👤';
     box.innerHTML = rows.map(m => {
       const isMine = m.from === me;
-      const within5 = (Date.now() - (m.ts||0)) < 300000;
-      const canEdit = (isMine && within5) || meAdmin;
-      const canDel = isMine || meAdmin;
-      let acts = '';
-      if(m._key){
-        if(canEdit) acts += ' <span class="gc-act edit" data-dmedit="'+esc(m._key)+'" data-dmtxt="'+esc(m.text||'')+'">✏️ Düzenle</span>';
-        if(canDel) acts += ' <span class="gc-act del" data-dmdel="'+esc(m._key)+'">🗑 Sil</span>';
-      }
-      const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? ' <span class="dm-tick seen">✓✓</span>' : ' <span class="dm-tick">✓</span>') : '';
-      const editedTag = m.edited ? '<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>' : '';
+      const editedTag = m.edited ? '<span class="dm-edited">·düz.</span>' : '';
+      const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? '<span class="dm-tick seen">✓✓</span>' : '<span class="dm-tick">✓</span>') : '';
       const adminName = m.isAdmin===true ? '<div class="dm-admin-name"><span class="admin-crown">👑</span><span class="admin-nick-glow">'+esc(m.fromName||'Admin')+'</span></div>' : '';
-      return '<div class="ghp-chat-row'+(isMine ? ' mine' : '')+'">'
+      // Tepkiler (reactions)
+      let reactHtml = '';
+      if(m.reactions){
+        const counts = {};
+        Object.values(m.reactions).forEach(em => { if(em) counts[em] = (counts[em]||0)+1; });
+        const chips = Object.entries(counts).map(([em,c]) => '<span class="dm-react-chip'+(m.reactions[me]===em?' mine':'')+'" data-reactkey="'+esc(m._key)+'" data-reactem="'+esc(em)+'">'+em+(c>1?' '+c:'')+'</span>').join('');
+        if(chips) reactHtml = '<div class="dm-reacts">'+chips+'</div>';
+      }
+      const avatarBubble = !isMine ? '<div class="dm-bubble-ava">'+oppAva+'</div>' : '';
+      return '<div class="ghp-chat-row dm-row-v2'+(isMine ? ' mine' : '')+'" data-msgkey="'+esc(m._key||'')+'" data-msgtxt="'+esc(m.text||'')+'" data-msgmine="'+(isMine?'1':'0')+'" data-msgts="'+(m.ts||0)+'">'
+        + avatarBubble
         + '<div class="ghp-chat-body">'
           + adminName
-          + '<div class="ghp-chat-text">'+esc(m.text)+editedTag+'</div>'
-          + '<div class="ghp-chat-ts" title="'+tFull(m.ts||0)+'">'+tAgo(m.ts || 0)+' <span class="chat-date-mini">'+tFull(m.ts||0)+'</span>'+tick+acts+'</div>'
+          + '<div class="ghp-chat-text">'+esc(m.text)+'</div>'
+          + '<div class="ghp-chat-ts" title="'+tFull(m.ts||0)+'">'+tAgo(m.ts || 0)+' '+editedTag+' '+tick+'</div>'
+          + reactHtml
         + '</div></div>';
     }).join('');
-    // Düzenle/sil listener
-    box.querySelectorAll('[data-dmdel]').forEach(b => b.addEventListener('click', async (e) => {
-      e.stopPropagation(); const k = b.dataset.dmdel; if(!k || !pk) return;
-      if(!confirm('Mesaj silinsin mi?')) return;
-      try{ await fdb.set(fdb.ref(db, 'messages/' + pk + '/' + k), null); }catch(err){}
+    // Tepki çipine tıkla → tepkiyi kaldır/değiştir
+    box.querySelectorAll('[data-reactkey]').forEach(c => c.addEventListener('click', async (e) => {
+      e.stopPropagation(); const k = c.dataset.reactkey; const em = c.dataset.reactem; if(!k||!pk) return;
+      try{
+        const cur = await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me));
+        if(cur.exists() && cur.val()===em){ await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), null); }
+        else { await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), em); }
+      }catch(err){}
     }));
-    box.querySelectorAll('[data-dmedit]').forEach(b => b.addEventListener('click', async (e) => {
-      e.stopPropagation(); const k = b.dataset.dmedit; if(!k || !pk) return;
-      const cur = b.dataset.dmtxt; const nt = prompt('Mesajı düzenle:', cur);
-      if(nt && nt.trim() && nt.trim() !== cur){
-        try{ await fdb.update(fdb.ref(db, 'messages/' + pk + '/' + k), { text: nt.trim().slice(0,300), edited: true }); }catch(err){}
-      }
-    }));
+    // Baloncuğa uzun bas / sağ tık → aksiyon menüsü (tepki, düzenle, sil)
+    box.querySelectorAll('.dm-row-v2').forEach(row => {
+      let pressTimer=null;
+      const openMenu=()=>{ showDMMsgMenu(row, pk, meAdmin); };
+      row.addEventListener('contextmenu', e=>{ e.preventDefault(); openMenu(); });
+      row.addEventListener('touchstart', ()=>{ pressTimer=setTimeout(openMenu, 480); }, {passive:true});
+      row.addEventListener('touchend', ()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      row.addEventListener('touchmove', ()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      // çift tık → hızlı ❤️ tepki
+      row.addEventListener('dblclick', async ()=>{
+        const k=row.dataset.msgkey; if(!k||!pk) return;
+        try{ const cur=await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me)); await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), (cur.exists()&&cur.val()==='❤️')?null:'❤️'); }catch(e){}
+      });
+    });
     box.scrollTop = box.scrollHeight;
   }
 }
+// ── 📋 Mesaj aksiyon menüsü (uzun bas/sağ tık) ──
+function showDMMsgMenu(row, pk, meAdmin){
+  if(!pk) return;
+  const me = Auth.getState().uid;
+  const k = row.dataset.msgkey;
+  const txt = row.dataset.msgtxt;
+  const isMine = row.dataset.msgmine === '1';
+  const ts = parseInt(row.dataset.msgts||'0');
+  const within5 = (Date.now() - ts) < 300000;
+  const canEdit = (isMine && within5) || meAdmin;
+  const canDel = isMine || meAdmin;
+  // Var olan menüyü kaldır
+  const ex = document.getElementById('dmMsgMenu'); if(ex) ex.remove();
+  const ov = document.createElement('div'); ov.id='dmMsgMenu'; ov.className='dm-msgmenu-ov';
+  const REACTS = ['👍','❤️','😂','😮','😢','🔥'];
+  ov.innerHTML = '<div class="dm-msgmenu">'
+    + '<div class="dm-react-row">'+REACTS.map(em=>'<button class="dm-react-btn" data-em="'+em+'">'+em+'</button>').join('')+'</div>'
+    + '<div class="dm-msgmenu-acts">'
+      + (canEdit?'<button class="dm-menu-act" data-act="edit">✏️ Düzenle</button>':'')
+      + '<button class="dm-menu-act" data-act="copy">📋 Kopyala</button>'
+      + (canDel?'<button class="dm-menu-act danger" data-act="del">🗑 Sil</button>':'')
+    + '</div></div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  // Tepki seç
+  ov.querySelectorAll('.dm-react-btn').forEach(b => b.addEventListener('click', async ()=>{
+    const em=b.dataset.em;
+    try{
+      const cur=await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me));
+      await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), (cur.exists()&&cur.val()===em)?null:em);
+    }catch(e){}
+    close();
+  }));
+  // Aksiyonlar
+  ov.querySelectorAll('.dm-menu-act').forEach(b => b.addEventListener('click', async ()=>{
+    const act=b.dataset.act;
+    if(act==='copy'){ try{ await navigator.clipboard.writeText(txt); showToast('📋 Kopyalandı'); }catch(e){ showToast('Kopyalanamadı'); } close(); }
+    else if(act==='del'){
+      close();
+      try{ await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k), null); showToast('🗑 Mesaj silindi'); }catch(e){}
+    }
+    else if(act==='edit'){
+      close();
+      showDMEditModal(pk, k, txt);
+    }
+  }));
+}
+
+// ── ✏️ Mesaj düzenleme modalı (prompt yerine) ──
+function showDMEditModal(pk, k, curText){
+  const ex=document.getElementById('dmEditModal'); if(ex) ex.remove();
+  const ov=document.createElement('div'); ov.id='dmEditModal'; ov.className='dm-edit-ov';
+  ov.innerHTML='<div class="dm-edit-box">'
+    +'<div class="dm-edit-title">✏️ Mesajı Düzenle</div>'
+    +'<textarea class="dm-edit-input" maxlength="300">'+esc(curText)+'</textarea>'
+    +'<div class="dm-edit-acts"><button class="dm-edit-cancel">Vazgeç</button><button class="dm-edit-save">Kaydet</button></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  const ta=ov.querySelector('.dm-edit-input'); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+  const close=()=>ov.remove();
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  ov.querySelector('.dm-edit-cancel').addEventListener('click', close);
+  ov.querySelector('.dm-edit-save').addEventListener('click', async ()=>{
+    const nt=ta.value.trim();
+    if(nt && nt!==curText){
+      try{ await fdb.update(fdb.ref(db,'messages/'+pk+'/'+k), { text:nt.slice(0,300), edited:true }); showToast('✏️ Düzenlendi'); }catch(e){}
+    }
+    close();
+  });
+}
+
 function dmBack(){
   if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
   if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }
@@ -791,12 +1033,12 @@ async function dmSend(){
       fdb.get(fdb.ref(db,'blocks/'+me.uid+'/'+H.dmThread.uid)),
       fdb.get(fdb.ref(db,'blocks/'+H.dmThread.uid+'/'+me.uid)),
     ]);
-    if(iBlock.exists() && iBlock.val()===true){ alert('🚫 Bu kişiyi engelledin. Mesaj göndermek için engeli kaldır.'); return; }
-    if(theyBlock.exists() && theyBlock.val()===true){ alert('🚫 Bu kişi seni engellemiş, mesaj gönderemezsin.'); return; }
+    if(iBlock.exists() && iBlock.val()===true){ showToast('🚫 Bu kişiyi engelledin'); return; }
+    if(theyBlock.exists() && theyBlock.val()===true){ showToast('🚫 Bu kişi seni engellemiş'); return; }
     // DM kapatma kontrolü — gönderen admin değilse ve alıcı DM kapatmışsa engelle
     if(me.isAdmin !== true){
       const tu = await fdb.get(fdb.ref(db,'users/'+H.dmThread.uid+'/dmClosed'));
-      if(tu.exists() && tu.val()===true){ alert('✉️ Bu kullanıcı herkesten mesaj almayı kapatmış.'); return; }
+      if(tu.exists() && tu.val()===true){ showToast('✉️ Bu kullanıcı mesaj almayı kapatmış'); return; }
     }
   }catch(e){}
   const pk = pairKey(me.uid, H.dmThread.uid);
@@ -811,7 +1053,7 @@ async function dmSend(){
     if(i >= 0) ts.splice(i, 1);
     ts.unshift(item); saveThreads(ts);
     watchDMThreads();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){ showToast('⚠️ Gönderilemedi'); }
 }
 // Son konuşmaların yeni mesajlarını izle → rozet
 function watchDMThreads(){
@@ -828,8 +1070,14 @@ function watchDMThreads(){
       if((last.ts || 0) > seen){
         const ts = loadThreads(); const i = ts.findIndex(x => x.uid === t.uid);
         if(i >= 0){ ts[i].last = (last.text || '').slice(0, 40); ts[i].ts = last.ts; ts[i].unread = true; saveThreads(ts); }
-        if(!(H.open && H.tab === 'ozel' && H.dmThread && H.dmThread.uid === t.uid)){
+        const threadOpen = H.open && H.tab === 'ozel' && H.dmThread && H.dmThread.uid === t.uid;
+        if(!threadOpen){
           H.dmUnread = loadThreads().filter(x => x.unread).length; updateBadges();
+          // 🔔 In-app bildirim toast (sohbet açık değilse)
+          if(!H._lastNotif || (Date.now()-H._lastNotif)>800){
+            H._lastNotif = Date.now();
+            showDMNotifToast(t.uid, t.nick, last.text||'');
+          }
         }
         if(H.open && H.tab === 'ozel' && !H.dmThread) renderThreads();
       }
@@ -959,7 +1207,7 @@ async function addFriendByNick(){
   const me = Auth.getState();
   if(!me.uid || me.status !== 'google'){ alert('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
   const t = await Auth.resolveNick(nick);
-  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
+  if(!t){ showToast('🔍 Nick bulunamadı: ' + nick); return; }
   if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
   try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ alert('Zaten arkadaşsınız.'); return; } }catch(e){}
   try{
@@ -967,7 +1215,7 @@ async function addFriendByNick(){
     inp.value = '';
     alert('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
     renderFriends();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){ showToast('⚠️ Gönderilemedi'); }
 }
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;

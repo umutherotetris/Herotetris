@@ -32,6 +32,8 @@ function injectHudCSS(){
 .ghud-vs{ flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:0 4px; }
 .ghud-vs-ico{ font-size:16px; filter:drop-shadow(0 0 6px rgba(255,215,64,.5)); }
 .ghud-vs-txt{ font-family:'Orbitron',sans-serif; font-size:7px; color:#FFD740; letter-spacing:1px; font-weight:800; }
+.ghud-dm-btn{ margin-top:3px; width:26px; height:26px; border-radius:8px; background:rgba(66,165,245,.18); border:1px solid rgba(66,165,245,.4); color:#42A5F5; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:background .15s; }
+.ghud-dm-btn:hover{ background:rgba(66,165,245,.3); }
 /* Solo HUD (tek oyuncu) */
 .ghud-solo{ display:flex; align-items:center; gap:10px; padding:8px 12px; background:linear-gradient(160deg,rgba(10,12,28,.95),rgba(4,5,14,.98)); border-bottom:1px solid rgba(0,229,255,.1); }
 .ghud-solo-info{ flex:1; display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 10px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid rgba(0,229,255,.15); transition:background .15s; }
@@ -148,7 +150,9 @@ export async function createVsHUD(opts={}){
   wrap.id = 'heroGameHud';
   wrap.innerHTML =
     playerRowHTML(me,  true,  myAcc,  opts.myScore  ? opts.myScore()  : 0)
-    + `<div class="ghud-vs"><div class="ghud-vs-ico">⚔️</div><div class="ghud-vs-txt">VS</div></div>`
+    + `<div class="ghud-vs"><div class="ghud-vs-ico">⚔️</div><div class="ghud-vs-txt">VS</div>`
+      + (opp.uid ? `<button class="ghud-dm-btn" title="Mesaj gönder">✉️</button>` : '')
+      + `</div>`
     + playerRowHTML(opp, false, oppAcc, opts.oppScore ? opts.oppScore() : 0);
 
   // Enjekte et
@@ -163,6 +167,14 @@ export async function createVsHUD(opts={}){
       try{ const m=await import('./social.js'); m.openPlayerCard(uid); }catch(e){}
     });
   });
+  // Oyun içi DM butonu
+  const dmBtn = wrap.querySelector('.ghud-dm-btn');
+  if(dmBtn && opp.uid){
+    dmBtn.addEventListener('click', async(e)=>{
+      e.stopPropagation();
+      try{ const m=await import('./social.js'); m.openInGameDM(opp.uid, opp.nick); }catch(err){}
+    });
+  }
 
   // Canlı skor güncelleyici (her 500ms)
   let hudRaf = null;
