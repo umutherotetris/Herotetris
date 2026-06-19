@@ -409,15 +409,31 @@ export function applyFabSetting(){
 }
 // Hub panelini garantili görünür kıl (FAB ayarından bağımsız)
 function ensureHubVisible(){
-  if(!H){ try{ initSocial(); }catch(e){} }
-  if(!H) return false;
-  const panel = byId('gemHubPanel');
-  if(!panel) return false;
-  return true;
+  // H yoksa init dene
+  if(!H || !byId('gemHubPanel')){
+    try{ initSocial(); }catch(e){ console.warn('[hub] init', e); }
+  }
+  // Hâlâ yoksa son bir kez daha (flag sıfırlayıp zorla)
+  if(!H || !byId('gemHubPanel')){
+    try{ if(typeof window!=='undefined') window.__heroSocialInit = false; }catch(e){}
+    try{ initSocial(); }catch(e){ console.warn('[hub] retry', e); }
+  }
+  return !!(H && byId('gemHubPanel'));
 }
 // Ekranlardan hub'ı belirli sekmede aç
 export function openHubTab(tab){
-  if(!ensureHubVisible()){ showToast('⚠️ Sosyal hub yüklenemedi'); return; }
+  // H hazır değilse init dene + kısa retry (DOM settle)
+  if(!ensureHubVisible()){
+    let tries=0;
+    const t=()=>{
+      tries++;
+      if(ensureHubVisible()){ if(!H.open) open(); switchTab(tab||'chat'); }
+      else if(tries<10){ setTimeout(t,100); }
+      else { showToast('⚠️ Sosyal hub yüklenemedi'); }
+    };
+    setTimeout(t,80);
+    return;
+  }
   if(!H.open) open();
   switchTab(tab || 'chat');
 }
@@ -482,25 +498,45 @@ export function openInGameDM(uid, nick){
 
 export function dmOpenThreadExternal(uid, nick){
   if(!uid){ showToast('Kişi bilgisi yok'); return; }
-  if(!ensureHubVisible()){ showToast('⚠️ Sosyal hub yüklenemedi'); return; }
   const me = Auth.getState();
   if(!me || !me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
   if(uid === me.uid){ showToast('🙂 Kendinize mesaj atamazsınız'); return; }
-  if(!H.open) open();
-  switchTab('ozel');
-  let tries=0;
-  const t=()=>{
-    tries++;
-    const el=byId('ghpDMThread');
-    if(el){ try{ dmOpenThread(uid,nick); }catch(e){ console.warn('[dmExt]',e); } }
-    else if(tries<25){ setTimeout(t,80); }
+  // Hub'ı garantiye al (init + retry)
+  let initTries=0;
+  const ensureThenOpen=()=>{
+    initTries++;
+    if(ensureHubVisible()){
+      if(!H.open) open();
+      switchTab('ozel');
+      // Thread DOM'u hazır olunca aç
+      let tries=0;
+      const t=()=>{
+        tries++;
+        const el=byId('ghpDMThread');
+        if(el){ try{ dmOpenThread(uid,nick); }catch(e){ console.warn('[dmExt]',e); } }
+        else if(tries<25){ setTimeout(t,80); }
+      };
+      setTimeout(t,180);
+    } else if(initTries<10){
+      setTimeout(ensureThenOpen,100);
+    } else {
+      showToast('⚠️ Sosyal hub yüklenemedi');
+    }
   };
-  setTimeout(t,180);
+  ensureThenOpen();
 }
 
 export function initSocial(){
-  if(typeof window!=='undefined'){ if(window.__heroSocialInit) return; window.__heroSocialInit = true; }
-  if(document.getElementById('gemFloatBtn')) return;
+  // H zaten kuruluysa tekrar kurma
+  if(H && document.getElementById('gemHubPanel')) return;
+  // Panel DOM'da ama H null kaldıysa (kısmi init) → eski DOM'u temizle, baştan kur
+  if(!H && document.getElementById('gemFloatBtn')){
+    try{ document.getElementById('gemFloatBtn').remove(); }catch(e){}
+    try{ const a=document.getElementById('adminFloatBtn'); if(a) a.remove(); }catch(e){}
+    try{ const p=document.getElementById('gemHubPanel'); if(p) p.remove(); }catch(e){}
+    try{ if(typeof window!=='undefined') window.__heroSocialInit = false; }catch(e){}
+  }
+  if(typeof window!=='undefined'){ if(window.__heroSocialInit && H) return; }
   // 💎 Gem FAB
   const gem = document.createElement('button');
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
@@ -568,6 +604,8 @@ export function initSocial(){
   document.body.appendChild(panel);
 
   H = { open:false, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
+  // H kuruldu — init tamamlandı işareti (artık güvenli)
+  try{ if(typeof window!=='undefined') window.__heroSocialInit = true; }catch(e){}
 
   // FAB davranışları
   const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(); });
