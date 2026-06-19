@@ -28,7 +28,7 @@ const { initializeApp } = await import(`${BASE}/firebase-app.js`);
 const {
   getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence,
   signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
-  GoogleAuthProvider, linkWithPopup, signOut
+  GoogleAuthProvider, linkWithPopup, signInWithCredential, signOut
 } = await import(`${BASE}/firebase-auth.js`);
 const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt, onChildAdded } = await import(`${BASE}/firebase-database.js`);
 
@@ -245,6 +245,7 @@ export async function loginGoogle(){
   // dönerken auth state'i kaybedebiliyor. Bu yüzden popup birincil yol.
   try {
     if(cur && cur.isAnonymous){
+      // Anonim hesabı Google'a bağla
       await linkWithPopup(cur, provider);
     } else {
       await signInWithPopup(auth, provider);
@@ -252,22 +253,43 @@ export async function loginGoogle(){
     return { ok: true };
   } catch(e){
     const code = (e && e.code) || '';
-    // Anonim hesap zaten Google'a bağlıysa → düz giriş dene
+
+    // ── credential-already-in-use: Google hesabı ZATEN bir Firebase
+    //    hesabına bağlı. Anonim hesaba bağlayamayız → o mevcut Google
+    //    hesabına DOĞRUDAN giriş yap (hatadan gelen credential ile). ──
     if(code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use'){
-      try { await signInWithPopup(auth, provider); return { ok: true }; }
-      catch(e3){ /* aşağı düş */ }
+      try{
+        const cred = GoogleAuthProvider.credentialFromError(e);
+        if(cred){
+          await signInWithCredential(auth, cred);
+          return { ok: true, switchedAccount: true };
+        }
+      }catch(eC){ console.warn('[auth] credFromError', eC&&eC.code); }
+      // Credential alınamadıysa → düz popup giriş dene (anonim oturumu bırak)
+      try{ await signInWithPopup(auth, provider); return { ok: true, switchedAccount: true }; }
+      catch(e3){
+        const c3=(e3&&e3.code)||code;
+        // Bu da popup blok'a takılırsa redirect'e düş
+        if(/popup/i.test(c3) || /blocked/i.test(c3)){
+          try{
+            try{ sessionStorage.setItem('hero_login_pending','1'); }catch(_){}
+            try{ localStorage.setItem('hero_login_redirect_ts', String(Date.now())); }catch(_){}
+            await signInWithRedirect(auth, provider); return { ok:true, redirect:true };
+          }catch(e4){ return { ok:false, code:(e4&&e4.code)||c3, message:(e4&&e4.message)||'' }; }
+        }
+        return { ok: false, code: c3, message: (e3&&e3.message)||'' };
+      }
     }
-    // Popup gerçekten engellendi/kapatıldı → redirect yedeği
+
+    // ── Popup engellendi/kapatıldı ──
     const popupFailed = /popup/i.test(code) || /blocked/i.test(code) ||
                         code === 'auth/web-storage-unsupported' ||
                         code === 'auth/cancelled-popup-request' ||
                         code === 'auth/popup-closed-by-user';
     if(popupFailed){
-      // Kullanıcı popup'ı kendisi kapattıysa redirect'e zorlamayalım
       if(code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request'){
         return { ok: false, code, message: 'İşlem iptal edildi', userCancelled: true };
       }
-      // Gerçek blok → redirect dene (A2: kalıcılık işareti)
       try{
         try{ sessionStorage.setItem('hero_login_pending', '1'); }catch(e2){}
         try{ localStorage.setItem('hero_login_redirect_ts', String(Date.now())); }catch(e2){}
