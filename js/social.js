@@ -1183,12 +1183,15 @@ async function renderFriends(){
   ).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => {
     const _uid=b.dataset.fdm, _nick=b.dataset.fn;
-    if(!H.open) open();
-    switchTab('ozel');
-    // DOM hazır olana kadar retry
-    let _t=0;
-    const _try=()=>{ _t++; const el=byId('ghpDMThread'); if(el){ try{dmOpenThread(_uid,_nick);}catch(e){} } else if(_t<15){ setTimeout(_try,80); } };
-    setTimeout(_try, 100);
+    // Hub kapalıysa önce aç, tab'ı değiştir, ardından thread aç
+    if(!H.open){ open(); }
+    // Kısa bekle (open animasyonu + DOM settle)
+    setTimeout(()=>{
+      switchTab('ozel');
+      setTimeout(()=>{
+        try{ dmOpenThread(_uid, _nick); }catch(e){ console.warn('[DM btn]',e); }
+      }, 120);
+    }, H.open ? 0 : 200);
   }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {

@@ -188,16 +188,35 @@ async function boot(){
 }
 
 // ── Google ile giriş: popup → redirect yedeği → anonse link ─────
+// Firefox tespiti (popup blokluyor — redirect kullan)
+function isFirefox(){ return typeof navigator !== 'undefined' && /Firefox/i.test(navigator.userAgent); }
+
 export async function loginGoogle(){
   const provider = new GoogleAuthProvider();
   try { provider.setCustomParameters({ prompt: 'select_account' }); } catch(e){}
-  // setPersistence boot'ta ayarlandı — burada await yapmıyoruz
-  // (Firefox: async await popup'ı kullanıcı jestinden koparır → bloklanır)
+  // setPersistence boot'ta ayarlandı — burada await YOK (Firefox popup block önlemi)
 
   const cur = auth.currentUser;
+
+  // Firefox: popup yerine her zaman redirect kullan
+  if(isFirefox()){
+    try{
+      if(cur && cur.isAnonymous){
+        // Anonim hesabı koru - Firefox'ta redirect ile link mümkün değil
+        // Direkt signInWithRedirect yap
+        await signInWithRedirect(auth, provider);
+      } else {
+        await signInWithRedirect(auth, provider);
+      }
+      return { ok: true, redirect: true };
+    } catch(e){
+      return { ok: false, code: (e&&e.code)||'redirect-fail', message: (e&&e.message)||'' };
+    }
+  }
+
+  // Chrome/Safari: popup dene → başarısız olursa redirect
   try {
     if(cur && cur.isAnonymous){
-      // Anonim veriyi koruyarak Google'a bağla
       await linkWithPopup(cur, provider);
     } else {
       await signInWithPopup(auth, provider);
@@ -205,17 +224,15 @@ export async function loginGoogle(){
     return { ok: true };
   } catch(e){
     const code = (e && e.code) || '';
-    if(/popup/.test(code) || code === 'auth/web-storage-unsupported'){
-      // Popup engellendi → redirect yedeği (firebaseapp.com'da garantili çalışır)
+    if(/popup/i.test(code) || code === 'auth/web-storage-unsupported' || /blocked/i.test(code)){
       try { await signInWithRedirect(auth, provider); return { ok: true, redirect: true }; }
-      catch(e2){ return { ok: false, code: (e2 && e2.code) || code, message: (e2 && e2.message) || '' }; }
+      catch(e2){ return { ok: false, code: (e2&&e2.code)||code, message: (e2&&e2.message)||'' }; }
     }
     if(code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use'){
-      // Hesap zaten var → doğrudan giriş
       try { await signInWithPopup(auth, provider); return { ok: true }; }
-      catch(e3){ return { ok: false, code: (e3 && e3.code) || code, message: (e3 && e3.message) || '' }; }
+      catch(e3){ return { ok: false, code: (e3&&e3.code)||code, message: (e3&&e3.message)||'' }; }
     }
-    return { ok: false, code, message: (e && e.message) || '' };
+    return { ok: false, code, message: (e&&e.message)||'' };
   }
 }
 

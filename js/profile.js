@@ -615,15 +615,13 @@ async function _renderNavFriends(){
       try{
         const m=await import('./social.js');
         const _uid=b.dataset.navdm, _nm=b.dataset.navnm;
-        m.applyFabSetting(); m.openHubTab('ozel');
-        let _t=0;
-        const _try=()=>{ _t++;
-          const el=document.getElementById('ghpDMThread');
-          if(el&&el.closest('.ghp-pane.active')){ try{m.dmOpenThreadExternal(_uid,_nm);}catch(e){} }
-          else if(el){ m.dmOpenThreadExternal(_uid,_nm); }
-          else if(_t<20){ setTimeout(_try,100); }
-        };
-        setTimeout(_try,200);
+        m.applyFabSetting();
+        // Hub aç → tab değiştir → 320ms sonra thread aç
+        const wasOpen = document.getElementById('gemHubPanel')&&document.getElementById('gemHubPanel').classList.contains('ghp-open');
+        m.openHubTab('ozel');
+        setTimeout(()=>{
+          try{ m.dmOpenThreadExternal(_uid,_nm); }catch(err){ console.warn('[navDM]',err); }
+        }, wasOpen ? 80 : 320);
       }catch(e){}
     }));
     box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
