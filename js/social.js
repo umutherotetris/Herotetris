@@ -232,7 +232,7 @@ export async function openPlayerCard(uid){
   // 🚫 Engelle / Engeli kaldır
   const blockB = ov.querySelector('[data-pc="block"]');
   if(blockB) blockB.addEventListener('click', async () => {
-    if(me.status !== 'google'){ alert('Engelleme için giriş gerekli.'); return; }
+    if(me.status !== 'google'){ showToast('Engelleme için giriş gerekli.'); return; }
     try{
       if(isBlocked){
         await fdb.set(fdb.ref(db,'blocks/'+me.uid+'/'+uid), null);
@@ -245,7 +245,7 @@ export async function openPlayerCard(uid){
         showToast('🚫 '+nick+' engellendi');
       }
       ov.remove();
-    }catch(e){ alert('Yapılamadı'); }
+    }catch(e){ showToast('Yapılamadı'); }
   });
   // 👥 Arkadaş chip'lerine tıklama (o kişinin profilini aç)
   ov.querySelectorAll('[data-frgo]').forEach(chip => chip.addEventListener('click', () => {
@@ -269,7 +269,7 @@ export async function openPlayerCard(uid){
   if(chalB) chalB.addEventListener('click', async()=>{
     // Online kontrolü — çevrimdışı oyuncuya meydan okunamaz
     if(!online){
-      alert('⚠️ '+nick+' şu an çevrimdışı. Meydan okuma sadece çevrimiçi oyunculara gönderilebilir.');
+      showToast('⚠️ '+nick+' şu an çevrimdışı. Meydan okuma sadece çevrimiçi oyunculara gönderilebilir.');
       return;
     }
     if(!confirm('⚔️ '+nick+' adlı oyuncuya meydan okuyacaksın. Devam?'))return;
@@ -280,7 +280,7 @@ export async function openPlayerCard(uid){
       });
       await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'⚔️',text:(me.displayName||'Biri')+' sana meydan okudu! (Tetris)',ts:Date.now(),fromUid:me.uid});
       ov.remove(); showToast('⚔️ Meydan okuma gönderildi!');
-    }catch(e){alert('Gönderilemedi');}
+    }catch(e){showToast('Gönderilemedi');}
   });
   // 👑/🔧 Moderasyon butonları (rol bazlı)
   ov.querySelectorAll('[data-mod]').forEach(btn=>btn.addEventListener('click',async()=>{
@@ -302,37 +302,37 @@ export async function openPlayerCard(uid){
         if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return;
         const res=await mod.globalKick(uid,nick,reason);
         if(res&&res.ok){ showToast('✅ '+nick+': Oyundan atıldı'); setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
-        else { alert(res&&res.error?res.error:'Atılamadı'); }
+        else { showToast(res&&res.error?res.error:'Atılamadı'); }
         return;
       }
       else if(action==='op'){ if(!confirm('🔧 '+nick+' operatör yapılsın mı?'))return; ok=await mod.makeOperator(uid,nick); msg='Operatör yapıldı'; if(H&&H.ops)H.ops[uid]=true; }
       else if(action==='unop'){ if(!confirm('🔧 '+nick+' operatörlüğü kaldırılsın mı?'))return; ok=await mod.removeOperator(uid,nick); msg='Operatörlük kaldırıldı'; if(H&&H.ops)delete H.ops[uid]; }
       else if(action==='showip'){
         const ip=await mod.getUserIP(uid);
-        alert(ip?('🌐 '+nick+' IP adresi:\n'+ip):'IP bilgisi bulunamadı (kullanıcı henüz kaydetmemiş olabilir)');
+        showToast(ip?('🌐 '+nick+' IP adresi:\n'+ip):'IP bilgisi bulunamadı (kullanıcı henüz kaydetmemiş olabilir)');
         return;
       }
       else if(action==='ipban'){
         if(!confirm('🌐 '+nick+' IP adresi yasaklansın mı? (Bu IP ile giriş engellenir)'))return;
         const res=await mod.ipBan(uid,nick,reason);
         if(res.ok){ showToast('✅ IP banlandı: '+res.ip); }
-        else { alert('IP ban başarısız: '+(res.error||'bilinmeyen')); }
+        else { showToast('IP ban başarısız: '+(res.error||'bilinmeyen')); }
         return;
       }
       else if(action==='ipunban'){
         const res=await mod.ipUnban(uid,nick,reason);
         if(res.ok){ showToast('✅ IP yasağı kaldırıldı'); }
-        else { alert('Başarısız: '+(res.error||'bilinmeyen')); }
+        else { showToast('Başarısız: '+(res.error||'bilinmeyen')); }
         return;
       }
       if(ok){ showToast('✅ '+nick+': '+msg); btn.textContent='✓'; setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
-      else { alert('İşlem başarısız'); }
-    }catch(e){ alert('Hata: '+(e.message||e)); }
+      else { showToast('İşlem başarısız'); }
+    }catch(e){ showToast('Hata: '+(e.message||e)); }
   }));
   const eggPcB = ov.querySelector('[data-pc="egg"]');
   if(eggPcB) eggPcB.addEventListener('click', async() => {
     ov.remove();
-    try{ const m = await import('./kozmos.js'); await m.sendEgg(uid, nick); }catch(e){ alert('Kozmo gönderilemedi: '+(e.message||e)); }
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(uid, nick); }catch(e){ showToast('Kozmo gönderilemedi: '+(e.message||e)); }
   });
   const dmB = ov.querySelector('[data-pc="dm"]');
   if(dmB) dmB.addEventListener('click', () => {
@@ -356,7 +356,7 @@ export async function openPlayerCard(uid){
   });
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
-    if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
+    if(me.status !== 'google'){ showToast('Arkadaşlık için Google ile giriş gerekli.'); return; }
     try{
       if(isFriend){
         await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
@@ -368,7 +368,7 @@ export async function openPlayerCard(uid){
       }
       ov.remove();
       if(H && H.open && H.tab === 'dost') renderFriends();
-    }catch(e){ alert('Yapılamadı'); }
+    }catch(e){ showToast('Yapılamadı'); }
   });
 }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 
@@ -573,7 +573,7 @@ export function initSocial(){
   const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(); });
   gem.addEventListener('click', () => { if(gemMoved()) return; pressAnim(gem); toggle(); });
   const admMoved = makeFabDraggable(adm);
-  adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => alert('Panel yüklenemedi')); });
+  adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => showToast('Panel yüklenemedi')); });
   // Panel sürükleme + kapatma
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
@@ -774,17 +774,17 @@ async function sendChat(){
   const st = Auth.getState();
   const inp = byId('ghpChatInput'); const text = inp.value.trim();
   if(!text) return;
-  if(!st.uid){ alert('Sohbet için giriş yapmalısın.'); return; }
+  if(!st.uid){ showToast('Sohbet için giriş yapmalısın.'); return; }
   const p = st.profile || {};
   if(p.muted === true){
     if(p.muteUntil && p.muteUntil <= Date.now()){
       // Süre dolmuş — otomatik kaldır
       try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{muted:false,muteReason:null,muteUntil:null}); }catch(e){}
     } else {
-      alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '') + (p.muteUntil ? ' (' + Math.ceil((p.muteUntil-Date.now())/60000) + ' dk kaldı)' : '')); return;
+      showToast('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '') + (p.muteUntil ? ' (' + Math.ceil((p.muteUntil-Date.now())/60000) + ' dk kaldı)' : '')); return;
     }
   }
-  if(H.chatLocked && st.isAdmin !== true){ alert('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
+  if(H.chatLocked && st.isAdmin !== true){ showToast('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
   inp.value = '';
   try{
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
@@ -792,7 +792,7 @@ async function sendChat(){
     // Admin badge: SADECE görünür admin modunda (userMode'da gizle)
     if(st.isVisibleAdmin === true) m.isAdmin = true;
     await fdb.push(fdb.ref(db, 'globalChat'), m);
-  }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
+  }catch(e){ showToast('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
 }
 
 // ── ✉️ ÖZEL MESAJLAR ────────────────────────────────────────────
@@ -1213,7 +1213,7 @@ async function renderFriends(){
   }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {
-    try{ const m = await import('./kozmos.js'); await m.sendEgg(b.dataset.fegg, b.dataset.fn); }catch(e){ alert('Kozmo gönderilemedi'); }
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(b.dataset.fegg, b.dataset.fn); }catch(e){ showToast('Kozmo gönderilemedi'); }
   }));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
     if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
@@ -1226,15 +1226,15 @@ async function addFriendByNick(){
   const inp = byId('ghpFrNick'); const nick = inp.value.trim();
   if(!nick) return;
   const me = Auth.getState();
-  if(!me.uid || me.status !== 'google'){ alert('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
+  if(!me.uid || me.status !== 'google'){ showToast('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
   const t = await Auth.resolveNick(nick);
   if(!t){ showToast('🔍 Nick bulunamadı: ' + nick); return; }
-  if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
-  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ alert('Zaten arkadaşsınız.'); return; } }catch(e){}
+  if(t.uid === me.uid){ showToast('Kendini ekleyemezsin 🙂'); return; }
+  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ showToast('Zaten arkadaşsınız.'); return; } }catch(e){}
   try{
     await sendFriendRequest(t.uid, t.nick);
     inp.value = '';
-    alert('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
+    showToast('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
     renderFriends();
   }catch(e){ showToast('⚠️ Gönderilemedi'); }
 }

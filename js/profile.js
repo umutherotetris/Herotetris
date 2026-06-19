@@ -4,6 +4,13 @@
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
 
+
+// Hafif toast helper (alert yerine)
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = (n) => { const v=Number(n); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); };
 const byId = (id) => document.getElementById(id);
@@ -179,10 +186,10 @@ function _renderProfile(st){
   if(q('kaju')&&isGoogle) q('kaju').addEventListener('click',async()=>(await uiMod()).openKajuModal());
   if(q('login')) q('login').addEventListener('click',()=>Auth.loginGoogle&&Auth.loginGoogle());
   if(q('mycard')) q('mycard').addEventListener('click',async()=>{ try{const m=await import('./social.js');m.openPlayerCard(st.uid);}catch(e){} });
-  if(q('clan')) q('clan').addEventListener('click',async()=>{ try{const m=await import('./clan.js');m.default();}catch(e){alert('Klan: '+(e.message||e));} });
-  if(q('season')) q('season').addEventListener('click',async()=>{ try{const m=await import('./season.js');m.openSeason();}catch(e){alert('Sezon: '+(e.message||e));} });
-  if(q('shop')) q('shop').addEventListener('click',async()=>{ try{const m=await import('./shop.js');m.openShop();}catch(e){alert('Mağaza: '+(e.message||e));} });
-  if(q('kozmos')) q('kozmos').addEventListener('click',async()=>{ try{const m=await import('./kozmos.js');m.openKozmos();}catch(e){alert('Kozmos: '+(e.message||e));} });
+  if(q('clan')) q('clan').addEventListener('click',async()=>{ try{const m=await import('./clan.js');m.default();}catch(e){_toast('Klan: '+(e.message||e));} });
+  if(q('season')) q('season').addEventListener('click',async()=>{ try{const m=await import('./season.js');m.openSeason();}catch(e){_toast('Sezon: '+(e.message||e));} });
+  if(q('shop')) q('shop').addEventListener('click',async()=>{ try{const m=await import('./shop.js');m.openShop();}catch(e){_toast('Mağaza: '+(e.message||e));} });
+  if(q('kozmos')) q('kozmos').addEventListener('click',async()=>{ try{const m=await import('./kozmos.js');m.openKozmos();}catch(e){_toast('Kozmos: '+(e.message||e));} });
   if(q('frame')) q('frame').addEventListener('click',openFramePicker);
   // Avatar/fotoğraf seçici
   const avb=box.querySelector('[data-p="avatar"]');
@@ -210,14 +217,14 @@ function openPhotoMenu(st, photoDataUrl){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
     inp.addEventListener('change',e=>{
       const file=e.target.files[0]; if(!file) return;
-      if(file.size>2*1024*1024){ alert('Fotoğraf 2MB’den küçük olmalı'); return; }
+      if(file.size>2*1024*1024){ _toast('Fotoğraf 2MB’den küçük olmalı'); return; }
       const reader=new FileReader();
       reader.onload=async ev=>{
         try{
           localStorage.setItem('hero_photo_'+st.uid, ev.target.result);
           try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{photo:ev.target.result.slice(0,50000)}); }catch(e){}
           _renderProfile(Auth.getState());
-        }catch(err){ alert('Fotoğraf kaydedilemedi'); }
+        }catch(err){ _toast('Fotoğraf kaydedilemedi'); }
       };
       reader.readAsDataURL(file);
     });
@@ -245,7 +252,7 @@ async function openAvatarPicker(){
   AVATARS.forEach(a=>{
     const b=document.createElement('button'); b.className='ava-opt'+(a===cur?' on':''); b.textContent=a; b.dataset.av=a;
     b.addEventListener('click',async()=>{
-      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{avatar:a}); if(st.profile)st.profile.avatar=a; ov.remove(); _renderProfile(Auth.getState()); }catch(e){ alert('Kaydedilemedi'); }
+      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{avatar:a}); if(st.profile)st.profile.avatar=a; ov.remove(); _renderProfile(Auth.getState()); }catch(e){ _toast('Kaydedilemedi'); }
     });
     grid.appendChild(b);
   });
@@ -275,7 +282,7 @@ const BG_THEMES=[
 ];
 function openFramePicker(){
   if(byId('framePicker')) return;
-  const st=Auth.getState(); if(!st.uid||st.status!=='google'){ alert('Çerçeve için giriş gerekli'); return; }
+  const st=Auth.getState(); if(!st.uid||st.status!=='google'){ _toast('Çerçeve için giriş gerekli'); return; }
   const cur=(st.profile&&st.profile.frame)||'none';
   const curBg=(st.profile&&st.profile.profileBg)||'default';
   const ov=document.createElement('div'); ov.id='framePicker'; ov.className='nick-modal-ov';
@@ -286,7 +293,7 @@ function openFramePicker(){
     b.style.cssText='font-size:10px;font-weight:800;padding:7px 2px;border:2px solid '+(fr.color==='transparent'?'rgba(255,255,255,.1)':fr.color);
     b.textContent=fr.label;
     b.addEventListener('click',async()=>{
-      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{frame:fr.id}); if(st.profile)st.profile.frame=fr.id; ov.remove(); _renderProfile(Auth.getState()); }catch(e){ alert('Kaydedilemedi'); }
+      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{frame:fr.id}); if(st.profile)st.profile.frame=fr.id; ov.remove(); _renderProfile(Auth.getState()); }catch(e){ _toast('Kaydedilemedi'); }
     });
     inner.querySelector('#fpFrames').appendChild(b);
   });
@@ -295,7 +302,7 @@ function openFramePicker(){
     b.style.cssText='font-size:10px;font-weight:700;padding:8px 2px;'+(bg.bg?'background:'+bg.bg+';':'');
     b.textContent=bg.label;
     b.addEventListener('click',async()=>{
-      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{profileBg:bg.id}); if(st.profile)st.profile.profileBg=bg.id; applyProfileBg(bg.id); ov.remove(); _renderProfile(Auth.getState()); }catch(e){ alert('Kaydedilemedi'); }
+      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{profileBg:bg.id}); if(st.profile)st.profile.profileBg=bg.id; applyProfileBg(bg.id); ov.remove(); _renderProfile(Auth.getState()); }catch(e){ _toast('Kaydedilemedi'); }
     });
     inner.querySelector('#fpBgs').appendChild(b);
   });
@@ -340,7 +347,7 @@ async function openBlockedList(){
         await fdb.set(fdb.ref(db,'blocks/'+st.uid+'/'+uid),null);
         b.closest('.blk-row').style.opacity='.4';
         b.textContent='✓ Kaldırıldı'; b.disabled=true;
-      }catch(e){alert('Yapılamadı');}
+      }catch(e){_toast('Yapılamadı');}
     }));
   }catch(e){ box.innerHTML='<i style="color:#ff7a8a">Yüklenemedi</i>'; }
 }
@@ -420,7 +427,7 @@ function openSettings(){
       nb.addEventListener('click',async()=>{
         const cur=pm.notifPermission();
         if(cur==='granted'){
-          alert('Bildirimler açık. Kapatmak için tarayıcı ayarlarını kullan.');
+          _toast('Bildirimler açık. Kapatmak için tarayıcı ayarlarını kullan.');
           return;
         }
         const ok=await pm.requestNotifPermission();
@@ -564,7 +571,7 @@ async function _buildFriendsBridge(){
   if(!st.uid || st.status!=='google'){
     fr.innerHTML='<div class="prf-card" style="text-align:center;padding:30px 16px"><div style="font-size:42px;margin-bottom:12px">👥</div><div style="font-size:14px;font-weight:800;color:#dfe7ff;margin-bottom:6px">Arkadaşların burada</div><div style="font-size:11px;color:#9fb0d8;margin-bottom:16px">Arkadaş eklemek, mesajlaşmak ve sosyalleşmek için giriş yap</div><button class="clan-btn p" style="width:100%" id="frLoginBtn">🔑 Google ile Giriş</button></div>';
     const lb=fr.querySelector('#frLoginBtn');
-    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){alert('Giriş başlatılamadı');}});
+    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){_toast('Giriş başlatılamadı');}});
     return;
   }
   fr.innerHTML='<div class="prf-card"><div id="navFrContent"><div class="clan-load">⏳ Yükleniyor…</div></div></div>';
@@ -621,7 +628,7 @@ async function _buildNotifBridge(){
   if(!st.uid || st.status!=='google'){
     nt.innerHTML='<div class="prf-card" style="text-align:center;padding:30px 16px"><div style="font-size:42px;margin-bottom:12px">🔔</div><div style="font-size:14px;font-weight:800;color:#dfe7ff;margin-bottom:6px">Bildirimlerin burada</div><div style="font-size:11px;color:#9fb0d8;margin-bottom:16px">Arkadaş istekleri, mesajlar ve duyuruları görmek için giriş yap</div><button class="clan-btn p" style="width:100%" id="ntfLoginBtn">🔑 Google ile Giriş</button></div>';
     const lb=nt.querySelector('#ntfLoginBtn');
-    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){alert('Giriş başlatılamadı');}});
+    if(lb) lb.addEventListener('click',async()=>{try{const a=await import('./auth.js');await a.loginGoogle();}catch(e){_toast('Giriş başlatılamadı');}});
     return;
   }
   nt.innerHTML='<div class="prf-card"><div id="navNotifContent"><div class="clan-load">⏳ Yükleniyor…</div></div></div>';

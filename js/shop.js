@@ -5,6 +5,13 @@
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
 
+
+// Hafif toast helper (alert yerine)
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=(n)=>(Number.isFinite(Number(n))?Number(n):0).toLocaleString('tr-TR');
 
@@ -190,7 +197,7 @@ function renderShop(){
 
 async function buyItem(item){
   const pl=Store.getState?Store.getState():{};
-  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if((pl.kaju||0)<item.price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   if(!confirm(item.icon+' "'+item.name+'" → '+fmt(item.price)+' Kaju harcanacak. Satın al?'))return;
   try{
     await Store.addKaju(-item.price,'shop',item.id);
@@ -199,7 +206,7 @@ async function buyItem(item){
     _inv[item.id]=true;
     await useItem(item);
     renderShop();
-  }catch(e){alert('Satın alınamadı: '+(e.message||e));}
+  }catch(e){_toast('Satın alınamadı: '+(e.message||e));}
 }
 
 async function useItem(item){
@@ -216,14 +223,14 @@ async function useItem(item){
       try{const m=await import('./profile.js');m.applyProfileBg(bgId);}catch(e){}
     }
     renderShop();
-  }catch(e){alert('Uygulanamadı: '+(e.message||e));}
+  }catch(e){_toast('Uygulanamadı: '+(e.message||e));}
 }
 
 async function buyEgg(item){
   const pl=Store.getState?Store.getState():{};
   const st=Auth.getState();
-  if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
-  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  if((pl.kaju||0)<item.price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   // Kendine mi hediye mi?
   await showEggGiftModal(item,st,pl);
 }
@@ -270,7 +277,7 @@ async function showEggGiftModal(item,st,pl){
     loadFriendsForGift(inn,st);
   });
   inn.querySelector('#eggConfirm').addEventListener('click',async()=>{
-    if((pl.kaju||0)<item.price){alert('Yetersiz Kaju!');return;}
+    if((pl.kaju||0)<item.price){_toast('Yetersiz Kaju!');return;}
     if(mode==='gift'){
       const nick=(inn.querySelector('#eggGiftNick').value||'').trim();
       const msgEl=inn.querySelector('#eggGiftMsg');
@@ -286,17 +293,17 @@ async function showEggGiftModal(item,st,pl){
           toUid=snap.val().uid; toName=snap.val().nick||nick;
         }
         if(toUid===st.uid){msgEl.textContent='Kendine hediye için "Kendime Al" seç';msgEl.className='clan-msg bad';return;}
-        try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){alert('Ödeme hatası');return;}
+        try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){_toast('Ödeme hatası');return;}
         const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
         await fdb.set(fdb.ref(db,'kozmoPending/'+toUid+'/'+st.uid+'_shop_'+Date.now()),{
           fromUid:st.uid,fromName:st.displayName||'Oyuncu',fromAvatar:(st.profile&&st.profile.avatar)||'🎁',
           toUid,toName,sentAt:Date.now(),seed:Math.floor(Math.random()*999),status:'pending',minRarity:rarity,source:'gift'
         });
         try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🎁',text:(st.displayName||'Bir oyuncu')+' sana '+esc(item.name)+' hediye etti! 🥚',ts:Date.now()});}catch(e){}
-        ov.remove(); alert('🎁 '+esc(item.name)+' → '+toName+' hediye edildi!');
+        ov.remove(); _toast('🎁 '+esc(item.name)+' → '+toName+' hediye edildi!');
       }catch(e){msgEl.textContent='Hata: '+(e.message||e);msgEl.className='clan-msg bad';}
     } else {
-      try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){alert('Ödeme hatası');return;}
+      try{await Store.addKaju(-item.price,'shop',item.id);}catch(e){_toast('Ödeme hatası');return;}
       const rarity=item.id==='egg_basic'?'common':item.id==='egg_rare'?'rare':'epic';
       const eggId='egg_'+Date.now()+'_shop';
       await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),{
@@ -304,7 +311,7 @@ async function showEggGiftModal(item,st,pl){
         toUid:st.uid,sentAt:Date.now(),acceptedAt:Date.now(),
         seed:Math.floor(Math.random()*999),feedCount:0,minRarity:rarity,source:'shop'
       });
-      ov.remove(); alert('🥚 Yumurta kozmos koleksiyonuna eklendi!');
+      ov.remove(); _toast('🥚 Yumurta kozmos koleksiyonuna eklendi!');
     }
   });
 }
@@ -340,8 +347,8 @@ async function loadFriendsForGift(modal, st){
 
 async function buyUniqueKozmo(item){
   const st=Auth.getState(); const pl=Store.getState?Store.getState():{};
-  if(!st.uid||st.status!=='google'){alert('Satın almak için giriş gerekli');return;}
-  if((pl.kaju||0)<item.price){alert('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  if((pl.kaju||0)<item.price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
   if(!confirm('⭐ "'+item.name+'" → '+fmt(item.price)+' Kaju. Bu UNIQUE kozmoyu satın al?'))return;
   try{
     await Store.addKaju(-item.price,'shop',item.id);
@@ -356,8 +363,8 @@ async function buyUniqueKozmo(item){
       icon:item.icon, color:item.color,
     });
     renderShop();
-    alert('✨ '+item.icon+' '+item.name+' kozmos koleksiyonuna eklendi!');
-  }catch(e){alert('Satın alınamadı: '+(e.message||e));}
+    _toast('✨ '+item.icon+' '+item.name+' kozmos koleksiyonuna eklendi!');
+  }catch(e){_toast('Satın alınamadı: '+(e.message||e));}
 }
 
 export default openShop;

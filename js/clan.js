@@ -4,6 +4,13 @@
 // ═══════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 
+
+// Hafif toast helper (alert yerine)
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=(n)=>(Number.isFinite(Number(n))?Number(n):0).toLocaleString('tr-TR');
 const tAgo=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'şimdi';if(d<3600e3)return Math.floor(d/60e3)+' dk';if(d<86400e3)return Math.floor(d/3600e3)+' sa';return Math.floor(d/86400e3)+' g';};
@@ -13,7 +20,7 @@ let C=null; let _clan=null;
 export async function openClan(){
   if(document.getElementById('clanPanel'))return;
   const st=Auth.getState();
-  if(!st.uid||st.status!=='google'){alert('Klan için giriş gerekli');return;}
+  if(!st.uid||st.status!=='google'){_toast('Klan için giriş gerekli');return;}
   const ov=document.createElement('div'); ov.id='clanPanel'; ov.className='clan-ov';
   const panel=document.createElement('div'); panel.className='clan-panel';
   panel.innerHTML='<div class="clan-head"><div class="clan-title">🏰 KLANLAR</div><button class="clan-x" id="clanClose">✕</button></div><div class="clan-body" id="clanBody"><div class="clan-load">⏳ Yükleniyor…</div></div>';
@@ -89,7 +96,7 @@ async function renderMyInvites(b){
         await fdb.update(fdb.ref(db,'users/'+st2.uid),{clanId:cid});
         await fdb.update(fdb.ref(db,'clanInvites/'+st2.uid+'/'+k),{accepted:true});
         C.myClanId=cid; await renderMyClan();
-      }catch(err){alert('Katılım başarısız');}
+      }catch(err){_toast('Katılım başarısız');}
     });
     row.querySelector('[data-rej]').addEventListener('click',async e=>{
       try{await fdb.update(fdb.ref(db,'clanInvites/'+Auth.getState().uid+'/'+e.target.dataset.rej),{rejected:true});row.remove();}catch(err){}
@@ -141,11 +148,11 @@ async function joinClan(clanId){
   try{
     // Ban kontrolü
     const ban=await fdb.get(fdb.ref(db,'clans/'+clanId+'/banned/'+st.uid));
-    if(ban.exists()&&ban.val()){alert('Bu klandan banlısın, katılamazsın.');return;}
+    if(ban.exists()&&ban.val()){_toast('Bu klandan banlısın, katılamazsın.');return;}
     await fdb.update(fdb.ref(db,'clans/'+clanId+'/members/'+st.uid),{name:st.displayName||'Oyuncu',role:'member',joinedAt:Date.now()});
     await fdb.update(fdb.ref(db,'users/'+st.uid),{clanId});
     C.myClanId=clanId; await renderMyClan();
-  }catch(e){alert('Katılım başarısız: '+(e.message||e));}
+  }catch(e){_toast('Katılım başarısız: '+(e.message||e));}
 }
 
 // ── Klanım ────────────────────────────────────────────────────
@@ -290,7 +297,7 @@ function showKickMenu(uid,name){
     // Üyelik kontrolü
     try{
       const mem=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid));
-      if(!mem.exists()||!mem.val()){ alert('⚠️ '+esc(name)+' artık klanda değil, atılamaz.'); ov.remove(); renderMembers(); return; }
+      if(!mem.exists()||!mem.val()){ _toast('⚠️ '+esc(name)+' artık klanda değil, atılamaz.'); ov.remove(); renderMembers(); return; }
     }catch(e){}
     if(!confirm('Klandan at?'))return;
     try{
@@ -298,13 +305,13 @@ function showKickMenu(uid,name){
       await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null);
       try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'🔨',text:'🔨 '+(_clan&&_clan.name||'Klan')+'\'dan atıldın!'+(reason?' Neden: '+reason:''),ts:Date.now()});}catch(e){}
       ov.remove(); renderMembers();
-    }catch(e){alert('Yapılamadı');}
+    }catch(e){_toast('Yapılamadı');}
   });
   inn.querySelector('#doBan').addEventListener('click',async()=>{
     const reason=(inn.querySelector('#kickReason').value||'').trim() || 'Kural İhlali';
     try{
       const mem=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members/'+uid));
-      if(!mem.exists()||!mem.val()){ alert('⚠️ '+esc(name)+' artık klanda değil. Yine de ban listesine eklensin mi?'); }
+      if(!mem.exists()||!mem.val()){ _toast('⚠️ '+esc(name)+' artık klanda değil. Yine de ban listesine eklensin mi?'); }
     }catch(e){}
     if(!confirm('Banla?'))return;
     try{
@@ -313,22 +320,22 @@ function showKickMenu(uid,name){
       await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null);
       try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'🚫',text:'🚫 '+(_clan&&_clan.name||'Klan')+'\'dan banlandın!'+(reason?' Neden: '+reason:''),ts:Date.now()});}catch(e){}
       ov.remove(); renderMembers();
-    }catch(e){alert('Yapılamadı');}
+    }catch(e){_toast('Yapılamadı');}
   });
 }
 
 // ── Davet gönder ──────────────────────────────────────────────
 export async function sendClanInvite(toUid,toName){
-  if(!C||!C.myClanId){alert('Önce klana gir');return;}
+  if(!C||!C.myClanId){_toast('Önce klana gir');return;}
   const st=Auth.getState();
   try{
     const already=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members/'+toUid));
-    if(already.exists()&&already.val()){alert(toName+' zaten klanında!');return;}
+    if(already.exists()&&already.val()){_toast(toName+' zaten klanında!');return;}
     const invKey='inv_'+Date.now().toString(36);
     await fdb.set(fdb.ref(db,'clanInvites/'+toUid+'/'+invKey),{clanId:C.myClanId,clanName:_clan&&_clan.name||'Klan',fromUid:st.uid,fromName:st.displayName||'Oyuncu',ts:Date.now()});
     await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🏰',text:'🏰 '+esc(st.displayName||'Oyuncu')+' seni '+esc(_clan&&_clan.name||'klana')+' davet etti!',ts:Date.now()});
-    alert('✅ '+toName+' davet edildi!');
-  }catch(e){alert('Davet gönderilemedi');}
+    _toast('✅ '+toName+' davet edildi!');
+  }catch(e){_toast('Davet gönderilemedi');}
 }
 
 // ── Klan Sohbeti ──────────────────────────────────────────────
@@ -344,7 +351,7 @@ function renderChat(){
   const clrBtn=card.querySelector('#clanChatClear');
   if(clrBtn) clrBtn.addEventListener('click',async()=>{
     if(!confirm('⚠️ Tüm klan sohbeti silinsin mi? (Admin işlemi)'))return;
-    try{await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/chat'),null);}catch(e){alert('Yapılamadı');}
+    try{await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/chat'),null);}catch(e){_toast('Yapılamadı');}
   });
   const offC=fdb.onValue(fdb.query(fdb.ref(db,'clans/'+C.myClanId+'/chat'),fdb.limitToLast(40)),snap=>{
     const list=document.getElementById('clanChatList'); if(!list)return;
@@ -387,7 +394,7 @@ async function sendChat(){
   const st=Auth.getState(); inp.value='';
   const cMsg={uid:st.uid,name:st.displayName||'Üye',avatar:(st.profile&&st.profile.avatar)||'👤',text:text.slice(0,200),ts:Date.now()};
   if(st.isVisibleAdmin===true) cMsg.isAdmin=true;
-  try{await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),cMsg);}catch(e){alert('Gönderilemedi');}
+  try{await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),cMsg);}catch(e){_toast('Gönderilemedi');}
 }
 
 // ── Klan Liderliği ────────────────────────────────────────────
@@ -433,7 +440,7 @@ async function renderManage(){
     renCard.querySelector('#clanRenameBtn').addEventListener('click',async()=>{
       const nn=(renCard.querySelector('#clanNewName2').value||'').trim();
       const nt=(renCard.querySelector('#clanNewTag2').value||'').trim().toUpperCase().replace(/[^A-Z0-9İÇŞĞÜÖ]/gi,'');
-      if(nn.length<3){alert('En az 3 harf');return;}
+      if(nn.length<3){_toast('En az 3 harf');return;}
       const newCount = isAdminUser ? nameChanges : nameChanges+1;
       if(!confirm('Klan adı "'+nn+'" olarak değişsin?'+(isAdminUser?'':' ('+(nameChanges+1)+'/3)')))return;
       const updates={name:nn,nameChanges:newCount};
@@ -441,9 +448,9 @@ async function renderManage(){
       try{
         await fdb.update(fdb.ref(db,'clans/'+C.myClanId),updates);
         _clan.name=nn;if(nt.length>=2)_clan.tag=nt;_clan.nameChanges=newCount;
-        alert('✅ Klan adı değiştirildi!'+(isAdminUser?'':' ('+(nameChanges+1)+'/3)'));
+        _toast('✅ Klan adı değiştirildi!'+(isAdminUser?'':' ('+(nameChanges+1)+'/3)'));
         await renderMyClan();
-      }catch(e){alert('Değiştirilemedi');}
+      }catch(e){_toast('Değiştirilemedi');}
     });
   }
   // Duyuru — mevcut duyuruyu göster + düzenle/sil
@@ -469,7 +476,7 @@ async function renderManage(){
       for(const uid of uids){if(uid===st.uid)continue;try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'📣',text:'['+esc(_clan.tag||'KLAN')+'] '+text.slice(0,130),ts:Date.now()});}catch(e){}}
       annCard.querySelector('#clanAnnInp').value='';
       await renderManage();
-    }catch(e){alert('Gönderilemedi');}
+    }catch(e){_toast('Gönderilemedi');}
   });
   // Düzenle
   const annEditBtn=annCard.querySelector('#annEdit');
@@ -499,7 +506,7 @@ async function renderManage(){
           await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/banned/'+uid),null);
           try{await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'✅',text:'✅ '+(_clan.name||'Klan')+'\'dan banın kaldırıldı!',ts:Date.now()});}catch(e){}
           row.remove();
-        }catch(e){alert('Yapılamadı');}
+        }catch(e){_toast('Yapılamadı');}
       });
       banCard.appendChild(row);
     });
@@ -521,7 +528,7 @@ async function renderManage(){
           await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/members/'+st.uid),{role:'member'});
           await fdb.update(fdb.ref(db,'clans/'+C.myClanId),{leader:varisE[0]});
           await loadMyClan();
-        }catch(e){alert('Yapılamadı');}
+        }catch(e){_toast('Yapılamadı');}
       });
     }
     const disbCard=document.createElement('div'); disbCard.className='clan-card';
@@ -530,12 +537,12 @@ async function renderManage(){
     disbCard.querySelector('#disbBtn').addEventListener('click',async()=>{
       if(!confirm('Klan KALICI OLARAK silinecek!'))return;
       const cn=prompt('Onaylamak için klan adını yaz: "'+(_clan.name||'')+'"');
-      if(cn!==(_clan.name||'')){alert('Klan adı eşleşmedi');return;}
+      if(cn!==(_clan.name||'')){_toast('Klan adı eşleşmedi');return;}
       try{
         for(const uid of Object.keys(mems))await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null).catch(()=>{});
         await fdb.set(fdb.ref(db,'clans/'+C.myClanId),null);
         C.myClanId=null;_clan=null;renderNoClan();
-      }catch(e){alert('Yapılamadı');}
+      }catch(e){_toast('Yapılamadı');}
     });
   }
 }

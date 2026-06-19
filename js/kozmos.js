@@ -4,6 +4,13 @@
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
 
+
+// Hafif toast helper (alert yerine)
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 
@@ -412,12 +419,12 @@ function lighten(hex){
 // ── Yumurta gönder (arkadaş profilinden) ─────────────────────
 export async function sendEgg(toUid,toName){
   const st=Auth.getState();
-  if(!st.uid||st.status!=='google'){alert('Yumurta için giriş gerekli');return;}
+  if(!st.uid||st.status!=='google'){_toast('Yumurta için giriş gerekli');return;}
   const todayKey='htu_kozmo_'+new Date().toDateString();
   const sentToday=parseInt(localStorage.getItem(todayKey)||'0');
   if(sentToday>=1){
     const pl=Store.getState?Store.getState():{};
-    if((pl.kaju||0)<50){alert('Günlük limit doldu! 50 Kaju ile 1 daha gönderebilirsin.');return;}
+    if((pl.kaju||0)<50){_toast('Günlük limit doldu! 50 Kaju ile 1 daha gönderebilirsin.');return;}
     if(!confirm('Günlük limit doldu. 50 Kaju ile gönder?'))return;
     try{await Store.addKaju(-50,'kozmo','egg_send');}catch(e){return;}
   }
@@ -431,15 +438,15 @@ export async function sendEgg(toUid,toName){
     try{localStorage.setItem(todayKey,String(sentToday+1));}catch(e){}
     // Alıcıya bildirim
     try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi!',ts:Date.now(),fromUid:st.uid});}catch(e){}
-    alert('🥚 Yumurta gönderildi → '+toName+'!');
-  }catch(e){alert('Gönderilemedi: '+(e.message||e));}
+    _toast('🥚 Yumurta gönderildi → '+toName+'!');
+  }catch(e){_toast('Gönderilemedi: '+(e.message||e));}
 }
 
 // ── Kozmos Paneli ─────────────────────────────────────────────
 export async function openKozmos(){
   if(document.getElementById('kozmosPanel'))return;
   const st=Auth.getState();
-  if(!st.uid||st.status!=='google'){alert('Kozmos için giriş gerekli');return;}
+  if(!st.uid||st.status!=='google'){_toast('Kozmos için giriş gerekli');return;}
   const ov=document.createElement('div'); ov.id='kozmosPanel'; ov.className='clan-ov';
   const panel=document.createElement('div'); panel.className='clan-panel';
   panel.style.cssText='border-color:rgba(192,132,252,.35);background:linear-gradient(170deg,#110826,#0a0416)';
@@ -489,7 +496,7 @@ async function renderKozmos(st,box){
           await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+id),{...e,acceptedAt:Date.now(),feedCount:0,ownerId:st.uid});
           await fdb.set(fdb.ref(db,'kozmoPending/'+st.uid+'/'+uid),null);
           feedAnim(); await renderKozmos(st,box);
-        }catch(err){alert('Kabul edilemedi');}
+        }catch(err){_toast('Kabul edilemedi');}
       });
       row.querySelector('[data-rej]').addEventListener('click',async()=>{
         try{await fdb.set(fdb.ref(db,'kozmoPending/'+st.uid+'/'+uid),null); await renderKozmos(st,box);}catch(e){}
@@ -534,12 +541,12 @@ async function renderKozmos(st,box){
         e.stopPropagation();
         const todayKey='htu_feed_'+k+'_'+new Date().toDateString();
         const fedToday=parseInt(localStorage.getItem(todayKey)||'0');
-        if(fedToday>=3){alert('Bugün bu yumurtayı 3 kez besledin. Yarın tekrar!');return;}
+        if(fedToday>=3){_toast('Bugün bu yumurtayı 3 kez besledin. Yarın tekrar!');return;}
         try{
           await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k+'/feedCount'),c=>(c||0)+1);
           localStorage.setItem(todayKey,String(fedToday+1));
           sfxFeed(); feedAnim(); await renderKozmos(st,box);
-        }catch(err){alert('Beslenemedi');}
+        }catch(err){_toast('Beslenemedi');}
       });
       const hb=card.querySelector('[data-hatch]');
       if(hb) hb.addEventListener('click',async e=>{e.stopPropagation();await hatchEgg(k,egg,st,box);});
@@ -612,14 +619,14 @@ async function hatchEgg(eggId,egg,st,box){
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
     feedAnim(); sfxChirp();
     await renderKozmos(st,box);
-    alert('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
-  }catch(e){alert('Doğurtulamadı: '+(e.message||e));}
+    _toast('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
+  }catch(e){_toast('Doğurtulamadı: '+(e.message||e));}
 }
 
 // ── 💥 Birleştirme Seçici ────────────────────────────────────────
 function openMergeSelector(srcId,src,allCreatures,st,box){
   const others=Object.entries(allCreatures).filter(([k,c])=>k!==srcId&&!c.unique);
-  if(!others.length){alert('Birleştirmek için en az 2 kozmo gerekli!');return;}
+  if(!others.length){_toast('Birleştirmek için en az 2 kozmo gerekli!');return;}
   const srcType=TYPES[src.typeKey]||{n:src.name||'?',e:'✨',c:'#c084fc',r:'common'};
   const ov=document.createElement('div'); ov.className='nick-modal-ov';
   const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='310px';
@@ -660,7 +667,7 @@ async function doMerge(id1,c1,id2,c2,resultType,st,box){
   c1._id=c1._id||id1; c2._id=c2._id||id2;
   try{
     showFusionAnimation(c1,c2,resultType,st,box);
-  }catch(e){alert('Birleştirme hatası: '+(e.message||e));}
+  }catch(e){_toast('Birleştirme hatası: '+(e.message||e));}
 }
 async function showFusionAnimation(c1,c2,resultType,st,box){
   const ov=document.createElement('div'); ov.className='koz-fusion-ov';
@@ -733,7 +740,7 @@ function showEggModal(eggId,egg,phase,st,box){
   bFeed.addEventListener('click',async()=>{
     const tk='htu_feed_'+eggId+'_'+new Date().toDateString();
     const fd=parseInt(localStorage.getItem(tk)||'0');
-    if(fd>=3){alert('Bugün 3 kez besledin!');return;}
+    if(fd>=3){_toast('Bugün 3 kez besledin!');return;}
     try{await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId+'/feedCount'),c=>(c||0)+1);localStorage.setItem(tk,String(fd+1));feedAnim();ov.remove();await renderKozmos(st,box);}catch(e){}
   });
   acts.appendChild(bFeed);
