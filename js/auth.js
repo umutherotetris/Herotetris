@@ -16,6 +16,13 @@
 // ════════════════════════════════════════════════════════════════
 import { firebaseConfig, FIREBASE_SDK } from './firebase-config.js';
 
+
+// Hafif toast helper
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const BASE = `https://www.gstatic.com/firebasejs/${FIREBASE_SDK}`;
 const { initializeApp } = await import(`${BASE}/firebase-app.js`);
 const {
@@ -153,7 +160,7 @@ function startKickListener(){
       const v = snap.val() || {};
       if((v.ts || 0) < _kickBootTs) return;          // eski kayıt — yok say
       try{ set(ref(db, 'kicks/' + state.uid), null); }catch(e){}
-      alert('🦵 Yönetici tarafından oyundan atıldın.' + (v.reason ? '\nSebep: ' + v.reason : ''));
+      _toast('🦵 Yönetici tarafından oyundan atıldın.' + (v.reason ? '\nSebep: ' + v.reason : ''));
       location.reload();
     });
   }catch(e){}
@@ -174,22 +181,40 @@ async function boot(){
   await setPersistence(auth, browserLocalPersistence)
     .catch(() => setPersistence(auth, browserSessionPersistence).catch(() => {}));
 
-  // Redirect'ten dönüldü mü? (Firefox/Safari Google girişi sonrası)
+  // "Giriş bekleniyor" işareti (redirect başlatıldı mı?)
+  let pendingLogin = false;
+  try { pendingLogin = sessionStorage.getItem('hero_login_pending') === '1'; } catch(e){}
+
+  // Redirect'ten dönüldü mü? (popup engellenince redirect yedeği kullanıldıysa)
   let redirectUser = null;
   try {
     const res = await getRedirectResult(auth);
     if(res && res.user){ redirectUser = res.user; }
-  } catch(e){ console.warn('[auth] redirect', e&&e.code); }
+  } catch(e){ console.warn('[auth] redirectResult', e&&e.code); }
 
-  // Redirect'ten gerçek kullanıcı döndüyse: anonim başlatma, direkt onu kullan
+  // Redirect başarılı → temizle ve kullan
   if(redirectUser){
+    try{ sessionStorage.removeItem('hero_login_pending'); }catch(e){}
+    try{ localStorage.removeItem('hero_login_redirect_ts'); }catch(e){}
     _resolveReady(getState());
     return;
   }
 
-  // "Giriş bekleniyor" işareti varsa (redirect başlatıldı ama henüz dönmedi)
-  let pendingLogin = false;
-  try { pendingLogin = sessionStorage.getItem('hero_login_pending') === '1'; } catch(e){}
+  // Redirect bekleniyordu ama sonuç boş döndü (Firefox storage izolasyonu olası)
+  // → kısa ek bekleme ver, currentUser oturabilir
+  if(pendingLogin){
+    // Eğer redirect 60sn'den eskiyse bayat say, temizle
+    let stale = false;
+    try{
+      const ts = parseInt(localStorage.getItem('hero_login_redirect_ts')||'0');
+      if(ts && (Date.now()-ts) > 60000) stale = true;
+    }catch(e){}
+    if(stale){
+      try{ sessionStorage.removeItem('hero_login_pending'); }catch(e){}
+      try{ localStorage.removeItem('hero_login_redirect_ts'); }catch(e){}
+      pendingLogin = false;
+    }
+  }
 
   // Kısa beklemeden sonra hâlâ kullanıcı yoksa anonim başlat
   setTimeout(async () => {
@@ -197,9 +222,10 @@ async function boot(){
       try { await signInAnonymously(auth); }
       catch(e){ state.status = 'offline'; emit(); }
     }
+    // pendingLogin doğruysa anonim başlatmadık ama flag'i temizle (sonraki açılışta takılmasın)
     try { sessionStorage.removeItem('hero_login_pending'); } catch(e){}
     _resolveReady(getState());
-  }, pendingLogin ? 1800 : 600);
+  }, pendingLogin ? 2500 : 600);
 }
 
 // ── Google ile giriş: popup → redirect yedeği → anonse link ─────
@@ -213,20 +239,10 @@ export async function loginGoogle(){
 
   const cur = auth.currentUser;
 
-  // Firefox: popup yerine her zaman redirect kullan
-  if(isFirefox()){
-    try{
-      // Redirect başladığını işaretle (boot anonim başlatmasın)
-      try{ sessionStorage.setItem('hero_login_pending', '1'); }catch(e){}
-      await signInWithRedirect(auth, provider);
-      return { ok: true, redirect: true };
-    } catch(e){
-      try{ sessionStorage.removeItem('hero_login_pending'); }catch(e2){}
-      return { ok: false, code: (e&&e.code)||'redirect-fail', message: (e&&e.message)||'' };
-    }
-  }
-
-  // Chrome/Safari: popup dene → başarısız olursa redirect
+  // ── STRATEJİ: Her tarayıcıda ÖNCE popup dene ──
+  // Firefox'ta popup same-origin storage kullandığından Total Cookie
+  // Protection sorununu yaşamaz; redirect ise farklı origin'e gidip
+  // dönerken auth state'i kaybedebiliyor. Bu yüzden popup birincil yol.
   try {
     if(cur && cur.isAnonymous){
       await linkWithPopup(cur, provider);
@@ -236,13 +252,32 @@ export async function loginGoogle(){
     return { ok: true };
   } catch(e){
     const code = (e && e.code) || '';
-    if(/popup/i.test(code) || code === 'auth/web-storage-unsupported' || /blocked/i.test(code)){
-      try { await signInWithRedirect(auth, provider); return { ok: true, redirect: true }; }
-      catch(e2){ return { ok: false, code: (e2&&e2.code)||code, message: (e2&&e2.message)||'' }; }
-    }
+    // Anonim hesap zaten Google'a bağlıysa → düz giriş dene
     if(code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use'){
       try { await signInWithPopup(auth, provider); return { ok: true }; }
-      catch(e3){ return { ok: false, code: (e3&&e3.code)||code, message: (e3&&e3.message)||'' }; }
+      catch(e3){ /* aşağı düş */ }
+    }
+    // Popup gerçekten engellendi/kapatıldı → redirect yedeği
+    const popupFailed = /popup/i.test(code) || /blocked/i.test(code) ||
+                        code === 'auth/web-storage-unsupported' ||
+                        code === 'auth/cancelled-popup-request' ||
+                        code === 'auth/popup-closed-by-user';
+    if(popupFailed){
+      // Kullanıcı popup'ı kendisi kapattıysa redirect'e zorlamayalım
+      if(code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request'){
+        return { ok: false, code, message: 'İşlem iptal edildi', userCancelled: true };
+      }
+      // Gerçek blok → redirect dene (A2: kalıcılık işareti)
+      try{
+        try{ sessionStorage.setItem('hero_login_pending', '1'); }catch(e2){}
+        try{ localStorage.setItem('hero_login_redirect_ts', String(Date.now())); }catch(e2){}
+        await signInWithRedirect(auth, provider);
+        return { ok: true, redirect: true };
+      }
+      catch(e2){
+        try{ sessionStorage.removeItem('hero_login_pending'); }catch(e3){}
+        return { ok: false, code: (e2&&e2.code)||code, message: (e2&&e2.message)||'', popupBlocked: true };
+      }
     }
     return { ok: false, code, message: (e&&e.message)||'' };
   }

@@ -8,6 +8,13 @@
 import Auth, { loginGoogle } from './auth.js';
 import Store from './store.js';
 
+
+// Hafif toast helper
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 const $ = (id) => document.getElementById(id);
 function setText(id, v){ const el = $(id); if(el && el.textContent !== v) el.textContent = v; }
 function show(el, on){ if(el) el.style.display = on ? '' : 'none'; }
@@ -100,7 +107,7 @@ function render(state){
     ab.style.display = (isAdmin === true) ? 'inline-block' : 'none';
     if(isAdmin === true){
       ab.style.cursor='pointer'; ab.title='Admin yönetim paneli 👑';
-      ab.onclick = () => import('./admin.js').then(m => m.openAdminPanel()).catch(()=>alert('Panel yüklenemedi (admin.js yüklü mü?)'));
+      ab.onclick = () => import('./admin.js').then(m => m.openAdminPanel()).catch(()=>_toast('Panel yüklenemedi (admin.js yüklü mü?)'));
     }
     else { ab.style.cursor=''; ab.onclick = null; }
   }
@@ -148,10 +155,25 @@ function bind(){
     const st = Auth.getState();
     if(st.status === 'google') return;
     if(st.status === 'offline'){ location.reload(); return; }
+    const msg = $('authMsg');
+    if(msg){ msg.style.display='none'; }
     const r = await loginGoogle();
-    if(!r.ok && r.code){
-      const msg = $('authMsg');
-      if(msg){ msg.style.display='block'; msg.textContent='Giriş hatası: ' + (r.message || r.code); }
+    if(r.redirect){
+      // Redirect başladı — sayfa birazdan yönlenecek
+      if(msg){ msg.style.display='block'; msg.style.color='#90caf9'; msg.textContent='Google\'a yönlendiriliyorsun…'; }
+      return;
+    }
+    if(!r.ok){
+      if(r.userCancelled){ return; } // kullanıcı kendisi kapattı, mesaj gösterme
+      if(msg){
+        msg.style.display='block'; msg.style.color='';
+        if(r.popupBlocked){
+          // A3: Firefox/Safari popup blok rehberi
+          msg.innerHTML = '⚠️ Açılır pencere engellendi.<br><b>Çözüm:</b> Adres çubuğundaki 🛡️/🚫 simgesine tıkla → bu site için <b>açılır pencerelere ve çerezlere izin ver</b>, sonra tekrar dene.';
+        } else {
+          msg.textContent = 'Giriş hatası: ' + (r.message || r.code || 'bilinmeyen');
+        }
+      }
     }
   };
   if(btn && !btn.__bound){ btn.__bound = 1; btn.addEventListener('click', onConnect); }
@@ -160,7 +182,7 @@ function bind(){
 // ── Nick belirleme/değiştirme modalı ────────────────────────────
 export function openNickModal(){
   const st = Auth.getState();
-  if(st.status !== 'google'){ alert('Nick için önce Google ile giriş yapmalısın.'); return; }
+  if(st.status !== 'google'){ _toast('Nick için önce Google ile giriş yapmalısın.'); return; }
   if(document.getElementById('nickModal')) return;
   const cur = (Auth.getNick && Auth.getNick()) || '';
   const ov = document.createElement('div');
@@ -210,7 +232,7 @@ export function openNickModal(){
 // ── Kaju gönderme modalı (nick'e gönder; admin: ± ayarlama da) ──
 export function openKajuModal(){
   const st = Auth.getState();
-  if(st.status !== 'google'){ alert('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
+  if(st.status !== 'google'){ _toast('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
   if(document.getElementById('kajuModal')) return;
   const isAdmin = st.isAdmin === true;
   const rem = Store.transferRemaining ? Store.transferRemaining() : { min:10, perTx:5000, hour:0, day:0, month:0 };
