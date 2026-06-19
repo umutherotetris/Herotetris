@@ -67,10 +67,29 @@ const Sound = {
     noise(0.1, 0.25, 0, 900);
     tone(120, 0.16, 'sawtooth', 0.14, 0.02);
   },
-  // Toplama (bear off) — yükselen ikili nota
-  bearoff(){
-    tone(523, 0.1, 'sine', 0.16);
-    tone(784, 0.14, 'sine', 0.16, 0.08);
+  // Toplama (bear off) — gerçekçi ahşap pul sesi
+  // 1) Keskin tıklama (pul kenarı tahta kenarına değiyor)
+  // 2) Kısa rezonans (içi boş ahşap çanak)
+  // 3) Hafif yumuşak iniş (pul yığına oturuyor)
+  bearoff(stackCount){
+    const n = (stackCount || 1);
+    // Ana tok darbe — ahşap
+    noise(0.03, 0.28, 0, 3200);        // sert tıklama
+    noise(0.06, 0.18, 0.01, 1400);     // derin gövde titreşimi
+    tone(260, 0.18, 'triangle', 0.12); // ahşap rezonans
+    tone(520, 0.06, 'triangle', 0.06, 0.02); // harmonik
+    // Kaymak hissi (pul yığına süzülüyor)
+    tone(180, 0.1, 'sine', 0.06, 0.04);
+    // Çok pul varsa hafif kaskad — n'e göre ek tıklamalar
+    if(n >= 5){
+      noise(0.025, 0.12, 0.07, 2800);
+      noise(0.02, 0.08, 0.11, 2200);
+    }
+    if(n >= 10){
+      noise(0.02, 0.1, 0.14, 3000);
+    }
+    // İnce hışırtı (pul kenara yerleşiyor)
+    noise(0.08, 0.06, 0.05, 800);
   },
   // Kazanma — yükselen arpej
   win(){

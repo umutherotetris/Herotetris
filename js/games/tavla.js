@@ -623,23 +623,133 @@ function drawMotifSymbol(ctx, cx, cy, r, motif, t){
 
 function drawBearOff(ctx, t){
   const g = G.geo;
-  // toplanan pul sayısı (üstte siyah off, altta beyaz off — flip'e göre)
-  ctx.save();
-  ctx.fillStyle = 'rgba(255,255,255,.85)';
-  ctx.font = `bold ${Math.floor(g.bearW*0.32)}px system-ui`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const cx = g.bearX + g.bearW/2;
   const wOff = G.state.off.w, bOff = G.state.off.b;
-  // beyaz altta (flip false), siyah üstte
+  const topColor = G.flip ? 'w' : 'b';
+  const botColor = G.flip ? 'b' : 'w';
   const topVal = G.flip ? wOff : bOff;
   const botVal = G.flip ? bOff : wOff;
-  ctx.fillStyle = 'rgba(0,0,0,.3)';
-  ctx.fillRect(g.bearX+2, g.innerY+2, g.bearW-4, g.innerH/2-4);
-  ctx.fillRect(g.bearX+2, g.innerY+g.innerH/2+2, g.bearW-4, g.innerH/2-4);
-  ctx.fillStyle = '#fff';
-  ctx.fillText('↑'+topVal, cx, g.innerY + g.innerH*0.25);
-  ctx.fillText('↓'+botVal, cx, g.innerY + g.innerH*0.75);
+  const cx = g.bearX + g.bearW/2;
+  const R = g.checkerR * 0.82; // biraz küçük
+  const maxShow = 15; // max gösterilecek pul
+  // ── Arka plan ──
+  ctx.save();
+  // üst bölge (topColor)
+  const rTop = 6;
+  const topH = g.innerH/2 - 4;
+  roundRect(ctx, g.bearX+2, g.innerY+2, g.bearW-4, topH, rTop);
+  ctx.fillStyle = 'rgba(0,0,0,.32)'; ctx.fill();
+  // alt bölge (botColor)
+  roundRect(ctx, g.bearX+2, g.innerY+g.innerH/2+2, g.bearW-4, topH, rTop);
+  ctx.fill();
+
+  // ── Üst pul stack'i (topColor, aşağıdan yukarı istiflenir) ──
+  _drawBearStack(ctx, cx, g.innerY+2+topH, -1, topVal, R, topColor, t);
+  // ── Alt pul stack'i (botColor, yukarıdan aşağı istiflenir) ──
+  _drawBearStack(ctx, cx, g.innerY+g.innerH/2+2, 1, botVal, R, botColor, t);
+
+  // ── Eğer toplanan yok: soluk ikon ──
+  ctx.font = `bold ${Math.floor(g.bearW*0.26)}px system-ui`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(255,255,255,.18)';
+  if(topVal === 0) ctx.fillText('off', cx, g.innerY + g.innerH*0.25);
+  if(botVal === 0) ctx.fillText('off', cx, g.innerY + g.innerH*0.75);
+
   ctx.restore();
+}
+
+function _drawBearStack(ctx, cx, baseY, dir, count, R, color, t){
+  if(count === 0) return;
+  const maxShow = 15;
+  const show = Math.min(count, maxShow);
+  const areaH = G.geo.innerH/2 - 4;
+  // Pul gap: alanı dolduracak şekilde hesapla
+  const totalR = R * 2;
+  const minGap = R * 0.25; // minimum görünür katman kalınlığı
+  const maxGap = R * 1.75;
+  const gap = show === 1 ? 0 : Math.min(maxGap, Math.max(minGap, (areaH - totalR) / (show - 1)));
+  const isW = color === 'w';
+
+  // Toplama animasyonu (G._bearAnim): son toplanan pulun animasyonu
+  const anim = G._bearAnim && G._bearAnim.color === color ? G._bearAnim : null;
+
+  for(let k = 0; k < show; k++){
+    const cy = baseY + dir * (R + k * gap);
+    // Son pul → animasyon uygula (sürükleme/giriş)
+    if(anim && k === show - 1){
+      const p = Math.min(1, anim.p);
+      // easeOutBounce
+      const eased = easeOutBounce(p);
+      const startY = baseY + dir * (R + k * gap + R * 4 * (1 - eased));
+      ctx.save();
+      ctx.globalAlpha = 0.4 + 0.6 * p;
+      drawChecker(ctx, cx, startY + (cy - startY) * eased, R, color, t);
+      ctx.restore();
+    } else {
+      drawChecker(ctx, cx, cy, R, color, t);
+    }
+  }
+  // 15'ten fazlaysa sayı etiketi (üstüne yaz)
+  if(count > maxShow){
+    const topCy = baseY + dir * (R + (show-1)*gap);
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.beginPath(); ctx.arc(cx, topCy, R*0.55, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = isW ? '#1a2a4a' : '#fff';
+    ctx.font = `bold ${Math.floor(R*0.65)}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(count, cx, topCy);
+    ctx.restore();
+  }
+  // Toplam sayı rozeti (köşe)
+  if(count > 0){
+    const rozetY = baseY + dir * R * 0.05;
+    ctx.save();
+    ctx.fillStyle = isW ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.85)';
+    ctx.strokeStyle = isW ? 'rgba(0,0,0,.25)' : 'rgba(255,255,255,.25)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(cx - R*0.7, rozetY - R*0.4, R*1.4, R*0.78, R*0.2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = isW ? '#2a3a5a' : '#eef2ff';
+    ctx.font = `900 ${Math.floor(R*0.55)}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('✕'+count, cx, rozetY - R*0.01);
+    ctx.restore();
+  }
+}
+
+// ── 🎲 Pul toplama (bear-off) giriş animasyonu ──────────────────
+function startBearAnim(color){
+  // Önceki aynı renk animasyonunu iptal et
+  if(G._bearAnimRaf){ cancelAnimationFrame(G._bearAnimRaf); G._bearAnimRaf=null; }
+  const startTime = performance.now();
+  const dur = 420; // ms
+  G._bearAnim = { color, p:0 };
+  function step(now){
+    if(!G || !G._bearAnim){ return; }
+    const elapsed = now - startTime;
+    G._bearAnim.p = Math.min(1, elapsed / dur);
+    draw();
+    if(G._bearAnim.p < 1){
+      G._bearAnimRaf = requestAnimationFrame(step);
+    } else {
+      G._bearAnim = null; G._bearAnimRaf = null;
+      draw();
+    }
+  }
+  G._bearAnimRaf = requestAnimationFrame(step);
+}
+
+function easeOutBounce(x){
+  const n1 = 7.5625, d1 = 2.75;
+  if(x < 1/d1) return n1*x*x;
+  else if(x < 2/d1){ x -= 1.5/d1; return n1*x*x + 0.75; }
+  else if(x < 2.5/d1){ x -= 2.25/d1; return n1*x*x + 0.9375; }
+  else { x -= 2.625/d1; return n1*x*x + 0.984375; }
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
+  ctx.arcTo(x+w, y, x+w, y+r, r); ctx.lineTo(x+w, y+h-r);
+  ctx.arcTo(x+w, y+h, x+w-r, y+h, r); ctx.lineTo(x+r, y+h);
+  ctx.arcTo(x, y+h, x, y+h-r, r); ctx.lineTo(x, y+r);
+  ctx.arcTo(x, y, x+r, y, r); ctx.closePath();
 }
 
 // Bir noktadaki pulları çiz — üstgenler üzerinde, güvenli boşlukla
@@ -931,7 +1041,7 @@ function doMove(mv){
   if(G.online){ TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }); }
   G.state = applyMove(G.state, mv);
   G.selected = null; G.legalForSel = [];
-  try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? Sound.bearoff() : Sound.move()); }catch(e){}
+  try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
 
   const status = gameStatus(G.state);
   if(status !== 'playing'){
@@ -1036,7 +1146,7 @@ function playAISequence(seq, i){
   const mv = seq[i];
   animateMove(mv, () => {
     G.state = applyMove(G.state, mv);
-    try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? Sound.bearoff() : Sound.move()); }catch(e){}
+    try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
     draw();
     const status = gameStatus(G.state);
     if(status !== 'playing'){ G.aiThinking = false; onWin(status); return; }
@@ -1103,7 +1213,7 @@ function onRemoteMessage(type, data){
     }
     animateMove(mv, () => {
       G.state = applyMove(G.state, mv);
-      try{ isHit ? Sound.hit() : (mv.to === 'off' ? Sound.bearoff() : Sound.move()); }catch(e){}
+      try{ isHit ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
       draw();
       const st = gameStatus(G.state);
       if(st !== 'playing'){ onWin(st); }
@@ -1463,16 +1573,20 @@ async function onWin(status){
   const winner = status === 'white_wins' ? 'w' : 'b';
   const wt = winType(G.state, winner);
   const typeLabel = wt === 3 ? ' (Hin/Backgammon ×3)' : wt === 2 ? ' (Mars/Gammon ×2)' : '';
+  // playerWon dışarıda tanımla — tüm dallarda erişilebilsin
+  let playerWon = false;
   let label;
   if(G.mode === 'ai'){
-    const playerWon = (winner === G.playerColor);
+    playerWon = (winner === G.playerColor);
     label = playerWon ? `🏆 KAZANDIN!${typeLabel}` : `🤖 YZ KAZANDI${typeLabel}`;
     try{ playerWon ? Sound.win() : Sound.lose(); }catch(e){}
   } else if(G.online){
-    const playerWon = (winner === G.playerColor);
+    playerWon = (winner === G.playerColor);
     label = playerWon ? `🏆 KAZANDIN!${typeLabel}` : `😔 Rakip kazandı${typeLabel}`;
     try{ playerWon ? Sound.win() : Sound.lose(); }catch(e){}
   } else {
+    // Local oyun: beyaz tarafı oynayan kazandıysa playerWon=true
+    playerWon = (winner === (G.playerColor || 'w'));
     const name = winner === 'w' ? 'BEYAZ' : 'SİYAH';
     label = `🏆 ${name} KAZANDI!${typeLabel}`;
     try{ Sound.win(); }catch(e){}
@@ -1485,7 +1599,7 @@ async function onWin(status){
   try{
     const Reward = await import('../reward.js');
     await Reward.showReward({
-      won: playerWon||false, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false,
+      won: playerWon, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false,
       title: playerWon ? '🎲 KAZANDIN!' : '😔 Rakip kazandı',
       subtitle: 'Tavla oyunu tamamlandı',
     });
