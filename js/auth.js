@@ -174,17 +174,32 @@ async function boot(){
   await setPersistence(auth, browserLocalPersistence)
     .catch(() => setPersistence(auth, browserSessionPersistence).catch(() => {}));
 
-  // Redirect yedeğiyle dönüldüyse sonucu işle (hatayı sessizce yut — env vb.)
-  try { await getRedirectResult(auth); } catch(e){ /* yoksay */ }
+  // Redirect'ten dönüldü mü? (Firefox/Safari Google girişi sonrası)
+  let redirectUser = null;
+  try {
+    const res = await getRedirectResult(auth);
+    if(res && res.user){ redirectUser = res.user; }
+  } catch(e){ console.warn('[auth] redirect', e&&e.code); }
+
+  // Redirect'ten gerçek kullanıcı döndüyse: anonim başlatma, direkt onu kullan
+  if(redirectUser){
+    _resolveReady(getState());
+    return;
+  }
+
+  // "Giriş bekleniyor" işareti varsa (redirect başlatıldı ama henüz dönmedi)
+  let pendingLogin = false;
+  try { pendingLogin = sessionStorage.getItem('hero_login_pending') === '1'; } catch(e){}
 
   // Kısa beklemeden sonra hâlâ kullanıcı yoksa anonim başlat
   setTimeout(async () => {
-    if(!auth.currentUser){
+    if(!auth.currentUser && !pendingLogin){
       try { await signInAnonymously(auth); }
       catch(e){ state.status = 'offline'; emit(); }
     }
+    try { sessionStorage.removeItem('hero_login_pending'); } catch(e){}
     _resolveReady(getState());
-  }, 600);
+  }, pendingLogin ? 1800 : 600);
 }
 
 // ── Google ile giriş: popup → redirect yedeği → anonse link ─────
@@ -201,15 +216,12 @@ export async function loginGoogle(){
   // Firefox: popup yerine her zaman redirect kullan
   if(isFirefox()){
     try{
-      if(cur && cur.isAnonymous){
-        // Anonim hesabı koru - Firefox'ta redirect ile link mümkün değil
-        // Direkt signInWithRedirect yap
-        await signInWithRedirect(auth, provider);
-      } else {
-        await signInWithRedirect(auth, provider);
-      }
+      // Redirect başladığını işaretle (boot anonim başlatmasın)
+      try{ sessionStorage.setItem('hero_login_pending', '1'); }catch(e){}
+      await signInWithRedirect(auth, provider);
       return { ok: true, redirect: true };
     } catch(e){
+      try{ sessionStorage.removeItem('hero_login_pending'); }catch(e2){}
       return { ok: false, code: (e&&e.code)||'redirect-fail', message: (e&&e.message)||'' };
     }
   }

@@ -407,9 +407,17 @@ export function applyFabSetting(){
   const g = document.getElementById('gemFloatBtn');
   if(g){ g.style.visibility = ''; g.style.display = on ? 'grid' : 'none'; }
 }
+// Hub panelini garantili görünür kıl (FAB ayarından bağımsız)
+function ensureHubVisible(){
+  if(!H){ try{ initSocial(); }catch(e){} }
+  if(!H) return false;
+  const panel = byId('gemHubPanel');
+  if(!panel) return false;
+  return true;
+}
 // Ekranlardan hub'ı belirli sekmede aç
 export function openHubTab(tab){
-  if(!H) return;
+  if(!ensureHubVisible()){ showToast('⚠️ Sosyal hub yüklenemedi'); return; }
   if(!H.open) open();
   switchTab(tab || 'chat');
 }
@@ -473,12 +481,21 @@ export function openInGameDM(uid, nick){
 }
 
 export function dmOpenThreadExternal(uid, nick){
-  if(!H) return;
+  if(!uid){ showToast('Kişi bilgisi yok'); return; }
+  if(!ensureHubVisible()){ showToast('⚠️ Sosyal hub yüklenemedi'); return; }
+  const me = Auth.getState();
+  if(!me || !me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
+  if(uid === me.uid){ showToast('🙂 Kendinize mesaj atamazsınız'); return; }
   if(!H.open) open();
   switchTab('ozel');
   let tries=0;
-  const t=()=>{ tries++; const el=byId('ghpDMThread'); if(el){ try{ dmOpenThread(uid,nick); }catch(e){} } else if(tries<15){ setTimeout(t,80); } };
-  setTimeout(t,120);
+  const t=()=>{
+    tries++;
+    const el=byId('ghpDMThread');
+    if(el){ try{ dmOpenThread(uid,nick); }catch(e){ console.warn('[dmExt]',e); } }
+    else if(tries<25){ setTimeout(t,80); }
+  };
+  setTimeout(t,180);
 }
 
 export function initSocial(){
@@ -635,9 +652,19 @@ function cycleSize(){
   applySize();
 }
 function position(){
-  if(curSize() === 'full'){ const p = byId('gemHubPanel'); p.style.left = p.style.top = p.style.right = p.style.bottom = ''; return; }
-  const panel = byId('gemHubPanel'), fab = byId('gemFloatBtn');
-  const fr = fab.getBoundingClientRect(), pw = panel.offsetWidth || 316, vw = window.innerWidth, vh = window.innerHeight;
+  const panel = byId('gemHubPanel');
+  if(!panel) return;
+  if(curSize() === 'full'){ panel.style.left = panel.style.top = panel.style.right = panel.style.bottom = ''; return; }
+  const fab = byId('gemFloatBtn');
+  const vw = window.innerWidth, vh = window.innerHeight, pw = panel.offsetWidth || 316;
+  // FAB yok veya gizli → ekranın sağ-altına sabitle
+  const fabHidden = !fab || fab.style.display === 'none' || fab.offsetParent === null;
+  if(fabHidden){
+    panel.style.left = 'auto'; panel.style.right = '12px';
+    panel.style.bottom = '80px'; panel.style.top = 'auto';
+    return;
+  }
+  const fr = fab.getBoundingClientRect();
   const l = Math.max(8, Math.min(vw - pw - 8, fr.left + fr.width/2 - pw/2));
   panel.style.left = l + 'px'; panel.style.right = 'auto';
   if(fr.top > 260){ panel.style.bottom = (vh - fr.top + 8) + 'px'; panel.style.top = 'auto'; }
@@ -1182,16 +1209,7 @@ async function renderFriends(){
     + '</div>'
   ).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => {
-    const _uid=b.dataset.fdm, _nick=b.dataset.fn;
-    // Hub kapalıysa önce aç, tab'ı değiştir, ardından thread aç
-    if(!H.open){ open(); }
-    // Kısa bekle (open animasyonu + DOM settle)
-    setTimeout(()=>{
-      switchTab('ozel');
-      setTimeout(()=>{
-        try{ dmOpenThread(_uid, _nick); }catch(e){ console.warn('[DM btn]',e); }
-      }, 120);
-    }, H.open ? 0 : 200);
+    dmOpenThreadExternal(b.dataset.fdm, b.dataset.fn);
   }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {

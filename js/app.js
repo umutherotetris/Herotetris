@@ -51,7 +51,7 @@ function start(){
   try{ initNav(); }catch(e){ console.error('[Nav]', e); }
 
   // 💎 Sosyal Hub + 👑 Admin FAB (izole — hata olsa bile portal çalışır)
-  import('./social.js?v=95').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
+  import('./social.js').then(m => m.initSocial()).catch(e => console.error('[Social]', e));
   // PWA push bildirimleri — SW kaydet + dinlemeyi başlat
   import('./push.js').then(m => m.initPush()).catch(e => console.warn('[Push]', e));
   // Günlük giriş ödülü — auth hazır olunca çalıştır
@@ -63,7 +63,7 @@ function start(){
     }, 2000);
   }).catch(()=>{});
   // 👤 Profil + ⚙️ Ayarlar + 🏆 Liderlik ekranları (izole)
-  import('./profile.js?v=94').then(m => m.initScreens()).catch(e => console.error('[Screens]', e));
+  import('./profile.js').then(m => m.initScreens()).catch(e => console.error('[Screens]', e));
 
   // Oyunlar dinamik yüklenir — biri eksikse diğerleri + login etkilenmez
   bindCard('gameTetris', './games/tetris.js', 'openTetris', 'Tetris');

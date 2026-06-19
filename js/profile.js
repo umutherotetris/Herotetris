@@ -73,7 +73,7 @@ export function applyProfileBg(id){
 // ── ui.js modal erişimi (önbelleğe dayanıklı) ────────────────
 async function uiMod(){
   try{ const m=await import('./ui.js'); if(m.openKajuModal&&m.openNickModal) return m; }catch(e){}
-  return import('./ui.js?v=95');
+  return import('./ui.js');
 }
 
 // ── 👤 PROFİL ─────────────────────────────────────────────────
@@ -169,18 +169,11 @@ function _renderProfile(st){
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
   if(q('dm')&&isGoogle) q('dm').addEventListener('click',async()=>{
-    const stNow=Auth.getState();
-    if(!stNow||!stNow.uid){ return; }
-    // Kendi profilinde - kendine mesaj engellensin
-    const viewedUid=document.querySelector('[data-viewed-uid]')&&document.querySelector('[data-viewed-uid]').dataset.viewedUid;
-    if(!viewedUid||viewedUid===stNow.uid){
-      import('./daily.js').then(d=>{ if(d.showToast) d.showToast('📭 Kendinize mesaj gönderemezsiniz'); }).catch(()=>{ alert('📭 Kendinize mesaj gönderemezsiniz'); });
-      return;
-    }
+    // Kendi profil ekranı → mesaj kutusunu (DM listesi) aç
     try{
       const m=await import('./social.js');
-      m.applyFabSetting(); m.openHubTab('ozel');
-    }catch(e){}
+      m.openHubTab('ozel');
+    }catch(e){ console.warn('[profil dm]',e); }
   });
   if(q('nick')&&isGoogle) q('nick').addEventListener('click',async()=>(await uiMod()).openNickModal());
   if(q('kaju')&&isGoogle) q('kaju').addEventListener('click',async()=>(await uiMod()).openKajuModal());
@@ -614,15 +607,8 @@ async function _renderNavFriends(){
       e.stopPropagation();
       try{
         const m=await import('./social.js');
-        const _uid=b.dataset.navdm, _nm=b.dataset.navnm;
-        m.applyFabSetting();
-        // Hub aç → tab değiştir → 320ms sonra thread aç
-        const wasOpen = document.getElementById('gemHubPanel')&&document.getElementById('gemHubPanel').classList.contains('ghp-open');
-        m.openHubTab('ozel');
-        setTimeout(()=>{
-          try{ m.dmOpenThreadExternal(_uid,_nm); }catch(err){ console.warn('[navDM]',err); }
-        }, wasOpen ? 80 : 320);
-      }catch(e){}
+        m.dmOpenThreadExternal(b.dataset.navdm, b.dataset.navnm);
+      }catch(err){ console.warn('[navDM]',err); }
     }));
     box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
       e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}
