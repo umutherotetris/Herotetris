@@ -493,7 +493,7 @@ function draw(){
   // dış zemin
   ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
   // altın çerçeve
-  roundRect(ctx, 2, 2, W-4, H-4, 10);
+  _roundRect(ctx, 2, 2, W-4, H-4, 10);
   const fg = ctx.createLinearGradient(0,0,W,H);
   fg.addColorStop(0, t.frame); fg.addColorStop(.5, t.frameDark); fg.addColorStop(1, t.frame);
   ctx.fillStyle = fg; ctx.fill();
@@ -636,10 +636,10 @@ function drawBearOff(ctx, t){
   // üst bölge (topColor)
   const rTop = 6;
   const topH = g.innerH/2 - 4;
-  roundRect(ctx, g.bearX+2, g.innerY+2, g.bearW-4, topH, rTop);
+  _roundRect(ctx, g.bearX+2, g.innerY+2, g.bearW-4, topH, rTop);
   ctx.fillStyle = 'rgba(0,0,0,.32)'; ctx.fill();
   // alt bölge (botColor)
-  roundRect(ctx, g.bearX+2, g.innerY+g.innerH/2+2, g.bearW-4, topH, rTop);
+  _roundRect(ctx, g.bearX+2, g.innerY+g.innerH/2+2, g.bearW-4, topH, rTop);
   ctx.fill();
 
   // ── Üst pul stack'i (topColor, aşağıdan yukarı istiflenir) ──
@@ -743,7 +743,7 @@ function easeOutBounce(x){
   else { x -= 2.625/d1; return n1*x*x + 0.984375; }
 }
 
-function roundRect(ctx, x, y, w, h, r){
+function __roundRect(ctx, x, y, w, h, r){
   ctx.beginPath();
   ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
   ctx.arcTo(x+w, y, x+w, y+r, r); ctx.lineTo(x+w, y+h-r);
@@ -862,7 +862,7 @@ function drawDice(ctx, t){
 function drawDie(ctx, cx, cy, sz, val, used){
   ctx.save();
   const x = cx - sz/2, y = cy - sz/2;
-  roundRect(ctx, x, y, sz, sz, sz*0.18);
+  _roundRect(ctx, x, y, sz, sz, sz*0.18);
   ctx.fillStyle = used ? '#8a8a8a' : '#f8f8f4';
   ctx.fill();
   ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineWidth = 1; ctx.stroke();
@@ -1928,7 +1928,7 @@ function checkerPixel(idx, color, side){
 }
 
 // ════════════ YARDIMCI ÇİZİM ════════════
-function roundRect(ctx, x, y, w, h, r){
+function __roundRect(ctx, x, y, w, h, r){
   ctx.beginPath();
   ctx.moveTo(x+r, y);
   ctx.arcTo(x+w, y, x+w, y+h, r);

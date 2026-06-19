@@ -1678,9 +1678,9 @@ function build(){
         <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="84" height="64"></canvas></div>
       </div>
       <div class="tetris-board-wrap">
-        <canvas class="tetris-canvas"></canvas>
+        <canvas class="tetris-canvas" style="position:relative;z-index:1"></canvas>
         <div class="t-fxlayer"></div>
-        <canvas class="tetris-ai-canvas" style="display:none"></canvas>
+        <canvas class="tetris-ai-canvas" style="display:none;position:absolute;top:0;left:0;z-index:0;pointer-events:none"></canvas>
         <div class="t-ai-label" style="display:none">🤖 AI</div>
         <div class="t-flash"></div>
         <div class="tetris-gameover">
@@ -2507,7 +2507,7 @@ function injectCSS(){
 .tetris-stage{ flex: 1; display: flex; gap: 10px; min-height: 0; align-items: stretch; }
 
 /* Yan paneller */
-.tetris-side{ width: 92px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.tetris-side{ width: 92px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
 .t-panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 8px; text-align: center; }
 .t-plabel{ font-size: 8px; letter-spacing: 1.5px; color: var(--text-mute); font-weight: 700; }
 .t-pval{ font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; margin-top: 2px; }
@@ -2517,7 +2517,7 @@ function injectCSS(){
 .t-next, .t-hold{ display: block; margin: 3px auto 0; }
 
 /* Tahta */
-.tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; }
+.tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; z-index:1; }
 .tetris-board-wrap *{ -webkit-tap-highlight-color: transparent; }
 .tetris-canvas{ -webkit-tap-highlight-color: transparent; outline: none; -webkit-user-select: none; user-select: none; }
 /* Bölünmüş ekran (AI rakip) */
@@ -2961,7 +2961,7 @@ function injectCSS(){
 }
 
 /* Güç + S.Güç buton satırı */
-.t-power-row{ display: flex; gap: 8px; margin-top: 8px; }
+.t-power-row{ display: flex; gap: 8px; margin-top: 8px; position:relative; z-index:10; flex-shrink:0; }
 .t-power-row .t-power{ margin-top: 0; flex: 1.4; }
 .t-gem{
   flex: 1; position: relative; overflow: hidden;
