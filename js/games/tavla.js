@@ -704,7 +704,7 @@ function _drawBearStack(ctx, cx, baseY, dir, count, R, color, t){
     ctx.save();
     ctx.fillStyle = isW ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.85)';
     ctx.strokeStyle = isW ? 'rgba(0,0,0,.25)' : 'rgba(255,255,255,.25)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.roundRect(cx - R*0.7, rozetY - R*0.4, R*1.4, R*0.78, R*0.2); ctx.fill(); ctx.stroke();
+    _roundRect(ctx, cx - R*0.7, rozetY - R*0.4, R*1.4, R*0.78, R*0.2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = isW ? '#2a3a5a' : '#eef2ff';
     ctx.font = `900 ${Math.floor(R*0.55)}px system-ui`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -741,15 +741,6 @@ function easeOutBounce(x){
   else if(x < 2/d1){ x -= 1.5/d1; return n1*x*x + 0.75; }
   else if(x < 2.5/d1){ x -= 2.25/d1; return n1*x*x + 0.9375; }
   else { x -= 2.625/d1; return n1*x*x + 0.984375; }
-}
-
-function __roundRect(ctx, x, y, w, h, r){
-  ctx.beginPath();
-  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
-  ctx.arcTo(x+w, y, x+w, y+r, r); ctx.lineTo(x+w, y+h-r);
-  ctx.arcTo(x+w, y+h, x+w-r, y+h, r); ctx.lineTo(x+r, y+h);
-  ctx.arcTo(x, y+h, x, y+h-r, r); ctx.lineTo(x, y+r);
-  ctx.arcTo(x, y, x+r, y, r); ctx.closePath();
 }
 
 // Bir noktadaki pulları çiz — üstgenler üzerinde, güvenli boşlukla
@@ -1928,6 +1919,15 @@ function checkerPixel(idx, color, side){
 }
 
 // ════════════ YARDIMCI ÇİZİM ════════════
+function _roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
 function star(ctx, cx, cy, spikes, outer, inner){
   ctx.beginPath();
   for(let i=0;i<spikes*2;i++){
