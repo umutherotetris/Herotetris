@@ -33,6 +33,8 @@ function renderPlayer(p){
   else kjShort = String(kj);
   setText('statKaju', kjShort);
   setText('statLvl', 'LV.' + (p.level || 1));
+  const _lvBadge = document.querySelector('.auth-user-lv');
+  if(_lvBadge) _lvBadge.textContent = 'LV.' + (p.level || 1);
   const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
   if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
   // ── XP İlerleme Çubuğu ──
@@ -87,6 +89,12 @@ function render(state){
   }
   // Admin rozeti — YALNIZCA gerçek /admins kaydı (güvenli)
   // NOT: .pc-admin CSS'te display:none → show()'un boş inline'ı yetmez, açıkça ver
+  // Avatar güncelle
+  const avaEl = $('pAvatar');
+  if(avaEl && profile && profile.avatar) avaEl.textContent = profile.avatar;
+  // Level rozetini hem eski hem yeni elemente yaz
+  const lvNew = document.querySelector('.auth-user-lv');
+  if(lvNew) lvNew.textContent = 'LV.' + (_player.level || 1);
   const ab = $('adminBadge');
   if(ab){
     ab.style.display = (isAdmin === true) ? 'inline-block' : 'none';
@@ -97,43 +105,56 @@ function render(state){
     else { ab.style.cursor=''; ab.onclick = null; }
   }
 
-  // Durum satırı + bağlan butonu + misafir banner
-  const dot = $('pStatusDot'), txt = $('pStatusText'), btn = $('connectBtn');
+  // Auth kartı: google → premium profil, anon/offline → login ekranı
+  const guestEl  = $('authGuest');
+  const userEl   = $('authUser');
+  const btn      = $('connectBtn');
 
   if(status === 'google'){
-    if(dot) dot.style.background = 'var(--green)';
-    setText('pStatusText', 'BAĞLI');
-    if(btn){ btn.textContent = '✅ BAĞLI'; btn.classList.add('is-linked'); }
+    // Giriş yapılmış → kullanıcı paneli göster
     show(banner, false);
-  } else if(status === 'anon'){
-    if(dot) dot.style.background = 'var(--red)';
-    setText('pStatusText', 'MİSAFİR');
-    if(btn){ btn.textContent = '🔗 HESABI BAĞLA'; btn.classList.remove('is-linked'); }
-    show(banner, true);
-  } else { // offline
-    if(dot) dot.style.background = 'var(--orange)';
-    setText('pStatusText', 'Çevrimdışı');
-    if(btn){ btn.textContent = '🔄 YENİDEN DENE'; btn.classList.remove('is-linked'); }
-    show(banner, false);
+    if(guestEl) guestEl.style.display = 'none';
+    if(userEl)  userEl.style.display  = 'flex';
+    // Kaju gönder butonu
+    const ks = $('pcKajuSend');
+    if(ks) ks.style.display = 'inline-block';
+    // Profil kartına tıkla → profil aç
+    const card = $('profileCard');
+    if(card && !card.__pclick){
+      card.__pclick = 1;
+      card.querySelector('.auth-user-left').style.cursor = 'pointer';
+      card.querySelector('.auth-user-left').addEventListener('click', () => {
+        try{ document.querySelector('[data-nav="profile"]').click(); }catch(e){}
+      });
+    }
+  } else {
+    // Giriş yapılmamış → login ekranı
+    if(guestEl) guestEl.style.display = 'flex';
+    if(userEl)  userEl.style.display  = 'none';
+    if(btn){
+      btn.textContent = status === 'offline'
+        ? '🔄 Yeniden Bağlan'
+        : 'Google ile Giriş Yap';
+    }
+    show(banner, status === 'anon');
   }
 }
 
 // ── Tek tıklama bağlama ─────────────────────────────────────────
 function bind(){
-  const btn = $('connectBtn'), bannerBtn = $('guestBannerBtn');
+  const btn = $('connectBtn');
   const onConnect = async (e) => {
     if(e){ e.preventDefault(); e.stopPropagation(); }
     const st = Auth.getState();
-    if(st.status === 'google') return;            // zaten bağlı
+    if(st.status === 'google') return;
     if(st.status === 'offline'){ location.reload(); return; }
     const r = await loginGoogle();
     if(!r.ok && r.code){
       const msg = $('authMsg');
-      if(msg){ msg.textContent = 'Giriş hatası: ' + (r.message || r.code); msg.style.display = 'block'; }
+      if(msg){ msg.style.display='block'; msg.textContent='Giriş hatası: ' + (r.message || r.code); }
     }
   };
   if(btn && !btn.__bound){ btn.__bound = 1; btn.addEventListener('click', onConnect); }
-  if(bannerBtn && !bannerBtn.__bound){ bannerBtn.__bound = 1; bannerBtn.addEventListener('click', onConnect); }
 }
 
 // ── Nick belirleme/değiştirme modalı ────────────────────────────
