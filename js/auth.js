@@ -191,7 +191,8 @@ async function boot(){
 export async function loginGoogle(){
   const provider = new GoogleAuthProvider();
   try { provider.setCustomParameters({ prompt: 'select_account' }); } catch(e){}
-  await setPersistence(auth, browserLocalPersistence).catch(() => {});
+  // setPersistence boot'ta ayarlandı — burada await yapmıyoruz
+  // (Firefox: async await popup'ı kullanıcı jestinden koparır → bloklanır)
 
   const cur = auth.currentUser;
   try {
