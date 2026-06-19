@@ -10,11 +10,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hero Portal">
-  <link rel="stylesheet" href="css/tokens.css?v=112">
-  <link rel="stylesheet" href="css/base.css?v=112">
-  <link rel="stylesheet" href="css/components.css?v=112">
-  <link rel="stylesheet" href="css/tetris.css?v=112">
-  <link rel="stylesheet" href="css/themes.css?v=112">
+  <link rel="stylesheet" href="css/tokens.css?v=120">
+  <link rel="stylesheet" href="css/base.css?v=120">
+  <link rel="stylesheet" href="css/components.css?v=120">
+  <link rel="stylesheet" href="css/tetris.css?v=120">
+  <link rel="stylesheet" href="css/themes.css?v=120">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -107,6 +107,24 @@
           <span class="xp-pct" id="xpPct">0%</span>
           <span class="xp-max" id="xpMax">500 XP</span>
         </div>
+      </div>
+
+      <!-- 💎 Ekonomi hızlı erişim -->
+      <div class="eco-quick-row">
+        <button class="eco-quick-btn" id="ecoWheelBtn">
+          <span class="eco-quick-ico">🎰</span>
+          <span class="eco-quick-lbl">Günlük Çark</span>
+          <span class="eco-quick-badge" id="wheelBadge">!</span>
+        </button>
+        <button class="eco-quick-btn" id="ecoQuestBtn">
+          <span class="eco-quick-ico">📋</span>
+          <span class="eco-quick-lbl">Görevler</span>
+          <span class="eco-quick-badge" id="questBadge" style="display:none">0</span>
+        </button>
+        <button class="eco-quick-btn" id="ecoHistBtn">
+          <span class="eco-quick-ico">🪙</span>
+          <span class="eco-quick-lbl">Kaju Geçmişi</span>
+        </button>
       </div>
 
       <!-- Oyunlar -->
@@ -293,10 +311,10 @@
   /* FAB görünürlük sıfırlama */
   try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
   </script>
-  <script type="module" src="js/app.js?v=112"></script>
+  <script type="module" src="js/app.js?v=120"></script>
   <script type="module">
   /* Ekranlar + Sosyal Hub: app.js'ten BAĞIMSIZ yedek başlatıcı (önbellek/eski app.js'e karşı) */
-  const V='112';
+  const V='120';
   const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
   import('./js/profile.js?v=' + V).then(m => m.initScreens()).catch(e => { ['scrProfile','scrLB','scrFriends','scrNotif'].forEach(id => err(id, e)); });
   import('./js/social.js?v=' + V).then(m => m.initSocial()).catch(e => console.error('[SocialBoot]', e));
