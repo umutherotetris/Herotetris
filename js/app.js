@@ -39,6 +39,27 @@ async function launchGame(modulePath, exportName, label){
   }
 }
 
+function bindEco(id, modulePath, exportName){
+  const el = document.getElementById(id);
+  if(!el || el.__bound) return;
+  el.__bound = 1;
+  el.addEventListener('click', async () => {
+    try{ const m = await import(modulePath); m[exportName](); }
+    catch(e){ console.error('[Eco]', e); toast('Yüklenemedi: ' + (e.message||e), true); }
+  });
+}
+async function updateEcoBadges(){
+  try{
+    const eco = await import('./economy.js');
+    // Çark badge: bugün çevrilmemişse göster
+    const wb = document.getElementById('wheelBadge');
+    if(wb) wb.style.display = eco.canSpin() ? 'flex' : 'none';
+    // Görev badge: alınmamış tamamlanan görev sayısı
+    const qb = document.getElementById('questBadge');
+    if(qb){ const n = eco.pendingQuestCount(); if(n>0){ qb.textContent = n; qb.style.display='flex'; } else qb.style.display='none'; }
+  }catch(e){}
+}
+
 function bindCard(id, modulePath, exportName, label){
   const card = document.getElementById(id);
   if(!card){ toast('HATA: ' + id + ' kartı yok (index.html güncel değil)', true); return; }
@@ -70,6 +91,13 @@ function start(){
   bindCard('gameChess',  './games/chess.js',  'openChess',  'Satranç');
   bindCard('gameTavla',  './games/tavla.js',  'openTavla',  'Tavla');
   bindCard('gameKelime', './games/kelime.js', 'openKelime', 'Kelimecik');
+
+  // 💎 Ekonomi butonları (çark / görev / kaju geçmişi)
+  bindEco('ecoWheelBtn',  './economy.js', 'openDailyWheel');
+  bindEco('ecoQuestBtn',  './economy.js', 'openQuests');
+  bindEco('ecoHistBtn',   './economy.js', 'openKajuHistory');
+  updateEcoBadges();
+  setInterval(updateEcoBadges, 30000);
 
   // Yakalanmayan hataları ekrana bas
   window.addEventListener('error', (e) => toast('HATA: ' + (e.message || '') + '\n' + (e.filename||'').split('/').pop() + ':' + (e.lineno||''), true));

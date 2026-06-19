@@ -46,6 +46,41 @@ export function getState(){ return snapshot(); }
 
 export function xpForLevel(lv){ return 300 + lv * 200; }
 
+// ════════════════ 🪙 KAJU İŞLEM GEÇMİŞİ ════════════════════════
+const KAJU_LOG_KEY = 'hero_kaju_log';
+const KAJU_LOG_MAX = 200;
+// Kaju işlemini geçmişe kaydet (kazanç/harcama)
+export function logKaju(amount, type, game, reason){
+  try{
+    const log = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    log.unshift({
+      amount: Math.abs(Math.floor(amount||0)),
+      type: type || (amount>=0?'earn':'spend'),  // 'earn' | 'spend'
+      game: game || 'genel',
+      reason: reason || '',
+      ts: Date.now()
+    });
+    const trimmed = log.length > KAJU_LOG_MAX ? log.slice(0, KAJU_LOG_MAX) : log;
+    localStorage.setItem(KAJU_LOG_KEY, JSON.stringify(trimmed));
+  }catch(e){ console.warn('[store] logKaju', e); }
+}
+// Geçmişi oku (filtre: 'all' | 'earn' | 'spend')
+export function getKajuLog(filter){
+  try{
+    const log = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    if(filter === 'earn') return log.filter(e => e.type === 'earn');
+    if(filter === 'spend') return log.filter(e => e.type === 'spend');
+    return log;
+  }catch(e){ return []; }
+}
+// Geçmiş özeti (toplam kazanç/harcama)
+export function getKajuSummary(){
+  const log = getKajuLog('all');
+  let earned = 0, spent = 0;
+  log.forEach(e => { if(e.type==='earn') earned += e.amount; else spent += e.amount; });
+  return { earned, spent, count: log.length };
+}
+
 // Günlük kaju takibi (tarih değişince sıfırlanır) — local
 function todayKey(){ return 'hero_kaju_' + new Date().toISOString().slice(0,10); }
 function loadKajuToday(){ try{ return Number(localStorage.getItem(todayKey()) || 0); }catch(e){ return 0; } }
@@ -76,6 +111,8 @@ export async function addKaju(n, game){
   if(n>0){try{import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});}catch(e){}}
   if(n<0){try{import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{});}catch(e){}}
   n = Math.floor(n || 0);
+  // Negatif → harcama olarak işle (geriye uyumluluk: shop.js addKaju(-price) çağırıyor)
+  if(n < 0){ const ok = await spendKaju(-n, game, arguments[2]); return ok ? n : 0; }
   if(n <= 0 || !player.uid) return 0;
   const isAdmin = Auth.getState().isAdmin === true;
   if(!isAdmin){
@@ -86,12 +123,43 @@ export async function addKaju(n, game){
   player.kaju += n;
   player.kajuToday += n;
   saveKajuToday(player.kajuToday);
+  // 🪙 Geçmişe kaydet
+  logKaju(n, 'earn', game || 'genel', _kajuReason(game, n));
   emit();
   try{
     await update(ref(db, 'users/' + player.uid), { kaju: player.kaju });
     await set(ref(db, 'leaderboard/kaju/' + player.uid), { uid: player.uid, kaju: player.kaju, ts: Date.now() });
   }catch(e){ console.warn('[store] addKaju sync', e); }
   return n;
+}
+
+// İşlem açıklaması üret
+function _kajuReason(game, n){
+  const names = { tetris:'Tetris ödülü', chess:'Satranç ödülü', satranc:'Satranç ödülü',
+    tavla:'Tavla ödülü', kelime:'Kelimecik ödülü', daily:'Günlük ödül', spin:'Çark ödülü',
+    quest:'Görev ödülü', shop:'Mağaza', clan:'Klan', gift:'Hediye', genel:'Kazanç' };
+  return names[game] || 'Kazanç';
+}
+
+// Harcama loglamak için (mağaza, kozmo vb. kullanır)
+export function logSpend(amount, game, reason){
+  logKaju(Math.abs(amount), 'spend', game||'shop', reason||'Harcama');
+}
+
+// ── Kaju harca (bakiyeden düş + Firebase + geçmiş) ──────────────
+export async function spendKaju(amount, game, reason){
+  amount = Math.abs(Math.floor(amount||0));
+  if(amount <= 0 || !player.uid) return false;
+  if(player.kaju < amount) return false;  // yetersiz bakiye
+  player.kaju -= amount;
+  logKaju(amount, 'spend', game||'shop', reason||'Harcama');
+  try{ import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{}); }catch(e){}
+  emit();
+  try{
+    await update(ref(db, 'users/' + player.uid), { kaju: player.kaju });
+    await set(ref(db, 'leaderboard/kaju/' + player.uid), { uid: player.uid, kaju: player.kaju, ts: Date.now() });
+  }catch(e){ console.warn('[store] spendKaju sync', e); }
+  return true;
 }
 
 // ── XP ekle (seviye atlama dahil) ───────────────────────────────
@@ -277,5 +345,5 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining };
+export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju };
 export default Store;

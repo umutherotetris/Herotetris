@@ -105,6 +105,14 @@ export async function showReward(opts={}){
   const afterP = Store.getState();
   const isLevelUp = afterP.level > fromLv;
 
+  // 📋 Görev ilerletme: oyun oynandı (+ galibiyet varsa)
+  try{
+    const eco = await import('./economy.js');
+    eco.progressQuest('play');
+    if(won) eco.progressQuest('win');
+    if(kaju > 0) eco.progressQuest('earn', kaju);
+  }catch(e){}
+
   // Başlık ve renk
   const displayTitle = title || (won ? '🏆 KAZANDIN!' : '💀 OYUN BİTTİ');
   const accentColor = won ? '#FFD740' : '#00E5FF';
