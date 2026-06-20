@@ -7,7 +7,7 @@ import Store, { getKajuLog as _getKajuLog, getKajuSummary as _getKajuSummary, ad
 // Güvenli erişim sarmalayıcıları (eski cache koruması)
 const _S = {
   getKajuLog: (f)=> (Store&&Store.getKajuLog?Store.getKajuLog(f):(_getKajuLog?_getKajuLog(f):[])),
-  getKajuSummary: ()=> (Store&&Store.getKajuSummary?_S.getKajuSummary():(_getKajuSummary?_getKajuSummary():{earned:0,spent:0,count:0})),
+  getKajuSummary: ()=> (Store&&Store.getKajuSummary?Store.getKajuSummary():(_getKajuSummary?_getKajuSummary():{earned:0,spent:0,count:0})),
   addKaju: (n,g)=> (Store&&Store.addKaju?Store.addKaju(n,g):(_addKaju?_addKaju(n,g):Promise.resolve(0))),
   addXP: (n)=> (Store&&Store.addXP?Store.addXP(n):(_addXP?_addXP(n):Promise.resolve(false))),
 };
@@ -36,7 +36,8 @@ export function openKajuHistory(){
   const ex = document.getElementById('kajuHistOv'); if(ex) ex.remove();
   const ov = document.createElement('div');
   ov.id = 'kajuHistOv'; ov.className = 'eco-ov';
-  const summary = _S.getKajuSummary();
+  const _sumRaw = _S.getKajuSummary() || {};
+  const summary = { earned: Number(_sumRaw.earned)||0, spent: Number(_sumRaw.spent)||0, count: Number(_sumRaw.count)||0 };
   ov.innerHTML = `
     <div class="eco-box">
       <div class="eco-head">
@@ -86,7 +87,7 @@ function renderKajuHistory(){
         <div class="kaju-row-reason">${esc(e.reason || e.game || '—')}</div>
         <div class="kaju-row-time">${_relTime(e.ts)}</div>
       </div>
-      <div class="kaju-row-amt ${isEarn?'earn':'spend'}">${isEarn?'+':'-'}${e.amount.toLocaleString('tr-TR')} 🥜</div>
+      <div class="kaju-row-amt ${isEarn?'earn':'spend'}">${isEarn?'+':'-'}${(Number(e.amount)||0).toLocaleString('tr-TR')} 🥜</div>
     </div>`;
   }).join('');
 }
