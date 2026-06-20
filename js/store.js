@@ -12,8 +12,9 @@ import Auth from './auth.js';
 import { firebaseConfig, FIREBASE_SDK } from './firebase-config.js';
 
 // Firebase veritabanı erişimini DOĞRUDAN al (auth.js'in fdb export'una bağlı değil).
-// Böylece auth.js'in hangi sürümü repoda olursa olsun store çalışır.
-const BASE = `https://www.gstatic.com/firebasejs/${FIREBASE_SDK}`;
+// FIREBASE_SDK eksik/undefined olsa bile sabit bir sürümle çalışır (çökmez).
+const SDK_VER = (typeof FIREBASE_SDK === 'string' && FIREBASE_SDK) ? FIREBASE_SDK : '10.12.0';
+const BASE = `https://www.gstatic.com/firebasejs/${SDK_VER}`;
 const { getDatabase, ref, get, set, update, runTransaction } = await import(`${BASE}/firebase-database.js`);
 const { getApp, getApps, initializeApp } = await import(`${BASE}/firebase-app.js`);
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
