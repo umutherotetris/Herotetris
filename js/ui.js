@@ -72,6 +72,18 @@ function render(state){
   const banner = $('guestBanner');
   if(card) card.dataset.status = status;
 
+  // 🔑 KRİTİK: Login UI'yi EN ÖNCE ayarla (sonraki kod patlasa bile giriş/çıkış doğru görünsün)
+  try{
+    const _g = $('authGuest'), _u = $('authUser');
+    if(status === 'google'){
+      if(_g) _g.style.display = 'none';
+      if(_u) _u.style.display = 'flex';
+    } else if(status !== 'boot'){
+      if(_g) _g.style.display = 'flex';
+      if(_u) _u.style.display = 'none';
+    }
+  }catch(_e){}
+
   // Boot: yükleniyor görünümü
   if(status === 'boot'){
     setText('pName', 'Yükleniyor…');
