@@ -311,43 +311,12 @@
   /* FAB görünürlük sıfırlama */
   try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
   </script>
-  <!-- 🔬 GLOBAL HATA YAKALAYICI — her türlü hatayı ekrana yazar (sorun çözülünce sil) -->
-  <script>
-  (function(){
-    let shown = 0;
-    function showErr(where, msg, stack){
-      if(shown > 8) return; shown++;
-      const d = document.createElement('div');
-      d.style.cssText = 'position:fixed;left:0;right:0;top:'+(shown*0)+'px;z-index:2147483647;background:#1a0008;color:#ffd;font:10px/1.4 monospace;padding:8px 10px;border-bottom:2px solid #ff3060;max-height:40vh;overflow:auto;white-space:pre-wrap';
-      const x = document.createElement('span'); x.textContent='✕'; x.style.cssText='float:right;color:#fff;cursor:pointer;padding:0 6px;border:1px solid #fff;margin-left:8px'; x.onclick=()=>d.remove();
-      d.appendChild(x);
-      d.appendChild(document.createTextNode('🔬 ['+where+'] '+msg+(stack?'\n'+stack.split('\n').slice(0,8).join('\n'):'')));
-      document.body.appendChild(d);
-    }
-    window.addEventListener('error', e => showErr('error', e.message || e.error, e.error && e.error.stack));
-    window.addEventListener('unhandledrejection', e => {
-      const r = e.reason;
-      showErr('promise', (r && r.message) || String(r), r && r.stack);
-    });
-    window.__showErr = showErr;
-  })();
-  </script>
-
-  <script type="module" src="js/app.js?v=132"></script>
+  <script type="module" src="js/app.js?v=133"></script>
   <script type="module">
   /* Ekranlar + Sosyal Hub: versiyonsuz - her zaman güncel */
   const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
   import('./js/profile.js').then(m => m.initScreens()).catch(e => {
     ['scrProfile','scrLB','scrFriends','scrNotif'].forEach(id => err(id, e));
-    // 🔬 STACK TRACE göster (sorun çözülünce sil)
-    try{
-      const sb = document.createElement('div');
-      sb.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:2147483647;background:#1a0000;color:#ff9;font:10px monospace;padding:8px;max-height:45vh;overflow:auto;border-top:3px solid red;white-space:pre-wrap';
-      sb.textContent = '🔬 initScreens HATASI:\n' + (e && e.message) + '\n\nSTACK:\n' + (e && e.stack ? e.stack.split('\n').slice(0,12).join('\n') : 'yok');
-      const x = document.createElement('div'); x.textContent='✕ KAPAT'; x.style.cssText='color:#fff;cursor:pointer;float:right;padding:2px 8px;border:1px solid #fff'; x.onclick=()=>sb.remove();
-      sb.prepend(x);
-      document.body.appendChild(sb);
-    }catch(_){}
   });
   import('./js/social.js').then(m => m.initSocial()).catch(e => console.error('[SocialBoot]', e));
   </script>
