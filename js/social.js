@@ -479,6 +479,9 @@ function listenChat(){
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
     list.innerHTML = rows.map(m => {
+      // 🎨 SİSTEM MESAJI (kick/ban/duyuru) → özel renkli kart
+      const isSys = m.uid === 'system' || m.isSystem === true || m.isAnnounce === true;
+      if(isSys){ return renderChatSystemMsg(m); }
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
       const op = !adm && H.ops && H.ops[m.uid] === true;
       const nameHtml = adm
@@ -726,6 +729,38 @@ function watchDMThreads(){
 }
 
 // ── 🔔 BİLDİRİMLER (kişisel + 📣 duyurular birleşik) ───────────
+// ── 🎨 SOHBET SİSTEM MESAJI (kick/ban/duyuru renkli kart) ─────
+function renderChatSystemMsg(m){
+  const txt = m.text || '';
+  let t = 'announce', label = '📢 DUYURU', col = '#E040FB', bd = 'rgba(224,64,251,.4)',
+      bg = 'linear-gradient(135deg,rgba(224,64,251,.13),rgba(171,71,188,.05))', glow = '0 0 12px rgba(224,64,251,.18)';
+
+  // Metinden tip tespit et
+  if(/atıld|sohbetten at|KICK/i.test(txt)){
+    t='kick'; label='🔨 SOHBET KICK'; col='#E040FB'; bd='rgba(224,64,251,.45)';
+    bg='linear-gradient(135deg,rgba(224,64,251,.14),rgba(120,40,180,.06))'; glow='0 0 14px rgba(224,64,251,.25)';
+  } else if(/banland|ban:|SOHBET BAN/i.test(txt)){
+    t='ban'; label='🚫 SOHBET BAN'; col='#FF5252'; bd='rgba(255,82,82,.5)';
+    bg='linear-gradient(135deg,rgba(255,82,82,.15),rgba(180,0,0,.07))'; glow='0 0 14px rgba(255,82,82,.28)';
+  } else if(/susturul|mute/i.test(txt)){
+    t='mute'; label='🔇 SOHBET SUSTURMA'; col='#FF9800'; bd='rgba(255,152,0,.45)';
+    bg='linear-gradient(135deg,rgba(255,152,0,.14),rgba(200,80,0,.06))'; glow='0 0 12px rgba(255,152,0,.2)';
+  }
+
+  // Admin adını renkli + crown yap (metinde ": AdminAdı" varsa)
+  let body = esc(txt);
+  // "📢 DUYURU" gibi tekrarları temizle (label zaten gösteriyor)
+  body = body.replace(/^[⚡🔨📢🚫🔇]\s*/, '');
+
+  return `<div class="ghp-chat-row" style="width:100%">
+    <div style="width:100%;border:1px solid ${bd};border-left:3px solid ${col};border-radius:11px;padding:9px 12px;background:${bg};box-shadow:${glow};animation:ghp-pulse-bc 2.5s ease-in-out infinite">
+      <div style="font-size:11px;font-weight:900;color:${col};letter-spacing:.5px;margin-bottom:3px">${label}</div>
+      <div style="font-size:12px;color:#e8eaf6;line-height:1.5">${body}</div>
+      <div style="font-size:9px;color:${col};opacity:.7;margin-top:3px">${tAgo(m.ts || 0)}</div>
+    </div>
+  </div>`;
+}
+
 // ── 🎨 ZENGİN BİLDİRİM KARTI (Goodyedek paleti) ──────────────
 function renderNotifCard(n){
   // Bildirim tipi renk paleti — her tip kendi canlı rengiyle
