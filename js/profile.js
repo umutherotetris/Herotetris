@@ -616,7 +616,12 @@ async function _renderNavFriends(){
     const uids=Object.keys(snap.val());
     const rows=await Promise.all(uids.map(async uid=>{
       let n='Arkadaş',a='👤',ol=false,lv=1,last=0;
-      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;a=v.avatar||'👤';lv=v.level||1;}}catch(e){}
+      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;lv=v.level||1;
+        // Avatar doğrula: emoji mi yoksa metin mi?
+        const rawAv = v.avatar;
+        const isValidAv = rawAv && typeof rawAv==='string' && (rawAv.length<=8) && /^\p{Emoji}/u.test(rawAv);
+        a = isValidAv ? rawAv : '👤';
+      }}catch(e){}
       try{const pr=await fdb.get(fdb.ref(db,'presence/'+uid));if(pr.exists()){const pv=pr.val();last=pv.lastSeen||0;ol=pv.online===true&&(Date.now()-last)<180000;}}catch(e){}
       return {uid,n,a,ol,lv,last};
     }));

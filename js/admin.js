@@ -728,7 +728,7 @@ async function runSystemCheckup(){
 
   // 5. Firebase bağlantısı
   try{
-    const snap = await fdb.get(fdb.ref(db, '.info/connected'));
+    await fdb.get(fdb.ref(db, 'admins/' + (st.uid||'x')));
     ok('Firebase DB erişilebilir');
   }catch(e){ bad('Firebase HATA: '+e.message); }
 
