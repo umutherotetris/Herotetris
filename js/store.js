@@ -229,7 +229,8 @@ export function transferRemaining(){
   const c = curSent();
   return { perTx:TX_PER, min:TX_MIN, hour:Math.max(0,TX_HOUR-c.h), day:Math.max(0,TX_DAY-c.d), month:Math.max(0,TX_MONTH-c.m) };
 }
-function logKaju(uid, amount, type, reason){
+// Başka bir kullanıcının kaju geçmişine yaz (admin/hediye işlemleri için)
+function logKajuFor(uid, amount, type, reason){
   try{
     const k = 'h' + Date.now() + '_' + Math.floor(Math.random()*100000);
     set(ref(db, 'users/'+uid+'/kaju_history/'+k), { amount: Math.floor(amount), type, game:'kaju', reason: reason||'', ts: Date.now() });
@@ -251,7 +252,7 @@ async function adminCredit(toUid, delta, reason){
     if(!res.committed || !ok) return { ok:false, error:'İşlem yapılamadı' };
   }catch(e){ return { ok:false, error:'İşlem hatası (bağlantı?)' }; }
   if(toUid === me.uid){ player.kaju = nb; emit(); }
-  logKaju(toUid, delta, delta>=0 ? 'admin-add' : 'admin-sub', reason || 'admin');
+  logKajuFor(toUid, delta, delta>=0 ? 'admin-add' : 'admin-sub', reason || 'admin');
   try{ await set(ref(db, 'leaderboard/kaju/'+toUid), { uid:toUid, kaju:nb, ts:Date.now() }); }catch(e){}
   return { ok:true, newBalance: nb };
 }
