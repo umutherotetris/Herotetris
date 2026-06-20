@@ -311,7 +311,37 @@
   /* FAB görünürlük sıfırlama */
   try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
   </script>
-  <script type="module" src="js/app.js?v=124"></script>
+  <!-- 🔬 TEŞHİS: hangi modül çöküyor? Ekrana yazar. Sorun çözülünce SİL. -->
+  <script type="module">
+  (async () => {
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#0a0a14;border-bottom:3px solid #ff4081;padding:10px 12px;font:12px/1.5 monospace;color:#9fe;max-height:55vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.8)';
+    box.innerHTML = '<div style="color:#ff4081;font-weight:bold;font-size:14px;margin-bottom:6px">🔬 MODÜL TEŞHİSİ <span style="float:right;cursor:pointer;color:#fff;padding:0 8px" onclick="this.closest(\'div\').parentNode.remove()">✕ KAPAT</span></div>';
+    document.body.appendChild(box);
+    const log = (txt, ok) => {
+      const d = document.createElement('div');
+      d.style.color = ok ? '#5fd38a' : '#ff6b8a';
+      d.style.fontWeight = ok ? 'normal' : 'bold';
+      d.textContent = (ok ? '✓ ' : '✗✗ ') + txt;
+      box.appendChild(d);
+    };
+    const mods = ['firebase-config','auth','store','ui','nav','profile','social','clan','admin','app'];
+    for (const name of mods) {
+      try {
+        await import(`./js/${name}.js?diag=${Date.now()}`);
+        log(name + '.js', true);
+      } catch (e) {
+        log(name + '.js → ' + (e && e.message ? e.message : e), false);
+      }
+    }
+    const done = document.createElement('div');
+    done.style.cssText = 'color:#FFD740;margin-top:8px;font-weight:bold';
+    done.textContent = '── Bitti. Kırmızı ✗✗ satır(lar)ı bana gönder ──';
+    box.appendChild(done);
+  })();
+  </script>
+
+  <script type="module" src="js/app.js?v=128"></script>
   <script type="module">
   /* Ekranlar + Sosyal Hub: versiyonsuz - her zaman güncel */
   const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
