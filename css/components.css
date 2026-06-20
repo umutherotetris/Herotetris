@@ -52,111 +52,56 @@
 .logo-best b{ color: var(--text-dim); }
 
 /* ── Profil kartı ── */
-/* ═══ 🔐 ULTRA PREMIUM AUTH KARTI ═══════════════════════════════ */
-.auth-card{
-  border-radius: 22px; overflow: hidden; position: relative;
-  margin-bottom: 4px;
-}
-/* ── Giriş yapılmamış: sinematik login ── */
-.auth-guest{
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 28px 20px 22px; position: relative; overflow: hidden;
-  background: linear-gradient(160deg,rgba(20,16,40,.98),rgba(8,6,20,.98));
-  border: 1px solid rgba(124,58,237,.35); border-radius: 22px;
-  animation: authCardIn .5s ease;
-}
-.auth-guest-glow{
-  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(124,58,237,.35), transparent 70%);
-  filter: blur(30px); pointer-events: none;
-}
-.auth-guest-icon{
-  font-size: 40px; margin-bottom: 10px; position: relative;
-  filter: drop-shadow(0 0 18px rgba(124,58,237,.7));
-  animation: authIconFloat 3s ease-in-out infinite;
-}
-@keyframes authIconFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } }
-.auth-guest-title{
-  font-family: 'Orbitron', var(--font-display); font-size: 15px; font-weight: 900;
-  background: linear-gradient(90deg, #c084fc, #00E5FF);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  letter-spacing: .5px; margin-bottom: 8px;
-}
-.auth-guest-sub{
-  font-size: 10.5px; color: #7d8ab8; line-height: 1.6; margin-bottom: 20px; max-width: 300px;
-}
-.auth-google-btn{
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; max-width: 280px; padding: 14px 20px;
-  background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
-  border: 1.5px solid rgba(255,255,255,.2); border-radius: 16px;
-  color: #fff; font-size: 14px; font-weight: 700; font-family: inherit;
-  cursor: pointer; transition: transform .2s, box-shadow .2s;
-  box-shadow: 0 4px 24px rgba(66,133,244,.25);
-  animation: authBtnPulse 2.5s ease-in-out infinite;
-}
-.auth-google-btn:active{ transform: scale(.97); }
-@keyframes authBtnPulse{ 0%,100%{ box-shadow:0 4px 20px rgba(66,133,244,.2) } 50%{ box-shadow:0 4px 32px rgba(66,133,244,.4) } }
-@keyframes authCardIn{ from{ opacity:0; transform:translateY(14px) } to{ opacity:1; transform:translateY(0) } }
-.auth-err{
-  display: none; margin-top: 10px; font-size: 10px; color: var(--red);
-  background: rgba(255,82,82,.08); border: 1px solid rgba(255,82,82,.25);
-  border-radius: 10px; padding: 8px 14px; width: 100%; box-sizing: border-box;
-}
-/* ── Giriş yapılmış: premium profil banner ── */
-.auth-user{
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  background: linear-gradient(135deg, rgba(0,229,255,.06), rgba(0,0,0,.4));
-  border: 1px solid rgba(0,229,255,.18); border-radius: 22px;
+.profile-card{
+  background: var(--surface);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  display: flex; align-items: center; gap: 14px;
   position: relative; overflow: hidden;
 }
-.auth-user::before{
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--logo-c1,#00E5FF), transparent);
+.profile-card::before{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,229,255,.05), transparent 60%);
+  pointer-events: none;
 }
-.auth-user-left{ display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-.auth-user-info{ flex: 1; min-width: 0; }
-.auth-user-namerow{ display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 5px; }
-.pc-name{ font-weight: 900; font-size: 17px; color: #fff; letter-spacing: .2px; }
-.pc-admin{
-  display: none; font-size: 10px; font-weight: 900; color: var(--gold);
-  background: rgba(255,215,64,.15); border: 1px solid rgba(255,215,64,.3);
-  border-radius: 8px; padding: 2px 7px; cursor: pointer;
-}
-.auth-user-meta{ display: flex; align-items: center; gap: 6px; }
-.auth-user-lv{
-  font-family: 'Orbitron', var(--font-display); font-size: 10px; font-weight: 800;
-  color: var(--logo-c1, #00E5FF); background: rgba(0,229,255,.12);
-  border: 1px solid rgba(0,229,255,.25); border-radius: 8px; padding: 2px 8px;
-}
-.auth-online-dot{
-  width: 7px; height: 7px; border-radius: 50%; background: #69F0AE;
-  box-shadow: 0 0 6px #69F0AE; animation: pulseGlow 2s ease-in-out infinite;
-}
-.auth-online-txt{ font-size: 9.5px; color: #69F0AE; font-weight: 700; letter-spacing: .5px; }
-.auth-user-right{ text-align: right; flex-shrink: 0; }
-.auth-kaju-val{ font-family: 'Orbitron', var(--font-display); font-size: 18px; font-weight: 900; color: var(--gold); text-shadow: 0 0 10px rgba(255,215,64,.4); }
-.auth-kaju-lbl{ font-size: 9px; color: #9a8a5a; letter-spacing: 1px; margin-top: 2px; }
-.auth-kaju-send{
-  margin-top: 5px; font-size: 9px; font-weight: 700; cursor: pointer; font-family: inherit;
-  background: rgba(255,215,64,.1); border: 1px solid rgba(255,215,64,.3);
-  color: var(--gold); border-radius: 8px; padding: 4px 9px;
-}
-/* Avatar: conic ring hala geçerli */
 .pc-avatar{
-  width: 52px; height: 52px; border-radius: 14px; flex: 0 0 auto;
-  background: conic-gradient(from 0deg, var(--logo-c1,#00E5FF), var(--logo-c2,#FF4081), var(--logo-x,#FFD740), var(--logo-c1,#00E5FF));
-  padding: 2px; animation: avatarRing 4s linear infinite;
+  width: 64px; height: 64px; border-radius: 50%; flex: 0 0 auto;
+  background: conic-gradient(from 0deg, var(--cyan), var(--magenta), var(--pink), var(--cyan));
+  padding: 2px;
 }
 .pc-avatar img, .pc-avatar .ph{
-  width: 100%; height: 100%; border-radius: 12px; object-fit: cover;
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
   background: #11111c; display: flex; align-items: center; justify-content: center; font-size: 26px;
 }
-@keyframes avatarRing{ to{ filter: hue-rotate(360deg); } }
-/* Eski uyumluluk seçiciler */
-.pc-lvl{ display: none; } /* auth-user-lv kullanılıyor */
-.connect-btn{ display: none !important; }
+.pc-info{ flex: 1; min-width: 0; }
+.pc-namerow{ display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.pc-name{ font-weight: 800; font-size: 19px; color: #fff; }
+.pc-lvl{
+  font-size: 9px; font-weight: 800; color: var(--cyan);
+  background: rgba(0,229,255,.12); border-radius: 5px; padding: 2px 6px;
+}
+.pc-admin{
+  display: none; font-size: 9px; font-weight: 900; color: var(--gold);
+  background: rgba(255,215,64,.12); border-radius: 5px; padding: 2px 6px;
+}
+.pc-meta{ font-size: 10px; color: var(--text-mute); margin: 3px 0 9px; }
+.pc-statusrow{ display: flex; align-items: center; gap: 9px; }
+.pc-status{
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 700; color: var(--text-dim);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px;
+}
+.pc-dot{ width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: pulseGlow 2s ease-in-out infinite; }
+.connect-btn{
+  font-size: 9px; font-weight: 700; color: var(--cyan); letter-spacing: .5px;
+  background: rgba(0,229,255,.06); border: 1px solid rgba(0,229,255,.2);
+  border-radius: var(--r-sm); padding: 6px 11px;
+}
+.connect-btn.is-linked{ color: var(--green); border-color: rgba(105,240,174,.3); background: rgba(105,240,174,.06); }
+.pc-kaju{ text-align: right; flex: 0 0 auto; }
+.pc-kaju .k-val{ font-weight: 800; font-size: 17px; color: var(--gold); text-shadow: var(--glow-gold); }
+.pc-kaju .k-lbl{ font-size: 8px; color: var(--text-mute); letter-spacing: 1px; }
 
 #authMsg{
   display: none; margin-top: 8px; font-size: 9px; color: var(--red);
@@ -267,22 +212,22 @@
 .adm-li b.ok{ color:#5fd38a; } .adm-li b.bad{ color:#ff7a8a; }
 
 /* ── 💎/👑 Sürüklenebilir FAB'lar (monolitten) ── */
-.twin-fab{position:fixed;width:34px;height:34px;border-radius:10px;background:rgba(6,6,20,.92);border:1.5px solid transparent;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 8px 28px rgba(0,0,0,.6);z-index:9900;}
+.twin-fab{position:fixed;width:38px;height:38px;border-radius:11px;background:rgba(6,6,20,.92);border:1.5px solid transparent;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 8px 28px rgba(0,0,0,.6);z-index:9900;padding:0;}
 .twin-fab:active{cursor:grabbing;}
 @keyframes twFabPress{0%{transform:scale(1) translateY(0)}28%{transform:scale(.84) translateY(4px)}62%{transform:scale(1.13) translateY(-5px)}82%{transform:scale(.97) translateY(1px)}100%{transform:scale(1) translateY(0)}}
 .twin-fab.tw-press{animation:twFabPress .42s cubic-bezier(.34,1.56,.64,1) forwards}
 .tw-spark{position:absolute;width:4px;height:4px;border-radius:50%;pointer-events:none;opacity:0;}
-#adminFloatBtn.twin-fab{right:12px;bottom:88px;border-color:rgba(255,215,64,.42);box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 0 14px rgba(255,200,0,.28),0 0 28px rgba(255,140,0,.14),0 8px 24px rgba(0,0,0,.65);animation:twAdminPulse 3.2s ease-in-out infinite;width:34px!important;height:34px!important;border-radius:10px!important;font-size:14px!important;}
+#adminFloatBtn{right:12px;bottom:148px;border-color:rgba(255,215,64,.42);box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 0 14px rgba(255,200,0,.28),0 0 28px rgba(255,140,0,.14),0 8px 24px rgba(0,0,0,.65);animation:twAdminPulse 3.2s ease-in-out infinite;}
 @keyframes twAdminPulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 12px rgba(255,200,0,.22),0 0 24px rgba(255,140,0,.11),0 8px 22px rgba(0,0,0,.62);}50%{box-shadow:0 0 0 1px rgba(255,255,255,.07) inset,0 0 22px rgba(255,215,64,.55),0 0 40px rgba(255,150,0,.28),0 8px 28px rgba(0,0,0,.68);}}
-.tw-crown{font-size:14px;line-height:1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(255,215,64,.85)) drop-shadow(0 0 14px rgba(255,150,0,.55));animation:twCrownFloat 2.8s ease-in-out infinite;}
+.tw-crown{font-size:16px;line-height:1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(255,215,64,.85)) drop-shadow(0 0 14px rgba(255,150,0,.55));animation:twCrownFloat 2.8s ease-in-out infinite;}
 @keyframes twCrownFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.08)}}
 .tw-spark-gold-1{top:5px;left:9px;background:#FFD740;animation:twSparkGold 2.6s ease-in-out infinite 0s;}
 .tw-spark-gold-2{top:8px;right:8px;background:#FFB300;animation:twSparkGold 2.6s ease-in-out infinite .87s;}
 .tw-spark-gold-3{bottom:9px;left:13px;background:#FF9800;animation:twSparkGold 2.6s ease-in-out infinite 1.74s;}
 @keyframes twSparkGold{0%,100%{opacity:0;transform:scale(0)}40%{opacity:1;transform:scale(1.6);box-shadow:0 0 6px #FFD740}65%{opacity:.6;transform:scale(1)}}
-#gemFloatBtn{left:12px;bottom:88px;border-color:rgba(0,229,255,.42);box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 0 14px rgba(0,229,255,.26),0 0 28px rgba(224,64,251,.14),0 8px 24px rgba(0,0,0,.65);animation:twGemPulse 3.2s ease-in-out infinite;width:34px!important;height:34px!important;border-radius:10px!important;}
+#gemFloatBtn{left:12px;bottom:148px;border-color:rgba(0,229,255,.42);box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 0 14px rgba(0,229,255,.26),0 0 28px rgba(224,64,251,.14),0 8px 24px rgba(0,0,0,.65);animation:twGemPulse 3.2s ease-in-out infinite;}
 @keyframes twGemPulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 12px rgba(0,229,255,.2),0 0 24px rgba(224,64,251,.11),0 8px 22px rgba(0,0,0,.62);}50%{box-shadow:0 0 0 1px rgba(255,255,255,.07) inset,0 0 22px rgba(0,229,255,.56),0 0 40px rgba(224,64,251,.3),0 8px 28px rgba(0,0,0,.68);}}
-.tw-gem{font-size:14px;line-height:1;pointer-events:none;filter:drop-shadow(0 0 7px rgba(0,229,255,.9)) drop-shadow(0 0 16px rgba(224,64,251,.6));animation:twGemShine 4s ease-in-out infinite;}
+.tw-gem{font-size:16px;line-height:1;pointer-events:none;filter:drop-shadow(0 0 7px rgba(0,229,255,.9)) drop-shadow(0 0 16px rgba(224,64,251,.6));animation:twGemShine 4s ease-in-out infinite;}
 @keyframes twGemShine{0%,100%{filter:drop-shadow(0 0 6px rgba(0,229,255,.7)) drop-shadow(0 0 12px rgba(224,64,251,.45)) brightness(1)}50%{filter:drop-shadow(0 0 14px rgba(0,229,255,1)) drop-shadow(0 0 24px rgba(224,64,251,.9)) brightness(1.26)}}
 .tw-spark-cyan-1{top:5px;left:9px;background:#00E5FF;animation:twSparkCyan 2.9s ease-in-out infinite 0s;}
 .tw-spark-cyan-2{top:8px;right:8px;background:#E040FB;animation:twSparkCyan 2.9s ease-in-out infinite .97s;}
@@ -354,7 +299,7 @@
 .scr-pad{ padding:12px 12px 96px; overflow-x:hidden; }
 .prf-card{ background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.02)); border:1px solid rgba(140,160,255,.18); border-radius:16px; padding:15px; margin-bottom:13px; overflow:visible; }
 .prf-top{ display:flex; gap:12px; align-items:flex-start; }
-.prf-ava{ width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,#1d2444,#0e1228); border:3px solid rgba(140,160,255,.3); display:flex; align-items:center; justify-content:center; font-size:26px; box-sizing:border-box; flex-shrink:0; position:relative; overflow:hidden; transition:border-color .3s; }
+.prf-ava{ width:54px; height:54px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:2px solid rgba(140,160,255,.3); display:flex; align-items:center; justify-content:center; font-size:27px; box-sizing:border-box; flex-shrink:0; position:relative; overflow:visible; transition:border-color .25s; }
 .prf-name{ font-size:15px; font-weight:900; color:#eef2ff; display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-width:0; word-break:break-word; }
 .prf-mini{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:3px 7px; font-size:11px; cursor:pointer; }
 .prf-sub{ font-size:10.5px; color:#8d9ac4; margin-top:2px; }
@@ -416,8 +361,8 @@
 .chat-op-badge{display:inline-block;font-size:9px;color:#CE93D8;background:rgba(206,147,216,.12);border:1px solid rgba(206,147,216,.25);border-radius:5px;padding:0 5px;font-weight:900;flex-shrink:0;}
 
 /* ── 👤 Oyuncu kartı popup ── */
-.pcp-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:flex; align-items:flex-start; justify-content:center; padding:16px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.pcp-card{ width:100%; max-width:330px; max-height:calc(100vh - 32px); overflow-y:auto; -webkit-overflow-scrolling:touch; background:linear-gradient(165deg,#1a2142,#0d1024); border:1.5px solid rgba(0,229,255,.25); border-radius:18px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.05); animation:ghpOpen .3s cubic-bezier(.34,1.56,.64,1); margin:auto; }
+.pcp-ov{ position:fixed; inset:0; z-index:9995; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px; }
+.pcp-card{ width:100%; max-width:330px; background:linear-gradient(165deg,#1a2142,#0d1024); border:1.5px solid rgba(0,229,255,.25); border-radius:18px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(0,229,255,.05); animation:ghpOpen .3s cubic-bezier(.34,1.56,.64,1); }
 .pcp-load{ text-align:center; font-size:24px; padding:20px; }
 .pcp-top{ display:flex; gap:12px; align-items:center; }
 .pcp-ava{ position:relative; width:56px; height:56px; border-radius:16px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(0,229,255,.3); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
@@ -466,7 +411,7 @@
 .clan-body{ overflow-y:auto; padding:12px 13px 24px; display:flex; flex-direction:column; gap:10px; }
 .clan-card{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:14px; padding:13px; }
 .clan-banner{ border-color:rgba(255,215,64,.25); background:linear-gradient(160deg,rgba(255,215,64,.06),transparent); }
-.clan-badge-box{ flex-shrink:0; min-width:40px; max-width:64px; height:40px; border-radius:10px; background:linear-gradient(135deg,#2a3158,#171c38); border:1.5px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#ffd86b; letter-spacing:.5px; word-break:break-all; text-align:center; padding:2px 6px; line-height:1.2; }
+.clan-badge{ width:54px; height:54px; border-radius:12px; background:linear-gradient(135deg,#2a3158,#171c38); border:1px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#ffd86b; letter-spacing:.3px; flex-shrink:0; padding:4px; text-align:center; line-height:1.1; overflow:hidden; word-break:break-word; box-sizing:border-box; }
 .clan-lbl{ font-size:10px; font-weight:900; letter-spacing:1.2px; color:#9fb0d8; margin-bottom:7px; }
 .clan-tabs{ display:flex; gap:4px; flex-wrap:wrap; }
 .clan-tab{ padding:7px 11px; font-size:11px; font-weight:800; border-radius:9px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#7d8ab8; cursor:pointer; }
@@ -492,636 +437,3 @@
 .clan-chat-row.mine{ flex-direction:row-reverse; }
 .clan-chat-ava{ font-size:16px; flex-shrink:0; }
 .clan-season-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:4px; margin-top:9px; overflow:hidden; }
-.ghp-sys-msg{ text-align:center; padding:4px 12px; margin:3px 0; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:5px; }
-.gc-act{ display:inline-block;font-size:9px;font-weight:700;cursor:pointer;padding:4px 9px;border-radius:8px;user-select:none;margin-left:10px;line-height:1.4;white-space:nowrap; }
-.gc-act:hover{ opacity:1;background:rgba(255,255,255,.15); }
-
-/* ── 🛍️ Mağaza ── */
-.shop-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-.shop-item{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:10px; text-align:center; transition:all .2s; }
-.shop-item.active{ border-color:#00E5FF; background:rgba(0,229,255,.07); }
-.shop-item.owned{ border-color:rgba(105,240,174,.3); }
-.shop-icon{ font-size:24px; margin-bottom:4px; }
-.shop-name{ font-size:11px; font-weight:800; color:#dfe7ff; margin-bottom:2px; }
-.shop-desc{ font-size:9px; color:#7d8ab8; margin-bottom:7px; }
-.shop-btn{ width:100%; padding:7px; border-radius:8px; font-size:11px; font-weight:800; border:none; cursor:pointer; }
-.shop-btn.buy{ background:linear-gradient(135deg,rgba(255,215,64,.25),rgba(255,150,0,.15)); color:#FFD740; border:1px solid rgba(255,215,64,.3); }
-.shop-btn.buy.locked{ opacity:.4; cursor:not-allowed; }
-.shop-btn.use{ background:linear-gradient(135deg,rgba(0,229,255,.2),rgba(0,229,255,.08)); color:#00E5FF; border:1px solid rgba(0,229,255,.3); }
-
-/* ── 🥚 Kozmos ── */
-.koz-egg{ background:linear-gradient(160deg,rgba(180,130,255,.08),rgba(124,77,255,.04)); border:1px solid rgba(180,130,255,.25); border-radius:12px; padding:10px; text-align:center; }
-.koz-egg-ico{ font-size:32px; margin-bottom:5px; }
-.koz-phase{ font-size:10px; font-weight:800; color:#CE93D8; margin-bottom:4px; }
-.koz-bar{ height:6px; background:rgba(255,255,255,.07); border-radius:3px; margin-bottom:4px; overflow:hidden; }
-.koz-creature{ background:rgba(255,255,255,.04); border:1px solid; border-radius:12px; padding:10px; text-align:center; }
-
-/* ── 🖼️ Profil fotoğraf ── */
-.prf-ava-edit{ position:absolute; bottom:-4px; right:-4px; font-size:11px; background:#1d2444; border:1px solid rgba(255,255,255,.2); border-radius:7px; padding:1px 3px; z-index:2; }
-
-/* ── 💚 Matrix profil tema animasyonu ── */
-@keyframes matrixDrop{ 0%{ transform:translateY(-100%); opacity:0; } 10%{ opacity:1; } 90%{ opacity:.7; } 100%{ transform:translateY(100vh); opacity:0; } }
-.prf-matrix-col{ position:absolute; top:0; font-family:monospace; font-size:12px; color:#00ff44; animation:matrixDrop linear infinite; pointer-events:none; z-index:0; white-space:pre; }
-[data-screen="profile"].matrix-bg{ overflow:hidden; }
-[data-screen="profile"].matrix-bg::before{ content:''; position:absolute; inset:0; background:#000800; z-index:-1; }
-
-/* ── 🥚 Kozmos (Goodyedek animasyonları) ── */
-@keyframes kozmoEggPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 7px var(--kgc,rgba(180,130,255,.45)))}50%{transform:scale(1.05);filter:drop-shadow(0 0 20px var(--kgc,rgba(180,130,255,.7)))}}
-@keyframes kozmoEggShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-3deg)}40%{transform:rotate(3deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
-@keyframes kozmoCrack{0%,100%{opacity:.3}50%{opacity:1}}
-@keyframes kozmoSparkle{0%,100%{opacity:0;transform:scale(0)}45%,55%{opacity:1;transform:scale(1)}}
-@keyframes kozmoConfetti{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(-40px) rotate(360deg) scale(0);opacity:0}}
-.kozmo-egg-mini{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;cursor:pointer;border-radius:14px;padding:10px 6px 8px;background:rgba(20,10,40,.9);border:1.5px solid rgba(180,130,255,.2);transition:transform .2s;text-align:center;}
-.kozmo-egg-mini:hover{transform:scale(1.06);}
-.kozmo-card{background:linear-gradient(145deg,rgba(20,10,40,.95),rgba(11,5,24,.98));border:1.5px solid rgba(180,130,255,.15);border-radius:14px;padding:10px 8px 11px;cursor:pointer;transition:transform .22s;text-align:center;}
-.kozmo-card:hover{transform:translateY(-3px);}
-.koz-title{background:linear-gradient(90deg,#E040FB,#7C4DFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.koz-sec{margin-bottom:4px;}
-.koz-pend-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);}
-.koz-pend-row:last-of-type{border-bottom:none;}
-.koz-pend-ava{font-size:22px;flex-shrink:0;}
-.koz-pend-info{flex:1;min-width:0;font-size:11.5px;color:#dfe7ff;}
-/* ── 💚 Matrix canvas ── */
-[data-screen="profile"].matrix-bg{position:relative;overflow:hidden;}
-canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
-.prf-card{position:relative;z-index:1;}
-
-/* ════ 🛍️ MAĞAZA ════════════════════════════════════════════ */
-.shop-panel{ border-color:rgba(255,215,64,.25)!important; }
-.shop-kaju-badge{ font-size:11px;font-weight:800;color:#ffd86b;background:rgba(255,215,64,.1);border:1px solid rgba(255,215,64,.25);border-radius:20px;padding:4px 10px;margin-right:6px; }
-.shop-tabs{ display:flex;gap:5px;padding:10px 13px 0;overflow-x:auto;-webkit-overflow-scrolling:touch; }
-.shop-tab-btn{ flex-shrink:0;padding:8px 12px;font-size:11px;font-weight:800;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#7d8ab8;cursor:pointer;white-space:nowrap; }
-.shop-tab-btn.active{ color:#E040FB;border-color:rgba(224,64,251,.4);background:rgba(224,64,251,.1); }
-.shop-item-grid{ display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:2px; }
-.shop-card{ background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:0 0 11px;overflow:hidden;transition:transform .18s,border-color .18s; }
-.shop-card:hover{ transform:translateY(-2px);border-color:rgba(255,255,255,.18); }
-.shop-card.owned{ border-color:rgba(105,240,174,.28);background:rgba(105,240,174,.03); }
-.shop-card.active{ border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.05);box-shadow:0 0 14px rgba(0,229,255,.1); }
-.shop-preview{ height:64px;position:relative;border-radius:12px 12px 0 0;overflow:hidden;display:flex;align-items:center;justify-content:center; }
-.shop-anim-badge{ position:absolute;top:5px;right:5px;font-size:8px;font-weight:800;color:#E040FB;background:rgba(224,64,251,.15);border:1px solid rgba(224,64,251,.3);border-radius:5px;padding:2px 5px; }
-.shop-active-badge{ position:absolute;top:5px;left:5px;font-size:8px;font-weight:800;color:#00E5FF;background:rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.3);border-radius:5px;padding:2px 5px; }
-.shop-icon-row{ display:flex;align-items:center;gap:5px;padding:8px 10px 4px;font-size:14px; }
-.shop-item-name{ font-size:11px;font-weight:800;color:#dfe7ff;flex:1; }
-.shop-btn-buy,.shop-btn-use{ width:calc(100% - 20px);margin:0 10px;padding:8px;border-radius:9px;font-size:11px;font-weight:800;border:none;cursor:pointer;font-family:inherit; }
-.shop-btn-buy{ background:linear-gradient(135deg,rgba(255,215,64,.2),rgba(255,150,0,.1));color:#ffd86b;border:1px solid rgba(255,215,64,.3); }
-.shop-btn-buy.locked{ opacity:.35;cursor:not-allowed; }
-.shop-btn-use{ background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.25); }
-.shop-btn-use.is-active{ background:rgba(0,229,255,.2);border-color:rgba(0,229,255,.5); }
-.shop-egg-info{ background:rgba(224,64,251,.05);border:1px solid rgba(224,64,251,.2);border-radius:12px;padding:12px;margin-bottom:10px; }
-.shop-egg-card{ background:linear-gradient(145deg,rgba(20,10,40,.95),rgba(11,5,24,.98));border:1.5px solid rgba(192,132,252,.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;transition:border-color .2s; }
-.shop-egg-card:hover{ border-color:rgba(192,132,252,.45); }
-.shop-egg-ico{ font-size:30px;flex-shrink:0; }
-.shop-egg-name{ font-size:12px;font-weight:900;color:#dfe7ff;margin-bottom:2px; }
-.shop-egg-desc{ font-size:9px;color:#7d8ab8;margin-bottom:8px; }
-.shop-buy-btn{ padding:8px 16px;border-radius:10px;border:1px solid rgba(192,132,252,.35);background:rgba(192,132,252,.12);color:#c084fc;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:inherit; }
-/* ════ 🥚 KOZMOS ════════════════════════════════════════════ */
-.koz-sec{ margin-bottom:8px; }
-.koz-pend-row{ display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05); }
-.koz-pend-row:last-child{ border-bottom:none; }
-.koz-pend-egg{ flex-shrink:0; }
-.koz-pend-info{ flex:1;min-width:0; }
-.koz-btn-acc{ padding:7px 11px;border-radius:9px;border:1px solid rgba(105,240,174,.35);background:rgba(105,240,174,.12);color:#69F0AE;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap; }
-.koz-btn-rej{ padding:7px 10px;border-radius:9px;border:1px solid rgba(255,82,82,.3);background:rgba(255,82,82,.08);color:#FF5252;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit; }
-.koz-egg-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
-.kozmo-egg-mini{ display:flex;flex-direction:column;align-items:center;cursor:pointer;border-radius:14px;padding:10px 6px 9px;background:rgba(20,10,40,.92);border:1.5px solid rgba(180,130,255,.2);transition:transform .2s,border-color .2s;text-align:center; }
-.kozmo-egg-mini:hover{ transform:scale(1.05);border-color:rgba(180,130,255,.5); }
-.koz-phase-label{ font-size:7px;font-weight:900;margin-top:5px;letter-spacing:.2px; }
-.koz-phase-desc{ font-size:6.5px;color:#5060a0;margin-top:1px;min-height:10px;line-height:1.3; }
-.koz-egg-from{ font-size:6px;color:#3a4070;margin-top:2px; }
-.koz-bar{ height:3px;background:rgba(255,255,255,.07);border-radius:3px;margin:6px 0 2px;width:100%;overflow:hidden; }
-.koz-bar-txt{ font-size:6px;color:#404060;margin-bottom:5px; }
-.koz-feed-btn{ width:100%;padding:7px;border-radius:9px;border:1px solid rgba(105,240,174,.35);background:rgba(105,240,174,.12);color:#69F0AE;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px; }
-.koz-hatch-btn{ width:100%;padding:5px;border-radius:8px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#fbbf24;font-size:8.5px;font-weight:900;cursor:pointer;font-family:inherit;margin-top:4px;animation:kozmoEggPulse 1.5s ease-in-out infinite; }
-.koz-cre-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
-.kozmo-card{ background:linear-gradient(145deg,rgba(20,10,40,.95),rgba(11,5,24,.98));border:1.5px solid rgba(180,130,255,.15);border-radius:14px;padding:11px 8px;cursor:pointer;transition:transform .22s;text-align:center; }
-.kozmo-card:hover{ transform:translateY(-3px); }
-.koz-cre-emoji{ font-size:30px;margin-bottom:5px; }
-.koz-cre-name{ font-size:10px;font-weight:900;margin-bottom:2px; }
-.koz-cre-rarity{ font-size:8px;font-weight:700;margin-bottom:2px; }
-.koz-cre-lv{ font-size:8px;color:#5d6890; }
-.koz-cre-from{ font-size:7px;color:#3a4070;margin-top:4px; }
-.koz-info-box{ background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px;margin-bottom:8px; }
-.koz-time-box{ background:rgba(255,190,60,.05);border:1px solid rgba(255,190,60,.15);border-radius:9px;padding:8px 10px;font-size:10px;color:#a08050;text-align:center; }
-/* ════ Klan güncelleme ══════════════════════════════════════ */
-.clan-badge{ min-width:42px;max-width:72px;height:40px;border-radius:10px;background:linear-gradient(135deg,#2a3158,#171c38);border:1px solid rgba(255,215,64,.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#ffd86b;letter-spacing:1px;flex-shrink:0;word-break:break-all;text-align:center;padding:0 4px; }
-/* ── 🥚 Kozmo sil butonu + admin satırı ── */
-.koz-del-btn{ width:100%;padding:5px;border-radius:8px;border:1px solid rgba(255,82,82,.28);background:rgba(255,82,82,.07);color:#FF9090;font-size:8.5px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:5px; }
-.koz-del-btn:hover{ background:rgba(255,82,82,.15); }
-.adm-koz-row{ display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:10px;color:#cdd8f5;gap:8px; }
-.adm-koz-row:last-child{ border-bottom:none; }
-/* ── 🛍️ Hediye seçim modal ── */
-.shop-gift-opt{ padding:12px 8px;border-radius:12px;border:1.5px solid;background:transparent;cursor:pointer;font-family:inherit;transition:transform .15s,border-color .15s; }
-.shop-gift-opt:hover{ transform:scale(1.04); }
-/* ── 🥚 Kozmo hediye + arkadaş seç ── */
-.egg-friend-list{ display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;padding:4px 0; }
-.egg-friend-btn{ display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:10px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);color:#dfe7ff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
-.egg-friend-btn:hover{ border-color:rgba(192,132,252,.5);background:rgba(192,132,252,.14); }
-.egg-friend-btn.selected{ border-color:rgba(224,64,251,.6);background:rgba(224,64,251,.14);color:#E040FB; }
-/* Arkadaş satırında kozmo butonu */
-.ghp-act[data-fegg]{ color:#c084fc;border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.07); }
-.ghp-act[data-fegg]:hover{ background:rgba(192,132,252,.18); }
-/* Oyuncu kartı kozmo butonu */
-.pcp-btn[data-pc="egg"]{ background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.3);color:#c084fc; }
-
-/* ── Klan Banner temiz düzen ── */
-.clan-banner-row{ display:flex; align-items:center; gap:10px; }
-.clan-banner-info{ flex:1; min-width:0; overflow:hidden; }
-.clan-banner-name{ font-size:15px; font-weight:900; color:#ffd86b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
-.clan-banner-meta{ font-size:10px; color:#aab6da; margin-top:2px; white-space:nowrap; }
-/* Eski .clan-badge geriye uyum */
-.clan-badge{ flex-shrink:0; min-width:40px; max-width:64px; height:40px; border-radius:10px; background:linear-gradient(135deg,#2a3158,#171c38); border:1.5px solid rgba(255,215,64,.4); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:900; color:#ffd86b; letter-spacing:.5px; word-break:break-all; text-align:center; padding:2px 6px; }
-/* Renkli bildirim row */
-.ghp-notif-row{ display:flex; align-items:flex-start; gap:9px; padding:9px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.07); margin-bottom:5px; transition:background .15s; }
-.ghp-notif-announce{ background:linear-gradient(135deg,rgba(224,64,251,.08),transparent)!important; border-color:rgba(224,64,251,.3)!important; }
-
-/* ── Nav Bridge ── */
-.prf-bridge-live{ padding:14px; }
-.bridge-fr-row{ display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05); }
-.bridge-fr-row:last-child{ border-bottom:none; }
-.bridge-fr-ava{ font-size:18px;flex-shrink:0;position:relative; }
-.bridge-fr-name{ flex:1;font-size:12px;font-weight:700;color:#dfe7ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-.bridge-notif-row{ display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04); }
-.bridge-notif-row:last-child{ border-bottom:none; }
-/* ── 🛍️ Animasyonlu Egg Kartı ── */
-.shop-anim-egg-card{ background:linear-gradient(145deg,rgba(20,10,40,.95),rgba(11,5,24,.98));border:1.5px solid rgba(192,132,252,.25);border-radius:14px;padding:12px 8px;text-align:center;transition:transform .2s; }
-.shop-anim-egg-card:hover{ transform:translateY(-3px);border-color:rgba(192,132,252,.5); }
-.shop-anim-egg{ min-height:62px;display:flex;align-items:center;justify-content:center;font-size:32px; }
-/* ── ⭐ Unique Kozmo ── */
-.shop-unique-card{ background:linear-gradient(145deg,rgba(25,10,35,.98),rgba(8,3,18,.99));border:2px solid var(--uc,#c084fc);border-radius:16px;padding:14px;text-align:center;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s; }
-.shop-unique-card::before{ content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,var(--uc,#c084fc)18,transparent 70%);opacity:.07;pointer-events:none; }
-.shop-unique-card:hover{ transform:translateY(-3px);box-shadow:0 8px 28px rgba(192,132,252,.2); }
-.shop-unique-badge{ display:inline-block;font-size:8px;font-weight:900;color:#FFD740;background:rgba(255,215,64,.12);border:1px solid rgba(255,215,64,.3);border-radius:6px;padding:2px 7px;margin-bottom:8px;letter-spacing:1px; }
-.shop-unique-creature{ font-size:38px;margin-bottom:6px; }
-.shop-unique-name{ font-size:12px;font-weight:900;margin-bottom:4px; }
-.shop-unique-btn{ width:100%;padding:9px;border-radius:10px;background:linear-gradient(135deg,rgba(255,215,64,.18),rgba(255,150,0,.1));color:#ffd86b;border:1px solid rgba(255,215,64,.35);font-size:11px;font-weight:800;cursor:pointer;font-family:inherit; }
-.shop-unique-btn.locked{ opacity:.35;cursor:not-allowed; }
-/* ── 💥 Birleştirme ── */
-.koz-merge-btn{ width:100%;padding:6px;border-radius:8px;border:1px solid rgba(240,120,248,.3);background:rgba(240,120,248,.07);color:#f0a0f8;font-size:8.5px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:5px; }
-.koz-merge-btn:hover{ background:rgba(240,120,248,.18); }
-.fusion-row{ display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px; }
-.fusion-parent{ text-align:center;font-size:36px;padding:14px;border-radius:16px;background:rgba(255,255,255,.04);border:2px solid var(--fc,#c084fc);box-shadow:0 0 20px var(--fc,#c084fc)40;animation:kozmoEggPulse 2s ease-in-out infinite; }
-.fusion-plus{ font-size:28px;animation:kozmoEggShake 1s ease-in-out infinite; }
-.fusion-result{ text-align:center;transition:opacity .6s,transform .6s; }
-/* ── 🥜 Kaju + Arkadaş gizli ── */
-.pcp-friends-hidden{ font-size:10px;color:#5d6890;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:6px 10px;text-align:center;margin:4px 0; }
-
-/* ── 🐾 Animasyonlu Yaratık SVG ── */
-.koz-cre-svg{ min-height:54px;display:flex;align-items:center;justify-content:center;margin-bottom:5px; }
-/* ── 🥚 Yumurta sil butonu (kartın altına) ── */
-.koz-egg-del{ align-self:flex-end;padding:3px 8px;border-radius:7px;border:1px solid rgba(255,82,82,.25);background:rgba(255,82,82,.06);color:#FF9090;font-size:8px;font-weight:700;cursor:pointer;font-family:inherit;margin:4px 0 2px;opacity:.7; }
-.koz-egg-del:hover{ background:rgba(255,82,82,.18);opacity:1; }
-/* ── 👑 Oyuncu kartı moderasyon ── */
-.pcp-admin-mod{ margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,215,64,.15); }
-.pcp-mod-lbl{ font-size:9px;font-weight:800;color:#FFD740;margin-bottom:7px;letter-spacing:.5px; }
-.pcp-mod-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:5px; }
-.pcp-mod-btn{ padding:7px 4px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#cdd8f5;font-size:9.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s; }
-.pcp-mod-btn:hover{ background:rgba(255,255,255,.1); }
-.pcp-mod-btn.ban{ border-color:rgba(255,82,82,.3);color:#FF7043; }
-.pcp-mod-btn.mute{ border-color:rgba(255,152,0,.3);color:#FFB74D; }
-.pcp-mod-btn.kick{ border-color:rgba(206,147,216,.3);color:#CE93D8; }
-/* ── 💬 Klan sohbet düzenle/sil ── */
-.clan-chat-act{ display:inline-block;font-size:9px;font-weight:700;cursor:pointer;margin-left:10px;padding:4px 9px;border-radius:8px;line-height:1.4;white-space:nowrap;transition:background .15s; }
-.clan-chat-act:hover{ opacity:1; }
-.clan-ann-current{ background:rgba(255,215,64,.06);border:1px solid rgba(255,215,64,.2);border-radius:10px;padding:10px;margin-top:8px; }
-/* ── Sistem mesajı (sohbette kick) ── */
-.ghp-sys-msg{ text-align:center;padding:6px 12px;margin:4px auto;max-width:90%;font-size:10px;font-weight:700;border-radius:10px; }
-.ghp-sys-msg.kick{ color:#CE93D8;background:rgba(206,147,216,.08);border:1px solid rgba(206,147,216,.25); }
-.ghp-sys-msg.ban{ color:#FF5252;background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.25); }
-
-.koz-feed-btn:hover{ background:rgba(105,240,174,.2); }
-/* ── 🔧 Operatör butonu (oyuncu kartı moderasyon) ── */
-.pcp-mod-btn.op{ border-color:rgba(206,147,216,.35);color:#CE93D8; }
-.pcp-mod-btn.op:hover{ background:rgba(206,147,216,.12); }
-
-/* ═══ 🪪 KOMPAKT OYUNCU KARTI ═══════════════════════════════ */
-/* Eylem grid: ikonlu kompakt butonlar */
-.pcp-acts-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:12px; }
-.pcp-act-ico{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px 4px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#dfe7ff; font-size:18px; cursor:pointer; font-family:inherit; transition:transform .15s,background .15s; }
-.pcp-act-ico:hover{ transform:translateY(-2px); background:rgba(255,255,255,.09); }
-.pcp-act-ico span{ font-size:8.5px; font-weight:700; opacity:.85; }
-/* Arkadaş listesi kutusu */
-.pcp-friends-box{ margin-top:12px; padding:10px; background:rgba(0,229,255,.04); border:1px solid rgba(0,229,255,.15); border-radius:12px; }
-.pcp-fr-title{ font-size:10px; font-weight:800; color:#00E5FF; margin-bottom:8px; }
-
-
-
-.pcp-fr-hidden{ font-size:11px; color:#7d8ab8; text-align:center; padding:4px; }
-/* Admin moderasyon: kart içinde scroll'lu, ayrı bölüm */
-.pcp-admin-mod{ margin-top:12px; padding:12px; background:rgba(255,215,64,.04); border:1px solid rgba(255,215,64,.15); border-radius:12px; }
-
-.gc-act.edit{ background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:#00E5FF; }
-.gc-act.edit:hover{ background:rgba(0,229,255,.2); }
-.gc-act.del{ background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#FF7043; }
-.gc-act.del:hover{ background:rgba(255,82,82,.2); }
-.clan-chat-act.edit{ background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:#00E5FF; }
-.clan-chat-act.edit:hover{ background:rgba(0,229,255,.2); }
-.clan-chat-act.del{ background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#FF7043; }
-.clan-chat-act.del:hover{ background:rgba(255,82,82,.2); }
-/* ═══ 👥 ZENGİN ARKADAŞ LİSTESİ (oyuncu kartı) ═══════════════ */
-.pcp-friends-box{ margin-top:12px; padding:12px; background:linear-gradient(160deg,rgba(0,229,255,.05),rgba(0,229,255,.01)); border:1px solid rgba(0,229,255,.18); border-radius:14px; }
-.pcp-fr-title{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; color:#dfe7ff; margin-bottom:10px; }
-.pcp-fr-count{ background:rgba(0,229,255,.15); color:#00E5FF; font-size:10px; padding:1px 8px; border-radius:10px; font-weight:800; }
-.pcp-fr-online-badge{ margin-left:auto; background:rgba(105,240,174,.12); color:#69F0AE; font-size:8.5px; font-weight:700; padding:2px 8px; border-radius:8px; }
-.pcp-fr-rows{ display:flex; flex-direction:column; gap:4px; }
-.pcp-fr-row{ display:flex; align-items:center; gap:10px; padding:8px 9px; border-radius:11px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05); cursor:pointer; transition:background .15s,transform .12s,border-color .15s; }
-.pcp-fr-row:hover{ background:rgba(0,229,255,.08); border-color:rgba(0,229,255,.25); transform:translateX(2px); }
-.pcp-fr-avawrap{ position:relative; width:38px; height:38px; border-radius:50%; background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
-.pcp-fr-dot{ position:absolute; bottom:-1px; right:-1px; width:11px; height:11px; border-radius:50%; background:#69F0AE; border:2px solid #1a2142; box-shadow:0 0 6px rgba(105,240,174,.6); }
-.pcp-fr-info{ flex:1; min-width:0; }
-.pcp-fr-nm{ font-size:12px; font-weight:700; color:#eef2ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.pcp-fr-meta{ font-size:9px; color:#9fb0d8; margin-top:1px; }
-.pcp-fr-go{ font-size:20px; color:#4a5578; flex-shrink:0; }
-.pcp-fr-row:hover .pcp-fr-go{ color:#00E5FF; }
-.pcp-fr-more{ text-align:center; font-size:9.5px; color:#5d6890; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(255,255,255,.08); }
-.pcp-fr-hidden{ font-size:11px; color:#7d8ab8; text-align:center; padding:6px; }
-
-/* ═══ 👥 ADMİN KULLANICI LİSTESİ (online durumlu) ═══════════════ */
-.aul-search-bar{ display:flex; gap:6px; margin-bottom:8px; }
-.aul-search{ flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,215,64,.22); border-radius:9px; padding:9px 11px; font-size:11px; color:#eef2ff; font-family:inherit; outline:none; }
-.aul-search:focus{ border-color:rgba(255,215,64,.5); background:rgba(255,255,255,.09); }
-.aul-refresh{ background:rgba(255,215,64,.12); border:1px solid rgba(255,215,64,.3); border-radius:9px; padding:8px 12px; cursor:pointer; font-size:14px; transition:background .15s; }
-.aul-refresh:hover{ background:rgba(255,215,64,.22); }
-.aul-stats{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
-.aul-stat{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:4px 10px; font-size:9.5px; color:#9fb0d8; }
-.aul-list{ display:flex; flex-direction:column; gap:5px; max-height:60vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.aul-loading,.aul-empty{ text-align:center; color:#7d8ab8; font-size:11px; padding:20px; }
-.aul-row{ display:flex; align-items:center; gap:10px; padding:9px 11px; background:linear-gradient(160deg,rgba(0,229,255,.04),transparent); border:1px solid rgba(0,229,255,.1); border-radius:12px; cursor:pointer; transition:background .15s,transform .12s,border-color .15s; }
-.aul-row:hover{ background:rgba(0,229,255,.09); border-color:rgba(0,229,255,.28); transform:translateX(2px); }
-.aul-row.admin{ border-color:rgba(255,215,64,.22); background:linear-gradient(160deg,rgba(255,215,64,.05),transparent); }
-.aul-row.banned{ border-color:rgba(255,82,82,.25); background:linear-gradient(160deg,rgba(255,82,82,.05),transparent); opacity:.75; }
-.aul-ava{ position:relative; width:40px; height:40px; border-radius:50%; background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-.aul-dot{ position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-radius:50%; background:#69F0AE; border:2px solid #1a2142; box-shadow:0 0 7px rgba(105,240,174,.7); }
-.aul-info{ flex:1; min-width:0; }
-.aul-name{ font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.aul-tag{ font-size:11px; flex-shrink:0; }
-.aul-meta{ font-size:9.5px; color:#9fb0d8; margin-top:2px; }
-.aul-online{ color:#69F0AE; font-weight:700; }
-.aul-offline{ color:#5d6890; }
-.aul-manage{ background:rgba(255,215,64,.1); border:1px solid rgba(255,215,64,.28); border-radius:9px; padding:7px 12px; font-size:10.5px; color:#FFD740; cursor:pointer; font-weight:700; font-family:inherit; flex-shrink:0; transition:background .15s; }
-.aul-manage:hover{ background:rgba(255,215,64,.2); }
-
-/* ═══ 👥 SOSYAL HUB ARKADAŞ LİSTESİ (online sistemli) ═══════════ */
-.fr-list-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; margin-bottom:8px; background:linear-gradient(135deg,rgba(0,229,255,.06),transparent); border:1px solid rgba(0,229,255,.15); border-radius:12px; }
-.fr-hdr-total{ font-size:12px; font-weight:800; color:#dfe7ff; }
-.fr-hdr-online{ font-size:10px; font-weight:700; color:#69F0AE; background:rgba(105,240,174,.1); padding:3px 10px; border-radius:10px; }
-.fr-hdr-offline{ font-size:9.5px; color:#5d6890; }
-.fr-row{ display:flex; align-items:center; gap:10px; padding:9px 11px; margin-bottom:5px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:12px; transition:background .15s,border-color .15s,transform .12s; }
-.fr-row.online{ background:linear-gradient(160deg,rgba(105,240,174,.05),transparent); border-color:rgba(105,240,174,.18); }
-.fr-row:hover{ background:rgba(0,229,255,.07); border-color:rgba(0,229,255,.25); transform:translateX(2px); }
-.fr-ava{ position:relative; width:42px; height:42px; border-radius:50%; background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0; cursor:pointer; }
-.fr-ava:hover{ border-color:rgba(0,229,255,.5); }
-.fr-dot{ position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-radius:50%; background:#69F0AE; border:2px solid #0e1424; box-shadow:0 0 7px rgba(105,240,174,.7); animation:frDotPulse 2s ease-in-out infinite; }
-@keyframes frDotPulse{ 0%,100%{ box-shadow:0 0 5px rgba(105,240,174,.6) } 50%{ box-shadow:0 0 10px rgba(105,240,174,.9) } }
-.fr-info{ flex:1; min-width:0; cursor:pointer; }
-.fr-name{ font-size:12.5px; font-weight:700; color:#eef2ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.fr-lv{ font-size:8.5px; font-weight:700; color:#FFB74D; background:rgba(255,183,77,.12); padding:1px 6px; border-radius:6px; margin-left:4px; }
-.fr-status{ font-size:9.5px; margin-top:2px; }
-.fr-on{ color:#69F0AE; font-weight:700; }
-.fr-off{ color:#5d6890; }
-.fr-btn{ width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); font-size:15px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:background .15s; padding:0; }
-.fr-btn:hover{ background:rgba(255,255,255,.12); }
-.fr-btn.dm{ color:#00E5FF; }
-.fr-btn.egg{ color:#c084fc; }
-.fr-btn.rm{ color:#FF7043; font-size:13px; }
-
-/* ═══ 🏅 ROZET SİSTEMİ ═══════════════════════════════════════ */
-.badge-loading{ text-align:center;color:#7d8ab8;font-size:11px;padding:16px; }
-.badge-summary{ display:flex;align-items:center;justify-content:center;margin-bottom:12px; }
-.badge-count{ background:linear-gradient(135deg,rgba(255,215,64,.15),rgba(255,150,0,.08));border:1px solid rgba(255,215,64,.3);color:#FFD740;font-size:12px;font-weight:800;padding:6px 16px;border-radius:12px; }
-.badge-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:9px; }
-.badge-item{ position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px;border-radius:14px;border:1.5px solid var(--bc,#9fb0d8);background:linear-gradient(160deg,rgba(255,255,255,.04),transparent);transition:transform .15s; }
-.badge-item:not(.locked){ box-shadow:0 0 14px var(--bg,rgba(159,176,216,.3)); }
-.badge-item:not(.locked):hover{ transform:translateY(-3px) scale(1.03); }
-.badge-item.locked{ border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.02);opacity:.45;box-shadow:none; }
-.badge-ico{ font-size:30px;line-height:1; }
-.badge-name{ font-size:9px;font-weight:800;color:#eef2ff;text-align:center;line-height:1.2; }
-.badge-rar{ font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px; }
-.badge-item.locked .badge-rar{ color:#5d6890!important; }
-/* Mitik/efsanevi rozet parıltısı */
-.badge-item.rar-mythic:not(.locked){ animation:badgeMythic 2.5s ease-in-out infinite; }
-.badge-item.rar-legendary:not(.locked){ animation:badgeLegend 3s ease-in-out infinite; }
-@keyframes badgeMythic{ 0%,100%{ box-shadow:0 0 14px rgba(255,82,82,.5) } 50%{ box-shadow:0 0 24px rgba(255,82,82,.85) } }
-@keyframes badgeLegend{ 0%,100%{ box-shadow:0 0 12px rgba(255,179,0,.5) } 50%{ box-shadow:0 0 22px rgba(255,179,0,.8) } }
-/* Oyuncu kartında rozet şeridi */
-.pcp-badges{ margin-top:12px;padding:10px;background:linear-gradient(135deg,rgba(255,215,64,.05),transparent);border:1px solid rgba(255,215,64,.15);border-radius:12px; }
-.pcp-badges-lbl{ font-size:10px;font-weight:800;color:#FFD740;margin-bottom:7px; }
-.pcp-badges-row{ display:flex;gap:7px;flex-wrap:wrap; }
-.pcp-badge-chip{ width:38px;height:38px;border-radius:11px;border:1.5px solid var(--bc,#9fb0d8);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 8px var(--bc,#9fb0d8)33; }
-/* ═══ 📊 FB İstatistik ═══ */
-.fbstat-grid{ display:grid;grid-template-columns:repeat(4,1fr);gap:7px; }
-.fbstat{ text-align:center;padding:10px 4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px; }
-.fbstat-n{ font-size:20px;font-weight:900;color:#dfe7ff; }
-.fbstat-l{ font-size:8px;color:#9fb0d8;margin-top:2px; }
-
-/* ═══ 🔔 NAV BİLDİRİM LİSTESİ (Hub kalitesinde) ═══════════════ */
-.nav-notif-item{ display:flex; align-items:flex-start; gap:10px; padding:11px 12px; margin-bottom:6px; border-radius:11px; transition:background .15s; }
-.nav-notif-item:hover{ filter:brightness(1.15); }
-.nav-notif-ico{ font-size:18px; flex-shrink:0; width:24px; text-align:center; }
-.nav-notif-body{ flex:1; min-width:0; }
-.nav-notif-txt{ font-size:11.5px; color:#dfe7ff; line-height:1.4; }
-.nav-notif-time{ font-size:8.5px; color:#5d6890; margin-top:3px; }
-
-/* ═══ 👑 ŞAŞALI ADMİN NİCK (her yerde tutarlı) ═══════════════ */
-/* Taç ikonu — hafif sallanma + parlama */
-.admin-crown{
-  display:inline-block; font-size:13px; margin-right:3px;
-  animation:adminCrownFloat 2s ease-in-out infinite;
-  filter:drop-shadow(0 0 4px rgba(255,215,64,.8));
-}
-@keyframes adminCrownFloat{
-  0%,100%{ transform:translateY(0) rotate(-5deg); }
-  50%{ transform:translateY(-2px) rotate(5deg); }
-}
-/* Admin nick — altın gradyan + akan parıltı + nabız (nick-blink'ten bağımsız özel hava) */
-.admin-nick-glow{
-  font-weight:900 !important;
-  background:linear-gradient(90deg,#FFD740,#FFA000,#FFE57F,#FFD740);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:adminNickShine 3s linear infinite, adminNickPulse 1.8s ease-in-out infinite;
-  text-shadow:0 0 12px rgba(255,215,64,.5);
-  letter-spacing:.3px;
-}
-@keyframes adminNickShine{
-  0%{ background-position:0% center; }
-  100%{ background-position:200% center; }
-}
-@keyframes adminNickPulse{
-  0%,100%{ filter:drop-shadow(0 0 3px rgba(255,215,64,.4)); }
-  50%{ filter:drop-shadow(0 0 8px rgba(255,215,64,.9)); }
-}
-/* DM'de admin nick satırı */
-.dm-admin-name{ display:flex; align-items:center; gap:2px; margin-bottom:3px; }
-.dm-admin-name .admin-nick-glow{ font-size:11px; }
-/* Klan admin mesajı vurgusu */
-.clan-chat-row.admin-msg{ background:linear-gradient(135deg,rgba(255,215,64,.06),transparent); border-radius:10px; }
-/* Minik tarih damgası */
-.chat-date-mini{ font-size:8px; color:#5d6890; opacity:.7; margin-left:2px; }
-/* ═══ 🚫 Engellediklerim listesi ═══ */
-.blk-row{ display:flex; align-items:center; gap:10px; padding:9px 11px; margin-bottom:6px; background:rgba(255,82,82,.04); border:1px solid rgba(255,82,82,.12); border-radius:11px; }
-.blk-ava{ width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
-.blk-name{ flex:1; font-size:12.5px; font-weight:700; color:#dfe7ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.blk-unblock{ background:rgba(105,240,174,.1); border:1px solid rgba(105,240,174,.3); border-radius:9px; padding:6px 11px; font-size:10px; color:#69F0AE; cursor:pointer; font-weight:700; font-family:inherit; flex-shrink:0; }
-.blk-unblock:hover{ background:rgba(105,240,174,.2); }
-.blk-unblock:disabled{ opacity:.5; cursor:default; }
-
-/* ═══ 🐾 ULTRA PREMIUM KOZMO ANİMASYONLARI ═══════════════════ */
-@keyframes creatureBob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-5px) } }
-@keyframes creatureBlink{ 0%,90%,100%{ transform:scaleY(1) } 95%{ transform:scaleY(0.15) } }
-@keyframes creatureWing{ 0%,100%{ transform:scaleX(1) rotate(0deg) } 50%{ transform:scaleX(0.75) rotate(-10deg) } }
-@keyframes creatureTail{ 0%,100%{ transform:rotate(-8deg) } 50%{ transform:rotate(8deg) } }
-@keyframes creatureRing{ 0%{ transform:rotate(0deg) } 100%{ transform:rotate(360deg) } }
-@keyframes creatureSparkle{ 0%,100%{ opacity:.4; transform:scale(.8) } 50%{ opacity:1; transform:scale(1.3) } }
-/* Yaratık kartı kalite parıltısı */
-.kozmo-card{ position:relative; overflow:hidden; }
-.kozmo-card.rar-epic{ box-shadow:0 0 16px rgba(192,132,252,.25); }
-.kozmo-card.rar-legendary{ box-shadow:0 0 18px rgba(255,215,64,.3); animation:cardLegendGlow 3s ease-in-out infinite; }
-.kozmo-card.rar-mythical{ box-shadow:0 0 20px rgba(255,128,255,.35); animation:cardMythicGlow 2.5s ease-in-out infinite; }
-@keyframes cardLegendGlow{ 0%,100%{ box-shadow:0 0 14px rgba(255,215,64,.25) } 50%{ box-shadow:0 0 24px rgba(255,215,64,.5) } }
-@keyframes cardMythicGlow{ 0%,100%{ box-shadow:0 0 16px rgba(255,128,255,.3) } 50%{ box-shadow:0 0 28px rgba(255,128,255,.6) } }
-.koz-cre-svg{ min-height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; }
-.koz-cre-element{ font-size:8.5px; color:#9fb0d8; margin-top:2px; background:rgba(255,255,255,.05); padding:2px 7px; border-radius:7px; display:inline-block; }
-/* ═══ ✨ Yaratık Detay Modalı ═══ */
-.koz-detail{ text-align:center; border:1.5px solid var(--cc,#c084fc); }
-.koz-detail-hero{ min-height:100px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
-.koz-detail-name{ font-size:18px; font-weight:900; margin-bottom:3px; }
-.koz-detail-rar{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
-.koz-detail-desc{ font-size:11px; color:#9fb0d8; font-style:italic; margin-bottom:14px; line-height:1.5; }
-.koz-detail-stats{ display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
-.koz-stat{ display:flex; align-items:center; gap:8px; padding:8px 11px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; }
-.koz-stat-ico{ font-size:16px; }
-.koz-stat-lbl{ font-size:10px; color:#7d8ab8; flex:1; text-align:left; }
-.koz-stat-val{ font-size:11px; font-weight:800; color:#eef2ff; }
-.koz-detail-sound{ width:100%; padding:10px; border-radius:11px; background:linear-gradient(135deg,rgba(124,77,255,.18),rgba(0,229,255,.1)); border:1px solid rgba(124,77,255,.35); color:#c084fc; font-size:12px; font-weight:800; cursor:pointer; font-family:inherit; margin-bottom:8px; }
-.koz-detail-sound:hover{ background:linear-gradient(135deg,rgba(124,77,255,.28),rgba(0,229,255,.18)); }
-/* ═══ 💥 Premium Fusion Sahnesi ═══ */
-.koz-fusion-ov{ position:fixed; inset:0; background:radial-gradient(ellipse at center,rgba(20,5,40,.96),rgba(0,0,0,.98)); backdrop-filter:blur(20px); z-index:99999; display:flex; align-items:center; justify-content:center; }
-.koz-fusion-stage{ text-align:center; max-width:90vw; }
-.koz-fusion-pair{ display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:24px; }
-.koz-fusion-p{ animation:fusionFloat 2s ease-in-out infinite; }
-.koz-fusion-p.left{ animation-delay:0s; }
-.koz-fusion-p.right{ animation-delay:.3s; }
-.koz-fusion-pn{ font-size:10px; font-weight:800; margin-top:6px; }
-@keyframes fusionFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-8px) } }
-.koz-fusion-spark{ font-size:32px; color:#FFD740; animation:fusionSparkSpin 1.5s linear infinite; text-shadow:0 0 12px rgba(255,215,64,.8); }
-@keyframes fusionSparkSpin{ 0%{ transform:rotate(0) scale(1) } 50%{ transform:rotate(180deg) scale(1.3) } 100%{ transform:rotate(360deg) scale(1) } }
-.koz-fusion-result{ opacity:0; transform:scale(.5); transition:opacity .6s,transform .6s cubic-bezier(.34,1.56,.64,1); position:relative; }
-.koz-fusion-result.show{ opacity:1; transform:scale(1); }
-.koz-fusion-burst{ position:absolute; top:50%; left:50%; width:200px; height:200px; transform:translate(-50%,-50%); background:radial-gradient(circle,var(--rc,#FFD740)44,transparent 70%); animation:fusionBurst 1s ease-out; pointer-events:none; }
-@keyframes fusionBurst{ 0%{ transform:translate(-50%,-50%) scale(0); opacity:1 } 100%{ transform:translate(-50%,-50%) scale(2.5); opacity:0 } }
-.koz-fusion-hero{ display:flex; align-items:center; justify-content:center; min-height:120px; }
-.koz-fusion-rn{ font-size:22px; font-weight:900; margin-top:10px; text-shadow:0 0 16px currentColor; }
-.koz-fusion-rr{ font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-top:5px; }
-.koz-fusion-power{ font-size:11px; color:#FFD740; margin-top:8px; background:rgba(255,215,64,.1); padding:5px 14px; border-radius:12px; display:inline-block; }
-.koz-fusion-label{ font-size:14px; color:#c084fc; font-weight:900; margin-top:18px; letter-spacing:2px; animation:fusionLabelPulse 1s ease-in-out infinite; }
-@keyframes fusionLabelPulse{ 0%,100%{ opacity:.7 } 50%{ opacity:1 } }
-
-/* ═══════════ 🎬 PREMIUM ANA SAYFA ═══════════ */
-/* Sinematik logo */
-.hero-logo{ text-align:center; padding:14px 0 4px; }
-.logo-main{ font-family:'Orbitron',var(--font-display); font-weight:900; font-size:clamp(34px,11vw,50px); letter-spacing:2px; line-height:.95; position:relative; display:inline-block; overflow:hidden; }
-.logo-hero-txt{ background:linear-gradient(180deg,var(--logo-c1-lt,#7df9ff),var(--logo-c1,#00E5FF) 45%,var(--logo-c1-dk,#0088aa)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 22px color-mix(in srgb,var(--logo-c1,#00E5FF) 55%,transparent)); animation:logoFloat 3s ease-in-out infinite; }
-.logo-x{ display:inline-block; color:var(--logo-x,#FFD740); filter:drop-shadow(0 0 16px color-mix(in srgb,var(--logo-x,#FFD740) 70%,transparent)); animation:logoSpin 4s ease-in-out infinite; margin:0 4px; font-size:.8em; }
-.logo-portal-txt{ background:linear-gradient(180deg,var(--logo-c2-lt,#ff9ec4),var(--logo-c2,#FF4081) 45%,var(--logo-c2-dk,#c2185b)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 22px color-mix(in srgb,var(--logo-c2,#FF4081) 55%,transparent)); animation:logoFloat 3s ease-in-out infinite .3s; }
-@keyframes logoFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-5px) } }
-@keyframes logoSpin{ 0%,100%{ transform:rotateY(0) scale(1) } 50%{ transform:rotateY(180deg) scale(1.12) } }
-.logo-sweep{ position:absolute; top:0; left:-100%; width:55%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent); animation:logoSweep 4.5s ease-in-out infinite; pointer-events:none; }
-@keyframes logoSweep{ 0%,55%{ left:-100% } 80%,100%{ left:200% } }
-.hero-sub{ font-family:'Orbitron',var(--font-display); font-size:10px; letter-spacing:7px; color:var(--logo-x,#FFD740); margin-top:7px; text-shadow:0 0 12px color-mix(in srgb,var(--logo-x,#FFD740) 40%,transparent); animation:heroSubGlow 2.5s ease-in-out infinite; }
-@keyframes heroSubGlow{ 0%,100%{ opacity:.7; letter-spacing:7px } 50%{ opacity:1; letter-spacing:9px } }
-/* İstatistik şeridi */
-.stats-bar{ display:flex; gap:8px; margin:18px 0; }
-.stats-bar .stat{ flex:1; min-width:0; text-align:center; padding:11px 3px; background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08); border-radius:14px; position:relative; overflow:hidden; }
-.stats-bar .stat::before{ content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--sc),transparent); }
-.stats-bar .stat-v{ font-family:'Orbitron',var(--font-display); font-size:11px; font-weight:800; color:var(--sc); white-space:nowrap; letter-spacing:-.3px; }
-.stats-bar .stat-l{ font-size:7.5px; color:#7070A0; letter-spacing:1px; margin-top:3px; }
-/* Bölüm başlığı */
-.sec-title{ display:flex; align-items:center; gap:12px; margin:22px 4px 14px; }
-.sec-title-icon{ font-size:16px; filter:drop-shadow(0 0 8px rgba(0,229,255,.5)); }
-.sec-title-txt{ font-family:'Orbitron',var(--font-display); font-size:13px; font-weight:700; letter-spacing:3px; color:#c0c0e0; }
-.sec-title-line{ flex:1; height:1px; background:linear-gradient(90deg,color-mix(in srgb,var(--logo-c1,#00E5FF) 40%,transparent),transparent); }
-/* Premium oyun kartları */
-.games-premium{ display:flex; flex-direction:column; gap:13px; }
-.game-pc{ position:relative; border-radius:20px; padding:16px; cursor:pointer; overflow:hidden; background:linear-gradient(135deg,var(--gc-bg1),var(--gc-bg2)); border:1.5px solid var(--gc-bd); transition:transform .25s cubic-bezier(.34,1.56,.64,1); display:flex; align-items:center; gap:15px; }
-.game-pc:active{ transform:scale(.97); }
-@keyframes gamePcEnter{ 0%{ opacity:0; transform:translateX(-18px) } 100%{ opacity:1; transform:translateX(0) } }
-.game-pc::before{ content:''; position:absolute; top:0; right:0; width:90px; height:100%; background:radial-gradient(ellipse at right,var(--gc) 0%,transparent 70%); opacity:.08; pointer-events:none; animation:gamePcGlowFade 4s ease-in-out infinite; }
-@keyframes gamePcGlowFade{ 0%,100%{ opacity:.05 } 50%{ opacity:.12 } }
-.game-pc::after{ content:''; position:absolute; top:0; left:0; width:100%; height:1.5px; background:linear-gradient(90deg,transparent,var(--gc),transparent); opacity:.6; }
-.game-pc-logo{ width:66px; height:66px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:18px; background:radial-gradient(circle at 38% 28%,color-mix(in srgb,var(--gc) 20%,transparent),rgba(0,0,0,.3)); position:relative; box-shadow:0 0 18px color-mix(in srgb,var(--gc) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.1); }
-.game-pc-logo::after{ content:''; position:absolute; inset:0; border-radius:18px; border:1.5px solid color-mix(in srgb,var(--gc) 32%,transparent); }
-.game-pc-info{ flex:1; min-width:0; }
-.game-pc-name{ font-family:'Orbitron',var(--font-display); font-size:17px; font-weight:800; color:var(--gc); letter-spacing:.5px; text-shadow:0 0 14px color-mix(in srgb,var(--gc) 50%,transparent); }
-.game-pc-modes{ font-size:9px; color:#8b8ba8; margin-top:4px; line-height:1.4; }
-.game-pc-play{ flex-shrink:0; padding:9px 14px; border-radius:22px; background:linear-gradient(135deg,color-mix(in srgb,var(--gc) 25%,transparent),color-mix(in srgb,var(--gc) 8%,transparent)); border:1.5px solid color-mix(in srgb,var(--gc) 50%,transparent); font-family:'Orbitron',var(--font-display); font-size:10px; font-weight:800; color:var(--gc); letter-spacing:1px; white-space:nowrap; text-shadow:0 0 10px color-mix(in srgb,var(--gc) 50%,transparent); animation:gamePcPlayPulse 2s ease-in-out infinite; }
-.gpc-arrow{ font-size:8px; }
-@keyframes gamePcPlayPulse{ 0%,100%{ box-shadow:0 0 0 0 color-mix(in srgb,var(--gc) 35%,transparent) } 50%{ box-shadow:0 0 12px 2px color-mix(in srgb,var(--gc) 28%,transparent) } }
-/* SVG logo animasyonları */
-@keyframes tetrisFall{ 0%{ transform:translateY(-3px) } 50%{ transform:translateY(2px) } 100%{ transform:translateY(-3px) } }
-@keyframes chessGlow{ 0%,100%{ filter:drop-shadow(0 0 3px rgba(255,215,64,.5)) } 50%{ filter:drop-shadow(0 0 8px rgba(255,215,64,.9)) } }
-@keyframes spinSlow{ 0%{ transform:rotate(0) } 100%{ transform:rotate(360deg) } }
-@keyframes diceShake{ 0%,100%{ transform:rotate(0) } 25%{ transform:rotate(-4deg) } 75%{ transform:rotate(4deg) } }
-@keyframes letterPop{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.06) } }
-/* Parçacık zemin + glow orb */
-.bg-particles{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; max-width:100vw; }
-.bg-particle{ position:absolute; border-radius:50%; opacity:0; animation:bgFloatUp linear infinite; }
-@keyframes bgFloatUp{ 0%{ transform:translateY(100vh) scale(0); opacity:0 } 10%{ opacity:.6 } 90%{ opacity:.4 } 100%{ transform:translateY(-10vh) scale(1); opacity:0 } }
-.bg-glow-orb{ position:fixed; border-radius:50%; filter:blur(60px); z-index:0; pointer-events:none; animation:bgOrbDrift 12s ease-in-out infinite; }
-.bg-orb1{ width:260px; height:260px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-c1,#00E5FF) 15%,transparent),transparent 70%); top:-60px; left:-80px; }
-.bg-orb2{ width:220px; height:220px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-c2,#E040FB) 12%,transparent),transparent 70%); top:35%; right:-90px; animation-delay:-4s; }
-.bg-orb3{ width:180px; height:180px; background:radial-gradient(circle,color-mix(in srgb,var(--logo-x,#FFD740) 8%,transparent),transparent 70%); bottom:12%; left:-60px; animation-delay:-8s; }
-@keyframes bgOrbDrift{ 0%,100%{ transform:translate(0,0) } 33%{ transform:translate(15px,-12px) } 66%{ transform:translate(-12px,15px) } }
-/* app içeriği orb'ların üstünde */
-#app{ position:relative; z-index:2; }
-
-/* ═══ 🎨 TEMA SEÇİCİ (ayarlar) ═══ */
-.set-theme-section{ margin:8px 0 14px; padding:12px; background:linear-gradient(160deg,rgba(255,255,255,.04),transparent); border:1px solid rgba(255,255,255,.08); border-radius:14px; }
-.set-theme-lbl{ font-size:10px; font-weight:800; letter-spacing:2px; color:#c0c0e0; margin-bottom:10px; }
-.set-theme-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-.theme-chip{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px; border-radius:12px; background:rgba(255,255,255,.03); border:1.5px solid rgba(255,255,255,.08); cursor:pointer; font-family:inherit; transition:transform .15s,border-color .15s; }
-.theme-chip:active{ transform:scale(.95); }
-.theme-chip.active{ border-color:var(--logo-c1,#00E5FF); background:color-mix(in srgb,var(--logo-c1,#00E5FF) 10%,transparent); box-shadow:0 0 12px color-mix(in srgb,var(--logo-c1,#00E5FF) 25%,transparent); }
-.theme-swatch{ width:34px; height:34px; border-radius:50%; border:2px solid rgba(255,255,255,.15); box-shadow:0 2px 8px rgba(0,0,0,.3); }
-.theme-chip.active .theme-swatch{ border-color:rgba(255,255,255,.4); }
-.theme-name{ font-size:8.5px; font-weight:700; color:#b0b0d0; }
-.theme-chip.active .theme-name{ color:#fff; }
-
-/* ═══ ⚡ ANASAYFA XP ÇUBUĞU ═══════════════════════════════════ */
-.xp-bar-wrap{ margin:0 0 14px; padding:12px 14px; background:linear-gradient(160deg,rgba(192,132,252,.06),rgba(0,229,255,.03)); border:1px solid rgba(192,132,252,.2); border-radius:16px; }
-.xp-bar-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
-.xp-lv-badge{ font-family:'Orbitron',var(--font-display); font-size:12px; font-weight:900; padding:3px 11px; border-radius:20px; }
-.xp-lv-badge[data-rank="common"]{ background:rgba(255,255,255,.06); color:#dfe7ff; border:1px solid rgba(255,255,255,.12); }
-.xp-lv-badge[data-rank="rare"]{ background:rgba(66,165,245,.12); color:#42A5F5; border:1px solid rgba(66,165,245,.3); }
-.xp-lv-badge[data-rank="epic"]{ background:rgba(171,71,188,.14); color:#AB47BC; border:1px solid rgba(171,71,188,.35); }
-.xp-lv-badge[data-rank="legend"]{ background:rgba(255,215,64,.13); color:#FFD740; border:1px solid rgba(255,215,64,.35); box-shadow:0 0 10px rgba(255,215,64,.2); }
-.xp-lv-badge[data-rank="mythic"]{ background:rgba(255,82,82,.14); color:#FF5252; border:1px solid rgba(255,82,82,.4); box-shadow:0 0 12px rgba(255,82,82,.3); animation:xpMythicPulse 2s ease-in-out infinite; }
-@keyframes xpMythicPulse{ 0%,100%{ box-shadow:0 0 10px rgba(255,82,82,.3) } 50%{ box-shadow:0 0 18px rgba(255,82,82,.6) } }
-.xp-label{ font-size:9px; font-weight:700; letter-spacing:2px; color:#8080b0; }
-.xp-next{ font-size:10px; font-weight:700; color:#c084fc; }
-.xp-bar-track{ position:relative; height:12px; background:rgba(255,255,255,.05); border-radius:12px; overflow:visible; border:1px solid rgba(255,255,255,.07); margin-bottom:6px; }
-.xp-bar-fill{ height:100%; border-radius:12px; background:linear-gradient(90deg,#7c3aed,#c084fc,#00E5FF); transition:width 1.4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 10px rgba(192,132,252,.4); position:relative; }
-.xp-bar-fill::after{ content:''; position:absolute; top:0; right:0; width:3px; height:100%; background:#fff; border-radius:2px; opacity:.8; box-shadow:0 0 6px #fff; }
-.xp-bar-glow{ position:absolute; top:-3px; width:6px; height:18px; background:radial-gradient(circle,#fff 0%,rgba(192,132,252,.6) 60%,transparent 100%); border-radius:50%; transition:left 1.4s cubic-bezier(.4,0,.2,1); pointer-events:none; }
-.xp-bar-footer{ display:flex; justify-content:space-between; align-items:center; }
-.xp-cur{ font-family:'Orbitron',var(--font-display); font-size:10px; font-weight:700; color:#c084fc; }
-.xp-pct{ font-size:11px; font-weight:800; color:#dfe7ff; }
-.xp-max{ font-size:10px; color:#7070A0; }
-/* Profil DM butonu */
-.prf-act-dm{ background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,229,255,.04)) !important; border-color:rgba(0,229,255,.35) !important; color:#00E5FF !important; }
-
-/* ═══ ⚡ PROFİL PREMIUM XP ÇUBUĞU ═══════════════════════════ */
-.prf-xp-premium{ margin:12px 0; padding:13px 14px; background:linear-gradient(160deg,rgba(192,132,252,.07),rgba(0,229,255,.03)); border:1px solid rgba(192,132,252,.22); border-radius:16px; }
-.prf-xp-header{ display:flex; align-items:center; gap:10px; margin-bottom:9px; }
-.prf-xp-lv-badge{ font-family:'Orbitron',var(--font-display); font-size:13px; font-weight:900; padding:4px 13px; border-radius:22px; flex-shrink:0; }
-.prf-xp-lv-badge[data-rank="common"]{ background:rgba(255,255,255,.07); color:#dfe7ff; border:1px solid rgba(255,255,255,.14); }
-.prf-xp-lv-badge[data-rank="rare"]{ background:rgba(66,165,245,.13); color:#42A5F5; border:1px solid rgba(66,165,245,.32); }
-.prf-xp-lv-badge[data-rank="epic"]{ background:rgba(171,71,188,.15); color:#AB47BC; border:1px solid rgba(171,71,188,.38); }
-.prf-xp-lv-badge[data-rank="legend"]{ background:rgba(255,215,64,.14); color:#FFD740; border:1px solid rgba(255,215,64,.38); box-shadow:0 0 12px rgba(255,215,64,.2); }
-.prf-xp-lv-badge[data-rank="mythic"]{ background:rgba(255,82,82,.14); color:#FF5252; border:1px solid rgba(255,82,82,.4); animation:xpMythicPulse 2s ease-in-out infinite; }
-.prf-xp-mid{ flex:1; min-width:0; }
-.prf-xp-title{ font-size:9px; font-weight:800; letter-spacing:2px; color:#8080b0; }
-.prf-xp-pct{ font-size:13px; font-weight:900; margin-top:2px; }
-.prf-xp-next-lv{ font-size:11px; font-weight:700; color:#c084fc; flex-shrink:0; }
-.prf-xp-track{ position:relative; height:14px; background:rgba(255,255,255,.05); border-radius:14px; border:1px solid rgba(255,255,255,.08); margin-bottom:8px; overflow:visible; }
-.prf-xp-fill-bar{ height:100%; border-radius:14px; background:linear-gradient(90deg,#7c3aed,#c084fc,#00E5FF); transition:width 1.2s cubic-bezier(.4,0,.2,1); box-shadow:0 0 12px rgba(192,132,252,.45); position:relative; }
-.prf-xp-fill-bar::after{ content:''; position:absolute; top:0; right:0; bottom:0; width:4px; background:#fff; border-radius:2px; opacity:.75; box-shadow:0 0 8px #fff; }
-.prf-xp-glow-dot{ position:absolute; top:-4px; width:8px; height:22px; background:radial-gradient(circle,#fff,rgba(192,132,252,.5) 60%,transparent); border-radius:50%; pointer-events:none; transition:left 1.2s cubic-bezier(.4,0,.2,1); }
-.prf-xp-footer{ display:flex; justify-content:space-between; align-items:center; }
-.prf-xp-cur{ font-family:'Orbitron',var(--font-display); font-size:11px; font-weight:700; color:#c084fc; }
-.prf-xp-remain{ font-size:11px; font-weight:800; color:#9fb0d8; background:rgba(255,215,64,.08); padding:2px 10px; border-radius:8px; }
-.prf-xp-max{ font-size:10px; color:#7070A0; }
-
-/* ═══ 🔙 AI SETUP GERİ/KAPAT BUTONLARI ═══════════════════════ */
-/* Tavla AI */
-.ttp-head-row,.cas-head-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.ttp-back-btn,.ttp-close-btn,.cas-back,.cas-close{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:7px 13px; font-size:12px; font-weight:700; color:#c8a557; cursor:pointer; font-family:inherit; transition:background .15s; }
-.ttp-close-btn,.cas-close{ color:#ff8080; border-color:rgba(255,100,100,.25); }
-.ttp-back-btn:hover,.cas-back:hover{ background:rgba(200,165,87,.15); }
-.ttp-close-btn:hover,.cas-close:hover{ background:rgba(255,80,80,.12); }
-.ttp-title,.cas-title{ font-family:'Orbitron',sans-serif; font-size:15px; font-weight:800; color:#f0e6cc; letter-spacing:.5px; }
-
-/* ═══════════ ✉️ PREMIUM DM SİSTEMİ ═══════════ */
-/* DM başlık: avatar + çevrimiçi durumu */
-.dm-title-ava{ display:inline-flex; width:30px; height:30px; border-radius:9px; background:rgba(255,255,255,.08); align-items:center; justify-content:center; font-size:16px; margin-right:8px; vertical-align:middle; }
-.dm-title-info{ display:inline-flex; flex-direction:column; vertical-align:middle; }
-.dm-title-nick{ font-size:12px; font-weight:700; color:#eef2ff; }
-.dm-title-status{ font-size:9px; color:#7d8ab8; display:flex; align-items:center; gap:3px; }
-.dm-title-status.online{ color:#69F0AE; }
-.dm-online-dot{ width:6px; height:6px; border-radius:50%; background:#69F0AE; box-shadow:0 0 5px #69F0AE; }
-/* Premium baloncuk (avatar + tasarım) */
-.dm-row-v2{ display:flex; align-items:flex-end; gap:6px; margin:5px 0; }
-.dm-row-v2.mine{ flex-direction:row-reverse; }
-.dm-bubble-ava{ width:26px; height:26px; border-radius:8px; background:rgba(192,132,252,.15); border:1px solid rgba(192,132,252,.25); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
-.dm-row-v2 .ghp-chat-body{ position:relative; }
-.dm-edited{ font-size:8px; opacity:.5; }
-/* Tepkiler */
-.dm-reacts{ display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
-.dm-react-chip{ font-size:11px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:1px 7px; cursor:pointer; transition:transform .1s; }
-.dm-react-chip:active{ transform:scale(.9); }
-.dm-react-chip.mine{ background:rgba(66,165,245,.2); border-color:rgba(66,165,245,.4); }
-/* Mesaj aksiyon menüsü */
-.dm-msgmenu-ov{ position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.55); backdrop-filter:blur(3px); animation:dmFadeIn .2s ease; }
-.dm-msgmenu{ background:linear-gradient(160deg,#1a2440,#0e1428); border:1px solid rgba(255,255,255,.12); border-radius:18px; padding:14px; min-width:240px; box-shadow:0 18px 50px rgba(0,0,0,.6); }
-.dm-react-row{ display:flex; justify-content:space-between; gap:4px; margin-bottom:12px; }
-.dm-react-btn{ width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); font-size:22px; cursor:pointer; transition:transform .12s,background .12s; display:flex; align-items:center; justify-content:center; }
-.dm-react-btn:active{ transform:scale(1.25); background:rgba(66,165,245,.2); }
-.dm-msgmenu-acts{ display:flex; flex-direction:column; gap:6px; }
-.dm-menu-act{ padding:11px 14px; border-radius:11px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:#dfe7ff; font-size:13px; font-weight:600; cursor:pointer; text-align:left; font-family:inherit; transition:background .12s; }
-.dm-menu-act:hover{ background:rgba(255,255,255,.08); }
-.dm-menu-act.danger{ color:#ff8080; border-color:rgba(255,80,80,.2); }
-/* Düzenleme modalı */
-.dm-edit-ov{ position:fixed; inset:0; z-index:100001; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); padding:20px; animation:dmFadeIn .2s ease; }
-.dm-edit-box{ background:linear-gradient(160deg,#1a2440,#0e1428); border:1px solid rgba(66,165,245,.3); border-radius:18px; padding:18px; width:100%; max-width:340px; }
-.dm-edit-title{ font-size:14px; font-weight:800; color:#42A5F5; margin-bottom:12px; }
-.dm-edit-input{ width:100%; min-height:80px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px; color:#eef2ff; font-size:13px; font-family:inherit; resize:vertical; box-sizing:border-box; }
-.dm-edit-acts{ display:flex; gap:10px; margin-top:12px; }
-.dm-edit-cancel,.dm-edit-save{ flex:1; padding:11px; border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; border:none; font-family:inherit; }
-.dm-edit-cancel{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:#9fb0d8; }
-.dm-edit-save{ background:linear-gradient(135deg,#42A5F5,#1976D2); color:#fff; }
-/* Hazır mesaj kalıpları */
-.dm-quick-row{ display:flex; gap:6px; overflow-x:auto; padding:6px 2px; scrollbar-width:none; }
-.dm-quick-row::-webkit-scrollbar{ display:none; }
-.dm-quick-chip{ flex-shrink:0; background:rgba(66,165,245,.1); border:1px solid rgba(66,165,245,.25); border-radius:16px; padding:6px 12px; font-size:11px; font-weight:600; color:#90caf9; cursor:pointer; white-space:nowrap; font-family:inherit; transition:background .12s; }
-.dm-quick-chip:active{ background:rgba(66,165,245,.25); }
-/* Emoji butonu + panel */
-.dm-emoji-btn{ width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); font-size:18px; cursor:pointer; flex-shrink:0; }
-.dm-emoji-panel{ display:flex; flex-wrap:wrap; gap:3px; padding:8px; background:rgba(0,0,0,.25); border-radius:12px; margin-top:6px; max-height:140px; overflow-y:auto; }
-.dm-emoji-item{ width:34px; height:34px; border-radius:8px; background:transparent; border:none; font-size:20px; cursor:pointer; transition:background .1s,transform .1s; }
-.dm-emoji-item:active{ background:rgba(255,255,255,.1); transform:scale(1.2); }
-/* Yeni mesaj bildirimi (ekran üstü toast) */
-.dm-notif-toast{ position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:100002; display:flex; align-items:center; gap:11px; background:linear-gradient(135deg,rgba(26,36,64,.98),rgba(14,20,40,.98)); border:1px solid rgba(66,165,245,.4); border-radius:16px; padding:11px 16px; min-width:240px; max-width:90vw; box-shadow:0 12px 36px rgba(0,0,0,.5); cursor:pointer; animation:dmNotifIn .4s cubic-bezier(.34,1.56,.64,1); }
-.dm-notif-toast.dm-nt-out{ animation:dmNotifOut .35s ease forwards; }
-@keyframes dmNotifIn{ from{ transform:translateX(-50%) translateY(-80px); opacity:0; } to{ transform:translateX(-50%) translateY(0); opacity:1; } }
-@keyframes dmNotifOut{ to{ transform:translateX(-50%) translateY(-80px); opacity:0; } }
-.dm-nt-ava{ width:38px; height:38px; border-radius:11px; background:rgba(66,165,245,.18); border:1px solid rgba(66,165,245,.35); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-.dm-nt-name{ font-size:12px; font-weight:800; color:#42A5F5; }
-.dm-nt-text{ font-size:11px; color:#cbd5f0; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px; }
-@keyframes dmFadeIn{ from{ opacity:0; } to{ opacity:1; } }
-/* ═══ 🎮 OYUN İÇİ MİNİ DM ═══ */
-.igdm-ov{ position:fixed; inset:0; z-index:100000; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); animation:dmFadeIn .2s ease; }
-.igdm-box{ width:100%; max-width:440px; background:linear-gradient(160deg,#16203a,#0c1424); border-top:2px solid rgba(66,165,245,.4); border-radius:20px 20px 0 0; padding:14px; max-height:70vh; display:flex; flex-direction:column; animation:igdmUp .35s cubic-bezier(.34,1.4,.64,1); }
-@keyframes igdmUp{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
-.igdm-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.igdm-title{ font-size:14px; font-weight:800; color:#42A5F5; }
-.igdm-close{ width:30px; height:30px; border-radius:9px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:#9fb0d8; font-size:14px; cursor:pointer; }
-.igdm-msgs{ flex:1; overflow-y:auto; min-height:60px; max-height:200px; display:flex; flex-direction:column; gap:5px; margin-bottom:10px; padding:4px; }
-.igdm-msg{ align-self:flex-start; max-width:80%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); border-radius:13px 13px 13px 4px; padding:7px 11px; font-size:12px; color:#eef2ff; }
-.igdm-msg.mine{ align-self:flex-end; background:linear-gradient(135deg,rgba(66,165,245,.25),rgba(66,165,245,.12)); border-color:rgba(66,165,245,.35); border-radius:13px 13px 4px 13px; }
-.igdm-quick{ display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; scrollbar-width:none; }
-.igdm-quick::-webkit-scrollbar{ display:none; }
-.igdm-chip{ flex-shrink:0; background:rgba(66,165,245,.1); border:1px solid rgba(66,165,245,.25); border-radius:16px; padding:7px 13px; font-size:11px; font-weight:600; color:#90caf9; cursor:pointer; white-space:nowrap; font-family:inherit; }
-.igdm-chip:active{ background:rgba(66,165,245,.25); }
-.igdm-input-row{ display:flex; gap:8px; }
-.igdm-input{ flex:1; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px 14px; color:#eef2ff; font-size:13px; font-family:inherit; outline:none; }
-.igdm-send{ width:44px; border-radius:12px; background:linear-gradient(135deg,#42A5F5,#1976D2); border:none; color:#fff; font-size:16px; cursor:pointer; }
-
-/* ═══ 💎 EKONOMİ HIZLI ERİŞİM BUTONLARI ═══════════════════════ */
-.eco-quick-row{ display:flex; gap:8px; margin:4px 0 16px; }
-.eco-quick-btn{ flex:1; position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; padding:13px 6px; background:linear-gradient(160deg,rgba(255,215,64,.07),rgba(255,255,255,.02)); border:1px solid rgba(255,215,64,.18); border-radius:16px; cursor:pointer; font-family:inherit; transition:transform .15s,border-color .15s,background .15s; }
-.eco-quick-btn:active{ transform:scale(.95); }
-.eco-quick-btn:hover{ border-color:rgba(255,215,64,.35); background:linear-gradient(160deg,rgba(255,215,64,.12),rgba(255,255,255,.04)); }
-.eco-quick-ico{ font-size:24px; filter:drop-shadow(0 2px 6px rgba(255,215,64,.3)); }
-.eco-quick-lbl{ font-size:9.5px; font-weight:800; color:#cbb98a; letter-spacing:.3px; text-align:center; }
-.eco-quick-badge{ position:absolute; top:6px; right:8px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:#FF5252; color:#fff; font-size:9px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px rgba(255,82,82,.5); animation:ecoBadgePulse 1.5s ease-in-out infinite; }
-@keyframes ecoBadgePulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
