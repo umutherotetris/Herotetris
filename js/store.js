@@ -106,13 +106,13 @@ function hydrate(state){
 Auth.subscribe(hydrate);
 
 // ── Kaju ekle (günlük limitli, admin sınırsız) ──────────────────
-export async function addKaju(n, game){
+export async function addKaju(n, game, reason){
   // Kaju kazanım sesi
   if(n>0){try{import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});}catch(e){}}
   if(n<0){try{import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{});}catch(e){}}
   n = Math.floor(n || 0);
   // Negatif → harcama olarak işle (geriye uyumluluk: shop.js addKaju(-price) çağırıyor)
-  if(n < 0){ const ok = await spendKaju(-n, game, arguments[2]); return ok ? n : 0; }
+  if(n < 0){ const ok = await spendKaju(-n, game, reason); return ok ? n : 0; }
   if(n <= 0 || !player.uid) return 0;
   const isAdmin = Auth.getState().isAdmin === true;
   if(!isAdmin){
