@@ -8,6 +8,16 @@ let _swReg = null;
 let _notifListener = null;
 let _lastNotifTs = 0;
 
+// Yeni SW kontrolü ele aldığında sayfayı BİR KEZ yenile (güncel kod gelsin)
+if(typeof navigator !== 'undefined' && 'serviceWorker' in navigator){
+  let _swReloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(_swReloaded) return;
+    _swReloaded = true;
+    location.reload();
+  });
+}
+
 // ── Service Worker kaydı ─────────────────────────────────────
 export async function registerSW(){
   if(!('serviceWorker' in navigator)) return null;

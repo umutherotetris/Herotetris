@@ -2,7 +2,7 @@
    Hero Oyun Portalı — Service Worker (PWA)
    Önbellek + Push bildirim desteği
    ═══════════════════════════════════════════════════════════════ */
-const CACHE_NAME = 'hero-portal-v95';
+const CACHE_NAME = 'hero-portal-v96';
 const CORE_ASSETS = [
   './index.html',
   './manifest.json',
@@ -25,19 +25,31 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// ── Fetch — network-first (taze içerik), cache fallback (offline) ──
+// ── Fetch ──
+// JS/CSS modülleri → DAİMA ağdan (cache'lenmez), böylece güncel kod hemen gelir.
+// Sadece HTML/manifest → network-first + cache fallback (offline çalışsın diye).
 self.addEventListener('fetch', (e) => {
   const url = e.request.url;
-  // Firebase, CDN, API istekleri → her zaman ağdan
+  // Firebase, CDN, API istekleri → her zaman ağdan, dokunma
   if (url.includes('firebase') || url.includes('gstatic') ||
       url.includes('googleapis') || url.includes('unpkg') ||
       url.includes('peerjs') || e.request.method !== 'GET') {
     return; // varsayılan tarayıcı davranışı
   }
+
+  // JS / CSS / JSON / harita dosyaları → network-only (cache'leme!)
+  // Bu, "eski cache'lenmiş kod" sorununu kökten önler.
+  if (/\.(js|mjs|css|json|map)(\?|$)/i.test(url)) {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Geri kalan (HTML, ikon, font vb.) → network-first + cache fallback
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        // Başarılı yanıtı cache'e kopyala
         if (res && res.status === 200 && res.type === 'basic') {
           const clone = res.clone();
           caches.open(CACHE_NAME).then(c => c.put(e.request, clone)).catch(() => {});
