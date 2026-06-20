@@ -85,10 +85,10 @@ function start(){
   // 👤 Profil ekranları: index.html'de versiyonsuz import ediliyor (çift init önlendi)
 
   // Oyunlar dinamik yüklenir — biri eksikse diğerleri + login etkilenmez
-  bindCard('gameTetris', './games/tetris.js', 'openTetris', 'Tetris');
-  bindCard('gameChess',  './games/chess.js',  'openChess',  'Satranç');
-  bindCard('gameTavla',  './games/tavla.js',  'openTavla',  'Tavla');
-  bindCard('gameKelime', './games/kelime.js', 'openKelime', 'Kelimecik');
+  bindCard('gameTetris', './tetris.js', 'openTetris', 'Tetris');
+  bindCard('gameChess',  './chess.js',  'openChess',  'Satranç');
+  bindCard('gameTavla',  './tavla.js',  'openTavla',  'Tavla');
+  bindCard('gameKelime', './kelime.js', 'openKelime', 'Kelimecik');
 
   // 💎 Ekonomi butonları (çark / görev / kaju geçmişi)
   bindEco('ecoWheelBtn',  './economy.js', 'openDailyWheel');
@@ -105,10 +105,10 @@ function start(){
   console.info('[Hero] Stage 2 — Auth hazır, oyunlar dinamik yüklenecek.');
   window.Hero = {
     Auth, Store, toast,
-    openTetris: () => launchGame('./games/tetris.js', 'openTetris', 'Tetris'),
-    openChess:  () => launchGame('./games/chess.js',  'openChess',  'Satranç'),
-    openTavla:  () => launchGame('./games/tavla.js',  'openTavla',  'Tavla'),
-    openKelime: () => launchGame('./games/kelime.js', 'openKelime', 'Kelimecik')
+    openTetris: () => launchGame('./tetris.js', 'openTetris', 'Tetris'),
+    openChess:  () => launchGame('./chess.js',  'openChess',  'Satranç'),
+    openTavla:  () => launchGame('./tavla.js',  'openTavla',  'Tavla'),
+    openKelime: () => launchGame('./kelime.js', 'openKelime', 'Kelimecik')
   };
 }
 
