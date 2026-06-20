@@ -600,21 +600,41 @@ function dmOpenThread(uid, nick){
   const pk = pairKey(me, uid);
   if(H.offDM){ try{ H.offDM(); }catch(e){} }
   H.dmOppSeen = 0;
+  H._lastDmSig = '';      // son render imzası (gereksiz render'ı önler)
+  H._lastSeenWrite = 0;   // _seen yazma throttle
+  // Sadece gerçek MESAJLARI dinle (alt _seen/_typing node'larını değil → feedback loop yok)
   H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(30)), (snap) => {
     const box = byId('ghpDMMsgs'); if(!box) return;
-    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
-    if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
+    const rows = []; if(snap.exists()) snap.forEach(ch => {
+      const k = ch.key; const v = ch.val();
+      // _seen / _typing gibi meta node'ları atla
+      if(k && (k.charAt(0)==='_')) return;
+      if(v && v.text) rows.push(v);
+    });
+    if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; H.dmRows=[]; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
-    renderDMRows(rows);
-    H.dmRows = rows;
-    H.seen['dm_' + uid] = Date.now(); saveSeen();
-    // 👁 okundu: en son mesajın ts'ini _seen'e yaz (rakip ✓✓ görsün)
-    try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_seen/' + me), Date.now()); }catch(e){}
+    // İmza: mesaj sayısı + son ts → değişmediyse render etme (kasma önleme)
+    const sig = rows.length + ':' + (rows[rows.length-1].ts||0);
+    if(sig !== H._lastDmSig){
+      H._lastDmSig = sig;
+      renderDMRows(rows);
+      H.dmRows = rows;
+      H.seen['dm_' + uid] = Date.now(); saveSeen();
+    }
+    // 👁 okundu yaz — throttle (en fazla 3 saniyede bir, gereksiz yazma yok)
+    const now = Date.now();
+    if(now - H._lastSeenWrite > 3000){
+      H._lastSeenWrite = now;
+      try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_seen/' + me), now); }catch(e){}
+    }
   });
-  // rakibin okundu zamanı → ✓✓
+  // rakibin okundu zamanı → ✓✓ (sadece tick güncelle, TÜM listeyi yeniden render etme)
   H.offSeen = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_seen/' + uid), (snap) => {
-    H.dmOppSeen = snap.exists() ? (snap.val() || 0) : 0;
-    if(H.dmRows) renderDMRows(H.dmRows);
+    const newSeen = snap.exists() ? (snap.val() || 0) : 0;
+    if(newSeen === H.dmOppSeen) return;  // değişmediyse dokunma
+    H.dmOppSeen = newSeen;
+    // Sadece tick işaretlerini güncelle (DOM'u baştan kurma)
+    updateDmTicks();
   });
   // ✍️ rakip yazıyor mu
   H.offTyping = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_typing/' + uid), (snap) => {
@@ -635,6 +655,20 @@ function dmOpenThread(uid, nick){
       try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_typing/' + me), now); }catch(e){}
     };
   }
+  // Hafif: sadece kendi mesajlarının ✓/✓✓ tikini güncelle (tüm DOM'u kurmaz)
+  function updateDmTicks(){
+    const box = byId('ghpDMMsgs'); if(!box || !H.dmRows) return;
+    box.querySelectorAll('[data-msgts]').forEach(el => {
+      const ts = Number(el.getAttribute('data-msgts')) || 0;
+      const tick = el.querySelector('.dm-tick');
+      if(!tick) return;
+      const seen = H.dmOppSeen >= ts;
+      tick.textContent = seen ? '✓✓' : '✓';
+      tick.style.color = seen ? '#4FC3F7' : '#546e7a';
+      tick.title = seen ? 'Görüldü' : 'İletildi';
+    });
+  }
+
   function renderDMRows(rows){
     const box = byId('ghpDMMsgs'); if(!box) return;
     const threadIsAdmin = H.dmThread && H.dmThread.isAdmin === true;
@@ -696,7 +730,7 @@ function dmOpenThread(uid, nick){
           <div style="background:${bubbleBg};border:1px solid ${bubbleBdr};border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;${isMine?'margin-left:auto':''}">
             <div class="ghp-chat-text" style="margin:0">${esc(m.text)}</div>
           </div>
-          <div class="ghp-chat-ts" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts || 0)}${tickHtml}</div>
+          <div class="ghp-chat-ts" data-msgts="${m.ts||0}" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts || 0)}${tickHtml}</div>
         </div>
         ${isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
       </div>`;
@@ -731,9 +765,21 @@ async function dmSend(){
     const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
     if(i >= 0) ts.splice(i, 1);
     ts.unshift(item); saveThreads(ts);
-    watchDMThreads();
+    // watchDMThreads() her mesajda çağrılmaz — ana dinleyici (offDM) zaten mesajı yakalar.
+    // Sadece thread listesi rozetini hafifçe güncelle:
+    updateDmThreadBadge();
   }catch(e){ alert('Gönderilemedi'); }
 }
+// Hafif: DM rozet sayısını güncelle (tüm dinleyicileri yeniden kurmadan)
+function updateDmThreadBadge(){
+  try{
+    const ts = loadThreads();
+    const unread = ts.filter(t => t.unread).length;
+    const badge = byId('ghpDMBadge');
+    if(badge){ badge.textContent = unread; badge.style.display = unread > 0 ? '' : 'none'; }
+  }catch(e){}
+}
+
 // Son konuşmaların yeni mesajlarını izle → rozet
 function watchDMThreads(){
   Object.values(H.dmWatch).forEach(off => { try{ off(); }catch(e){} });
