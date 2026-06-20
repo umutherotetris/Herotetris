@@ -117,6 +117,12 @@ function render(state){
   const userEl   = $('authUser');
   const btn      = $('connectBtn');
   console.info('[auth-ui] status =', status, '| guest:', !!guestEl, '| user:', !!userEl);
+  // 🔬 GEÇİCİ TEŞHİS — status'u ekranda göster (sorun çözülünce SİL)
+  try{
+    let dbg = document.getElementById('__authDbg');
+    if(!dbg){ dbg = document.createElement('div'); dbg.id='__authDbg'; dbg.style.cssText='position:fixed;top:0;left:0;z-index:2147483647;background:#000;color:#0f0;font:11px monospace;padding:4px 8px;border:1px solid #0f0;max-width:100vw'; document.body.appendChild(dbg); }
+    dbg.textContent = '🔬 status='+status+' uid='+(state.uid?state.uid.slice(0,6):'YOK')+' guest='+(guestEl?guestEl.style.display||'def':'?')+' user='+(userEl?userEl.style.display||'def':'?');
+  }catch(e){}
 
   if(status === 'google'){
     // Giriş yapılmış → kullanıcı paneli göster

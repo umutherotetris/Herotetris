@@ -24,7 +24,7 @@ function _toast(msg, isErr){
 }
 
 const BASE = `https://www.gstatic.com/firebasejs/${FIREBASE_SDK}`;
-const { initializeApp } = await import(`${BASE}/firebase-app.js`);
+const { initializeApp, getApp, getApps } = await import(`${BASE}/firebase-app.js`);
 const {
   getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence,
   signInAnonymously, signInWithPopup, signInWithRedirect, getRedirectResult,
@@ -32,7 +32,7 @@ const {
 } = await import(`${BASE}/firebase-auth.js`);
 const { getDatabase, ref, get, set, update, onValue, push, remove, runTransaction, onDisconnect, serverTimestamp, off, child, query, orderByChild, equalTo, limitToFirst, limitToLast, orderByKey, startAt, endAt, onChildAdded } = await import(`${BASE}/firebase-database.js`);
 
-const app  = initializeApp(firebaseConfig);
+const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getDatabase(app);
 
