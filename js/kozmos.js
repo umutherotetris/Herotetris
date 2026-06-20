@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
 //  KOZMOS — Hero Oyun Portalı (Goodyedek birebir + geliştirilmiş UI)
 // ═══════════════════════════════════════════════════════════════
-import { Auth, db, fdb } from '../auth.js';
-import { Store } from '../store.js';
+import { Auth, db, fdb } from './auth.js';
+import { Store } from './store.js';
 
 
 // Hafif toast helper (alert yerine)
