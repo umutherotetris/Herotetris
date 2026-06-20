@@ -116,6 +116,7 @@ function render(state){
   const guestEl  = $('authGuest');
   const userEl   = $('authUser');
   const btn      = $('connectBtn');
+  console.info('[auth-ui] status =', status, '| guest:', !!guestEl, '| user:', !!userEl);
 
   if(status === 'google'){
     // Giriş yapılmış → kullanıcı paneli göster

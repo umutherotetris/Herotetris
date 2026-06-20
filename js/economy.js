@@ -3,7 +3,14 @@
 //  🪙 Kaju Geçmişi · 🎰 Günlük Çark · 📋 Günlük Görevler
 // ════════════════════════════════════════════════════════════════
 import Auth from './auth.js';
-import * as Store from './store.js';
+import Store, { getKajuLog as _getKajuLog, getKajuSummary as _getKajuSummary, addKaju as _addKaju, addXP as _addXP } from './store.js';
+// Güvenli erişim sarmalayıcıları (eski cache koruması)
+const _S = {
+  getKajuLog: (f)=> (Store&&Store.getKajuLog?Store.getKajuLog(f):(_getKajuLog?_getKajuLog(f):[])),
+  getKajuSummary: ()=> (Store&&Store.getKajuSummary?_S.getKajuSummary():(_getKajuSummary?_getKajuSummary():{earned:0,spent:0,count:0})),
+  addKaju: (n,g)=> (Store&&Store.addKaju?Store.addKaju(n,g):(_addKaju?_addKaju(n,g):Promise.resolve(0))),
+  addXP: (n)=> (Store&&Store.addXP?Store.addXP(n):(_addXP?_addXP(n):Promise.resolve(false))),
+};
 
 // ── Toast yardımcısı ──
 function _toast(msg, isErr){
@@ -29,7 +36,7 @@ export function openKajuHistory(){
   const ex = document.getElementById('kajuHistOv'); if(ex) ex.remove();
   const ov = document.createElement('div');
   ov.id = 'kajuHistOv'; ov.className = 'eco-ov';
-  const summary = Store.getKajuSummary();
+  const summary = _S.getKajuSummary();
   ov.innerHTML = `
     <div class="eco-box">
       <div class="eco-head">
@@ -63,7 +70,7 @@ function renderKajuHistory(){
   document.querySelectorAll('.kaju-filter').forEach(b => {
     b.classList.toggle('active', b.dataset.f === _kajuFilter);
   });
-  const entries = Store.getKajuLog(_kajuFilter);
+  const entries = _S.getKajuLog(_kajuFilter);
   if(!entries.length){
     list.innerHTML = '<div class="eco-empty"><div class="eco-empty-icon">📭</div><div>Henüz kayıt yok</div><div class="eco-empty-sub">Oyun oynayıp Kaju kazanmaya başla!</div></div>';
     return;
@@ -89,14 +96,14 @@ function renderKajuHistory(){
 // ════════════════════════════════════════════════════════════════
 // Çark dilimleri: ağırlıklı (küçük ödül sık, büyük nadir)
 const WHEEL_SEGMENTS = [
-  { type:'kaju', amount:50,  label:'50',   color:'#FFD740', weight:25 },
-  { type:'xp',   amount:30,  label:'30 XP', color:'#c084fc', weight:20 },
-  { type:'kaju', amount:100, label:'100',  color:'#FFA726', weight:18 },
-  { type:'kaju', amount:25,  label:'25',   color:'#FFD740', weight:22 },
-  { type:'xp',   amount:80,  label:'80 XP', color:'#AB47BC', weight:12 },
-  { type:'kaju', amount:250, label:'250',  color:'#FF7043', weight:8  },
-  { type:'kaju', amount:75,  label:'75',   color:'#FFD740', weight:15 },
-  { type:'jackpot', amount:500, label:'500!', color:'#FF5252', weight:3 },
+  { type:'kaju',    amount:50,  label:'50🥜',  color:'#FFD740', weight:22, ico:'🥜' },
+  { type:'xp',      amount:40,  label:'40 XP', color:'#c084fc', weight:18, ico:'⚡' },
+  { type:'kaju',    amount:120, label:'120🥜', color:'#FFA726', weight:15, ico:'🥜' },
+  { type:'kaju',    amount:30,  label:'30🥜',  color:'#FFE082', weight:18, ico:'🥜' },
+  { type:'xp',      amount:100, label:'100 XP',color:'#AB47BC', weight:10, ico:'⚡' },
+  { type:'kaju',    amount:300, label:'300🥜', color:'#FF7043', weight:7,  ico:'💰' },
+  { type:'egg',     amount:1,   label:'Yumurta',color:'#66BB6A', weight:5, ico:'🥚' },
+  { type:'jackpot', amount:750, label:'750!',  color:'#FF5252', weight:2,  ico:'💎' },
 ];
 
 function spinKey(){ return 'hero_spin_' + new Date().toISOString().slice(0,10); }
@@ -139,7 +146,14 @@ export function openDailyWheel(){
         <button class="eco-close" data-close>✕</button>
       </div>
       <div class="wheel-sub">${already ? 'Bugünkü hakkını kullandın · Yarın tekrar gel!' : 'Günde bir kez çevir, ödülü kap!'}</div>
+      <div class="wheel-prizes">
+        <span class="wheel-prize-chip">🥜 Kaju</span>
+        <span class="wheel-prize-chip">⚡ XP</span>
+        <span class="wheel-prize-chip">🥚 Yumurta</span>
+        <span class="wheel-prize-chip" style="color:#FF8080;border-color:rgba(255,82,82,.3)">💎 750 Jackpot</span>
+      </div>
       <div class="wheel-wrap">
+        <div class="wheel-glow-ring"></div>
         <div class="wheel-pointer">▼</div>
         <svg class="wheel-svg" id="wheelSvg" width="260" height="260" viewBox="0 0 260 260">
           <circle cx="130" cy="130" r="124" fill="none" stroke="rgba(255,215,64,.5)" stroke-width="4"/>
@@ -179,10 +193,15 @@ export function openDailyWheel(){
         markSpun();
         // Ödülü ver
         if(seg.type === 'xp'){
-          await Store.addXP(seg.amount);
+          await _S.addXP(seg.amount);
           _toast(`🎉 ${seg.amount} XP kazandın!`);
+        } else if(seg.type === 'egg'){
+          // Kozmo yumurtası ver
+          try{ const kz = await import('./kozmos.js'); if(kz.grantEgg) await kz.grantEgg(); }catch(e){}
+          await _S.addKaju(50, 'spin');  // bonus kaju da
+          _toast(`🥚 Kozmo Yumurtası + 50🥜 kazandın!`);
         } else {
-          await Store.addKaju(seg.amount, 'spin');
+          await _S.addKaju(seg.amount, 'spin');
           _toast(`🎉 ${seg.amount} 🥜 kazandın!`);
         }
         try{ winSound(seg.type === 'jackpot'); }catch(e){}
@@ -319,7 +338,7 @@ function renderQuests(){
     const cur = data[qid] || { progress:0, claimed:false };
     if(cur.claimed || cur.progress < q.target) return;
     cur.claimed = true; data[qid] = cur; saveQuests(data);
-    await Store.addKaju(q.reward, 'quest');
+    await _S.addKaju(q.reward, 'quest');
     _toast(`🎉 +${q.reward} 🥜 görev ödülü!`);
     renderQuests();
   }));
@@ -374,14 +393,21 @@ function injectEconomyCSS(){
 .kaju-row-amt.earn{ color:#69F0AE; }
 .kaju-row-amt.spend{ color:#FF5252; }
 /* Çark */
-.wheel-box{ text-align:center; }
-.wheel-sub{ font-size:11px; color:#9fb0d8; margin-bottom:16px; }
+.wheel-box{ text-align:center; position:relative; overflow:hidden; }
+.wheel-box::before{ content:''; position:absolute; top:-40px; left:50%; transform:translateX(-50%); width:240px; height:240px; background:radial-gradient(circle,rgba(255,215,64,.18),transparent 65%); filter:blur(20px); pointer-events:none; }
+.wheel-sub{ font-size:11px; color:#9fb0d8; margin-bottom:14px; position:relative; }
 .wheel-wrap{ position:relative; display:inline-block; margin-bottom:18px; }
-.wheel-pointer{ position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:24px; color:#FFD740; z-index:5; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
-.wheel-svg{ display:block; filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)); }
-.wheel-spin-btn{ width:100%; padding:15px; border-radius:14px; background:linear-gradient(135deg,#FFD740,#FFA726); border:none; color:#1a1020; font-size:16px; font-weight:900; font-family:inherit; cursor:pointer; letter-spacing:1px; transition:transform .15s; }
+.wheel-pointer{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); font-size:30px; color:#FFD740; z-index:5; filter:drop-shadow(0 3px 6px rgba(0,0,0,.6)); animation:wheelPointerBob 1.2s ease-in-out infinite; }
+@keyframes wheelPointerBob{ 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(3px)} }
+.wheel-svg{ display:block; filter:drop-shadow(0 8px 30px rgba(255,215,64,.25)) drop-shadow(0 4px 12px rgba(0,0,0,.5)); }
+.wheel-glow-ring{ position:absolute; inset:0; border-radius:50%; box-shadow:0 0 30px rgba(255,215,64,.3),inset 0 0 20px rgba(255,215,64,.15); pointer-events:none; animation:wheelRingPulse 2s ease-in-out infinite; }
+@keyframes wheelRingPulse{ 0%,100%{opacity:.5} 50%{opacity:1} }
+.wheel-spin-btn{ width:100%; padding:16px; border-radius:16px; background:linear-gradient(135deg,#FFD740,#FFA726,#FF7043); background-size:200% 100%; border:none; color:#1a1020; font-size:17px; font-weight:900; font-family:inherit; cursor:pointer; letter-spacing:1px; transition:transform .15s; box-shadow:0 6px 20px rgba(255,167,38,.4); position:relative; animation:wheelBtnShine 3s linear infinite; }
+@keyframes wheelBtnShine{ 0%{background-position:0% 0} 100%{background-position:200% 0} }
 .wheel-spin-btn:active:not(:disabled){ transform:scale(.96); }
-.wheel-spin-btn:disabled{ opacity:.5; cursor:not-allowed; background:rgba(255,255,255,.1); color:#9fb0d8; }
+.wheel-spin-btn:disabled{ opacity:.5; cursor:not-allowed; background:rgba(255,255,255,.1); color:#9fb0d8; animation:none; box-shadow:none; }
+.wheel-prizes{ display:flex; justify-content:center; gap:6px; margin-bottom:14px; flex-wrap:wrap; position:relative; }
+.wheel-prize-chip{ font-size:9px; font-weight:700; padding:3px 9px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); color:#cbb98a; }
 /* Görevler */
 .quest-sub{ font-size:11px; color:#9fb0d8; margin-bottom:14px; }
 .quest-list{ display:flex; flex-direction:column; gap:9px; }

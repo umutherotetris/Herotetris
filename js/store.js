@@ -306,8 +306,13 @@ export async function transferKaju(toUid, toNick, amount){
   }
   // 3) sayaç + geçmiş + liderlik
   await bumpLimits(amount);
-  logKaju(me.uid, -amount, 'transfer-out', 'Gönderildi → '+(toNick||toUid));
+  logKaju(amount, 'spend', 'gift', 'Gönderildi → '+(toNick||toUid));
   try{ await set(ref(db, 'leaderboard/kaju/'+me.uid), { uid:me.uid, kaju:player.kaju, ts:Date.now() }); }catch(e){}
+  // 🎁 Alıcıya bildirim gönder
+  try{
+    const N = await import('./notify.js');
+    await N.notifyKajuGift(toUid, amount, me.displayName || 'Bir oyuncu');
+  }catch(e){}
   return { ok:true, amount };
 }
 
@@ -331,7 +336,7 @@ export async function claimPendingTransfers(){
         if(res.committed && ok){
           total += amt; player.kaju = nb;
           await set(ref(db, path), null);   // talep edildi → sil
-          logKaju(me.uid, amt, 'transfer-in', (t.fromNick||'Biri')+' gönderdi');
+          logKaju(amt, 'earn', 'gift', (t.fromNick||'Biri')+' gönderdi');
           claimed.push({ from: t.fromNick || 'Biri', amount: amt });
         }
       }catch(e){ /* sonraki transfer */ }

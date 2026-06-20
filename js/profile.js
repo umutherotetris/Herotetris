@@ -352,6 +352,18 @@ async function openBlockedList(){
   }catch(e){ box.innerHTML='<i style="color:#ff7a8a">Yüklenemedi</i>'; }
 }
 
+// ── 🔍 Arayüz ölçekleme ──
+function getUIScale(){
+  try{ const v = parseFloat(localStorage.getItem('hero_ui_scale')); return (v>=0.8 && v<=1.3) ? v : 1; }catch(e){ return 1; }
+}
+function applyUIScale(scale){
+  scale = Math.max(0.8, Math.min(1.3, scale));
+  try{ localStorage.setItem('hero_ui_scale', String(scale)); }catch(e){}
+  document.documentElement.style.fontSize = (16 * scale) + 'px';
+}
+// Açılışta uygula
+if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){} }
+
 function openSettings(){
   if(byId('setModal')) return;
   const ov=document.createElement('div'); ov.id='setModal'; ov.className='nick-modal-ov';
@@ -361,6 +373,10 @@ function openSettings(){
   const hfOn=setOn('hero_set_hidefriends',false);
   inner.innerHTML='<div class="nm-title">⚙️ Ayarlar</div>'
     +'<div class="set-theme-section"><div class="set-theme-lbl">🎨 TEMA & RENK</div><div class="set-theme-grid" id="themeGrid"></div></div>'
+    +'<div class="set-scale-section"><div class="set-scale-lbl">🔍 Arayüz Boyutu <span id="scaleVal">'+Math.round(getUIScale()*100)+'%</span></div>'
+      +'<div class="set-scale-row"><button class="scale-btn" id="scaleDown">A−</button>'
+      +'<input type="range" id="scaleSlider" min="80" max="130" step="5" value="'+Math.round(getUIScale()*100)+'" class="scale-slider">'
+      +'<button class="scale-btn" id="scaleUp">A+</button></div></div>'
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
     +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
     +'<div class="set-row"><span>🔔 Push bildirimleri</span><button class="set-tgl" id="stNotif">YÜKLENİYOR</button></div>'
@@ -371,6 +387,15 @@ function openSettings(){
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="stClose">Kapat</button></div>';
   inner.querySelector('#stClose').addEventListener('click',()=>ov.remove());
+  // 🔍 UI ölçek kontrolleri
+  const slider=inner.querySelector('#scaleSlider');
+  const scaleVal=inner.querySelector('#scaleVal');
+  const setScale=(pct)=>{ pct=Math.max(80,Math.min(130,pct)); slider.value=pct; if(scaleVal)scaleVal.textContent=pct+'%'; applyUIScale(pct/100); };
+  if(slider){
+    slider.addEventListener('input',()=>setScale(parseInt(slider.value)));
+    inner.querySelector('#scaleDown').addEventListener('click',()=>setScale(parseInt(slider.value)-5));
+    inner.querySelector('#scaleUp').addEventListener('click',()=>setScale(parseInt(slider.value)+5));
+  }
   // 🎨 Tema seçici
   const THEMES=[
     {key:'neon',    name:'Neon',    c1:'#00E5FF',c2:'#FF4081'},

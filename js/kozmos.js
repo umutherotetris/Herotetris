@@ -764,3 +764,20 @@ function feedAnim(){['⭐','🌟','✨','💫'].forEach((s,i)=>setTimeout(()=>{c
 function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return r+','+g+','+b;}
 
 export default openKozmos;
+
+
+// ── 🥚 Kozmo yumurtası ver (çark/ödül kullanır) ──
+export async function grantEgg(){
+  const st = (window.Hero && window.Hero.Auth && window.Hero.Auth.getState) ? window.Hero.Auth.getState() : null;
+  if(!st || !st.uid) return false;
+  try{
+    const id = 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    const seed = (Math.random()*0x7fffffff)|0;
+    const type = randomType(seed);
+    await fdb.set(fdb.ref(db, 'kozmos/'+st.uid+'/eggs/'+id), {
+      id, type, acceptedAt: Date.now(), feedCount: 0, ownerId: st.uid,
+      source: 'spin'
+    });
+    return true;
+  }catch(e){ console.warn('[kozmo] grantEgg', e); return false; }
+}
