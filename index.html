@@ -311,7 +311,18 @@
   /* FAB görünürlük sıfırlama */
   try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
   </script>
-  <script type="module" src="js/app.js?v=133"></script>
+  <!-- SW zorla güncelle + eski cache temizle (Unexpected token < / eski kod sorununu çözer) -->
+  <script>
+  (async function(){
+    try{
+      if('serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for(const r of regs){ try{ await r.update(); }catch(e){} }
+      }
+    }catch(e){}
+  })();
+  </script>
+  <script type="module" src="js/app.js?v=134"></script>
   <script type="module">
   /* Ekranlar + Sosyal Hub: versiyonsuz - her zaman güncel */
   const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
