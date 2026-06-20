@@ -726,6 +726,51 @@ function watchDMThreads(){
 }
 
 // ── 🔔 BİLDİRİMLER (kişisel + 📣 duyurular birleşik) ───────────
+// ── 🎨 ZENGİN BİLDİRİM KARTI (Goodyedek paleti) ──────────────
+function renderNotifCard(n){
+  // Bildirim tipi renk paleti — her tip kendi canlı rengiyle
+  const STY = {
+    kick:     {bg:'linear-gradient(135deg,rgba(255,82,82,.16),rgba(180,0,0,.08))', bd:'rgba(255,82,82,.5)',  bl:'#FF5252', ic:'🦵', col:'#ff9090', label:'SOHBETTEN ATILDIN', glow:'0 0 14px rgba(255,82,82,.25)'},
+    ban:      {bg:'linear-gradient(135deg,rgba(229,57,53,.18),rgba(120,0,0,.08))', bd:'rgba(229,57,53,.55)', bl:'#E53935', ic:'🚫', col:'#ff8a80', label:'BANLANDIN', glow:'0 0 16px rgba(229,57,53,.3)'},
+    unban:    {bg:'linear-gradient(135deg,rgba(105,240,174,.12),rgba(76,175,80,.05))', bd:'rgba(105,240,174,.4)', bl:'#69F0AE', ic:'✅', col:'#69F0AE', label:'BAN KALDIRILDI', glow:'none'},
+    mute:     {bg:'linear-gradient(135deg,rgba(255,152,0,.14),rgba(200,80,0,.06))', bd:'rgba(255,152,0,.45)', bl:'#FF9800', ic:'🔇', col:'#FFB74D', label:'SUSTURULDUN', glow:'0 0 12px rgba(255,152,0,.2)'},
+    admin:    {bg:'linear-gradient(135deg,rgba(255,82,82,.12),rgba(255,215,64,.06))', bd:'rgba(255,215,64,.5)', bl:'#FFD740', ic:'👑', col:'#FFD740', label:'ADMİN BİLDİRİMİ', glow:'0 0 14px rgba(255,215,64,.2)'},
+    broadcast:{bg:'linear-gradient(135deg,rgba(224,64,251,.14),rgba(171,71,188,.06))', bd:'rgba(224,64,251,.4)', bl:'#E040FB', ic:'📢', col:'#E040FB', label:'DUYURU', glow:'0 0 14px rgba(224,64,251,.22)'},
+    kaju:     {bg:'linear-gradient(135deg,rgba(255,215,64,.16),rgba(255,180,0,.08))', bd:'rgba(255,215,64,.45)', bl:'#FFD740', ic:'🎁', col:'#FFE57F', label:'KAJU HEDİYESİ', glow:'0 0 14px rgba(255,215,64,.25)'},
+    msg:      {bg:'linear-gradient(135deg,rgba(66,165,245,.12),rgba(66,165,245,.05))', bd:'rgba(66,165,245,.35)', bl:'#42A5F5', ic:'✉️', col:'#90CAF9', label:'MESAJ', glow:'none'},
+    friend:   {bg:'linear-gradient(135deg,rgba(105,240,174,.12),rgba(76,175,80,.05))', bd:'rgba(105,240,174,.4)', bl:'#69F0AE', ic:'👥', col:'#69F0AE', label:'ARKADAŞLIK', glow:'none'},
+    poke:     {bg:'linear-gradient(135deg,rgba(255,215,64,.14),rgba(255,152,0,.06))', bd:'rgba(255,215,64,.4)', bl:'#FFD740', ic:'👋', col:'#FFD740', label:'DÜRTME', glow:'0 0 12px rgba(255,215,64,.2)'},
+    challenge:{bg:'linear-gradient(135deg,rgba(255,152,0,.14),rgba(255,87,34,.07))', bd:'rgba(255,152,0,.4)', bl:'#FF9800', ic:'⚔️', col:'#FFB74D', label:'MEYDAN OKUMA', glow:'0 0 12px rgba(255,152,0,.2)'},
+    clan:     {bg:'linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,188,212,.05))', bd:'rgba(0,229,255,.4)', bl:'#00E5FF', ic:'🏰', col:'#00E5FF', label:'KLAN', glow:'0 0 12px rgba(0,229,255,.18)'},
+    system:   {bg:'rgba(255,255,255,.04)', bd:'rgba(206,147,216,.3)', bl:'#CE93D8', ic:'⚙️', col:'#CE93D8', label:'SİSTEM', glow:'none'}
+  };
+  // Tipi tespit et: önce n.type, sonra ikon/metin sezgisi
+  const txt0 = (n.text || n.msg || '');
+  let t = n.type || '';
+  if(!t || !STY[t]){
+    if(n.icon === '🦵' || txt0.includes('atıldın')) t = 'kick';
+    else if(n.icon === '🚫' || txt0.includes('banland')) t = 'ban';
+    else if(n.icon === '🔇' || txt0.includes('susturuld')) t = 'mute';
+    else if((txt0.includes('🪙') || txt0.includes('🥜') || txt0.includes('hediye')) && (txt0.includes('Kaju') || txt0.includes('kaju'))) t = 'kaju';
+    else if(n.from === 'admin' || n.from === 'system') t = 'admin';
+    else t = 'system';
+  }
+  const s = STY[t] || STY.system;
+  const ic  = esc(n.icon || s.ic);
+  const txt = esc(txt0);
+  const hdr = `<b style="color:${s.col};font-size:11px;font-weight:900;letter-spacing:.3px">${s.ic} ${s.label}${t==='admin'||t==='broadcast'?' 👑':''}</b><br>`;
+  const fromAttr = n.fromUid
+    ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-left:3px solid ${s.bl};border-color:${s.bd};background:${s.bg};box-shadow:${s.glow}"`
+    : `style="border-left:3px solid ${s.bl};border-color:${s.bd};background:${s.bg};box-shadow:${s.glow}"`;
+  return `<div class="ghp-notif-row" ${fromAttr}>
+    <div class="ghp-notif-icon" style="background:${s.bg};border:1px solid ${s.bd};font-size:20px">${ic}</div>
+    <div class="ghp-notif-body">
+      <div class="ghp-notif-text">${hdr}<span style="color:#e8eaf6">${txt}</span></div>
+      <div class="ghp-chat-ts" style="color:${s.col};opacity:.85">${tAgo(n.ts || 0)}</div>
+    </div>
+  </div>`;
+}
+
 function renderNotifPane(){
   const list = byId('ghpNotifList'); if(!list) return;
   const all = [
@@ -744,30 +789,7 @@ function renderNotifPane(){
           <div class="ghp-chat-ts" style="color:#FFD740;opacity:.8">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
         </div>
       </div>` : `
-      ${(()=>{
-        const isKick  = (n.icon==='🦵') || (n.text||'').includes('atıldın') || n.type==='kick';
-        const isAdmin = n.from==='admin' || n.from==='system';
-        const bdr  = isKick  ? 'rgba(255,82,82,.5)'         : isAdmin ? 'rgba(255,215,64,.45)'        : 'rgba(255,215,64,.18)';
-        const bg   = isKick  ? 'linear-gradient(135deg,rgba(255,82,82,.13),rgba(180,0,0,.07))'
-                             : isAdmin ? 'linear-gradient(135deg,rgba(255,215,64,.1),rgba(224,64,251,.06))'
-                             : 'linear-gradient(135deg,rgba(255,215,64,.05),transparent)';
-        const glow = isKick  ? '0 0 14px rgba(255,82,82,.2)'
-                             : isAdmin ? '0 0 14px rgba(255,215,64,.15)' : 'none';
-        const iconBg  = isKick ? 'rgba(255,82,82,.18)' : isAdmin ? 'rgba(255,215,64,.15)' : 'rgba(255,215,64,.1)';
-        const iconBdr = isKick ? '1px solid rgba(255,82,82,.4)' : isAdmin ? '1px solid rgba(255,215,64,.4)' : '1px solid rgba(255,215,64,.2)';
-        const ic   = esc(n.icon || '🔔');
-        const txt  = esc(n.text || n.msg || '');
-        const hdr  = isKick  ? '<b style="color:#ff8fa0;font-size:11px">🦵 SOHBETTEN ATILDIN</b><br>'
-                             : isAdmin ? '<b style="color:#FFD740;font-size:11px">👑 ADMİN BİLDİRİMİ 👑</b><br>' : '';
-        const fromAttr = n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:${bdr};background:${bg};box-shadow:${glow}"` : `style="border-color:${bdr};background:${bg};box-shadow:${glow}"`;
-        return `<div class="ghp-notif-row" ${fromAttr}>
-          <div class="ghp-notif-icon" style="background:${iconBg};border:${iconBdr};font-size:20px">${ic}</div>
-          <div class="ghp-notif-body">
-            <div class="ghp-notif-text">${hdr}<span style="color:#e8eaf6">${txt}</span></div>
-            <div class="ghp-chat-ts" style="color:${isKick?'#ff8fa0':isAdmin?'#FFD740':'inherit'}">${tAgo(n.ts || 0)}</div>
-          </div>
-        </div>`;
-      })()}`).join('');
+      ${renderNotifCard(n)}`).join('');
   list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
 }
 function listenNotifs(uid){
