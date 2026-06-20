@@ -1762,7 +1762,11 @@ async function endGame(){
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
-  const playerWon = a > b;
+  // Oyuncunun kendi rolüne göre kazanma (online'da B olabilirsin!)
+  const myRole = G.role || 'A';
+  const myScore = G.state.scores[myRole];
+  const oppScore = G.state.scores[myRole==='A'?'B':'A'];
+  const playerWon = myScore > oppScore;
   const klKaju = playerWon ? 70 : a===b ? 30 : 10;
   const klXp = playerWon ? 50 : a===b ? 20 : 15;
   try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
