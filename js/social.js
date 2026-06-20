@@ -655,7 +655,19 @@ function dmOpenThread(uid, nick){
         ? ((Auth.getState().profile && Auth.getState().profile.avatar) || defaultAvatar(me))
         : (m.fromAvatar || defaultAvatar(m.from || ''));
       // İsim + admin rozeti
-      const nameHtml = isMine ? '' : (() => {
+      const nameHtml = (() => {
+        // Kendi mesajım: kendi nick'imi göster (sağa hizalı)
+        if(isMine){
+          const myState = Auth.getState();
+          const myNick = esc(myState.displayName || (myState.profile && myState.profile.nick) || 'Sen');
+          const myAdm = myState.isAdmin === true;
+          if(myAdm){
+            const gcl = glowClass();
+            return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px;text-align:right"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${myNick} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;
+          }
+          return `<div style="color:#00E5FF;font-size:10px;font-weight:800;margin-bottom:2px;text-align:right">${myNick}</div>`;
+        }
+        // Karşı tarafın mesajı
         const n = esc(m.fromName || H.dmThread.nick || 'Oyuncu');
         if(isAdmMsg || threadIsAdmin){
           const gcl = glowClass();
