@@ -264,6 +264,25 @@ export function applyFabSetting(){
   }
 }
 // Ekranlardan hub'ı belirli sekmede aç
+// Dışarıdan (profile.js, nav.js) DM açmak için — hub'ı gösterir + DM'e geçer
+export function dmOpenThreadExternal(uid, nick){
+  // Sosyal hub'ı göster (FAB'a basmadan direkt aç)
+  let panel = document.getElementById('ghpPanel');
+  if(!panel){
+    // Hub kapalıysa gem FAB'a programatik tıkla
+    const fab = document.getElementById('gemFloatBtn');
+    if(fab) fab.click();
+    // Kısa bekle sonra DM aç
+    setTimeout(() => {
+      try{ openHubTab('ozel'); dmOpenThread(uid, nick); }catch(e){}
+    }, 180);
+  } else {
+    // Hub zaten açık
+    openHubTab('ozel');
+    dmOpenThread(uid, nick);
+  }
+}
+
 export function openHubTab(tab){
   if(!H) return;
   switchTab(tab || 'chat');
