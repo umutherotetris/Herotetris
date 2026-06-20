@@ -4,19 +4,16 @@
 // ═══════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 
+
+// Hafif toast helper
+function _toast(msg, isErr){
+  try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
+  try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
+}
+
 let _swReg = null;
 let _notifListener = null;
 let _lastNotifTs = 0;
-
-// Yeni SW kontrolü ele aldığında sayfayı BİR KEZ yenile (güncel kod gelsin)
-if(typeof navigator !== 'undefined' && 'serviceWorker' in navigator){
-  let _swReloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if(_swReloaded) return;
-    _swReloaded = true;
-    location.reload();
-  });
-}
 
 // ── Service Worker kaydı ─────────────────────────────────────
 export async function registerSW(){
@@ -45,10 +42,10 @@ export function notifPermission(){
 
 // ── İzin iste ────────────────────────────────────────────────
 export async function requestNotifPermission(){
-  if(!('Notification' in window)){ alert('Tarayıcın bildirimleri desteklemiyor'); return false; }
+  if(!('Notification' in window)){ _toast('Tarayıcın bildirimleri desteklemiyor'); return false; }
   if(Notification.permission === 'granted') return true;
   if(Notification.permission === 'denied'){
-    alert('Bildirimler engellenmiş. Tarayıcı ayarlarından izin vermelisin.');
+    _toast('Bildirimler engellenmiş. Tarayıcı ayarlarından izin vermelisin.');
     return false;
   }
   try{
