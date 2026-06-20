@@ -189,7 +189,7 @@ function _renderProfile(st){
   if(q('clan')) q('clan').addEventListener('click',async()=>{ try{const m=await import('./clan.js');m.default();}catch(e){_toast('Klan: '+(e.message||e));} });
   if(q('season')) q('season').addEventListener('click',async()=>{ try{const m=await import('./season.js');m.openSeason();}catch(e){_toast('Sezon: '+(e.message||e));} });
   if(q('shop')) q('shop').addEventListener('click',async()=>{ try{const m=await import('./shop.js');m.openShop();}catch(e){_toast('Mağaza: '+(e.message||e));} });
-  if(q('kozmos')) q('kozmos').addEventListener('click',async()=>{ try{const m=await import('./kozmos.js');m.openKozmos();}catch(e){_toast('Kozmos: '+(e.message||e));} });
+  if(q('kozmos')) q('kozmos').addEventListener('click',async()=>{ try{const m=await import('./games/kozmos.js');m.openKozmos();}catch(e){_toast('Kozmos: '+(e.message||e));} });
   if(q('frame')) q('frame').addEventListener('click',openFramePicker);
   // Avatar/fotoğraf seçici
   const avb=box.querySelector('[data-p="avatar"]');
@@ -643,7 +643,7 @@ async function _renderNavFriends(){
       }catch(err){ console.warn('[navDM]',err); }
     }));
     box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
-      e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}
+      e.stopPropagation();try{const m=await import('./games/kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}
     }));
   }catch(e){ box.innerHTML='<div class="prf-lbl">👥 ARKADAŞLAR</div><i style="color:#7d8ab8">Yüklenemedi</i>'; }
 }
