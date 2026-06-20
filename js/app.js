@@ -15,13 +15,13 @@ function toast(msg, isErr){
   if(!t){
     t = document.createElement('div');
     t.id = '__heroToast';
-    t.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;z-index:99999;padding:10px 12px;border-radius:10px;font:700 11px/1.5 system-ui;white-space:pre-wrap;word-break:break-word;box-shadow:0 8px 30px rgba(0,0,0,.6)';
+    t.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;z-index:99999;padding:10px 12px;border-radius:10px;font:700 11px/1.5 system-ui;white-space:pre-wrap;word-break:break-word;box-shadow:0 8px 30px rgba(0,0,0,.6);pointer-events:none';
     document.body.appendChild(t);
   }
   t.style.background = isErr ? 'rgba(255,82,82,.96)' : 'rgba(105,240,174,.96)';
   t.style.color = isErr ? '#fff' : '#001018';
   t.textContent = msg;
-  clearTimeout(t.__h); t.__h = setTimeout(() => { t.remove(); }, isErr ? 9000 : 2500);
+  clearTimeout(t.__h); t.__h = setTimeout(() => { t.remove(); }, isErr ? 4000 : 2000);
 }
 
 // Bir oyun modülünü dinamik yükle + aç. Hata olursa sadece o oyun etkilenir.
@@ -96,8 +96,9 @@ function start(){
   bindEco('ecoWheelBtn',  './economy.js', 'openDailyWheel');
   bindEco('ecoQuestBtn',  './economy.js', 'openQuests');
   bindEco('ecoHistBtn',   './economy.js', 'openKajuHistory');
-  updateEcoBadges();
-  setInterval(updateEcoBadges, 30000);
+  // Badge güncelleme: 3sn sonra (önce kritik UI yüklensin)
+  setTimeout(updateEcoBadges, 3000);
+  setInterval(updateEcoBadges, 60000);
 
   // Yakalanmayan hataları ekrana bas
   window.addEventListener('error', (e) => toast('HATA: ' + (e.message || '') + '\n' + (e.filename||'').split('/').pop() + ':' + (e.lineno||''), true));
