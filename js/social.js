@@ -8,6 +8,8 @@ import { Auth, db, fdb } from './auth.js';
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tAgo = (ts) => { const d = Date.now()-ts; if(d<60e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk'; if(d<86400e3) return Math.floor(d/3600e3)+' sa'; return Math.floor(d/86400e3)+' g'; };
+// Minik tam tarih+saat (tooltip + altta gösterim)
+const tFull = (ts) => { if(!ts) return ''; const dt=new Date(ts); const bugun=new Date(); const ayni=dt.toDateString()===bugun.toDateString(); const saat=dt.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); if(ayni) return saat; return dt.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'})+' '+saat; };
 
 let H = null;   // hub durumu
 
@@ -18,7 +20,48 @@ export const GLOW_STYLES = {
   ice:{label:'❄️ Buz', cls:'ng-ice'},           purple:{label:'💜 Mor', cls:'ng-purple'},
   gold:{label:'👑 Altın', cls:'ng-gold'}
 };
+function showToast(msg,dur){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(20,30,60,.95);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 18px;font-size:12px;font-weight:700;color:#dfe7ff;z-index:99999;pointer-events:none;animation:dailyToastIn .3s ease';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), dur||2200);
+}
 export function glowClass(){ const k = localStorage.getItem('hero_glow_style') || 'classic'; return (GLOW_STYLES[k] || GLOW_STYLES.classic).cls; }
+
+// ── 🔔 Yeni mesaj bildirimi (ekran üstü kayan toast + ses) ──
+function dmNotifSound(){
+  try{
+    const ac = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type='sine'; o.frequency.setValueAtTime(880, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(1320, ac.currentTime+0.08);
+    g.gain.setValueAtTime(0.0001, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12, ac.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+0.3);
+    o.start(ac.currentTime); o.stop(ac.currentTime+0.32);
+  }catch(e){}
+}
+function showDMNotifToast(uid, nick, text){
+  dmNotifSound();
+  // Avatar çek
+  let ava='👤';
+  (async()=>{ try{ const u=await fdb.get(fdb.ref(db,'users/'+uid+'/avatar')); if(u.exists()) ava=u.val(); const el=document.querySelector('#dmNT_'+CSS.escape(uid)+' .dm-nt-ava'); if(el) el.textContent=ava; }catch(e){} })();
+  const ex=document.getElementById('dmNT_'+uid); if(ex) ex.remove();
+  const t=document.createElement('div'); t.id='dmNT_'+uid; t.className='dm-notif-toast';
+  t.innerHTML='<div class="dm-nt-ava">'+ava+'</div>'
+    +'<div class="dm-nt-body"><div class="dm-nt-name">✉️ '+esc(nick)+'</div><div class="dm-nt-text">'+esc((text||'').slice(0,48))+'</div></div>';
+  document.body.appendChild(t);
+  // Tıkla → sohbeti aç
+  t.addEventListener('click', ()=>{
+    t.remove();
+    applyFabSetting(); openHubTab('ozel');
+    let _t=0; const _try=()=>{ _t++; const el=byId('ghpDMThread'); if(el){ try{dmOpenThread(uid,nick);}catch(e){} } else if(_t<15){ setTimeout(_try,80); } };
+    setTimeout(_try,120);
+  });
+  setTimeout(()=>{ t.classList.add('dm-nt-out'); setTimeout(()=>t.remove(),350); }, 4200);
+}
 
 // Seçilebilir avatarlar (profil > değiştir)
 // Basit, her cihazda çalışan avatarlar (ZWJ sekansı yok)
@@ -57,34 +100,263 @@ export async function openPlayerCard(uid){
   const isOp = H && H.ops && H.ops[uid] === true;
   let isFriend = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
+  // Engelleme durumu
+  let isBlocked = false;
+  try{ const s = await fdb.get(fdb.ref(db, 'blocks/' + me.uid + '/' + uid)); isBlocked = s.exists() && s.val() === true; }catch(e){}
+  // Arkadaş sayısı + liste (gizlilik kontrolü)
+  const meAdmGlobal = (H&&H.admins&&H.admins[me.uid]) || me.isAdmin===true;
+  const frHidden = p.friendsHidden === true;
+  let frList = [], frCount = 0, frData = [];
+  if(!frHidden || meAdmGlobal){
+    try{
+      const fs = await fdb.get(fdb.ref(db,'friends/'+uid));
+      if(fs.exists()){
+        const fv=fs.val()||{};
+        const allUids=Object.keys(fv);
+        frCount=allUids.length;
+        frList=allUids.slice(0,8);
+        // Her arkadaşın detayını çek (isim, avatar, online, level)
+        frData = await Promise.all(frList.map(async fu=>{
+          let nm='Arkadaş', av='👤', ol=false, lv=1;
+          try{
+            const u=await fdb.get(fdb.ref(db,'users/'+fu));
+            if(u.exists()){ const v=u.val(); nm=v.nick||v.name||nm; av=v.avatar||'👤'; lv=v.level||1; }
+          }catch(e){}
+          try{
+            const pr=await fdb.get(fdb.ref(db,'presence/'+fu));
+            if(pr.exists()){ const pv=pr.val(); ol=pv.online===true && (Date.now()-(pv.lastSeen||0))<180000; }
+          }catch(e){}
+          return { uid:fu, nm, av, ol, lv };
+        }));
+        // Online olanlar üstte
+        frData.sort((a,b)=>(b.ol-a.ol)||0);
+      }
+    }catch(e){}
+  }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
+  // En iyi rozetleri çek (ilk 5)
+  let topBadges = [];
+  try{
+    const bm = await import('./badges.js');
+    const all = await bm.getUserBadges(uid, p);
+    const earned = all.filter(b=>b.earned);
+    const rarOrder={mythic:0,legendary:1,epic:2,special:3,rare:4,common:5};
+    earned.sort((a,b)=>(rarOrder[a.rarity]??9)-(rarOrder[b.rarity]??9));
+    topBadges = earned.slice(0,5).map(b=>({icon:b.icon,name:b.name,rarity:b.rarity,color:(bm.BADGE_RARITY[b.rarity]||{}).color||'#9fb0d8'}));
+  }catch(e){}
   ov.querySelector('.pcp-card').innerHTML = `
     <div class="pcp-top">
       <div class="pcp-ava">${avatarOf(p, uid)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
       <div class="pcp-id">
         <div class="pcp-name ${isAdm ? glowClass() : ''}" style="${isAdm?'color:#FFD740':''}">${esc(nick)}
-          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN 👑</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
+          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
         </div>
         <div class="pcp-sub">${online ? '<b style="color:#69F0AE">● Çevrimiçi</b>' : (pr.lastSeen ? tAgo(pr.lastSeen) + ' önce görüldü' : 'Çevrimdışı')}</div>
       </div>
     </div>
     <div class="pcp-stats">
       <div class="pcp-stat"><b>⭐ ${esc(p.level || 1)}</b><span>SEVİYE</span></div>
-      <div class="pcp-stat"><b>💰 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
+      <div class="pcp-stat"><b>🥜 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
       <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
-    ${self ? '' : `<div class="pcp-acts">
-      <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
-      <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
+    ${topBadges.length ? '<div class="pcp-badges"><div class="pcp-badges-lbl">🏅 Rozetler</div><div class="pcp-badges-row">'+topBadges.map(b=>'<div class="pcp-badge-chip" title="'+esc(b.name)+'" style="--bc:'+b.color+'">'+b.icon+'</div>').join('')+'</div></div>' : ''}
+    ${(()=>{
+      // Arkadaş listesi gösterimi
+      if(frHidden && !meAdmGlobal) return '<div class="pcp-friends-box"><div class="pcp-fr-hidden">🔒 Arkadaş listesi gizli</div></div>';
+      if(frCount===0) return '';
+      const onlineCount = frData.filter(f=>f.ol).length;
+      const rows = frData.map(fr=>
+        '<div class="pcp-fr-row" data-frgo="'+esc(fr.uid)+'">'
+          +'<div class="pcp-fr-avawrap">'+esc(fr.av)+(fr.ol?'<span class="pcp-fr-dot"></span>':'')+'</div>'
+          +'<div class="pcp-fr-info"><div class="pcp-fr-nm">'+esc(fr.nm)+'</div><div class="pcp-fr-meta">'+(fr.ol?'<span style="color:#69F0AE">● Çevrimiçi</span>':'<span style="color:#5d6890">Çevrimdışı</span>')+' · Lv '+fr.lv+'</div></div>'
+          +'<div class="pcp-fr-go">›</div>'
+        +'</div>'
+      ).join('');
+      const moreTxt = frCount>frData.length ? '<div class="pcp-fr-more">+'+(frCount-frData.length)+' arkadaş daha</div>' : '';
+      return '<div class="pcp-friends-box">'
+        +'<div class="pcp-fr-title">👥 Arkadaşlar <span class="pcp-fr-count">'+frCount+'</span>'
+          +(onlineCount>0?'<span class="pcp-fr-online-badge">'+onlineCount+' çevrimiçi</span>':'')
+          +(frHidden?' <span style="color:#FFB74D;font-size:8px">🔒 admin</span>':'')
+        +'</div>'
+        +'<div class="pcp-fr-rows">'+rows+'</div>'
+        +moreTxt
+      +'</div>';
+    })()}
+    ${self ? '' : `<div class="pcp-acts-grid">
+      <button class="pcp-act-ico" data-pc="dm" title="Mesaj Gönder">✉️<span>Mesaj</span></button>
+      <button class="pcp-act-ico" data-pc="egg" title="Kozmo Gönder" style="color:#c084fc">🥚<span>Kozmo</span></button>
+      <button class="pcp-act-ico" data-pc="poke" title="Dürt" style="color:#FFB74D">👉<span>Dürt</span></button>
+      <button class="pcp-act-ico" data-pc="challenge" title="Meydan Oku" style="color:#FF7043">⚔️<span>Meydan</span></button>
+      <button class="pcp-act-ico" data-pc="fr" title="${isFriend ? 'Çıkar' : 'Ekle'}" style="color:${isFriend?'#FF7043':'#69F0AE'}">${isFriend ? '✕' : '👥'}<span>${isFriend ? 'Çıkar' : 'Arkadaş'}</span></button>
+      <button class="pcp-act-ico" data-pc="block" title="${isBlocked ? 'Engeli Kaldır' : 'Engelle'}" style="color:${isBlocked?'#69F0AE':'#FF5252'}">${isBlocked ? '🔓' : '🚫'}<span>${isBlocked ? 'Engel Kaldır' : 'Engelle'}</span></button>
+      ${(()=>{
+        if(uid===me.uid) return '';
+        const meAdmin = me.isAdmin === true;
+        const meOp = (H && H.ops && H.ops[me.uid] === true);
+        if(!meAdmin && !meOp) return '';
+        const targetIsOp = (H && H.ops && H.ops[uid] === true);
+        let html = '<div class="pcp-admin-mod">';
+        if(meAdmin){
+          // ── ADMİN: tüm yetkiler ──
+          html += '<div class="pcp-mod-lbl">👑 Yönetici İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn ban" data-mod="ban">🚫 Ban</button>'
+              + '<button class="pcp-mod-btn" data-mod="unban">✅ Unban</button>'
+              + '<button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button>'
+              + '<button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button>'
+              + '<button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button>'
+              + '<button class="pcp-mod-btn op" data-mod="'+(targetIsOp?'unop':'op')+'">'+(targetIsOp?'🔧 OP Al':'🔧 OP Yap')+'</button>'
+            + '</div>'
+            + '<div class="pcp-mod-lbl" style="margin-top:8px;color:#FF7043">🌐 IP İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn" data-mod="showip">👁️ IP Gör</button>'
+              + '<button class="pcp-mod-btn ban" data-mod="ipban">🌐 IP Ban</button>'
+              + '<button class="pcp-mod-btn" data-mod="ipunban">✅ IP Unban</button>'
+            + '</div>';
+        } else if(meOp){
+          // ── OPERATÖR: sınırlı yetkiler ──
+          html += '<div class="pcp-mod-lbl" style="color:#CE93D8">🔧 Operatör İşlemleri</div>'
+            + '<div class="pcp-mod-grid">'
+              + '<button class="pcp-mod-btn kick" data-mod="kick">🦵 Kick</button>'
+              + '<button class="pcp-mod-btn mute" data-mod="mute">🔇 Mute</button>'
+              + '<button class="pcp-mod-btn" data-mod="unmute">🔊 Unmute</button>'
+            + '</div>';
+        }
+        html += '</div>';
+        return html;
+      })()}
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  // 🚫 Engelle / Engeli kaldır
+  const blockB = ov.querySelector('[data-pc="block"]');
+  if(blockB) blockB.addEventListener('click', async () => {
+    if(me.status !== 'google'){ showToast('Engelleme için giriş gerekli.'); return; }
+    try{
+      if(isBlocked){
+        await fdb.set(fdb.ref(db,'blocks/'+me.uid+'/'+uid), null);
+        showToast('🔓 '+nick+' engeli kaldırıldı');
+      } else {
+        if(!confirm('🚫 '+nick+' engellensin mi?\n\nEngellenen kişi sana mesaj gönderemez, sen de onun mesajlarını görmezsin.'))return;
+        await fdb.set(fdb.ref(db,'blocks/'+me.uid+'/'+uid), true);
+        // Arkadaşlıktan da çıkar
+        try{ await fdb.set(fdb.ref(db,'friends/'+me.uid+'/'+uid), null); await fdb.set(fdb.ref(db,'friends/'+uid+'/'+me.uid), null); }catch(e){}
+        showToast('🚫 '+nick+' engellendi');
+      }
+      ov.remove();
+    }catch(e){ showToast('Yapılamadı'); }
+  });
+  // 👥 Arkadaş chip'lerine tıklama (o kişinin profilini aç)
+  ov.querySelectorAll('[data-frgo]').forEach(chip => chip.addEventListener('click', () => {
+    const fu = chip.dataset.frgo;
+    ov.remove();
+    setTimeout(() => openPlayerCard(fu), 100);
+  }));
+  // 👉 Poke
+  const pokeB = ov.querySelector('[data-pc="poke"]');
+  if(pokeB) pokeB.addEventListener('click', async()=>{
+    try{
+      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'👉',text:(me.displayName||'Biri')+' seni dürttü!',ts:Date.now(),fromUid:me.uid});
+      // Kısa vibrasyon
+      if(navigator.vibrate) navigator.vibrate([30,20,30]);
+      ov.remove();
+      showToast('👉 Dürtüldü!');
+    }catch(e){}
+  });
+  // ⚔️ Meydan okuma
+  const chalB = ov.querySelector('[data-pc="challenge"]');
+  if(chalB) chalB.addEventListener('click', async()=>{
+    // Online kontrolü — çevrimdışı oyuncuya meydan okunamaz
+    if(!online){
+      showToast('⚠️ '+nick+' şu an çevrimdışı. Meydan okuma sadece çevrimiçi oyunculara gönderilebilir.');
+      return;
+    }
+    if(!confirm('⚔️ '+nick+' adlı oyuncuya meydan okuyacaksın. Devam?'))return;
+    try{
+      await fdb.set(fdb.ref(db,'gameInvites/'+uid+'/chall_'+Date.now()),{
+        fromUid:me.uid,fromName:me.displayName||'Oyuncu',fromAvatar:(me.profile&&me.profile.avatar)||'👤',
+        toUid:uid,type:'challenge',game:'tetris',ts:Date.now(),status:'pending'
+      });
+      await fdb.push(fdb.ref(db,'userNotifs/'+uid),{icon:'⚔️',text:(me.displayName||'Biri')+' sana meydan okudu! (Tetris)',ts:Date.now(),fromUid:me.uid});
+      ov.remove(); showToast('⚔️ Meydan okuma gönderildi!');
+    }catch(e){showToast('Gönderilemedi');}
+  });
+  // 👑/🔧 Moderasyon butonları (rol bazlı)
+  ov.querySelectorAll('[data-mod]').forEach(btn=>btn.addEventListener('click',async()=>{
+    const action=btn.dataset.mod;
+    const mod=await import('./moderation.js');
+    // Neden sorulacak aksiyonlar
+    const needsReason=['ban','mute','kick','unban','unmute','ipban','ipunban'];
+    let reason='';
+    if(needsReason.includes(action)){
+      reason=prompt('Neden? (boş bırakırsan "Kural İhlali")','')||'';
+    }
+    let ok=false, msg='';
+    try{
+      if(action==='ban'){ if(!confirm('🚫 '+nick+' oyundan banlansın mı?'))return; ok=await mod.globalBan(uid,nick,reason); msg='Banlandı'; }
+      else if(action==='unban'){ ok=await mod.globalUnban(uid,nick,reason); msg='Ban kaldırıldı'; }
+      else if(action==='mute'){ const dur=prompt('Kaç dakika? (boş = süresiz)','60'); const d=dur?parseInt(dur):null; if(!confirm('🔇 '+nick+' susturulsun mu?'))return; ok=await mod.globalMute(uid,nick,reason,d); msg='Susturuldu'; }
+      else if(action==='unmute'){ ok=await mod.globalUnmute(uid,nick,reason); msg='Susturma kaldırıldı'; }
+      else if(action==='kick'){
+        if(!confirm('🦵 '+nick+' oyundan atılsın mı?'))return;
+        const res=await mod.globalKick(uid,nick,reason);
+        if(res&&res.ok){ showToast('✅ '+nick+': Oyundan atıldı'); setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
+        else { showToast(res&&res.error?res.error:'Atılamadı'); }
+        return;
+      }
+      else if(action==='op'){ if(!confirm('🔧 '+nick+' operatör yapılsın mı?'))return; ok=await mod.makeOperator(uid,nick); msg='Operatör yapıldı'; if(H&&H.ops)H.ops[uid]=true; }
+      else if(action==='unop'){ if(!confirm('🔧 '+nick+' operatörlüğü kaldırılsın mı?'))return; ok=await mod.removeOperator(uid,nick); msg='Operatörlük kaldırıldı'; if(H&&H.ops)delete H.ops[uid]; }
+      else if(action==='showip'){
+        const ip=await mod.getUserIP(uid);
+        showToast(ip?('🌐 '+nick+' IP adresi:\n'+ip):'IP bilgisi bulunamadı (kullanıcı henüz kaydetmemiş olabilir)');
+        return;
+      }
+      else if(action==='ipban'){
+        if(!confirm('🌐 '+nick+' IP adresi yasaklansın mı? (Bu IP ile giriş engellenir)'))return;
+        const res=await mod.ipBan(uid,nick,reason);
+        if(res.ok){ showToast('✅ IP banlandı: '+res.ip); }
+        else { showToast('IP ban başarısız: '+(res.error||'bilinmeyen')); }
+        return;
+      }
+      else if(action==='ipunban'){
+        const res=await mod.ipUnban(uid,nick,reason);
+        if(res.ok){ showToast('✅ IP yasağı kaldırıldı'); }
+        else { showToast('Başarısız: '+(res.error||'bilinmeyen')); }
+        return;
+      }
+      if(ok){ showToast('✅ '+nick+': '+msg); btn.textContent='✓'; setTimeout(()=>{try{ov.remove();}catch(e){}},800); }
+      else { showToast('İşlem başarısız'); }
+    }catch(e){ showToast('Hata: '+(e.message||e)); }
+  }));
+  const eggPcB = ov.querySelector('[data-pc="egg"]');
+  if(eggPcB) eggPcB.addEventListener('click', async() => {
+    ov.remove();
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(uid, nick); }catch(e){ showToast('Kozmo gönderilemedi: '+(e.message||e)); }
+  });
   const dmB = ov.querySelector('[data-pc="dm"]');
-  if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
+  if(dmB) dmB.addEventListener('click', () => {
+    ov.remove();
+    applyFabSetting();
+    // Hub'ı aç ve özel sekmeye geç
+    openHubTab('ozel');
+    // DM thread'i aç — element hazır olana kadar dene (retry)
+    let tries = 0;
+    const tryOpen = () => {
+      tries++;
+      const dmListEl = byId('ghpDMList');
+      const dmThreadEl = byId('ghpDMThread');
+      if(dmListEl && dmThreadEl){
+        try{ dmOpenThread(uid, nick); }catch(e){ console.warn('[DM]', e); }
+      } else if(tries < 15){
+        setTimeout(tryOpen, 80);
+      }
+    };
+    setTimeout(tryOpen, 100);
+  });
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
-    if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
+    if(me.status !== 'google'){ showToast('Arkadaşlık için Google ile giriş gerekli.'); return; }
     try{
       if(isFriend){
         await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
@@ -96,7 +368,7 @@ export async function openPlayerCard(uid){
       }
       ov.remove();
       if(H && H.open && H.tab === 'dost') renderFriends();
-    }catch(e){ alert('Yapılamadı'); }
+    }catch(e){ showToast('Yapılamadı'); }
   });
 }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 
@@ -130,168 +402,146 @@ function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth;
 
 // ── Kurulum ─────────────────────────────────────────────────────
 // Ayar: FAB'lar gizlenebilir (profil > ayarlar)
-// ── ⚙️ SOSYAL HUB AYARLAR PANELİ ──────────────────────────────
-function openHubSettings(){
-  if(document.getElementById('ghpSettingsModal')) return;
-  const fabsOn   = localStorage.getItem('hero_set_fabs') !== '0';
-  const admHidden = localStorage.getItem('hero_admfab_hidden') === '1';
-  const st = Auth.getState();
-  const isAdm = st.isAdmin === true;
-
-  const m = document.createElement('div');
-  m.id = 'ghpSettingsModal';
-  m.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
-  m.innerHTML = `
-    <div style="background:linear-gradient(160deg,#1a1a2e,#16162a);border:1px solid rgba(124,77,255,.35);border-radius:18px;padding:0;max-width:380px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(124,77,255,.2);position:sticky;top:0;background:linear-gradient(160deg,#1a1a2e,#16162a);z-index:1">
-        <div style="font-size:16px;font-weight:900;color:#B39DDB">⚙️ Ayarlar</div>
-        <button id="ghpSetClose" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-size:16px;cursor:pointer">✕</button>
-      </div>
-      <div style="padding:16px 18px;display:flex;flex-direction:column;gap:14px">
-
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-          <div><div style="font-weight:800;font-size:13px;color:#e8eaf6">💎 FAB Butonları</div><div style="font-size:10px;color:#8a93b8">Ekrandaki gem & admin butonları</div></div>
-          <button id="ghpSetFabs" class="ghp-set-toggle" style="padding:6px 14px;border-radius:20px;border:1px solid ${fabsOn?'#5fd38a':'#ff8fa0'};background:${fabsOn?'rgba(95,211,138,.15)':'rgba(255,143,160,.15)'};color:${fabsOn?'#5fd38a':'#ff8fa0'};font-weight:800;font-size:12px;cursor:pointer">${fabsOn?'AÇIK':'KAPALI'}</button>
-        </div>
-
-        ${isAdm ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-          <div><div style="font-weight:800;font-size:13px;color:#e8eaf6">👑 Admin FAB</div><div style="font-size:10px;color:#8a93b8">Admin butonu görünürlüğü</div></div>
-          <button id="ghpSetAdmFab" style="padding:6px 14px;border-radius:20px;border:1px solid ${admHidden?'#ff8fa0':'#5fd38a'};background:${admHidden?'rgba(255,143,160,.15)':'rgba(95,211,138,.15)'};color:${admHidden?'#ff8fa0':'#5fd38a'};font-weight:800;font-size:12px;cursor:pointer">${admHidden?'GİZLİ':'GÖRÜNÜR'}</button>
-        </div>` : ''}
-
-        <div style="height:1px;background:rgba(255,255,255,.08);margin:2px 0"></div>
-
-        <div style="font-weight:800;font-size:12px;color:#8a93b8;text-transform:uppercase;letter-spacing:.5px">🧹 Bakım</div>
-
-        <button id="ghpSetReload" style="text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(66,165,245,.3);background:rgba(66,165,245,.08);color:#90CAF9;font-weight:700;font-size:13px;cursor:pointer">
-          🔄 Sayfayı Yenile <span style="font-size:10px;opacity:.7;display:block;font-weight:400">Önbelleği atlayarak yeniden yükle</span>
-        </button>
-
-        <button id="ghpSetClearCache" style="text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,180,0,.3);background:rgba(255,180,0,.08);color:#FFD740;font-weight:700;font-size:13px;cursor:pointer">
-          🗑 Önbellek & Bellek Temizle <span style="font-size:10px;opacity:.7;display:block;font-weight:400">localStorage + cache temizler (oturum korunur)</span>
-        </button>
-
-        <button id="ghpSetHardReset" style="text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,82,82,.35);background:rgba(255,82,82,.08);color:#ff8fa0;font-weight:700;font-size:13px;cursor:pointer">
-          ⚠️ Tam Sıfırlama <span style="font-size:10px;opacity:.7;display:block;font-weight:400">Tüm yerel veri + çıkış (yeniden giriş gerekir)</span>
-        </button>
-
-        <div style="font-size:9px;color:#50506e;text-align:center;margin-top:4px">Hero Oyun Portalı · ${st.uid ? st.uid.slice(0,8) : 'misafir'}</div>
-      </div>
-    </div>`;
-  document.body.appendChild(m);
-
-  const close = () => m.remove();
-  byId('ghpSetClose').addEventListener('click', close);
-  m.addEventListener('click', (e) => { if(e.target === m) close(); });
-
-  // FAB toggle
-  const fabBtn = byId('ghpSetFabs');
-  if(fabBtn) fabBtn.addEventListener('click', () => {
-    const on = localStorage.getItem('hero_set_fabs') !== '0';
-    localStorage.setItem('hero_set_fabs', on ? '0' : '1');
-    applyFabSetting();
-    close(); openHubSettings();
-  });
-
-  // Admin FAB toggle
-  const admBtn = byId('ghpSetAdmFab');
-  if(admBtn) admBtn.addEventListener('click', () => {
-    const hidden = localStorage.getItem('hero_admfab_hidden') === '1';
-    localStorage.setItem('hero_admfab_hidden', hidden ? '0' : '1');
-    applyFabSetting();
-    close(); openHubSettings();
-  });
-
-  // Sayfayı yenile (cache-bust)
-  byId('ghpSetReload').addEventListener('click', () => {
-    const u = new URL(location.href);
-    u.searchParams.set('v', Date.now());
-    location.href = u.toString();
-  });
-
-  // Önbellek temizle (oturum korunur)
-  byId('ghpSetClearCache').addEventListener('click', async () => {
-    if(!confirm('Önbellek ve yerel ayarlar temizlenecek. Oturumun korunur. Devam?')) return;
-    try{
-      // Firebase auth anahtarlarını koru
-      const keep = {};
-      for(let i=0;i<localStorage.length;i++){
-        const k = localStorage.key(i);
-        if(k && (k.startsWith('firebase:') || k.includes('firebaseLocalStorage'))) keep[k] = localStorage.getItem(k);
-      }
-      localStorage.clear();
-      Object.keys(keep).forEach(k => localStorage.setItem(k, keep[k]));
-      // Cache API temizle
-      if('caches' in window){ const names = await caches.keys(); await Promise.all(names.map(n => caches.delete(n))); }
-      // Service worker temizle
-      if('serviceWorker' in navigator){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
-      alert('✓ Önbellek temizlendi. Sayfa yenileniyor.');
-      const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.href = u.toString();
-    }catch(e){ alert('Hata: ' + (e.message||e)); }
-  });
-
-  // Tam sıfırlama
-  byId('ghpSetHardReset').addEventListener('click', async () => {
-    if(!confirm('TÜM yerel veriler silinecek ve çıkış yapılacak. Yeniden giriş gerekir. Emin misin?')) return;
-    try{
-      localStorage.clear();
-      try{ sessionStorage.clear(); }catch(e){}
-      if('caches' in window){ const names = await caches.keys(); await Promise.all(names.map(n => caches.delete(n))); }
-      if('serviceWorker' in navigator){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
-      if(window.indexedDB && indexedDB.databases){ const dbs = await indexedDB.databases(); await Promise.all(dbs.map(d => d.name && indexedDB.deleteDatabase(d.name))); }
-      try{ const Auth = await import('./auth.js'); if(Auth.logout) await Auth.logout(); }catch(e){}
-      alert('✓ Tam sıfırlama yapıldı. Sayfa yenileniyor.');
-      location.href = location.origin + location.pathname;
-    }catch(e){ alert('Hata: ' + (e.message||e)); location.reload(); }
-  });
-}
-
 export function applyFabSetting(){
   const on = localStorage.getItem('hero_set_fabs') !== '0';
   const g = document.getElementById('gemFloatBtn');
-  if(g){
-    g.style.visibility = on ? '' : 'hidden';
-    g.style.opacity = '';
-    g.style.transform = '';
-    g.style.display = '';
+  if(g){ g.style.visibility = ''; g.style.display = on ? 'grid' : 'none'; }
+}
+// Hub panelini garantili görünür kıl (FAB ayarından bağımsız)
+function ensureHubVisible(){
+  // H yoksa init dene
+  if(!H || !byId('gemHubPanel')){
+    try{ initSocial(); }catch(e){ console.warn('[hub] init', e); }
   }
-  // Admin FAB — gizli modda küçük+şeffaf ama görünür
-  const a = document.getElementById('adminFloatBtn');
-  if(a){
-    const admHid = localStorage.getItem('hero_admfab_hidden') === '1';
-    a.style.opacity = admHid ? '0.18' : '';
-    a.style.transform = admHid ? 'scale(0.52)' : '';
+  // Hâlâ yoksa son bir kez daha (flag sıfırlayıp zorla)
+  if(!H || !byId('gemHubPanel')){
+    try{ if(typeof window!=='undefined') window.__heroSocialInit = false; }catch(e){}
+    try{ initSocial(); }catch(e){ console.warn('[hub] retry', e); }
   }
+  return !!(H && byId('gemHubPanel'));
 }
 // Ekranlardan hub'ı belirli sekmede aç
 export function openHubTab(tab){
-  if(!H) return;
-  switchTab(tab || 'chat');
+  // H hazır değilse init dene + kısa retry (DOM settle)
+  if(!ensureHubVisible()){
+    let tries=0;
+    const t=()=>{
+      tries++;
+      if(ensureHubVisible()){ if(!H.open) open(); switchTab(tab||'chat'); }
+      else if(tries<10){ setTimeout(t,100); }
+      else { showToast('⚠️ Sosyal hub yüklenemedi'); }
+    };
+    setTimeout(t,80);
+    return;
+  }
   if(!H.open) open();
+  switchTab(tab || 'chat');
+}
+// Dışarıdan (nav menü) DM thread açmak için
+// ── 🎮 OYUN İÇİ MİNİ DM ──
+// Oyun ekranındayken rakibe/arkadaşa hızlı mesaj gönderme paneli
+export function openInGameDM(uid, nick){
+  if(!uid){ showToast('Rakip bilgisi yok'); return; }
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
+  if(uid === me.uid){ showToast('🙂 Kendine mesaj atamazsın'); return; }
+  const ex=document.getElementById('inGameDM'); if(ex){ ex.remove(); return; }
+  const ov=document.createElement('div'); ov.id='inGameDM'; ov.className='igdm-ov';
+  const pk = pairKey(me.uid, uid);
+  ov.innerHTML='<div class="igdm-box">'
+    +'<div class="igdm-head"><span class="igdm-title">✉️ '+esc(nick||'Rakip')+'</span><button class="igdm-close">✕</button></div>'
+    +'<div class="igdm-msgs" id="igdmMsgs"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">Hızlı mesaj gönder</div></div></div>'
+    +'<div class="igdm-quick">'
+      +['👋 Selam','İyi oyun! 👏','Bravo! 🎉','Hamlene hayran kaldım 😎','Tekrar? 🔄','Bol şans! 🍀','Yenildim 😅','Rövanş! ⚔️'].map(q=>'<button class="igdm-chip" data-q="'+esc(q)+'">'+esc(q)+'</button>').join('')
+    +'</div>'
+    +'<div class="igdm-input-row"><input class="igdm-input" id="igdmInput" maxlength="200" placeholder="Mesaj…" autocomplete="off"><button class="igdm-send" id="igdmSend">➤</button></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  ov.querySelector('.igdm-close').addEventListener('click', ()=>{ if(_off){try{_off();}catch(e){}} ov.remove(); });
+  ov.addEventListener('click', e=>{ if(e.target===ov){ if(_off){try{_off();}catch(e){}} ov.remove(); } });
+
+  async function send(text){
+    if(!text || !text.trim()) return;
+    try{
+      const theyBlock=await fdb.get(fdb.ref(db,'blocks/'+uid+'/'+me.uid));
+      if(theyBlock.exists()&&theyBlock.val()===true){ showToast('🚫 Bu kişi seni engellemiş'); return; }
+      const msg={ from:me.uid, fromName:me.displayName||'Oyuncu', text:text.trim().slice(0,200), ts:Date.now() };
+      if(me.isVisibleAdmin===true) msg.isAdmin=true;
+      await fdb.push(fdb.ref(db,'messages/'+pk), msg);
+      // konu listesine ekle
+      const ts=loadThreads(); const i=ts.findIndex(x=>x.uid===uid);
+      const item={ uid, nick:nick||'Rakip', last:text.trim().slice(0,40), ts:Date.now(), unread:false };
+      if(i>=0) ts.splice(i,1); ts.unshift(item); saveThreads(ts);
+    }catch(e){ showToast('⚠️ Gönderilemedi'); }
+  }
+  const inp=ov.querySelector('#igdmInput');
+  ov.querySelector('#igdmSend').addEventListener('click', ()=>{ send(inp.value); inp.value=''; });
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ send(inp.value); inp.value=''; } });
+  ov.querySelectorAll('.igdm-chip').forEach(c=>c.addEventListener('click', ()=>{ send(c.dataset.q); }));
+
+  // Mesajları canlı dinle
+  let _off=null;
+  try{
+    _off = fdb.onValue(fdb.query(fdb.ref(db,'messages/'+pk), fdb.orderByChild('ts'), fdb.limitToLast(15)), snap=>{
+      const box=document.getElementById('igdmMsgs'); if(!box) return;
+      const rows=[]; if(snap.exists()) snap.forEach(ch=>{ const v=ch.val(); if(v&&v.text&&ch.key!=='_seen'&&ch.key!=='_typing') rows.push(v); });
+      if(!rows.length) return;
+      rows.sort((a,b)=>(a.ts||0)-(b.ts||0));
+      box.innerHTML=rows.map(m=>{
+        const mine=m.from===me.uid;
+        return '<div class="igdm-msg'+(mine?' mine':'')+'">'+esc(m.text)+'</div>';
+      }).join('');
+      box.scrollTop=box.scrollHeight;
+    });
+  }catch(e){}
+}
+
+export function dmOpenThreadExternal(uid, nick){
+  if(!uid){ showToast('Kişi bilgisi yok'); return; }
+  const me = Auth.getState();
+  if(!me || !me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
+  if(uid === me.uid){ showToast('🙂 Kendinize mesaj atamazsınız'); return; }
+  // Hub'ı garantiye al (init + retry)
+  let initTries=0;
+  const ensureThenOpen=()=>{
+    initTries++;
+    if(ensureHubVisible()){
+      if(!H.open) open();
+      switchTab('ozel');
+      // Thread DOM'u hazır olunca aç
+      let tries=0;
+      const t=()=>{
+        tries++;
+        const el=byId('ghpDMThread');
+        if(el){ try{ dmOpenThread(uid,nick); }catch(e){ console.warn('[dmExt]',e); } }
+        else if(tries<25){ setTimeout(t,80); }
+      };
+      setTimeout(t,180);
+    } else if(initTries<10){
+      setTimeout(ensureThenOpen,100);
+    } else {
+      showToast('⚠️ Sosyal hub yüklenemedi');
+    }
+  };
+  ensureThenOpen();
 }
 
 export function initSocial(){
-  // Duyuru pulse animasyonu
-  if(!document.getElementById('ghp-bc-style')){
-    const st = document.createElement('style');
-    st.id = 'ghp-bc-style';
-    st.textContent = `
-      @keyframes ghp-pulse-bc {
-        0%,100% { box-shadow: 0 0 10px rgba(255,215,64,.12); }
-        50%      { box-shadow: 0 0 22px rgba(255,215,64,.35), 0 0 8px rgba(224,64,251,.2); }
-      }
-    `;
-    document.head.appendChild(st);
+  // H zaten kuruluysa tekrar kurma
+  if(H && document.getElementById('gemHubPanel')) return;
+  // Panel DOM'da ama H null kaldıysa (kısmi init) → eski DOM'u temizle, baştan kur
+  if(!H && document.getElementById('gemFloatBtn')){
+    try{ document.getElementById('gemFloatBtn').remove(); }catch(e){}
+    try{ const a=document.getElementById('adminFloatBtn'); if(a) a.remove(); }catch(e){}
+    try{ const p=document.getElementById('gemHubPanel'); if(p) p.remove(); }catch(e){}
+    try{ if(typeof window!=='undefined') window.__heroSocialInit = false; }catch(e){}
   }
-  // FAB zaten varsa tekrar oluşturma (çift init koruması) — ama style ekleme devam etsin
-  if(document.getElementById('gemFloatBtn')){
-    applyFabSetting();
-    return;
-  }
+  if(typeof window!=='undefined'){ if(window.__heroSocialInit && H) return; }
   // 💎 Gem FAB
   const gem = document.createElement('button');
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
   gem.innerHTML = `<span class="tw-gem">💎</span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
+  gem.style.display = 'grid'; gem.style.visibility = '';   // her zaman görünür başla
   document.body.appendChild(gem);
   // 👑 Admin FAB (yalnız adminde görünür)
   const adm = document.createElement('button');
@@ -305,7 +555,7 @@ export function initSocial(){
   panel.innerHTML = `
     <div class="ghp-drag" id="ghpDragHandle">
       <div class="ghp-title"><span class="ghp-title-gem">💎</span> SOSYAL HUB</div>
-      <div class="ghp-acts"><button class="ghp-act" id="ghpSettingsBtn" title="Ayarlar">⚙️</button><button class="ghp-act" id="ghpSizeBtn" title="Boyut: mini / midi / full">⤢</button><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
+      <div class="ghp-acts"><button class="ghp-act" id="ghpSizeBtn" title="Boyut: mini / midi / full">⤢</button><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
     </div>
     <div class="ghp-tabs">
       <button class="ghp-tab active" data-ghptab="chat">💬 CHAT</button>
@@ -328,7 +578,16 @@ export function initSocial(){
             <button class="ghp-act" id="ghpDMBack">←</button><div class="ghp-dm-name" id="ghpDMTitle" style="font-size:12px;flex:1"></div>
           </div>
           <div class="ghp-list" id="ghpDMMsgs"></div>
-          <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+          <div class="dm-quick-row" id="dmQuickRow">
+            <button class="dm-quick-chip" data-q="Selam 👋">Selam 👋</button>
+            <button class="dm-quick-chip" data-q="Nasılsın?">Nasılsın?</button>
+            <button class="dm-quick-chip" data-q="Oynayalım mı? 🎮">Oynayalım mı? 🎮</button>
+            <button class="dm-quick-chip" data-q="İyi oyundu! 👏">İyi oyundu! 👏</button>
+            <button class="dm-quick-chip" data-q="Tebrikler 🎉">Tebrikler 🎉</button>
+            <button class="dm-quick-chip" data-q="Görüşürüz 👋">Görüşürüz 👋</button>
+          </div>
+          <div class="ghp-input-row"><button class="dm-emoji-btn" id="ghpDMEmoji" title="Emoji">😊</button><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+          <div class="dm-emoji-panel" id="dmEmojiPanel" style="display:none"></div>
         </div>
       </div>
       <div class="ghp-pane" id="ghpPane-dost">
@@ -345,12 +604,14 @@ export function initSocial(){
   document.body.appendChild(panel);
 
   H = { open:false, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
+  // H kuruldu — init tamamlandı işareti (artık güvenli)
+  try{ if(typeof window!=='undefined') window.__heroSocialInit = true; }catch(e){}
 
   // FAB davranışları
   const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(); });
   gem.addEventListener('click', () => { if(gemMoved()) return; pressAnim(gem); toggle(); });
   const admMoved = makeFabDraggable(adm);
-  adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => alert('Panel yüklenemedi')); });
+  adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => showToast('Panel yüklenemedi')); });
   // Panel sürükleme + kapatma
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
@@ -359,8 +620,6 @@ export function initSocial(){
   document.addEventListener('pointerdown', (e) => { if(!H.open) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
   // Sekmeler
   panel.querySelectorAll('.ghp-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.ghptab)));
-  const setBtn = byId('ghpSettingsBtn');
-  if(setBtn) setBtn.addEventListener('click', openHubSettings);
   // Chat gönder
   panel.querySelector('#ghpChatSend').addEventListener('click', sendChat);
   panel.querySelector('#ghpChatList').addEventListener('click', (e) => {
@@ -374,6 +633,27 @@ export function initSocial(){
   panel.querySelector('#ghpDMBack').addEventListener('click', dmBack);
   panel.querySelector('#ghpDMSend').addEventListener('click', dmSend);
   panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmSend(); });
+  // Hazır mesaj kalıpları
+  panel.querySelectorAll('#dmQuickRow .dm-quick-chip').forEach(chip => chip.addEventListener('click', () => {
+    const inp = byId('ghpDMInput'); if(!inp) return;
+    inp.value = chip.dataset.q; inp.focus();
+    dmSend();
+  }));
+  // Emoji picker
+  const EMOJIS = ['😀','😂','🥹','😍','😎','🤔','😮','😢','😭','😡','👍','👎','👏','🙏','💪','🔥','✨','🎉','❤️','💔','💯','🎮','⚽','🏆','🎯','🥜','⭐','🌙','☀️','🌈','🚀','👋','🤝','😴','🤩','😇','🥳','😅','🙈','💀'];
+  const emojiBtn = panel.querySelector('#ghpDMEmoji');
+  const emojiPanel = panel.querySelector('#dmEmojiPanel');
+  if(emojiBtn && emojiPanel){
+    emojiPanel.innerHTML = EMOJIS.map(e=>'<button class="dm-emoji-item" data-emoji="'+e+'">'+e+'</button>').join('');
+    emojiBtn.addEventListener('click', () => {
+      const vis = emojiPanel.style.display !== 'none';
+      emojiPanel.style.display = vis ? 'none' : 'flex';
+    });
+    emojiPanel.querySelectorAll('.dm-emoji-item').forEach(b => b.addEventListener('click', () => {
+      const inp = byId('ghpDMInput'); if(!inp) return;
+      inp.value += b.dataset.emoji; inp.focus();
+    }));
+  }
   // Bildirim temizle
   panel.querySelector('#ghpNotifClear').addEventListener('click', clearNotifs);
   // Arkadaş ekle
@@ -383,17 +663,7 @@ export function initSocial(){
   // Auth durumuna göre: admin FAB + dinleyiciler
   applyFabSetting();
   Auth.subscribe((st) => {
-    const _fabHid = localStorage.getItem('hero_admfab_hidden') === '1';
-    if(st.isAdmin === true){
-      adm.style.display = 'grid';
-      adm.style.opacity = _fabHid ? '0.18' : '';
-      adm.style.transform = _fabHid ? 'scale(0.52)' : '';
-      adm.title = _fabHid ? 'Admin paneli (gizli mod)' : '';
-    } else {
-      adm.style.display = 'none';
-      adm.style.opacity = '';
-      adm.style.transform = '';
-    }
+    adm.style.display = (st.isAdmin === true) ? 'grid' : 'none';
     teardownListeners();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
@@ -420,9 +690,19 @@ function cycleSize(){
   applySize();
 }
 function position(){
-  if(curSize() === 'full'){ const p = byId('gemHubPanel'); p.style.left = p.style.top = p.style.right = p.style.bottom = ''; return; }
-  const panel = byId('gemHubPanel'), fab = byId('gemFloatBtn');
-  const fr = fab.getBoundingClientRect(), pw = panel.offsetWidth || 316, vw = window.innerWidth, vh = window.innerHeight;
+  const panel = byId('gemHubPanel');
+  if(!panel) return;
+  if(curSize() === 'full'){ panel.style.left = panel.style.top = panel.style.right = panel.style.bottom = ''; return; }
+  const fab = byId('gemFloatBtn');
+  const vw = window.innerWidth, vh = window.innerHeight, pw = panel.offsetWidth || 316;
+  // FAB yok veya gizli → ekranın sağ-altına sabitle
+  const fabHidden = !fab || fab.style.display === 'none' || fab.offsetParent === null;
+  if(fabHidden){
+    panel.style.left = 'auto'; panel.style.right = '12px';
+    panel.style.bottom = '80px'; panel.style.top = 'auto';
+    return;
+  }
+  const fr = fab.getBoundingClientRect();
   const l = Math.max(8, Math.min(vw - pw - 8, fr.left + fr.width/2 - pw/2));
   panel.style.left = l + 'px'; panel.style.right = 'auto';
   if(fr.top > 260){ panel.style.bottom = (vh - fr.top + 8) + 'px'; panel.style.top = 'auto'; }
@@ -475,27 +755,56 @@ function listenChat(){
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
-    const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
+    const rows = []; snap.forEach(ch => { const v=ch.val(); if(v) rows.push({...v, _key:ch.key}); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
     list.innerHTML = rows.map(m => {
-      const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
+      // Sistem mesajı — renkli pill (kick/ban/duyuru)
+      const isSys = m.uid === 'system' || m.isSystem === true;
+      if(isSys){
+        const t=esc(m.text||''), tx=m.text||'';
+        const isKick=tx.includes('atıldı')||tx.includes('kick')||tx.includes('🦵');
+        const isBan =tx.includes('banlı')||tx.includes('banlandı')||tx.includes('🚫');
+        const isUnban=tx.includes('ban kaldır')||tx.includes('serbest')||tx.includes('✅');
+        const isWarn=tx.includes('uyar')||tx.includes('⚠');
+        const isAnn =tx.includes('📣')||tx.includes('DUYURU');
+        const bg=isKick?'rgba(255,82,82,.1)':isBan?'rgba(255,50,50,.12)':isUnban?'rgba(105,240,174,.08)':isWarn?'rgba(255,152,0,.09)':isAnn?'rgba(255,215,64,.09)':'rgba(206,147,216,.06)';
+        const br=isKick?'rgba(255,82,82,.4)':isBan?'rgba(255,50,50,.45)':isUnban?'rgba(105,240,174,.35)':isWarn?'rgba(255,152,0,.4)':isAnn?'rgba(255,215,64,.4)':'rgba(206,147,216,.2)';
+        const cl=isKick?'#FF9090':isBan?'#FF5252':isUnban?'#69F0AE':isWarn?'#FFB74D':isAnn?'#FFD740':'#CE93D8';
+        const ic=isKick?'🦵':isBan?'🚫':isUnban?'✅':isWarn?'⚠️':isAnn?'📣':'🔔';
+        return `<div class="ghp-sys-msg" style="background:${bg};border:1px solid ${br};color:${cl}">${ic} ${t} <span class="ghp-chat-ts" style="color:${cl}66;margin-left:4px">${tAgo(m.ts||0)}</span></div>`;
+      }
+      const adm = m.isAdmin === true; // mesaj gönderilirken kaydedilen flag (userMode'da false)
       const op = !adm && H.ops && H.ops[m.uid] === true;
+      const isMe = m.uid === me;
+      const me_isAdmin = (H && H.admins && H.admins[me]) || Auth.getState().isAdmin === true;
       const nameHtml = adm
-        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
+        ? `<span class="admin-crown">👑</span><span class="admin-nick-glow ghp-chat-name ${gcl}">${esc(m.name || 'Admin')}</span>`
         : (op
           ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
-          : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
+          : `<span class="ghp-chat-name" style="color:${isMe ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
-      <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
-        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : defaultAvatar(m.uid)))}</div>
+      <div class="ghp-chat-row${isMe?' mine':''}${adm?' ghp-adm':''}" data-mkey="${esc(m._key||'')}">
+        <div class="ghp-chat-avatar" data-pcuid="${esc(m.uid||'')}" style="cursor:pointer">${esc(m.avatar||(adm?'👑':defaultAvatar(m.uid)))}</div>
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
-          <div class="ghp-chat-text">${esc(m.text)}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
+          <div class="ghp-chat-text">${esc(m.text)}${m.edited?'<span style="font-size:8px;opacity:.5;margin-left:4px">(düzenlendi)</span>':''}</div>
+          <div class="ghp-chat-ts" title="${tFull(m.ts||0)}">${tAgo(m.ts||0)} <span class="chat-date-mini">${tFull(m.ts||0)}</span>${(()=>{
+            if(!m._key) return '';
+            const within5min = (Date.now()-(m.ts||0)) < 300000;
+            const canEdit = (isMe && within5min) || me_isAdmin;
+            const canDel = isMe || me_isAdmin;
+            let acts='';
+            if(canEdit) acts+=' <span class="gc-act edit" data-edit="'+esc(m._key)+'" data-txt="'+esc(m.text||'')+'">✏️ Düzenle</span>';
+            if(canDel) acts+=' <span class="gc-act del" data-del="'+esc(m._key)+'">🗑 Sil</span>';
+            return acts;
+          })()}</div>
         </div>
       </div>`;
     }).join('');
+    // düzenle/sil
+    list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const k=b.dataset.del;if(k&&confirm('Mesaj silinsin mi?'))fdb.set(fdb.ref(db,'globalChat/'+k),null).catch(()=>{});}));
+    list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const cur=b.dataset.txt;const txt=prompt('Mesajı düzenle:',cur);if(txt&&txt.trim()&&txt.trim()!==cur)fdb.update(fdb.ref(db,'globalChat/'+b.dataset.edit),{text:txt.trim(),edited:true}).catch(()=>{});}));
     list.scrollTop = list.scrollHeight;
   });
 }
@@ -503,17 +812,25 @@ async function sendChat(){
   const st = Auth.getState();
   const inp = byId('ghpChatInput'); const text = inp.value.trim();
   if(!text) return;
-  if(!st.uid){ alert('Sohbet için giriş yapmalısın.'); return; }
+  if(!st.uid){ showToast('Sohbet için giriş yapmalısın.'); return; }
   const p = st.profile || {};
-  if(p.muted === true && (!p.muteUntil || p.muteUntil > Date.now())){ alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '')); return; }
-  if(H.chatLocked && st.isAdmin !== true){ alert('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
+  if(p.muted === true){
+    if(p.muteUntil && p.muteUntil <= Date.now()){
+      // Süre dolmuş — otomatik kaldır
+      try{ await fdb.update(fdb.ref(db,'users/'+st.uid),{muted:false,muteReason:null,muteUntil:null}); }catch(e){}
+    } else {
+      showToast('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '') + (p.muteUntil ? ' (' + Math.ceil((p.muteUntil-Date.now())/60000) + ' dk kaldı)' : '')); return;
+    }
+  }
+  if(H.chatLocked && st.isAdmin !== true){ showToast('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
   inp.value = '';
   try{
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
     const av = st.profile && st.profile.avatar; if(av) m.avatar = av;
-    if(st.isAdmin === true) m.isAdmin = true;
+    // Admin badge: SADECE görünür admin modunda (userMode'da gizle)
+    if(st.isVisibleAdmin === true) m.isAdmin = true;
     await fdb.push(fdb.ref(db, 'globalChat'), m);
-  }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
+  }catch(e){ showToast('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
 }
 
 // ── ✉️ ÖZEL MESAJLAR ────────────────────────────────────────────
@@ -526,11 +843,23 @@ function renderThreads(){
   if(!t.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">NICK YAZIP YENİ SOHBET AÇ</div></div>'; return; }
   list.innerHTML = t.map(x => `
     <div class="ghp-dm-row" data-uid="${esc(x.uid)}" data-nick="${esc(x.nick)}">
-      <div class="ghp-dm-avatar" data-dmpc="${esc(x.uid)}" style="cursor:pointer">👤</div>
+      <div class="ghp-dm-avatar" data-dmpc="${esc(x.uid)}" data-avauid="${esc(x.uid)}" style="cursor:pointer">${esc(x.avatar||'👤')}</div>
       <div class="ghp-dm-info"><div class="ghp-dm-name">${esc(x.nick)}</div><div class="ghp-dm-text">${esc(x.last || '')}</div></div>
       <div class="ghp-dm-ts">${x.ts ? tAgo(x.ts) : ''}</div>
       ${x.unread ? '<div class="ghp-dm-dot"></div>' : ''}
     </div>`).join('');
+  // Avatarları Firebase'den yükle (cache'le)
+  t.forEach(x => {
+    if(x.avatar) return;
+    fdb.get(fdb.ref(db,'users/'+x.uid+'/avatar')).then(snap=>{
+      if(snap.exists()){
+        const ava=snap.val();
+        const el=list.querySelector('[data-avauid="'+x.uid+'"]'); if(el) el.textContent=ava;
+        // threads cache'e yaz
+        const ts=loadThreads(); const i=ts.findIndex(z=>z.uid===x.uid); if(i>=0){ ts[i].avatar=ava; saveThreads(ts); }
+      }
+    }).catch(()=>{});
+  });
   list.querySelectorAll('.ghp-dm-row').forEach(r => r.addEventListener('click', (e) => {
     const pc = e.target.closest('[data-dmpc]');
     if(pc){ openPlayerCard(pc.dataset.dmpc); return; }
@@ -541,35 +870,44 @@ async function dmOpenByNick(){
   const inp = byId('ghpDMNick'); const nick = inp.value.trim();
   if(!nick) return;
   const me = Auth.getState();
-  if(!me.uid || me.status !== 'google'){ alert('Özel mesaj için Google ile giriş gerekli.'); return; }
+  if(!me.uid || me.status !== 'google'){ showToast('🔑 Mesaj için Google girişi gerekli'); return; }
   const t = await Auth.resolveNick(nick);
-  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
-  if(t.uid === me.uid){ alert('Kendine mesaj atamazsın 🙂'); return; }
+  if(!t){ showToast('🔍 Nick bulunamadı: ' + nick); return; }
+  if(t.uid === me.uid){ showToast('🙂 Kendine mesaj atamazsın'); return; }
   inp.value = '';
   dmOpenThread(t.uid, t.nick || nick);
 }
 function dmOpenThread(uid, nick){
-  H.dmThread = { uid, nick };
+  H.dmThread = { uid, nick, avatar:'👤' };
   byId('ghpDMList').style.display = 'none';
   byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
   const th = byId('ghpDMThread'); th.style.display = 'flex';
   const tEl = byId('ghpDMTitle');
-  // Karşı tarafın admin bilgisini çek
-  fdb.get(fdb.ref(db, 'users/' + uid)).then(s => {
-    if(!s.exists()) return;
-    const uv = s.val();
-    const isAdmUser = uv.isAdmin === true || (H.admins && H.admins[uid]);
-    H.dmThread.isAdmin = isAdmUser;
-    H.dmThread.avatar = avatarOf(uv, uid);
-    if(isAdmUser){
-      tEl.innerHTML = '✉️ <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span> ' + esc(uv.nick||uv.displayName||nick) + ' <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span>';
-    } else {
-      tEl.textContent = '✉️ ' + (uv.nick || uv.displayName || nick);
-    }
-  }).catch(()=>{});
-  tEl.textContent = '✉️ ' + nick;
+  tEl.innerHTML = '<span class="dm-title-ava">👤</span><span class="dm-title-info"><span class="dm-title-nick">'+esc(nick)+'</span><span class="dm-title-status" id="dmTitleStatus">·····</span></span>';
   tEl.style.cursor = 'pointer';
   tEl.onclick = () => openPlayerCard(uid);
+  // Avatar + çevrimiçi durumu çek
+  (async()=>{
+    try{
+      const [uSnap,pSnap]=await Promise.all([
+        fdb.get(fdb.ref(db,'users/'+uid)),
+        fdb.get(fdb.ref(db,'presence/'+uid)),
+      ]);
+      const u=uSnap.exists()?uSnap.val():{};
+      const pr=pSnap.exists()?pSnap.val():{};
+      const ava=u.avatar||'👤';
+      H.dmThread.avatar=ava;
+      const avaEl=tEl.querySelector('.dm-title-ava'); if(avaEl) avaEl.textContent=ava;
+      const online=pr.online===true && (Date.now()-(pr.lastSeen||0))<180000;
+      const stEl=byId('dmTitleStatus');
+      if(stEl){
+        if(online){ stEl.innerHTML='<span class="dm-online-dot"></span> çevrimiçi'; stEl.className='dm-title-status online'; }
+        else if(pr.lastSeen){ stEl.textContent='son görülme '+tAgo(pr.lastSeen); stEl.className='dm-title-status'; }
+        else { stEl.textContent=''; }
+      }
+      if(H.dmRows) { /* avatar baloncukları güncelle */ const ev=byId('ghpDMMsgs'); }
+    }catch(e){}
+  })();
   // okundu işaretle
   const ts = loadThreads(); const i = ts.findIndex(x => x.uid === uid);
   if(i >= 0){ ts[i].unread = false; saveThreads(ts); }
@@ -580,7 +918,7 @@ function dmOpenThread(uid, nick){
   H.dmOppSeen = 0;
   H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(30)), (snap) => {
     const box = byId('ghpDMMsgs'); if(!box) return;
-    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text) rows.push(v); });
+    const rows = []; if(snap.exists()) snap.forEach(ch => { const v = ch.val(); if(v && v.text && ch.key !== '_seen' && ch.key !== '_typing') rows.push({...v, _key:ch.key}); });
     if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     renderDMRows(rows);
@@ -615,61 +953,130 @@ function dmOpenThread(uid, nick){
   }
   function renderDMRows(rows){
     const box = byId('ghpDMMsgs'); if(!box) return;
-    const threadIsAdmin = H.dmThread && H.dmThread.isAdmin === true;
-    const myIsAdmin = Auth.getState().isAdmin === true;
-    let prevDate = '';
+    const meAdmin = Auth.getState().isAdmin === true;
+    const pk = H.dmThread ? pairKey(me, H.dmThread.uid) : null;
+    const oppAva = (H.dmThread && H.dmThread.avatar) || '👤';
     box.innerHTML = rows.map(m => {
       const isMine = m.from === me;
-      const isAdmMsg = m.isAdmin === true;
-      // Tarih ayırıcı
-      const d = m.ts ? new Date(m.ts) : null;
-      const dateStr = d ? d.toLocaleDateString('tr-TR', {day:'numeric',month:'long'}) : '';
-      const dateSep = (dateStr && dateStr !== prevDate)
-        ? `<div style="text-align:center;margin:8px 0;font-size:9px;color:#50506e;letter-spacing:.5px">${dateStr}</div>`
-        : '';
-      prevDate = dateStr;
-      // Avatar
-      const av = isMine
-        ? ((Auth.getState().profile && Auth.getState().profile.avatar) || defaultAvatar(me))
-        : (m.fromAvatar || defaultAvatar(m.from || ''));
-      // İsim + admin rozeti
-      const nameHtml = isMine ? '' : (() => {
-        const n = esc(m.fromName || H.dmThread.nick || 'Oyuncu');
-        if(isAdmMsg || threadIsAdmin){
-          const gcl = glowClass();
-          return \`<div class="ghp-dm-sender-name \${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> \${n} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>\`;
-        }
-        return \`<div style="color:#A78BFA;font-size:10px;font-weight:800;margin-bottom:2px">\${n}</div>\`;
-      })();
-      // Tick durumu (iletildi / görüldü)
-      const tickHtml = isMine ? (() => {
-        const seen = H.dmOppSeen >= (m.ts||0);
-        return seen
-          ? \` <span class="dm-tick seen" title="Görüldü" style="color:#4FC3F7">✓✓</span>\`
-          : \` <span class="dm-tick" title="İletildi" style="color:#546e7a">✓</span>\`;
-      })() : '';
-      // Mesaj balonu stili
-      const bubbleBg = isMine
-        ? 'linear-gradient(135deg,rgba(103,80,164,.6),rgba(81,45,168,.4))'
-        : isAdmMsg || threadIsAdmin
-          ? 'linear-gradient(135deg,rgba(255,180,0,.18),rgba(224,64,251,.1))'
-          : 'linear-gradient(135deg,rgba(30,30,60,.8),rgba(20,20,50,.6))';
-      const bubbleBdr = isMine ? 'rgba(103,80,164,.4)' : isAdmMsg || threadIsAdmin ? 'rgba(255,215,64,.35)' : 'rgba(60,60,100,.5)';
-      return \`\${dateSep}<div class="ghp-chat-row\${isMine ? ' mine' : ''}" style="align-items:flex-end;gap:6px">
-        \${!isMine ? \`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid \${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">\${av}</div>\` : ''}
-        <div style="flex:1;min-width:0">
-          \${nameHtml}
-          <div style="background:\${bubbleBg};border:1px solid \${bubbleBdr};border-radius:\${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;\${isMine?'margin-left:auto':''}">
-            <div class="ghp-chat-text" style="margin:0">\${esc(m.text)}</div>
-          </div>
-          <div class="ghp-chat-ts" style="\${isMine?'text-align:right':''}margin-top:2px">\${tAgo(m.ts || 0)}\${tickHtml}</div>
-        </div>
-        \${isMine ? \`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">\${av}</div>\` : ''}
-      </div>\`;
+      const editedTag = m.edited ? '<span class="dm-edited">·düz.</span>' : '';
+      const tick = isMine ? (H.dmOppSeen >= (m.ts||0) ? '<span class="dm-tick seen">✓✓</span>' : '<span class="dm-tick">✓</span>') : '';
+      const adminName = m.isAdmin===true ? '<div class="dm-admin-name"><span class="admin-crown">👑</span><span class="admin-nick-glow">'+esc(m.fromName||'Admin')+'</span></div>' : '';
+      // Tepkiler (reactions)
+      let reactHtml = '';
+      if(m.reactions){
+        const counts = {};
+        Object.values(m.reactions).forEach(em => { if(em) counts[em] = (counts[em]||0)+1; });
+        const chips = Object.entries(counts).map(([em,c]) => '<span class="dm-react-chip'+(m.reactions[me]===em?' mine':'')+'" data-reactkey="'+esc(m._key)+'" data-reactem="'+esc(em)+'">'+em+(c>1?' '+c:'')+'</span>').join('');
+        if(chips) reactHtml = '<div class="dm-reacts">'+chips+'</div>';
+      }
+      const avatarBubble = !isMine ? '<div class="dm-bubble-ava">'+oppAva+'</div>' : '';
+      return '<div class="ghp-chat-row dm-row-v2'+(isMine ? ' mine' : '')+'" data-msgkey="'+esc(m._key||'')+'" data-msgtxt="'+esc(m.text||'')+'" data-msgmine="'+(isMine?'1':'0')+'" data-msgts="'+(m.ts||0)+'">'
+        + avatarBubble
+        + '<div class="ghp-chat-body">'
+          + adminName
+          + '<div class="ghp-chat-text">'+esc(m.text)+'</div>'
+          + '<div class="ghp-chat-ts" title="'+tFull(m.ts||0)+'">'+tAgo(m.ts || 0)+' '+editedTag+' '+tick+'</div>'
+          + reactHtml
+        + '</div></div>';
     }).join('');
+    // Tepki çipine tıkla → tepkiyi kaldır/değiştir
+    box.querySelectorAll('[data-reactkey]').forEach(c => c.addEventListener('click', async (e) => {
+      e.stopPropagation(); const k = c.dataset.reactkey; const em = c.dataset.reactem; if(!k||!pk) return;
+      try{
+        const cur = await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me));
+        if(cur.exists() && cur.val()===em){ await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), null); }
+        else { await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), em); }
+      }catch(err){}
+    }));
+    // Baloncuğa uzun bas / sağ tık → aksiyon menüsü (tepki, düzenle, sil)
+    box.querySelectorAll('.dm-row-v2').forEach(row => {
+      let pressTimer=null;
+      const openMenu=()=>{ showDMMsgMenu(row, pk, meAdmin); };
+      row.addEventListener('contextmenu', e=>{ e.preventDefault(); openMenu(); });
+      row.addEventListener('touchstart', ()=>{ pressTimer=setTimeout(openMenu, 480); }, {passive:true});
+      row.addEventListener('touchend', ()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      row.addEventListener('touchmove', ()=>{ if(pressTimer) clearTimeout(pressTimer); });
+      // çift tık → hızlı ❤️ tepki
+      row.addEventListener('dblclick', async ()=>{
+        const k=row.dataset.msgkey; if(!k||!pk) return;
+        try{ const cur=await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me)); await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), (cur.exists()&&cur.val()==='❤️')?null:'❤️'); }catch(e){}
+      });
+    });
     box.scrollTop = box.scrollHeight;
   }
 }
+// ── 📋 Mesaj aksiyon menüsü (uzun bas/sağ tık) ──
+function showDMMsgMenu(row, pk, meAdmin){
+  if(!pk) return;
+  const me = Auth.getState().uid;
+  const k = row.dataset.msgkey;
+  const txt = row.dataset.msgtxt;
+  const isMine = row.dataset.msgmine === '1';
+  const ts = parseInt(row.dataset.msgts||'0');
+  const within5 = (Date.now() - ts) < 300000;
+  const canEdit = (isMine && within5) || meAdmin;
+  const canDel = isMine || meAdmin;
+  // Var olan menüyü kaldır
+  const ex = document.getElementById('dmMsgMenu'); if(ex) ex.remove();
+  const ov = document.createElement('div'); ov.id='dmMsgMenu'; ov.className='dm-msgmenu-ov';
+  const REACTS = ['👍','❤️','😂','😮','😢','🔥'];
+  ov.innerHTML = '<div class="dm-msgmenu">'
+    + '<div class="dm-react-row">'+REACTS.map(em=>'<button class="dm-react-btn" data-em="'+em+'">'+em+'</button>').join('')+'</div>'
+    + '<div class="dm-msgmenu-acts">'
+      + (canEdit?'<button class="dm-menu-act" data-act="edit">✏️ Düzenle</button>':'')
+      + '<button class="dm-menu-act" data-act="copy">📋 Kopyala</button>'
+      + (canDel?'<button class="dm-menu-act danger" data-act="del">🗑 Sil</button>':'')
+    + '</div></div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  // Tepki seç
+  ov.querySelectorAll('.dm-react-btn').forEach(b => b.addEventListener('click', async ()=>{
+    const em=b.dataset.em;
+    try{
+      const cur=await fdb.get(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me));
+      await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k+'/reactions/'+me), (cur.exists()&&cur.val()===em)?null:em);
+    }catch(e){}
+    close();
+  }));
+  // Aksiyonlar
+  ov.querySelectorAll('.dm-menu-act').forEach(b => b.addEventListener('click', async ()=>{
+    const act=b.dataset.act;
+    if(act==='copy'){ try{ await navigator.clipboard.writeText(txt); showToast('📋 Kopyalandı'); }catch(e){ showToast('Kopyalanamadı'); } close(); }
+    else if(act==='del'){
+      close();
+      try{ await fdb.set(fdb.ref(db,'messages/'+pk+'/'+k), null); showToast('🗑 Mesaj silindi'); }catch(e){}
+    }
+    else if(act==='edit'){
+      close();
+      showDMEditModal(pk, k, txt);
+    }
+  }));
+}
+
+// ── ✏️ Mesaj düzenleme modalı (prompt yerine) ──
+function showDMEditModal(pk, k, curText){
+  const ex=document.getElementById('dmEditModal'); if(ex) ex.remove();
+  const ov=document.createElement('div'); ov.id='dmEditModal'; ov.className='dm-edit-ov';
+  ov.innerHTML='<div class="dm-edit-box">'
+    +'<div class="dm-edit-title">✏️ Mesajı Düzenle</div>'
+    +'<textarea class="dm-edit-input" maxlength="300">'+esc(curText)+'</textarea>'
+    +'<div class="dm-edit-acts"><button class="dm-edit-cancel">Vazgeç</button><button class="dm-edit-save">Kaydet</button></div>'
+    +'</div>';
+  document.body.appendChild(ov);
+  const ta=ov.querySelector('.dm-edit-input'); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+  const close=()=>ov.remove();
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  ov.querySelector('.dm-edit-cancel').addEventListener('click', close);
+  ov.querySelector('.dm-edit-save').addEventListener('click', async ()=>{
+    const nt=ta.value.trim();
+    if(nt && nt!==curText){
+      try{ await fdb.update(fdb.ref(db,'messages/'+pk+'/'+k), { text:nt.slice(0,300), edited:true }); showToast('✏️ Düzenlendi'); }catch(e){}
+    }
+    close();
+  });
+}
+
 function dmBack(){
   if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
   if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }
@@ -685,20 +1092,33 @@ async function dmSend(){
   const inp = byId('ghpDMInput'); const text = inp.value.trim();
   if(!text) return;
   const me = Auth.getState();
+  // Engelleme kontrolü — karşı taraf beni engellemişse veya ben onu engellemişsem
+  try{
+    const [iBlock, theyBlock] = await Promise.all([
+      fdb.get(fdb.ref(db,'blocks/'+me.uid+'/'+H.dmThread.uid)),
+      fdb.get(fdb.ref(db,'blocks/'+H.dmThread.uid+'/'+me.uid)),
+    ]);
+    if(iBlock.exists() && iBlock.val()===true){ showToast('🚫 Bu kişiyi engelledin'); return; }
+    if(theyBlock.exists() && theyBlock.val()===true){ showToast('🚫 Bu kişi seni engellemiş'); return; }
+    // DM kapatma kontrolü — gönderen admin değilse ve alıcı DM kapatmışsa engelle
+    if(me.isAdmin !== true){
+      const tu = await fdb.get(fdb.ref(db,'users/'+H.dmThread.uid+'/dmClosed'));
+      if(tu.exists() && tu.val()===true){ showToast('✉️ Bu kullanıcı mesaj almayı kapatmış'); return; }
+    }
+  }catch(e){}
   const pk = pairKey(me.uid, H.dmThread.uid);
   inp.value = '';
   try{
-    const _dmAvatar = (me.profile && me.profile.avatar) ? me.profile.avatar : defaultAvatar(me.uid);
-    const _dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now(), fromAvatar: _dmAvatar };
-    if(me.isAdmin === true) _dmMsg.isAdmin = true;
-    await fdb.push(fdb.ref(db, 'messages/' + pk), _dmMsg);
+    const dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now() };
+    if(me.isVisibleAdmin === true) dmMsg.isAdmin = true;
+    await fdb.push(fdb.ref(db, 'messages/' + pk), dmMsg);
     // konu listesini güncelle
     const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
     const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
     if(i >= 0) ts.splice(i, 1);
     ts.unshift(item); saveThreads(ts);
     watchDMThreads();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){ showToast('⚠️ Gönderilemedi'); }
 }
 // Son konuşmaların yeni mesajlarını izle → rozet
 function watchDMThreads(){
@@ -715,8 +1135,14 @@ function watchDMThreads(){
       if((last.ts || 0) > seen){
         const ts = loadThreads(); const i = ts.findIndex(x => x.uid === t.uid);
         if(i >= 0){ ts[i].last = (last.text || '').slice(0, 40); ts[i].ts = last.ts; ts[i].unread = true; saveThreads(ts); }
-        if(!(H.open && H.tab === 'ozel' && H.dmThread && H.dmThread.uid === t.uid)){
+        const threadOpen = H.open && H.tab === 'ozel' && H.dmThread && H.dmThread.uid === t.uid;
+        if(!threadOpen){
           H.dmUnread = loadThreads().filter(x => x.unread).length; updateBadges();
+          // 🔔 In-app bildirim toast (sohbet açık değilse)
+          if(!H._lastNotif || (Date.now()-H._lastNotif)>800){
+            H._lastNotif = Date.now();
+            showDMNotifToast(t.uid, t.nick, last.text||'');
+          }
         }
         if(H.open && H.tab === 'ozel' && !H.dmThread) renderThreads();
       }
@@ -736,38 +1162,36 @@ function renderNotifPane(){
   H.notifUnread = (H.open && H.tab === 'notif') ? 0 : all.filter(r => (r.ts||0) > seen).length;
   updateBadges();
   if(!all.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; return; }
-  list.innerHTML = all.map(n => n._bc ? `
-      <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.5);background:linear-gradient(135deg,rgba(255,180,0,.13),rgba(224,64,251,.07));box-shadow:0 0 12px rgba(255,215,64,.12);animation:ghp-pulse-bc 2s ease-in-out infinite">
-        <div class="ghp-notif-icon" style="background:rgba(255,215,64,.18);border:1px solid rgba(255,215,64,.5);font-size:20px">📣</div>
-        <div class="ghp-notif-body">
-          <div class="ghp-notif-text" style="font-weight:800"><span style="color:#FFD740">👑 ADMİN DUYURUSU 👑</span><br><span style="color:#fff;font-size:12px">${esc(n.text || '')}</span></div>
-          <div class="ghp-chat-ts" style="color:#FFD740;opacity:.8">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
-        </div>
-      </div>` : `
-      ${(()=>{
-        const isKick  = (n.icon==='🦵') || (n.text||'').includes('atıldın') || n.type==='kick';
-        const isAdmin = n.from==='admin' || n.from==='system';
-        const bdr  = isKick  ? 'rgba(255,82,82,.5)'         : isAdmin ? 'rgba(255,215,64,.45)'        : 'rgba(255,215,64,.18)';
-        const bg   = isKick  ? 'linear-gradient(135deg,rgba(255,82,82,.13),rgba(180,0,0,.07))'
-                             : isAdmin ? 'linear-gradient(135deg,rgba(255,215,64,.1),rgba(224,64,251,.06))'
-                             : 'linear-gradient(135deg,rgba(255,215,64,.05),transparent)';
-        const glow = isKick  ? '0 0 14px rgba(255,82,82,.2)'
-                             : isAdmin ? '0 0 14px rgba(255,215,64,.15)' : 'none';
-        const iconBg  = isKick ? 'rgba(255,82,82,.18)' : isAdmin ? 'rgba(255,215,64,.15)' : 'rgba(255,215,64,.1)';
-        const iconBdr = isKick ? '1px solid rgba(255,82,82,.4)' : isAdmin ? '1px solid rgba(255,215,64,.4)' : '1px solid rgba(255,215,64,.2)';
-        const ic   = esc(n.icon || '🔔');
-        const txt  = esc(n.text || n.msg || '');
-        const hdr  = isKick  ? '<b style="color:#ff8fa0;font-size:11px">🦵 SOHBETTEN ATILDIN</b><br>'
-                             : isAdmin ? '<b style="color:#FFD740;font-size:11px">👑 ADMİN BİLDİRİMİ 👑</b><br>' : '';
-        const fromAttr = n.fromUid ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-color:${bdr};background:${bg};box-shadow:${glow}"` : `style="border-color:${bdr};background:${bg};box-shadow:${glow}"`;
-        return \`<div class="ghp-notif-row" \${fromAttr}>
-          <div class="ghp-notif-icon" style="background:\${iconBg};border:\${iconBdr};font-size:20px">\${ic}</div>
-          <div class="ghp-notif-body">
-            <div class="ghp-notif-text">\${hdr}<span style="color:#e8eaf6">\${txt}</span></div>
-            <div class="ghp-chat-ts" style="color:\${isKick?'#ff8fa0':isAdmin?'#FFD740':'inherit'}">\${tAgo(n.ts || 0)}</div>
-          </div>
-        </div>\`;
-      })()}`).join('');
+  list.innerHTML = all.map(n => {
+    const ico  = n.icon||'🔔'; const txt = n.text||n.msg||'';
+    if(n._bc){
+      return '<div class="ghp-notif-row ghp-notif-announce">'
+        +'<div class="ghp-notif-icon" style="background:rgba(224,64,251,.12);border:1px solid rgba(224,64,251,.35);color:#E040FB">📣</div>'
+        +'<div class="ghp-notif-body">'
+          +'<div class="ghp-notif-text"><b style="color:#E040FB">DUYURU</b> · '+esc(txt)+'</div>'
+          +'<div class="ghp-chat-ts">'+esc(n.by||'Admin')+' · '+tAgo(n.ts||0)+'</div>'
+        +'</div></div>';
+    }
+    const isKick  = ico==='🦵'||ico==='🔨'||txt.includes('atıldın')||txt.includes('atıldı');
+    const isBan   = ico==='🚫'||txt.includes('banlandın')||txt.includes('banlandı');
+    const isUnban = ico==='✅'&&(txt.includes('ban')||txt.includes('serbest'));
+    const isWarn  = ico==='⚠️'||txt.includes('uyarıldın');
+    const isAnn   = ico==='📣'||txt.includes('DUYURU');
+    const isClan  = ico==='🏰'||txt.includes('klana')||txt.includes('kland');
+    const isKozmo = ico==='🥚'||ico==='🎁';
+    const isFr    = ico==='👥'||ico==='🤝'||ico==='👋';
+    const bg    = isKick?'rgba(255,82,82,.09)'  :isBan?'rgba(220,30,30,.11)'  :isUnban?'rgba(105,240,174,.07)':isWarn?'rgba(255,152,0,.08)':isAnn?'rgba(255,215,64,.07)':isClan?'rgba(255,215,64,.05)':isKozmo?'rgba(192,132,252,.07)':isFr?'rgba(0,229,255,.05)':'rgba(255,255,255,.03)';
+    const bc    = isKick?'rgba(255,82,82,.4)'   :isBan?'rgba(220,30,30,.45)'  :isUnban?'rgba(105,240,174,.3)' :isWarn?'rgba(255,152,0,.38)':isAnn?'rgba(255,215,64,.4)' :isClan?'rgba(255,215,64,.28)':isKozmo?'rgba(192,132,252,.32)':isFr?'rgba(0,229,255,.28)':'rgba(255,255,255,.07)';
+    const ic    = isKick?'#FF5252'              :isBan?'#FF1744'              :isUnban?'#69F0AE'             :isWarn?'#FFB74D'            :isAnn?'#FFD740'            :isClan?'#ffd86b'           :isKozmo?'#c084fc'          :isFr?'#00E5FF'          :'#9fb0d8';
+    const prefix= isKick?'<b style="color:'+ic+'">🦵 SOHBET KICK</b> · ':isBan?'<b style="color:'+ic+'">🚫 BANLANDIN</b> · ':isUnban?'<b style="color:'+ic+'">✅ UNBAN</b> · ':isWarn?'<b style="color:'+ic+'">⚠️ UYARI</b> · ':'';
+    const pFrom = n.fromUid ? ' data-nfrom="'+esc(n.fromUid)+'" style="cursor:pointer;' : ' style="';
+    return '<div class="ghp-notif-row" '+pFrom+'background:'+bg+';border-color:'+bc+'">'
+      +'<div class="ghp-notif-icon" style="background:'+ic+'22;border:1px solid '+ic+'55;color:'+ic+'">'+esc(ico)+'</div>'
+      +'<div class="ghp-notif-body">'
+        +'<div class="ghp-notif-text" style="color:'+(isKick||isBan?ic:'#dfe7ff')+'">'+prefix+esc(txt)+'</div>'
+        +'<div class="ghp-chat-ts">'+tAgo(n.ts||0)+'</div>'
+      +'</div></div>';
+  }).join('');
   list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
 }
 function listenNotifs(uid){
@@ -804,15 +1228,31 @@ async function renderFriends(){
     return { uid: fu, name: name || 'Arkadaş', online, last, ava, lvl };
   }));
   rows.sort((a,b) => (b.online - a.online) || (b.last - a.last));
-  list.innerHTML = rows.map(r => `
-    <div class="ghp-dm-row" style="border-left-color:${r.online ? '#69F0AE' : '#546E7A'}">
-      <div class="ghp-dm-avatar" data-pcfr="${esc(r.uid)}" style="position:relative;cursor:pointer">${r.ava}${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
-      <div class="ghp-dm-info" data-pcfr="${esc(r.uid)}" style="cursor:pointer"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)} <small style="opacity:.65;font-weight:700">LV ${esc(r.lvl)}</small></div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
-      <button class="ghp-act" data-fdm="${esc(r.uid)}" data-fn="${esc(r.name)}">✉️</button>
-      <button class="ghp-act" data-frm="${esc(r.uid)}" style="color:#ff7a8a">✕</button>
-    </div>`).join('');
-  list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
+  const onlineCount = rows.filter(r => r.online).length;
+  // Başlık: çevrimiçi sayacı
+  const header = '<div class="fr-list-header">'
+    + '<span class="fr-hdr-total">👥 '+rows.length+' Arkadaş</span>'
+    + (onlineCount>0 ? '<span class="fr-hdr-online">🟢 '+onlineCount+' çevrimiçi</span>' : '<span class="fr-hdr-offline">Kimse çevrimiçi değil</span>')
+    + '</div>';
+  list.innerHTML = header + rows.map(r => 
+    '<div class="fr-row'+(r.online?' online':'')+'" data-frrow="'+esc(r.uid)+'">'
+      + '<div class="fr-ava" data-pcfr="'+esc(r.uid)+'">'+r.ava+(r.online?'<span class="fr-dot"></span>':'')+'</div>'
+      + '<div class="fr-info" data-pcfr="'+esc(r.uid)+'">'
+        + '<div class="fr-name">'+esc(r.name)+' <span class="fr-lv">LV '+esc(r.lvl)+'</span></div>'
+        + '<div class="fr-status">'+(r.online?'<span class="fr-on">● Çevrimiçi</span>':'<span class="fr-off">'+(r.last?tAgo(r.last)+' önce':'Çevrimdışı')+'</span>')+'</div>'
+      + '</div>'
+      + '<button class="fr-btn dm" data-fdm="'+esc(r.uid)+'" data-fn="'+esc(r.name)+'" title="Mesaj">✉️</button>'
+      + '<button class="fr-btn egg" data-fegg="'+esc(r.uid)+'" data-fn="'+esc(r.name)+'" title="Kozmo">🥚</button>'
+      + '<button class="fr-btn rm" data-frm="'+esc(r.uid)+'" title="Çıkar">✕</button>'
+    + '</div>'
+  ).join('');
+  list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => {
+    dmOpenThreadExternal(b.dataset.fdm, b.dataset.fn);
+  }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
+  list.querySelectorAll('[data-fegg]').forEach(b => b.addEventListener('click', async() => {
+    try{ const m = await import('./kozmos.js'); await m.sendEgg(b.dataset.fegg, b.dataset.fn); }catch(e){ showToast('Kozmo gönderilemedi'); }
+  }));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
     if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
     try{ await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + b.dataset.frm), null); }catch(e){}
@@ -824,17 +1264,17 @@ async function addFriendByNick(){
   const inp = byId('ghpFrNick'); const nick = inp.value.trim();
   if(!nick) return;
   const me = Auth.getState();
-  if(!me.uid || me.status !== 'google'){ alert('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
+  if(!me.uid || me.status !== 'google'){ showToast('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
   const t = await Auth.resolveNick(nick);
-  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
-  if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
-  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ alert('Zaten arkadaşsınız.'); return; } }catch(e){}
+  if(!t){ showToast('🔍 Nick bulunamadı: ' + nick); return; }
+  if(t.uid === me.uid){ showToast('Kendini ekleyemezsin 🙂'); return; }
+  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ showToast('Zaten arkadaşsınız.'); return; } }catch(e){}
   try{
     await sendFriendRequest(t.uid, t.nick);
     inp.value = '';
-    alert('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
+    showToast('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
     renderFriends();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){ showToast('⚠️ Gönderilemedi'); }
 }
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;
