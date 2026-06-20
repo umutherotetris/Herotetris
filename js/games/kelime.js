@@ -1598,16 +1598,38 @@ function checkGameOver(){
   return false;
 }
 
-function endGameAI(){
+async function endGameAI(){
   if(G._over) return; G._over = true;
   stopTurnTimer();
   Resume.clearSnapshot('kelime');
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
+  const playerWon = a > b;
+  const isDraw = a === b;
+  // Pes edildiyse ödül yok; aksi halde sonuca göre ödül (AI'ya DEĞİL, oyuncuya)
+  if(!G._resigned){
+    const klKaju = playerWon ? 70 : isDraw ? 30 : 10;
+    const klXp   = playerWon ? 50 : isDraw ? 20 : 15;
+    try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
+    if(playerWon){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
+    saveRecordsIfBetter();
+    // Merkezi ödül ekranı
+    try{
+      const Reward = await import('../reward.js');
+      const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
+      await Reward.showReward({
+        won: playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
+        title: playerWon ? '🔤 KAZANDIN!' : (isDraw?'🤝 BERABERLİK':'🤖 Yapay zekâ kazandı'),
+        subtitle: G.names.A+': '+a+' · '+G.names.B+': '+b,
+        extra: bwText,
+      });
+      return;
+    }catch(e){ console.warn('[reward]',e); }
+  } else {
+    saveRecordsIfBetter();
+  }
   const verdict = G._resigned ? 'Pes ettin 🏳️' : (a===b ? 'Berabere!' : (a>b ? 'Kazandın! 🎉' : 'Yapay zekâ kazandı 🤖'));
-  if(G._resigned){ /* pes: kutlama yok */ } else if(a>b){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
   const stars = starsFor(a);
-  saveRecordsIfBetter();
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
