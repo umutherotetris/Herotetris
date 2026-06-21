@@ -130,7 +130,7 @@ export function openTavla(){
       </div>
       <div class="tg-controls">
         <button class="tg-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
-        <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn">🎲 ZAR AT</button>
+        <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn" style="display:none">🎲 ZAR AT</button>
         <button class="tg-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ Pas</button>
       </div>
       <div class="tg-actions" data-el="actionsBar">
@@ -267,7 +267,12 @@ function startGame(root, mode, opts){
       AUTO_ROLL = !AUTO_ROLL;
       try{ localStorage.setItem('hero_tavla_autoroll', AUTO_ROLL ? 'on' : 'off'); }catch(e){}
       paintG();
-      if(AUTO_ROLL) startAutoRollTimer(); else clearAutoRollTimer();
+      if(AUTO_ROLL){ startAutoRollTimer(); }
+      else {
+        clearAutoRollTimer();
+        // Sayaç mesajını da temizle (takılı kalmasın)
+        if(!G.rolled){ updateStatus((G.state.turn==='w'?'Beyaz':'Siyah') + ' — zar at'); }
+      }
       if(window.Hero && window.Hero.toast) window.Hero.toast(AUTO_ROLL ? 'Otomatik zar açıldı (5 sn)' : 'Otomatik zar kapatıldı', false);
     });
   }
@@ -552,48 +557,43 @@ function draw(){
   if(G.dragging && G.dragMoved && G.dragPos){
     drawChecker(ctx, G.dragPos.x, G.dragPos.y, G.geo.checkerR * 1.15, G.state.turn, t);
   }
-
-  // ── ZAR AT mini belirteci (sol-orta, zar atılmadıysa)
-  if(!G.rolled && canInteract()){
-    drawRollHint(ctx, t);
-  }
+  // ZAR AT mini belirteç (sol-orta, zar atılmadıysa)
+  if(!G.rolled && canInteractRoll()){ drawRollHint(ctx, t); }
 }
 
-// Sol-orta'da, hiçbir sivri uca/birleşim yerine denk gelmeyen küçük ZAR AT rozeti
+function canInteractRoll(){
+  if(!G || G.gameEnded || G.rolled || G.aiThinking) return false;
+  if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
+  if(G.online && G.state.turn!==G.playerColor) return false;
+  return true;
+}
+
+// Sol-orta, sivri uçtan ve bar'dan uzak küçük ZAR AT rozeti
 function drawRollHint(ctx, t){
   const g = G.geo;
-  // Sol oyun yarısının ortası, dikey merkez — üçgenlerin geniş tabanından uzak
-  const cx = g.leftX + g.halfW * 0.5;
+  const cx = (G.flip ? g.rightX : g.leftX) + g.halfW * 0.5;
   const cy = g.innerY + g.innerH * 0.5;
-  const w = Math.min(g.halfW * 0.62, 120);
-  const h = Math.max(28, w * 0.34);
+  const w = Math.min(g.halfW * 0.62, 130);
+  const h = Math.max(30, w * 0.32);
   ctx.save();
-  // Yumuşak puls (zamanla hafif büyür/küçülür)
   const t0 = (performance.now() % 1400) / 1400;
   const pulse = 1 + Math.sin(t0 * Math.PI * 2) * 0.04;
-  ctx.translate(cx, cy);
-  ctx.scale(pulse, pulse);
-  // gölge
-  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 3;
+  ctx.translate(cx, cy); ctx.scale(pulse, pulse);
+  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 3;
   _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
   const grd = ctx.createLinearGradient(-w/2, -h/2, w/2, h/2);
-  grd.addColorStop(0, 'rgba(200,165,87,.96)');
-  grd.addColorStop(1, 'rgba(158,122,42,.96)');
+  grd.addColorStop(0,'rgba(200,165,87,.97)'); grd.addColorStop(1,'rgba(158,122,42,.97)');
   ctx.fillStyle = grd; ctx.fill();
   ctx.shadowColor = 'transparent';
-  // kenar
   _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
-  ctx.strokeStyle = 'rgba(255,235,180,.5)'; ctx.lineWidth = 1.4; ctx.stroke();
-  // mini zar ikonu
-  const ds = h * 0.5;
-  drawDie(ctx, -w/2 + ds*0.85, 0, ds, 3, false);
-  // yazı
+  ctx.strokeStyle = 'rgba(255,235,180,.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+  const ds = h * 0.52;
+  drawDie(ctx, -w/2 + ds*0.9, 0, ds, 5, false);
   ctx.fillStyle = '#1a1208';
-  ctx.font = `900 ${Math.floor(h*0.42)}px system-ui, sans-serif`;
+  ctx.font = `900 ${Math.floor(h*0.40)}px system-ui, sans-serif`;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  ctx.fillText('ZAR AT', -w/2 + ds*1.6, 1);
+  ctx.fillText('ZAR AT', -w/2 + ds*1.65, 1);
   ctx.restore();
-  // Sürekli yenilensin (puls için)
   if(!G._rollHintRAF){
     G._rollHintRAF = requestAnimationFrame(() => { G._rollHintRAF = null; if(!G.rolled && G.ctx) draw(); });
   }
@@ -910,67 +910,39 @@ function drawDie(ctx, cx, cy, sz, val, used){
   ctx.save();
   const x = cx - sz/2, y = cy - sz/2;
   const rad = sz*0.20;
-
-  // ── 1) Yere düşen yumuşak gölge (3D his)
+  // 1) Yere düşen gölge
   ctx.save();
   ctx.shadowColor = 'rgba(0,0,0,.45)';
-  ctx.shadowBlur = sz*0.22;
-  ctx.shadowOffsetX = sz*0.05;
-  ctx.shadowOffsetY = sz*0.10;
+  ctx.shadowBlur = sz*0.22; ctx.shadowOffsetX = sz*0.05; ctx.shadowOffsetY = sz*0.10;
   _roundRect(ctx, x, y, sz, sz, rad);
-  ctx.fillStyle = used ? '#9a9a92' : '#f5f1e8';
-  ctx.fill();
+  ctx.fillStyle = used ? '#9a9a92' : '#f5f1e8'; ctx.fill();
   ctx.restore();
-
-  // ── 2) Kemik beyazı gövde — köşegen gradient (ışık üst-soldan)
+  // 2) Gövde — köşegen gradient
   const grad = ctx.createLinearGradient(x, y, x+sz, y+sz);
-  if(used){
-    grad.addColorStop(0,  '#b8b8ae');
-    grad.addColorStop(0.5,'#9a9a90');
-    grad.addColorStop(1,  '#7e7e74');
-  } else {
-    grad.addColorStop(0,  '#fffefb');
-    grad.addColorStop(0.45,'#f3eee2');
-    grad.addColorStop(1,  '#ddd5c4');
-  }
-  _roundRect(ctx, x, y, sz, sz, rad);
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // ── 3) Üst parlama (highlight şeridi)
+  if(used){ grad.addColorStop(0,'#b8b8ae'); grad.addColorStop(0.5,'#9a9a90'); grad.addColorStop(1,'#7e7e74'); }
+  else { grad.addColorStop(0,'#fffefb'); grad.addColorStop(0.45,'#f3eee2'); grad.addColorStop(1,'#ddd5c4'); }
+  _roundRect(ctx, x, y, sz, sz, rad); ctx.fillStyle = grad; ctx.fill();
+  // 3) Üst parlama
   ctx.save();
-  _roundRect(ctx, x, y, sz, sz, rad);
-  ctx.clip();
+  _roundRect(ctx, x, y, sz, sz, rad); ctx.clip();
   const hl = ctx.createLinearGradient(x, y, x, y+sz*0.55);
-  hl.addColorStop(0, 'rgba(255,255,255,.55)');
-  hl.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = hl;
-  ctx.fillRect(x, y, sz, sz*0.55);
+  hl.addColorStop(0,'rgba(255,255,255,.55)'); hl.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle = hl; ctx.fillRect(x, y, sz, sz*0.55);
   ctx.restore();
-
-  // ── 4) İnce kenar (bevel)
+  // 4) İnce kenar
   _roundRect(ctx, x+0.5, y+0.5, sz-1, sz-1, rad);
   ctx.strokeStyle = used ? 'rgba(0,0,0,.25)' : 'rgba(150,130,90,.45)';
-  ctx.lineWidth = Math.max(1, sz*0.012);
-  ctx.stroke();
-
-  // ── 5) Kabartma noktalar (her biri gölge + highlight ile)
-  const r = sz*0.085;
-  const C=0.5, L=0.27, R=0.73;
+  ctx.lineWidth = Math.max(1, sz*0.012); ctx.stroke();
+  // 5) Kabartma noktalar
+  const r = sz*0.085, C=0.5, L=0.27, R=0.73;
   const dot = (fx, fy) => {
     const px = x + sz*fx, py = y + sz*fy;
-    // alt gölge
-    ctx.beginPath();
-    ctx.arc(px+r*0.18, py+r*0.18, r, 0, Math.PI*2);
-    ctx.fillStyle = used ? 'rgba(40,40,40,.5)' : 'rgba(20,15,5,.35)';
-    ctx.fill();
-    // nokta gövdesi (radyal gradient → oyuk hissi)
+    ctx.beginPath(); ctx.arc(px+r*0.18, py+r*0.18, r, 0, Math.PI*2);
+    ctx.fillStyle = used ? 'rgba(40,40,40,.5)' : 'rgba(20,15,5,.35)'; ctx.fill();
     const dg = ctx.createRadialGradient(px-r*0.3, py-r*0.3, r*0.1, px, py, r);
     if(used){ dg.addColorStop(0,'#444'); dg.addColorStop(1,'#222'); }
-    else    { dg.addColorStop(0,'#3a2a18'); dg.addColorStop(0.7,'#1a120a'); dg.addColorStop(1,'#0a0704'); }
-    ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2);
-    ctx.fillStyle = dg; ctx.fill();
-    // küçük ışık noktası
+    else { dg.addColorStop(0,'#3a2a18'); dg.addColorStop(0.7,'#1a120a'); dg.addColorStop(1,'#0a0704'); }
+    ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle = dg; ctx.fill();
     ctx.beginPath(); ctx.arc(px-r*0.35, py-r*0.35, r*0.28, 0, Math.PI*2);
     ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fill();
   };
@@ -985,14 +957,11 @@ function drawDie(ctx, cx, cy, sz, val, used){
 
 
 // ════════════ KOMBİNE HAMLE (toplam pip) ════════════
-// Bir noktadan iki zarı ardışık kullanarak ulaşılabilecek BİLEŞİK hedefleri bulur.
-// Örn 5-6 elde, tek pul 11 hane uzağa: ara nokta açıksa final noktaya tek tap.
 function getCombinedMoves(state, from){
   const single = legalMovesFrom(state, from);
   if(!single.length) return single;
-  const rem = remainingDice(state);          // [{die, idx}, ...] kalan zarlar
-  if(rem.length < 2) return single;          // tek zar kaldıysa kombine yok
-  // Eşsiz zar değerleri (çift değilse 2 farklı, çiftse aynı)
+  const rem = remainingDice(state);
+  if(rem.length < 2) return single;
   const combos = [];
   for(let i=0;i<rem.length;i++){
     for(let j=0;j<rem.length;j++){
@@ -1003,28 +972,16 @@ function getCombinedMoves(state, from){
   const result = [...single];
   const seenTo = new Set(single.map(m => String(m.to)));
   for(const [d1, d2] of combos){
-    // 1. adım: from'dan d1 ile gidilebilir mi?
     const step1 = single.find(m => m.die === d1.die && m.to !== 'off');
     if(!step1 || typeof step1.to !== 'number') continue;
-    // 1. adımı uygula → ara state
     let midState;
     try{ midState = applyMove(state, step1); }catch(e){ continue; }
-    // 2. adım: ara noktadan d2 ile gidilebilir mi?
     const step2List = legalMovesFrom(midState, step1.to);
     const step2 = step2List.find(m => m.die === d2.die);
     if(!step2) continue;
-    const finalTo = step2.to;
-    if(seenTo.has(String(finalTo))) continue;  // zaten tekli hamleyle ulaşılıyor
-    seenTo.add(String(finalTo));
-    // Bileşik hamle: iki adımı sırayla sakla
-    result.push({
-      from: from,
-      to: finalTo,
-      die: d1.die,
-      dieIdx: d1.idx,
-      _combo: [step1, step2],   // doMove bunu görürse iki adımı oynar
-      type: step2.type || step1.type
-    });
+    if(seenTo.has(String(step2.to))) continue;
+    seenTo.add(String(step2.to));
+    result.push({ from, to: step2.to, die: d1.die, dieIdx: d1.idx, _combo:[step1, step2], type: step2.type||step1.type });
   }
   return result;
 }
@@ -1090,7 +1047,7 @@ function isMyPoint(idx){
 }
 
 function onPointerDown(e){
-  // Zar atılmadıysa: ZAR AT belirtecine (veya boşa) basınca zar at
+  // Zar atılmadıysa belirtece/boşa basınca zar at
   if(G && !G.rolled && !G.gameEnded && !G.aiThinking){
     const canRoll = !(G.mode==='ai' && G.state.turn===G.aiColor) && !(G.online && G.state.turn!==G.playerColor);
     if(canRoll){ e.preventDefault(); rollAndShow(); return; }
@@ -1189,10 +1146,9 @@ function hitTest(px, py){
 }
 
 function doMove(mv){
-  if(G.moveGraceActive) clearMoveGrace();   // mola sonrası oynandı → ceza süresi iptal
-  // undo için kaydet (online'da undo kapalı)
+  if(G.moveGraceActive) clearMoveGrace();
   if(!G.online){ G.undoStack.push({ state: G.state, selected: null }); }
-  // ── KOMBİNE HAMLE: iki zarı ardışık oyna (toplam pip)
+  // KOMBİNE: iki zarı ardışık oyna (toplam pip)
   if(mv._combo && Array.isArray(mv._combo)){
     for(const step of mv._combo){
       if(G.online){ TavlaMP.send({ type:'move', from: step.from, to: step.to, die: step.die, dieIdx: step.dieIdx }); }
@@ -1200,8 +1156,8 @@ function doMove(mv){
       try{ step.type === 'hit' ? Sound.hit() : Sound.move(); }catch(e){}
     }
     G.selected = null; G.legalForSel = [];
-    const status0 = gameStatus(G.state);
-    if(status0 !== 'playing'){ onWin(status0); return; }
+    const st0 = gameStatus(G.state);
+    if(st0 !== 'playing'){ onWin(st0); return; }
     if(turnComplete(G.state)){
       updateStatus('Sıra tamamlandı — ' + (G.state.turn==='w'?'beyaz':'siyah') + ' bitti');
       setTimeout(() => endTurn(), 600);
@@ -1210,7 +1166,6 @@ function doMove(mv){
       updateStatus(`Kalan zar: ${rem0} — devam et`);
     }
     updateControls(); draw();
-    if(G && G.mode==='ai') { try{ saveAIGame(); }catch(e){} }
     return;
   }
   if(G.online){ TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }); }
@@ -1261,6 +1216,13 @@ function endTurn(){
 function clearAutoRollTimer(){
   if(G && G.autoRollTimer){ clearTimeout(G.autoRollTimer); G.autoRollTimer = null; }
   if(G && G.autoRollCountdown){ clearInterval(G.autoRollCountdown); G.autoRollCountdown = null; }
+  // Sayaç mesajı asılı kaldıysa temizle
+  if(G && !G.rolled && !G.gameEnded){
+    const st = G.root && G.root.querySelector('[data-el="status"]');
+    if(st && st.textContent.includes('otomatik zar')){
+      updateStatus((G.state.turn==='w'?'Beyaz':'Siyah') + ' — zar at');
+    }
+  }
 }
 function startAutoRollTimer(){
   if(!G) return;
@@ -1837,11 +1799,11 @@ function updateControls(){
     rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }
-  // zar atılmadıysa ZAR AT göster
+  // ZAR AT artık canvas içi belirteç → büyük buton hep gizli
+  rollBtn.style.display = 'none';
   if(!G.rolled){
-    rollBtn.style.display = 'block'; passBtn.style.display = 'none';
+    passBtn.style.display = 'none';
   } else {
-    rollBtn.style.display = 'none';
     const noMoves = allLegalMoves(G.state).length === 0;
     passBtn.style.display = (noMoves || turnComplete(G.state)) ? 'block' : 'none';
   }
