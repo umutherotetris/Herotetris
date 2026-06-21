@@ -1739,6 +1739,10 @@ function build(){
       </div>
     </div>`;
   document.body.appendChild(root);
+  // 🏠 Oyun içi ev butonu
+  import('../game-home.js').then(m => {
+    G && (G._home = m.mountGameHome('tetris', () => { try{ close(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+  }).catch(()=>{});
   return root;
 }
 
@@ -2105,6 +2109,7 @@ function restart(){
 
 function close(){
   if(!G) return;
+  try{ if(G._home) G._home.remove(); }catch(e){}
   try{ saveTetrisResume(); }catch(e){}
   cancelAnimationFrame(G.raf);
   try{ Sound.stopMusic(); }catch(e){}
