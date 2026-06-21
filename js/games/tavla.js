@@ -118,8 +118,7 @@ export function openTavla(){
       <div class="tg-top">
         <button class="tv-icon" data-act="exit">✕</button>
         <div class="tg-turn" data-el="turn">BEYAZ'IN SIRASI</div>
-        <div style="display:flex;gap:5px;align-items:center">
-          <button class="tg-toproll" data-act="roll" data-el="rollBtn">🎲</button>
+        <div style="display:flex;gap:6px">
           <button class="tv-icon" data-act="gameAutoRoll" data-el="gameAutoRollBtn" title="Otomatik zar">⏱️</button>
           <button class="tv-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="tg-chat-badge" data-el="chatBadge" style="display:none"></span></button>
           <button class="tv-icon" data-act="restart" title="Yeniden">🔄</button>
@@ -131,7 +130,8 @@ export function openTavla(){
       </div>
       <div class="tg-controls">
         <button class="tg-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
-        <button class="tg-btn tg-pass-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ GELE</button>
+        <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn">🎲 ZAR AT</button>
+        <button class="tg-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ Pas</button>
       </div>
       <div class="tg-actions" data-el="actionsBar">
         <button class="tg-act-btn" data-act="draw">🤝 Beraberlik</button>
@@ -206,7 +206,10 @@ function startGame(root, mode, opts){
     if(!G) return;
     G._home = m.mountGameHome('tavla',
       () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
-      { sound: { get:()=>Sound.enabled, toggle:()=>Sound.toggle() } });
+      {
+        sound:   { get:()=>Sound.enabled, toggle:()=>Sound.toggle() },
+        onTheme: () => showThemePicker(G.root),
+      });
   }).catch(()=>{});
 
   G.mode = mode;
@@ -220,7 +223,45 @@ function startGame(root, mode, opts){
     G.playerColor = opts.playerColor || 'w';     // AI modunda insanın rengi
     G.aiColor = G.playerColor === 'w' ? 'b' : 'w';
   }
-  G.state = newGame();
+  // AI modunda önceki oyun varsa devam teklif et
+  if(mode === 'ai'){
+    const saved = loadAIGame();
+    if(saved && saved.playerColor === (opts.playerColor||'w')){
+      G.state       = saved.state;
+      G.playerColor = saved.playerColor;
+      G.aiColor     = saved.aiColor;
+      G.difficulty  = saved.difficulty  || opts.difficulty || 'medium';
+      G.rolled      = saved.rolled      || false;
+      G.openingDice = saved.openingDice || null;
+      G.flip        = saved.flip        || false;
+      if(saved.theme && THEMES[saved.theme]) SELECTED_THEME = saved.theme;
+      // Devam banner'ı
+      setTimeout(()=>{
+        const b = document.createElement('div');
+        b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#1a2a10,#0e1e08);border-bottom:2px solid #7dc24b;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:#b8f07a';
+        b.innerHTML='<span>♟️ Kaldığın yerden devam ediyorsun</span><button style="margin-left:auto;padding:5px 12px;border-radius:8px;border:none;background:#7dc24b;color:#0a1408;font-weight:800;font-size:11px;cursor:pointer">✕</button>';
+        document.body.appendChild(b);
+        b.querySelector('button').onclick = ()=>b.remove();
+        setTimeout(()=>b.remove(), 3500);
+      }, 600);
+      // state yüklendi, canvas setup'a git
+      G.canvas = root.querySelector('[data-el="canvas"]');
+      // ↓ Aşağıdaki satırlar zaten çalışacak (newGame() atlıyoruz)
+      G.ctx = G.canvas.getContext('2d');
+      G.boardWrap = root.querySelector('[data-el="boardWrap"]');
+      G.selected = null; G.legalForSel = []; G.undoStack = [];
+      G.gameEnded = false; G.aiThinking = false;
+      G.oppLeft = false; G.unreadChat = 0; G.chatOpen = false;
+      G.online = false; G.isHost = false;
+      // state yüklendi - canvas setup'a aşağıda devam
+      G._resuming = true;
+    }
+  }
+  if(!G._resuming){
+    G.state = newGame();
+    G.rolled = false;
+    G.flip = false;
+  }
   G.canvas = root.querySelector('[data-el="canvas"]');
   G.ctx = G.canvas.getContext('2d');
   G.boardWrap = root.querySelector('[data-el="boardWrap"]');
@@ -228,8 +269,7 @@ function startGame(root, mode, opts){
   G.legalForSel = [];       // seçili noktanın hamleleri
   G.undoStack = [];
   G.gameEnded = false;
-  G.rolled = false;         // bu sırada zar atıldı mı
-  G.flip = false;           // tahta yönü
+  if(!G._resuming){ G.flip = false; }
   G.aiThinking = false;
   G.oppLeft = false;
   G.unreadChat = 0; G.chatOpen = false;
@@ -244,14 +284,15 @@ function startGame(root, mode, opts){
   }
 
   // Açılış zarı — online'da host belirler+gönderir; diğer modlarda yerel
-  if(G.online && !G.isHost){
-    // misafir: host'tan 'start' bekleyecek
-    G.openingDice = [1, 1];
-    G.state.turn = 'w';
-  } else {
-    const open = openingRoll();
-    G.state.turn = open.first;
-    G.openingDice = open.dice;
+  if(!G._resuming){
+    if(G.online && !G.isHost){
+      G.openingDice = [1, 1];
+      G.state.turn = 'w';
+    } else {
+      const open = openingRoll();
+      G.state.turn = open.first;
+      G.openingDice = open.dice;
+    }
   }
 
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
@@ -284,8 +325,10 @@ function startGame(root, mode, opts){
 
   // Tahta yönü ÖNCE belirlensin ki fitCanvas doğru yönle çizsin
   // AI/online'da insan rengine göre sabit; 2 oyuncuda döner
-  if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
-  else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(!G._resuming){
+    if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
+    else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  }
 
   fitCanvas();
   // Portal HUD enjekte et
@@ -299,7 +342,7 @@ function startGame(root, mode, opts){
     const oppN=G.oppName||'Rakip'; const oppA=G.oppAvatar||'🎲';
     const oppL=G.oppLevel||1; const oppX=G.oppXP||0;
     createVsHUD({
-      root: gameEl, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
+      root: document.body, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
       oppUid: G.oppUid||null, oppNick:oppN, oppAvatar:oppA, oppLevel:oppL, oppXP:oppX,
       myScore: ()=>0, oppScore: ()=>0,
     }).then(h=>{ G._hud=h; }).catch(()=>{});
@@ -308,6 +351,18 @@ function startGame(root, mode, opts){
   // canvas ve taşların tam oturması için yeniden boyutlandır (özellikle flip=true)
   requestAnimationFrame(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); });
   setTimeout(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); }, 60);
+
+  // Resume sonrası durum düzelt
+  if(G._resuming){
+    G._resuming = false;
+    updateControls();
+    draw();
+    // Sıra AI'daysa devam ettir
+    if(G.mode === 'ai' && G.state.turn === G.aiColor && !G.rolled){
+      setTimeout(() => maybeAITurn(), 800);
+    }
+    if(window.Hero && window.Hero.toast) window.Hero.toast('Kaldığın yerden devam', false);
+  }
 
   if(G.online){
     setupChat();
@@ -351,6 +406,44 @@ function restart(){
 }
 
 // ════════════ ZAR ATMA ════════════
+
+// ════════════ AI OYUN KAYIT / YÜKLEME ════════════
+const TAVLA_SAVE_KEY = 'hero_tavla_ai_save';
+
+function saveAIGame(){
+  if(!G || G.mode !== 'ai' || G.gameEnded) return;
+  try{
+    const snap = {
+      state:      G.state,
+      mode:       G.mode,
+      playerColor:G.playerColor,
+      aiColor:    G.aiColor,
+      difficulty: G.difficulty,
+      rolled:     G.rolled,
+      openingDice:G.openingDice,
+      flip:       G.flip,
+      theme:      SELECTED_THEME,
+      ts:         Date.now(),
+    };
+    localStorage.setItem(TAVLA_SAVE_KEY, JSON.stringify(snap));
+  }catch(e){}
+}
+
+function clearAIGame(){
+  try{ localStorage.removeItem(TAVLA_SAVE_KEY); }catch(e){}
+}
+
+function loadAIGame(){
+  try{
+    const raw = localStorage.getItem(TAVLA_SAVE_KEY);
+    if(!raw) return null;
+    const snap = JSON.parse(raw);
+    // 6 saatten eskiyse sil
+    if(Date.now() - (snap.ts||0) > 6*3600*1000){ clearAIGame(); return null; }
+    return snap;
+  }catch(e){ return null; }
+}
+
 function rollAndShow(){
   if(G.gameEnded || G.rolled || G.aiThinking) return;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
@@ -367,16 +460,13 @@ function rollAndShow(){
   const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
   animateDiceRoll(() => {
     if(moves.length === 0){
-      updateStatus(`🎲 ${diceStr} — Gele! Sıra rakibe geçiyor…`, 'info');
+      updateStatus(`🎲 ${diceStr} — oynanabilir hamle yok, pas`);
       G.canPass = true;
-      updateControls();
-      draw();
-      setTimeout(() => { if(G && G.canPass) endTurn(); }, 1600);
     } else {
       updateStatus(`🎲 ${diceStr} — pul seç`);
-      updateControls();
-      draw();
     }
+    updateControls();
+    draw();
   });
 }
 
@@ -384,29 +474,18 @@ function rollAndShow(){
 function fitCanvas(){
   if(!G || !G.canvas) return;
   const wrap = G.boardWrap;
-  const availW = wrap.clientWidth || (window.innerWidth - 12);
-  // Sabit rezerv: header(~52) + status(~0) + controls(~46) + actions(~36) + HUD(~60) + padding
-  const ctrl = G.root && G.root.querySelector('.tg-controls');
-  const acts = G.root && G.root.querySelector('.tg-actions');
-  const top  = G.root && G.root.querySelector('.tg-top');
-  const hud  = G.root && G.root.querySelector('#heroGameHud');
-  const reservedH = (ctrl ? ctrl.offsetHeight : 46)
-                  + (acts ? acts.offsetHeight : 36)
-                  + (top  ? top.offsetHeight  : 52)
-                  + (hud  ? hud.offsetHeight  : 0)
-                  + 28; // padding + güvenlik marjı
-  const winH = window.innerHeight || window.screen.height;
-  const availH = Math.max(80, winH - reservedH);
-  // Tavla tahtası DİKEY-UZUN ama dengeli (gerçek tavla oranı ~1.40).
-  // Aşırı uzamayı önlemek için 1.36–1.48 arasına sabitlenir.
+  // wrap.clientWidth/Height DOM'dan direkt okuyoruz — flex:1 ile kendisi büyüdü
+  const availW = wrap.clientWidth  || (window.innerWidth  - 16);
+  const availH = wrap.clientHeight || (window.innerHeight - 140);
+  // Tavla tahtası dikey-uzun (gerçek oran ~1.40). 1.30–1.52 arasına sabitle.
   let ratio = availH / availW;
-  ratio = Math.max(1.36, Math.min(ratio, 1.48));
+  ratio = Math.max(1.30, Math.min(ratio, 1.52));
   let w = availW, h = w * ratio;
   if(h > availH){ h = availH; w = h / ratio; }
   const dpr = window.devicePixelRatio || 1;
   G.W = Math.floor(w); G.H = Math.floor(h);
-  G.canvas.width = G.W * dpr; G.canvas.height = G.H * dpr;
-  G.canvas.style.width = G.W + 'px'; G.canvas.style.height = G.H + 'px';
+  G.canvas.width  = G.W * dpr; G.canvas.height = G.H * dpr;
+  G.canvas.style.width  = G.W + 'px'; G.canvas.style.height = G.H + 'px';
   G.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   computeLayout();
   draw();
@@ -1057,9 +1136,17 @@ function doMove(mv){
   } else {
     const rem = remainingDice(G.state).map(r=>r.die).join(', ');
     updateStatus(`Kalan zar: ${rem} — devam et`);
+    // Otomatik tekli hamle: geriye tek zorunlu hamle kaldıysa uygula
+    const allMoves = allLegalMoves(G.state);
+    if(allMoves.length === 1 && !G.online){
+      setTimeout(() => {
+        if(G && !G.gameEnded && !turnComplete(G.state)) doMove(allMoves[0]);
+      }, 280);
+    }
   }
   updateControls();
   draw();
+  if(G && G.mode==='ai') saveAIGame();
 }
 
 function endTurn(){
@@ -1069,6 +1156,7 @@ function endTurn(){
   G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
   G.state.dice = []; G.state.used = [];
   G.rolled = false; G.canPass = false;
+  if(G && G.mode==='ai') saveAIGame();
   G.selected = null; G.legalForSel = []; G.undoStack = [];
   if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
   updateTurn();
@@ -1588,6 +1676,7 @@ async function awardSimple(playerWon, reason){
 }
 
 async function onWin(status){
+  clearAIGame();  // oyun bitti → kayıt sil
   G.gameEnded = true;
   G.aiThinking = false;
   clearAutoRollTimer();
@@ -1651,24 +1740,24 @@ function updateControls(){
   const actionsBar = G.root.querySelector('[data-el="actionsBar"]');
   if(actionsBar) actionsBar.style.display = G.gameEnded ? 'none' : 'flex';
   if(G.gameEnded || G.aiThinking){
-    rollBtn.classList.remove('visible'); passBtn.style.display = 'none'; undoBtn.style.display = 'none';
+    rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }
   // AI sırasıysa kontrol gösterme
   if(G.mode === 'ai' && G.state.turn === G.aiColor){
-    rollBtn.classList.remove('visible'); passBtn.style.display = 'none'; undoBtn.style.display = 'none';
+    rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }
   // Online'da sıra rakipteyse kontrol gösterme
   if(G.online && G.state.turn !== G.playerColor){
-    rollBtn.classList.remove('visible'); passBtn.style.display = 'none'; undoBtn.style.display = 'none';
+    rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }
-  // zar atılmadıysa ZAR AT göster (top bar'da .visible class ile)
+  // zar atılmadıysa ZAR AT göster
   if(!G.rolled){
-    rollBtn.classList.add('visible'); passBtn.style.display = 'none';
+    rollBtn.style.display = 'block'; passBtn.style.display = 'none';
   } else {
-    rollBtn.classList.remove('visible');
+    rollBtn.style.display = 'none';
     const noMoves = allLegalMoves(G.state).length === 0;
     passBtn.style.display = (noMoves || turnComplete(G.state)) ? 'block' : 'none';
   }
@@ -2031,19 +2120,6 @@ function injectCSS(){
 .tvbk-note{ font-size:11px; color:#8a98ac; margin-top:12px; line-height:1.4; }
 .tg-btn{ padding:12px 18px; background:rgba(255,255,255,.06); border:1px solid rgba(200,165,87,.3); border-radius:12px; color:#c8a557; font-size:13px; font-weight:700; cursor:pointer; transition:transform .1s; }
 .tg-btn:active{ transform:scale(.96); }
-.tg-pass-btn{ background:rgba(255,200,80,.08); border-color:rgba(200,165,87,.5); }
-/* Top bar'daki küçük ZAR AT butonu */
-.tg-toproll{
-  height:34px; padding:0 11px; border-radius:9px;
-  background:linear-gradient(135deg,#c8a557,#a07d2f);
-  color:#0a1428; font-size:14px; font-weight:900;
-  border:none; cursor:pointer; letter-spacing:.3px;
-  box-shadow:0 2px 8px rgba(200,165,87,.4);
-  transition:transform .1s, opacity .15s;
-  display:none; /* updateControls ile gösterilir */
-}
-.tg-toproll:active{ transform:scale(.92); }
-.tg-toproll.visible{ display:flex; align-items:center; gap:4px; }
 .tg-roll{ background:linear-gradient(135deg, #c8a557, #a07d2f); color:#0a1428; font-size:16px; font-weight:800; letter-spacing:1px; padding:14px 32px; box-shadow:0 0 16px rgba(200,165,87,.3); }
 
 .tavla-theme-picker{ position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(6px); padding:16px; box-sizing:border-box; }
