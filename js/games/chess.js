@@ -593,6 +593,7 @@ function startGame(root, mode, opts){
       if(G.mode === 'online'){ ChessMP.send({ type:'resign' }); }
       updateStatus('🏳️ Pes ettin — Rakip kazandı', 'draw');
       try{ Sound.lose(); }catch(e){}
+      onGameEnd(false);   // pes eden kaybeder → kaybetme ödülü
     });
   });
 
@@ -1095,12 +1096,14 @@ function onRemoteMessage(data){
     updateStatus('🏳️ Rakip pes etti — KAZANDIN!', 'win');
     G.oppLeft = true; G.gameEnded = true;
     try{ Sound.win(); }catch(e){}
+    onGameEnd(true);   // rakip pes etti → kazanma ödülü
   } else if(data.type === 'drawOffer'){
     handleDrawOffer();
   } else if(data.type === 'drawAccept'){
     G.gameEnded = true;
     updateStatus('🤝 BERABERE — Karşılıklı anlaşma', 'draw');
     try{ Sound.draw(); }catch(e){}
+    onGameEndDraw();   // beraberlik ödülü
   } else if(data.type === 'drawDecline'){
     updateStatus('Rakip beraberliği reddetti', 'check');
     setTimeout(() => { if(G && !G.gameEnded) updateStatus(''); }, 2000);
@@ -1181,37 +1184,41 @@ function applyAndContinue(mv, isCapture){
   // Durum + ses
   const status = gameStatus(G.state);
   if(status === 'checkmate'){
-    const winner = G.state.turn === 'w' ? 'SİYAH' : 'BEYAZ';
-    let label = `♚ ŞAH MAT! ${winner} KAZANDI`;
+    // Mat edilen taraf = sırası gelen taraf (hamle yapamıyor). Kazanan = diğeri.
+    const matedColor = G.state.turn;        // 'w' veya 'b' (mat olan)
+    const winnerColor = matedColor === 'w' ? 'b' : 'w';
+    const winnerName = winnerColor === 'w' ? 'BEYAZ' : 'SİYAH';
+    let label = `♚ ŞAH MAT! ${winnerName} KAZANDI`;
+    // playerWon: AI ve online modda oyuncunun kendi rengine göre
     let playerWon = true;
-    if(G.mode === 'ai'){
-      playerWon = (G.state.turn !== G.playerColor);
-      label = playerWon ? '🏆 KAZANDIN! ŞAH MAT' : '🤖 YZ KAZANDI — ŞAH MAT';
+    if(G.mode === 'ai' || G.mode === 'online'){
+      playerWon = (winnerColor === G.playerColor);
+      label = playerWon ? '🏆 KAZANDIN! ŞAH MAT' : (G.mode==='ai' ? '🤖 YZ KAZANDI — ŞAH MAT' : '♟ RAKİP KAZANDI — ŞAH MAT');
     }
     updateStatus(label, 'win');
     try{ playerWon ? Sound.win() : Sound.lose(); }catch(e){}
     G.gameEnded = true;
-    onGameEnd(winner);
+    onGameEnd(playerWon);
     return;
   } else if(status === 'stalemate'){
     updateStatus('🤝 PAT — BERABERE', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true; Resume.clearSnapshot('chess');
+    G.gameEnded = true; onGameEndDraw();
     return;
   } else if(status === 'insufficient'){
     updateStatus('🤝 BERABERE — Yetersiz materyal', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true; Resume.clearSnapshot('chess');
+    G.gameEnded = true; onGameEndDraw();
     return;
   } else if(status === 'fiftymove'){
     updateStatus('🤝 BERABERE — 50 hamle kuralı', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true; Resume.clearSnapshot('chess');
+    G.gameEnded = true; onGameEndDraw();
     return;
   } else if(repeats >= 3){
     updateStatus('🤝 BERABERE — 3 hamle tekrarı', 'draw');
     try{ Sound.draw(); }catch(e){}
-    G.gameEnded = true; Resume.clearSnapshot('chess');
+    G.gameEnded = true; onGameEndDraw();
     return;
   } else if(status === 'check'){
     updateStatus('⚠️ ŞAH!', 'check');
@@ -1231,9 +1238,22 @@ function applyAndContinue(mv, isCapture){
   maybeAIMove();
 }
 
-async function onGameEnd(winner){
+async function onGameEndDraw(){
   Resume.clearSnapshot('chess');
-  const won = winner === 'w'; // Oyuncu beyaz
+  const kaju = 40, xp = 30;
+  try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
+  try{
+    const Reward = await import('../reward.js');
+    await Reward.showReward({
+      won:false, draw:true, game:'chess', kaju, xp, writeReward:false,
+      title: '🤝 BERABERE', subtitle: 'Satranç partisi berabere bitti',
+    });
+  }catch(e){ console.warn('[reward]',e); }
+}
+
+async function onGameEnd(playerWon){
+  Resume.clearSnapshot('chess');
+  const won = playerWon === true;
   const kaju = won ? 80 : 20;
   const xp = won ? 60 : 25;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
