@@ -1068,8 +1068,28 @@ function renderBoard(){
   // 🏠 Oyun içi ev butonu (ilk render'da bir kez)
   if(G && !G._homeMounted){
     G._homeMounted = true;
+    // İlk kez oynayana 🎁 sürpriz kutu ipucu (bir defa)
+    try{
+      if(localStorage.getItem('hero_kelime_tip_seen') !== '1'){
+        localStorage.setItem('hero_kelime_tip_seen', '1');
+        setTimeout(() => {
+          const tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:2147483500;background:linear-gradient(135deg,rgba(255,240,192,.97),rgba(243,212,132,.97));color:#5a4500;font-size:12px;font-weight:700;padding:10px 16px;border-radius:14px;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4);border:1px solid rgba(240,177,50,.6);line-height:1.5;cursor:pointer';
+          tip.innerHTML = '🎁 <b>Sürpriz kutular!</b> Üzerine harf koyunca açılır: ekstra puan, +1 harf veya 2× çarpan kazanırsın. <span style="opacity:.6;font-size:10px;display:block;margin-top:3px">(dokun → kapat)</span>';
+          document.body.appendChild(tip);
+          const close = () => tip.remove();
+          tip.addEventListener('click', close);
+          setTimeout(close, 7000);
+        }, 800);
+      }
+    }catch(e){}
     import('../game-home.js').then(m => {
-      G && (G._home = m.mountGameHome('kelime', () => { try{ closeKelime(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+      if(!G) return;
+      G._home = m.mountGameHome('kelime',
+        () => { try{ closeKelime(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
+        {
+          sound: { get:()=> G ? !!G.sound : true, toggle:()=>{ if(G){ G.sound=!G.sound; const sb=G.root&&G.root.querySelector('[data-el=\"sound\"]'); if(sb) sb.textContent=G.sound?'🔊':'🔇'; return G.sound; } return false; } },
+        });
     }).catch(()=>{});
   }
   const board = G.root.querySelector('[data-el="board"]');

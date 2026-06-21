@@ -1669,11 +1669,13 @@ function build(){
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
+    <div class="t-statbar">
+      <div class="t-stat"><span class="t-sl">SKOR</span><span class="t-pval t-score">0</span></div>
+      <div class="t-stat"><span class="t-sl">SEVİYE</span><span class="t-pval t-level">1</span></div>
+      <div class="t-stat"><span class="t-sl">SATIR</span><span class="t-pval t-lines">0</span></div>
+    </div>
     <div class="tetris-stage">
       <div class="tetris-side">
-        <div class="t-panel"><div class="t-plabel">SKOR</div><div class="t-pval t-score">0</div></div>
-        <div class="t-panel"><div class="t-plabel">SEVİYE</div><div class="t-pval t-level">1</div></div>
-        <div class="t-panel"><div class="t-plabel">SATIR</div><div class="t-pval t-lines">0</div></div>
         <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="84" height="64"></canvas></div>
         <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="84" height="64"></canvas></div>
       </div>
@@ -1739,9 +1741,16 @@ function build(){
       </div>
     </div>`;
   document.body.appendChild(root);
-  // 🏠 Oyun içi ev butonu
+  // 🏠 Oyun içi kontrol merkezi (ses/müzik/titreşim API'li)
   import('../game-home.js').then(m => {
-    G && (G._home = m.mountGameHome('tetris', () => { try{ close(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+    if(!G) return;
+    G._home = m.mountGameHome('tetris',
+      () => { try{ close(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
+      {
+        sound: { get:()=>Sound.enabled,      toggle:()=>Sound.toggle() },
+        music: { get:()=>Sound.musicEnabled, toggle:()=>Sound.toggleMusic() },
+        vibe:  { get:()=>Sound.vibeEnabled,  toggle:()=>Sound.toggleVibe() },
+      });
   }).catch(()=>{});
   return root;
 }
@@ -2512,7 +2521,11 @@ function injectCSS(){
 .tetris-stage{ flex: 1; display: flex; gap: 10px; min-height: 0; align-items: stretch; }
 
 /* Yan paneller */
-.tetris-side{ width: 92px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
+.t-statbar{ display:flex; gap:6px; margin-bottom:8px; }
+.t-stat{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:5px 4px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:1px; }
+.t-stat .t-sl{ font-size:8px; letter-spacing:1px; color:var(--text-mute); font-weight:700; }
+.t-stat .t-pval{ font-size:16px; }
+.tetris-side{ width: 72px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
 .t-panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 8px; text-align: center; }
 .t-plabel{ font-size: 8px; letter-spacing: 1.5px; color: var(--text-mute); font-weight: 700; }
 .t-pval{ font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; margin-top: 2px; }
