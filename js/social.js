@@ -488,163 +488,36 @@ function listenChatLock(){
 }
 
 // ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
-
-// ════════════════════════════════════════════════════════
-// MESAJ DÜZENLEME / SİLME SİSTEMİ
-// ════════════════════════════════════════════════════════
-const MSG_EDIT_MS = 5 * 60 * 1000; // 5 dakika
-
-function _amAdmin(){ return Auth.getState().isAdmin === true; }
-
-function canEdit(m, myUid){
-  if(!m || !myUid || m.deleted) return false;
-  const own = (m.uid || m.from) === myUid;
-  if(!own) return false;
-  return _amAdmin() || (Date.now() - (m.ts||0)) < MSG_EDIT_MS;
-}
-function canDel(m, myUid){
-  if(!m || !myUid || m.deleted) return false;
-  if(_amAdmin()) return true; // admin her zaman siler
-  return (m.uid||m.from) === myUid && (Date.now() - (m.ts||0)) < MSG_EDIT_MS;
-}
-
-async function _editChat(key, newText, old){
-  const hist = [...(old.editHistory||[]), {text: old.text, at: old.editedAt||null}];
-  await fdb.update(fdb.ref(db,'globalChat/'+key), {text:newText.slice(0,200), edited:true, editedAt:Date.now(), editHistory:hist});
-}
-async function _delChat(key){
-  await fdb.update(fdb.ref(db,'globalChat/'+key), {deleted:true, text:'[silindi]'});
-}
-async function _editDM(pk, key, newText, old){
-  const hist = [...(old.editHistory||[]), {text: old.text, at: old.editedAt||null}];
-  await fdb.update(fdb.ref(db,'messages/'+pk+'/'+key), {text:newText.slice(0,300), edited:true, editedAt:Date.now(), editHistory:hist});
-}
-async function _delDM(pk, key){
-  await fdb.update(fdb.ref(db,'messages/'+pk+'/'+key), {deleted:true, text:'[silindi]'});
-}
-
-function _editLabel(m){
-  if(m.deleted) return '<span style="font-size:10px;color:#546e7a;font-style:italic">🗑 silindi</span>';
-  if(!m.edited) return '';
-  const t = m.editedAt ? (' · ' + tAgo(m.editedAt)) : '';
-  if(_amAdmin() && m.editHistory && m.editHistory.length){
-    const items = m.editHistory.map((h,i)=>`<div style="font-size:10px;color:#b0bec5;padding:2px 0"><span style="color:#FFD740;font-weight:800">${i+1}.</span> ${esc(h.text||'')} <span style="color:#546e7a">${h.at?tAgo(h.at):''}</span></div>`).join('');
-    return `<span class="_edt_toggle" style="font-size:10px;color:#78909c;font-style:italic;cursor:pointer" data-hist>✏️ düzenlendi${t} ▸</span><div class="_edt_hist" style="display:none;margin-top:3px;padding:4px 8px;background:rgba(255,215,64,.07);border-left:2px solid rgba(255,215,64,.4);border-radius:0 5px 5px 0">${items}</div>`;
-  }
-  return `<span style="font-size:10px;color:#78909c;font-style:italic">✏️ düzenlendi${t}</span>`;
-}
-
-function _actionBtns(key, m, myUid, forDM){
-  const e = canEdit(m,myUid), d = canDel(m,myUid);
-  if(!e && !d) return '';
-  // ✏️ ve 🗑️ arası 14px boşluk - karışmaması için
-  const eBtn = e ? `<button data-ekey="${key}" data-edm="${forDM?1:0}" style="background:none;border:none;cursor:pointer;font-size:14px;padding:3px 5px;border-radius:5px;color:#4FC3F7;line-height:1" title="Düzenle">✏️</button>` : '';
-  const dBtn = d ? `<button data-dkey="${key}" data-ddm="${forDM?1:0}" style="background:none;border:none;cursor:pointer;font-size:14px;padding:3px 5px;border-radius:5px;color:#EF9A9A;line-height:1;margin-left:14px" title="Sil">🗑️</button>` : '';
-  return `<span style="opacity:0;transition:opacity .2s" class="_msg_acts">${eBtn}${dBtn}</span>`;
-}
-
-function _showEditBox(wrapEl, curText, onSave){
-  if(wrapEl.querySelector('textarea')) return;
-  const orig = wrapEl.innerHTML;
-  wrapEl.innerHTML = '';
-  const ta = document.createElement('textarea');
-  ta.value = curText; ta.rows = 2;
-  ta.style.cssText = 'width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(100,180,255,.4);border-radius:8px;padding:6px 8px;color:#e8eaf6;font-size:12px;resize:none;font-family:inherit;outline:none';
-  const row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:4px';
-  const ok = document.createElement('button');
-  ok.textContent='✓ Kaydet'; ok.style.cssText='padding:4px 11px;border-radius:7px;border:none;background:#4FC3F7;color:#0a0e1e;font-size:11px;font-weight:800;cursor:pointer';
-  const no = document.createElement('button');
-  no.textContent='✕ İptal'; no.style.cssText='padding:4px 11px;border-radius:7px;border:none;background:rgba(255,255,255,.1);color:#aaa;font-size:11px;font-weight:700;cursor:pointer';
-  row.append(no, ok);
-  wrapEl.append(ta, row);
-  ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
-  no.onclick = () => { wrapEl.innerHTML = orig; };
-  ok.onclick = () => { const v=ta.value.trim(); if(!v||v===curText){ wrapEl.innerHTML=orig; return; } onSave(v); };
-  ta.onkeydown = e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ok.click();} if(e.key==='Escape') no.click(); };
-}
-
-function _injectMsgCSS(){
-  if(document.getElementById('_hero_edit_css')) return;
-  const s = document.createElement('style');
-  s.id = '_hero_edit_css';
-  s.textContent = `.ghp-chat-row:hover ._msg_acts, .ghp-chat-row:focus-within ._msg_acts { opacity:1 !important; }`;
-  document.head.appendChild(s);
-}
-
 function listenChat(){
-  _injectMsgCSS();
   const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
   H.offChat = fdb.onValue(ref, (snap) => {
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
-    const st = Auth.getState();
-    const me = st.uid;
-    const isAdm = st.isAdmin === true;
-    // key ile birlikte sakla
-    const rows = [];
-    snap.forEach(ch => { if(ch.val()) rows.push({...ch.val(), _key: ch.key}); });
+    const me = Auth.getState().uid;
+    const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
     list.innerHTML = rows.map(m => {
+      // 🎨 SİSTEM MESAJI (kick/ban/duyuru) → özel renkli kart
       const isSys = m.uid === 'system' || m.isSystem === true || m.isAnnounce === true;
       if(isSys){ return renderChatSystemMsg(m); }
-      // Silindi: normal kullanıcı sadece placeholder görür
-      if(m.deleted && !isAdm){
-        return `<div class="ghp-chat-row"><div class="ghp-chat-avatar">🗑️</div><div class="ghp-chat-body"><div class="ghp-chat-text" style="color:#546e7a;font-style:italic">Bu mesaj silindi.</div><div class="ghp-chat-ts">${tAgo(m.ts||0)}</div></div></div>`;
-      }
       const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
-      const op  = !adm && H.ops && H.ops[m.uid] === true;
-      const isMine = m.uid === me;
+      const op = !adm && H.ops && H.ops[m.uid] === true;
       const nameHtml = adm
-        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name||'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
+        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name || 'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
         : (op
-          ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name||'Oyuncu')}</span>`
-          : `<span class="ghp-chat-name" style="color:${isMine?'#00E5FF':'#A78BFA'}">${esc(m.name||'Oyuncu')}</span>`);
-      const acts   = _actionBtns(m._key, m, me, false);
-      const label  = _editLabel(m);
-      const txt    = m.deleted ? '<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>' : esc(m.text);
+          ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name || 'Oyuncu')}</span>`
+          : `<span class="ghp-chat-name" style="color:${m.uid === me ? '#00E5FF' : '#A78BFA'}">${esc(m.name || 'Oyuncu')}</span>`);
       return `
-      <div class="ghp-chat-row${isMine?' mine':''}${adm?' ghp-adm':''}${m.deleted?' _deleted':''}" data-ckey="${m._key}">
-        <div class="ghp-chat-avatar">${esc(m.avatar||(adm?'👑':defaultAvatar(m.uid)))}</div>
+      <div class="ghp-chat-row${m.uid === me ? ' mine' : ''}${adm ? ' ghp-adm' : ''}">
+        <div class="ghp-chat-avatar">${esc(m.avatar || (adm ? '👑' : defaultAvatar(m.uid)))}</div>
         <div class="ghp-chat-body">
-          <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap">
-            <span style="cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</span>${acts}
-          </div>
-          <div class="ghp-chat-text _ctxt" data-ckey="${m._key}">${txt}</div>
-          <div class="ghp-chat-ts">${tAgo(m.ts||0)} ${label}</div>
+          <div style="display:flex;align-items:center;gap:3px;cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</div>
+          <div class="ghp-chat-text">${esc(m.text)}</div>
+          <div class="ghp-chat-ts">${tAgo(m.ts || 0)}</div>
         </div>
       </div>`;
     }).join('');
-    // geçmiş toggle
-    list.querySelectorAll('[data-hist]').forEach(el => {
-      el.onclick = () => { const h=el.nextElementSibling; if(h) h.style.display=h.style.display==='none'?'':'none'; };
-    });
-    // ✏️ düzenle
-    list.querySelectorAll('[data-ekey]').forEach(btn => {
-      btn.onclick = e => {
-        e.stopPropagation();
-        const key  = btn.dataset.ekey;
-        const rowM = rows.find(r => r._key === key);
-        if(!rowM || rowM.deleted) return;
-        const txtEl = list.querySelector(`.ghp-chat-text[data-ckey="${key}"]`);
-        if(!txtEl) return;
-        _showEditBox(txtEl, rowM.text, async newTxt => {
-          try{ await _editChat(key, newTxt, rowM); }
-          catch(err){ txtEl.textContent='[hata]'; alert('Düzenlenemedi'); }
-        });
-      };
-    });
-    // 🗑️ sil
-    list.querySelectorAll('[data-dkey]').forEach(btn => {
-      btn.onclick = async e => {
-        e.stopPropagation();
-        if(!confirm('Mesajı silmek istediğine emin misin?')) return;
-        try{ await _delChat(btn.dataset.dkey); }
-        catch(err){ alert('Silinemedi'); }
-      };
-    });
-    list.querySelectorAll('[data-pcuid]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcuid)));
     list.scrollTop = list.scrollHeight;
   });
 }
@@ -736,12 +609,12 @@ function dmOpenThread(uid, nick){
       const k = ch.key; const v = ch.val();
       // _seen / _typing gibi meta node'ları atla
       if(k && (k.charAt(0)==='_')) return;
-      if(v && (v.text || v.deleted)) rows.push({...v, _key: k});
+      if(v && v.text) rows.push(v);
     });
     if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; H.dmRows=[]; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
-    // İmza: mesaj sayısı + son ts → değişmediyse render etme (kasma önleme)
-    const sig = rows.length + ':' + (rows[rows.length-1].ts||0) + ':' + (rows.map(r=>r.edited?1:0).join('')) + ':' + (rows.map(r=>r.deleted?1:0).join(''));
+    // İmza: mesaj sayısı + son ts + tüm editedAt/deleted → herhangi bir düzenleme/silmede render tetikle
+    const sig = rows.length + ':' + (rows[rows.length-1].ts||0) + ':' + rows.map(r => (r.editedAt||0) + (r.deleted?'d':'')).join(',');
     if(sig !== H._lastDmSig){
       H._lastDmSig = sig;
       renderDMRows(rows);
@@ -811,24 +684,13 @@ function dmOpenThread(uid, nick){
         ? `<div style="text-align:center;margin:8px 0;font-size:9px;color:#50506e;letter-spacing:.5px">${dateStr}</div>`
         : '';
       prevDate = dateStr;
-      // Silindi - normal kullanıcı
-      if(m.deleted && !myIsAdmin){
-        return `${dateSep}<div class="ghp-chat-row${isMine?' mine':''}" style="align-items:flex-end;gap:6px">
-          <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🗑️</div>
-          <div style="flex:1;min-width:0">
-            <div style="background:rgba(30,30,50,.4);border:1px solid rgba(80,80,100,.3);border-radius:12px;padding:6px 10px;max-width:82%;${isMine?'margin-left:auto':''}">
-              <div class="ghp-chat-text" style="margin:0;color:#546e7a;font-style:italic">Bu mesaj silindi.</div>
-            </div>
-            <div class="ghp-chat-ts" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts||0)}</div>
-          </div>
-        </div>`;
-      }
       // Avatar
       const av = isMine
         ? ((Auth.getState().profile && Auth.getState().profile.avatar) || defaultAvatar(me))
         : (m.fromAvatar || defaultAvatar(m.from || ''));
       // İsim + admin rozeti
       const nameHtml = (() => {
+        // Kendi mesajım: kendi nick'imi göster (sağa hizalı)
         if(isMine){
           const myState = Auth.getState();
           const myNick = esc(myState.displayName || (myState.profile && myState.profile.nick) || 'Sen');
@@ -837,8 +699,9 @@ function dmOpenThread(uid, nick){
             const gcl = glowClass();
             return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px;text-align:right"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${myNick} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;
           }
-          return `<div style="color:#00E5FF;font-size:10px;font-weight:800;margin-bottom:2px;${isMine?'text-align:right':''}">${myNick}</div>`;
+          return `<div style="color:#00E5FF;font-size:10px;font-weight:800;margin-bottom:2px;text-align:right">${myNick}</div>`;
         }
+        // Karşı tarafın mesajı
         const n = esc(m.fromName || H.dmThread.nick || 'Oyuncu');
         if(isAdmMsg || threadIsAdmin){
           const gcl = glowClass();
@@ -846,67 +709,32 @@ function dmOpenThread(uid, nick){
         }
         return `<div style="color:#A78BFA;font-size:10px;font-weight:800;margin-bottom:2px">${n}</div>`;
       })();
-      // Tick
+      // Tick durumu (iletildi / görüldü)
       const tickHtml = isMine ? (() => {
         const seen = H.dmOppSeen >= (m.ts||0);
         return seen
           ? ` <span class="dm-tick seen" title="Görüldü" style="color:#4FC3F7">✓✓</span>`
           : ` <span class="dm-tick" title="İletildi" style="color:#546e7a">✓</span>`;
       })() : '';
-      // Balon stili
+      // Mesaj balonu stili
       const bubbleBg = isMine
         ? 'linear-gradient(135deg,rgba(103,80,164,.6),rgba(81,45,168,.4))'
-        : isAdmMsg||threadIsAdmin
+        : isAdmMsg || threadIsAdmin
           ? 'linear-gradient(135deg,rgba(255,180,0,.18),rgba(224,64,251,.1))'
           : 'linear-gradient(135deg,rgba(30,30,60,.8),rgba(20,20,50,.6))';
-      const bubbleBdr = isMine ? 'rgba(103,80,164,.4)' : isAdmMsg||threadIsAdmin ? 'rgba(255,215,64,.35)' : 'rgba(60,60,100,.5)';
-      // Edit/sil butonları
-      const acts  = _actionBtns(m._key, m, me, true);
-      const label = _editLabel(m);
-      const txt   = m.deleted
-        ? '<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin görüntülüyor)</span>'
-        : esc(m.text);
-      return `${dateSep}<div class="ghp-chat-row${isMine?' mine':''}${m.deleted?' _deleted':''}" style="align-items:flex-end;gap:6px" data-dmrow="${esc(m._key||'')}">
+      const bubbleBdr = isMine ? 'rgba(103,80,164,.4)' : isAdmMsg || threadIsAdmin ? 'rgba(255,215,64,.35)' : 'rgba(60,60,100,.5)';
+      return `${dateSep}<div class="ghp-chat-row${isMine ? ' mine' : ''}" style="align-items:flex-end;gap:6px">
         ${!isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid ${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;${isMine?'justify-content:flex-end':''}gap:2px;flex-wrap:wrap">
-            ${nameHtml}${acts}
+          ${nameHtml}
+          <div style="background:${bubbleBg};border:1px solid ${bubbleBdr};border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;${isMine?'margin-left:auto':''}">
+            <div class="ghp-chat-text" style="margin:0">${esc(m.text)}</div>
           </div>
-          <div class="_dmtxt" data-dmkey="${esc(m._key||'')}" style="background:${bubbleBg};border:1px solid ${bubbleBdr};border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;${isMine?'margin-left:auto':''}">
-            <div class="ghp-chat-text" style="margin:0">${txt}</div>
-          </div>
-          <div class="ghp-chat-ts" data-msgts="${m.ts||0}" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts||0)} ${label}${tickHtml}</div>
+          <div class="ghp-chat-ts" data-msgts="${m.ts||0}" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts || 0)}${tickHtml}</div>
         </div>
         ${isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
       </div>`;
     }).join('');
-    // geçmiş toggle
-    box.querySelectorAll('[data-hist]').forEach(el => {
-      el.onclick = () => { const h=el.nextElementSibling; if(h) h.style.display=h.style.display==='none'?'':'none'; };
-    });
-    // ✏️ DM düzenle
-    box.querySelectorAll('[data-ekey]').forEach(btn => {
-      btn.onclick = e => {
-        e.stopPropagation();
-        const key   = btn.dataset.ekey;
-        const rowM  = rows.find(r => r._key === key);
-        const wrapEl = box.querySelector(`._dmtxt[data-dmkey="${key}"]`);
-        if(!rowM || rowM.deleted || !wrapEl) return;
-        _showEditBox(wrapEl, rowM.text, async newTxt => {
-          try{ await _editDM(pk, key, newTxt, rowM); }
-          catch(err){ alert('Düzenlenemedi'); }
-        });
-      };
-    });
-    // 🗑️ DM sil
-    box.querySelectorAll('[data-dkey]').forEach(btn => {
-      btn.onclick = async e => {
-        e.stopPropagation();
-        if(!confirm('Mesajı silmek istediğine emin misin?')) return;
-        try{ await _delDM(pk, btn.dataset.dkey); }
-        catch(err){ alert('Silinemedi'); }
-      };
-    });
     box.scrollTop = box.scrollHeight;
   }
 }
