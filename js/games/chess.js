@@ -465,6 +465,7 @@ function showAISetup(root){
 }
 
 function closeAll(){
+  try{ if(G && G._home) G._home.remove(); }catch(e){}
   try{ saveChessResume(); }catch(e){}
   try{ if(G && G.vis) document.removeEventListener('visibilitychange', G.vis); }catch(e){}
   try{ if(G && G.online) ChessMP.close(); }catch(e){}
@@ -480,6 +481,10 @@ function startGame(root, mode, opts){
   root.querySelector('[data-el="modeSelect"]').style.display = 'none';
   const gameEl = root.querySelector('[data-el="game"]');
   gameEl.style.display = 'flex';
+  // 🏠 Oyun içi ev butonu
+  import('../game-home.js').then(m => {
+    G && (G._home = m.mountGameHome('chess', () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+  }).catch(()=>{});
 
   const canvas = root.querySelector('[data-el="canvas"]');
   G.mode = mode;
