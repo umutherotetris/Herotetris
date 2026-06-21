@@ -127,11 +127,13 @@ export function openTavla(){
       <div class="tg-status" data-el="status"></div>
       <div class="tg-board-wrap" data-el="boardWrap">
         <canvas data-el="canvas"></canvas>
+        <div class="tg-overlay-controls">
+          <button class="tg-btn-sm tg-roll-sm" data-act="roll" data-el="rollBtn">🎲 ZAR AT</button>
+          <button class="tg-btn-sm tg-pass-sm" data-act="pass" data-el="passBtn" style="display:none">⏭️ GELE</button>
+        </div>
       </div>
       <div class="tg-controls">
         <button class="tg-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
-        <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn">🎲 ZAR AT</button>
-        <button class="tg-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ Pas</button>
       </div>
       <div class="tg-actions" data-el="actionsBar">
         <button class="tg-act-btn" data-act="draw">🤝 Beraberlik</button>
@@ -367,13 +369,19 @@ function rollAndShow(){
   const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
   animateDiceRoll(() => {
     if(moves.length === 0){
-      updateStatus(`🎲 ${diceStr} — oynanabilir hamle yok, pas`);
+      updateStatus(`🎲 ${diceStr} — Gele! Sıra rakibe geçiyor…`, 'info');
       G.canPass = true;
+      updateControls();
+      draw();
+      // Otomatik gele: 1.6 sn sonra sırayı geç
+      setTimeout(() => {
+        if(G && G.canPass && moves.length === 0) endTurn();
+      }, 1600);
     } else {
       updateStatus(`🎲 ${diceStr} — pul seç`);
+      updateControls();
+      draw();
     }
-    updateControls();
-    draw();
   });
 }
 
@@ -387,11 +395,12 @@ function fitCanvas(){
   const acts = G.root && G.root.querySelector('.tg-actions');
   const top  = G.root && G.root.querySelector('.tg-top');
   const hud  = G.root && G.root.querySelector('#heroGameHud');
-  const reservedH = (ctrl ? ctrl.offsetHeight : 46)
+  // ZAR AT artık overlay (canvas üstünde) — ctrl sadece undoBtn, daha az yer kaplıyor
+  const reservedH = (ctrl ? ctrl.offsetHeight : 28)
                   + (acts ? acts.offsetHeight : 36)
                   + (top  ? top.offsetHeight  : 52)
                   + (hud  ? hud.offsetHeight  : 0)
-                  + 28; // padding + güvenlik marjı
+                  + 16; // padding + güvenlik marjı
   const winH = window.innerHeight || window.screen.height;
   const availH = Math.max(80, winH - reservedH);
   // Tavla tahtası DİKEY-UZUN ama dengeli (gerçek tavla oranı ~1.40).
@@ -2001,9 +2010,30 @@ function injectCSS(){
 .tg-status{ text-align:center; font-size:13px; font-weight:700; min-height:0; height:0; overflow:hidden; opacity:0; transition:all .2s; }
 .tg-status.show{ height:auto; min-height:22px; opacity:1; margin:2px 0 6px; padding:6px; border-radius:10px; background:rgba(255,255,255,.05); }
 .tg-status.win{ background:linear-gradient(90deg, rgba(200,165,87,.25), rgba(255,215,64,.15)); color:#ffd740; font-size:15px; }
-.tg-board-wrap{ flex:1 1 0; display:flex; align-items:center; justify-content:center; min-height:0; overflow:hidden; }
+.tg-board-wrap{ flex:1 1 0; display:flex; align-items:center; justify-content:center; min-height:0; overflow:hidden; position:relative; }
 .tg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; }
-.tg-controls{ display:flex; gap:6px; justify-content:center; align-items:center; padding:5px 0 3px; flex-shrink:0; position:relative; z-index:5; }
+/* Overlay kontroller - canvas üzerine sağ alt köşe */
+.tg-overlay-controls{
+  position:absolute; bottom:10px; right:10px;
+  display:flex; flex-direction:column; gap:6px; align-items:flex-end; z-index:10;
+}
+.tg-btn-sm{
+  padding:8px 14px; border-radius:10px; font-size:12px; font-weight:800;
+  cursor:pointer; border:none; transition:transform .1s, opacity .15s;
+  backdrop-filter:blur(6px); white-space:nowrap;
+}
+.tg-btn-sm:active{ transform:scale(.93); }
+.tg-roll-sm{
+  background:linear-gradient(135deg, rgba(200,165,87,.92), rgba(160,125,47,.92));
+  color:#0a1428; box-shadow:0 3px 12px rgba(200,165,87,.4);
+  letter-spacing:.5px;
+}
+.tg-pass-sm{
+  background:rgba(255,255,255,.13); color:#e8eaf6;
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.tg-controls{ display:flex; gap:6px; justify-content:center; align-items:center; padding:4px 0 2px; flex-shrink:0; position:relative; z-index:5; }
 .tg-actions{ display:flex; gap:6px; justify-content:center; align-items:center; padding:0 0 4px; flex-shrink:0; flex-wrap:wrap; position:relative; z-index:5; }
 .tg-act-btn{ padding:7px 11px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:11px; font-weight:700; cursor:pointer; transition:transform .1s; white-space:nowrap; }
 .tg-act-btn:active{ transform:scale(.95); }
@@ -2028,7 +2058,7 @@ function injectCSS(){
 .tvbk-note{ font-size:11px; color:#8a98ac; margin-top:12px; line-height:1.4; }
 .tg-btn{ padding:12px 18px; background:rgba(255,255,255,.06); border:1px solid rgba(200,165,87,.3); border-radius:12px; color:#c8a557; font-size:13px; font-weight:700; cursor:pointer; transition:transform .1s; }
 .tg-btn:active{ transform:scale(.96); }
-.tg-roll{ background:linear-gradient(135deg, #c8a557, #a07d2f); color:#0a1428; font-size:16px; font-weight:800; letter-spacing:1px; padding:14px 32px; box-shadow:0 0 16px rgba(200,165,87,.3); }
+/* .tg-roll eski büyük buton - artık .tg-roll-sm overlay olarak kullanılıyor */
 
 .tavla-theme-picker{ position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(6px); padding:16px; box-sizing:border-box; }
 .ttp-head-row{ display:flex;align-items:center;justify-content:space-between;margin-bottom:14px; }
