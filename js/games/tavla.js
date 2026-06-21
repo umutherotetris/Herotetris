@@ -1245,9 +1245,11 @@ function onRemoteMessage(type, data){
     updateStatus('🏆 Rakip hükmen yenildi — KAZANDIN!', 'win');
     try{ Sound.win(); }catch(e){}
     updateControls();
+    awardSimple(true, 'Rakip süre aşımından yenildi');
   } else if(msg.type === 'resign'){
     G.gameEnded = true; G.oppLeft = true; clearAutoRollTimer();
     updateStatus('🏆 Rakip pes etti — KAZANDIN!', 'win');
+    awardSimple(true, 'Rakip pes etti');
     try{ Sound.win(); }catch(e){}
     updateControls();
   }
@@ -1366,11 +1368,13 @@ function resignGame(){
       updateStatus('🏳️ Pes ettin — rakip kazandı', 'win');
       try{ Sound.lose(); }catch(e){}
       updateControls(); draw();
+      awardSimple(false, 'Pes ettin');
     } else if(G.mode === 'ai'){
       G.gameEnded = true; clearAutoRollTimer();
       updateStatus('🏳️ Pes ettin — 🤖 yapay zekâ kazandı', 'win');
       try{ Sound.lose(); }catch(e){}
       updateControls(); draw();
+      awardSimple(false, 'Pes ettin');
     } else {
       // local: sıradaki oyuncu pes eder, diğeri kazanır
       const winner = G.state.turn === 'w' ? 'SİYAH' : 'BEYAZ';
@@ -1555,6 +1559,21 @@ function hideBreakOverlay(){
   if(!G || !G.root) return;
   const ov = G.root.querySelector('[data-el="breakOverlay"]');
   if(ov) ov.remove();
+}
+
+// Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
+async function awardSimple(playerWon, reason){
+  const kaju = playerWon ? 50 : 15;
+  const xp = playerWon ? 55 : 20;
+  try{ await Store.addKaju(kaju, 'tavla'); await Store.addXP(xp); }catch(e){}
+  try{
+    const Reward = await import('../reward.js');
+    await Reward.showReward({
+      won: playerWon, game:'tavla', kaju, xp, writeReward:false,
+      title: playerWon ? '🎲 KAZANDIN!' : '🏳️ Kaybettin',
+      subtitle: reason || 'Tavla oyunu tamamlandı',
+    });
+  }catch(e){ console.warn('[reward]',e); }
 }
 
 async function onWin(status){
