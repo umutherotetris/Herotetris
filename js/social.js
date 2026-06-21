@@ -6,6 +6,93 @@
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 
+/* ── MESAJ DÜZENLEME / SİLME ─────────────────────────────────── */
+const _EDIT_MS = 5 * 60 * 1000;
+
+function _amAdmin(){ return Auth.getState().isAdmin === true; }
+
+function _canEdit(m, myUid){
+  if(!m || !myUid || m.deleted) return false;
+  if((m.uid||m.from) !== myUid) return false;
+  return _amAdmin() || (Date.now()-(m.ts||0)) < _EDIT_MS;
+}
+function _canDel(m, myUid){
+  if(!m || !myUid || m.deleted) return false;
+  if(_amAdmin()) return true;
+  return (m.uid||m.from)===myUid && (Date.now()-(m.ts||0)) < _EDIT_MS;
+}
+async function _doEditChat(key, txt, old){
+  const hist=[...(old.editHistory||[]),{text:old.text,at:old.editedAt||null}];
+  await fdb.update(fdb.ref(db,'globalChat/'+key),{text:txt.slice(0,200),edited:true,editedAt:Date.now(),editHistory:hist});
+}
+async function _doDelChat(key){
+  await fdb.update(fdb.ref(db,'globalChat/'+key),{deleted:true,text:'[silindi]'});
+}
+async function _doEditDM(pk,key,txt,old){
+  const hist=[...(old.editHistory||[]),{text:old.text,at:old.editedAt||null}];
+  await fdb.update(fdb.ref(db,'messages/'+pk+'/'+key),{text:txt.slice(0,300),edited:true,editedAt:Date.now(),editHistory:hist});
+}
+async function _doDelDM(pk,key){
+  await fdb.update(fdb.ref(db,'messages/'+pk+'/'+key),{deleted:true,text:'[silindi]'});
+}
+function _openEditBox(wrapEl, curText, saveFn){
+  if(wrapEl.dataset.editing==='1') return;
+  wrapEl.dataset.editing='1';
+  const orig=wrapEl.innerHTML;
+  wrapEl.innerHTML='';
+  const ta=document.createElement('textarea');
+  ta.value=curText; ta.rows=2;
+  ta.style.cssText='width:100%;box-sizing:border-box;background:rgba(255,255,255,.09);border:1px solid rgba(100,180,255,.45);border-radius:8px;padding:7px 9px;color:#e8eaf6;font-size:12px;resize:none;font-family:inherit;outline:none;display:block';
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:8px;justify-content:flex-end;margin-top:5px';
+  const ok=document.createElement('button');
+  ok.textContent='✓ Kaydet';
+  ok.style.cssText='padding:4px 12px;border-radius:7px;border:none;background:#4FC3F7;color:#0a0e1e;font-size:11px;font-weight:800;cursor:pointer';
+  const no=document.createElement('button');
+  no.textContent='✕ İptal';
+  no.style.cssText='padding:4px 12px;border-radius:7px;border:none;background:rgba(255,255,255,.1);color:#aaa;font-size:11px;font-weight:700;cursor:pointer';
+  row.append(no,ok); wrapEl.append(ta,row);
+  ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+  const cancel=()=>{wrapEl.dataset.editing='0';wrapEl.innerHTML=orig;};
+  no.onclick=cancel;
+  ok.onclick=async()=>{
+    const v=ta.value.trim();
+    if(!v||v===curText){cancel();return;}
+    ok.disabled=true; ok.textContent='…';
+    try{ await saveFn(v); wrapEl.dataset.editing='0'; }
+    catch(e){ alert('Kaydedilemedi'); cancel(); }
+  };
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ok.click();}
+    if(e.key==='Escape') cancel();
+  });
+}
+function _editLabel(m){
+  if(m.deleted) return ' <span style="font-size:10px;color:#546e7a;font-style:italic">🗑 silindi</span>';
+  if(!m.edited) return '';
+  const ago=m.editedAt?' · '+tAgo(m.editedAt):'';
+  if(_amAdmin()&&m.editHistory&&m.editHistory.length){
+    const items=m.editHistory.map((h,i)=>`<div style="font-size:10px;color:#b0bec5;padding:2px 0"><span style="color:#FFD740;font-weight:800">${i+1}.</span> ${esc(h.text||'')} <span style="color:#546e7a">${h.at?tAgo(h.at):''}</span></div>`).join('');
+    return ` <span data-histbtn style="font-size:10px;color:#78909c;font-style:italic;cursor:pointer">✏️ düzenlendi${ago} ▸</span><div data-histbox style="display:none;margin-top:3px;padding:5px 8px;background:rgba(255,215,64,.07);border-left:2px solid rgba(255,215,64,.4);border-radius:0 5px 5px 0">${items}</div>`;
+  }
+  return ` <span style="font-size:10px;color:#78909c;font-style:italic">✏️ düzenlendi${ago}</span>`;
+}
+function _actBtns(key,m,myUid){
+  const e=_canEdit(m,myUid), d=_canDel(m,myUid);
+  if(!e&&!d) return '';
+  const eB=e?`<button data-ekey="${key}" title="Düzenle" style="background:none;border:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:5px;color:#4FC3F7;opacity:.8">✏️</button>`:'';
+  const dB=d?`<button data-dkey="${key}" title="Sil" style="background:none;border:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:5px;color:#EF9A9A;opacity:.8;margin-left:14px">🗑️</button>`:'';
+  return `<span class="_macts" style="opacity:0;transition:opacity .18s;margin-left:4px">${eB}${dB}</span>`;
+}
+function _injectMsgCSS(){
+  if(document.getElementById('_ms_css')) return;
+  const s=document.createElement('style'); s.id='_ms_css';
+  s.textContent='.ghp-chat-row:hover ._macts,.ghp-chat-row:focus-within ._macts{opacity:1!important}';
+  document.head.appendChild(s);
+}
+/* ── / MESAJ DÜZENLEME / SİLME ──────────────────────────────── */
+
+
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tAgo = (ts) => { const d = Date.now()-ts; if(d<60e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk'; if(d<86400e3) return Math.floor(d/3600e3)+' sa'; return Math.floor(d/86400e3)+' g'; };
 
@@ -494,32 +581,25 @@ function listenChat(){
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
-    const rows = []; snap.forEach(ch => { if(ch.val()) rows.push({...ch.val(), _key: ch.key}); });
+    const rows = []; snap.forEach(ch => { if(ch.val()) rows.push({...ch.val(),_key:ch.key}); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
-    const isAdm = Auth.getState().isAdmin === true;
+    const meIsAdm = Auth.getState().isAdmin === true;
     _injectMsgCSS();
     list.innerHTML = rows.map(m => {
-      // 🎨 SİSTEM MESAJI
-      const isSys = m.uid === 'system' || m.isSystem === true || m.isAnnounce === true;
+      const isSys = m.uid==='system'||m.isSystem===true||m.isAnnounce===true;
       if(isSys){ return renderChatSystemMsg(m); }
-      // Silindi → normal kullanıcıya placeholder
-      if(m.deleted && !isAdm){
-        return `<div class="ghp-chat-row"><div class="ghp-chat-avatar">🗑️</div>`
-          + `<div class="ghp-chat-body"><div class="ghp-chat-text" style="color:#546e7a;font-style:italic">Bu mesaj silindi.</div>`
-          + `<div class="ghp-chat-ts">${tAgo(m.ts||0)}</div></div></div>`;
+      if(m.deleted && !meIsAdm){
+        return `<div class="ghp-chat-row"><div class="ghp-chat-avatar">🗑️</div><div class="ghp-chat-body"><div class="ghp-chat-text" style="color:#546e7a;font-style:italic">Bu mesaj silindi.</div><div class="ghp-chat-ts">${tAgo(m.ts||0)}</div></div></div>`;
       }
-      const adm = m.isAdmin === true || (H.admins && H.admins[m.uid]);
-      const op  = !adm && H.ops && H.ops[m.uid] === true;
-      const isMine = m.uid === me;
-      const nameHtml = adm
+      const adm=m.isAdmin===true||(H.admins&&H.admins[m.uid]);
+      const op=!adm&&H.ops&&H.ops[m.uid]===true;
+      const isMine=m.uid===me;
+      const nameHtml=adm
         ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name||'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
-        : op
-          ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name||'Oyuncu')}</span>`
-          : `<span class="ghp-chat-name" style="color:${isMine?'#00E5FF':'#A78BFA'}">${esc(m.name||'Oyuncu')}</span>`;
-      const txt = m.deleted
-        ? `<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>`
-        : esc(m.text);
+        : op ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name||'Oyuncu')}</span>`
+             : `<span class="ghp-chat-name" style="color:${isMine?'#00E5FF':'#A78BFA'}">${esc(m.name||'Oyuncu')}</span>`;
+      const txt=m.deleted?'<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>':esc(m.text);
       return `
       <div class="ghp-chat-row${isMine?' mine':''}${adm?' ghp-adm':''}" data-ckey="${m._key}">
         <div class="ghp-chat-avatar">${esc(m.avatar||(adm?'👑':defaultAvatar(m.uid)))}</div>
@@ -532,29 +612,26 @@ function listenChat(){
         </div>
       </div>`;
     }).join('');
-    // geçmiş toggle
-    list.querySelectorAll('[data-histbtn]').forEach(el =>
-      el.onclick = () => { const b=el.nextElementSibling; if(b) b.style.display=b.style.display==='none'?'':'none'; });
-    // ✏️ düzenle
-    list.querySelectorAll('[data-ekey]').forEach(btn => {
-      btn.onclick = e => {
+    list.querySelectorAll('[data-histbtn]').forEach(el=>
+      el.onclick=()=>{const b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'':'none';});
+    list.querySelectorAll('[data-ekey]').forEach(btn=>{
+      btn.onclick=e=>{
         e.stopPropagation();
         const key=btn.dataset.ekey, m=rows.find(r=>r._key===key);
         const el=list.querySelector(`._ctxt[data-ckey="${key}"]`);
         if(!m||!el) return;
-        _openEditBox(el, m.text, v => _doEditChat(key, v, m));
+        _openEditBox(el, m.text, v=>_doEditChat(key,v,m));
       };
     });
-    // 🗑️ sil
-    list.querySelectorAll('[data-dkey]').forEach(btn => {
-      btn.onclick = async e => {
+    list.querySelectorAll('[data-dkey]').forEach(btn=>{
+      btn.onclick=async e=>{
         e.stopPropagation();
         if(!confirm('Mesajı silmek istediğine emin misin?')) return;
         try{ await _doDelChat(btn.dataset.dkey); }catch(err){ alert('Silinemedi'); }
       };
     });
-    list.querySelectorAll('[data-pcuid]').forEach(el =>
-      el.addEventListener('click', () => openPlayerCard(el.dataset.pcuid)));
+    list.querySelectorAll('[data-pcuid]').forEach(el=>
+      el.addEventListener('click',()=>openPlayerCard(el.dataset.pcuid)));
     list.scrollTop = list.scrollHeight;
   });
 }
@@ -646,7 +723,7 @@ function dmOpenThread(uid, nick){
       const k = ch.key; const v = ch.val();
       // _seen / _typing gibi meta node'ları atla
       if(k && (k.charAt(0)==='_')) return;
-      if(v && (v.text || v.deleted)) rows.push({...v, _key: k});
+      if(v && (v.text||v.deleted)) rows.push({...v,_key:k});
     });
     if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; H.dmRows=[]; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
@@ -707,22 +784,18 @@ function dmOpenThread(uid, nick){
   }
 
   function renderDMRows(rows){
-    const box = byId('ghpDMMsgs'); if(!box) return;
-    const threadIsAdmin = H.dmThread && H.dmThread.isAdmin === true;
-    const myIsAdmin = Auth.getState().isAdmin === true;
-    let prevDate = '';
-    box.innerHTML = rows.map(m => {
-      const isMine   = m.from === me;
-      const isAdmMsg = m.isAdmin === true;
-      // Tarih ayırıcı
-      const d = m.ts ? new Date(m.ts) : null;
-      const dateStr = d ? d.toLocaleDateString('tr-TR', {day:'numeric',month:'long'}) : '';
-      const dateSep = (dateStr && dateStr !== prevDate)
-        ? `<div style="text-align:center;margin:8px 0;font-size:9px;color:#50506e;letter-spacing:.5px">${dateStr}</div>`
-        : '';
-      prevDate = dateStr;
-      // Silindi → normal kullanıcı placeholder
-      if(m.deleted && !myIsAdmin){
+    const box=byId('ghpDMMsgs'); if(!box) return;
+    const threadIsAdmin=H.dmThread&&H.dmThread.isAdmin===true;
+    const myIsAdmin=Auth.getState().isAdmin===true;
+    let prevDate='';
+    box.innerHTML=rows.map(m=>{
+      const isMine=m.from===me, isAdmMsg=m.isAdmin===true;
+      const d=m.ts?new Date(m.ts):null;
+      const dateStr=d?d.toLocaleDateString('tr-TR',{day:'numeric',month:'long'}):'';
+      const dateSep=(dateStr&&dateStr!==prevDate)
+        ?`<div style="text-align:center;margin:8px 0;font-size:9px;color:#50506e;letter-spacing:.5px">${dateStr}</div>`:'';
+      prevDate=dateStr;
+      if(m.deleted&&!myIsAdmin){
         return `${dateSep}<div class="ghp-chat-row${isMine?' mine':''}" style="align-items:flex-end;gap:6px">
           <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🗑️</div>
           <div style="flex:1;min-width:0">
@@ -733,82 +806,54 @@ function dmOpenThread(uid, nick){
           </div>
         </div>`;
       }
-      // Avatar
-      const av = isMine
-        ? ((Auth.getState().profile && Auth.getState().profile.avatar) || defaultAvatar(me))
-        : (m.fromAvatar || defaultAvatar(m.from || ''));
-      // İsim
-      const nameHtml = (() => {
+      const av=isMine?((Auth.getState().profile&&Auth.getState().profile.avatar)||defaultAvatar(me)):(m.fromAvatar||defaultAvatar(m.from||''));
+      const nameHtml=(()=>{
         if(isMine){
-          const st2 = Auth.getState();
-          const myNick = esc(st2.displayName || (st2.profile && st2.profile.nick) || 'Sen');
-          if(st2.isAdmin === true){
-            const gcl = glowClass();
-            return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px;text-align:right"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${myNick} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;
-          }
+          const st2=Auth.getState();
+          const myNick=esc(st2.displayName||(st2.profile&&st2.profile.nick)||'Sen');
+          if(st2.isAdmin===true){const gcl=glowClass();return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px;text-align:right"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${myNick} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;}
           return `<div style="color:#00E5FF;font-size:10px;font-weight:800;margin-bottom:2px;text-align:right">${myNick}</div>`;
         }
-        const n = esc(m.fromName || H.dmThread.nick || 'Oyuncu');
-        if(isAdmMsg || threadIsAdmin){
-          const gcl = glowClass();
-          return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${n} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;
-        }
+        const n=esc(m.fromName||H.dmThread.nick||'Oyuncu');
+        if(isAdmMsg||threadIsAdmin){const gcl=glowClass();return `<div class="ghp-dm-sender-name ${gcl}" style="color:#FFD740;font-size:10px;font-weight:900;margin-bottom:2px"><span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span> ${n} <span class="chat-admin-badge" style="font-size:9px;padding:1px 4px">👑</span></div>`;}
         return `<div style="color:#A78BFA;font-size:10px;font-weight:800;margin-bottom:2px">${n}</div>`;
       })();
-      // Tick
-      const tickHtml = isMine ? (() => {
-        const seen = H.dmOppSeen >= (m.ts||0);
-        return seen
-          ? ` <span class="dm-tick seen" title="Görüldü" style="color:#4FC3F7">✓✓</span>`
-          : ` <span class="dm-tick" title="İletildi" style="color:#546e7a">✓</span>`;
-      })() : '';
-      // Balon
-      const bubbleBg = isMine
-        ? 'linear-gradient(135deg,rgba(103,80,164,.6),rgba(81,45,168,.4))'
-        : isAdmMsg||threadIsAdmin
-          ? 'linear-gradient(135deg,rgba(255,180,0,.18),rgba(224,64,251,.1))'
-          : 'linear-gradient(135deg,rgba(30,30,60,.8),rgba(20,20,50,.6))';
-      const bubbleBdr = isMine ? 'rgba(103,80,164,.4)' : isAdmMsg||threadIsAdmin ? 'rgba(255,215,64,.35)' : 'rgba(60,60,100,.5)';
-      const txt = m.deleted
-        ? '<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin görüntülüyor)</span>'
-        : esc(m.text);
+      const tickHtml=isMine?(()=>{const seen=H.dmOppSeen>=(m.ts||0);return seen?` <span class="dm-tick seen" title="Görüldü" style="color:#4FC3F7">✓✓</span>`:` <span class="dm-tick" title="İletildi" style="color:#546e7a">✓</span>`;})():'';
+      const bubbleBg=isMine?'linear-gradient(135deg,rgba(103,80,164,.6),rgba(81,45,168,.4))':isAdmMsg||threadIsAdmin?'linear-gradient(135deg,rgba(255,180,0,.18),rgba(224,64,251,.1))':'linear-gradient(135deg,rgba(30,30,60,.8),rgba(20,20,50,.6))';
+      const bubbleBdr=isMine?'rgba(103,80,164,.4)':isAdmMsg||threadIsAdmin?'rgba(255,215,64,.35)':'rgba(60,60,100,.5)';
+      const txt=m.deleted?'<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>':esc(m.text);
       return `${dateSep}<div class="ghp-chat-row${isMine?' mine':''}" style="align-items:flex-end;gap:6px" data-dmrow="${esc(m._key||'')}">
-        ${!isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid ${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
+        ${!isMine?`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid ${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>`:''}
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;${isMine?'justify-content:flex-end;':''}flex-wrap:wrap;gap:2px">
-            ${nameHtml}${_actBtns(m._key, m, me)}
+            ${nameHtml}${_actBtns(m._key,m,me)}
           </div>
           <div class="_dmtxt" data-dmkey="${esc(m._key||'')}" style="background:${bubbleBg};border:1px solid ${bubbleBdr};border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;${isMine?'margin-left:auto':''}">
             <div class="ghp-chat-text" style="margin:0">${txt}</div>
           </div>
           <div class="ghp-chat-ts" data-msgts="${m.ts||0}" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts||0)}${_editLabel(m)}${tickHtml}</div>
         </div>
-        ${isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
+        ${isMine?`<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>`:''}
       </div>`;
     }).join('');
-    // Geçmiş toggle (admin)
-    box.querySelectorAll('[data-histbtn]').forEach(el =>
-      el.onclick = () => { const b=el.nextElementSibling; if(b) b.style.display=b.style.display==='none'?'':'none'; });
-    // ✏️ DM düzenle
-    box.querySelectorAll('[data-ekey]').forEach(btn => {
-      btn.onclick = e => {
+    box.querySelectorAll('[data-histbtn]').forEach(el=>el.onclick=()=>{const b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'':'none';});
+    box.querySelectorAll('[data-ekey]').forEach(btn=>{
+      btn.onclick=e=>{
         e.stopPropagation();
-        const key    = btn.dataset.ekey;
-        const rowM   = rows.find(r => r._key === key);
-        const wrapEl = box.querySelector(`._dmtxt[data-dmkey="${key}"]`);
-        if(!rowM || rowM.deleted || !wrapEl) return;
-        _openEditBox(wrapEl, rowM.text, v => _doEditDM(pk, key, v, rowM));
+        const key=btn.dataset.ekey, rowM=rows.find(r=>r._key===key);
+        const wrapEl=box.querySelector(`._dmtxt[data-dmkey="${key}"]`);
+        if(!rowM||rowM.deleted||!wrapEl) return;
+        _openEditBox(wrapEl, rowM.text, v=>_doEditDM(pk,key,v,rowM));
       };
     });
-    // 🗑️ DM sil
-    box.querySelectorAll('[data-dkey]').forEach(btn => {
-      btn.onclick = async e => {
+    box.querySelectorAll('[data-dkey]').forEach(btn=>{
+      btn.onclick=async e=>{
         e.stopPropagation();
         if(!confirm('Mesajı silmek istediğine emin misin?')) return;
-        try{ await _doDelDM(pk, btn.dataset.dkey); }catch(err){ alert('Silinemedi'); }
+        try{ await _doDelDM(pk,btn.dataset.dkey); }catch(err){ alert('Silinemedi'); }
       };
     });
-    box.scrollTop = box.scrollHeight;
+    box.scrollTop=box.scrollHeight;
   }
 }
 function dmBack(){
