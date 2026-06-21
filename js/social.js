@@ -809,31 +809,40 @@ function watchDMThreads(){
 // ── 🎨 SOHBET SİSTEM MESAJI (kick/ban/duyuru renkli kart) ─────
 function renderChatSystemMsg(m){
   const txt = m.text || '';
-  let t = 'announce', label = '📢 DUYURU', col = '#E040FB', bd = 'rgba(224,64,251,.4)',
-      bg = 'linear-gradient(135deg,rgba(224,64,251,.13),rgba(171,71,188,.05))', glow = '0 0 12px rgba(224,64,251,.18)';
+  // ── Premium cyberpunk paleti (mor-altın, MMORPG sistem mesajı havası) ──
+  // Tüm sistem mesajları aynı elit temayı paylaşır; tip sadece başlık/ikonu değiştirir.
+  let label = '📢 DUYURU', icon = '📢';
+  if(/atıld|sohbetten at|KICK/i.test(txt)){ label = 'SOHBET KICK'; icon = '🔨'; }
+  else if(/banland|ban:|SOHBET BAN/i.test(txt)){ label = 'SOHBET BAN'; icon = '⛔'; }
+  else if(/susturul|mute/i.test(txt)){ label = 'SOHBET SUSTURMA'; icon = '🔇'; }
+  else if(/duyuru|announce/i.test(txt)){ label = 'DUYURU'; icon = '📢'; }
 
-  // Metinden tip tespit et
-  if(/atıld|sohbetten at|KICK/i.test(txt)){
-    t='kick'; label='🔨 SOHBET KICK'; col='#E040FB'; bd='rgba(224,64,251,.45)';
-    bg='linear-gradient(135deg,rgba(224,64,251,.14),rgba(120,40,180,.06))'; glow='0 0 14px rgba(224,64,251,.25)';
-  } else if(/banland|ban:|SOHBET BAN/i.test(txt)){
-    t='ban'; label='🚫 SOHBET BAN'; col='#FF5252'; bd='rgba(255,82,82,.5)';
-    bg='linear-gradient(135deg,rgba(255,82,82,.15),rgba(180,0,0,.07))'; glow='0 0 14px rgba(255,82,82,.28)';
-  } else if(/susturul|mute/i.test(txt)){
-    t='mute'; label='🔇 SOHBET SUSTURMA'; col='#FF9800'; bd='rgba(255,152,0,.45)';
-    bg='linear-gradient(135deg,rgba(255,152,0,.14),rgba(200,80,0,.06))'; glow='0 0 12px rgba(255,152,0,.2)';
-  }
+  // Gövde: başlıktaki ikon tekrarını temizle
+  let body = esc(txt).replace(/^[⚡🔨📢🚫⛔🔇]\s*/, '');
 
-  // Admin adını renkli + crown yap (metinde ": AdminAdı" varsa)
-  let body = esc(txt);
-  // "📢 DUYURU" gibi tekrarları temizle (label zaten gösteriyor)
-  body = body.replace(/^[⚡🔨📢🚫🔇]\s*/, '');
+  // Admin adlarını altın + ışıltılı yap (👑 ... 👑 arasını veya "Admin: X" sonrasını)
+  // "Admin:" sonrası gelen ismi altına boya
+  body = body.replace(/(Admin[:\s]+)([^·\n(]+)/i, (mm, p1, p2) =>
+    `${p1}<span style="color:#ffd84d;font-weight:800;text-shadow:0 0 6px rgba(255,216,77,.5)">${p2.trim()}</span>`);
+  // "ADMIN" / "ADMİN" etiketini mat-altın rozet yap
+  body = body.replace(/\b(ADM[İI]N)\b/g,
+    `<span style="background:#d6b23c;color:#1a1208;font-weight:900;font-size:9px;padding:1px 6px;border-radius:5px;letter-spacing:.5px;box-shadow:0 0 4px rgba(214,178,60,.4)">$1</span>`);
+  // "(neden: ...)" kısmını soluk gri
+  body = body.replace(/(\(neden:[^)]*\))/i, `<span style="color:#8a8a8a;font-style:italic">$1</span>`);
 
   return `<div class="ghp-chat-row" style="width:100%">
-    <div style="width:100%;border:1px solid ${bd};border-left:3px solid ${col};border-radius:11px;padding:9px 12px;background:${bg};box-shadow:${glow};animation:ghp-pulse-bc 2.5s ease-in-out infinite">
-      <div style="font-size:11px;font-weight:900;color:${col};letter-spacing:.5px;margin-bottom:3px">${label}</div>
-      <div style="font-size:12px;color:#e8eaf6;line-height:1.5">${body}</div>
-      <div style="font-size:9px;color:${col};opacity:.7;margin-top:3px">${tAgo(m.ts || 0)}</div>
+    <div style="width:100%;position:relative;border:1px solid #b000ff;border-radius:12px;padding:10px 13px;
+      background:linear-gradient(150deg,#120018 0%,#080010 100%);
+      box-shadow:0 0 14px rgba(176,0,255,.35), inset 0 0 22px rgba(176,0,255,.06), inset 0 1px 0 rgba(255,76,255,.15);
+      overflow:hidden">
+      <div style="position:absolute;inset:0;border-radius:12px;pointer-events:none;
+        box-shadow:inset 0 0 0 1px rgba(255,76,255,.18)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <span style="font-size:14px;filter:drop-shadow(0 0 4px rgba(255,76,255,.6))">${icon}</span>
+        <span style="font-size:11px;font-weight:900;letter-spacing:1px;color:#ff4cff;text-shadow:0 0 8px rgba(255,76,255,.6),0 0 2px rgba(255,76,255,.9)">${label}</span>
+        <span style="margin-left:auto;font-size:8.5px;color:#666666">${tAgo(m.ts || 0)}</span>
+      </div>
+      <div style="font-size:12px;color:#e5e5e5;line-height:1.55">${body}</div>
     </div>
   </div>`;
 }
