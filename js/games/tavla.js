@@ -185,6 +185,7 @@ export function openTavla(){
 }
 
 function closeAll(){
+  try{ if(G && G._home) G._home.remove(); }catch(e){}
   clearAutoRollTimer();
   clearBreakTimers();
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
@@ -200,6 +201,10 @@ function startGame(root, mode, opts){
   root.querySelector('[data-el="modeSelect"]').style.display = 'none';
   const gameEl = root.querySelector('[data-el="game"]');
   gameEl.style.display = 'flex';
+  // 🏠 Oyun içi ev butonu
+  import('../game-home.js').then(m => {
+    G && (G._home = m.mountGameHome('tavla', () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+  }).catch(()=>{});
 
   G.mode = mode;
   G.online = (mode === 'online');

@@ -235,7 +235,7 @@ function _injectKelimeHUD(){
   }catch(e){ console.warn('[kelime hud]',e); }
 }
 
-function closeKelime(){ try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
   const c = G.root.querySelector('[data-el="content"]');
@@ -1065,6 +1065,13 @@ function renderScores(){
 }
 
 function renderBoard(){
+  // 🏠 Oyun içi ev butonu (ilk render'da bir kez)
+  if(G && !G._homeMounted){
+    G._homeMounted = true;
+    import('../game-home.js').then(m => {
+      G && (G._home = m.mountGameHome('kelime', () => { try{ closeKelime(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+    }).catch(()=>{});
+  }
   const board = G.root.querySelector('[data-el="board"]');
   for(const cell of board.children){
     const r=+cell.dataset.r, cc=+cell.dataset.c;
