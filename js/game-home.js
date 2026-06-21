@@ -76,17 +76,18 @@ function inject(){
 
     .ghp-cc-fab{
       position:fixed; z-index:2147483000;
-      width:46px; height:46px; border-radius:50%;
+      width:34px; height:34px; border-radius:50%;
       display:flex; align-items:center; justify-content:center;
-      background:rgba(15,15,28,.9); border:1.5px solid var(--cc-accent);
-      color:var(--cc-accent); font-size:20px; cursor:pointer;
-      box-shadow:0 4px 16px var(--cc-glow), inset 0 0 0 1px rgba(255,255,255,.05);
+      background:rgba(12,12,22,.88); border:1.5px solid var(--cc-accent);
+      color:var(--cc-accent); font-size:14px; cursor:pointer;
+      box-shadow:0 3px 10px var(--cc-glow), inset 0 0 0 1px rgba(255,255,255,.05);
       backdrop-filter:blur(8px); touch-action:none;
-      transition:transform .18s, box-shadow .2s;
-      user-select:none; -webkit-user-select:none;
+      transition:transform .18s, box-shadow .2s, opacity .15s;
+      user-select:none; -webkit-user-select:none; opacity:0.82;
     }
-    .ghp-cc-fab:active{ transform:scale(.9); }
-    .ghp-cc-fab.dragging{ transform:scale(1.12); box-shadow:0 8px 28px var(--cc-glow); }
+    .ghp-cc-fab:hover{ opacity:1; box-shadow:0 4px 14px var(--cc-glow); }
+    .ghp-cc-fab:active{ transform:scale(.88); opacity:1; }
+    .ghp-cc-fab.dragging{ transform:scale(1.08); box-shadow:0 6px 18px var(--cc-glow); opacity:1; }
     .ghp-cc-panel{
       position:fixed; z-index:2147483001;
       width:248px; max-width:calc(100vw - 24px);
@@ -205,7 +206,7 @@ export function mountGameHome(gameKey, onExit, api = {}){
   const fab = document.createElement('div');
   fab.className = 'ghp-cc-fab';
   fab.id = 'ghpGameHome';
-  fab.textContent = '☰';
+  fab.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V10.5z"/><path d="M9 21V13h6v8"/></svg>`;
   fab.style.setProperty('--cc-accent', theme.accent);
   fab.style.setProperty('--cc-glow', theme.glow);
 
@@ -285,10 +286,27 @@ export function mountGameHome(gameKey, onExit, api = {}){
     // events
     panel.querySelector('[data-cc="close"]').addEventListener('click', closePanel);
     panel.querySelector('[data-cc="home"]').addEventListener('click', confirmExit);
-    panel.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', () => {
+    panel.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', async () => {
       const screen = b.dataset.nav;
       closePanel();
-      doExit(() => { try{ import('../nav.js').then(n => n.go && n.go(screen)); }catch(e){} });
+      if(screen === 'home'){
+        // Ana menüye çık
+        doExit(async () => {
+          try{ const n = await import('./nav.js'); if(n.go) n.go('home'); }catch(e){ console.warn('[cc] nav', e); }
+        });
+      } else {
+        // Oyundan çıkmadan social hub overlay aç
+        const tabMap = { friends:'dost', notifications:'notif', leaderboard:'leaderboard' };
+        const tab = tabMap[screen] || screen;
+        try{
+          if(tab === 'leaderboard'){
+            const n = await import('./nav.js'); if(n.go) n.go('leaderboard');
+          } else {
+            const soc = await import('./social.js');
+            if(soc.openHubTab) soc.openHubTab(tab);
+          }
+        }catch(e){ console.warn('[cc] social', e); }
+      }
     }));
     panel.querySelectorAll('[data-sw]').forEach(sw => sw.addEventListener('click', () => {
       const kind = sw.dataset.sw; let on=false;
