@@ -203,7 +203,10 @@ function startGame(root, mode, opts){
   gameEl.style.display = 'flex';
   // 🏠 Oyun içi ev butonu
   import('../game-home.js').then(m => {
-    G && (G._home = m.mountGameHome('tavla', () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} }));
+    if(!G) return;
+    G._home = m.mountGameHome('tavla',
+      () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
+      { sound: { get:()=>Sound.enabled, toggle:()=>Sound.toggle() } });
   }).catch(()=>{});
 
   G.mode = mode;
