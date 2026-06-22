@@ -191,6 +191,8 @@ function closeAll(){
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
   try{ if(G && G.online) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
+  if(G && G._rollHintRAF){ cancelAnimationFrame(G._rollHintRAF); G._rollHintRAF = null; }
+  if(G && G._bearAnimRaf){ cancelAnimationFrame(G._bearAnimRaf); G._bearAnimRaf = null; }
   if(G && G.root){ G.root.remove(); }
   G = null;
 }
@@ -636,8 +638,12 @@ function drawRollHint(ctx, t){
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.fillText('ZAR AT', -w/2 + ds*1.65, 1);
   ctx.restore();
-  if(!G._rollHintRAF){
-    G._rollHintRAF = requestAnimationFrame(() => { G._rollHintRAF = null; if(!G.rolled && G.ctx) draw(); });
+  if(G && !G._rollHintRAF){
+    G._rollHintRAF = requestAnimationFrame(() => {
+      if(!G) return;                       // oyundan çıkıldıysa dur
+      G._rollHintRAF = null;
+      if(!G.rolled && G.ctx) draw();
+    });
   }
 }
 
@@ -2192,9 +2198,9 @@ function injectCSS(){
 .tg-turn.black{ background:rgba(60,80,120,.25); color:#9fc0e8; }
 .tv-icon{ width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(200,165,87,.3); color:#c8a557; font-size:16px; cursor:pointer; }
 .tv-icon:active{ transform:scale(.92); }
-.tg-status{ text-align:center; font-size:13px; font-weight:700; min-height:0; height:0; overflow:hidden; opacity:0; transition:all .2s; }
-.tg-status.show{ height:auto; min-height:22px; opacity:1; margin:2px 0 6px; padding:6px; border-radius:10px; background:rgba(255,255,255,.05); }
-.tg-status.win{ background:linear-gradient(90deg, rgba(200,165,87,.25), rgba(255,215,64,.15)); color:#ffd740; font-size:15px; }
+.tg-status{ text-align:center; font-size:13px; font-weight:700; height:34px; min-height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; opacity:0; transition:opacity .2s, background .2s; margin:2px 0 4px; padding:0 8px; border-radius:10px; box-sizing:border-box; }
+.tg-status.show{ opacity:1; background:rgba(255,255,255,.05); }
+.tg-status.win{ opacity:1; background:linear-gradient(90deg, rgba(200,165,87,.25), rgba(255,215,64,.15)); color:#ffd740; font-size:15px; }
 .tg-board-wrap{ flex:1 1 0; display:flex; align-items:center; justify-content:center; min-height:0; overflow:hidden; }
 .tg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; }
 .tg-controls{ display:flex; gap:6px; justify-content:center; align-items:center; padding:5px 0 3px; flex-shrink:0; position:relative; z-index:5; }
