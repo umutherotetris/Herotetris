@@ -539,13 +539,17 @@ function drawMini(canvas, type){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if(!type) return;
   const p = PIECES[type], cells = p.cells;
-  let maxX=0,maxY=0; cells.forEach(([x,y])=>{if(x>maxX)maxX=x;if(y>maxY)maxY=y;});
-  const w=maxX+1, h=maxY+1, s = Math.floor(Math.min(canvas.width/(w+0.5), canvas.height/(h+0.5)));
+  // Gerçek bounding box (minX/minY dahil) — parça TAM ortalanır
+  let minX=99,minY=99,maxX=0,maxY=0;
+  cells.forEach(([x,y])=>{ if(x<minX)minX=x; if(y<minY)minY=y; if(x>maxX)maxX=x; if(y>maxY)maxY=y; });
+  const w=maxX-minX+1, h=maxY-minY+1;
+  const s = Math.floor(Math.min(canvas.width/(w+0.5), canvas.height/(h+0.5)));
   const ox = (canvas.width - w*s)/2, oy = (canvas.height - h*s)/2;
   cells.forEach(([x,y]) => {
+    const dx = ox + (x-minX)*s, dy = oy + (y-minY)*s;
     ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = 6;
-    ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, s-2); ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, Math.max(2,s*0.18));
+    ctx.fillRect(dx+1, dy+1, s-2, s-2); ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(dx+1, dy+1, s-2, Math.max(2,s*0.18));
   });
 }
 // Birden fazla sonraki taşı dikey çiz (kahramanın önizleme sayısı kadar)
@@ -558,17 +562,20 @@ function drawNextQueue(canvas, count){
   for(let i=0;i<n;i++){
     const type = G.queue[i].type;
     const p = PIECES[type], cells = p.cells;
-    let maxX=0,maxY=0; cells.forEach(([x,y])=>{if(x>maxX)maxX=x;if(y>maxY)maxY=y;});
-    const w=maxX+1, h=maxY+1;
+    // Gerçek bounding box ile TAM ortalama
+    let minX=99,minY=99,maxX=0,maxY=0;
+    cells.forEach(([x,y])=>{ if(x<minX)minX=x; if(y<minY)minY=y; if(x>maxX)maxX=x; if(y>maxY)maxY=y; });
+    const w=maxX-minX+1, h=maxY-minY+1;
     const s = Math.floor(Math.min(canvas.width/(w+0.6), slotH/(h+0.4)));
     const ox = (canvas.width - w*s)/2;
     const oy = i*slotH + (slotH - h*s)/2;
-    const alpha = i === 0 ? 1 : 0.55;   // ilk taş net, sonrakiler soluk
+    const alpha = i === 0 ? 1 : 0.55;
     cells.forEach(([x,y]) => {
+      const dx = ox + (x-minX)*s, dy = oy + (y-minY)*s;
       ctx.globalAlpha = alpha;
       ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = i===0?6:3;
-      ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, s-2); ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(ox+x*s+1, oy+y*s+1, s-2, Math.max(2,s*0.18));
+      ctx.fillRect(dx+1, dy+1, s-2, s-2); ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(dx+1, dy+1, s-2, Math.max(2,s*0.18));
     });
   }
   ctx.globalAlpha = 1;
@@ -1669,11 +1676,15 @@ function build(){
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
-    <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
+    <div class="t-statbar">
+      <div class="t-stat"><span class="t-sl">SKOR</span><span class="t-pval t-score">0</span></div>
+      <div class="t-stat"><span class="t-sl">SEVİYE</span><span class="t-pval t-level">1</span></div>
+      <div class="t-stat"><span class="t-sl">SATIR</span><span class="t-pval t-lines">0</span></div>
+    </div>
     <div class="tetris-stage">
       <div class="tetris-side">
-        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="84" height="64"></canvas></div>
-        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="84" height="64"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="60" height="100"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="60" height="50"></canvas></div>
       </div>
       <div class="tetris-board-wrap">
         <canvas class="tetris-canvas" style="position:relative;z-index:1"></canvas>
@@ -1756,8 +1767,8 @@ function fitCanvas(){
   // Genişlik
   let availW = wrap.clientWidth;
   if(!availW || availW < 40){
-    const sideW = 60 + 7;    // yan panel(60) + gap(7)
-    availW = Math.max(120, (window.innerWidth || 360) - sideW - 14);
+    const sideW = 92 + 10;   // yan panel + boşluk
+    availW = Math.max(120, (window.innerWidth || 360) - sideW - 20);
   }
   // Yükseklik: sarmalayıcının GERÇEK yüksekliğini ölç (mod barı, güç satırı,
   // kontroller flex ile yer kaptıktan SONRA kalan alan). Sabit tahmin yapma.
@@ -1796,7 +1807,7 @@ function fitCanvas(){
     return;
   }
   const csW = Math.floor(availW / COLS);
-  const csH = Math.floor((availH * 0.98) / ROWS);  // dikeyde %2 nefes payı
+  const csH = Math.floor(availH / ROWS);
   cs = Math.min(csW, csH);
   if(cs < 8) cs = 8;
   G.cellSize = cs;
@@ -2514,24 +2525,24 @@ function injectCSS(){
 .tetris-topbar .t-title{ font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 3px; color: var(--cyan); text-shadow: var(--glow-cyan); }
 .t-icon{ width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 16px; }
 
-.tetris-stage{ flex: 1; display: flex; gap: 7px; min-height: 0; align-items: stretch; }
+.tetris-stage{ flex: 1; display: flex; gap: 10px; min-height: 0; align-items: stretch; }
 
 /* Yan paneller */
 .t-statbar{ display:flex; gap:6px; margin-bottom:8px; }
 .t-stat{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:5px 4px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:1px; }
 .t-stat .t-sl{ font-size:8px; letter-spacing:1px; color:var(--text-mute); font-weight:700; }
 .t-stat .t-pval{ font-size:16px; }
-.tetris-side{ width: 60px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
+.tetris-side{ width: 72px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
 .t-panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 8px; text-align: center; }
 .t-plabel{ font-size: 8px; letter-spacing: 1.5px; color: var(--text-mute); font-weight: 700; }
 .t-pval{ font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; margin-top: 2px; }
 .t-pval.t-score{ color: var(--gold); text-shadow: var(--glow-gold); font-size: 15px; transition: transform .1s ease; display: inline-block; }
 .t-pval.t-score.bump{ animation: scoreBump .3s ease-out; }
 @keyframes scoreBump{ 0%{ transform: scale(1); } 35%{ transform: scale(1.25); color: #fff; } 100%{ transform: scale(1); } }
-.t-next, .t-hold{ display: block; margin: 3px auto 0; }
+.t-next, .t-hold{ display: block; margin: 2px auto 0; max-width: 100%; }
 
 /* Tahta */
-.tetris-board-wrap{ flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; z-index:1; }
+.tetris-board-wrap{ flex: 1; display: flex; align-items: flex-start; justify-content: center; position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; z-index:1; }
 .tetris-board-wrap *{ -webkit-tap-highlight-color: transparent; }
 .tetris-canvas{ -webkit-tap-highlight-color: transparent; outline: none; -webkit-user-select: none; user-select: none; }
 /* Bölünmüş ekran (AI rakip) */
