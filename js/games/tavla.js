@@ -223,7 +223,23 @@ function startGame(root, mode, opts){
     G.playerColor = opts.playerColor || 'w';     // AI modunda insanın rengi
     G.aiColor = G.playerColor === 'w' ? 'b' : 'w';
   }
-  G.state = newGame();
+  // ── AI modunda kayıtlı oyun varsa devam et
+  G._resuming = false;
+  if(mode === 'ai' && !opts.fresh){
+    const saved = loadAIGame();
+    if(saved && saved.state){
+      G.state = saved.state;
+      G.playerColor = saved.playerColor || G.playerColor;
+      G.aiColor = saved.aiColor || G.aiColor;
+      G.difficulty = saved.difficulty || G.difficulty;
+      G.rolled = saved.rolled || false;
+      G.openingDice = saved.openingDice || [1,1];
+      if(saved.theme && THEMES[saved.theme]) SELECTED_THEME = saved.theme;
+      G._resuming = true;
+      G._savedFlip = saved.flip;
+    }
+  }
+  if(!G._resuming){ G.state = newGame(); }
   G.canvas = root.querySelector('[data-el="canvas"]');
   G.ctx = G.canvas.getContext('2d');
   G.boardWrap = root.querySelector('[data-el="boardWrap"]');
@@ -246,15 +262,16 @@ function startGame(root, mode, opts){
     setTimeout(() => { if(G && G.online){ G._helloSent = true; sendHello(); } }, 900);
   }
 
-  // Açılış zarı — online'da host belirler+gönderir; diğer modlarda yerel
-  if(G.online && !G.isHost){
-    // misafir: host'tan 'start' bekleyecek
-    G.openingDice = [1, 1];
-    G.state.turn = 'w';
-  } else {
-    const open = openingRoll();
-    G.state.turn = open.first;
-    G.openingDice = open.dice;
+  // Açılış zarı — resume'da mevcut state korunur
+  if(!G._resuming){
+    if(G.online && !G.isHost){
+      G.openingDice = [1, 1];
+      G.state.turn = 'w';
+    } else {
+      const open = openingRoll();
+      G.state.turn = open.first;
+      G.openingDice = open.dice;
+    }
   }
 
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
@@ -292,7 +309,8 @@ function startGame(root, mode, opts){
 
   // Tahta yönü ÖNCE belirlensin ki fitCanvas doğru yönle çizsin
   // AI/online'da insan rengine göre sabit; 2 oyuncuda döner
-  if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
+  if(G._resuming && G._savedFlip !== undefined){ G.flip = G._savedFlip; }
+  else if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
   else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
 
   fitCanvas();
@@ -335,16 +353,23 @@ function startGame(root, mode, opts){
   }
 
   updateTurn();
-  updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
+  if(G._resuming){
+    updateStatus(G.rolled ? 'Kaldığın yerden devam — pul seç' : 'Kaldığın yerden devam — zar at');
+    if(window.Hero && window.Hero.toast) window.Hero.toast('♟️ Kaldığın yerden devam ediyorsun', false);
+  } else {
+    updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
+  }
   updateControls();
   draw();
-  // AI başlıyorsa otomatik oyna
+  G._resuming = false;
+  // AI sırasındaysa otomatik oyna
   maybeAITurn();
   startAutoRollTimer();
 }
 
 function restart(){
   if(G.online) return;   // çevrimiçi oyunda tek taraflı sıfırlama yok
+  clearAIGame();   // yeni oyun → kayıt sil
   G.state = newGame();
   const open = openingRoll();
   G.state.turn = open.first; G.openingDice = open.dice;
@@ -356,6 +381,30 @@ function restart(){
   updateControls(); draw();
   maybeAITurn();
   startAutoRollTimer();
+}
+
+
+// ════════════ AI OYUN KAYIT / YÜKLEME (kaldığın yerden devam) ════════════
+const TAVLA_SAVE_KEY = 'hero_tavla_ai_save';
+function saveAIGame(){
+  if(!G || G.mode !== 'ai' || G.gameEnded) return;
+  try{
+    localStorage.setItem(TAVLA_SAVE_KEY, JSON.stringify({
+      state: G.state, playerColor: G.playerColor, aiColor: G.aiColor,
+      difficulty: G.difficulty, rolled: G.rolled, openingDice: G.openingDice,
+      flip: G.flip, theme: SELECTED_THEME, ts: Date.now()
+    }));
+  }catch(e){}
+}
+function clearAIGame(){ try{ localStorage.removeItem(TAVLA_SAVE_KEY); }catch(e){} }
+function loadAIGame(){
+  try{
+    const raw = localStorage.getItem(TAVLA_SAVE_KEY);
+    if(!raw) return null;
+    const snap = JSON.parse(raw);
+    if(Date.now() - (snap.ts||0) > 12*3600*1000){ clearAIGame(); return null; }  // 12 saat
+    return snap;
+  }catch(e){ return null; }
 }
 
 // ════════════ ZAR ATMA ════════════
@@ -1188,6 +1237,7 @@ function doMove(mv){
   }
   updateControls();
   draw();
+  if(G.mode === 'ai'){ saveAIGame(); }   // her hamlede kaydet
 }
 
 function endTurn(){
@@ -1210,6 +1260,7 @@ function endTurn(){
   draw();
   if(!G.online){ maybeAITurn(); }   // sıra AI'daysa otomatik oyna (online'da yok)
   startAutoRollTimer();             // sıra insandaysa otomatik zar sayacı
+  if(G.mode === 'ai'){ saveAIGame(); }   // kaldığın yerden devam için kaydet
 }
 
 // ════════════ OTOMATİK ZAR ════════════
@@ -1726,6 +1777,7 @@ async function onWin(status){
   G.gameEnded = true;
   G.aiThinking = false;
   clearAutoRollTimer();
+  clearAIGame();   // oyun bitti → kayıt sil
   const winner = status === 'white_wins' ? 'w' : 'b';
   const wt = winType(G.state, winner);
   const typeLabel = wt === 3 ? ' (Hin/Backgammon ×3)' : wt === 2 ? ' (Mars/Gammon ×2)' : '';
