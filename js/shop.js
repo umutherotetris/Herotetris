@@ -53,10 +53,16 @@ const BG_MAP={
 };
 
 const UNIQUE_KOZMOS=[
-  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, desc:'Uzak galaksilerin gizemli yaratığı. Tek üretim, koleksiyonluk.', rarity:'mythical'},
-  {id:'uniq_void',    name:'Karanlık Ejder',    icon:'🐉',color:'#00ffc8',price:50000, desc:'Karanlık bölgelerin nadir sakinlerinden. Ultra nadir, benzersiz baskı.', rarity:'mythical'},
-  {id:'uniq_aurora',  name:'Kutup Dansçısı',    icon:'🌠',color:'#f0a0f8',price:35000, desc:'Kuzey ışıklarıyla dans eden efsanevi yaratık. Tek nüsha.', rarity:'legendary'},
-  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, desc:'Ateşin içinden çıkan güçlü bir kanat. Koleksiyonda yalnızca bu kopya.', rarity:'legendary'},
+  // ── EFSANEVI ──
+  {id:'uniq_aurora',  name:'Kutup Dansçısı',    icon:'🌠',color:'#f0a0f8',price:35000, rarity:'legendary', element:'Aurora',  power:'Renk Cümbüşü',     desc:'Kuzey ışıklarıyla dans eden efsanevi yaratık. Tek nüsha.'},
+  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, rarity:'legendary', element:'Ateş',    power:'Küllerden Doğar',  desc:'Ateşin içinden çıkan güçlü bir kanat. Koleksiyonda yalnızca bu kopya.'},
+  {id:'uniq_leviathan',name:'Derin Leviathan',  icon:'🐋',color:'#22d3ee',price:40000, rarity:'legendary', element:'Okyanus', power:'Gelgit Çağırır',   desc:'Okyanusun en derininde uyuyan kadim dev. Eşi benzeri yok.'},
+  {id:'uniq_seraph',  name:'Işık Kanadı',       icon:'😇',color:'#fde68a',price:42000, rarity:'legendary', element:'Kutsal',  power:'Şifa Dağıtır',     desc:'Yıldızlararası ışıktan örülmüş kanatlı muhafız.'},
+  // ── MITOLOJIK ──
+  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, rarity:'mythical',  element:'Kozmos',  power:'Yıldız Tozu Saçar',desc:'Uzak galaksilerin gizemli yaratığı. Tek üretim, koleksiyonluk.'},
+  {id:'uniq_void',    name:'Karanlık Ejder',    icon:'🐉',color:'#00ffc8',price:50000, rarity:'mythical',  element:'Boşluk',  power:'Karanlığı Yutar',  desc:'Karanlık bölgelerin nadir sakinlerinden. Ultra nadir, benzersiz baskı.'},
+  {id:'uniq_chronos', name:'Zaman Gezgini',     icon:'⏳',color:'#a3e635',price:60000, rarity:'mythical',  element:'Zaman',   power:'Zamanı Büker',     desc:'Geçmiş ve geleceği aynı anda gören efsane. Evrende tek.'},
+  {id:'uniq_cosmos',  name:'Evren Çekirdeği',   icon:'🌀',color:'#e879f9',price:75000, rarity:'mythical',  element:'Sonsuzluk',power:'Galaksi Doğurur', desc:'Bir evrenin tüm enerjisini içinde taşıyan efsanelerin efsanesi.'},
 ];
 
 let _inv={}, _tab='frames';
@@ -135,21 +141,32 @@ function renderShop(){
     const uniqSec=document.createElement('div'); uniqSec.innerHTML='<div class="clan-lbl" style="color:#FFD740;margin-bottom:8px">⭐ BENZERSİZ KOZMO (Tek Üretim)</div>';
     box.appendChild(uniqSec);
     const uGrid=document.createElement('div'); uGrid.style.cssText='display:grid;grid-template-columns:repeat(2,1fr);gap:10px';
+    const RAR_LBL={mythical:'MİTOLOJİK',legendary:'EFSANEVİ',epic:'EPİK'};
     UNIQUE_KOZMOS.forEach(item=>{
       const pl=Store.getState?Store.getState():{};
       const owned=!!_inv[item.id];
       const canBuy=!owned&&(pl.kaju||0)>=item.price;
       const card=document.createElement('div'); card.className='shop-unique-card';
       card.style.setProperty('--uc',item.color);
-      card.innerHTML='<div class="shop-unique-badge">✦ UNIQUE</div>'
-        +'<div class="shop-unique-creature">'+item.icon+'</div>'
+      const rl = RAR_LBL[item.rarity]||'NADİR';
+      card.innerHTML='<div class="shop-unique-badge">✦ '+rl+'</div>'
+        +'<div class="shop-unique-creature" data-uqanim="'+esc(item.id)+'">'+item.icon+'</div>'
         +'<div class="shop-unique-name" style="color:'+item.color+'">'+esc(item.name)+'</div>'
+        +(item.power?'<div style="font-size:8px;color:'+item.color+';font-weight:800;margin-top:2px;opacity:.9">⚡ '+esc(item.power)+'</div>':'')
         +'<div style="font-size:8px;color:#7d8ab8;margin:3px 0 8px;line-height:1.4">'+esc(item.desc)+'</div>'
         +(owned
           ?'<div style="font-size:10px;color:#69F0AE;font-weight:800">✓ Sahibisin</div>'
           :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(item.price)+'</button>');
       if(!owned){ const btn=card.querySelector('button'); if(btn) btn.addEventListener('click',()=>buyUniqueKozmo(item)); }
       uGrid.appendChild(card);
+      // Animasyonlu SVG yükle (kozmos.js'den)
+      import('./kozmos.js').then(kz=>{
+        if(kz.uniqueCosmoSVG){
+          const slot=card.querySelector('[data-uqanim="'+CSS.escape(item.id)+'"]');
+          if(slot) slot.innerHTML=kz.uniqueCosmoSVG(item.icon,64,item.color);
+        }
+        if(kz.ensureUniqueCSS) kz.ensureUniqueCSS();
+      }).catch(()=>{});
     });
     box.appendChild(uGrid);
     return;
@@ -361,6 +378,7 @@ async function buyUniqueKozmo(item){
       fromUid:'shop', fromName:'Mağaza', bornAt:Date.now(),
       level:1, xp:0, unique:true, uniqueId:item.id,
       icon:item.icon, color:item.color,
+      element:item.element||null, power:item.power||null,
     });
     renderShop();
     _toast('✨ '+item.icon+' '+item.name+' kozmos koleksiyonuna eklendi!');
