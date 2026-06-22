@@ -1669,14 +1669,11 @@ function build(){
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
-    <!-- t-statbar kaldırıldı: HUD zaten SKOR/SATIR/SEVİYE gösteriyor -->
-    <div class="t-hidden-vals" style="display:none">
-      <span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span>
-    </div>
+    <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
     <div class="tetris-stage">
       <div class="tetris-side">
-        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="56" height="80"></canvas></div>
-        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="56" height="48"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="84" height="64"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="84" height="64"></canvas></div>
       </div>
       <div class="tetris-board-wrap">
         <canvas class="tetris-canvas" style="position:relative;z-index:1"></canvas>
@@ -1759,8 +1756,8 @@ function fitCanvas(){
   // Genişlik
   let availW = wrap.clientWidth;
   if(!availW || availW < 40){
-    const sideW = 64 + 8;    // yan panel(64) + gap(8)
-    availW = Math.max(120, (window.innerWidth || 360) - sideW - 16);
+    const sideW = 60 + 7;    // yan panel(60) + gap(7)
+    availW = Math.max(120, (window.innerWidth || 360) - sideW - 14);
   }
   // Yükseklik: sarmalayıcının GERÇEK yüksekliğini ölç (mod barı, güç satırı,
   // kontroller flex ile yer kaptıktan SONRA kalan alan). Sabit tahmin yapma.
@@ -1768,7 +1765,7 @@ function fitCanvas(){
   if(!availH || availH < 60){
     // İlk render'da ölçülememişse güvenli tahmin (tüm UI elemanlarını düş)
     const modeBarH = (G.mode && G.mode !== 'solo') ? 30 : 0;
-    availH = Math.max(200, (window.innerHeight || 640) - 52 - modeBarH - 60 - 64 - 16);
+    availH = Math.max(200, (window.innerHeight || 640) - 56 - modeBarH - 66 - 70 - 24);
   }
   // Hücre boyutu: hem genişliğe hem yüksekliğe sığmalı (küçük olanı seç)
   let cs;
@@ -1799,7 +1796,7 @@ function fitCanvas(){
     return;
   }
   const csW = Math.floor(availW / COLS);
-  const csH = Math.floor(availH / ROWS);
+  const csH = Math.floor((availH * 0.98) / ROWS);  // dikeyde %2 nefes payı
   cs = Math.min(csW, csH);
   if(cs < 8) cs = 8;
   G.cellSize = cs;
@@ -2513,19 +2510,19 @@ function injectCSS(){
   animation: fadeUp .25s ease both;
 }
 
-.tetris-topbar{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.tetris-topbar{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .tetris-topbar .t-title{ font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 3px; color: var(--cyan); text-shadow: var(--glow-cyan); }
 .t-icon{ width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 16px; }
 
-.tetris-stage{ flex: 1; display: flex; gap: 8px; min-height: 0; align-items: stretch; margin-bottom: 6px; }
+.tetris-stage{ flex: 1; display: flex; gap: 7px; min-height: 0; align-items: stretch; }
 
 /* Yan paneller */
 .t-statbar{ display:flex; gap:6px; margin-bottom:8px; }
 .t-stat{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:5px 4px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:1px; }
 .t-stat .t-sl{ font-size:8px; letter-spacing:1px; color:var(--text-mute); font-weight:700; }
 .t-stat .t-pval{ font-size:16px; }
-.tetris-side{ width: 64px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; position:relative; z-index:10; }
-.t-panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 5px 5px; text-align: center; }
+.tetris-side{ width: 60px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; position:relative; z-index:10; }
+.t-panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 7px 8px; text-align: center; }
 .t-plabel{ font-size: 8px; letter-spacing: 1.5px; color: var(--text-mute); font-weight: 700; }
 .t-pval{ font-family: var(--font-display); font-weight: 700; font-size: 17px; color: #fff; margin-top: 2px; }
 .t-pval.t-score{ color: var(--gold); text-shadow: var(--glow-gold); font-size: 15px; transition: transform .1s ease; display: inline-block; }
@@ -2541,7 +2538,7 @@ function injectCSS(){
 .tetris-board-wrap.split{ flex-direction: row; gap: 8px; align-items: flex-start; justify-content: center; }
 .tetris-ai-canvas{ border: 1px solid rgba(124,77,255,.4); border-radius: 8px; background: rgba(0,0,0,.35); box-shadow: 0 0 20px rgba(124,77,255,.15) inset; align-self: flex-start; }
 .t-ai-label{ position: absolute; top: 4px; right: 8px; font-size: 10px; font-weight: 800; letter-spacing: 1px; color: #7C4DFF; background: rgba(124,77,255,.12); border-radius: 6px; padding: 2px 8px; z-index: 6; }
-.tetris-canvas{ border: 1.5px solid var(--border-cyan); border-radius: 10px; background: rgba(0,0,0,.4); box-shadow: 0 0 40px rgba(0,229,255,.15) inset, 0 0 20px rgba(0,229,255,.1); }
+.tetris-canvas{ border: 1px solid var(--border-cyan); border-radius: 8px; background: rgba(0,0,0,.35); box-shadow: 0 0 30px rgba(0,229,255,.12) inset; }
 
 /* Seviye flash */
 .t-flash{
@@ -2662,7 +2659,7 @@ function injectCSS(){
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
 /* Admin yenilmez mod butonu */
 .t-godmode{
-  display: block; margin: 0 auto 6px; padding: 5px 14px; border-radius: var(--r-md);
+  display: block; margin: 0 auto 8px; padding: 7px 16px; border-radius: var(--r-md);
   background: rgba(255,215,64,.08); border: 1.5px solid rgba(255,215,64,.4); color: var(--gold);
   font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1px;
   transition: all .15s;
