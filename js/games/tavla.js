@@ -438,25 +438,18 @@ function rollAndShow(){
 function fitCanvas(){
   if(!G || !G.canvas) return;
   const wrap = G.boardWrap;
-  const availW = wrap.clientWidth || (window.innerWidth - 12);
-  // Sabit rezerv: header(~52) + status(~0) + controls(~46) + actions(~36) + HUD(~60) + padding
-  const ctrl = G.root && G.root.querySelector('.tg-controls');
-  const acts = G.root && G.root.querySelector('.tg-actions');
-  const top  = G.root && G.root.querySelector('.tg-top');
-  const hud  = G.root && G.root.querySelector('#heroGameHud');
-  const reservedH = (ctrl ? ctrl.offsetHeight : 46)
-                  + (acts ? acts.offsetHeight : 36)
-                  + (top  ? top.offsetHeight  : 52)
-                  + (hud  ? hud.offsetHeight  : 0)
-                  + 28; // padding + güvenlik marjı
-  const winH = window.innerHeight || window.screen.height;
-  const availH = Math.max(80, winH - reservedH);
-  // Tavla tahtası DİKEY-UZUN ama dengeli (gerçek tavla oranı ~1.40).
-  // Aşırı uzamayı önlemek için 1.36–1.48 arasına sabitlenir.
+  // wrap (.tg-board-wrap) flex:1 ile kalan alanı zaten alıyor →
+  // clientWidth/clientHeight DOM'dan direkt okunur, manuel rezerv hesabı YOK.
+  const availW = wrap.clientWidth  || (window.innerWidth  - 16);
+  const availH = wrap.clientHeight || (window.innerHeight - 160);
+  // Tavla oranı ~1.40 (dikey-uzun). 1.30–1.50 arasına sabitle.
   let ratio = availH / availW;
-  ratio = Math.max(1.36, Math.min(ratio, 1.48));
+  ratio = Math.max(1.30, Math.min(ratio, 1.50));
   let w = availW, h = w * ratio;
+  // Yükseklik taşarsa genişlikten kıs (ama en-boy korunur)
   if(h > availH){ h = availH; w = h / ratio; }
+  // Genişlik taşarsa yükseklikten kıs
+  if(w > availW){ w = availW; h = w * ratio; }
   const dpr = window.devicePixelRatio || 1;
   G.W = Math.floor(w); G.H = Math.floor(h);
   G.canvas.width = G.W * dpr; G.canvas.height = G.H * dpr;
@@ -1237,7 +1230,7 @@ function doMove(mv){
   }
   updateControls();
   draw();
-  if(G.mode === 'ai'){ saveAIGame(); }   // her hamlede kaydet
+  if(G.mode === 'ai'){ saveAIGame(); }
 }
 
 function endTurn(){
@@ -1258,9 +1251,9 @@ function endTurn(){
   }
   updateControls();
   draw();
-  if(!G.online){ maybeAITurn(); }   // sıra AI'daysa otomatik oyna (online'da yok)
-  startAutoRollTimer();             // sıra insandaysa otomatik zar sayacı
-  if(G.mode === 'ai'){ saveAIGame(); }   // kaldığın yerden devam için kaydet
+  if(!G.online){ maybeAITurn(); }
+  startAutoRollTimer();
+  if(G.mode === 'ai'){ saveAIGame(); }
 }
 
 // ════════════ OTOMATİK ZAR ════════════
@@ -1777,7 +1770,7 @@ async function onWin(status){
   G.gameEnded = true;
   G.aiThinking = false;
   clearAutoRollTimer();
-  clearAIGame();   // oyun bitti → kayıt sil
+  clearAIGame();
   const winner = status === 'white_wins' ? 'w' : 'b';
   const wt = winType(G.state, winner);
   const typeLabel = wt === 3 ? ' (Hin/Backgammon ×3)' : wt === 2 ? ' (Mars/Gammon ×2)' : '';
@@ -1851,7 +1844,6 @@ function updateControls(){
     rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }
-  // ZAR AT artık canvas içi belirteç → büyük buton hep gizli
   rollBtn.style.display = 'none';
   if(!G.rolled){
     passBtn.style.display = 'none';
@@ -1883,10 +1875,21 @@ function showAISetup(root){
       <button class="tas-opt active" data-v="w">⚪ BEYAZ</button>
       <button class="tas-opt" data-v="b">⚫ SİYAH</button>
     </div>
-    <button class="ttp-close tas-start">▶ BAŞLA</button>
+    <button class="tas-resume" style="display:none;width:100%;padding:14px;margin-bottom:10px;border-radius:14px;border:1.5px solid rgba(125,194,75,.6);background:linear-gradient(135deg,rgba(40,80,25,.7),rgba(20,45,12,.9));color:#b8f07a;font-size:14px;font-weight:900;cursor:pointer;transition:transform .12s">♟️ KALDIĞIN YERDEN DEVAM ET</button>
+    <button class="ttp-close tas-start">▶ YENİ OYUN BAŞLAT</button>
   </div>`;
   root.appendChild(ov);
   let diff = 'medium', color = 'w';
+  // Yarım kalmış AI oyunu varsa "devam" butonunu göster
+  const _saved = loadAIGame();
+  const _resumeBtn = ov.querySelector('.tas-resume');
+  if(_saved && _saved.state && _resumeBtn){
+    _resumeBtn.style.display = 'block';
+    _resumeBtn.addEventListener('click', () => {
+      ov.remove();
+      startGame(root, 'ai', { difficulty: _saved.difficulty || 'medium', playerColor: _saved.playerColor || 'w' });
+    });
+  }
   ov.querySelectorAll('[data-group="diff"] .tas-opt').forEach(b => b.addEventListener('click', () => {
     ov.querySelectorAll('[data-group="diff"] .tas-opt').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); diff = b.dataset.v;
@@ -1897,7 +1900,8 @@ function showAISetup(root){
   }));
   ov.querySelector('.tas-start').addEventListener('click', () => {
     ov.remove();
-    startGame(root, 'ai', { difficulty: diff, playerColor: color });
+    clearAIGame();   // yeni oyun → eski kaydı sil
+    startGame(root, 'ai', { difficulty: diff, playerColor: color, fresh: true });
   });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => { ov.remove(); });
   ov.querySelector('[data-act="close"]').addEventListener('click', () => {
