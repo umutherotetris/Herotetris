@@ -290,21 +290,16 @@ export function mountGameHome(gameKey, onExit, api = {}){
       const screen = b.dataset.nav;
       closePanel();
       if(screen === 'home'){
-        // Ana menüye çık
         doExit(async () => {
           try{ const n = await import('./nav.js'); if(n.go) n.go('home'); }catch(e){ console.warn('[cc] nav', e); }
         });
       } else {
-        // Oyundan çıkmadan social hub overlay aç
-        const tabMap = { friends:'dost', notifications:'notif', leaderboard:'leaderboard' };
+        // Arkadaş / Liderlik / Bildirim → hepsi social hub overlay (oyundan çıkmadan)
+        const tabMap = { friends:'dost', notifications:'notif', leaderboard:'lider' };
         const tab = tabMap[screen] || screen;
         try{
-          if(tab === 'leaderboard'){
-            const n = await import('./nav.js'); if(n.go) n.go('leaderboard');
-          } else {
-            const soc = await import('./social.js');
-            if(soc.openHubTab) soc.openHubTab(tab);
-          }
+          const soc = await import('./social.js');
+          if(soc.openHubTab) soc.openHubTab(tab);
         }catch(e){ console.warn('[cc] social', e); }
       }
     }));
