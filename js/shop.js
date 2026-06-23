@@ -204,7 +204,7 @@ function _injectShopCSS(){
     #shopPanel .shop-panel .shop-tab-btn,
     .shop-panel .shop-tab-btn{
       flex:0 0 auto !important; white-space:nowrap !important;
-      padding:8px 13px !important; border-radius:11px !important;
+      padding:7px 11px !important; border-radius:10px !important;
       border:1px solid rgba(255,255,255,.1) !important; background:rgba(255,255,255,.05) !important;
       color:#9fb0d8 !important; font-size:12px !important; font-weight:800 !important;
       cursor:pointer !important; transition:all .18s !important;
@@ -219,7 +219,8 @@ function _injectShopCSS(){
     }
     .shop-panel .shop-tab-btn:active{ transform:scale(.95); }
     /* Başlık satırı taşmasın */
-    #shopPanel .shop-panel{ overflow:hidden !important; }
+    #shopPanel .shop-panel{ overflow:hidden !important; max-width:100vw !important; }
+    #shopPanel #shopTabs{ max-width:100% !important; width:100% !important; box-sizing:border-box !important; overflow-x:auto !important; }
     #shopPanel .clan-head{ flex-wrap:nowrap !important; gap:8px !important; padding:14px 14px 10px !important; }
     #shopPanel .clan-title{ flex-shrink:0 !important; font-size:18px !important; }
     #shopPanel .shop-kaju-badge{ flex:1 1 auto !important; min-width:0 !important; text-align:center !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; font-size:13px !important; }
@@ -273,6 +274,9 @@ function renderShopTabs(){
     b.addEventListener('click',()=>{_tab=id;renderShopTabs();renderShop();});
     box.appendChild(b);
   });
+  // Aktif sekmeyi görünür alana kaydır (taşma/gizlenme önlenir)
+  const act = box.querySelector('.shop-tab-btn.active');
+  if(act){ try{ act.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'}); }catch(e){} }
 }
 
 function renderShop(){
