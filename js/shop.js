@@ -89,10 +89,76 @@ export async function openShop(){
     +'<div class="shop-tabs" id="shopTabs"></div>'
     +'<div class="clan-body" id="shopBody"></div>';
   ov.appendChild(panel); document.body.appendChild(ov);
+  _injectShopCSS();
   panel.querySelector('#shopClose').addEventListener('click',()=>ov.remove());
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   renderShopTabs();
   renderShop();
+}
+
+// ── 🔊 Mağaza ses efektleri (WebAudio, hafif sentez) ──
+let _shopAC = null;
+function _ac(){ try{ if(!_shopAC) _shopAC = new (window.AudioContext||window.webkitAudioContext)(); if(_shopAC.state==='suspended') _shopAC.resume(); return _shopAC; }catch(e){ return null; } }
+function _beep(freq, dur, type, vol, slideTo){
+  const ac=_ac(); if(!ac) return;
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  if(slideTo){ o.frequency.exponentialRampToValueAtTime(slideTo, ac.currentTime+dur); }
+  g.gain.setValueAtTime(0, ac.currentTime);
+  g.gain.linearRampToValueAtTime(vol||0.08, ac.currentTime+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+dur);
+  o.connect(g); g.connect(ac.destination);
+  o.start(); o.stop(ac.currentTime+dur+0.02);
+}
+const ShopSfx = {
+  hover(){ _beep(620, 0.07, 'sine', 0.04, 720); },
+  tap(){ _beep(480, 0.09, 'triangle', 0.06, 360); },
+  buy(){ // yükselen üçlü akor
+    _beep(523, 0.12, 'sine', 0.07);
+    setTimeout(()=>_beep(659, 0.12, 'sine', 0.07), 90);
+    setTimeout(()=>_beep(784, 0.18, 'sine', 0.08, 880), 180);
+  },
+  deny(){ _beep(200, 0.18, 'sawtooth', 0.05, 140); },
+};
+
+function _injectShopCSS(){
+  if(document.getElementById('shopPremiumCSS')) return;
+  const s=document.createElement('style'); s.id='shopPremiumCSS';
+  s.textContent=`
+    /* Sekme satırı — yazı binmesini önle */
+    .shop-panel .shop-tabs{ display:flex; gap:7px; padding:10px 14px 8px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid rgba(255,255,255,.06); }
+    .shop-panel .shop-tabs::-webkit-scrollbar{ display:none; }
+    .shop-panel .shop-tab-btn{ flex:0 0 auto; white-space:nowrap; padding:8px 14px; border-radius:11px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); color:#9fb0d8; font-size:12px; font-weight:800; cursor:pointer; transition:all .18s; }
+    .shop-panel .shop-tab-btn.active{ background:linear-gradient(135deg,rgba(224,64,251,.25),rgba(124,77,255,.18)); border-color:rgba(192,132,252,.5); color:#e9d5ff; box-shadow:0 2px 10px rgba(124,77,255,.2); }
+    .shop-panel .shop-tab-btn:active{ transform:scale(.95); }
+
+    /* Benzersiz kozmo kartı — premium */
+    .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
+      background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
+      border:1.5px solid color-mix(in srgb, var(--uc) 45%, transparent);
+      box-shadow:0 4px 22px color-mix(in srgb, var(--uc) 18%, transparent), inset 0 1px 0 rgba(255,255,255,.06);
+      overflow:hidden; transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s; cursor:pointer; }
+    .shop-unique-card::before{ content:''; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+      background:radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--uc) 22%, transparent), transparent 60%); }
+    .shop-unique-card:hover{ transform:translateY(-4px) scale(1.015);
+      box-shadow:0 10px 32px color-mix(in srgb, var(--uc) 32%, transparent), inset 0 1px 0 rgba(255,255,255,.1); }
+    .shop-unique-card:active{ transform:translateY(-1px) scale(.99); }
+    .shop-unique-badge{ display:inline-block; font-size:9px; font-weight:900; letter-spacing:.5px;
+      padding:3px 10px; border-radius:20px; margin-bottom:6px; color:#1a1208;
+      background:linear-gradient(90deg, #ffd86b, #f0a500); box-shadow:0 2px 8px rgba(240,165,0,.35); }
+    .shop-unique-creature{ width:64px; height:64px; margin:2px auto 6px; display:flex; align-items:center; justify-content:center; font-size:40px; }
+    .shop-unique-name{ font-size:14px; font-weight:900; letter-spacing:.3px; }
+    .shop-unique-btn{ margin-top:9px; width:100%; padding:10px; border-radius:12px; border:none; cursor:pointer;
+      font-size:13px; font-weight:900; color:#1a1208; background:linear-gradient(135deg, #ffd86b, #f0a500);
+      box-shadow:0 3px 12px rgba(240,165,0,.3); transition:transform .12s, filter .15s; }
+    .shop-unique-btn:hover{ filter:brightness(1.08); }
+    .shop-unique-btn:active{ transform:scale(.96); }
+    .shop-unique-btn.locked{ background:rgba(255,255,255,.08); color:#7d8ab8; box-shadow:none; cursor:not-allowed; }
+    /* Satın alınınca ışık dalgası */
+    @keyframes shopUqBuy{ 0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--uc) 60%, transparent)} 100%{box-shadow:0 0 0 30px transparent} }
+    .shop-unique-card.bought{ animation:shopUqBuy .7s ease-out; }
+  `;
+  document.head.appendChild(s);
 }
 
 function renderShopTabs(){
@@ -157,7 +223,21 @@ function renderShop(){
         +(owned
           ?'<div style="font-size:10px;color:#69F0AE;font-weight:800">✓ Sahibisin</div>'
           :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(item.price)+'</button>');
-      if(!owned){ const btn=card.querySelector('button'); if(btn) btn.addEventListener('click',()=>buyUniqueKozmo(item)); }
+      // 🔊 Hover sesi (kart üzerine gelince)
+      let _hovT=0;
+      card.addEventListener('mouseenter',()=>{ const now=Date.now(); if(now-_hovT>200){ _hovT=now; ShopSfx.hover(); } });
+      // Tıklama (kart geneli) — hafif tap sesi
+      card.addEventListener('click',()=>ShopSfx.tap());
+      if(!owned){
+        const btn=card.querySelector('button');
+        if(btn) btn.addEventListener('click',(e)=>{
+          e.stopPropagation();
+          if(!canBuy){ ShopSfx.deny(); return; }
+          ShopSfx.buy();
+          card.classList.add('bought');
+          buyUniqueKozmo(item);
+        });
+      }
       uGrid.appendChild(card);
       // Animasyonlu SVG yükle (kozmos.js'den)
       import('./kozmos.js').then(kz=>{
