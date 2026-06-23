@@ -303,6 +303,7 @@ function showAIDifficulty(){
 }
 
 function startLocal(){
+  setTimeout(notifyKozmoBonus, 400);
   const st = newGame();
   G.state = st;
   G.who = 'A';
@@ -328,6 +329,7 @@ function startLocal(){
 // ── YAPAY ZEKÂ ──
 let KA = null;   // kelime-ai.js (talep üzerine yüklenir)
 async function startAI(difficulty, turnTime){
+  setTimeout(notifyKozmoBonus, 400);
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 Hazırlanıyor…</h3><p>Sözlük yükleniyor</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
@@ -801,6 +803,29 @@ function onlineGameOver(msg, verdictOverride){
     <button class="kl-btn primary" data-x="menu">Menüye Dön</button></div>`;
   c.appendChild(ov);
   ov.querySelector('[data-x="menu"]').addEventListener('click', ()=>{ ov.remove(); G.online=false; G._over=false; showStart(); });
+}
+
+
+// ⚡ Oyun başında aktif kozmo bonusunu kısaca bildir (floating)
+async function notifyKozmoBonus(){
+  try{
+    const kz = await import('../kozmos.js');
+    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
+    if(!b) return;
+    if(window.Hero && window.Hero.toast){
+      window.Hero.toast('⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label, false);
+      return;
+    }
+    const d=document.createElement('div');
+    d.textContent='⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label;
+    d.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:99999;'
+      +'padding:9px 16px;border-radius:20px;font-size:12px;font-weight:800;color:#e9d5ff;'
+      +'background:linear-gradient(135deg,rgba(192,132,252,.95),rgba(124,77,255,.9));'
+      +'box-shadow:0 4px 20px rgba(124,77,255,.4);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none';
+    document.body.appendChild(d);
+    requestAnimationFrame(()=>{ d.style.opacity='1'; d.style.transform='translateX(-50%) translateY(4px)'; });
+    setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(),350); }, 3000);
+  }catch(e){}
 }
 
 function buildGameDOM(){
