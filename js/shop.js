@@ -15,6 +15,70 @@ function _toast(msg, isErr){
 const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=(n)=>(Number.isFinite(Number(n))?Number(n):0).toLocaleString('tr-TR');
 
+// ════════════ 🎁 SANDIKLAR ════════════
+const CHESTS = [
+  {id:'chest_bronze', name:'Bronz Sandık', icon:'📦', color:'#cd7f32', price:1500,
+   desc:'Rastgele ödül: 500-3000 Kaju, çerçeve veya yumurta şansı',
+   loot:{kajuMin:500,kajuMax:3000, eggChance:0.15, frameChance:0.10}},
+  {id:'chest_silver', name:'Gümüş Sandık', icon:'🎁', color:'#c0c0c0', price:4000,
+   desc:'Daha iyi ödül: 1500-7000 Kaju, nadir çerçeve/tema/yumurta',
+   loot:{kajuMin:1500,kajuMax:7000, eggChance:0.30, frameChance:0.20, themeChance:0.10}},
+  {id:'chest_gold', name:'Altın Sandık', icon:'💰', color:'#ffd700', price:10000,
+   desc:'Premium ödül: 4000-18000 Kaju, epik yumurta + boost şansı',
+   loot:{kajuMin:4000,kajuMax:18000, eggChance:0.50, epicEgg:true, boostChance:0.25, frameChance:0.30, themeChance:0.20}},
+];
+
+// ════════════ ⚡ BOOSTLAR (süreli) ════════════
+const BOOSTS = [
+  {id:'boost_xp2',   name:'2× XP Rozeti', icon:'⭐', color:'#fbbf24', price:3000,
+   type:'xp', mult:2, hours:24, desc:'24 saat boyunca tüm oyunlarda XP iki katı'},
+  {id:'boost_kaju2', name:'2× Kaju Rozeti', icon:'🥜', color:'#f59e0b', price:3500,
+   type:'kaju', mult:2, hours:24, desc:'24 saat boyunca kazandığın Kaju iki katı'},
+  {id:'boost_all15', name:'Altın Dokunuş', icon:'✨', color:'#c084fc', price:6000,
+   type:'all', mult:1.5, hours:24, desc:'24 saat XP, Kaju ve Skor %50 artar'},
+  {id:'boost_xp2_3d',name:'2× XP (3 Gün)', icon:'🌟', color:'#fbbf24', price:7000,
+   type:'xp', mult:2, hours:72, desc:'3 gün boyunca XP iki katı — uzun süreli'},
+];
+
+// ════════════ ✨ KOZMETİK / STİL ════════════
+const COSMETICS = [
+  // Nick efektleri
+  {id:'nick_flame',   name:'Alev Nick', icon:'🔥', color:'#ff6b35', price:5000, ckey:'nickEffect', cval:'flame', preview:'flame', desc:'Adın alevli yanıp söner'},
+  {id:'nick_neon',    name:'Neon Nick', icon:'💠', color:'#22d3ee', price:5000, ckey:'nickEffect', cval:'neon', preview:'neon', desc:'Adın neon ışıkla parlar'},
+  {id:'nick_rainbow', name:'Gökkuşağı Nick', icon:'🌈', color:'#e879f9', price:8000, ckey:'nickEffect', cval:'rainbow', preview:'rainbow', desc:'Adın gökkuşağı renklerinde akar'},
+  {id:'nick_gold',    name:'Altın Nick', icon:'👑', color:'#ffd700', price:7000, ckey:'nickEffect', cval:'gold', preview:'gold', desc:'Adın altın parıltıyla görünür'},
+  // İsim renkleri
+  {id:'color_cyan',   name:'Camgöbeği İsim', icon:'🔵', color:'#22d3ee', price:2500, ckey:'nameColor', cval:'#22d3ee', desc:'İsmin camgöbeği renginde'},
+  {id:'color_pink',   name:'Pembe İsim', icon:'🩷', color:'#f472b6', price:2500, ckey:'nameColor', cval:'#f472b6', desc:'İsmin pembe renginde'},
+  {id:'color_lime',   name:'Yeşil İsim', icon:'💚', color:'#a3e635', price:2500, ckey:'nameColor', cval:'#a3e635', desc:'İsmin canlı yeşil renginde'},
+  // Unvanlar
+  {id:'title_legend', name:'"Efsane" Unvanı', icon:'🏆', color:'#ffd700', price:10000, ckey:'title', cval:'Efsane', desc:'Profilinde "Efsane" unvanı görünür'},
+  {id:'title_master', name:'"Kozmo Ustası"', icon:'🌌', color:'#c084fc', price:9000, ckey:'title', cval:'Kozmo Ustası', desc:'Profilinde "Kozmo Ustası" unvanı'},
+  {id:'title_champ',  name:'"Şampiyon"', icon:'⚔️', color:'#fb923c', price:9000, ckey:'title', cval:'Şampiyon', desc:'Profilinde "Şampiyon" unvanı'},
+];
+
+// ════════════ 🛠️ İŞLEVSEL ÖĞELER (envantere eklenir) ════════════
+const CONSUMABLES = [
+  {id:'item_hint',    name:'İpucu Paketi (×5)', icon:'💡', color:'#fbbf24', price:2000, qty:5, desc:'Kelime ve satrançta 5 ipucu hakkı'},
+  {id:'item_undo',    name:'Geri Alma (×5)', icon:'↩️', color:'#60a5fa', price:1800, qty:5, desc:'Oyunlarda 5 ekstra geri alma hakkı'},
+  {id:'item_food10',  name:'Besin Paketi (×10)', icon:'🍎', color:'#ef4444', price:1000, qty:10, desc:'Kozmo besleme: 10 yiyecek'},
+  {id:'item_food50',  name:'Besin Çuvalı (×50)', icon:'🧺', color:'#dc2626', price:4000, qty:50, desc:'Kozmo besleme: 50 yiyecek (indirimli)'},
+  {id:'item_fusion',  name:'Birleştirme Taşı', icon:'💫', color:'#e879f9', price:5000, qty:1, desc:'Bir sonraki birleştirmede daha iyi sonuç şansı'},
+];
+
+// ════════════ 💎 PAKETLER / BUNDLE ════════════
+const BUNDLES = [
+  {id:'bundle_starter', name:'Başlangıç Paketi', icon:'🎒', color:'#34d399', price:5000, origPrice:9000,
+   desc:'Yeni başlayanlar için: 1 Nadir Yumurta + 1 Çerçeve + 2× XP (24s)',
+   grants:[{type:'egg',rarity:'nadir'},{type:'frame',random:true},{type:'boost',boostId:'boost_xp2'}]},
+  {id:'bundle_mega', name:'Mega Paket', icon:'🎆', color:'#c084fc', price:18000, origPrice:30000,
+   desc:'1 Epik Yumurta + Altın Dokunuş Boost + 1 Tema + 10000 Kaju',
+   grants:[{type:'egg',rarity:'epik'},{type:'boost',boostId:'boost_all15'},{type:'theme',random:true},{type:'kaju',amount:10000}]},
+  {id:'bundle_vip', name:'VIP Aylık', icon:'👑', color:'#ffd700', price:25000, origPrice:45000,
+   desc:'30 gün her gün 1000 Kaju + kalıcı "VIP" unvanı + 2× XP (3 gün)',
+   grants:[{type:'vip',days:30,daily:1000},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
+];
+
 export const SHOP_ITEMS={
   frames:[
     {id:'fr_none',  name:'Çerçeve Yok',     price:0,    icon:'⭕',color:'transparent',      free:true},
@@ -125,12 +189,41 @@ function _injectShopCSS(){
   if(document.getElementById('shopPremiumCSS')) return;
   const s=document.createElement('style'); s.id='shopPremiumCSS';
   s.textContent=`
-    /* Sekme satırı — yazı binmesini önle */
-    .shop-panel .shop-tabs{ display:flex; gap:7px; padding:10px 14px 8px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid rgba(255,255,255,.06); }
-    .shop-panel .shop-tabs::-webkit-scrollbar{ display:none; }
-    .shop-panel .shop-tab-btn{ flex:0 0 auto; white-space:nowrap; padding:8px 14px; border-radius:11px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); color:#9fb0d8; font-size:12px; font-weight:800; cursor:pointer; transition:all .18s; }
-    .shop-panel .shop-tab-btn.active{ background:linear-gradient(135deg,rgba(224,64,251,.25),rgba(124,77,255,.18)); border-color:rgba(192,132,252,.5); color:#e9d5ff; box-shadow:0 2px 10px rgba(124,77,255,.2); }
+    /* Sekme satırı — yazı binmesini KESİN önle (yüksek specificity + !important) */
+    #shopPanel .shop-panel .shop-tabs,
+    .shop-panel .shop-tabs{
+      display:flex !important; gap:7px !important; padding:10px 14px 9px !important;
+      flex-wrap:nowrap !important; overflow-x:auto !important; overflow-y:hidden !important;
+      scrollbar-width:none !important; -ms-overflow-style:none !important;
+      width:100% !important; box-sizing:border-box !important;
+      border-bottom:1px solid rgba(255,255,255,.06) !important;
+      -webkit-overflow-scrolling:touch;
+    }
+    #shopPanel .shop-tabs::-webkit-scrollbar,
+    .shop-panel .shop-tabs::-webkit-scrollbar{ display:none !important; width:0 !important; height:0 !important; }
+    #shopPanel .shop-panel .shop-tab-btn,
+    .shop-panel .shop-tab-btn{
+      flex:0 0 auto !important; white-space:nowrap !important;
+      padding:8px 13px !important; border-radius:11px !important;
+      border:1px solid rgba(255,255,255,.1) !important; background:rgba(255,255,255,.05) !important;
+      color:#9fb0d8 !important; font-size:12px !important; font-weight:800 !important;
+      cursor:pointer !important; transition:all .18s !important;
+      width:auto !important; min-width:0 !important; max-width:none !important;
+      line-height:1.2 !important;
+    }
+    #shopPanel .shop-panel .shop-tab-btn.active,
+    .shop-panel .shop-tab-btn.active{
+      background:linear-gradient(135deg,rgba(224,64,251,.3),rgba(124,77,255,.2)) !important;
+      border-color:rgba(192,132,252,.55) !important; color:#e9d5ff !important;
+      box-shadow:0 2px 12px rgba(124,77,255,.25) !important;
+    }
     .shop-panel .shop-tab-btn:active{ transform:scale(.95); }
+    /* Başlık satırı taşmasın */
+    #shopPanel .shop-panel{ overflow:hidden !important; }
+    #shopPanel .clan-head{ flex-wrap:nowrap !important; gap:8px !important; padding:14px 14px 10px !important; }
+    #shopPanel .clan-title{ flex-shrink:0 !important; font-size:18px !important; }
+    #shopPanel .shop-kaju-badge{ flex:1 1 auto !important; min-width:0 !important; text-align:center !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; font-size:13px !important; }
+    #shopPanel .clan-x{ flex-shrink:0 !important; }
 
     /* Benzersiz kozmo kartı — premium */
     .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
@@ -157,13 +250,21 @@ function _injectShopCSS(){
     /* Satın alınınca ışık dalgası */
     @keyframes shopUqBuy{ 0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--uc) 60%, transparent)} 100%{box-shadow:0 0 0 30px transparent} }
     .shop-unique-card.bought{ animation:shopUqBuy .7s ease-out; }
+    /* Nick efekt önizlemeleri */
+    .cz-flame{ background:linear-gradient(90deg,#ff6b35,#ffd700,#ff6b35); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlame 2s linear infinite; }
+    @keyframes czFlame{ to{ background-position:200% center; } }
+    .cz-neon{ color:#22d3ee; text-shadow:0 0 6px #22d3ee,0 0 12px #22d3ee; animation:czNeon 1.5s ease-in-out infinite; }
+    @keyframes czNeon{ 0%,100%{ opacity:1; } 50%{ opacity:.6; } }
+    .cz-rainbow{ background:linear-gradient(90deg,#ff0000,#ff9900,#ffff00,#33ff00,#00ffff,#3333ff,#cc00ff,#ff0000); background-size:300% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czRainbow 3s linear infinite; }
+    @keyframes czRainbow{ to{ background-position:300% center; } }
+    .cz-gold{ background:linear-gradient(90deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlame 2.5s linear infinite; }
   `;
   document.head.appendChild(s);
 }
 
 function renderShopTabs(){
   const box=document.getElementById('shopTabs'); if(!box)return;
-  const tabs=[['frames','🖼️ Çerçeve'],['themes','🎨 Tema'],['eggs','🥚 Kozmo Yumurta']];
+  const tabs=[['chests','🎁 Sandık'],['boosts','⚡ Boost'],['cosmetics','✨ Stil'],['frames','🖼️ Çerçeve'],['themes','🎨 Tema'],['eggs','🥚 Kozmo'],['bundles','💎 Paket']];
   box.innerHTML='';
   tabs.forEach(([id,label])=>{
     const b=document.createElement('button');
@@ -179,6 +280,14 @@ function renderShop(){
   const items=SHOP_ITEMS[_tab]||[];
   const st=Auth.getState(); const pl=Store.getState?Store.getState():{};
   box.innerHTML='';
+
+  // ── Aktif boost bandı (her sekmede üstte göster)
+  _renderActiveBoostBand(box);
+
+  if(_tab==='chests'){ renderChests(box, pl); return; }
+  if(_tab==='boosts'){ renderBoosts(box, pl); return; }
+  if(_tab==='cosmetics'){ renderCosmetics(box, pl); return; }
+  if(_tab==='bundles'){ renderBundles(box, pl); return; }
 
   if(_tab==='eggs'){
     const intro=document.createElement('div'); intro.className='shop-egg-info';
@@ -321,6 +430,274 @@ async function useItem(item){
     }
     renderShop();
   }catch(e){_toast('Uygulanamadı: '+(e.message||e));}
+}
+
+
+// ════════════ AKTİF BOOST BANDI ════════════
+function _renderActiveBoostBand(box){
+  try{
+    const boosts = Store.getActiveBoosts ? Store.getActiveBoosts() : [];
+    if(!boosts.length) return;
+    const band=document.createElement('div');
+    band.style.cssText='display:flex;gap:8px;flex-wrap:wrap;padding:9px 11px;margin-bottom:12px;border-radius:12px;background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(245,158,11,.06));border:1px solid rgba(251,191,36,.3)';
+    band.innerHTML='<div style="font-size:10px;font-weight:900;color:#fbbf24;width:100%;margin-bottom:2px">⚡ AKTİF BOOSTLAR</div>'
+      + boosts.map(b=>{
+          const mins=Math.ceil(b.remainMs/60000);
+          const tstr = mins>60 ? Math.floor(mins/60)+'s '+(mins%60)+'dk' : mins+' dk';
+          const tlabel = b.type==='xp'?'XP':b.type==='kaju'?'Kaju':'Tümü';
+          return '<span style="font-size:10px;font-weight:800;color:#fde68a;background:rgba(251,191,36,.15);padding:4px 9px;border-radius:14px">'
+            +'×'+b.mult+' '+tlabel+' · ⏳ '+tstr+'</span>';
+        }).join('');
+    box.appendChild(band);
+  }catch(e){}
+}
+
+// ════════════ 🎁 SANDIK RENDER ════════════
+function renderChests(box, pl){
+  const intro=document.createElement('div'); intro.className='shop-egg-info';
+  intro.innerHTML='<div class="clan-lbl" style="color:#ffd700;margin-bottom:5px">🎁 GİZEMLİ SANDIKLAR</div>'
+    +'<div style="font-size:10.5px;color:#9fb0d8;line-height:1.6">Sandık aç → sürpriz ödül kazan! Kaju, çerçeve, tema, yumurta veya boost çıkabilir. Pahalı sandık = daha iyi ödül şansı.</div>';
+  box.appendChild(intro);
+  const grid=document.createElement('div'); grid.className='shop-grid';
+  CHESTS.forEach(ch=>{
+    const canBuy=(pl.kaju||0)>=ch.price;
+    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',ch.color);
+    card.innerHTML='<div class="shop-unique-creature" style="font-size:48px">'+ch.icon+'</div>'
+      +'<div class="shop-unique-name" style="color:'+ch.color+'">'+esc(ch.name)+'</div>'
+      +'<div style="font-size:9px;color:#9fb0d8;margin:5px 0 9px;line-height:1.5">'+esc(ch.desc)+'</div>'
+      +'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(ch.price)+'</button>';
+    const btn=card.querySelector('button');
+    card.addEventListener('mouseenter',()=>ShopSfx.hover());
+    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} openChest(ch); });
+    grid.appendChild(card);
+  });
+  box.appendChild(grid);
+}
+
+// ════════════ ⚡ BOOST RENDER ════════════
+function renderBoosts(box, pl){
+  const intro=document.createElement('div'); intro.className='shop-egg-info';
+  intro.innerHTML='<div class="clan-lbl" style="color:#fbbf24;margin-bottom:5px">⚡ GÜÇLENDİRİCİLER</div>'
+    +'<div style="font-size:10.5px;color:#9fb0d8;line-height:1.6">Süreli boostlar tüm oyunlarda geçerli. Kozmo bonuslarıyla BİRLİKTE çalışır — çarpanlar çarpılır!</div>';
+  box.appendChild(intro);
+  const grid=document.createElement('div'); grid.className='shop-grid';
+  BOOSTS.forEach(b=>{
+    const canBuy=(pl.kaju||0)>=b.price;
+    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',b.color);
+    card.innerHTML='<div class="shop-unique-badge">'+(b.hours>=72?'⏳ '+(b.hours/24)+' GÜN':'⏳ '+b.hours+' SAAT')+'</div>'
+      +'<div class="shop-unique-creature" style="font-size:46px">'+b.icon+'</div>'
+      +'<div class="shop-unique-name" style="color:'+b.color+'">'+esc(b.name)+'</div>'
+      +'<div style="font-size:9px;color:#9fb0d8;margin:5px 0 9px;line-height:1.5">'+esc(b.desc)+'</div>'
+      +'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(b.price)+'</button>';
+    const btn=card.querySelector('button');
+    card.addEventListener('mouseenter',()=>ShopSfx.hover());
+    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} buyBoost(b); });
+    grid.appendChild(card);
+  });
+  box.appendChild(grid);
+}
+
+// ════════════ ✨ KOZMETİK RENDER ════════════
+function renderCosmetics(box, pl){
+  const intro=document.createElement('div'); intro.className='shop-egg-info';
+  intro.innerHTML='<div class="clan-lbl" style="color:#e879f9;margin-bottom:5px">✨ STİL & GÖRÜNÜM</div>'
+    +'<div style="font-size:10.5px;color:#9fb0d8;line-height:1.6">Nick efektleri, isim renkleri ve unvanlar. Sohbet ve liderlikte herkese görünür!</div>';
+  box.appendChild(intro);
+  const own = Store.getCosmetics ? Store.getCosmetics() : {};
+  const grid=document.createElement('div'); grid.className='shop-grid';
+  COSMETICS.forEach(cz=>{
+    const equipped = own[cz.ckey]===cz.cval;
+    const owned = (Store.getInventory&&Store.getInventory()['cz_'+cz.id]) || equipped;
+    const canBuy=(pl.kaju||0)>=cz.price;
+    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',cz.color);
+    // Nick efekti önizlemesi
+    let preview='';
+    if(cz.preview){ preview='<div class="cz-prev cz-'+cz.preview+'" style="font-size:15px;font-weight:900;margin:4px 0">İsim</div>'; }
+    else if(cz.ckey==='nameColor'){ preview='<div style="font-size:15px;font-weight:900;margin:4px 0;color:'+cz.cval+'">İsim</div>'; }
+    card.innerHTML='<div class="shop-unique-creature" style="font-size:36px">'+cz.icon+'</div>'
+      +preview
+      +'<div class="shop-unique-name" style="color:'+cz.color+';font-size:12px">'+esc(cz.name)+'</div>'
+      +'<div style="font-size:8px;color:#9fb0d8;margin:4px 0 8px;line-height:1.4">'+esc(cz.desc)+'</div>'
+      +(equipped
+        ?'<button class="shop-unique-btn" style="background:rgba(105,240,174,.15);color:#69F0AE">✓ Kullanımda</button>'
+        : owned
+          ?'<button class="shop-unique-btn" data-equip>Kullan</button>'
+          :'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(cz.price)+'</button>');
+    const btn=card.querySelector('button');
+    card.addEventListener('mouseenter',()=>ShopSfx.hover());
+    if(equipped){ /* nothing */ }
+    else if(owned){ btn.addEventListener('click',()=>equipCosmetic(cz)); }
+    else { btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} buyCosmetic(cz); }); }
+    grid.appendChild(card);
+  });
+  box.appendChild(grid);
+
+  // İşlevsel öğeler bölümü
+  const sep=document.createElement('div');
+  sep.innerHTML='<div class="clan-lbl" style="color:#60a5fa;margin:16px 0 8px">🛠️ İŞLEVSEL ÖĞELER</div>';
+  box.appendChild(sep);
+  const grid2=document.createElement('div'); grid2.className='shop-grid';
+  CONSUMABLES.forEach(it=>{
+    const have=(Store.getItemCount&&Store.getItemCount(it.id))||0;
+    const canBuy=(pl.kaju||0)>=it.price;
+    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',it.color);
+    card.innerHTML='<div class="shop-unique-creature" style="font-size:38px">'+it.icon+'</div>'
+      +'<div class="shop-unique-name" style="color:'+it.color+';font-size:12px">'+esc(it.name)+'</div>'
+      +(have?'<div style="font-size:9px;color:#69F0AE;font-weight:800;margin-top:2px">Elinde: '+have+'</div>':'')
+      +'<div style="font-size:8px;color:#9fb0d8;margin:4px 0 8px;line-height:1.4">'+esc(it.desc)+'</div>'
+      +'<button class="shop-unique-btn'+(canBuy?'':' locked')+'">🥜 '+fmt(it.price)+'</button>';
+    const btn=card.querySelector('button');
+    card.addEventListener('mouseenter',()=>ShopSfx.hover());
+    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} buyConsumable(it); });
+    grid2.appendChild(card);
+  });
+  box.appendChild(grid2);
+}
+
+// ════════════ 💎 BUNDLE RENDER ════════════
+function renderBundles(box, pl){
+  const intro=document.createElement('div'); intro.className='shop-egg-info';
+  intro.innerHTML='<div class="clan-lbl" style="color:#c084fc;margin-bottom:5px">💎 ÖZEL PAKETLER</div>'
+    +'<div style="font-size:10.5px;color:#9fb0d8;line-height:1.6">Birden fazla premium içerik tek fiyata — indirimli! Sınırlı süre değil, istediğinde al.</div>';
+  box.appendChild(intro);
+  BUNDLES.forEach(bd=>{
+    const canBuy=(pl.kaju||0)>=bd.price;
+    const save=bd.origPrice?Math.round((1-bd.price/bd.origPrice)*100):0;
+    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',bd.color);
+    card.style.marginBottom='12px';
+    card.innerHTML=(save?'<div class="shop-unique-badge" style="background:linear-gradient(90deg,#34d399,#10b981)">%'+save+' İNDİRİM</div>':'')
+      +'<div class="shop-unique-creature" style="font-size:50px">'+bd.icon+'</div>'
+      +'<div class="shop-unique-name" style="color:'+bd.color+'">'+esc(bd.name)+'</div>'
+      +'<div style="font-size:10px;color:#cbd5e1;margin:6px 0 9px;line-height:1.6">'+esc(bd.desc)+'</div>'
+      +(bd.origPrice?'<div style="font-size:11px;color:#7d8ab8;text-decoration:line-through;margin-bottom:3px">🥜 '+fmt(bd.origPrice)+'</div>':'')
+      +'<button class="shop-unique-btn'+(canBuy?'':' locked')+'" style="font-size:14px">🥜 '+fmt(bd.price)+'</button>';
+    const btn=card.querySelector('button');
+    card.addEventListener('mouseenter',()=>ShopSfx.hover());
+    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} buyBundle(bd); });
+    box.appendChild(card);
+  });
+}
+
+
+// ════════════ SATIN ALMA FONKSİYONLARI ════════════
+async function buyBoost(b){
+  const st=Auth.getState();
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  const ok=await Store.spendKaju(b.price,'shop','boost:'+b.id);
+  if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
+  ShopSfx.buy();
+  await Store.activateBoost(b.id, b.type, b.mult, b.hours*3600*1000);
+  _toast('⚡ '+b.name+' aktif! '+b.hours+' saat geçerli');
+  renderShop();
+}
+
+async function buyCosmetic(cz){
+  const st=Auth.getState();
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  const ok=await Store.spendKaju(cz.price,'shop','cosmetic:'+cz.id);
+  if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
+  ShopSfx.buy();
+  await Store.addItem('cz_'+cz.id, 1);     // sahiplik işareti
+  await Store.setCosmetic(cz.ckey, cz.cval); // direkt kuşan
+  _toast('✨ '+cz.name+' alındı ve kullanıma alındı!');
+  renderShop();
+}
+async function equipCosmetic(cz){
+  await Store.setCosmetic(cz.ckey, cz.cval);
+  ShopSfx.tap();
+  _toast('✨ '+cz.name+' kullanımda');
+  renderShop();
+}
+
+async function buyConsumable(it){
+  const st=Auth.getState();
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  const ok=await Store.spendKaju(it.price,'shop','item:'+it.id);
+  if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
+  ShopSfx.buy();
+  await Store.addItem(it.id, it.qty||1);
+  _toast('✓ '+it.name+' envantere eklendi');
+  renderShop();
+}
+
+// ── Sandık açma (animasyonlu sonuç) ──
+async function openChest(ch){
+  const st=Auth.getState();
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  const ok=await Store.spendKaju(ch.price,'shop','chest:'+ch.id);
+  if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
+  ShopSfx.buy();
+  // Ödül hesapla
+  const L=ch.loot;
+  const rewards=[];
+  // Kaju (her zaman)
+  const kaju=Math.floor(L.kajuMin + Math.random()*(L.kajuMax-L.kajuMin));
+  await Store.addKaju(kaju,'chest','Sandık ödülü');
+  rewards.push({icon:'🥜',label:fmt(kaju)+' Kaju',color:'#f59e0b'});
+  // Yumurta şansı
+  if(L.eggChance && Math.random()<L.eggChance){
+    try{ const kz=await import('./kozmos.js'); if(kz.grantEgg){ await kz.grantEgg(L.epicEgg?'epik':'nadir'); rewards.push({icon:'🥚',label:(L.epicEgg?'Epik':'Nadir')+' Yumurta',color:'#E040FB'}); } }catch(e){}
+  }
+  // Boost şansı
+  if(L.boostChance && Math.random()<L.boostChance){
+    await Store.activateBoost('chest_xp2','xp',2,24*3600*1000);
+    rewards.push({icon:'⭐',label:'2× XP (24s)',color:'#fbbf24'});
+  }
+  _showChestResult(ch, rewards);
+  renderShop();
+}
+
+function _showChestResult(ch, rewards){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(6px)';
+  const inn=document.createElement('div');
+  inn.style.cssText='background:linear-gradient(160deg,#1a1530,#0f0a20);border:2px solid '+ch.color+';border-radius:24px;padding:28px 24px;max-width:320px;width:88%;text-align:center;box-shadow:0 0 60px '+ch.color+'66';
+  inn.innerHTML='<div style="font-size:64px;animation:chestPop .6s cubic-bezier(.2,1.4,.4,1)">'+ch.icon+'</div>'
+    +'<div style="font-size:18px;font-weight:900;color:'+ch.color+';margin:6px 0 16px">🎉 Sandık Açıldı!</div>'
+    +'<div style="display:flex;flex-direction:column;gap:9px">'
+    + rewards.map((r,i)=>'<div style="display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1px solid '+r.color+'55;animation:chestReward .4s ease-out '+(i*0.15)+'s both"><span style="font-size:26px">'+r.icon+'</span><span style="font-size:15px;font-weight:800;color:'+r.color+'">'+r.label+'</span></div>').join('')
+    +'</div>'
+    +'<button id="chestOk" style="margin-top:18px;width:100%;padding:12px;border-radius:13px;border:none;cursor:pointer;font-size:14px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#ffd86b,#f0a500)">Harika!</button>';
+  ov.appendChild(inn); document.body.appendChild(ov);
+  if(!document.getElementById('chestAnimCSS')){
+    const s=document.createElement('style'); s.id='chestAnimCSS';
+    s.textContent='@keyframes chestPop{0%{transform:scale(0) rotate(-20deg)}100%{transform:scale(1) rotate(0)}}'
+      +'@keyframes chestReward{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}';
+    document.head.appendChild(s);
+  }
+  inn.querySelector('#chestOk').addEventListener('click',()=>{ ShopSfx.tap(); ov.remove(); });
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+
+// ── Bundle satın alma ──
+async function buyBundle(bd){
+  const st=Auth.getState();
+  if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  const ok=await Store.spendKaju(bd.price,'shop','bundle:'+bd.id);
+  if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
+  ShopSfx.buy();
+  const got=[];
+  for(const g of bd.grants){
+    try{
+      if(g.type==='egg'){ const kz=await import('./kozmos.js'); if(kz.grantEgg){ await kz.grantEgg(g.rarity); got.push((g.rarity||'')+' yumurta'); } }
+      else if(g.type==='boost'){ const b=BOOSTS.find(x=>x.id===g.boostId); if(b){ await Store.activateBoost(b.id,b.type,b.mult,b.hours*3600*1000); got.push(b.name); } }
+      else if(g.type==='kaju'){ await Store.addKaju(g.amount,'bundle','Paket Kaju'); got.push(fmt(g.amount)+' Kaju'); }
+      else if(g.type==='title'){ await Store.setCosmetic('title',g.title); got.push('"'+g.title+'" unvanı'); }
+      else if(g.type==='frame'||g.type==='theme'){
+        // rastgele bir çerçeve/tema ver
+        const pool=(g.type==='frame'?SHOP_ITEMS.frames:SHOP_ITEMS.themes).filter(x=>!x.free);
+        const pick=pool[Math.floor(Math.random()*pool.length)];
+        if(pick){ await Store.addItem(pick.id,1); got.push(pick.name); }
+      }
+      else if(g.type==='vip'){
+        // VIP: günlük kaju için işaret koy (daily.js okuyabilir)
+        await Store.setCosmetic('vip', JSON.stringify({until:Date.now()+g.days*86400000, daily:g.daily}));
+        got.push(g.days+' gün VIP');
+      }
+    }catch(e){ console.warn('bundle grant', e); }
+  }
+  _toast('🎆 '+bd.name+' alındı! ('+got.join(', ')+')');
+  renderShop();
 }
 
 async function buyEgg(item){

@@ -946,16 +946,19 @@ export default openKozmos;
 
 
 // ── 🥚 Kozmo yumurtası ver (çark/ödül kullanır) ──
-export async function grantEgg(){
+export async function grantEgg(rarity){
   const st = (window.Hero && window.Hero.Auth && window.Hero.Auth.getState) ? window.Hero.Auth.getState() : null;
   if(!st || !st.uid) return false;
   try{
+    // Türkçe rarity → İngilizce minRarity eşlemesi (sandık/paket garantisi)
+    const rmap = { 'nadir':'rare', 'epik':'epic', 'efsanevi':'legendary', 'mitolojik':'mythical' };
+    const minR = rarity ? (rmap[rarity] || rarity) : null;
     const id = 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
     const seed = (Math.random()*0x7fffffff)|0;
-    const type = randomType(seed);
+    const type = randomType(seed, minR);
     await fdb.set(fdb.ref(db, 'kozmos/'+st.uid+'/eggs/'+id), {
       id, type, acceptedAt: Date.now(), feedCount: 0, ownerId: st.uid,
-      source: 'spin'
+      source: 'shop'
     });
     return true;
   }catch(e){ console.warn('[kozmo] grantEgg', e); return false; }

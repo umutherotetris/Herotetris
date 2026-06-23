@@ -98,8 +98,12 @@ function hydrate(state){
   player.totalXP = Number((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
   player.best    = p.bestScores || {};
   player.kajuSent = p.kajuSent || {};
+  player.inventory = p.inventory || {};      // {itemId: adet}
+  player.boosts = p.boosts || {};            // {boostKey: {until:ts, mult:val}}
+  player.cosmetics = p.cosmetics || {};      // {nickEffect, chatTheme, nameColor, title...}
   player.kajuToday = loadKajuToday();
   player.ready   = true;
+  _pruneExpiredBoosts();
   emit();
   // Bekleyen transferleri talep et (alıcıya gelen Kaju'lar)
   claimPendingTransfers();
@@ -148,6 +152,7 @@ export async function addKaju(n, game, reason){
   if(n <= 0 || !player.uid) return 0;
   // ⚡ Aktif kozmo Kaju bonusu (varsa kazanımı çarpar)
   n = _applyKozmoBonus(n, 'kaju_boost');
+  n = Math.round(n * getBoostMult('kaju'));    // satın alınan Kaju boost'u
   const isAdmin = Auth.getState().isAdmin === true;
   if(!isAdmin){
     const remaining = KAJU_DAILY_LIMIT - player.kajuToday;
@@ -196,12 +201,104 @@ export async function spendKaju(amount, game, reason){
   return true;
 }
 
+
+
+// ════════════ 📦 ENVANTER & BOOST SİSTEMİ ════════════
+function _pruneExpiredBoosts(){
+  if(!player.boosts) return;
+  const now = Date.now();
+  let changed = false;
+  for(const k of Object.keys(player.boosts)){
+    const b = player.boosts[k];
+    if(b && b.until && b.until < now){ delete player.boosts[k]; changed = true; }
+  }
+  if(changed && player.uid){
+    try{ update(ref(db,'users/'+player.uid), { boosts: player.boosts }); }catch(e){}
+  }
+}
+
+// Aktif boost çarpanı (kozmo bonusuyla ÇARPILIR — ikisi birlikte çalışır)
+export function getBoostMult(type){
+  _pruneExpiredBoosts();
+  if(!player.boosts) return 1;
+  const now = Date.now();
+  let mult = 1;
+  for(const k of Object.keys(player.boosts)){
+    const b = player.boosts[k];
+    if(!b || (b.until && b.until < now)) continue;
+    if(b.type === type || b.type === 'all') mult *= (b.mult || 1);
+  }
+  return mult;
+}
+
+// Boost aktifleştir (süreli). durationMs sonra otomatik biter.
+export async function activateBoost(key, type, mult, durationMs){
+  if(!player.uid) return false;
+  const until = Date.now() + durationMs;
+  player.boosts = player.boosts || {};
+  player.boosts[key] = { type, mult, until };
+  emit();
+  try{ await update(ref(db,'users/'+player.uid), { boosts: player.boosts }); }catch(e){}
+  return true;
+}
+
+// Aktif boost listesi (UI için)
+export function getActiveBoosts(){
+  _pruneExpiredBoosts();
+  const now = Date.now();
+  const out = [];
+  for(const k of Object.keys(player.boosts||{})){
+    const b = player.boosts[k];
+    if(b && (!b.until || b.until > now)) out.push({ key:k, ...b, remainMs: b.until ? b.until-now : 0 });
+  }
+  return out;
+}
+
+// Envantere ürün ekle
+export async function addItem(itemId, qty){
+  if(!player.uid) return false;
+  qty = qty || 1;
+  player.inventory = player.inventory || {};
+  player.inventory[itemId] = (player.inventory[itemId] || 0) + qty;
+  emit();
+  try{ await update(ref(db,'users/'+player.uid), { inventory: player.inventory }); }catch(e){}
+  return true;
+}
+
+// Envanterden ürün kullan (1 azalt)
+export async function useItem(itemId){
+  if(!player.uid || !player.inventory || !player.inventory[itemId]) return false;
+  player.inventory[itemId]--;
+  if(player.inventory[itemId] <= 0) delete player.inventory[itemId];
+  emit();
+  try{ await update(ref(db,'users/'+player.uid), { inventory: player.inventory }); }catch(e){}
+  return true;
+}
+
+export function getItemCount(itemId){ return (player.inventory && player.inventory[itemId]) || 0; }
+export function getInventory(){ return Object.assign({}, player.inventory||{}); }
+
+// Kozmetik ayarla (nick efekti, sohbet teması, unvan vb.)
+export async function setCosmetic(key, value){
+  if(!player.uid) return false;
+  player.cosmetics = player.cosmetics || {};
+  if(value === null || value === undefined) delete player.cosmetics[key];
+  else player.cosmetics[key] = value;
+  emit();
+  try{ await update(ref(db,'users/'+player.uid), { cosmetics: player.cosmetics }); }catch(e){}
+  return true;
+}
+export function getCosmetic(key){ return player.cosmetics && player.cosmetics[key]; }
+export function getCosmetics(){ return Object.assign({}, player.cosmetics||{}); }
+
+
 // ── XP ekle (seviye atlama dahil) ───────────────────────────────
 export async function addXP(n){
   n = Math.floor(n || 0);
   if(n <= 0 || !player.uid) return false;
   // ⚡ Aktif kozmo XP bonusu
   n = _applyKozmoBonus(n, 'xp_boost');
+  n = Math.round(n * getBoostMult('xp'));      // satın alınan XP boost'u
   player.xp += n; player.totalXP += n;
   let leveled = false, needed = xpForLevel(player.level);
   while(player.xp >= needed){ player.xp -= needed; player.level++; needed = xpForLevel(player.level); leveled = true; }
@@ -387,5 +484,5 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju };
+export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics };
 export default Store;

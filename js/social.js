@@ -89,6 +89,41 @@ function _injectMsgCSS(){
 
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ════════════ ✨ KOZMETİK GÖSTERİM (nick efekti / renk / unvan) ════════════
+function _nickClass(cz){
+  if(!cz || !cz.nickEffect) return '';
+  return 'cz-nick-' + cz.nickEffect;   // cz-nick-flame, cz-nick-neon, ...
+}
+function _nickStyle(cz){
+  if(cz && cz.nameColor && !cz.nickEffect) return 'color:'+cz.nameColor;
+  return '';
+}
+function _titleBadge(cz){
+  if(!cz || !cz.title) return '';
+  return '<span class="cz-title-badge">'+esc(cz.title)+'</span>';
+}
+// Mesaja gömülü kozmetik objesini çıkar
+function _czOf(m){
+  if(!m) return null;
+  return { nickEffect:m.nickEffect||null, nameColor:m.nameColor||null, title:m.title||null };
+}
+function _injectCosmeticCSS(){
+  if(document.getElementById('czNickCSS')) return;
+  const s=document.createElement('style'); s.id='czNickCSS';
+  s.textContent=`
+    .cz-nick-flame{ background:linear-gradient(90deg,#ff6b35,#ffd700,#ff6b35); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlameAnim 2s linear infinite; }
+    @keyframes czFlameAnim{ to{ background-position:200% center; } }
+    .cz-nick-neon{ color:#22d3ee !important; text-shadow:0 0 5px #22d3ee,0 0 10px #22d3ee; animation:czNeonAnim 1.5s ease-in-out infinite; }
+    @keyframes czNeonAnim{ 0%,100%{ opacity:1; } 50%{ opacity:.65; } }
+    .cz-nick-rainbow{ background:linear-gradient(90deg,#ff0000,#ff9900,#ffff00,#33ff00,#00ffff,#3333ff,#cc00ff,#ff0000); background-size:300% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czRainbowAnim 3s linear infinite; }
+    @keyframes czRainbowAnim{ to{ background-position:300% center; } }
+    .cz-nick-gold{ background:linear-gradient(90deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlameAnim 2.5s linear infinite; }
+    .cz-title-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:.3px; padding:1px 6px; margin-left:4px; border-radius:8px; background:linear-gradient(90deg,#ffd86b,#f0a500); color:#1a1208; vertical-align:middle; }
+  `;
+  document.head.appendChild(s);
+}
+
 const tAgo = (ts) => { const d = Date.now()-ts; if(d<60e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk'; if(d<86400e3) return Math.floor(d/3600e3)+' sa'; return Math.floor(d/86400e3)+' g'; };
 
 let H = null;   // hub durumu
@@ -141,12 +176,17 @@ export async function openPlayerCard(uid){
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
+  _injectCosmeticCSS();
+  const pcz = p.cosmetics || {};
+  const pczCls = (!isAdm) ? _nickClass(pcz) : '';
+  const pczStyle = (!isAdm) ? _nickStyle(pcz) : '';
+  const pczTitle = _titleBadge(pcz);
   ov.querySelector('.pcp-card').innerHTML = `
     <div class="pcp-top">
       <div class="pcp-ava">${avatarOf(p, uid)}${online ? '<span class="pcp-dot"></span>' : ''}</div>
       <div class="pcp-id">
-        <div class="pcp-name ${isAdm ? glowClass() : ''}" style="${isAdm?'color:#FFD740':''}">${esc(nick)}
-          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN 👑</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}
+        <div class="pcp-name ${isAdm ? glowClass() : pczCls}" style="${isAdm?'color:#FFD740':pczStyle}">${esc(nick)}
+          ${isAdm?'<span class="chat-admin-badge">👑 ADMİN 👑</span>':''}${isOp?'<span class="chat-op-badge">🔧 OP</span>':''}${p.isVice?'<span class="chat-op-badge" style="color:#FFD740;border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.1)">⭐ VICE</span>':''}${pczTitle}
         </div>
         <div class="pcp-sub">${online ? '<b style="color:#69F0AE">● Çevrimiçi</b>' : (pr.lastSeen ? tAgo(pr.lastSeen) + ' önce görüldü' : 'Çevrimdışı')}</div>
       </div>
@@ -574,6 +614,7 @@ function markTabSeen(tab){
 
 // ════════════ 🏆 LİDERLİK ════════════
 async function renderLeaderboard(mode){
+  _injectCosmeticCSS();
   H.lbMode = mode || 'xp';
   const list = byId('ghpLbList'); if(!list) return;
   document.querySelectorAll('.ghp-lb-tab').forEach(b => {
@@ -592,7 +633,7 @@ async function renderLeaderboard(mode){
         const v = ch.val() || {};
         const xObj = v.xp;
         const xp = (xObj && typeof xObj==='object') ? (xObj.totalXP ?? xObj.xp ?? 0) : (v.totalXP ?? xObj ?? 0);
-        users.push({ uid: ch.key, nick: v.nick || v.name || 'Oyuncu', level: Number(v.level||1), xp: Number(xp)||0, avatar: avatarOf(v, ch.key), isAdmin: v.isAdmin===true||(H.admins&&H.admins[ch.key]) });
+        users.push({ uid: ch.key, nick: v.nick || v.name || 'Oyuncu', level: Number(v.level||1), xp: Number(xp)||0, avatar: avatarOf(v, ch.key), isAdmin: v.isAdmin===true||(H.admins&&H.admins[ch.key]), cz: v.cosmetics||null });
       });
     }
   }catch(e){ console.warn('lb', e); }
@@ -605,7 +646,9 @@ async function renderLeaderboard(mode){
     const isMe = u.uid===me2;
     const nameCol = u.isAdmin?'#FFD740':(isMe?'#00E5FF':'#cdd');
     const admB = u.isAdmin?'<span style="font-size:9px;background:rgba(255,215,64,.2);border:1px solid rgba(255,215,64,.4);border-radius:4px;padding:0 3px;margin-left:3px;color:#FFD740">👑</span>':'';
-    return `<div data-pclb="${esc(u.uid)}" style="display:flex;align-items:center;gap:9px;padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;${isMe?'background:rgba(0,229,255,.06)':''}"><div style="width:26px;text-align:center;flex-shrink:0">${medal(i)}</div><div style="width:30px;height:30px;border-radius:50%;background:rgba(30,30,60,.7);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${esc(u.avatar)}</div><div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:700;color:${nameCol}">${esc(u.nick)}${admB}${isMe?' <span style="font-size:9px;color:#00E5FF">(sen)</span>':''}</div><div style="font-size:12px;font-weight:800;color:#FFD740;flex-shrink:0">${val}</div></div>`;
+    const lcz=u.cz||{}; const lczCls=_nickClass(lcz); const lczStyle=_nickStyle(lcz); const lczTitle=_titleBadge(lcz);
+    const nameStyle = (lczStyle && !u.isAdmin) ? lczStyle : ('color:'+nameCol);
+    return `<div data-pclb="${esc(u.uid)}" style="display:flex;align-items:center;gap:9px;padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;${isMe?'background:rgba(0,229,255,.06)':''}"><div style="width:26px;text-align:center;flex-shrink:0">${medal(i)}</div><div style="width:30px;height:30px;border-radius:50%;background:rgba(30,30,60,.7);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${esc(u.avatar)}</div><div class="${u.isAdmin?'':lczCls}" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:700;${nameStyle}">${esc(u.nick)}${admB}${lczTitle}${isMe?' <span style="font-size:9px;color:#00E5FF">(sen)</span>':''}</div><div style="font-size:12px;font-weight:800;color:#FFD740;flex-shrink:0">${val}</div></div>`;
   }).join('');
   list.querySelectorAll('[data-pclb]').forEach(el=>el.addEventListener('click',()=>openPlayerCard(el.dataset.pclb)));
 }
@@ -636,6 +679,7 @@ function listenChatLock(){
 
 // ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
 function listenChat(){
+  _injectCosmeticCSS();
   const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
   H.offChat = fdb.onValue(ref, (snap) => {
     const list = byId('ghpChatList'); if(!list) return;
@@ -654,10 +698,12 @@ function listenChat(){
       const adm=m.isAdmin===true||(H.admins&&H.admins[m.uid]);
       const op=!adm&&H.ops&&H.ops[m.uid]===true;
       const isMine=m.uid===me;
+      const cz=_czOf(m);
+      const czCls=_nickClass(cz), czStyle=_nickStyle(cz), czTitle=_titleBadge(cz);
       const nameHtml=adm
-        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name||'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>`
-        : op ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name||'Oyuncu')}</span>`
-             : `<span class="ghp-chat-name" style="color:${isMine?'#00E5FF':'#A78BFA'}">${esc(m.name||'Oyuncu')}</span>`;
+        ? `<span class="chat-admin-badge">👑</span><span class="ghp-chat-name ${gcl}" style="color:#FFD740">${esc(m.name||'Admin')}</span><span class="chat-admin-badge" style="margin-left:2px">👑</span>${czTitle}`
+        : op ? `<span class="chat-op-badge">🔧 OP</span><span class="ghp-chat-name" style="color:#CE93D8">${esc(m.name||'Oyuncu')}</span>${czTitle}`
+             : `<span class="ghp-chat-name ${czCls}" style="${czStyle||('color:'+(isMine?'#00E5FF':'#A78BFA'))}">${esc(m.name||'Oyuncu')}</span>${czTitle}`;
       const txt=m.deleted?'<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>':esc(m.text);
       return `
       <div class="ghp-chat-row${isMine?' mine':''}${adm?' ghp-adm':''}" data-ckey="${m._key}">
@@ -689,6 +735,13 @@ async function sendChat(){
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
     const av = st.profile && st.profile.avatar; if(av) m.avatar = av;
     if(st.isAdmin === true) m.isAdmin = true;
+    // ✨ Kozmetikleri göm (nick efekti / renk / unvan)
+    try{
+      const cz = (st.profile && st.profile.cosmetics) || {};
+      if(cz.nickEffect) m.nickEffect = cz.nickEffect;
+      if(cz.nameColor)  m.nameColor  = cz.nameColor;
+      if(cz.title)      m.title      = cz.title;
+    }catch(e){}
     await fdb.push(fdb.ref(db, 'globalChat'), m);
   }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
 }
