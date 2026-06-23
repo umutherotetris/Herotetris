@@ -1635,8 +1635,9 @@ async function endGameAI(){
   const isDraw = a === b;
   // Pes edildiyse ödül yok; aksi halde sonuca göre ödül (AI'ya DEĞİL, oyuncuya)
   if(!G._resigned){
-    const klKaju = playerWon ? 70 : isDraw ? 30 : 10;
-    const klXp   = playerWon ? 50 : isDraw ? 20 : 15;
+    let klKaju = playerWon ? 70 : isDraw ? 30 : 10;
+    let klXp   = playerWon ? 50 : isDraw ? 20 : 15;
+    try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ klKaju=Math.round(klKaju*m); klXp=Math.round(klXp*m); } } }catch(e){}
     try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
     if(playerWon){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
     saveRecordsIfBetter();
@@ -1794,8 +1795,9 @@ async function endGame(){
   const myScore = G.state.scores[myRole];
   const oppScore = G.state.scores[myRole==='A'?'B':'A'];
   const playerWon = myScore > oppScore;
-  const klKaju = playerWon ? 70 : a===b ? 30 : 10;
-  const klXp = playerWon ? 50 : a===b ? 20 : 15;
+  let klKaju = playerWon ? 70 : a===b ? 30 : 10;
+  let klXp = playerWon ? 50 : a===b ? 20 : 15;
+  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ klKaju=Math.round(klKaju*m); klXp=Math.round(klXp*m); } } }catch(e){}
   try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
   if(a!==b){ sndWin(); confetti(); } else sndLose();
   try{

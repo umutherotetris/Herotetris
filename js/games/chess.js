@@ -1248,7 +1248,8 @@ function applyAndContinue(mv, isCapture){
 
 async function onGameEndDraw(){
   Resume.clearSnapshot('chess');
-  const kaju = 40, xp = 30;
+  let kaju = 40, xp = 30;
+  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ kaju=Math.round(kaju*m); xp=Math.round(xp*m); } } }catch(e){}
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
@@ -1262,8 +1263,9 @@ async function onGameEndDraw(){
 async function onGameEnd(playerWon){
   Resume.clearSnapshot('chess');
   const won = playerWon === true;
-  const kaju = won ? 80 : 20;
-  const xp = won ? 60 : 25;
+  let kaju = won ? 80 : 20;
+  let xp = won ? 60 : 25;
+  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ kaju=Math.round(kaju*m); xp=Math.round(xp*m); } } }catch(e){}
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
