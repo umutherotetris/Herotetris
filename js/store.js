@@ -107,6 +107,37 @@ function hydrate(state){
 Auth.subscribe(hydrate);
 
 // ── Kaju ekle (günlük limitli, admin sınırsız) ──────────────────
+// ⚡ Aktif kozmo bonus çarpanı (localStorage'dan senkron okur — import gecikmesi yok)
+function _kozmoMult(type){
+  try{
+    const raw = localStorage.getItem('hero_active_kozmo');
+    if(!raw) return 1;
+    const a = JSON.parse(raw);
+    if(!a || !a.power) return 1;
+    // Bonus tablosu (kozmos.js KOZMO_POWERS ile eşleşir)
+    const P = {
+      'Yıldız Tozu Saçar':['xp_boost',0.05],'Alev Püskürtür':['score_boost',0.05],
+      'Alev Saçar':['score_boost',0.08],'Şans Getirir':['wheel_luck',1],
+      'Bulut Çağırır':['kaju_boost',0.05],'Yıldırım Düşürür':['score_boost',0.07],
+      'Işık Kırar':['xp_boost',0.06],'Üç Kuyruk Sallar':['kaju_boost',0.06],
+      'Işık Saçar':['xp_boost',0.07],'Okyanus Dalgası':['score_boost',0.06],
+      'Şimşek Hızı':['xp_boost',0.10],'Işık Patlatır':['allboost',0.08],
+      'Gelgit Çağırır':['kaju_boost',0.08],'Renk Cümbüşü':['allboost',0.05],
+      'Karanlığı Yutar':['score_boost',0.10],
+    };
+    const e = P[a.power];
+    if(!e) return 1;
+    const [key,val] = e;
+    if(key === type) return 1 + val;
+    if(key === 'allboost' && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + val;
+    return 1;
+  }catch(e){ return 1; }
+}
+function _applyKozmoBonus(n, type){
+  const m = _kozmoMult(type);
+  return m > 1 ? Math.round(n * m) : n;
+}
+
 export async function addKaju(n, game, reason){
   // Kaju kazanım sesi
   if(n>0){try{import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});}catch(e){}}
@@ -115,6 +146,8 @@ export async function addKaju(n, game, reason){
   // Negatif → harcama olarak işle (geriye uyumluluk: shop.js addKaju(-price) çağırıyor)
   if(n < 0){ const ok = await spendKaju(-n, game, reason); return ok ? n : 0; }
   if(n <= 0 || !player.uid) return 0;
+  // ⚡ Aktif kozmo Kaju bonusu (varsa kazanımı çarpar)
+  n = _applyKozmoBonus(n, 'kaju_boost');
   const isAdmin = Auth.getState().isAdmin === true;
   if(!isAdmin){
     const remaining = KAJU_DAILY_LIMIT - player.kajuToday;
@@ -167,6 +200,8 @@ export async function spendKaju(amount, game, reason){
 export async function addXP(n){
   n = Math.floor(n || 0);
   if(n <= 0 || !player.uid) return false;
+  // ⚡ Aktif kozmo XP bonusu
+  n = _applyKozmoBonus(n, 'xp_boost');
   player.xp += n; player.totalXP += n;
   let leveled = false, needed = xpForLevel(player.level);
   while(player.xp >= needed){ player.xp -= needed; player.level++; needed = xpForLevel(player.level); leveled = true; }

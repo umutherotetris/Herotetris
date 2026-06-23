@@ -55,14 +55,14 @@ const BG_MAP={
 const UNIQUE_KOZMOS=[
   // ── EFSANEVI ──
   {id:'uniq_aurora',  name:'Kutup Dansçısı',    icon:'🌠',color:'#f0a0f8',price:35000, rarity:'legendary', element:'Aurora',  power:'Renk Cümbüşü',     desc:'Kuzey ışıklarıyla dans eden efsanevi yaratık. Tek nüsha.'},
-  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, rarity:'legendary', element:'Ateş',    power:'Küllerden Doğar',  desc:'Ateşin içinden çıkan güçlü bir kanat. Koleksiyonda yalnızca bu kopya.'},
+  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, rarity:'legendary', element:'Ateş',    power:'Alev Saçar',       desc:'Ateş renkli görkemli kanatlara sahip nadir bir kuş. Koleksiyonda yalnızca bu kopya.'},
   {id:'uniq_leviathan',name:'Derin Leviathan',  icon:'🐋',color:'#22d3ee',price:40000, rarity:'legendary', element:'Okyanus', power:'Gelgit Çağırır',   desc:'Okyanusun en derininde uyuyan kadim dev. Eşi benzeri yok.'},
-  {id:'uniq_seraph',  name:'Işık Kanadı',       icon:'😇',color:'#fde68a',price:42000, rarity:'legendary', element:'Kutsal',  power:'Şifa Dağıtır',     desc:'Yıldızlararası ışıktan örülmüş kanatlı muhafız.'},
+  {id:'uniq_lumina',  name:'Işıltı Kuşu',       icon:'🕊️',color:'#fde68a',price:42000, rarity:'legendary', element:'Işık',    power:'Işık Saçar',       desc:'Parlak altın tüylere sahip zarif bir ışık kuşu. Tek nüsha.'},
   // ── MITOLOJIK ──
   {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, rarity:'mythical',  element:'Kozmos',  power:'Yıldız Tozu Saçar',desc:'Uzak galaksilerin gizemli yaratığı. Tek üretim, koleksiyonluk.'},
   {id:'uniq_void',    name:'Karanlık Ejder',    icon:'🐉',color:'#00ffc8',price:50000, rarity:'mythical',  element:'Boşluk',  power:'Karanlığı Yutar',  desc:'Karanlık bölgelerin nadir sakinlerinden. Ultra nadir, benzersiz baskı.'},
-  {id:'uniq_chronos', name:'Zaman Gezgini',     icon:'⏳',color:'#a3e635',price:60000, rarity:'mythical',  element:'Zaman',   power:'Zamanı Büker',     desc:'Geçmiş ve geleceği aynı anda gören efsane. Evrende tek.'},
-  {id:'uniq_cosmos',  name:'Evren Çekirdeği',   icon:'🌀',color:'#e879f9',price:75000, rarity:'mythical',  element:'Sonsuzluk',power:'Galaksi Doğurur', desc:'Bir evrenin tüm enerjisini içinde taşıyan efsanelerin efsanesi.'},
+  {id:'uniq_swift',   name:'Hız Gezgini',       icon:'💫',color:'#a3e635',price:60000, rarity:'mythical',  element:'Hız',     power:'Şimşek Hızı',      desc:'Göz açıp kapayana dek yer değiştiren çevik bir yaratık. Tek üretim.'},
+  {id:'uniq_nova',    name:'Nova Çekirdeği',    icon:'🌀',color:'#e879f9',price:75000, rarity:'mythical',  element:'Enerji',  power:'Işık Patlatır',    desc:'İçinde muazzam parlak enerji barındıran nadir bir çekirdek. En değerli koleksiyon parçası.'},
 ];
 
 let _inv={}, _tab='frames';

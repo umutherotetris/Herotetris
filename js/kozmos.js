@@ -117,13 +117,13 @@ const TYPES={
   kristal_boc:  {n:'Kristal Böcek', e:'🦋',c:'#67e8f9',c1:'#a5f3fc',c2:'#0891b2',acc:'#cffafe',r:'rare',
                  shape:'beetle', element:'Kristal', power:'Işık Kırar',        sound:'crystal',particle:'crystals',desc:'Işıltılı kanatların sahibi'},
   nova_kitsune: {n:'Nova Kitsune', e:'🦊',c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#f3e8ff',r:'rare',
-                 shape:'kitsune',element:'Ruh',     power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'spirits', desc:'Üç kuyruklu gizemli ruh tilkisi'},
+                 shape:'kitsune',element:'Gizem',   power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'sparkles',desc:'Üç kuyruklu çevik ve gizemli tilki'},
   kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',c1:'#fbcfe8',c2:'#db2777',acc:'#fdf2f8',r:'epic',
                  shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Yaratır', sound:'magical',particle:'rainbow', desc:'Evrenin büyülü tek boynuzlusu'},
   derin_ejder:  {n:'Derin Ejder',   e:'🐲',c:'#00ffc8',c1:'#5eead4',c2:'#0d9488',acc:'#ccfbf1',r:'legendary',
                  shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin kadim ejderhası'},
   peri_ruhu:    {n:'Peri Kelebeği', e:'🧚',c:'#ffb8ff',c1:'#fbcfe8',c2:'#e879f9',acc:'#fdf4ff',r:'mythical',
-                 shape:'fairy',  element:'Işık',    power:'Dilek Tutturur',    sound:'fairy',  particle:'sparkles',desc:'Işığın saf periler kraliçesi'},
+                 shape:'fairy',  element:'Işık',    power:'Işık Saçar',        sound:'fairy',  particle:'sparkles',desc:'Parlak ışıltılar saçan zarif kelebek perisi'},
 };
 const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff'};
 const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Efsanevi',mythical:'Mitolojik'};
@@ -158,7 +158,7 @@ const MERGE_TABLE={
 };
 // Tabloda olmayan kombinasyonlar → benzersiz füzyon yaratıkları
 const FUSION_TYPES=[
-  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Doğurur',  sound:'epic',   particle:'galaxy',  desc:'İki ruhun kozmik birleşimi'},
+  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Işık Saçar',       sound:'epic',   particle:'galaxy',  desc:'İki kozmonun parlak birleşimi'},
   {key:'fusion_void',    name:'Void Birliği',    e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Boşluk',  power:'Karanlığı Yutar',  sound:'mystic', particle:'void',    desc:'Boşluğun kara enerjisi'},
   {key:'fusion_cosmic',  name:'Kozmik Fırtına',  e:'⚡',c:'#fbbf24',c1:'#fde047',c2:'#d97706',acc:'#fef9c3',r:'epic',     shape:'storm',  element:'Enerji',  power:'Enerji Patlatır',  sound:'epic',   particle:'energy',  desc:'Saf enerjinin fırtınası'},
   {key:'fusion_aurora',  name:'Aurora Dansı',    e:'🌈',c:'#f9a8d4',c1:'#fbcfe8',c2:'#db2777',acc:'#fce7f3',r:'legendary',shape:'aurora', element:'Aurora',  power:'Renk Cümbüşü',     sound:'magical',particle:'aurora',  desc:'Kuzey ışıklarının dansı'},
@@ -405,7 +405,7 @@ export function ensureUniqueCSS(){
 
 // ── Element ikonu ──
 function elementIcon(el){
-  const m={'Yıldız':'⭐','Ateş':'🔥','Doğa':'🌿','Hava':'💨','Şimşek':'⚡','Kristal':'💎','Ruh':'👻','Gökkuşağı':'🌈','Derinlik':'🌊','Işık':'✨','Kozmos':'🌌','Boşluk':'🕳️','Enerji':'⚡','Aurora':'🌈','Elmas':'💠'};
+  const m={'Yıldız':'⭐','Ateş':'🔥','Doğa':'🌿','Hava':'💨','Şimşek':'⚡','Kristal':'💎','Gizem':'🔮','Gökkuşağı':'🌈','Derinlik':'🌊','Işık':'✨','Kozmos':'🌌','Boşluk':'🕳️','Enerji':'⚡','Aurora':'🌈','Elmas':'💠','Okyanus':'🌊','Hız':'💨','Zaman':'⏳','Sonsuzluk':'♾️'};
   return m[el]||'✨';
 }
 
@@ -473,12 +473,97 @@ function showCreatureDetail(c,t,rc){
       +'<div class="koz-stat"><span class="koz-stat-ico">⭐</span><span class="koz-stat-lbl">Seviye</span><span class="koz-stat-val">LV '+(c.level||1)+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">💝</span><span class="koz-stat-lbl">Kaynak</span><span class="koz-stat-val">'+esc(c.fromName||'Mağaza')+'</span></div>'
     +'</div>'
+    +(()=>{
+        const pw = c.power || t.power;
+        const bonus = pw && KOZMO_POWERS[pw];
+        if(!bonus) return '';
+        const active = isActiveKozmo(c,t);
+        return '<div class="koz-bonus-box" style="margin:10px 0;padding:9px 11px;border-radius:12px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3)">'
+          +'<div style="font-size:11px;font-weight:900;color:#c084fc;margin-bottom:3px">'+bonus.icon+' '+esc(bonus.label)+'</div>'
+          +'<div style="font-size:9.5px;color:#9fb0d8;line-height:1.5">'+esc(bonus.desc)+'</div>'
+          +'<button class="koz-activate-btn" id="kozActivate" style="margin-top:8px;width:100%;padding:9px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-weight:900;'
+            +(active
+              ?'background:rgba(105,240,174,.15);color:#69F0AE;border:1px solid rgba(105,240,174,.4)">✓ Aktif Bonus'
+              :'background:linear-gradient(135deg,#E040FB,#7C4DFF);color:#fff">⚡ Bonusu Aktif Et')
+          +'</button></div>';
+      })()
     +'<button class="koz-detail-sound" id="kozPlaySound">🔊 Sesini Dinle</button>'
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="kozDetClose">Kapat</button></div>';
   ov.appendChild(inn); document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#kozDetClose').addEventListener('click',()=>ov.remove());
   inn.querySelector('#kozPlaySound').addEventListener('click',()=>creatureSound(t.sound));
+  const actBtn = inn.querySelector('#kozActivate');
+  if(actBtn) actBtn.addEventListener('click',()=>{
+    if(isActiveKozmo(c,t)){ _toast('Bu kozmo zaten aktif'); return; }
+    if(setActiveKozmo(c,t)){ ov.remove(); }
+  });
+}
+
+
+// ════════════ ⚡ KOZMO YETENEK BONUS SİSTEMİ ════════════
+// Tamamen oyunsal/mekanik bonuslar — her aktif kozmo bir avantaj verir.
+// power metni → bonus tanımı. Dini/manevi içerik yoktur, sadece oyun avantajı.
+export const KOZMO_POWERS = {
+  'Yıldız Tozu Saçar':{key:'xp_boost',    val:0.05, icon:'✨', label:'+%5 XP', desc:'Tüm oyunlarda kazandığın XP %5 artar'},
+  'Alev Püskürtür':   {key:'score_boost', val:0.05, icon:'🔥', label:'+%5 Skor',desc:'Oyun skorların %5 artar'},
+  'Alev Saçar':       {key:'score_boost', val:0.08, icon:'🔥', label:'+%8 Skor',desc:'Oyun skorların %8 artar'},
+  'Şans Getirir':     {key:'wheel_luck',  val:1,    icon:'🍀', label:'Çark Şansı',desc:'Günlük çarkta daha iyi ödül şansı'},
+  'Bulut Çağırır':    {key:'kaju_boost',  val:0.05, icon:'☁️', label:'+%5 Kaju', desc:'Kazandığın Kaju %5 artar'},
+  'Yıldırım Düşürür': {key:'score_boost', val:0.07, icon:'⚡', label:'+%7 Skor',desc:'Oyun skorların %7 artar'},
+  'Işık Kırar':       {key:'xp_boost',    val:0.06, icon:'💎', label:'+%6 XP', desc:'Kazandığın XP %6 artar'},
+  'Üç Kuyruk Sallar': {key:'kaju_boost',  val:0.06, icon:'🔮', label:'+%6 Kaju', desc:'Kazandığın Kaju %6 artar'},
+  'Işık Saçar':       {key:'xp_boost',    val:0.07, icon:'✨', label:'+%7 XP', desc:'Kazandığın XP %7 artar'},
+  'Okyanus Dalgası':  {key:'score_boost', val:0.06, icon:'🌊', label:'+%6 Skor',desc:'Oyun skorların %6 artar'},
+  'Şimşek Hızı':      {key:'xp_boost',    val:0.10, icon:'💫', label:'+%10 XP',desc:'Kazandığın XP %10 artar'},
+  'Işık Patlatır':    {key:'allboost',    val:0.08, icon:'🌀', label:'+%8 Her Şey',desc:'XP, Skor ve Kaju %8 artar'},
+  'Gelgit Çağırır':   {key:'kaju_boost',  val:0.08, icon:'🌊', label:'+%8 Kaju', desc:'Kazandığın Kaju %8 artar'},
+  'Renk Cümbüşü':     {key:'allboost',    val:0.05, icon:'🌈', label:'+%5 Her Şey',desc:'XP, Skor ve Kaju %5 artar'},
+  'Karanlığı Yutar':  {key:'score_boost', val:0.10, icon:'🐉', label:'+%10 Skor',desc:'Oyun skorların %10 artar'},
+};
+
+// Aktif kozmonun bonusunu localStorage'dan oku (oyunlar bunu çağırır)
+export function getActiveKozmoBonus(){
+  try{
+    const raw = localStorage.getItem('hero_active_kozmo');
+    if(!raw) return null;
+    const a = JSON.parse(raw);
+    if(!a || !a.power) return null;
+    const p = KOZMO_POWERS[a.power];
+    if(!p) return null;
+    return { ...p, power:a.power, name:a.name, icon2:a.icon };
+  }catch(e){ return null; }
+}
+
+// Belirli bir bonus tipinin çarpanını döndür (1.0 = bonus yok)
+export function kozmoMultiplier(type){
+  const b = getActiveKozmoBonus();
+  if(!b) return 1;
+  if(b.key === type) return 1 + b.val;
+  if(b.key === 'allboost' && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + b.val;
+  return 1;
+}
+
+function setActiveKozmo(c, t){
+  const power = c.power || (t && t.power) || null;
+  if(!power || !KOZMO_POWERS[power]){ _toast('Bu kozmonun aktif bonusu yok'); return false; }
+  try{
+    localStorage.setItem('hero_active_kozmo', JSON.stringify({
+      power, name:c.name||(t&&t.n)||'Kozmo', icon:c.icon||(t&&t.e)||'✨'
+    }));
+    const p = KOZMO_POWERS[power];
+    _toast('⚡ '+(c.name||'Kozmo')+' aktif! '+p.icon+' '+p.label);
+    return true;
+  }catch(e){ return false; }
+}
+function isActiveKozmo(c, t){
+  try{
+    const raw = localStorage.getItem('hero_active_kozmo');
+    if(!raw) return false;
+    const a = JSON.parse(raw);
+    const power = c.power || (t && t.power);
+    return a && a.power === power && a.name === (c.name||(t&&t.n));
+  }catch(e){ return false; }
 }
 
 // Rengi açma yardımcısı (3D highlight için)
@@ -548,6 +633,20 @@ async function renderKozmos(st,box){
   const eggList=Object.entries(eggs);
   const creList=Object.entries(creatures);
   box.innerHTML='';
+
+  // ── Aktif Kozmo Bonusu Bandı
+  const actB = getActiveKozmoBonus();
+  if(actB){
+    const band=document.createElement('div');
+    band.style.cssText='display:flex;align-items:center;gap:9px;padding:9px 12px;margin-bottom:12px;border-radius:12px;background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(124,77,255,.08));border:1px solid rgba(192,132,252,.3)';
+    band.innerHTML='<span style="font-size:20px">'+(actB.icon2||'✨')+'</span>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:900;color:#c084fc">⚡ Aktif: '+esc(actB.name)+'</div>'
+      +'<div style="font-size:9.5px;color:#9fb0d8">'+actB.icon+' '+esc(actB.label)+' — '+esc(actB.desc)+'</div></div>'
+      +'<button id="kozClearActive" style="background:rgba(255,255,255,.08);border:none;color:#9fb0d8;font-size:14px;cursor:pointer;border-radius:8px;padding:4px 8px">✕</button>';
+    box.appendChild(band);
+    const cb=band.querySelector('#kozClearActive');
+    if(cb) cb.addEventListener('click',()=>{ try{localStorage.removeItem('hero_active_kozmo');}catch(e){} _toast('Aktif bonus kaldırıldı'); renderKozmos(st,box); });
+  }
 
   // ── Gelen Yumurtalar
   if(pendList.length){
