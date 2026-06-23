@@ -1612,6 +1612,14 @@ async function endGame(isWin){
     score += timeBonus;
     G.score = score;
   }
+  // ⚡ Aktif kozmo skor bonusu (final skoru çarpar → kaju/xp de artar)
+  try{
+    const _km = await import('./kozmos.js');
+    if(_km && _km.kozmoMultiplier){
+      const mult = _km.kozmoMultiplier('score_boost');
+      if(mult > 1){ score = Math.round(score * mult); G.score = score; }
+    }
+  }catch(e){}
   const kaju = Math.min(Math.floor(score / 200), 200);
   const xp   = Math.floor(score / 50);
   let isRecord = false;
