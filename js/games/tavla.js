@@ -362,9 +362,22 @@ function startGame(root, mode, opts){
   updateControls();
   draw();
   G._resuming = false;
+  // ⚡ Aktif kozmo bonusu bildirimi
+  notifyKozmoBonus();
   // AI sırasındaysa otomatik oyna
   maybeAITurn();
   startAutoRollTimer();
+}
+
+// ⚡ Oyun başında aktif kozmo bonusunu kısaca bildir
+async function notifyKozmoBonus(){
+  try{
+    const kz = await import('../kozmos.js');
+    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
+    if(b && window.Hero && window.Hero.toast){
+      window.Hero.toast('⚡ '+(b.icon2||'✨')+' '+b.name+' aktif — '+b.icon+' '+b.label, false);
+    }
+  }catch(e){}
 }
 
 function restart(){

@@ -1681,6 +1681,7 @@ function build(){
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
     <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
+    <div class="t-kozmo-bonus" data-el="kozmoBonus" style="display:none"></div>
     <div class="t-modebar" style="display:none"></div>
     <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
     <div class="tetris-stage">
@@ -2182,10 +2183,38 @@ function launchGame(){
       level: ()=> G ? G.level : 1,
     });
   }catch(e){}
+  // ⚡ Aktif kozmo bonus rozeti
+  showKozmoBonusBadge();
   startGame();
   // DOM yerleştikten sonra gerçek ölçüyle yeniden boyutlandır (mod barı dahil)
   requestAnimationFrame(() => { if(G){ fitCanvas(); drawBoard(); } });
   setTimeout(() => { if(G){ fitCanvas(); drawBoard(); } }, 80);
+}
+
+// ⚡ Aktif kozmo bonusunu HUD rozetinde göster
+async function showKozmoBonusBadge(){
+  try{
+    const el = G && G.root && G.root.querySelector('[data-el="kozmoBonus"]');
+    if(!el) return;
+    const kz = await import('./kozmos.js');
+    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
+    if(!b){ el.style.display='none'; return; }
+    el.innerHTML = '<span class="tkb-ico">'+(b.icon2||'✨')+'</span>'
+      +'<span class="tkb-txt">'+b.icon+' '+String(b.label||'')+'</span>';
+    el.style.display = 'flex';
+    if(!document.getElementById('tKozmoBonusCSS')){
+      const s=document.createElement('style'); s.id='tKozmoBonusCSS';
+      s.textContent='.t-kozmo-bonus{display:flex;align-items:center;justify-content:center;gap:6px;'
+        +'margin:0 auto 6px;padding:5px 12px;border-radius:20px;width:fit-content;max-width:90%;'
+        +'background:linear-gradient(135deg,rgba(192,132,252,.18),rgba(124,77,255,.1));'
+        +'border:1px solid rgba(192,132,252,.4);box-shadow:0 2px 12px rgba(124,77,255,.2);'
+        +'animation:tkbPulse 2.2s ease-in-out infinite}'
+        +'.t-kozmo-bonus .tkb-ico{font-size:15px}'
+        +'.t-kozmo-bonus .tkb-txt{font-size:11px;font-weight:900;color:#e9d5ff;white-space:nowrap}'
+        +'@keyframes tkbPulse{0%,100%{box-shadow:0 2px 12px rgba(124,77,255,.2)}50%{box-shadow:0 2px 20px rgba(124,77,255,.4)}}';
+      document.head.appendChild(s);
+    }
+  }catch(e){}
 }
 
 // Çok oyunculu oyunu başlat (versus modu)
