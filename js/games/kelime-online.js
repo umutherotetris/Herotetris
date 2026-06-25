@@ -298,8 +298,22 @@ export async function listFriends(){
   try{
     const snap = await fdb.get(fdb.ref(db, `friends/${st.uid}`));
     if(!snap.exists()) return [];
-    const v = snap.val(); const out=[];
-    for(const fuid in v){ const f=v[fuid]; if(f===false) continue; out.push({ uid:fuid, name:(f&&f.name)|| (typeof f==='string'?f:null) || ('Arkadaş') }); }
+    const v = snap.val();
+    const fuids = Object.keys(v).filter(fuid => v[fuid] !== false);
+    // Her arkadaşın GÜNCEL nick'ini users node'undan çek (kayıttaki eski isim yerine)
+    const out = await Promise.all(fuids.map(async fuid => {
+      const f = v[fuid];
+      const fallback = (f&&f.name) || (typeof f==='string'?f:null) || 'Arkadaş';
+      let nick = fallback;
+      try{
+        const us = await fdb.get(fdb.ref(db, 'users/'+fuid));
+        if(us.exists()){
+          const u = us.val();
+          nick = u.nick || u.name || u.displayName || fallback;
+        }
+      }catch(e){}
+      return { uid:fuid, name:nick };
+    }));
     return out;
   }catch(e){ return []; }
 }
