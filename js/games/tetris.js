@@ -200,8 +200,8 @@ function lock(){
   G.cur = nextFromQueue();
   G.canHold = true;
   if(collides(G.cur, 0, 0)){
-    // Admin antrenman modu: ölme, üst yarıyı temizle ve devam et
-    if(G.practiceMode){
+    // Admin yenilmez mod: ölme, üst yarıyı temizle ve devam et
+    if(G.godmode){
       const half = Math.floor(ROWS/2);
       for(let i=0;i<half;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
       G.cur.y = 0; G.cur.x = 3;
@@ -1557,15 +1557,15 @@ function showAchievements(list){
   showNext();
 }
 
-// Admin antrenman modu aç/kapat
-function togglePractice(){
+// Admin yenilmez mod aç/kapat
+function toggleGodmode(){
   if(!G || !G.isAdmin) return;
-  G.practiceMode = !G.practiceMode;
-  if(G.el.practiceBtn){
-    G.el.practiceBtn.classList.toggle('on', G.practiceMode);
-    G.el.practiceBtn.textContent = '🎯 ANTRENMAN: ' + (G.practiceMode ? 'AÇIK' : 'KAPALI');
+  G.godmode = !G.godmode;
+  if(G.el.godmodeBtn){
+    G.el.godmodeBtn.classList.toggle('on', G.godmode);
+    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: ' + (G.godmode ? 'AÇIK' : 'KAPALI');
   }
-  flash(G.practiceMode ? '🎯 ANTRENMAN AÇIK' : '🎯 ANTRENMAN KAPALI');
+  flash(G.godmode ? '🛡️ YENİLMEZ AÇIK' : '🛡️ YENİLMEZ KAPALI');
   try{ Sound.shield(); }catch(e){}
 }
 async function sprintWin(){ await endGame(true); }
@@ -1626,12 +1626,35 @@ async function endGame(isWin){
     const Reward = await import('../reward.js');
     const extraLine = G.mode==='sprint'||G.mode==='survival' ? G.lines+' satır · '+fmtTime(G.elapsed) : G.lines+' satır';
     const bossTxt = isWin&&G.mode==='adventure'&&G.advWorld ? '👹 '+G.advWorld.boss+' YENİLDİ!' : '';
+    // Macera boss zaferi: sonraki dünya bilgisini hazırla
+    const advNextW = (isWin && G.mode==='adventure' && G.advWorld) ? getWorld(G.advWorld.id + 1) : null;
+    const advExtra = {};
+    if(isWin && G.mode==='adventure' && G.advWorld){
+      const s = G.advStars || 1;
+      let starsStr=''; for(let i=1;i<=3;i++) starsStr += (i<=s?'★':'☆');
+      advExtra.subtitle = starsStr + (advNextW ? ('  ·  '+advNextW.name+' açıldı!') : '  ·  Tüm dünyalar tamamlandı! 🎉');
+    }
     const action = await Reward.showReward({
       won: isWin, game:'tetris', score, kaju, xp,
       isRecord, writeReward:false,
       title: bossTxt || (isWin?'🏆 KAZANDIN!':'💀 OYUN BİTTİ'),
-      subtitle: extraLine,
+      subtitle: advExtra.subtitle || extraLine,
     });
+    // ── Macera akışı: boss geçilince sonraki dünyaya ilerle ──
+    if(isWin && G.mode==='adventure' && G.advWorld){
+      if(action==='replay'){
+        // "Tekrar" → sonraki dünya varsa ona geç, yoksa menüye dön
+        if(advNextW){
+          ADVENTURE_WORLD = advNextW.id;   // sonraki dünyayı seç
+          restart();                        // yeni dünyada başlat
+        } else {
+          // Tüm dünyalar bitti → menüye dön
+          try{ close(); }catch(e){}
+          try{ const n=await import('../nav.js'); n.go && n.go('home'); }catch(e){}
+        }
+      }
+      return;
+    }
     if(action==='replay') G.el.gameover && G.el.gameover.querySelector('[data-x="restart"]') && G.el.gameover.querySelector('[data-x="restart"]').click();
     return;
   }catch(e){ console.warn('[reward]',e); }
@@ -1657,6 +1680,24 @@ async function endGame(isWin){
   }
   ov.querySelector('.go-reward').textContent = (kaju>0?('+'+kaju+' 🥜'):'') + (xp>0?('  +'+xp+' XP'):'');
   ov.querySelector('.go-record').style.display = isRecord ? 'block' : 'none';
+  // Macera boss zaferinde TEKRAR butonunu sonraki dünyaya göre uyarla
+  const restartBtn = ov.querySelector('[data-act="restart"]');
+  if(restartBtn){
+    if(isWin && G.mode==='adventure' && G.advWorld){
+      const nextW = getWorld(G.advWorld.id + 1);
+      if(nextW){
+        restartBtn.textContent = '➡️ SONRAKİ DÜNYA';
+        restartBtn.dataset.advnext = nextW.id;
+      } else {
+        restartBtn.textContent = '🏠 MENÜ';
+        restartBtn.dataset.advdone = '1';
+      }
+    } else {
+      restartBtn.textContent = '🔄 TEKRAR';
+      delete restartBtn.dataset.advnext;
+      delete restartBtn.dataset.advdone;
+    }
+  }
   recordGameStats(isWin);
   ov.classList.add('show');
 }
@@ -1672,7 +1713,7 @@ function build(){
       <button class="t-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="t-chat-badge" data-el="chatBadge" style="display:none"></span></button>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
-    <button class="t-practice" data-act="practice" style="display:none">🎯 ANTRENMAN: KAPALI</button>
+    <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
     <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
     <div class="tetris-stage">
@@ -1846,12 +1887,17 @@ function bindControls(){
       if(a==='exit') close();
       else if(a==='pause') togglePause(true);
       else if(a==='resume') togglePause(false);
-      else if(a==='restart') restart();
+      else if(a==='restart'){
+        // Macera boss zaferi sonrası: sonraki dünya / menü
+        if(btn.dataset.advdone === '1'){ close(); try{ import('../nav.js').then(n=>n.go&&n.go('home')); }catch(e){} }
+        else if(btn.dataset.advnext){ ADVENTURE_WORLD = parseInt(btn.dataset.advnext,10); delete btn.dataset.advnext; restart(); }
+        else restart();
+      }
       else if(a==='quit') close();
       else if(a==='power') usePower();
       else if(a==='gem') openGemSheet();
       else if(a==='gemclose') closeGemSheet();
-      else if(a==='practice') togglePractice();
+      else if(a==='godmode') toggleGodmode();
     });
   });
 
@@ -2049,15 +2095,15 @@ function startGame(){
   G.visualY = 0;
   try{ G.colorBlind = localStorage.getItem('hero_tetris_colorblind') === 'on'; }catch(e){ G.colorBlind = false; }
 
-  // ── Admin antrenman modu (default KAPALI; sadece admin görür) ──
-  G.practiceMode = false;
+  // ── Admin yenilmez mod (default KAPALI; sadece admin görür) ──
+  G.godmode = false;
   let admin = false;
   try{ admin = Auth.getState().isAdmin === true; }catch(e){ admin = false; }
   G.isAdmin = admin;
-  if(G.el.practiceBtn){
-    G.el.practiceBtn.style.display = admin ? 'block' : 'none';
-    G.el.practiceBtn.classList.remove('on');
-    G.el.practiceBtn.textContent = '🎯 ANTRENMAN: KAPALI';
+  if(G.el.godmodeBtn){
+    G.el.godmodeBtn.style.display = admin ? 'block' : 'none';
+    G.el.godmodeBtn.classList.remove('on');
+    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: KAPALI';
   }
 
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
@@ -2151,7 +2197,7 @@ function launchGame(){
       powerBtn: root.querySelector('.t-power'),
       aiCanvas: root.querySelector('.tetris-ai-canvas'),
       aiLabel: root.querySelector('.t-ai-label'),
-      practiceBtn: root.querySelector('.t-practice'),
+      godmodeBtn: root.querySelector('.t-godmode'),
       fxLayer: root.querySelector('.t-fxlayer'),
       gemBtn: root.querySelector('.t-gem'),
       gemSheet: root.querySelector('.gem-sheet'),
@@ -2662,15 +2708,15 @@ function injectCSS(){
 .theme-card:active{ transform: scale(.95); }
 /* Oyun içi mod göstergesi */
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
-/* Admin antrenman modu butonu */
-.t-practice{
+/* Admin yenilmez mod butonu */
+.t-godmode{
   display: block; margin: 0 auto 8px; padding: 7px 16px; border-radius: var(--r-md);
   background: rgba(255,215,64,.08); border: 1.5px solid rgba(255,215,64,.4); color: var(--gold);
   font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1px;
   transition: all .15s;
 }
-.t-practice:active{ transform: scale(.96); }
-.t-practice.on{
+.t-godmode:active{ transform: scale(.96); }
+.t-godmode.on{
   background: linear-gradient(135deg, rgba(255,215,64,.25), rgba(255,180,0,.15));
   border-color: var(--gold); color: #fff;
   box-shadow: 0 0 18px rgba(255,215,64,.5), inset 0 0 12px rgba(255,215,64,.2);
