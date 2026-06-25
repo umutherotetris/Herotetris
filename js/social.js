@@ -120,6 +120,14 @@ function _injectCosmeticCSS(){
     @keyframes czRainbowAnim{ to{ background-position:300% center; } }
     .cz-nick-gold{ background:linear-gradient(90deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlameAnim 2.5s linear infinite; }
     .cz-title-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:.3px; padding:1px 6px; margin-left:4px; border-radius:8px; background:linear-gradient(90deg,#ffd86b,#f0a500); color:#1a1208; vertical-align:middle; }
+    /* Profil en iyi skorlar */
+    .pcp-besttitle{ font-size:10px; font-weight:900; letter-spacing:.5px; color:#FFD740; margin:12px 0 7px; text-align:center; }
+    .pcp-bestgrid{ display:flex; flex-direction:column; gap:6px; }
+    .pcp-bestitem{ display:flex; align-items:center; gap:9px; padding:8px 11px; border-radius:11px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); }
+    .pcp-besticon{ font-size:17px; flex-shrink:0; }
+    .pcp-bestname{ flex:1; font-size:12px; font-weight:700; color:#cdd; }
+    .pcp-bestval{ font-size:13px; font-weight:900; color:#FFD740; }
+    .pcp-nobest{ text-align:center; font-size:11px; color:#7d8ab8; margin:12px 0 4px; }
   `;
   document.head.appendChild(s);
 }
@@ -199,6 +207,22 @@ export async function openPlayerCard(uid){
       <div class="pcp-stat"><b>💰 ${Number(p.kaju||0).toLocaleString('tr-TR')}</b><span>KAJU</span></div>
       <div class="pcp-stat"><b>✨ ${(()=>{ const xObj=p.xp; const raw = (xObj && typeof xObj==='object') ? (xObj.totalXP??xObj.xp??0) : (p.totalXP??xObj??0); const v=Number(raw); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); })()}</b><span>XP</span></div>
     </div>
+    ${(()=>{
+      const bs = p.bestScores || {};
+      const games = [
+        {k:'tetris', icon:'🟦', name:'Tetris'},
+        {k:'tavla',  icon:'🎲', name:'Tavla'},
+        {k:'chess',  icon:'♟️', name:'Satranç'},
+        {k:'kelime', icon:'🔤', name:'Kelime'},
+      ];
+      const have = games.filter(g => bs[g.k] != null);
+      if(!have.length) return '<div class="pcp-nobest">Henüz oyun skoru yok</div>';
+      return '<div class="pcp-besttitle">🏆 EN İYİ SKORLAR</div><div class="pcp-bestgrid">'
+        + have.map(g => '<div class="pcp-bestitem"><span class="pcp-besticon">'+g.icon+'</span>'
+            +'<span class="pcp-bestname">'+g.name+'</span>'
+            +'<span class="pcp-bestval">'+Number(bs[g.k]||0).toLocaleString('tr-TR')+'</span></div>').join('')
+        + '</div>';
+    })()}
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
@@ -984,6 +1008,14 @@ async function dmSend(){
     const _dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now(), fromAvatar: _dmAvatar };
     if(me.isAdmin === true) _dmMsg.isAdmin = true;
     await fdb.push(fdb.ref(db, 'messages/' + pk), _dmMsg);
+    // 📩 Alıcıya DM bildirimi (bildirimler sekmesinde uyarı olarak çıkar)
+    try{
+      await fdb.push(fdb.ref(db, 'userNotifs/' + H.dmThread.uid), {
+        type:'dm', icon:'✉️',
+        text: (me.displayName || 'Biri') + ' sana mesaj gönderdi: "' + text.slice(0,40) + (text.length>40?'…':'') + '"',
+        ts: Date.now(), fromUid: me.uid
+      });
+    }catch(e){}
     // konu listesini güncelle
     const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
     const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
@@ -1085,6 +1117,7 @@ function renderNotifCard(n){
     gift_kaju:{bg:'linear-gradient(135deg,rgba(255,215,64,.16),rgba(255,180,0,.08))', bd:'rgba(255,215,64,.45)', bl:'#FFD740', ic:'🎁', col:'#FFE57F', label:'KAJU HEDİYESİ', glow:'0 0 14px rgba(255,215,64,.25)'},
     gift_kozmo:{bg:'linear-gradient(135deg,rgba(171,71,188,.16),rgba(224,64,251,.07))', bd:'rgba(171,71,188,.5)', bl:'#AB47BC', ic:'🥚', col:'#CE93D8', label:'KOZMO HEDİYESİ', glow:'0 0 14px rgba(171,71,188,.22)'},
     msg:      {bg:'linear-gradient(135deg,rgba(66,165,245,.12),rgba(66,165,245,.05))', bd:'rgba(66,165,245,.35)', bl:'#42A5F5', ic:'✉️', col:'#90CAF9', label:'MESAJ', glow:'none'},
+    dm:       {bg:'linear-gradient(135deg,rgba(66,165,245,.14),rgba(66,165,245,.06))', bd:'rgba(66,165,245,.4)', bl:'#42A5F5', ic:'✉️', col:'#90CAF9', label:'YENİ MESAJ', glow:'0 0 10px rgba(66,165,245,.18)'},
     friend:   {bg:'linear-gradient(135deg,rgba(105,240,174,.12),rgba(76,175,80,.05))', bd:'rgba(105,240,174,.4)', bl:'#69F0AE', ic:'👥', col:'#69F0AE', label:'ARKADAŞLIK', glow:'none'},
     friendreq:{bg:'linear-gradient(135deg,rgba(105,240,174,.16),rgba(0,229,255,.06))', bd:'rgba(105,240,174,.5)', bl:'#69F0AE', ic:'👥', col:'#69F0AE', label:'ARKADAŞLIK İSTEĞİ', glow:'0 0 12px rgba(105,240,174,.2)'},
     poke:     {bg:'linear-gradient(135deg,rgba(255,215,64,.14),rgba(255,152,0,.06))', bd:'rgba(255,215,64,.4)', bl:'#FFD740', ic:'👋', col:'#FFD740', label:'DÜRTME', glow:'0 0 12px rgba(255,215,64,.2)'},
