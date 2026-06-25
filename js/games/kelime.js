@@ -1773,3 +1773,70 @@ function performExchange(idxs){
   G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
   if(G.ai){
     G.rackView = G.state.racks.A;
+    stopTurnTimer();
+    G.who='B'; G.aiThinking=true; renderAll(); renderScores();
+    flashStatus('🔄 '+removed.length+' harf değişti · 🤖 düşünüyor…');
+    setTimeout(aiTurn, 700);
+    return;
+  }
+  renderAll();
+  nextTurn();   // 2 oyuncu: sıra karşıya geçer
+}
+
+function nextTurn(){
+  G.who = (G.who==='A') ? 'B' : 'A';
+  G.rackView = G.state.racks[G.who].slice();
+  G.selected=null; G.pending=[];
+  // sıra geçişi bilgilendirme
+  const c = G.root.querySelector('[data-el="content"]');
+  const ov=document.createElement('div'); ov.className='kl-overlay';
+  ov.innerHTML=`<div class="kl-card"><h3>${G.names[G.who]} sırası</h3><p>Cihazı ${G.names[G.who]}'e ver, hazır olunca başla.</p><button class="kl-btn primary" data-x="go">Hazırım ▶</button></div>`;
+  c.appendChild(ov);
+  ov.querySelector('[data-x="go"]').addEventListener('click',()=>{ ov.remove(); renderAll(); });
+}
+
+async function endGame(){
+  const c = G.root.querySelector('[data-el="content"]');
+  const a=G.state.scores.A, b=G.state.scores.B;
+  const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
+  // Oyuncunun kendi rolüne göre kazanma (online'da B olabilirsin!)
+  const myRole = G.role || 'A';
+  const myScore = G.state.scores[myRole];
+  const oppScore = G.state.scores[myRole==='A'?'B':'A'];
+  const playerWon = myScore > oppScore;
+  const klKaju = playerWon ? 70 : a===b ? 30 : 10;
+  const klXp = playerWon ? 50 : a===b ? 20 : 15;
+  try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
+  if(a!==b){ sndWin(); confetti(); } else sndLose();
+  try{
+    const Reward = await import('../reward.js');
+    const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
+    await Reward.showReward({
+      won:playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
+      title: playerWon ? '🔤 KAZANDIN!' : (a===b?'🤝 BERABERLİK':'📚 Rakip kazandı'),
+      subtitle: G.names.A+': '+a+' puan · '+G.names.B+': '+b+' puan',
+      extra: bwText,
+    }); return;
+  }catch(e){ console.warn('[reward]',e); }
+  const stars = starsFor(Math.max(a,b));
+  const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
+  const ov=document.createElement('div'); ov.className='kl-overlay';
+  ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
+    <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
+    <p>${G.names.A}: ${a} &nbsp;·&nbsp; ${G.names.B}: ${b}</p>
+    <p style="color:#ffd86b;font-weight:700">${win}</p>${bw}
+    <button class="kl-btn primary" data-x="again">Yeni Oyun</button>
+    <button class="kl-btn" style="margin-top:8px" data-x="close">Kapat</button></div>`;
+  c.appendChild(ov);
+  ov.querySelector('[data-x="again"]').addEventListener('click',()=>{ ov.remove(); startLocal(); });
+  ov.querySelector('[data-x="close"]').addEventListener('click', closeKelime);
+}
+
+// Rakip adına dokun → oyuncu kartı (online)
+if(typeof document !== 'undefined' && !window.__klOppClick){
+  window.__klOppClick = true;
+  document.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-opc]');
+    if(o && o.dataset.opc){ import('../social.js').then(m => m.openPlayerCard(o.dataset.opc)).catch(()=>{}); }
+  });
+}
