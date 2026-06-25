@@ -174,6 +174,9 @@ export async function openPlayerCard(uid){
   const isOp = H && H.ops && H.ops[uid] === true;
   let isFriend = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
+  // Bekleyen arkadaşlık isteği var mı? (ben → karşı taraf)
+  let reqSent = false;
+  try{ const s = await fdb.get(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid)); reqSent = s.exists(); }catch(e){}
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
   _injectCosmeticCSS();
@@ -198,7 +201,7 @@ export async function openPlayerCard(uid){
     </div>
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
-      <button class="pcp-btn" data-pc="fr">${isFriend ? '✕ Arkadaşlıktan Çıkar' : '👥 Arkadaş Ekle'}</button>
+      <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
     </div>`}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
@@ -207,14 +210,20 @@ export async function openPlayerCard(uid){
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
     if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
+    if(reqSent && !isFriend){ return; }   // zaten istek gönderilmiş
     try{
       if(isFriend){
+        // Arkadaşlıktan çıkar (çift taraflı)
         await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
         await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), null);
       } else {
-        await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), { name: nick, ts: Date.now() });
-        await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
-        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' seni arkadaş olarak ekledi!', ts: Date.now(), fromUid: me.uid }); }catch(e){}
+        // ⏳ Arkadaşlık İSTEĞİ gönder (karşı taraf kabul edene kadar arkadaş olmaz)
+        await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), {
+          fromUid: me.uid, fromName: me.displayName || 'Oyuncu',
+          fromAvatar: (me.profile && me.profile.avatar) || '👤', ts: Date.now()
+        });
+        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { type:'friendreq', icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' sana arkadaşlık isteği gönderdi!', ts: Date.now(), fromUid: me.uid, reqFrom: me.uid }); }catch(e){}
+        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⏳ Arkadaşlık isteği gönderildi'); }catch(e){}
       }
       ov.remove();
       if(H && H.open && H.tab === 'dost') renderFriends();
@@ -1073,8 +1082,11 @@ function renderNotifCard(n){
     admin:    {bg:'linear-gradient(135deg,rgba(255,82,82,.12),rgba(255,215,64,.06))', bd:'rgba(255,215,64,.5)', bl:'#FFD740', ic:'👑', col:'#FFD740', label:'ADMİN BİLDİRİMİ', glow:'0 0 14px rgba(255,215,64,.2)'},
     broadcast:{bg:'linear-gradient(135deg,rgba(224,64,251,.14),rgba(171,71,188,.06))', bd:'rgba(224,64,251,.4)', bl:'#E040FB', ic:'📢', col:'#E040FB', label:'DUYURU', glow:'0 0 14px rgba(224,64,251,.22)'},
     kaju:     {bg:'linear-gradient(135deg,rgba(255,215,64,.16),rgba(255,180,0,.08))', bd:'rgba(255,215,64,.45)', bl:'#FFD740', ic:'🎁', col:'#FFE57F', label:'KAJU HEDİYESİ', glow:'0 0 14px rgba(255,215,64,.25)'},
+    gift_kaju:{bg:'linear-gradient(135deg,rgba(255,215,64,.16),rgba(255,180,0,.08))', bd:'rgba(255,215,64,.45)', bl:'#FFD740', ic:'🎁', col:'#FFE57F', label:'KAJU HEDİYESİ', glow:'0 0 14px rgba(255,215,64,.25)'},
+    gift_kozmo:{bg:'linear-gradient(135deg,rgba(171,71,188,.16),rgba(224,64,251,.07))', bd:'rgba(171,71,188,.5)', bl:'#AB47BC', ic:'🥚', col:'#CE93D8', label:'KOZMO HEDİYESİ', glow:'0 0 14px rgba(171,71,188,.22)'},
     msg:      {bg:'linear-gradient(135deg,rgba(66,165,245,.12),rgba(66,165,245,.05))', bd:'rgba(66,165,245,.35)', bl:'#42A5F5', ic:'✉️', col:'#90CAF9', label:'MESAJ', glow:'none'},
     friend:   {bg:'linear-gradient(135deg,rgba(105,240,174,.12),rgba(76,175,80,.05))', bd:'rgba(105,240,174,.4)', bl:'#69F0AE', ic:'👥', col:'#69F0AE', label:'ARKADAŞLIK', glow:'none'},
+    friendreq:{bg:'linear-gradient(135deg,rgba(105,240,174,.16),rgba(0,229,255,.06))', bd:'rgba(105,240,174,.5)', bl:'#69F0AE', ic:'👥', col:'#69F0AE', label:'ARKADAŞLIK İSTEĞİ', glow:'0 0 12px rgba(105,240,174,.2)'},
     poke:     {bg:'linear-gradient(135deg,rgba(255,215,64,.14),rgba(255,152,0,.06))', bd:'rgba(255,215,64,.4)', bl:'#FFD740', ic:'👋', col:'#FFD740', label:'DÜRTME', glow:'0 0 12px rgba(255,215,64,.2)'},
     challenge:{bg:'linear-gradient(135deg,rgba(255,152,0,.14),rgba(255,87,34,.07))', bd:'rgba(255,152,0,.4)', bl:'#FF9800', ic:'⚔️', col:'#FFB74D', label:'MEYDAN OKUMA', glow:'0 0 12px rgba(255,152,0,.2)'},
     clan:     {bg:'linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,188,212,.05))', bd:'rgba(0,229,255,.4)', bl:'#00E5FF', ic:'🏰', col:'#00E5FF', label:'KLAN', glow:'0 0 12px rgba(0,229,255,.18)'},
@@ -1098,12 +1110,25 @@ function renderNotifCard(n){
   const fromAttr = n.fromUid
     ? `data-nfrom="${esc(n.fromUid)}" style="cursor:pointer;border-left:3px solid ${s.bl};border-color:${s.bd};background:${s.bg};box-shadow:${s.glow}"`
     : `style="border-left:3px solid ${s.bl};border-color:${s.bd};background:${s.bg};box-shadow:${s.glow}"`;
+  const delBtn = n.key
+    ? `<button class="ghp-notif-del" data-ndel="${esc(n.key)}" title="Sil" style="flex-shrink:0;background:rgba(255,82,82,.12);border:1px solid rgba(255,82,82,.3);color:#ff8a80;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;align-self:center">🗑️</button>`
+    : '';
+  // Arkadaşlık isteği → Kabul / Red butonları
+  const isFriendReq = (n.type === 'friendreq' && n.reqFrom);
+  const reqBtns = isFriendReq
+    ? `<div style="display:flex;gap:6px;margin-top:7px">
+         <button data-fraccept="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" data-frname="${esc(n.fromName||'Oyuncu')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#04130b;background:linear-gradient(135deg,#69F0AE,#34d399)">✓ Kabul Et</button>
+         <button data-frreject="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" style="flex:1;padding:7px;border-radius:9px;border:1px solid rgba(255,82,82,.4);cursor:pointer;font-size:11px;font-weight:900;color:#ff8a80;background:rgba(255,82,82,.1)">✕ Reddet</button>
+       </div>`
+    : '';
   return `<div class="ghp-notif-row" ${fromAttr}>
     <div class="ghp-notif-icon" style="background:${s.bg};border:1px solid ${s.bd};font-size:20px">${ic}</div>
     <div class="ghp-notif-body">
       <div class="ghp-notif-text">${hdr}<span style="color:#e8eaf6">${txt}</span></div>
       <div class="ghp-chat-ts" style="color:${s.col};opacity:.85">${tAgo(n.ts || 0)}</div>
+      ${reqBtns}
     </div>
+    ${delBtn}
   </div>`;
 }
 
@@ -1117,6 +1142,7 @@ function renderNotifPane(){
   H.notifUnread = (H.open && H.tab === 'notif') ? 0 : all.filter(r => (r.ts||0) > seen).length;
   updateBadges();
   if(!all.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🔔</div><div class="ghp-empty-text">BİLDİRİM YOK</div></div>'; return; }
+  const canDelBcast = _amAdmin();
   list.innerHTML = all.map(n => n._bc ? `
       <div class="ghp-notif-row" style="border-color:rgba(255,215,64,.5);background:linear-gradient(135deg,rgba(255,180,0,.13),rgba(224,64,251,.07));box-shadow:0 0 12px rgba(255,215,64,.12);animation:ghp-pulse-bc 2s ease-in-out infinite">
         <div class="ghp-notif-icon" style="background:rgba(255,215,64,.18);border:1px solid rgba(255,215,64,.5);font-size:20px">📣</div>
@@ -1124,9 +1150,82 @@ function renderNotifPane(){
           <div class="ghp-notif-text" style="font-weight:800"><span style="color:#FFD740">👑 ADMİN DUYURUSU 👑</span><br><span style="color:#fff;font-size:12px">${esc(n.text || '')}</span></div>
           <div class="ghp-chat-ts" style="color:#FFD740;opacity:.8">${esc(n.by || 'Admin')} · ${tAgo(n.ts || 0)}</div>
         </div>
+        ${canDelBcast && n.key ? `<button class="ghp-notif-del" data-bcdel="${esc(n.key)}" title="Duyuruyu sil" style="flex-shrink:0;background:rgba(255,82,82,.12);border:1px solid rgba(255,82,82,.3);color:#ff8a80;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;align-self:center">🗑️</button>` : ''}
       </div>` : `
       ${renderNotifCard(n)}`).join('');
-  list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.nfrom)));
+  list.querySelectorAll('[data-nfrom]').forEach(el => el.addEventListener('click', (e) => { if(e.target.closest('[data-ndel]')) return; openPlayerCard(el.dataset.nfrom); }));
+  // Kişisel bildirim sil
+  list.querySelectorAll('[data-ndel]').forEach(el => el.addEventListener('click', (e) => {
+    e.stopPropagation(); deleteNotif(el.dataset.ndel);
+  }));
+  // Admin duyurusu sil (broadcast)
+  list.querySelectorAll('[data-bcdel]').forEach(el => el.addEventListener('click', (e) => {
+    e.stopPropagation(); deleteBroadcast(el.dataset.bcdel);
+  }));
+  // Arkadaşlık isteği Kabul
+  list.querySelectorAll('[data-fraccept]').forEach(el => el.addEventListener('click', (e) => {
+    e.stopPropagation(); acceptFriendReq(el.dataset.fraccept, el.dataset.frname, el.dataset.frkey);
+  }));
+  // Arkadaşlık isteği Red
+  list.querySelectorAll('[data-frreject]').forEach(el => el.addEventListener('click', (e) => {
+    e.stopPropagation(); rejectFriendReq(el.dataset.frreject, el.dataset.frkey);
+  }));
+}
+
+// Arkadaşlık isteğini KABUL et → çift taraflı arkadaşlık kur
+async function acceptFriendReq(fromUid, fromName, notifKey){
+  const me = Auth.getState();
+  if(!me.uid || !fromUid) return;
+  try{
+    // İsteği gönderenin güncel nick'ini al
+    let fName = fromName || 'Oyuncu';
+    try{ const us = await fdb.get(fdb.ref(db,'users/'+fromUid)); if(us.exists()){ const u=us.val(); fName = u.nick||u.name||u.displayName||fName; } }catch(e){}
+    // Çift taraflı arkadaşlık
+    await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + fromUid), { name: fName, ts: Date.now() });
+    await fdb.set(fdb.ref(db, 'friends/' + fromUid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
+    // İsteği temizle
+    await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + fromUid), null);
+    // İsteği gönrene "kabul edildi" bildirimi
+    try{ await fdb.push(fdb.ref(db, 'userNotifs/' + fromUid), { type:'friend', icon:'🤝', text: (me.displayName || 'Biri') + ' arkadaşlık isteğini kabul etti!', ts: Date.now(), fromUid: me.uid }); }catch(e){}
+    // Bildirimi sil
+    if(notifKey){ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + notifKey), null); H.notifRows = (H.notifRows||[]).filter(r=>r.key!==notifKey); }
+    try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🤝 '+fName+' artık arkadaşın!'); }catch(e){}
+    renderNotifPane();
+    if(H && H.open && H.tab === 'dost') renderFriends();
+  }catch(e){ console.warn('[friendreq] accept', e); }
+}
+
+// Arkadaşlık isteğini REDDET
+async function rejectFriendReq(fromUid, notifKey){
+  const me = Auth.getState();
+  if(!me.uid || !fromUid) return;
+  try{
+    await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + fromUid), null);
+    if(notifKey){ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + notifKey), null); H.notifRows = (H.notifRows||[]).filter(r=>r.key!==notifKey); }
+    renderNotifPane();
+  }catch(e){ console.warn('[friendreq] reject', e); }
+}
+
+// Kişisel bildirimi sil
+async function deleteNotif(key){
+  const me = Auth.getState();
+  if(!me.uid || !key) return;
+  try{
+    await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null);
+    H.notifRows = (H.notifRows || []).filter(r => r.key !== key);
+    renderNotifPane();
+  }catch(e){ console.warn('[notif] sil', e); }
+}
+
+// Admin duyurusunu sil (sadece admin) — herkesten kalkar
+async function deleteBroadcast(key){
+  if(!_amAdmin() || !key) return;
+  if(!confirm('Bu admin duyurusunu herkesten kaldırmak istediğine emin misin?')) return;
+  try{
+    await fdb.set(fdb.ref(db, 'broadcasts/' + key), null);
+    H.bcastRows = (H.bcastRows || []).filter(r => r.key !== key);
+    renderNotifPane();
+  }catch(e){ console.warn('[broadcast] sil', e); }
 }
 function listenNotifs(uid){
   H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
