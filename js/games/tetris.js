@@ -200,8 +200,8 @@ function lock(){
   G.cur = nextFromQueue();
   G.canHold = true;
   if(collides(G.cur, 0, 0)){
-    // Admin yenilmez mod: ölme, üst yarıyı temizle ve devam et
-    if(G.godmode){
+    // Admin antrenman modu: ölme, üst yarıyı temizle ve devam et
+    if(G.practiceMode){
       const half = Math.floor(ROWS/2);
       for(let i=0;i<half;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
       G.cur.y = 0; G.cur.x = 3;
@@ -1557,15 +1557,15 @@ function showAchievements(list){
   showNext();
 }
 
-// Admin yenilmez mod aç/kapat
-function toggleGodmode(){
+// Admin antrenman modu aç/kapat
+function togglePractice(){
   if(!G || !G.isAdmin) return;
-  G.godmode = !G.godmode;
-  if(G.el.godmodeBtn){
-    G.el.godmodeBtn.classList.toggle('on', G.godmode);
-    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: ' + (G.godmode ? 'AÇIK' : 'KAPALI');
+  G.practiceMode = !G.practiceMode;
+  if(G.el.practiceBtn){
+    G.el.practiceBtn.classList.toggle('on', G.practiceMode);
+    G.el.practiceBtn.textContent = '🎯 ANTRENMAN: ' + (G.practiceMode ? 'AÇIK' : 'KAPALI');
   }
-  flash(G.godmode ? '🛡️ YENİLMEZ AÇIK' : '🛡️ YENİLMEZ KAPALI');
+  flash(G.practiceMode ? '🎯 ANTRENMAN AÇIK' : '🎯 ANTRENMAN KAPALI');
   try{ Sound.shield(); }catch(e){}
 }
 async function sprintWin(){ await endGame(true); }
@@ -1713,7 +1713,7 @@ function build(){
       <button class="t-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="t-chat-badge" data-el="chatBadge" style="display:none"></span></button>
       <button class="t-icon" data-act="pause">⏸</button>
     </div>
-    <button class="t-godmode" data-act="godmode" style="display:none">🛡️ YENİLMEZ: KAPALI</button>
+    <button class="t-practice" data-act="practice" style="display:none">🎯 ANTRENMAN: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
     <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
     <div class="tetris-stage">
@@ -1897,7 +1897,7 @@ function bindControls(){
       else if(a==='power') usePower();
       else if(a==='gem') openGemSheet();
       else if(a==='gemclose') closeGemSheet();
-      else if(a==='godmode') toggleGodmode();
+      else if(a==='practice') togglePractice();
     });
   });
 
@@ -2095,15 +2095,15 @@ function startGame(){
   G.visualY = 0;
   try{ G.colorBlind = localStorage.getItem('hero_tetris_colorblind') === 'on'; }catch(e){ G.colorBlind = false; }
 
-  // ── Admin yenilmez mod (default KAPALI; sadece admin görür) ──
-  G.godmode = false;
+  // ── Admin antrenman modu (default KAPALI; sadece admin görür) ──
+  G.practiceMode = false;
   let admin = false;
   try{ admin = Auth.getState().isAdmin === true; }catch(e){ admin = false; }
   G.isAdmin = admin;
-  if(G.el.godmodeBtn){
-    G.el.godmodeBtn.style.display = admin ? 'block' : 'none';
-    G.el.godmodeBtn.classList.remove('on');
-    G.el.godmodeBtn.textContent = '🛡️ YENİLMEZ: KAPALI';
+  if(G.el.practiceBtn){
+    G.el.practiceBtn.style.display = admin ? 'block' : 'none';
+    G.el.practiceBtn.classList.remove('on');
+    G.el.practiceBtn.textContent = '🎯 ANTRENMAN: KAPALI';
   }
 
   fitCanvas(); updateHUD(); drawSide(); updateHeroBar();
@@ -2197,7 +2197,7 @@ function launchGame(){
       powerBtn: root.querySelector('.t-power'),
       aiCanvas: root.querySelector('.tetris-ai-canvas'),
       aiLabel: root.querySelector('.t-ai-label'),
-      godmodeBtn: root.querySelector('.t-godmode'),
+      practiceBtn: root.querySelector('.t-practice'),
       fxLayer: root.querySelector('.t-fxlayer'),
       gemBtn: root.querySelector('.t-gem'),
       gemSheet: root.querySelector('.gem-sheet'),
@@ -2708,15 +2708,15 @@ function injectCSS(){
 .theme-card:active{ transform: scale(.95); }
 /* Oyun içi mod göstergesi */
 .t-modebar{ text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; padding: 4px 0 8px; }
-/* Admin yenilmez mod butonu */
-.t-godmode{
+/* Admin antrenman modu butonu */
+.t-practice{
   display: block; margin: 0 auto 8px; padding: 7px 16px; border-radius: var(--r-md);
   background: rgba(255,215,64,.08); border: 1.5px solid rgba(255,215,64,.4); color: var(--gold);
   font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: 1px;
   transition: all .15s;
 }
-.t-godmode:active{ transform: scale(.96); }
-.t-godmode.on{
+.t-practice:active{ transform: scale(.96); }
+.t-practice.on{
   background: linear-gradient(135deg, rgba(255,215,64,.25), rgba(255,180,0,.15));
   border-color: var(--gold); color: #fff;
   box-shadow: 0 0 18px rgba(255,215,64,.5), inset 0 0 12px rgba(255,215,64,.2);
