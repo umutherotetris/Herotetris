@@ -129,11 +129,11 @@ export function openTavla(){
         <canvas data-el="canvas"></canvas>
       </div>
       <div class="tg-controls">
-        <button class="tg-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
         <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn" style="display:none">🎲 ZAR AT</button>
         <button class="tg-btn" data-act="pass" data-el="passBtn" style="display:none">⏭️ Pas</button>
       </div>
       <div class="tg-actions" data-el="actionsBar">
+        <button class="tg-act-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
         <button class="tg-act-btn" data-act="draw">🤝 Beraberlik</button>
         <button class="tg-act-btn" data-act="break" data-el="breakBtn" style="display:none">🛌 Mola</button>
         <button class="tg-act-btn danger" data-act="resign">🏳️ Pes Et</button>
@@ -188,6 +188,7 @@ function closeAll(){
   try{ if(G && G._home) G._home.remove(); }catch(e){}
   clearAutoRollTimer();
   clearBreakTimers();
+  if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
   try{ if(G && G.online) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -362,22 +363,9 @@ function startGame(root, mode, opts){
   updateControls();
   draw();
   G._resuming = false;
-  // ⚡ Aktif kozmo bonusu bildirimi
-  notifyKozmoBonus();
   // AI sırasındaysa otomatik oyna
   maybeAITurn();
   startAutoRollTimer();
-}
-
-// ⚡ Oyun başında aktif kozmo bonusunu kısaca bildir
-async function notifyKozmoBonus(){
-  try{
-    const kz = await import('../kozmos.js');
-    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
-    if(b && window.Hero && window.Hero.toast){
-      window.Hero.toast('⚡ '+(b.icon2||'✨')+' '+b.name+' aktif — '+b.icon+' '+b.label, false);
-    }
-  }catch(e){}
 }
 
 function restart(){
@@ -437,8 +425,23 @@ function rollAndShow(){
   const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
   animateDiceRoll(() => {
     if(moves.length === 0){
-      updateStatus(`🎲 ${diceStr} — oynanabilir hamle yok, pas`);
+      updateStatus(`🎲 ${diceStr} — oynanabilir hamle yok, 2 sn içinde otomatik pas…`);
       G.canPass = true;
+      // ⏭️ Otomatik pas: gele/hamle yoksa 2 saniyede sırayı devret
+      // Sadece insan oyuncunun KENDİ sırasında (AI hamlesi değil)
+      const _isAIturn = (G.mode==='ai' && G.state.turn !== G.playerColor);
+      const _isOppTurn = (G.online && G.state.turn !== G.playerColor);
+      if(!_isAIturn && !_isOppTurn){
+        if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); }
+        G._autoPassTimer = setTimeout(() => {
+          G._autoPassTimer = null;
+          // Hâlâ aynı durumda mı? (oyuncu zar atmadı, hamle yok, sıra değişmedi)
+          if(G && !G.gameEnded && G.rolled && G.canPass){
+            const stillNone = allLegalMoves(G.state).length === 0;
+            if(stillNone){ try{ Sound.move && Sound.move(); }catch(e){} endTurn(); }
+          }
+        }, 2000);
+      }
     } else {
       updateStatus(`🎲 ${diceStr} — pul seç`);
     }
@@ -1248,6 +1251,7 @@ function doMove(mv){
 
 function endTurn(){
   if(G.gameEnded) return;
+  if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G.online){ TavlaMP.send({ type:'endturn' }); }
   // sırayı değiştir, zarları temizle
   G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
@@ -1766,9 +1770,8 @@ function hideBreakOverlay(){
 
 // Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
 async function awardSimple(playerWon, reason){
-  let kaju = playerWon ? 50 : 15;
-  let xp = playerWon ? 55 : 20;
-  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ kaju=Math.round(kaju*m); xp=Math.round(xp*m); } } }catch(e){}
+  const kaju = playerWon ? 50 : 15;
+  const xp = playerWon ? 55 : 20;
   try{ await Store.addKaju(kaju, 'tavla'); await Store.addXP(xp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
@@ -1809,8 +1812,7 @@ async function onWin(status){
   updateStatus(label, 'win');
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
-  let tavlaKaju = 50 * wt; let tavlaXp = playerWon ? 55 : 20;
-  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ tavlaKaju=Math.round(tavlaKaju*m); tavlaXp=Math.round(tavlaXp*m); } } }catch(e){}
+  const tavlaKaju = 50 * wt; const tavlaXp = playerWon ? 55 : 20;
   try{ await Store.addKaju(tavlaKaju, 'tavla'); await Store.addXP(tavlaXp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
@@ -2213,8 +2215,8 @@ function injectCSS(){
 .tg-board-wrap{ flex:1 1 0; display:flex; align-items:center; justify-content:center; min-height:0; overflow:hidden; }
 .tg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; }
 .tg-controls{ display:flex; gap:6px; justify-content:center; align-items:center; padding:5px 0 3px; flex-shrink:0; position:relative; z-index:5; }
-.tg-actions{ display:flex; gap:6px; justify-content:center; align-items:center; padding:0 0 4px; flex-shrink:0; flex-wrap:wrap; position:relative; z-index:5; }
-.tg-act-btn{ padding:7px 11px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:11px; font-weight:700; cursor:pointer; transition:transform .1s; white-space:nowrap; }
+.tg-actions{ display:flex; gap:6px; justify-content:center; align-items:center; padding:0 6px 4px; flex-shrink:0; flex-wrap:nowrap; position:relative; z-index:5; }
+.tg-act-btn{ flex:1 1 0; min-width:0; padding:9px 6px; background:rgba(255,255,255,.05); border:1px solid rgba(200,165,87,.3); border-radius:10px; color:#c8a557; font-size:11px; font-weight:700; cursor:pointer; transition:transform .1s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tg-act-btn:active{ transform:scale(.95); }
 .tg-act-btn.danger{ border-color:rgba(255,90,90,.4); color:#ff8080; }
 .tavla-confirm{ position:fixed; inset:0; z-index:9300; display:flex; align-items:center; justify-content:center; background:rgba(5,10,20,.8); backdrop-filter:blur(5px); padding:20px; box-sizing:border-box; }
