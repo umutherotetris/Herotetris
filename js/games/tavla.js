@@ -189,6 +189,7 @@ function closeAll(){
   clearAutoRollTimer();
   clearBreakTimers();
   if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
+  if(G && G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
   try{ if(G && G.online) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -617,6 +618,60 @@ function draw(){
   }
   // ZAR AT mini belirteç (sol-orta, zar atılmadıysa)
   if(!G.rolled && canInteractRoll()){ drawRollHint(ctx, t); }
+  // PAS mini butonu (zar atıldı ama hamle yok → zarların altında)
+  else { G._passBox = null; }
+  if(G.rolled && G.canPass && canPassNow()){ drawPassHint(ctx, t); }
+}
+
+// Şu an pas geçebilir miyim? (insan, kendi sıram)
+function canPassNow(){
+  if(!G || G.gameEnded || !G.rolled || !G.canPass) return false;
+  if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
+  if(G.online && G.state.turn!==G.playerColor) return false;
+  return true;
+}
+
+// Zarların ALTINDA küçük PAS butonu (ZAR AT rozetinin minik versiyonu)
+function drawPassHint(ctx, t){
+  const g = G.geo;
+  // Zarların merkezi (drawDice ile aynı hesap)
+  const sz = Math.min(g.barW * 1.0, g.innerH * 0.085, g.halfW * 0.30);
+  const halfCx = G.flip ? (g.leftX + g.halfW * 0.5) : (g.rightX + g.halfW * 0.5);
+  const diceCy = g.innerY + g.innerH / 2;
+  // Çift zarda 2x2 ızgara → daha aşağı; tekli sıra → bir zar yarısı
+  const isDouble = G.state.dice && G.state.dice.length === 4;
+  const diceBottom = diceCy + (isDouble ? sz*1.28*0.5 + sz*0.5 : sz*0.5);
+  // PAS rozeti — ZAR AT'tan belirgin küçük
+  const w = Math.min(g.halfW * 0.44, 84);
+  const h = Math.max(22, w * 0.34);
+  const cx = halfCx;
+  const cy = diceBottom + h*0.85 + sz*0.18;
+  ctx.save();
+  const t0 = (performance.now() % 1400) / 1400;
+  const pulse = 1 + Math.sin(t0 * Math.PI * 2) * 0.05;
+  ctx.translate(cx, cy); ctx.scale(pulse, pulse);
+  ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 2;
+  _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
+  const grd = ctx.createLinearGradient(-w/2, -h/2, w/2, h/2);
+  grd.addColorStop(0,'rgba(120,128,150,.97)'); grd.addColorStop(1,'rgba(80,86,104,.97)');
+  ctx.fillStyle = grd; ctx.fill();
+  ctx.shadowColor = 'transparent';
+  _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
+  ctx.strokeStyle = 'rgba(220,225,240,.5)'; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = `900 ${Math.floor(h*0.42)}px system-ui, sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('⏭ PAS', 0, 1);
+  ctx.restore();
+  // Hit-test için kutuyu sakla (ölçeksiz koordinat)
+  G._passBox = { x: cx - w/2, y: cy - h/2, w, h };
+  // Nabız animasyonu için sürekli çizim
+  if(!G._passRAF){
+    G._passRAF = requestAnimationFrame(() => {
+      G._passRAF = null;
+      if(G && G.rolled && G.canPass && G.ctx) draw();
+    });
+  }
 }
 
 function canInteractRoll(){
@@ -1105,6 +1160,19 @@ function isMyPoint(idx){
 }
 
 function onPointerDown(e){
+  // PAS mini butonuna basıldı mı? (zarların altında, hamle yokken)
+  if(G && G._passBox && G.rolled && G.canPass && canPassNow()){
+    const { x, y } = getPos(e);
+    const b = G._passBox;
+    if(x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h){
+      e.preventDefault();
+      if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
+      G._passBox = null;
+      try{ Sound.move && Sound.move(); }catch(_){}
+      endTurn();
+      return;
+    }
+  }
   // Zar atılmadıysa belirtece/boşa basınca zar at
   if(G && !G.rolled && !G.gameEnded && !G.aiThinking){
     const canRoll = !(G.mode==='ai' && G.state.turn===G.aiColor) && !(G.online && G.state.turn!==G.playerColor);
@@ -1252,6 +1320,8 @@ function doMove(mv){
 function endTurn(){
   if(G.gameEnded) return;
   if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
+  if(G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
+  G._passBox = null;
   if(G.online){ TavlaMP.send({ type:'endturn' }); }
   // sırayı değiştir, zarları temizle
   G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
@@ -1866,7 +1936,10 @@ function updateControls(){
     passBtn.style.display = 'none';
   } else {
     const noMoves = allLegalMoves(G.state).length === 0;
-    passBtn.style.display = (noMoves || turnComplete(G.state)) ? 'block' : 'none';
+    // noMoves (gele) → tahtadaki mini PAS gösterilir, alttaki gizli
+    // turnComplete (tüm zarlar kullanıldı) → alttaki Pas (tahtada zar yok)
+    const showBottomPass = !noMoves && turnComplete(G.state);
+    passBtn.style.display = showBottomPass ? 'block' : 'none';
   }
   undoBtn.style.display = (G.undoStack && G.undoStack.length > 0) ? 'block' : 'none';
 }
