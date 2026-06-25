@@ -303,7 +303,6 @@ function showAIDifficulty(){
 }
 
 function startLocal(){
-  setTimeout(notifyKozmoBonus, 400);
   const st = newGame();
   G.state = st;
   G.who = 'A';
@@ -329,7 +328,6 @@ function startLocal(){
 // ── YAPAY ZEKÂ ──
 let KA = null;   // kelime-ai.js (talep üzerine yüklenir)
 async function startAI(difficulty, turnTime){
-  setTimeout(notifyKozmoBonus, 400);
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 Hazırlanıyor…</h3><p>Sözlük yükleniyor</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
@@ -805,29 +803,6 @@ function onlineGameOver(msg, verdictOverride){
   ov.querySelector('[data-x="menu"]').addEventListener('click', ()=>{ ov.remove(); G.online=false; G._over=false; showStart(); });
 }
 
-
-// ⚡ Oyun başında aktif kozmo bonusunu kısaca bildir (floating)
-async function notifyKozmoBonus(){
-  try{
-    const kz = await import('../kozmos.js');
-    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
-    if(!b) return;
-    if(window.Hero && window.Hero.toast){
-      window.Hero.toast('⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label, false);
-      return;
-    }
-    const d=document.createElement('div');
-    d.textContent='⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label;
-    d.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:99999;'
-      +'padding:9px 16px;border-radius:20px;font-size:12px;font-weight:800;color:#e9d5ff;'
-      +'background:linear-gradient(135deg,rgba(192,132,252,.95),rgba(124,77,255,.9));'
-      +'box-shadow:0 4px 20px rgba(124,77,255,.4);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none';
-    document.body.appendChild(d);
-    requestAnimationFrame(()=>{ d.style.opacity='1'; d.style.transform='translateX(-50%) translateY(4px)'; });
-    setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(),350); }, 3000);
-  }catch(e){}
-}
-
 function buildGameDOM(){
   const c = G.root.querySelector('[data-el="content"]');
   let cells = '';
@@ -881,7 +856,11 @@ function buildGameDOM(){
   // Nick tıklanabilir → profil kartı
   c.querySelectorAll('.kl-nm-click').forEach(nm => nm.addEventListener('click', async e => {
     const uid = nm.dataset.pcuid;
-    if(!uid) return;
+    if(!uid){
+      // AI/yerel rakip — gerçek profil yok
+      try{ flashStatus && flashStatus('🤖 Bu oyuncunun profili yok'); }catch(e){}
+      return;
+    }
     try{ const m=await import('../social.js'); m.openPlayerCard(uid); }catch(e){}
   }));
   c.querySelector('[data-el="board"]').addEventListener('click', (e)=>{
@@ -1054,13 +1033,19 @@ function renderScores(){
       const lvEl=q('[data-el="lvA"]'); if(lvEl) lvEl.textContent='LV.'+lv;
       const xpEl=q('[data-el="xpA"]'); if(xpEl) xpEl.style.width=pct+'%';
     }
-    // UID'leri data-pcuid'ye set et (ilk render'da)
+    // UID'leri data-pcuid'ye set et — ROLE GÖRE doğru eşleştir
+    // names.A "Sen" mi rakip mi? G.who (rolüm) belirler:
+    //   - Ben A isem: nameA=ben, nameB=rakip
+    //   - Ben B isem: nameA=rakip, nameB=ben
     const nmA=q('[data-el="nameA"]'); const nmB=q('[data-el="nameB"]');
-    if(nmA&&!nmA.dataset.pcuid){
-      const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
-      if(_as&&_as.uid) nmA.dataset.pcuid=_as.uid;
-    }
-    if(nmB&&!nmB.dataset.pcuid&&G.oppUid) nmB.dataset.pcuid=G.oppUid;
+    const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
+    const myUid = (_as&&_as.uid)||null;
+    const myRole = G.who || G.role || 'A';   // benim rolüm
+    // A koltuğundaki kişinin UID'i
+    const uidA = (myRole==='A') ? myUid : (G.oppUid||null);
+    const uidB = (myRole==='B') ? myUid : (G.oppUid||null);
+    if(nmA && uidA) nmA.dataset.pcuid = uidA;
+    if(nmB && uidB) nmB.dataset.pcuid = uidB;
     // Rakip level (varsa)
     if(G.oppLevel){ const lvB=q('[data-el="lvB"]'); if(lvB) lvB.textContent='LV.'+(G.oppLevel||1); }
     if(G.oppXP&&G.oppLevel){ const xpB=q('[data-el="xpB"]'); if(xpB){ const pctB=Math.min(100,Math.round((G.oppXP||0)/(300+(G.oppLevel||1)*200)*100)); xpB.style.width=pctB+'%'; } }
@@ -1660,9 +1645,8 @@ async function endGameAI(){
   const isDraw = a === b;
   // Pes edildiyse ödül yok; aksi halde sonuca göre ödül (AI'ya DEĞİL, oyuncuya)
   if(!G._resigned){
-    let klKaju = playerWon ? 70 : isDraw ? 30 : 10;
-    let klXp   = playerWon ? 50 : isDraw ? 20 : 15;
-    try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ klKaju=Math.round(klKaju*m); klXp=Math.round(klXp*m); } } }catch(e){}
+    const klKaju = playerWon ? 70 : isDraw ? 30 : 10;
+    const klXp   = playerWon ? 50 : isDraw ? 20 : 15;
     try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
     if(playerWon){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
     saveRecordsIfBetter();
@@ -1789,71 +1773,3 @@ function performExchange(idxs){
   G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
   if(G.ai){
     G.rackView = G.state.racks.A;
-    stopTurnTimer();
-    G.who='B'; G.aiThinking=true; renderAll(); renderScores();
-    flashStatus('🔄 '+removed.length+' harf değişti · 🤖 düşünüyor…');
-    setTimeout(aiTurn, 700);
-    return;
-  }
-  renderAll();
-  nextTurn();   // 2 oyuncu: sıra karşıya geçer
-}
-
-function nextTurn(){
-  G.who = (G.who==='A') ? 'B' : 'A';
-  G.rackView = G.state.racks[G.who].slice();
-  G.selected=null; G.pending=[];
-  // sıra geçişi bilgilendirme
-  const c = G.root.querySelector('[data-el="content"]');
-  const ov=document.createElement('div'); ov.className='kl-overlay';
-  ov.innerHTML=`<div class="kl-card"><h3>${G.names[G.who]} sırası</h3><p>Cihazı ${G.names[G.who]}'e ver, hazır olunca başla.</p><button class="kl-btn primary" data-x="go">Hazırım ▶</button></div>`;
-  c.appendChild(ov);
-  ov.querySelector('[data-x="go"]').addEventListener('click',()=>{ ov.remove(); renderAll(); });
-}
-
-async function endGame(){
-  const c = G.root.querySelector('[data-el="content"]');
-  const a=G.state.scores.A, b=G.state.scores.B;
-  const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
-  // Oyuncunun kendi rolüne göre kazanma (online'da B olabilirsin!)
-  const myRole = G.role || 'A';
-  const myScore = G.state.scores[myRole];
-  const oppScore = G.state.scores[myRole==='A'?'B':'A'];
-  const playerWon = myScore > oppScore;
-  let klKaju = playerWon ? 70 : a===b ? 30 : 10;
-  let klXp = playerWon ? 50 : a===b ? 20 : 15;
-  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ klKaju=Math.round(klKaju*m); klXp=Math.round(klXp*m); } } }catch(e){}
-  try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
-  if(a!==b){ sndWin(); confetti(); } else sndLose();
-  try{
-    const Reward = await import('../reward.js');
-    const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
-    await Reward.showReward({
-      won:playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
-      title: playerWon ? '🔤 KAZANDIN!' : (a===b?'🤝 BERABERLİK':'📚 Rakip kazandı'),
-      subtitle: G.names.A+': '+a+' puan · '+G.names.B+': '+b+' puan',
-      extra: bwText,
-    }); return;
-  }catch(e){ console.warn('[reward]',e); }
-  const stars = starsFor(Math.max(a,b));
-  const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
-  const ov=document.createElement('div'); ov.className='kl-overlay';
-  ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3>
-    <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
-    <p>${G.names.A}: ${a} &nbsp;·&nbsp; ${G.names.B}: ${b}</p>
-    <p style="color:#ffd86b;font-weight:700">${win}</p>${bw}
-    <button class="kl-btn primary" data-x="again">Yeni Oyun</button>
-    <button class="kl-btn" style="margin-top:8px" data-x="close">Kapat</button></div>`;
-  c.appendChild(ov);
-  ov.querySelector('[data-x="again"]').addEventListener('click',()=>{ ov.remove(); startLocal(); });
-  ov.querySelector('[data-x="close"]').addEventListener('click', closeKelime);
-}
-
-// Rakip adına dokun → oyuncu kartı (online)
-if(typeof document !== 'undefined' && !window.__klOppClick){
-  window.__klOppClick = true;
-  document.addEventListener('click', (e) => {
-    const o = e.target.closest('[data-opc]');
-    if(o && o.dataset.opc){ import('../social.js').then(m => m.openPlayerCard(o.dataset.opc)).catch(()=>{}); }
-  });
-}
