@@ -128,6 +128,25 @@ function _injectCosmeticCSS(){
     .pcp-bestname{ flex:1; font-size:12px; font-weight:700; color:#cdd; }
     .pcp-bestval{ font-size:13px; font-weight:900; color:#FFD740; }
     .pcp-nobest{ text-align:center; font-size:11px; color:#7d8ab8; margin:12px 0 4px; }
+    /* Profil arkadaş listesi */
+    .pcp-frsec, .pcp-kzsec{ margin-top:14px; }
+    .pcp-frgrid{ display:flex; flex-wrap:wrap; gap:7px; }
+    .pcp-frcard{ display:flex; align-items:center; gap:6px; padding:5px 9px 5px 5px; border-radius:20px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); cursor:pointer; transition:background .15s; }
+    .pcp-frcard:active{ background:rgba(0,229,255,.15); }
+    .pcp-frav{ font-size:15px; }
+    .pcp-frnick{ font-size:11px; font-weight:700; color:#cdd; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .pcp-frmore{ font-size:10px; color:#7d8ab8; text-align:center; margin-top:6px; }
+    /* Profil kozmolar */
+    .pcp-kzgrid{ display:flex; flex-wrap:wrap; gap:8px; }
+    .pcp-kzcard{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:9px 11px; border-radius:13px; background:rgba(171,71,188,.08); border:1px solid rgba(171,71,188,.25); min-width:78px; }
+    .pcp-kzic{ font-size:26px; }
+    .pcp-kznm{ font-size:10px; font-weight:800; color:#CE93D8; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .pcp-kzlvl{ font-size:8.5px; color:#9fb0d8; }
+    .pcp-kzfeed{ margin-top:4px; font-size:9.5px; font-weight:800; padding:4px 9px; border-radius:10px; border:none; cursor:pointer; color:#04130b; background:linear-gradient(135deg,#69F0AE,#34d399); }
+    .pcp-kzfeed:disabled{ opacity:.6; cursor:default; }
+    .pcp-kzlock{ margin-top:4px; font-size:9px; color:#7d8ab8; }
+    .pcp-frtoggle{ font-size:9px; font-weight:700; padding:3px 8px; margin-left:6px; border-radius:9px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:#9fb0d8; cursor:pointer; vertical-align:middle; }
+    .pcp-frtoggle:active{ background:rgba(255,255,255,.12); }
   `;
   document.head.appendChild(s);
 }
@@ -166,6 +185,167 @@ export function avatarOf(p, uid){
 }
 
 // ── 👤 OYUNCU KARTI: her yerden açılan mini profil ─────────────
+// ── Profil arkadaş listesini yükle ──
+async function _loadProfileFriends(ov, uid, p){
+  const sec = ov.querySelector('[data-pcfriends]');
+  if(!sec) return;
+  const slot = sec.querySelector('[data-frload]');
+  if(!slot) return;   // gizli (zaten mesaj basıldı)
+  try{
+    const s = await fdb.get(fdb.ref(db, 'friends/' + uid));
+    const v = s.exists() ? s.val() : {};
+    const fuids = Object.keys(v).filter(k => v[k] !== false);
+    if(!fuids.length){ slot.textContent = 'Henüz arkadaşı yok'; return; }
+    // En fazla 12 arkadaşın güncel nick+avatarını çek
+    const show = fuids.slice(0, 12);
+    const cards = await Promise.all(show.map(async fuid => {
+      let fp = {};
+      try{ const fs = await fdb.get(fdb.ref(db, 'users/' + fuid)); fp = fs.exists() ? fs.val() : {}; }catch(e){}
+      const fnick = fp.nick || fp.name || fp.displayName || 'Oyuncu';
+      const fav = avatarOf(fp, fuid);
+      return '<div class="pcp-frcard" data-pcfr="'+esc(fuid)+'"><span class="pcp-frav">'+fav+'</span><span class="pcp-frnick">'+esc(fnick)+'</span></div>';
+    }));
+    const more = fuids.length > 12 ? '<div class="pcp-frmore">+'+(fuids.length-12)+' daha</div>' : '';
+    slot.outerHTML = '<div class="pcp-frgrid">' + cards.join('') + '</div>' + more;
+    // Arkadaş kartına tıkla → o kişinin profili
+    sec.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => {
+      const fid = el.dataset.pcfr;
+      ov.remove();
+      setTimeout(() => openPlayerCard(fid), 80);
+    }));
+  }catch(e){ slot.textContent = 'Yüklenemedi'; }
+}
+
+// ── Profil kozmolarını yükle (ziyaret + besleme) ──
+async function _loadProfileKozmos(ov, uid, p){
+  const sec = ov.querySelector('[data-pckozmos]');
+  if(!sec) return;
+  const slot = sec.querySelector('[data-kzload]');
+  if(!slot) return;
+  const me = Auth.getState();
+  const myLevel = Number((me.profile && me.profile.level) || 0);
+  const canFeed = _amAdmin() || myLevel >= 70;   // level 70+ veya admin besleyebilir
+  try{
+    // Hem yetişen yumurtalar hem yetişkinler
+    let eggs = {}, creatures = {};
+    try{ const s = await fdb.get(fdb.ref(db, 'kozmos/' + uid + '/eggs')); eggs = s.exists() ? s.val() : {}; }catch(e){}
+    try{ const s = await fdb.get(fdb.ref(db, 'kozmos/' + uid + '/creatures')); creatures = s.exists() ? s.val() : {}; }catch(e){}
+    const eggList = Object.entries(eggs);
+    const creList = Object.entries(creatures);
+    if(!eggList.length && !creList.length){ slot.textContent = 'Henüz kozmosu yok'; return; }
+
+    let html = '<div class="pcp-kzgrid">';
+    // Yetişkinler
+    for(const [k, cre] of creList){
+      const icon = cre.icon || '🌟';
+      const nm = cre.name || cre.typeName || 'Kozmo';
+      html += '<div class="pcp-kzcard"><span class="pcp-kzic">'+esc(icon)+'</span><span class="pcp-kznm">'+esc(nm)+'</span><span class="pcp-kzlvl">yetişkin</span></div>';
+    }
+    // Yumurtalar (beslenebilir)
+    for(const [k, egg] of eggList){
+      const icon = (egg.type && egg.type.icon) || '🥚';
+      const nm = (egg.type && egg.type.name) || 'Yumurta';
+      const fed = egg.feedCount || 0;
+      const feedBtn = canFeed
+        ? '<button class="pcp-kzfeed" data-feed="'+esc(k)+'">🍎 Besle</button>'
+        : '<span class="pcp-kzlock">🔒 Lv.70</span>';
+      html += '<div class="pcp-kzcard"><span class="pcp-kzic">'+esc(icon)+'</span><span class="pcp-kznm">'+esc(nm)+'</span><span class="pcp-kzlvl">'+fed+' beslenme</span>'+feedBtn+'</div>';
+    }
+    html += '</div>';
+    if(!canFeed){ html += '<div class="pcp-nobest" style="margin-top:6px">🍎 Beslemek için Seviye 70 gerekli</div>'; }
+    slot.outerHTML = html;
+
+    // Besleme handler'ları
+    sec.querySelectorAll('[data-feed]').forEach(btn => btn.addEventListener('click', async () => {
+      const eggKey = btn.dataset.feed;
+      // Günde bir kez besleme (ziyaretçi başına)
+      const todayKey = 'htu_pfeed_' + uid + '_' + eggKey + '_' + new Date().toDateString();
+      if(localStorage.getItem(todayKey) && !_amAdmin()){
+        btn.disabled = true; btn.textContent = '✓ Bugün beslendi'; return;
+      }
+      btn.disabled = true; btn.textContent = '🍎 …';
+      try{
+        const eref = fdb.ref(db, 'kozmos/' + uid + '/eggs/' + eggKey);
+        const snap = await fdb.get(eref);
+        if(snap.exists()){
+          const egg = snap.val();
+          await fdb.set(eref, { ...egg, feedCount: (egg.feedCount || 0) + 1 });
+          localStorage.setItem(todayKey, '1');
+          btn.textContent = '✓ Beslendi!';
+          // Sahibine bildirim
+          try{
+            await fdb.push(fdb.ref(db, 'userNotifs/' + uid), {
+              type:'gift_kozmo', icon:'🍎',
+              text: (me.displayName || 'Biri') + ' kozmonu besledi! 🌱',
+              ts: Date.now(), fromUid: me.uid
+            });
+          }catch(e){}
+          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🍎 Kozmo beslendi'); }catch(e){}
+        }
+      }catch(e){ btn.disabled = false; btn.textContent = '🍎 Besle'; }
+    }));
+  }catch(e){ slot.textContent = 'Yüklenemedi'; }
+}
+
+// ── Profil: oyuna davet seçici (arkadaş listesinden / profilden) ──
+function _showGameInvitePicker(targetUid, targetNick){
+  const old = document.getElementById('giPick'); if(old) old.remove();
+  const ov = document.createElement('div');
+  ov.id = 'giPick'; ov.className = 'pcp-ov'; ov.style.zIndex = '2147483646';
+  ov.innerHTML = `<div class="pcp-card" style="max-width:300px">
+    <div class="pcp-besttitle" style="margin-top:4px">⚔️ ${esc(targetNick)} — Oyuna Davet</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">
+      <button class="pcp-btn" data-gi="kelime">🔤 Kelimecik</button>
+      <button class="pcp-btn" data-gi="chess" disabled style="opacity:.5">♟️ Satranç (yakında)</button>
+      <button class="pcp-btn" data-gi="tavla" disabled style="opacity:.5">🎲 Tavla (yakında)</button>
+    </div>
+    <button class="pcp-x">Vazgeç</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  // Kelimecik daveti — userNotifs'e challenge bildirimi
+  const kb = ov.querySelector('[data-gi="kelime"]');
+  if(kb) kb.addEventListener('click', async () => {
+    const me = Auth.getState();
+    kb.disabled = true; kb.textContent = '✓ Davet gönderildi';
+    try{
+      await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
+        type:'challenge', icon:'⚔️',
+        text: (me.displayName || 'Biri') + ' seni Kelimecik\'e davet ediyor! Oyuna girip kabul et.',
+        ts: Date.now(), fromUid: me.uid, game:'kelime'
+      });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ Oyun daveti gönderildi'); }catch(e){}
+    }catch(e){}
+    setTimeout(() => ov.remove(), 900);
+  });
+}
+
+// ── Profil: arkadaş listesi bölümü (gizli değilse + admin hep görür) ──
+function _renderProfileFriends(p, uid, isAdm){
+  // Gizlilik: p.hideFriends === true ise sadece sahibi veya admin görür
+  const me = Auth.getState();
+  const isSelf = uid === me.uid;
+  const hidden = p.hideFriends === true;
+  if(hidden && !isSelf && !_amAdmin()){
+    return '<div class="pcp-frsec"><div class="pcp-besttitle">👥 ARKADAŞLAR</div><div class="pcp-nobest">🔒 Bu kullanıcı arkadaş listesini gizlemiş</div></div>';
+  }
+  // Kendi profilimde: gizle/göster toggle butonu
+  const toggle = isSelf
+    ? '<button class="pcp-frtoggle" data-frhide="'+(hidden?'0':'1')+'">'+(hidden?'🔒 Liste gizli — Göster':'👁️ Listeyi gizle')+'</button>'
+    : '';
+  // İçerik async yüklenecek; placeholder + sonradan doldur
+  return '<div class="pcp-frsec" data-pcfriends="'+esc(uid)+'"><div class="pcp-besttitle">👥 ARKADAŞLAR'+(isSelf?' '+toggle:'')+'</div><div class="pcp-nobest" data-frload>⏳ Yükleniyor…</div></div>';
+}
+
+// ── Profil: kozmo bölümü (ziyaret + besleme: level 70+ veya admin) ──
+function _renderProfileKozmos(p, uid){
+  const me = Auth.getState();
+  const isSelf = uid === me.uid;
+  if(isSelf) return '';   // kendi kozmolarını kozmos panelinden yönetir
+  return '<div class="pcp-kzsec" data-pckozmos="'+esc(uid)+'"><div class="pcp-besttitle">🌌 KOZMOLAR</div><div class="pcp-nobest" data-kzload>⏳ Yükleniyor…</div></div>';
+}
+
 export async function openPlayerCard(uid){
   if(!uid || document.getElementById('pcPop')) return;
   const ov = document.createElement('div');
@@ -225,12 +405,49 @@ export async function openPlayerCard(uid){
     })()}
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="invite">⚔️ Oyuna Davet</button>' : ''}
       <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
     </div>`}
+    ${_renderProfileFriends(p, uid, isAdm)}
+    ${_renderProfileKozmos(p, uid)}
     <button class="pcp-x">Kapat</button>`;
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
   const dmB = ov.querySelector('[data-pc="dm"]');
   if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
+  // Dürt (arkadaş veya admin)
+  const pokeB = ov.querySelector('[data-pc="poke"]');
+  if(pokeB) pokeB.addEventListener('click', async () => {
+    pokeB.disabled = true; pokeB.textContent = '✓ Dürtüldü!';
+    try{
+      await fdb.push(fdb.ref(db, 'userNotifs/' + uid), {
+        type:'poke', icon:'👋',
+        text: (me.displayName || (me.profile && me.profile.nick) || 'Biri') + ' seni dürtüyor! 👋',
+        ts: Date.now(), fromUid: me.uid
+      });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('👋 Dürtüldü'); }catch(e){}
+    }catch(e){}
+    setTimeout(() => { if(pokeB){ pokeB.disabled = false; pokeB.textContent = '👋 Dürt'; } }, 4000);
+  });
+  // Oyuna Davet (arkadaş veya admin) — oyun seçtir
+  const invB = ov.querySelector('[data-pc="invite"]');
+  if(invB) invB.addEventListener('click', () => { _showGameInvitePicker(uid, nick); });
+
+  // ── Arkadaş listesini async yükle ──
+  _loadProfileFriends(ov, uid, p);
+  // ── Kozmoları async yükle (besleme: level 70+ veya admin) ──
+  _loadProfileKozmos(ov, uid, p);
+  // ── Arkadaş listesi gizle/göster toggle (kendi profilim) ──
+  const frHideBtn = ov.querySelector('[data-frhide]');
+  if(frHideBtn) frHideBtn.addEventListener('click', async () => {
+    const newHidden = frHideBtn.dataset.frhide === '1';
+    try{
+      await fdb.update(fdb.ref(db, 'users/' + me.uid), { hideFriends: newHidden });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast(newHidden ? '🔒 Arkadaş listesi gizlendi' : '👁️ Arkadaş listesi herkese açık'); }catch(e){}
+      frHideBtn.dataset.frhide = newHidden ? '0' : '1';
+      frHideBtn.textContent = newHidden ? '🔒 Liste gizli — Göster' : '👁️ Listeyi gizle';
+    }catch(e){}
+  });
   const frB = ov.querySelector('[data-pc="fr"]');
   if(frB) frB.addEventListener('click', async () => {
     if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
