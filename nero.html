@@ -391,7 +391,40 @@ input[type=range]::-moz-range-thumb{
 }
 .toast.show{transform:translateX(-50%) translateY(0);}
 
-/* ─── SCROLLBAR ─── */
+/* ─── MOOD CHIPS ─── */
+.mood-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.mood-chip{
+  padding:6px 13px;border-radius:20px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--ghost-dim);font-size:0.75rem;cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;font-family:'Inter',sans-serif;
+}
+.mood-chip:hover{border-color:var(--cyan);color:var(--cyan);}
+.mood-chip.selected{background:rgba(46,232,199,0.12);border-color:var(--cyan);color:var(--cyan);}
+
+/* ─── AI RESULT CARD ─── */
+.ai-result-preset{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;margin-bottom:10px;
+  background:rgba(123,111,240,0.1);border-radius:var(--radius-sm);
+  border:1px solid var(--border-bright);cursor:pointer;transition:all 0.2s;
+}
+.ai-result-preset:hover{background:rgba(123,111,240,0.18);transform:translateX(2px);}
+.ai-result-icon{font-size:1.3rem;}
+.ai-result-info{flex:1;}
+.ai-result-name{font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:600;color:var(--ghost);}
+.ai-result-why{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;line-height:1.4;}
+.ai-result-hz{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);}
+.ai-analysis{
+  font-size:0.8rem;color:var(--ghost-dim);line-height:1.6;
+  margin-bottom:10px;padding-bottom:10px;
+  border-bottom:1px solid var(--ghost-faint);
+}
+.ai-footer{font-size:0.67rem;color:var(--ghost-faint);margin-top:8px;text-align:right;}
+
+/* ─── TYPING ANIMATION ─── */
+.typing-wrap{display:flex;align-items:center;gap:10px;padding:4px 0;}
+
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -406,6 +439,239 @@ input[type=range]::-moz-range-thumb{
   .brainwave-hero{padding:18px 14px;}
   #spectrumCanvas{height:90px;}
 }
+
+/* ══════════════════════════════════════════════
+   TAB NAVIGATION
+   ══════════════════════════════════════════════ */
+.tab-nav{
+  display:flex;gap:6px;margin-bottom:22px;
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:6px;box-shadow:var(--shadow);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{
+  flex:1;min-width:fit-content;padding:11px 14px;border-radius:11px;border:none;
+  background:transparent;color:var(--ghost-dim);cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all 0.25s;white-space:nowrap;
+}
+.tab-btn span.tab-emoji{font-size:1rem;}
+.tab-btn:hover{color:var(--ghost);background:rgba(255,255,255,0.04);}
+.tab-btn.active{
+  background:linear-gradient(135deg,rgba(123,111,240,0.35),rgba(46,232,199,0.18));
+  color:var(--ghost);box-shadow:var(--glow-purple);
+}
+.tab-panel{display:none;animation:tabFadeIn 0.35s ease;}
+.tab-panel.active{display:block;}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══════════════════════════════════════════════
+   HYPNOTIC VISUAL ENGINE (shared canvas layer)
+   ══════════════════════════════════════════════ */
+.hv-stage{
+  position:relative;width:100%;aspect-ratio:1/1;max-width:420px;margin:0 auto;
+  border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle,rgba(123,111,240,0.06),rgba(0,0,0,0.4) 70%);
+  border:1px solid var(--border);box-shadow:0 0 60px rgba(123,111,240,0.15),inset 0 0 40px rgba(0,0,0,0.5);
+}
+/* Fallback for browsers without aspect-ratio support (older Samsung Internet) */
+@supports not (aspect-ratio:1/1){
+  .hv-stage::before{content:'';display:block;padding-top:100%;}
+  .hv-stage > canvas,.hv-stage > .hv-focus-dot{position:absolute;top:0;left:0;}
+}
+#hvCanvas,#hvCanvasMed{width:100%;height:100%;display:block;}
+.hv-focus-dot{
+  position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;
+  background:#fff;box-shadow:0 0 16px #fff,0 0 30px var(--cyan);
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+.hv-controls{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+.hv-style-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.hv-style-card{
+  padding:10px 6px;border-radius:var(--radius-sm);text-align:center;cursor:pointer;
+  border:1px solid var(--border);background:var(--glass-light);transition:all 0.2s;
+}
+.hv-style-card:hover{border-color:var(--purple);}
+.hv-style-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.12);box-shadow:var(--glow-cyan);}
+.hv-style-icon{font-size:1.2rem;}
+.hv-style-name{font-size:0.65rem;color:var(--ghost-dim);margin-top:3px;}
+
+/* ══════════════════════════════════════════════
+   ZIKIR (ESMA-ÜL HÜSNA) MODULE
+   ══════════════════════════════════════════════ */
+.zikir-name-display{
+  text-align:center;padding:22px 16px;margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(123,111,240,0.1),rgba(46,232,199,0.06));
+  border:1px solid var(--border-bright);border-radius:var(--radius);
+  position:relative;overflow:hidden;
+}
+.zikir-arabic{
+  font-size:2.6rem;line-height:1.3;color:var(--ghost);margin-bottom:8px;
+  text-shadow:0 0 24px rgba(123,111,240,0.5);
+  font-family:'Inter',sans-serif;
+}
+.zikir-translit{
+  font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:600;
+  color:var(--cyan);letter-spacing:0.02em;margin-bottom:4px;
+}
+.zikir-meaning{font-size:0.85rem;color:var(--ghost-dim);}
+.zikir-counter{
+  display:flex;align-items:center;justify-content:center;gap:18px;margin:18px 0;
+}
+.zikir-count-val{
+  font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--ghost);
+  text-shadow:0 0 20px rgba(46,232,199,0.4);min-width:90px;text-align:center;
+}
+.zikir-count-target{font-size:0.78rem;color:var(--ghost-dim);}
+.zikir-tap-btn{
+  width:100%;padding:18px;border-radius:var(--radius);border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#fff;
+  box-shadow:0 0 24px rgba(123,111,240,0.4);transition:transform 0.15s;margin-bottom:14px;
+}
+.zikir-tap-btn:active{transform:scale(0.97);}
+.zikir-name-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:280px;overflow-y:auto;
+  padding:4px;margin-top:6px;
+}
+@media(max-width:600px){.zikir-name-grid{grid-template-columns:repeat(2,1fr);}}
+.zikir-name-card{
+  padding:10px 8px;border-radius:var(--radius-sm);text-align:center;cursor:pointer;
+  border:1px solid var(--border);background:var(--glass-light);transition:all 0.2s;
+}
+.zikir-name-card:hover{border-color:var(--purple);transform:translateY(-1px);}
+.zikir-name-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.14);box-shadow:var(--glow-cyan);}
+.zikir-name-card-ar{font-size:1.1rem;color:var(--ghost);}
+.zikir-name-card-tr{font-size:0.62rem;color:var(--ghost-dim);margin-top:3px;line-height:1.3;}
+.zikir-mode-toggle{display:flex;gap:6px;margin-bottom:14px;}
+.zikir-settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ghost-faint);}
+.zikir-settings-row:last-child{border-bottom:none;}
+.zikir-settings-label{font-size:0.8rem;color:var(--ghost-dim);}
+
+/* Toggle switch */
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-slider{
+  position:absolute;cursor:pointer;inset:0;background:var(--ghost-faint);
+  border-radius:24px;transition:0.3s;
+}
+.switch-slider::before{
+  position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:0.3s;
+}
+.switch input:checked+.switch-slider{background:linear-gradient(135deg,var(--purple),var(--cyan));}
+.switch input:checked+.switch-slider::before{transform:translateX(20px);}
+
+/* ══════════════════════════════════════════════
+   BREATHING COACH MODULE
+   ══════════════════════════════════════════════ */
+.breath-mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+.breath-mode-card{
+  padding:14px;border-radius:var(--radius-sm);cursor:pointer;
+  border:1px solid var(--border);background:var(--glass-light);transition:all 0.25s;
+}
+.breath-mode-card:hover{border-color:var(--purple);transform:translateY(-2px);}
+.breath-mode-card.active{
+  border-color:var(--cyan);background:linear-gradient(135deg,rgba(46,232,199,0.12),rgba(123,111,240,0.08));
+  box-shadow:var(--glow-cyan);
+}
+.breath-mode-name{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;color:var(--ghost);}
+.breath-mode-pattern{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);margin-top:4px;}
+.breath-mode-desc{font-size:0.7rem;color:var(--ghost-dim);margin-top:4px;line-height:1.4;}
+
+.breath-stage{
+  position:relative;width:100%;max-width:300px;aspect-ratio:1/1;margin:10px auto 18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.breath-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid var(--ghost-faint);
+}
+.breath-ring.r2{inset:14%;}
+.breath-circle{
+  width:42%;height:42%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,rgba(123,111,240,0.55),rgba(46,232,199,0.25) 60%,transparent 100%);
+  box-shadow:0 0 50px rgba(123,111,240,0.5),inset 0 0 30px rgba(255,255,255,0.1);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 4s ease-in-out;
+  will-change:transform;
+}
+.breath-phase-text{
+  font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;
+  text-shadow:0 0 12px rgba(0,0,0,0.6);text-align:center;
+}
+.breath-phase-sub{
+  position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--ghost-dim);white-space:nowrap;
+}
+.breath-cycle-count{text-align:center;font-size:0.78rem;color:var(--ghost-dim);margin-top:30px;}
+.breath-cycle-count span{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-weight:700;}
+.breath-controls{display:flex;gap:10px;justify-content:center;margin-top:8px;}
+.breath-main-btn{
+  padding:14px 32px;border-radius:30px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  font-family:'Space Grotesk',sans-serif;font-size:0.9rem;font-weight:700;color:#fff;
+  box-shadow:0 0 24px rgba(123,111,240,0.4);transition:transform 0.2s;
+}
+.breath-main-btn:hover{transform:scale(1.04);}
+.breath-main-btn:active{transform:scale(0.96);}
+.breath-secondary-btn{
+  padding:14px 20px;border-radius:30px;border:1px solid var(--border);cursor:pointer;
+  background:transparent;color:var(--ghost-dim);font-size:0.85rem;transition:all 0.2s;
+}
+.breath-secondary-btn:hover{border-color:var(--purple);color:var(--ghost);}
+
+/* ══════════════════════════════════════════════
+   MEDITATION / HYPNOSIS COACH MODULE
+   ══════════════════════════════════════════════ */
+.med-script-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
+.med-script-card{
+  display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-light);cursor:pointer;transition:all 0.25s;
+}
+.med-script-card:hover{border-color:var(--purple);transform:translateX(3px);}
+.med-script-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.1);box-shadow:var(--glow-cyan);}
+.med-script-icon{font-size:1.7rem;flex-shrink:0;}
+.med-script-info{flex:1;}
+.med-script-name{font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;color:var(--ghost);}
+.med-script-meta{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;}
+.med-script-desc{font-size:0.7rem;color:var(--ghost-faint);margin-top:3px;line-height:1.4;}
+
+.med-player{
+  padding:20px;border-radius:var(--radius);border:1px solid var(--border-bright);
+  background:linear-gradient(135deg,rgba(123,111,240,0.08),rgba(46,232,199,0.04));
+  margin-bottom:18px;
+}
+.med-player-title{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;color:var(--ghost);margin-bottom:4px;}
+.med-player-step-count{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:14px;}
+.med-progress-bar{height:4px;background:var(--ghost-faint);border-radius:2px;overflow:hidden;margin-bottom:16px;}
+.med-progress-fill{height:100%;background:linear-gradient(to right,var(--purple),var(--cyan));border-radius:2px;transition:width 0.4s;}
+.med-text-display{
+  font-size:0.95rem;line-height:1.85;color:var(--ghost);min-height:140px;
+  padding:6px 2px;
+}
+.med-player-controls{display:flex;gap:10px;margin-top:18px;align-items:center;justify-content:center;}
+.med-ctrl-btn{
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--border);
+  background:var(--glass-light);color:var(--ghost);cursor:pointer;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.med-ctrl-btn:hover{border-color:var(--purple);}
+.med-ctrl-btn.primary{
+  width:58px;height:58px;background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;
+  box-shadow:0 0 24px rgba(123,111,240,0.4);
+}
+.med-voice-settings{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--ghost-faint);}
+.med-voice-settings select{
+  flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--ghost);padding:8px 10px;font-size:0.78rem;font-family:'Inter',sans-serif;outline:none;
+}
+
+/* Shared small label row */
+.module-subtitle{font-size:0.78rem;color:var(--ghost-dim);margin-bottom:14px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -431,6 +697,17 @@ input[type=range]::-moz-range-thumb{
       <span id="statusText">Hazır</span>
     </div>
   </header>
+
+  <!-- TAB NAVIGATION -->
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="panel-main"><span class="tab-emoji">🧠</span>Ana Panel</button>
+    <button class="tab-btn" data-tab="panel-zikir"><span class="tab-emoji">📿</span>Zikir</button>
+    <button class="tab-btn" data-tab="panel-breath"><span class="tab-emoji">🌬️</span>Nefes</button>
+    <button class="tab-btn" data-tab="panel-med"><span class="tab-emoji">🌀</span>Hipnoz</button>
+  </nav>
+
+  <!-- ═══════════ PANEL: ANA PANEL (mevcut) ═══════════ -->
+  <div class="tab-panel active" id="panel-main">
 
   <!-- BRAINWAVE SIGNATURE ELEMENT -->
   <div class="brainwave-hero">
@@ -587,15 +864,16 @@ input[type=range]::-moz-range-thumb{
     <!-- RIGHT COLUMN -->
     <div>
 
-      <!-- AI PANEL -->
+      <!-- LOCAL AI PANEL -->
       <div class="card section-gap">
-        <div class="card-title">AI Öneri Motoru</div>
-        <div class="ai-input-wrap">
-          <input class="ai-input" id="aiInput" type="text" placeholder="Nasıl hissediyorsunuz? (örn: odaklanamıyorum, uyuyamıyorum...)"/>
-          <button class="ai-send" id="aiSendBtn" onclick="sendAI()" aria-label="Gönder">✦</button>
+        <div class="card-title">Nöro Öneri Motoru</div>
+        <div class="mood-chips" id="moodChips"></div>
+        <div class="ai-input-wrap" style="margin-top:10px;">
+          <input class="ai-input" id="aiInput" type="text" placeholder="Nasıl hissediyorsunuz? (örn: odaklanamıyorum, yorgunum...)"/>
+          <button class="ai-send" id="aiSendBtn" onclick="sendAI()" aria-label="Analiz Et">✦</button>
         </div>
         <div class="ai-response" id="aiResponse">
-          <span style="color:var(--ghost-faint);font-style:italic;">Durumunuzu yazın, size özel ses protokolü önereyim...</span>
+          <span style="color:var(--ghost-faint);font-style:italic;">Durumunuzu yazın veya yukarıdan seçin...</span>
         </div>
       </div>
 
@@ -626,6 +904,132 @@ input[type=range]::-moz-range-thumb{
         <div class="toggle-group" id="specialFreqGroup" style="flex-direction:column;gap:8px;"></div>
       </div>
 
+    </div>
+  </div>
+
+  </div><!-- /panel-main -->
+
+  <!-- ═══════════ PANEL: ZİKİR (ESMA-ÜL HÜSNA) ═══════════ -->
+  <div class="tab-panel" id="panel-zikir">
+    <div class="card section-gap">
+      <div class="card-title">Esma-ül Hüsna Zikir Motoru</div>
+      <div class="module-subtitle">Bir isim seçin; ritmik döngü, beat frekansıyla senkronize görsel zikir alanında ve sesli tekrarda akar.</div>
+
+      <div class="zikir-name-display" id="zikirDisplay">
+        <div class="zikir-arabic" id="zikirArabic">الله</div>
+        <div class="zikir-translit" id="zikirTranslit">Allah</div>
+        <div class="zikir-meaning" id="zikirMeaning">Zat-ı İlahi'nin özel ismi</div>
+      </div>
+
+      <div class="hv-stage" id="zikirHvStage">
+        <canvas id="hvCanvas"></canvas>
+        <div class="hv-focus-dot"></div>
+      </div>
+
+      <div class="zikir-counter">
+        <button class="med-ctrl-btn" id="zikirResetBtn" aria-label="Sıfırla">↺</button>
+        <div>
+          <div class="zikir-count-val" id="zikirCount">0</div>
+          <div class="zikir-count-target">/ <span id="zikirTarget">33</span> hedef</div>
+        </div>
+        <button class="med-ctrl-btn" id="zikirTargetBtn" aria-label="Hedef değiştir">🎯</button>
+      </div>
+
+      <button class="zikir-tap-btn" id="zikirTapBtn">Çek (dokun veya boşluk tuşu)</button>
+
+      <div class="zikir-mode-toggle">
+        <button class="toggle-btn active" data-zmode="manual">Manuel Tıkla</button>
+        <button class="toggle-btn" data-zmode="auto">Otomatik Döngü</button>
+      </div>
+
+      <div class="zikir-settings-row">
+        <span class="zikir-settings-label">🔊 Sesli okuma (Web Speech)</span>
+        <label class="switch"><input type="checkbox" id="zikirVoiceToggle"/><span class="switch-slider"></span></label>
+      </div>
+      <div class="zikir-settings-row">
+        <span class="zikir-settings-label">🎧 Beat frekansıyla senkronize otomatik tempo</span>
+        <label class="switch"><input type="checkbox" id="zikirSyncToggle" checked/><span class="switch-slider"></span></label>
+      </div>
+      <div class="control-row" style="margin-top:10px;">
+        <div class="control-label">Otomatik Tempo <span id="zikirTempoVal">60 bpm</span></div>
+        <div class="slider-wrap">
+          <input type="range" id="zikirTempo" min="20" max="180" value="60"/>
+          <div class="slider-track" id="zikirTempoTrack"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="card-title">99 İsim — Esma-ül Hüsna</div>
+      <div class="zikir-name-grid" id="zikirNameGrid"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PANEL: NEFES KOÇU ═══════════ -->
+  <div class="tab-panel" id="panel-breath">
+    <div class="card section-gap">
+      <div class="card-title">Nefes Egzersiz Koçu</div>
+      <div class="module-subtitle">Bir teknik seçin; görsel daire koçu ve isteğe bağlı sesli yönlendirmeyle fazları takip edin.</div>
+      <div class="breath-mode-grid" id="breathModeGrid"></div>
+
+      <div class="breath-stage">
+        <div class="breath-ring"></div>
+        <div class="breath-ring r2"></div>
+        <div class="breath-circle" id="breathCircle">
+          <span class="breath-phase-text" id="breathPhaseText">Başla</span>
+        </div>
+        <span class="breath-phase-sub" id="breathPhaseSub">Hazır olduğunuzda başlatın</span>
+      </div>
+
+      <div class="breath-cycle-count">Döngü: <span id="breathCycleCount">0</span></div>
+
+      <div class="breath-controls">
+        <button class="breath-main-btn" id="breathStartBtn">Başlat</button>
+        <button class="breath-secondary-btn" id="breathStopBtn" style="display:none;">Durdur</button>
+      </div>
+
+      <div class="zikir-settings-row" style="margin-top:18px;">
+        <span class="zikir-settings-label">🔊 Sesli faz yönlendirmesi</span>
+        <label class="switch"><input type="checkbox" id="breathVoiceToggle" checked/><span class="switch-slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PANEL: MEDİTASYON + HİPNOZ KOÇU ═══════════ -->
+  <div class="tab-panel" id="panel-med">
+    <div class="card section-gap" id="medScriptSelectCard">
+      <div class="card-title">Oturum Senaryosu Seçin</div>
+      <div class="module-subtitle">Adım adım sesli (Web Speech API) ve yazılı yönlendirme ile rehberli oturum.</div>
+      <div class="med-script-grid" id="medScriptGrid"></div>
+    </div>
+
+    <div class="card section-gap" id="medPlayerCard" style="display:none;">
+      <div class="hv-stage" id="medHvStage" style="margin-bottom:18px;max-width:260px;">
+        <canvas id="hvCanvasMed"></canvas>
+      </div>
+      <div class="med-player">
+        <div class="med-player-title" id="medPlayerTitle">Senaryo</div>
+        <div class="med-player-step-count" id="medStepCount">Adım 1 / 10</div>
+        <div class="med-progress-bar"><div class="med-progress-fill" id="medProgressFill" style="width:0%"></div></div>
+        <div class="med-text-display" id="medTextDisplay">Hazır olduğunuzda başlatın.</div>
+        <div class="med-player-controls">
+          <button class="med-ctrl-btn" id="medPrevBtn" aria-label="Önceki">⏮</button>
+          <button class="med-ctrl-btn primary" id="medPlayBtn" aria-label="Oynat/Durdur">▶</button>
+          <button class="med-ctrl-btn" id="medNextBtn" aria-label="Sonraki">⏭</button>
+          <button class="med-ctrl-btn" id="medExitBtn" aria-label="Çıkış">✕</button>
+        </div>
+        <div class="med-voice-settings">
+          <span style="font-size:0.78rem;color:var(--ghost-dim);">Ses</span>
+          <select id="medVoiceSelect"></select>
+        </div>
+        <div class="control-row" style="margin-top:10px;">
+          <div class="control-label">Konuşma Hızı <span id="medRateVal">0.85x</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="medRate" min="0.6" max="1.2" step="0.05" value="0.85"/>
+            <div class="slider-track" id="medRateTrack"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1150,33 +1554,153 @@ function toggleFilter() {
   showToast(`Filtreler ${NS.filterActive?'aktif':'devre dışı'}`);
 }
 
-// ─── AI PANEL ───
-async function sendAI() {
+// ─── LOCAL NÖRO ÖNERİ MOTORU ───
+const MOOD_CHIPS = [
+  {label:'😴 Uyuyamıyorum', keys:['uyku','uyu','uyanık','uykusuz','gece','yatamıyorum','dinlenemiyorum']},
+  {label:'🧠 Odaklanamıyorum', keys:['odak','konsantre','dağınık','dikkat','odaklan','düşünemiyorum']},
+  {label:'😰 Stres / Kaygı', keys:['stres','kaygı','anksiyete','gergin','endişe','panik','sinirli','huzursuz']},
+  {label:'🔋 Yorgunum', keys:['yorgun','bitkin','enerji','halsiz','motivasyon','tükendim','isteksiz']},
+  {label:'🌊 Meditasyon', keys:['meditasyon','nefes','huzur','sakin','mindful','farkındalık','içe dön']},
+  {label:'📚 Çalışmak istiyorum', keys:['çalış','öğren','hafıza','okul','sınav','proje','verimlilik']},
+  {label:'😔 Duygusal yorgunluk', keys:['üzgün','depresif','mutsuz','bunaldım','zor','ağır','boş']},
+  {label:'✨ Yaratıcılık', keys:['yaratıcı','ilham','fikir','sanat','müzik','yaz','tasarım']},
+];
+
+// Preset eşleştirme kuralları — her entry: { keywords, presetId, analysis, tip }
+const AI_RULES = [
+  {
+    keys:['uyku','uyu','uyanık','uykusuz','gece','yatamıyorum','dinlenemiyorum','uyuyamıyorum'],
+    presets:['sleep','meditate'],
+    analysis:'Uyku güçlüğü genellikle aşırı Beta aktivitesiyle ilişkilidir. Delta ve Theta dalgaları beyin aktivitesini yavaşlatarak doğal uyku geçişini kolaylaştırır.',
+    tip:'🌙 Kulaklık takın, ekranı karartın, 20–45 dk süre seçin.'
+  },
+  {
+    keys:['odak','konsantre','dağınık','dikkat','odaklan','düşünemiyorum','çalış','öğren','proje','sınav','verimlilik'],
+    presets:['focus','memory'],
+    analysis:'Dikkat dağınıklığında Gamma ve Alfa+ frekansları prefrontal korteksi aktive eder, nöronal senkronizasyonu artırır.',
+    tip:'🎯 Sessiz bir ortamda en az 25 dk (Pomodoro) uygulayın.'
+  },
+  {
+    keys:['stres','kaygı','anksiyete','gergin','endişe','panik','sinirli','huzursuz','bunaldım'],
+    presets:['relax','meditate'],
+    analysis:'Kronik stres sempatik sinir sistemi aktivasyonunu artırır. Alfa dalgaları (8–13 Hz) bu aktivasyonu dengeleyerek parasempatik yanıtı güçlendirir.',
+    tip:'🌿 Pink noise ile birleştirin, nefes egzersizi yapın.'
+  },
+  {
+    keys:['yorgun','bitkin','enerji','halsiz','motivasyon','tükendim','isteksiz'],
+    presets:['energy','focus'],
+    analysis:'Fiziksel ve zihinsel yorgunlukta düşük Beta ve Gamma uyarımı nörotransmitter dengesini yeniden kurar, dopamin salgısını teşvik eder.',
+    tip:'⚡ Sabah veya öğleden sonra 15–20 dk uygulayın.'
+  },
+  {
+    keys:['meditasyon','nefes','huzur','sakin','mindful','farkındalık','içe dön'],
+    presets:['meditate','relax'],
+    analysis:'Theta dalgaları (4–8 Hz) meditasyon ve derin rahatlama durumunu temsil eder. Deneyimli meditasyoncuların beyin taramalarında en baskın dalga budur.',
+    tip:'🧘 Lotus pozisyonunda, gözler kapalı, en az 20 dk.'
+  },
+  {
+    keys:['hafıza','öğren','okul','hafıza'],
+    presets:['memory','focus'],
+    analysis:'Hafıza konsolidasyonu Alfa-Beta geçiş bölgesinde (12–15 Hz) en verimlidir. Hipokampüs ile prefrontal korteks arasındaki bağlantıyı güçlendirir.',
+    tip:'📚 Çalışma öncesi 10 dk uygulayın, öğrenme sırasında devam edin.'
+  },
+  {
+    keys:['üzgün','depresif','mutsuz','bunaldım','zor','ağır','boş','duygusal'],
+    presets:['relax','meditate'],
+    analysis:'Duygusal yorgunlukta nazik Alfa uyarımı ve Pink noise kombinasyonu kortizol seviyesini düşürür, ruh hali düzenlemesine yardımcı olur.',
+    tip:'🌸 528 Hz özel frekansı eklemeyi deneyin, uzun seans tutun.'
+  },
+  {
+    keys:['yaratıcı','ilham','fikir','sanat','müzik','yaz','tasarım'],
+    presets:['meditate','memory'],
+    analysis:'Yaratıcı akış halinde Theta dalgaları baskındır. Bu durum bilinçaltı bağlantılarının yüzeye çıkmasını, sıra dışı fikir kombinasyonlarını kolaylaştırır.',
+    tip:'✨ Brown noise ile birleştirin, yargılamadan yazın/çizin.'
+  },
+];
+
+function scoreText(text, keys) {
+  const t = text.toLowerCase();
+  return keys.reduce((s, k) => s + (t.includes(k) ? 1 : 0), 0);
+}
+
+function findBestRules(text) {
+  return AI_RULES
+    .map(r => ({...r, score: scoreText(text, r.keys)}))
+    .filter(r => r.score > 0)
+    .sort((a,b) => b.score - a.score);
+}
+
+function initMoodChips() {
+  const wrap = document.getElementById('moodChips');
+  MOOD_CHIPS.forEach(chip => {
+    const btn = document.createElement('button');
+    btn.className = 'mood-chip';
+    btn.textContent = chip.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('aiInput').value = chip.keys[0];
+      sendAI();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function sendAI() {
   const input = document.getElementById('aiInput').value.trim();
   if (!input) return;
   const resp = document.getElementById('aiResponse');
-  resp.innerHTML = '<div class="loading"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span style="margin-left:8px;font-size:0.8rem;color:var(--ghost-faint)">Analiz ediliyor...</span></div>';
 
-  try {
-    const beatHz = parseFloat(document.getElementById('beatFreq').value);
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:500,
-        system:`Sen NeuroSync AI Ultra'nın ses terapisi asistanısın. Kullanıcının ruh halini analiz ederek kısa, net binaural beat ve ses protokolü önerileri sun. Türkçe yanıt ver. Şu anki ayarlar: ${beatHz} Hz beat frekansı. Format: 1-2 cümle analiz, ardından öneri (frekans, ses tipi, süre). Maksimum 120 kelime.`,
-        messages:[{role:'user', content:input}]
-      })
+  // Typing effect
+  resp.innerHTML = `<div class="typing-wrap"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span style="font-size:0.78rem;color:var(--ghost-faint)">Analiz ediliyor...</span></div>`;
+
+  setTimeout(() => {
+    const matches = findBestRules(input);
+
+    if (matches.length === 0) {
+      // Fallback: genel öneri
+      resp.innerHTML = `
+        <div class="ai-analysis">Girdiğiniz durum için genel bir rahatlama protokolü öneriyorum. Birkaç farklı kelimeyle tekrar deneyin.</div>
+        ${buildPresetCards(['relax','meditate'], 'Genel Rahatlama')}
+        <div class="ai-footer">✦ NeuroSync Nöro Motoru — Offline</div>`;
+      return;
+    }
+
+    const top = matches[0];
+    const html = `
+      <div class="ai-analysis">${top.analysis}</div>
+      ${buildPresetCards(top.presets, null)}
+      <div style="font-size:0.75rem;color:var(--cyan);margin:8px 0 4px">💡 ${top.tip}</div>
+      <div class="ai-footer">✦ NeuroSync Nöro Motoru — Offline</div>`;
+    resp.innerHTML = html;
+
+    // Tıklanabilir preset kartlarına listener ekle
+    resp.querySelectorAll('.ai-result-preset').forEach(card => {
+      card.onclick = () => {
+        const pid = card.dataset.pid;
+        const preset = PRESETS.find(p => p.id === pid);
+        if (preset) { applyPreset(preset); showToast(`${preset.icon} ${preset.name} yüklendi`); }
+      };
     });
-    const d = await r.json();
-    const text = d.content?.[0]?.text || 'Yanıt alınamadı.';
-    resp.innerHTML = `<div style="line-height:1.65">${text.replace(/\n/g,'<br>')}</div>
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--ghost-faint);font-size:0.7rem;color:var(--ghost-faint);">✦ NeuroSync AI — Claude Sonnet</div>`;
-  } catch(e) {
-    resp.innerHTML = '<span style="color:var(--ghost-faint)">AI bağlantısı başarısız. Lütfen tekrar deneyin.</span>';
-  }
+  }, 700);
 }
+
+function buildPresetCards(presetIds, overrideTitle) {
+  return presetIds.map(pid => {
+    const p = PRESETS.find(x => x.id === pid);
+    if (!p) return '';
+    return `<div class="ai-result-preset" data-pid="${p.id}">
+      <div class="ai-result-icon">${p.icon}</div>
+      <div class="ai-result-info">
+        <div class="ai-result-name">${p.name}</div>
+        <div class="ai-result-why">${p.desc}</div>
+        <div class="ai-result-hz">${p.hz}</div>
+      </div>
+      <span style="color:var(--ghost-faint);font-size:0.75rem;">Uygula →</span>
+    </div>`;
+  }).join('');
+}
+
 
 // ─── TOAST ───
 let toastTO = null;
@@ -1304,13 +1828,767 @@ function initTracks() {
   });
 }
 
+// ═══════════════════════════════════════════
+//  TAB NAVIGATION
+// ═══════════════════════════════════════════
+function initTabs() {
+  const buttons = document.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => {
+    btn.onclick = () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(btn.dataset.tab);
+      if (target) target.classList.add('active');
+
+      // Lazily (re)size visual-engine canvases when their tab becomes visible
+      if (btn.dataset.tab === 'panel-zikir') HV.resize('hvCanvas');
+      if (btn.dataset.tab === 'panel-med') HV.resize('hvCanvasMed');
+    };
+  });
+}
+
+// ═══════════════════════════════════════════
+//  HYPNOTIC VISUAL ENGINE
+//  Shared mandala / spiral / fractal canvas layer.
+//  Used by Zikir + Meditation/Hypnosis modules.
+// ═══════════════════════════════════════════
+const HV = {
+  style: 'mandala',
+  speed: 1,
+  hue: 260,
+  rafIds: {},
+  t: 0,
+
+  styles: [
+    {id:'mandala',icon:'🕸️',name:'Mandala'},
+    {id:'spiral',icon:'🌀',name:'Spiral'},
+    {id:'fraktal',icon:'❄️',name:'Fraktal'},
+    {id:'nefes',icon:'⭕',name:'Nefes Halkası'},
+  ],
+
+  resize(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const stage = canvas.closest('.hv-stage') || canvas.parentElement;
+    let size = stage.clientWidth;
+    if (!size) {
+      // Stage is hidden (e.g. inactive tab) — retry shortly after it becomes visible
+      requestAnimationFrame(() => this.resize(canvasId));
+      return;
+    }
+    canvas.width = Math.round(size * devicePixelRatio);
+    canvas.height = Math.round(size * devicePixelRatio);
+  },
+
+  start(canvasId) {
+    this.resize(canvasId);
+    if (!this._resizeBound) {
+      this._resizeBound = true;
+      window.addEventListener('resize', () => {
+        Object.keys(this.rafIds).forEach(id => this.resize(id));
+      });
+    }
+    if (this.rafIds[canvasId]) return; // already animating, just keep going
+    const draw = () => {
+      this.rafIds[canvasId] = requestAnimationFrame(draw);
+      this.render(canvasId);
+    };
+    draw();
+  },
+
+  // Beat frekansını referans alarak görsel hızı senkronlar
+  getSyncSpeed() {
+    const beatEl = document.getElementById('beatFreq');
+    const beat = beatEl ? parseFloat(beatEl.value) : 10;
+    // 0.5–40 Hz beat aralığını ~0.3–2.2 görsel hız çarpanına haritalar
+    return 0.3 + (beat / 40) * 1.9;
+  },
+
+  render(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx2 = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+    const R = Math.min(w,h)/2 * 0.92;
+
+    this.t += 0.012 * this.getSyncSpeed();
+
+    ctx2.clearRect(0,0,w,h);
+    ctx2.fillStyle = 'rgba(5,6,16,0.18)';
+    ctx2.fillRect(0,0,w,h);
+
+    const hueBase = this.hue;
+
+    if (this.style === 'mandala') {
+      const layers = 6;
+      for (let l = 0; l < layers; l++) {
+        const petals = 8 + l*2;
+        const rad = R * (0.25 + l*0.13);
+        const rot = this.t * (l%2===0?1:-1) * 0.4;
+        ctx2.save();
+        ctx2.translate(cx,cy);
+        ctx2.rotate(rot);
+        for (let i = 0; i < petals; i++) {
+          const ang = (i/petals)*Math.PI*2;
+          const x = Math.cos(ang)*rad, y = Math.sin(ang)*rad;
+          const hue = hueBase + l*18 + i*4;
+          ctx2.beginPath();
+          ctx2.arc(x,y, R*0.045 + Math.sin(this.t*2+l)*R*0.015, 0, Math.PI*2);
+          ctx2.fillStyle = `hsla(${hue},85%,65%,${0.55 - l*0.06})`;
+          ctx2.shadowColor = `hsla(${hue},90%,60%,0.8)`;
+          ctx2.shadowBlur = R*0.06;
+          ctx2.fill();
+        }
+        ctx2.restore();
+      }
+    } else if (this.style === 'spiral') {
+      ctx2.save();
+      ctx2.translate(cx,cy);
+      const arms = 3;
+      for (let a = 0; a < arms; a++) {
+        ctx2.beginPath();
+        const armOffset = (a/arms)*Math.PI*2;
+        for (let i = 0; i < 260; i++) {
+          const p = i/260;
+          const ang = p*Math.PI*10 + this.t*1.3 + armOffset;
+          const rad = p*R;
+          const x = Math.cos(ang)*rad, y = Math.sin(ang)*rad;
+          i===0 ? ctx2.moveTo(x,y) : ctx2.lineTo(x,y);
+        }
+        const hue = hueBase + a*40;
+        ctx2.strokeStyle = `hsla(${hue},85%,65%,0.8)`;
+        ctx2.lineWidth = 2.4*devicePixelRatio;
+        ctx2.shadowColor = `hsla(${hue},90%,60%,0.7)`;
+        ctx2.shadowBlur = R*0.04;
+        ctx2.stroke();
+      }
+      ctx2.restore();
+    } else if (this.style === 'fraktal') {
+      const depth = 5;
+      const drawBranch = (x,y,len,ang,d) => {
+        if (d > depth || len < R*0.04) return;
+        const x2 = x + Math.cos(ang)*len, y2 = y + Math.sin(ang)*len;
+        const hue = hueBase + d*22;
+        ctx2.beginPath();
+        ctx2.moveTo(x,y); ctx2.lineTo(x2,y2);
+        ctx2.strokeStyle = `hsla(${hue},85%,65%,${0.85 - d*0.12})`;
+        ctx2.lineWidth = (depth-d+1)*0.9*devicePixelRatio;
+        ctx2.shadowColor = `hsla(${hue},90%,60%,0.6)`;
+        ctx2.shadowBlur = R*0.03;
+        ctx2.stroke();
+        const spread = 0.5 + Math.sin(this.t*0.7)*0.12;
+        drawBranch(x2,y2,len*0.72,ang-spread,d+1);
+        drawBranch(x2,y2,len*0.72,ang+spread,d+1);
+      };
+      const branches = 6;
+      for (let b = 0; b < branches; b++) {
+        const ang = (b/branches)*Math.PI*2 + this.t*0.5;
+        drawBranch(cx,cy,R*0.42,ang,0);
+      }
+    } else if (this.style === 'nefes') {
+      const pulse = 0.5 + Math.sin(this.t*1.6)*0.5;
+      const rings = 4;
+      for (let i = 0; i < rings; i++) {
+        const rad = R*(0.2 + i*0.2) + pulse*R*0.08;
+        const hue = hueBase + i*15;
+        ctx2.beginPath();
+        ctx2.arc(cx,cy,rad,0,Math.PI*2);
+        ctx2.strokeStyle = `hsla(${hue},85%,65%,${0.5 - i*0.08})`;
+        ctx2.lineWidth = 3*devicePixelRatio;
+        ctx2.shadowColor = `hsla(${hue},90%,60%,0.6)`;
+        ctx2.shadowBlur = R*0.05;
+        ctx2.stroke();
+      }
+    }
+
+    // Central focus glow
+    const grad = ctx2.createRadialGradient(cx,cy,0,cx,cy,R*0.12);
+    grad.addColorStop(0,`hsla(${hueBase+30},90%,85%,0.9)`);
+    grad.addColorStop(1,'transparent');
+    ctx2.fillStyle = grad;
+    ctx2.beginPath();
+    ctx2.arc(cx,cy,R*0.12,0,Math.PI*2);
+    ctx2.fill();
+  },
+
+  setStyle(id) {
+    this.style = id;
+    document.querySelectorAll('.hv-style-card').forEach(c => c.classList.toggle('active', c.dataset.style===id));
+  },
+
+  // Hue can be nudged to reflect the active brainwave / mood
+  setHue(h) { this.hue = h; },
+};
+
+// ═══════════════════════════════════════════
+//  ESMA-ÜL HÜSNA — ZİKİR MOTORU
+// ═══════════════════════════════════════════
+const ESMA = [
+  {ar:'الله',tr:'Allah',mean:"Zat-ı İlahi'nin özel ismi"},
+  {ar:'الرحمن',tr:'Er-Rahmân',mean:'Tüm yaratılmışlara merhamet eden'},
+  {ar:'الرحيم',tr:'Er-Rahîm',mean:'İnananlara özel rahmet eden'},
+  {ar:'الملك',tr:'El-Melik',mean:'Mülkün gerçek sahibi'},
+  {ar:'القدوس',tr:'El-Kuddûs',mean:'Her türlü eksiklikten uzak, tertemiz'},
+  {ar:'السلام',tr:'Es-Selâm',mean:'Selamet veren, her türlü kusurdan salim'},
+  {ar:'المؤمن',tr:'El-Mü\'min',mean:'Güven veren, emin kılan'},
+  {ar:'المهيمن',tr:'El-Müheymin',mean:'Her şeyi görüp gözeten'},
+  {ar:'العزيز',tr:'El-Azîz',mean:'Karşı durulamaz izzet sahibi'},
+  {ar:'الجبار',tr:'El-Cebbâr',mean:'Dilediğini yaptıran, eksikleri tamamlayan'},
+  {ar:'المتكبر',tr:'El-Mütekebbir',mean:'Büyüklüğünde eşi olmayan'},
+  {ar:'الخالق',tr:'El-Hâlık',mean:'Yaratan, yoktan var eden'},
+  {ar:'البارئ',tr:'El-Bâri',mean:'Her şeyi kusursuzca yaratan'},
+  {ar:'المصور',tr:'El-Musavvir',mean:'Her varlığa şekil veren'},
+  {ar:'الغفار',tr:'El-Gaffâr',mean:'Günahları çokça örten ve bağışlayan'},
+  {ar:'القهار',tr:'El-Kahhâr',mean:'Her şeye galip gelen'},
+  {ar:'الوهاب',tr:'El-Vehhâb',mean:'Karşılıksız çokça bağışta bulunan'},
+  {ar:'الرزاق',tr:'Er-Rezzâk',mean:'Tüm canlıların rızkını veren'},
+  {ar:'الفتاح',tr:'El-Fettâh',mean:'Her türlü zorluğu açan, çözen'},
+  {ar:'العليم',tr:'El-Alîm',mean:'Her şeyi hakkıyla bilen'},
+  {ar:'القابض',tr:'El-Kâbid',mean:'Dilediğini sıkıp daraltan'},
+  {ar:'الباسط',tr:'El-Bâsit',mean:'Dilediğini açıp genişleten'},
+  {ar:'الخافض',tr:'El-Hâfıd',mean:'Dilediğini alçaltan'},
+  {ar:'الرافع',tr:'Er-Râfi',mean:'Dilediğini yükselten'},
+  {ar:'المعز',tr:'El-Muizz',mean:'Dilediğini aziz eden'},
+  {ar:'المذل',tr:'El-Müzil',mean:'Dilediğini alçaltan, zelil kılan'},
+  {ar:'السميع',tr:'Es-Semî',mean:'Her şeyi işiten'},
+  {ar:'البصير',tr:'El-Basîr',mean:'Her şeyi gören'},
+  {ar:'الحكم',tr:'El-Hakem',mean:'Hak ile hükmeden'},
+  {ar:'العدل',tr:'El-Adl',mean:'Mutlak adalet sahibi'},
+  {ar:'اللطيف',tr:'El-Latîf',mean:'En ince işleri bilen, lütufkâr'},
+  {ar:'الخبير',tr:'El-Habîr',mean:'Her şeyin iç yüzünden haberdar'},
+  {ar:'الحليم',tr:'El-Halîm',mean:'Cezalandırmada acele etmeyen'},
+  {ar:'العظيم',tr:'El-Azîm',mean:'Büyüklüğü sınırsız olan'},
+  {ar:'الغفور',tr:'El-Gafûr',mean:'Çok bağışlayan'},
+  {ar:'الشكور',tr:'Eş-Şekûr',mean:'Az amele çok mükâfat veren'},
+  {ar:'العلي',tr:'El-Aliyy',mean:'Yüceliği sınırsız olan'},
+  {ar:'الكبير',tr:'El-Kebîr',mean:'Büyüklükte eşi olmayan'},
+  {ar:'الحفيظ',tr:'El-Hafîz',mean:'Her şeyi koruyan'},
+  {ar:'المقيت',tr:'El-Mukît',mean:'Rızıkları yaratıp ulaştıran'},
+  {ar:'الحسيب',tr:'El-Hasîb',mean:'Hesabı görüp yeten'},
+  {ar:'الجليل',tr:'El-Celîl',mean:'Azamet ve celal sahibi'},
+  {ar:'الكريم',tr:'El-Kerîm',mean:'Cömertliği sınırsız olan'},
+  {ar:'الرقيب',tr:'Er-Rakîb',mean:'Her şeyi gözetip denetleyen'},
+  {ar:'المجيب',tr:'El-Mucîb',mean:'Duaları kabul eden'},
+  {ar:'الواسع',tr:'El-Vâsi',mean:'İlmi ve rahmeti her şeyi kuşatan'},
+  {ar:'الحكيم',tr:'El-Hakîm',mean:'Her işi hikmetli olan'},
+  {ar:'الودود',tr:'El-Vedûd',mean:'Kullarını çok seven'},
+  {ar:'المجيد',tr:'El-Mecîd',mean:'Şanı ve şerefi yüce olan'},
+  {ar:'الباعث',tr:'El-Bâis',mean:'Ölüleri dirilten'},
+  {ar:'الشهيد',tr:'Eş-Şehîd',mean:'Her şeye şahit olan'},
+  {ar:'الحق',tr:'El-Hak',mean:'Varlığı değişmez gerçek olan'},
+  {ar:'الوكيل',tr:'El-Vekîl',mean:'Kendine güvenenlerin işini üstlenen'},
+  {ar:'القوي',tr:'El-Kaviyy',mean:'Kudreti sonsuz olan'},
+  {ar:'المتين',tr:'El-Metîn',mean:'Sarsılmaz kuvvet sahibi'},
+  {ar:'الولي',tr:'El-Veliyy',mean:'İnananların yardımcısı ve dostu'},
+  {ar:'الحميد',tr:'El-Hamîd',mean:'Övgüye en layık olan'},
+  {ar:'المحصي',tr:'El-Muhsî',mean:'Her şeyin sayısını bilen'},
+  {ar:'المبدئ',tr:'El-Mübdi',mean:'Varlıkları ilk yaratan'},
+  {ar:'المعيد',tr:'El-Muîd',mean:'Yarattıklarını yok edip yeniden yaratan'},
+  {ar:'المحيي',tr:'El-Muhyî',mean:'Can veren, dirilten'},
+  {ar:'المميت',tr:'El-Mümît',mean:'Ölümü yaratan'},
+  {ar:'الحي',tr:'El-Hayy',mean:'Ezelî ve ebedî diri olan'},
+  {ar:'القيوم',tr:'El-Kayyûm',mean:'Her şeyi varlıkta tutan'},
+  {ar:'الواجد',tr:'El-Vâcid',mean:'İstediğini istediği an bulan'},
+  {ar:'الماجد',tr:'El-Mâcid',mean:'Şan ve şeref sahibi'},
+  {ar:'الواحد',tr:'El-Vâhid',mean:'Zatında ve sıfatlarında bir olan'},
+  {ar:'الصمد',tr:'Es-Samed',mean:'Hiçbir şeye muhtaç olmayan'},
+  {ar:'القادر',tr:'El-Kâdir',mean:'Her şeye gücü yeten'},
+  {ar:'المقتدر',tr:'El-Muktedir',mean:'Kudretiyle her şeye hükmeden'},
+  {ar:'المقدم',tr:'El-Mukaddim',mean:'Dilediğini öne alan'},
+  {ar:'المؤخر',tr:'El-Müahhir',mean:'Dilediğini geri bırakan'},
+  {ar:'الأول',tr:'El-Evvel',mean:'Varlığının başlangıcı olmayan'},
+  {ar:'الآخر',tr:'El-Âhir',mean:'Varlığının sonu olmayan'},
+  {ar:'الظاهر',tr:'Ez-Zâhir',mean:'Varlığı delilleriyle apaçık olan'},
+  {ar:'الباطن',tr:'El-Bâtın',mean:'Zatı gizli, hakikati akılla kavranamayan'},
+  {ar:'الوالي',tr:'El-Vâlî',mean:'Kâinatı tek başına idare eden'},
+  {ar:'المتعالي',tr:'El-Müteâlî',mean:'Aklın tasavvüründen çok yüce olan'},
+  {ar:'البر',tr:'El-Berr',mean:'İyilik ve lütuf sahibi'},
+  {ar:'التواب',tr:'Et-Tevvâb',mean:'Tevbeleri çokça kabul eden'},
+  {ar:'المنتقم',tr:'El-Müntekım',mean:'Suçluları cezalandıran'},
+  {ar:'العفو',tr:'El-Afüvv',mean:'Affı çok olan'},
+  {ar:'الرؤوف',tr:'Er-Raûf',mean:'Çok şefkatli, esirgeyen'},
+  {ar:'مالك الملك',tr:'Mâlik-ül Mülk',mean:'Mülkün gerçek ve ebedî sahibi'},
+  {ar:'ذو الجلال والإكرام',tr:'Zü\'l-Celâli ve\'l-İkrâm',mean:'Hem büyüklük hem ikram sahibi'},
+  {ar:'المقسط',tr:'El-Muksit',mean:'Her işi denk ve adaletli yapan'},
+  {ar:'الجامع',tr:'El-Câmi',mean:'Dilediğini dilediği yerde toplayan'},
+  {ar:'الغني',tr:'El-Ganî',mean:'Hiçbir şeye ihtiyacı olmayan zengin'},
+  {ar:'المغني',tr:'El-Mugnî',mean:'Dilediğini zengin eden'},
+  {ar:'المانع',tr:'El-Mâni',mean:'İstemediği şeye mâni olan'},
+  {ar:'الضار',tr:'Ed-Dârr',mean:'İlahî hikmeti gereği zarar verdiren'},
+  {ar:'النافع',tr:'En-Nâfi',mean:'Hayır ve fayda yaratan'},
+  {ar:'النور',tr:'En-Nûr',mean:'Âlemleri nurlandıran'},
+  {ar:'الهادي',tr:'El-Hâdî',mean:'Hidayete erdiren'},
+  {ar:'البديع',tr:'El-Bedî',mean:'Eşi benzeri olmayan şeyler yaratan'},
+  {ar:'الباقي',tr:'El-Bâkî',mean:'Varlığının sonu olmayan, ebedî'},
+  {ar:'الوارث',tr:'El-Vâris',mean:'Her şeyin asıl sahibi, varisi'},
+  {ar:'الرشيد',tr:'Er-Reşîd',mean:'Doğru yola sevk eden'},
+  {ar:'الصبور',tr:'Es-Sabûr',mean:'Çok sabırlı olan'},
+];
+// Hû zikri — Esma listesine ek özel mod
+const HU_ZIKR = {ar:'هو',tr:'Hû',mean:"O — Zatına işaret eden zikir; nefesle (HÛÛÛ) çekilir"};
+
+const ZK = {
+  activeIdx: 0,
+  count: 0,
+  target: 33,
+  mode: 'manual',
+  autoTimer: null,
+  voiceOn: false,
+  syncOn: true,
+  tempo: 60,
+};
+
+function initZikir() {
+  // Render 99-name grid + Hû card
+  const grid = document.getElementById('zikirNameGrid');
+  const huCard = document.createElement('div');
+  huCard.className = 'zikir-name-card';
+  huCard.dataset.idx = '-1';
+  huCard.innerHTML = `<div class="zikir-name-card-ar">هو</div><div class="zikir-name-card-tr">Hû Zikri</div>`;
+  huCard.onclick = () => selectZikirName(-1);
+  grid.appendChild(huCard);
+
+  ESMA.forEach((e,i) => {
+    const card = document.createElement('div');
+    card.className = 'zikir-name-card';
+    card.dataset.idx = i;
+    card.innerHTML = `<div class="zikir-name-card-ar">${e.ar}</div><div class="zikir-name-card-tr">${e.tr}</div>`;
+    card.onclick = () => selectZikirName(i);
+    grid.appendChild(card);
+  });
+  selectZikirName(0);
+
+  document.getElementById('zikirTapBtn').onclick = zikirTap;
+  document.getElementById('zikirResetBtn').onclick = () => { ZK.count=0; updateZikirCount(); };
+  document.getElementById('zikirTargetBtn').onclick = cycleZikirTarget;
+  document.getElementById('zikirVoiceToggle').onchange = e => ZK.voiceOn = e.target.checked;
+  document.getElementById('zikirSyncToggle').onchange = e => {
+    ZK.syncOn = e.target.checked;
+    document.getElementById('zikirTempo').disabled = e.target.checked;
+    if (ZK.mode==='auto') restartZikirAuto();
+  };
+  document.getElementById('zikirTempo').oninput = function() {
+    ZK.tempo = parseInt(this.value);
+    document.getElementById('zikirTempoVal').textContent = this.value+' bpm';
+    updateTrack('zikirTempo','zikirTempoTrack');
+    if (ZK.mode==='auto' && !ZK.syncOn) restartZikirAuto();
+  };
+
+  document.querySelectorAll('[data-zmode]').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('[data-zmode]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      ZK.mode = btn.dataset.zmode;
+      if (ZK.mode==='auto') { restartZikirAuto(); showToast('🔄 Otomatik zikir döngüsü başladı'); }
+      else { clearInterval(ZK.autoTimer); showToast('👆 Manuel mod'); }
+    };
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.code==='Space' && document.getElementById('panel-zikir').classList.contains('active')) {
+      e.preventDefault(); zikirTap();
+    }
+  });
+
+  HV.start('hvCanvas');
+}
+
+function selectZikirName(idx) {
+  ZK.activeIdx = idx;
+  document.querySelectorAll('.zikir-name-card').forEach(c => c.classList.toggle('active', parseInt(c.dataset.idx)===idx));
+  const e = idx === -1 ? HU_ZIKR : ESMA[idx];
+  document.getElementById('zikirArabic').textContent = e.ar;
+  document.getElementById('zikirTranslit').textContent = e.tr;
+  document.getElementById('zikirMeaning').textContent = e.mean;
+  ZK.count = 0; updateZikirCount();
+  // Subtle hue shift per name for visual variety
+  HV.setHue(200 + (idx===-1 ? 300 : idx*3) % 160);
+}
+
+function updateZikirCount() {
+  document.getElementById('zikirCount').textContent = ZK.count;
+  if (ZK.count >= ZK.target) {
+    showToast('✨ Zikir hedefine ulaşıldı');
+  }
+}
+
+function cycleZikirTarget() {
+  const targets = [33, 99, 100, 1000];
+  const idx = targets.indexOf(ZK.target);
+  ZK.target = targets[(idx+1) % targets.length];
+  document.getElementById('zikirTarget').textContent = ZK.target;
+  showToast(`🎯 Hedef: ${ZK.target}`);
+}
+
+function zikirTap() {
+  ZK.count++;
+  updateZikirCount();
+  const btn = document.getElementById('zikirTapBtn');
+  btn.style.transform = 'scale(0.96)';
+  setTimeout(()=>btn.style.transform='scale(1)', 120);
+  if (ZK.voiceOn) speakZikirName();
+}
+
+function speakZikirName() {
+  if (!('speechSynthesis' in window)) return;
+  const e = ZK.activeIdx === -1 ? HU_ZIKR : ESMA[ZK.activeIdx];
+  const u = new SpeechSynthesisUtterance(e.tr);
+  u.lang = 'tr-TR'; u.rate = 0.9; u.pitch = 0.95;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+function restartZikirAuto() {
+  clearInterval(ZK.autoTimer);
+  const bpm = ZK.syncOn ? Math.max(20, Math.min(180, (parseFloat(document.getElementById('beatFreq')?.value||10))*8)) : ZK.tempo;
+  const interval = 60000 / bpm;
+  ZK.autoTimer = setInterval(() => { if (ZK.mode==='auto') zikirTap(); }, interval);
+}
+
+// ═══════════════════════════════════════════
+//  NEFES EGZERSİZ KOÇU
+// ═══════════════════════════════════════════
+const BREATH_MODES = [
+  {id:'478', name:'4-7-8 Tekniği', desc:'Sakinleştirici; uykuya geçiş ve kaygı azaltma için.',
+   phases:[{label:'Nefes Al',sec:4,voice:'Nefes alın'},{label:'Tut',sec:7,voice:'Tutun'},{label:'Ver',sec:8,voice:'Verin'}]},
+  {id:'box', name:'Box Breathing', desc:'Eşit kare nefes; odaklanma ve sinir sistemi dengesi.',
+   phases:[{label:'Nefes Al',sec:4,voice:'Nefes alın'},{label:'Tut',sec:4,voice:'Tutun'},{label:'Ver',sec:4,voice:'Verin'},{label:'Tut',sec:4,voice:'Tutun'}]},
+  {id:'tummo', name:'Tummo Nefesi', desc:'Enerjik; güçlü döngüsel nefes + tutma (ileri seviye).',
+   phases:[{label:'Güçlü Nefes Al',sec:2,voice:'Güçlü nefes alın'},{label:'Bırak',sec:2,voice:'Bırakın'},{label:'Tut (Boş)',sec:15,voice:'Nefesi boşaltıp tutun'},{label:'Derin Al & Tut',sec:10,voice:'Derin alın ve tutun'}]},
+  {id:'nadi', name:'Nadi Shodhana', desc:'Alternatif burun nefesi; zihinsel denge ve berraklık.',
+   phases:[{label:'Sağ Burundan Ver',sec:4,voice:'Sağ burun deliğinden verin'},{label:'Sol Burundan Al',sec:4,voice:'Sol burun deliğinden alın'},{label:'Sol Burundan Ver',sec:4,voice:'Sol burun deliğinden verin'},{label:'Sağ Burundan Al',sec:4,voice:'Sağ burun deliğinden alın'}]},
+];
+
+const BR = {
+  modeIdx: 0,
+  running: false,
+  phaseIdx: 0,
+  cycleCount: 0,
+  timer: null,
+  voiceOn: true,
+};
+
+function initBreath() {
+  const grid = document.getElementById('breathModeGrid');
+  BREATH_MODES.forEach((m,i) => {
+    const card = document.createElement('div');
+    card.className = 'breath-mode-card';
+    card.dataset.idx = i;
+    card.innerHTML = `<div class="breath-mode-name">${m.name}</div>
+      <div class="breath-mode-pattern">${m.phases.map(p=>p.sec).join('-')}</div>
+      <div class="breath-mode-desc">${m.desc}</div>`;
+    card.onclick = () => selectBreathMode(i);
+    grid.appendChild(card);
+  });
+  selectBreathMode(0);
+
+  document.getElementById('breathStartBtn').onclick = toggleBreath;
+  document.getElementById('breathStopBtn').onclick = stopBreath;
+  document.getElementById('breathVoiceToggle').onchange = e => BR.voiceOn = e.target.checked;
+}
+
+function selectBreathMode(i) {
+  if (BR.running) stopBreath();
+  BR.modeIdx = i;
+  document.querySelectorAll('.breath-mode-card').forEach(c => c.classList.toggle('active', parseInt(c.dataset.idx)===i));
+}
+
+function toggleBreath() {
+  if (BR.running) stopBreath(); else startBreath();
+}
+
+function startBreath() {
+  BR.running = true;
+  BR.phaseIdx = 0;
+  BR.cycleCount = 0;
+  document.getElementById('breathStartBtn').textContent = 'Duraklat';
+  document.getElementById('breathStopBtn').style.display = 'inline-block';
+  document.getElementById('breathCycleCount').textContent = '0';
+  runBreathPhase();
+}
+
+function runBreathPhase() {
+  if (!BR.running) return;
+  const mode = BREATH_MODES[BR.modeIdx];
+  const phase = mode.phases[BR.phaseIdx];
+  const circle = document.getElementById('breathCircle');
+  const text = document.getElementById('breathPhaseText');
+  const sub = document.getElementById('breathPhaseSub');
+
+  text.textContent = phase.label;
+  sub.textContent = `${phase.sec} saniye`;
+
+  // Expand on inhale-type phases, contract on exhale, hold = no scale change
+  const lower = phase.label.toLowerCase();
+  let scale = 1;
+  if (lower.includes('al')) scale = 1.55;
+  else if (lower.includes('ver') || lower.includes('bırak')) scale = 0.7;
+  circle.style.transition = `transform ${phase.sec}s ease-in-out`;
+  circle.style.transform = `scale(${scale})`;
+
+  if (BR.voiceOn && 'speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(phase.voice);
+    u.lang = 'tr-TR'; u.rate = 0.85;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }
+
+  // Countdown inside sub-label
+  let remaining = phase.sec;
+  clearInterval(BR.timer);
+  BR.timer = setInterval(() => {
+    remaining--;
+    if (remaining > 0) sub.textContent = `${remaining} saniye`;
+  }, 1000);
+
+  setTimeout(() => {
+    clearInterval(BR.timer);
+    if (!BR.running) return;
+    BR.phaseIdx++;
+    if (BR.phaseIdx >= mode.phases.length) {
+      BR.phaseIdx = 0;
+      BR.cycleCount++;
+      document.getElementById('breathCycleCount').textContent = BR.cycleCount;
+    }
+    runBreathPhase();
+  }, phase.sec*1000);
+}
+
+function stopBreath() {
+  BR.running = false;
+  clearInterval(BR.timer);
+  speechSynthesis.cancel();
+  document.getElementById('breathStartBtn').textContent = 'Başlat';
+  document.getElementById('breathStopBtn').style.display = 'none';
+  document.getElementById('breathPhaseText').textContent = 'Başla';
+  document.getElementById('breathPhaseSub').textContent = 'Hazır olduğunuzda başlatın';
+  document.getElementById('breathCircle').style.transform = 'scale(1)';
+}
+
+// ═══════════════════════════════════════════
+//  MEDİTASYON + HİPNOZ KOÇU
+// ═══════════════════════════════════════════
+const MED_SCRIPTS = [
+  {id:'bodyscan', icon:'🧍', name:'Body Scan', meta:'~10 dk · 12 adım', desc:'Bedeni baştan ayağa fark ederek gevşeme.',
+   steps:[
+    'Rahat bir pozisyonda oturun veya uzanın. Gözlerinizi yavaşça kapatın.',
+    'Birkaç derin nefes alın. Her nefes verişte biraz daha gevşeyin.',
+    'Dikkatinizi başınızın tepesine getirin. Orada hissettiğiniz her duyguyu fark edin, yargılamadan.',
+    'Yüzünüze inin. Alnınız, gözleriniz, çene kaslarınız... Tüm gerginliği serbest bırakın.',
+    'Boynunuza ve omuzlarınıza geçin. Omuzlarınızın ağırlığını yere veya koltuğa teslim edin.',
+    'Kollarınıza, ellerinize doğru ilerleyin. Parmak uçlarınıza kadar her noktayı fark edin.',
+    'Göğsünüze gelin. Nefesinizin doğal ritmini izleyin, değiştirmeden.',
+    'Karın bölgenize inin. Her nefeste hafif yükselip alçalmasını hissedin.',
+    'Belinize ve sırtınıza geçin. Yere veya koltuğa olan tüm değme noktalarını fark edin.',
+    'Kalçalarınıza, bacaklarınıza, dizlerinize doğru ilerleyin. Ağırlığın akışını izleyin.',
+    'Ayak bileklerinize, ayaklarınıza ve parmak uçlarınıza kadar inin. Bedeninizin tamamını şimdi tek bir bütün olarak hissedin.',
+    'Bu bütünlük hissiyle birlikte birkaç nefes daha alın. Hazır olduğunuzda gözlerinizi yavaşça açın.'
+   ]},
+  {id:'nsdr', icon:'🌊', name:'NSDR (Non-Sleep Deep Rest)', meta:'~12 dk · 11 adım', desc:'Derin dinlenme; zihni sıfırlama protokolü.',
+   steps:[
+    'Sırt üstü uzanın, gözleriniz kapalı. Kollarınız yanlarda, avuçlar yukarı dönük.',
+    'Üç kez, normalden daha derin nefes alın. Her verişte vücudunuzu yere doğru bırakın.',
+    'Şimdi nefesinizi doğal akışına bırakın. Sadece izleyin, kontrol etmeyin.',
+    'Dikkatinizi sağ ayağınıza getirin. Orada olduğunu fark edin, hiçbir şey yapmadan.',
+    'Dikkatinizi sol ayağınıza taşıyın. Aynı şekilde, sadece fark edin.',
+    'Şimdi her iki bacağınızı birlikte hissedin. Ağırlıklarını yere teslim edin.',
+    'Dikkatinizi karnınıza getirin, nefesle yükselip inişini izleyin.',
+    'Göğsünüze, sonra omuzlarınıza geçin. Her bölgeyi sırayla, yargısızca fark edin.',
+    'Şimdi tüm bedeninizi bir bütün olarak hissedin — ağır, sıcak, dinlenmiş.',
+    'Bu dinlenme halinde birkaç dakika kalın. Zihniniz dağılırsa, nazikçe nefese geri dönün.',
+    'Yavaşça parmaklarınızı, ayak baş parmaklarınızı kıpırdatın. Gözlerinizi açmaya hazır olduğunuzda açın.'
+   ]},
+  {id:'ericksonian', icon:'🌀', name:'Ericksonian Gevşeme Dili', meta:'~9 dk · 10 adım', desc:'Dolaylı, metaforik hipnoz dili ile derin gevşeme.',
+   steps:[
+    'Rahatça yerleşin... ve isterseniz gözleriniz kendi hızında kapanabilir.',
+    'Şu an burada otururken, bedeninizin desteklendiği yüzeyi fark edebilirsiniz... ve merak edebilirsiniz, hangi kas grubu önce gevşemeyi seçecek.',
+    'Bazı insanlar nefesin yavaşladığını fark eder... bazıları önce ellerinde bir ağırlaşma duyar... sizin için hangisi olursa olsun, doğru olan odur.',
+    'Ve şimdi, hiçbir şey yapmanıza gerek olmadan... beden kendi bilgeliğiyle gevşemeyi biliyor... tıpkı bir ağacın yaprağının düşmesi gerektiğinde düşmesi gibi.',
+    'Belki şu anda, içinizden bir yer... çok uzaklarda, sakin bir yerde olduğunuzu hayal edebilir... orası deniz kenarı olabilir, bir orman olabilir, ya da hiç bilmediğiniz huzurlu bir yer.',
+    'O yerde, her nefes sizi biraz daha derine taşıyor... aşağı, aşağı, daha derin bir rahatlamaya... acele etmeden.',
+    'Ve zihniniz, isterse, bu cümleleri dinlemeyi bırakıp kendi iç sesine geçebilir... çünkü siz şu an gitmeniz gereken yere zaten gidiyorsunuz.',
+    'Bedeniniz şimdi neyi öğrendiyse... bu gevşeme hissini hatırlamayı biliyor... ve istediğiniz her an, bir nefes alıp bu hissi yeniden bulabilirsiniz.',
+    'Birazdan, hazır olduğunuzda... yavaşça, kendi hızınızda buraya, şu odaya geri döneceksiniz... taze, dinlenmiş ve berrak bir zihinle.',
+    'Üçe kadar sayacağım... bir... farkındalığınız yavaşça artıyor... iki... bedeniniz hafifliyor... üç... gözlerinizi açabilirsiniz, hazır olduğunuzda.'
+   ]},
+  {id:'focus-hypno', icon:'🎯', name:'Odak & Akış Hipnozu', meta:'~8 dk · 9 adım', desc:'Derin çalışma/yaratıcı akış haline geçiş telkini.',
+   steps:[
+    'Oturduğunuz yerde rahatlayın. Gözlerinizi kapatabilir veya sabit bir noktaya yumuşak bir bakışla bakabilirsiniz.',
+    'Üç kez yavaşça nefes alıp verin. Her verişte zihninizdeki gürültü biraz daha azalsın.',
+    'Şimdi zihninizde, üzerinde çalışacağınız işi net bir şekilde görün... renkleri, şekli, ayrıntılarıyla.',
+    'Kendinize, bu işe tamamen odaklanmış, zahmetsizce ilerlediğiniz halinizi hayal edin.',
+    'Bu odak halinde zaman algınızın değiştiğini, dakikaların akıp gittiğini fark edin.',
+    'Bedeninizde, bu derin odak haliyle birlikte gelen sakin ama uyanık enerjiyi hissedin.',
+    'Şimdi kendinize sessizce şu telkini verin: "Hazır olduğumda, zahmetsizce odaklanırım."',
+    'Bu hissi bir nefes daha alarak pekiştirin... ve bu hissin sizinle kalacağını bilin.',
+    'Üçe kadar sayıp gözlerinizi açın: bir, iki, üç — şimdi tam burada, odaklanmış ve hazır.'
+   ]},
+];
+
+const MED = {
+  scriptIdx: -1,
+  stepIdx: 0,
+  playing: false,
+  autoAdvance: true,
+  rate: 0.85,
+  voice: null,
+};
+
+function initMeditation() {
+  const grid = document.getElementById('medScriptGrid');
+  MED_SCRIPTS.forEach((s,i) => {
+    const card = document.createElement('div');
+    card.className = 'med-script-card';
+    card.dataset.idx = i;
+    card.innerHTML = `<div class="med-script-icon">${s.icon}</div>
+      <div class="med-script-info">
+        <div class="med-script-name">${s.name}</div>
+        <div class="med-script-meta">${s.meta}</div>
+        <div class="med-script-desc">${s.desc}</div>
+      </div>`;
+    card.onclick = () => openMedScript(i);
+    grid.appendChild(card);
+  });
+
+  document.getElementById('medPrevBtn').onclick = () => medStep(-1);
+  document.getElementById('medNextBtn').onclick = () => medStep(1);
+  document.getElementById('medPlayBtn').onclick = toggleMedPlay;
+  document.getElementById('medExitBtn').onclick = closeMedScript;
+  document.getElementById('medRate').oninput = function() {
+    MED.rate = parseFloat(this.value);
+    document.getElementById('medRateVal').textContent = this.value+'x';
+    updateTrack('medRate','medRateTrack');
+  };
+
+  populateVoiceList();
+  if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = populateVoiceList;
+  }
+}
+
+function populateVoiceList() {
+  if (!('speechSynthesis' in window)) return;
+  const sel = document.getElementById('medVoiceSelect');
+  const voices = speechSynthesis.getVoices();
+  sel.innerHTML = '';
+  const trVoices = voices.filter(v => v.lang.startsWith('tr'));
+  const list = trVoices.length ? trVoices : voices;
+  list.forEach((v,i) => {
+    const opt = document.createElement('option');
+    opt.value = v.name; opt.textContent = `${v.name} (${v.lang})`;
+    sel.appendChild(opt);
+  });
+  if (list.length) MED.voice = list[0];
+  sel.onchange = () => { MED.voice = voices.find(v=>v.name===sel.value) || null; };
+}
+
+function openMedScript(i) {
+  MED.scriptIdx = i;
+  MED.stepIdx = 0;
+  document.getElementById('medScriptSelectCard').style.display = 'none';
+  document.getElementById('medPlayerCard').style.display = 'block';
+  document.getElementById('medPlayerTitle').textContent = MED_SCRIPTS[i].name;
+  renderMedStep();
+  HV.setStyle('nefes');
+  HV.start('hvCanvasMed');
+}
+
+function closeMedScript() {
+  speechSynthesis.cancel();
+  MED.playing = false;
+  document.getElementById('medPlayBtn').textContent = '▶';
+  document.getElementById('medScriptSelectCard').style.display = 'block';
+  document.getElementById('medPlayerCard').style.display = 'none';
+}
+
+function renderMedStep() {
+  const script = MED_SCRIPTS[MED.scriptIdx];
+  const total = script.steps.length;
+  document.getElementById('medStepCount').textContent = `Adım ${MED.stepIdx+1} / ${total}`;
+  document.getElementById('medProgressFill').style.width = ((MED.stepIdx+1)/total*100)+'%';
+  document.getElementById('medTextDisplay').textContent = script.steps[MED.stepIdx];
+}
+
+function medStep(dir) {
+  const script = MED_SCRIPTS[MED.scriptIdx];
+  const newIdx = MED.stepIdx + dir;
+  if (newIdx < 0 || newIdx >= script.steps.length) {
+    if (newIdx >= script.steps.length) showToast('✨ Oturum tamamlandı');
+    return;
+  }
+  MED.stepIdx = newIdx;
+  renderMedStep();
+  if (MED.playing) speakCurrentMedStep();
+}
+
+function toggleMedPlay() {
+  MED.playing = !MED.playing;
+  document.getElementById('medPlayBtn').textContent = MED.playing ? '⏸' : '▶';
+  if (MED.playing) speakCurrentMedStep();
+  else speechSynthesis.cancel();
+}
+
+function speakCurrentMedStep() {
+  if (!('speechSynthesis' in window)) { showToast('Web Speech API desteklenmiyor'); return; }
+  const script = MED_SCRIPTS[MED.scriptIdx];
+  const text = script.steps[MED.stepIdx];
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'tr-TR'; u.rate = MED.rate; u.pitch = 0.92;
+  if (MED.voice) u.voice = MED.voice;
+  u.onend = () => {
+    if (!MED.playing) return;
+    if (MED.stepIdx < script.steps.length - 1) {
+      MED.stepIdx++;
+      renderMedStep();
+      setTimeout(() => { if (MED.playing) speakCurrentMedStep(); }, 900);
+    } else {
+      MED.playing = false;
+      document.getElementById('medPlayBtn').textContent = '▶';
+      showToast('✨ Oturum tamamlandı');
+    }
+  };
+  speechSynthesis.speak(u);
+}
+
+// ─── HV STYLE PICKER (shared, injected into both zikir & med stages) ───
+function initHvStylePickers() {
+  // Inject a style-picker row under each hv-stage if not already present
+  document.querySelectorAll('.hv-stage').forEach(stage => {
+    if (stage.nextElementSibling && stage.nextElementSibling.classList.contains('hv-style-grid')) return;
+    const grid = document.createElement('div');
+    grid.className = 'hv-style-grid';
+    HV.styles.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'hv-style-card' + (s.id==='mandala'?' active':'');
+      card.dataset.style = s.id;
+      card.innerHTML = `<div class="hv-style-icon">${s.icon}</div><div class="hv-style-name">${s.name}</div>`;
+      card.onclick = () => {
+        HV.setStyle(s.id);
+        document.querySelectorAll('.hv-style-grid').forEach(g => {
+          g.querySelectorAll('.hv-style-card').forEach(c => c.classList.toggle('active', c.dataset.style===s.id));
+        });
+      };
+      grid.appendChild(card);
+    });
+    stage.insertAdjacentElement('afterend', grid);
+  });
+}
+
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
   initPresets();
   initSpecialFreqs();
   initBrainwaveUI();
+  initMoodChips();
   startSpectrumAnim();
   initTracks();
+  initTabs();
+  initZikir();
+  initBreath();
+  initMeditation();
+  initHvStylePickers();
   // Apply default preset
   applyPreset(PRESETS[1]); // relax default
   document.querySelector(`[data-id="relax"]`)?.classList.add('active');
