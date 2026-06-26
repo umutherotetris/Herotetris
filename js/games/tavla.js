@@ -182,6 +182,68 @@ export function openTavla(){
     });
   });
   G = { root, mode:null };
+
+  // DAVET BAGLAMI: davetle acildiysa otomatik online host/guest
+  try{
+    const raw = localStorage.getItem('hero_invite_ctx');
+    if(raw){
+      const ctx = JSON.parse(raw);
+      if(ctx && ctx.game === 'tavla' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+        localStorage.removeItem('hero_invite_ctx');
+        _startInviteTavla(root, ctx);
+        return;
+      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+        localStorage.removeItem('hero_invite_ctx');
+      }
+    }
+  }catch(e){}
+}
+
+// Davetle baslatilan online tavla (host/guest otomatik)
+async function _startInviteTavla(root, ctx){
+  const isHost = ctx.role === 'host';
+  const wait = document.createElement('div');
+  wait.style.cssText = 'position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,8,14,.92);color:#c8a557;font-family:system-ui;gap:14px';
+  wait.innerHTML = '<div style="font-size:42px">' + (isHost?'\u23f3':'\u2694\ufe0f') + '</div>'
+    + '<div id="tinvMsg" style="font-size:16px;font-weight:800">' + (isHost ? (esc(ctx.oppNick)+' bekleniyor...') : (esc(ctx.oppNick)+'\'e baglaniliyor...')) + '</div>'
+    + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + esc(ctx.code) + '</div>'
+    + '<button id="tinvCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
+  root.appendChild(wait);
+  let cancelled = false;
+  wait.querySelector('#tinvCancel').addEventListener('click', () => { cancelled = true; try{ if(TavlaMP) TavlaMP.close(); }catch(e){} closeAll(); });
+
+  // TavlaMP yukle
+  try{ if(!TavlaMP) TavlaMP = (await import('./tavla-mp.js')).default; }
+  catch(e){ wait.querySelector('#tinvMsg').textContent = 'Baglanti modulu yuklenemedi'; return; }
+
+  const onConnected = () => {
+    if(cancelled) return;
+    wait.remove();
+    G && (G.oppName = ctx.oppNick);
+    startGame(root, 'online', { isHost });
+  };
+
+  if(isHost){
+    TavlaMP.createRoom((type, data) => {
+      if(cancelled) return;
+      if(type === 'connected'){ onConnected(); }
+      else if(type === 'error'){ const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Hata: ' + data; }
+    }, ctx.code);
+  } else {
+    let tries = 0;
+    const tryJoin = () => {
+      if(cancelled) return;
+      tries++;
+      TavlaMP.joinRoom(ctx.code, (type, data) => {
+        if(type === 'connected'){ onConnected(); }
+        else if(type === 'error'){
+          if(tries < 8){ setTimeout(tryJoin, 1500); }
+          else { const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Baglanilamadi (host hazir degil)'; }
+        }
+      });
+    };
+    setTimeout(tryJoin, 800);
+  }
 }
 
 function closeAll(){

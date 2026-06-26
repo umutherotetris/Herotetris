@@ -232,6 +232,21 @@ export function openChess(){
   G.vis = ()=>{ if(document.hidden){ try{ saveChessResume(); }catch(e){} } };
   document.addEventListener('visibilitychange', G.vis);
 
+  // DAVET BAGLAMI: davetle acildiysa otomatik online host/guest
+  try{
+    const raw = localStorage.getItem('hero_invite_ctx');
+    if(raw){
+      const ctx = JSON.parse(raw);
+      if(ctx && ctx.game === 'chess' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+        localStorage.removeItem('hero_invite_ctx');
+        _startInviteChess(root, ctx);
+        return;
+      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+        localStorage.removeItem('hero_invite_ctx');
+      }
+    }
+  }catch(e){}
+
   // Kaldığın yerden devam teklifi (AI oyunu yarıda kaldıysa)
   const rsnap = Resume.loadSnapshot('chess');
   if(rsnap){
@@ -249,6 +264,51 @@ export function openChess(){
 }
 
 // Çevrimiçi lobi: oda kur veya katıl
+// Davetle baslatilan online satranc (host/guest otomatik)
+function _startInviteChess(root, ctx){
+  const isHost = ctx.role === 'host';
+  // Bekleme ekrani goster
+  const wait = document.createElement('div');
+  wait.style.cssText = 'position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,8,14,.92);color:#FFD740;font-family:system-ui;gap:14px';
+  wait.innerHTML = '<div style="font-size:42px">' + (isHost?'\u23f3':'\u2694\ufe0f') + '</div>'
+    + '<div style="font-size:16px;font-weight:800">' + (isHost ? (esc(ctx.oppNick)+' bekleniyor...') : (esc(ctx.oppNick)+'\'e baglaniliyor...')) + '</div>'
+    + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + esc(ctx.code) + '</div>'
+    + '<button id="invCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
+  root.appendChild(wait);
+  let cancelled = false;
+  wait.querySelector('#invCancel').addEventListener('click', () => { cancelled = true; try{ ChessMP.close(); }catch(e){} closeAll(); });
+
+  const onEvt = (type, data) => {
+    if(cancelled) return;
+    if(type === 'connected'){
+      if(isHost){ ChessMP.send({ type:'config', time: 0 }); }
+      wait.remove();
+      G.oppName = ctx.oppNick;
+      startGame(root, 'online', { playerColor: isHost ? 'w' : 'b', time: 0 });
+    } else if(type === 'error'){
+      wait.querySelector('div:nth-child(2)').textContent = 'Hata: ' + data;
+    }
+  };
+
+  if(isHost){ ChessMP.createRoom(onEvt, ctx.code); }
+  else {
+    // Guest: host'un odasi hazir olana kadar birkac deneme
+    let tries = 0;
+    const tryJoin = () => {
+      if(cancelled) return;
+      tries++;
+      ChessMP.joinRoom(ctx.code, (type, data) => {
+        if(type === 'connected'){ onEvt('connected'); }
+        else if(type === 'error'){
+          if(tries < 8){ setTimeout(tryJoin, 1500); }
+          else { wait.querySelector('div:nth-child(2)').textContent = 'Baglanilamadi (host hazir degil)'; }
+        }
+      });
+    };
+    setTimeout(tryJoin, 800);
+  }
+}
+
 function showOnlineLobby(root){
   const ov = document.createElement('div');
   ov.className = 'chess-online-lobby';

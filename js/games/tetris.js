@@ -2227,6 +2227,57 @@ function launchGame(){
 }
 
 // Çok oyunculu oyunu başlat (versus modu)
+// Davetle baslatilan versus tetris (host/guest otomatik)
+function _startInviteTetris(ctx){
+  const isHost = ctx.role === 'host';
+  const wait = document.createElement('div');
+  wait.className = 'hero-select-overlay';
+  wait.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,10,24,.95);color:#00E5FF;font-family:system-ui;gap:14px';
+  wait.innerHTML = '<div style="font-size:42px">' + (isHost?'\u23f3':'\u2694\ufe0f') + '</div>'
+    + '<div id="xinvMsg" style="font-size:16px;font-weight:800">' + (isHost ? (ctx.oppNick+' bekleniyor...') : (ctx.oppNick+'\'e baglaniliyor...')) + '</div>'
+    + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + ctx.code + '</div>'
+    + '<button id="xinvCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
+  document.body.appendChild(wait);
+  let cancelled = false;
+  wait.querySelector('#xinvCancel').addEventListener('click', () => { cancelled = true; try{ MP.close(); }catch(e){} wait.remove(); });
+
+  const onConnected = () => {
+    if(cancelled) return;
+    MP.send({ type:'hello', nick:(window.__HERO_NICK||'Rakip'), hero:SELECTED_HERO });
+    wait.remove();
+    window.__HERO_OPP_NICK = ctx.oppNick;
+    launchVersusGame();
+  };
+
+  const handler = (type, data) => {
+    if(cancelled) return;
+    if(type === 'connected'){ onConnected(); }
+    else if(type === 'error'){
+      const m = wait.querySelector('#xinvMsg');
+      if(isHost){ if(m) m.textContent = 'Hata: ' + data; }
+      // guest tarafi retry handler icinde
+    }
+  };
+
+  if(isHost){
+    MP.createRoom(handler, ctx.code);
+  } else {
+    let tries = 0;
+    const tryJoin = () => {
+      if(cancelled) return;
+      tries++;
+      MP.joinRoom(ctx.code, (type, data) => {
+        if(type === 'connected'){ onConnected(); }
+        else if(type === 'error'){
+          if(tries < 8){ setTimeout(tryJoin, 1500); }
+          else { const m = wait.querySelector('#xinvMsg'); if(m) m.textContent = 'Baglanilamadi (host hazir degil)'; }
+        }
+      });
+    };
+    setTimeout(tryJoin, 800);
+  }
+}
+
 function launchVersusGame(){
   SELECTED_MODE = 'versus';
   ADVENTURE_WORLD = null;
@@ -3160,8 +3211,23 @@ function injectCSS(){
 
 export function openTetris(){
   injectCSS();
-  if(G) return;   // oyun zaten açık
-  if(document.querySelector('.hero-select-overlay')) return;  // seçim ekranı açık
+  if(G) return;   // oyun zaten acik
+  if(document.querySelector('.hero-select-overlay')) return;  // secim ekrani acik
+
+  // DAVET BAGLAMI: davetle acildiysa otomatik versus host/guest
+  try{
+    const raw = localStorage.getItem('hero_invite_ctx');
+    if(raw){
+      const ctx = JSON.parse(raw);
+      if(ctx && ctx.game === 'tetris' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+        localStorage.removeItem('hero_invite_ctx');
+        _startInviteTetris(ctx);
+        return;
+      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+        localStorage.removeItem('hero_invite_ctx');
+      }
+    }
+  }catch(e){}
   // Önce kahraman seçim ekranı, "OYNA"ya basınca oyun başlar
   buildHeroSelect(() => {
     if(SELECTED_MODE === 'adventure'){
