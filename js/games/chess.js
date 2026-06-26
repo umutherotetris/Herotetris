@@ -165,6 +165,7 @@ export function openChess(){
       </div>
       <div class="cg-actions" data-el="actions">
         <button class="cg-act-btn" data-act="undo" data-el="undoBtn">↩️ Geri Al</button>
+        <button class="cg-act-btn" data-act="hint" data-el="hintBtn">💡 İpucu</button>
         <button class="cg-act-btn" data-act="resign">🏳️ Pes Et</button>
         <button class="cg-act-btn" data-act="offerDraw">🤝 Beraberlik</button>
         <button class="cg-act-btn" data-act="history">📜 Geçmiş</button>
@@ -688,6 +689,35 @@ function startGame(root, mode, opts){
     maybeAIMove();
   });
 
+  // İpucu (item_hint öğesi gerektirir) — en iyi hamleyi vurgular
+  const hintBtn = gameEl.querySelector('[data-act="hint"]');
+  if(hintBtn) hintBtn.addEventListener('click', async () => {
+    if(!G || G.gameEnded || G.aiThinking || G.animating) return;
+    // Sadece kendi sıramda
+    if(G.mode === 'ai' && G.state.turn !== G.playerColor){ updateStatus('Sıra sende değil'); return; }
+    if(G.mode === 'online' && G.state.turn !== G.playerColor){ updateStatus('Sıra sende değil'); return; }
+    const cnt = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
+    if(cnt <= 0){ updateStatus('💡 İpucu hakkın yok — Mağazadan alabilirsin'); return; }
+    hintBtn.disabled = true;
+    try{
+      // AI motoruyla en iyi hamleyi bul
+      let mv = null;
+      try{ mv = chooseMove(G.state, 'hard'); }catch(e){ try{ mv = chooseMove(G.state, 'medium'); }catch(e2){} }
+      if(mv && mv.from && mv.to){
+        await Store.useItem('item_hint');
+        // Kalkış + varış karelerini vurgula
+        G.hintSquares = { from: mv.from, to: mv.to, until: Date.now() + 4000 };
+        draw();
+        const rem = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
+        updateStatus('💡 İpucu kullanıldı · Kalan: ' + rem);
+        setTimeout(() => { if(G){ G.hintSquares = null; draw(); } }, 4000);
+      } else {
+        updateStatus('İpucu bulunamadı');
+      }
+    }catch(e){ updateStatus('İpucu hatası'); }
+    setTimeout(() => { if(hintBtn) hintBtn.disabled = false; }, 1500);
+  });
+
   // Pes Et
   gameEl.querySelector('[data-act="resign"]').addEventListener('click', () => {
     if(G.gameEnded) return;
@@ -869,6 +899,19 @@ function draw(){
     ctx.beginPath(); ctx.moveTo(cellXY(0,0).x, py); ctx.lineTo(cellXY(0,0).x + cell*8, py); ctx.stroke();
   }
 
+  // İpucu kareleri (item_hint) — yeşil parlak vurgu
+  if(G.hintSquares && (!G.hintSquares.until || G.hintSquares.until > Date.now())){
+    for(const sq of [G.hintSquares.from, G.hintSquares.to]){
+      const { x, y } = cellXY(sq.r, sq.c);
+      const hg = ctx.createRadialGradient(x+cell/2, y+cell/2, cell*0.1, x+cell/2, y+cell/2, cell*0.65);
+      hg.addColorStop(0, 'rgba(105,240,174,.55)');
+      hg.addColorStop(1, 'rgba(105,240,174,.18)');
+      ctx.fillStyle = hg;
+      ctx.fillRect(x, y, cell, cell);
+      ctx.strokeStyle = 'rgba(105,240,174,.8)'; ctx.lineWidth = Math.max(2, cell*0.04);
+      ctx.strokeRect(x + ctx.lineWidth/2, y + ctx.lineWidth/2, cell - ctx.lineWidth, cell - ctx.lineWidth);
+    }
+  }
   // Son hamle vurgusu — yumuşak altın parlama + kenar
   if(G.lastMove){
     for(const sq of [G.lastMove.from, G.lastMove.to]){
