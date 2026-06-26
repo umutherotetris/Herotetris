@@ -190,6 +190,7 @@ function closeAll(){
   clearBreakTimers();
   if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G && G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
+  if(G && G._rollHintRAF){ cancelAnimationFrame(G._rollHintRAF); G._rollHintRAF = null; }
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
   try{ if(G && G.online) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -666,8 +667,9 @@ function drawPassHint(ctx, t){
   // Hit-test için kutuyu sakla (ölçeksiz koordinat)
   G._passBox = { x: cx - w/2, y: cy - h/2, w, h };
   // Nabız animasyonu için sürekli çizim
-  if(!G._passRAF){
+  if(G && !G._passRAF){
     G._passRAF = requestAnimationFrame(() => {
+      if(!G) return;
       G._passRAF = null;
       if(G && G.rolled && G.canPass && G.ctx) draw();
     });
@@ -707,8 +709,12 @@ function drawRollHint(ctx, t){
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.fillText('ZAR AT', -w/2 + ds*1.65, 1);
   ctx.restore();
-  if(!G._rollHintRAF){
-    G._rollHintRAF = requestAnimationFrame(() => { G._rollHintRAF = null; if(!G.rolled && G.ctx) draw(); });
+  if(G && !G._rollHintRAF){
+    G._rollHintRAF = requestAnimationFrame(() => {
+      if(!G) return;                       // oyundan çıkıldıysa dur
+      G._rollHintRAF = null;
+      if(!G.rolled && G.ctx) draw();
+    });
   }
 }
 
