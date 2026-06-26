@@ -2238,8 +2238,31 @@ function launchVersusGame(){
   // Rakip mesajlarını dinle
   MP.send({ type:'hello', nick:(window.__HERO_NICK||'Sen'), hero:SELECTED_HERO });
   MP._gameHandler = (type, data) => {
-    if(type === 'message') handleVersusMessage(data);
-    else if(type === 'disconnected'){ if(G && G.versus && !G.over){ flash('🏆 Rakip ayrıldı!'); G.oppAlive = false; } }
+    if(type === 'message'){
+      if(data && data.type === 'vsync'){ applyVersusSync(data); return; }
+      if(data && data.type === 'vsync_request'){ sendVersusSync(); return; }
+      handleVersusMessage(data);
+    }
+    else if(type === 'disconnected'){
+      // Hemen kazanma — reconnect denenecek
+      if(G && G.versus && !G.over){ flash('🔌 Rakip koptu — yeniden bağlanılıyor…'); }
+    }
+    else if(type === 'reconnecting'){
+      const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
+      if(G && G.versus && !G.over) flash(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`);
+    }
+    else if(type === 'reconnected'){
+      if(G && G.versus && !G.over){
+        flash('✅ Yeniden bağlanıldı!');
+        G.oppAlive = true;
+        // Skor/durum senkronu: host gönderir, misafir ister
+        if(MP.host){ setTimeout(sendVersusSync, 400); }
+        else { setTimeout(() => MP.send({ type:'vsync_request' }), 400); }
+      }
+    }
+    else if(type === 'reconnect_failed'){
+      if(G && G.versus && !G.over){ flash('🏆 Rakip yeniden bağlanamadı!'); G.oppAlive = false; }
+    }
   };
   // onEvent'i oyun handler'ına yönlendir (lobi handler'ı bitti)
   rebindMPHandler();
@@ -2441,6 +2464,31 @@ function aiApplyGarbage(rows){
     G.aiBoard.push(row);
   }
   if(G.aiCur && aiCollides(G.aiCur, 0, 0)){ G.aiCur.y = Math.max(0, G.aiCur.y - rows); }
+}
+
+// ── Reconnect sonrası versus senkronu (skor + canlılık) ──
+function sendVersusSync(){
+  if(!G || !G.versus || !MP.connected) return;
+  try{
+    MP.send({
+      type: 'vsync',
+      score: G.score || 0,
+      lines: G.lines || 0,
+      nick: (window.__HERO_NICK || 'Rakip'),
+      alive: !G.over,
+    });
+  }catch(e){ console.warn('[tetris] sendVersusSync', e); }
+}
+function applyVersusSync(d){
+  if(!G || !G.versus || !d) return;
+  // Rakibin güncel skoru/durumu
+  G.oppScore = d.score || 0;
+  G.oppLines = d.lines || 0;
+  if(d.nick) G.oppNick = d.nick;
+  G.oppAlive = (d.alive !== false);
+  // Karşılık ver (misafir ister, host gönderir; çift yönlü garanti)
+  if(MP.host){ /* host zaten gönderdi */ }
+  updateVersusUI();
 }
 
 function handleVersusMessage(msg){

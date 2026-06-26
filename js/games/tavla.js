@@ -1423,6 +1423,36 @@ function playAISequence(seq, i){
 }
 
 // ════════════ ÇEVRİMİÇİ MESAJ ════════════
+// ── Reconnect sonrası tam state senkronizasyonu ──
+function sendFullSync(){
+  if(!G || !G.online || !TavlaMP || !TavlaMP.connected) return;
+  try{
+    TavlaMP.send({
+      type: 'fullsync',
+      state: {
+        gameState: G.state,           // points, bar, off, turn, dice, used
+        rolled: !!G.rolled,
+        openingDice: G.openingDice || null,
+        gameEnded: !!G.gameEnded,
+      }
+    });
+  }catch(e){ console.warn('[tavla] sendFullSync', e); }
+}
+
+function applyFullSync(s){
+  if(!G || !s) return;
+  try{
+    if(s.gameState){ G.state = s.gameState; }
+    G.rolled = !!s.rolled;
+    if(s.openingDice) G.openingDice = s.openingDice;
+    G.selected = null; G.legalForSel = []; G.undoStack = [];
+    G.flip = (G.online && G.playerColor === 'b');
+    updateTurn();
+    updateControls();
+    draw();
+  }catch(e){ console.warn('[tavla] applyFullSync', e); }
+}
+
 function sendHello(){
   try{
     import('../auth.js').then(m => {
@@ -1448,12 +1478,35 @@ function onHello(d){
 function onRemoteMessage(type, data){
   if(!G) return;
   if(type === 'disconnected'){
-    if(!G.gameEnded){ G.oppLeft = true; G.gameEnded = true; updateStatus('❌ Rakip bağlantısı koptu', 'win'); updateControls(); }
+    // Oyunu HEMEN bitirme — reconnect denenecek
+    if(!G.gameEnded){ G.oppLeft = true; updateStatus('🔌 Rakip bağlantısı koptu — yeniden bağlanılıyor…'); updateControls(); }
+    return;
+  }
+  if(type === 'reconnecting'){
+    const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
+    updateStatus(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`);
+    return;
+  }
+  if(type === 'reconnected'){
+    G.oppLeft = false;
+    updateStatus('✅ Yeniden bağlanıldı!');
+    // Host güncel state'i gönderir; misafir ister
+    if(G.isHost){ setTimeout(sendFullSync, 400); }
+    else { setTimeout(() => TavlaMP.send({ type:'resync_request' }), 400); }
+    setTimeout(() => { if(!G.gameEnded) updateTurn(); }, 2000);
+    return;
+  }
+  if(type === 'reconnect_failed'){
+    if(!G.gameEnded){ G.oppLeft = true; G.gameEnded = true; updateStatus('❌ Rakip yeniden bağlanamadı', 'win'); updateControls(); }
     return;
   }
   if(type !== 'message') return;
   const msg = data;
   if(!msg || !msg.type) return;
+
+  // Reconnect senkron mesajları
+  if(msg.type === 'resync_request'){ sendFullSync(); return; }
+  if(msg.type === 'fullsync'){ applyFullSync(msg.state); return; }
 
   if(msg.type === 'start'){
     G.openingDice = msg.openingDice || [1,1];

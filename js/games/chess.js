@@ -65,7 +65,7 @@ const THEMES = {
   },
   kizil: {
     name: 'Kızıl Sancak',
-    desc: 'Bordo ve fildişi, hafif hilal-yıldız gölgesi.',
+    desc: 'Bordo ve fildişi, zarif bordo dokular.',
     light:'#f0e8d8', dark:'#8a1c2c', lightTile:'#f5eede', darkTile:'#9a2434',
     border:'#d4af37', borderDark:'#9a7d27', bg:'#2a0a10',
     wTop:'#f8f0e0', wBot:'#e0d4bc', bTop:'#2a2420', bBot:'#160f0c',
@@ -88,6 +88,18 @@ const THEMES = {
     wPiece:'#6b4226', bPiece:'#f0e0c0', glow:'#e0a860'
   }
 };
+
+// Hex rengi alpha ile rgba'ya çevirir: _hexA('#3fa0ff', .5) → 'rgba(63,160,255,.5)'
+function _hexA(hex, a){
+  if(!hex) return 'rgba(120,160,220,'+a+')';
+  let h = hex.replace('#','');
+  if(h.length === 3) h = h.split('').map(x=>x+x).join('');
+  const r = parseInt(h.slice(0,2),16) || 0;
+  const g = parseInt(h.slice(2,4),16) || 0;
+  const b = parseInt(h.slice(4,6),16) || 0;
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
+
 let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return (t && THEMES[t]) ? t : 'iznikmavi'; }catch(e){ return 'iznikmavi'; } })();
 
 // Unicode satranç sembolleri (dolu figürler — 2.5D stilize edilecek)
@@ -476,36 +488,11 @@ function closeAll(){
 }
 
 // ════════════ OYUN BAŞLAT ════════════
-
-// ⚡ Oyun başında aktif kozmo bonusunu kısaca bildir (floating)
-async function notifyKozmoBonus(){
-  try{
-    const kz = await import('../kozmos.js');
-    const b = kz.getActiveKozmoBonus && kz.getActiveKozmoBonus();
-    if(!b) return;
-    if(window.Hero && window.Hero.toast){
-      window.Hero.toast('⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label, false);
-      return;
-    }
-    // toast yoksa basit floating div
-    const d=document.createElement('div');
-    d.textContent='⚡ '+(b.icon2||'✨')+' '+b.name+' — '+b.icon+' '+b.label;
-    d.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:99999;'
-      +'padding:9px 16px;border-radius:20px;font-size:12px;font-weight:800;color:#e9d5ff;'
-      +'background:linear-gradient(135deg,rgba(192,132,252,.95),rgba(124,77,255,.9));'
-      +'box-shadow:0 4px 20px rgba(124,77,255,.4);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none';
-    document.body.appendChild(d);
-    requestAnimationFrame(()=>{ d.style.opacity='1'; d.style.transform='translateX(-50%) translateY(4px)'; });
-    setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(),350); }, 3000);
-  }catch(e){}
-}
-
 function startGame(root, mode, opts){
   opts = opts || {};
   root.querySelector('[data-el="modeSelect"]').style.display = 'none';
   const gameEl = root.querySelector('[data-el="game"]');
   gameEl.style.display = 'flex';
-  notifyKozmoBonus();
   // 🏠 Oyun içi ev butonu
   import('../game-home.js').then(m => {
     if(!G) return;
@@ -585,13 +572,36 @@ function startGame(root, mode, opts){
     ChessMP.__setHandler((type, data) => {
       if(type === 'message'){
         if(data && data.type === 'hello'){ onHello(data); return; }
+        if(data && data.type === 'fullsync'){ applyFullSync(data.state); return; }
+        if(data && data.type === 'resync_request'){ sendFullSync(); return; }
         onRemoteMessage(data);
       }
       else if(type === 'disconnected'){
-        updateStatus('🔌 Rakip ayrıldı', 'draw'); G.oppLeft = true;
-        root.querySelector('[data-el="oppStatus"]').textContent = 'ayrıldı';
+        updateStatus('🔌 Rakip ayrıldı — yeniden bağlanılıyor…', 'draw'); G.oppLeft = true;
+        root.querySelector('[data-el="oppStatus"]').textContent = 'bağlantı koptu';
         root.querySelector('[data-el="oppDot"]').classList.remove('online');
         updatePanels();
+      }
+      else if(type === 'reconnecting'){
+        const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
+        updateStatus(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`, 'draw');
+        root.querySelector('[data-el="oppStatus"]').textContent = 'yeniden bağlanılıyor…';
+      }
+      else if(type === 'reconnected'){
+        G.oppLeft = false;
+        updateStatus('✅ Yeniden bağlanıldı!', 'win');
+        root.querySelector('[data-el="oppStatus"]').textContent = 'çevrimiçi';
+        root.querySelector('[data-el="oppDot"]').classList.add('online');
+        updatePanels();
+        // Host güncel state'i gönderir; misafir state ister
+        if(G.playerColor === 'w'){ setTimeout(sendFullSync, 400); }
+        else { setTimeout(() => ChessMP.send({ type:'resync_request' }), 400); }
+        setTimeout(() => { if(!G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
+      }
+      else if(type === 'reconnect_failed'){
+        updateStatus('❌ Yeniden bağlanılamadı', 'lose');
+        root.querySelector('[data-el="oppStatus"]').textContent = 'ayrıldı';
+        G.oppLeft = true; updatePanels();
       }
     });
   }
@@ -765,22 +775,44 @@ function draw(){
   // Altın çerçeve
   drawBorder(ctx, t, sz, m);
 
-  // Kareler
+  // Kareler — premium: yumuşak köşegen gradyan + ince iç kenar parlaması
   for(let r=0;r<8;r++) for(let c=0;c<8;c++){
     const { x, y } = cellXY(r, c);
     const isLight = (r + c) % 2 === 0;
-    ctx.fillStyle = isLight ? t.light : t.dark;
+    const base = isLight ? t.light : t.dark;
+    const tile = isLight ? t.lightTile : t.darkTile;
+    // Köşegen gradyan (üst-sol açık → alt-sağ koyu) — derinlik hissi
+    const g = ctx.createLinearGradient(x, y, x + cell, y + cell);
+    g.addColorStop(0, tile);
+    g.addColorStop(1, base);
+    ctx.fillStyle = g;
     ctx.fillRect(x, y, cell, cell);
-    // ince motif (İznik dokusu) — küçük merkez yıldız
-    drawTileMotif(ctx, x, y, cell, isLight ? t.darkTile : t.lightTile);
+    // Üst kenar ince parlama (ışık üstten gelir)
+    ctx.fillStyle = 'rgba(255,255,255,.05)';
+    ctx.fillRect(x, y, cell, Math.max(1, cell*0.03));
+    // Alt kenar ince gölge
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fillRect(x, y + cell - Math.max(1, cell*0.03), cell, Math.max(1, cell*0.03));
+  }
+  // Kareler arası ince ızgara çizgisi (premium ayrım)
+  ctx.strokeStyle = 'rgba(0,0,0,.10)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=8;i++){
+    const p = cellXY(0,0).x + i*cell;
+    const py = cellXY(0,0).y + i*cell;
+    ctx.beginPath(); ctx.moveTo(p, cellXY(0,0).y); ctx.lineTo(p, cellXY(0,0).y + cell*8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cellXY(0,0).x, py); ctx.lineTo(cellXY(0,0).x + cell*8, py); ctx.stroke();
   }
 
-  // Son hamle vurgusu
+  // Son hamle vurgusu — yumuşak altın parlama + kenar
   if(G.lastMove){
     for(const sq of [G.lastMove.from, G.lastMove.to]){
       const { x, y } = cellXY(sq.r, sq.c);
-      ctx.fillStyle = 'rgba(200,165,87,.35)';
+      ctx.fillStyle = 'rgba(212,175,55,.28)';
       ctx.fillRect(x, y, cell, cell);
+      ctx.strokeStyle = 'rgba(212,175,55,.55)';
+      ctx.lineWidth = Math.max(1.5, cell*0.03);
+      ctx.strokeRect(x + ctx.lineWidth/2, y + ctx.lineWidth/2, cell - ctx.lineWidth, cell - ctx.lineWidth);
     }
   }
 
@@ -790,28 +822,40 @@ function draw(){
     const k = findKingPos(G.state.board, checkColor);
     if(k){
       const { x, y } = cellXY(k.r, k.c);
-      ctx.fillStyle = 'rgba(255,60,60,.45)';
+      const rg = ctx.createRadialGradient(x+cell/2, y+cell/2, cell*0.1, x+cell/2, y+cell/2, cell*0.6);
+      rg.addColorStop(0, 'rgba(255,60,60,.55)');
+      rg.addColorStop(1, 'rgba(255,60,60,.15)');
+      ctx.fillStyle = rg;
       ctx.fillRect(x, y, cell, cell);
     }
   }
 
-  // Seçili kare + geçerli hamleler
+  // Seçili kare + geçerli hamleler — tema rengiyle uyumlu, premium
   if(G.selected){
     const { x, y } = cellXY(G.selected.r, G.selected.c);
-    ctx.fillStyle = 'rgba(0,212,224,.4)';
+    // seçili kare: tema glow yumuşak dolgu + kenar
+    const sg = ctx.createRadialGradient(x+cell/2, y+cell/2, cell*0.1, x+cell/2, y+cell/2, cell*0.7);
+    sg.addColorStop(0, _hexA(t.glow, .42));
+    sg.addColorStop(1, _hexA(t.glow, .18));
+    ctx.fillStyle = sg;
     ctx.fillRect(x, y, cell, cell);
+    ctx.strokeStyle = _hexA(t.glow, .7); ctx.lineWidth = Math.max(1.5, cell*0.03);
+    ctx.strokeRect(x + ctx.lineWidth/2, y + ctx.lineWidth/2, cell - ctx.lineWidth, cell - ctx.lineWidth);
     for(const mv of G.legalForSelected){
       const cc = cellXY(mv.to.r, mv.to.c);
       const target = G.state.board[mv.to.r][mv.to.c];
       ctx.save();
       if(target){
-        // yeme: halka
-        ctx.strokeStyle = t.glow; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.42, 0, Math.PI*2); ctx.stroke();
+        // yeme: kalın tema halkası + hafif iç parlama
+        ctx.strokeStyle = _hexA(t.glow, .85); ctx.lineWidth = Math.max(2.5, cell*0.055);
+        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.40, 0, Math.PI*2); ctx.stroke();
       } else {
-        // boş: nokta
-        ctx.fillStyle = 'rgba(0,212,224,.55)';
-        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.16, 0, Math.PI*2); ctx.fill();
+        // boş: yumuşak nokta + halo
+        const dg = ctx.createRadialGradient(cc.x+cell/2, cc.y+cell/2, 0, cc.x+cell/2, cc.y+cell/2, cell*0.20);
+        dg.addColorStop(0, _hexA(t.glow, .65));
+        dg.addColorStop(1, _hexA(t.glow, .15));
+        ctx.fillStyle = dg;
+        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.18, 0, Math.PI*2); ctx.fill();
       }
       ctx.restore();
     }
@@ -930,22 +974,6 @@ function drawBorder(ctx, t, sz, m){
   ctx.fillRect(m, m, sz - 2*m, sz - 2*m);
 }
 
-function drawTileMotif(ctx, x, y, cell, color){
-  // küçük 8 köşeli yıldız (İznik dokusu) — çok hafif
-  ctx.save();
-  ctx.globalAlpha = 0.12;
-  ctx.fillStyle = color;
-  const cx = x + cell/2, cy = y + cell/2, R = cell*0.28, r = cell*0.13;
-  ctx.beginPath();
-  for(let i=0;i<16;i++){
-    const ang = (Math.PI/8)*i - Math.PI/2;
-    const rad = i%2===0 ? R : r;
-    const px = cx + Math.cos(ang)*rad, py = cy + Math.sin(ang)*rad;
-    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-  }
-  ctx.closePath(); ctx.fill();
-  ctx.restore();
-}
 
 // 2.5D taş: gölgeli yuvarlak taban + sembol (kare konumunda)
 function drawPiece(ctx, r, c, piece, t){
@@ -957,19 +985,24 @@ function drawPiece(ctx, r, c, piece, t){
 function drawPieceAt(ctx, cx, cy, piece, t){
   const isW = piece.c === 'w';
   const s = G.cell;
-  // Hacim renkleri (üst açık → alt koyu)
-  const top  = isW ? '#fcf6e6' : '#6b6b78';
-  const mid  = isW ? '#eaddbe' : '#34343f';
-  const bot  = isW ? '#c9b78c' : '#141019';
-  const edge = isW ? '#9a824f' : '#04040a';
+  // Hacim renkleri (üst açık → alt koyu) — beyaz: fildişi-altın, siyah: obsidyen
+  const top  = isW ? '#fdf8ec' : '#5a5a68';
+  const mid  = isW ? '#ece0c6' : '#2e2e3a';
+  const bot  = isW ? '#cdbb92' : '#0f0c16';
+  const edge = isW ? '#8a7142' : '#020208';
   const glyph = GLYPH[piece.t];
 
   ctx.save();
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
-  // zemin gölgesi (taşı tahtaya oturtur)
-  ctx.fillStyle = 'rgba(0,0,0,.30)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.31, s*0.27, s*0.08, 0, 0, Math.PI*2); ctx.fill();
+  // zemin gölgesi (taşı tahtaya oturtur) — yumuşak çift katman
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.22)';
+  ctx.filter = 'blur(1px)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.32, s*0.29, s*0.085, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.31, s*0.24, s*0.065, 0, 0, Math.PI*2); ctx.fill();
 
   const fs = Math.floor(s * 0.76);
   ctx.font = `${fs}px "Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",serif`;
@@ -1093,6 +1126,49 @@ function sendMoveOnline(mv){
 }
 
 // Rakipten gelen mesaj
+// ── Reconnect sonrası tam state senkronizasyonu ──
+function sendFullSync(){
+  if(!G || !ChessMP.connected) return;
+  try{
+    ChessMP.send({
+      type: 'fullsync',
+      state: {
+        board: G.state.board,
+        turn: G.state.turn,
+        castling: G.state.castling || null,
+        ep: G.state.ep || null,
+        halfmove: G.state.halfmove || 0,
+        moveHistory: G.moveHistory || [],
+        captured: G.captured || { w:[], b:[] },
+        lastMove: G.lastMove || null,
+        posHistory: G.posHistory || [],
+        scores: G.scores || null,
+        gameEnded: !!G.gameEnded,
+      }
+    });
+  }catch(e){ console.warn('[chess] sendFullSync', e); }
+}
+
+function applyFullSync(s){
+  if(!G || !s) return;
+  try{
+    if(s.board){ G.state.board = s.board; }
+    if(s.turn){ G.state.turn = s.turn; }
+    if(s.castling !== undefined) G.state.castling = s.castling;
+    if(s.ep !== undefined) G.state.ep = s.ep;
+    if(s.halfmove !== undefined) G.state.halfmove = s.halfmove;
+    G.moveHistory = s.moveHistory || G.moveHistory || [];
+    G.captured = s.captured || G.captured || { w:[], b:[] };
+    G.lastMove = s.lastMove || null;
+    G.posHistory = s.posHistory || G.posHistory || [];
+    if(s.scores) G.scores = s.scores;
+    G.selected = null; G.legalForSelected = [];
+    drawBoard();
+    if(typeof updatePanels === 'function') updatePanels();
+    if(!G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI");
+  }catch(e){ console.warn('[chess] applyFullSync', e); }
+}
+
 function sendHello(){
   try{
     import('../auth.js').then(m => {
@@ -1273,8 +1349,7 @@ function applyAndContinue(mv, isCapture){
 
 async function onGameEndDraw(){
   Resume.clearSnapshot('chess');
-  let kaju = 40, xp = 30;
-  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ kaju=Math.round(kaju*m); xp=Math.round(xp*m); } } }catch(e){}
+  const kaju = 40, xp = 30;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
@@ -1288,9 +1363,8 @@ async function onGameEndDraw(){
 async function onGameEnd(playerWon){
   Resume.clearSnapshot('chess');
   const won = playerWon === true;
-  let kaju = won ? 80 : 20;
-  let xp = won ? 60 : 25;
-  try{ const _k=await import('../kozmos.js'); if(_k.kozmoMultiplier){ const m=_k.kozmoMultiplier('score_boost'); if(m>1){ kaju=Math.round(kaju*m); xp=Math.round(xp*m); } } }catch(e){}
+  const kaju = won ? 80 : 20;
+  const xp = won ? 60 : 25;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
   try{
     const Reward = await import('../reward.js');
