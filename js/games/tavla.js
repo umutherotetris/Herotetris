@@ -735,12 +735,22 @@ function drawRollHint(ctx, t){
   const g = G.geo;
   const cx = (G.flip ? g.rightX : g.leftX) + g.halfW * 0.5;
   const cy = g.innerY + g.innerH * 0.5;
-  const w = Math.min(g.halfW * 0.62, 130);
-  const h = Math.max(30, w * 0.32);
+  // Yükseklik referansı (eski genişlikten türetilir, görsel oran korunur)
+  const wRef = Math.min(g.halfW * 0.62, 130);
+  const h = Math.max(30, wRef * 0.32);
+  const ds = h * 0.52;                       // zar boyutu
+  const label = 'ZAR AT';
   ctx.save();
   const t0 = (performance.now() % 1400) / 1400;
   const pulse = 1 + Math.sin(t0 * Math.PI * 2) * 0.04;
   ctx.translate(cx, cy); ctx.scale(pulse, pulse);
+  // ── Genişliği İÇERİĞE göre hesapla (sağdaki boşluk kalkar) ──
+  ctx.font = `900 ${Math.floor(h*0.40)}px system-ui, sans-serif`;
+  const textW = ctx.measureText(label).width;
+  const padL = ds * 0.9;                      // sol kenar → zar merkezi
+  const gap  = ds * 0.55;                     // zar ile yazı arası
+  const padR = h * 0.42;                      // yazı sonu → sağ kenar
+  const w = padL + ds*0.5 + gap + textW + padR;
   ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 3;
   _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
   const grd = ctx.createLinearGradient(-w/2, -h/2, w/2, h/2);
@@ -749,12 +759,13 @@ function drawRollHint(ctx, t){
   ctx.shadowColor = 'transparent';
   _roundRect(ctx, -w/2, -h/2, w, h, h*0.45);
   ctx.strokeStyle = 'rgba(255,235,180,.55)'; ctx.lineWidth = 1.5; ctx.stroke();
-  const ds = h * 0.52;
-  drawDie(ctx, -w/2 + ds*0.9, 0, ds, 5, false);
+  // zar (sol) + yazı (zarın hemen sağında)
+  const dieX = -w/2 + padL;
+  drawDie(ctx, dieX, 0, ds, 5, false);
   ctx.fillStyle = '#1a1208';
   ctx.font = `900 ${Math.floor(h*0.40)}px system-ui, sans-serif`;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  ctx.fillText('ZAR AT', -w/2 + ds*1.65, 1);
+  ctx.fillText(label, dieX + ds*0.5 + gap, 1);
   ctx.restore();
   if(G && !G._rollHintRAF){
     G._rollHintRAF = requestAnimationFrame(() => {
