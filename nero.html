@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0A0B1A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>NeuroSync AI Ultra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET & BASE ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{
+  background:#0A0B1A;
+  color:#E8E8FF;
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ─── CSS VARIABLES ─── */
+:root{
+  --bg-deep:#0A0B1A;
+  --bg-mid:#111228;
+  --bg-panel:#1A1B3A;
+  --glass:rgba(26,27,58,0.7);
+  --glass-light:rgba(123,111,240,0.08);
+  --purple:#7B6FF0;
+  --cyan:#2EE8C7;
+  --pink:#FF6B9D;
+  --ghost:#E8E8FF;
+  --ghost-dim:rgba(232,232,255,0.5);
+  --ghost-faint:rgba(232,232,255,0.15);
+  --border:rgba(123,111,240,0.25);
+  --border-bright:rgba(123,111,240,0.5);
+  --radius:16px;
+  --radius-sm:10px;
+  --radius-xs:6px;
+  --blur:backdrop-filter:blur(20px);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --glow-purple:0 0 20px rgba(123,111,240,0.4);
+  --glow-cyan:0 0 20px rgba(46,232,199,0.4);
+  --glow-pink:0 0 20px rgba(255,107,157,0.4);
+}
+
+/* ─── AMBIENT BACKGROUND ─── */
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+}
+.ambient-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
+  animation:orbFloat 12s ease-in-out infinite;
+}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,#7B6FF0,transparent);top:-200px;left:-200px;animation-delay:0s;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,#2EE8C7,transparent);bottom:-150px;right:-150px;animation-delay:-5s;}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,#FF6B9D,transparent);top:40%;left:50%;transform:translateX(-50%);animation-delay:-3s;}
+@keyframes orbFloat{
+  0%,100%{transform:translateY(0) scale(1);}
+  33%{transform:translateY(-30px) scale(1.05);}
+  66%{transform:translateY(20px) scale(0.95);}
+}
+
+/* ─── LAYOUT ─── */
+.app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px 16px 40px;}
+
+/* ─── HEADER ─── */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;margin-bottom:28px;
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#7B6FF0,#2EE8C7);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:var(--glow-purple);
+}
+.logo-text{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.15rem;font-weight:700;letter-spacing:-0.02em;
+  background:linear-gradient(135deg,#E8E8FF 40%,#7B6FF0);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.logo-badge{
+  font-size:0.6rem;font-weight:700;letter-spacing:0.1em;
+  color:#2EE8C7;border:1px solid rgba(46,232,199,0.4);
+  padding:2px 7px;border-radius:20px;margin-left:8px;
+  text-transform:uppercase;vertical-align:middle;
+  -webkit-text-fill-color:#2EE8C7;
+}
+.header-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:0.8rem;color:var(--ghost-dim);
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#2EE8C7;box-shadow:0 0 8px #2EE8C7;
+  animation:statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* ─── BRAINWAVE SIGNATURE ELEMENT ─── */
+.brainwave-hero{
+  padding:28px 24px 20px;margin-bottom:24px;
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.bw-labels{
+  display:flex;justify-content:space-between;margin-bottom:12px;
+}
+.bw-label{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;transition:transform 0.2s;
+}
+.bw-label:hover{transform:translateY(-2px);}
+.bw-name{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
+.bw-hz{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ghost-dim);}
+.bw-bar{width:3px;height:16px;border-radius:2px;margin:0 auto;transition:all 0.4s;}
+
+#bwCanvas{width:100%;height:90px;display:block;}
+
+.bw-active-info{
+  display:flex;justify-content:center;align-items:center;gap:16px;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--ghost-faint);
+}
+.bw-active-name{
+  font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;
+  color:var(--ghost);
+}
+.bw-active-state{font-size:0.8rem;color:var(--ghost-dim);}
+
+/* ─── MAIN GRID ─── */
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+
+/* ─── GLASS CARD ─── */
+.card{
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--ghost-dim);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title::before{
+  content:'';width:3px;height:14px;
+  background:linear-gradient(to bottom,var(--purple),var(--cyan));
+  border-radius:2px;flex-shrink:0;
+}
+
+/* ─── SPECTRUM ANALYZER ─── */
+.spectrum-wrap{
+  background:rgba(0,0,0,0.35);border-radius:var(--radius-sm);
+  border:1px solid var(--ghost-faint);overflow:hidden;margin-bottom:20px;
+  position:relative;
+}
+#spectrumCanvas{width:100%;height:120px;display:block;}
+.spectrum-label{
+  position:absolute;top:8px;left:12px;
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+  color:var(--ghost-faint);letter-spacing:0.05em;
+}
+
+/* ─── CONTROLS ─── */
+.control-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.control-label{
+  font-size:0.78rem;color:var(--ghost-dim);min-width:100px;flex-shrink:0;
+}
+.control-label span{
+  display:block;font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;color:var(--purple);margin-top:1px;
+}
+
+/* ─── SLIDER ─── */
+.slider-wrap{flex:1;position:relative;}
+input[type=range]{
+  width:100%;height:4px;
+  -webkit-appearance:none;appearance:none;
+  background:var(--ghost-faint);border-radius:2px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  box-shadow:0 0 8px rgba(123,111,240,0.5);cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+input[type=range]::-webkit-slider-thumb:hover{
+  transform:scale(1.2);box-shadow:var(--glow-purple);
+}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));cursor:pointer;
+}
+.slider-track{
+  position:absolute;top:50%;left:0;height:4px;
+  background:linear-gradient(to right,var(--purple),var(--cyan));
+  border-radius:2px;pointer-events:none;transform:translateY(-50%);
+  transition:width 0.1s;
+}
+
+/* ─── TOGGLE BUTTONS ─── */
+.toggle-group{display:flex;gap:6px;flex-wrap:wrap;}
+.toggle-btn{
+  padding:7px 14px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--ghost-dim);
+  font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:500;
+  cursor:pointer;transition:all 0.25s;white-space:nowrap;
+}
+.toggle-btn:hover{border-color:var(--purple);color:var(--ghost);}
+.toggle-btn.active{
+  background:linear-gradient(135deg,rgba(123,111,240,0.3),rgba(46,232,199,0.15));
+  border-color:var(--purple);color:var(--ghost);
+  box-shadow:var(--glow-purple);
+}
+
+/* ─── PRESET GRID ─── */
+.preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.preset-card{
+  padding:14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-light);
+  cursor:pointer;transition:all 0.25s;
+}
+.preset-card:hover{border-color:var(--purple);transform:translateY(-2px);}
+.preset-card.active{
+  border-color:var(--cyan);
+  background:linear-gradient(135deg,rgba(46,232,199,0.12),rgba(123,111,240,0.08));
+  box-shadow:var(--glow-cyan);
+}
+.preset-icon{font-size:1.4rem;margin-bottom:6px;}
+.preset-name{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:0.82rem;font-weight:600;color:var(--ghost);margin-bottom:3px;
+}
+.preset-desc{font-size:0.72rem;color:var(--ghost-dim);line-height:1.4;}
+.preset-hz{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.68rem;color:var(--cyan);margin-top:5px;
+}
+
+/* ─── PLAY BUTTON ─── */
+.play-section{
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  margin:24px 0;
+}
+.play-btn{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 30px rgba(123,111,240,0.5),0 0 60px rgba(123,111,240,0.2);
+  transition:all 0.3s;position:relative;
+}
+.play-btn::before{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  z-index:-1;opacity:0.3;filter:blur(8px);
+  animation:playGlow 2s ease-in-out infinite;
+}
+@keyframes playGlow{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.6;transform:scale(1.1);}}
+.play-btn:hover{transform:scale(1.08);box-shadow:0 0 40px rgba(123,111,240,0.7);}
+.play-btn:active{transform:scale(0.95);}
+.play-btn.playing{background:linear-gradient(135deg,var(--pink),var(--purple));}
+.play-icon{font-size:28px;margin-left:4px;color:#fff;}
+.play-btn.playing .play-icon::before{content:'⏸';}
+.play-btn:not(.playing) .play-icon::before{content:'▶';}
+
+.session-info{
+  display:flex;gap:24px;align-items:center;
+}
+.session-stat{text-align:center;}
+.session-stat-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;font-weight:700;color:var(--ghost);
+}
+.session-stat-lbl{font-size:0.68rem;color:var(--ghost-dim);margin-top:2px;}
+
+/* ─── VOLUME MASTER ─── */
+.master-vol{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;
+  background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);
+  border:1px solid var(--ghost-faint);
+}
+.master-vol-icon{font-size:1.2rem;}
+.master-vol-label{font-size:0.8rem;color:var(--ghost-dim);min-width:60px;}
+
+/* ─── SLEEP TIMER ─── */
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.timer-btn{
+  padding:6px 14px;border-radius:20px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--ghost-dim);font-size:0.75rem;cursor:pointer;
+  transition:all 0.2s;font-family:'JetBrains Mono',monospace;
+}
+.timer-btn:hover{border-color:var(--pink);color:var(--pink);}
+.timer-btn.active{background:rgba(255,107,157,0.15);border-color:var(--pink);color:var(--pink);}
+.timer-display{
+  font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;
+  text-align:center;color:var(--ghost);margin:12px 0;
+  text-shadow:0 0 20px rgba(255,107,157,0.4);
+}
+
+/* ─── AI PANEL ─── */
+.ai-input-wrap{position:relative;margin-bottom:12px;}
+.ai-input{
+  width:100%;padding:12px 48px 12px 16px;
+  background:rgba(0,0,0,0.3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--ghost);
+  font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;
+  transition:border-color 0.2s;
+}
+.ai-input:focus{border-color:var(--purple);}
+.ai-input::placeholder{color:var(--ghost-faint);}
+.ai-send{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  border:none;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.ai-send:hover{transform:translateY(-50%) scale(1.1);}
+.ai-response{
+  background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);
+  padding:12px;min-height:80px;border:1px solid var(--ghost-faint);
+  font-size:0.82rem;color:var(--ghost-dim);line-height:1.6;
+}
+.ai-response.loading{
+  display:flex;align-items:center;gap:8px;color:var(--ghost-faint);
+}
+.ai-dots{display:flex;gap:5px;}
+.ai-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--purple);
+  animation:aiDot 1.2s ease-in-out infinite;
+}
+.ai-dot:nth-child(2){animation-delay:0.2s;}
+.ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes aiDot{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}
+
+/* ─── FILTER SECTION ─── */
+.filter-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;
+}
+.filter-card{
+  padding:12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-light);
+}
+.filter-title{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:8px;font-weight:500;}
+.filter-card input[type=range]{height:3px;}
+
+/* ─── NOISE SECTION ─── */
+.noise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.noise-card{
+  padding:12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-light);
+  text-align:center;cursor:pointer;transition:all 0.25s;
+}
+.noise-card:hover{border-color:var(--purple);}
+.noise-card.active{
+  border-color:var(--cyan);background:rgba(46,232,199,0.1);
+  box-shadow:var(--glow-cyan);
+}
+.noise-icon{font-size:1.3rem;margin-bottom:4px;}
+.noise-name{font-size:0.72rem;font-weight:600;color:var(--ghost);}
+.noise-desc{font-size:0.65rem;color:var(--ghost-dim);margin-top:2px;}
+
+/* ─── SECTION DIVIDER ─── */
+.section-gap{margin-bottom:20px;}
+
+/* ─── BOTTOM TOAST ─── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:40px;
+  padding:12px 24px;font-size:0.85rem;color:var(--ghost);
+  box-shadow:var(--shadow);z-index:999;transition:transform 0.3s ease;
+  white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ─── MOBILE ─── */
+@media(max-width:600px){
+  .app{padding:12px 12px 60px;}
+  .header{padding:12px 16px;}
+  .logo-text{font-size:1rem;}
+  .preset-grid{grid-template-columns:1fr 1fr;}
+  .noise-grid{grid-template-columns:repeat(3,1fr);}
+  .brainwave-hero{padding:18px 14px;}
+  #spectrumCanvas{height:90px;}
+}
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true">
+  <div class="ambient-orb orb1"></div>
+  <div class="ambient-orb orb2"></div>
+  <div class="ambient-orb orb3"></div>
+</div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div>
+        <span class="logo-text">NeuroSync<span class="logo-badge">AI Ultra</span></span>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <span id="statusText">Hazır</span>
+    </div>
+  </header>
+
+  <!-- BRAINWAVE SIGNATURE ELEMENT -->
+  <div class="brainwave-hero">
+    <div class="bw-labels" id="bwLabels"></div>
+    <canvas id="bwCanvas"></canvas>
+    <div class="bw-active-info">
+      <span class="bw-active-name" id="bwActiveName">Alfa Dalgaları</span>
+      <span>·</span>
+      <span class="bw-active-state" id="bwActiveState">Rahat odaklanma, uyanık huzur</span>
+    </div>
+  </div>
+
+  <!-- PLAY + TIMER SESSION -->
+  <div class="card section-gap">
+    <div class="play-section">
+      <button class="play-btn" id="playBtn" aria-label="Oynat/Durdur">
+        <span class="play-icon"></span>
+      </button>
+      <div class="session-info">
+        <div class="session-stat">
+          <div class="session-stat-val" id="sessionTime">00:00</div>
+          <div class="session-stat-lbl">Süre</div>
+        </div>
+        <div class="session-stat">
+          <div class="session-stat-val" id="sessionFreq">10.0 Hz</div>
+          <div class="session-stat-lbl">Beat Frekansı</div>
+        </div>
+        <div class="session-stat">
+          <div class="session-stat-val" id="sessionCarrier">200 Hz</div>
+          <div class="session-stat-lbl">Taşıyıcı</div>
+        </div>
+      </div>
+    </div>
+    <!-- Master Volume -->
+    <div class="master-vol">
+      <span class="master-vol-icon" id="volIcon">🔊</span>
+      <span class="master-vol-label">Ses <span id="masterVolVal" style="font-family:'JetBrains Mono';font-size:0.72rem;color:var(--cyan);">70%</span></span>
+      <div class="slider-wrap" style="flex:1;position:relative;">
+        <input type="range" id="masterVol" min="0" max="100" value="70"/>
+        <div class="slider-track" id="masterVolTrack" style="width:70%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPECTRUM -->
+  <div class="card section-gap">
+    <div class="card-title">Spektrum Analizörü</div>
+    <div class="spectrum-wrap">
+      <span class="spectrum-label">FFT SPECTRUM</span>
+      <canvas id="spectrumCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- PRESETS -->
+      <div class="card section-gap">
+        <div class="card-title">Protokoller</div>
+        <div class="preset-grid" id="presetGrid"></div>
+      </div>
+
+      <!-- BINAURAL CONTROLS -->
+      <div class="card section-gap">
+        <div class="card-title">Binaural Beat Motoru</div>
+
+        <div class="control-row">
+          <div class="control-label">Taşıyıcı Frekansı <span id="carrierVal">200 Hz</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="carrierFreq" min="80" max="500" value="200"/>
+            <div class="slider-track" id="carrierTrack"></div>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label">Beat Frekansı <span id="beatVal">10.0 Hz</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="beatFreq" min="0.5" max="40" step="0.1" value="10"/>
+            <div class="slider-track" id="beatTrack"></div>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label">Binaural Ses <span id="binVolVal">60%</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="binauralVol" min="0" max="100" value="60"/>
+            <div class="slider-track" id="binVolTrack"></div>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label" style="min-width:auto;">Mod</div>
+          <div class="toggle-group" id="beatModeGroup">
+            <button class="toggle-btn active" data-mode="binaural">Binaural</button>
+            <button class="toggle-btn" data-mode="isochronic">Isochronic</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOISE -->
+      <div class="card section-gap">
+        <div class="card-title">Gürültü Jeneratörü</div>
+        <div class="noise-grid">
+          <div class="noise-card" data-noise="white">
+            <div class="noise-icon">🌊</div>
+            <div class="noise-name">White</div>
+            <div class="noise-desc">Tüm frekanslar</div>
+          </div>
+          <div class="noise-card" data-noise="pink">
+            <div class="noise-icon">🌸</div>
+            <div class="noise-name">Pink</div>
+            <div class="noise-desc">Doğal denge</div>
+          </div>
+          <div class="noise-card" data-noise="brown">
+            <div class="noise-icon">🌊</div>
+            <div class="noise-name">Brown</div>
+            <div class="noise-desc">Derin bas</div>
+          </div>
+        </div>
+        <div class="control-row" style="margin-top:14px;">
+          <div class="control-label">Gürültü Ses <span id="noiseVolVal">0%</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="noiseVol" min="0" max="100" value="0"/>
+            <div class="slider-track" id="noiseVolTrack" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="card section-gap">
+        <div class="card-title">Filtreler</div>
+        <div class="filter-row">
+          <div class="filter-card">
+            <div class="filter-title">🔽 Lowpass <span id="lpfVal" style="font-family:'JetBrains Mono';font-size:0.7rem;color:var(--cyan);">2000 Hz</span></div>
+            <input type="range" id="lpfFreq" min="200" max="8000" value="2000"/>
+          </div>
+          <div class="filter-card">
+            <div class="filter-title">🔼 Highpass <span id="hpfVal" style="font-family:'JetBrains Mono';font-size:0.7rem;color:var(--pink);">80 Hz</span></div>
+            <input type="range" id="hpfFreq" min="20" max="2000" value="80"/>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="control-label" style="min-width:auto;">Filtre</div>
+          <div class="toggle-group">
+            <button class="toggle-btn active" id="filterToggle" onclick="toggleFilter()">Aktif</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+
+      <!-- AI PANEL -->
+      <div class="card section-gap">
+        <div class="card-title">AI Öneri Motoru</div>
+        <div class="ai-input-wrap">
+          <input class="ai-input" id="aiInput" type="text" placeholder="Nasıl hissediyorsunuz? (örn: odaklanamıyorum, uyuyamıyorum...)"/>
+          <button class="ai-send" id="aiSendBtn" onclick="sendAI()" aria-label="Gönder">✦</button>
+        </div>
+        <div class="ai-response" id="aiResponse">
+          <span style="color:var(--ghost-faint);font-style:italic;">Durumunuzu yazın, size özel ses protokolü önereyim...</span>
+        </div>
+      </div>
+
+      <!-- SLEEP TIMER -->
+      <div class="card section-gap">
+        <div class="card-title">Sleep Timer</div>
+        <div class="timer-display" id="timerDisplay">—</div>
+        <div class="timer-presets">
+          <button class="timer-btn" onclick="setTimer(15)">15d</button>
+          <button class="timer-btn" onclick="setTimer(30)">30d</button>
+          <button class="timer-btn" onclick="setTimer(45)">45d</button>
+          <button class="timer-btn" onclick="setTimer(60)">60d</button>
+          <button class="timer-btn" onclick="setTimer(90)">90d</button>
+          <button class="timer-btn" onclick="setTimer(0)" id="timerCancelBtn" style="color:var(--pink);border-color:rgba(255,107,157,0.3);">İptal</button>
+        </div>
+        <div class="control-row" style="margin-top:14px;">
+          <div class="control-label">Fade-Out <span id="fadeVal">60s</span></div>
+          <div class="slider-wrap">
+            <input type="range" id="fadeDuration" min="5" max="300" value="60" step="5"/>
+            <div class="slider-track" id="fadeTrack"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPECIAL FREQUENCIES -->
+      <div class="card section-gap">
+        <div class="card-title">Özel Frekanslar</div>
+        <div class="toggle-group" id="specialFreqGroup" style="flex-direction:column;gap:8px;"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  NEUROSYNC AI ULTRA — CORE ENGINE
+// ═══════════════════════════════════════════
+
+const NS = {
+  ctx: null,
+  analyser: null,
+  masterGain: null,
+  binauralL: null,
+  binauralR: null,
+  binauralMerger: null,
+  binauralGain: null,
+  noiseSource: null,
+  noiseGain: null,
+  lpf: null,
+  hpf: null,
+  filterActive: true,
+  isoInterval: null,
+  isPlaying: false,
+  beatMode: 'binaural',
+  noiseType: null,
+  activePreset: null,
+  sessionStart: null,
+  sessionTimer: null,
+  sleepTimer: null,
+  sleepEnd: null,
+  fadeDuration: 60,
+  fadeTimer: null,
+  specAnimId: null,
+  bwAnimId: null,
+  bwPhases: [0,0,0,0,0],
+};
+
+// PRESETS
+const PRESETS = [
+  {id:'focus',icon:'🎯',name:'Derin Odak',desc:'Konsantrasyon & akış hali',hz:'40 Hz Gamma',carrier:200,beat:40,wave:4,noise:null,lpf:3000,hpf:100},
+  {id:'relax',icon:'🌿',name:'Derin Rahatlama',desc:'Stres azaltma, sakinleştirici',hz:'10 Hz Alfa',carrier:180,beat:10,wave:2,noise:'pink',lpf:2000,hpf:80},
+  {id:'sleep',icon:'🌙',name:'Uyku Geçişi',desc:'Derin uyku, delta dalgaları',hz:'2 Hz Delta',carrier:100,beat:2,wave:0,noise:'brown',lpf:1500,hpf:40},
+  {id:'meditate',icon:'🧘',name:'Meditasyon',desc:'Theta dalgaları, yaratıcılık',hz:'6 Hz Theta',carrier:160,beat:6,wave:1,noise:'pink',lpf:2500,hpf:60},
+  {id:'energy',icon:'⚡',name:'Enerji Artışı',desc:'Uyanıklık, motivasyon',hz:'35 Hz Beta',carrier:220,beat:35,wave:3,noise:null,lpf:4000,hpf:120},
+  {id:'memory',icon:'💡',name:'Hafıza & Öğrenme',desc:'Hafıza güçlendirme, öğrenme',hz:'12 Hz Alfa+',carrier:200,beat:12,wave:2,noise:null,lpf:3000,hpf:100},
+];
+
+// BRAIN WAVES
+const WAVES = [
+  {name:'Delta',hz:'0.5–4 Hz',color:'#7B6FF0',state:'Derin uyku, yenileme',freqRange:[0.5,4]},
+  {name:'Theta',hz:'4–8 Hz',color:'#2EE8C7',state:'Meditasyon, yaratıcılık, rüya',freqRange:[4,8]},
+  {name:'Alfa',hz:'8–13 Hz',color:'#A78BFA',state:'Rahat odaklanma, uyanık huzur',freqRange:[8,13]},
+  {name:'Beta',hz:'13–30 Hz',color:'#FF6B9D',state:'Aktif düşünce, konsantrasyon',freqRange:[13,30]},
+  {name:'Gamma',hz:'30–100 Hz',color:'#F59E0B',state:'Yüksek bilişsel işlev, odak zirvesi',freqRange:[30,100]},
+];
+
+// SPECIAL FREQUENCIES
+const SPECIAL_FREQS = [
+  {hz:432,name:'432 Hz',desc:'Evrensel uyum, kalp ahengi'},
+  {hz:528,name:'528 Hz',desc:'DNA onarımı, dönüşüm'},
+  {hz:639,name:'639 Hz',desc:'Bağlantı, ilişki iyileştirme'},
+  {hz:741,name:'741 Hz',desc:'İfade açma, çözüm'},
+  {hz:852,name:'852 Hz',desc:'Sezgi uyanışı'},
+  {hz:963,name:'963 Hz',desc:'İlahi frekans, bilinç genişleme'},
+];
+
+let activeSpecialFreq = null;
+let specialOsc = null, specialGain = null;
+
+// ─── INIT ───
+function initAudio() {
+  if (NS.ctx) return true;
+  try {
+    NS.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    NS.masterGain = NS.ctx.createGain();
+    NS.masterGain.gain.value = 0.7;
+    NS.analyser = NS.ctx.createAnalyser();
+    NS.analyser.fftSize = 2048;
+    NS.analyser.smoothingTimeConstant = 0.85;
+    // Filters
+    NS.lpf = NS.ctx.createBiquadFilter();
+    NS.lpf.type = 'lowpass';
+    NS.lpf.frequency.value = 2000;
+    NS.hpf = NS.ctx.createBiquadFilter();
+    NS.hpf.type = 'highpass';
+    NS.hpf.frequency.value = 80;
+    // Chain: masterGain → lpf → hpf → analyser → destination
+    NS.masterGain.connect(NS.lpf);
+    NS.lpf.connect(NS.hpf);
+    NS.hpf.connect(NS.analyser);
+    NS.analyser.connect(NS.ctx.destination);
+    return true;
+  } catch(e) { showToast('Web Audio API desteklenmiyor'); return false; }
+}
+
+// ─── BINAURAL ───
+function startBinaural() {
+  if (NS.binauralL) stopBinaural();
+  const carrier = parseFloat(document.getElementById('carrierFreq').value);
+  const beat = parseFloat(document.getElementById('beatFreq').value);
+  const vol = parseFloat(document.getElementById('binauralVol').value)/100;
+
+  NS.binauralGain = NS.ctx.createGain();
+  NS.binauralGain.gain.value = vol;
+  NS.binauralMerger = NS.ctx.createChannelMerger(2);
+
+  if (NS.beatMode === 'binaural') {
+    NS.binauralL = NS.ctx.createOscillator();
+    NS.binauralR = NS.ctx.createOscillator();
+    NS.binauralL.type = 'sine'; NS.binauralL.frequency.value = carrier;
+    NS.binauralR.type = 'sine'; NS.binauralR.frequency.value = carrier + beat;
+    const splitterL = NS.ctx.createChannelSplitter(1);
+    const splitterR = NS.ctx.createChannelSplitter(1);
+    NS.binauralL.connect(NS.binauralMerger, 0, 0);
+    NS.binauralR.connect(NS.binauralMerger, 0, 1);
+    NS.binauralL.start(); NS.binauralR.start();
+  } else {
+    // Isochronic tone
+    NS.binauralL = NS.ctx.createOscillator();
+    NS.binauralL.type = 'sine'; NS.binauralL.frequency.value = carrier;
+    const isoGain = NS.ctx.createGain();
+    NS.binauralL.connect(isoGain);
+    isoGain.connect(NS.binauralMerger, 0, 0);
+    isoGain.connect(NS.binauralMerger, 0, 1);
+    NS.binauralL.start();
+    // Pulse at beat Hz
+    const period = 1000 / beat;
+    let on = true;
+    NS.isoInterval = setInterval(() => {
+      isoGain.gain.setTargetAtTime(on ? 1 : 0, NS.ctx.currentTime, 0.005);
+      on = !on;
+    }, period / 2);
+  }
+  NS.binauralMerger.connect(NS.binauralGain);
+  NS.binauralGain.connect(NS.masterGain);
+}
+
+function stopBinaural() {
+  if (NS.isoInterval) { clearInterval(NS.isoInterval); NS.isoInterval = null; }
+  try { if(NS.binauralL){NS.binauralL.stop();NS.binauralL.disconnect();NS.binauralL=null;} } catch(e){}
+  try { if(NS.binauralR){NS.binauralR.stop();NS.binauralR.disconnect();NS.binauralR=null;} } catch(e){}
+  try { if(NS.binauralGain){NS.binauralGain.disconnect();NS.binauralGain=null;} } catch(e){}
+  try { if(NS.binauralMerger){NS.binauralMerger.disconnect();NS.binauralMerger=null;} } catch(e){}
+}
+
+// ─── NOISE ───
+function createNoiseBuffer(type) {
+  const bufferSize = NS.ctx.sampleRate * 4;
+  const buffer = NS.ctx.createBuffer(1, bufferSize, NS.ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  if (type === 'white') {
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random()*2-1);
+  } else if (type === 'pink') {
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i=0;i<bufferSize;i++){
+      const w=Math.random()*2-1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      data[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)/6.8; b6=w*0.115926;
+    }
+  } else { // brown
+    let last=0;
+    for (let i=0;i<bufferSize;i++){
+      const w=Math.random()*2-1;
+      data[i]=(last+(0.02*w))/1.02; last=data[i]; data[i]*=3.5;
+    }
+  }
+  return buffer;
+}
+
+function startNoise(type) {
+  stopNoise();
+  const buf = createNoiseBuffer(type);
+  NS.noiseSource = NS.ctx.createBufferSource();
+  NS.noiseSource.buffer = buf;
+  NS.noiseSource.loop = true;
+  NS.noiseGain = NS.ctx.createGain();
+  NS.noiseGain.gain.value = parseFloat(document.getElementById('noiseVol').value)/100;
+  NS.noiseSource.connect(NS.noiseGain);
+  NS.noiseGain.connect(NS.masterGain);
+  NS.noiseSource.start();
+}
+
+function stopNoise() {
+  try{if(NS.noiseSource){NS.noiseSource.stop();NS.noiseSource.disconnect();NS.noiseSource=null;}}catch(e){}
+  try{if(NS.noiseGain){NS.noiseGain.disconnect();NS.noiseGain=null;}}catch(e){}
+}
+
+// ─── SPECIAL FREQ ───
+function playSpecialFreq(hz) {
+  if (!NS.ctx) return;
+  if (specialOsc) { try{specialOsc.stop();}catch(e){} specialOsc=null; }
+  if (activeSpecialFreq === hz) { activeSpecialFreq = null; updateSpecialFreqUI(); return; }
+  activeSpecialFreq = hz;
+  specialOsc = NS.ctx.createOscillator();
+  specialGain = NS.ctx.createGain();
+  specialOsc.type = 'sine'; specialOsc.frequency.value = hz;
+  specialGain.gain.value = 0.3;
+  specialOsc.connect(specialGain); specialGain.connect(NS.masterGain);
+  specialOsc.start();
+  updateSpecialFreqUI();
+}
+
+function updateSpecialFreqUI() {
+  document.querySelectorAll('.sf-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.hz) === activeSpecialFreq);
+  });
+}
+
+// ─── PLAY / STOP ───
+function togglePlay() {
+  if (!initAudio()) return;
+  if (NS.ctx.state === 'suspended') NS.ctx.resume();
+  if (NS.isPlaying) stopAll(); else startAll();
+}
+
+function startAll() {
+  NS.isPlaying = true;
+  startBinaural();
+  if (NS.noiseType) startNoise(NS.noiseType);
+  NS.sessionStart = Date.now();
+  NS.sessionTimer = setInterval(updateSessionTimer, 1000);
+  document.getElementById('playBtn').classList.add('playing');
+  document.getElementById('statusText').textContent = 'Aktif Seans';
+  startSpectrumAnim();
+  showToast('🧠 Seans başladı');
+}
+
+function stopAll() {
+  NS.isPlaying = false;
+  stopBinaural(); stopNoise();
+  clearInterval(NS.sessionTimer);
+  document.getElementById('playBtn').classList.remove('playing');
+  document.getElementById('statusText').textContent = 'Hazır';
+  showToast('Seans durduruldu');
+}
+
+// ─── TIMER ───
+function updateSessionTimer() {
+  const s = Math.floor((Date.now() - NS.sessionStart)/1000);
+  const m = Math.floor(s/60), sec = s%60;
+  document.getElementById('sessionTime').textContent =
+    String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+
+let sleepRemaining = 0;
+function setTimer(mins) {
+  clearInterval(NS.sleepTimer);
+  document.querySelectorAll('.timer-btn').forEach(b=>b.classList.remove('active'));
+  if (mins === 0) {
+    sleepRemaining = 0;
+    document.getElementById('timerDisplay').textContent = '—';
+    showToast('Timer iptal edildi');
+    return;
+  }
+  sleepRemaining = mins * 60;
+  event.target.classList.add('active');
+  NS.sleepEnd = Date.now() + sleepRemaining*1000;
+  updateTimerDisplay();
+  NS.sleepTimer = setInterval(() => {
+    sleepRemaining--;
+    updateTimerDisplay();
+    if (sleepRemaining <= 0) {
+      clearInterval(NS.sleepTimer);
+      startFadeOut();
+    } else if (sleepRemaining <= NS.fadeDuration) {
+      // fade already handled in startFadeOut
+    }
+  }, 1000);
+  showToast(`⏱ ${mins} dakika timer ayarlandı`);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(sleepRemaining/60), s = sleepRemaining%60;
+  document.getElementById('timerDisplay').textContent =
+    String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function startFadeOut() {
+  if (!NS.isPlaying || !NS.masterGain) return;
+  const fd = NS.fadeDuration;
+  NS.masterGain.gain.linearRampToValueAtTime(0, NS.ctx.currentTime + fd);
+  showToast('🌙 Fade-out başladı...');
+  setTimeout(() => { if(NS.isPlaying) stopAll(); NS.masterGain.gain.value = parseFloat(document.getElementById('masterVol').value)/100; }, fd*1000+200);
+}
+
+// ─── SPECTRUM CANVAS ───
+function startSpectrumAnim() {
+  const canvas = document.getElementById('spectrumCanvas');
+  const ctx2 = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    NS.specAnimId = requestAnimationFrame(draw);
+    const w = canvas.width, h = canvas.height;
+    ctx2.clearRect(0,0,w,h);
+
+    // Background
+    ctx2.fillStyle = 'rgba(0,0,0,0)';
+    ctx2.fillRect(0,0,w,h);
+
+    if (NS.analyser && NS.isPlaying) {
+      const bufLen = NS.analyser.frequencyBinCount;
+      const data = new Uint8Array(bufLen);
+      NS.analyser.getByteFrequencyData(data);
+      const barW = w / 80;
+      const step = Math.floor(bufLen / 80);
+      for (let i = 0; i < 80; i++) {
+        const val = data[i * step] / 255;
+        const barH = val * h * 0.9;
+        const hue = 260 + i * 2;
+        const grad = ctx2.createLinearGradient(0, h, 0, h - barH);
+        grad.addColorStop(0, `hsla(${hue},80%,60%,0.9)`);
+        grad.addColorStop(1, `hsla(${hue+40},90%,70%,0.4)`);
+        ctx2.fillStyle = grad;
+        ctx2.fillRect(i * (barW + 1), h - barH, barW, barH);
+      }
+    } else {
+      // Idle animation
+      for (let i = 0; i < 80; i++) {
+        const val = (Math.sin(Date.now()/2000 + i*0.3)*0.5+0.5) * 0.08 + 0.01;
+        const barH = val * h;
+        ctx2.fillStyle = `rgba(123,111,240,0.25)`;
+        ctx2.fillRect(i * (w/80 + 1), h - barH, w/80, barH);
+      }
+    }
+  }
+  draw();
+}
+
+// ─── BRAINWAVE CANVAS ───
+function initBrainwaveUI() {
+  const labels = document.getElementById('bwLabels');
+  WAVES.forEach((w, i) => {
+    const div = document.createElement('div');
+    div.className = 'bw-label';
+    div.innerHTML = `<div class="bw-name" style="color:${w.color}">${w.name}</div>
+      <div class="bw-bar" id="bwBar${i}" style="background:${w.color};opacity:0.3"></div>
+      <div class="bw-hz">${w.hz}</div>`;
+    div.onclick = () => highlightWave(i);
+    labels.appendChild(div);
+  });
+  startBrainwaveAnim();
+}
+
+function highlightWave(idx) {
+  document.getElementById('bwActiveName').textContent = WAVES[idx].name + ' Dalgaları';
+  document.getElementById('bwActiveState').textContent = WAVES[idx].state;
+}
+
+function getActiveBeatWave() {
+  const beat = parseFloat(document.getElementById('beatFreq').value);
+  let wi = 0;
+  WAVES.forEach((w,i) => { if(beat >= w.freqRange[0] && beat <= w.freqRange[1]) wi = i; });
+  return wi;
+}
+
+function startBrainwaveAnim() {
+  const canvas = document.getElementById('bwCanvas');
+  const ctx2 = canvas.getContext('2d');
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio;
+    canvas.height = canvas.offsetHeight * devicePixelRatio;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const phases = [0,0,0,0,0];
+
+  function draw() {
+    NS.bwAnimId = requestAnimationFrame(draw);
+    const w = canvas.width, h = canvas.height;
+    ctx2.clearRect(0,0,w,h);
+
+    const activeWave = getActiveBeatWave();
+    const beat = parseFloat(document.getElementById('beatFreq').value);
+
+    WAVES.forEach((wave, i) => {
+      const isActive = i === activeWave && NS.isPlaying;
+      const amp = isActive ? h*0.35 : h*0.08;
+      // Wave speed based on frequency
+      const speed = (wave.freqRange[0]+wave.freqRange[1])/2 * 0.003;
+      phases[i] += speed;
+
+      ctx2.beginPath();
+      ctx2.strokeStyle = wave.color;
+      ctx2.lineWidth = isActive ? 2.5 * devicePixelRatio : 1 * devicePixelRatio;
+      ctx2.globalAlpha = isActive ? 0.9 : 0.25;
+
+      const yBase = h * 0.5;
+      for (let x = 0; x <= w; x += 2) {
+        const t = (x / w) * Math.PI * 2 * 4 + phases[i];
+        const y = yBase + Math.sin(t) * amp;
+        x === 0 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);
+      }
+      ctx2.stroke();
+      ctx2.globalAlpha = 1;
+
+      // Update bar opacity
+      const bar = document.getElementById(`bwBar${i}`);
+      if (bar) bar.style.opacity = isActive ? '1' : '0.25';
+    });
+
+    // Update active label
+    const activeW = WAVES[activeWave];
+    document.getElementById('bwActiveName').textContent = activeW.name + ' Dalgaları';
+    document.getElementById('bwActiveState').textContent = activeW.state;
+  }
+  draw();
+}
+
+// ─── PRESETS ───
+function initPresets() {
+  const grid = document.getElementById('presetGrid');
+  PRESETS.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'preset-card';
+    card.dataset.id = p.id;
+    card.innerHTML = `<div class="preset-icon">${p.icon}</div>
+      <div class="preset-name">${p.name}</div>
+      <div class="preset-desc">${p.desc}</div>
+      <div class="preset-hz">${p.hz}</div>`;
+    card.onclick = () => applyPreset(p);
+    grid.appendChild(card);
+  });
+}
+
+function applyPreset(p) {
+  NS.activePreset = p.id;
+  document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-id="${p.id}"]`)?.classList.add('active');
+
+  setSlider('carrierFreq', p.carrier, 'carrierVal', 'carrierTrack', 80, 500, ' Hz');
+  setSlider('beatFreq', p.beat, 'beatVal', 'beatTrack', 0.5, 40, ' Hz', 1);
+  document.getElementById('sessionFreq').textContent = p.beat.toFixed(1) + ' Hz';
+  document.getElementById('sessionCarrier').textContent = p.carrier + ' Hz';
+  setSlider('lpfFreq', p.lpf, 'lpfVal', null, 200, 8000, ' Hz');
+  setSlider('hpfFreq', p.hpf, 'hpfVal', null, 20, 2000, ' Hz');
+  document.getElementById('lpfVal').textContent = p.lpf + ' Hz';
+  document.getElementById('hpfVal').textContent = p.hpf + ' Hz';
+
+  // Noise
+  NS.noiseType = p.noise;
+  document.querySelectorAll('.noise-card').forEach(c => c.classList.remove('active'));
+  if (p.noise) {
+    document.querySelector(`[data-noise="${p.noise}"]`)?.classList.add('active');
+    if (NS.isPlaying) startNoise(p.noise);
+    if (parseFloat(document.getElementById('noiseVol').value) < 5) {
+      setSlider('noiseVol', 35, 'noiseVolVal', 'noiseVolTrack', 0, 100, '%');
+      if (NS.noiseGain) NS.noiseGain.gain.value = 0.35;
+    }
+  } else {
+    if (NS.isPlaying) stopNoise();
+  }
+
+  if (NS.isPlaying) { stopBinaural(); startBinaural(); }
+  if (NS.lpf) NS.lpf.frequency.value = p.lpf;
+  if (NS.hpf) NS.hpf.frequency.value = p.hpf;
+
+  showToast(`${p.icon} ${p.name} protokolü yüklendi`);
+}
+
+// ─── SPECIAL FREQS ───
+function initSpecialFreqs() {
+  const wrap = document.getElementById('specialFreqGroup');
+  SPECIAL_FREQS.forEach(f => {
+    const btn = document.createElement('button');
+    btn.className = 'toggle-btn sf-btn';
+    btn.dataset.hz = f.hz;
+    btn.innerHTML = `<strong style="font-family:'JetBrains Mono'">${f.name}</strong> — <span style="opacity:0.65;font-size:0.75em">${f.desc}</span>`;
+    btn.style.textAlign = 'left';
+    btn.onclick = () => { initAudio(); if(NS.ctx.state==='suspended') NS.ctx.resume(); playSpecialFreq(f.hz); };
+    wrap.appendChild(btn);
+  });
+}
+
+// ─── SLIDER HELPER ───
+function setSlider(id, val, labelId, trackId, min, max, suffix, decimals=0) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = val;
+  if (labelId) document.getElementById(labelId).textContent = val.toFixed(decimals) + suffix;
+  if (trackId) {
+    const pct = ((val - min)/(max - min))*100;
+    document.getElementById(trackId).style.width = pct + '%';
+  }
+}
+
+function updateTrack(inputId, trackId) {
+  const el = document.getElementById(inputId);
+  const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+  const pct = ((val-min)/(max-min))*100;
+  const track = document.getElementById(trackId);
+  if (track) track.style.width = pct+'%';
+}
+
+// ─── FILTER TOGGLE ───
+function toggleFilter() {
+  NS.filterActive = !NS.filterActive;
+  const btn = document.getElementById('filterToggle');
+  if (NS.lpf && NS.hpf) {
+    if (NS.filterActive) {
+      NS.lpf.frequency.value = parseFloat(document.getElementById('lpfFreq').value);
+      NS.hpf.frequency.value = parseFloat(document.getElementById('hpfFreq').value);
+    } else {
+      NS.lpf.frequency.value = 20000;
+      NS.hpf.frequency.value = 20;
+    }
+  }
+  btn.textContent = NS.filterActive ? 'Aktif' : 'Devre Dışı';
+  btn.classList.toggle('active', NS.filterActive);
+  showToast(`Filtreler ${NS.filterActive?'aktif':'devre dışı'}`);
+}
+
+// ─── AI PANEL ───
+async function sendAI() {
+  const input = document.getElementById('aiInput').value.trim();
+  if (!input) return;
+  const resp = document.getElementById('aiResponse');
+  resp.innerHTML = '<div class="loading"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><span style="margin-left:8px;font-size:0.8rem;color:var(--ghost-faint)">Analiz ediliyor...</span></div>';
+
+  try {
+    const beatHz = parseFloat(document.getElementById('beatFreq').value);
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:500,
+        system:`Sen NeuroSync AI Ultra'nın ses terapisi asistanısın. Kullanıcının ruh halini analiz ederek kısa, net binaural beat ve ses protokolü önerileri sun. Türkçe yanıt ver. Şu anki ayarlar: ${beatHz} Hz beat frekansı. Format: 1-2 cümle analiz, ardından öneri (frekans, ses tipi, süre). Maksimum 120 kelime.`,
+        messages:[{role:'user', content:input}]
+      })
+    });
+    const d = await r.json();
+    const text = d.content?.[0]?.text || 'Yanıt alınamadı.';
+    resp.innerHTML = `<div style="line-height:1.65">${text.replace(/\n/g,'<br>')}</div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--ghost-faint);font-size:0.7rem;color:var(--ghost-faint);">✦ NeuroSync AI — Claude Sonnet</div>`;
+  } catch(e) {
+    resp.innerHTML = '<span style="color:var(--ghost-faint)">AI bağlantısı başarısız. Lütfen tekrar deneyin.</span>';
+  }
+}
+
+// ─── TOAST ───
+let toastTO = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTO);
+  toastTO = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── EVENT LISTENERS ───
+document.getElementById('playBtn').onclick = togglePlay;
+
+document.getElementById('aiInput').addEventListener('keydown', e => { if(e.key==='Enter') sendAI(); });
+
+// Master volume
+document.getElementById('masterVol').oninput = function() {
+  const v = this.value;
+  document.getElementById('masterVolVal').textContent = v+'%';
+  updateTrack('masterVol','masterVolTrack');
+  if (NS.masterGain) NS.masterGain.gain.value = v/100;
+  document.getElementById('volIcon').textContent = v==0?'🔇':v<40?'🔉':'🔊';
+};
+
+// Carrier
+document.getElementById('carrierFreq').oninput = function() {
+  document.getElementById('carrierVal').textContent = this.value+' Hz';
+  document.getElementById('sessionCarrier').textContent = this.value+' Hz';
+  updateTrack('carrierFreq','carrierTrack');
+  if (NS.isPlaying) { stopBinaural(); startBinaural(); }
+};
+
+// Beat
+document.getElementById('beatFreq').oninput = function() {
+  const v = parseFloat(this.value).toFixed(1);
+  document.getElementById('beatVal').textContent = v+' Hz';
+  document.getElementById('sessionFreq').textContent = v+' Hz';
+  updateTrack('beatFreq','beatTrack');
+  if (NS.isPlaying) { stopBinaural(); startBinaural(); }
+};
+
+// Binaural vol
+document.getElementById('binauralVol').oninput = function() {
+  document.getElementById('binVolVal').textContent = this.value+'%';
+  updateTrack('binauralVol','binVolTrack');
+  if (NS.binauralGain) NS.binauralGain.gain.value = this.value/100;
+};
+
+// Noise vol
+document.getElementById('noiseVol').oninput = function() {
+  document.getElementById('noiseVolVal').textContent = this.value+'%';
+  updateTrack('noiseVol','noiseVolTrack');
+  if (NS.noiseGain) NS.noiseGain.gain.value = this.value/100;
+};
+
+// LPF
+document.getElementById('lpfFreq').oninput = function() {
+  document.getElementById('lpfVal').textContent = this.value+' Hz';
+  if (NS.lpf && NS.filterActive) NS.lpf.frequency.value = this.value;
+};
+
+// HPF
+document.getElementById('hpfFreq').oninput = function() {
+  document.getElementById('hpfVal').textContent = this.value+' Hz';
+  if (NS.hpf && NS.filterActive) NS.hpf.frequency.value = this.value;
+};
+
+// Fade duration
+document.getElementById('fadeDuration').oninput = function() {
+  NS.fadeDuration = parseInt(this.value);
+  document.getElementById('fadeVal').textContent = this.value+'s';
+  updateTrack('fadeDuration','fadeTrack');
+};
+
+// Beat mode
+document.getElementById('beatModeGroup').querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.getElementById('beatModeGroup').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    NS.beatMode = btn.dataset.mode;
+    if (NS.isPlaying) { stopBinaural(); startBinaural(); }
+    showToast(NS.beatMode==='binaural'?'🎧 Binaural mod aktif':'🔔 Isochronic mod aktif');
+  };
+});
+
+// Noise cards
+document.querySelectorAll('.noise-card').forEach(card => {
+  card.onclick = () => {
+    const type = card.dataset.noise;
+    if (NS.noiseType === type) {
+      NS.noiseType = null;
+      card.classList.remove('active');
+      stopNoise();
+      showToast('Gürültü durduruldu');
+    } else {
+      NS.noiseType = type;
+      document.querySelectorAll('.noise-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      if (!initAudio()) return;
+      if (NS.ctx.state==='suspended') NS.ctx.resume();
+      if (NS.isPlaying) startNoise(type);
+      else { initAudio(); startNoise(type); } // preview
+      showToast(`${type.charAt(0).toUpperCase()+type.slice(1)} Noise aktif`);
+    }
+  };
+});
+
+// Initial track widths
+function initTracks() {
+  const tracks = [
+    ['carrierFreq','carrierTrack',80,500],
+    ['beatFreq','beatTrack',0.5,40],
+    ['binauralVol','binVolTrack',0,100],
+    ['masterVol','masterVolTrack',0,100],
+    ['noiseVol','noiseVolTrack',0,100],
+    ['fadeDuration','fadeTrack',5,300],
+  ];
+  tracks.forEach(([id,tid,min,max]) => {
+    const el=document.getElementById(id);
+    const track=document.getElementById(tid);
+    if(el&&track){
+      const pct=((parseFloat(el.value)-min)/(max-min))*100;
+      track.style.width=pct+'%';
+    }
+  });
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  initPresets();
+  initSpecialFreqs();
+  initBrainwaveUI();
+  startSpectrumAnim();
+  initTracks();
+  // Apply default preset
+  applyPreset(PRESETS[1]); // relax default
+  document.querySelector(`[data-id="relax"]`)?.classList.add('active');
+});
+</script>
+</body>
+</html>
