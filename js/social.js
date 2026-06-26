@@ -296,29 +296,88 @@ function _showGameInvitePicker(targetUid, targetNick){
     <div class="pcp-besttitle" style="margin-top:4px">⚔️ ${esc(targetNick)} — Oyuna Davet</div>
     <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">
       <button class="pcp-btn" data-gi="kelime">🔤 Kelimecik</button>
-      <button class="pcp-btn" data-gi="chess" disabled style="opacity:.5">♟️ Satranç (yakında)</button>
-      <button class="pcp-btn" data-gi="tavla" disabled style="opacity:.5">🎲 Tavla (yakında)</button>
+      <button class="pcp-btn" data-gi="chess">♟️ Satranç</button>
+      <button class="pcp-btn" data-gi="tavla">🎲 Tavla</button>
+      <button class="pcp-btn" data-gi="tetris">🟦 Tetris Maçı</button>
     </div>
     <button class="pcp-x">Vazgeç</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
   ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
-  // Kelimecik daveti — userNotifs'e challenge bildirimi
-  const kb = ov.querySelector('[data-gi="kelime"]');
-  if(kb) kb.addEventListener('click', async () => {
+
+  const GAMES = {
+    kelime: { name:'Kelimecik', icon:'🔤' },
+    chess:  { name:'Satranç',   icon:'♟️' },
+    tavla:  { name:'Tavla',     icon:'🎲' },
+    tetris: { name:'Tetris Maçı', icon:'🟦' },
+  };
+  ov.querySelectorAll('[data-gi]').forEach(btn => btn.addEventListener('click', async () => {
+    const game = btn.dataset.gi;
+    const g = GAMES[game]; if(!g) return;
     const me = Auth.getState();
-    kb.disabled = true; kb.textContent = '✓ Davet gönderildi';
+    btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
+    // 6 haneli buluşma kodu üret (davet eden host, davet edilen guest)
+    const code = _genInviteCode();
     try{
       await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
         type:'challenge', icon:'⚔️',
-        text: (me.displayName || 'Biri') + ' seni Kelimecik\'e davet ediyor! Oyuna girip kabul et.',
-        ts: Date.now(), fromUid: me.uid, game:'kelime'
+        text: (me.displayName || 'Biri') + ' seni ' + g.name + ' oynamaya davet ediyor! Kabul etmek için dokun.',
+        ts: Date.now(), fromUid: me.uid, game, inviteCode: code
       });
-      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ Oyun daveti gönderildi'); }catch(e){}
-    }catch(e){}
-    setTimeout(() => ov.remove(), 900);
-  });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi'); }catch(e){}
+      btn.textContent = '✓ Davet gönderildi';
+      // Kelimecik kendi davet sistemini kullanır; diğerleri host olarak oyunu açar
+      if(game !== 'kelime'){
+        // Davet eden HOST olarak oyunu bu kodla açar
+        _launchGameAsInviteHost(game, code, targetNick);
+      }
+    }catch(e){ btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
+    setTimeout(() => { if(ov.parentNode) ov.remove(); }, 900);
+  }));
+}
+
+// Davet için 6 haneli kod (PeerJS uyumlu: A-Z0-9)
+function _genInviteCode(){
+  const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = ''; for(let i=0;i<6;i++) s += ch[Math.floor(Math.random()*ch.length)];
+  return s;
+}
+
+// Davet eden tarafı: oyunu HOST olarak aç (bu kodla oda kur, rakibi bekle)
+function _launchGameAsInviteHost(game, code, oppNick){
+  // localStorage'a davet bağlamı yaz → oyun açılınca okur
+  try{
+    localStorage.setItem('hero_invite_ctx', JSON.stringify({
+      game, code, role:'host', oppNick: oppNick || 'Rakip', ts: Date.now()
+    }));
+  }catch(e){}
+  _openGameModule(game);
+}
+
+// Davet edilen tarafı: bildirimden kabul → oyunu GUEST olarak aç
+function _acceptGameInvite(game, code, hostNick){
+  try{
+    localStorage.setItem('hero_invite_ctx', JSON.stringify({
+      game, code, role:'guest', oppNick: hostNick || 'Rakip', ts: Date.now()
+    }));
+  }catch(e){}
+  _openGameModule(game);
+}
+
+// Oyun modülünü aç (export edilen open fonksiyonu)
+function _openGameModule(game){
+  const map = {
+    chess:  ['../games/chess.js', 'openChess'],
+    tavla:  ['../games/tavla.js', 'openTavla'],
+    tetris: ['../games/tetris.js', 'openTetris'],
+    kelime: ['../games/kelime.js', 'openKelime'],
+  };
+  const entry = map[game]; if(!entry) return;
+  import(entry[0]).then(m => {
+    const fn = m[entry[1]] || m.default;
+    if(typeof fn === 'function') fn();
+  }).catch(e => { console.warn('[invite] oyun açılamadı', game, e); });
 }
 
 // ── Profil: arkadaş listesi bölümü (gizli değilse + admin hep görür) ──
@@ -1365,12 +1424,19 @@ function renderNotifCard(n){
     : '';
   // Arkadaşlık isteği → Kabul / Red butonları
   const isFriendReq = (n.type === 'friendreq' && n.reqFrom);
-  const reqBtns = isFriendReq
-    ? `<div style="display:flex;gap:6px;margin-top:7px">
+  // Oyun daveti → Kabul butonu (inviteCode'lu satranç/tavla/tetris; kelime ayrı akış)
+  const isGameInvite = (n.type === 'challenge' && n.inviteCode && n.game && n.game !== 'kelime');
+  let reqBtns = '';
+  if(isFriendReq){
+    reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
          <button data-fraccept="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" data-frname="${esc(n.fromName||'Oyuncu')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#04130b;background:linear-gradient(135deg,#69F0AE,#34d399)">✓ Kabul Et</button>
          <button data-frreject="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" style="flex:1;padding:7px;border-radius:9px;border:1px solid rgba(255,82,82,.4);cursor:pointer;font-size:11px;font-weight:900;color:#ff8a80;background:rgba(255,82,82,.1)">✕ Reddet</button>
-       </div>`
-    : '';
+       </div>`;
+  } else if(isGameInvite){
+    reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
+         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
+       </div>`;
+  }
   return `<div class="ghp-notif-row" ${fromAttr}>
     <div class="ghp-notif-icon" style="background:${s.bg};border:1px solid ${s.bd};font-size:20px">${ic}</div>
     <div class="ghp-notif-body">
@@ -1419,6 +1485,17 @@ function renderNotifPane(){
   // Arkadaşlık isteği Red
   list.querySelectorAll('[data-frreject]').forEach(el => el.addEventListener('click', (e) => {
     e.stopPropagation(); rejectFriendReq(el.dataset.frreject, el.dataset.frkey);
+  }));
+  // Oyun daveti Kabul → oyunu guest olarak aç
+  list.querySelectorAll('[data-giaccept]').forEach(el => el.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey;
+    // Bildirimi sil
+    const me = Auth.getState();
+    if(key && me.uid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null); }catch(e){} }
+    // Hub'ı kapat, oyunu guest olarak aç
+    try{ close(); }catch(e){}
+    _acceptGameInvite(game, code, nick);
   }));
 }
 
