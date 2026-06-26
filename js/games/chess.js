@@ -677,6 +677,11 @@ function startGame(root, mode, opts){
 
   // Dokunma / tıklama
   canvas.addEventListener('click', onBoardClick);
+  // Sürükle-bırak (taşı kaldır-bırak)
+  canvas.addEventListener('pointerdown', onBoardPointerDown);
+  canvas.addEventListener('pointermove', onBoardPointerMove);
+  canvas.addEventListener('pointerup', onBoardPointerUp);
+  canvas.addEventListener('pointercancel', onBoardPointerCancel);
 
   // Boyutlandırma
   G.resizeHandler = () => fitCanvas();
@@ -867,6 +872,11 @@ function draw(){
     if(!p) continue;
     // Animasyon: hareket eden taşı varış karesinde çizme (ayrı interpole çizilecek)
     if(G.anim && G.anim.to.r === r && G.anim.to.c === c) continue;
+    // Sürükleniyorsa: kalkış karesinde taşı soluk "hayalet" çiz (kaldırıldı hissi)
+    if(G._drag && G._drag.moved && G._drag.from.r === r && G._drag.from.c === c){
+      ctx.save(); ctx.globalAlpha = 0.28; drawPiece(ctx, r, c, p, t); ctx.restore();
+      continue;
+    }
     drawPiece(ctx, r, c, p, t);
   }
 
@@ -882,6 +892,24 @@ function draw(){
 
   // Kenar koordinatları (a-h, 1-8)
   drawCoords(ctx, t, m, cell, sz);
+
+  // ── Sürüklenen taş (parmağı/imleci takip eder, büyütülmüş + gölgeli) ──
+  if(G._drag && G._drag.moved){
+    const d = G._drag;
+    ctx.save();
+    // büyük gölge (kaldırılmış hissi)
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(d.px, d.py + G.cell*0.30, G.cell*0.34, G.cell*0.14, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    // taşı imleç konumunda, hafif büyük çiz
+    ctx.translate(d.px, d.py - G.cell*0.10);
+    ctx.scale(1.12, 1.12);
+    drawPieceAt(ctx, 0, 0, d.piece, t);
+    ctx.restore();
+  }
 }
 
 function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
@@ -1058,9 +1086,97 @@ function findKingPos(board, color){
   return null;
 }
 
+// ════════════ SÜRÜKLE-BIRAK (taşı kaldır-bırak) ════════════
+// Ortak: oynanabilir mi kontrolü
+function _canPlayNow(){
+  if(!G || G.animating || G.aiThinking || G.gameEnded) return false;
+  if(G.mode === 'ai' && G.state.turn !== G.playerColor) return false;
+  if(G.mode === 'online'){ if(G.oppLeft) return false; if(G.state.turn !== G.playerColor) return false; }
+  const status = gameStatus(G.state);
+  if(status === 'checkmate' || status === 'stalemate') return false;
+  return true;
+}
+function _eventCell(e){
+  const rect = G.canvas.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  return { sq: xyToCell(px, py), px, py };
+}
+
+function onBoardPointerDown(e){
+  if(!_canPlayNow()) return;
+  const { sq, px, py } = _eventCell(e);
+  if(!sq) return;
+  const piece = G.state.board[sq.r][sq.c];
+  // Kendi taşına basıldıysa sürüklemeyi hazırla
+  if(piece && piece.c === G.state.turn){
+    G._drag = {
+      from: { r: sq.r, c: sq.c },
+      piece,
+      px, py,
+      moved: false,
+      pointerId: e.pointerId,
+    };
+    // Taşı seç + geçerli hamleleri hesapla (vurgu için)
+    G.selected = { r: sq.r, c: sq.c };
+    G.legalForSelected = legalMoves(G.state, sq.r, sq.c);
+    try{ G.canvas.setPointerCapture(e.pointerId); }catch(_){}
+    try{ Sound.select(); }catch(_){}
+    draw();
+  }
+}
+
+function onBoardPointerMove(e){
+  if(!G || !G._drag) return;
+  if(e.pointerId !== G._drag.pointerId) return;
+  const rect = G.canvas.getBoundingClientRect();
+  G._drag.px = e.clientX - rect.left;
+  G._drag.py = e.clientY - rect.top;
+  // Belirgin hareket olduysa "sürükleniyor" say (basit tıklamadan ayır)
+  G._drag.moved = true;
+  draw();
+}
+
+function onBoardPointerUp(e){
+  if(!G || !G._drag) return;
+  if(e.pointerId !== G._drag.pointerId) return;
+  const drag = G._drag;
+  G._drag = null;
+  try{ G.canvas.releasePointerCapture(e.pointerId); }catch(_){}
+
+  const { sq } = _eventCell(e);
+  // Sürüklenmediyse (sadece bastı-bıraktı, aynı kare) → tıklama mantığına bırak (tap-tap seçim)
+  if(!drag.moved){
+    draw();   // seçim zaten yapıldı, vurguyu göster
+    return;
+  }
+  // Sürükleme oldu → eşlik eden click event'ini yok saymak için işaretle
+  G._dragJustEnded = true;
+  setTimeout(() => { if(G) G._dragJustEnded = false; }, 50);
+  // Sürüklenip bir kareye bırakıldı
+  if(sq){
+    // Aynı kareye bırakıldıysa → seçili kalsın (tap-tap'e devam)
+    if(sq.r === drag.from.r && sq.c === drag.from.c){ draw(); return; }
+    // Geçerli hamle mi?
+    const mv = G.legalForSelected.find(m => m.to.r === sq.r && m.to.c === sq.c);
+    if(mv){ doMove(mv); return; }
+  }
+  // Geçersiz bırakma → taş yerine döner, seçim kalkar
+  G.selected = null; G.legalForSelected = [];
+  draw();
+}
+
+function onBoardPointerCancel(e){
+  if(!G || !G._drag) return;
+  G._drag = null;
+  try{ G.canvas.releasePointerCapture(e.pointerId); }catch(_){}
+  draw();
+}
+
 // ════════════ TIKLAMA / HAMLE ════════════
 function onBoardClick(e){
   if(!G || G.animating || G.aiThinking || G.gameEnded) return;
+  // Sürükle-bırak yeni tamamlandıysa, eşlik eden click'i yok say (çift işlem önlenir)
+  if(G._dragJustEnded){ G._dragJustEnded = false; return; }
   // AI modunda sadece insan kendi sırasında oynayabilir
   if(G.mode === 'ai' && G.state.turn !== G.playerColor) return;
   // Çevrimiçi modda sadece kendi rengini, kendi sıranda oyna
@@ -1911,7 +2027,7 @@ function injectCSS(){
   border-radius:12px; color:#3fc8e0; font-size:22px; cursor:pointer; transition:transform .1s; }
 .col-paste:active{ transform:scale(.94); }
 .cg-board-wrap{ flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
-.cg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:manipulation; }
+.cg-board-wrap canvas{ border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.6); touch-action:none; -webkit-user-select:none; user-select:none; }
 .cg-captured{ display:flex; justify-content:space-between; padding:8px 12px; font-size:18px; gap:10px; }
 .cg-captured{ display:flex; flex-direction:column; gap:4px; padding:8px 12px; font-size:16px; }
 .cap-row{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.04); border-radius:8px; padding:6px 12px; min-height:30px; }
