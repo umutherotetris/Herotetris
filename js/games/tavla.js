@@ -862,14 +862,115 @@ const THEME_MOTIF = { iznik:'flower', kizil:'crescent', lacivert:'star8', zumrut
 function drawBarMotif(ctx, t){
   const g = G.geo;
   ctx.save();
-  // bar kenarlarında hafif iç gölge (3B his) — sembol değil, sadece kenar
+  // bar kenarlarında hafif iç gölge (3B his)
   const grad = ctx.createLinearGradient(g.barX, 0, g.barX + g.barW, 0);
   grad.addColorStop(0,    'rgba(0,0,0,.28)');
   grad.addColorStop(0.5,  'rgba(0,0,0,0)');
   grad.addColorStop(1,    'rgba(0,0,0,.28)');
   ctx.fillStyle = grad;
   ctx.fillRect(g.barX, g.innerY, g.barW, g.innerH);
+
+  // ── ⚜️ SARAY AY-YILDIZ MOTİFİ (bar üst & alt) — önbellekli ──
+  const cx = g.barX + g.barW * 0.5;
+  const r = Math.min(g.barW * 0.32, g.innerH * 0.045, 20);
+  const yTop = g.innerY + g.innerH * 0.16;
+  const yBot = g.innerY + g.innerH * 0.84;
+  const sprite = _getCrescentSprite(r, t.frame, t.barMotif || t.frame);
+  if(sprite){
+    const dw = sprite.width, dh = sprite.height;
+    ctx.globalAlpha = 0.55;
+    ctx.drawImage(sprite, cx - dw/2, yTop - dh/2);
+    ctx.drawImage(sprite, cx - dw/2, yBot - dh/2);
+    ctx.globalAlpha = 1;
+  }
   ctx.restore();
+}
+
+// Ay-yıldız motifini bir kez render edip önbelleğe al (FPS korunur)
+let _crescentCache = {};
+function _getCrescentSprite(r, goldMain, goldLight){
+  const key = Math.round(r) + '|' + goldMain + '|' + goldLight;
+  if(_crescentCache[key]) return _crescentCache[key];
+  try{
+    const pad = Math.ceil(r * 0.6);
+    const W = Math.ceil(r * 2.5 + pad*2), H = Math.ceil(r * 2.4 + pad*2);
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const cc = cv.getContext('2d');
+    drawCrescentStarLux(cc, W*0.42, H/2, r, goldMain, goldLight, 1.0);
+    _crescentCache[key] = cv;
+    return cv;
+  }catch(e){ return null; }
+}
+
+// ⚜️ Premium Saray Ay-Yıldız (çift katman altın hilal + kabartmalı yıldız + gölge + ışıltı)
+function drawCrescentStarLux(ctx, cx, cy, r, goldMain, goldLight, alpha){
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  const gD = _shade(goldMain, 0.7);     // koyu altın
+  const gL = _shade(goldLight, 1.35);   // açık altın (parlama)
+
+  // ── Hilal gölgesi (derinlik) ──
+  ctx.save();
+  ctx.translate(1.5, 2);
+  ctx.globalAlpha = alpha * 0.4;
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath(); ctx.arc(cx + r*0.42, cy - r*0.05, r*0.82, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // ── Hilal gövdesi (altın gradyan dolgu — offscreen ile temiz kesim) ──
+  try{
+    const sz = Math.ceil(r*3);
+    const tmp = document.createElement('canvas'); tmp.width = sz; tmp.height = sz;
+    const tc = tmp.getContext('2d');
+    const ox = sz/2, oy = sz/2;
+    tc.fillStyle = '#fff';
+    tc.beginPath(); tc.arc(ox, oy, r, 0, Math.PI*2); tc.fill();
+    tc.globalCompositeOperation = 'destination-out';
+    tc.beginPath(); tc.arc(ox + r*0.42, oy - r*0.05, r*0.82, 0, Math.PI*2); tc.fill();
+    tc.globalCompositeOperation = 'source-in';
+    const gg = tc.createLinearGradient(0, 0, sz, sz);
+    gg.addColorStop(0, gL); gg.addColorStop(0.5, goldMain); gg.addColorStop(1, gD);
+    tc.fillStyle = gg; tc.fillRect(0, 0, sz, sz);
+    ctx.drawImage(tmp, cx - ox, cy - oy);
+  }catch(e){
+    // Fallback: düz dolgu
+    ctx.fillStyle = goldMain;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(cx + r*0.42, cy - r*0.05, r*0.82, 0, Math.PI*2); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ── Hilal iç kenar parlaması ──
+  ctx.strokeStyle = gL; ctx.lineWidth = Math.max(1, r*0.06); ctx.globalAlpha = alpha * 0.75;
+  ctx.beginPath(); ctx.arc(cx, cy, r-1, -0.7, 1.0); ctx.stroke();
+  ctx.globalAlpha = alpha;
+
+  // ── Yıldız (kabartmalı, gölge + gradyan + parlama) ──
+  const sx = cx + r*0.66, sy = cy, R = r*0.5;
+  // gölge
+  ctx.save(); ctx.translate(1.2, 1.8); ctx.globalAlpha = alpha*0.4;
+  ctx.fillStyle = '#000'; _star5path(ctx, sx, sy, R); ctx.fill();
+  ctx.restore();
+  // gövde
+  const sg = ctx.createRadialGradient(sx - R*0.3, sy - R*0.3, R*0.1, sx, sy, R);
+  sg.addColorStop(0, gL); sg.addColorStop(0.5, goldMain); sg.addColorStop(1, gD);
+  ctx.fillStyle = sg; _star5path(ctx, sx, sy, R); ctx.fill();
+  ctx.strokeStyle = gL; ctx.lineWidth = Math.max(0.8, R*0.08); _star5path(ctx, sx, sy, R); ctx.stroke();
+
+  ctx.restore();
+}
+function _star5path(ctx, cx, cy, R){
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const a = -Math.PI/2 + i*2*Math.PI/5;
+    const a2 = a + Math.PI/5;
+    ctx.lineTo(cx + Math.cos(a)*R, cy + Math.sin(a)*R);
+    ctx.lineTo(cx + Math.cos(a2)*R*0.42, cy + Math.sin(a2)*R*0.42);
+  }
+  ctx.closePath();
 }
 
 // Tek bir tema sembolü çiz
