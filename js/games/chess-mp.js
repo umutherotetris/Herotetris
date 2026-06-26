@@ -124,10 +124,10 @@ export const ChessMP = {
   get code(){ return myCode; },
   get host(){ return isHost; },
 
-  createRoom(cb){
+  createRoom(cb, fixedCode){
     onEvent = cb; isHost = true; manualClose = false; stopReconnect();
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return null; }
-    myCode = genCode();
+    myCode = fixedCode || genCode();
     try{ peer = new window.Peer(PREFIX + myCode, { debug: 1 }); }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
     peer.on('open', () => { fire('code', myCode); fire('waiting'); });
