@@ -54,13 +54,13 @@ const THEMES = {
     glow:'#3fe0a0'
   },
   ceviz: {
-    name: 'Anadolu Ceviz',
-    bg:'#1a0e06', felt:'#5a3a1e', frame:'#c8a557', frameDark:'#8a6d2f',
-    pointA:'#7d4e2a', pointB:'#e0c498',
-    bar:'#3a2410', barMotif:'#c8a557',
-    wTop:'#f0e0c0', wBot:'#d0b890', wEdge:'#b09868',
-    bTop:'#6b4226', bBot:'#3a2414', bEdge:'#8a5e3a',
-    glow:'#e0a860'
+    name: 'Topkapı Altın',
+    bg:'#1a0d08', felt:'#5e1a1a', frame:'#d4af37', frameDark:'#9a7d27',
+    pointA:'#7a1e1e', pointB:'#d9b86a',
+    bar:'#4a1414', barMotif:'#d4af37',
+    wTop:'#f5ecd2', wBot:'#e0cca0', wEdge:'#c0a870',
+    bTop:'#9a2424', bBot:'#5e1414', bEdge:'#c04040',
+    glow:'#e0b850'
   },
   buz: {
     name: 'Buzlu Deniz',
@@ -566,28 +566,75 @@ function draw(){
   const ctx = G.ctx, t = THEMES[SELECTED_THEME], g = G.geo, W = G.W, H = G.H;
   ctx.clearRect(0, 0, W, H);
 
-  // dış zemin
-  ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
-  // altın çerçeve
-  _roundRect(ctx, 2, 2, W-4, H-4, 10);
-  const fg = ctx.createLinearGradient(0,0,W,H);
-  fg.addColorStop(0, t.frame); fg.addColorStop(.5, t.frameDark); fg.addColorStop(1, t.frame);
+  // dış zemin (koyu radyal vinyet)
+  const bgGrad = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.2, W/2, H/2, Math.max(W,H)*0.7);
+  bgGrad.addColorStop(0, _shade(t.bg, 1.25));
+  bgGrad.addColorStop(1, t.bg);
+  ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
+
+  // ── ALTIN ÇERÇEVE (çok katmanlı metalik) ──
+  _roundRect(ctx, 2, 2, W-4, H-4, 12);
+  const fg = ctx.createLinearGradient(0, 0, W, H);
+  fg.addColorStop(0, _shade(t.frame, 1.25));
+  fg.addColorStop(0.25, t.frame);
+  fg.addColorStop(0.5, t.frameDark);
+  fg.addColorStop(0.75, t.frame);
+  fg.addColorStop(1, _shade(t.frame, 1.15));
   ctx.fillStyle = fg; ctx.fill();
-  // iç keçe (oyun alanı)
-  ctx.fillStyle = t.felt;
+  // çerçeve üst parlama
+  _roundRect(ctx, 2, 2, W-4, H-4, 12);
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+  // çerçeve iç oyma çizgisi (altın detay)
+  _roundRect(ctx, g.innerX-6, g.innerY-6, g.innerW+12, g.innerH+12, 8);
+  ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 2; ctx.stroke();
+  _roundRect(ctx, g.innerX-4, g.innerY-4, g.innerW+8, g.innerH+8, 6);
+  ctx.strokeStyle = _shade(t.frame, 1.3); ctx.lineWidth = 1; ctx.stroke();
+
+  // ── İÇ KEÇE (kadife dokusu: gradyan + ince vinyet) ──
+  const feltGrad = ctx.createLinearGradient(g.innerX, g.innerY, g.innerX, g.innerY + g.innerH);
+  feltGrad.addColorStop(0, _shade(t.felt, 1.15));
+  feltGrad.addColorStop(0.5, t.felt);
+  feltGrad.addColorStop(1, _shade(t.felt, 0.85));
+  ctx.fillStyle = feltGrad;
   ctx.fillRect(g.innerX, g.innerY, g.innerW, g.innerH);
+  // keçe vinyet (kenarlar koyu)
+  const fv = ctx.createRadialGradient(
+    g.innerX + g.innerW/2, g.innerY + g.innerH/2, Math.min(g.innerW,g.innerH)*0.15,
+    g.innerX + g.innerW/2, g.innerY + g.innerH/2, Math.max(g.innerW,g.innerH)*0.6);
+  fv.addColorStop(0, 'rgba(0,0,0,0)');
+  fv.addColorStop(1, 'rgba(0,0,0,.32)');
+  ctx.fillStyle = fv;
+  ctx.fillRect(g.innerX, g.innerY, g.innerW, g.innerH);
+  // ince kadife doku (hafif noise çizgileri)
+  _drawFeltTexture(ctx, g.innerX, g.innerY, g.innerW, g.innerH);
 
   // üçgen noktalar
   for(let i=0;i<24;i++){ drawPoint(ctx, i, t); }
 
-  // orta bar
-  ctx.fillStyle = t.bar;
+  // orta bar — kadife gradyan
+  const barGrad = ctx.createLinearGradient(g.barX, 0, g.barX + g.barW, 0);
+  barGrad.addColorStop(0, _shade(t.bar, 0.75));
+  barGrad.addColorStop(0.5, _shade(t.bar, 1.12));
+  barGrad.addColorStop(1, _shade(t.bar, 0.75));
+  ctx.fillStyle = barGrad;
   ctx.fillRect(g.barX, g.innerY, g.barW, g.innerH);
+  _drawFeltTexture(ctx, g.barX, g.innerY, g.barW, g.innerH);
   drawBarMotif(ctx, t);
+  // bar altın kenar şeritleri
+  ctx.fillStyle = _shade(t.frame, 1.1);
+  ctx.fillRect(g.barX - 2, g.innerY, 2, g.innerH);
+  ctx.fillRect(g.barX + g.barW, g.innerY, 2, g.innerH);
 
-  // bear-off oluğu
-  ctx.fillStyle = t.bar;
+  // bear-off oluğu — kadife gradyan + altın kenar
+  const bearGrad = ctx.createLinearGradient(g.bearX, 0, g.bearX + g.bearW, 0);
+  bearGrad.addColorStop(0, _shade(t.bar, 0.7));
+  bearGrad.addColorStop(0.5, _shade(t.bar, 1.05));
+  bearGrad.addColorStop(1, _shade(t.bar, 0.7));
+  ctx.fillStyle = bearGrad;
   ctx.fillRect(g.bearX, g.innerY, g.bearW, g.innerH);
+  _drawFeltTexture(ctx, g.bearX, g.innerY, g.bearW, g.innerH);
+  ctx.fillStyle = _shade(t.frame, 1.1);
+  ctx.fillRect(g.bearX - 2, g.innerY, 2, g.innerH);
   // toplanan pul göstergesi
   drawBearOff(ctx, t);
 
@@ -723,17 +770,78 @@ function drawPoint(ctx, idx, t){
   const g = G.geo;
   const half = pg.colW * 0.5;
   const tipY = pg.y0 + pg.dir * g.pointH;
-  // alternatifli renk
   const isA = (idx % 2 === 0);
-  ctx.fillStyle = isA ? t.pointA : t.pointB;
-  ctx.beginPath();
-  ctx.moveTo(pg.baseX - half*0.86, pg.y0);
-  ctx.lineTo(pg.baseX + half*0.86, pg.y0);
-  ctx.lineTo(pg.baseX, tipY);
-  ctx.closePath();
-  ctx.globalAlpha = 0.92; ctx.fill(); ctx.globalAlpha = 1;
-  // ince kenar
-  ctx.strokeStyle = 'rgba(0,0,0,.2)'; ctx.lineWidth = 1; ctx.stroke();
+  const baseCol = isA ? t.pointA : t.pointB;
+  const x0 = pg.baseX - half*0.86, x1 = pg.baseX + half*0.86;
+
+  ctx.save();
+  // Üçgen yolu
+  const tri = () => { ctx.beginPath(); ctx.moveTo(x0, pg.y0); ctx.lineTo(x1, pg.y0); ctx.lineTo(pg.baseX, tipY); ctx.closePath(); };
+
+  // ── Ana gövde: tabandan uca gradyan (parlak taban → koyu uç) ──
+  const grad = ctx.createLinearGradient(pg.baseX, pg.y0, pg.baseX, tipY);
+  grad.addColorStop(0, _shade(baseCol, isA ? 1.18 : 1.10));   // taban: aydınlık
+  grad.addColorStop(0.55, baseCol);
+  grad.addColorStop(1, _shade(baseCol, 0.62));                // uç: koyu
+  tri(); ctx.fillStyle = grad; ctx.fill();
+
+  // ── Sol kenar boyunca ışık şeridi (3B hacim) ──
+  const lg = ctx.createLinearGradient(x0, 0, pg.baseX, 0);
+  lg.addColorStop(0, 'rgba(255,255,255,.16)');
+  lg.addColorStop(0.5, 'rgba(255,255,255,0)');
+  lg.addColorStop(1, 'rgba(0,0,0,.10)');
+  tri(); ctx.fillStyle = lg; ctx.fill();
+
+  // ── Uç gölgesi (sivri uca doğru koyulaşma, derinlik) ──
+  const tg = ctx.createLinearGradient(pg.baseX, tipY - g.pointH*0.4, pg.baseX, tipY);
+  tg.addColorStop(0, 'rgba(0,0,0,0)');
+  tg.addColorStop(1, 'rgba(0,0,0,.28)');
+  tri(); ctx.fillStyle = tg; ctx.fill();
+
+  // ── Kenar çizgileri (taban parlak, yanlar koyu) ──
+  tri();
+  ctx.strokeStyle = 'rgba(0,0,0,.30)'; ctx.lineWidth = 1.2; ctx.stroke();
+  // taban üst ince altın çizgi
+  ctx.beginPath(); ctx.moveTo(x0, pg.y0); ctx.lineTo(x1, pg.y0);
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.restore();
+}
+
+// Keçe/kadife dokusu — ince çapraz tarama (performanslı, bir kez hesaplanır)
+let _feltPattern = null;
+function _drawFeltTexture(ctx, x, y, w, h){
+  try{
+    if(!_feltPattern){
+      const pc = document.createElement('canvas'); pc.width = 64; pc.height = 64;
+      const pctx = pc.getContext('2d');
+      // hafif noise noktaları
+      for(let i=0;i<260;i++){
+        const px = Math.random()*64, py = Math.random()*64;
+        const a = Math.random()*0.04;
+        pctx.fillStyle = Math.random()>0.5 ? 'rgba(255,255,255,'+a+')' : 'rgba(0,0,0,'+a+')';
+        pctx.fillRect(px, py, 1, 1);
+      }
+      _feltPattern = ctx.createPattern(pc, 'repeat');
+    }
+    if(_feltPattern){
+      ctx.save();
+      ctx.fillStyle = _feltPattern;
+      ctx.fillRect(x, y, w, h);
+      ctx.restore();
+    }
+  }catch(e){}
+}
+
+// Renk tonu açma/koyma (factor>1 açar, <1 koyar)
+function _shade(hex, factor){
+  let h = (hex||'#888').replace('#','');
+  if(h.length===3) h = h.split('').map(x=>x+x).join('');
+  let r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  r = Math.max(0, Math.min(255, Math.round(r*factor)));
+  g = Math.max(0, Math.min(255, Math.round(g*factor)));
+  b = Math.max(0, Math.min(255, Math.round(b*factor)));
+  return 'rgb('+r+','+g+','+b+')';
 }
 
 // Her temanın kendine özgü motifi (tasarım kuralı: motif yalnızca orta bar'da)
@@ -957,21 +1065,56 @@ function drawCheckers(ctx, t){
 function drawChecker(ctx, cx, cy, R, color, t){
   const isW = color === 'w';
   ctx.save();
-  // gölge
-  ctx.fillStyle = 'rgba(0,0,0,.3)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + R*0.18, R*0.95, R*0.9, 0, 0, Math.PI*2); ctx.fill();
-  // gövde (radyal gradyan)
-  const grad = ctx.createRadialGradient(cx - R*0.3, cy - R*0.3, R*0.15, cx, cy, R);
-  grad.addColorStop(0, isW ? t.wTop : t.bTop);
-  grad.addColorStop(1, isW ? t.wBot : t.bBot);
-  ctx.fillStyle = grad;
+
+  // ── Zemin gölgesi (yumuşak, taşı tahtaya oturtur) ──
+  ctx.save();
+  ctx.filter = 'blur(2px)';
+  ctx.fillStyle = 'rgba(0,0,0,.38)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + R*0.22, R*0.96, R*0.82, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // ── Dış disk kenarı (metalik/koyu pah) ──
+  const rim = ctx.createLinearGradient(cx, cy - R, cx, cy + R);
+  if(isW){ rim.addColorStop(0, t.wEdge); rim.addColorStop(.5, t.wBot); rim.addColorStop(1, '#000'); }
+  else   { rim.addColorStop(0, t.bEdge); rim.addColorStop(.5, t.bBot); rim.addColorStop(1, '#000'); }
+  ctx.fillStyle = rim;
   ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.fill();
-  // kenar
-  ctx.strokeStyle = isW ? t.wEdge : t.bEdge; ctx.lineWidth = Math.max(1, R*0.12);
-  ctx.beginPath(); ctx.arc(cx, cy, R*0.94, 0, Math.PI*2); ctx.stroke();
-  // iç halka (oyuk hissi)
-  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = Math.max(1, R*0.08);
-  ctx.beginPath(); ctx.arc(cx, cy, R*0.6, 0, Math.PI*2); ctx.stroke();
+
+  // ── Ana gövde (yukarıdan ışık alan kubbe) ──
+  const body = ctx.createRadialGradient(cx - R*0.32, cy - R*0.38, R*0.1, cx, cy, R*0.98);
+  body.addColorStop(0, isW ? t.wTop : t.bTop);
+  body.addColorStop(0.55, isW ? t.wBot : t.bBot);
+  body.addColorStop(1, isW ? t.wEdge : t.bEdge);
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.92, 0, Math.PI*2); ctx.fill();
+
+  // ── İç basamak halkası (oyma/torna hissi) ──
+  ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = Math.max(1, R*0.05);
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.74, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = isW ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.14)';
+  ctx.lineWidth = Math.max(1, R*0.04);
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.70, 0, Math.PI*2); ctx.stroke();
+
+  // ── Merkez oyuk (içe basık daire, hafif gölge + parlama) ──
+  const inner = ctx.createRadialGradient(cx - R*0.15, cy - R*0.18, R*0.05, cx, cy, R*0.55);
+  inner.addColorStop(0, isW ? t.wBot : t.bBot);
+  inner.addColorStop(1, isW ? t.wTop : t.bTop);
+  ctx.fillStyle = inner;
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.52, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = Math.max(1, R*0.03);
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.52, 0, Math.PI*2); ctx.stroke();
+
+  // ── Üst parlama (specular highlight, sol-üst) ──
+  const hl = ctx.createRadialGradient(cx - R*0.30, cy - R*0.34, R*0.02, cx - R*0.30, cy - R*0.34, R*0.55);
+  hl.addColorStop(0, 'rgba(255,255,255,'+(isW?0.55:0.30)+')');
+  hl.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hl;
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.92, 0, Math.PI*2); ctx.fill();
+
+  // ── İnce dış çizgi (tanım) ──
+  ctx.strokeStyle = 'rgba(0,0,0,.32)'; ctx.lineWidth = Math.max(1, R*0.045);
+  ctx.beginPath(); ctx.arc(cx, cy, R*0.97, 0, Math.PI*2); ctx.stroke();
+
   ctx.restore();
 }
 
