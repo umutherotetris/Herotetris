@@ -59,11 +59,11 @@ const COSMETICS = [
 
 // ════════════ 🛠️ İŞLEVSEL ÖĞELER (envantere eklenir) ════════════
 const CONSUMABLES = [
-  {id:'item_hint',    name:'İpucu Paketi (×5)', icon:'💡', color:'#fbbf24', price:2000, qty:5, desc:'Kelime ve satrançta 5 ipucu hakkı'},
-  {id:'item_undo',    name:'Geri Alma (×5)', icon:'↩️', color:'#60a5fa', price:1800, qty:5, desc:'Oyunlarda 5 ekstra geri alma hakkı'},
-  {id:'item_food10',  name:'Besin Paketi (×10)', icon:'🍎', color:'#ef4444', price:1000, qty:10, desc:'Kozmo besleme: 10 yiyecek'},
-  {id:'item_food50',  name:'Besin Çuvalı (×50)', icon:'🧺', color:'#dc2626', price:4000, qty:50, desc:'Kozmo besleme: 50 yiyecek (indirimli)'},
-  {id:'item_fusion',  name:'Birleştirme Taşı', icon:'💫', color:'#e879f9', price:5000, qty:1, desc:'Bir sonraki birleştirmede daha iyi sonuç şansı'},
+  {id:'item_hint',    name:'İpucu Paketi (×5)', icon:'💡', color:'#fbbf24', price:2000, qty:5, desc:'Satrançta en iyi hamleyi gösterir (5 kullanım)'},
+  {id:'item_undo',    name:'Geri Alma (×5)', icon:'↩️', color:'#60a5fa', price:1800, qty:5, desc:'Oyunlarda ekstra geri alma hakkı (yakında)'},
+  {id:'item_food10',  name:'Besin Paketi (×10)', icon:'🍎', color:'#ef4444', price:1000, qty:10, desc:'Günlük 3 besleme limitini aşıp kozmonu besle (10 ek)'},
+  {id:'item_food50',  name:'Besin Çuvalı (×50)', icon:'🧺', color:'#dc2626', price:4000, qty:50, desc:'Günlük limiti aşıp besle (50 ek, indirimli)'},
+  {id:'item_fusion',  name:'Birleştirme Taşı', icon:'💫', color:'#e879f9', price:5000, qty:1, desc:'Kozmo birleştirmede Efsanevi sonuç garantisi'},
 ];
 
 // ════════════ 💎 PAKETLER / BUNDLE ════════════

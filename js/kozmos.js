@@ -117,13 +117,13 @@ const TYPES={
   kristal_boc:  {n:'Kristal Böcek', e:'🦋',c:'#67e8f9',c1:'#a5f3fc',c2:'#0891b2',acc:'#cffafe',r:'rare',
                  shape:'beetle', element:'Kristal', power:'Işık Kırar',        sound:'crystal',particle:'crystals',desc:'Işıltılı kanatların sahibi'},
   nova_kitsune: {n:'Nova Kitsune', e:'🦊',c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#f3e8ff',r:'rare',
-                 shape:'kitsune',element:'Gizem',   power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'sparkles',desc:'Üç kuyruklu çevik ve gizemli tilki'},
+                 shape:'kitsune',element:'Ruh',     power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'spirits', desc:'Üç kuyruklu gizemli ruh tilkisi'},
   kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',c1:'#fbcfe8',c2:'#db2777',acc:'#fdf2f8',r:'epic',
                  shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Yaratır', sound:'magical',particle:'rainbow', desc:'Evrenin büyülü tek boynuzlusu'},
   derin_ejder:  {n:'Derin Ejder',   e:'🐲',c:'#00ffc8',c1:'#5eead4',c2:'#0d9488',acc:'#ccfbf1',r:'legendary',
                  shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin kadim ejderhası'},
   peri_ruhu:    {n:'Peri Kelebeği', e:'🧚',c:'#ffb8ff',c1:'#fbcfe8',c2:'#e879f9',acc:'#fdf4ff',r:'mythical',
-                 shape:'fairy',  element:'Işık',    power:'Işık Saçar',        sound:'fairy',  particle:'sparkles',desc:'Parlak ışıltılar saçan zarif kelebek perisi'},
+                 shape:'fairy',  element:'Işık',    power:'Dilek Tutturur',    sound:'fairy',  particle:'sparkles',desc:'Işığın saf periler kraliçesi'},
 };
 const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff'};
 const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Efsanevi',mythical:'Mitolojik'};
@@ -158,20 +158,25 @@ const MERGE_TABLE={
 };
 // Tabloda olmayan kombinasyonlar → benzersiz füzyon yaratıkları
 const FUSION_TYPES=[
-  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Işık Saçar',       sound:'epic',   particle:'galaxy',  desc:'İki kozmonun parlak birleşimi'},
+  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Doğurur',  sound:'epic',   particle:'galaxy',  desc:'İki ruhun kozmik birleşimi'},
   {key:'fusion_void',    name:'Void Birliği',    e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Boşluk',  power:'Karanlığı Yutar',  sound:'mystic', particle:'void',    desc:'Boşluğun kara enerjisi'},
   {key:'fusion_cosmic',  name:'Kozmik Fırtına',  e:'⚡',c:'#fbbf24',c1:'#fde047',c2:'#d97706',acc:'#fef9c3',r:'epic',     shape:'storm',  element:'Enerji',  power:'Enerji Patlatır',  sound:'epic',   particle:'energy',  desc:'Saf enerjinin fırtınası'},
   {key:'fusion_aurora',  name:'Aurora Dansı',    e:'🌈',c:'#f9a8d4',c1:'#fbcfe8',c2:'#db2777',acc:'#fce7f3',r:'legendary',shape:'aurora', element:'Aurora',  power:'Renk Cümbüşü',     sound:'magical',particle:'aurora',  desc:'Kuzey ışıklarının dansı'},
   {key:'fusion_crystal', name:'Kristal Kalp',    e:'💎',c:'#67e8f9',c1:'#a5f3fc',c2:'#0e7490',acc:'#cffafe',r:'epic',     shape:'crystal',element:'Elmas',   power:'Prizma Işığı',     sound:'crystal',particle:'prism',   desc:'Saf kristalin kalbi'},
 ];
-function getMergeResult(key1,key2){
+function getMergeResult(key1,key2,useStone){
   const combo=key1+'+'+key2;
   const direct=MERGE_TABLE[combo];
   if(direct&&TYPES[direct]) return {key:direct,...TYPES[direct]};
+  // Birlestirme Tasi: legendary fusion garantisi
+  if(useStone){
+    const legends=FUSION_TYPES.filter(f=>f.r==='legendary');
+    if(legends.length){ const lf=legends[Math.floor(Math.random()*legends.length)]; return {...lf}; }
+  }
   // Bilinmeyen → rastgele fusion (epic+)
   const roll=Math.floor(Math.random()*100);
   if(roll===0){
-    // %1 çok nadir: gokk_ruhu
+    // %1 cok nadir: gokk_ruhu
     return {key:'gokk_ruhu',...TYPES.gokk_ruhu};
   }
   const ft=FUSION_TYPES[Math.floor(Math.random()*FUSION_TYPES.length)];
@@ -328,84 +333,9 @@ export function creatureSVG(typeKey, size, opts){
     +defs+aura+back+bodyShape+belly+shine+special+front+eyes+cheeks+mouth+'</svg>';
 }
 
-
-
-// ── ✨ BENZERSIZ (UNIQUE) KOZMO — premium animasyonlu sahne ──
-// Mağazadan gelen unique kozmolar düz emoji yerine: dönen yörünge halkaları,
-// nabız atan aura, yörüngede dolaşan parçacıklar, parlayan glow ile gösterilir.
-export function uniqueCosmoSVG(icon, size, color){
-  size = size || 72;
-  color = color || '#c084fc';
-  const W=size, H=size, cx=W/2, cy=H/2;
-  const uid='uq'+Math.floor(Math.random()*99999);
-  const lite = lighten(color);
-  // Yörüngede dolaşan parçacık üret
-  const orbit = (r, dur, delay, dotR, col) =>
-    '<g style="transform-origin:'+cx+'px '+cy+'px;animation:uqOrbit '+dur+'s linear infinite '+delay+'s">'
-    +'<circle cx="'+cx+'" cy="'+(cy-r)+'" r="'+dotR+'" fill="'+col+'">'
-    +'<animate attributeName="opacity" values="1;.4;1" dur="'+(dur*0.5)+'s" repeatCount="indefinite"/></circle></g>';
-
-  const defs='<defs>'
-    +'<radialGradient id="uqGlow'+uid+'" cx="50%" cy="50%" r="50%">'
-      +'<stop offset="0%" stop-color="'+lite+'" stop-opacity=".55"/>'
-      +'<stop offset="60%" stop-color="'+color+'" stop-opacity=".25"/>'
-      +'<stop offset="100%" stop-color="'+color+'" stop-opacity="0"/></radialGradient>'
-    +'<linearGradient id="uqRing'+uid+'" x1="0%" y1="0%" x2="100%" y2="100%">'
-      +'<stop offset="0%" stop-color="'+lite+'"/><stop offset="100%" stop-color="'+color+'" stop-opacity=".3"/></linearGradient>'
-    +'</defs>';
-
-  // Nabız atan glow zemini
-  const glow='<circle cx="'+cx+'" cy="'+cy+'" r="'+(W*.48)+'" fill="url(#uqGlow'+uid+')" '
-    +'style="animation:uqPulse 2.4s ease-in-out infinite;transform-origin:'+cx+'px '+cy+'px"/>';
-
-  // İki dönen yörünge halkası (eğik)
-  const ringA='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(W*.44)+'" ry="'+(W*.17)+'" fill="none" '
-    +'stroke="url(#uqRing'+uid+')" stroke-width="1.6" opacity=".75" '
-    +'style="animation:uqSpin 5s linear infinite;transform-origin:'+cx+'px '+cy+'px"/>';
-  const ringB='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(W*.46)+'" ry="'+(W*.19)+'" fill="none" '
-    +'stroke="url(#uqRing'+uid+')" stroke-width="1.2" opacity=".5" '
-    +'transform="rotate(60 '+cx+' '+cy+')" '
-    +'style="animation:uqSpinR 7s linear infinite;transform-origin:'+cx+'px '+cy+'px"/>';
-
-  // Yörünge parçacıkları (farklı yarıçap/hız)
-  const dots = orbit(W*.44, 5, 0, W*.03, lite)
-             + orbit(W*.46, 7, -2, W*.025, '#fff')
-             + orbit(W*.40, 4, -1, W*.022, color);
-
-  // Köşelerde parıldayan yıldızlar
-  const spark='<circle cx="'+(cx-W*.34)+'" cy="'+(cy-H*.3)+'" r="'+(W*.022)+'" fill="#fff" '
-      +'style="animation:creatureSparkle 1.6s ease-in-out infinite"/>'
-    +'<circle cx="'+(cx+W*.36)+'" cy="'+(cy+H*.26)+'" r="'+(W*.018)+'" fill="'+lite+'" '
-      +'style="animation:creatureSparkle 2.1s ease-in-out infinite .6s"/>'
-    +'<circle cx="'+(cx+W*.3)+'" cy="'+(cy-H*.34)+'" r="'+(W*.02)+'" fill="#fff" '
-      +'style="animation:creatureSparkle 1.3s ease-in-out infinite .3s"/>';
-
-  // Merkez: emoji (hafif süzülme + parlama)
-  const emoji='<text x="'+cx+'" y="'+(cy+H*.13)+'" text-anchor="middle" '
-    +'font-size="'+(W*.46)+'" style="animation:uqFloat 3s ease-in-out infinite">'+(icon||'🌟')+'</text>';
-
-  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" '
-    +'style="display:block;margin:0 auto;overflow:visible;filter:drop-shadow(0 0 12px '+color+'aa)">'
-    +defs+glow+ringB+dots+ringA+spark+emoji+'</svg>';
-}
-
-// Unique kozmo animasyon keyframe'lerini garanti et
-export function ensureUniqueCSS(){
-  if(document.getElementById('uqCosmoCSS')) return;
-  const s=document.createElement('style'); s.id='uqCosmoCSS';
-  s.textContent='@keyframes uqSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'
-    +'@keyframes uqSpinR{from{transform:rotate(60deg)}to{transform:rotate(420deg)}}'
-    +'@keyframes uqOrbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}'
-    +'@keyframes uqPulse{0%,100%{transform:scale(.92);opacity:.85}50%{transform:scale(1.08);opacity:1}}'
-    +'@keyframes uqFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-'+'3px)}}'
-    // creatureSparkle yoksa fallback
-    +'@keyframes creatureSparkle{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}';
-  document.head.appendChild(s);
-}
-
 // ── Element ikonu ──
 function elementIcon(el){
-  const m={'Yıldız':'⭐','Ateş':'🔥','Doğa':'🌿','Hava':'💨','Şimşek':'⚡','Kristal':'💎','Gizem':'🔮','Gökkuşağı':'🌈','Derinlik':'🌊','Işık':'✨','Kozmos':'🌌','Boşluk':'🕳️','Enerji':'⚡','Aurora':'🌈','Elmas':'💠','Okyanus':'🌊','Hız':'💨','Zaman':'⏳','Sonsuzluk':'♾️'};
+  const m={'Yıldız':'⭐','Ateş':'🔥','Doğa':'🌿','Hava':'💨','Şimşek':'⚡','Kristal':'💎','Ruh':'👻','Gökkuşağı':'🌈','Derinlik':'🌊','Işık':'✨','Kozmos':'🌌','Boşluk':'🕳️','Enerji':'⚡','Aurora':'🌈','Elmas':'💠'};
   return m[el]||'✨';
 }
 
@@ -463,107 +393,22 @@ function showCreatureDetail(c,t,rc){
   const ov=document.createElement('div'); ov.className='nick-modal-ov';
   const inn=document.createElement('div'); inn.className='nick-modal koz-detail'; inn.style.maxWidth='300px';
   inn.style.setProperty('--cc',t.c||'#c084fc');
-  inn.innerHTML='<div class="koz-detail-hero">'+(c.unique?uniqueCosmoSVG(c.icon||t.e,96,c.color||t.c):creatureSVG(c.typeKey,96))+'</div>'
+  inn.innerHTML='<div class="koz-detail-hero">'+(c.unique?'<div style="font-size:64px">'+(c.icon||t.e)+'</div>':creatureSVG(c.typeKey,96))+'</div>'
     +'<div class="koz-detail-name" style="color:'+(t.c||'#c084fc')+'">'+esc(c.name||t.n)+'</div>'
-    +'<div class="koz-detail-rar" style="color:'+rc+'">'+(RARITY_LABEL[c.rarity||t.r]||c.rarity||t.r)+'</div>'
+    +'<div class="koz-detail-rar" style="color:'+rc+'">'+(RARITY_LABEL[t.r]||t.r)+'</div>'
     +'<div class="koz-detail-desc">'+esc(t.desc||'Gizemli bir kozmo')+'</div>'
     +'<div class="koz-detail-stats">'
-      +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(c.element||t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(c.element||t.element||'?')+'</span></div>'
-      +'<div class="koz-stat"><span class="koz-stat-ico">⚡</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(c.power||t.power||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(t.element||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">✨</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(t.power||'?')+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">⭐</span><span class="koz-stat-lbl">Seviye</span><span class="koz-stat-val">LV '+(c.level||1)+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">💝</span><span class="koz-stat-lbl">Kaynak</span><span class="koz-stat-val">'+esc(c.fromName||'Mağaza')+'</span></div>'
     +'</div>'
-    +(()=>{
-        const pw = c.power || t.power;
-        const bonus = pw && KOZMO_POWERS[pw];
-        if(!bonus) return '';
-        const active = isActiveKozmo(c,t);
-        return '<div class="koz-bonus-box" style="margin:10px 0;padding:9px 11px;border-radius:12px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.3)">'
-          +'<div style="font-size:11px;font-weight:900;color:#c084fc;margin-bottom:3px">'+bonus.icon+' '+esc(bonus.label)+'</div>'
-          +'<div style="font-size:9.5px;color:#9fb0d8;line-height:1.5">'+esc(bonus.desc)+'</div>'
-          +'<button class="koz-activate-btn" id="kozActivate" style="margin-top:8px;width:100%;padding:9px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-weight:900;'
-            +(active
-              ?'background:rgba(105,240,174,.15);color:#69F0AE;border:1px solid rgba(105,240,174,.4)">✓ Aktif Bonus'
-              :'background:linear-gradient(135deg,#E040FB,#7C4DFF);color:#fff">⚡ Bonusu Aktif Et')
-          +'</button></div>';
-      })()
     +'<button class="koz-detail-sound" id="kozPlaySound">🔊 Sesini Dinle</button>'
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="kozDetClose">Kapat</button></div>';
   ov.appendChild(inn); document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#kozDetClose').addEventListener('click',()=>ov.remove());
   inn.querySelector('#kozPlaySound').addEventListener('click',()=>creatureSound(t.sound));
-  const actBtn = inn.querySelector('#kozActivate');
-  if(actBtn) actBtn.addEventListener('click',()=>{
-    if(isActiveKozmo(c,t)){ _toast('Bu kozmo zaten aktif'); return; }
-    if(setActiveKozmo(c,t)){ ov.remove(); }
-  });
-}
-
-
-// ════════════ ⚡ KOZMO YETENEK BONUS SİSTEMİ ════════════
-// Tamamen oyunsal/mekanik bonuslar — her aktif kozmo bir avantaj verir.
-// power metni → bonus tanımı. Dini/manevi içerik yoktur, sadece oyun avantajı.
-export const KOZMO_POWERS = {
-  'Yıldız Tozu Saçar':{key:'xp_boost',    val:0.05, icon:'✨', label:'+%5 XP', desc:'Tüm oyunlarda kazandığın XP %5 artar'},
-  'Alev Püskürtür':   {key:'score_boost', val:0.05, icon:'🔥', label:'+%5 Skor',desc:'Oyun skorların %5 artar'},
-  'Alev Saçar':       {key:'score_boost', val:0.08, icon:'🔥', label:'+%8 Skor',desc:'Oyun skorların %8 artar'},
-  'Şans Getirir':     {key:'wheel_luck',  val:1,    icon:'🍀', label:'Çark Şansı',desc:'Günlük çarkta daha iyi ödül şansı'},
-  'Bulut Çağırır':    {key:'kaju_boost',  val:0.05, icon:'☁️', label:'+%5 Kaju', desc:'Kazandığın Kaju %5 artar'},
-  'Yıldırım Düşürür': {key:'score_boost', val:0.07, icon:'⚡', label:'+%7 Skor',desc:'Oyun skorların %7 artar'},
-  'Işık Kırar':       {key:'xp_boost',    val:0.06, icon:'💎', label:'+%6 XP', desc:'Kazandığın XP %6 artar'},
-  'Üç Kuyruk Sallar': {key:'kaju_boost',  val:0.06, icon:'🔮', label:'+%6 Kaju', desc:'Kazandığın Kaju %6 artar'},
-  'Işık Saçar':       {key:'xp_boost',    val:0.07, icon:'✨', label:'+%7 XP', desc:'Kazandığın XP %7 artar'},
-  'Okyanus Dalgası':  {key:'score_boost', val:0.06, icon:'🌊', label:'+%6 Skor',desc:'Oyun skorların %6 artar'},
-  'Şimşek Hızı':      {key:'xp_boost',    val:0.10, icon:'💫', label:'+%10 XP',desc:'Kazandığın XP %10 artar'},
-  'Işık Patlatır':    {key:'allboost',    val:0.08, icon:'🌀', label:'+%8 Her Şey',desc:'XP, Skor ve Kaju %8 artar'},
-  'Gelgit Çağırır':   {key:'kaju_boost',  val:0.08, icon:'🌊', label:'+%8 Kaju', desc:'Kazandığın Kaju %8 artar'},
-  'Renk Cümbüşü':     {key:'allboost',    val:0.05, icon:'🌈', label:'+%5 Her Şey',desc:'XP, Skor ve Kaju %5 artar'},
-  'Karanlığı Yutar':  {key:'score_boost', val:0.10, icon:'🐉', label:'+%10 Skor',desc:'Oyun skorların %10 artar'},
-};
-
-// Aktif kozmonun bonusunu localStorage'dan oku (oyunlar bunu çağırır)
-export function getActiveKozmoBonus(){
-  try{
-    const raw = localStorage.getItem('hero_active_kozmo');
-    if(!raw) return null;
-    const a = JSON.parse(raw);
-    if(!a || !a.power) return null;
-    const p = KOZMO_POWERS[a.power];
-    if(!p) return null;
-    return { ...p, power:a.power, name:a.name, icon2:a.icon };
-  }catch(e){ return null; }
-}
-
-// Belirli bir bonus tipinin çarpanını döndür (1.0 = bonus yok)
-export function kozmoMultiplier(type){
-  const b = getActiveKozmoBonus();
-  if(!b) return 1;
-  if(b.key === type) return 1 + b.val;
-  if(b.key === 'allboost' && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + b.val;
-  return 1;
-}
-
-function setActiveKozmo(c, t){
-  const power = c.power || (t && t.power) || null;
-  if(!power || !KOZMO_POWERS[power]){ _toast('Bu kozmonun aktif bonusu yok'); return false; }
-  try{
-    localStorage.setItem('hero_active_kozmo', JSON.stringify({
-      power, name:c.name||(t&&t.n)||'Kozmo', icon:c.icon||(t&&t.e)||'✨'
-    }));
-    const p = KOZMO_POWERS[power];
-    _toast('⚡ '+(c.name||'Kozmo')+' aktif! '+p.icon+' '+p.label);
-    return true;
-  }catch(e){ return false; }
-}
-function isActiveKozmo(c, t){
-  try{
-    const raw = localStorage.getItem('hero_active_kozmo');
-    if(!raw) return false;
-    const a = JSON.parse(raw);
-    const power = c.power || (t && t.power);
-    return a && a.power === power && a.name === (c.name||(t&&t.n));
-  }catch(e){ return false; }
 }
 
 // Rengi açma yardımcısı (3D highlight için)
@@ -597,7 +442,7 @@ export async function sendEgg(toUid,toName){
     });
     try{localStorage.setItem(todayKey,String(sentToday+1));}catch(e){}
     // Alıcıya bildirim
-    try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi!',ts:Date.now(),fromUid:st.uid});}catch(e){}
+    try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{type:'gift_kozmo',icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi! Kozmos panelinden kabul et.',ts:Date.now(),fromUid:st.uid});}catch(e){}
     _toast('🥚 Yumurta gönderildi → '+toName+'!');
   }catch(e){_toast('Gönderilemedi: '+(e.message||e));}
 }
@@ -605,7 +450,6 @@ export async function sendEgg(toUid,toName){
 // ── Kozmos Paneli ─────────────────────────────────────────────
 export async function openKozmos(){
   if(document.getElementById('kozmosPanel'))return;
-  ensureUniqueCSS();
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){_toast('Kozmos için giriş gerekli');return;}
   const ov=document.createElement('div'); ov.id='kozmosPanel'; ov.className='clan-ov';
@@ -633,20 +477,6 @@ async function renderKozmos(st,box){
   const eggList=Object.entries(eggs);
   const creList=Object.entries(creatures);
   box.innerHTML='';
-
-  // ── Aktif Kozmo Bonusu Bandı
-  const actB = getActiveKozmoBonus();
-  if(actB){
-    const band=document.createElement('div');
-    band.style.cssText='display:flex;align-items:center;gap:9px;padding:9px 12px;margin-bottom:12px;border-radius:12px;background:linear-gradient(135deg,rgba(192,132,252,.14),rgba(124,77,255,.08));border:1px solid rgba(192,132,252,.3)';
-    band.innerHTML='<span style="font-size:20px">'+(actB.icon2||'✨')+'</span>'
-      +'<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:900;color:#c084fc">⚡ Aktif: '+esc(actB.name)+'</div>'
-      +'<div style="font-size:9.5px;color:#9fb0d8">'+actB.icon+' '+esc(actB.label)+' — '+esc(actB.desc)+'</div></div>'
-      +'<button id="kozClearActive" style="background:rgba(255,255,255,.08);border:none;color:#9fb0d8;font-size:14px;cursor:pointer;border-radius:8px;padding:4px 8px">✕</button>';
-    box.appendChild(band);
-    const cb=band.querySelector('#kozClearActive');
-    if(cb) cb.addEventListener('click',()=>{ try{localStorage.removeItem('hero_active_kozmo');}catch(e){} _toast('Aktif bonus kaldırıldı'); renderKozmos(st,box); });
-  }
 
   // ── Gelen Yumurtalar
   if(pendList.length){
@@ -716,11 +546,22 @@ async function renderKozmos(st,box){
         e.stopPropagation();
         const todayKey='htu_feed_'+k+'_'+new Date().toDateString();
         const fedToday=parseInt(localStorage.getItem(todayKey)||'0');
-        if(fedToday>=3){_toast('Bugün bu yumurtayı 3 kez besledin. Yarın tekrar!');return;}
+        // Gunluk 3 ucretsiz besleme dolduysa: Besin Paketi ogesi varsa onunla besle
+        let usedItem=false;
+        if(fedToday>=3){
+          const foodCount=(Store.getItemCount&&(Store.getItemCount('item_food10')+Store.getItemCount('item_food50')))||0;
+          if(foodCount<=0){_toast('Bugun 3 kez besledin. Magazadan 🍎 Besin alarak devam edebilirsin!');return;}
+          // Besin ogesini kullan (once 10luk, yoksa 50lik)
+          if(Store.getItemCount('item_food10')>0){ await Store.useItem('item_food10'); }
+          else if(Store.getItemCount('item_food50')>0){ await Store.useItem('item_food50'); }
+          usedItem=true;
+        }
         try{
           await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k+'/feedCount'),c=>(c||0)+1);
-          localStorage.setItem(todayKey,String(fedToday+1));
-          sfxFeed(); feedAnim(); await renderKozmos(st,box);
+          if(!usedItem) localStorage.setItem(todayKey,String(fedToday+1));
+          sfxFeed(); feedAnim();
+          if(usedItem){ const rem=(Store.getItemCount('item_food10')+Store.getItemCount('item_food50')); _toast('🍎 Besin kullanildi! Kalan: '+rem); }
+          await renderKozmos(st,box);
         }catch(err){_toast('Beslenemedi');}
       });
       const hb=card.querySelector('[data-hatch]');
@@ -743,7 +584,7 @@ async function renderKozmos(st,box){
       const card=document.createElement('div'); card.className='kozmo-card rar-'+(t.r||'common');
       card.style.cssText='border-color:'+t.c+'44;background:linear-gradient(160deg,rgba(20,10,40,.98),rgba('+hexToRgb(t.c)+', .08))';
       card.innerHTML=''
-        +'<div class="koz-cre-svg">'+(c.unique?uniqueCosmoSVG(c.icon||t.e||'🌟',58,c.color||t.c):creatureSVG(c.typeKey,58))+'</div>'
+        +'<div class="koz-cre-svg">'+(c.unique?'<div style="font-size:40px">'+(c.icon||t.e||'🌟')+'</div>':creatureSVG(c.typeKey,58))+'</div>'
         +'<div class="koz-cre-name" style="color:'+t.c+'">'+esc(c.name||t.n)+'</div>'
         +'<div class="koz-cre-rarity" style="color:'+rc+'">'+esc(RARITY_LABEL[t.r]||t.r)+'</div>'
         +(t.element?'<div class="koz-cre-element">'+elementIcon(t.element)+' '+esc(t.element)+'</div>':'')
@@ -788,12 +629,8 @@ async function hatchEgg(eggId,egg,st,box){
     const t=randomType(egg.seed||0,egg.minRarity);
     const creId='cre_'+Date.now()+'_'+eggId.slice(0,6);
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
-      typeKey:t.key, name:t.n,
-      fromUid: egg.fromUid || null,        // mağaza yumurtasında olmayabilir
-      fromName: egg.fromName || '?',
-      bornAt: Date.now(),
-      sentAt: egg.sentAt || null,          // undefined → null (Firebase reddetmesin)
-      level:1, xp:0,
+      typeKey:t.key, name:t.n, fromUid:egg.fromUid, fromName:egg.fromName||'?',
+      bornAt:Date.now(), sentAt:egg.sentAt, level:1, xp:0,
     });
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
     feedAnim(); sfxChirp();
@@ -811,33 +648,43 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
   const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='310px';
   inn.innerHTML='<div class="nm-title">💥 Birleştirme Seç</div>'
     +'<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">'
-      +'<div>'+(src.unique?uniqueCosmoSVG(src.icon||srcType.e,44,src.color||srcType.c):creatureSVG(src.typeKey,44))+'</div>'
+      +'<div>'+(src.unique?'<span style="font-size:28px">'+(src.icon||srcType.e)+'</span>':creatureSVG(src.typeKey,44))+'</div>'
       +'<span style="font-size:11px;color:'+srcType.c+';font-weight:800">'+esc(src.name||srcType.n)+'</span>'
       +'<span style="color:#c084fc;font-size:18px">+</span>'
       +'<span style="font-size:22px;color:#7d8ab8">❓</span>'
     +'</div>'
     +'<div style="font-size:9px;color:#5d6890;text-align:center;margin-bottom:10px">Birleştirince ebeveynler kaybolur — geri alınamaz!</div>'
+    +((Store.getItemCount&&Store.getItemCount('item_fusion')>0)?'<label style="display:flex;align-items:center;gap:7px;padding:8px 10px;margin-bottom:8px;border-radius:10px;background:rgba(232,121,249,.1);border:1px solid rgba(232,121,249,.3);cursor:pointer;font-size:10px;color:#e879f9;font-weight:700"><input type="checkbox" id="useStoneChk" style="width:15px;height:15px"> 💫 Birleştirme Taşı kullan (Efsanevi garanti) · '+Store.getItemCount('item_fusion')+' adet</label>':'')
     +'<div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto" id="mergeTargetList"></div>'
     +'<div class="nm-actions" style="margin-top:12px"><button class="nm-btn nm-cancel" id="mergeClose">İptal</button></div>';
   ov.appendChild(inn); document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#mergeClose').addEventListener('click',()=>ov.remove());
   const list=inn.querySelector('#mergeTargetList');
+  const stoneChk=inn.querySelector('#useStoneChk');
+  const _useStone=()=>!!(stoneChk&&stoneChk.checked);
+  const _renderRows=()=>{
+  list.innerHTML='';
   others.forEach(([k2,c2])=>{
     const t2=TYPES[c2.typeKey]||{n:c2.name||'?',e:'✨',c:'#c084fc',r:'common'};
-    const result=getMergeResult(src.typeKey||'',c2.typeKey||'');
+    const result=getMergeResult(src.typeKey||'',c2.typeKey||'',_useStone());
     const rc=RARITY_COLOR[result.r]||'#aaa';
     const row=document.createElement('button'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);cursor:pointer;font-family:inherit;width:100%;text-align:left';
-    row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?uniqueCosmoSVG(c2.icon||t2.e,36,c2.color||t2.c):creatureSVG(c2.typeKey,36))+'</div>'
+    row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?'<span style="font-size:24px">'+(c2.icon||t2.e)+'</span>':creatureSVG(c2.typeKey,36))+'</div>'
       +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+' · '+esc(t2.element||'')+'</div></div>'
       +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
     row.addEventListener('click',async()=>{
+      const usingStone=_useStone();
       ov.remove();
       src._id=srcId; c2._id=k2;
-    await doMerge(srcId,src,k2,c2,result,st,box);
+      if(usingStone && Store.getItemCount('item_fusion')>0){ await Store.useItem('item_fusion'); }
+      await doMerge(srcId,src,k2,c2,result,st,box);
     });
     list.appendChild(row);
   });
+  };
+  _renderRows();
+  if(stoneChk) stoneChk.addEventListener('change',_renderRows);
 }
 
 async function doMerge(id1,c1,id2,c2,resultType,st,box){
@@ -854,9 +701,9 @@ async function showFusionAnimation(c1,c2,resultType,st,box){
   const rc=RARITY_COLOR[resultType.r]||'#FFD740';
   ov.innerHTML='<div class="koz-fusion-stage">'
     +'<div class="koz-fusion-pair">'
-      +'<div class="koz-fusion-p left">'+(c1.unique?uniqueCosmoSVG(c1.icon||t1.e,72,c1.color||t1.c):creatureSVG(c1.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t1.c+'">'+esc(c1.name||t1.n||'?')+'</div></div>'
+      +'<div class="koz-fusion-p left">'+(c1.unique?'<div style="font-size:48px">'+(c1.icon||t1.e)+'</div>':creatureSVG(c1.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t1.c+'">'+esc(c1.name||t1.n||'?')+'</div></div>'
       +'<div class="koz-fusion-spark">✦</div>'
-      +'<div class="koz-fusion-p right">'+(c2.unique?uniqueCosmoSVG(c2.icon||t2.e,72,c2.color||t2.c):creatureSVG(c2.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t2.c+'">'+esc(c2.name||t2.n||'?')+'</div></div>'
+      +'<div class="koz-fusion-p right">'+(c2.unique?'<div style="font-size:48px">'+(c2.icon||t2.e)+'</div>':creatureSVG(c2.typeKey,72))+'<div class="koz-fusion-pn" style="color:'+t2.c+'">'+esc(c2.name||t2.n||'?')+'</div></div>'
     +'</div>'
     +'<div class="koz-fusion-result" id="fusionResult">'
       +'<div class="koz-fusion-burst" style="--rc:'+rc+'"></div>'
@@ -887,7 +734,7 @@ async function showFusionAnimation(c1,c2,resultType,st,box){
       typeKey:resultType.key||'fusion_cosmic', name:resultType.name||resultType.n||'Fusion',
       rarity:resultType.r||'epic', color:resultType.c||'#c084fc',
       fromUid:st.uid, fromName:'Birleştirme', bornAt:Date.now(), level:Math.max(c1.level||1,c2.level||1),
-      xp:0, parents:[c1.typeKey||'?', c2.typeKey||'?'], isFusion:true,
+      xp:0, parents:[c1.typeKey,c2.typeKey], isFusion:true,
     };
     try{
       // Önce ebeveynleri sil, sonra yeni yaratığı ekle (atomik benzeri)
@@ -946,19 +793,16 @@ export default openKozmos;
 
 
 // ── 🥚 Kozmo yumurtası ver (çark/ödül kullanır) ──
-export async function grantEgg(rarity){
+export async function grantEgg(){
   const st = (window.Hero && window.Hero.Auth && window.Hero.Auth.getState) ? window.Hero.Auth.getState() : null;
   if(!st || !st.uid) return false;
   try{
-    // Türkçe rarity → İngilizce minRarity eşlemesi (sandık/paket garantisi)
-    const rmap = { 'nadir':'rare', 'epik':'epic', 'efsanevi':'legendary', 'mitolojik':'mythical' };
-    const minR = rarity ? (rmap[rarity] || rarity) : null;
     const id = 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
     const seed = (Math.random()*0x7fffffff)|0;
-    const type = randomType(seed, minR);
+    const type = randomType(seed);
     await fdb.set(fdb.ref(db, 'kozmos/'+st.uid+'/eggs/'+id), {
       id, type, acceptedAt: Date.now(), feedCount: 0, ownerId: st.uid,
-      source: 'shop'
+      source: 'spin'
     });
     return true;
   }catch(e){ console.warn('[kozmo] grantEgg', e); return false; }

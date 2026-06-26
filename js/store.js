@@ -107,6 +107,26 @@ function hydrate(state){
   emit();
   // Bekleyen transferleri talep et (alıcıya gelen Kaju'lar)
   claimPendingTransfers();
+  // 👑 VIP günlük Kaju (oturum açılınca, günde 1 kez)
+  _claimVipDaily();
+}
+
+// 👑 VIP günlük Kaju dağıtımı
+async function _claimVipDaily(){
+  try{
+    if(!player.uid || !player.cosmetics || !player.cosmetics.vip) return;
+    let vip;
+    try{ vip = typeof player.cosmetics.vip === 'string' ? JSON.parse(player.cosmetics.vip) : player.cosmetics.vip; }
+    catch(e){ return; }
+    if(!vip || !vip.until || Date.now() > vip.until) return;   // VIP süresi dolmuş
+    const daily = Number(vip.daily) || 0;
+    if(daily <= 0) return;
+    const todayKey = 'hero_vip_daily_' + new Date().toDateString();
+    if(localStorage.getItem(todayKey)) return;                 // bugün alındı
+    localStorage.setItem(todayKey, '1');
+    await addKaju(daily, 'vip', '👑 VIP günlük Kaju');
+    try{ if(window.Hero && window.Hero.toast) window.Hero.toast('👑 VIP günlük ' + daily + ' Kaju eklendi!'); }catch(e){}
+  }catch(e){ console.warn('[store] vip daily', e); }
 }
 Auth.subscribe(hydrate);
 
