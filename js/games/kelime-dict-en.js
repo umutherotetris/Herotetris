@@ -4,3 +4,10 @@ const EN_WORDS_STR = "aa aah aahed aahing aahs aal aalii aaliis aals aardvark aa
 const DICT_EN = EN_WORDS_STR.split(" ");
 export const EN_LOWER = {"A": "a", "B": "b", "C": "c", "D": "d", "E": "e", "F": "f", "G": "g", "H": "h", "I": "i", "J": "j", "K": "k", "L": "l", "M": "m", "N": "n", "O": "o", "P": "p", "Q": "q", "R": "r", "S": "s", "T": "t", "U": "u", "V": "v", "W": "w", "X": "x", "Y": "y", "Z": "z"};
 export default DICT_EN;
+
+// Hızlı kelime kontrolü için Set (büyük→küçük normalize)
+const EN_SET = new Set(DICT_EN);
+export function isWordEN(word){
+  if(!word) return false;
+  return EN_SET.has(String(word).toLowerCase());
+}

@@ -3,7 +3,23 @@
 //  15x15 tahta, Türkçe harf seti (100 taş), torba, yerleştirme
 //  doğrulama (hizalama/bağlantı/sözlük) ve puanlama (harf+kelime bonusları).
 // ════════════════════════════════════════════════════════════════
-import { isWord } from './kelime-dict.js';
+import { isWord as isWordTR } from './kelime-dict.js';
+
+// İngilizce sözlük kontrolü (async yüklenir, yüklenene kadar TR'ye düşmez)
+let _isWordEN = null;
+export async function loadEnglishDict(){
+  if(_isWordEN) return true;
+  try{ const m = await import('./kelime-dict-en.js'); _isWordEN = m.isWordEN; return true; }
+  catch(e){ console.warn('[engine] EN sözlük yüklenemedi', e); return false; }
+}
+// Dile göre kelime kontrolü
+function isWord(text){
+  if(GAME_LANG === 'en'){
+    if(_isWordEN) return _isWordEN(text);
+    return true;   // EN sözlük henüz yüklenmediyse engelleme (yüklenince devreye girer)
+  }
+  return isWordTR(text);
+}
 
 export const SIZE = 15;
 export const RACK_SIZE = 7;
@@ -36,6 +52,7 @@ export const JOKER_COUNT = 2;
 export function setLanguage(lang){
   GAME_LANG = (lang === 'en') ? 'en' : 'tr';
   LETTERS = (GAME_LANG === 'en') ? LETTERS_EN : LETTERS_TR;
+  if(GAME_LANG === 'en'){ loadEnglishDict(); }   // EN sözlüğü ön-yükle (kelime kontrolü için)
   return GAME_LANG;
 }
 export function getLanguage(){ return GAME_LANG; }
