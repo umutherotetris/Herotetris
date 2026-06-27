@@ -113,7 +113,7 @@ const TYPES={
   bulut_ruhu:   {n:'Bulut Kaplanı', e:'🐯',c:'#e0f2fe',c1:'#f0f9ff',c2:'#7dd3fc',acc:'#bae6fd',r:'rare',
                  shape:'tiger',  element:'Hava',    power:'Bulut Çağırır',     sound:'majestic',particle:'clouds', desc:'Gökyüzünde süzülen heybetli kaplan'},
   gokk_ruhu:    {n:'Gök Fırtınası', e:'⚡',c:'#e879f9',c1:'#f0abfc',c2:'#a21caf',acc:'#fae8ff',r:'legendary',
-                 shape:'storm',  element:'Şimşek',  power:'Yıldırım Düşürür',  sound:'epic',   particle:'lightning',desc:'Fırtınaların efsanevi ruhu'},
+                 shape:'storm',  element:'Şimşek',  power:'Yıldırım Düşürür',  sound:'epic',   particle:'lightning',desc:'Fırtınaların güçlü ruhu'},
   kristal_boc:  {n:'Kristal Böcek', e:'🦋',c:'#67e8f9',c1:'#a5f3fc',c2:'#0891b2',acc:'#cffafe',r:'rare',
                  shape:'beetle', element:'Kristal', power:'Işık Kırar',        sound:'crystal',particle:'crystals',desc:'Işıltılı kanatların sahibi'},
   nova_kitsune: {n:'Nova Kitsune', e:'🦊',c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#f3e8ff',r:'rare',
@@ -121,12 +121,12 @@ const TYPES={
   kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',c1:'#fbcfe8',c2:'#db2777',acc:'#fdf2f8',r:'epic',
                  shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Yaratır', sound:'magical',particle:'rainbow', desc:'Evrenin büyülü tek boynuzlusu'},
   derin_ejder:  {n:'Derin Ejder',   e:'🐲',c:'#00ffc8',c1:'#5eead4',c2:'#0d9488',acc:'#ccfbf1',r:'legendary',
-                 shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin kadim ejderhası'},
+                 shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin görkemli ejderhası'},
   peri_ruhu:    {n:'Peri Kelebeği', e:'🧚',c:'#ffb8ff',c1:'#fbcfe8',c2:'#e879f9',acc:'#fdf4ff',r:'mythical',
                  shape:'fairy',  element:'Işık',    power:'Dilek Tutturur',    sound:'fairy',  particle:'sparkles',desc:'Işığın saf periler kraliçesi'},
 };
-const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff'};
-const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Efsanevi',mythical:'Mitolojik'};
+const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff',gorkem:'#FFD740',olagan:'#ff80ff'};
+const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Görkemli',mythical:'Olağanüstü',gorkem:'Görkemli',olagan:'Olağanüstü'};
 const TYPE_KEYS=Object.keys(TYPES);
 
 // ── Birleştirme tablosu (Goodyedek birebir) ──────────────────
@@ -156,7 +156,7 @@ const MERGE_TABLE={
   'kristal_boc+nova_kitsune':'kozmik_unicorn',
   'nova_kitsune+kristal_boc':'kozmik_unicorn',
 };
-// Tabloda olmayan kombinasyonlar → benzersiz füzyon yaratıkları
+// Tabloda olmayan kombinasyonlar → özel füzyon yaratıkları
 const FUSION_TYPES=[
   {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Doğurur',  sound:'epic',   particle:'galaxy',  desc:'İki ruhun kozmik birleşimi'},
   {key:'fusion_void',    name:'Void Birliği',    e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Boşluk',  power:'Karanlığı Yutar',  sound:'mystic', particle:'void',    desc:'Boşluğun kara enerjisi'},
@@ -220,9 +220,149 @@ export function kozmoEggSVG(phase,size){
 }
 
 // ── 🐾 Animasyonlu sevimli yaratık SVG'leri ──────────────────
+// ════════ ANIMASYONLU DEGERLI TAS (özel kozmolar) ════════
+// kind: aurora/ember/tide/glow/star/prism/bolt/nova
+// Her biri animasyonlu, ışımalı, parçacıklı bir değerli taş döndürür
+let _gemCssInjected = false;
+function _ensureGemCSS(){
+  if(_gemCssInjected) return; _gemCssInjected = true;
+  const st = document.createElement('style');
+  st.textContent = `
+  @keyframes gemFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}
+  @keyframes gemSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes gemPulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.85;transform:scale(1.18)}}
+  @keyframes gemShimmer{0%{opacity:0;transform:translateX(-60%) translateY(-60%) rotate(35deg)}50%{opacity:.9}100%{opacity:0;transform:translateX(60%) translateY(60%) rotate(35deg)}}
+  @keyframes gemSpark{0%{opacity:0;transform:translate(0,0) scale(.4)}40%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+  @keyframes gemHue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+  .gem-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;animation:gemFloat 3.4s ease-in-out infinite}
+  .gem-glow{position:absolute;inset:-15%;border-radius:50%;filter:blur(7px);animation:gemPulse 2.6s ease-in-out infinite;z-index:0}
+  .gem-svg{position:relative;z-index:1;overflow:visible}
+  .gem-spark{position:absolute;width:4px;height:4px;border-radius:50%;z-index:2;animation:gemSpark 1.8s ease-out infinite}
+  .koz-detail-sound,.koz-detail-activate{display:block;width:100%;margin:7px 0 0;padding:10px;border-radius:11px;border:1px solid rgba(192,132,252,.35);background:rgba(192,132,252,.12);color:#e9d5ff;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;transition:transform .12s,background .12s}
+  .koz-detail-sound:active,.koz-detail-activate:active{transform:scale(.97)}
+  .koz-detail-activate{border-color:rgba(255,215,64,.45);background:linear-gradient(135deg,rgba(255,215,64,.18),rgba(240,165,0,.12));color:#ffe082}
+  .koz-detail-activate.active{background:linear-gradient(135deg,#69F0AE,#34d399);color:#04130b;border-color:transparent}
+  `;
+  document.head.appendChild(st);
+}
+
+export function uniqueGemSVG(kind, size, color){
+  _ensureGemCSS();
+  size = size || 64;
+  color = color || '#c0b0ff';
+  // Renk paleti: ana + açık + koyu
+  const lite = _gemShade(color, 1.4), dark = _gemShade(color, 0.55);
+  const S = size;
+
+  // Taş gövdesi (kesme elmas biçimi) — her kind biraz farklı kesim
+  const cuts = {
+    aurora: 'M50 6 L80 32 L66 92 L34 92 L20 32 Z',       // uzun damla
+    ember:  'M50 4 L82 38 L50 96 L18 38 Z',               // alev/baklava
+    tide:   'M50 8 C78 8 90 40 72 72 C60 92 40 92 28 72 C10 40 22 8 50 8 Z', // su damlası
+    glow:   'M50 6 L72 26 L92 50 L72 74 L50 94 L28 74 L8 50 L28 26 Z',  // ışık yıldızı
+    star:   'M50 4 L61 38 L96 38 L68 60 L79 94 L50 72 L21 94 L32 60 L4 38 L39 38 Z', // 5 köşe yıldız
+    prism:  'M50 6 L86 30 L86 70 L50 94 L14 70 L14 30 Z', // altıgen prizma
+    bolt:   'M58 4 L30 52 L48 52 L40 96 L74 40 L54 40 Z', // şimşek
+    nova:   'M50 8 L62 36 L92 38 L68 58 L78 90 L50 70 L22 90 L32 58 L8 38 L38 36 Z', // patlama yıldız
+  };
+  const path = cuts[kind] || cuts.star;
+  const gid = 'g'+kind+Math.floor(Math.random()*100000);
+
+  // Bazı taşlar dönen ışın / renk döngüsü efekti alır
+  const extraAnim = (kind==='aurora'||kind==='prism'||kind==='nova') ? 'animation:gemHue 6s linear infinite' : '';
+  const rays = (kind==='star'||kind==='nova'||kind==='glow')
+    ? '<g style="animation:gemSpin 9s linear infinite;transform-origin:50px 50px">'
+      + _gemRays(color) + '</g>'
+    : '';
+
+  // Parçacık kıvılcımları (rastgele konum)
+  let sparks = '';
+  for(let i=0;i<4;i++){
+    const ang = Math.random()*Math.PI*2, dist = 18+Math.random()*10;
+    const dx = Math.cos(ang)*dist, dy = Math.sin(ang)*dist;
+    const delay = (Math.random()*1.8).toFixed(2);
+    sparks += '<span class="gem-spark" style="left:50%;top:50%;background:'+lite+';--dx:'+dx.toFixed(0)+'px;--dy:'+dy.toFixed(0)+'px;animation-delay:'+delay+'s;box-shadow:0 0 6px '+color+'"></span>';
+  }
+
+  const svg =
+    '<svg class="gem-svg" width="'+S+'" height="'+S+'" viewBox="0 0 100 100" style="'+extraAnim+'">'
+    + '<defs>'
+    +   '<linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1">'
+    +     '<stop offset="0" stop-color="'+lite+'"/>'
+    +     '<stop offset="0.5" stop-color="'+color+'"/>'
+    +     '<stop offset="1" stop-color="'+dark+'"/>'
+    +   '</linearGradient>'
+    +   '<radialGradient id="'+gid+'r" cx="0.35" cy="0.3" r="0.8">'
+    +     '<stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>'
+    +     '<stop offset="0.4" stop-color="'+lite+'" stop-opacity="0.3"/>'
+    +     '<stop offset="1" stop-color="'+dark+'" stop-opacity="0"/>'
+    +   '</radialGradient>'
+    + '</defs>'
+    + rays
+    // taş gövdesi
+    + '<path d="'+path+'" fill="url(#'+gid+')" stroke="'+lite+'" stroke-width="1.5"/>'
+    // iç kesim çizgileri (elmas faseti)
+    + '<path d="'+path+'" fill="url(#'+gid+'r)"/>'
+    + _gemFacets(kind, color, lite)
+    // üst parlama
+    + '<ellipse cx="40" cy="32" rx="10" ry="6" fill="#ffffff" opacity="0.55" transform="rotate(-25 40 32)"/>'
+    + '</svg>';
+
+  return '<span class="gem-wrap">'
+    + '<span class="gem-glow" style="background:radial-gradient(circle,'+color+'cc,transparent 70%)"></span>'
+    + svg
+    + sparks
+    + '</span>';
+}
+
+// Faset (iç kesim) çizgileri — taşa derinlik
+function _gemFacets(kind, color, lite){
+  const c = 'stroke="'+lite+'" stroke-width="0.8" opacity="0.5" fill="none"';
+  if(kind==='prism'||kind==='nova'||kind==='star'){
+    return '<g '+c+'><line x1="50" y1="6" x2="50" y2="94"/><line x1="14" y1="34" x2="86" y2="34"/><line x1="14" y1="66" x2="86" y2="66"/></g>';
+  }
+  if(kind==='tide'){
+    return '<g '+c+'><path d="M30 40 Q50 50 70 40"/><path d="M34 60 Q50 70 66 60"/></g>';
+  }
+  if(kind==='bolt'){
+    return '<g '+c+'><line x1="48" y1="20" x2="40" y2="70"/></g>';
+  }
+  return '<g '+c+'><line x1="50" y1="8" x2="50" y2="92"/><line x1="22" y1="40" x2="78" y2="40"/></g>';
+}
+
+// Dönen ışınlar (yıldız tipi taşlar)
+function _gemRays(color){
+  let r = '';
+  for(let i=0;i<8;i++){
+    const a = (i*45)*Math.PI/180;
+    const x1 = 50+Math.cos(a)*22, y1 = 50+Math.sin(a)*22;
+    const x2 = 50+Math.cos(a)*44, y2 = 50+Math.sin(a)*44;
+    r += '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+color+'" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>';
+  }
+  return r;
+}
+
+// Renk tonu açma/koyma
+function _gemShade(hex, factor){
+  let h = (hex||'#888').replace('#','');
+  if(h.length===3) h = h.split('').map(x=>x+x).join('');
+  let r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  r = Math.max(0,Math.min(255,Math.round(r*factor)));
+  g = Math.max(0,Math.min(255,Math.round(g*factor)));
+  b = Math.max(0,Math.min(255,Math.round(b*factor)));
+  return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
 export function creatureSVG(typeKey, size, opts){
   size = size || 56;
   opts = opts || {};
+  // Özel değerli taş kozmolar → animasyonlu gem render
+  if(opts && opts.unique && opts.kind){
+    return uniqueGemSVG(opts.kind, size, opts.color || '#c0b0ff');
+  }
+  if(typeof typeKey==='string' && typeKey.indexOf('unique_')===0 && opts && opts.kind){
+    return uniqueGemSVG(opts.kind, size, opts.color || '#c0b0ff');
+  }
   const t = TYPES[typeKey] || FUSION_TYPES.find(x=>x.key===typeKey) || {c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#fff',shape:'blob'};
   const c1=t.c1||t.c||'#c084fc', c2=t.c2||t.c||'#7c3aed', acc=t.acc||'#fff';
   const shape=t.shape||'blob';
@@ -393,7 +533,7 @@ function showCreatureDetail(c,t,rc){
   const ov=document.createElement('div'); ov.className='nick-modal-ov';
   const inn=document.createElement('div'); inn.className='nick-modal koz-detail'; inn.style.maxWidth='300px';
   inn.style.setProperty('--cc',t.c||'#c084fc');
-  inn.innerHTML='<div class="koz-detail-hero">'+(c.unique?'<div style="font-size:64px">'+(c.icon||t.e)+'</div>':creatureSVG(c.typeKey,96))+'</div>'
+  inn.innerHTML='<div class="koz-detail-hero">'+(c.unique?( c.kind?creatureSVG(c.typeKey,96,{unique:true,kind:c.kind,color:c.color}):'<div style="font-size:64px">'+(c.icon||t.e)+'</div>' ):creatureSVG(c.typeKey,96))+'</div>'
     +'<div class="koz-detail-name" style="color:'+(t.c||'#c084fc')+'">'+esc(c.name||t.n)+'</div>'
     +'<div class="koz-detail-rar" style="color:'+rc+'">'+(RARITY_LABEL[t.r]||t.r)+'</div>'
     +'<div class="koz-detail-desc">'+esc(t.desc||'Gizemli bir kozmo')+'</div>'
@@ -404,11 +544,31 @@ function showCreatureDetail(c,t,rc){
       +'<div class="koz-stat"><span class="koz-stat-ico">💝</span><span class="koz-stat-lbl">Kaynak</span><span class="koz-stat-val">'+esc(c.fromName||'Mağaza')+'</span></div>'
     +'</div>'
     +'<button class="koz-detail-sound" id="kozPlaySound">🔊 Sesini Dinle</button>'
+    +((c.bonus||c.power)?'<button class="koz-detail-activate" id="kozActivate">⚡ Aktif Et (bonusu kullan)</button>':'')
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="kozDetClose">Kapat</button></div>';
   ov.appendChild(inn); document.body.appendChild(ov);
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#kozDetClose').addEventListener('click',()=>ov.remove());
   inn.querySelector('#kozPlaySound').addEventListener('click',()=>creatureSound(t.sound));
+  // ⚡ Aktif Et — bonusu hero_active_kozmo'ya yaz (oyunlarda etki eder)
+  const actBtn = inn.querySelector('#kozActivate');
+  if(actBtn){
+    // Mevcut aktif mi?
+    try{
+      const cur = JSON.parse(localStorage.getItem('hero_active_kozmo')||'null');
+      if(cur && cur.id === (c._id||c.uniqueId)){ actBtn.textContent='✓ Aktif'; actBtn.classList.add('active'); }
+    }catch(e){}
+    actBtn.addEventListener('click',()=>{
+      try{
+        localStorage.setItem('hero_active_kozmo', JSON.stringify({
+          id: c._id||c.uniqueId||c.name, name: c.name, power: c.power||(t&&t.power)||null, bonus: c.bonus||null
+        }));
+        actBtn.textContent='✓ Aktif'; actBtn.classList.add('active');
+        creatureSound(t.sound);
+        _toast('⚡ '+(c.name||'Kozmo')+' aktif! Bonusu artık oyunlarda geçerli.');
+      }catch(e){ _toast('Aktif edilemedi'); }
+    });
+  }
 }
 
 // Rengi açma yardımcısı (3D highlight için)
@@ -584,7 +744,7 @@ async function renderKozmos(st,box){
       const card=document.createElement('div'); card.className='kozmo-card rar-'+(t.r||'common');
       card.style.cssText='border-color:'+t.c+'44;background:linear-gradient(160deg,rgba(20,10,40,.98),rgba('+hexToRgb(t.c)+', .08))';
       card.innerHTML=''
-        +'<div class="koz-cre-svg">'+(c.unique?'<div style="font-size:40px">'+(c.icon||t.e||'🌟')+'</div>':creatureSVG(c.typeKey,58))+'</div>'
+        +'<div class="koz-cre-svg">'+(c.unique?( c.kind?creatureSVG(c.typeKey,58,{unique:true,kind:c.kind,color:c.color}):'<div style="font-size:40px">'+(c.icon||t.e||'🌟')+'</div>' ):creatureSVG(c.typeKey,58))+'</div>'
         +'<div class="koz-cre-name" style="color:'+t.c+'">'+esc(c.name||t.n)+'</div>'
         +'<div class="koz-cre-rarity" style="color:'+rc+'">'+esc(RARITY_LABEL[t.r]||t.r)+'</div>'
         +(t.element?'<div class="koz-cre-element">'+elementIcon(t.element)+' '+esc(t.element)+'</div>':'')
@@ -603,7 +763,7 @@ async function renderKozmos(st,box){
         card.appendChild(mergeBtn);
       }
       // Karta tıkla → detay modalı (yetenek + ses çal)
-      card.addEventListener('click',()=>{ creatureSound(t.sound); showCreatureDetail(c,t,rc); });
+      card.addEventListener('click',()=>{ c._id=k; creatureSound(t.sound); showCreatureDetail(c,t,rc); });
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -648,13 +808,13 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
   const inn=document.createElement('div'); inn.className='nick-modal'; inn.style.maxWidth='310px';
   inn.innerHTML='<div class="nm-title">💥 Birleştirme Seç</div>'
     +'<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">'
-      +'<div>'+(src.unique?'<span style="font-size:28px">'+(src.icon||srcType.e)+'</span>':creatureSVG(src.typeKey,44))+'</div>'
+      +'<div>'+(src.unique?( src.kind?creatureSVG(src.typeKey,44,{unique:true,kind:src.kind,color:src.color}):'<span style="font-size:28px">'+(src.icon||srcType.e)+'</span>' ):creatureSVG(src.typeKey,44))+'</div>'
       +'<span style="font-size:11px;color:'+srcType.c+';font-weight:800">'+esc(src.name||srcType.n)+'</span>'
       +'<span style="color:#c084fc;font-size:18px">+</span>'
       +'<span style="font-size:22px;color:#7d8ab8">❓</span>'
     +'</div>'
     +'<div style="font-size:9px;color:#5d6890;text-align:center;margin-bottom:10px">Birleştirince ebeveynler kaybolur — geri alınamaz!</div>'
-    +((Store.getItemCount&&Store.getItemCount('item_fusion')>0)?'<label style="display:flex;align-items:center;gap:7px;padding:8px 10px;margin-bottom:8px;border-radius:10px;background:rgba(232,121,249,.1);border:1px solid rgba(232,121,249,.3);cursor:pointer;font-size:10px;color:#e879f9;font-weight:700"><input type="checkbox" id="useStoneChk" style="width:15px;height:15px"> 💫 Birleştirme Taşı kullan (Efsanevi garanti) · '+Store.getItemCount('item_fusion')+' adet</label>':'')
+    +((Store.getItemCount&&Store.getItemCount('item_fusion')>0)?'<label style="display:flex;align-items:center;gap:7px;padding:8px 10px;margin-bottom:8px;border-radius:10px;background:rgba(232,121,249,.1);border:1px solid rgba(232,121,249,.3);cursor:pointer;font-size:10px;color:#e879f9;font-weight:700"><input type="checkbox" id="useStoneChk" style="width:15px;height:15px"> 💫 Birleştirme Taşı kullan (Görkemli garanti) · '+Store.getItemCount('item_fusion')+' adet</label>':'')
     +'<div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto" id="mergeTargetList"></div>'
     +'<div class="nm-actions" style="margin-top:12px"><button class="nm-btn nm-cancel" id="mergeClose">İptal</button></div>';
   ov.appendChild(inn); document.body.appendChild(ov);
@@ -670,7 +830,7 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
     const result=getMergeResult(src.typeKey||'',c2.typeKey||'',_useStone());
     const rc=RARITY_COLOR[result.r]||'#aaa';
     const row=document.createElement('button'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);cursor:pointer;font-family:inherit;width:100%;text-align:left';
-    row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?'<span style="font-size:24px">'+(c2.icon||t2.e)+'</span>':creatureSVG(c2.typeKey,36))+'</div>'
+    row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?( c2.kind?creatureSVG(c2.typeKey,36,{unique:true,kind:c2.kind,color:c2.color}):'<span style="font-size:24px">'+(c2.icon||t2.e)+'</span>' ):creatureSVG(c2.typeKey,36))+'</div>'
       +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+' · '+esc(t2.element||'')+'</div></div>'
       +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
     row.addEventListener('click',async()=>{

@@ -137,7 +137,18 @@ function _kozmoMult(type){
     const raw = localStorage.getItem('hero_active_kozmo');
     if(!raw) return 1;
     const a = JSON.parse(raw);
-    if(!a || !a.power) return 1;
+    if(!a) return 1;
+    // Yeni değerli taşlar: doğrudan bonus objesi {xp/score/kaju/all}
+    if(a.bonus && typeof a.bonus === 'object'){
+      const b = a.bonus;
+      if(type==='xp_boost'    && b.xp)    return 1 + b.xp;
+      if(type==='score_boost' && b.score) return 1 + b.score;
+      if(type==='kaju_boost'  && b.kaju)  return 1 + b.kaju;
+      if(b.all && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + b.all;
+      // bonus var ama bu tipe uymuyorsa power tablosuna düşmesin
+      if(!a.power) return 1;
+    }
+    if(!a.power) return 1;
     // Bonus tablosu (kozmos.js KOZMO_POWERS ile eşleşir)
     const P = {
       'Yıldız Tozu Saçar':['xp_boost',0.05],'Alev Püskürtür':['score_boost',0.05],

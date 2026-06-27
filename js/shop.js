@@ -52,7 +52,7 @@ const COSMETICS = [
   {id:'color_pink',   name:'Pembe İsim', icon:'🩷', color:'#f472b6', price:2500, ckey:'nameColor', cval:'#f472b6', desc:'İsmin pembe renginde'},
   {id:'color_lime',   name:'Yeşil İsim', icon:'💚', color:'#a3e635', price:2500, ckey:'nameColor', cval:'#a3e635', desc:'İsmin canlı yeşil renginde'},
   // Unvanlar
-  {id:'title_legend', name:'"Efsane" Unvanı', icon:'🏆', color:'#ffd700', price:10000, ckey:'title', cval:'Efsane', desc:'Profilinde "Efsane" unvanı görünür'},
+  {id:'title_legend', name:'"Şampiyon" Unvanı', icon:'🏆', color:'#ffd700', price:10000, ckey:'title', cval:'Şampiyon', desc:'Profilinde "Şampiyon" unvanı görünür'},
   {id:'title_master', name:'"Kozmo Ustası"', icon:'🌌', color:'#c084fc', price:9000, ckey:'title', cval:'Kozmo Ustası', desc:'Profilinde "Kozmo Ustası" unvanı'},
   {id:'title_champ',  name:'"Şampiyon"', icon:'⚔️', color:'#fb923c', price:9000, ckey:'title', cval:'Şampiyon', desc:'Profilinde "Şampiyon" unvanı'},
 ];
@@ -63,7 +63,7 @@ const CONSUMABLES = [
   {id:'item_undo',    name:'Geri Alma (×5)', icon:'↩️', color:'#60a5fa', price:1800, qty:5, desc:'Oyunlarda ekstra geri alma hakkı (yakında)'},
   {id:'item_food10',  name:'Besin Paketi (×10)', icon:'🍎', color:'#ef4444', price:1000, qty:10, desc:'Günlük 3 besleme limitini aşıp kozmonu besle (10 ek)'},
   {id:'item_food50',  name:'Besin Çuvalı (×50)', icon:'🧺', color:'#dc2626', price:4000, qty:50, desc:'Günlük limiti aşıp besle (50 ek, indirimli)'},
-  {id:'item_fusion',  name:'Birleştirme Taşı', icon:'💫', color:'#e879f9', price:5000, qty:1, desc:'Kozmo birleştirmede Efsanevi sonuç garantisi'},
+  {id:'item_fusion',  name:'Birleştirme Taşı', icon:'💫', color:'#e879f9', price:5000, qty:1, desc:'Kozmo birleştirmede Görkemli sonuç garantisi'},
 ];
 
 // ════════════ 💎 PAKETLER / BUNDLE ════════════
@@ -117,16 +117,16 @@ const BG_MAP={
 };
 
 const UNIQUE_KOZMOS=[
-  // ── EFSANEVI ──
-  {id:'uniq_aurora',  name:'Kutup Dansçısı',    icon:'🌠',color:'#f0a0f8',price:35000, rarity:'legendary', element:'Aurora',  power:'Renk Cümbüşü',     desc:'Kuzey ışıklarıyla dans eden efsanevi yaratık. Tek nüsha.'},
-  {id:'uniq_phoenix', name:'Kor Kanatları',     icon:'🦅',color:'#fb923c',price:45000, rarity:'legendary', element:'Ateş',    power:'Alev Saçar',       desc:'Ateş renkli görkemli kanatlara sahip nadir bir kuş. Koleksiyonda yalnızca bu kopya.'},
-  {id:'uniq_leviathan',name:'Derin Leviathan',  icon:'🐋',color:'#22d3ee',price:40000, rarity:'legendary', element:'Okyanus', power:'Gelgit Çağırır',   desc:'Okyanusun en derininde uyuyan kadim dev. Eşi benzeri yok.'},
-  {id:'uniq_lumina',  name:'Işıltı Kuşu',       icon:'🕊️',color:'#fde68a',price:42000, rarity:'legendary', element:'Işık',    power:'Işık Saçar',       desc:'Parlak altın tüylere sahip zarif bir ışık kuşu. Tek nüsha.'},
-  // ── MITOLOJIK ──
-  {id:'uniq_aether',  name:'Yıldız Bekçisi',    icon:'🌌',color:'#c0b0ff',price:25000, rarity:'mythical',  element:'Kozmos',  power:'Yıldız Tozu Saçar',desc:'Uzak galaksilerin gizemli yaratığı. Tek üretim, koleksiyonluk.'},
-  {id:'uniq_void',    name:'Karanlık Ejder',    icon:'🐉',color:'#00ffc8',price:50000, rarity:'mythical',  element:'Boşluk',  power:'Karanlığı Yutar',  desc:'Karanlık bölgelerin nadir sakinlerinden. Ultra nadir, benzersiz baskı.'},
-  {id:'uniq_swift',   name:'Hız Gezgini',       icon:'💫',color:'#a3e635',price:60000, rarity:'mythical',  element:'Hız',     power:'Şimşek Hızı',      desc:'Göz açıp kapayana dek yer değiştiren çevik bir yaratık. Tek üretim.'},
-  {id:'uniq_nova',    name:'Nova Çekirdeği',    icon:'🌀',color:'#e879f9',price:75000, rarity:'mythical',  element:'Enerji',  power:'Işık Patlatır',    desc:'İçinde muazzam parlak enerji barındıran nadir bir çekirdek. En değerli koleksiyon parçası.'},
+  // ── GÖRKEMLİ (üst sınıf) ──
+  {id:'uniq_aurora',  name:'Kutup Işıltısı',   kind:'aurora',  color:'#a0f8d8',price:35000, rarity:'gorkem', element:'Aurora',  power:'Renk Cümbüşü · +%8 XP',  bonus:{xp:0.08}, desc:'Kuzey ışıkları gibi renk değiştiren ışıltılı bir taş. Sınırlı sayıda.'},
+  {id:'uniq_ember',   name:'Kor Yüreği',       kind:'ember',   color:'#fb923c',price:45000, rarity:'gorkem', element:'Ateş',    power:'Alev Saçar · +%8 Skor',  bonus:{score:0.08}, desc:'İçinde sönmeyen bir kor taşıyan turuncu kristal. Sınırlı koleksiyon.'},
+  {id:'uniq_tide',    name:'Gelgit Damlası',   kind:'tide',    color:'#22d3ee',price:40000, rarity:'gorkem', element:'Okyanus', power:'Gelgit Çağırır · +%8 Kaju', bonus:{kaju:0.08}, desc:'Okyanus mavisi dalgalanan canlı bir su kristali. Az üretildi.'},
+  {id:'uniq_glow',    name:'Şafak Tüyü',       kind:'glow',    color:'#fde68a',price:42000, rarity:'gorkem', element:'Işık',    power:'Işık Saçar · +%8 XP',    bonus:{xp:0.08}, desc:'Şafak renginde parlayan zarif bir altın kristal. Sınırlı baskı.'},
+  // ── OLAĞANÜSTÜ (en üst sınıf) ──
+  {id:'uniq_star',    name:'Yıldız Tozu',      kind:'star',    color:'#c0b0ff',price:25000, rarity:'olagan',  element:'Kozmos',  power:'Yıldız Tozu Saçar · +%10 XP', bonus:{xp:0.10}, desc:'Gece göğü gibi ışıldayan mor-mavi bir kozmik taş. Olağanüstü nadir.'},
+  {id:'uniq_prism',   name:'Prizma Kalbi',     kind:'prism',   color:'#00ffc8',price:50000, rarity:'olagan',  element:'Kristal', power:'Işık Kırar · +%10 Kaju', bonus:{kaju:0.10}, desc:'Işığı binbir renge ayıran çok yüzeyli berrak elmas. Çok az üretildi.'},
+  {id:'uniq_bolt',    name:'Şimşek Çakmağı',   kind:'bolt',    color:'#a3e635',price:60000, rarity:'olagan',  element:'Enerji',  power:'Şimşek Hızı · +%10 Skor', bonus:{score:0.10}, desc:'İçinde elektrik dolaşan yeşil-sarı bir enerji taşı. Sınırlı üretim.'},
+  {id:'uniq_nova',    name:'Nova Çekirdeği',   kind:'nova',    color:'#e879f9',price:75000, rarity:'olagan',  element:'Enerji',  power:'Işık Patlatır · +%12 Tümü', bonus:{all:0.12}, desc:'Parlak enerji yayan pembe-mor bir çekirdek kristali. En değerli koleksiyon taşı.'},
 ];
 
 let _inv={}, _tab='frames';
@@ -226,7 +226,7 @@ function _injectShopCSS(){
     #shopPanel .shop-kaju-badge{ flex:1 1 auto !important; min-width:0 !important; text-align:center !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; font-size:13px !important; }
     #shopPanel .clan-x{ flex-shrink:0 !important; }
 
-    /* Benzersiz kozmo kartı — premium */
+    /* Özel kozmo kartı — premium */
     .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
       background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
       border:1.5px solid color-mix(in srgb, var(--uc) 45%, transparent);
@@ -316,11 +316,11 @@ function renderShop(){
       eggGrid.appendChild(card);
     });
     box.appendChild(eggGrid);
-    // Unique / Benzersiz kozmolar
+    // Özel kozmolar
     const uniqSec=document.createElement('div'); uniqSec.innerHTML='<div class="clan-lbl" style="color:#FFD740;margin-bottom:8px">⭐ BENZERSİZ KOZMO (Tek Üretim)</div>';
     box.appendChild(uniqSec);
     const uGrid=document.createElement('div'); uGrid.style.cssText='display:grid;grid-template-columns:repeat(2,1fr);gap:10px';
-    const RAR_LBL={mythical:'MİTOLOJİK',legendary:'EFSANEVİ',epic:'EPİK'};
+    const RAR_LBL={olagan:'OLAĞANÜSTÜ',gorkem:'GÖRKEMLİ',epic:'EPİK',mythical:'OLAĞANÜSTÜ',legendary:'GÖRKEMLİ'};
     UNIQUE_KOZMOS.forEach(item=>{
       const pl=Store.getState?Store.getState():{};
       const owned=!!_inv[item.id];
@@ -352,11 +352,11 @@ function renderShop(){
         });
       }
       uGrid.appendChild(card);
-      // Animasyonlu SVG yükle (kozmos.js'den)
+      // Animasyonlu değerli taş SVG yükle (kozmos.js'den)
       import('./kozmos.js').then(kz=>{
-        if(kz.uniqueCosmoSVG){
+        if(kz.uniqueGemSVG){
           const slot=card.querySelector('[data-uqanim="'+CSS.escape(item.id)+'"]');
-          if(slot) slot.innerHTML=kz.uniqueCosmoSVG(item.icon,64,item.color);
+          if(slot) slot.innerHTML=kz.uniqueGemSVG(item.kind||'star', 64, item.color);
         }
         if(kz.ensureUniqueCSS) kz.ensureUniqueCSS();
       }).catch(()=>{});
@@ -827,22 +827,24 @@ async function buyUniqueKozmo(item){
   const st=Auth.getState(); const pl=Store.getState?Store.getState():{};
   if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
   if((pl.kaju||0)<item.price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
-  if(!confirm('⭐ "'+item.name+'" → '+fmt(item.price)+' Kaju. Bu UNIQUE kozmoyu satın al?'))return;
+  if(!confirm('⭐ "'+item.name+'" → '+fmt(item.price)+' Kaju. Bu özel değerli taşı satın al?'))return;
   try{
     await Store.addKaju(-item.price,'shop',item.id);
     await fdb.update(fdb.ref(db,'shopInventory/'+st.uid+'/ownedItems'),{[item.id]:true});
     _inv[item.id]=true;
-    // Kozmos koleksiyonuna ekle
+    // Kozmos koleksiyonuna ekle (animasyonlu değerli taş + işlevsel bonus)
     const creId='cre_uniq_'+Date.now();
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
       typeKey:'unique_'+item.id, name:item.name, rarity:item.rarity,
       fromUid:'shop', fromName:'Mağaza', bornAt:Date.now(),
       level:1, xp:0, unique:true, uniqueId:item.id,
-      icon:item.icon, color:item.color,
+      kind:item.kind||'star', color:item.color,
       element:item.element||null, power:item.power||null,
+      bonus:item.bonus||null,
     });
     renderShop();
-    _toast('✨ '+item.icon+' '+item.name+' kozmos koleksiyonuna eklendi!');
+    try{ ShopSfx.buy(); ShopSfx.chestOpen&&ShopSfx.chestOpen(); }catch(e){}
+    _toast('✨ '+item.name+' kozmos koleksiyonuna eklendi!');
   }catch(e){_toast('Satın alınamadı: '+(e.message||e));}
 }
 
