@@ -130,6 +130,17 @@ async function _claimVipDaily(){
 }
 Auth.subscribe(hydrate);
 
+// ── Görev takibi köprüsü (lazy import — döngüsel bağımlılık yok) ──
+let _Quests = null;
+async function _trackQuestSafe(eventType, data){
+  try{
+    if(!_Quests){ _Quests = await import('./quests.js'); }
+    if(_Quests && _Quests.trackQuest) _Quests.trackQuest(eventType, data);
+  }catch(e){ /* quests opsiyonel */ }
+}
+// Dışarıdan da çağrılabilsin (oyunlar galibiyet/özel olay için)
+export function trackQuestEvent(eventType, data){ _trackQuestSafe(eventType, data); }
+
 // ── Kaju ekle (günlük limitli, admin sınırsız) ──────────────────
 // ⚡ Aktif kozmo bonus çarpanı (localStorage'dan senkron okur — import gecikmesi yok)
 function _kozmoMult(type){
@@ -192,6 +203,8 @@ export async function addKaju(n, game, reason){
   }
   player.kaju += n;
   player.kajuToday += n;
+  // Görev takibi: Kaju kazanıldı (görev ödülü/transfer kendini saymasın)
+  if(game !== 'quest' && game !== 'transfer' && game !== 'vip'){ _trackQuestSafe('kaju_earned', { amount: n }); }
   saveKajuToday(player.kajuToday);
   // 🪙 Geçmişe kaydet
   logKaju(n, 'earn', game || 'genel', _kajuReason(game, n));
@@ -346,6 +359,9 @@ export async function addXP(n){
 // ── Skor kaydet (yeni rekor ise liderliğe yaz) ──────────────────
 export async function addScore(game, score){
   score = Math.floor(score || 0);
+  // Görev takibi: oyun oynandı + skor (oyun bittiğinde addScore çağrılır)
+  _trackQuestSafe('game_played', { game });
+  if(game === 'tetris') _trackQuestSafe('score_tetris', { score });
   if(!player.uid || score <= 0) return false;
   const prev = player.best[game] || 0;
   if(score <= prev) return false;       // yeni rekor değil
@@ -515,5 +531,5 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics };
+export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent };
 export default Store;
