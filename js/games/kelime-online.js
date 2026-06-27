@@ -36,7 +36,9 @@ export async function findMatch(cb, opts){
   opts = opts || {};
   const async = opts.mode === 'async';
   const turnHours = opts.turnHours || 72;
-  const QP = async ? ('kelimeQueue/async' + turnHours) : QPATH;
+  const lang = (opts.lang === 'en') ? 'en' : 'tr';   // dil ayrımı: aynı dil eşleşir
+  const langSfx = '_' + lang;
+  const QP = (async ? ('kelimeQueue/async' + turnHours) : QPATH) + langSfx;
   const st = await ensureAuth();
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   const myUid = st.uid, myName = st.displayName || 'Oyuncu';
@@ -51,7 +53,7 @@ export async function findMatch(cb, opts){
     scores: { A:0, B:0 }, turn:'A', bagPointer:14,
     players:{ A:myUid }, names:{ A:myName },
     presence:{ A:true }, status:'waiting',
-    passStreak:0, createdAt: now0
+    passStreak:0, createdAt: now0, lang
   };
   if(async){ baseRoom.mode='async'; baseRoom.turnHours=turnHours; baseRoom.deadline = now0 + turnHours*3600000; baseRoom.lastMoveAt = now0; }
 
@@ -298,22 +300,8 @@ export async function listFriends(){
   try{
     const snap = await fdb.get(fdb.ref(db, `friends/${st.uid}`));
     if(!snap.exists()) return [];
-    const v = snap.val();
-    const fuids = Object.keys(v).filter(fuid => v[fuid] !== false);
-    // Her arkadaşın GÜNCEL nick'ini users node'undan çek (kayıttaki eski isim yerine)
-    const out = await Promise.all(fuids.map(async fuid => {
-      const f = v[fuid];
-      const fallback = (f&&f.name) || (typeof f==='string'?f:null) || 'Arkadaş';
-      let nick = fallback;
-      try{
-        const us = await fdb.get(fdb.ref(db, 'users/'+fuid));
-        if(us.exists()){
-          const u = us.val();
-          nick = u.nick || u.name || u.displayName || fallback;
-        }
-      }catch(e){}
-      return { uid:fuid, name:nick };
-    }));
+    const v = snap.val(); const out=[];
+    for(const fuid in v){ const f=v[fuid]; if(f===false) continue; out.push({ uid:fuid, name:(f&&f.name)|| (typeof f==='string'?f:null) || ('Arkadaş') }); }
     return out;
   }catch(e){ return []; }
 }

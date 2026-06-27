@@ -7,8 +7,30 @@
 import {
   newGame, validatePlacement, commitMove, drawFromBag, buildBagSeeded, isEmptyBoard,
   buildSurprises, SURPRISE_INFO, previewPlacement,
-  SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT
+  SIZE, RACK_SIZE, bonusAt, letterPoints, LETTERS, JOKER_COUNT,
+  setLanguage, getLanguage
 } from './kelime-engine.js';
+
+// Aktif dil (localStorage'dan hatırla)
+let KL_LANG = (function(){ try{ return localStorage.getItem('hero_kelime_lang') || 'tr'; }catch(e){ return 'tr'; } })();
+try{ setLanguage(KL_LANG); }catch(e){}
+// Dil metinleri
+const KL_TXT = {
+  tr: { title:'KELİMECİK', sub:'Türkçe · 59.000 kelime', desc:'Türkçe kelime türetme oyunu · 15×15 tahta · TDK sözlüğü',
+        local:'2 Oyuncu', localS:'Aynı cihazda sırayla', ai:'Yapay Zekâ', aiS:'3 zorluk · bilgisayara karşı',
+        seri:'Seri Mod (Süreli)', seriS:'Hamle başına süre · hızlı oyun', online:'Çevrimiçi Rakip', onlineS:'Rastgele bir oyuncuyla eşleş',
+        invite:'Arkadaşını Davet Et', inviteS:'Nick ile meydan oku', langLbl:'Dil' },
+  en: { title:'WORDIE', sub:'English · Scrabble letters', desc:'English word game · 15×15 board · dictionary meanings',
+        local:'2 Players', localS:'Same device, take turns', ai:'Computer', aiS:'3 levels · vs AI',
+        seri:'Timed Mode', seriS:'Time per move · fast play', online:'Online Match', onlineS:'Match with a random player',
+        invite:'Invite a Friend', inviteS:'Challenge by nickname', langLbl:'Language' },
+};
+function klT(key){ return (KL_TXT[KL_LANG] && KL_TXT[KL_LANG][key]) || (KL_TXT.tr[key] || ''); }
+function klSetLang(lang){
+  KL_LANG = (lang==='en')?'en':'tr';
+  try{ localStorage.setItem('hero_kelime_lang', KL_LANG); }catch(e){}
+  try{ setLanguage(KL_LANG); }catch(e){}
+}
 import * as Resume from './resume.js';
 
 let G = null;
@@ -138,6 +160,11 @@ function injectStyles(){
 .kl-card{background:linear-gradient(160deg,#241141,#1a0e30);border:1px solid rgba(200,170,255,.22);border-radius:20px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 16px 50px rgba(80,20,140,.5)}
 .kl-card h3{margin:0 0 6px;font-size:19px;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
 .kl-card p{margin:0 0 14px;font-size:13px;color:#cbb9ea;line-height:1.45}
+.kl-langsel{display:flex;align-items:center;gap:7px;justify-content:center;margin:4px 0 14px;flex-wrap:wrap}
+.kl-langlbl{font-size:11px;color:#bba8df;font-weight:700}
+.kl-langbtn{padding:7px 13px;border-radius:20px;border:1px solid rgba(200,170,255,.3);background:rgba(168,85,247,.08);color:#d9caf2;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
+.kl-langbtn:active{transform:scale(.96)}
+.kl-langbtn.active{background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(168,85,247,.4)}
 .kl-modes{display:flex;flex-direction:column;gap:9px}
 .kl-mode{padding:14px;border-radius:13px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.08);cursor:pointer;font-weight:700;text-align:left;display:flex;align-items:center;gap:11px;transition:.15s}
 .kl-mode:active{transform:scale(.98);background:rgba(168,85,247,.16)}
@@ -175,8 +202,8 @@ export function openKelime(){
     <div class="kl-top">
       <div class="kl-gameicon">🔤</div>
       <div class="kl-brand">
-        <div class="kl-title">KELİMECİK</div>
-        <div class="kl-sub">Türkçe · 59.000 kelime</div>
+        <div class="kl-title" data-el="klTitle">${klT('title')}</div>
+        <div class="kl-sub" data-el="klSub">${klT('sub')}</div>
       </div>
       <button class="kl-icon" data-el="lettertable" title="Harf tablosu">📊</button>
       <button class="kl-icon" data-el="sound" title="Ses">🔊</button>
@@ -261,19 +288,34 @@ function showStart(){
   c.innerHTML = `
     <div class="kl-overlay" style="position:relative;background:transparent">
       <div class="kl-card">
-        <h3>🔤 Kelimecik</h3>
-        <p>Türkçe kelime türetme oyunu · 15×15 tahta · 59.000 kelimelik TDK sözlüğü</p>
+        <h3>🔤 ${klT('title')}</h3>
+        <p>${klT('desc')}</p>
+        <div class="kl-langsel">
+          <span class="kl-langlbl">${klT('langLbl')}:</span>
+          <button class="kl-langbtn${KL_LANG==='tr'?' active':''}" data-lang="tr">🇹🇷 Türkçe</button>
+          <button class="kl-langbtn${KL_LANG==='en'?' active':''}" data-lang="en">🇬🇧 English</button>
+        </div>
         ${resumeHtml}
         ${recHtml}
         <div class="kl-modes">
-          <div class="kl-mode" data-mode="local"><span class="e">👥</span><div>2 Oyuncu<small>Aynı cihazda sırayla</small></div></div>
-          <div class="kl-mode" data-mode="ai"><span class="e">🤖</span><div>Yapay Zekâ<small>3 zorluk · bilgisayara karşı</small></div></div>
-          <div class="kl-mode" data-mode="seri"><span class="e">⏱️</span><div>Seri Mod (Süreli)<small>Hamle başına süre · hızlı oyun</small></div></div>
-          <div class="kl-mode" data-mode="online"><span class="e">🌐</span><div>Çevrimiçi Rakip<small>Rastgele bir oyuncuyla eşleş</small></div></div>
-          <div class="kl-mode" data-mode="invite"><span class="e">📨</span><div>Arkadaşını Davet Et<small>Nick ile meydan oku</small></div></div>
+          <div class="kl-mode" data-mode="local"><span class="e">👥</span><div>${klT('local')}<small>${klT('localS')}</small></div></div>
+          <div class="kl-mode" data-mode="ai"><span class="e">🤖</span><div>${klT('ai')}<small>${klT('aiS')}</small></div></div>
+          <div class="kl-mode" data-mode="seri"><span class="e">⏱️</span><div>${klT('seri')}<small>${klT('seriS')}</small></div></div>
+          <div class="kl-mode" data-mode="online"><span class="e">🌐</span><div>${klT('online')}<small>${klT('onlineS')}</small></div></div>
+          <div class="kl-mode" data-mode="invite"><span class="e">📨</span><div>${klT('invite')}<small>${klT('inviteS')}</small></div></div>
         </div>
       </div>
     </div>`;
+  // Dil seçici — değişince ekranı yenile
+  c.querySelectorAll('[data-lang]').forEach(btn=>btn.addEventListener('click',()=>{
+    klSetLang(btn.dataset.lang);
+    // Üst başlığı güncelle
+    try{
+      const tEl = G.root.querySelector('[data-el="klTitle"]'); if(tEl) tEl.textContent = klT('title');
+      const sEl = G.root.querySelector('[data-el="klSub"]'); if(sEl) sEl.textContent = klT('sub');
+    }catch(e){}
+    showStart();   // ekranı yeni dille yeniden çiz
+  }));
   c.querySelector('[data-mode="local"]').addEventListener('click', ()=>startLocal());
   c.querySelector('[data-mode="ai"]').addEventListener('click', ()=>showAIDifficulty());
   const rb = c.querySelector('[data-x="resume"]');
@@ -288,8 +330,9 @@ function showAIDifficulty(){
   c.innerHTML = `
     <div class="kl-overlay" style="position:relative;background:transparent">
       <div class="kl-card">
-        <h3>🤖 Yapay Zekâ</h3>
-        <p>Zorluk seç — bilgisayara karşı oyna.</p>
+        <h3>🤖 ${KL_LANG==='en'?'Computer':'Yapay Zekâ'}</h3>
+        <p>${KL_LANG==='en'?'Pick a difficulty — play vs computer.':'Zorluk seç — bilgisayara karşı oyna.'}</p>
+        ${KL_LANG==='en'?'<div style="font-size:11px;color:#ffd54f;background:rgba(255,213,79,.1);border:1px solid rgba(255,213,79,.3);border-radius:10px;padding:8px 10px;margin-bottom:10px;line-height:1.4">⚠️ The computer currently plays Turkish words best. For English, <b>2 Players</b> or <b>Online Match</b> is recommended.</div>':''}
         <div class="kl-modes">
           <div class="kl-mode" data-diff="kolay"><span class="e">🟢</span><div>Kolay<small>Kısa kelimeler, rahat tempo</small></div></div>
           <div class="kl-mode" data-diff="orta"><span class="e">🟡</span><div>Orta<small>Dengeli rakip</small></div></div>
@@ -457,7 +500,7 @@ async function startOnlineSearch(opts){
     onSearching: ()=>{},
     onError: (msg)=>{ if(!cancelled) flashCard('Eşleşme hatası', msg); },
     onMatched: (d)=>{ if(!cancelled) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours, oppUid:d.oppUid }); }
-  }, async ? { mode:'async', turnHours: opts.turnHours||72 } : undefined);
+  }, async ? { mode:'async', turnHours: opts.turnHours||72, lang: KL_LANG } : { lang: KL_LANG });
 }
 
 // Çevrimiçi mod seçimi
@@ -616,6 +659,8 @@ function doAcceptInvite(inv){
 function startOnline(role, gameId, oppName, seed, opts){
   const _oppUid = (opts && opts.oppUid) || null;
   opts = opts || {};
+  // Oda dilini uygula (eşleşen iki oyuncu aynı dilde olur)
+  try{ const rl = (opts.room && opts.room.lang) || opts.lang || KL_LANG; if(rl){ klSetLang(rl); } }catch(e){}
   G.online = true; G.ai = null; G.seri = null; stopTurnTimer(); G.role = role; G.gameId = gameId; G.oppName = oppName; G.oppUid = _oppUid; G._over = false; G.oppPresent = true;
   G.async = !!opts.async; G.turnHours = opts.turnHours || 0; G.deadline = opts.deadline || (opts.room && opts.room.deadline) || 0;
   G.bag = buildBagSeeded(seed);
@@ -1408,22 +1453,41 @@ async function saveRecordsIfBetter(){
 function starsFor(score){ return score>=220 ? 3 : score>=110 ? 2 : 1; }
 function starStr(n){ return '★★★'.slice(0,n) + '☆☆☆'.slice(0,3-n); }
 
-// ── TDK kelime anlamı ──
-const _tdkCache = {};
-async function fetchTDK(word){
+// ── Kelime anlamı (dile göre: TR=TDK, EN=dictionaryapi.dev) ──
+const _meaningCache = {};
+async function fetchTDK(word){ return fetchMeaning(word); }   // geriye dönük uyum
+async function fetchMeaning(word){
   const w = String(word||'').trim();
   if(!w) return null;
-  if(_tdkCache[w] !== undefined) return _tdkCache[w];
+  const lang = (typeof getLanguage==='function') ? getLanguage() : KL_LANG;
+  const ckey = lang + ':' + w;
+  if(_meaningCache[ckey] !== undefined) return _meaningCache[ckey];
   try{
-    const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(w.toLocaleLowerCase('tr')));
-    const txt = await res.text();
-    const data = JSON.parse(txt.trim());
-    if(Array.isArray(data) && data[0] && data[0].anlamlarListe){
-      const anlam = data[0].anlamlarListe.map(a=>a.anlam).filter(Boolean);
-      _tdkCache[w] = anlam.length ? anlam : null;
-    } else { _tdkCache[w] = null; }
-  }catch(e){ _tdkCache[w] = undefined; return undefined; }   // undefined = ağ hatası (tekrar denenebilir)
-  return _tdkCache[w];
+    if(lang === 'en'){
+      // İngilizce sözlük API
+      const res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(w.toLowerCase()));
+      if(res.status === 404){ _meaningCache[ckey] = null; return null; }
+      const data = await res.json();
+      if(Array.isArray(data) && data[0] && data[0].meanings){
+        const out = [];
+        data[0].meanings.forEach(m=>{
+          const pos = m.partOfSpeech ? '('+m.partOfSpeech+') ' : '';
+          (m.definitions||[]).slice(0,2).forEach(d=>{ if(d.definition) out.push(pos + d.definition); });
+        });
+        _meaningCache[ckey] = out.length ? out.slice(0,5) : null;
+      } else { _meaningCache[ckey] = null; }
+    } else {
+      // Türkçe TDK
+      const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(w.toLocaleLowerCase('tr')));
+      const txt = await res.text();
+      const data = JSON.parse(txt.trim());
+      if(Array.isArray(data) && data[0] && data[0].anlamlarListe){
+        const anlam = data[0].anlamlarListe.map(a=>a.anlam).filter(Boolean);
+        _meaningCache[ckey] = anlam.length ? anlam : null;
+      } else { _meaningCache[ckey] = null; }
+    }
+  }catch(e){ _meaningCache[ckey] = undefined; return undefined; }   // undefined = ağ hatası
+  return _meaningCache[ckey];
 }
 // Bir hücredeki taştan geçen yatay+dikey kelimeleri çöz
 function wordsThrough(r, c){
@@ -1446,15 +1510,15 @@ function showWordMeaning(r, c){
   const cEl = G.root.querySelector('[data-el="content"]');
   const ov = document.createElement('div'); ov.className='kl-overlay';
   ov.innerHTML = `<div class="kl-card"><h3>📖 ${esc(words[0])}</h3>
-    <div data-el="mbody" style="font-size:13px;color:#d9caf2;line-height:1.5;text-align:left;max-height:46vh;overflow:auto">Anlam yükleniyor…</div>
+    <div data-el="mbody" style="font-size:13px;color:#d9caf2;line-height:1.5;text-align:left;max-height:46vh;overflow:auto">${KL_LANG==='en'?'Loading definition…':'Anlam yükleniyor…'}</div>
     ${words.length>1?`<p style="font-size:11px;color:#bba8df;margin-top:8px">Diğer kelime: ${esc(words[1])}</p>`:''}
     <button class="kl-btn primary" style="margin-top:14px" data-x="ok">Kapat</button></div>`;
   cEl.appendChild(ov);
   ov.querySelector('[data-x="ok"]').addEventListener('click', ()=>ov.remove());
   const body = ov.querySelector('[data-el="mbody"]');
   fetchTDK(words[0]).then(an=>{
-    if(an === undefined){ body.textContent='Anlam alınamadı (bağlantı). Tekrar dene.'; return; }
-    if(!an){ body.innerHTML = `<span style="color:#bba8df">TDK sözlüğünde anlam bulunamadı.</span>`; return; }
+    if(an === undefined){ body.textContent = KL_LANG==='en' ? 'Could not load (connection). Try again.' : 'Anlam alınamadı (bağlantı). Tekrar dene.'; return; }
+    if(!an){ body.innerHTML = `<span style="color:#bba8df">${KL_LANG==='en'?'No definition found in dictionary.':'TDK sözlüğünde anlam bulunamadı.'}</span>`; return; }
     body.innerHTML = an.map((a,i)=>`<div style="padding:3px 0"><b style="color:#ffe08a">${i+1}.</b> ${esc(a)}</div>`).join('');
   });
 }

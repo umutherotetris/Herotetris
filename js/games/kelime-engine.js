@@ -10,7 +10,9 @@ export const RACK_SIZE = 7;
 export const BINGO_BONUS = 30;   // tüm 7 taş kullanılırsa ek puan
 
 // Harf seti: { adet, puan }
-export const LETTERS = {
+// ── Harf havuzları (dile göre) ──
+// Türkçe (TDK dağılımı)
+export const LETTERS_TR = {
   A:{n:12,p:1}, B:{n:2,p:3}, C:{n:2,p:4}, 'Ç':{n:2,p:4}, D:{n:2,p:3},
   E:{n:8,p:1}, F:{n:1,p:7}, G:{n:1,p:5}, 'Ğ':{n:1,p:8}, H:{n:1,p:5},
   'I':{n:4,p:2}, 'İ':{n:7,p:1}, J:{n:1,p:10}, K:{n:7,p:1}, L:{n:7,p:1},
@@ -18,7 +20,25 @@ export const LETTERS = {
   R:{n:6,p:1}, S:{n:3,p:2}, 'Ş':{n:2,p:4}, T:{n:5,p:1}, U:{n:3,p:2},
   'Ü':{n:2,p:3}, V:{n:1,p:7}, Y:{n:2,p:3}, Z:{n:2,p:4}
 };
+// İngilizce (klasik Scrabble dağılımı, 100 taş)
+export const LETTERS_EN = {
+  A:{n:9,p:1}, B:{n:2,p:3}, C:{n:2,p:3}, D:{n:4,p:2}, E:{n:12,p:1},
+  F:{n:2,p:4}, G:{n:3,p:2}, H:{n:2,p:4}, I:{n:9,p:1}, J:{n:1,p:8},
+  K:{n:1,p:5}, L:{n:4,p:1}, M:{n:2,p:3}, N:{n:6,p:1}, O:{n:8,p:1},
+  P:{n:2,p:3}, Q:{n:1,p:10}, R:{n:6,p:1}, S:{n:4,p:1}, T:{n:6,p:1},
+  U:{n:4,p:1}, V:{n:2,p:4}, W:{n:2,p:4}, X:{n:1,p:8}, Y:{n:2,p:4}, Z:{n:1,p:10}
+};
+// Aktif dil ve havuz (varsayılan Türkçe)
+export let GAME_LANG = 'tr';
+export let LETTERS = LETTERS_TR;
 export const JOKER_COUNT = 2;
+// Dili değiştir (oyun başlamadan önce çağrılır)
+export function setLanguage(lang){
+  GAME_LANG = (lang === 'en') ? 'en' : 'tr';
+  LETTERS = (GAME_LANG === 'en') ? LETTERS_EN : LETTERS_TR;
+  return GAME_LANG;
+}
+export function getLanguage(){ return GAME_LANG; }
 export function letterPoints(letter){ return (LETTERS[letter] ? LETTERS[letter].p : 0); }
 
 // Bonus tahta düzeni (klasik 15x15 simetrik)
