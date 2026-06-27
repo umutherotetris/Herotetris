@@ -1582,6 +1582,8 @@ async function onGameEndDraw(){
 async function onGameEnd(playerWon){
   Resume.clearSnapshot('chess');
   const won = playerWon === true;
+  // Görev takibi
+  try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'chess'}); if(won) Store.trackQuestEvent('game_won',{game:'chess'}); }catch(e){}
   const kaju = won ? 80 : 20;
   const xp = won ? 60 : 25;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}

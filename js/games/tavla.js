@@ -2216,6 +2216,7 @@ function hideBreakOverlay(){
 
 // Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
 async function awardSimple(playerWon, reason){
+  try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'tavla'}); if(playerWon) Store.trackQuestEvent('game_won',{game:'tavla'}); }catch(e){}
   const kaju = playerWon ? 50 : 15;
   const xp = playerWon ? 55 : 20;
   try{ await Store.addKaju(kaju, 'tavla'); await Store.addXP(xp); }catch(e){}

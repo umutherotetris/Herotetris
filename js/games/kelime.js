@@ -1706,6 +1706,7 @@ async function endGameAI(){
   if(G._over) return; G._over = true;
   stopTurnTimer();
   Resume.clearSnapshot('kelime');
+  try{ import('../quests.js').then(q=>{ q.trackQuest('game_played',{game:'kelime'}); if(G.state.scores.A>G.state.scores.B) q.trackQuest('game_won',{game:'kelime'}); }).catch(()=>{}); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const playerWon = a > b;
