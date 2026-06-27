@@ -69,13 +69,29 @@ const CONSUMABLES = [
 // ════════════ 💎 PAKETLER / BUNDLE ════════════
 const BUNDLES = [
   {id:'bundle_starter', name:'Başlangıç Paketi', icon:'🎒', color:'#34d399', price:5000, origPrice:9000,
-   desc:'Yeni başlayanlar için: 1 Nadir Yumurta + 1 Çerçeve + 2× XP (24s)',
+   tagline:'Yeni başlayanlar için ideal başlangıç',
+   items:[
+     {ic:'🥚', t:'1 Nadir Yumurta', f:'Garantili nadir kozmo çıkar'},
+     {ic:'🖼️', t:'1 Rastgele Çerçeve', f:'Profil avatarını süsler'},
+     {ic:'⚡', t:'2× XP Boost · 24 saat', f:'Seviye atlamayı hızlandırır'},
+   ],
    grants:[{type:'egg',rarity:'nadir'},{type:'frame',random:true},{type:'boost',boostId:'boost_xp2'}]},
   {id:'bundle_mega', name:'Mega Paket', icon:'🎆', color:'#c084fc', price:18000, origPrice:30000,
-   desc:'1 Epik Yumurta + Altın Dokunuş Boost + 1 Tema + 10000 Kaju',
+   tagline:'En çok tercih edilen · büyük değer',
+   items:[
+     {ic:'🥚', t:'1 Epik Yumurta', f:'Garantili epik kozmo — nadir güçler'},
+     {ic:'✨', t:'Altın Dokunuş Boost', f:'Tüm kazançlar +%15 (süreli)'},
+     {ic:'🎨', t:'1 Rastgele Tema', f:'Oyun tahtası görünümü değişir'},
+     {ic:'🥜', t:'10.000 Kaju', f:'Anında hesabına eklenir'},
+   ],
    grants:[{type:'egg',rarity:'epik'},{type:'boost',boostId:'boost_all15'},{type:'theme',random:true},{type:'kaju',amount:10000}]},
   {id:'bundle_vip', name:'VIP Aylık', icon:'👑', color:'#ffd700', price:25000, origPrice:45000,
-   desc:'30 gün her gün 1000 Kaju + kalıcı "VIP" unvanı + 2× XP (3 gün)',
+   tagline:'Aylık ayrıcalık · en yüksek değer',
+   items:[
+     {ic:'🥜', t:'30 gün · günlük 1.000 Kaju', f:'Toplam 30.000 Kaju (her gün otomatik)'},
+     {ic:'👑', t:'"VIP" Unvanı', f:'Profilinde kalıcı altın VIP rozeti'},
+     {ic:'⚡', t:'2× XP Boost · 3 gün', f:'Uzun süreli seviye hızlandırma'},
+   ],
    grants:[{type:'vip',days:30,daily:1000},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
 ];
 
@@ -227,6 +243,40 @@ function _injectShopCSS(){
     #shopPanel .clan-x{ flex-shrink:0 !important; }
 
     /* Özel kozmo kartı — premium */
+    /* ── Premium Paket Kartları ── */
+    .shop-bundle-card{ position:relative; border-radius:18px; padding:14px 14px 15px; margin-bottom:14px;
+      background:linear-gradient(165deg, rgba(255,255,255,.05), rgba(0,0,0,.25));
+      border:1.5px solid var(--uc); box-shadow:0 6px 26px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+      overflow:hidden; }
+    .shop-bundle-card::before{ content:''; position:absolute; top:-40%; left:-30%; width:60%; height:180%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent); transform:rotate(20deg);
+      pointer-events:none; }
+    .shop-bundle-save{ position:absolute; top:0; right:0; font-size:10px; font-weight:900; color:#04130b;
+      padding:5px 12px; border-radius:0 16px 0 14px; background:linear-gradient(90deg,#fbbf24,#f59e0b);
+      box-shadow:0 2px 8px rgba(245,158,11,.5); letter-spacing:.4px; }
+    .shop-bundle-head{ display:flex; align-items:center; gap:11px; margin-bottom:11px; }
+    .shop-bundle-ic{ width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+      font-size:30px; flex-shrink:0; box-shadow:inset 0 0 12px rgba(0,0,0,.3); }
+    .shop-bundle-titles{ text-align:left; flex:1; min-width:0; }
+    .shop-bundle-name{ font-size:16px; font-weight:900; letter-spacing:.3px; }
+    .shop-bundle-tag{ font-size:9.5px; color:#9fb0d8; margin-top:2px; font-weight:600; }
+    .shop-bundle-items{ display:flex; flex-direction:column; gap:7px; margin:10px 0 12px;
+      background:rgba(0,0,0,.22); border-radius:12px; padding:10px 11px; }
+    .shop-bundle-item{ display:flex; align-items:flex-start; gap:9px; }
+    .sbi-ic{ font-size:17px; flex-shrink:0; width:22px; text-align:center; }
+    .sbi-txt{ display:flex; flex-direction:column; text-align:left; line-height:1.3; }
+    .sbi-txt b{ font-size:11.5px; color:#e8eaf6; font-weight:800; }
+    .sbi-f{ font-size:9.5px; color:#8b9bc4; margin-top:1px; }
+    .shop-bundle-price{ display:flex; align-items:baseline; justify-content:center; gap:10px; margin-bottom:11px; }
+    .sbp-orig{ font-size:12px; color:#7d8ab8; text-decoration:line-through; }
+    .sbp-now{ font-size:18px; font-weight:900; }
+    .shop-bundle-btn{ width:100%; padding:12px; border-radius:13px; border:none; cursor:pointer;
+      font-size:14px; font-weight:900; font-family:inherit; color:#0a0a14;
+      background:linear-gradient(135deg, var(--uc), color-mix(in srgb, var(--uc) 70%, #000));
+      box-shadow:0 4px 16px rgba(0,0,0,.4); transition:transform .12s, box-shadow .12s; letter-spacing:.3px; }
+    .shop-bundle-btn:active{ transform:scale(.97); }
+    .shop-bundle-btn.locked{ background:rgba(120,130,160,.25); color:#7d8ab8; cursor:not-allowed; box-shadow:none; }
+
     .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
       background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
       border:1.5px solid color-mix(in srgb, var(--uc) 45%, transparent);
@@ -567,17 +617,36 @@ function renderBundles(box, pl){
   BUNDLES.forEach(bd=>{
     const canBuy=(pl.kaju||0)>=bd.price;
     const save=bd.origPrice?Math.round((1-bd.price/bd.origPrice)*100):0;
-    const card=document.createElement('div'); card.className='shop-unique-card'; card.style.setProperty('--uc',bd.color);
-    card.style.marginBottom='12px';
-    card.innerHTML=(save?'<div class="shop-unique-badge" style="background:linear-gradient(90deg,#34d399,#10b981)">%'+save+' İNDİRİM</div>':'')
-      +'<div class="shop-unique-creature" style="font-size:50px">'+bd.icon+'</div>'
-      +'<div class="shop-unique-name" style="color:'+bd.color+'">'+esc(bd.name)+'</div>'
-      +'<div style="font-size:10px;color:#cbd5e1;margin:6px 0 9px;line-height:1.6">'+esc(bd.desc)+'</div>'
-      +(bd.origPrice?'<div style="font-size:11px;color:#7d8ab8;text-decoration:line-through;margin-bottom:3px">🥜 '+fmt(bd.origPrice)+'</div>':'')
-      +'<button class="shop-unique-btn'+(canBuy?'':' locked')+'" style="font-size:14px">🥜 '+fmt(bd.price)+'</button>';
+    const card=document.createElement('div'); card.className='shop-bundle-card'; card.style.setProperty('--uc',bd.color);
+    // İçindekiler listesi (madde + fayda)
+    let itemsHtml='';
+    if(bd.items&&bd.items.length){
+      itemsHtml='<div class="shop-bundle-items">';
+      bd.items.forEach(it=>{
+        itemsHtml+='<div class="shop-bundle-item">'
+          +'<span class="sbi-ic">'+it.ic+'</span>'
+          +'<span class="sbi-txt"><b>'+esc(it.t)+'</b><span class="sbi-f">'+esc(it.f)+'</span></span>'
+          +'</div>';
+      });
+      itemsHtml+='</div>';
+    }
+    card.innerHTML=(save?'<div class="shop-bundle-save">%'+save+' İNDİRİM</div>':'')
+      +'<div class="shop-bundle-head">'
+        +'<div class="shop-bundle-ic" style="background:radial-gradient(circle at 35% 30%,'+bd.color+'55,'+bd.color+'18)">'+bd.icon+'</div>'
+        +'<div class="shop-bundle-titles">'
+          +'<div class="shop-bundle-name" style="color:'+bd.color+'">'+esc(bd.name)+'</div>'
+          +(bd.tagline?'<div class="shop-bundle-tag">'+esc(bd.tagline)+'</div>':'')
+        +'</div>'
+      +'</div>'
+      +itemsHtml
+      +'<div class="shop-bundle-price">'
+        +(bd.origPrice?'<span class="sbp-orig">🥜 '+fmt(bd.origPrice)+'</span>':'')
+        +'<span class="sbp-now" style="color:'+bd.color+'">🥜 '+fmt(bd.price)+'</span>'
+      +'</div>'
+      +'<button class="shop-bundle-btn'+(canBuy?'':' locked')+'" style="--uc:'+bd.color+'">'+(canBuy?'🎁 Satın Al':'🔒 Yetersiz Kaju')+'</button>';
     const btn=card.querySelector('button');
     card.addEventListener('mouseenter',()=>ShopSfx.hover());
-    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} buyBundle(bd); });
+    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} ShopSfx.tap(); buyBundle(bd); });
     box.appendChild(card);
   });
 }

@@ -105,25 +105,35 @@ export function kozmoGetPhase(sentAt,feedBonus){
 // power: yetenek · element: tür · sound: ses karakteri · particle: parçacık
 const TYPES={
   nebula_kedi:  {n:'Nebula Kedi',   e:'🐱',c:'#7dd3fc',c1:'#93c5fd',c2:'#3b82f6',acc:'#e0f2fe',r:'common',
-                 shape:'cat',    element:'Yıldız',  power:'Yıldız Tozu Saçar', sound:'soft',   particle:'stars',   desc:'Gece göğünün küçük avcısı'},
+                 shape:'cat',    element:'Yıldız',  power:'Yıldız Tozu Saçar', bonus:{xp:0.05}, sound:'soft',   particle:'stars',
+                 desc:'Gece göğünün küçük avcısı. Yıldız tozu saçarak sahibine ekstra deneyim kazandırır.'},
   lav_tilkisi:  {n:'Lav Tilkisi',   e:'🦊',c:'#fb923c',c1:'#fdba74',c2:'#ea580c',acc:'#fef08a',r:'rare',
-                 shape:'fox',    element:'Ateş',    power:'Alev Püskürtür',    sound:'fierce', particle:'fire',    desc:'Volkanların ateşli sakini'},
+                 shape:'fox',    element:'Ateş',    power:'Alev Püskürtür',    bonus:{score:0.05}, sound:'fierce', particle:'fire',
+                 desc:'Volkanların ateşli sakini. Alevleriyle oyun skorunu yükseltir.'},
   mandalina_tav:{n:'Mandalina Tavşan',e:'🐇',c:'#fbbf24',c1:'#fde047',c2:'#f59e0b',acc:'#fff7cd',r:'common',
-                 shape:'bunny',  element:'Doğa',    power:'Şans Getirir',      sound:'cute',   particle:'leaves',  desc:'Bahçelerin neşeli zıplayıcısı'},
+                 shape:'bunny',  element:'Doğa',    power:'Bereket Saçar',     bonus:{kaju:0.04}, sound:'cute',   particle:'leaves',
+                 desc:'Bahçelerin neşeli zıplayıcısı. Bereketiyle Kaju kazancını artırır.'},
   bulut_ruhu:   {n:'Bulut Kaplanı', e:'🐯',c:'#e0f2fe',c1:'#f0f9ff',c2:'#7dd3fc',acc:'#bae6fd',r:'rare',
-                 shape:'tiger',  element:'Hava',    power:'Bulut Çağırır',     sound:'majestic',particle:'clouds', desc:'Gökyüzünde süzülen heybetli kaplan'},
+                 shape:'tiger',  element:'Hava',    power:'Rüzgâr Toplar',     bonus:{kaju:0.05}, sound:'majestic',particle:'clouds',
+                 desc:'Gökyüzünde süzülen heybetli kaplan. Rüzgârla Kaju kazancını çoğaltır.'},
   gokk_ruhu:    {n:'Gök Fırtınası', e:'⚡',c:'#e879f9',c1:'#f0abfc',c2:'#a21caf',acc:'#fae8ff',r:'legendary',
-                 shape:'storm',  element:'Şimşek',  power:'Yıldırım Düşürür',  sound:'epic',   particle:'lightning',desc:'Fırtınaların güçlü ruhu'},
+                 shape:'storm',  element:'Şimşek',  power:'Şimşek Çaktırır',   bonus:{score:0.07}, sound:'epic',   particle:'lightning',
+                 desc:'Fırtınaların güçlü ruhu. Şimşek hızıyla skorunu yükseltir. Görkemli ve nadir.'},
   kristal_boc:  {n:'Kristal Böcek', e:'🦋',c:'#67e8f9',c1:'#a5f3fc',c2:'#0891b2',acc:'#cffafe',r:'rare',
-                 shape:'beetle', element:'Kristal', power:'Işık Kırar',        sound:'crystal',particle:'crystals',desc:'Işıltılı kanatların sahibi'},
+                 shape:'beetle', element:'Kristal', power:'Işık Kırar',        bonus:{xp:0.06}, sound:'crystal',particle:'crystals',
+                 desc:'Işıltılı kanatların sahibi. Işığı kırarak deneyim kazancını parlatır.'},
   nova_kitsune: {n:'Nova Kitsune', e:'🦊',c:'#c084fc',c1:'#d8b4fe',c2:'#7c3aed',acc:'#f3e8ff',r:'rare',
-                 shape:'kitsune',element:'Ruh',     power:'Üç Kuyruk Sallar',  sound:'mystic', particle:'spirits', desc:'Üç kuyruklu gizemli ruh tilkisi'},
+                 shape:'kitsune',element:'Doğa',    power:'Üç Kuyruk Sallar',  bonus:{kaju:0.06}, sound:'mystic', particle:'spirits',
+                 desc:'Üç kuyruklu çevik tilki. Her kuyruğu ayrı bir Kaju bereketi taşır.'},
   kozmik_unicorn:{n:'Kozmik Unicorn',e:'🦄',c:'#ff80ff',c1:'#fbcfe8',c2:'#db2777',acc:'#fdf2f8',r:'epic',
-                 shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Yaratır', sound:'magical',particle:'rainbow', desc:'Evrenin büyülü tek boynuzlusu'},
+                 shape:'unicorn',element:'Gökkuşağı',power:'Gökkuşağı Saçar',  bonus:{all:0.05}, sound:'magical',particle:'rainbow',
+                 desc:'Yedi renkli kozmik tek boynuzlu. Gökkuşağı saçarak tüm kazançları artırır.'},
   derin_ejder:  {n:'Derin Ejder',   e:'🐲',c:'#00ffc8',c1:'#5eead4',c2:'#0d9488',acc:'#ccfbf1',r:'legendary',
-                 shape:'dragon', element:'Derinlik',power:'Okyanus Dalgası',   sound:'roar',   particle:'bubbles', desc:'Derinlerin görkemli ejderhası'},
+                 shape:'dragon', element:'Derinlik',power:'Gelgit Çağırır',    bonus:{kaju:0.08}, sound:'roar',   particle:'bubbles',
+                 desc:'Derinlerin görkemli ejderhası. Gelgitlerle bol Kaju getirir. Çok nadir.'},
   peri_ruhu:    {n:'Peri Kelebeği', e:'🧚',c:'#ffb8ff',c1:'#fbcfe8',c2:'#e879f9',acc:'#fdf4ff',r:'mythical',
-                 shape:'fairy',  element:'Işık',    power:'Dilek Tutturur',    sound:'fairy',  particle:'sparkles',desc:'Işığın saf periler kraliçesi'},
+                 shape:'fairy',  element:'Işık',    power:'Işık Serper',       bonus:{all:0.08}, sound:'fairy',  particle:'sparkles',
+                 desc:'Işığın zarif kelebeği. Işık serperek tüm kazançlarını en üst düzeyde çoğaltır. Olağanüstü nadir.'},
 };
 const RARITY_COLOR={common:'#aaa',rare:'#00E5FF',epic:'#c084fc',legendary:'#FFD740',mythical:'#ff80ff',gorkem:'#FFD740',olagan:'#ff80ff'};
 const RARITY_LABEL={common:'Sıradan',rare:'Nadir',epic:'Epik',legendary:'Görkemli',mythical:'Olağanüstü',gorkem:'Görkemli',olagan:'Olağanüstü'};
@@ -158,11 +168,11 @@ const MERGE_TABLE={
 };
 // Tabloda olmayan kombinasyonlar → özel füzyon yaratıkları
 const FUSION_TYPES=[
-  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Doğurur',  sound:'epic',   particle:'galaxy',  desc:'İki ruhun kozmik birleşimi'},
-  {key:'fusion_void',    name:'Void Birliği',    e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Boşluk',  power:'Karanlığı Yutar',  sound:'mystic', particle:'void',    desc:'Boşluğun kara enerjisi'},
-  {key:'fusion_cosmic',  name:'Kozmik Fırtına',  e:'⚡',c:'#fbbf24',c1:'#fde047',c2:'#d97706',acc:'#fef9c3',r:'epic',     shape:'storm',  element:'Enerji',  power:'Enerji Patlatır',  sound:'epic',   particle:'energy',  desc:'Saf enerjinin fırtınası'},
-  {key:'fusion_aurora',  name:'Aurora Dansı',    e:'🌈',c:'#f9a8d4',c1:'#fbcfe8',c2:'#db2777',acc:'#fce7f3',r:'legendary',shape:'aurora', element:'Aurora',  power:'Renk Cümbüşü',     sound:'magical',particle:'aurora',  desc:'Kuzey ışıklarının dansı'},
-  {key:'fusion_crystal', name:'Kristal Kalp',    e:'💎',c:'#67e8f9',c1:'#a5f3fc',c2:'#0e7490',acc:'#cffafe',r:'epic',     shape:'crystal',element:'Elmas',   power:'Prizma Işığı',     sound:'crystal',particle:'prism',   desc:'Saf kristalin kalbi'},
+  {key:'fusion_nebula',  name:'Nebula Kaynağı', e:'💠',c:'#818cf8',c1:'#a5b4fc',c2:'#4338ca',acc:'#e0e7ff',r:'legendary',shape:'cosmic', element:'Kozmos',  power:'Galaksi Işıtır',   bonus:{all:0.07}, sound:'epic',   particle:'galaxy',  desc:'İki kozmonun birleşimi. Galaksi ışığıyla tüm kazançları artırır. Görkemli füzyon.'},
+  {key:'fusion_void',    name:'Gölge Birliği',   e:'🌌',c:'#c084fc',c1:'#d8b4fe',c2:'#6b21a8',acc:'#f3e8ff',r:'legendary',shape:'void',   element:'Gölge',   power:'Gölge Toplar',     bonus:{score:0.08}, sound:'mystic', particle:'void',    desc:'Gölgelerin gücünü toplayan füzyon. Skorunu güçlü biçimde yükseltir.'},
+  {key:'fusion_cosmic',  name:'Kozmik Fırtına',  e:'⚡',c:'#fbbf24',c1:'#fde047',c2:'#d97706',acc:'#fef9c3',r:'epic',     shape:'storm',  element:'Enerji',  power:'Enerji Saçar',     bonus:{score:0.06}, sound:'epic',   particle:'energy',  desc:'Saf enerjinin fırtınası. Skor kazancını çoğaltır.'},
+  {key:'fusion_aurora',  name:'Aurora Dansı',    e:'🌈',c:'#f9a8d4',c1:'#fbcfe8',c2:'#db2777',acc:'#fce7f3',r:'legendary',shape:'aurora', element:'Aurora',  power:'Renk Cümbüşü',     bonus:{xp:0.08}, sound:'magical',particle:'aurora',  desc:'Kuzey ışıklarının dansı. Renkleriyle deneyim kazancını parlatır.'},
+  {key:'fusion_crystal', name:'Kristal Kalp',    e:'💎',c:'#67e8f9',c1:'#a5f3fc',c2:'#0e7490',acc:'#cffafe',r:'epic',     shape:'crystal',element:'Elmas',   power:'Prizma Işığı',     bonus:{kaju:0.07}, sound:'crystal',particle:'prism',   desc:'Saf kristalin kalbi. Prizma ışığıyla Kaju kazancını çoğaltır.'},
 ];
 function getMergeResult(key1,key2,useStone){
   const combo=key1+'+'+key2;
@@ -242,6 +252,8 @@ function _ensureGemCSS(){
   .koz-detail-sound:active,.koz-detail-activate:active{transform:scale(.97)}
   .koz-detail-activate{border-color:rgba(255,215,64,.45);background:linear-gradient(135deg,rgba(255,215,64,.18),rgba(240,165,0,.12));color:#ffe082}
   .koz-detail-activate.active{background:linear-gradient(135deg,#69F0AE,#34d399);color:#04130b;border-color:transparent}
+  .koz-detail-bonus{margin:8px 0 4px;padding:8px 12px;border-radius:11px;font-size:11.5px;font-weight:800;color:#ffe082;background:linear-gradient(135deg,rgba(255,215,64,.15),rgba(255,165,0,.08));border:1px solid rgba(255,215,64,.3);text-align:center;line-height:1.4}
+  .koz-cre-power{font-size:8px;color:#ffd54f;font-weight:800;margin-top:2px;opacity:.92}
   `;
   document.head.appendChild(st);
 }
@@ -537,6 +549,14 @@ function showCreatureDetail(c,t,rc){
     +'<div class="koz-detail-name" style="color:'+(t.c||'#c084fc')+'">'+esc(c.name||t.n)+'</div>'
     +'<div class="koz-detail-rar" style="color:'+rc+'">'+(RARITY_LABEL[t.r]||t.r)+'</div>'
     +'<div class="koz-detail-desc">'+esc(t.desc||'Gizemli bir kozmo')+'</div>'
+    +(()=>{ const b=c.bonus||t.bonus; if(!b) return ''; 
+        const parts=[]; 
+        if(b.all) parts.push('Tüm kazançlar +%'+Math.round(b.all*100));
+        if(b.xp) parts.push('XP +%'+Math.round(b.xp*100));
+        if(b.score) parts.push('Skor +%'+Math.round(b.score*100));
+        if(b.kaju) parts.push('Kaju +%'+Math.round(b.kaju*100));
+        return '<div class="koz-detail-bonus">⚡ Aktifken: '+parts.join(' · ')+'</div>';
+      })()
     +'<div class="koz-detail-stats">'
       +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(t.element||'?')+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">✨</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(t.power||'?')+'</span></div>'
@@ -701,7 +721,7 @@ async function renderKozmos(st,box){
         +'<div class="koz-bar"><div style="width:'+pct+'%;height:100%;background:linear-gradient(90deg,'+info.color+',#818cf8);border-radius:3px;transition:width .5s"></div></div>'
         +'<div class="koz-bar-txt">%'+pct+' · '+fed+' beslenme</div>'
         +'<button class="koz-feed-btn" data-feed="'+k+'">🍎 Besle</button>'
-        +(phase>=11?'<button class="koz-hatch-btn" data-hatch="'+k+'">🎊 Doğurt!</button>':'');
+        +(phase>=11?'<button class="koz-hatch-btn" data-hatch="'+k+'">🎊 Çıkar!</button>':'');
       card.querySelector('[data-feed]').addEventListener('click',async e=>{
         e.stopPropagation();
         const todayKey='htu_feed_'+k+'_'+new Date().toDateString();
@@ -748,6 +768,13 @@ async function renderKozmos(st,box){
         +'<div class="koz-cre-name" style="color:'+t.c+'">'+esc(c.name||t.n)+'</div>'
         +'<div class="koz-cre-rarity" style="color:'+rc+'">'+esc(RARITY_LABEL[t.r]||t.r)+'</div>'
         +(t.element?'<div class="koz-cre-element">'+elementIcon(t.element)+' '+esc(t.element)+'</div>':'')
+        +(()=>{ const b=c.bonus||t.bonus; if(!b) return '';
+            if(b.all) return '<div class="koz-cre-power">⚡ Tümü +%'+Math.round(b.all*100)+'</div>';
+            if(b.xp) return '<div class="koz-cre-power">⚡ XP +%'+Math.round(b.xp*100)+'</div>';
+            if(b.score) return '<div class="koz-cre-power">⚡ Skor +%'+Math.round(b.score*100)+'</div>';
+            if(b.kaju) return '<div class="koz-cre-power">⚡ Kaju +%'+Math.round(b.kaju*100)+'</div>';
+            return '';
+          })()
         +'<div class="koz-cre-lv">LV '+(c.level||1)+'</div>';
       const delB=document.createElement('button');delB.className='koz-del-btn';delB.textContent='🗑';delB.title='Sil';
       delB.addEventListener('click',async e=>{e.stopPropagation();if(!confirm('Yaratık silinsin mi?'))return;sfxReject();try{await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+k),null);await renderKozmos(st,box);}catch(err){}});
@@ -781,7 +808,7 @@ async function renderKozmos(st,box){
 let _hatchLock=false;
 async function hatchEgg(eggId,egg,st,box){
   if(_hatchLock){ return; }  // çift tıklama koruması
-  if(!confirm('🎊 Yumurta doğurulsun mu?'))return;
+  if(!confirm('🎊 Yumurta çıkarılsın mı?'))return;
   _hatchLock=true;
   setTimeout(()=>{_hatchLock=false;},2000);
   sfxCrack(); setTimeout(()=>sfxCrack(),180); setTimeout(()=>sfxHatch(),350);
@@ -796,7 +823,7 @@ async function hatchEgg(eggId,egg,st,box){
     feedAnim(); sfxChirp();
     await renderKozmos(st,box);
     _toast('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
-  }catch(e){_toast('Doğurtulamadı: '+(e.message||e));}
+  }catch(e){_toast('Çıkarılamadı: '+(e.message||e));}
 }
 
 // ── 💥 Birleştirme Seçici ────────────────────────────────────────
