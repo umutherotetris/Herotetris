@@ -244,16 +244,14 @@ function _injectShopCSS(){
 
     /* Özel kozmo kartı — premium */
     /* ── Premium Paket Kartları ── */
-    .shop-bundle-card{ position:relative; border-radius:18px; padding:14px 14px 15px; margin-bottom:14px;
+    .shop-bundle-card{ position:relative; border-radius:18px; padding:14px 14px 16px; margin-bottom:14px;
       background:linear-gradient(165deg, rgba(255,255,255,.05), rgba(0,0,0,.25));
       border:1.5px solid var(--uc); box-shadow:0 6px 26px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
-      overflow:hidden; }
-    .shop-bundle-card::before{ content:''; position:absolute; top:-40%; left:-30%; width:60%; height:180%;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent); transform:rotate(20deg);
-      pointer-events:none; }
-    .shop-bundle-save{ position:absolute; top:0; right:0; font-size:10px; font-weight:900; color:#04130b;
-      padding:5px 12px; border-radius:0 16px 0 14px; background:linear-gradient(90deg,#fbbf24,#f59e0b);
-      box-shadow:0 2px 8px rgba(245,158,11,.5); letter-spacing:.4px; }
+      overflow:visible; box-sizing:border-box; width:100%; }
+
+    .shop-bundle-save{ position:absolute; top:-8px; right:-4px; font-size:10px; font-weight:900; color:#04130b;
+      padding:5px 12px; border-radius:12px; background:linear-gradient(90deg,#fbbf24,#f59e0b);
+      box-shadow:0 2px 8px rgba(245,158,11,.5); letter-spacing:.4px; z-index:2; }
     .shop-bundle-head{ display:flex; align-items:center; gap:11px; margin-bottom:11px; }
     .shop-bundle-ic{ width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center;
       font-size:30px; flex-shrink:0; box-shadow:inset 0 0 12px rgba(0,0,0,.3); }
@@ -270,9 +268,9 @@ function _injectShopCSS(){
     .shop-bundle-price{ display:flex; align-items:baseline; justify-content:center; gap:10px; margin-bottom:11px; }
     .sbp-orig{ font-size:12px; color:#7d8ab8; text-decoration:line-through; }
     .sbp-now{ font-size:18px; font-weight:900; }
-    .shop-bundle-btn{ width:100%; padding:12px; border-radius:13px; border:none; cursor:pointer;
+    .shop-bundle-btn{ width:100%; padding:13px; border-radius:13px; border:none; cursor:pointer;
       font-size:14px; font-weight:900; font-family:inherit; color:#0a0a14;
-      background:linear-gradient(135deg, var(--uc), color-mix(in srgb, var(--uc) 70%, #000));
+      background:var(--uc); filter:saturate(1.1);
       box-shadow:0 4px 16px rgba(0,0,0,.4); transition:transform .12s, box-shadow .12s; letter-spacing:.3px; }
     .shop-bundle-btn:active{ transform:scale(.97); }
     .shop-bundle-btn.locked{ background:rgba(120,130,160,.25); color:#7d8ab8; cursor:not-allowed; box-shadow:none; }
@@ -746,6 +744,7 @@ function _showChestResult(ch, rewards){
 async function buyBundle(bd){
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
+  if(!confirm('🎁 "'+bd.name+'" → '+fmt(bd.price)+' Kaju harcanacak. Satın al?')){ return; }
   const ok=await Store.spendKaju(bd.price,'shop','bundle:'+bd.id);
   if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
   ShopSfx.buy();
