@@ -541,7 +541,24 @@ function creatureSound(soundType){
 }
 
 // ── ✨ Yaratık detay modalı ──
+// Özel kozmo geri-doldurma tablosu (eski satın alımlar için element/yetenek/bonus)
+const UNIQUE_FALLBACK = {
+  uniq_aurora:{element:'Aurora',power:'Renk Cümbüşü · +%8 XP',bonus:{xp:0.08}},  aurora:{element:'Aurora',power:'Renk Cümbüşü · +%8 XP',bonus:{xp:0.08}},
+  uniq_ember:{element:'Ateş',power:'Alev Saçar · +%8 Skor',bonus:{score:0.08}},   ember:{element:'Ateş',power:'Alev Saçar · +%8 Skor',bonus:{score:0.08}},
+  uniq_tide:{element:'Okyanus',power:'Gelgit Çağırır · +%8 Kaju',bonus:{kaju:0.08}}, tide:{element:'Okyanus',power:'Gelgit Çağırır · +%8 Kaju',bonus:{kaju:0.08}},
+  uniq_glow:{element:'Işık',power:'Işık Saçar · +%8 XP',bonus:{xp:0.08}},          glow:{element:'Işık',power:'Işık Saçar · +%8 XP',bonus:{xp:0.08}},
+  uniq_star:{element:'Kozmos',power:'Yıldız Tozu Saçar · +%10 XP',bonus:{xp:0.10}}, star:{element:'Kozmos',power:'Yıldız Tozu Saçar · +%10 XP',bonus:{xp:0.10}},
+  uniq_prism:{element:'Kristal',power:'Işık Kırar · +%10 Kaju',bonus:{kaju:0.10}},  prism:{element:'Kristal',power:'Işık Kırar · +%10 Kaju',bonus:{kaju:0.10}},
+  uniq_bolt:{element:'Enerji',power:'Şimşek Hızı · +%10 Skor',bonus:{score:0.10}},  bolt:{element:'Enerji',power:'Şimşek Hızı · +%10 Skor',bonus:{score:0.10}},
+  uniq_nova:{element:'Enerji',power:'Işık Patlatır · +%12 Tümü',bonus:{all:0.12}},  nova:{element:'Enerji',power:'Işık Patlatır · +%12 Tümü',bonus:{all:0.12}},
+};
+
 function showCreatureDetail(c,t,rc){
+  // Eski özel kozmolarda element/power eksikse, isimden/türden geri doldur
+  if(c.unique && (!c.power || !c.element)){
+    const guess = UNIQUE_FALLBACK[c.uniqueId] || UNIQUE_FALLBACK[c.kind];
+    if(guess){ if(!c.element) c.element = guess.element; if(!c.power) c.power = guess.power; if(!c.bonus) c.bonus = guess.bonus; }
+  }
   const ov=document.createElement('div'); ov.className='nick-modal-ov';
   const inn=document.createElement('div'); inn.className='nick-modal koz-detail'; inn.style.maxWidth='300px';
   inn.style.setProperty('--cc',t.c||'#c084fc');
@@ -558,8 +575,8 @@ function showCreatureDetail(c,t,rc){
         return '<div class="koz-detail-bonus">⚡ Aktifken: '+parts.join(' · ')+'</div>';
       })()
     +'<div class="koz-detail-stats">'
-      +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(t.element||'?')+'</span></div>'
-      +'<div class="koz-stat"><span class="koz-stat-ico">✨</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(t.power||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">'+elementIcon(c.element||t.element)+'</span><span class="koz-stat-lbl">Element</span><span class="koz-stat-val">'+esc(c.element||t.element||'?')+'</span></div>'
+      +'<div class="koz-stat"><span class="koz-stat-ico">✨</span><span class="koz-stat-lbl">Yetenek</span><span class="koz-stat-val">'+esc(c.power||t.power||'?')+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">⭐</span><span class="koz-stat-lbl">Seviye</span><span class="koz-stat-val">LV '+(c.level||1)+'</span></div>'
       +'<div class="koz-stat"><span class="koz-stat-ico">💝</span><span class="koz-stat-lbl">Kaynak</span><span class="koz-stat-val">'+esc(c.fromName||'Mağaza')+'</span></div>'
     +'</div>'
@@ -759,7 +776,12 @@ async function renderKozmos(st,box){
     const sec=mkCard(box,'🐾 YARATIKLARIM ('+creList.length+')','#69F0AE');
     const grid=document.createElement('div'); grid.className='koz-cre-grid';
     creList.forEach(([k,c])=>{
-      const t=TYPES[c.typeKey]||{n:'?',e:'🌟',c:'#c084fc',r:'common'};
+      const t=TYPES[c.typeKey]||(FUSION_TYPES.find(x=>x.key===c.typeKey))||{n:c.name||'?',e:c.icon||'🌟',c:c.color||'#c084fc',r:c.rarity||'common',element:c.element,power:c.power,bonus:c.bonus};
+      // Eski özel kozmolarda eksik bilgileri geri doldur
+      if(c.unique && (!c.power || !c.element)){
+        const _g = UNIQUE_FALLBACK[c.uniqueId] || UNIQUE_FALLBACK[c.kind];
+        if(_g){ if(!c.element) c.element=_g.element; if(!c.power) c.power=_g.power; if(!c.bonus) c.bonus=_g.bonus; }
+      }
       const rc=RARITY_COLOR[t.r]||'#aaa';
       const card=document.createElement('div'); card.className='kozmo-card rar-'+(t.r||'common');
       card.style.cssText='border-color:'+t.c+'44;background:linear-gradient(160deg,rgba(20,10,40,.98),rgba('+hexToRgb(t.c)+', .08))';
