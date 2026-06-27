@@ -19,11 +19,15 @@ const KL_TXT = {
   tr: { title:'KELİMECİK', sub:'Türkçe · 59.000 kelime', desc:'Türkçe kelime türetme oyunu · 15×15 tahta · TDK sözlüğü',
         local:'2 Oyuncu', localS:'Aynı cihazda sırayla', ai:'Yapay Zekâ', aiS:'3 zorluk · bilgisayara karşı',
         seri:'Seri Mod (Süreli)', seriS:'Hamle başına süre · hızlı oyun', online:'Çevrimiçi Rakip', onlineS:'Rastgele bir oyuncuyla eşleş',
-        invite:'Arkadaşını Davet Et', inviteS:'Nick ile meydan oku', langLbl:'Dil' },
+        invite:'Arkadaşını Davet Et', inviteS:'Nick ile meydan oku', langLbl:'Dil',
+        bRecall:'↩︎ Geri Al', bExchange:'🔄 Harf Değiş', bPass:'⏭️ Geç', bSubmit:'✓ Onayla',
+        bagWord:'Torbada', tilesWord:'taş', confirmEx:'✓ Değiştir' },
   en: { title:'WORDIE', sub:'English · Scrabble letters', desc:'English word game · 15×15 board · dictionary meanings',
         local:'2 Players', localS:'Same device, take turns', ai:'Computer', aiS:'3 levels · vs AI',
         seri:'Timed Mode', seriS:'Time per move · fast play', online:'Online Match', onlineS:'Match with a random player',
-        invite:'Invite a Friend', inviteS:'Challenge by nickname', langLbl:'Language' },
+        invite:'Invite a Friend', inviteS:'Challenge by nickname', langLbl:'Language',
+        bRecall:'↩︎ Recall', bExchange:'🔄 Swap', bPass:'⏭️ Pass', bSubmit:'✓ Submit',
+        bagWord:'In bag', tilesWord:'tiles', confirmEx:'✓ Swap' },
 };
 function klT(key){ return (KL_TXT[KL_LANG] && KL_TXT[KL_LANG][key]) || (KL_TXT.tr[key] || ''); }
 function klSetLang(lang){
@@ -332,13 +336,12 @@ function showAIDifficulty(){
       <div class="kl-card">
         <h3>🤖 ${KL_LANG==='en'?'Computer':'Yapay Zekâ'}</h3>
         <p>${KL_LANG==='en'?'Pick a difficulty — play vs computer.':'Zorluk seç — bilgisayara karşı oyna.'}</p>
-        ${KL_LANG==='en'?'<div style="font-size:11px;color:#ffd54f;background:rgba(255,213,79,.1);border:1px solid rgba(255,213,79,.3);border-radius:10px;padding:8px 10px;margin-bottom:10px;line-height:1.4">⚠️ The computer currently plays Turkish words best. For English, <b>2 Players</b> or <b>Online Match</b> is recommended.</div>':''}
         <div class="kl-modes">
-          <div class="kl-mode" data-diff="kolay"><span class="e">🟢</span><div>Kolay<small>Kısa kelimeler, rahat tempo</small></div></div>
-          <div class="kl-mode" data-diff="orta"><span class="e">🟡</span><div>Orta<small>Dengeli rakip</small></div></div>
-          <div class="kl-mode" data-diff="zor"><span class="e">🔴</span><div>Zor<small>En yüksek puanı arar</small></div></div>
+          <div class="kl-mode" data-diff="kolay"><span class="e">🟢</span><div>${KL_LANG==='en'?'Easy':'Kolay'}<small>${KL_LANG==='en'?'Short words, relaxed':'Kısa kelimeler, rahat tempo'}</small></div></div>
+          <div class="kl-mode" data-diff="orta"><span class="e">🟡</span><div>${KL_LANG==='en'?'Medium':'Orta'}<small>${KL_LANG==='en'?'Balanced opponent':'Dengeli rakip'}</small></div></div>
+          <div class="kl-mode" data-diff="zor"><span class="e">🔴</span><div>${KL_LANG==='en'?'Hard':'Zor'}<small>${KL_LANG==='en'?'Seeks highest score':'En yüksek puanı arar'}</small></div></div>
         </div>
-        <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
+        <button class="kl-btn" style="margin-top:12px" data-x="back">${KL_LANG==='en'?'← Back':'← Geri'}</button>
       </div>
     </div>`;
   c.querySelectorAll('[data-diff]').forEach(el=>el.addEventListener('click', ()=>startAI(el.dataset.diff)));
@@ -372,8 +375,8 @@ function startLocal(){
 let KA = null;   // kelime-ai.js (talep üzerine yüklenir)
 async function startAI(difficulty, turnTime){
   const c = G.root.querySelector('[data-el="content"]');
-  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 Hazırlanıyor…</h3><p>Sözlük yükleniyor</p></div></div>`;
-  try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 ${KL_LANG==='en'?'Preparing…':'Hazırlanıyor…'}</h3><p>${KL_LANG==='en'?'Loading dictionary':'Sözlük yükleniyor'}</p></div></div>`;
+  try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
   catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
   Resume.clearSnapshot('kelime');                // yeni oyun → eski devam kaydını sil
   const st = newGame();
@@ -381,10 +384,10 @@ async function startAI(difficulty, turnTime){
   G.who = 'A';                                   // insan = A
   G.ai = { difficulty, color:'B' };
   G.seri = turnTime ? { turnTime } : null;        // süreli seri mod
-  const diffLbl = {kolay:'Kolay',orta:'Orta',zor:'Zor'}[difficulty];
+  const diffLbl = (KL_LANG==='en'?{kolay:'Easy',orta:'Medium',zor:'Hard'}:{kolay:'Kolay',orta:'Orta',zor:'Zor'})[difficulty];
   let _klAiNick='Oyuncu';
   try{const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();if(_as&&(_as.profile&&_as.profile.nick||_as.displayName))_klAiNick=_as.profile&&_as.profile.nick||_as.displayName;}catch(e){}
-  G.names = { A:_klAiNick, B:(turnTime?'Seri AI':'Yapay Zekâ')+' ('+diffLbl+')' };
+  G.names = { A:_klAiNick, B:(KL_LANG==='en'?(turnTime?'Timed AI':'Computer'):(turnTime?'Seri AI':'Yapay Zekâ'))+' ('+diffLbl+')' };
   G.pending = []; G.selected = null;
   G.rackView = st.racks.A.slice();
   G.surprises = buildSurprises((Math.random()*0x7fffffff)|0);
@@ -421,7 +424,7 @@ function saveKelimeResume(){
 async function resumeKelime(snap){
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>↩️ Devam ediliyor…</h3><p>Oyun yükleniyor</p></div></div>`;
-  try{ if(!KA) KA = await import('./kelime-ai.js'); KA.aiReady(); }
+  try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
   catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
   G.state = {
     board: snap.board, bag: snap.bag, racks: snap.racks,
@@ -892,10 +895,10 @@ function buildGameDOM(){
       <button class="kl-shuffle" data-act="shuffle" title="Karıştır">🔀</button>
     </div>
     <div class="kl-actions">
-      <button class="kl-btn" data-act="recall">↩︎ Geri Al</button>
-      <button class="kl-btn warn" data-act="exchange">🔄 Harf Değiş</button>
-      <button class="kl-btn warn" data-act="pass">⏭️ Geç</button>
-      <button class="kl-btn primary" data-act="submit">✓ Onayla</button>
+      <button class="kl-btn" data-act="recall">${klT('bRecall')}</button>
+      <button class="kl-btn warn" data-act="exchange">${klT('bExchange')}</button>
+      <button class="kl-btn warn" data-act="pass">${klT('bPass')}</button>
+      <button class="kl-btn primary" data-act="submit">${klT('bSubmit')}</button>
     </div>`;
   // tahta hücre tıklama
   // Nick tıklanabilir → profil kartı
@@ -1113,9 +1116,9 @@ function renderScores(){
         : ` &nbsp; <span style="color:#bba8df">⏳ rakip: ${left>0?fmtRemain(left):'doldu'}</span>`;
     }
     const pill = isMyTurn() ? `<span class="kl-turn me">▶ Senin sıran</span>` : `<span class="kl-turn opp" data-opc="${G.oppUid||''}" style="${G.oppUid?'cursor:pointer;text-decoration:underline dotted':''}">${G.oppName} oynuyor…</span>`;
-    q('[data-el="status"]').innerHTML = `${pill} &nbsp; Torbada ~${remain}${dl}`;
+    q('[data-el="status"]').innerHTML = `${pill} &nbsp; ${klT('bagWord')} ~${remain}${dl}`;
   } else {
-    q('[data-el="status"]').innerHTML = `<span class="kl-turn me">${G.names[G.who]}</span> &nbsp; Torbada ${G.state.bag.length} taş`;
+    q('[data-el="status"]').innerHTML = `<span class="kl-turn me">${G.names[G.who]}</span> &nbsp; ${klT('bagWord')} ${G.state.bag.length} ${klT('tilesWord')}`;
   }
 }
 
@@ -1269,7 +1272,7 @@ function dropTileOnCell(i, r, c){
 }
 function updateExchangeBtn(){
   const b = G.root.querySelector('[data-act="exchange"]'); if(!b) return;
-  if(G.exchangeMode){ const n=G.exchangeSel?G.exchangeSel.size:0; b.textContent = n ? `✓ Değiştir (${n})` : '✓ Onayla'; }
+  if(G.exchangeMode){ const n=G.exchangeSel?G.exchangeSel.size:0; b.textContent = n ? `${klT('confirmEx')} (${n})` : klT('bSubmit'); }
   else b.textContent = '🔄 Harf Değiş';
 }
 

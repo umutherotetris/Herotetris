@@ -4,18 +4,36 @@
 //  Zorluk: kolay (kısa/düşük puan), orta (rastgele iyi), zor (en yüksek).
 // ════════════════════════════════════════════════════════════════
 import DICT, { TR_LOWER } from './kelime-dict.js';
-import { SIZE, RACK_SIZE, validatePlacement, isEmptyBoard, letterPoints, CENTER } from './kelime-engine.js';
+import { SIZE, RACK_SIZE, validatePlacement, isEmptyBoard, letterPoints, CENTER, getLanguage } from './kelime-engine.js';
 
 // küçük→büyük Türkçe (TR_LOWER tersi)
 const TR_UPPER = {}; for(const up in TR_LOWER) TR_UPPER[TR_LOWER[up]] = up;
-function upTR(lowerWord){ let s=''; for(const ch of lowerWord) s += (TR_UPPER[ch]||ch); return s; }
 
-// Anagram indeksi: sıralı-harf-anahtarı → [küçük kelime] (uzunluk 2..8)
-let INDEX = null;
+// İngilizce sözlük (talep üzerine yüklenir — dosya büyük)
+let DICT_EN = null, EN_LOWER = null, EN_UPPER = null;
+async function ensureEnDict(){
+  if(DICT_EN) return;
+  const m = await import('./kelime-dict-en.js');
+  DICT_EN = m.default;
+  EN_LOWER = m.EN_LOWER || {};
+  EN_UPPER = {}; for(const up in EN_LOWER) EN_UPPER[EN_LOWER[up]] = up;
+}
+
+// Aktif dile göre harf eşleme
+function _lang(){ try{ return getLanguage(); }catch(e){ return 'tr'; } }
+function _lowerMap(){ return _lang()==='en' ? (EN_LOWER||{}) : TR_LOWER; }
+function _upperMap(){ return _lang()==='en' ? (EN_UPPER||{}) : TR_UPPER; }
+function upTR(lowerWord){ const U=_upperMap(); let s=''; for(const ch of lowerWord) s += (U[ch]||ch.toUpperCase()); return s; }
+
+// Anagram indeksi: dile göre ayrı (TR ve EN)
+let INDEX = null, INDEX_LANG = null;
 function ensureIndex(){
-  if(INDEX) return;
+  const lang = _lang();
+  if(INDEX && INDEX_LANG === lang) return;   // doğru dilin indeksi hazır
   INDEX = new Map();
-  for(const w of DICT){
+  INDEX_LANG = lang;
+  const src = (lang === 'en') ? (DICT_EN || []) : DICT;
+  for(const w of src){
     const n = w.length;
     if(n < 2 || n > 8) continue;
     const key = Array.from(w).sort().join('');
@@ -76,7 +94,8 @@ function buildPending(board, word, alignIdx, r, c, horizontal){
 // Ana fonksiyon: en iyi (zorluğa göre) geçerli hamleyi bul. Yoksa null.
 export function findBestMove(board, rack, difficulty){
   ensureIndex();
-  const rackLower = rack.filter(t=>!t.joker).map(t => TR_LOWER[t.letter] || t.letter);
+  const LM = _lowerMap();
+  const rackLower = rack.filter(t=>!t.joker).map(t => LM[t.letter] || t.letter.toLowerCase());
   const moves = [];           // {pending, score, words}
   const seen = new Set();     // aynı yerleşimi tekrar etme
   const MAX_EVAL = 6000;      // güvenlik bütçesi
@@ -112,7 +131,7 @@ export function findBestMove(board, rack, difficulty){
     for(let r=0;r<SIZE && evals<=MAX_EVAL;r++){
       for(let c=0;c<SIZE && evals<=MAX_EVAL;c++){
         const cell = board[r][c]; if(!cell) continue;
-        const bl = TR_LOWER[cell.letter] || cell.letter;
+        const bl = LM[cell.letter] || cell.letter.toLowerCase();
         const pool = rackLower.concat([bl]);
         const keys = subsetKeys(countOf(pool));
         for(const key of keys){
@@ -151,4 +170,8 @@ export function findBestMove(board, rack, difficulty){
   return pick || null;
 }
 
-export function aiReady(){ ensureIndex(); return INDEX.size; }
+export async function aiReady(){
+  if(_lang() === 'en'){ await ensureEnDict(); }
+  ensureIndex();
+  return INDEX.size;
+}
