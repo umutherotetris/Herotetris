@@ -160,7 +160,17 @@ async function _trackQuestSafe(eventType, data){
     if(!_Quests){ _Quests = await import('./quests.js'); }
     if(_Quests && _Quests.trackQuest) _Quests.trackQuest(eventType, data);
   }catch(e){ /* quests opsiyonel */ }
+  // Turnuva puanı (maç oynama + galibiyet + yüksek skor)
+  try{
+    if(!_Trn){ _Trn = await import('./tournament.js'); }
+    if(_Trn && _Trn.addTournamentPoints){
+      if(eventType === 'game_played') _Trn.addTournamentPoints(10, 'maç');
+      else if(eventType === 'game_won') _Trn.addTournamentPoints(25, 'galibiyet');
+      else if(eventType === 'score_tetris' && data && data.score >= 10000) _Trn.addTournamentPoints(Math.floor(data.score/2000), 'tetris skor');
+    }
+  }catch(e){ /* turnuva opsiyonel */ }
 }
+let _Trn = null;
 // Dışarıdan da çağrılabilsin (oyunlar galibiyet/özel olay için)
 export function trackQuestEvent(eventType, data){ _trackQuestSafe(eventType, data); }
 
