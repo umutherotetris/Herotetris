@@ -88,13 +88,16 @@ const BUNDLES = [
    grants:[{type:'egg',rarity:'epik'},{type:'boost',boostId:'boost_all15'},{type:'theme',random:true},{type:'kaju',amount:10000}]},
   {id:'bundle_vip', name:'VIP Aylık', icon:'👑', color:'#ffd700', price:25000, origPrice:45000,
    subscription:true,   // abonelik — aktifken kapalı, dolunca/dolmaya yakın açık
-   tagline:'Aylık ayrıcalık · en yüksek değer',
+   tagline:'30 gün boyunca ayrıcalıklı oyuncu',
    items:[
-     {ic:'🥜', t:'30 gün · günlük 600 Kaju', f:'Toplam 18.000 Kaju (her gün otomatik)'},
-     {ic:'👑', t:'"VIP" Unvanı', f:'Profilinde kalıcı altın VIP rozeti'},
-     {ic:'⚡', t:'2× XP Boost · 3 gün', f:'Uzun süreli seviye hızlandırma'},
+     {ic:'🛍️', t:'Mağazada %10 indirim', f:'30 gün boyunca tüm alımlarda geçerli'},
+     {ic:'🎡', t:'Günlük çark 2× ödül', f:'Her gün çift kazanç'},
+     {ic:'🍎', t:'Ekstra kozmo besleme', f:'Günlük besleme limitiniz +2'},
+     {ic:'🥜', t:'30 gün · günlük 300 Kaju', f:'Her gün otomatik bonus'},
+     {ic:'👑', t:'Altın "VIP" Rozeti', f:'Profil ve sohbette özel rozet'},
+     {ic:'⚡', t:'2× XP Boost · 3 gün', f:'Seviye hızlandırma'},
    ],
-   grants:[{type:'vip',days:30,daily:600},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
+   grants:[{type:'vip',days:30,daily:300},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
 ];
 
 export const SHOP_ITEMS={
@@ -168,6 +171,7 @@ export async function openShop(){
       +'<div class="shop-kaju-badge">🥜 '+fmt(pl.kaju)+' Kaju</div>'
       +'<button class="clan-x" id="shopClose">✕</button>'
     +'</div>'
+    +(Store.isVip && Store.isVip() ? '<div class="shop-vip-banner">👑 VIP aktif · Tüm alımlarda <b>%10 indirim</b> · '+(Store.vipDaysLeft?Store.vipDaysLeft():0)+' gün kaldı</div>' : '')
     +'<div class="shop-tabs" id="shopTabs"></div>'
     +'<div class="clan-body" id="shopBody"></div>';
   ov.appendChild(panel); document.body.appendChild(ov);
@@ -280,6 +284,10 @@ function _injectShopCSS(){
     .shop-bundle-active{ width:100%; padding:13px; border-radius:13px; text-align:center; font-size:13px; font-weight:900;
       color:#ffd54f; background:linear-gradient(135deg,rgba(255,215,64,.18),rgba(240,165,0,.08));
       border:1px solid rgba(255,215,64,.4); letter-spacing:.3px; }
+    .shop-vip-banner{ margin:8px 12px 0; padding:9px 12px; border-radius:11px; font-size:11.5px; text-align:center;
+      color:#ffe082; background:linear-gradient(135deg,rgba(255,215,64,.16),rgba(240,165,0,.07));
+      border:1px solid rgba(255,215,64,.35); font-weight:700; }
+    .shop-vip-banner b{ color:#fff3c4; }
 
     .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
       background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
@@ -461,10 +469,15 @@ function renderShop(){
 
 async function buyItem(item){
   const pl=Store.getState?Store.getState():{};
-  if((pl.kaju||0)<item.price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(item.price));return;}
-  if(!confirm(item.icon+' "'+item.name+'" → '+fmt(item.price)+' Kaju harcanacak. Satın al?'))return;
+  const price = (Store.vipPrice ? Store.vipPrice(item.price) : item.price);
+  const vipSave = item.price - price;
+  if((pl.kaju||0)<price){_toast('🥜 Yetersiz Kaju! Gerekli: '+fmt(price));return;}
+  const cMsg = vipSave>0
+    ? item.icon+' "'+item.name+'" → '+fmt(price)+' Kaju (👑 VIP indirimi -'+fmt(vipSave)+'). Satın al?'
+    : item.icon+' "'+item.name+'" → '+fmt(price)+' Kaju harcanacak. Satın al?';
+  if(!confirm(cMsg))return;
   try{
-    await Store.addKaju(-item.price,'shop',item.id);
+    await Store.addKaju(-price,'shop',item.id);
     const st=Auth.getState();
     await fdb.update(fdb.ref(db,'shopInventory/'+st.uid+'/ownedItems'),{[item.id]:true});
     _inv[item.id]=true;

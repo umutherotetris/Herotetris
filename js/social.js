@@ -319,11 +319,15 @@ function _showGameInvitePicker(targetUid, targetNick){
     btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
     // 6 haneli buluşma kodu üret (davet eden host, davet edilen guest)
     const code = _genInviteCode();
+    // Kelimecik için davet edenin dili (TR/EN) — davet edilen ona göre kabul eder
+    let klLang = '';
+    if(game === 'kelime'){ try{ klLang = localStorage.getItem('hero_kelime_lang') || 'tr'; }catch(e){ klLang='tr'; } }
+    const langTag = (game==='kelime') ? (klLang==='en' ? ' 🇬🇧 (English)' : ' 🇹🇷 (Türkçe)') : '';
     try{
       await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
         type:'challenge', icon:'⚔️',
-        text: (me.displayName || 'Biri') + ' seni ' + g.name + ' oynamaya davet ediyor! Kabul etmek için dokun.',
-        ts: Date.now(), fromUid: me.uid, game, inviteCode: code
+        text: (me.displayName || 'Biri') + ' seni ' + g.name + langTag + ' oynamaya davet ediyor! Kabul etmek için dokun.',
+        ts: Date.now(), fromUid: me.uid, game, inviteCode: code, lang: klLang
       });
       try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi'); }catch(e){}
       btn.textContent = '✓ Davet gönderildi';
@@ -1425,7 +1429,7 @@ function renderNotifCard(n){
   // Arkadaşlık isteği → Kabul / Red butonları
   const isFriendReq = (n.type === 'friendreq' && n.reqFrom);
   // Oyun daveti → Kabul butonu (inviteCode'lu satranç/tavla/tetris; kelime ayrı akış)
-  const isGameInvite = (n.type === 'challenge' && n.inviteCode && n.game && n.game !== 'kelime');
+  const isGameInvite = (n.type === 'challenge' && n.inviteCode && n.game);
   let reqBtns = '';
   if(isFriendReq){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
@@ -1434,7 +1438,7 @@ function renderNotifCard(n){
        </div>`;
   } else if(isGameInvite){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
-         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
+         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
        </div>`;
   }
   return `<div class="ghp-notif-row" ${fromAttr}>
@@ -1489,7 +1493,9 @@ function renderNotifPane(){
   // Oyun daveti Kabul → oyunu guest olarak aç
   list.querySelectorAll('[data-giaccept]').forEach(el => el.addEventListener('click', async (e) => {
     e.stopPropagation();
-    const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey;
+    const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey, lang = el.dataset.gilang;
+    // Kelimecik: davet edenin dilini uygula (TR/EN aynı olmalı)
+    if(game === 'kelime' && lang){ try{ localStorage.setItem('hero_kelime_lang', lang); }catch(e){} }
     // Bildirimi sil
     const me = Auth.getState();
     if(key && me.uid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null); }catch(e){} }

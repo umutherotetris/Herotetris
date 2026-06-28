@@ -101,6 +101,7 @@ function hydrate(state){
   player.inventory = p.inventory || {};      // {itemId: adet}
   player.boosts = p.boosts || {};            // {boostKey: {until:ts, mult:val}}
   player.cosmetics = p.cosmetics || {};      // {nickEffect, chatTheme, nameColor, title...}
+  player.purchasedOnce = p.purchasedOnce || {};   // tek seferlik paketler { bundleId: true }
   player.kajuToday = loadKajuToday();
   player.ready   = true;
   _pruneExpiredBoosts();
@@ -112,6 +113,28 @@ function hydrate(state){
 }
 
 // 👑 VIP günlük Kaju dağıtımı
+// ── VIP durumu (merkezi — tüm sistemler buradan okur) ──
+function _readVip(){
+  try{
+    if(!player.cosmetics || !player.cosmetics.vip) return null;
+    const v = typeof player.cosmetics.vip === 'string' ? JSON.parse(player.cosmetics.vip) : player.cosmetics.vip;
+    if(v && v.until && Date.now() < v.until) return v;
+  }catch(e){}
+  return null;
+}
+export function isVip(){ return !!_readVip(); }
+export function vipDaysLeft(){
+  const v = _readVip();
+  if(!v) return 0;
+  return Math.ceil((v.until - Date.now())/86400000);
+}
+// VIP indirim oranı (mağaza fiyatlarına uygulanır)
+export const VIP_DISCOUNT = 0.10;   // %10
+export function vipPrice(basePrice){
+  if(isVip()) return Math.ceil(basePrice * (1 - VIP_DISCOUNT));
+  return basePrice;
+}
+
 async function _claimVipDaily(){
   try{
     if(!player.uid || !player.cosmetics || !player.cosmetics.vip) return;
@@ -333,6 +356,14 @@ export async function setCosmetic(key, value){
   return true;
 }
 export function getCosmetic(key){ return player.cosmetics && player.cosmetics[key]; }
+export async function markPurchasedOnce(bundleId){
+  if(!player.uid) return;
+  player.purchasedOnce = player.purchasedOnce || {};
+  player.purchasedOnce[bundleId] = true;
+  emit();
+  try{ await update(ref(db, 'users/' + player.uid + '/purchasedOnce'), { [bundleId]: true }); }catch(e){ console.warn('[store] markPurchasedOnce', e); }
+}
+export function hasPurchasedOnce(bundleId){ return !!(player.purchasedOnce && player.purchasedOnce[bundleId]); }
 export function getCosmetics(){ return Object.assign({}, player.cosmetics||{}); }
 
 
@@ -531,5 +562,5 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent };
+export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT };
 export default Store;

@@ -743,11 +743,12 @@ async function renderKozmos(st,box){
         e.stopPropagation();
         const todayKey='htu_feed_'+k+'_'+new Date().toDateString();
         const fedToday=parseInt(localStorage.getItem(todayKey)||'0');
-        // Gunluk 3 ucretsiz besleme dolduysa: Besin Paketi ogesi varsa onunla besle
+        const feedLimit=(Store.isVip&&Store.isVip())?5:3;   // VIP: +2 ekstra besleme
+        // Gunluk besleme dolduysa: Besin Paketi ogesi varsa onunla besle
         let usedItem=false;
-        if(fedToday>=3){
+        if(fedToday>=feedLimit){
           const foodCount=(Store.getItemCount&&(Store.getItemCount('item_food10')+Store.getItemCount('item_food50')))||0;
-          if(foodCount<=0){_toast('Bugun 3 kez besledin. Magazadan 🍎 Besin alarak devam edebilirsin!');return;}
+          if(foodCount<=0){_toast('Bugun '+feedLimit+' kez besledin. Magazadan 🍎 Besin alarak devam edebilirsin!');return;}
           // Besin ogesini kullan (once 10luk, yoksa 50lik)
           if(Store.getItemCount('item_food10')>0){ await Store.useItem('item_food10'); }
           else if(Store.getItemCount('item_food50')>0){ await Store.useItem('item_food50'); }
@@ -975,12 +976,13 @@ function showEggModal(eggId,egg,phase,st,box){
   bFeed.addEventListener('click',async()=>{
     const tk='htu_feed_'+eggId+'_'+new Date().toDateString();
     const fd=parseInt(localStorage.getItem(tk)||'0');
-    if(fd>=3){_toast('Bugün 3 kez besledin!');return;}
+    const fLim=(Store.isVip&&Store.isVip())?5:3;
+    if(fd>=fLim){_toast('Bugün '+fLim+' kez besledin!'+((Store.isVip&&Store.isVip())?'':' 👑 VIP ile +2 hak!'));return;}
     try{await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId+'/feedCount'),c=>(c||0)+1);localStorage.setItem(tk,String(fd+1));feedAnim();ov.remove();await renderKozmos(st,box);}catch(e){}
   });
   acts.appendChild(bFeed);
   if(phase>=11){
-    const bH=document.createElement('button'); bH.className='nm-btn nm-ok'; bH.style.background='linear-gradient(135deg,rgba(251,191,36,.2),rgba(251,191,36,.08))'; bH.style.color='#fbbf24'; bH.style.borderColor='rgba(251,191,36,.35)'; bH.textContent='🎊 DOĞURT!';
+    const bH=document.createElement('button'); bH.className='nm-btn nm-ok'; bH.style.background='linear-gradient(135deg,rgba(251,191,36,.2),rgba(251,191,36,.08))'; bH.style.color='#fbbf24'; bH.style.borderColor='rgba(251,191,36,.35)'; bH.textContent='🎊 ÇIKAR!';
     bH.addEventListener('click',async()=>{ov.remove();await hatchEgg(eggId,egg,st,box);});
     acts.appendChild(bH);
   }
