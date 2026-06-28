@@ -2,7 +2,7 @@
    Hero Oyun Portalı — Service Worker (PWA)
    Önbellek + Push bildirim desteği
    ═══════════════════════════════════════════════════════════════ */
-const CACHE_NAME = 'hero-portal-v97';
+const CACHE_NAME = 'hero-portal-v98';
 const CORE_ASSETS = [
   './index.html',
   './manifest.json',
