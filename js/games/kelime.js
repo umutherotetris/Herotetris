@@ -708,15 +708,18 @@ function startOnline(role, gameId, oppName, seed, opts){
     // ── SÜRDÜRME: oda durumundan yükle ──
     const room = opts.room;
     let board; try{ board = JSON.parse(room.boardStr); }catch(e){ board = Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)); }
-    G.state = { board, scores: room.scores||{A:0,B:0}, turn: room.turn||'A', bagPointer: room.bagPointer!=null?room.bagPointer:14, passStreak: room.passStreak||0 };
+    G.state = { board, scores: room.scores||{A:0,B:0}, turn: room.turn||'A', bagPointer: room.bagPointer!=null?room.bagPointer:14, passStreak: room.passStreak||0, racks: (room.racks ? {A: room.racks.A||null, B: room.racks.B||null} : {A:null,B:null}) };
     const myRack = room.racks && room.racks[role];
     G.rackView = Array.isArray(myRack)
       ? myRack.map(t=>({letter:t.letter,points:t.points,joker:t.joker}))
       : G.bag.slice(role==='A'?0:RACK_SIZE, (role==='A'?0:RACK_SIZE)+RACK_SIZE).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
+    // racks[role] benim güncel rafım olsun (resume sonrası exchange için gerekli)
+    G.state.racks[role] = G.rackView.slice();
   } else {
     const start = role === 'A' ? 0 : RACK_SIZE;     // A → [0..6], B → [7..13]
     G.rackView = G.bag.slice(start, start+RACK_SIZE).map(t=>({letter:t.letter, points:t.points, joker:t.joker}));
-    G.state = { board: Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)), scores:{A:0,B:0}, turn:'A', bagPointer:14, passStreak:0 };
+    G.state = { board: Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)), scores:{A:0,B:0}, turn:'A', bagPointer:14, passStreak:0, racks:{A:null,B:null} };
+    G.state.racks[role] = G.rackView.slice();
     if(G.async && KO && KO.saveRack) KO.saveRack(G.rackView);   // sürdürme için rafımı kaydet
   }
   G.who = role;
@@ -1848,6 +1851,10 @@ function toggleExchangeMode(){
 function exitExchangeMode(){ G.exchangeMode=false; G.exchangeSel=null; updateExchangeBtn(); renderRack(); }
 
 function performExchange(idxs){
+  // Çift tetikleme kilidi — buton hızlı/çoklu basımda harf birden fazla değişmesin
+  if(G._exchanging) return;
+  G._exchanging = true;
+  setTimeout(()=>{ G._exchanging = false; }, 1200);
   const removed = idxs.map(i=>G.rackView[i]);
   G.rackView = G.rackView.filter((_,i)=>!idxs.includes(i));
   if(G.online){
@@ -1856,6 +1863,7 @@ function performExchange(idxs){
     const fresh = G.bag.slice(G.state.bagPointer, G.state.bagPointer+need).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
     G.state.bagPointer += fresh.length;
     G.rackView = G.rackView.concat(fresh);
+    if(!G.state.racks) G.state.racks = {A:null,B:null};   // güvenlik: racks yoksa oluştur
     G.state.racks[G.role] = G.rackView.slice();
     G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
     G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
@@ -1873,6 +1881,7 @@ function performExchange(idxs){
   // çıkarılanları torbaya geri at + karıştır
   for(const t of removed) G.state.bag.unshift(t);
   for(let i=G.state.bag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [G.state.bag[i],G.state.bag[j]]=[G.state.bag[j],G.state.bag[i]]; }
+  if(!G.state.racks) G.state.racks = {A:null,B:null};
   G.state.racks[G.who]=G.rackView.slice();
   G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
   G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
