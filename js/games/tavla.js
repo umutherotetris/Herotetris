@@ -435,6 +435,8 @@ function startGame(root, mode, opts){
 function restart(){
   if(G.online) return;   // çevrimiçi oyunda tek taraflı sıfırlama yok
   clearAIGame();   // yeni oyun → kayıt sil
+  // Devam eden animasyonları durdur (yenilemede frame çökmesini önler)
+  G.movingChecker = null; G.hitChecker = null; G.hideAt = null;
   G.state = newGame();
   const open = openingRoll();
   G.state.turn = open.first; G.openingDice = open.dice;
@@ -2567,7 +2569,8 @@ function animateMove(mv, onDone){
     G.hideAt = to;                                         // statik kopyayı gizle
   }
   function frame(now){
-    if(!G){ return; }
+    // G veya hareket eden taş yoksa (yenile/reset olmuş) animasyonu güvenle durdur
+    if(!G || !G.movingChecker){ return; }
     const p = Math.min(1, (now - t0) / dur);
     const e = easeOutCubic(p);
     G.movingChecker.x = start.x + (end.x - start.x) * e;

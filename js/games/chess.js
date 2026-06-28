@@ -671,7 +671,8 @@ function startGame(root, mode, opts){
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => {
     G.state = newGame();
-  // Portal HUD enjekte et (her oyun modunda)
+  // Portal HUD enjekte et (her oyun modunda) — eski HUD hud.js içinde otomatik temizlenir
+  try{ if(G.root){ G.root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove()); } }catch(e){}
   try{
     const oppNm = G.oppName || (G.mode==='ai'?'Yapay Zekâ':'Rakip');
     const oppUid = G.oppUid || null;
