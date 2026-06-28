@@ -6,6 +6,16 @@ import { Store } from './store.js';
 
 
 // Hafif toast helper (alert yerine)
+// Firebase undefined kabul etmez — objeyi recursive temizle
+function _noUndef(obj){
+  if(Array.isArray(obj)) return obj.map(_noUndef).filter(v=>v!==undefined);
+  if(obj && typeof obj==='object'){
+    const out={};
+    for(const k in obj){ const v=_noUndef(obj[k]); if(v!==undefined) out[k]=v; }
+    return out;
+  }
+  return obj;
+}
 function _toast(msg, isErr){
   try{ if(window.Hero && window.Hero.toast){ window.Hero.toast(msg, !!isErr); return; } }catch(e){}
   try{ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;background:'+(isErr?'rgba(200,50,50,.95)':'rgba(20,28,50,.95)')+';color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center'; document.body.appendChild(t); setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800); }catch(e){ console.log(msg); }
@@ -631,12 +641,12 @@ export async function sendEgg(toUid,toName){
     try{await Store.addKaju(-50,'kozmo','egg_send');}catch(e){return;}
   }
   try{
-    await fdb.set(fdb.ref(db,'kozmoPending/'+toUid+'/'+st.uid),{
+    await fdb.set(fdb.ref(db,'kozmoPending/'+toUid+'/'+st.uid),_noUndef({
       fromUid:st.uid,fromName:st.displayName||'Oyuncu',
       fromAvatar:(st.profile&&st.profile.avatar)||'👤',
       toUid,toName:toName||'Oyuncu',
       sentAt:Date.now(),seed:Math.floor(Date.now()/1000)%997,status:'pending'
-    });
+    }));
     try{localStorage.setItem(todayKey,String(sentToday+1));}catch(e){}
     // Alıcıya bildirim
     try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{type:'gift_kozmo',icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi! Kozmos panelinden kabul et.',ts:Date.now(),fromUid:st.uid});}catch(e){}
@@ -695,7 +705,7 @@ async function renderKozmos(st,box){
         ev.target.disabled=true; ev.target.textContent='⏳';
         const id='egg_'+Date.now()+'_'+uid.slice(0,6);
         try{
-          await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+id),{...e,acceptedAt:Date.now(),feedCount:0,ownerId:st.uid});
+          await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+id),_noUndef({...e,acceptedAt:Date.now(),feedCount:0,ownerId:st.uid}));
           await fdb.set(fdb.ref(db,'kozmoPending/'+st.uid+'/'+uid),null);
           feedAnim(); await renderKozmos(st,box);
         }catch(err){_toast('Kabul edilemedi');}
@@ -838,10 +848,22 @@ async function hatchEgg(eggId,egg,st,box){
   try{
     const t=randomType(egg.seed||0,egg.minRarity);
     const creId='cre_'+Date.now()+'_'+eggId.slice(0,6);
-    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),{
-      typeKey:t.key, name:t.n, fromUid:egg.fromUid, fromName:egg.fromName||'?',
-      bornAt:Date.now(), sentAt:egg.sentAt, level:1, xp:0,
-    });
+    // Firebase undefined kabul etmez — tüm alanları güvene al (mağaza/çark yumurtalarında fromUid/sentAt olmayabilir)
+    const creature = {
+      typeKey: t.key || 'unknown',
+      name: t.n || 'Kozmo',
+      fromUid: egg.fromUid || st.uid,        // gönderen yoksa sahibi
+      fromName: egg.fromName || 'Mağaza',
+      bornAt: Date.now(),
+      sentAt: egg.sentAt || egg.acceptedAt || Date.now(),
+      level: 1, xp: 0,
+    };
+    // Benzersiz/değerli yumurta alanlarını da taşı (varsa)
+    if(egg.unique) creature.unique = true;
+    if(egg.kind) creature.kind = egg.kind;
+    if(egg.uniqueId) creature.uniqueId = egg.uniqueId;
+    if(t.r) creature.rarity = t.r;
+    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId), _noUndef(creature));
     await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
     feedAnim(); sfxChirp();
     await renderKozmos(st,box);
@@ -950,7 +972,7 @@ async function showFusionAnimation(c1,c2,resultType,st,box){
       // Önce ebeveynleri sil, sonra yeni yaratığı ekle (atomik benzeri)
       await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c1._id),null);
       await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c2._id),null);
-      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),newCre);
+      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),_noUndef(newCre));
     }catch(e){ console.warn('[fusion]',e); }
     feedAnim();
     await renderKozmos(st,box);
