@@ -707,9 +707,10 @@ function startOnlineHeartbeat(){
   if(!G || !G.online || G.async) return;
   G._hb = setInterval(()=>{
     if(!G || !G.online || G._over){ stopOnlineHeartbeat(); return; }
-    if(document.hidden) return;            // arka plandayken (donmuş) yazma
+    // Kalp atışını arka planda da yaz (mobilde ekran kilidi/sekme değişimi rakibi düşürmesin)
     if(KO && KO.heartbeat) KO.heartbeat();
-    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 55000)){   // ~55 sn sessizlik → ayrıldı
+    // Sessizlik eşiği 3 dakika — kelime oyununda uzun düşünme normaldir, kısa kopmalar oyunu bitirmesin
+    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){   // ~180 sn (3 dk) sessizlik → gerçekten ayrılmış
       onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉');
     }
   }, 8000);
@@ -1072,31 +1073,30 @@ function renderScores(){
   const ct = currentTurn();
   q('[data-el="scoreA"]').classList.toggle('active', ct==='A');
   q('[data-el="scoreB"]').classList.toggle('active', ct==='B');
-  // XP + Level (kendi profilimizden)
+  // XP + Level — A ve B koltuklarına ROLE GÖRE doğru kişinin verisini yaz
   try{
     const _ps = window.Hero&&window.Hero.Store&&window.Hero.Store.getState&&window.Hero.Store.getState();
-    if(_ps){
-      const lv=_ps.level||1, xp=_ps.xp||0, need=300+lv*200;
-      const pct=Math.min(100,Math.round(xp/need*100));
-      const lvEl=q('[data-el="lvA"]'); if(lvEl) lvEl.textContent='LV.'+lv;
-      const xpEl=q('[data-el="xpA"]'); if(xpEl) xpEl.style.width=pct+'%';
-    }
-    // UID'leri data-pcuid'ye set et — ROLE GÖRE doğru eşleştir
-    // names.A "Sen" mi rakip mi? G.who (rolüm) belirler:
-    //   - Ben A isem: nameA=ben, nameB=rakip
-    //   - Ben B isem: nameA=rakip, nameB=ben
-    const nmA=q('[data-el="nameA"]'); const nmB=q('[data-el="nameB"]');
-    const _as=window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
+    const _as = window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
     const myUid = (_as&&_as.uid)||null;
-    const myRole = G.who || G.role || 'A';   // benim rolüm
-    // A koltuğundaki kişinin UID'i
+    const myRole = G.online ? (G.role||'A') : 'A';   // online'da gerçek rolüm; local'de A=ben
+    const myLv = (_ps&&_ps.level)||1, myXp=(_ps&&_ps.xp)||0;
+    const oppLv = G.oppLevel||1, oppXp=G.oppXP||0;
+    const lvFill=(el,xel,lv,xp)=>{ const need=300+lv*200; const pct=Math.min(100,Math.round(xp/need*100));
+      if(el) el.textContent='LV.'+lv; if(xel) xel.style.width=pct+'%'; };
+    // A koltuğu: ben A isem benim verim, değilsem rakibin
+    if(myRole==='A'){
+      lvFill(q('[data-el="lvA"]'), q('[data-el="xpA"]'), myLv, myXp);
+      lvFill(q('[data-el="lvB"]'), q('[data-el="xpB"]'), oppLv, oppXp);
+    } else {
+      lvFill(q('[data-el="lvA"]'), q('[data-el="xpA"]'), oppLv, oppXp);
+      lvFill(q('[data-el="lvB"]'), q('[data-el="xpB"]'), myLv, myXp);
+    }
+    // UID'leri data-pcuid'ye set et — ROLE GÖRE
+    const nmA=q('[data-el="nameA"]'); const nmB=q('[data-el="nameB"]');
     const uidA = (myRole==='A') ? myUid : (G.oppUid||null);
     const uidB = (myRole==='B') ? myUid : (G.oppUid||null);
     if(nmA && uidA) nmA.dataset.pcuid = uidA;
     if(nmB && uidB) nmB.dataset.pcuid = uidB;
-    // Rakip level (varsa)
-    if(G.oppLevel){ const lvB=q('[data-el="lvB"]'); if(lvB) lvB.textContent='LV.'+(G.oppLevel||1); }
-    if(G.oppXP&&G.oppLevel){ const xpB=q('[data-el="xpB"]'); if(xpB){ const pctB=Math.min(100,Math.round((G.oppXP||0)/(300+(G.oppLevel||1)*200)*100)); xpB.style.width=pctB+'%'; } }
   }catch(e){}
   const starEl = q('[data-el="stars"]');
   if(starEl){
