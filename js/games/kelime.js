@@ -537,7 +537,7 @@ function showOnlineOptions(){
           <div class="kl-mode" data-on="live"><span class="e">⚡</span><div>Anlık<small>Gerçek zamanlı, aynı anda</small></div></div>
           <div class="kl-mode" data-on="12"><span class="e">⏳</span><div>Süreli · 12 saat<small>Hamle başına 12 saat süre</small></div></div>
           <div class="kl-mode" data-on="72"><span class="e">⏳</span><div>Süreli · 72 saat<small>Hamle başına 72 saat süre</small></div></div>
-          <div class="kl-mode" data-on="mygames"><span class="e">📂</span><div>Devam eden oyunlarım<small>Süreli oyunlarına dön</small></div></div>
+          <div class="kl-mode" data-on="mygames"><span class="e">📂</span><div>Devam eden oyunlarım<small>Yarım kalan maçlara dön</small></div></div>
         </div>
         <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
       </div>
@@ -565,17 +565,27 @@ async function showMyGames(){
   const rows = games.length ? games.map((g,i)=>{
     const mine = g.scores[g.myRole], opp = g.scores[g.myRole==='A'?'B':'A'];
     let badge, act;
+    const isLive = g.mode === 'live';
+    const langTag = g.lang==='en' ? ' 🇬🇧' : ' 🇹🇷';
     if(g.over){ badge = `<small>Bitti · ${mine}-${opp}</small>`; act='view'; }
-    else if(g.myTurn){ badge = `<small style="color:#6cff9a">▶ Sıra sende · ${mine}-${opp}</small>`; act='play'; }
+    else if(isLive){
+      // Canlı maç: süre yok, sadece skor + sıra bilgisi
+      badge = g.myTurn
+        ? `<small style="color:#6cff9a">▶ Sıra sende · ${mine}-${opp}${langTag}</small>`
+        : `<small style="color:#bba8df">Rakipte · ${mine}-${opp}${langTag}</small>`;
+      act = 'play';   // canlı maçta her zaman geri dönülebilir
+    }
+    else if(g.myTurn){ badge = `<small style="color:#6cff9a">▶ Sıra sende · ${mine}-${opp}${langTag}</small>`; act='play'; }
     else {
       const over = g.deadline && now > g.deadline;
       badge = over
         ? `<small style="color:#ff8fae">Rakibin süresi doldu · galibiyet alabilirsin</small>`
-        : `<small style="color:#bba8df">Rakipte · kalan ${fmtRemain((g.deadline||0)-now)} · ${mine}-${opp}</small>`;
+        : `<small style="color:#bba8df">Rakipte · kalan ${fmtRemain((g.deadline||0)-now)} · ${mine}-${opp}${langTag}</small>`;
       act = over ? 'claim' : 'view';
     }
-    return `<div class="kl-mode" data-i="${i}" data-act="${act}"><span class="e">${g.over?'🏁':(g.myTurn?'⚔️':'⌛')}</span><div>${esc(g.opp)}${badge}</div></div>`;
-  }).join('') : `<div style="font-size:12px;color:#8a7aae">Devam eden süreli oyunun yok.</div>`;
+    const icon = g.over?'🏁':(isLive?'🔴':(g.myTurn?'⚔️':'⌛'));
+    return `<div class="kl-mode" data-i="${i}" data-act="${act}"><span class="e">${icon}</span><div>${esc(g.opp)}${badge}</div></div>`;
+  }).join('') : `<div style="font-size:12px;color:#8a7aae">Devam eden oyunun yok. Yeni bir maç başlat! 🎮</div>`;
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
       <h3>📂 Devam Eden Oyunlarım</h3>
       <div class="kl-modes" data-el="mglist">${rows}</div>
@@ -591,7 +601,7 @@ async function showMyGames(){
       } else {
         KO.resumeGame(g.gameId, {
           onError:(m)=>flashCard('Açılamadı', m),
-          onResumed:({role,gameId,oppName,oppUid,seed,room})=>startOnline(role,gameId,oppName,seed,{async:true,turnHours:room.turnHours,room,oppUid})
+          onResumed:(d)=>startOnline(d.role,d.gameId,d.oppName,d.seed,{async:d.async,turnHours:d.turnHours,room:d.room,oppUid:d.oppUid,lang:d.lang})
         });
       }
     });
@@ -873,7 +883,7 @@ function onlineGameOver(msg, verdictOverride){
   if(G._over) return; G._over = true;
   if(G._oppGrace){ clearTimeout(G._oppGrace); G._oppGrace = null; }
   stopOnlineHeartbeat();
-  try{ if(KO) KO.leaveRoom(); }catch(e){}
+  try{ if(KO && KO.markGameOver) KO.markGameOver(); else if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
   const verdict = verdictOverride || (mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔'));

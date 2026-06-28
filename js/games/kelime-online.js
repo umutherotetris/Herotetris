@@ -98,7 +98,8 @@ export async function findMatch(cb, opts){
     await fdb.update(roomRef, upd);
     const isAsync = room.mode === 'async';
     if(!isAsync){ try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/B`)).set(false); }catch(e){} }
-    if(isAsync){ await indexBothGames(gameId, myUid, room.players.A, myName, room.names && room.names.A, room.mode, room.turnHours); }
+    // Async VE canlı maçları indeksle (kaldığın yerden devam için)
+    await indexBothGames(gameId, myUid, room.players.A, myName, room.names && room.names.A, room.mode || 'live', room.turnHours);
     S = { gameId, role:'B', roomRef, myUid, oppUid: room.players.A, async:isAsync };
     cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', oppUid: room.players.A, seed: room.seed, async:isAsync, turnHours:room.turnHours });
   } else {
@@ -116,7 +117,7 @@ export async function findMatch(cb, opts){
         S.waiting = false; S.oppUid = room.players.B;
         try{ off(); }catch(e){}
         clearQueueIfMine(myUid, QP);
-        if(async) indexBothGames(gameId, myUid, room.players.B, myName, room.names && room.names.B, 'async', turnHours);
+        indexBothGames(gameId, myUid, room.players.B, myName, room.names && room.names.B, async?'async':'live', turnHours);
         cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', oppUid: room.players.B, seed: room.seed, async, turnHours });
       }
     });
@@ -145,11 +146,18 @@ export async function listMyGames(){
       const room = rs.val();
       const myRole = (room.players && room.players.A === st.uid) ? 'A' : 'B';
       const over = room.status === 'over';
+      // Bitmiş maçları indeksten temizle (listede gösterme)
+      if(over){ fdb.remove(fdb.ref(db, `${MYGAMES}/${st.uid}/${gameId}`)).catch(()=>{}); continue; }
+      // Henüz rakip bağlanmamış (B yok) → atla
+      if(!room.players || !room.players.B){ continue; }
+      const mode = idx[gameId].mode || room.mode || 'live';
       out.push({
         gameId, opp: idx[gameId].opp, myRole,
-        myTurn: !over && room.turn === myRole,
+        myTurn: room.turn === myRole,
         deadline: room.deadline || 0, turnHours: room.turnHours || idx[gameId].turnHours,
-        scores: room.scores || {A:0,B:0}, over, status: room.status
+        scores: room.scores || {A:0,B:0}, over, status: room.status,
+        mode, lang: room.lang || 'tr',
+        ts: idx[gameId].ts || 0
       });
     }catch(e){}
   }
@@ -166,8 +174,19 @@ export async function resumeGame(gameId, cb){
   catch(e){ cb.onError && cb.onError('Oyun yüklenemedi'); return; }
   const role = (room.players && room.players.A === st.uid) ? 'A' : 'B';
   const oppUid = role==='A' ? (room.players.B) : (room.players.A);
-  S = { gameId, role, roomRef, myUid: st.uid, oppUid, async:true };
-  cb.onResumed && cb.onResumed({ role, gameId, oppName: (room.names && room.names[role==='A'?'B':'A']) || 'Rakip', seed: room.seed, room });
+  const isAsync = room.mode === 'async';
+  S = { gameId, role, roomRef, myUid: st.uid, oppUid, async:isAsync };
+  // Canlı maç: presence'ı geri kur (geri döndüm) + disconnect izle
+  if(!isAsync){
+    try{ await fdb.update(roomRef, { ['presence/'+role]: true }); }catch(e){}
+    try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/${role}`)).set(false); }catch(e){}
+  }
+  cb.onResumed && cb.onResumed({
+    role, gameId,
+    oppName: (room.names && room.names[role==='A'?'B':'A']) || 'Rakip',
+    oppUid, seed: room.seed, room, async:isAsync,
+    turnHours: room.turnHours || 0, lang: room.lang || 'tr'
+  });
 }
 
 // Rakibin süresi dolduysa galibiyet talep et
@@ -242,6 +261,15 @@ export async function leaveRoom(){
   try{ if(S._offRoom) S._offRoom(); }catch(e){}
   if(!S.async){ try{ await fdb.update(S.roomRef, { ['presence/'+S.role]: false }); }catch(e){} }
   S = null;
+}
+
+// Maç bitti — her iki oyuncunun MYGAMES indeksinden sil (devam listesinde görünmesin)
+export async function markGameOver(){
+  if(!S) return;
+  try{ if(S.myUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${S.myUid}/${S.gameId}`)); }catch(e){}
+  try{ if(S.oppUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${S.oppUid}/${S.gameId}`)); }catch(e){}
+  // Odayı da bitti olarak işaretle (karşı tarafın listMyGames'i de temizlesin)
+  try{ await fdb.update(S.roomRef, { status:'over' }); }catch(e){}
 }
 
 // Uygulama/sekme öne gelince varlığı (presence) yeniden yaz + onDisconnect'i tazele.
