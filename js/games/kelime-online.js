@@ -300,8 +300,24 @@ export async function listFriends(){
   try{
     const snap = await fdb.get(fdb.ref(db, `friends/${st.uid}`));
     if(!snap.exists()) return [];
-    const v = snap.val(); const out=[];
-    for(const fuid in v){ const f=v[fuid]; if(f===false) continue; out.push({ uid:fuid, name:(f&&f.name)|| (typeof f==='string'?f:null) || ('Arkadaş') }); }
+    const v = snap.val();
+    const fuids = Object.keys(v).filter(fuid => v[fuid] !== false);
+    // Her arkadaşın GÜNCEL profilini users/{uid}'den çek (nick + avatar + level)
+    const out = await Promise.all(fuids.map(async fuid => {
+      const f = v[fuid];
+      let name = (f && f.name) || (typeof f === 'string' ? f : null);
+      let avatar = '🧑', level = 1;
+      try{
+        const uSnap = await fdb.get(fdb.ref(db, 'users/' + fuid));
+        if(uSnap.exists()){
+          const u = uSnap.val() || {};
+          name = u.nick || u.name || u.displayName || name || 'Oyuncu';
+          avatar = u.avatar || avatar;
+          level = u.level || 1;
+        }
+      }catch(e){}
+      return { uid: fuid, name: name || 'Oyuncu', avatar, level };
+    }));
     return out;
   }catch(e){ return []; }
 }

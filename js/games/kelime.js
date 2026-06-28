@@ -171,6 +171,12 @@ function injectStyles(){
 .kl-langbtn.active{background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(168,85,247,.4)}
 .kl-modes{display:flex;flex-direction:column;gap:9px}
 .kl-mode{padding:14px;border-radius:13px;border:1px solid rgba(200,170,255,.2);background:rgba(168,85,247,.08);cursor:pointer;font-weight:700;text-align:left;display:flex;align-items:center;gap:11px;transition:.15s}
+.kl-friend{padding:11px 13px}
+.kl-friend-ava{font-size:26px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(168,85,247,.15);border-radius:50%;flex-shrink:0}
+.kl-friend-info{flex:1;min-width:0}
+.kl-friend-nm{font-size:14px;font-weight:800;color:#e9d5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kl-friend-lv{font-size:10px;color:#bba8df;font-weight:600;margin-top:1px}
+.kl-friend-go{font-size:17px;opacity:.7;flex-shrink:0}
 .kl-mode:active{transform:scale(.98);background:rgba(168,85,247,.16)}
 .kl-mode .e{font-size:23px}
 .kl-mode.soon{opacity:.45}
@@ -597,7 +603,7 @@ async function showInviteScreen(){
   catch(e){ flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); return; }
   let friends = []; try{ friends = await KO.listFriends(); }catch(e){}
   const friendsHtml = friends.length
-    ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 Arkadaşların</div>${friends.map(f=>`<div class="kl-mode" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="e">🧑</span><div>${esc(f.name)}<small>Meydan oku</small></div></div>`).join('')}</div>`
+    ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 ${klT('invite')==='Invite a Friend'?'Your Friends':'Arkadaşların'}</div>${friends.map(f=>`<div class="kl-mode kl-friend" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="kl-friend-ava">${esc(f.avatar||'🧑')}</span><div class="kl-friend-info"><div class="kl-friend-nm">${esc(f.name)}</div><div class="kl-friend-lv">LV ${f.level||1} · ${klT('invite')==='Invite a Friend'?'Challenge':'Meydan oku'}</div></div><span class="kl-friend-go">⚔️</span></div>`).join('')}</div>`
     : '';
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
       <h3>📨 Arkadaşını Davet Et</h3>
