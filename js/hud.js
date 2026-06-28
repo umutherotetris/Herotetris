@@ -155,9 +155,12 @@ export async function createVsHUD(opts={}){
       + `</div>`
     + playerRowHTML(opp, false, oppAcc, opts.oppScore ? opts.oppScore() : 0);
 
-  // Enjekte et
+  // Enjekte et — önce eski HUD'u temizle (yenile/restart'ta yığılmasın)
   const root = opts.root;
-  if(root) root.insertBefore(wrap, root.firstChild);
+  if(root){
+    root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove());
+    root.insertBefore(wrap, root.firstChild);
+  }
 
   // Tıklanabilir profil kartları
   wrap.querySelectorAll('[data-huduid]').forEach(el=>{
@@ -252,7 +255,10 @@ export function createSoloHUD(opts={}){
     </div>`;
 
   const root = opts.root;
-  if(root) root.insertBefore(wrap, root.firstChild);
+  if(root){
+    root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove());
+    root.insertBefore(wrap, root.firstChild);
+  }
 
   // Profil kartı tıklama
   wrap.querySelector('[data-huduid]').addEventListener('click', async()=>{
