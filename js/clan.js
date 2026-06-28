@@ -33,6 +33,14 @@ function _ensureTreasuryCss(){
   .clan-sect{font-size:11px;font-weight:800;color:#bba8df;margin:14px 2px 8px;letter-spacing:.4px}
   .clan-donrow{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.035);margin-bottom:6px;font-size:12px;font-weight:700;color:#e8eaf6}
   .clan-treasury-info{font-size:10px;color:#7d8ab8;line-height:1.6;background:rgba(255,255,255,.03);border-radius:11px;padding:11px;margin-top:13px}
+  .clan-admin-box{background:linear-gradient(135deg,rgba(255,215,64,.1),rgba(124,77,255,.06));border:1px solid rgba(255,215,64,.35);border-radius:14px;padding:13px;margin-bottom:14px}
+  .clan-admin-title{font-size:13px;font-weight:900;color:#ffe082;margin-bottom:3px}
+  .clan-admin-sub{font-size:10px;color:#bba8df;margin-bottom:9px}
+  .clan-adm-amt{flex:1;padding:11px 6px;border-radius:11px;border:1px solid rgba(124,77,255,.4);background:rgba(124,77,255,.12);color:#d8b4fe;font-weight:900;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
+  .clan-adm-amt:active{transform:scale(.96);background:rgba(124,77,255,.25)}
+  .clan-adm-go{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#FFD740,#f0a500);color:#1a1208;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .clan-adm-go:active{transform:scale(.96)}
+  .clan-sys-msg{text-align:center;font-size:11px;font-weight:700;color:#ffe082;background:linear-gradient(135deg,rgba(255,215,64,.12),rgba(124,77,255,.06));border:1px solid rgba(255,215,64,.25);border-radius:12px;padding:9px 12px;margin:8px 6px;line-height:1.4}
   `;
   document.head.appendChild(s);
 }
@@ -229,6 +237,7 @@ function loadTab(t){
 async function renderTreasury(){
   const body=document.getElementById('clanTabBody'); if(!body||!_clan) return;
   const st=Auth.getState();
+  const isAdmin = st.isAdmin === true;
   const pool=_clan.kaju||0;
   const myKaju=(window.Hero&&window.Hero.Store&&window.Hero.Store.getState&&window.Hero.Store.getState().kaju)||0;
   // Bağış geçmişi (son katkılar)
@@ -266,11 +275,84 @@ async function renderTreasury(){
         +'<button class="clan-don-amt" data-don="5000">5.000</button>'
       +'</div>'
     +'</div>'
+    +(isAdmin ? (
+        '<div class="clan-admin-box">'
+        +'<div class="clan-admin-title">👑 Admin Kaju Desteği</div>'
+        +'<div class="clan-admin-sub">Kasaya sınırsız destek — Kaju\'ndan düşmez</div>'
+        +'<div class="clan-donate-row">'
+          +'<button class="clan-adm-amt" data-adm="100000">100.000</button>'
+          +'<button class="clan-adm-amt" data-adm="500000">500.000</button>'
+          +'<button class="clan-adm-amt" data-adm="1000000">1.000.000</button>'
+        +'</div>'
+        +'<div style="display:flex;gap:7px;margin-top:8px">'
+          +'<input id="clanAdmCustom" type="number" min="1" placeholder="Özel miktar…" style="flex:1;min-width:0;padding:10px;border-radius:10px;border:1px solid rgba(255,215,64,.3);background:rgba(255,215,64,.06);color:#ffe082;font-size:13px;font-weight:700">'
+          +'<button class="clan-adm-go" id="clanAdmGo">💰 Destekle</button>'
+        +'</div>'
+        +'</div>'
+      ) : '')
     +(topDonors?'<div class="clan-sect">🏆 En Cömert Üyeler</div>'+topDonors:'')
     +(donors?'<div class="clan-sect">📜 Son Bağışlar</div>'+donors:'')
     +'<div class="clan-treasury-info">💡 Klan kasası, klan turnuvalarında ödül olarak dağıtılır ve klan seviyesini yükseltir. Cömert üyeler liderlik tablosunda öne çıkar!</div>';
 
   body.querySelectorAll('[data-don]').forEach(btn=>btn.addEventListener('click',()=>donateToClan(parseInt(btn.dataset.don))));
+  // Admin destek butonları (sınırsız, Kaju'dan düşmez)
+  body.querySelectorAll('[data-adm]').forEach(btn=>btn.addEventListener('click',()=>adminDonateToClan(parseInt(btn.dataset.adm))));
+  const admGo=body.querySelector('#clanAdmGo');
+  if(admGo) admGo.addEventListener('click',()=>{
+    const inp=body.querySelector('#clanAdmCustom');
+    const amt=parseInt(inp&&inp.value||'0');
+    if(!amt||amt<1){ _toast('Geçerli bir miktar gir',true); return; }
+    adminDonateToClan(amt);
+  });
+}
+
+// ── Admin Kaju desteği — sınırsız, admin'in Kaju'sundan DÜŞMEZ ──
+async function adminDonateToClan(amount){
+  const st=Auth.getState();
+  if(!st.uid||!C||!C.myClanId) return;
+  if(st.isAdmin !== true){ _toast('Bu işlem yalnızca admin içindir',true); return; }
+  if(!amount||amount<1){ _toast('Geçersiz miktar',true); return; }
+  // Üst sınır: Kaju veri tipi güvenliği (çok büyük sayı taşmasın)
+  const MAX = 1000000000;   // 1 milyar tavan (güvenlik)
+  if(amount>MAX){ _toast('En fazla '+fmt(MAX)+' destek verilebilir',true); return; }
+  if(!confirm('👑 Admin desteği: Klan kasasına '+fmt(amount)+' Kaju eklensin mi?\n(Senin Kaju\'ndan düşmez)')) return;
+  try{
+    // Klan kasasına ekle (admin'den düşmeden)
+    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/kaju'),c=>(c||0)+amount);
+    // Bağış kaydı (admin desteği olarak işaretli)
+    const name='👑 '+(st.displayName||'Admin')+' (Destek)';
+    await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/donations'),{uid:st.uid,name,amount,ts:Date.now(),adminGift:true});
+    // Yerel güncelle
+    _clan.kaju=(_clan.kaju||0)+amount;
+    // 💬 Klan sohbetine sistem mesajı (her destekte)
+    try{
+      await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),{
+        uid:'system', name:'👑 Sistem', avatar:'💰', isSystem:true, isAdmin:true,
+        text:'👑 '+(st.displayName||'Admin')+' klan kasasına '+fmt(amount)+' Kaju destek verdi! 🎉',
+        ts:Date.now()
+      });
+    }catch(e){}
+    // 🔔 Büyük destek (100.000+) → tüm klan üyelerine push bildirimi
+    if(amount >= 100000){
+      try{
+        const memSnap = await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members'));
+        const members = memSnap.exists() ? memSnap.val() : {};
+        const clanName = _clan.name || 'Klanın';
+        const notifText = '💰 '+clanName+' kasasına '+fmt(amount)+' Kaju destek geldi! 🎉';
+        await Promise.all(Object.keys(members).map(async muid=>{
+          if(muid === st.uid) return;   // kendine bildirim gönderme
+          try{
+            await fdb.push(fdb.ref(db,'userNotifs/'+muid),{
+              type:'clan', icon:'💰', text:notifText, ts:Date.now(), fromUid:st.uid
+            });
+          }catch(e){}
+        }));
+      }catch(e){}
+    }
+    _toast('👑 Admin desteği: '+fmt(amount)+' Kaju kasaya eklendi!'+(amount>=100000?' · Üyelere bildirildi':''));
+    renderTreasury();
+    renderMyClan();
+  }catch(e){ _toast('Destek başarısız',true); }
 }
 
 async function donateToClan(amount){
@@ -458,6 +540,10 @@ function renderChat(){
     const meAdmin=Auth.getState().isAdmin===true;
     const meLeader=C.myRole==='leader'||C.myRole==='vice';
     list.innerHTML=rows.map(m=>{
+      // Sistem mesajı (admin desteği vb.) → özel ortalanmış rozet
+      if(m.isSystem){
+        return '<div class="clan-sys-msg">'+esc(m.text||'')+'</div>';
+      }
       const within5=(Date.now()-(m.ts||0))<300000;
       const canEdit=(m.uid===me&&within5)||meAdmin;
       const canDel=m.uid===me||meAdmin||meLeader;
