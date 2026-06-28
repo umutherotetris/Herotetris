@@ -288,6 +288,29 @@ async function _loadProfileKozmos(ov, uid, p){
 }
 
 // ── Profil: oyuna davet seçici (arkadaş listesinden / profilden) ──
+// Kelimecik daveti için dil seçimi (TR/EN) — promise döner ('tr'/'en' veya null)
+function _pickKelimeLang(parentOv){
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.className = 'pcp-ov'; ov.style.zIndex = '2147483647';
+    const myLang = (()=>{ try{ return localStorage.getItem('hero_kelime_lang')||'tr'; }catch(e){ return 'tr'; } })();
+    ov.innerHTML = `<div class="pcp-card" style="max-width:300px">
+      <div class="pcp-besttitle" style="margin-top:4px">🔤 Kelimecik — Dil Seç</div>
+      <div style="font-size:11px;color:#9fb0d8;margin:6px 0 12px;text-align:center">Hangi dilde oynamak istersin?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
+        <button class="pcp-btn" data-lang="tr">🇹🇷 Türkçe${myLang==='tr'?' ✓':''}</button>
+        <button class="pcp-btn" data-lang="en">🇬🇧 English${myLang==='en'?' ✓':''}</button>
+      </div>
+      <button class="pcp-x">Vazgeç</button>
+    </div>`;
+    document.body.appendChild(ov);
+    const done = (val)=>{ ov.remove(); resolve(val); };
+    ov.addEventListener('click', e=>{ if(e.target===ov) done(null); });
+    ov.querySelector('.pcp-x').addEventListener('click', ()=>done(null));
+    ov.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click', ()=>done(b.dataset.lang)));
+  });
+}
+
 function _showGameInvitePicker(targetUid, targetNick){
   const old = document.getElementById('giPick'); if(old) old.remove();
   const ov = document.createElement('div');
@@ -315,21 +338,26 @@ function _showGameInvitePicker(targetUid, targetNick){
   ov.querySelectorAll('[data-gi]').forEach(btn => btn.addEventListener('click', async () => {
     const game = btn.dataset.gi;
     const g = GAMES[game]; if(!g) return;
+    // Kelimecik: önce dil seç (TR/EN)
+    let klLang = '';
+    if(game === 'kelime'){
+      klLang = await _pickKelimeLang(ov);
+      if(!klLang) return;   // vazgeçildi
+    }
     const me = Auth.getState();
     btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
     // 6 haneli buluşma kodu üret (davet eden host, davet edilen guest)
     const code = _genInviteCode();
-    // Kelimecik için davet edenin dili (TR/EN) — davet edilen ona göre kabul eder
-    let klLang = '';
-    if(game === 'kelime'){ try{ klLang = localStorage.getItem('hero_kelime_lang') || 'tr'; }catch(e){ klLang='tr'; } }
     const langTag = (game==='kelime') ? (klLang==='en' ? ' 🇬🇧 (English)' : ' 🇹🇷 (Türkçe)') : '';
     try{
+      const INVITE_TTL = 5 * 60 * 1000;   // canlı davet 5 dakika geçerli (host bekler)
       await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
         type:'challenge', icon:'⚔️',
         text: (me.displayName || 'Biri') + ' seni ' + g.name + langTag + ' oynamaya davet ediyor! Kabul etmek için dokun.',
-        ts: Date.now(), fromUid: me.uid, game, inviteCode: code, lang: klLang
+        ts: Date.now(), fromUid: me.uid, game, inviteCode: code, lang: klLang,
+        expiresAt: Date.now() + INVITE_TTL
       });
-      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi'); }catch(e){}
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi · 5 dk geçerli'); }catch(e){}
       btn.textContent = '✓ Davet gönderildi';
       // Kelimecik kendi davet sistemini kullanır; diğerleri host olarak oyunu açar
       if(game !== 'kelime'){
@@ -1438,7 +1466,7 @@ function renderNotifCard(n){
        </div>`;
   } else if(isGameInvite){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
-         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
+         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" data-giexp="${esc(n.expiresAt||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
        </div>`;
   }
   return `<div class="ghp-notif-row" ${fromAttr}>
@@ -1494,6 +1522,15 @@ function renderNotifPane(){
   list.querySelectorAll('[data-giaccept]').forEach(el => el.addEventListener('click', async (e) => {
     e.stopPropagation();
     const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey, lang = el.dataset.gilang;
+    // Davet süresi dolmuş mu? (canlı davet 5 dk)
+    const exp = parseInt(el.dataset.giexp||'0');
+    if(exp && Date.now() > exp){
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⏰ Bu davetin süresi doldu', true); }catch(e){}
+      const me0 = Auth.getState();
+      if(key && me0.uid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + me0.uid + '/' + key), null); }catch(e){} }
+      try{ renderNotifs && renderNotifs(); }catch(e){}
+      return;
+    }
     // Kelimecik: davet edenin dilini uygula (TR/EN aynı olmalı)
     if(game === 'kelime' && lang){ try{ localStorage.setItem('hero_kelime_lang', lang); }catch(e){} }
     // Bildirimi sil
