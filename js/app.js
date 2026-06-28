@@ -64,6 +64,11 @@ async function updateEcoBadges(){
     const qb = document.getElementById('questBadge');
     if(qb){ const n = eco.pendingQuestCount(); if(n>0){ qb.textContent = n; qb.style.display='flex'; } else qb.style.display='none'; }
   }catch(e){}
+  // Turnuva badge: geçen haftanın ödülü bekliyorsa
+  try{
+    const tb = document.getElementById('trnBadge');
+    if(tb){ const trn = await import('./tournament.js'); const has = await trn.hasPendingPrize(); tb.style.display = has ? 'flex' : 'none'; }
+  }catch(e){}
 }
 
 function bindCard(id, modulePath, exportName, label){
@@ -100,6 +105,10 @@ function start(){
   bindEco('ecoWheelBtn',  './economy.js', 'openDailyWheel');
   bindEco('ecoQuestBtn',  './economy.js', 'openQuests');
   bindEco('ecoHistBtn',   './economy.js', 'openKajuHistory');
+  // 🏆 Turnuva butonu (varsa)
+  bindEco('ecoTrnBtn',    './tournament.js', 'openTournament');
+  // Turnuva sistemini aktive et (puan toplama + Auth aboneliği)
+  import('./tournament.js').catch(e => console.warn('[Tournament]', e));
   // Badge güncelleme: 3sn sonra (önce kritik UI yüklensin)
   setTimeout(updateEcoBadges, 3000);
   setInterval(updateEcoBadges, 60000);
@@ -114,7 +123,10 @@ function start(){
     openTetris: () => launchGame('./games/tetris.js', 'openTetris', 'Tetris'),
     openChess:  () => launchGame('./games/chess.js',  'openChess',  'Satranç'),
     openTavla:  () => launchGame('./games/tavla.js',  'openTavla',  'Tavla'),
-    openKelime: () => launchGame('./games/kelime.js', 'openKelime', 'Kelimecik')
+    openKelime: () => launchGame('./games/kelime.js', 'openKelime', 'Kelimecik'),
+    openQuests:     () => import('./economy.js').then(m=>m.openQuests()).catch(e=>toast('Görevler açılamadı',true)),
+    openWheel:      () => import('./economy.js').then(m=>m.openDailyWheel()).catch(e=>toast('Çark açılamadı',true)),
+    openTournament: () => import('./tournament.js').then(m=>m.openTournament()).catch(e=>toast('Turnuva açılamadı',true))
   };
 }
 

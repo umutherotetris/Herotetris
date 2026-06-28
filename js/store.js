@@ -154,12 +154,19 @@ async function _claimVipDaily(){
 Auth.subscribe(hydrate);
 
 // ── Görev takibi köprüsü (lazy import — döngüsel bağımlılık yok) ──
-let _Quests = null;
+let _Eco = null, _Trn = null;
 async function _trackQuestSafe(eventType, data){
+  data = data || {};
+  // Görev ilerlemesi → economy.js (tek görev sistemi). track: play/win/earn/spin
   try{
-    if(!_Quests){ _Quests = await import('./quests.js'); }
-    if(_Quests && _Quests.trackQuest) _Quests.trackQuest(eventType, data);
-  }catch(e){ /* quests opsiyonel */ }
+    if(!_Eco){ _Eco = await import('./economy.js'); }
+    if(_Eco && _Eco.progressQuest){
+      if(eventType === 'game_played') _Eco.progressQuest('play', 1);
+      else if(eventType === 'game_won') _Eco.progressQuest('win', 1);
+      else if(eventType === 'kaju_earned') _Eco.progressQuest('earn', data.amount||0);
+      else if(eventType === 'spin_wheel') _Eco.progressQuest('spin', 1);
+    }
+  }catch(e){ /* görev opsiyonel */ }
   // Turnuva puanı (maç oynama + galibiyet + yüksek skor)
   try{
     if(!_Trn){ _Trn = await import('./tournament.js'); }
@@ -170,7 +177,6 @@ async function _trackQuestSafe(eventType, data){
     }
   }catch(e){ /* turnuva opsiyonel */ }
 }
-let _Trn = null;
 // Dışarıdan da çağrılabilsin (oyunlar galibiyet/özel olay için)
 export function trackQuestEvent(eventType, data){ _trackQuestSafe(eventType, data); }
 

@@ -10,6 +10,7 @@ const _S = {
   getKajuSummary: ()=> (Store&&Store.getKajuSummary?Store.getKajuSummary():(_getKajuSummary?_getKajuSummary():{earned:0,spent:0,count:0})),
   addKaju: (n,g)=> (Store&&Store.addKaju?Store.addKaju(n,g):(_addKaju?_addKaju(n,g):Promise.resolve(0))),
   addXP: (n)=> (Store&&Store.addXP?Store.addXP(n):(_addXP?_addXP(n):Promise.resolve(false))),
+  isVip: ()=> (Store&&Store.isVip?Store.isVip():false),
 };
 
 // ── Toast yardımcısı ──
@@ -146,7 +147,7 @@ export function openDailyWheel(){
         <span class="eco-title">🎰 Günlük Çark</span>
         <button class="eco-close" data-close>✕</button>
       </div>
-      <div class="wheel-sub">${already ? 'Bugünkü hakkını kullandın · Yarın tekrar gel!' : 'Günde bir kez çevir, ödülü kap!'}</div>
+      <div class="wheel-sub">${already ? 'Bugünkü hakkını kullandın · Yarın tekrar gel!' : 'Günde bir kez çevir, ödülü kap!'}${(_S.isVip&&_S.isVip())?' <b style="color:#ffd54f">👑 VIP ×2 ödül!</b>':''}</div>
       <div class="wheel-prizes">
         <span class="wheel-prize-chip">🥜 Kaju</span>
         <span class="wheel-prize-chip">⚡ XP</span>
@@ -192,18 +193,25 @@ export function openDailyWheel(){
       try{ wheelSpinSound(); }catch(e){}
       setTimeout(async () => {
         markSpun();
+        // 👑 VIP çark 2× bonusu
+        let vipMult = 1;
+        try{ if(_S.isVip && _S.isVip()) vipMult = 2; }catch(e){}
+        const vipTag = vipMult>1 ? ' 👑×2' : '';
         // Ödülü ver
         if(seg.type === 'xp'){
-          await _S.addXP(seg.amount);
-          _toast(`🎉 ${seg.amount} XP kazandın!`);
+          const amt = seg.amount * vipMult;
+          await _S.addXP(amt);
+          _toast(`🎉 ${amt} XP kazandın!${vipTag}`);
         } else if(seg.type === 'egg'){
           // Kozmo yumurtası ver
           try{ const kz = await import('./kozmos.js'); if(kz.grantEgg) await kz.grantEgg(); }catch(e){}
-          await _S.addKaju(50, 'spin');  // bonus kaju da
-          _toast(`🥚 Kozmo Yumurtası + 50🥜 kazandın!`);
+          const bonus = 50 * vipMult;
+          await _S.addKaju(bonus, 'spin');  // bonus kaju da
+          _toast(`🥚 Kozmo Yumurtası + ${bonus}🥜 kazandın!${vipTag}`);
         } else {
-          await _S.addKaju(seg.amount, 'spin');
-          _toast(`🎉 ${seg.amount} 🥜 kazandın!`);
+          const amt = seg.amount * vipMult;
+          await _S.addKaju(amt, 'spin');
+          _toast(`🎉 ${amt} 🥜 kazandın!${vipTag}`);
         }
         try{ winSound(seg.type === 'jackpot'); }catch(e){}
         btn.textContent = seg.type === 'jackpot' ? '💰 JACKPOT!' : '✅ Kazandın!';
