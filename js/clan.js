@@ -17,8 +17,29 @@ const tAgo=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'şimdi';if(d<3600e
 
 let C=null; let _clan=null;
 
+let _trCssDone=false;
+function _ensureTreasuryCss(){
+  if(_trCssDone) return; _trCssDone=true;
+  const s=document.createElement('style');
+  s.textContent=`
+  .clan-treasury-hero{text-align:center;padding:18px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(255,215,64,.14),rgba(240,165,0,.05));border:1px solid rgba(255,215,64,.3);margin-bottom:14px}
+  .clan-treasury-lbl{font-size:12px;color:#bba8df;font-weight:700}
+  .clan-treasury-amt{font-size:30px;font-weight:900;color:#ffe082;margin:5px 0;text-shadow:0 2px 12px rgba(255,215,64,.3)}
+  .clan-treasury-sub{font-size:10px;color:#9fb0d8}
+  .clan-donate-box{background:rgba(255,255,255,.04);border-radius:14px;padding:13px;margin-bottom:14px}
+  .clan-donate-row{display:flex;gap:8px}
+  .clan-don-amt{flex:1;padding:11px;border-radius:11px;border:1px solid rgba(255,215,64,.3);background:rgba(255,215,64,.08);color:#ffe082;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+  .clan-don-amt:active{transform:scale(.96);background:rgba(255,215,64,.18)}
+  .clan-sect{font-size:11px;font-weight:800;color:#bba8df;margin:14px 2px 8px;letter-spacing:.4px}
+  .clan-donrow{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.035);margin-bottom:6px;font-size:12px;font-weight:700;color:#e8eaf6}
+  .clan-treasury-info{font-size:10px;color:#7d8ab8;line-height:1.6;background:rgba(255,255,255,.03);border-radius:11px;padding:11px;margin-top:13px}
+  `;
+  document.head.appendChild(s);
+}
+
 export async function openClan(){
   if(document.getElementById('clanPanel'))return;
+  _ensureTreasuryCss();
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){_toast('Klan için giriş gerekli');return;}
   const ov=document.createElement('div'); ov.id='clanPanel'; ov.className='clan-ov';
@@ -182,7 +203,7 @@ async function renderMyClan(){
     const tabBody=document.createElement('div'); tabBody.id='clanTabBody'; b.appendChild(tabBody);
     const leaveBtn=document.createElement('button'); leaveBtn.className='clan-btn r'; leaveBtn.style.cssText='width:100%;margin-top:8px'; leaveBtn.textContent='🚪 Klandan Ayrıl';
     leaveBtn.addEventListener('click',leaveClan); b.appendChild(leaveBtn);
-    const tabs=[['members','👥 Üyeler'],['chat','💬 Sohbet'],['leader','🏆 Liderlik']];
+    const tabs=[['members','👥 Üyeler'],['treasury','💰 Kasa'],['chat','💬 Sohbet'],['leader','🏆 Liderlik']];
     if(C.myRole==='leader'||C.myRole==='vice') tabs.push(['manage','⚙️ Yönet']);
     const tabsEl=banner.querySelector('#clanTabs');
     tabs.forEach(([id,label])=>{
@@ -198,9 +219,84 @@ async function renderMyClan(){
 
 function loadTab(t){
   if(t==='members')renderMembers();
+  else if(t==='treasury')renderTreasury();
   else if(t==='chat')renderChat();
   else if(t==='leader')renderLeader();
   else if(t==='manage')renderManage();
+}
+
+// ── Klan Kasası (ortak Kaju havuzu) ──────────────────────────
+async function renderTreasury(){
+  const body=document.getElementById('clanTabBody'); if(!body||!_clan) return;
+  const st=Auth.getState();
+  const pool=_clan.kaju||0;
+  const myKaju=(window.Hero&&window.Hero.Store&&window.Hero.Store.getState&&window.Hero.Store.getState().kaju)||0;
+  // Bağış geçmişi (son katkılar)
+  let donors='';
+  try{
+    const snap=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/donations'));
+    if(snap.exists()){
+      const v=snap.val()||{};
+      const arr=Object.keys(v).map(k=>v[k]).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,10);
+      donors=arr.map(d=>'<div class="clan-donrow"><span>'+esc(d.name||'Üye')+'</span><span style="color:#ffd86b">🥜 '+fmt(d.amount)+'</span></div>').join('');
+    }
+  }catch(e){}
+  // En çok bağış yapanlar (toplam)
+  let topDonors='';
+  try{
+    const snap=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals'));
+    if(snap.exists()){
+      const v=snap.val()||{};
+      const arr=Object.keys(v).map(uid=>({uid,...v[uid]})).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,3);
+      topDonors=arr.map((d,i)=>'<div class="clan-donrow"><span>'+['🥇','🥈','🥉'][i]+' '+esc(d.name||'Üye')+'</span><span style="color:#ffd86b">🥜 '+fmt(d.total)+'</span></div>').join('');
+    }
+  }catch(e){}
+
+  body.innerHTML=''
+    +'<div class="clan-treasury-hero">'
+      +'<div class="clan-treasury-lbl">💰 Klan Kasası</div>'
+      +'<div class="clan-treasury-amt">🥜 '+fmt(pool)+'</div>'
+      +'<div class="clan-treasury-sub">Üyelerin ortak ödül havuzu</div>'
+    +'</div>'
+    +'<div class="clan-donate-box">'
+      +'<div style="font-size:11px;color:#bba8df;margin-bottom:7px">Kasaya bağış yap (senin Kaju: '+fmt(myKaju)+')</div>'
+      +'<div class="clan-donate-row">'
+        +'<button class="clan-don-amt" data-don="500">500</button>'
+        +'<button class="clan-don-amt" data-don="1000">1.000</button>'
+        +'<button class="clan-don-amt" data-don="5000">5.000</button>'
+      +'</div>'
+    +'</div>'
+    +(topDonors?'<div class="clan-sect">🏆 En Cömert Üyeler</div>'+topDonors:'')
+    +(donors?'<div class="clan-sect">📜 Son Bağışlar</div>'+donors:'')
+    +'<div class="clan-treasury-info">💡 Klan kasası, klan turnuvalarında ödül olarak dağıtılır ve klan seviyesini yükseltir. Cömert üyeler liderlik tablosunda öne çıkar!</div>';
+
+  body.querySelectorAll('[data-don]').forEach(btn=>btn.addEventListener('click',()=>donateToClan(parseInt(btn.dataset.don))));
+}
+
+async function donateToClan(amount){
+  const st=Auth.getState();
+  if(!st.uid||!C||!C.myClanId) return;
+  const Store=(window.Hero&&window.Hero.Store);
+  const myKaju=(Store&&Store.getState&&Store.getState().kaju)||0;
+  if(myKaju<amount){ _toast('Yetersiz Kaju (gerekli: '+fmt(amount)+')',true); return; }
+  if(!confirm('💰 Klan kasasına '+fmt(amount)+' Kaju bağışla?')) return;
+  try{
+    // Kaju'yu oyuncudan düş
+    if(Store&&Store.addKaju) await Store.addKaju(-amount,'clan','💰 Klan kasası bağışı');
+    // Klan kasasına ekle
+    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/kaju'),c=>(c||0)+amount);
+    // Bağış kaydı + toplam
+    const name=st.displayName||'Üye';
+    await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/donations'),{uid:st.uid,name,amount,ts:Date.now()});
+    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals/'+st.uid+'/total'),c=>(c||0)+amount);
+    await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals/'+st.uid),{name});
+    // Yerel güncelle
+    _clan.kaju=(_clan.kaju||0)+amount;
+    _toast('💰 '+fmt(amount)+' Kaju kasaya eklendi! Teşekkürler 🙏');
+    renderTreasury();
+    const meta=document.querySelector('.clan-banner-meta'); // banner kasa rakamını güncelle
+    renderMyClan();
+  }catch(e){ _toast('Bağış başarısız',true); }
 }
 
 // ── Üyeler ────────────────────────────────────────────────────
