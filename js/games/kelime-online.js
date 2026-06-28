@@ -100,7 +100,7 @@ export async function findMatch(cb, opts){
     if(!isAsync){ try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/B`)).set(false); }catch(e){} }
     if(isAsync){ await indexBothGames(gameId, myUid, room.players.A, myName, room.names && room.names.A, room.mode, room.turnHours); }
     S = { gameId, role:'B', roomRef, myUid, oppUid: room.players.A, async:isAsync };
-    cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', seed: room.seed, async:isAsync, turnHours:room.turnHours });
+    cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', oppUid: room.players.A, seed: room.seed, async:isAsync, turnHours:room.turnHours });
   } else {
     // ── HOST (A) ──
     const gameId = myGameId;
@@ -117,7 +117,7 @@ export async function findMatch(cb, opts){
         try{ off(); }catch(e){}
         clearQueueIfMine(myUid, QP);
         if(async) indexBothGames(gameId, myUid, room.players.B, myName, room.names && room.names.B, 'async', turnHours);
-        cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', seed: room.seed, async, turnHours });
+        cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', oppUid: room.players.B, seed: room.seed, async, turnHours });
       }
     });
     S._offWait = off;
