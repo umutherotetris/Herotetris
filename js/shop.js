@@ -69,7 +69,8 @@ const CONSUMABLES = [
 // ════════════ 💎 PAKETLER / BUNDLE ════════════
 const BUNDLES = [
   {id:'bundle_starter', name:'Başlangıç Paketi', icon:'🎒', color:'#34d399', price:5000, origPrice:9000,
-   tagline:'Yeni başlayanlar için ideal başlangıç',
+   once:true,   // tek seferlik — bir kez alınınca kapanır
+   tagline:'Yeni başlayanlar için ideal başlangıç · tek seferlik',
    items:[
      {ic:'🥚', t:'1 Nadir Yumurta', f:'Garantili nadir kozmo çıkar'},
      {ic:'🖼️', t:'1 Rastgele Çerçeve', f:'Profil avatarını süsler'},
@@ -86,13 +87,14 @@ const BUNDLES = [
    ],
    grants:[{type:'egg',rarity:'epik'},{type:'boost',boostId:'boost_all15'},{type:'theme',random:true},{type:'kaju',amount:10000}]},
   {id:'bundle_vip', name:'VIP Aylık', icon:'👑', color:'#ffd700', price:25000, origPrice:45000,
+   subscription:true,   // abonelik — aktifken kapalı, dolunca/dolmaya yakın açık
    tagline:'Aylık ayrıcalık · en yüksek değer',
    items:[
-     {ic:'🥜', t:'30 gün · günlük 1.000 Kaju', f:'Toplam 30.000 Kaju (her gün otomatik)'},
+     {ic:'🥜', t:'30 gün · günlük 600 Kaju', f:'Toplam 18.000 Kaju (her gün otomatik)'},
      {ic:'👑', t:'"VIP" Unvanı', f:'Profilinde kalıcı altın VIP rozeti'},
      {ic:'⚡', t:'2× XP Boost · 3 gün', f:'Uzun süreli seviye hızlandırma'},
    ],
-   grants:[{type:'vip',days:30,daily:1000},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
+   grants:[{type:'vip',days:30,daily:600},{type:'title',title:'VIP'},{type:'boost',boostId:'boost_xp2_3d'}]},
 ];
 
 export const SHOP_ITEMS={
@@ -274,6 +276,10 @@ function _injectShopCSS(){
       box-shadow:0 4px 16px rgba(0,0,0,.4); transition:transform .12s, box-shadow .12s; letter-spacing:.3px; }
     .shop-bundle-btn:active{ transform:scale(.97); }
     .shop-bundle-btn.locked{ background:rgba(120,130,160,.25); color:#7d8ab8; cursor:not-allowed; box-shadow:none; }
+    .shop-bundle-btn.owned{ background:rgba(105,240,174,.18); color:#69F0AE; cursor:default; box-shadow:none; border:1px solid rgba(105,240,174,.35); }
+    .shop-bundle-active{ width:100%; padding:13px; border-radius:13px; text-align:center; font-size:13px; font-weight:900;
+      color:#ffd54f; background:linear-gradient(135deg,rgba(255,215,64,.18),rgba(240,165,0,.08));
+      border:1px solid rgba(255,215,64,.4); letter-spacing:.3px; }
 
     .shop-unique-card{ position:relative; border-radius:18px; padding:14px 12px 13px; text-align:center;
       background:linear-gradient(160deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
@@ -641,10 +647,23 @@ function renderBundles(box, pl){
         +(bd.origPrice?'<span class="sbp-orig">🥜 '+fmt(bd.origPrice)+'</span>':'')
         +'<span class="sbp-now" style="color:'+bd.color+'">🥜 '+fmt(bd.price)+'</span>'
       +'</div>'
-      +'<button class="shop-bundle-btn'+(canBuy?'':' locked')+'" style="--uc:'+bd.color+'">'+(canBuy?'🎁 Satın Al':'🔒 Yetersiz Kaju')+'</button>';
+      +(()=>{
+        // Buton durumu: tek seferlik sahip / VIP aktif / normal
+        if(bd.once && (Store.hasPurchasedOnce && Store.hasPurchasedOnce(bd.id))){
+          return '<button class="shop-bundle-btn owned" disabled>✓ Sahipsin (tek seferlik)</button>';
+        }
+        if(bd.subscription){
+          const dleft = _vipDaysLeft();
+          if(dleft > 3){ return '<div class="shop-bundle-active">👑 VIP Aktif · '+dleft+' gün kaldı</div>'; }
+          if(dleft > 0){ return '<button class="shop-bundle-btn'+(canBuy?'':' locked')+'" style="--uc:'+bd.color+'">'+(canBuy?('🔄 Yenile ('+dleft+' gün kaldı)'):'🔒 Yetersiz Kaju')+'</button>'; }
+        }
+        return '<button class="shop-bundle-btn'+(canBuy?'':' locked')+'" style="--uc:'+bd.color+'">'+(canBuy?'🎁 Satın Al':'🔒 Yetersiz Kaju')+'</button>';
+      })();
     const btn=card.querySelector('button');
-    card.addEventListener('mouseenter',()=>ShopSfx.hover());
-    btn.addEventListener('click',()=>{ if(!canBuy){ShopSfx.deny();return;} ShopSfx.tap(); buyBundle(bd); });
+    if(btn){
+      card.addEventListener('mouseenter',()=>ShopSfx.hover());
+      btn.addEventListener('click',()=>{ if(btn.disabled){return;} if(!canBuy){ShopSfx.deny();return;} ShopSfx.tap(); buyBundle(bd); });
+    }
     box.appendChild(card);
   });
 }
@@ -744,7 +763,20 @@ function _showChestResult(ch, rewards){
 async function buyBundle(bd){
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){_toast('Satın almak için giriş gerekli');return;}
-  if(!confirm('🎁 "'+bd.name+'" → '+fmt(bd.price)+' Kaju harcanacak. Satın al?')){ return; }
+  // Tek seferlik paket zaten alınmış mı?
+  if(bd.once){
+    const owned = await _bundleOwnedOnce(bd.id);
+    if(owned){ _toast('🔒 Bu paket tek seferlik — zaten aldın'); ShopSfx.deny(); return; }
+  }
+  // Abonelik (VIP) hâlâ aktif mi?
+  if(bd.subscription){
+    const days = _vipDaysLeft();
+    if(days > 3){ _toast('👑 VIP zaten aktif · '+days+' gün kaldı. Bitmesine 3 gün kala yenileyebilirsin.'); ShopSfx.deny(); return; }
+  }
+  const confirmMsg = bd.subscription && _vipDaysLeft()>0
+    ? '👑 VIP\'yi 30 gün uzat → '+fmt(bd.price)+' Kaju. Onaylıyor musun?'
+    : '🎁 "'+bd.name+'" → '+fmt(bd.price)+' Kaju harcanacak. Satın al?';
+  if(!confirm(confirmMsg)){ return; }
   const ok=await Store.spendKaju(bd.price,'shop','bundle:'+bd.id);
   if(!ok){_toast('Yetersiz Kaju');ShopSfx.deny();return;}
   ShopSfx.buy();
@@ -762,14 +794,47 @@ async function buyBundle(bd){
         if(pick){ await Store.addItem(pick.id,1); got.push(pick.name); }
       }
       else if(g.type==='vip'){
-        // VIP: günlük kaju için işaret koy (daily.js okuyabilir)
-        await Store.setCosmetic('vip', JSON.stringify({until:Date.now()+g.days*86400000, daily:g.daily}));
+        // VIP: mevcut süre varsa üzerine ekle (yenileme), yoksa şimdiden başlat
+        let base = Date.now();
+        try{ const cur = JSON.parse(Store.getCosmetic('vip')||'null'); if(cur && cur.until && cur.until > base) base = cur.until; }catch(e){}
+        await Store.setCosmetic('vip', JSON.stringify({until: base + g.days*86400000, daily:g.daily}));
         got.push(g.days+' gün VIP');
       }
     }catch(e){ console.warn('bundle grant', e); }
   }
+  // Tek seferlik paket → kalıcı kaydet
+  if(bd.once){ try{ await _markBundleOwned(bd.id); }catch(e){} }
   _toast('🎆 '+bd.name+' alındı! ('+got.join(', ')+')');
   renderShop();
+}
+
+// ── Paket satın alma durumu yardımcıları ──
+async function _bundleOwnedOnce(bundleId){
+  const st=Auth.getState();
+  if(!st.uid) return false;
+  // Hızlı: store durumu (Firebase'den hydrate edilmiş)
+  if(Store.hasPurchasedOnce && Store.hasPurchasedOnce(bundleId)) return true;
+  // Yedek: localStorage
+  try{ if(localStorage.getItem('hero_bundle_once_'+st.uid+'_'+bundleId)) return true; }catch(e){}
+  return false;
+}
+async function _markBundleOwned(bundleId){
+  const st=Auth.getState();
+  if(!st.uid) return;
+  try{ localStorage.setItem('hero_bundle_once_'+st.uid+'_'+bundleId, '1'); }catch(e){}
+  // Firebase'e de yaz (Store üzerinden cosmetic benzeri kalıcı kayıt)
+  try{
+    if(Store.markPurchasedOnce) await Store.markPurchasedOnce(bundleId);
+  }catch(e){}
+}
+function _vipDaysLeft(){
+  try{
+    const cur = JSON.parse(Store.getCosmetic('vip')||'null');
+    if(cur && cur.until && cur.until > Date.now()){
+      return Math.ceil((cur.until - Date.now())/86400000);
+    }
+  }catch(e){}
+  return 0;
 }
 
 async function buyEgg(item){
