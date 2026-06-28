@@ -590,6 +590,7 @@ export async function openPlayerCard(uid){
           // Eski takılı isteği temizleyip yeni İSTEK gönder
           try{ await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), null); }catch(e){}
           await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), {
+            from: me.uid, name: me.displayName || 'Oyuncu',
             fromUid: me.uid, fromName: me.displayName || 'Oyuncu',
             fromAvatar: (me.profile && me.profile.avatar) || '👤', ts: Date.now()
           });
@@ -927,6 +928,15 @@ export function initSocial(){
   // Arkadaş ekle
   panel.querySelector('#ghpFrAdd').addEventListener('click', addFriendByNick);
   panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') addFriendByNick(); });
+  panel.querySelector('#ghpFrNick').addEventListener('input', () => {
+    const q = panel.querySelector('#ghpFrNick').value.trim().toLowerCase();
+    const rows = byId('ghpFrList') ? byId('ghpFrList').querySelectorAll('.ghp-dm-row') : [];
+    rows.forEach(r => {
+      const nameEl = r.querySelector('.ghp-dm-name');
+      const name = nameEl ? nameEl.textContent.toLowerCase() : '';
+      r.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
+  });
 
   // Auth durumuna göre: admin FAB + dinleyiciler
   applyFabSetting();
