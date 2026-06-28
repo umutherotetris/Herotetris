@@ -456,6 +456,18 @@ export async function openPlayerCard(uid){
   // Bekleyen arkadaşlık isteği var mı? (ben → karşı taraf)
   let reqSent = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid)); reqSent = s.exists(); }catch(e){}
+  // Klana davet için: kendi klanım var mı + karşı taraf zaten o klanda değil mi?
+  let _myClanId = null;
+  if(uid !== me.uid){
+    try{
+      const myC = await fdb.get(fdb.ref(db, 'users/' + me.uid + '/clanId'));
+      if(myC.exists() && myC.val()){
+        const cid = myC.val();
+        const inClan = await fdb.get(fdb.ref(db, 'clans/' + cid + '/members/' + uid));
+        if(!(inClan.exists() && inClan.val())) _myClanId = cid;   // karşı taraf klanımda değilse davet edilebilir
+      }
+    }catch(e){}
+  }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
   const self = uid === me.uid;
   _injectCosmeticCSS();
@@ -499,6 +511,7 @@ export async function openPlayerCard(uid){
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="invite">⚔️ Oyuna Davet</button>' : ''}
       <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
+      ${_myClanId ? '<button class="pcp-btn" data-pc="claninv">🏰 Klana Davet</button>' : ''}
     </div>`}
     ${_renderProfileFriends(p, uid, isAdm)}
     ${_renderProfileKozmos(p, uid)}
@@ -524,6 +537,18 @@ export async function openPlayerCard(uid){
   const invB = ov.querySelector('[data-pc="invite"]');
   if(invB) invB.addEventListener('click', () => { _showGameInvitePicker(uid, nick); });
 
+  // Klana Davet
+  const clanInvB = ov.querySelector('[data-pc="claninv"]');
+  if(clanInvB) clanInvB.addEventListener('click', async () => {
+    clanInvB.disabled = true; clanInvB.textContent = '⏳ Gönderiliyor…';
+    try{
+      const m = await import('./clan.js');
+      if(m.inviteToClanByUid){ await m.inviteToClanByUid(uid, nick); }
+      else if(m.sendClanInvite){ await m.sendClanInvite(uid, nick); }
+      clanInvB.textContent = '✓ Davet edildi';
+    }catch(e){ clanInvB.disabled = false; clanInvB.textContent = '🏰 Klana Davet'; }
+  });
+
   // ── Arkadaş listesini async yükle ──
   _loadProfileFriends(ov, uid, p);
   // ── Kozmoları async yükle (besleme: level 70+ veya admin) ──
@@ -545,21 +570,36 @@ export async function openPlayerCard(uid){
     if(reqSent && !isFriend){ return; }   // zaten istek gönderilmiş
     try{
       if(isFriend){
-        // Arkadaşlıktan çıkar (çift taraflı)
+        // Arkadaşlıktan çıkar (çift taraflı) + bekleyen istekleri de temizle
         await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
         await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), null);
+        try{ await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), null); }catch(e){}
+        try{ await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid), null); }catch(e){}
+        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Arkadaşlıktan çıkarıldı'); }catch(e){}
       } else {
-        // ⏳ Arkadaşlık İSTEĞİ gönder (karşı taraf kabul edene kadar arkadaş olmaz)
-        await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), {
-          fromUid: me.uid, fromName: me.displayName || 'Oyuncu',
-          fromAvatar: (me.profile && me.profile.avatar) || '👤', ts: Date.now()
-        });
-        try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { type:'friendreq', icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' sana arkadaşlık isteği gönderdi!', ts: Date.now(), fromUid: me.uid, reqFrom: me.uid }); }catch(e){}
-        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⏳ Arkadaşlık isteği gönderildi'); }catch(e){}
+        // Önce: karşı taraftan bana bekleyen istek var mı? Varsa direkt arkadaş ol (karşılıklı)
+        let mutual = false;
+        try{ const inc = await fdb.get(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid)); mutual = inc.exists(); }catch(e){}
+        if(mutual){
+          // Çift taraflı arkadaşlık kur
+          await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), { name: nick, ts: Date.now() });
+          await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
+          try{ await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid), null); }catch(e){}
+          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🎉 Artık arkadaşsınız!'); }catch(e){}
+        } else {
+          // Eski takılı isteği temizleyip yeni İSTEK gönder
+          try{ await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), null); }catch(e){}
+          await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), {
+            fromUid: me.uid, fromName: me.displayName || 'Oyuncu',
+            fromAvatar: (me.profile && me.profile.avatar) || '👤', ts: Date.now()
+          });
+          try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { type:'friendreq', icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' sana arkadaşlık isteği gönderdi!', ts: Date.now(), fromUid: me.uid, reqFrom: me.uid }); }catch(e){}
+          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⏳ Arkadaşlık isteği gönderildi'); }catch(e){}
+        }
       }
       ov.remove();
       if(H && H.open && H.tab === 'dost') renderFriends();
-    }catch(e){ alert('Yapılamadı'); }
+    }catch(e){ console.warn('[friend] action failed', e); alert('İşlem yapılamadı: ' + (e && e.message ? e.message : 'bilinmeyen hata')); }
   });
 }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 

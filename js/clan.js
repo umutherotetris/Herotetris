@@ -503,6 +503,26 @@ function showKickMenu(uid,name){
 }
 
 // ── Davet gönder ──────────────────────────────────────────────
+// Profil kartından klana davet — C state'e bağlı değil, klanı Firebase'den çeker
+export async function inviteToClanByUid(toUid, toName){
+  const st = Auth.getState();
+  if(!st.uid){ _toast('Giriş gerekli'); return; }
+  let cid = null;
+  try{ const s = await fdb.get(fdb.ref(db,'users/'+st.uid+'/clanId')); cid = s.exists() ? s.val() : null; }catch(e){}
+  if(!cid){ _toast('Önce bir klana katılmalısın'); return; }
+  try{
+    // Zaten üye mi?
+    const already = await fdb.get(fdb.ref(db,'clans/'+cid+'/members/'+toUid));
+    if(already.exists() && already.val()){ _toast(toName+' zaten klanında!'); return; }
+    let clanName = 'Klan';
+    try{ const cn = await fdb.get(fdb.ref(db,'clans/'+cid+'/name')); if(cn.exists()) clanName = cn.val(); }catch(e){}
+    const invKey = 'inv_'+Date.now().toString(36);
+    await fdb.set(fdb.ref(db,'clanInvites/'+toUid+'/'+invKey), { clanId:cid, clanName, fromUid:st.uid, fromName:st.displayName||'Oyuncu', ts:Date.now() });
+    await fdb.push(fdb.ref(db,'userNotifs/'+toUid), { type:'clan', icon:'🏰', text:'🏰 '+(st.displayName||'Oyuncu')+' seni '+clanName+' klanına davet etti!', ts:Date.now(), fromUid:st.uid });
+    _toast('✅ '+toName+' klana davet edildi!');
+  }catch(e){ _toast('Davet gönderilemedi'); }
+}
+
 export async function sendClanInvite(toUid,toName){
   if(!C||!C.myClanId){_toast('Önce klana gir');return;}
   const st=Auth.getState();
