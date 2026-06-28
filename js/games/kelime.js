@@ -162,6 +162,9 @@ function injectStyles(){
 .kl-btn.warn{background:rgba(214,41,154,.16)}
 .kl-overlay{position:absolute;inset:0;background:rgba(15,8,30,.85);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
 .kl-card{background:linear-gradient(160deg,#241141,#1a0e30);border:1px solid rgba(200,170,255,.22);border-radius:20px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 16px 50px rgba(80,20,140,.5)}
+.kl-card-scroll{max-height:calc(100vh - 120px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.kl-card-scroll::-webkit-scrollbar{width:5px}
+.kl-card-scroll::-webkit-scrollbar-thumb{background:rgba(200,170,255,.3);border-radius:3px}
 .kl-card h3{margin:0 0 6px;font-size:19px;background:linear-gradient(90deg,#ffe08a,#f0b132);-webkit-background-clip:text;background-clip:text;color:transparent}
 .kl-card p{margin:0 0 14px;font-size:13px;color:#cbb9ea;line-height:1.45}
 .kl-langsel{display:flex;align-items:center;gap:7px;justify-content:center;margin:4px 0 14px;flex-wrap:wrap}
@@ -177,6 +180,16 @@ function injectStyles(){
 .kl-friend-nm{font-size:14px;font-weight:800;color:#e9d5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kl-friend-lv{font-size:10px;color:#bba8df;font-weight:600;margin-top:1px}
 .kl-friend-go{font-size:17px;opacity:.7;flex-shrink:0}
+.kl-acc-head{width:100%;display:flex;align-items:center;gap:9px;padding:12px 13px;border-radius:12px;border:1px solid rgba(255,224,138,.25);background:rgba(255,224,138,.07);cursor:pointer;font-family:inherit;margin-bottom:8px}
+.kl-acc-title{font-size:12px;font-weight:800;color:#ffe08a;flex:1;text-align:left}
+.kl-acc-badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:linear-gradient(135deg,#FF4081,#e91e63);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.kl-acc-arrow{font-size:13px;color:#ffe08a;transition:transform .25s}
+.kl-acc-arrow.open{transform:rotate(180deg)}
+.kl-acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;display:flex;flex-direction:column;gap:7px}
+.kl-acc-body.open{max-height:60vh;overflow-y:auto}
+.kl-friends-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.kl-friends-list::-webkit-scrollbar{width:4px}
+.kl-friends-list::-webkit-scrollbar-thumb{background:rgba(200,170,255,.3);border-radius:3px}
 .kl-mode:active{transform:scale(.98);background:rgba(168,85,247,.16)}
 .kl-mode .e{font-size:23px}
 .kl-mode.soon{opacity:.45}
@@ -603,10 +616,10 @@ async function showInviteScreen(){
   catch(e){ flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); return; }
   let friends = []; try{ friends = await KO.listFriends(); }catch(e){}
   const friendsHtml = friends.length
-    ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 ${klT('invite')==='Invite a Friend'?'Your Friends':'Arkadaşların'}</div>${friends.map(f=>`<div class="kl-mode kl-friend" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="kl-friend-ava">${esc(f.avatar||'🧑')}</span><div class="kl-friend-info"><div class="kl-friend-nm">${esc(f.name)}</div><div class="kl-friend-lv">LV ${f.level||1} · ${klT('invite')==='Invite a Friend'?'Challenge':'Meydan oku'}</div></div><span class="kl-friend-go">⚔️</span></div>`).join('')}</div>`
+    ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 ${klT('invite')==='Invite a Friend'?'Your Friends':'Arkadaşların'}</div><div class="kl-friends-list">${friends.map(f=>`<div class="kl-mode kl-friend" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="kl-friend-ava">${esc(f.avatar||'🧑')}</span><div class="kl-friend-info"><div class="kl-friend-nm">${esc(f.name)}</div><div class="kl-friend-lv">LV ${f.level||1} · ${klT('invite')==='Invite a Friend'?'Challenge':'Meydan oku'}</div></div><span class="kl-friend-go">⚔️</span></div>`).join('')}</div></div>`
     : '';
-  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
-      <h3>📨 Arkadaşını Davet Et</h3>
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent;align-items:flex-start;padding-top:14px;padding-bottom:14px"><div class="kl-card kl-card-scroll">
+      <h3>${klT('invite')}</h3>
       <p>Nick yaz, meydan oku — rakip kabul edince oyun başlar.</p>
       <div style="display:flex;gap:6px">
         <input data-el="nickin" placeholder="Rakip nick…" autocomplete="off" style="flex:1;min-width:0;padding:11px;border-radius:11px;border:1px solid rgba(200,170,255,.25);background:rgba(168,85,247,.1);color:#efe7ff;font-size:14px">
@@ -632,9 +645,27 @@ async function showInviteScreen(){
   stopInviteListen();
   _invOff = KO.listenInvites((list)=>{
     const box = card.querySelector('[data-el="invites"]'); if(!box) return;
-    if(!list.length){ box.innerHTML = `<div style="font-size:12px;color:#8a7aae">📭 Bekleyen davet yok.</div>`; return; }
-    box.innerHTML = `<div style="font-size:12px;color:#ffe08a;margin-bottom:5px">📥 Gelen davetler</div>` +
-      list.map((inv,i)=>`<div class="kl-mode" data-acc="${i}"><span class="e">⚔️</span><div>${esc(inv.fromName||'Rakip')}<small>Seni Kelimecik'e çağırıyor · Kabul et</small></div></div>`).join('');
+    const enLang = klT('invite')==='Invite a Friend';
+    if(!list.length){ box.innerHTML = `<div style="font-size:12px;color:#8a7aae">📭 ${enLang?'No pending invites.':'Bekleyen davet yok.'}</div>`; return; }
+    // Akordiyon: başlık (davet sayısı rozeti) + açılır liste
+    const wasOpen = box.dataset.open === '1';
+    box.innerHTML =
+      `<button class="kl-acc-head" data-acc-toggle>
+         <span class="kl-acc-title">📥 ${enLang?'Incoming invites':'Gelen davetler'}</span>
+         <span class="kl-acc-badge">${list.length}</span>
+         <span class="kl-acc-arrow${wasOpen?' open':''}">▾</span>
+       </button>
+       <div class="kl-acc-body${wasOpen?' open':''}" data-acc-body>${
+         list.map((inv,i)=>`<div class="kl-mode kl-friend" data-acc="${i}"><span class="kl-friend-ava">⚔️</span><div class="kl-friend-info"><div class="kl-friend-nm">${esc(inv.fromName||'Rakip')}</div><div class="kl-friend-lv">${enLang?"Challenges you · Tap to accept":"Seni çağırıyor · Kabul et"}</div></div><span class="kl-friend-go">✅</span></div>`).join('')
+       }</div>`;
+    const toggle = box.querySelector('[data-acc-toggle]');
+    const body = box.querySelector('[data-acc-body]');
+    const arrow = box.querySelector('.kl-acc-arrow');
+    toggle.addEventListener('click', ()=>{
+      const open = body.classList.toggle('open');
+      arrow.classList.toggle('open', open);
+      box.dataset.open = open ? '1' : '0';
+    });
     box.querySelectorAll('[data-acc]').forEach(el=>{ const inv=list[+el.dataset.acc]; el.addEventListener('click', ()=>doAcceptInvite(inv)); });
   });
 }
