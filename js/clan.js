@@ -40,6 +40,17 @@ function _ensureTreasuryCss(){
   .clan-adm-amt:active{transform:scale(.96);background:rgba(124,77,255,.25)}
   .clan-adm-go{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#FFD740,#f0a500);color:#1a1208;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
   .clan-adm-go:active{transform:scale(.96)}
+  .clan-war-hero{text-align:center;padding:18px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(255,82,82,.12),rgba(124,77,255,.06));border:1px solid rgba(255,82,82,.3);margin-bottom:14px}
+  .clan-war-lbl{font-size:12px;color:#bba8df;font-weight:700}
+  .clan-war-rank{font-size:30px;font-weight:900;color:#ff8a80;margin:4px 0;text-shadow:0 2px 12px rgba(255,82,82,.3)}
+  .clan-war-pts{font-size:16px;font-weight:900;color:#ffe082}
+  .clan-war-sub{font-size:10px;color:#9fb0d8;margin-top:3px}
+  .clan-war-info{font-size:10px;color:#7d8ab8;line-height:1.6;background:rgba(255,255,255,.03);border-radius:11px;padding:11px;margin-bottom:13px}
+  .clan-war-row{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.035);margin-bottom:6px}
+  .clan-war-row.mine{background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.3)}
+  .clan-war-medal{font-size:14px;font-weight:900;min-width:32px;text-align:center;color:#ffd54f}
+  .clan-war-nm{flex:1;font-size:12px;font-weight:700;color:#e8eaf6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .clan-war-rowpts{font-size:13px;font-weight:900;color:#ff8a80}
   .clan-sys-msg{text-align:center;font-size:11px;font-weight:700;color:#ffe082;background:linear-gradient(135deg,rgba(255,215,64,.12),rgba(124,77,255,.06));border:1px solid rgba(255,215,64,.25);border-radius:12px;padding:9px 12px;margin:8px 6px;line-height:1.4}
   `;
   document.head.appendChild(s);
@@ -211,7 +222,7 @@ async function renderMyClan(){
     const tabBody=document.createElement('div'); tabBody.id='clanTabBody'; b.appendChild(tabBody);
     const leaveBtn=document.createElement('button'); leaveBtn.className='clan-btn r'; leaveBtn.style.cssText='width:100%;margin-top:8px'; leaveBtn.textContent='🚪 Klandan Ayrıl';
     leaveBtn.addEventListener('click',leaveClan); b.appendChild(leaveBtn);
-    const tabs=[['members','👥 Üyeler'],['treasury','💰 Kasa'],['chat','💬 Sohbet'],['leader','🏆 Liderlik']];
+    const tabs=[['members','👥 Üyeler'],['treasury','💰 Kasa'],['war','⚔️ Savaş'],['chat','💬 Sohbet'],['leader','🏆 Liderlik']];
     if(C.myRole==='leader'||C.myRole==='vice') tabs.push(['manage','⚙️ Yönet']);
     const tabsEl=banner.querySelector('#clanTabs');
     tabs.forEach(([id,label])=>{
@@ -228,12 +239,103 @@ async function renderMyClan(){
 function loadTab(t){
   if(t==='members')renderMembers();
   else if(t==='treasury')renderTreasury();
+  else if(t==='war')renderClanWar();
   else if(t==='chat')renderChat();
   else if(t==='leader')renderLeader();
   else if(t==='manage')renderManage();
 }
 
 // ── Klan Kasası (ortak Kaju havuzu) ──────────────────────────
+// ══════════ KLAN SAVAŞLARI ══════════
+// Haftalık: üyelerin galibiyetleri klana puan kazandırır.
+// Firebase: clanWars/{weekId}/{clanId} = { name, tag, points, members:{uid:pts} }
+function _warWeekId(){
+  const d = new Date();
+  const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = dt.getUTCDay() || 7;
+  dt.setUTCDate(dt.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+  const wk = Math.ceil((((dt - yearStart)/86400000)+1)/7);
+  return dt.getUTCFullYear()+'-W'+String(wk).padStart(2,'0');
+}
+
+// Bir oyuncu maç kazanınca klanına puan ekle (store.js veya oyunlar çağırabilir)
+export async function addClanWarPoints(pts){
+  const st = Auth.getState();
+  if(!st.uid || !pts) return;
+  let cid = null;
+  try{ const s = await fdb.get(fdb.ref(db,'users/'+st.uid+'/clanId')); cid = s.exists()?s.val():null; }catch(e){}
+  if(!cid) return;   // klanı yoksa puan yok
+  const wk = _warWeekId();
+  try{
+    let cname='Klan', ctag='?';
+    try{ const cn=await fdb.get(fdb.ref(db,'clans/'+cid)); if(cn.exists()){ const cv=cn.val(); cname=cv.name||'Klan'; ctag=cv.tag||'?'; } }catch(e){}
+    await fdb.runTransaction(fdb.ref(db,'clanWars/'+wk+'/'+cid+'/points'), p=>(p||0)+pts);
+    await fdb.runTransaction(fdb.ref(db,'clanWars/'+wk+'/'+cid+'/members/'+st.uid), p=>(p||0)+pts);
+    await fdb.update(fdb.ref(db,'clanWars/'+wk+'/'+cid), { name:cname, tag:ctag });
+  }catch(e){}
+}
+
+async function renderClanWar(){
+  const body=document.getElementById('clanTabBody'); if(!body||!_clan) return;
+  const wk = _warWeekId();
+  body.innerHTML = '<div style="text-align:center;color:#9fb0d8;font-size:12px;padding:20px">⚔️ Savaş yükleniyor…</div>';
+  // Tüm klanların bu haftaki puanları
+  let wars = [];
+  let myClanPts = 0, myMembers = {};
+  try{
+    const snap = await fdb.get(fdb.ref(db,'clanWars/'+wk));
+    if(snap.exists()){
+      const v = snap.val()||{};
+      wars = Object.keys(v).map(cid=>({ cid, name:v[cid].name||'Klan', tag:v[cid].tag||'?', points:v[cid].points||0, members:v[cid].members||{} }));
+      wars.sort((a,b)=>b.points-a.points);
+      const mine = v[C.myClanId];
+      if(mine){ myClanPts = mine.points||0; myMembers = mine.members||{}; }
+    }
+  }catch(e){}
+  const myRank = wars.findIndex(w=>w.cid===C.myClanId)+1;
+  // Ödül: ilk 3 klana kasaya bonus
+  const prizeText = '🥇 1.: 50.000 · 🥈 2.: 30.000 · 🥉 3.: 15.000 Kaju (kasaya)';
+
+  let html = '<div class="clan-war-hero">'
+    + '<div class="clan-war-lbl">⚔️ Haftalık Klan Savaşı</div>'
+    + '<div class="clan-war-rank">'+(myRank>0?'#'+myRank:'—')+'</div>'
+    + '<div class="clan-war-pts">'+fmt(myClanPts)+' puan</div>'
+    + '<div class="clan-war-sub">Her galibiyet klanına puan kazandırır</div>'
+    + '</div>';
+
+  html += '<div class="clan-war-info">🏆 '+prizeText+'<br>🗓️ Her pazartesi sıfırlanır. Üyelerin maç galibiyetleri klan puanına eklenir!</div>';
+
+  // Sıralama
+  html += '<div class="clan-sect">🏅 KLAN SIRALAMASI</div>';
+  if(!wars.length){
+    html += '<div style="text-align:center;color:#9fb0d8;font-size:12px;padding:16px">Bu hafta henüz savaş puanı yok. İlk galibiyeti sen getir! ⚔️</div>';
+  } else {
+    html += wars.slice(0,20).map((w,i)=>{
+      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+      const isMine = w.cid===C.myClanId;
+      return '<div class="clan-war-row'+(isMine?' mine':'')+'">'
+        + '<div class="clan-war-medal">'+medal+'</div>'
+        + '<div class="clan-war-nm">['+esc(w.tag)+'] '+esc(w.name)+'</div>'
+        + '<div class="clan-war-rowpts">'+fmt(w.points)+'</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // Klanımın en çok puan getiren üyeleri
+  const memArr = Object.keys(myMembers).map(uid=>({uid, pts:myMembers[uid]})).sort((a,b)=>b.pts-a.pts).slice(0,5);
+  if(memArr.length){
+    html += '<div class="clan-sect">⭐ Klanının Yıldızları</div>';
+    // İsimleri çek
+    const names = await Promise.all(memArr.map(async m=>{
+      try{ const u=await fdb.get(fdb.ref(db,'users/'+m.uid)); return u.exists()?(u.val().nick||u.val().name||'Üye'):'Üye'; }catch(e){ return 'Üye'; }
+    }));
+    html += memArr.map((m,i)=>'<div class="clan-donrow"><span>'+['🥇','🥈','🥉','4.','5.'][i]+' '+esc(names[i])+'</span><span style="color:#ffd86b">⚔️ '+fmt(m.pts)+'</span></div>').join('');
+  }
+
+  body.innerHTML = html;
+}
+
 async function renderTreasury(){
   const body=document.getElementById('clanTabBody'); if(!body||!_clan) return;
   const st=Auth.getState();

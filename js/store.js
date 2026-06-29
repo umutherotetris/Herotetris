@@ -15,7 +15,7 @@ import { firebaseConfig, FIREBASE_SDK } from './firebase-config.js';
 // FIREBASE_SDK eksik/undefined olsa bile sabit bir sürümle çalışır (çökmez).
 const SDK_VER = (typeof FIREBASE_SDK === 'string' && FIREBASE_SDK) ? FIREBASE_SDK : '10.12.0';
 const BASE = `https://www.gstatic.com/firebasejs/${SDK_VER}`;
-const { getDatabase, ref, get, set, update, runTransaction } = await import(`${BASE}/firebase-database.js`);
+const { getDatabase, ref, get, set, update, push, runTransaction } = await import(`${BASE}/firebase-database.js`);
 const { getApp, getApps, initializeApp } = await import(`${BASE}/firebase-app.js`);
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -102,6 +102,9 @@ function hydrate(state){
   player.boosts = p.boosts || {};            // {boostKey: {until:ts, mult:val}}
   player.cosmetics = p.cosmetics || {};      // {nickEffect, chatTheme, nameColor, title...}
   player.purchasedOnce = p.purchasedOnce || {};   // tek seferlik paketler { bundleId: true }
+  player.stats = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
+  player.h2h = p.h2h || {};   // head-to-head { oppUid: {w,l,d,oppName} }
+  _statsCache = null;
   player.kajuToday = loadKajuToday();
   player.ready   = true;
   _pruneExpiredBoosts();
@@ -179,6 +182,81 @@ async function _trackQuestSafe(eventType, data){
 }
 // Dışarıdan da çağrılabilsin (oyunlar galibiyet/özel olay için)
 export function trackQuestEvent(eventType, data){ _trackQuestSafe(eventType, data); }
+
+// ══════════ MAÇ İSTATİSTİK SİSTEMİ ══════════
+// Firebase: users/{uid}/stats = {
+//   games: { chess:{w,l,d}, tavla:{...}, tetris:{...}, kelime:{...} },
+//   totalW, totalL, totalD, streak, bestStreak, lastResult, lastGame, updatedAt
+// }
+// Head-to-head: users/{uid}/h2h/{oppUid} = { w, l, d, oppName, lastTs }
+let _statsCache = null;
+function _loadStats(){
+  if(_statsCache) return _statsCache;
+  _statsCache = (player.stats && typeof player.stats==='object') ? player.stats : {
+    games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0
+  };
+  return _statsCache;
+}
+export function getStats(){ return _loadStats(); }
+export function getH2H(oppUid){ return (player.h2h && player.h2h[oppUid]) || null; }
+
+// Maç sonucu kaydet. result: 'win' | 'loss' | 'draw'
+export async function recordMatchResult(game, result, oppUid, oppName){
+  if(!player.uid) return;
+  const s = _loadStats();
+  s.games = s.games || {};
+  s.games[game] = s.games[game] || { w:0, l:0, d:0 };
+  if(result === 'win'){ s.games[game].w++; s.totalW=(s.totalW||0)+1; s.streak=(s.streak||0)+1; if(s.streak>(s.bestStreak||0)) s.bestStreak=s.streak; }
+  else if(result === 'loss'){ s.games[game].l++; s.totalL=(s.totalL||0)+1; s.streak=0; }
+  else if(result === 'draw'){ s.games[game].d++; s.totalD=(s.totalD||0)+1; }   // seri korunur
+  s.lastResult = result; s.lastGame = game; s.updatedAt = Date.now();
+  player.stats = s;
+  emit();
+  // Firebase'e yaz
+  try{ await update(ref(db, 'users/' + player.uid + '/stats'), s); }catch(e){ console.warn('[stats]', e); }
+  // Head-to-head (sadece online rakip varsa)
+  if(oppUid && oppUid !== player.uid){
+    player.h2h = player.h2h || {};
+    const h = player.h2h[oppUid] || { w:0, l:0, d:0 };
+    if(result==='win') h.w++; else if(result==='loss') h.l++; else if(result==='draw') h.d++;
+    h.oppName = oppName || h.oppName || 'Rakip'; h.lastTs = Date.now();
+    player.h2h[oppUid] = h;
+    try{ await update(ref(db, 'users/' + player.uid + '/h2h/' + oppUid), h); }catch(e){}
+  }
+  // Başarım kontrolü (badges.js varsa)
+  try{ if(!_Badges) _Badges = await import('./badges.js'); if(_Badges && _Badges.checkAchievements) _Badges.checkAchievements(s, game, result); }catch(e){}
+  // Klan savaşı puanı (galibiyet → klana 10, beraberlik → 3 puan)
+  try{
+    if(result === 'win' || result === 'draw'){
+      const cw = await import('./clan.js');
+      if(cw && cw.addClanWarPoints) cw.addClanWarPoints(result==='win'?10:3);
+    }
+  }catch(e){}
+  // Maç geçmişine ekle
+  try{ await _pushMatchHistory(game, result, oppUid, oppName); }catch(e){}
+}
+let _Badges = null;
+
+// Son 20 maçı sakla (users/{uid}/matchHistory)
+async function _pushMatchHistory(game, result, oppUid, oppName){
+  if(!player.uid) return;
+  try{
+    const entry = { game, result, oppName: oppName||'—', ts: Date.now() };
+    if(oppUid) entry.oppUid = oppUid;
+    await push(ref(db, 'users/' + player.uid + '/matchHistory'), entry);
+    // Eski kayıtları buda (son 20 tut) — basit yaklaşım: ara sıra temizle
+  }catch(e){}
+}
+export async function getMatchHistory(limit){
+  if(!player.uid) return [];
+  try{
+    const snap = await get(ref(db, 'users/' + player.uid + '/matchHistory'));
+    if(!snap.exists()) return [];
+    const v = snap.val() || {};
+    const arr = Object.keys(v).map(k=>({ id:k, ...v[k] })).sort((a,b)=>(b.ts||0)-(a.ts||0));
+    return arr.slice(0, limit||20);
+  }catch(e){ return []; }
+}
 
 // ── Kaju ekle (günlük limitli, admin sınırsız) ──────────────────
 // ⚡ Aktif kozmo bonus çarpanı (localStorage'dan senkron okur — import gecikmesi yok)
@@ -578,5 +656,5 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT };
+export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
 export default Store;

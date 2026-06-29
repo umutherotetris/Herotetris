@@ -127,6 +127,20 @@ function _injectCosmeticCSS(){
     .pcp-besticon{ font-size:17px; flex-shrink:0; }
     .pcp-bestname{ flex:1; font-size:12px; font-weight:700; color:#cdd; }
     .pcp-bestval{ font-size:13px; font-weight:900; color:#FFD740; }
+    .pcp-stat-row{ display:flex; gap:7px; margin-bottom:7px; }
+    .pcp-stat{ flex:1; text-align:center; padding:9px 4px; border-radius:11px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); }
+    .pcp-stat-v{ font-size:18px; font-weight:900; color:#eef2ff; line-height:1.1; }
+    .pcp-stat-l{ font-size:8.5px; color:#9fb0d8; margin-top:3px; font-weight:600; }
+    .pcp-gstats{ display:flex; flex-direction:column; gap:5px; margin-top:8px; }
+    .pcp-gstat{ display:flex; align-items:center; gap:9px; padding:8px 11px; border-radius:10px; background:rgba(255,255,255,.03); }
+    .pcp-gstat-ic{ font-size:16px; }
+    .pcp-gstat-nm{ flex:1; font-size:12px; font-weight:700; color:#cdd; }
+    .pcp-gstat-rec{ font-size:11px; color:#9fb0d8; font-weight:600; }
+    .pcp-h2h{ margin-top:10px; padding:10px 12px; border-radius:11px; font-size:11px; text-align:center; color:#cdd; background:linear-gradient(135deg,rgba(255,215,64,.1),rgba(124,77,255,.05)); border:1px solid rgba(255,215,64,.25); line-height:1.5; }
+    .pcp-badges{ display:flex; flex-wrap:wrap; gap:6px; }
+    .pcp-badge{ display:flex; align-items:center; gap:5px; padding:6px 10px; border-radius:20px; background:linear-gradient(135deg,rgba(255,215,64,.12),rgba(255,215,64,.04)); border:1px solid rgba(255,215,64,.3); }
+    .pcp-badge-ic{ font-size:15px; }
+    .pcp-badge-nm{ font-size:10px; font-weight:700; color:#ffe082; }
     .pcp-nobest{ text-align:center; font-size:11px; color:#7d8ab8; margin:12px 0 4px; }
     /* Profil arkadaş listesi */
     .pcp-frsec, .pcp-kzsec{ margin-top:14px; }
@@ -430,6 +444,59 @@ function _renderProfileFriends(p, uid, isAdm){
 }
 
 // ── Profil: kozmo bölümü (ziyaret + besleme: level 70+ veya admin) ──
+// Profil istatistikleri: kazanma oranı, maç sayısı, seri, oyun bazlı + head-to-head
+async function _loadProfileBadges(ov, uid){
+  try{
+    const m = await import('./badges.js');
+    if(!m.getUserBadges) return;
+    const badges = await m.getUserBadges(uid);
+    const box = ov.querySelector('[data-el="pcpBadges"]');
+    if(!box || !badges.length) return;
+    box.innerHTML = '<div class="pcp-besttitle" style="margin-top:14px">🏅 ROZETLER ('+badges.length+')</div>'
+      + '<div class="pcp-badges">'
+      + badges.slice(0,12).map(b=>'<div class="pcp-badge" title="'+esc(b.name)+' — '+esc(b.desc)+'"><span class="pcp-badge-ic">'+b.icon+'</span><span class="pcp-badge-nm">'+esc(b.name)+'</span></div>').join('')
+      + '</div>';
+  }catch(e){}
+}
+
+function _renderProfileStats(p, uid, self, h2h){
+  const s = p.stats;
+  if(!s || (!s.totalW && !s.totalL && !s.totalD)){
+    return '<div class="pcp-nobest" style="margin-top:10px">📊 Henüz maç oynanmadı</div>';
+  }
+  const tw=s.totalW||0, tl=s.totalL||0, td=s.totalD||0;
+  const total = tw+tl+td;
+  const winRate = total>0 ? Math.round(tw/(tw+tl||1)*100) : 0;
+  const streak = s.streak||0, best=s.bestStreak||0;
+  // Genel özet kartları
+  let html = '<div class="pcp-besttitle" style="margin-top:14px">📊 İSTATİSTİKLER</div>';
+  html += '<div class="pcp-stat-row">'
+    + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#69F0AE">'+tw+'</div><div class="pcp-stat-l">Galibiyet</div></div>'
+    + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#ff8a80">'+tl+'</div><div class="pcp-stat-l">Mağlubiyet</div></div>'
+    + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#a5b4fc">'+td+'</div><div class="pcp-stat-l">Beraberlik</div></div>'
+    + '</div>';
+  html += '<div class="pcp-stat-row">'
+    + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#FFD740">%'+winRate+'</div><div class="pcp-stat-l">Kazanma Oranı</div></div>'
+    + '<div class="pcp-stat"><div class="pcp-stat-v">'+total+'</div><div class="pcp-stat-l">Toplam Maç</div></div>'
+    + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#ff9800">'+(streak>0?'🔥'+streak:best>0?'⭐'+best:'—')+'</div><div class="pcp-stat-l">'+(streak>0?'Seri':'En İyi Seri')+'</div></div>'
+    + '</div>';
+  // Oyun bazlı dağılım
+  const games = s.games || {};
+  const GMETA = { chess:['♟','Satranç'], tavla:['🎲','Tavla'], tetris:['🟦','Tetris'], kelime:['🔤','Kelimecik'] };
+  const gameRows = Object.keys(GMETA).filter(g=>games[g] && (games[g].w||games[g].l||games[g].d)).map(g=>{
+    const gd=games[g]; const gt=(gd.w||0)+(gd.l||0)+(gd.d||0);
+    return '<div class="pcp-gstat"><span class="pcp-gstat-ic">'+GMETA[g][0]+'</span>'
+      + '<span class="pcp-gstat-nm">'+GMETA[g][1]+'</span>'
+      + '<span class="pcp-gstat-rec"><b style="color:#69F0AE">'+(gd.w||0)+'</b>G · <b style="color:#ff8a80">'+(gd.l||0)+'</b>M'+((gd.d||0)?' · <b style="color:#a5b4fc">'+gd.d+'</b>B':'')+'</span></div>';
+  }).join('');
+  if(gameRows) html += '<div class="pcp-gstats">'+gameRows+'</div>';
+  // Head-to-head (bu kişiye karşı benim skorum) — başkasının profilinde
+  if(!self && h2h && (h2h.w||h2h.l||h2h.d)){
+    html += '<div class="pcp-h2h">⚔️ Bu oyuncuya karşı: <b style="color:#69F0AE">'+(h2h.w||0)+'</b> galibiyet · <b style="color:#ff8a80">'+(h2h.l||0)+'</b> mağlubiyet'+((h2h.d||0)?' · <b style="color:#a5b4fc">'+h2h.d+'</b> beraberlik':'')+'</div>';
+  }
+  return html;
+}
+
 function _renderProfileKozmos(p, uid){
   const me = Auth.getState();
   const isSelf = uid === me.uid;
@@ -457,6 +524,11 @@ export async function openPlayerCard(uid){
   let reqSent = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid)); reqSent = s.exists(); }catch(e){}
   // Klana davet için: kendi klanım var mı + karşı taraf zaten o klanda değil mi?
+  // Bu kişiye karşı head-to-head geçmişim (benim stats'imden)
+  let _myH2H = null;
+  if(uid !== me.uid && me.uid){
+    try{ const h = await fdb.get(fdb.ref(db, 'users/' + me.uid + '/h2h/' + uid)); if(h.exists()) _myH2H = h.val(); }catch(e){}
+  }
   let _myClanId = null;
   if(uid !== me.uid){
     try{
@@ -506,6 +578,8 @@ export async function openPlayerCard(uid){
             +'<span class="pcp-bestval">'+Number(bs[g.k]||0).toLocaleString('tr-TR')+'</span></div>').join('')
         + '</div>';
     })()}
+    ${_renderProfileStats(p, uid, self, _myH2H)}
+    <div data-el="pcpBadges"></div>
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
@@ -551,6 +625,7 @@ export async function openPlayerCard(uid){
 
   // ── Arkadaş listesini async yükle ──
   _loadProfileFriends(ov, uid, p);
+  _loadProfileBadges(ov, uid);
   // ── Kozmoları async yükle (besleme: level 70+ veya admin) ──
   _loadProfileKozmos(ov, uid, p);
   // ── Arkadaş listesi gizle/göster toggle (kendi profilim) ──
@@ -864,9 +939,13 @@ export function initSocial(){
         <div class="ghp-list" id="ghpFrList"></div>
       </div>
       <div class="ghp-pane" id="ghpPane-lider">
-        <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(255,215,64,.12);gap:6px">
-          <button class="ghp-lb-tab active" data-lb="xp" style="flex:1;padding:7px;font-size:11px;font-weight:800;border-radius:8px;border:1px solid rgba(255,215,64,.3);background:rgba(255,215,64,.12);color:#FFD740;cursor:pointer">✨ XP</button>
-          <button class="ghp-lb-tab" data-lb="level" style="flex:1;padding:7px;font-size:11px;font-weight:800;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#aab;cursor:pointer">⭐ Seviye</button>
+        <div class="ghp-input-row ghp-lb-tabrow" style="border-top:none;border-bottom:1px solid rgba(255,215,64,.12);gap:6px;overflow-x:auto;flex-wrap:nowrap">
+          <button class="ghp-lb-tab active" data-lb="xp">✨ XP</button>
+          <button class="ghp-lb-tab" data-lb="level">⭐ Seviye</button>
+          <button class="ghp-lb-tab" data-lb="wins">🏆 Galibiyet</button>
+          <button class="ghp-lb-tab" data-lb="winrate">📈 Oran</button>
+          <button class="ghp-lb-tab" data-lb="streak">🔥 Seri</button>
+          <button class="ghp-lb-tab" data-lb="friends">👥 Arkadaşlar</button>
         </div>
         <div class="ghp-list" id="ghpLbList"><div class="ghp-empty"><div class="ghp-empty-icon">🏆</div><div class="ghp-empty-text">LİDERLİK YÜKLENİYOR…</div></div></div>
       </div>
@@ -1004,7 +1083,21 @@ function markTabSeen(tab){
 }
 
 // ════════════ 🏆 LİDERLİK ════════════
+let _lbTabCss=false;
+function _ensureLbTabCss(){
+  if(_lbTabCss) return; _lbTabCss=true;
+  const s=document.createElement('style');
+  s.textContent=`
+  .ghp-lb-tabrow::-webkit-scrollbar{height:0;display:none}
+  .ghp-lb-tabrow{scrollbar-width:none}
+  .ghp-lb-tab{flex-shrink:0;padding:7px 11px;font-size:11px;font-weight:800;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#aab;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.15s}
+  .ghp-lb-tab.active{border-color:rgba(255,215,64,.3);background:rgba(255,215,64,.12);color:#FFD740}
+  `;
+  document.head.appendChild(s);
+}
+
 async function renderLeaderboard(mode){
+  _ensureLbTabCss();
   _injectCosmeticCSS();
   H.lbMode = mode || 'xp';
   const list = byId('ghpLbList'); if(!list) return;
@@ -1024,16 +1117,40 @@ async function renderLeaderboard(mode){
         const v = ch.val() || {};
         const xObj = v.xp;
         const xp = (xObj && typeof xObj==='object') ? (xObj.totalXP ?? xObj.xp ?? 0) : (v.totalXP ?? xObj ?? 0);
-        users.push({ uid: ch.key, nick: v.nick || v.name || 'Oyuncu', level: Number(v.level||1), xp: Number(xp)||0, avatar: avatarOf(v, ch.key), isAdmin: v.isAdmin===true||(H.admins&&H.admins[ch.key]), cz: v.cosmetics||null });
+        const stt = v.stats || {};
+        const tw=stt.totalW||0, tl=stt.totalL||0;
+        users.push({ uid: ch.key, nick: v.nick || v.name || 'Oyuncu', level: Number(v.level||1), xp: Number(xp)||0, avatar: avatarOf(v, ch.key), isAdmin: v.isAdmin===true||(H.admins&&H.admins[ch.key]), cz: v.cosmetics||null,
+          wins: tw, losses: tl, winrate: (tw+tl)>0 ? Math.round(tw/(tw+tl)*100) : 0, totalMatches: tw+tl+(stt.totalD||0), bestStreak: stt.bestStreak||0, curStreak: stt.streak||0 });
       });
     }
   }catch(e){ console.warn('lb', e); }
   if(!users.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">🏆</div><div class="ghp-empty-text">VERİ YOK</div></div>'; return; }
-  users.sort((a,b) => H.lbMode==='level' ? (b.level-a.level||b.xp-a.xp) : (b.xp-a.xp));
-  const top = users.slice(0,50), me2 = Auth.getState().uid;
+  const me2 = Auth.getState().uid;
+  // Arkadaşlar modu: sadece arkadaşlarım + ben
+  if(H.lbMode === 'friends'){
+    let friendIds = {};
+    try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me2)); if(fs.exists()){ const fv=fs.val()||{}; Object.keys(fv).forEach(k=>{ if(fv[k]!==false) friendIds[k]=true; }); } }catch(e){}
+    users = users.filter(u => u.uid===me2 || friendIds[u.uid]);
+  }
+  // Mode'a göre sırala
+  const sorters = {
+    xp:      (a,b)=> b.xp-a.xp,
+    level:   (a,b)=> b.level-a.level || b.xp-a.xp,
+    wins:    (a,b)=> b.wins-a.wins || b.xp-a.xp,
+    winrate: (a,b)=> (b.totalMatches>=5?b.winrate:0)-(a.totalMatches>=5?a.winrate:0) || b.wins-a.wins,
+    streak:  (a,b)=> b.bestStreak-a.bestStreak || b.wins-a.wins,
+    friends: (a,b)=> b.xp-a.xp,
+  };
+  users.sort(sorters[H.lbMode] || sorters.xp);
+  const top = users.slice(0,50);
   const medal = i => i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="color:#667;font-weight:800;font-size:12px">${i+1}</span>`;
   list.innerHTML = top.map((u,i) => {
-    const val = H.lbMode==='level' ? `⭐ ${u.level}` : `✨ ${u.xp.toLocaleString('tr-TR')}`;
+    let val;
+    if(H.lbMode==='level') val = `⭐ ${u.level}`;
+    else if(H.lbMode==='wins') val = `🏆 ${u.wins}`;
+    else if(H.lbMode==='winrate') val = u.totalMatches>=5 ? `📈 %${u.winrate}` : `<span style="font-size:10px;color:#778">az maç</span>`;
+    else if(H.lbMode==='streak') val = `🔥 ${u.bestStreak}`;
+    else val = `✨ ${u.xp.toLocaleString('tr-TR')}`;
     const isMe = u.uid===me2;
     const nameCol = u.isAdmin?'#FFD740':(isMe?'#00E5FF':'#cdd');
     const admB = u.isAdmin?'<span style="font-size:9px;background:rgba(255,215,64,.2);border:1px solid rgba(255,215,64,.4);border-radius:4px;padding:0 3px;margin-left:3px;color:#FFD740">👑</span>':'';
