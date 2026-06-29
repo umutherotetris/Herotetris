@@ -459,15 +459,36 @@ async function _loadProfileBadges(ov, uid){
   }catch(e){}
 }
 
-function _renderProfileStats(p, uid, self, h2h){
-  const s = p.stats;
-  if(!s || (!s.totalW && !s.totalL && !s.totalD)){
+function _renderProfileStats(p, uid, self, h2h, gameLB){
+  const s = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
+  // Ana sistem (gameLB) tüm oyunları içerir — onu birincil kaynak yap, modül stats'ı tamamla
+  const merged = {};   // { game: {w,l,d} }
+  const GKEYS = ['chess','tavla','tetris','kelime','icePong','im'];
+  // Önce gameLB'den (senin ana sistemin: wins/losses/draws)
+  if(gameLB){
+    GKEYS.forEach(g=>{
+      const gd = gameLB[g];
+      if(gd && (gd.wins||gd.losses||gd.draws)){
+        merged[g] = { w:gd.wins||0, l:gd.losses||0, d:gd.draws||0 };
+      }
+    });
+  }
+  // Modül stats'tan eksik kalanları ekle (varsa, üzerine yazma — gameLB önceliklidir)
+  if(s.games){
+    Object.keys(s.games).forEach(g=>{
+      if(!merged[g]){ const gd=s.games[g]; if(gd&&(gd.w||gd.l||gd.d)) merged[g]={w:gd.w||0,l:gd.l||0,d:gd.d||0}; }
+    });
+  }
+  // Toplamları birleşmiş veriden hesapla
+  let tw=0, tl=0, td=0;
+  Object.keys(merged).forEach(g=>{ tw+=merged[g].w; tl+=merged[g].l; td+=merged[g].d; });
+  // Seri bilgisi modül stats'tan (gameLB'de yok)
+  const streak = s.streak||0, best=s.bestStreak||0;
+  const total = tw+tl+td;
+  if(total===0){
     return '<div class="pcp-nobest" style="margin-top:10px">📊 Henüz maç oynanmadı</div>';
   }
-  const tw=s.totalW||0, tl=s.totalL||0, td=s.totalD||0;
-  const total = tw+tl+td;
-  const winRate = total>0 ? Math.round(tw/(tw+tl||1)*100) : 0;
-  const streak = s.streak||0, best=s.bestStreak||0;
+  const winRate = (tw+tl)>0 ? Math.round(tw/(tw+tl)*100) : 0;
   // Genel özet kartları
   let html = '<div class="pcp-besttitle" style="margin-top:14px">📊 İSTATİSTİKLER</div>';
   html += '<div class="pcp-stat-row">'
@@ -480,11 +501,10 @@ function _renderProfileStats(p, uid, self, h2h){
     + '<div class="pcp-stat"><div class="pcp-stat-v">'+total+'</div><div class="pcp-stat-l">Toplam Maç</div></div>'
     + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#ff9800">'+(streak>0?'🔥'+streak:best>0?'⭐'+best:'—')+'</div><div class="pcp-stat-l">'+(streak>0?'Seri':'En İyi Seri')+'</div></div>'
     + '</div>';
-  // Oyun bazlı dağılım
-  const games = s.games || {};
-  const GMETA = { chess:['♟','Satranç'], tavla:['🎲','Tavla'], tetris:['🟦','Tetris'], kelime:['🔤','Kelimecik'] };
-  const gameRows = Object.keys(GMETA).filter(g=>games[g] && (games[g].w||games[g].l||games[g].d)).map(g=>{
-    const gd=games[g]; const gt=(gd.w||0)+(gd.l||0)+(gd.d||0);
+  // Oyun bazlı dağılım (birleşmiş veriden — tüm oyunlar)
+  const GMETA = { chess:['♟','Satranç'], tavla:['🎲','Tavla'], tetris:['🟦','Tetris'], kelime:['🔤','Kelimecik'], icePong:['🏓','Buz Tenisi'], im:['🦸','Kahraman'] };
+  const gameRows = Object.keys(GMETA).filter(g=>merged[g] && (merged[g].w||merged[g].l||merged[g].d)).map(g=>{
+    const gd=merged[g];
     return '<div class="pcp-gstat"><span class="pcp-gstat-ic">'+GMETA[g][0]+'</span>'
       + '<span class="pcp-gstat-nm">'+GMETA[g][1]+'</span>'
       + '<span class="pcp-gstat-rec"><b style="color:#69F0AE">'+(gd.w||0)+'</b>G · <b style="color:#ff8a80">'+(gd.l||0)+'</b>M'+((gd.d||0)?' · <b style="color:#a5b4fc">'+gd.d+'</b>B':'')+'</span></div>';
@@ -529,6 +549,9 @@ export async function openPlayerCard(uid){
   if(uid !== me.uid && me.uid){
     try{ const h = await fdb.get(fdb.ref(db, 'users/' + me.uid + '/h2h/' + uid)); if(h.exists()) _myH2H = h.val(); }catch(e){}
   }
+  // Ana sistem oyun istatistikleri (gameLeaderboard/all → tüm oyunlar: tetris/icePong/chess/tavla/im)
+  let _gameLB = null;
+  try{ const gl = await fdb.get(fdb.ref(db, 'gameLeaderboard/all/' + uid)); if(gl.exists()){ const v=gl.val(); _gameLB = v.games || null; } }catch(e){}
   let _myClanId = null;
   if(uid !== me.uid){
     try{
@@ -578,7 +601,7 @@ export async function openPlayerCard(uid){
             +'<span class="pcp-bestval">'+Number(bs[g.k]||0).toLocaleString('tr-TR')+'</span></div>').join('')
         + '</div>';
     })()}
-    ${_renderProfileStats(p, uid, self, _myH2H)}
+    ${_renderProfileStats(p, uid, self, _myH2H, _gameLB)}
     <div data-el="pcpBadges"></div>
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>

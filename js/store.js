@@ -203,6 +203,16 @@ export function getH2H(oppUid){ return (player.h2h && player.h2h[oppUid]) || nul
 // Maç sonucu kaydet. result: 'win' | 'loss' | 'draw'
 export async function recordMatchResult(game, result, oppUid, oppName){
   if(!player.uid) return;
+  // ── Ana sisteme köprü: HTML'deki recordGameResult (gameLB, leaderboard, başarımlar) ──
+  // Modül oyunları (chess/tavla/kelime) da senin mevcut liderlik+başarım sistemine yazsın.
+  // Çift sayımı önlemek için: bu köprü sadece bir kez çağrılır, içerideki h2h/matchHistory ek kalır.
+  try{
+    if(typeof window !== 'undefined' && typeof window.recordGameResult === 'function' && !window.__heroBridgeBusy){
+      window.__heroBridgeBusy = true;
+      window.recordGameResult(game, result, 0);
+      setTimeout(()=>{ window.__heroBridgeBusy = false; }, 100);
+    }
+  }catch(e){}
   const s = _loadStats();
   s.games = s.games || {};
   s.games[game] = s.games[game] || { w:0, l:0, d:0 };
@@ -223,8 +233,16 @@ export async function recordMatchResult(game, result, oppUid, oppName){
     player.h2h[oppUid] = h;
     try{ await update(ref(db, 'users/' + player.uid + '/h2h/' + oppUid), h); }catch(e){}
   }
-  // Başarım kontrolü (badges.js varsa)
-  try{ if(!_Badges) _Badges = await import('./badges.js'); if(_Badges && _Badges.checkAchievements) _Badges.checkAchievements(s, game, result); }catch(e){}
+  // Başarım kontrolü: senin ana başarım sistemin (checkGameAchievements) varsa ONA bırak,
+  // yoksa modül badges.js'i kullan (çift başarım önlenir)
+  try{
+    if(typeof window !== 'undefined' && typeof window.checkGameAchievements === 'function'){
+      // Ana sistem zaten recordGameResult içinde çağırıyor — burada tekrar etme
+    } else {
+      if(!_Badges) _Badges = await import('./badges.js');
+      if(_Badges && _Badges.checkAchievements) _Badges.checkAchievements(s, game, result);
+    }
+  }catch(e){}
   // Klan savaşı puanı (galibiyet → klana 10, beraberlik → 3 puan)
   try{
     if(result === 'win' || result === 'draw'){
