@@ -1569,6 +1569,7 @@ function applyAndContinue(mv, isCapture){
 
 async function onGameEndDraw(){
   Resume.clearSnapshot('chess');
+  try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', 'draw', G.oppUid||null, G.oppName||null); }catch(e){}
   const kaju = 40, xp = 30;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
   try{
@@ -1585,6 +1586,8 @@ async function onGameEnd(playerWon){
   const won = playerWon === true;
   // Görev takibi
   try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'chess'}); if(won) Store.trackQuestEvent('game_won',{game:'chess'}); }catch(e){}
+  // Maç istatistiği (online maçlarda head-to-head dahil)
+  try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', won?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
   const kaju = won ? 80 : 20;
   const xp = won ? 60 : 25;
   try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}

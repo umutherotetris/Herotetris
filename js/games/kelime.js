@@ -886,6 +886,9 @@ function onlineGameOver(msg, verdictOverride){
   try{ if(KO && KO.markGameOver) KO.markGameOver(); else if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
+  // Maç istatistiği + head-to-head (online rakip)
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = mine>opp?'win':(mine<opp?'loss':'draw'); _S.recordMatchResult('kelime', r, G.oppUid||null, G.oppName||null); } }catch(e){}
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(mine>opp) _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
   const verdict = verdictOverride || (mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔'));
   if(verdictOverride){ /* pes/anlaşma: skor sesi yerine nötr */ }
   else if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
@@ -1756,7 +1759,9 @@ async function endGameAI(){
   if(G._over) return; G._over = true;
   stopTurnTimer();
   Resume.clearSnapshot('kelime');
-  try{ import('../quests.js').then(q=>{ q.trackQuest('game_played',{game:'kelime'}); if(G.state.scores.A>G.state.scores.B) q.trackQuest('game_won',{game:'kelime'}); }).catch(()=>{}); }catch(e){}
+  const a0=G.state.scores.A, b0=G.state.scores.B;
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(a0>b0) _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = a0>b0?'win':(a0<b0?'loss':'draw'); await _S.recordMatchResult('kelime', r, null, null); } }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const playerWon = a > b;
