@@ -463,7 +463,7 @@ function _renderProfileStats(p, uid, self, h2h, gameLB){
   const s = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
   // Ana sistem (gameLB) tüm oyunları içerir — onu birincil kaynak yap, modül stats'ı tamamla
   const merged = {};   // { game: {w,l,d} }
-  const GKEYS = ['chess','tavla','tetris','kelime','icePong','im'];
+  const GKEYS = ['chess','tavla','tetris','kelime'];
   // Önce gameLB'den (senin ana sistemin: wins/losses/draws)
   if(gameLB){
     GKEYS.forEach(g=>{
@@ -502,7 +502,7 @@ function _renderProfileStats(p, uid, self, h2h, gameLB){
     + '<div class="pcp-stat"><div class="pcp-stat-v" style="color:#ff9800">'+(streak>0?'🔥'+streak:best>0?'⭐'+best:'—')+'</div><div class="pcp-stat-l">'+(streak>0?'Seri':'En İyi Seri')+'</div></div>'
     + '</div>';
   // Oyun bazlı dağılım (birleşmiş veriden — tüm oyunlar)
-  const GMETA = { chess:['♟','Satranç'], tavla:['🎲','Tavla'], tetris:['🟦','Tetris'], kelime:['🔤','Kelimecik'], icePong:['🏓','Buz Tenisi'], im:['🦸','Kahraman'] };
+  const GMETA = { chess:['♟','Satranç'], tavla:['🎲','Tavla'], tetris:['🟦','Tetris'], kelime:['🔤','Kelimecik'] };
   const gameRows = Object.keys(GMETA).filter(g=>merged[g] && (merged[g].w||merged[g].l||merged[g].d)).map(g=>{
     const gd=merged[g];
     return '<div class="pcp-gstat"><span class="pcp-gstat-ic">'+GMETA[g][0]+'</span>'
@@ -549,7 +549,7 @@ export async function openPlayerCard(uid){
   if(uid !== me.uid && me.uid){
     try{ const h = await fdb.get(fdb.ref(db, 'users/' + me.uid + '/h2h/' + uid)); if(h.exists()) _myH2H = h.val(); }catch(e){}
   }
-  // Ana sistem oyun istatistikleri (gameLeaderboard/all → tüm oyunlar: tetris/icePong/chess/tavla/im)
+  // Ana sistem oyun istatistikleri (gameLeaderboard/all → tetris/chess/tavla/kelime)
   let _gameLB = null;
   try{ const gl = await fdb.get(fdb.ref(db, 'gameLeaderboard/all/' + uid)); if(gl.exists()){ const v=gl.val(); _gameLB = v.games || null; } }catch(e){}
   let _myClanId = null;
