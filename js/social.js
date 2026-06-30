@@ -1277,6 +1277,126 @@ function listenChatLock(){
   }catch(e){}
 }
 
+// ── 🔧 SOHBET YÖNETİM (OPERATÖR) MENÜSÜ ──────────────────────────
+// Admin/operatör bir nick'e tıklayınca hızlı aksiyon menüsü gösterir.
+function _showChatModMenu(uid, name, targetIsAdm, targetIsOp, evt, iAmAdmin){
+  const old = document.getElementById('chatModMenu'); if(old) old.remove();
+  if(targetIsAdm) return;   // admin'e işlem yapılamaz
+  _ensureModMenuCss();
+  const menu = document.createElement('div');
+  menu.id = 'chatModMenu';
+  const btnS = 'display:block;width:100%;text-align:left;padding:10px 14px;font-size:12px;font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;border-radius:8px';
+  let html = '<div class="cmm-head">'+(targetIsOp?'🔧 ':'')+esc(name)+'</div>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#00E5FF" data-cmm="profile">👤 Profili Aç</button>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#00E5FF" data-cmm="dm">💬 Özel Mesaj</button>';
+  html += '<div class="cmm-sep"></div>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#FF9800" data-cmm="mute">🔇 Sustur (30dk)</button>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#69F0AE" data-cmm="unmute">🔊 Susturmayı Kaldır</button>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#FF5252" data-cmm="chatban">🚫 Sohbet Ban (1sa)</button>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#69F0AE" data-cmm="chatunban">✅ Sohbet Ban Kaldır</button>';
+  html += '<button class="cmm-btn" style="'+btnS+';color:#E040FB" data-cmm="kick">🔨 Sohbetten At</button>';
+  if(iAmAdmin){
+    html += '<div class="cmm-sep"></div>';
+    if(!targetIsOp){
+      html += '<button class="cmm-btn" style="'+btnS+';color:#CE93D8" data-cmm="giveop">🔧 Operatör Yap</button>';
+    } else {
+      html += '<button class="cmm-btn" style="'+btnS+';color:#9090b0" data-cmm="removeop">❌ Operatörlükten Al</button>';
+    }
+  }
+  html += '<button class="cmm-btn" style="'+btnS+';color:#6a7290" data-cmm="close">✕ Kapat</button>';
+  menu.innerHTML = html;
+  document.body.appendChild(menu);
+  // Pozisyon: tıklanan noktaya yakın, ekrandan taşmasın
+  const vh = window.innerHeight, vw = window.innerWidth;
+  const mh = menu.offsetHeight, mw = menu.offsetWidth;
+  let top = Math.min((evt && evt.clientY || 100), vh - mh - 12);
+  let left = Math.min(Math.max((evt && evt.clientX || vw/2) - mw/2, 8), vw - mw - 8);
+  menu.style.top = Math.max(top, 8) + 'px';
+  menu.style.left = left + 'px';
+  // Aksiyonlar
+  menu.querySelectorAll('[data-cmm]').forEach(btn=>{
+    btn.addEventListener('click', async () => {
+      const act = btn.dataset.cmm;
+      menu.remove();
+      if(act === 'close') return;
+      if(act === 'profile'){ openPlayerCard(uid); return; }
+      if(act === 'dm'){ applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, name); return; }
+      await _modAction(act, uid, name);
+    });
+  });
+  // Dışarı tıklayınca kapat
+  setTimeout(()=>{
+    document.addEventListener('click', function _cl(e){
+      const m = document.getElementById('chatModMenu');
+      if(m && !m.contains(e.target)){ m.remove(); }
+      document.removeEventListener('click', _cl);
+    });
+  }, 60);
+}
+
+let _modMenuCssDone = false;
+function _ensureModMenuCss(){
+  if(_modMenuCssDone) return; _modMenuCssDone = true;
+  const s = document.createElement('style');
+  s.textContent = `
+  #chatModMenu{position:fixed;z-index:2147483640;min-width:200px;max-width:260px;background:#0e0e1a;border:1px solid rgba(255,255,255,.12);border-radius:13px;box-shadow:0 10px 36px rgba(0,0,0,.6);overflow:hidden;animation:cmmIn .15s ease;padding:5px}
+  @keyframes cmmIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .cmm-head{font-size:10px;font-weight:900;color:#9fb0d8;padding:8px 12px 7px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:3px;letter-spacing:.3px}
+  .cmm-btn:active{background:rgba(255,255,255,.06)}
+  .cmm-sep{height:1px;background:rgba(255,255,255,.07);margin:4px 2px}
+  `;
+  document.head.appendChild(s);
+}
+
+// Yönetim aksiyonunu uygula (mute/chatban/kick/operatör)
+async function _modAction(act, uid, name){
+  const me2 = Auth.getState();
+  if(!me2.uid) return;
+  const iAmAdmin = _amAdmin();
+  const iAmOp = H.ops && H.ops[me2.uid] === true;
+  if(!iAmAdmin && !iAmOp){ try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Yetkin yok', true); }catch(e){} return; }
+  const myName = me2.displayName || (me2.profile && me2.profile.nick) || 'Operatör';
+  try{
+    if(act === 'mute'){
+      if(!confirm(name + ' kullanıcısını 30dk sustur?')) return;
+      await fdb.update(fdb.ref(db, 'users/'+uid), { muted:true, muteUntil:Date.now()+1800000, muteReason:'Operatör: '+myName });
+      await fdb.push(fdb.ref(db, 'userNotifs/'+uid), { type:'mod', icon:'🔇', text:'🔇 Sohbet operatörü tarafından 30dk susturuldun.', ts:Date.now() });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🔇 '+name+' susturuldu'); }catch(e){}
+    } else if(act === 'unmute'){
+      await fdb.update(fdb.ref(db, 'users/'+uid), { muted:false, muteUntil:0 });
+      await fdb.push(fdb.ref(db, 'userNotifs/'+uid), { type:'mod', icon:'🔊', text:'🔊 Susturman kaldırıldı.', ts:Date.now() });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🔊 Susturma kaldırıldı'); }catch(e){}
+    } else if(act === 'chatban'){
+      if(!confirm(name + ' kullanıcısını sohbetten 1 saat banlamak istiyor musun?')) return;
+      await fdb.update(fdb.ref(db, 'users/'+uid), { chatBanned:true, chatBanUntil:Date.now()+3600000, chatBanBy:myName });
+      await fdb.push(fdb.ref(db, 'userNotifs/'+uid), { type:'mod', icon:'🚫', text:'🚫 Sohbetten 1 saat banlandın.', ts:Date.now() });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🚫 '+name+' sohbet banlandı'); }catch(e){}
+    } else if(act === 'chatunban'){
+      await fdb.update(fdb.ref(db, 'users/'+uid), { chatBanned:false, chatBanUntil:0 });
+      await fdb.push(fdb.ref(db, 'userNotifs/'+uid), { type:'mod', icon:'✅', text:'✅ Sohbet banın kaldırıldı.', ts:Date.now() });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('✅ Sohbet banı kaldırıldı'); }catch(e){}
+    } else if(act === 'kick'){
+      await fdb.update(fdb.ref(db, 'users/'+uid), { kicked:true });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🔨 '+name+' sohbetten atıldı'); }catch(e){}
+    } else if(act === 'giveop'){
+      if(!iAmAdmin) return;
+      await fdb.set(fdb.ref(db, 'gcOperators/'+uid), true);
+      H.ops = H.ops || {}; H.ops[uid] = true;
+      await fdb.push(fdb.ref(db, 'userNotifs/'+uid), { type:'mod', icon:'🔧', text:'🔧 Sohbet operatörü yapıldın!', ts:Date.now() });
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🔧 '+name+' operatör yapıldı'); }catch(e){}
+    } else if(act === 'removeop'){
+      if(!iAmAdmin) return;
+      await fdb.set(fdb.ref(db, 'gcOperators/'+uid), null);
+      if(H.ops) delete H.ops[uid];
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('❌ '+name+' operatörlükten alındı'); }catch(e){}
+    }
+    // Admin log (varsa)
+    try{ await fdb.push(fdb.ref(db, 'adminLog'), { action:'chatmod_'+act, admin:me2.uid, adminName:myName, target:uid, targetName:name, ts:Date.now() }); }catch(e){}
+  }catch(e){
+    try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('İşlem başarısız', true); }catch(_){}
+  }
+}
+
 // ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
 function listenChat(){
   _injectCosmeticCSS();
@@ -1318,7 +1438,23 @@ function listenChat(){
     list.querySelectorAll('[data-histbtn]').forEach(el=>el.onclick=()=>{const b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'':'none';});
     list.querySelectorAll('[data-ekey]').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const key=btn.dataset.ekey,m=rows.find(r=>r._key===key),el=list.querySelector(`._ctxt[data-ckey="${key}"]`);if(!m||!el)return;_openEditBox(el,m.text,v=>_doEditChat(key,v,m));};});
     list.querySelectorAll('[data-dkey]').forEach(btn=>{btn.onclick=async e=>{e.stopPropagation();if(!confirm('Mesajı silmek istediğine emin misin?'))return;try{await _doDelChat(btn.dataset.dkey);}catch(err){alert('Silinemedi');}};});
-    list.querySelectorAll('[data-pcuid]').forEach(el=>el.addEventListener('click',()=>openPlayerCard(el.dataset.pcuid)));
+    list.querySelectorAll('[data-pcuid]').forEach(el=>el.addEventListener('click',(e)=>{
+      const targetUid = el.dataset.pcuid;
+      const me2 = Auth.getState();
+      const iAmAdmin = _amAdmin();
+      const iAmOp = H.ops && H.ops[me2.uid] === true;
+      // Admin/operatör + başkasının nickine tıklandıysa → hızlı yönetim menüsü
+      if((iAmAdmin || iAmOp) && targetUid && targetUid !== me2.uid){
+        const row = rows.find(r=>r.uid===targetUid);
+        const targetName = (row && row.name) || 'Oyuncu';
+        const targetIsAdm = (row && (row.isAdmin===true || (H.admins&&H.admins[targetUid])));
+        const targetIsOp = !targetIsAdm && H.ops && H.ops[targetUid]===true;
+        e.stopPropagation();
+        _showChatModMenu(targetUid, targetName, targetIsAdm, targetIsOp, e, iAmAdmin);
+        return;
+      }
+      openPlayerCard(targetUid);
+    }));
     list.scrollTop = list.scrollHeight;
   });
 }
