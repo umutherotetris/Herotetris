@@ -100,8 +100,21 @@ function _nickStyle(cz){
   return '';
 }
 function _titleBadge(cz){
-  if(!cz || !cz.title) return '';
-  return '<span class="cz-title-badge">'+esc(cz.title)+'</span>';
+  if(!cz) return '';
+  let html = '';
+  // VIP rozeti (cosmetics.vip.until gelecekteyse aktif)
+  try{
+    let vip = cz.vip;
+    if(typeof vip === 'string') vip = JSON.parse(vip);
+    if(vip && vip.until && vip.until > Date.now()){
+      html += '<span class="cz-vip-badge">👑 VIP</span>';
+    }
+  }catch(e){}
+  // Unvan (mağazadan alınan title — örn. "Kozmo Ustası")
+  if(cz.title){
+    html += '<span class="cz-title-badge">'+esc(cz.title)+'</span>';
+  }
+  return html;
 }
 // Mesaja gömülü kozmetik objesini çıkar
 function _czOf(m){
@@ -119,6 +132,7 @@ function _injectCosmeticCSS(){
     .cz-nick-rainbow{ background:linear-gradient(90deg,#ff0000,#ff9900,#ffff00,#33ff00,#00ffff,#3333ff,#cc00ff,#ff0000); background-size:300% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czRainbowAnim 3s linear infinite; }
     @keyframes czRainbowAnim{ to{ background-position:300% center; } }
     .cz-nick-gold{ background:linear-gradient(90deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlameAnim 2.5s linear infinite; }
+    .cz-vip-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:900;padding:2px 8px;border-radius:10px;margin-left:5px;color:#1a1410;background:linear-gradient(135deg,#FFD740,#f0a500);box-shadow:0 1px 6px rgba(255,215,64,.4);vertical-align:middle}
     .cz-title-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:.3px; padding:1px 6px; margin-left:4px; border-radius:8px; background:linear-gradient(90deg,#ffd86b,#f0a500); color:#1a1208; vertical-align:middle; }
     /* Profil en iyi skorlar */
     .pcp-besttitle{ font-size:10px; font-weight:900; letter-spacing:.5px; color:#FFD740; margin:12px 0 7px; text-align:center; }
@@ -573,18 +587,23 @@ export async function openPlayerCard(uid){
     </div>
     ${(()=>{
       const bs = p.bestScores || {};
+      const kr = p.kelimeRecords || {};
       const games = [
-        {k:'tetris', icon:'🟦', name:'Tetris'},
-        {k:'tavla',  icon:'🎲', name:'Tavla'},
-        {k:'chess',  icon:'♟️', name:'Satranç'},
-        {k:'kelime', icon:'🔤', name:'Kelime'},
+        {k:'tetris', icon:'🟦', name:'Tetris', val: bs.tetris},
+        {k:'tavla',  icon:'🎲', name:'Tavla',  val: bs.tavla},
+        {k:'chess',  icon:'♟️', name:'Satranç', val: bs.chess},
+        {k:'kelime', icon:'🔤', name:'Kelime',  val: (bs.kelime != null ? bs.kelime : kr.bestScore)},
       ];
-      const have = games.filter(g => bs[g.k] != null);
-      if(!have.length) return '<div class="pcp-nobest">Henüz oyun skoru yok</div>';
+      const have = games.filter(g => g.val != null);
+      // Kelimecik en uzun kelime ekstra satırı
+      const kelExtra = (kr.longestWord && kr.longestLen) ? '<div class="pcp-bestitem"><span class="pcp-besticon">📏</span><span class="pcp-bestname">En Uzun Kelime</span><span class="pcp-bestval" style="font-size:11px">'+esc(kr.longestWord)+' ('+kr.longestLen+')</span></div>' : '';
+      const kelBest = (kr.bestWord && kr.bestScore) ? '<div class="pcp-bestitem"><span class="pcp-besticon">💎</span><span class="pcp-bestname">En İyi Kelime</span><span class="pcp-bestval" style="font-size:11px">'+esc(kr.bestWord)+' ('+kr.bestScore+'p)</span></div>' : '';
+      if(!have.length && !kelExtra && !kelBest) return '<div class="pcp-nobest">Henüz oyun skoru yok</div>';
       return '<div class="pcp-besttitle">🏆 EN İYİ SKORLAR</div><div class="pcp-bestgrid">'
         + have.map(g => '<div class="pcp-bestitem"><span class="pcp-besticon">'+g.icon+'</span>'
             +'<span class="pcp-bestname">'+g.name+'</span>'
-            +'<span class="pcp-bestval">'+Number(bs[g.k]||0).toLocaleString('tr-TR')+'</span></div>').join('')
+            +'<span class="pcp-bestval">'+Number(g.val||0).toLocaleString('tr-TR')+'</span></div>').join('')
+        + kelBest + kelExtra
         + '</div>';
     })()}
     ${_renderProfileStats(p, uid, self, _myH2H, _gameLB)}
