@@ -134,6 +134,18 @@ function _injectCosmeticCSS(){
     .cz-nick-gold{ background:linear-gradient(90deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c); background-size:200% auto; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:czFlameAnim 2.5s linear infinite; }
     .cz-vip-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:900;padding:2px 8px;border-radius:10px;margin-left:5px;color:#1a1410;background:linear-gradient(135deg,#FFD740,#f0a500);box-shadow:0 1px 6px rgba(255,215,64,.4);vertical-align:middle}
     .cz-title-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:.3px; padding:1px 6px; margin-left:4px; border-radius:8px; background:linear-gradient(90deg,#ffd86b,#f0a500); color:#1a1208; vertical-align:middle; }
+    .pcp-kajusend-box{ margin-top:9px; padding:13px; border-radius:13px; background:linear-gradient(135deg,rgba(255,215,64,.08),rgba(255,215,64,.02)); border:1px solid rgba(255,215,64,.22); animation:pksIn .2s ease; }
+    @keyframes pksIn{ from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .pcp-ks-lbl{ font-size:11.5px; font-weight:800; color:#ffe082; margin-bottom:9px; text-align:center; }
+    .pcp-ks-amts{ display:flex; gap:6px; margin-bottom:9px; }
+    .pcp-ks-amt{ flex:1; padding:9px 4px; border-radius:10px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); color:#cdd; font-size:11.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .pcp-ks-amt:active{ transform:scale(.94); background:rgba(255,215,64,.15); border-color:rgba(255,215,64,.4); }
+    .pcp-ks-custom{ display:flex; gap:7px; }
+    .pcp-ks-input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); color:#eef2ff; font-size:13px; font-family:inherit; min-width:0; }
+    .pcp-ks-input::placeholder{ color:#6a7290; }
+    .pcp-ks-send{ padding:10px 16px; border-radius:10px; border:none; background:linear-gradient(135deg,#FFD740,#f0a500); color:#1a1410; font-size:12px; font-weight:900; cursor:pointer; font-family:inherit; white-space:nowrap; }
+    .pcp-ks-send:active{ transform:scale(.95); }
+    .pcp-ks-send:disabled{ opacity:.6; }
     /* Profil en iyi skorlar */
     .pcp-besttitle{ font-size:10px; font-weight:900; letter-spacing:.5px; color:#FFD740; margin:12px 0 7px; text-align:center; }
     .pcp-bestgrid{ display:flex; flex-direction:column; gap:6px; }
@@ -507,7 +519,7 @@ function _renderProfileStats(p, uid, self, h2h, gameLB){
     const gd=merged[g];
     return '<div class="pcp-gstat"><span class="pcp-gstat-ic">'+GMETA[g][0]+'</span>'
       + '<span class="pcp-gstat-nm">'+GMETA[g][1]+'</span>'
-      + '<span class="pcp-gstat-rec"><b style="color:#69F0AE">'+(gd.w||0)+'</b>G · <b style="color:#ff8a80">'+(gd.l||0)+'</b>M'+((gd.d||0)?' · <b style="color:#a5b4fc">'+gd.d+'</b>B':'')+'</span></div>';
+      + '<span class="pcp-gstat-rec"><b style="color:#69F0AE">'+(gd.w||0)+'</b> G &nbsp;·&nbsp; <b style="color:#ff8a80">'+(gd.l||0)+'</b> M'+((gd.d||0)?' &nbsp;·&nbsp; <b style="color:#a5b4fc">'+gd.d+'</b> B':'')+'</span></div>';
   }).join('');
   if(gameRows) html += '<div class="pcp-gstats">'+gameRows+'</div>';
   // Head-to-head (bu kişiye karşı benim skorum) — başkasının profilinde
@@ -611,8 +623,22 @@ export async function openPlayerCard(uid){
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="invite">⚔️ Oyuna Davet</button>' : ''}
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="kajusend">💰 Kaju Gönder</button>' : ''}
       <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
       ${_myClanId ? '<button class="pcp-btn" data-pc="claninv">🏰 Klana Davet</button>' : ''}
+    </div>
+    <div class="pcp-kajusend-box" data-el="kajuSendBox" style="display:none">
+      <div class="pcp-ks-lbl">💰 ${esc(nick)} kişisine Kaju gönder</div>
+      <div class="pcp-ks-amts">
+        <button class="pcp-ks-amt" data-amt="100">100</button>
+        <button class="pcp-ks-amt" data-amt="500">500</button>
+        <button class="pcp-ks-amt" data-amt="1000">1.000</button>
+        <button class="pcp-ks-amt" data-amt="5000">5.000</button>
+      </div>
+      <div class="pcp-ks-custom">
+        <input type="number" class="pcp-ks-input" data-el="kajuAmtInput" placeholder="Özel miktar" min="10">
+        <button class="pcp-ks-send" data-pc="kajusendgo">Gönder</button>
+      </div>
     </div>`}
     ${_renderProfileFriends(p, uid, isAdm)}
     ${_renderProfileKozmos(p, uid)}
@@ -637,6 +663,46 @@ export async function openPlayerCard(uid){
   // Oyuna Davet (arkadaş veya admin) — oyun seçtir
   const invB = ov.querySelector('[data-pc="invite"]');
   if(invB) invB.addEventListener('click', () => { _showGameInvitePicker(uid, nick); });
+
+  // Kaju Gönder — mini paneli aç/kapat
+  const ksBtn = ov.querySelector('[data-pc="kajusend"]');
+  const ksBox = ov.querySelector('[data-el="kajuSendBox"]');
+  if(ksBtn && ksBox){
+    ksBtn.addEventListener('click', () => {
+      const showing = ksBox.style.display !== 'none';
+      ksBox.style.display = showing ? 'none' : 'block';
+      if(!showing) ksBox.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    });
+    // Hızlı miktar butonları → input'a yaz
+    ksBox.querySelectorAll('[data-amt]').forEach(b=>{
+      b.addEventListener('click', () => {
+        const inp = ksBox.querySelector('[data-el="kajuAmtInput"]');
+        if(inp) inp.value = b.dataset.amt;
+      });
+    });
+    // Gönder
+    const goBtn = ksBox.querySelector('[data-pc="kajusendgo"]');
+    if(goBtn) goBtn.addEventListener('click', async () => {
+      const inp = ksBox.querySelector('[data-el="kajuAmtInput"]');
+      const amount = Math.floor(Number(inp && inp.value) || 0);
+      if(amount < 10){ try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('En az 10 Kaju girmelisin', true); }catch(e){} return; }
+      goBtn.disabled = true; goBtn.textContent = '⏳…';
+      try{
+        const S = await import('./store.js');
+        const r = await S.transferKaju(uid, nick, amount);
+        if(r && r.ok){
+          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('💰 '+amount.toLocaleString('tr-TR')+' Kaju gönderildi!'); }catch(e){}
+          ksBox.style.display = 'none';
+          if(inp) inp.value = '';
+        } else {
+          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast(r&&r.error ? r.error : 'Gönderilemedi', true); }catch(e){}
+        }
+      }catch(e){
+        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Gönderilemedi', true); }catch(_){}
+      }
+      goBtn.disabled = false; goBtn.textContent = 'Gönder';
+    });
+  }
 
   // Klana Davet
   const clanInvB = ov.querySelector('[data-pc="claninv"]');
