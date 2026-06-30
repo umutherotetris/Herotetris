@@ -222,6 +222,12 @@ export async function recordMatchResult(game, result, oppUid, oppName){
   s.lastResult = result; s.lastGame = game; s.updatedAt = Date.now();
   player.stats = s;
   emit();
+  // Önemli seri kilometre taşlarını Sosyal Duvar'a (achWall) yaz
+  try{
+    if(result === 'win' && [3,5,10,20].includes(s.streak)){
+      _pushActivity('streak', '🔥 ' + s.streak + ' maçlık galibiyet serisi!', '🔥');
+    }
+  }catch(e){}
   // Firebase'e yaz
   try{ await update(ref(db, 'users/' + player.uid + '/stats'), s); }catch(e){ console.warn('[stats]', e); }
   // Head-to-head (sadece online rakip varsa)
@@ -233,16 +239,8 @@ export async function recordMatchResult(game, result, oppUid, oppName){
     player.h2h[oppUid] = h;
     try{ await update(ref(db, 'users/' + player.uid + '/h2h/' + oppUid), h); }catch(e){}
   }
-  // Başarım kontrolü: senin ana başarım sistemin (checkGameAchievements) varsa ONA bırak,
-  // yoksa modül badges.js'i kullan (çift başarım önlenir)
-  try{
-    if(typeof window !== 'undefined' && typeof window.checkGameAchievements === 'function'){
-      // Ana sistem zaten recordGameResult içinde çağırıyor — burada tekrar etme
-    } else {
-      if(!_Badges) _Badges = await import('./badges.js');
-      if(_Badges && _Badges.checkAchievements) _Badges.checkAchievements(s, game, result);
-    }
-  }catch(e){}
+  // Başarımlar: ana sistem (HTML checkGameAchievements) recordGameResult köprüsü içinde
+  // zaten çalışıyor. Modül tarafında ekstra başarım sistemi YOK (çakışma önlendi).
   // Klan savaşı puanı (galibiyet → klana 10, beraberlik → 3 puan)
   try{
     if(result === 'win' || result === 'draw'){
@@ -253,7 +251,22 @@ export async function recordMatchResult(game, result, oppUid, oppName){
   // Maç geçmişine ekle
   try{ await _pushMatchHistory(game, result, oppUid, oppName); }catch(e){}
 }
-let _Badges = null;
+
+// Sosyal Duvar'a (achWall) aktivite yaz — mevcut başarı duvarı sistemiyle uyumlu
+async function _pushActivity(kind, text, icon){
+  if(!player.uid) return;
+  try{
+    await push(ref(db, 'achWall'), {
+      uid: player.uid,
+      userName: player.displayName || 'Oyuncu',
+      achId: kind + '_' + Date.now(),
+      achName: text,
+      icon: icon || '⭐',
+      isAdmin: false,
+      ts: Date.now()
+    });
+  }catch(e){}
+}
 
 // Son 20 maçı sakla (users/{uid}/matchHistory)
 async function _pushMatchHistory(game, result, oppUid, oppName){

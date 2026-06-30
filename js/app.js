@@ -109,9 +109,10 @@ function start(){
   bindEco('ecoTrnBtn',    './tournament.js', 'openTournament');
   // 🔔 Bildirim ayarları butonu (varsa)
   bindEco('notifSettingsBtn', './push.js', 'openNotifSettings');
-  bindEco('achievementsBtn', './badges.js', 'openAchievements');
   // Turnuva sistemini aktive et (puan toplama + Auth aboneliği)
   import('./tournament.js').catch(e => console.warn('[Tournament]', e));
+  // Günlük özet widget'ı (ana ekrana otomatik enjekte olur)
+  import('./dailysummary.js').catch(e => console.warn('[DailySummary]', e));
   // Badge güncelleme: 3sn sonra (önce kritik UI yüklensin)
   setTimeout(updateEcoBadges, 3000);
   setInterval(updateEcoBadges, 60000);
@@ -130,8 +131,7 @@ function start(){
     openQuests:     () => import('./economy.js').then(m=>m.openQuests()).catch(e=>toast('Görevler açılamadı',true)),
     openWheel:      () => import('./economy.js').then(m=>m.openDailyWheel()).catch(e=>toast('Çark açılamadı',true)),
     openTournament: () => import('./tournament.js').then(m=>m.openTournament()).catch(e=>toast('Turnuva açılamadı',true)),
-    openNotifSettings: () => import('./push.js').then(m=>m.openNotifSettings()).catch(e=>toast('Bildirim ayarları açılamadı',true)),
-    openAchievements: () => import('./badges.js').then(m=>m.openAchievements()).catch(e=>toast('Başarımlar açılamadı',true))
+    openNotifSettings: () => import('./push.js').then(m=>m.openNotifSettings()).catch(e=>toast('Bildirim ayarları açılamadı',true))
   };
 }
 

@@ -99,6 +99,17 @@ async function claimPrize(){
     await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true);
     await Store.addKaju(prize, 'tournament', '🏆 Turnuva ödülü (#'+rank+')');
     _toast('🏆 '+rank+'. oldun! '+fmt(prize)+' Kaju kazandın!');
+    // İlk 3 → Sosyal Duvar'a yaz
+    try{
+      if(rank <= 3){
+        const medal = rank===1?'🥇':rank===2?'🥈':'🥉';
+        await fdb.push(fdb.ref(db, 'achWall'), {
+          uid: st.uid, userName: st.displayName||'Oyuncu',
+          achId: 'trn_'+pwk+'_'+rank, achName: medal+' Haftalık turnuvada '+rank+'. oldu!',
+          icon: medal, isAdmin:false, ts: Date.now()
+        });
+      }
+    }catch(e){}
     if(window.Hero && window.Hero.openTournament) setTimeout(()=>openTournament(), 600);
   }catch(e){ _toast('Ödül alınamadı', true); }
 }

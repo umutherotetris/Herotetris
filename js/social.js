@@ -445,20 +445,6 @@ function _renderProfileFriends(p, uid, isAdm){
 
 // ── Profil: kozmo bölümü (ziyaret + besleme: level 70+ veya admin) ──
 // Profil istatistikleri: kazanma oranı, maç sayısı, seri, oyun bazlı + head-to-head
-async function _loadProfileBadges(ov, uid){
-  try{
-    const m = await import('./badges.js');
-    if(!m.getUserBadges) return;
-    const badges = await m.getUserBadges(uid);
-    const box = ov.querySelector('[data-el="pcpBadges"]');
-    if(!box || !badges.length) return;
-    box.innerHTML = '<div class="pcp-besttitle" style="margin-top:14px">🏅 ROZETLER ('+badges.length+')</div>'
-      + '<div class="pcp-badges">'
-      + badges.slice(0,12).map(b=>'<div class="pcp-badge" title="'+esc(b.name)+' — '+esc(b.desc)+'"><span class="pcp-badge-ic">'+b.icon+'</span><span class="pcp-badge-nm">'+esc(b.name)+'</span></div>').join('')
-      + '</div>';
-  }catch(e){}
-}
-
 function _renderProfileStats(p, uid, self, h2h, gameLB){
   const s = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
   // Ana sistem (gameLB) tüm oyunları içerir — onu birincil kaynak yap, modül stats'ı tamamla
@@ -602,7 +588,6 @@ export async function openPlayerCard(uid){
         + '</div>';
     })()}
     ${_renderProfileStats(p, uid, self, _myH2H, _gameLB)}
-    <div data-el="pcpBadges"></div>
     ${self ? '' : `<div class="pcp-acts">
       <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
       ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
@@ -648,7 +633,6 @@ export async function openPlayerCard(uid){
 
   // ── Arkadaş listesini async yükle ──
   _loadProfileFriends(ov, uid, p);
-  _loadProfileBadges(ov, uid);
   // ── Kozmoları async yükle (besleme: level 70+ veya admin) ──
   _loadProfileKozmos(ov, uid, p);
   // ── Arkadaş listesi gizle/göster toggle (kendi profilim) ──
