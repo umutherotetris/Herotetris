@@ -384,9 +384,18 @@ function openSettings(){
     +(st.status==='google'?'<div class="set-row"><span>🚫 Engellediklerim</span><button class="set-tgl" id="stBlocked">GÖSTER</button></div>':'')
     +'<div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" id="stCache">TEMİZLE</button></div>'
     +(st.status==='google'?'<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" id="stLogout">ÇIKIŞ</button></div>':'')
+    +(st.isAdmin===true?'<div class="set-row set-admin-row" style="border:1px solid rgba(255,82,82,.25);border-radius:10px;background:rgba(255,82,82,.05);margin-top:4px"><span style="color:#FF9090;font-weight:700">👑 Admin Paneli</span><button class="set-tgl" id="stAdminPanel" style="background:linear-gradient(135deg,#FF5252,#c62828);color:#fff;font-weight:900">PANEL AÇ</button></div>':'')
     +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
     +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="stClose">Kapat</button></div>';
   inner.querySelector('#stClose').addEventListener('click',()=>ov.remove());
+  // Admin Paneli butonu (sadece adminlerde gorunur)
+  const adminBtn = inner.querySelector('#stAdminPanel');
+  if(adminBtn) adminBtn.addEventListener('click',()=>{
+    ov.remove();
+    import('./admin.js').then(m=>m.openAdminPanel()).catch(()=>{
+      try{ if(window.Hero&&window.Hero.openAdminPanel) window.Hero.openAdminPanel(); }catch(e){}
+    });
+  });
   // 🔍 UI ölçek kontrolleri
   const slider=inner.querySelector('#scaleSlider');
   const scaleVal=inner.querySelector('#scaleVal');
