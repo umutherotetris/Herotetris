@@ -1192,4 +1192,7 @@ async function toggleLog(){
   }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
 }
 
+// Global erişim — Ayarlar ekranındaki buton veya başka modüller çağırabilsin
+try{ window.Hero = window.Hero || {}; window.Hero.openAdminPanel = openAdminPanel; }catch(e){}
+
 export default openAdminPanel;
