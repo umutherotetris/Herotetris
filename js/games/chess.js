@@ -1200,9 +1200,15 @@ function _canPlayNow(){
   if(status === 'checkmate' || status === 'stalemate') return false;
   return true;
 }
+function _canvasScale(rect){
+  // Görsel boyut (rect) ile mantıksal boyut (G.boardPx) oranı — UI ölçeği/CSS farkına dayanıklı
+  const s = (rect && rect.width && G.boardPx) ? (G.boardPx / rect.width) : 1;
+  return s;
+}
 function _eventCell(e){
   const rect = G.canvas.getBoundingClientRect();
-  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const s = _canvasScale(rect);
+  const px = (e.clientX - rect.left) * s, py = (e.clientY - rect.top) * s;
   return { sq: xyToCell(px, py), px, py };
 }
 
@@ -1233,8 +1239,9 @@ function onBoardPointerMove(e){
   if(!G || !G._drag) return;
   if(e.pointerId !== G._drag.pointerId) return;
   const rect = G.canvas.getBoundingClientRect();
-  G._drag.px = e.clientX - rect.left;
-  G._drag.py = e.clientY - rect.top;
+  const _s = _canvasScale(rect);
+  G._drag.px = (e.clientX - rect.left) * _s;
+  G._drag.py = (e.clientY - rect.top) * _s;
   // Belirgin hareket olduysa "sürükleniyor" say (basit tıklamadan ayır)
   G._drag.moved = true;
   draw();
@@ -1292,7 +1299,8 @@ function onBoardClick(e){
   if(status === 'checkmate' || status === 'stalemate') return;   // oyun bitti
 
   const rect = G.canvas.getBoundingClientRect();
-  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const _s3 = _canvasScale(rect);
+  const px = (e.clientX - rect.left) * _s3, py = (e.clientY - rect.top) * _s3;
   const sq = xyToCell(px, py);
   if(!sq) return;
 
