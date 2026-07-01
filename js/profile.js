@@ -359,55 +359,12 @@ function getUIScale(){
 function applyUIScale(scale){
   scale = Math.max(0.8, Math.min(1.3, scale));
   try{ localStorage.setItem('hero_ui_scale', String(scale)); }catch(e){}
-  // ── ÖLÇEKLEME: transform:scale kullanılır (zoom DEĞİL) ──
-  // Neden: zoom, getBoundingClientRect() ile clientX'i farklı uzaya koyar → drag/dokunma kayar.
-  // transform:scale ise HER İKİSİNİ de aynı görsel uzayda tutar → tıklama/sürükleme doğru çalışır.
-  const b = document.body;
-  // Önce zoom'u temizle (eski değer kalmışsa)
-  try{ b.style.zoom = ''; }catch(e){}
-  if(scale === 1){
-    b.style.transform = '';
-    b.style.transformOrigin = '';
-    b.style.width = '';
-    b.style.minHeight = '';
-    document.documentElement.style.fontSize = '';
-  } else {
-    b.style.transformOrigin = 'top left';
-    b.style.transform = 'scale(' + scale + ')';
-    // Ölçek küçülünce boşluk kalmasın, büyüyünce taşmasın: ters oranla genişlik/yükseklik
-    b.style.width = (100 / scale) + '%';
-    b.style.minHeight = (100 / scale) + 'vh';
-    // rem kullanan elemanlar için font-size de ölçekle (uyum)
-    document.documentElement.style.fontSize = (16 * scale) + 'px';
-  }
-  // Global ölçek faktörü — drag/koordinat kodları gerekirse kullanabilir
-  try{ window.__uiScale = scale; }catch(e){}
-  // FAB'ları ölçekten muaf tut: ters-ölçek ver → görsel boyut sabit kalır,
-  // drag koordinatı (left/top px) ölçeksiz uzayda yorumlanır → parmaktan kaymaz.
-  try{ _counterScaleFabs(scale); }catch(e){}
-}
-
-// FAB / sabit araç butonlarını UI ölçeğinden muaf tutar (ters ölçek)
-// Press animasyonu (tw-press) sırasında dokunmaz — çakışma önlenir.
-function _counterScaleFabs(scale){
-  const inv = scale === 1 ? '' : ('scale(' + (1/scale) + ')');
-  ['gemFloatBtn','adminFloatWrap'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    // Basma animasyonu oynuyorsa ters-ölçeği erteleme (animasyon bitince tekrar uygulanır — periyodik timer var)
-    if(el.classList && el.classList.contains('tw-press')) return;
-    el.style.transform = inv;
-    el.style.transformOrigin = 'top right';
-  });
-}
-// Ölçek uygulandıktan sonra FAB'lar DOM'a geç eklenebilir — periyodik güvence (ilk 5 sn)
-if(typeof document !== 'undefined'){
-  let _fabTries = 0;
-  const _fabTimer = setInterval(()=>{
-    _fabTries++;
-    try{ const sc = getUIScale(); if(sc !== 1) _counterScaleFabs(sc); }catch(e){}
-    if(_fabTries >= 10) clearInterval(_fabTimer);   // 10 × 500ms = 5 sn
-  }, 500);
+  // ── SADECE font-size (rem) ölçekleme ──
+  // zoom ve transform:scale, position:fixed elemanları (FAB, alt nav menü) ve
+  // canvas/drag koordinatlarını bozuyor. En güvenli yöntem yalnızca root font-size:
+  // rem/em kullanan metin ve boşluklar ölçeklenir, fixed elemanlar ve koordinatlar BOZULMAZ.
+  document.documentElement.style.fontSize = (16 * scale) + 'px';
+  try{ window.__uiScale = 1; }catch(e){}   // koordinatlar ölçeksiz → drag/FAB tutarlı
 }
 // Açılışta uygula
 if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){} }
