@@ -1006,7 +1006,9 @@ function bindZoomDock(){
   });
   dock.addEventListener('pointermove', e=>{
     if(!dragging) return;
-    const mx=e.clientX-sx, my=e.clientY-sy;
+    // ZOOM telafisi: Arayüz Boyutu (body zoom) aktifken clientX ölçekli, rect ölçeksiz gelir.
+    const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1;
+    const mx=(e.clientX-sx)/_z, my=(e.clientY-sy)/_z;
     if(Math.abs(mx)+Math.abs(my)>6){ moved=true; hideZTip(); }
     if(moved){
       const nl=Math.max(2,Math.min(window.innerWidth-dock.offsetWidth-2, dx0+mx));
@@ -1276,7 +1278,7 @@ function onRackPointerMove(e){
   }
   if(!_drag.moved) return;
   e.preventDefault();
-  if(_drag.ghost){ _drag.ghost.style.left=e.clientX+'px'; _drag.ghost.style.top=e.clientY+'px'; }
+  if(_drag.ghost){ const _z=(window.__uiScale&&window.__uiScale!==1)?window.__uiScale:1; _drag.ghost.style.left=(e.clientX/_z)+'px'; _drag.ghost.style.top=(e.clientY/_z)+'px'; }
   highlightDrop(e.clientX, e.clientY);
 }
 function onRackPointerUp(e){
@@ -1386,7 +1388,7 @@ function onPendingPointerMove(e){
   }
   if(!_pdrag.moved) return;
   e.preventDefault();
-  if(_pdrag.ghost){ _pdrag.ghost.style.left=e.clientX+'px'; _pdrag.ghost.style.top=e.clientY+'px'; }
+  if(_pdrag.ghost){ const _z=(window.__uiScale&&window.__uiScale!==1)?window.__uiScale:1; _pdrag.ghost.style.left=(e.clientX/_z)+'px'; _pdrag.ghost.style.top=(e.clientY/_z)+'px'; }
   highlightDrop(e.clientX, e.clientY);
 }
 function onPendingPointerUp(e){
