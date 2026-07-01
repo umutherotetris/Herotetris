@@ -128,6 +128,62 @@ export async function hasPendingPrize(){
   }catch(e){ return false; }
 }
 
+// ── OTOMATİK ÖDÜL YATIRMA ──
+// Giriş/panel açılışında çağrılır. Geçen haftanın ödülünü talep beklemeden otomatik yatırır.
+export async function autoClaimPrize(){
+  const st = Auth.getState();
+  if(!st.uid) return { claimed:false };
+  const pwk = _prevWeekId();
+  try{
+    // Zaten alındı mı?
+    const cl = await fdb.get(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid));
+    if(cl.exists() && cl.val()) return { claimed:false };
+    // Sıralamada mı?
+    const lb = await fetchLeaderboard(pwk);
+    const rank = lb.findIndex(x=>x.uid===st.uid) + 1;
+    if(rank === 0) return { claimed:false };
+    const prize = prizeForRank(rank);
+    if(prize <= 0) return { claimed:false };
+    // Otomatik yatır
+    await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true);
+    await Store.addKaju(prize, 'tournament', '🏆 Turnuva ödülü (#'+rank+') — otomatik');
+    // İlk 3 → Sosyal Duvar
+    try{
+      if(rank <= 3){
+        const medal = rank===1?'🥇':rank===2?'🥈':'🥉';
+        await fdb.push(fdb.ref(db, 'achWall'), {
+          uid: st.uid, userName: st.displayName||'Oyuncu',
+          achId: 'trn_'+pwk+'_'+rank, achName: medal+' Haftalık turnuvada '+rank+'. oldu!',
+          icon: medal, isAdmin:false, ts: Date.now()
+        });
+      }
+    }catch(e){}
+    // Kutlama bildirimi
+    _showPrizeWon(rank, prize);
+    return { claimed:true, rank, prize };
+  }catch(e){ return { claimed:false }; }
+}
+
+// Ödül kazanma kutlaması (otomatik yatırınca)
+function _showPrizeWon(rank, prize){
+  try{
+    const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'🏅';
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:2147483644;background:linear-gradient(135deg,#1a1330,#0b0a16);border:1.5px solid rgba(255,215,64,.5);border-radius:16px;padding:16px 22px;box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 30px rgba(255,215,64,.35);text-align:center;max-width:88vw;animation:trnWonPop .4s cubic-bezier(.2,.9,.3,1.3)';
+    ov.innerHTML = '<div style="font-size:40px">'+medal+'</div>'
+      + '<div style="font-size:11px;color:#ffd54f;font-weight:800;letter-spacing:.5px;margin-top:4px">🏆 GEÇEN HAFTA TURNUVA ÖDÜLÜ</div>'
+      + '<div style="font-size:17px;font-weight:900;color:#fff;margin-top:3px">'+rank+'. oldun!</div>'
+      + '<div style="font-size:14px;color:#69F0AE;font-weight:800;margin-top:2px">+'+fmt(prize)+' Kaju hesabına yatırıldı</div>';
+    if(!document.getElementById('trnWonKeyframes')){
+      const sty=document.createElement('style'); sty.id='trnWonKeyframes';
+      sty.textContent='@keyframes trnWonPop{from{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.8)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}';
+      document.head.appendChild(sty);
+    }
+    document.body.appendChild(ov);
+    setTimeout(()=>{ ov.style.transition='opacity .4s,transform .4s'; ov.style.opacity='0'; ov.style.transform='translateX(-50%) translateY(-20px)'; setTimeout(()=>ov.remove(),400); }, 4500);
+  }catch(e){}
+}
+
 // ── UI ──
 let _tCss=false;
 function _ensureCss(){
@@ -166,10 +222,11 @@ function _ensureCss(){
 
 function _fmtRemain(ms){
   if(ms<=0) return 'bitti';
-  const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), m=Math.floor(ms%3600000/60000);
+  const d=Math.floor(ms/86400000), h=Math.floor(ms%86400000/3600000), m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
   if(d>0) return d+' gün '+h+' saat';
   if(h>0) return h+' saat '+m+' dk';
-  return m+' dk';
+  if(m>0) return m+' dk '+s+' sn';
+  return s+' sn';
 }
 
 export async function openTournament(){
@@ -183,8 +240,18 @@ export async function openTournament(){
 
   const bounds = weekBounds();
   const timerEl = ov.querySelector('#trnTimer');
-  const tick=()=>{ if(!document.body.contains(ov)) return; timerEl.innerHTML='Bu hafta bitmesine: <b>'+_fmtRemain(bounds.end-Date.now())+'</b>'; };
-  tick(); const ti=setInterval(tick, 30000);
+  const tick=()=>{
+    if(!document.body.contains(ov)) return;
+    const rem = bounds.end - Date.now();
+    const lastHour = rem <= 3600000 && rem > 0;   // son 1 saat
+    timerEl.innerHTML = 'Bu hafta bitmesine: <b>'+_fmtRemain(rem)+'</b>' + (lastHour ? ' 🔥' : '');
+    timerEl.style.color = lastHour ? '#ff8a80' : '';
+    timerEl.style.fontWeight = lastHour ? '900' : '';
+  };
+  tick();
+  // Son 1 saatte saniye başı, aksi halde 20 sn'de bir güncelle
+  const rem0 = bounds.end - Date.now();
+  const ti = setInterval(tick, (rem0 <= 3600000) ? 1000 : 20000);
 
   const body=ov.querySelector('#trnBody');
   const st=Auth.getState();
@@ -198,7 +265,7 @@ export async function openTournament(){
 
   let html='';
   if(pending){
-    html += '<button class="trn-claim" id="trnClaim">🎁 Geçen haftanın ödülünü al!</button>';
+    html += '<button class="trn-claim" id="trnClaim">🎁 Geçen haftanın ödülünü şimdi al!</button>';
   }
   // Benim durumum
   html += '<div class="trn-me"><div class="trn-me-rank">'+(myRank>0?'#'+myRank:'—')+'</div>'
@@ -220,7 +287,7 @@ export async function openTournament(){
         + '</div>';
     });
   }
-  html += '<div class="trn-info">📋 <b>Nasıl puan toplanır?</b><br>• Her maç: +10 puan<br>• Galibiyet: +25 puan (ekstra)<br>• Tetris/Kelimecik yüksek skor: bonus puan<br><br>🗓️ Turnuva her pazartesi sıfırlanır. Hafta sonunda ilk 25 oyuncu Kaju kazanır. Ödülünü ertesi hafta bu ekrandan al!</div>';
+  html += '<div class="trn-info">📋 <b>Nasıl puan toplanır?</b><br>• Her maç: +10 puan<br>• Galibiyet: +30 puan (10+20)<br>• Beraberlik: +15 puan (10+5)<br>• Tetris yüksek skor: bonus (maks +25)<br><br>🗓️ Turnuva her pazartesi 00:00 başlar, pazar 23:59 biter.<br>🏆 Hafta sonunda ilk 25 oyuncu Kaju kazanır.<br>🎁 <b>Ödülün otomatik yatırılır</b> — ertesi hafta giriş yapman yeterli!</div>';
 
   body.innerHTML=html;
   const cb=body.querySelector('#trnClaim');
@@ -230,4 +297,4 @@ export async function openTournament(){
 // Global erişim
 try{ window.Hero=window.Hero||{}; window.Hero.openTournament=openTournament; }catch(e){}
 
-export default { openTournament, addTournamentPoints, hasPendingPrize };
+export default { openTournament, addTournamentPoints, hasPendingPrize, autoClaimPrize };

@@ -174,9 +174,11 @@ async function _trackQuestSafe(eventType, data){
   try{
     if(!_Trn){ _Trn = await import('./tournament.js'); }
     if(_Trn && _Trn.addTournamentPoints){
-      if(eventType === 'game_played') _Trn.addTournamentPoints(10, 'maç');
-      else if(eventType === 'game_won') _Trn.addTournamentPoints(25, 'galibiyet');
-      else if(eventType === 'score_tetris' && data && data.score >= 10000) _Trn.addTournamentPoints(Math.floor(data.score/2000), 'tetris skor');
+      // Dengeli puan: katılım ödüllü ama galibiyet öne çıkar, beraberlik de değerli
+      if(eventType === 'game_played') _Trn.addTournamentPoints(10, 'maç');          // her maç (katılım)
+      else if(eventType === 'game_won') _Trn.addTournamentPoints(20, 'galibiyet');   // +20 ek → galibiyet toplam 30
+      else if(eventType === 'game_draw') _Trn.addTournamentPoints(5, 'beraberlik');  // +5 ek → beraberlik toplam 15
+      else if(eventType === 'score_tetris' && data && data.score >= 10000) _Trn.addTournamentPoints(Math.min(Math.floor(data.score/2000), 25), 'tetris skor'); // maks 25 (aşırı skoru sınırla)
     }
   }catch(e){ /* turnuva opsiyonel */ }
 }
@@ -222,6 +224,8 @@ export async function recordMatchResult(game, result, oppUid, oppName){
   s.lastResult = result; s.lastGame = game; s.updatedAt = Date.now();
   player.stats = s;
   emit();
+  // Beraberlikte turnuva puanı (game_played zaten oyun tarafında tetikleniyor, draw ek puan)
+  if(result === 'draw'){ try{ _trackQuestSafe('game_draw', { game }); }catch(e){} }
   // Önemli seri kilometre taşlarını Sosyal Duvar'a (achWall) yaz
   try{
     if(result === 'win' && [3,5,10,20].includes(s.streak)){
