@@ -359,7 +359,19 @@ function getUIScale(){
 function applyUIScale(scale){
   scale = Math.max(0.8, Math.min(1.3, scale));
   try{ localStorage.setItem('hero_ui_scale', String(scale)); }catch(e){}
+  // font-size (rem kullanan elemanlar icin)
   document.documentElement.style.fontSize = (16 * scale) + 'px';
+  // zoom (px dahil HER SEYI olcekler; Chrome/Samsung Internet/Edge destekler)
+  // body'ye uygula ki modallar/overlay'ler de olceklensin
+  try{
+    document.body.style.zoom = scale;
+  }catch(e){}
+  // zoom desteklenmeyen tarayicilar icin transform fallback (nadiren gerekir)
+  if(!('zoom' in document.body.style)){
+    document.body.style.transform = scale===1 ? '' : ('scale('+scale+')');
+    document.body.style.transformOrigin = 'top center';
+    document.body.style.width = scale===1 ? '' : (100/scale + '%');
+  }
 }
 // Açılışta uygula
 if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){} }
@@ -368,6 +380,7 @@ function openSettings(){
   if(byId('setModal')) return;
   const ov=document.createElement('div'); ov.id='setModal'; ov.className='nick-modal-ov';
   const inner=document.createElement('div'); inner.className='nick-modal';
+  inner.style.maxHeight='88vh'; inner.style.overflowY='auto'; inner.style.webkitOverflowScrolling='touch';
   const st=Auth.getState();
   const fabOn=setOn('hero_set_fabs',true);
   const hfOn=setOn('hero_set_hidefriends',false);
