@@ -786,7 +786,10 @@ function makeFabDraggable(fab, onMove){
   fab.addEventListener('pointerdown', (e) => { st.on = true; st.moved = false; st.sx = e.clientX; st.sy = e.clientY; const r = fab.getBoundingClientRect(); st.sl = r.left; st.st = r.top; if(fab.setPointerCapture) fab.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
   fab.addEventListener('pointermove', (e) => {
     if(!st.on) return;
-    const dx = e.clientX - st.sx, dy = e.clientY - st.sy;
+    // ZOOM telafisi: Arayüz Boyutu (body zoom) aktifken clientX ölçekli, getBoundingClientRect ölçeksiz gelir.
+    // dx/dy'yi zoom faktörüne bölerek st.sl/st.st (ölçeksiz) ile aynı uzaya getir → FAB parmaktan kaymaz.
+    const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1;
+    const dx = (e.clientX - st.sx) / _z, dy = (e.clientY - st.sy) / _z;
     if(Math.abs(dx) > 5 || Math.abs(dy) > 5) st.moved = true;
     if(!st.moved) return;
     const l = Math.max(4, Math.min(window.innerWidth - 54, st.sl + dx));
@@ -2068,7 +2071,7 @@ async function clearNotifs(){
 function makePanelDrag(panel, handle){
   const st = { on:false, sx:0, sy:0, pl:0, pt:0 };
   handle.addEventListener('pointerdown', (e) => { if(e.target.closest('button')) return; if(curSize() === 'full') return; st.on = true; st.sx = e.clientX; st.sy = e.clientY; const r = panel.getBoundingClientRect(); st.pl = r.left; st.pt = r.top; if(handle.setPointerCapture) handle.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
-  handle.addEventListener('pointermove', (e) => { if(!st.on) return; const l = Math.max(8, Math.min(window.innerWidth - panel.offsetWidth - 8, st.pl + e.clientX - st.sx)); const t = Math.max(8, Math.min(window.innerHeight - 120, st.pt + e.clientY - st.sy)); panel.style.left = l+'px'; panel.style.right = 'auto'; panel.style.top = t+'px'; panel.style.bottom = 'auto'; });
+  handle.addEventListener('pointermove', (e) => { if(!st.on) return; const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1; const l = Math.max(8, Math.min(window.innerWidth - panel.offsetWidth - 8, st.pl + (e.clientX - st.sx)/_z)); const t = Math.max(8, Math.min(window.innerHeight - 120, st.pt + (e.clientY - st.sy)/_z)); panel.style.left = l+'px'; panel.style.right = 'auto'; panel.style.top = t+'px'; panel.style.bottom = 'auto'; });
   handle.addEventListener('pointerup', () => { st.on = false; });
   handle.addEventListener('pointercancel', () => { st.on = false; });
 }

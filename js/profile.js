@@ -359,12 +359,15 @@ function getUIScale(){
 function applyUIScale(scale){
   scale = Math.max(0.8, Math.min(1.3, scale));
   try{ localStorage.setItem('hero_ui_scale', String(scale)); }catch(e){}
-  // ── SADECE font-size (rem) ölçekleme ──
-  // zoom ve transform:scale, position:fixed elemanları (FAB, alt nav menü) ve
-  // canvas/drag koordinatlarını bozuyor. En güvenli yöntem yalnızca root font-size:
-  // rem/em kullanan metin ve boşluklar ölçeklenir, fixed elemanlar ve koordinatlar BOZULMAZ.
+  // ── ZOOM yöntemi ──
+  // zoom, position:fixed elemanları (FAB, alt nav menü) BOZMAZ ve her şeyi (px dahil) ölçekler.
+  // Tek yan etkisi drag koordinatının kayması — bunu window.__uiScale ile telafi ediyoruz
+  // (canvas oyunları getBoundingClientRect oranıyla, FAB drag'ı __uiScale faktörüyle).
+  try{ document.body.style.zoom = (scale === 1 ? '' : scale); }catch(e){}
+  // zoom'u desteklemeyen tarayıcı olursa font-size en azından metni ölçeklesin
   document.documentElement.style.fontSize = (16 * scale) + 'px';
-  try{ window.__uiScale = 1; }catch(e){}   // koordinatlar ölçeksiz → drag/FAB tutarlı
+  // Drag/koordinat kodları için ölçek faktörü (zoom aktifken kayma telafisi)
+  try{ window.__uiScale = scale; }catch(e){}
 }
 // Açılışta uygula
 if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){} }
