@@ -1201,14 +1201,16 @@ function _canPlayNow(){
   return true;
 }
 function _canvasScale(rect){
-  // Görsel boyut (rect) ile mantıksal boyut (G.boardPx) oranı — UI ölçeği/CSS farkına dayanıklı
+  // Görsel boyut (rect) ile mantıksal boyut (G.boardPx) oranı — CSS farkına dayanıklı
   const s = (rect && rect.width && G.boardPx) ? (G.boardPx / rect.width) : 1;
   return s;
 }
+// ZOOM telafisi: body zoom aktifken clientX ölçekli gelir, rect ölçeksiz. clientX'i zoom'a böl.
+function _zc(v){ const z=(window.__uiScale&&window.__uiScale!==1)?window.__uiScale:1; return v/z; }
 function _eventCell(e){
   const rect = G.canvas.getBoundingClientRect();
   const s = _canvasScale(rect);
-  const px = (e.clientX - rect.left) * s, py = (e.clientY - rect.top) * s;
+  const px = (_zc(e.clientX) - rect.left) * s, py = (_zc(e.clientY) - rect.top) * s;
   return { sq: xyToCell(px, py), px, py };
 }
 
@@ -1240,8 +1242,8 @@ function onBoardPointerMove(e){
   if(e.pointerId !== G._drag.pointerId) return;
   const rect = G.canvas.getBoundingClientRect();
   const _s = _canvasScale(rect);
-  G._drag.px = (e.clientX - rect.left) * _s;
-  G._drag.py = (e.clientY - rect.top) * _s;
+  G._drag.px = (_zc(e.clientX) - rect.left) * _s;
+  G._drag.py = (_zc(e.clientY) - rect.top) * _s;
   // Belirgin hareket olduysa "sürükleniyor" say (basit tıklamadan ayır)
   G._drag.moved = true;
   draw();
@@ -1300,7 +1302,7 @@ function onBoardClick(e){
 
   const rect = G.canvas.getBoundingClientRect();
   const _s3 = _canvasScale(rect);
-  const px = (e.clientX - rect.left) * _s3, py = (e.clientY - rect.top) * _s3;
+  const px = (_zc(e.clientX) - rect.left) * _s3, py = (_zc(e.clientY) - rect.top) * _s3;
   const sq = xyToCell(px, py);
   if(!sq) return;
 
