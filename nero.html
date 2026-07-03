@@ -1,28 +1,2295 @@
 <!DOCTYPE html>
+<!-- ════════════════════════════════════════════════════════════════
+     SÜKÛN v1.0 — Tasavvufî Frekans Üreticisi & Zikir Terapisi
+     Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
+     Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
+     ════════════════════════════════════════════════════════════════ -->
 <html lang="tr">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#0A0B1A"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>NeuroSync AI Ultra</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07110e">
+<meta name="description" content="Tasavvufî frekans üreticisi, ambiyans mikseri ve zikir terapisi">
+<title>SÜKÛN ۞ Birleşik — Frekans · Zikir · Tekke · NeuroSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Amiri:wght@400;700&family=Figtree:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ─── RESET & BASE ─── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;-webkit-tap-highlight-color:transparent}
+/* ─────────── 0. TEMEL & DEĞİŞKENLER ─────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#05090c;
+  --panel:rgba(13,27,24,.74);
+  --line:rgba(201,162,39,.16);
+  --line2:rgba(201,162,39,.34);
+  --gold:#c9a227;
+  --goldh:#ecd27e;
+  --ivory:#efe7d3;
+  --mut:#93a89e;
+  --dim:#5d7168;
+  --danger:#c25b4e;
+  --r:16px;
+  --fD:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --fA:'Amiri','Scheherazade New',serif;
+  --fB:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
+  font-family:var(--fB);color:var(--ivory);min-height:100vh;line-height:1.45;
+  background:
+    radial-gradient(1100px 640px at 50% -8%, rgba(19,64,53,.55), transparent 62%),
+    radial-gradient(860px 620px at 88% 108%, rgba(15,34,66,.45), transparent 60%),
+    linear-gradient(180deg,#081310,#050b0e 55%,#04070a);
+  background-attachment:fixed;
+}
+/* Girih (sekiz köşeli yıldız) dokusu — tıklamayı asla engellemez */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='none' stroke='%23c9a227' stroke-opacity='.055'%3E%3Crect x='30' y='30' width='36' height='36'/%3E%3Crect x='30' y='30' width='36' height='36' transform='rotate(45 48 48)'/%3E%3C/g%3E%3C/svg%3E");
+}
+/* Nefes alan nur — yine pointer-events:none */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(560px 340px at 50% 16%, rgba(201,162,39,.055), transparent 70%);
+  animation:breath 9s ease-in-out infinite;
+}
+@keyframes breath{0%,100%{opacity:.45}50%{opacity:1}}
+.wrap{max-width:740px;margin:0 auto;padding:14px 12px 40px;position:relative;z-index:1}
+
+/* ─────────── 1. BAŞLIK ─────────── */
+header{text-align:center;padding:12px 0 14px}
+.logo:not(#ns *){font-size:42px;line-height:1;color:var(--goldh);text-shadow:0 0 28px rgba(201,162,39,.55);display:block}
+h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;text-indent:.38em;margin-top:4px}
+.sub{font-size:10.5px;color:var(--mut);letter-spacing:.26em;text-transform:uppercase;margin-top:3px}
+
+/* ─────────── 2. KARTLAR & GENEL ─────────── */
+.card:not(#ns *){
+  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,0)), var(--panel);
+  border:1px solid var(--line);border-radius:var(--r);padding:14px;
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+}
+.secT{font-family:var(--fD);font-weight:600;font-size:19px;color:var(--goldh);letter-spacing:.06em;margin:18px 2px 10px;display:flex;align-items:center;gap:10px}
+.secT::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.hint{font-size:11.5px;color:var(--dim);margin:10px 4px 0;line-height:1.5}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+select:not(#ns *){
+  font-family:inherit;font-size:12.5px;color:var(--ivory);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;
+  padding:7px 8px;outline:none;
+}
+select option{background:#0b1512;color:var(--ivory)}
+.btn{
+  padding:9px 14px;border-radius:11px;font-weight:600;font-size:13px;
+  border:1px solid var(--line2);color:var(--goldh);
+  background:linear-gradient(180deg,rgba(201,162,39,.14),rgba(201,162,39,.04));
+  transition:transform .12s, box-shadow .2s;
+}
+.btn:active{transform:scale(.96)}
+.btn.danger{color:#e8b1a8;border-color:rgba(194,91,78,.45);background:linear-gradient(180deg,rgba(194,91,78,.16),rgba(194,91,78,.04))}
+.btn.playing{box-shadow:0 0 18px rgba(201,162,39,.35), inset 0 0 12px rgba(201,162,39,.15)}
+
+/* ─────────── 3. ANA SES ÇUBUĞU ─────────── */
+.masterBar{display:flex;align-items:center;gap:10px;padding:10px 12px;position:sticky;top:8px;z-index:50}
+.mIc{font-size:16px;flex:none}
+.masterBar input[type=range]:not(#ns *){flex:1}
+#timerBadge{font-size:11px;color:var(--goldh);min-width:0;white-space:nowrap}
+
+/* ─────────── 4. SEKMELER ─────────── */
+.tabs{display:flex;gap:4px;margin:14px 0 14px;padding:4px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.tab{flex:1;text-align:center;padding:10px 4px;border-radius:10px;color:var(--mut);font-weight:600;font-size:13px;letter-spacing:.03em;transition:.2s}
+.tab.act{color:var(--goldh);background:linear-gradient(180deg,rgba(201,162,39,.16),rgba(201,162,39,.05));box-shadow:inset 0 0 0 1px var(--line2)}
+.tabTekke{cursor:pointer;font:inherit;flex:.9;display:flex;align-items:center;justify-content:center;padding:10px 4px;border-radius:10px;text-decoration:none;color:var(--goldh);font-weight:600;font-size:13px;letter-spacing:.03em;border:1px solid var(--line2);background:rgba(201,162,39,.07);box-shadow:0 0 14px rgba(201,162,39,.08) inset}
+
+/* ─────────── 5. KAYDIRICILAR (sliders) ─────────── */
+input[type=range]:not(#ns *){-webkit-appearance:none;appearance:none;background:transparent;height:26px;width:100%;--val:50%}
+input[type=range]:not(#ns *)::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--gold) var(--val),rgba(255,255,255,.12) var(--val))}
+input[type=range]:not(#ns *)::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;margin-top:-6px;background:radial-gradient(circle at 35% 35%,#f4e2a4,var(--gold));border:1px solid #7a6118;box-shadow:0 0 9px rgba(201,162,39,.6)}
+input[type=range]:not(#ns *)::-moz-range-track{height:4px;border-radius:4px;background:rgba(255,255,255,.12)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:4px;background:var(--gold)}
+input[type=range]:not(#ns *)::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f4e2a4,var(--gold));border:1px solid #7a6118;box-shadow:0 0 9px rgba(201,162,39,.6)}
+.sldRow{display:flex;align-items:center;gap:10px;margin:6px 0}
+.sldRow label{font-size:12px;color:var(--mut);min-width:74px}
+.sldRow input{flex:1}
+.valB{font-size:11.5px;color:var(--goldh);min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ─────────── 6. AÇ/KAPAT ANAHTARI ─────────── */
+.sw{position:relative;width:42px;height:23px;flex:none;border-radius:20px;background:rgba(255,255,255,.09);border:1px solid var(--line);transition:.25s}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#7d938a;transition:.25s}
+.sw.on{background:linear-gradient(90deg,#6d5410,#c9a227);border-color:var(--line2)}
+.sw.on::after{left:21px;background:#fff7e0;box-shadow:0 0 9px rgba(236,210,126,.9)}
+
+/* ─────────── 7. AMBİYANS MİKSERİ ─────────── */
+.sessRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sess{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.03);transition:.2s}
+.sess:active{transform:scale(.97)}
+.sess .sIc{font-size:20px}
+.sess b{font-size:12px;color:var(--ivory)}
+.sess small{font-size:9.5px;color:var(--dim)}
+.mixGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
+.chn{padding:11px 12px 8px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--panel);transition:border-color .3s, box-shadow .3s}
+.chn.on{border-color:var(--line2);box-shadow:0 0 16px rgba(201,162,39,.12), inset 0 0 20px rgba(201,162,39,.05)}
+.chTop{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.chIc{font-size:19px;flex:none}
+.chName{flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.15}
+.chName small{display:block;font-weight:400;font-size:10px;color:var(--dim)}
+
+/* ─────────── 8. FREKANS MODÜLÜ ─────────── */
+.orbWrap{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.orb{
+  width:64px;height:64px;flex:none;border-radius:50%;position:relative;
+  background:radial-gradient(circle at 38% 32%,#f2dc9b,#c9a227 45%,#6d5410 78%,#3c2f09);
+  box-shadow:0 0 26px rgba(201,162,39,.35);
+  animation:orbP var(--bd,1s) ease-in-out infinite;animation-play-state:paused;opacity:.45;transition:opacity .5s;
+}
+.orb.live{animation-play-state:running;opacity:1}
+@keyframes orbP{0%,100%{transform:scale(.82);box-shadow:0 0 12px rgba(201,162,39,.25)}50%{transform:scale(1);box-shadow:0 0 34px rgba(201,162,39,.6)}}
+.bandInfo b{font-family:var(--fD);font-size:21px;color:var(--goldh);letter-spacing:.04em}
+.bandInfo p{font-size:12px;color:var(--mut)}
+.seg{display:flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:11px;padding:3px;margin:10px 0}
+.seg button{flex:1;padding:7px 4px;border-radius:8px;font-size:12px;font-weight:600;color:var(--mut)}
+.seg button.act{color:var(--goldh);background:rgba(201,162,39,.13);box-shadow:inset 0 0 0 1px var(--line2)}
+.bandChips{display:flex;gap:4px;margin:2px 0 8px}
+.bandChips span{flex:1;text-align:center;font-size:9.5px;padding:3px 0;border-radius:7px;color:var(--dim);border:1px solid transparent}
+.bandChips span.act{color:var(--goldh);border-color:var(--line2);background:rgba(201,162,39,.08)}
+.frBtns{display:flex;gap:8px;margin-top:10px}
+.frBtns .btn{flex:1;text-align:center;padding:12px}
+.presetGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
+.pre{
+  text-align:left;padding:12px;border-radius:14px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--panel);
+  display:flex;flex-direction:column;gap:3px;transition:.2s;
+}
+.pre:active{transform:scale(.97)}
+.pre.act{border-color:var(--line2);box-shadow:0 0 16px rgba(201,162,39,.16)}
+.pre .pIc{font-size:20px}
+.pre b{font-size:13px;line-height:1.2}
+.pre small{font-size:10.5px;color:var(--mut);line-height:1.35}
+#journeyBox{margin-top:12px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line2);background:rgba(201,162,39,.05)}
+#journeyBox b{color:var(--goldh);font-size:13px}
+#journeyBox p{font-size:11.5px;color:var(--mut);margin-top:2px}
+
+/* ─────────── 9. ZİKİR MODÜLÜ ─────────── */
+.catRow{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.catRow::-webkit-scrollbar{display:none}
+.cat{flex:none;padding:8px 13px;border-radius:20px;font-size:12px;font-weight:600;color:var(--mut);border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.cat.act{color:var(--goldh);border-color:var(--line2);background:rgba(201,162,39,.1)}
+.zList{display:flex;flex-wrap:wrap;gap:6px;max-height:142px;overflow-y:auto;padding:2px 2px 8px;scrollbar-width:thin}
+.zList::-webkit-scrollbar{display:none}
+.zItem{flex:none;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:8px 12px;border-radius:12px;font-size:12px;color:var(--ivory);border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.zItem.act{color:var(--goldh);border-color:var(--line2);background:rgba(201,162,39,.1)}
+
+/* İmza sahne: dönen altın halkalar içinde yaşayan zikir */
+.zStage{position:relative;min-height:295px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;overflow:hidden;text-align:center;padding:26px 16px}
+.rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.ring{position:absolute;border-radius:50%}
+.r1:not(#ns *){width:300px;height:300px;border:1px dashed rgba(201,162,39,.4);animation:spin 85s linear infinite}
+.r2:not(#ns *){width:344px;height:344px;border:1px solid rgba(201,162,39,.14);animation:spin 140s linear infinite reverse}
+.r3:not(#ns *){width:252px;height:252px;border:1px dotted rgba(236,210,126,.28);animation:spin 60s linear infinite reverse}
+.rStar{position:absolute;font-size:13px;color:var(--gold);opacity:.55;text-shadow:0 0 8px rgba(201,162,39,.6)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.zGlow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(201,162,39,.13),transparent 62%);animation:breath 7s ease-in-out infinite}
+.zAr{font-family:var(--fA);font-size:33px;line-height:1.7;color:var(--goldh);direction:rtl;text-shadow:0 0 26px rgba(201,162,39,.35);position:relative;max-width:100%}
+.zTr{font-family:var(--fD);font-style:italic;font-weight:600;font-size:25px;line-height:1.25;color:var(--ivory);position:relative;max-width:30ch}
+.zMean{font-size:12px;color:var(--mut);max-width:36ch;position:relative}
+.swap .zAr,.swap .zTr,.swap .zMean{animation:swapIn .55s ease}
+@keyframes swapIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}
+.pulse{animation:zp .45s ease}
+@keyframes zp{0%{transform:scale(1)}35%{transform:scale(1.055);text-shadow:0 0 34px rgba(236,210,126,.65)}100%{transform:scale(1)}}
+
+/* Sayaç & kontroller */
+.zCtl{margin-top:10px}
+.cntRow{display:flex;align-items:center;gap:14px}
+.cntNums{flex:1}
+.cntBig{font-family:var(--fD);font-weight:600;font-size:44px;line-height:1;color:var(--goldh);font-variant-numeric:tabular-nums}
+.cntSub{font-size:12px;color:var(--mut);margin-top:2px}
+.progWrap{position:relative;width:68px;height:68px;flex:none}
+.progWrap svg{transform:rotate(-90deg)}
+.progWrap .pc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--goldh);font-weight:600}
+.zOpts{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:12px 0 4px}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--mut)}
+.tapBtn{
+  width:100%;margin-top:10px;padding:19px;border-radius:15px;font-size:15px;font-weight:700;letter-spacing:.14em;
+  color:var(--goldh);border:1px solid var(--line2);
+  background:radial-gradient(140% 200% at 50% -40%,rgba(201,162,39,.24),rgba(201,162,39,.05));
+  box-shadow:inset 0 0 22px rgba(201,162,39,.08);
+  transition:transform .1s;user-select:none;-webkit-user-select:none;
+}
+.tapBtn:active{transform:scale(.975)}
+.zBtns{display:flex;gap:8px;margin-top:9px}
+.zBtns .btn{flex:1;text-align:center}
+.statLine{text-align:center;font-size:11.5px;color:var(--dim);margin-top:12px}
+.statLine b{color:var(--goldh)}
+
+/* ─────────── 10. ALT BİLGİ & ORTAK ─────────── */
+section[hidden]{display:none}
+.chipLbl{font-size:9px;letter-spacing:.14em;color:var(--dim);margin:10px 2px 4px;display:flex;justify-content:space-between;align-items:baseline}
+.chipLbl small{letter-spacing:.06em;color:var(--gold);font-size:9px}
+#bandChips span{cursor:pointer}
+.wrapChips{flex-wrap:wrap}
+.wrapChips span{flex:0 0 auto;min-width:46px;padding:4px 9px;cursor:pointer;border-color:var(--line);color:var(--mut)}
+.wrapChips span:active{transform:scale(.94)}
+.wrapChips span.act{color:var(--goldh);border-color:var(--line2);background:rgba(201,162,39,.1)}
+.lrLine{font-size:10.5px;color:var(--dim);text-align:center;margin-top:9px;min-height:14px;letter-spacing:.04em}
+.zTools{display:flex;flex-direction:column;gap:8px;margin:2px 0 10px}
+#zSearch{background:rgba(6,20,18,.6);border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ink);font:inherit;font-size:12.5px;outline:none;width:100%}
+#zSearch:focus{border-color:var(--line2)}
+#zSearch::placeholder{color:var(--dim)}
+.noHit{font-size:11px;color:var(--dim);padding:6px 4px}
+.zEb{margin-top:9px;font-size:10.5px;color:var(--gold);letter-spacing:.12em;position:relative;text-transform:uppercase}
+.ebBtn{background:rgba(201,162,39,.1);border:1px solid var(--line2);color:var(--goldh);border-radius:9px;padding:7px 11px;font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+.ebBtn:active{transform:scale(.96)}
+footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
+.hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+@media (max-width:420px){
+  .mixGrid,.presetGrid{grid-template-columns:1fr 1fr}
+  h1{font-size:26px}
+  .zAr{font-size:28px}.zTr{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ring,.orb,.zGlow,body::after{animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ═══ BAŞLIK ═══ -->
+  <header>
+    <span class="logo">۞</span>
+    <h1>SÜKÛN</h1>
+    <div class="sub">Tasavvufî Frekans &amp; Zikir Terapisi</div>
+  </header>
+
+  <!-- ═══ ANA SES ÇUBUĞU (Master) ═══ -->
+  <div class="card masterBar">
+    <span class="mIc">🔊</span>
+    <input type="range" id="masterVol" min="0" max="1" step="0.01" value="0.7" aria-label="Ana ses">
+    <span id="timerBadge"></span>
+    <select id="sleepTimer" aria-label="Uyku zamanlayıcısı">
+      <option value="0">⏳ Kapalı</option>
+      <option value="10">10 dk</option>
+      <option value="20">20 dk</option>
+      <option value="30">30 dk</option>
+      <option value="60">60 dk</option>
+    </select>
+    <button class="btn danger" id="stopAll">■</button>
+  </div>
+
+  <!-- ═══ SEKMELER ═══ -->
+  <nav class="tabs" role="tablist">
+    <button class="tab act" data-t="amb" role="tab">🌿 Ambiyans</button>
+    <button class="tab" data-t="frq" role="tab">〰 Frekanslar</button>
+    <button class="tab" data-t="zkr" role="tab">📿 Zikir</button>
+    <button class="tabTekke" id="tekkeTab" title="Dijital Tekke — katre, ebru ve haptik seyir">۞ Tekke</button>
+  </nav>
+
+  <!-- ═══════════ SEKME 1: AMBİYANS ═══════════ -->
+  <section id="tab-amb">
+    <div class="sessRow" id="sessRow"></div>
+    <div class="mixGrid" id="mixer"></div>
+    <p class="hint">💡 Tüm ambiyans sesleri (ney taksimi dâhil) cihazında gerçek zamanlı sentezlenir; internet ve ses dosyası gerektirmez. Gerçek bir kayıt kullanmak istersen kodun başındaki <b>SOUND_URLS</b> nesnesine mp3 bağlantısı yazman yeterli.</p>
+  </section>
+
+  <!-- ═══════════ SEKME 2: FREKANSLAR ═══════════ -->
+  <section id="tab-frq" hidden>
+      <button class="btn" id="neuroBtn" style="width:100%;margin-bottom:12px;border-color:rgba(56,232,255,.35);color:#8fe9ff;background:rgba(20,60,90,.18)">🧠 NeuroSync AI Ultra — gelişmiş nöro laboratuvarı aç</button>
+    <div class="card">
+      <div class="orbWrap">
+        <div class="orb" id="orb"></div>
+        <div class="bandInfo">
+          <b id="bandName">Theta</b>
+          <p id="bandDesc">Meditasyon • tefekkür</p>
+        </div>
+      </div>
+
+      <div class="seg" id="modeSeg">
+        <button data-m="bin" class="act">Binaural</button>
+        <button data-m="iso">İzokronik</button>
+        <button data-m="mix">Karma</button>
+      </div>
+
+      <div class="sldRow">
+        <label for="carSld">Taşıyıcı</label>
+        <input type="range" id="carSld" min="60" max="963" step="0.1" value="180">
+        <span class="valB" id="carVal">180.0 Hz</span>
+      </div>
+      <div class="sldRow">
+        <label for="beatSld">Vuruş</label>
+        <input type="range" id="beatSld" min="0.5" max="40" step="0.01" value="7.83">
+        <span class="valB" id="beatVal">7.83 Hz</span>
+      </div>
+      <div class="bandChips" id="bandChips">
+        <span data-b="delta">Delta</span><span data-b="theta">Theta</span><span data-b="alpha">Alfa</span><span data-b="beta">Beta</span><span data-b="gamma">Gama</span>
+      </div>
+      <div class="chipLbl">VURUŞ HIZLARI <small id="beatBandTag"></small></div>
+      <div class="bandChips wrapChips" id="beatChips"></div>
+      <div class="chipLbl">TAŞIYICI • SOLFEJ FREKANSLARI (Hz)</div>
+      <div class="bandChips wrapChips" id="carChips"></div>
+      <div class="lrLine" id="lrInfo"></div>
+      <div class="sldRow">
+        <label for="frVol">Şiddet</label>
+        <input type="range" id="frVol" min="0" max="1" step="0.01" value="0.5">
+        <span class="valB" id="frVolVal">%50</span>
+      </div>
+
+      <div class="frBtns">
+        <button class="btn" id="frToggle">▶ Frekansı Başlat</button>
+      </div>
+
+      <div id="journeyBox" hidden>
+        <b id="jName">—</b>
+        <p id="jInfo">—</p>
+      </div>
+
+      <div class="hpNote">🎧 Binaural etki yalnızca <b>kulaklıkla</b> oluşur; sol ve sağ kulağa ayrı frekans gönderilir.</div>
+    </div>
+
+    <h3 class="secT">Hazır Setler</h3>
+    <div class="presetGrid" id="presets"></div>
+  </section>
+
+  <!-- ═══════════ SEKME 3: ZİKİR ═══════════ -->
+  <section id="tab-zkr" hidden>
+    <div class="catRow" id="zCats"></div>
+    <div class="zTools">
+      <div class="seg" id="formSeg">
+        <button data-f="nida" class="act">Nidâ • «Yâ …»</button>
+        <button data-f="tev">Tevhid • «Lâ … illâllah»</button>
+      </div>
+      <input type="search" id="zSearch" placeholder="Esmâ ara… (ör. Latîf, şifa, rızık)" autocomplete="off">
+    </div>
+    <div class="zList" id="zList"></div>
+
+    <!-- İmza sahne: dönen halkalar içinde yaşayan zikir -->
+    <div class="card zStage" id="zStage">
+      <div class="zGlow"></div>
+      <div class="rings" id="ringHost">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+      </div>
+      <div class="zAr" id="zAr"></div>
+      <div class="zTr" id="zTr"></div>
+      <div class="zMean" id="zMean"></div>
+      <div class="zEb" id="zEb"></div>
+    </div>
+
+    <div class="card zCtl">
+      <div class="cntRow">
+        <div class="cntNums">
+          <div class="cntBig" id="cntBig">0</div>
+          <div class="cntSub" id="cntSub">Hedef 33 • Devir 0</div>
+        </div>
+        <div class="progWrap">
+          <svg width="68" height="68" viewBox="0 0 68 68">
+            <circle cx="34" cy="34" r="29" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/>
+            <circle id="progC" cx="34" cy="34" r="29" fill="none" stroke="#c9a227" stroke-width="4"
+              stroke-linecap="round" stroke-dasharray="182.2" stroke-dashoffset="182.2"/>
+          </svg>
+          <span class="pc" id="progPct">0%</span>
+        </div>
+      </div>
+
+      <div class="sldRow" style="margin-top:10px">
+        <label for="tempoSld">Tempo</label>
+        <input type="range" id="tempoSld" min="0.8" max="6" step="0.1" value="2">
+        <span class="valB" id="tempoVal">2.0 sn</span>
+      </div>
+      <div class="sldRow">
+        <label for="targetSel">Hedef</label>
+        <select id="targetSel" style="flex:1">
+          <option value="33">33</option>
+          <option value="99">99</option>
+          <option value="100">100</option>
+          <option value="300">300</option>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+          <option value="0">∞ Serbest</option>
+        </select>
+        <button class="ebBtn" id="ebBtn" title="Seçili esmânın ebced değerini hedef yap">🎯 Ebced</button>
+      </div>
+
+      <div class="zOpts">
+        <div class="opt"><span>🔉 Tesbih tık sesi</span><button class="sw on" id="optTick"></button></div>
+        <div class="opt"><span>📳 Titreşim</span><button class="sw on" id="optVib"></button></div>
+        <div class="opt"><span>📖 Anlamı göster</span><button class="sw on" id="optMean"></button></div>
+        <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv"></button></div>
+      </div>
+
+      <button class="tapBtn" id="tapBtn">SAYMAK İÇİN DOKUN ✦</button>
+      <div class="zBtns">
+        <button class="btn" id="autoBtn">▶ Otomatik Akış</button>
+        <button class="btn" id="resetBtn">↺ Sıfırla</button>
+      </div>
+      <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
+      <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
+    </div>
+  </section>
+
+  <footer>
+    🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
+    SÜKÛN v1.0 — kalp huzuru niyetiyle ✦
+  </footer>
+</div>
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════
+   1) YARDIMCILAR & GÜVENLİ DEPO
+   ════════════════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+/* localStorage erişilemezse (kısıtlı iframe vb.) bellekte tutar — asla hata fırlatmaz */
+const S=(()=>{const m={};let ok=false;
+  try{localStorage.setItem('_sukun_t','1');localStorage.removeItem('_sukun_t');ok=true;}catch(e){}
+  return{
+    get(k,d){try{const v=ok?localStorage.getItem(k):m[k];return v==null?d:JSON.parse(v);}catch(e){return d;}},
+    set(k,v){try{const s=JSON.stringify(v);if(ok)localStorage.setItem(k,s);else m[k]=s;}catch(e){}}
+  };
+})();
+
+/* ════════════════════════════════════════════════════════════
+   2) SES ÇEKİRDEĞİ — AudioContext, master, cami reverb'ü
+   ════════════════════════════════════════════════════════════ */
+let ctx=null, master=null, wetIn=null;
+
+function ac(){
+  if(!ctx){
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    master=ctx.createGain();
+    master.gain.value=parseFloat($('#masterVol').value);
+    master.connect(ctx.destination);
+    /* Kubbeli mekân hissi: üretilmiş impulse ile convolution reverb */
+    wetIn=ctx.createGain(); wetIn.gain.value=1;
+    const conv=ctx.createConvolver(); conv.buffer=makeIR(2.8,2.5);
+    wetIn.connect(conv); conv.connect(master);
+  }
+  if(ctx.state==='suspended') ctx.resume();
+  return ctx;
+}
+function makeIR(dur,decay){
+  const sr=ctx.sampleRate, len=Math.floor(sr*dur), buf=ctx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const d=buf.getChannelData(c);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);
+  }
+  return buf;
+}
+/* Kısa düğüm fabrikaları */
+const g=v=>{const x=ctx.createGain();x.gain.value=v;return x;};
+const osc=(f,type='sine')=>{const o=ctx.createOscillator();o.type=type;o.frequency.value=f;return o;};
+const flt=(type,f,q)=>{const x=ctx.createBiquadFilter();x.type=type;x.frequency.value=f;if(q!=null)x.Q.value=q;return x;};
+
+/* Döngülenebilir gürültü tamponları (white / pink / brown) */
+const NOISE={_c:{},get(type){
+  if(this._c[type])return this._c[type];
+  const sr=ctx.sampleRate, len=sr*3, b=ctx.createBuffer(1,len,sr), d=b.getChannelData(0);
+  if(type==='white'){for(let i=0;i<len;i++)d[i]=Math.random()*2-1;}
+  else if(type==='pink'){let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<len;i++){const w=Math.random()*2-1;
+      b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;
+      b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926;}}
+  else{let l=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;l=(l+.02*w)/1.02;d[i]=l*3.5;}}
+  this._c[type]=b;return b;
+}};
+const src=type=>{const s=ctx.createBufferSource();s.buffer=NOISE.get(type);s.loop=true;return s;};
+
+/* Kanal ortamı: başlatılan kaynakları, zamanlayıcıları ve düğümleri
+   toplar; kill() ile solarak temiz kapanır (sızıntı yok). */
+function makeEnv(){
+  const started=[], tos=[], ivs=[], nodes=[]; let alive=true;
+  return{
+    alive:()=>alive,
+    n(node){nodes.push(node);return node;},
+    play(s){nodes.push(s);try{s.start();}catch(e){}started.push(s);return s;},
+    later(fn,ms){if(!alive)return;const id=setTimeout(()=>{if(alive)fn();},ms);tos.push(id);return id;},
+    every(fn,ms){const id=setInterval(()=>{if(alive)fn();},ms);ivs.push(id);return id;},
+    kill(fadeSec,out){
+      alive=false; tos.forEach(clearTimeout); ivs.forEach(clearInterval);
+      if(out&&ctx){out.gain.setTargetAtTime(0.0001,ctx.currentTime,fadeSec/3);}
+      setTimeout(()=>{
+        started.forEach(s=>{try{s.stop();}catch(e){}});
+        nodes.forEach(n=>{try{n.disconnect();}catch(e){}});
+      },fadeSec*1000+120);
+    }
+  };
+}
+
+/* ════════════════════════════════════════════════════════════
+   3) AMBİYANS MODÜLÜ — 8 kanal, tamamı prosedürel sentez
+   Gerçek kayıt kullanmak istersen: SOUND_URLS.ocean='https://.../dalga.mp3'
+   O kanal otomatik olarak dosya döngüsüne geçer, sentez devre dışı kalır.
+   ════════════════════════════════════════════════════════════ */
+const SOUND_URLS={ney:null,rain:null,birds:null,forest:null,cicada:null,stream:null,wind:null,ocean:null};
+
+const AMBIENT_DEFS=[
+{id:'ney',icon:'🎼',name:'Ney Taksimi',desc:'uşşak makamı • sentez',cal:.9,wet:.6,build:(E,out)=>{
+  /* Nefesli, kamış tınılı prosedürel taksim */
+  const o=E.play(osc(220)), o2=E.play(osc(220,'sawtooth')), o2g=E.n(g(.055));
+  o2.connect(o2g);
+  const breath=E.play(src('pink')), bf=E.n(flt('bandpass',1200,2)), bg=E.n(g(0));
+  breath.connect(bf); bf.connect(bg);
+  const vib=E.play(osc(5.1)), vibg=E.n(g(0));
+  vib.connect(vibg); vibg.connect(o.frequency); vibg.connect(o2.frequency);
+  const tone=E.n(flt('lowpass',2300,.6)), amp=E.n(g(0));
+  o.connect(amp); o2g.connect(amp); amp.connect(tone); bg.connect(tone); tone.connect(out);
+  const SC=[220,246.94,261.63,293.66,329.63,349.23,392,440,493.88,523.25];
+  let idx=3;
+  function phrase(){
+    if(!E.alive())return;
+    const notes=3+Math.floor(rnd(0,5));
+    let t=ctx.currentTime+.1;
+    const t0=t;
+    amp.gain.cancelScheduledValues(t);
+    amp.gain.setValueAtTime(0.0001,t);
+    amp.gain.linearRampToValueAtTime(.5,t+.3);
+    o.frequency.cancelScheduledValues(t);
+    o.frequency.setValueAtTime(Math.max(60,o.frequency.value),t);
+    o2.frequency.cancelScheduledValues(t);
+    o2.frequency.setValueAtTime(Math.max(60,o2.frequency.value),t);
+    for(let i=0;i<notes;i++){
+      const drift=idx>6?-1:(idx<2?1:(Math.random()<.5?-1:1));
+      idx=clamp(idx+(Math.random()<.72?drift:drift*2),0,SC.length-1);
+      const f=SC[idx];
+      const dur=(i===notes-1)?rnd(1.8,4.2):rnd(.55,1.7);
+      o.frequency.exponentialRampToValueAtTime(f,t+.12);
+      o.frequency.setValueAtTime(f,t+dur);
+      o2.frequency.exponentialRampToValueAtTime(f,t+.12);
+      o2.frequency.setValueAtTime(f,t+dur);
+      /* her notada hafif nefes vurgusu + nota sonuna doğru açılan vibrato */
+      amp.gain.setTargetAtTime(.42,t,.06);
+      amp.gain.setTargetAtTime(.55,t+.18,.25);
+      vibg.gain.setValueAtTime(0,t);
+      vibg.gain.linearRampToValueAtTime(f*.0065,t+dur*.7);
+      bf.frequency.setTargetAtTime(f*3,t,.15);
+      t+=dur;
+    }
+    bg.gain.setTargetAtTime(.06,t0,.3);
+    bg.gain.setTargetAtTime(.0001,t,.3);
+    amp.gain.setTargetAtTime(.0001,t,.4);
+    vibg.gain.setTargetAtTime(0,t,.3);
+    E.later(phrase,(t-ctx.currentTime)*1000+rnd(2500,7000));
+  }
+  phrase();
+}},
+{id:'rain',icon:'🌧',name:'Yağmur',desc:'doğa • damla damla',cal:.85,wet:.2,build:(E,out)=>{
+  const n=E.play(src('white')), hp=E.n(flt('highpass',1100)), lp=E.n(flt('lowpass',9000)), base=E.n(g(.4));
+  n.connect(hp); hp.connect(lp); lp.connect(base); base.connect(out);
+  (function drop(){
+    E.later(()=>{
+      const t=ctx.currentTime, s=ctx.createBufferSource(); s.buffer=NOISE.get('white');
+      const bp=flt('bandpass',rnd(2200,6200),4), dg=g(0), pan=ctx.createStereoPanner();
+      pan.pan.value=rnd(-.85,.85);
+      s.connect(bp); bp.connect(dg); dg.connect(pan); pan.connect(out);
+      dg.gain.setValueAtTime(0,t);
+      dg.gain.linearRampToValueAtTime(rnd(.05,.13),t+.004);
+      dg.gain.exponentialRampToValueAtTime(.0001,t+rnd(.02,.05));
+      s.start(t,rnd(0,2),.08); drop();
+    },rnd(60,230));
+  })();
+}},
+{id:'birds',icon:'🐦',name:'Kuş Cıvıltıları',desc:'seher kuşları',cal:.9,wet:.35,build:(E,out)=>{
+  function singer(){
+    (function phrase(){
+      E.later(()=>{
+        const notes=2+Math.floor(rnd(0,5));
+        let t=ctx.currentTime+.05;
+        const pan=ctx.createStereoPanner(); pan.pan.value=rnd(-.85,.85); pan.connect(out); E.n(pan);
+        for(let i=0;i<notes;i++){
+          const o=ctx.createOscillator(); o.type='sine';
+          const f=rnd(2100,4400), dur=rnd(.05,.14);
+          o.frequency.setValueAtTime(f,t);
+          o.frequency.exponentialRampToValueAtTime(f*rnd(.6,1.6),t+dur);
+          const og=g(0);
+          og.gain.setValueAtTime(0,t);
+          og.gain.linearRampToValueAtTime(rnd(.07,.15),t+.012);
+          og.gain.exponentialRampToValueAtTime(.0001,t+dur);
+          o.connect(og); og.connect(pan);
+          o.start(t); o.stop(t+dur+.02);
+          t+=dur+rnd(.03,.16);
+        }
+        phrase();
+      },rnd(800,4200));
+    })();
+  }
+  singer(); singer(); /* iki bağımsız kuş */
+}},
+{id:'forest',icon:'🌲',name:'Orman Uğultusu',desc:'derin yeşil sükût',cal:.95,wet:.3,build:(E,out)=>{
+  const n=E.play(src('brown')), lp=E.n(flt('lowpass',300,.7)), bg=E.n(g(.7));
+  n.connect(lp); lp.connect(bg); bg.connect(out);
+  const lfo=E.play(osc(.045)), lg=E.n(g(.22)); lfo.connect(lg); lg.connect(bg.gain);
+  /* yaprak hışırtısı katmanı */
+  const p=E.play(src('pink')), hp=E.n(flt('highpass',2600)), pg=E.n(g(.045));
+  p.connect(hp); hp.connect(pg); pg.connect(out);
+  const lfo2=E.play(osc(.09)), lg2=E.n(g(.028)); lfo2.connect(lg2); lg2.connect(pg.gain);
+}},
+{id:'cicada',icon:'🦗',name:'Ağustos Böceği',desc:'yaz gecesi ritmi',cal:.55,wet:.25,build:(E,out)=>{
+  function cic(center,ringHz,base){
+    const n=E.play(src('white')), bp=E.n(flt('bandpass',center,9)), rg=E.n(g(0));
+    rg.gain.value=0;
+    const cs=E.play(ctx.createConstantSource()); cs.offset.value=.5; cs.connect(rg.gain);
+    const ring=E.play(osc(ringHz)), rd=E.n(g(.5)); ring.connect(rd); rd.connect(rg.gain);
+    const aw=E.n(g(base));
+    n.connect(bp); bp.connect(rg); rg.connect(aw); aw.connect(out);
+    E.every(()=>{aw.gain.setTargetAtTime(base*rnd(.5,1.1),ctx.currentTime,.9);},rnd(2400,3600));
+  }
+  cic(4700,165,.5); cic(5700,205,.32);
+}},
+{id:'stream',icon:'💧',name:'Dere Sesi',desc:'su şırıltısı',cal:.85,wet:.25,build:(E,out)=>{
+  const n=E.play(src('white'));
+  const hp=E.n(flt('highpass',380)), lp=E.n(flt('lowpass',4300)), base=E.n(g(.42));
+  n.connect(hp); hp.connect(lp); lp.connect(base); base.connect(out);
+  const gurg=E.n(flt('bandpass',800,2.6)), gg=E.n(g(.5));
+  n.connect(gurg); gurg.connect(gg); gg.connect(out);
+  E.every(()=>{gurg.frequency.setTargetAtTime(rnd(430,1400),ctx.currentTime,.12);},140);
+  (function bub(){
+    E.later(()=>{
+      const t=ctx.currentTime, o=ctx.createOscillator();
+      const f0=rnd(380,900);
+      o.frequency.setValueAtTime(f0,t);
+      o.frequency.exponentialRampToValueAtTime(f0*rnd(1.4,2.4),t+.045);
+      const og=g(0);
+      og.gain.setValueAtTime(0,t);
+      og.gain.linearRampToValueAtTime(rnd(.04,.09),t+.012);
+      og.gain.exponentialRampToValueAtTime(.0001,t+.06);
+      o.connect(og); og.connect(out);
+      o.start(t); o.stop(t+.08); bub();
+    },rnd(110,420));
+  })();
+}},
+{id:'wind',icon:'🌬',name:'Rüzgâr',desc:'ovada esinti',cal:.9,wet:.3,build:(E,out)=>{
+  const n=E.play(src('pink')), bp=E.n(flt('bandpass',320,.7)), gg=E.n(g(.75));
+  n.connect(bp); bp.connect(gg); gg.connect(out);
+  E.every(()=>{
+    const t=ctx.currentTime;
+    bp.frequency.setTargetAtTime(rnd(140,760),t,1.5);
+    gg.gain.setTargetAtTime(rnd(.4,1),t,1.2);
+  },2600);
+}},
+{id:'ocean',icon:'🌊',name:'Okyanus Dalgaları',desc:'gelgitin nefesi',cal:.95,wet:.3,build:(E,out)=>{
+  const n=E.play(src('brown')), f=E.n(flt('lowpass',420,.6));
+  const lf=E.play(osc(.06)), lfg=E.n(g(220)); lf.connect(lfg); lfg.connect(f.frequency);
+  const am=E.n(g(.78));
+  const la=E.play(osc(.045)), lag=E.n(g(.3)); la.connect(lag); lag.connect(am.gain);
+  n.connect(f); f.connect(am); am.connect(out);
+  (function wash(){
+    E.later(()=>{
+      const t=ctx.currentTime, w=ctx.createBufferSource(); w.buffer=NOISE.get('white');
+      const hf=flt('highpass',900), wg=g(0);
+      w.connect(hf); hf.connect(wg); wg.connect(out);
+      wg.gain.setValueAtTime(0,t);
+      wg.gain.linearRampToValueAtTime(.15,t+.9);
+      wg.gain.exponentialRampToValueAtTime(.0001,t+3.4);
+      w.start(t,rnd(0,1.5)); w.stop(t+3.6); wash();
+    },rnd(6500,14000));
+  })();
+}}
+];
+
+/* Aktif kanallar */
+const AMB={};
+const chVol={}; AMBIENT_DEFS.forEach(d=>chVol[d.id]=.5);
+
+function buildFromUrl(url,E,out){
+  const el=new Audio(url); el.loop=true; el.crossOrigin='anonymous';
+  const ms=ctx.createMediaElementSource(el); E.n(ms); ms.connect(out);
+  el.play().catch(()=>{});
+  E.n({disconnect(){try{el.pause();}catch(e){}}});
+}
+function chOn(def){
+  if(AMB[def.id])return;
+  ac();
+  const E=makeEnv();
+  const gain=E.n(g(0));
+  gain.connect(master);
+  const w=E.n(g(def.wet??.25)); gain.connect(w); w.connect(wetIn);
+  if(SOUND_URLS[def.id]) buildFromUrl(SOUND_URLS[def.id],E,gain);
+  else def.build(E,gain);
+  gain.gain.setTargetAtTime(chVol[def.id]*def.cal,ctx.currentTime,.35);
+  AMB[def.id]={E,gain,def};
+}
+function chOff(id){
+  const c=AMB[id]; if(!c)return;
+  c.E.kill(.6,c.gain); delete AMB[id];
+}
+function chSetVol(id,v){
+  chVol[id]=v;
+  const c=AMB[id];
+  if(c) c.gain.gain.setTargetAtTime(v*c.def.cal,ctx.currentTime,.15);
+}
+
+/* Seans presetleri: mikser + frekansı birlikte kurar */
+const SESSIONS=[
+ {name:'Seher Vakti',icon:'🌅',sub:'kuş • dere • alfa',mix:{birds:.55,stream:.4,wind:.15},freq:{c:220,b:10}},
+ {name:'Derin Tefekkür',icon:'🕯',sub:'ney • okyanus • theta',mix:{ney:.5,ocean:.3},freq:{c:136.1,b:6}},
+ {name:'Gece Sükûnu',icon:'🌙',sub:'ağustos böceği • delta',mix:{cicada:.4,forest:.3,wind:.18},freq:{c:110,b:2.5}}
+];
+function applySession(s){
+  ac();
+  Object.keys(AMB).forEach(chOff);
+  Object.entries(s.mix).forEach(([id,v])=>{
+    chVol[id]=v;
+    const def=AMBIENT_DEFS.find(d=>d.id===id);
+    chOn(def);
+  });
+  FR.c=s.freq.c; FR.b=s.freq.b;
+  if(!FR.playing) frStart(); else frRetune();
+  stopJourney();
+  syncMixerUI(); syncFreqUI();
+}
+
+/* ════════════════════════════════════════════════════════════
+   4) FREKANS / HEMI-SYNC MODÜLÜ — gerçek binaural + izokronik
+   Binaural: sol kulağa (c − b/2), sağ kulağa (c + b/2) Hz.
+   İzokronik: taşıyıcı ton, vuruş hızında yumuşatılmış kare
+   dalga ile kapılanır (kulaklıksız da çalışır).
+   ════════════════════════════════════════════════════════════ */
+const FR={playing:false,mode:'bin',c:180,b:7.83,vol:.5,E:null,out:null,oL:null,oR:null,iso:null,gate:null};
+
+function frStart(){
+  if(FR.playing)return;
+  ac();
+  const E=makeEnv(); FR.E=E;
+  const out=E.n(g(0)); out.connect(master); FR.out=out;
+  if(FR.mode!=='iso'){
+    const mg=E.n(ctx.createChannelMerger(2));
+    FR.oL=E.play(osc(FR.c-FR.b/2)); const gl=E.n(g(.5)); FR.oL.connect(gl); gl.connect(mg,0,0);
+    FR.oR=E.play(osc(FR.c+FR.b/2)); const gr=E.n(g(.5)); FR.oR.connect(gr); gr.connect(mg,0,1);
+    const bg2=E.n(g(FR.mode==='mix'?.6:1)); mg.connect(bg2); bg2.connect(out);
+  } else { FR.oL=FR.oR=null; }
+  if(FR.mode!=='bin'){
+    FR.iso=E.play(osc(FR.c));
+    const ig=E.n(g(0)); ig.gain.value=0;
+    const cs=E.play(ctx.createConstantSource()); cs.offset.value=.5; cs.connect(ig.gain);
+    FR.gate=E.play(osc(FR.b,'square'));
+    const gf=E.n(flt('lowpass',45)), gd=E.n(g(.48));
+    FR.gate.connect(gf); gf.connect(gd); gd.connect(ig.gain);
+    const ig2=E.n(g(FR.mode==='mix'?.5:1));
+    FR.iso.connect(ig); ig.connect(ig2); ig2.connect(out);
+  } else { FR.iso=FR.gate=null; }
+  out.gain.setTargetAtTime(FR.vol*.35,ctx.currentTime,.5);
+  FR.playing=true; syncFreqUI();
+}
+function frStop(){
+  if(!FR.playing)return;
+  FR.E.kill(.5,FR.out);
+  FR.playing=false; FR.E=null;
+  stopJourney(); syncFreqUI();
+}
+function frRetune(tau=.15){
+  if(!FR.playing)return;
+  const t=ctx.currentTime;
+  if(FR.oL){FR.oL.frequency.setTargetAtTime(FR.c-FR.b/2,t,tau);FR.oR.frequency.setTargetAtTime(FR.c+FR.b/2,t,tau);}
+  if(FR.iso){FR.iso.frequency.setTargetAtTime(FR.c,t,tau);FR.gate.frequency.setTargetAtTime(FR.b,t,tau);}
+  if(FR.playing)FR.out.gain.setTargetAtTime(FR.vol*.35,t,.15);
+}
+/* Yolculuk geçişleri: hedefe doğrusal süzülüş (Hemi-Sync tarzı) */
+function frRamp(cT,bT,durSec){
+  FR.c=cT??FR.c; FR.b=bT??FR.b;
+  if(FR.playing){
+    const t=ctx.currentTime;
+    const ramp=(param,target)=>{
+      param.cancelScheduledValues(t);
+      param.setValueAtTime(param.value,t);
+      param.linearRampToValueAtTime(target,t+durSec);
+    };
+    if(FR.oL){ramp(FR.oL.frequency,FR.c-FR.b/2);ramp(FR.oR.frequency,FR.c+FR.b/2);}
+    if(FR.iso){ramp(FR.iso.frequency,FR.c);ramp(FR.gate.frequency,FR.b);}
+  }
+  syncFreqUI();
+}
+
+const FREQ_PRESETS=[
+ {id:'tefekkur',icon:'🕯',name:'Derin Tefekkür',sub:'Theta 6 Hz • 136.1 Hz taşıyıcı',c:136.1,b:6},
+ {id:'mutmainne',icon:'🌿',name:'Nefs-i Mutmainne',sub:'Sükûnet • Schumann 7.83 Hz',c:183,b:7.83},
+ {id:'huzur',icon:'✨',name:'Huzur & Odaklanma',sub:'Alfa 10 Hz • berrak zihin',c:220,b:10},
+ {id:'vecd',icon:'🔥',name:'Vecd • Şuur Açıklığı',sub:'Gama 40 Hz • yüksek farkındalık',c:240,b:40},
+ {id:'sukut',icon:'🌙',name:'Derin Sükût / Uyku',sub:'Delta 2.5 Hz',c:110,b:2.5},
+ {id:'tayy',icon:'🜂',name:'Tayy-i Mekân Yolculuğu',sub:'Theta→Delta→Gama geçişli seans (~15 dk)',journey:true}
+];
+/* Tayy-i Mekân: aşamalı beyin dalgası yolculuğu */
+const JOURNEY=[
+ {n:'Bedeni gevşetme • Theta',b:6,c:130,hold:120},
+ {n:'Eşik • Derin Theta',b:4.5,hold:150},
+ {n:'Tayy-i Mekân kapısı • Delta',b:3.2,hold:240},
+ {n:'Gama parlaması • Şuur',b:40,hold:40},
+ {n:'Derin Delta • Seyir',b:3.2,hold:300}
+];
+const RAMP=18;
+let jTimers=[], jTick=null, jStageEnd=0, jActive=false;
+
+function startJourney(){
+  ac(); stopJourney();
+  if(!FR.playing){FR.c=130;FR.b=6;frStart();}
+  jActive=true; $('#journeyBox').hidden=false;
+  (function step(i){
+    if(i>=JOURNEY.length){
+      $('#jName').textContent='Seyir hâlinde ∞';
+      $('#jInfo').textContent='Derin deltada dilediğin kadar kal; bitirmek için frekansı durdur.';
+      if(jTick){clearInterval(jTick);jTick=null;}
+      return;
+    }
+    const st=JOURNEY[i];
+    frRamp(st.c??FR.c,st.b,RAMP);
+    $('#jName').textContent=(i+1)+'/'+JOURNEY.length+' • '+st.n;
+    jStageEnd=Date.now()+(RAMP+st.hold)*1000;
+    if(!jTick)jTick=setInterval(()=>{
+      const s=Math.max(0,Math.round((jStageEnd-Date.now())/1000));
+      $('#jInfo').textContent='Kalan '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' • vuruş '+FR.b.toFixed(2)+' Hz hedefine süzülüyor';
+    },1000);
+    jTimers.push(setTimeout(()=>step(i+1),(RAMP+st.hold)*1000));
+  })(0);
+}
+function stopJourney(){
+  jTimers.forEach(clearTimeout); jTimers=[];
+  if(jTick){clearInterval(jTick);jTick=null;}
+  jActive=false;
+  const jb=$('#journeyBox'); if(jb)jb.hidden=true;
+  $$('.pre').forEach(p=>p.classList.remove('act'));
+}
+function bandOf(b){
+  return b<4?['delta','Delta','Derin uyku • trans']
+    :b<8?['theta','Theta','Meditasyon • tefekkür']
+    :b<13?['alpha','Alfa','Sükûnet • gevşeme']
+    :b<30?['beta','Beta','Odaklanma • zindelik']
+    :['gamma','Gama','Yüksek farkındalık'];
+}
+function syncFreqUI(){
+  const cS=$('#carSld'), bS=$('#beatSld');
+  cS.value=FR.c; bS.value=FR.b; setFill(cS); setFill(bS);
+  $('#carVal').textContent=FR.c.toFixed(1)+' Hz';
+  $('#beatVal').textContent=FR.b.toFixed(2)+' Hz';
+  const [key,nm,ds]=bandOf(FR.b);
+  $('#bandName').textContent=nm; $('#bandDesc').textContent=ds;
+  $$('#bandChips span').forEach(s=>s.classList.toggle('act',s.dataset.b===key));
+  renderBeatChips();
+  $('#lrInfo').textContent = FR.mode==='iso'
+    ? 'İzokronik: '+FR.c.toFixed(1)+' Hz taşıyıcı • '+FR.b.toFixed(2)+' Hz kapı (kulaklıksız da etkilidir)'
+    : 'Sol kulak '+(FR.c-FR.b/2).toFixed(2)+' Hz ◂ ✦ ▸ Sağ kulak '+(FR.c+FR.b/2).toFixed(2)+' Hz';
+  const orb=$('#orb');
+  orb.style.setProperty('--bd',Math.max(.12,1/FR.b)+'s');
+  orb.classList.toggle('live',FR.playing);
+  const tg=$('#frToggle');
+  tg.textContent=FR.playing?'⏸ Frekansı Durdur':'▶ Frekansı Başlat';
+  tg.classList.toggle('playing',FR.playing);
+  $('#frVolVal').textContent='%'+Math.round(FR.vol*100);
+}
+
+/* ════════════════════════════════════════════════════════════
+   5) ZİKİR & ESMÂ-ÜL HÜSNÂ MODÜLÜ
+   ════════════════════════════════════════════════════════════ */
+const ZIKIR={
+esma:{label:'✦ Esmâ-ül Hüsnâ (99)',items:[
+ {t:'Rahmân',a:'رَحْمٰن',m:'Rahmeti bütün varlığı kuşatan'},
+ {t:'Rahîm',a:'رَحِيم',m:'Müminlere hususi merhamet eden'},
+ {t:'Melik',a:'مَلِك',m:'Mülkün mutlak sahibi'},
+ {t:'Kuddûs',a:'قُدُّوس',m:'Her noksandan münezzeh, arındıran'},
+ {t:'Selâm',a:'سَلَام',m:'Esenlik veren, kusurdan sâlim'},
+ {t:'Mü’min',a:'مُؤْمِن',m:'Güven veren, emin kılan'},
+ {t:'Müheymin',a:'مُهَيْمِن',m:'Gözetip koruyan'},
+ {t:'Azîz',a:'عَزِيز',m:'Mutlak galip, izzet sahibi'},
+ {t:'Cebbâr',a:'جَبَّار',m:'Dilediğini yaptıran, kırığı onaran'},
+ {t:'Mütekebbir',a:'مُتَكَبِّر',m:'Büyüklük yalnız kendisine ait olan'},
+ {t:'Hâlık',a:'خَالِق',m:'Yoktan yaratan'},
+ {t:'Bâri’',a:'بَارِئ',m:'Kusursuz ve uyumlu var eden'},
+ {t:'Musavvir',a:'مُصَوِّر',m:'Her varlığa sûret veren'},
+ {t:'Gaffâr',a:'غَفَّار',m:'Günahları tekrar tekrar örten'},
+ {t:'Kahhâr',a:'قَهَّار',m:'Her şeye üstün gelen'},
+ {t:'Vehhâb',a:'وَهَّاب',m:'Karşılıksız, bol bol veren'},
+ {t:'Rezzâk',a:'رَزَّاق',m:'Rızıkları yaratan ve ulaştıran'},
+ {t:'Fettâh',a:'فَتَّاح',m:'Kapıları ve gönülleri açan'},
+ {t:'Alîm',a:'عَلِيم',m:'Her şeyi hakkıyla bilen'},
+ {t:'Kâbıd',a:'قَابِض',m:'Hikmetle daraltan, tutan'},
+ {t:'Bâsıt',a:'بَاسِط',m:'Genişleten, ferahlatan'},
+ {t:'Hâfıd',a:'خَافِض',m:'Alçaltan'},
+ {t:'Râfi’',a:'رَافِع',m:'Yücelten, yükselten'},
+ {t:'Muizz',a:'مُعِزّ',m:'İzzet ve şeref veren'},
+ {t:'Müzill',a:'مُذِلّ',m:'Zillete düşüren'},
+ {t:'Semî’',a:'سَمِيع',m:'Her şeyi işiten'},
+ {t:'Basîr',a:'بَصِير',m:'Her şeyi gören'},
+ {t:'Hakem',a:'حَكَم',m:'Hükmeden, hakkı yerine getiren'},
+ {t:'Adl',a:'عَدْل',m:'Mutlak adalet sahibi'},
+ {t:'Latîf',a:'لَطِيف',m:'Lütfu ince ve derin olan'},
+ {t:'Habîr',a:'خَبِير',m:'Her şeyden haberdar'},
+ {t:'Halîm',a:'حَلِيم',m:'Yumuşak muamele eden'},
+ {t:'Azîm',a:'عَظِيم',m:'Pek yüce, azamet sahibi'},
+ {t:'Gafûr',a:'غَفُور',m:'Çok bağışlayan'},
+ {t:'Şekûr',a:'شَكُور',m:'Az amele çok karşılık veren'},
+ {t:'Aliyy',a:'عَلِيّ',m:'En yüce'},
+ {t:'Kebîr',a:'كَبِير',m:'En büyük'},
+ {t:'Hafîz',a:'حَفِيظ',m:'Koruyup gözeten'},
+ {t:'Mukît',a:'مُقِيت',m:'Her canlının azığını veren'},
+ {t:'Hasîb',a:'حَسِيب',m:'Hesaba çeken, kâfi gelen'},
+ {t:'Celîl',a:'جَلِيل',m:'Ululuk ve heybet sahibi'},
+ {t:'Kerîm',a:'كَرِيم',m:'Keremi bol, cömert'},
+ {t:'Rakîb',a:'رَقِيب',m:'Her an görüp gözeten'},
+ {t:'Mucîb',a:'مُجِيب',m:'Dualara icabet eden'},
+ {t:'Vâsi’',a:'وَاسِع',m:'İlmi ve rahmeti her şeyi kuşatan'},
+ {t:'Hakîm',a:'حَكِيم',m:'Her işi hikmetli olan'},
+ {t:'Vedûd',a:'وَدُود',m:'Çok seven ve çok sevilen'},
+ {t:'Mecîd',a:'مَجِيد',m:'Şanı yüce ve keremi bol'},
+ {t:'Bâis',a:'بَاعِث',m:'Ölüleri dirilten'},
+ {t:'Şehîd',a:'شَهِيد',m:'Her şeye şahit olan'},
+ {t:'Hakk',a:'حَقّ',m:'Varlığı gerçek olan'},
+ {t:'Vekîl',a:'وَكِيل',m:'Kendisine güvenilen, işleri üstlenen'},
+ {t:'Kaviyy',a:'قَوِيّ',m:'Pek güçlü'},
+ {t:'Metîn',a:'مَتِين',m:'Sarsılmaz kuvvet sahibi'},
+ {t:'Veliyy',a:'وَلِيّ',m:'Dost ve yardımcı'},
+ {t:'Hamîd',a:'حَمِيد',m:'Her hâlde övgüye lâyık'},
+ {t:'Muhsî',a:'مُحْصِي',m:'Her şeyi tek tek bilen, sayan'},
+ {t:'Mübdi’',a:'مُبْدِئ',m:'İlk kez, örneksiz yaratan'},
+ {t:'Muîd',a:'مُعِيد',m:'Öldükten sonra yeniden dirilten'},
+ {t:'Muhyî',a:'مُحْيِي',m:'Hayat veren, canlandıran'},
+ {t:'Mümît',a:'مُمِيت',m:'Ölümü yaratan'},
+ {t:'Hayy',a:'حَيّ',m:'Ezelî ve ebedî diri'},
+ {t:'Kayyûm',a:'قَيُّوم',m:'Her şeyi ayakta tutan'},
+ {t:'Vâcid',a:'وَاجِد',m:'Dilediğini bulan, kaybetmeyen'},
+ {t:'Mâcid',a:'مَاجِد',m:'Şeref ve kerem sahibi'},
+ {t:'Vâhid',a:'وَاحِد',m:'Tek, benzersiz'},
+ {t:'Ehad',a:'أَحَد',m:'Mutlak bir, bölünmez'},
+ {t:'Samed',a:'صَمَد',m:'Her şey O’na muhtaç, O muhtaç değil'},
+ {t:'Kâdir',a:'قَادِر',m:'Kudret sahibi'},
+ {t:'Muktedir',a:'مُقْتَدِر',m:'Mutlak iktidar sahibi'},
+ {t:'Mukaddim',a:'مُقَدِّم',m:'Dilediğini öne alan'},
+ {t:'Muahhir',a:'مُؤَخِّر',m:'Dilediğini erteleyen'},
+ {t:'Evvel',a:'أَوَّل',m:'Başlangıcı olmayan ilk'},
+ {t:'Âhir',a:'آخِر',m:'Sonu olmayan son'},
+ {t:'Zâhir',a:'ظَاهِر',m:'Varlığı apaçık'},
+ {t:'Bâtın',a:'بَاطِن',m:'Zâtı idrakten gizli, her şeyin içyüzü'},
+ {t:'Vâlî',a:'وَالِي',m:'Bütün işleri yöneten'},
+ {t:'Müteâlî',a:'مُتَعَالِي',m:'Aşkın, noksandan pek yüce'},
+ {t:'Berr',a:'بَرّ',m:'İyiliği ve ihsanı bol'},
+ {t:'Tevvâb',a:'تَوَّاب',m:'Tevbeleri kabul eden'},
+ {t:'Müntekim',a:'مُنْتَقِم',m:'Zâlime hak ettiğini veren'},
+ {t:'Afüvv',a:'عَفُوّ',m:'Affı çok, günahı silen'},
+ {t:'Raûf',a:'رَؤُوف',m:'Pek şefkatli'},
+ {t:'Mâlikü’l-Mülk',a:'مَالِكُ الْمُلْك',m:'Mülkün ebedî sahibi',nt:1,ya:'Yâ Mâlike’l-Mülk',aya:'يَا مَالِكَ الْمُلْكِ'},
+ {t:'Zü’l-Celâli ve’l-İkrâm',a:'ذُو الْجَلَالِ وَالْإِكْرَام',m:'Celâl ve ikram sahibi',nt:1,ya:'Yâ Ze’l-Celâli ve’l-İkrâm',aya:'يَا ذَا الْجَلَالِ وَالْإِكْرَامِ'},
+ {t:'Muksit',a:'مُقْسِط',m:'Adaletle hükmeden'},
+ {t:'Câmi’',a:'جَامِع',m:'Toplayıp birleştiren'},
+ {t:'Ganiyy',a:'غَنِيّ',m:'Hiçbir şeye muhtaç olmayan'},
+ {t:'Muğnî',a:'مُغْنِي',m:'Zengin kılan, gönlü doyuran'},
+ {t:'Mâni’',a:'مَانِع',m:'Dilemediğine engel olan'},
+ {t:'Dârr',a:'ضَارّ',m:'Hikmetiyle elem ve zararı yaratan'},
+ {t:'Nâfi’',a:'نَافِع',m:'Hayır ve fayda veren'},
+ {t:'Nûr',a:'نُور',m:'Âlemleri nurlandıran'},
+ {t:'Hâdî',a:'هَادِي',m:'Hidayete erdiren'},
+ {t:'Bedî’',a:'بَدِيع',m:'Örneksiz, eşsiz yaratan'},
+ {t:'Bâkî',a:'بَاقِي',m:'Varlığı sonsuz'},
+ {t:'Vâris',a:'وَارِث',m:'Her şeyin son ve gerçek sahibi'},
+ {t:'Reşîd',a:'رَشِيد',m:'Doğru yola ulaştıran'},
+ {t:'Sabûr',a:'صَبُور',m:'Cezada acele etmeyen'}
+]},
+tevhid:{label:'☪ Tevhid Zikirleri',items:[
+ {tr:'Lâ ilâhe illâllah',ar:'لَا إِلٰهَ إِلَّا اللّٰهُ',mean:'Allah\u2019tan başka ilâh yoktur'},
+ {tr:'Lâ ilâhe illâ Hû',ar:'لَا إِلٰهَ إِلَّا هُوَ',mean:'O\u2019ndan başka ilâh yoktur'},
+ {tr:'Lâ vedûde illâllah',ar:'لَا وَدُودَ إِلَّا اللّٰهُ',mean:'Gerçek seven ve sevilen yalnız Allah\u2019tır'},
+ {tr:'Lâ samede illâllah',ar:'لَا صَمَدَ إِلَّا اللّٰهُ',mean:'Herkesin kendisine muhtaç olduğu yalnız O\u2019dur'},
+ {tr:'Lâ fâile illâllah',ar:'لَا فَاعِلَ إِلَّا اللّٰهُ',mean:'Hakiki fâil yalnız Allah\u2019tır'},
+ {tr:'Lâ mevcûde illâllah',ar:'لَا مَوْجُودَ إِلَّا اللّٰهُ',mean:'Hakiki varlık yalnız Allah\u2019tır'},
+ {tr:'Lâ ma\u2019bûde illâllah',ar:'لَا مَعْبُودَ إِلَّا اللّٰهُ',mean:'İbadete lâyık olan yalnız Allah\u2019tır'},
+ {tr:'Lâ maksûde illâllah',ar:'لَا مَقْصُودَ إِلَّا اللّٰهُ',mean:'Bütün yönelişlerin gayesi yalnız Allah\u2019tır'}
+]},
+temel:{label:'📿 Temel Zikirler',items:[
+ {tr:'Allah',ar:'اَللّٰهُ',mean:'Lafza-i Celâl • ism-i zât zikri'},
+ {tr:'Hû',ar:'هُوَ',mean:'İsm-i zâtın hülâsası • nefesin zikri'},
+ {tr:'Lâ havle velâ kuvvete illâ billâhil-aliyyil-azîm',ar:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',mean:'Güç ve kudret ancak yüce Allah\u2019ındır • cennet hazinelerinden'},
+ {tr:'Hasbünallâhü ve ni\u2019mel-vekîl',ar:'حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيلُ',mean:'Allah bize yeter, O ne güzel vekildir • tevekkül'}
+]},
+arinma:{label:'🤲 İstiğfar & Arınma',items:[
+ {tr:'Sübhânallâhi ve bihamdihî',ar:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ',mean:'Allah\u2019ı hamd ile tesbih ederim • günahlara kefâret'},
+ {tr:'Sübhânallâhi ve bihamdihî, sübhânallâhil-azîm',ar:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ سُبْحَانَ اللّٰهِ الْعَظِيمِ',mean:'Dile hafif, mîzanda ağır iki cümle'},
+ {tr:'Estağfirullâhel-azîm ve etûbü ileyh',ar:'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',mean:'Yüce Allah\u2019tan bağışlanma diler, O\u2019na dönerim'},
+ {tr:'Lâ ilâhe illâ ente sübhâneke innî küntü minez-zâlimîn',ar:'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',mean:'Yûnus (as) niyâzı • darlıktan feraha çıkış'},
+ {tr:'Yâ Hayyu yâ Kayyûm, bi-rahmetike estağîs',ar:'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',mean:'Kalbin ihyâsı için yardım niyâzı'},
+ {tr:'Sübbûhun Kuddûsün Rabbü\u2019l-melâiketi ve\u2019r-rûh',ar:'سُبُّوحٌ قُدُّوسٌ رَبُّ الْمَلَائِكَةِ وَالرُّوحِ',mean:'Melekût âleminin tesbihi • arınma'},
+ {tr:'Allâhümme salli alâ seyyidinâ Muhammed',ar:'اَللّٰهُمَّ صَلِّ عَلٰى سَيِّدِنَا مُحَمَّدٍ',mean:'Salavât • kalbe nur, işlere feth'},
+ {tr:'Hüvel-Evvelü vel-Âhiru vez-Zâhiru vel-Bâtın',ar:'هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ',mean:'Tefekkür zikri • Hadîd sûresi, 3'}
+]}
+};
+
+const Z={cat:'esma',idx:0,count:0,devir:0,target:33,tempo:2,auto:false,autoId:null,
+ tick:true,vib:true,mean:true,adv:false,total:S.get('sukun.total',0)};
+
+function zItem(){return ZIKIR[Z.cat].items[Z.idx];}
+function renderCats(){
+  $('#zCats').innerHTML=Object.entries(ZIKIR).map(([k,c])=>
+    '<button class="cat'+(k===Z.cat?' act':'')+'" data-c="'+k+'">'+c.label+'</button>').join('');
+  $('#formSeg').style.display=Z.cat==='esma'?'':'none';
+  renderList();
+}
+function renderList(){
+  const q=($('#zSearch').value||'').trim().toLocaleLowerCase('tr');
+  const items=ZIKIR[Z.cat].items;
+  $('#zList').innerHTML=items.map((it,i)=>{
+    const nm=it.t||it.tr, hay=(nm+' '+(it.m||it.mean||'')).toLocaleLowerCase('tr');
+    if(q&&!hay.includes(q))return '';
+    return '<button class="zItem'+(i===Z.idx?' act':'')+'" data-i="'+i+'">'+nm+'</button>';
+  }).join('')||'<div class="noHit">Eşleşme yok</div>';
+}
+function renderZikir(swap=true){
+  const it=zItem(); let ar,tr,mean,eb=0;
+  if(Z.cat==='esma'){ const f=esmaForms(it); ar=f.ar; tr=f.tr; mean=f.mean; eb=f.eb; }
+  else { ar=it.ar; tr=it.tr; mean=it.mean; }
+  $('#zAr').textContent=ar;
+  $('#zTr').textContent=tr;
+  $('#zMean').textContent=Z.mean?mean:'';
+  $('#zEb').textContent=Z.cat==='esma'?'ebced • '+eb:'';
+  $('#ebBtn').style.display=Z.cat==='esma'?'':'none';
+  if(swap){const st=$('#zStage');st.classList.remove('swap');void st.offsetWidth;st.classList.add('swap');}
+  $$('#zList .zItem').forEach(el=>el.classList.toggle('act',+el.dataset.i===Z.idx));
+}
+function zUI(){
+  $('#cntBig').textContent=Z.count;
+  $('#cntSub').textContent=(Z.target>0?'Hedef '+Z.target:'Serbest sayım')+' • Devir '+Z.devir;
+  const pct=Z.target>0?Z.count/Z.target:(Z.count%100)/100;
+  $('#progC').style.strokeDashoffset=182.2*(1-clamp(pct,0,1));
+  $('#progPct').textContent=Math.round(pct*100)+'%';
+  $('#totalCnt').textContent=Z.total;
+  const ab=$('#autoBtn');
+  ab.textContent=Z.auto?'⏸ Akışı Durdur':'▶ Otomatik Akış';
+  ab.classList.toggle('playing',Z.auto);
+}
+function pulseZ(){
+  ['#zAr','#zTr'].forEach(s=>{const el=$(s);el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse');});
+}
+/* Tesbih tanesi tıkırtısı */
+function tickSnd(){
+  if(!ctx)return;
+  const t=ctx.currentTime, o=ctx.createOscillator();
+  o.type='triangle'; o.frequency.setValueAtTime(1400+Math.random()*500,t);
+  const gg=g(.0001);
+  gg.gain.setValueAtTime(.001,t);
+  gg.gain.exponentialRampToValueAtTime(.13,t+.007);
+  gg.gain.exponentialRampToValueAtTime(.0001,t+.07);
+  o.connect(gg); gg.connect(master);
+  o.start(t); o.stop(t+.09);
+}
+/* Devir tamamlandığında yumuşak çan */
+function chime(){
+  if(!ctx)return;
+  [659.25,987.77].forEach((f,i)=>{
+    const t=ctx.currentTime+i*.22, o=ctx.createOscillator(); o.frequency.value=f;
+    const gg=g(0);
+    gg.gain.setValueAtTime(0,t);
+    gg.gain.linearRampToValueAtTime(.09,t+.02);
+    gg.gain.exponentialRampToValueAtTime(.0001,t+1.1);
+    o.connect(gg); gg.connect(master); gg.connect(wetIn);
+    o.start(t); o.stop(t+1.2);
+  });
+}
+function rep(){
+  ac();
+  Z.count++; Z.total++;
+  if(Z.total%5===0)S.set('sukun.total',Z.total);
+  pulseZ();
+  if(Z.tick)tickSnd();
+  if(Z.vib&&navigator.vibrate)navigator.vibrate(12);
+  if(Z.target>0&&Z.count>=Z.target){
+    Z.count=0; Z.devir++;
+    chime();
+    if(Z.vib&&navigator.vibrate)navigator.vibrate([90,60,90]);
+    if(Z.adv){Z.idx=(Z.idx+1)%ZIKIR[Z.cat].items.length;renderZikir();}
+  }
+  zUI();
+}
+/* Otomatik akış + ekranı uyanık tutma */
+let wl=null;
+async function lockOn(){try{if('wakeLock' in navigator)wl=await navigator.wakeLock.request('screen');}catch(e){}}
+function lockOff(){try{wl&&wl.release();}catch(e){} wl=null;}
+function autoStart(){
+  if(Z.auto)return;
+  ac(); Z.auto=true;
+  Z.autoId=setInterval(rep,Z.tempo*1000);
+  lockOn(); zUI();
+}
+function autoStop(){
+  if(!Z.auto)return;
+  Z.auto=false; clearInterval(Z.autoId); Z.autoId=null;
+  S.set('sukun.total',Z.total);
+  lockOff(); zUI();
+}
+
+/* ════════════════════════════════════════════════════════════
+   6) ARAYÜZ BAĞLARI
+   ════════════════════════════════════════════════════════════ */
+function setFill(inp){
+  const min=+inp.min||0, max=+inp.max||1, v=+inp.value;
+  inp.style.setProperty('--val',((v-min)/(max-min)*100)+'%');
+}
+
+/* Sekmeler */
+$$('.tab').forEach(b=>b.onclick=()=>{
+  $$('.tab').forEach(x=>x.classList.toggle('act',x===b));
+  ['amb','frq','zkr'].forEach(t=>$('#tab-'+t).hidden=(t!==b.dataset.t));
+});
+
+/* ── Ambiyans mikseri ── */
+function renderMixer(){
+  $('#mixer').innerHTML=AMBIENT_DEFS.map(d=>
+   '<div class="chn" id="chn-'+d.id+'">'+
+     '<div class="chTop">'+
+       '<span class="chIc">'+d.icon+'</span>'+
+       '<div class="chName">'+d.name+'<small>'+d.desc+'</small></div>'+
+       '<button class="sw" data-sw="'+d.id+'" aria-label="'+d.name+' aç/kapat"></button>'+
+     '</div>'+
+     '<input type="range" min="0" max="1" step="0.01" value="'+chVol[d.id]+'" data-vol="'+d.id+'" aria-label="'+d.name+' ses">'+
+   '</div>').join('');
+  $('#sessRow').innerHTML=SESSIONS.map((s,i)=>
+   '<button class="sess" data-sess="'+i+'"><span class="sIc">'+s.icon+'</span><b>'+s.name+'</b><small>'+s.sub+'</small></button>').join('');
+}
+function syncMixerUI(){
+  AMBIENT_DEFS.forEach(d=>{
+    const on=!!AMB[d.id];
+    const sw=$('[data-sw="'+d.id+'"]'); if(sw)sw.classList.toggle('on',on);
+    const card=$('#chn-'+d.id); if(card)card.classList.toggle('on',on);
+    const r=$('[data-vol="'+d.id+'"]'); if(r){r.value=chVol[d.id];setFill(r);}
+  });
+}
+$('#mixer').addEventListener('click',e=>{
+  const sw=e.target.closest('[data-sw]'); if(!sw)return;
+  const id=sw.dataset.sw;
+  if(AMB[id])chOff(id); else chOn(AMBIENT_DEFS.find(d=>d.id===id));
+  syncMixerUI();
+});
+$('#mixer').addEventListener('input',e=>{
+  const r=e.target.closest('[data-vol]'); if(!r)return;
+  setFill(r); chSetVol(r.dataset.vol,+r.value);
+});
+$('#sessRow').addEventListener('click',e=>{
+  const b=e.target.closest('[data-sess]'); if(!b)return;
+  applySession(SESSIONS[+b.dataset.sess]);
+});
+
+/* ── Frekans paneli ── */
+function renderPresets(){
+  $('#presets').innerHTML=FREQ_PRESETS.map((p,i)=>
+   '<button class="pre" data-p="'+i+'"><span class="pIc">'+p.icon+'</span><b>'+p.name+'</b><small>'+p.sub+'</small></button>').join('');
+}
+$('#presets').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]'); if(!b)return;
+  const p=FREQ_PRESETS[+b.dataset.p];
+  if(p.journey){ startJourney(); b.classList.add('act'); }
+  else{
+    stopJourney();
+    FR.c=p.c; FR.b=p.b;
+    if(FR.playing)frRetune(.4); else frStart();
+    b.classList.add('act'); syncFreqUI(); saveSettings();
+  }
+});
+$('#carSld').addEventListener('input',e=>{stopJourney();FR.c=+e.target.value;frRetune();syncFreqUI();saveSettings();});
+$('#beatSld').addEventListener('input',e=>{stopJourney();FR.b=+e.target.value;frRetune();syncFreqUI();saveSettings();});
+$('#frVol').addEventListener('input',e=>{
+  FR.vol=+e.target.value; setFill(e.target);
+  if(FR.playing)FR.out.gain.setTargetAtTime(FR.vol*.35,ctx.currentTime,.15);
+  $('#frVolVal').textContent='%'+Math.round(FR.vol*100);
+  saveSettings();
+});
+$('#modeSeg').addEventListener('click',e=>{
+  const b=e.target.closest('[data-m]'); if(!b)return;
+  $$('#modeSeg button').forEach(x=>x.classList.toggle('act',x===b));
+  FR.mode=b.dataset.m;
+  if(FR.playing){
+    FR.E.kill(.25,FR.out); FR.playing=false;
+    setTimeout(frStart,320);
+  }
+  saveSettings();
+});
+$('#frToggle').onclick=()=>{FR.playing?frStop():frStart();};
+
+/* ── Ana ses / durdur / uyku zamanlayıcısı ── */
+$('#masterVol').addEventListener('input',e=>{
+  setFill(e.target);
+  if(master)master.gain.setTargetAtTime(+e.target.value,ctx.currentTime,.1);
+  saveSettings();
+});
+function hardStopAll(){
+  Object.keys(AMB).forEach(chOff);
+  frStop(); autoStop(); syncMixerUI();
+}
+$('#stopAll').onclick=hardStopAll;
+
+let stInt=null, stEnd=0;
+$('#sleepTimer').addEventListener('change',e=>{
+  clearInterval(stInt); stInt=null; $('#timerBadge').textContent='';
+  const m=+e.target.value; if(!m)return;
+  stEnd=Date.now()+m*60000;
+  stInt=setInterval(()=>{
+    const s=Math.max(0,Math.round((stEnd-Date.now())/1000));
+    $('#timerBadge').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+    if(s<=0){
+      clearInterval(stInt); stInt=null;
+      $('#timerBadge').textContent=''; e.target.value='0';
+      fadeOutAll();
+    }
+  },1000);
+});
+function fadeOutAll(){
+  if(ctx)master.gain.setTargetAtTime(.0001,ctx.currentTime,4);
+  setTimeout(()=>{
+    hardStopAll();
+    if(ctx)master.gain.setTargetAtTime(+$('#masterVol').value,ctx.currentTime,.4);
+  },13000);
+}
+
+/* ── Zikir bağları ── */
+$('#zCats').addEventListener('click',e=>{
+  const b=e.target.closest('[data-c]'); if(!b)return;
+  Z.cat=b.dataset.c; Z.idx=0;
+  renderCats(); renderZikir();
+});
+$('#zList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-i]'); if(!b)return;
+  Z.idx=+b.dataset.i; renderZikir();
+});
+$('#tapBtn').onclick=rep;
+$('#autoBtn').onclick=()=>Z.auto?autoStop():autoStart();
+$('#resetBtn').onclick=()=>{Z.count=0;Z.devir=0;zUI();};
+/* ۞ Köprü: seçili zikri Dijital Tekke'ye taşı */
+$('#tekkeBtn').onclick=()=>{
+  const it=zItem(); let tr,ar,mean;
+  if(Z.cat==='esma'){const f=esmaForms(it);tr=f.tr;ar=f.ar;mean=f.mean;}
+  else{tr=it.tr;ar=it.ar;mean=it.mean;}
+  S.set('sukun.total',Z.total); hardStopAll();
+  Tekke.open({tr,ar,mean,target:Z.target>0?Z.target:33});
+};
+$('#tekkeTab').onclick=()=>{S.set('sukun.total',Z.total);hardStopAll();Tekke.open();};
+$('#neuroBtn').onclick=()=>{S.set('sukun.total',Z.total);hardStopAll();Neuro.open();};
+window.addEventListener('tekke:closed',()=>{Z.total=Math.max(Z.total,S.get('sukun.total',Z.total));zUI();});
+$('#tempoSld').addEventListener('input',e=>{
+  Z.tempo=+e.target.value; setFill(e.target);
+  $('#tempoVal').textContent=Z.tempo.toFixed(1)+' sn';
+  if(Z.auto){clearInterval(Z.autoId);Z.autoId=setInterval(rep,Z.tempo*1000);}
+  saveSettings();
+});
+$('#targetSel').addEventListener('change',e=>{
+  Z.target=+e.target.value; Z.count=0; Z.devir=0; zUI(); saveSettings();
+});
+[['optTick','tick'],['optVib','vib'],['optMean','mean'],['optAdv','adv']].forEach(([id,key])=>{
+  $('#'+id).onclick=()=>{
+    Z[key]=!Z[key];
+    $('#'+id).classList.toggle('on',Z[key]);
+    if(key==='mean')renderZikir(false);
+    saveSettings();
+  };
+});
+/* Boşluk tuşu ile sayım (zikir sekmesi açıkken) */
+document.addEventListener('keydown',e=>{
+  const _tk=document.getElementById('tk'),_ns=document.getElementById('ns');
+  if((_tk&&!_tk.hidden)||(_ns&&!_ns.hidden))return;
+  if(e.code==='Space'&&!$('#tab-zkr').hidden&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){
+    e.preventDefault(); rep();
+  }
+});
+window.addEventListener('pagehide',()=>S.set('sukun.total',Z.total));
+
+/* ── Ayar kalıcılığı ── */
+function saveSettings(){
+  S.set('sukun.set',{
+    mv:+$('#masterVol').value,
+    fr:{c:FR.c,b:FR.b,vol:FR.vol,mode:FR.mode},
+    z:{target:Z.target,tempo:Z.tempo,tick:Z.tick,vib:Z.vib,mean:Z.mean,adv:Z.adv,form:Z.form}
+  });
+}
+function loadSettings(){
+  const s=S.get('sukun.set',null); if(!s)return;
+  if(s.mv!=null)$('#masterVol').value=s.mv;
+  if(s.fr){
+    FR.c=s.fr.c??FR.c; FR.b=s.fr.b??FR.b; FR.vol=s.fr.vol??FR.vol; FR.mode=s.fr.mode??FR.mode;
+    $('#frVol').value=FR.vol;
+    $$('#modeSeg button').forEach(x=>x.classList.toggle('act',x.dataset.m===FR.mode));
+  }
+  if(s.z)Object.assign(Z,s.z);
+}
+
+/* ════════════════════════════════════════════════════════════
+   6b) v1.1 — ESMÂ FORMLARI • EBCED • BANT ARAYÜZLERİ
+   ════════════════════════════════════════════════════════════ */
+Z.form='nida';
+const EB_MAP={'ا':1,'أ':1,'إ':1,'آ':1,'ء':1,'ب':2,'ج':3,'د':4,'ه':5,'و':6,'ؤ':6,'ز':7,'ح':8,'ط':9,'ي':10,'ى':10,'ئ':10,'ك':20,'ل':30,'م':40,'ن':50,'س':60,'ع':70,'ف':80,'ص':90,'ق':100,'ر':200,'ش':300,'ت':400,'ث':500,'خ':600,'ذ':700,'ض':800,'ظ':900,'غ':1000};
+const stripHarake=a=>a.replace(/[\u064B-\u0652\u0670\s]/g,'');
+function ebced(a){let s=0;for(const ch of stripHarake(a))s+=EB_MAP[ch]||0;return s;}
+const EMPH='حخصضطظعغقر';
+/* Her esmâ için nidâ («Yâ …») ve tevhid («Lâ … illâllah») kalıbını üretir */
+function esmaForms(it){
+  const eb=ebced(it.a), bare=stripHarake(it.a), last=bare[bare.length-1];
+  if(Z.form==='tev'&&!it.nt){
+    const tt=/î$/.test(it.t)?it.t.slice(0,-1)+'iye':it.t+(EMPH.includes(last)?'a':'e');
+    return {ar:'لَا '+it.a+'َ إِلَّا اللّٰهُ', tr:'Lâ '+tt+' illâllah',
+            mean:'Gerçek '+it.t+' ancak Allah’tır', eb};
+  }
+  const mean=(Z.form==='tev'&&it.nt)?it.m+' • bu isme tevhid kalıbı uygulanmaz':it.m;
+  return {ar:it.aya||('يَا '+it.a+(last==='ي'?'':'ُ')), tr:it.ya||('Yâ '+it.t), mean, eb};
+}
+function syncFormSeg(){$$('#formSeg button').forEach(x=>x.classList.toggle('act',x.dataset.f===Z.form));}
+$('#formSeg').addEventListener('click',e=>{
+  const b=e.target.closest('[data-f]'); if(!b)return;
+  Z.form=b.dataset.f; syncFormSeg(); renderZikir(); saveSettings();
+});
+$('#zSearch').addEventListener('input',renderList);
+/* Ebced hedefi: seçili esmânın değeri kadar çek */
+function ensureTargetOpt(v,label){
+  const sel=$('#targetSel');
+  let o=[...sel.options].find(x=>+x.value===v);
+  if(!o){o=document.createElement('option');o.value=v;sel.insertBefore(o,sel.querySelector('option[value="0"]'));}
+  o.textContent=label||String(v);
+  sel.value=String(v);
+}
+$('#ebBtn').onclick=()=>{
+  const it=zItem(); if(!it.a)return;
+  const v=ebced(it.a);
+  Z.target=v; Z.count=0; Z.devir=0;
+  ensureTargetOpt(v,'Ebced • '+v);
+  zUI(); saveSettings();
+};
+/* Bant arayüzleri: her beyin dalgası bandının kendi vuruş çipleri */
+const BANDS={
+ delta:{def:2.5,chips:[0.5,1,1.5,2,3,3.5],tag:'DELTA 0.5–4 Hz'},
+ theta:{def:6,chips:[4,4.5,5,6,7,7.83],tag:'THETA 4–8 Hz'},
+ alpha:{def:10,chips:[8,9,10,11,12],tag:'ALFA 8–13 Hz'},
+ beta:{def:18,chips:[13,15,18,22,27],tag:'BETA 13–30 Hz'},
+ gamma:{def:40,chips:[30,33,36,40],tag:'GAMA 30–40 Hz'}
+};
+const SOLFEJ=[136.1,174,285,396,417,432,528,639,741,852,963];
+let lastBand='';
+function renderBeatChips(){
+  const key=bandOf(FR.b)[0];
+  if(key!==lastBand){
+    lastBand=key;
+    $('#beatChips').innerHTML=BANDS[key].chips.map(v=>'<span data-v="'+v+'">'+v+'</span>').join('');
+    $('#beatBandTag').textContent=BANDS[key].tag;
+  }
+  $$('#beatChips span').forEach(s=>s.classList.toggle('act',Math.abs(+s.dataset.v-FR.b)<.01));
+  $$('#carChips span').forEach(s=>s.classList.toggle('act',Math.abs(+s.dataset.v-FR.c)<.05));
+}
+$('#carChips').innerHTML=SOLFEJ.map(v=>'<span data-v="'+v+'">'+v+'</span>').join('');
+$('#bandChips').addEventListener('click',e=>{
+  const s=e.target.closest('[data-b]'); if(!s)return;
+  stopJourney(); FR.b=BANDS[s.dataset.b].def; frRetune(.3); syncFreqUI(); saveSettings();
+});
+$('#beatChips').addEventListener('click',e=>{
+  const s=e.target.closest('[data-v]'); if(!s)return;
+  stopJourney(); FR.b=+s.dataset.v; frRetune(.3); syncFreqUI(); saveSettings();
+});
+$('#carChips').addEventListener('click',e=>{
+  const s=e.target.closest('[data-v]'); if(!s)return;
+  stopJourney(); FR.c=+s.dataset.v; frRetune(.3); syncFreqUI(); saveSettings();
+});
+
+/* ════════════════════════════════════════════════════════════
+   7) BAŞLATMA
+   ════════════════════════════════════════════════════════════ */
+(function init(){
+  loadSettings();
+  renderMixer(); renderPresets(); syncFormSeg(); renderCats(); renderZikir(false);
+  /* dönen halkanın üstüne 8 köşe yıldızı diz */
+  const r1=document.querySelector('.r1');
+  for(let i=0;i<8;i++){
+    const st=document.createElement('span');
+    st.className='rStar'; st.textContent='✦';
+    st.style.left='50%'; st.style.top='50%';
+    st.style.transform='translate(-50%,-50%) rotate('+(i*45)+'deg) translateY(-150px)';
+    r1.appendChild(st);
+  }
+  $('#optTick').classList.toggle('on',Z.tick);
+  $('#optVib').classList.toggle('on',Z.vib);
+  $('#optMean').classList.toggle('on',Z.mean);
+  $('#optAdv').classList.toggle('on',Z.adv);
+  if(![...$('#targetSel').options].some(o=>+o.value===Z.target))ensureTargetOpt(Z.target,'Özel • '+Z.target);
+  $('#targetSel').value=String(Z.target);
+  $('#tempoSld').value=Z.tempo;
+  $('#tempoVal').textContent=Z.tempo.toFixed(1)+' sn';
+  syncMixerUI(); syncFreqUI(); zUI();
+  $$('input[type=range]').forEach(setFill);
+})();
+</script>
+<!-- ═══════════ ۞ TEKKE MODÜLÜ ═══════════ -->
+<style>#tk /* ═══════ V10.0 DİJİTAL TEKKE — Mistik Estetik ═══════ */
+:root{
+  --bg:#0a1626; --bg2:#0d1f33;
+  --ink:#efe7d3; --mut:#b9ad91; --dim:#6f6a58;
+  --gold:#c9a227; --goldh:#ecd27e;
+  --teal:#2e8f7f; --emerald:#1e5c4f;
+  --line:rgba(201,162,39,.16); --line2:rgba(201,162,39,.4);
+  --glow:0; --mukop:.06;
+}#tk *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}#tk{height:100%}#tk{
+  background:var(--bg); color:var(--ink); overflow:hidden;
+  font:400 14px/1.6 "Figtree",system-ui,sans-serif;
+  user-select:none;-webkit-user-select:none;
+}#tk button, #tk select, #tk input{font:inherit;color:inherit}#tk /* ── Sahne katmanları ── */
+#stage{position:fixed;inset:0;touch-action:none}#tk #ebruC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+  transition:filter 6s ease}#tk #muk{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;overflow:hidden}#tk #muk svg{width:min(140vmax,1400px);height:min(140vmax,1400px);opacity:var(--mukop);transition:opacity 4s}#tk #mukIn{transform-origin:center;transition:transform 5.5s cubic-bezier(.4,0,.2,1)}#tk #vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 90% 70% at 50% 44%,transparent 40%,rgba(4,10,18,.55) 100%)}#tk /* ── Merkez: nefes eden Hû ── */
+#center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:0;pointer-events:none;padding-bottom:6vh}#tk #huZone{position:relative;width:296px;height:296px;display:grid;place-items:center}#tk #bArcSvg{position:absolute;inset:0;transform:rotate(-90deg)}#tk #bArcBg{fill:none;stroke:rgba(239,231,211,.07);stroke-width:2}#tk #bArc{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;
+  transition:stroke .8s}#tk #huWrap{filter:url(#rip);will-change:transform;transform:scale(1)}#tk #hu{font:700 172px/1 "Amiri",serif;color:var(--ink);
+  text-shadow:
+    0 0 calc(14px + 30px*var(--glow)) rgba(236,210,126,calc(.18 + .5*var(--glow))),
+    0 0 calc(46px + 70px*var(--glow)) rgba(201,162,39,calc(.10 + .32*var(--glow))),
+    0 2px 22px rgba(0,0,0,.55);
+  transition:color 3s}#tk #phase{position:absolute;bottom:8px;left:0;right:0;text-align:center;
+  font:600 10px/1 "Figtree";letter-spacing:.34em;color:var(--mut)}#tk #phase b{color:var(--goldh);font-weight:600}#tk /* ── Zikir satırı ── */
+#zk{margin-top:2px;text-align:center;min-height:88px}#tk #zkAr{font:400 30px/1.5 "Amiri",serif;color:var(--goldh);
+  text-shadow:0 0 24px rgba(201,162,39,.25)}#tk #zkTr{font:italic 500 14.5px/1.3 "Cormorant Garamond",serif;color:var(--mut);letter-spacing:.06em}#tk #zkRow{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:7px}#tk #zkPill{font:600 11px/1 "Figtree";letter-spacing:.12em;color:var(--ink);
+  border:1px solid var(--line2);border-radius:99px;padding:6px 13px;
+  background:rgba(10,22,38,.5);backdrop-filter:blur(4px)}#tk #zkHand{font-size:10.5px;color:var(--dim);letter-spacing:.05em;margin-top:7px;padding:0 30px}#tk .zkFlash{animation:zkF .5s ease}
+@keyframes zkF{0%{transform:scale(1)}30%{transform:scale(1.045);color:#fff}100%{transform:scale(1)}}#tk /* ── Telkin (Sır Kapısı) ── */
+#telkin{position:absolute;left:0;right:0;bottom:calc(15px + env(safe-area-inset-bottom));
+  text-align:center;padding:0 34px;pointer-events:none;
+  font:italic 500 15.5px/1.75 "Cormorant Garamond",serif;color:rgba(239,231,211,.82);
+  letter-spacing:.045em;opacity:0;transition:opacity 2.2s ease;min-height:58px;
+  text-shadow:0 1px 14px rgba(0,0,0,.7)}#tk #telkin.show{opacity:1}#tk /* ── Üst bar ── */
+#top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;
+  justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 16px 8px}#tk #brand{display:flex;align-items:center;gap:8px;
+  font:600 13px/1 "Cormorant Garamond",serif;letter-spacing:.42em;color:var(--mut)}#tk #brand span{color:var(--gold);font-size:17px;letter-spacing:0}#tk #topR{display:flex;gap:8px;align-items:center}#tk #sesT{font:300 11px/1 "Figtree";letter-spacing:.14em;color:var(--dim);min-width:44px;text-align:right}#tk .iBtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(10,22,38,.5);backdrop-filter:blur(6px);color:var(--mut);
+  font-size:15px;cursor:pointer;display:grid;place-items:center}#tk .iBtn:active{transform:scale(.92)}#tk .pillLink{display:flex;align-items:center;height:36px;padding:0 13px;border-radius:99px;border:1px solid var(--line2);background:rgba(201,162,39,.08);backdrop-filter:blur(6px);color:var(--goldh);font:600 10px/1 'Figtree';letter-spacing:.22em;text-decoration:none}#tk .pillLink:active{transform:scale(.95)}#tk /* ── Mihrap paneli ── */
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:linear-gradient(180deg,rgba(12,25,42,.94),rgba(8,17,30,.97));
+  backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  border-radius:22px 22px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom));
+  max-height:72vh;overflow-y:auto;transform:translateY(102%);
+  transition:transform .45s cubic-bezier(.32,.9,.35,1)}#tk #panel.open{transform:translateY(0)}#tk #pGrip{width:38px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 12px}#tk .pSec{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:11px;
+  background:rgba(6,14,26,.4)}#tk .pT{font:600 10px/1 "Figtree";letter-spacing:.3em;color:var(--gold);margin-bottom:11px;
+  display:flex;justify-content:space-between;align-items:center}#tk .pT small{letter-spacing:.05em;color:var(--dim);font-weight:400}#tk .row{display:flex;align-items:center;gap:10px;margin:9px 0}#tk .row label{font-size:11.5px;color:var(--mut);width:74px;flex:none;letter-spacing:.04em}#tk .row .valB{font-size:11px;color:var(--goldh);width:56px;text-align:right;flex:none;font-variant-numeric:tabular-nums}#tk input[type=range]{flex:1;appearance:none;-webkit-appearance:none;height:26px;background:transparent}#tk input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold) var(--val,50%),rgba(255,255,255,.1) var(--val,50%))}#tk input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--goldh);border:2px solid #0a1626;margin-top:-6px;box-shadow:0 0 8px rgba(201,162,39,.5)}#tk input[type=range]::-moz-range-track{height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold) var(--val,50%),rgba(255,255,255,.1) var(--val,50%))}#tk input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;
+  background:var(--goldh);border:2px solid #0a1626}#tk select{background:rgba(6,14,26,.7);border:1px solid var(--line);border-radius:9px;
+  padding:7px 10px;color:var(--ink);outline:none;flex:1}#tk .sw{width:40px;height:22px;border-radius:99px;border:1px solid var(--line2);flex:none;
+  background:rgba(255,255,255,.06);position:relative;cursor:pointer;transition:background .25s}#tk .sw::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:var(--mut);transition:transform .25s,background .25s}#tk .sw.on{background:rgba(201,162,39,.3)}#tk .sw.on::after{transform:translateX(18px);background:var(--goldh)}#tk .opt{display:flex;justify-content:space-between;align-items:center;margin:9px 0;font-size:12px;color:var(--mut)}#tk .seyirLine{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--mut);margin:7px 0}#tk .seyirLine .st{width:17px;text-align:center}#tk .seyirLine.act{color:var(--goldh)}#tk .seyirLine.done{color:var(--dim);text-decoration:line-through}#tk .btn{border:1px solid var(--line2);background:rgba(201,162,39,.09);color:var(--goldh);
+  border-radius:11px;padding:9px 14px;font-size:12px;letter-spacing:.08em;cursor:pointer}#tk .btn:active{transform:scale(.97)}#tk .btnRow{display:flex;gap:9px;margin-top:6px}#tk /* ── Giriş kapısı ── */
+#gate{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:22px;background:
+  radial-gradient(ellipse 120% 90% at 50% 0%,#0d2438 0%,#0a1626 55%,#060d18 100%);
+  transition:opacity 1.6s ease;text-align:center;padding:0 34px}#tk #gate.bye{opacity:0;pointer-events:none}#tk #gLogo{font:400 84px/1 "Amiri",serif;color:var(--gold);text-shadow:0 0 60px rgba(201,162,39,.35)}#tk #gT{font:600 15px/1 "Cormorant Garamond",serif;letter-spacing:.5em;color:var(--ink)}#tk #gS{font:italic 500 13.5px/1.8 "Cormorant Garamond",serif;color:var(--mut);max-width:340px}#tk #gBtn{border:1px solid var(--line2);background:rgba(201,162,39,.1);color:var(--goldh);
+  border-radius:99px;padding:15px 38px;font:600 12.5px/1 "Figtree";letter-spacing:.3em;cursor:pointer;
+  box-shadow:0 0 40px rgba(201,162,39,.14)}#tk #gBtn:active{transform:scale(.96)}#tk #gNote{font-size:10px;color:var(--dim);letter-spacing:.06em;max-width:330px;line-height:1.7}#tk #fin{position:fixed;inset:0;z-index:50;display:none;place-items:center;text-align:center;
+  pointer-events:none;padding:0 40px}#tk #fin.show{display:grid}#tk #fin div{font:italic 500 17px/2 "Cormorant Garamond",serif;color:var(--goldh);
+  text-shadow:0 0 30px rgba(201,162,39,.3)}
+
+@media (max-width:380px){#tk #hu{font-size:150px}#tk #huZone{width:262px;height:262px}#tk #zkAr{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){#tk #huWrap{filter:none!important}
+}
+
+#tk{position:fixed;inset:0;z-index:1000}
+#tk[hidden]{display:none!important}
+</style>
+<div id="tk" hidden>
+
+<!-- Su dalgası (mürekkep) filtresi -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="rip" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence id="ripT" type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap id="ripD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div id="stage">
+  <canvas id="ebruC"></canvas>
+  <div id="muk"></div>
+  <div id="vignette"></div>
+
+  <div id="center">
+    <div id="huZone">
+      <svg id="bArcSvg" viewBox="0 0 296 296">
+        <circle id="bArcBg" cx="148" cy="148" r="133"/>
+        <circle id="bArc" cx="148" cy="148" r="133" stroke-dasharray="835.6" stroke-dashoffset="835.6"/>
+      </svg>
+      <div id="huWrap"><div id="hu">هُو</div></div>
+      <div id="phase"><b id="phN">—</b> <span id="phC"></span></div>
+    </div>
+
+    <div id="zk">
+      <div id="zkAr"></div>
+      <div id="zkTr"></div>
+      <div id="zkRow"><span id="zkPill">0 / 33</span></div>
+      <div id="zkHand"></div>
+    </div>
+  </div>
+
+  <div id="telkin"></div>
+</div>
+
+<div id="top">
+  <div id="brand"><span>۞</span> TEKKE</div>
+  <div id="topR">
+    <button class="pillLink" id="backSukun" title="SÜKÛN'a dön">✦ SÜKÛN</button>
+    <span id="sesT">0:00</span>
+    <button class="iBtn" id="muteBtn" title="Sesi aç/kapat">🕯</button>
+    <button class="iBtn" id="panelBtn" title="Mihrap">☰</button>
+  </div>
+</div>
+
+<!-- ═══ MİHRAP PANELİ ═══ -->
+<div id="panel">
+  <div id="pGrip"></div>
+
+  <div class="pSec">
+    <div class="pT">SEYİR — LETÂİF ZİKRİ <small id="bastLbl">Kabz → Bast</small></div>
+    <div id="seyirList"></div>
+    <div class="btnRow">
+      <button class="btn" id="skipBtn">⏭ Aşamayı geç</button>
+      <button class="btn" id="rstBtn">↺ Seyri başa al</button>
+    </div>
+  </div>
+
+  <div class="pSec">
+    <div class="pT">NEFES</div>
+    <div class="row"><label>Desen</label>
+      <select id="patSel">
+        <option value="hu" selected>Hû nefesi — 4 al · 2 tut · 6 ver</option>
+        <option value="box">Kutu — 4 · 4 · 4 · 4</option>
+        <option value="coh">Koherent — 5.5 al · 5.5 ver</option>
+      </select>
+    </div>
+    <div class="opt"><span>✋ Elle nefes (Hû'ya bas: al · bırak: ver)</span><button class="sw" id="manTgl"></button></div>
+    <div class="opt"><span>📜 Sır Kapısı telkini</span><button class="sw on" id="telTgl"></button></div>
+    <div class="opt"><span>🗣 Sesli telkin (cihaz sesi, fısıltı)</span><button class="sw" id="voiceTgl"></button></div>
+  </div>
+
+  <div class="pSec">
+    <div class="pT">KATRE & UMMAN</div>
+    <div class="row"><label>Damla</label><input type="range" id="bpmSld" min="40" max="72" step="1" value="54"><span class="valB" id="bpmVal">54 BPM</span></div>
+    <div class="row"><label>Umman</label>
+      <select id="umSel">
+        <option value="3">Her 3. damla</option>
+        <option value="4" selected>Her 4. damla</option>
+        <option value="5">Her 5. damla</option>
+        <option value="6">Her 6. damla</option>
+      </select>
+    </div>
+    <div class="row"><label>Katre sesi</label><input type="range" id="katVol" min="0" max="1" step="0.01" value="0.7"><span class="valB" id="katVolV">%70</span></div>
+    <div class="opt"><span>📳 Haptik vuruş (titreşim + 55 Hz darbe)</span><button class="sw on" id="hapTgl"></button></div>
+    <div class="opt"><span>💧 Katre metronomu</span><button class="sw on" id="katTgl"></button></div>
+  </div>
+
+  <div class="pSec">
+    <div class="pT">MAKAM & ANÂSIR-I ERBAA <small>Rast → Segâh</small></div>
+    <div class="row"><label>🎼 Ney</label><input type="range" id="vNey" min="0" max="1" step="0.01" value="0.35"><span class="valB"></span></div>
+    <div class="row"><label>💧 Su</label><input type="range" id="vSu" min="0" max="1" step="0.01" value="0.3"><span class="valB"></span></div>
+    <div class="row"><label>🪨 Toprak</label><input type="range" id="vToprak" min="0" max="1" step="0.01" value="0.2"><span class="valB"></span></div>
+    <div class="row"><label>🌬 Hava</label><input type="range" id="vHava" min="0" max="1" step="0.01" value="0.15"><span class="valB"></span></div>
+    <div class="row"><label>🔥 Ateş</label><input type="range" id="vAtes" min="0" max="1" step="0.01" value="0.08"><span class="valB"></span></div>
+    <div class="opt"><span id="binLbl">〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)</span><button class="sw" id="binTgl"></button></div>
+    <div class="row"><label>Ana ses</label><input type="range" id="vMaster" min="0" max="1" step="0.01" value="0.75"><span class="valB"></span></div>
+  </div>
+
+  <div style="text-align:center;font-size:9.5px;color:var(--dim);line-height:1.7;padding:2px 6px 4px">
+    Bu bir tefekkür aynasıdır; fetva ve tedavi makamı değildir — usul, ehlinin rehberliğine emanettir.<br>
+    🎧 Binaural için kulaklık gerekir • Titreşimli/ritmik uyarana duyarlılığınız varsa hekiminize danışın.
+  </div>
+</div>
+
+<!-- ═══ GİRİŞ KAPISI ═══ -->
+<div id="gate">
+  <div id="gLogo">۞</div>
+  <div id="gT">DİJİTAL TEKKE</div>
+  <div id="gS">Gürültü kıyıda kalsın. İçeride yalnız katre konuşur —<br>nefesinle Hû'nun arasında ince bir perde var.</div>
+  <button id="gBtn">TEKKEYE GİR ✦</button>
+  <div id="gNote">Girişte ses açılır ve ekran uyanık tutulur. Kulaklık, mağara yankısını derinleştirir. Rahat oturun: omurga elif gibi dik, sağ el kalpte.</div>
+</div>
+
+<div id="fin"><div>Seyir tamam ✦<br>Dilediğin kadar sükûtta kal —<br>perde aralandı.</div></div>
+
+</div>
+<script>
+window.Tekke=(function(){
+
+'use strict';
+/* ════════ 1) YARDIMCILAR ════════ */
+const root=document.getElementById('tk');
+const $=s=>root.querySelector(s), $$=s=>[...root.querySelectorAll(s)];
+const rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const S={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+function setFill(i){const mn=+i.min||0,mx=+i.max||1;i.style.setProperty('--val',((+i.value-mn)/(mx-mn)*100)+'%')}
+
+/* ════════ 2) SES ÇEKİRDEĞİ — mağara ════════ */
+let ctx=null,master=null,wetIn=null;
+function ac(){
+  if(ctx)return ctx;
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  master=ctx.createGain(); master.gain.value=+$('#vMaster').value*0.9;
+  master.connect(ctx.destination);
+  /* mağara IR: 4 sn, gitgide koyulaşan (lowpass) yankı */
+  const conv=ctx.createConvolver(); conv.buffer=makeIR(4.2,3.0);
+  wetIn=ctx.createGain(); wetIn.gain.value=.9;
+  wetIn.connect(conv); conv.connect(master);
+  return ctx;
+}
+function makeIR(sec,decay){
+  const L=Math.floor(ctx.sampleRate*sec), b=ctx.createBuffer(2,L,ctx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=b.getChannelData(c); let lp=0;
+    for(let i=0;i<L;i++){
+      const k=1-i/L, a=(Math.random()*2-1)*Math.pow(k,decay);
+      lp+=( a-lp )*lerp(.34,.05,i/L);   /* zamanla kısılan tiz = taş duvar */
+      d[i]=lp;
+    }
+  }
+  return b;
+}
+const g=v=>{const n=ctx.createGain();n.gain.value=v;return n};
+const osc=(f,t='sine')=>{const o=ctx.createOscillator();o.type=t;o.frequency.value=f;return o};
+const flt=(t,f,q=1)=>{const n=ctx.createBiquadFilter();n.type=t;n.frequency.value=f;n.Q.value=q;return n};
+const NOISE={};
+function noiseBuf(kind){
+  if(NOISE[kind])return NOISE[kind];
+  const L=ctx.sampleRate*3, b=ctx.createBuffer(1,L,ctx.sampleRate), d=b.getChannelData(0);
+  if(kind==='white'){for(let i=0;i<L;i++)d[i]=Math.random()*2-1}
+  else if(kind==='pink'){let b0=0,b1=0,b2=0;for(let i=0;i<L;i++){const w=Math.random()*2-1;
+    b0=.997*b0+.029591*w;b1=.985*b1+.032534*w;b2=.95*b2+.048056*w;d[i]=(b0+b1+b2+w*.1848)*3.2}}
+  else{let l=0;for(let i=0;i<L;i++){const w=Math.random()*2-1;l=(l+.02*w)/1.02;d[i]=l*3.5}}
+  return NOISE[kind]=b;
+}
+const src=kind=>{const s=ctx.createBufferSource();s.buffer=noiseBuf(kind);s.loop=true;return s};
+function makeEnv(){
+  const E={nodes:[],started:[],tos:[],ivs:[],dead:false};
+  E.n=x=>(E.nodes.push(x),x);
+  E.play=x=>(E.nodes.push(x),E.started.push(x),x.start(),x);
+  E.later=(f,ms)=>{const t=setTimeout(()=>{if(!E.dead)f()},ms);E.tos.push(t);return t};
+  E.every=(f,ms)=>{const t=setInterval(()=>{if(!E.dead)f()},ms);E.ivs.push(t);return t};
+  E.kill=(fade,out)=>{
+    E.dead=true;E.tos.forEach(clearTimeout);E.ivs.forEach(clearInterval);
+    if(out&&ctx){out.gain.setTargetAtTime(.0001,ctx.currentTime,fade/3)}
+    setTimeout(()=>{E.started.forEach(x=>{try{x.stop()}catch(e){}});
+      E.nodes.forEach(x=>{try{x.disconnect()}catch(e){}})},fade*1000+150);
+  };
+  return E;
+}
+
+/* ════════ 3) ANÂSIR-I ERBAA (4 element) ════════ */
+const ELEMS={
+ su:{cal:.9,wet:.3,build(E,out){
+   const n=E.play(src('white')),hp=E.n(flt('highpass',420)),lp=E.n(flt('lowpass',4200)),b=E.n(g(.16));
+   n.connect(hp);hp.connect(lp);lp.connect(b);b.connect(out);
+   const gg=E.play(src('brown')),bp=E.n(flt('bandpass',300,2.4)),gb=E.n(g(.5));
+   gg.connect(bp);bp.connect(gb);gb.connect(out);
+   E.every(()=>{bp.frequency.setTargetAtTime(rnd(180,520),ctx.currentTime,.09)},150);
+   E.every(()=>{ if(Math.random()<.5)return;
+     const o=E.n(osc(rnd(520,1300))),og=E.n(g(0));o.connect(og);og.connect(out);
+     const t=ctx.currentTime;og.gain.setValueAtTime(0,t);
+     og.gain.linearRampToValueAtTime(rnd(.02,.05),t+.015);
+     og.gain.exponentialRampToValueAtTime(.0001,t+rnd(.06,.14));
+     o.frequency.exponentialRampToValueAtTime(o.frequency.value*rnd(1.1,1.6),t+.1);
+     o.start(t);o.stop(t+.2);},260);
+ }},
+ toprak:{cal:1.1,wet:.2,build(E,out){
+   const n=E.play(src('brown')),lp=E.n(flt('lowpass',105)),b=E.n(g(.9));
+   n.connect(lp);lp.connect(b);b.connect(out);
+   const lfo=E.play(osc(.05)),ld=E.n(g(.3));lfo.connect(ld);ld.connect(b.gain);
+ }},
+ hava:{cal:.9,wet:.25,build(E,out){
+   const n=E.play(src('pink')),bp=E.n(flt('bandpass',480,.6)),b=E.n(g(.5));
+   n.connect(bp);bp.connect(b);b.connect(out);
+   E.every(()=>{bp.frequency.setTargetAtTime(rnd(260,1050),ctx.currentTime,1.6);
+     b.gain.setTargetAtTime(rnd(.3,.62),ctx.currentTime,2.1)},2800);
+ }},
+ ates:{cal:1,wet:.12,build(E,out){
+   const bed=E.play(src('brown')),bl=E.n(flt('lowpass',190)),bb=E.n(g(.12));
+   bed.connect(bl);bl.connect(bb);bb.connect(out);
+   E.every(()=>{ if(Math.random()<.35)return;
+     const n=E.n(src('white')),bp=E.n(flt('bandpass',rnd(1700,3400),4)),cg=E.n(g(0));
+     n.loop=false;n.connect(bp);bp.connect(cg);cg.connect(out);
+     const t=ctx.currentTime,d=rnd(.015,.05);
+     cg.gain.setValueAtTime(0,t);cg.gain.linearRampToValueAtTime(rnd(.05,.13),t+.004);
+     cg.gain.exponentialRampToValueAtTime(.0001,t+d);
+     n.start(t);n.stop(t+d+.02);},130);
+ }}
+};
+const CH={};   /* aktif element kanalları */
+function elemOn(id){
+  if(CH[id])return; ac();
+  const def=ELEMS[id],E=makeEnv(),out=E.n(g(0));
+  out.connect(master);
+  const wet=E.n(g(def.wet));out.connect(wet);wet.connect(wetIn);
+  def.build(E,out);
+  out.gain.setTargetAtTime(vol(id)*def.cal,ctx.currentTime,2.2);
+  CH[id]={E,out};
+}
+function elemSet(id){ if(CH[id])CH[id].out.gain.setTargetAtTime(vol(id)*ELEMS[id].cal,ctx.currentTime,.3);
+  else if(vol(id)>0&&running)elemOn(id);
+  if(CH[id]&&vol(id)===0){CH[id].E.kill(1.2,CH[id].out);delete CH[id];}}
+const vol=id=>+({su:$('#vSu'),toprak:$('#vToprak'),hava:$('#vHava'),ates:$('#vAtes')}[id].value);
+
+/* ════════ 4) NEY — Rast kapısı, Segâh gövdesi ════════ */
+/* saf aralıklarla iki çeşni; segâh rengi için 3. derecede koma inişi */
+const KOMA=Math.pow(2,-50/1200);
+const RAST =[240,270,300*KOMA,320,360,405,432,480];
+const SEGAH=[240*KOMA,270,288,320,360*KOMA,384,432,480*KOMA];
+let NEY=null;
+function neyOn(){
+  if(NEY)return; ac();
+  const E=makeEnv(),out=E.n(g(0));out.connect(master);
+  const wet=E.n(g(.5));out.connect(wet);wet.connect(wetIn);
+  const body=E.play(osc(300)),edge=E.play(osc(300,'sawtooth')),eg=E.n(g(.06)),
+        bg=E.n(g(.5)),mix=E.n(g(1)),bp=E.n(flt('bandpass',900,1.1)),
+        breath=E.play(src('pink')),bf=E.n(flt('bandpass',1400,2)),bgn=E.n(g(.05));
+  body.connect(bg);edge.connect(eg);bg.connect(mix);eg.connect(mix);
+  breath.connect(bf);bf.connect(bgn);bgn.connect(mix);
+  mix.connect(bp);bp.connect(out);
+  const vib=E.play(osc(5.1)),vd=E.n(g(2.6));vib.connect(vd);
+  vd.connect(body.frequency);vd.connect(edge.frequency);
+  const amp=E.n(g(0));mix.disconnect();mix.connect(amp);amp.connect(bp);
+  function note(f,dur,vel){
+    const t=ctx.currentTime;
+    body.frequency.setTargetAtTime(f,t,.045);edge.frequency.setTargetAtTime(f,t,.045);
+    bp.frequency.setTargetAtTime(clamp(f*3,700,2600),t,.08);
+    amp.gain.cancelScheduledValues(t);amp.gain.setTargetAtTime(vel,t,.09);
+    amp.gain.setTargetAtTime(.0001,t+dur*.72,dur*.2);
+  }
+  function phrase(){
+    if(E.dead)return;
+    const seg=clamp((perfNow()-t0)/90000,0,1);          /* 1.5 dk'da Rast→Segâh */
+    const SC=Math.random()<seg?SEGAH:RAST;
+    let i=Math.floor(rnd(1,5));const n=Math.floor(rnd(3,7));
+    let d=0;
+    for(let k=0;k<n;k++){
+      const dur=rnd(.5,1.5)*(k===n-1?1.9:1);
+      E.later(()=>note(SC[i]??SC[2],dur,rnd(.12,.2)),d*1000);
+      d+=dur*rnd(.86,1);
+      i=clamp(i+(Math.random()<.62?(Math.random()<.5?-1:1):(Math.random()<.5?-2:2)),0,SC.length-1);
+    }
+    E.later(phrase,(d+rnd(4,9))*1000);
+  }
+  out.gain.setTargetAtTime(+$('#vNey').value*.9,ctx.currentTime,2);
+  E.later(phrase,1800);
+  NEY={E,out};
+}
+
+/* ════════ 5) KATRE & UMMAN — mağara yankılı su damlası + haptik ════════ */
+const HAP={on:true};
+let katOn=true,katT=null,beat=0,bpm=54,ummanEvery=4,nextBeat=0;
+
+function katreSnd(umman){
+  if(!ctx)return;
+  const t=ctx.currentTime, kv=+$('#katVol').value*(umman?1.2:1);
+  const wetAmt=umman?.65:.32, f0=umman?200:410, f1=umman?460:930;
+  /* bloop — yükselen sinüs */
+  const o=osc(f0), dry=g(0), ws=g(wetAmt);
+  o.connect(dry); dry.connect(master); dry.connect(ws); ws.connect(wetIn);
+  o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(f1,t+(umman?.11:.07));
+  dry.gain.setValueAtTime(0,t);
+  dry.gain.linearRampToValueAtTime(.24*kv,t+.006);
+  dry.gain.exponentialRampToValueAtTime(.0001,t+(umman?.34:.16));
+  o.start(t); o.stop(t+.45);
+  /* tok gövde rezonansı */
+  const b=osc(umman?130:262), bg2=g(0);
+  b.connect(bg2); bg2.connect(master); bg2.connect(ws);
+  bg2.gain.setValueAtTime(0,t);
+  bg2.gain.linearRampToValueAtTime(.11*kv,t+.012);
+  bg2.gain.exponentialRampToValueAtTime(.0001,t+(umman?.6:.24));
+  b.start(t); b.stop(t+.7);
+  /* umman: 55 Hz "hissedilen" darbe (iOS'ta titreşim yerine) */
+  if(umman&&HAP.on){
+    const th=osc(55), tg2=g(0); th.connect(tg2); tg2.connect(master);
+    tg2.gain.setValueAtTime(0,t);
+    tg2.gain.linearRampToValueAtTime(.22,t+.02);
+    tg2.gain.exponentialRampToValueAtTime(.0001,t+.2);
+    th.start(t); th.stop(t+.26);
+  }
+}
+function hapticBeat(um){
+  if(!HAP.on||!navigator.vibrate)return;
+  try{navigator.vibrate(um?[60,40,25]:45)}catch(e){}
+}
+function katStart(){
+  if(katT)return;
+  beat=0; nextBeat=performance.now()+500; katTick();
+}
+function katTick(){
+  katT=setTimeout(()=>{
+    if(running&&katOn&&!muted){
+      beat++;
+      const um=(beat%ummanEvery===0);
+      katreSnd(um); hapticBeat(um); onKatre(um);
+    }
+    nextBeat+=60000/bpm;
+    katTick();
+  },Math.max(0,nextBeat-performance.now()));
+}
+function katStop(){clearTimeout(katT);katT=null;}
+
+/* ════════ 6) ALT AKIM — 136.1 Hz · 7.83 Hz binaural ════════ */
+let BIN=null;
+function binOn(){
+  if(BIN)return; ac();
+  const E=makeEnv(), out=E.n(g(0)); out.connect(master);
+  const mg=E.n(ctx.createChannelMerger(2));
+  const sk=S.get('sukun.set',null), fr=(sk&&sk.fr)||{};
+  const c=+fr.c||136.1, bt=+fr.b||7.83;
+  const L=E.play(osc(c-bt/2)), R=E.play(osc(c+bt/2));
+  const gl=E.n(g(.5)), gr=E.n(g(.5));
+  L.connect(gl); gl.connect(mg,0,0);
+  R.connect(gr); gr.connect(mg,0,1);
+  mg.connect(out);
+  out.gain.setTargetAtTime(.06,ctx.currentTime,2.5);
+  BIN={E,out};
+}
+function binOff(){if(!BIN)return;BIN.E.kill(1.2,BIN.out);BIN=null;}
+
+/* ════════ 7) EBRU — yaşayan mermer zemin (Kabz → Bast) ════════ */
+const eb={c:$('#ebruC'),x:null,drops:[],W:0,H:0,dpr:1};
+const NV=72;
+function ebInit(){
+  eb.x=eb.c.getContext('2d');
+  ebResize();
+  window.addEventListener('resize',ebResize);
+}
+function ebResize(){
+  eb.dpr=Math.min(window.devicePixelRatio||1,1.5);
+  eb.W=innerWidth; eb.H=innerHeight;
+  eb.c.width=Math.round(eb.W*eb.dpr); eb.c.height=Math.round(eb.H*eb.dpr);
+  eb.x.setTransform(eb.dpr,0,0,eb.dpr,0,0);
+  ebDraw();
+}
+const PAL_K=['#0e2a3d','#12352e','#0d2b26','#183043','#0f2233'];
+const PAL_B=['#1e5c4f','#2e8f7f','#175646','#2a7a6a','#134b62'];
+const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+function mixHex(a,b,t){
+  const A=hx(a),B=hx(b);
+  return 'rgb('+Math.round(lerp(A[0],B[0],t))+','+Math.round(lerp(A[1],B[1],t))+','+Math.round(lerp(A[2],B[2],t))+')';
+}
+const ebColor=()=>mixHex(PAL_K[(Math.random()*PAL_K.length)|0],PAL_B[(Math.random()*PAL_B.length)|0],bast*rnd(.55,1));
+/* klasik damla-itme: C' = P + (C−P)·√(1 + r²/|C−P|²) */
+function ebDrop(x,y,r,color,strokeOnly){
+  for(const d of eb.drops){
+    const p=d.pts;
+    for(let i=0;i<p.length;i+=2){
+      const dx=p[i]-x,dy=p[i+1]-y,L2=dx*dx+dy*dy||1e-6,f=Math.sqrt(1+r*r/L2);
+      p[i]=x+dx*f;p[i+1]=y+dy*f;
+    }
+  }
+  const pts=new Float32Array(NV*2);
+  for(let i=0;i<NV;i++){
+    const a=i/NV*Math.PI*2,rr=r*rnd(.96,1.04);
+    pts[i*2]=x+Math.cos(a)*rr;pts[i*2+1]=y+Math.sin(a)*rr;
+  }
+  eb.drops.push({pts,color,stroke:strokeOnly});
+  if(eb.drops.length>64)eb.drops.shift();
+  ebDraw();
+}
+/* gel-git tarağı — Bast yükselince desen taranır */
+function ebComb(){
+  const amp=lerp(6,15,bast),sp=rnd(52,78),ph=rnd(0,Math.PI*2);
+  for(const d of eb.drops){
+    const p=d.pts;
+    for(let i=0;i<p.length;i+=2)p[i+1]+=Math.sin(p[i]/sp*Math.PI+ph)*amp;
+  }
+  ebDraw();
+}
+function ebDraw(){
+  const x=eb.x;if(!x)return;
+  x.fillStyle='#0a1626';x.fillRect(0,0,eb.W,eb.H);
+  for(const d of eb.drops){
+    const p=d.pts;
+    x.beginPath();x.moveTo(p[0],p[1]);
+    for(let i=2;i<p.length;i+=2)x.lineTo(p[i],p[i+1]);
+    x.closePath();
+    if(d.stroke){x.globalAlpha=.5;x.strokeStyle=d.color;x.lineWidth=1.4;x.stroke();}
+    else{x.globalAlpha=.9;x.fillStyle=d.color;x.fill();}
+  }
+  x.globalAlpha=1;
+}
+function ebExhaleDrop(){
+  const cx=eb.W/2,cy=eb.H*.46;
+  const a=rnd(0,Math.PI*2),dist=rnd(.14,.55)*Math.min(eb.W,eb.H);
+  const x=clamp(cx+Math.cos(a)*dist,24,eb.W-24);
+  const y=clamp(cy+Math.sin(a)*dist*1.15,24,eb.H-24);
+  const gold=bast>.55&&Math.random()<.22;
+  ebDrop(x,y,rnd(26,58)*(0.75+bast*.5),gold?'#c9a227':ebColor(),gold);
+}
+
+/* ════════ 8) MUKARNAS — 16 kollu Selçuklu yıldız kubbesi ════════ */
+function starPath(cx,cy,R,r,n,rot){
+  let s='';
+  for(let i=0;i<n*2;i++){
+    const a=(rot||0)+i*Math.PI/n,rr=i%2?r:R;
+    s+=(i?'L':'M')+(cx+Math.cos(a)*rr).toFixed(1)+' '+(cy+Math.sin(a)*rr).toFixed(1);
+  }
+  return s+'Z';
+}
+function buildMuk(){
+  let p='';
+  p+='<path d="'+starPath(0,0,150,64,16,0)+'"/>';
+  p+='<path d="'+starPath(0,0,96,42,8,Math.PI/8)+'"/>';
+  const rings=[[250,10,.5,44,19],[400,14,0,38,17],[560,18,.5,32,14]];
+  for(const ring of rings){
+    const R=ring[0],n=ring[1],off=ring[2],r1=ring[3],r2=ring[4];
+    for(let i=0;i<n;i++){
+      const a=(i+off)/n*Math.PI*2;
+      p+='<path d="'+starPath(Math.cos(a)*R,Math.sin(a)*R,r1,r2,8,a)+'"/>';
+    }
+    p+='<circle cx="0" cy="0" r="'+R+'"/>';
+  }
+  $('#muk').innerHTML='<svg viewBox="-640 -640 1280 1280"><g id="mukIn" stroke="#c9a227" fill="none" stroke-width="1">'+p+'</g></svg>';
+}
+function mukDeepen(){
+  const el=root.querySelector('#mukIn');if(!el)return;
+  el.style.transform='scale(.982) rotate(.35deg)';
+  setTimeout(()=>{const e2=root.querySelector('#mukIn');if(e2)e2.style.transform='scale(1) rotate(0deg)'},5600);
+}
+
+/* ════════ 9) NEFES MOTORU — Hû ile nefes ════════ */
+const PATS={
+ hu:[['AL',4],['TUT',2],['VER',6]],
+ box:[['AL',4],['TUT',4],['VER',4],['TUT',4]],
+ coh:[['AL',5.5],['VER',5.5]]
+};
+const BR={pat:'hu',i:0,t0:0,manual:false,mPhase:null,mDur:6};
+const ARC_C=835.6;
+const easeIO=x=>.5-.5*Math.cos(Math.PI*x);
+const phCur=()=>PATS[BR.pat][BR.i];
+function brReset(){BR.i=0;BR.t0=performance.now();applyPhase(phCur()[0]);}
+function nextPhase(){
+  BR.i=(BR.i+1)%PATS[BR.pat].length;
+  BR.t0=performance.now();
+  applyPhase(phCur()[0]);
+}
+function applyPhase(n){
+  $('#phN').textContent=n;
+  $('#bArc').style.stroke=n==='AL'?'#c9a227':n==='TUT'?'#efe7d3':'#2e8f7f';
+  if(n==='VER'&&running){
+    ebExhaleDrop(); mukDeepen(); telkinNext();
+    const st=SEY.stage;
+    if(st&&st.mode==='nefes')zkCount();
+  }
+}
+function drawBreath(n,p,dur){
+  let sc=1,glow=0;
+  if(n==='AL'){sc=1+.07*easeIO(p);glow=.12+.55*easeIO(p);}
+  else if(n==='TUT'){sc=1.07+.004*Math.sin(performance.now()/280);glow=.72;}
+  else if(n==='VER'){
+    sc=1.07-.07*easeIO(p);glow=.6*(1-p)+.08;
+    const k=Math.sin(p*Math.PI);
+    $('#ripD').setAttribute('scale',(k*13).toFixed(2));
+    $('#ripT').setAttribute('baseFrequency',(0.010+0.004*Math.sin(performance.now()/900)).toFixed(4)+' 0.02');
+  }
+  if(n!=='VER')$('#ripD').setAttribute('scale','0');
+  $('#huWrap').style.transform='scale('+sc.toFixed(4)+')';
+  root.style.setProperty('--glow',glow.toFixed(3));
+  $('#bArc').style.strokeDashoffset=(ARC_C*(1-p)).toFixed(1);
+  $('#phC').textContent=Math.ceil((1-p)*dur)||'';
+}
+
+/* ════════ 10) SIR KAPISI TELKİNİ ════════ */
+const TELKIN=[
+'Hoş geldin, yorgun katre…',
+'Zihnindeki uğultu, henüz kâğıdını bulamamış mürekkeptir; suçlama onu, sadece izle.',
+'Ekrandaki Hû nasıl nefes alıyorsa, sen de öylesin: daralan her göğüs, genişlemek için daralır.',
+'Şimdi ver nefesini… mürekkebin suya yayıldığını, laciverdin zümrüde döndüğünü seyret.',
+'Sen ummandan koparılmış bir damla değilsin; ummanın kendini damlada seyrettiği ânsın.',
+'Gürültü kıyıda kalsın… burası mağaranın kalbi; burada yalnız damla konuşur: Hû…',
+'Sükûn sana uzak bir ülke değil — nefesinle aranda duran ince bir perde.',
+'Ver nefesini… perde şimdi aralandı.'
+];
+let telI=-1,telHold=0;
+function telkinNext(){
+  if(!TGL.tel){$('#telkin').classList.remove('show');return;}
+  telHold++; if(telHold%2)return;                 /* her iki nefeste bir cümle */
+  telI++;
+  const el=$('#telkin');
+  if(telI>=TELKIN.length){el.classList.remove('show');return;}
+  const t=TELKIN[telI];
+  el.classList.remove('show');
+  setTimeout(()=>{el.textContent=t;el.classList.add('show');},700);
+  say(t);
+}
+function say(t){
+  if(!TGL.voice||!('speechSynthesis' in window))return;
+  try{
+    const u=new SpeechSynthesisUtterance(t);
+    u.lang='tr-TR';u.rate=.8;u.pitch=.7;u.volume=.85;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ════════ 11) SEYİR — Letâif zikri ════════ */
+const SEYIR=[
+ {ar:'يَا سَلَامُ',tr:'Yâ Selâm ×33 — gürültüyü uğurla',target:33,mode:'katre',
+  hand:'Sağ avuç sol göğsün iki parmak altına — kalp noktasına.'},
+ {ar:'يَا لَطِيفُ',tr:'Yâ Latîf ×129 (ebced) — inceliğe açıl',target:129,mode:'katre',
+  hand:'El kalpte kalsın; omuzlar gevşesin.'},
+ {ar:'لَا إِلٰهَ إِلَّا اللّٰهُ',tr:'Lâ ilâhe illâllah ×11 nefes',target:11,mode:'nefes',
+  hand:'Baş hafifçe kalbe eğik; “illâllah” kalpten.'}
+];
+const SEY={i:0,count:0,done:false};
+let tekTotal=S.get('sukun.total',0);   /* SÜKÛN ile ortak toplam */
+Object.defineProperty(SEY,'stage',{get(){return SEY.done?null:SEYIR[SEY.i]}});
+function zkRender(){
+  const st=SEY.stage;
+  if(!st){
+    $('#zkAr').textContent='هُوَ الْبَاقِي';
+    $('#zkTr').textContent='Seyir tamam ✦ sükûtta kal';
+    $('#zkPill').textContent='✦';
+    $('#zkHand').textContent='';
+  }else{
+    $('#zkAr').textContent=st.ar;
+    $('#zkTr').textContent=st.tr;
+    $('#zkPill').textContent=SEY.count+' / '+st.target;
+    $('#zkHand').textContent='🤲 '+st.hand;
+  }
+  seyirPanel();
+}
+function seyirPanel(){
+  $('#seyirList').innerHTML=SEYIR.map((s,i)=>{
+    const done=i<SEY.i||SEY.done, act=i===SEY.i&&!SEY.done;
+    return '<div class="seyirLine '+(done?'done':act?'act':'')+'">'+
+      '<span class="st">'+(done?'✓':act?'✦':'○')+'</span>'+s.tr+'</div>';
+  }).join('');
+}
+function zkCount(){
+  const st=SEY.stage; if(!st)return;
+  SEY.count++;
+  tekTotal++; if(tekTotal%5===0)S.set('sukun.total',tekTotal);
+  const ar=$('#zkAr');
+  ar.classList.remove('zkFlash');void ar.offsetWidth;ar.classList.add('zkFlash');
+  if(SEY.count>=st.target){
+    chime();
+    if(navigator.vibrate&&HAP.on)try{navigator.vibrate([90,60,90])}catch(e){}
+    if(SEY.i<SEYIR.length-1){SEY.i++;SEY.count=0;}
+    else{SEY.done=true;finish();}
+  }
+  zkRender();
+}
+function chime(){
+  if(!ctx)return;
+  [523.25,784].forEach((f,i)=>{
+    const t=ctx.currentTime+i*.25,o=osc(f),gg=g(0);
+    o.connect(gg);gg.connect(master);gg.connect(wetIn);
+    gg.gain.setValueAtTime(0,t);
+    gg.gain.linearRampToValueAtTime(.07,t+.02);
+    gg.gain.exponentialRampToValueAtTime(.0001,t+1.4);
+    o.start(t);o.stop(t+1.5);
+  });
+}
+function finish(){
+  $('#fin').classList.add('show');
+  setTimeout(()=>$('#fin').classList.remove('show'),9000);
+}
+function onKatre(um){
+  const st=SEY.stage;
+  if(st&&st.mode==='katre')zkCount();
+  if(um){
+    if(bast>.5&&Math.random()<.4)ebComb();
+    else if(Math.random()<.3)ebDrop(rnd(40,eb.W-40),rnd(60,eb.H-60),rnd(10,20),ebColor(),false);
+  }
+}
+
+/* ════════ 12) DURUM + ANA DÖNGÜ ════════ */
+let running=false,muted=false,bast=0,bastApplied=-1,lastT=0;
+let t0=performance.now();
+const perfNow=()=>performance.now();
+function applyBast(){
+  if(Math.abs(bast-bastApplied)<.005)return;
+  bastApplied=bast;
+  eb.c.style.filter='saturate('+(1+bast*.28).toFixed(3)+') brightness('+(1+bast*.09).toFixed(3)+')';
+  root.style.setProperty('--mukop',(.05+bast*.045).toFixed(3));
+  $('#bastLbl').textContent=bast<.33?'Kabz':bast<.7?'Eşik — açılıyor':'Bast ✦';
+}
+function loop(ts){
+  requestAnimationFrame(loop);
+  const dt=Math.min(.06,(ts-lastT)/1000||0);lastT=ts;
+  if(!running)return;
+  bast=clamp(bast+dt/200,0,1);
+  applyBast();
+  if(BR.manual){
+    if(BR.mPhase){
+      const el=(performance.now()-BR.t0)/1000;
+      const d=BR.mPhase==='AL'?4:BR.mDur;
+      const p=clamp(el/d,0,1);
+      drawBreath(BR.mPhase,p,d);
+      if(BR.mPhase==='VER'&&p>=1){
+        BR.mPhase=null;
+        $('#phN').textContent='HÛ’YA BAS';$('#phC').textContent='';
+      }
+    }
+  }else{
+    const el=(performance.now()-BR.t0)/1000,d=phCur()[1];
+    const p=clamp(el/d,0,1);
+    drawBreath(phCur()[0],p,d);
+    if(el>=d)nextPhase();
+  }
+  const s=Math.floor((performance.now()-t0)/1000);
+  $('#sesT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+}
+
+/* ════════ 13) MİHRAP BAĞLARI ════════ */
+const TGL={tel:true,voice:false};
+let BINwant=false;
+$('#backSukun').onclick=()=>close();
+$('#panelBtn').onclick=()=>$('#panel').classList.toggle('open');
+$('#muteBtn').onclick=()=>{
+  muted=!muted;
+  $('#muteBtn').textContent=muted?'🌘':'🕯';
+  if(ctx)master.gain.setTargetAtTime(muted?.0001:+$('#vMaster').value*.9,ctx.currentTime,.4);
+};
+$$('input[type=range]').forEach(r=>{setFill(r);r.addEventListener('input',()=>setFill(r));});
+$('#bpmSld').addEventListener('input',e=>{bpm=+e.target.value;$('#bpmVal').textContent=bpm+' BPM';save();});
+$('#katVol').addEventListener('input',e=>{$('#katVolV').textContent='%'+Math.round(e.target.value*100);save();});
+$('#umSel').addEventListener('change',e=>{ummanEvery=+e.target.value;save();});
+$('#vMaster').addEventListener('input',e=>{if(ctx&&!muted)master.gain.setTargetAtTime(+e.target.value*.9,ctx.currentTime,.15);save();});
+$('#vNey').addEventListener('input',e=>{if(NEY&&ctx)NEY.out.gain.setTargetAtTime(+e.target.value*.9,ctx.currentTime,.3);save();});
+[['vSu','su'],['vToprak','toprak'],['vHava','hava'],['vAtes','ates']].forEach(pair=>{
+  $('#'+pair[0]).addEventListener('input',()=>{elemSet(pair[1]);save();});
+});
+function bindSw(id,fn){
+  const b=$('#'+id);
+  b.onclick=()=>{const on=b.classList.toggle('on');fn(on);save();};
+}
+bindSw('manTgl',on=>{
+  BR.manual=on;BR.mPhase=null;
+  if(on){
+    $('#phN').textContent='HÛ’YA BAS';$('#phC').textContent='';
+    $('#bArc').style.strokeDashoffset=ARC_C;$('#ripD').setAttribute('scale','0');
+  }else brReset();
+});
+bindSw('telTgl',on=>{TGL.tel=on;if(!on)$('#telkin').classList.remove('show');});
+bindSw('voiceTgl',on=>{TGL.voice=on;if(!on&&'speechSynthesis' in window)try{speechSynthesis.cancel()}catch(e){}});
+bindSw('hapTgl',on=>HAP.on=on);
+bindSw('katTgl',on=>katOn=on);
+bindSw('binTgl',on=>{BINwant=on;if(running)(on?binOn():binOff());});
+$('#patSel').addEventListener('change',e=>{BR.pat=e.target.value;if(!BR.manual)brReset();save();});
+$('#skipBtn').onclick=()=>{
+  if(SEY.done)return;
+  if(SEY.i<SEYIR.length-1){SEY.i++;SEY.count=0;}
+  else{SEY.done=true;finish();}
+  zkRender();
+};
+$('#rstBtn').onclick=()=>{SEY.i=0;SEY.count=0;SEY.done=false;$('#fin').classList.remove('show');zkRender();};
+
+/* elle nefes: Hû'ya bas = al · bırak = ver */
+const stage=$('#stage');
+const isUI=t=>t.closest('#panel,#top,button,input,select');
+stage.addEventListener('pointerdown',e=>{
+  if($('#panel').classList.contains('open')){$('#panel').classList.remove('open');return;}
+  if(!running||!BR.manual||isUI(e.target))return;
+  BR.mPhase='AL';BR.t0=performance.now();applyPhase('AL');
+});
+stage.addEventListener('pointerup',e=>{
+  if(!running||!BR.manual||BR.mPhase!=='AL')return;
+  const inh=clamp((performance.now()-BR.t0)/1000,1,8);
+  BR.mDur=clamp(inh*1.5,3,10);
+  BR.mPhase='VER';BR.t0=performance.now();applyPhase('VER');
+});
+stage.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ════════ 14) KALICILIK + UYANIK EKRAN ════════ */
+function save(){
+  S.set('tekke.set',{
+    bpm,um:ummanEvery,kv:+$('#katVol').value,mv:+$('#vMaster').value,
+    ney:+$('#vNey').value,su:+$('#vSu').value,top:+$('#vToprak').value,
+    hav:+$('#vHava').value,ate:+$('#vAtes').value,
+    pat:BR.pat,man:BR.manual,tel:TGL.tel,voi:TGL.voice,hap:HAP.on,kat:katOn,bin:BINwant
+  });
+}
+function load(){
+  const s=S.get('tekke.set',null);if(!s)return;
+  bpm=s.bpm??54;$('#bpmSld').value=bpm;$('#bpmVal').textContent=bpm+' BPM';
+  ummanEvery=s.um??4;$('#umSel').value=String(ummanEvery);
+  if(s.kv!=null){$('#katVol').value=s.kv;$('#katVolV').textContent='%'+Math.round(s.kv*100);}
+  if(s.mv!=null)$('#vMaster').value=s.mv;
+  if(s.ney!=null)$('#vNey').value=s.ney;
+  if(s.su!=null)$('#vSu').value=s.su;
+  if(s.top!=null)$('#vToprak').value=s.top;
+  if(s.hav!=null)$('#vHava').value=s.hav;
+  if(s.ate!=null)$('#vAtes').value=s.ate;
+  BR.pat=s.pat||'hu';$('#patSel').value=BR.pat;
+  BR.manual=!!s.man;$('#manTgl').classList.toggle('on',BR.manual);
+  TGL.tel=s.tel!==false;$('#telTgl').classList.toggle('on',TGL.tel);
+  TGL.voice=!!s.voi;$('#voiceTgl').classList.toggle('on',TGL.voice);
+  HAP.on=s.hap!==false;$('#hapTgl').classList.toggle('on',HAP.on);
+  katOn=s.kat!==false;$('#katTgl').classList.toggle('on',katOn);
+  BINwant=!!s.bin;$('#binTgl').classList.toggle('on',BINwant);
+}
+let wl=null;
+async function lockOn(){try{if('wakeLock' in navigator)wl=await navigator.wakeLock.request('screen')}catch(e){}}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&running)lockOn();
+});
+function tkStop(){
+  katStop();
+  if(NEY){NEY.E.kill(1,NEY.out);NEY=null;}
+  Object.keys(CH).forEach(k=>{CH[k].E.kill(1,CH[k].out);delete CH[k];});
+  binOff(); running=false;
+  try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
+  S.set('sukun.total',tekTotal);
+  $('#telkin').classList.remove('show');
+  $('#fin').classList.remove('show');
+  if(ctx&&ctx.state==='running')ctx.suspend();
+}
+function open(h){
+  if(h&&h.tr){
+    SEYIR.length=0;
+    SEYIR.push(
+     {ar:h.ar||'هُو',tr:h.tr+' ×'+(h.target||33),target:h.target||33,mode:'katre',
+      hand:h.mean||'Sağ avuç kalpte; zikir damlaya kilitli.'},
+     {ar:'لَا إِلٰهَ إِلَّا اللّٰهُ',tr:'Lâ ilâhe illâllah ×11 nefes — kapanış',target:11,mode:'nefes',
+      hand:'Baş hafifçe kalbe eğik; “illâllah” kalpten.'});
+    SEY.i=0;SEY.count=0;SEY.done=false;
+  }
+  root.hidden=false;
+  if(ctx&&ctx.state==='suspended')ctx.resume();
+  ebResize(); syncBridgeUI(); zkRender();
+}
+function close(){
+  tkStop(); root.hidden=true;
+  $('#gate').classList.remove('bye');
+  window.dispatchEvent(new CustomEvent('tekke:closed'));
+}
+window.addEventListener('pagehide',()=>S.set('sukun.total',tekTotal));
+
+function syncBridgeUI(){
+  const sk=S.get('sukun.set',null);
+  if(sk&&sk.fr&&sk.fr.c)
+    $('#binLbl').textContent='〰 Alt akım (SÜKÛN ayarı): '+(+sk.fr.c).toFixed(1)+' Hz · '+(+sk.fr.b).toFixed(2)+' Hz binaural';
+}
+
+/* ════════ 15) TEKKEYE GİRİŞ ════════ */
+$('#gBtn').onclick=()=>{
+  ac(); if(ctx.state==='suspended')ctx.resume();
+  $('#gate').classList.add('bye');
+  running=true;
+  t0=performance.now();
+  bast=0;bastApplied=-1;telI=-1;telHold=0;
+  brReset();
+  for(let i=0;i<6;i++)ebExhaleDrop();        /* battal açılış */
+  ['su','toprak','hava','ates'].forEach(id=>{if(vol(id)>0)elemOn(id)});
+  neyOn(); katStart();
+  if(BINwant)binOn();
+  lockOn();
+  zkRender();
+  if(BR.manual){$('#phN').textContent='HÛ’YA BAS';$('#phC').textContent='';}
+};
+
+/* ════════ 16) BAŞLATMA ════════ */
+(function init(){
+  ebInit(); buildMuk(); load(); syncBridgeUI(); zkRender();
+  $$('input[type=range]').forEach(setFill);
+  requestAnimationFrame(loop);
+})();
+
+return{open,close};
+})();
+</script>
+<!-- ═══════════ 🧠 NEUROSYNC MODÜLÜ ═══════════ -->
+<style>#ns /* ─── RESET & BASE ─── */
+*, #ns *::before, #ns *::after{box-sizing:border-box;margin:0;padding:0}#ns{
   background:#0A0B1A;
   color:#E8E8FF;
   font-family:'Inter',sans-serif;
   min-height:100vh;
   overflow-x:hidden;
   position:relative;
-}
-
-/* ─── CSS VARIABLES ─── */
+}#ns /* ─── CSS VARIABLES ─── */
 :root{
   --bg-deep:#0A0B1A;
   --bg-mid:#111228;
@@ -45,342 +2312,222 @@ body{
   --glow-purple:0 0 20px rgba(123,111,240,0.4);
   --glow-cyan:0 0 20px rgba(46,232,199,0.4);
   --glow-pink:0 0 20px rgba(255,107,157,0.4);
-}
-
-/* ─── AMBIENT BACKGROUND ─── */
+}#ns /* ─── AMBIENT BACKGROUND ─── */
 .ambient{
   position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
-}
-.ambient-orb{
+}#ns .ambient-orb{
   position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
   animation:orbFloat 12s ease-in-out infinite;
-}
-.orb1{width:600px;height:600px;background:radial-gradient(circle,#7B6FF0,transparent);top:-200px;left:-200px;animation-delay:0s;}
-.orb2{width:500px;height:500px;background:radial-gradient(circle,#2EE8C7,transparent);bottom:-150px;right:-150px;animation-delay:-5s;}
-.orb3{width:400px;height:400px;background:radial-gradient(circle,#FF6B9D,transparent);top:40%;left:50%;transform:translateX(-50%);animation-delay:-3s;}
+}#ns .orb1{width:600px;height:600px;background:radial-gradient(circle,#7B6FF0,transparent);top:-200px;left:-200px;animation-delay:0s;}#ns .orb2{width:500px;height:500px;background:radial-gradient(circle,#2EE8C7,transparent);bottom:-150px;right:-150px;animation-delay:-5s;}#ns .orb3{width:400px;height:400px;background:radial-gradient(circle,#FF6B9D,transparent);top:40%;left:50%;transform:translateX(-50%);animation-delay:-3s;}
 @keyframes orbFloat{
   0%,100%{transform:translateY(0) scale(1);}
   33%{transform:translateY(-30px) scale(1.05);}
   66%{transform:translateY(20px) scale(0.95);}
-}
-
-/* ─── LAYOUT ─── */
-.app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px 16px 40px;}
-
-/* ─── HEADER ─── */
+}#ns /* ─── LAYOUT ─── */
+.app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px 16px 40px;}#ns /* ─── HEADER ─── */
 .header{
   display:flex;align-items:center;justify-content:space-between;
   padding:16px 24px;margin-bottom:28px;
   background:var(--glass);backdrop-filter:blur(20px);
   border:1px solid var(--border);border-radius:var(--radius);
   box-shadow:var(--shadow);
-}
-.logo{display:flex;align-items:center;gap:12px;}
-.logo-icon{
+}#ns .logo{display:flex;align-items:center;gap:12px;}#ns .logo-icon{
   width:40px;height:40px;
   background:linear-gradient(135deg,#7B6FF0,#2EE8C7);
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:18px;box-shadow:var(--glow-purple);
-}
-.logo-text{
+}#ns .logo-text{
   font-family:'Space Grotesk',sans-serif;
   font-size:1.15rem;font-weight:700;letter-spacing:-0.02em;
   background:linear-gradient(135deg,#E8E8FF 40%,#7B6FF0);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.logo-badge{
+}#ns .logo-badge{
   font-size:0.6rem;font-weight:700;letter-spacing:0.1em;
   color:#2EE8C7;border:1px solid rgba(46,232,199,0.4);
   padding:2px 7px;border-radius:20px;margin-left:8px;
   text-transform:uppercase;vertical-align:middle;
   -webkit-text-fill-color:#2EE8C7;
-}
-.header-status{
+}#ns .header-status{
   display:flex;align-items:center;gap:8px;
   font-size:0.8rem;color:var(--ghost-dim);
-}
-.status-dot{
+}#ns .status-dot{
   width:8px;height:8px;border-radius:50%;
   background:#2EE8C7;box-shadow:0 0 8px #2EE8C7;
   animation:statusPulse 2s ease-in-out infinite;
 }
-@keyframes statusPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-
-/* ─── BRAINWAVE SIGNATURE ELEMENT ─── */
+@keyframes statusPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}#ns /* ─── BRAINWAVE SIGNATURE ELEMENT ─── */
 .brainwave-hero{
   padding:28px 24px 20px;margin-bottom:24px;
   background:var(--glass);backdrop-filter:blur(20px);
   border:1px solid var(--border);border-radius:var(--radius);
   box-shadow:var(--shadow);
-}
-.bw-labels{
+}#ns .bw-labels{
   display:flex;justify-content:space-between;margin-bottom:12px;
-}
-.bw-label{
+}#ns .bw-label{
   display:flex;flex-direction:column;align-items:center;gap:4px;
   cursor:pointer;transition:transform 0.2s;
-}
-.bw-label:hover{transform:translateY(-2px);}
-.bw-name{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
-.bw-hz{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ghost-dim);}
-.bw-bar{width:3px;height:16px;border-radius:2px;margin:0 auto;transition:all 0.4s;}
-
-#bwCanvas{width:100%;height:90px;display:block;}
-
-.bw-active-info{
+}#ns .bw-label:hover{transform:translateY(-2px);}#ns .bw-name{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}#ns .bw-hz{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ghost-dim);}#ns .bw-bar{width:3px;height:16px;border-radius:2px;margin:0 auto;transition:all 0.4s;}#ns #bwCanvas{width:100%;height:90px;display:block;}#ns .bw-active-info{
   display:flex;justify-content:center;align-items:center;gap:16px;
   margin-top:12px;padding-top:12px;border-top:1px solid var(--ghost-faint);
-}
-.bw-active-name{
+}#ns .bw-active-name{
   font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;
   color:var(--ghost);
-}
-.bw-active-state{font-size:0.8rem;color:var(--ghost-dim);}
-
-/* ─── MAIN GRID ─── */
+}#ns .bw-active-state{font-size:0.8rem;color:var(--ghost-dim);}#ns /* ─── MAIN GRID ─── */
 .main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
-@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
-
-/* ─── GLASS CARD ─── */
+@media(max-width:900px){#ns .main-grid{grid-template-columns:1fr;}}#ns /* ─── GLASS CARD ─── */
 .card{
   background:var(--glass);backdrop-filter:blur(20px);
   border:1px solid var(--border);border-radius:var(--radius);
   box-shadow:var(--shadow);padding:22px;
-}
-.card-title{
+}#ns .card-title{
   font-family:'Space Grotesk',sans-serif;
   font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
   color:var(--ghost-dim);margin-bottom:18px;
   display:flex;align-items:center;gap:8px;
-}
-.card-title::before{
+}#ns .card-title::before{
   content:'';width:3px;height:14px;
   background:linear-gradient(to bottom,var(--purple),var(--cyan));
   border-radius:2px;flex-shrink:0;
-}
-
-/* ─── SPECTRUM ANALYZER ─── */
+}#ns /* ─── SPECTRUM ANALYZER ─── */
 .spectrum-wrap{
   background:rgba(0,0,0,0.35);border-radius:var(--radius-sm);
   border:1px solid var(--ghost-faint);overflow:hidden;margin-bottom:20px;
   position:relative;
-}
-#spectrumCanvas{width:100%;height:120px;display:block;}
-.spectrum-label{
+}#ns #spectrumCanvas{width:100%;height:120px;display:block;}#ns .spectrum-label{
   position:absolute;top:8px;left:12px;
   font-family:'JetBrains Mono',monospace;font-size:0.65rem;
   color:var(--ghost-faint);letter-spacing:0.05em;
-}
-
-/* ─── CONTROLS ─── */
-.control-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.control-label{
+}#ns /* ─── CONTROLS ─── */
+.control-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}#ns .control-label{
   font-size:0.78rem;color:var(--ghost-dim);min-width:100px;flex-shrink:0;
-}
-.control-label span{
+}#ns .control-label span{
   display:block;font-family:'JetBrains Mono',monospace;
   font-size:0.7rem;color:var(--purple);margin-top:1px;
-}
-
-/* ─── SLIDER ─── */
-.slider-wrap{flex:1;position:relative;}
-input[type=range]{
+}#ns /* ─── SLIDER ─── */
+.slider-wrap{flex:1;position:relative;}#ns input[type=range]{
   width:100%;height:4px;
   -webkit-appearance:none;appearance:none;
   background:var(--ghost-faint);border-radius:2px;outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
+}#ns input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none;appearance:none;
   width:16px;height:16px;border-radius:50%;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   box-shadow:0 0 8px rgba(123,111,240,0.5);cursor:pointer;
   transition:transform 0.2s,box-shadow 0.2s;
-}
-input[type=range]::-webkit-slider-thumb:hover{
+}#ns input[type=range]::-webkit-slider-thumb:hover{
   transform:scale(1.2);box-shadow:var(--glow-purple);
-}
-input[type=range]::-moz-range-thumb{
+}#ns input[type=range]::-moz-range-thumb{
   width:16px;height:16px;border-radius:50%;border:none;
   background:linear-gradient(135deg,var(--purple),var(--cyan));cursor:pointer;
-}
-.slider-track{
+}#ns .slider-track{
   position:absolute;top:50%;left:0;height:4px;
   background:linear-gradient(to right,var(--purple),var(--cyan));
   border-radius:2px;pointer-events:none;transform:translateY(-50%);
   transition:width 0.1s;
-}
-
-/* ─── TOGGLE BUTTONS ─── */
-.toggle-group{display:flex;gap:6px;flex-wrap:wrap;}
-.toggle-btn{
+}#ns /* ─── TOGGLE BUTTONS ─── */
+.toggle-group{display:flex;gap:6px;flex-wrap:wrap;}#ns .toggle-btn{
   padding:7px 14px;border-radius:20px;border:1px solid var(--border);
   background:transparent;color:var(--ghost-dim);
   font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:500;
   cursor:pointer;transition:all 0.25s;white-space:nowrap;
-}
-.toggle-btn:hover{border-color:var(--purple);color:var(--ghost);}
-.toggle-btn.active{
+}#ns .toggle-btn:hover{border-color:var(--purple);color:var(--ghost);}#ns .toggle-btn.active{
   background:linear-gradient(135deg,rgba(123,111,240,0.3),rgba(46,232,199,0.15));
   border-color:var(--purple);color:var(--ghost);
   box-shadow:var(--glow-purple);
-}
-
-/* ─── PRESET GRID ─── */
-.preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.preset-card{
+}#ns /* ─── PRESET GRID ─── */
+.preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}#ns .preset-card{
   padding:14px;border-radius:var(--radius-sm);
   border:1px solid var(--border);background:var(--glass-light);
   cursor:pointer;transition:all 0.25s;
-}
-.preset-card:hover{border-color:var(--purple);transform:translateY(-2px);}
-.preset-card.active{
+}#ns .preset-card:hover{border-color:var(--purple);transform:translateY(-2px);}#ns .preset-card.active{
   border-color:var(--cyan);
   background:linear-gradient(135deg,rgba(46,232,199,0.12),rgba(123,111,240,0.08));
   box-shadow:var(--glow-cyan);
-}
-.preset-icon{font-size:1.4rem;margin-bottom:6px;}
-.preset-name{
+}#ns .preset-icon{font-size:1.4rem;margin-bottom:6px;}#ns .preset-name{
   font-family:'Space Grotesk',sans-serif;
   font-size:0.82rem;font-weight:600;color:var(--ghost);margin-bottom:3px;
-}
-.preset-desc{font-size:0.72rem;color:var(--ghost-dim);line-height:1.4;}
-.preset-hz{
+}#ns .preset-desc{font-size:0.72rem;color:var(--ghost-dim);line-height:1.4;}#ns .preset-hz{
   font-family:'JetBrains Mono',monospace;
   font-size:0.68rem;color:var(--cyan);margin-top:5px;
-}
-
-/* ─── PLAY BUTTON ─── */
+}#ns /* ─── PLAY BUTTON ─── */
 .play-section{
   display:flex;flex-direction:column;align-items:center;gap:16px;
   margin:24px 0;
-}
-.play-btn{
+}#ns .play-btn{
   width:80px;height:80px;border-radius:50%;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 30px rgba(123,111,240,0.5),0 0 60px rgba(123,111,240,0.2);
   transition:all 0.3s;position:relative;
-}
-.play-btn::before{
+}#ns .play-btn::before{
   content:'';position:absolute;inset:-4px;border-radius:50%;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   z-index:-1;opacity:0.3;filter:blur(8px);
   animation:playGlow 2s ease-in-out infinite;
 }
-@keyframes playGlow{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.6;transform:scale(1.1);}}
-.play-btn:hover{transform:scale(1.08);box-shadow:0 0 40px rgba(123,111,240,0.7);}
-.play-btn:active{transform:scale(0.95);}
-.play-btn.playing{background:linear-gradient(135deg,var(--pink),var(--purple));}
-.play-icon{font-size:28px;margin-left:4px;color:#fff;}
-.play-btn.playing .play-icon::before{content:'⏸';}
-.play-btn:not(.playing) .play-icon::before{content:'▶';}
-
-.session-info{
+@keyframes playGlow{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.6;transform:scale(1.1);}}#ns .play-btn:hover{transform:scale(1.08);box-shadow:0 0 40px rgba(123,111,240,0.7);}#ns .play-btn:active{transform:scale(0.95);}#ns .play-btn.playing{background:linear-gradient(135deg,var(--pink),var(--purple));}#ns .play-icon{font-size:28px;margin-left:4px;color:#fff;}#ns .play-btn.playing .play-icon::before{content:'⏸';}#ns .play-btn:not(.playing) .play-icon::before{content:'▶';}#ns .session-info{
   display:flex;gap:24px;align-items:center;
-}
-.session-stat{text-align:center;}
-.session-stat-val{
+}#ns .session-stat{text-align:center;}#ns .session-stat-val{
   font-family:'JetBrains Mono',monospace;
   font-size:1.1rem;font-weight:700;color:var(--ghost);
-}
-.session-stat-lbl{font-size:0.68rem;color:var(--ghost-dim);margin-top:2px;}
-
-/* ─── VOLUME MASTER ─── */
+}#ns .session-stat-lbl{font-size:0.68rem;color:var(--ghost-dim);margin-top:2px;}#ns /* ─── VOLUME MASTER ─── */
 .master-vol{
   display:flex;align-items:center;gap:12px;
   padding:14px 18px;
   background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);
   border:1px solid var(--ghost-faint);
-}
-.master-vol-icon{font-size:1.2rem;}
-.master-vol-label{font-size:0.8rem;color:var(--ghost-dim);min-width:60px;}
-
-/* ─── SLEEP TIMER ─── */
-.timer-presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.timer-btn{
+}#ns .master-vol-icon{font-size:1.2rem;}#ns .master-vol-label{font-size:0.8rem;color:var(--ghost-dim);min-width:60px;}#ns /* ─── SLEEP TIMER ─── */
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}#ns .timer-btn{
   padding:6px 14px;border-radius:20px;
   border:1px solid var(--border);background:transparent;
   color:var(--ghost-dim);font-size:0.75rem;cursor:pointer;
   transition:all 0.2s;font-family:'JetBrains Mono',monospace;
-}
-.timer-btn:hover{border-color:var(--pink);color:var(--pink);}
-.timer-btn.active{background:rgba(255,107,157,0.15);border-color:var(--pink);color:var(--pink);}
-.timer-display{
+}#ns .timer-btn:hover{border-color:var(--pink);color:var(--pink);}#ns .timer-btn.active{background:rgba(255,107,157,0.15);border-color:var(--pink);color:var(--pink);}#ns .timer-display{
   font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;
   text-align:center;color:var(--ghost);margin:12px 0;
   text-shadow:0 0 20px rgba(255,107,157,0.4);
-}
-
-/* ─── AI PANEL ─── */
-.ai-input-wrap{position:relative;margin-bottom:12px;}
-.ai-input{
+}#ns /* ─── AI PANEL ─── */
+.ai-input-wrap{position:relative;margin-bottom:12px;}#ns .ai-input{
   width:100%;padding:12px 48px 12px 16px;
   background:rgba(0,0,0,0.3);border:1px solid var(--border);
   border-radius:var(--radius-sm);color:var(--ghost);
   font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;
   transition:border-color 0.2s;
-}
-.ai-input:focus{border-color:var(--purple);}
-.ai-input::placeholder{color:var(--ghost-faint);}
-.ai-send{
+}#ns .ai-input:focus{border-color:var(--purple);}#ns .ai-input::placeholder{color:var(--ghost-faint);}#ns .ai-send{
   position:absolute;right:10px;top:50%;transform:translateY(-50%);
   width:30px;height:30px;border-radius:8px;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   border:none;cursor:pointer;font-size:14px;
   display:flex;align-items:center;justify-content:center;
   transition:all 0.2s;
-}
-.ai-send:hover{transform:translateY(-50%) scale(1.1);}
-.ai-response{
+}#ns .ai-send:hover{transform:translateY(-50%) scale(1.1);}#ns .ai-response{
   background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);
   padding:12px;min-height:80px;border:1px solid var(--ghost-faint);
   font-size:0.82rem;color:var(--ghost-dim);line-height:1.6;
-}
-.ai-response.loading{
+}#ns .ai-response.loading{
   display:flex;align-items:center;gap:8px;color:var(--ghost-faint);
-}
-.ai-dots{display:flex;gap:5px;}
-.ai-dot{
+}#ns .ai-dots{display:flex;gap:5px;}#ns .ai-dot{
   width:6px;height:6px;border-radius:50%;
   background:var(--purple);
   animation:aiDot 1.2s ease-in-out infinite;
-}
-.ai-dot:nth-child(2){animation-delay:0.2s;}
-.ai-dot:nth-child(3){animation-delay:0.4s;}
-@keyframes aiDot{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}
-
-/* ─── FILTER SECTION ─── */
+}#ns .ai-dot:nth-child(2){animation-delay:0.2s;}#ns .ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes aiDot{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1.2);}}#ns /* ─── FILTER SECTION ─── */
 .filter-row{
   display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;
-}
-.filter-card{
+}#ns .filter-card{
   padding:12px;border-radius:var(--radius-sm);
   border:1px solid var(--border);background:var(--glass-light);
-}
-.filter-title{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:8px;font-weight:500;}
-.filter-card input[type=range]{height:3px;}
-
-/* ─── NOISE SECTION ─── */
-.noise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.noise-card{
+}#ns .filter-title{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:8px;font-weight:500;}#ns .filter-card input[type=range]{height:3px;}#ns /* ─── NOISE SECTION ─── */
+.noise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}#ns .noise-card{
   padding:12px;border-radius:var(--radius-sm);
   border:1px solid var(--border);background:var(--glass-light);
   text-align:center;cursor:pointer;transition:all 0.25s;
-}
-.noise-card:hover{border-color:var(--purple);}
-.noise-card.active{
+}#ns .noise-card:hover{border-color:var(--purple);}#ns .noise-card.active{
   border-color:var(--cyan);background:rgba(46,232,199,0.1);
   box-shadow:var(--glow-cyan);
-}
-.noise-icon{font-size:1.3rem;margin-bottom:4px;}
-.noise-name{font-size:0.72rem;font-weight:600;color:var(--ghost);}
-.noise-desc{font-size:0.65rem;color:var(--ghost-dim);margin-top:2px;}
-
-/* ─── SECTION DIVIDER ─── */
-.section-gap{margin-bottom:20px;}
-
-/* ─── BOTTOM TOAST ─── */
+}#ns .noise-icon{font-size:1.3rem;margin-bottom:4px;}#ns .noise-name{font-size:0.72rem;font-weight:600;color:var(--ghost);}#ns .noise-desc{font-size:0.65rem;color:var(--ghost-dim);margin-top:2px;}#ns /* ─── SECTION DIVIDER ─── */
+.section-gap{margin-bottom:20px;}#ns /* ─── BOTTOM TOAST ─── */
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
   background:var(--glass);backdrop-filter:blur(20px);
@@ -388,48 +2535,24 @@ input[type=range]::-moz-range-thumb{
   padding:12px 24px;font-size:0.85rem;color:var(--ghost);
   box-shadow:var(--shadow);z-index:999;transition:transform 0.3s ease;
   white-space:nowrap;
-}
-.toast.show{transform:translateX(-50%) translateY(0);}
-
-/* ─── MOOD CHIPS ─── */
-.mood-chips{display:flex;flex-wrap:wrap;gap:7px;}
-.mood-chip{
+}#ns .toast.show{transform:translateX(-50%) translateY(0);}#ns /* ─── MOOD CHIPS ─── */
+.mood-chips{display:flex;flex-wrap:wrap;gap:7px;}#ns .mood-chip{
   padding:6px 13px;border-radius:20px;
   border:1px solid var(--border);background:transparent;
   color:var(--ghost-dim);font-size:0.75rem;cursor:pointer;
   transition:all 0.2s;white-space:nowrap;font-family:'Inter',sans-serif;
-}
-.mood-chip:hover{border-color:var(--cyan);color:var(--cyan);}
-.mood-chip.selected{background:rgba(46,232,199,0.12);border-color:var(--cyan);color:var(--cyan);}
-
-/* ─── AI RESULT CARD ─── */
+}#ns .mood-chip:hover{border-color:var(--cyan);color:var(--cyan);}#ns .mood-chip.selected{background:rgba(46,232,199,0.12);border-color:var(--cyan);color:var(--cyan);}#ns /* ─── AI RESULT CARD ─── */
 .ai-result-preset{
   display:flex;align-items:center;gap:10px;
   padding:10px 12px;margin-bottom:10px;
   background:rgba(123,111,240,0.1);border-radius:var(--radius-sm);
   border:1px solid var(--border-bright);cursor:pointer;transition:all 0.2s;
-}
-.ai-result-preset:hover{background:rgba(123,111,240,0.18);transform:translateX(2px);}
-.ai-result-icon{font-size:1.3rem;}
-.ai-result-info{flex:1;}
-.ai-result-name{font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:600;color:var(--ghost);}
-.ai-result-why{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;line-height:1.4;}
-.ai-result-hz{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);}
-.ai-analysis{
+}#ns .ai-result-preset:hover{background:rgba(123,111,240,0.18);transform:translateX(2px);}#ns .ai-result-icon{font-size:1.3rem;}#ns .ai-result-info{flex:1;}#ns .ai-result-name{font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:600;color:var(--ghost);}#ns .ai-result-why{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;line-height:1.4;}#ns .ai-result-hz{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);}#ns .ai-analysis{
   font-size:0.8rem;color:var(--ghost-dim);line-height:1.6;
   margin-bottom:10px;padding-bottom:10px;
   border-bottom:1px solid var(--ghost-faint);
-}
-.ai-footer{font-size:0.67rem;color:var(--ghost-faint);margin-top:8px;text-align:right;}
-
-/* ─── TYPING ANIMATION ─── */
-.typing-wrap{display:flex;align-items:center;gap:10px;padding:4px 0;}
-
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-
-/* ─── MOBILE ─── */
+}#ns .ai-footer{font-size:0.67rem;color:var(--ghost-faint);margin-top:8px;text-align:right;}#ns /* ─── TYPING ANIMATION ─── */
+.typing-wrap{display:flex;align-items:center;gap:10px;padding:4px 0;}#ns ::-webkit-scrollbar{width:6px;}#ns ::-webkit-scrollbar-track{background:transparent;}#ns ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}#ns /* ─── MOBILE ─── */
 @media(max-width:600px){
   .app{padding:12px 12px 60px;}
   .header{padding:12px 16px;}
@@ -438,9 +2561,7 @@ input[type=range]::-moz-range-thumb{
   .noise-grid{grid-template-columns:repeat(3,1fr);}
   .brainwave-hero{padding:18px 14px;}
   #spectrumCanvas{height:90px;}
-}
-
-/* ══════════════════════════════════════════════
+}#ns /* ══════════════════════════════════════════════
    TAB NAVIGATION
    ══════════════════════════════════════════════ */
 .tab-nav{
@@ -449,26 +2570,17 @@ input[type=range]::-moz-range-thumb{
   border:1px solid var(--border);border-radius:var(--radius);
   padding:6px;box-shadow:var(--shadow);
   overflow-x:auto;-webkit-overflow-scrolling:touch;
-}
-.tab-nav::-webkit-scrollbar{display:none;}
-.tab-btn{
+}#ns .tab-nav::-webkit-scrollbar{display:none;}#ns .tab-btn{
   flex:1;min-width:fit-content;padding:11px 14px;border-radius:11px;border:none;
   background:transparent;color:var(--ghost-dim);cursor:pointer;
   font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:600;
   display:flex;align-items:center;justify-content:center;gap:6px;
   transition:all 0.25s;white-space:nowrap;
-}
-.tab-btn span.tab-emoji{font-size:1rem;}
-.tab-btn:hover{color:var(--ghost);background:rgba(255,255,255,0.04);}
-.tab-btn.active{
+}#ns .tab-btn span.tab-emoji{font-size:1rem;}#ns .tab-btn:hover{color:var(--ghost);background:rgba(255,255,255,0.04);}#ns .tab-btn.active{
   background:linear-gradient(135deg,rgba(123,111,240,0.35),rgba(46,232,199,0.18));
   color:var(--ghost);box-shadow:var(--glow-purple);
-}
-.tab-panel{display:none;animation:tabFadeIn 0.35s ease;}
-.tab-panel.active{display:block;}
-@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-/* ══════════════════════════════════════════════
+}#ns .tab-panel{display:none;animation:tabFadeIn 0.35s ease;}#ns .tab-panel.active{display:block;}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}#ns /* ══════════════════════════════════════════════
    HYPNOTIC VISUAL ENGINE (shared canvas layer)
    ══════════════════════════════════════════════ */
 .hv-stage{
@@ -476,30 +2588,18 @@ input[type=range]::-moz-range-thumb{
   border-radius:50%;overflow:hidden;
   background:radial-gradient(circle,rgba(123,111,240,0.06),rgba(0,0,0,0.4) 70%);
   border:1px solid var(--border);box-shadow:0 0 60px rgba(123,111,240,0.15),inset 0 0 40px rgba(0,0,0,0.5);
-}
-/* Fallback for browsers without aspect-ratio support (older Samsung Internet) */
+}#ns /* Fallback for browsers without aspect-ratio support (older Samsung Internet) */
 @supports not (aspect-ratio:1/1){
   .hv-stage::before{content:'';display:block;padding-top:100%;}
   .hv-stage > canvas,.hv-stage > .hv-focus-dot{position:absolute;top:0;left:0;}
-}
-#hvCanvas,#hvCanvasMed{width:100%;height:100%;display:block;}
-.hv-focus-dot{
+}#ns #hvCanvas, #ns #hvCanvasMed{width:100%;height:100%;display:block;}#ns .hv-focus-dot{
   position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;
   background:#fff;box-shadow:0 0 16px #fff,0 0 30px var(--cyan);
   transform:translate(-50%,-50%);pointer-events:none;
-}
-.hv-controls{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
-.hv-style-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
-.hv-style-card{
+}#ns .hv-controls{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}#ns .hv-style-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}#ns .hv-style-card{
   padding:10px 6px;border-radius:var(--radius-sm);text-align:center;cursor:pointer;
   border:1px solid var(--border);background:var(--glass-light);transition:all 0.2s;
-}
-.hv-style-card:hover{border-color:var(--purple);}
-.hv-style-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.12);box-shadow:var(--glow-cyan);}
-.hv-style-icon{font-size:1.2rem;}
-.hv-style-name{font-size:0.65rem;color:var(--ghost-dim);margin-top:3px;}
-
-/* ══════════════════════════════════════════════
+}#ns .hv-style-card:hover{border-color:var(--purple);}#ns .hv-style-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.12);box-shadow:var(--glow-cyan);}#ns .hv-style-icon{font-size:1.2rem;}#ns .hv-style-name{font-size:0.65rem;color:var(--ghost-dim);margin-top:3px;}#ns /* ══════════════════════════════════════════════
    ZIKIR (ESMA-ÜL HÜSNA) MODULE
    ══════════════════════════════════════════════ */
 .zikir-name-display{
@@ -507,174 +2607,104 @@ input[type=range]::-moz-range-thumb{
   background:linear-gradient(135deg,rgba(123,111,240,0.1),rgba(46,232,199,0.06));
   border:1px solid var(--border-bright);border-radius:var(--radius);
   position:relative;overflow:hidden;
-}
-.zikir-arabic{
+}#ns .zikir-arabic{
   font-size:2.6rem;line-height:1.3;color:var(--ghost);margin-bottom:8px;
   text-shadow:0 0 24px rgba(123,111,240,0.5);
   font-family:'Inter',sans-serif;
-}
-.zikir-translit{
+}#ns .zikir-translit{
   font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:600;
   color:var(--cyan);letter-spacing:0.02em;margin-bottom:4px;
-}
-.zikir-meaning{font-size:0.85rem;color:var(--ghost-dim);}
-.zikir-counter{
+}#ns .zikir-meaning{font-size:0.85rem;color:var(--ghost-dim);}#ns .zikir-counter{
   display:flex;align-items:center;justify-content:center;gap:18px;margin:18px 0;
-}
-.zikir-count-val{
+}#ns .zikir-count-val{
   font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--ghost);
   text-shadow:0 0 20px rgba(46,232,199,0.4);min-width:90px;text-align:center;
-}
-.zikir-count-target{font-size:0.78rem;color:var(--ghost-dim);}
-.zikir-tap-btn{
+}#ns .zikir-count-target{font-size:0.78rem;color:var(--ghost-dim);}#ns .zikir-tap-btn{
   width:100%;padding:18px;border-radius:var(--radius);border:none;cursor:pointer;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:#fff;
   box-shadow:0 0 24px rgba(123,111,240,0.4);transition:transform 0.15s;margin-bottom:14px;
-}
-.zikir-tap-btn:active{transform:scale(0.97);}
-.zikir-name-grid{
+}#ns .zikir-tap-btn:active{transform:scale(0.97);}#ns .zikir-name-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:280px;overflow-y:auto;
   padding:4px;margin-top:6px;
 }
-@media(max-width:600px){.zikir-name-grid{grid-template-columns:repeat(2,1fr);}}
-.zikir-name-card{
+@media(max-width:600px){#ns .zikir-name-grid{grid-template-columns:repeat(2,1fr);}}#ns .zikir-name-card{
   padding:10px 8px;border-radius:var(--radius-sm);text-align:center;cursor:pointer;
   border:1px solid var(--border);background:var(--glass-light);transition:all 0.2s;
-}
-.zikir-name-card:hover{border-color:var(--purple);transform:translateY(-1px);}
-.zikir-name-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.14);box-shadow:var(--glow-cyan);}
-.zikir-name-card-ar{font-size:1.1rem;color:var(--ghost);}
-.zikir-name-card-tr{font-size:0.62rem;color:var(--ghost-dim);margin-top:3px;line-height:1.3;}
-.zikir-mode-toggle{display:flex;gap:6px;margin-bottom:14px;}
-.zikir-settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ghost-faint);}
-.zikir-settings-row:last-child{border-bottom:none;}
-.zikir-settings-label{font-size:0.8rem;color:var(--ghost-dim);}
-
-/* Toggle switch */
-.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
-.switch input{opacity:0;width:0;height:0;}
-.switch-slider{
+}#ns .zikir-name-card:hover{border-color:var(--purple);transform:translateY(-1px);}#ns .zikir-name-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.14);box-shadow:var(--glow-cyan);}#ns .zikir-name-card-ar{font-size:1.1rem;color:var(--ghost);}#ns .zikir-name-card-tr{font-size:0.62rem;color:var(--ghost-dim);margin-top:3px;line-height:1.3;}#ns .zikir-mode-toggle{display:flex;gap:6px;margin-bottom:14px;}#ns .zikir-settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--ghost-faint);}#ns .zikir-settings-row:last-child{border-bottom:none;}#ns .zikir-settings-label{font-size:0.8rem;color:var(--ghost-dim);}#ns /* Toggle switch */
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}#ns .switch input{opacity:0;width:0;height:0;}#ns .switch-slider{
   position:absolute;cursor:pointer;inset:0;background:var(--ghost-faint);
   border-radius:24px;transition:0.3s;
-}
-.switch-slider::before{
+}#ns .switch-slider::before{
   position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;
   background:#fff;border-radius:50%;transition:0.3s;
-}
-.switch input:checked+.switch-slider{background:linear-gradient(135deg,var(--purple),var(--cyan));}
-.switch input:checked+.switch-slider::before{transform:translateX(20px);}
-
-/* ══════════════════════════════════════════════
+}#ns .switch input:checked+.switch-slider{background:linear-gradient(135deg,var(--purple),var(--cyan));}#ns .switch input:checked+.switch-slider::before{transform:translateX(20px);}#ns /* ══════════════════════════════════════════════
    BREATHING COACH MODULE
    ══════════════════════════════════════════════ */
-.breath-mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
-.breath-mode-card{
+.breath-mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}#ns .breath-mode-card{
   padding:14px;border-radius:var(--radius-sm);cursor:pointer;
   border:1px solid var(--border);background:var(--glass-light);transition:all 0.25s;
-}
-.breath-mode-card:hover{border-color:var(--purple);transform:translateY(-2px);}
-.breath-mode-card.active{
+}#ns .breath-mode-card:hover{border-color:var(--purple);transform:translateY(-2px);}#ns .breath-mode-card.active{
   border-color:var(--cyan);background:linear-gradient(135deg,rgba(46,232,199,0.12),rgba(123,111,240,0.08));
   box-shadow:var(--glow-cyan);
-}
-.breath-mode-name{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;color:var(--ghost);}
-.breath-mode-pattern{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);margin-top:4px;}
-.breath-mode-desc{font-size:0.7rem;color:var(--ghost-dim);margin-top:4px;line-height:1.4;}
-
-.breath-stage{
+}#ns .breath-mode-name{font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;color:var(--ghost);}#ns .breath-mode-pattern{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--cyan);margin-top:4px;}#ns .breath-mode-desc{font-size:0.7rem;color:var(--ghost-dim);margin-top:4px;line-height:1.4;}#ns .breath-stage{
   position:relative;width:100%;max-width:300px;aspect-ratio:1/1;margin:10px auto 18px;
   display:flex;align-items:center;justify-content:center;
-}
-.breath-ring{
+}#ns .breath-ring{
   position:absolute;inset:0;border-radius:50%;
   border:1px solid var(--ghost-faint);
-}
-.breath-ring.r2{inset:14%;}
-.breath-circle{
+}#ns .breath-ring.r2{inset:14%;}#ns .breath-circle{
   width:42%;height:42%;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,rgba(123,111,240,0.55),rgba(46,232,199,0.25) 60%,transparent 100%);
   box-shadow:0 0 50px rgba(123,111,240,0.5),inset 0 0 30px rgba(255,255,255,0.1);
   display:flex;align-items:center;justify-content:center;
   transition:transform 4s ease-in-out;
   will-change:transform;
-}
-.breath-phase-text{
+}#ns .breath-phase-text{
   font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;
   text-shadow:0 0 12px rgba(0,0,0,0.6);text-align:center;
-}
-.breath-phase-sub{
+}#ns .breath-phase-sub{
   position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);
   font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--ghost-dim);white-space:nowrap;
-}
-.breath-cycle-count{text-align:center;font-size:0.78rem;color:var(--ghost-dim);margin-top:30px;}
-.breath-cycle-count span{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-weight:700;}
-.breath-controls{display:flex;gap:10px;justify-content:center;margin-top:8px;}
-.breath-main-btn{
+}#ns .breath-cycle-count{text-align:center;font-size:0.78rem;color:var(--ghost-dim);margin-top:30px;}#ns .breath-cycle-count span{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-weight:700;}#ns .breath-controls{display:flex;gap:10px;justify-content:center;margin-top:8px;}#ns .breath-main-btn{
   padding:14px 32px;border-radius:30px;border:none;cursor:pointer;
   background:linear-gradient(135deg,var(--purple),var(--cyan));
   font-family:'Space Grotesk',sans-serif;font-size:0.9rem;font-weight:700;color:#fff;
   box-shadow:0 0 24px rgba(123,111,240,0.4);transition:transform 0.2s;
-}
-.breath-main-btn:hover{transform:scale(1.04);}
-.breath-main-btn:active{transform:scale(0.96);}
-.breath-secondary-btn{
+}#ns .breath-main-btn:hover{transform:scale(1.04);}#ns .breath-main-btn:active{transform:scale(0.96);}#ns .breath-secondary-btn{
   padding:14px 20px;border-radius:30px;border:1px solid var(--border);cursor:pointer;
   background:transparent;color:var(--ghost-dim);font-size:0.85rem;transition:all 0.2s;
-}
-.breath-secondary-btn:hover{border-color:var(--purple);color:var(--ghost);}
-
-/* ══════════════════════════════════════════════
+}#ns .breath-secondary-btn:hover{border-color:var(--purple);color:var(--ghost);}#ns /* ══════════════════════════════════════════════
    MEDITATION / HYPNOSIS COACH MODULE
    ══════════════════════════════════════════════ */
-.med-script-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
-.med-script-card{
+.med-script-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}#ns .med-script-card{
   display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--radius-sm);
   border:1px solid var(--border);background:var(--glass-light);cursor:pointer;transition:all 0.25s;
-}
-.med-script-card:hover{border-color:var(--purple);transform:translateX(3px);}
-.med-script-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.1);box-shadow:var(--glow-cyan);}
-.med-script-icon{font-size:1.7rem;flex-shrink:0;}
-.med-script-info{flex:1;}
-.med-script-name{font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;color:var(--ghost);}
-.med-script-meta{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;}
-.med-script-desc{font-size:0.7rem;color:var(--ghost-faint);margin-top:3px;line-height:1.4;}
-
-.med-player{
+}#ns .med-script-card:hover{border-color:var(--purple);transform:translateX(3px);}#ns .med-script-card.active{border-color:var(--cyan);background:rgba(46,232,199,0.1);box-shadow:var(--glow-cyan);}#ns .med-script-icon{font-size:1.7rem;flex-shrink:0;}#ns .med-script-info{flex:1;}#ns .med-script-name{font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;color:var(--ghost);}#ns .med-script-meta{font-size:0.72rem;color:var(--ghost-dim);margin-top:2px;}#ns .med-script-desc{font-size:0.7rem;color:var(--ghost-faint);margin-top:3px;line-height:1.4;}#ns .med-player{
   padding:20px;border-radius:var(--radius);border:1px solid var(--border-bright);
   background:linear-gradient(135deg,rgba(123,111,240,0.08),rgba(46,232,199,0.04));
   margin-bottom:18px;
-}
-.med-player-title{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;color:var(--ghost);margin-bottom:4px;}
-.med-player-step-count{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:14px;}
-.med-progress-bar{height:4px;background:var(--ghost-faint);border-radius:2px;overflow:hidden;margin-bottom:16px;}
-.med-progress-fill{height:100%;background:linear-gradient(to right,var(--purple),var(--cyan));border-radius:2px;transition:width 0.4s;}
-.med-text-display{
+}#ns .med-player-title{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;color:var(--ghost);margin-bottom:4px;}#ns .med-player-step-count{font-size:0.72rem;color:var(--ghost-dim);margin-bottom:14px;}#ns .med-progress-bar{height:4px;background:var(--ghost-faint);border-radius:2px;overflow:hidden;margin-bottom:16px;}#ns .med-progress-fill{height:100%;background:linear-gradient(to right,var(--purple),var(--cyan));border-radius:2px;transition:width 0.4s;}#ns .med-text-display{
   font-size:0.95rem;line-height:1.85;color:var(--ghost);min-height:140px;
   padding:6px 2px;
-}
-.med-player-controls{display:flex;gap:10px;margin-top:18px;align-items:center;justify-content:center;}
-.med-ctrl-btn{
+}#ns .med-player-controls{display:flex;gap:10px;margin-top:18px;align-items:center;justify-content:center;}#ns .med-ctrl-btn{
   width:46px;height:46px;border-radius:50%;border:1px solid var(--border);
   background:var(--glass-light);color:var(--ghost);cursor:pointer;font-size:1.1rem;
   display:flex;align-items:center;justify-content:center;transition:all 0.2s;
-}
-.med-ctrl-btn:hover{border-color:var(--purple);}
-.med-ctrl-btn.primary{
+}#ns .med-ctrl-btn:hover{border-color:var(--purple);}#ns .med-ctrl-btn.primary{
   width:58px;height:58px;background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;
   box-shadow:0 0 24px rgba(123,111,240,0.4);
-}
-.med-voice-settings{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--ghost-faint);}
-.med-voice-settings select{
+}#ns .med-voice-settings{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--ghost-faint);}#ns .med-voice-settings select{
   flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius-sm);
   color:var(--ghost);padding:8px 10px;font-size:0.78rem;font-family:'Inter',sans-serif;outline:none;
-}
-
-/* Shared small label row */
+}#ns /* Shared small label row */
 .module-subtitle{font-size:0.78rem;color:var(--ghost-dim);margin-bottom:14px;line-height:1.5;}
+
+#ns{position:fixed;inset:0;z-index:1100;overflow:auto;-webkit-overflow-scrolling:touch}
+#ns[hidden]{display:none!important}
 </style>
-</head>
-<body>
+<div id="ns" hidden>
+<button id="nsBack" style="position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:99999;background:rgba(10,11,26,.72);backdrop-filter:blur(8px);border:1px solid rgba(56,232,255,.45);color:#8fe9ff;border-radius:99px;padding:9px 15px;font:600 10px/1 Inter,system-ui;letter-spacing:.2em;cursor:pointer">✦ SÜKÛN</button>
 
 <div class="ambient" aria-hidden="true">
   <div class="ambient-orb orb1"></div>
@@ -744,10 +2774,10 @@ input[type=range]::-moz-range-thumb{
     <!-- Master Volume -->
     <div class="master-vol">
       <span class="master-vol-icon" id="volIcon">🔊</span>
-      <span class="master-vol-label">Ses <span id="masterVolVal" style="font-family:'JetBrains Mono';font-size:0.72rem;color:var(--cyan);">70%</span></span>
+      <span class="master-vol-label">Ses <span id="nsMasterVolVal" style="font-family:'JetBrains Mono';font-size:0.72rem;color:var(--cyan);">70%</span></span>
       <div class="slider-wrap" style="flex:1;position:relative;">
-        <input type="range" id="masterVol" min="0" max="100" value="70"/>
-        <div class="slider-track" id="masterVolTrack" style="width:70%"></div>
+        <input type="range" id="nsMasterVol" min="0" max="100" value="70"/>
+        <div class="slider-track" id="nsMasterVolTrack" style="width:70%"></div>
       </div>
     </div>
   </div>
@@ -785,7 +2815,7 @@ input[type=range]::-moz-range-thumb{
         </div>
 
         <div class="control-row">
-          <div class="control-label">Beat Frekansı <span id="beatVal">10.0 Hz</span></div>
+          <div class="control-label">Beat Frekansı <span id="nsBeatVal">10.0 Hz</span></div>
           <div class="slider-wrap">
             <input type="range" id="beatFreq" min="0.5" max="40" step="0.1" value="10"/>
             <div class="slider-track" id="beatTrack"></div>
@@ -1037,7 +3067,10 @@ input[type=range]::-moz-range-thumb{
 
 <div class="toast" id="toast"></div>
 
+</div>
 <script>
+window.Neuro=(function(){
+
 // ═══════════════════════════════════════════
 //  NEUROSYNC AI ULTRA — CORE ENGINE
 // ═══════════════════════════════════════════
@@ -1318,7 +3351,7 @@ function startFadeOut() {
   const fd = NS.fadeDuration;
   NS.masterGain.gain.linearRampToValueAtTime(0, NS.ctx.currentTime + fd);
   showToast('🌙 Fade-out başladı...');
-  setTimeout(() => { if(NS.isPlaying) stopAll(); NS.masterGain.gain.value = parseFloat(document.getElementById('masterVol').value)/100; }, fd*1000+200);
+  setTimeout(() => { if(NS.isPlaying) stopAll(); NS.masterGain.gain.value = parseFloat(document.getElementById('nsMasterVol').value)/100; }, fd*1000+200);
 }
 
 // ─── SPECTRUM CANVAS ───
@@ -1473,7 +3506,7 @@ function applyPreset(p) {
   document.querySelector(`[data-id="${p.id}"]`)?.classList.add('active');
 
   setSlider('carrierFreq', p.carrier, 'carrierVal', 'carrierTrack', 80, 500, ' Hz');
-  setSlider('beatFreq', p.beat, 'beatVal', 'beatTrack', 0.5, 40, ' Hz', 1);
+  setSlider('beatFreq', p.beat, 'nsBeatVal', 'beatTrack', 0.5, 40, ' Hz', 1);
   document.getElementById('sessionFreq').textContent = p.beat.toFixed(1) + ' Hz';
   document.getElementById('sessionCarrier').textContent = p.carrier + ' Hz';
   setSlider('lpfFreq', p.lpf, 'lpfVal', null, 200, 8000, ' Hz');
@@ -1701,7 +3734,6 @@ function buildPresetCards(presetIds, overrideTitle) {
   }).join('');
 }
 
-
 // ─── TOAST ───
 let toastTO = null;
 function showToast(msg) {
@@ -1717,10 +3749,10 @@ document.getElementById('playBtn').onclick = togglePlay;
 document.getElementById('aiInput').addEventListener('keydown', e => { if(e.key==='Enter') sendAI(); });
 
 // Master volume
-document.getElementById('masterVol').oninput = function() {
+document.getElementById('nsMasterVol').oninput = function() {
   const v = this.value;
-  document.getElementById('masterVolVal').textContent = v+'%';
-  updateTrack('masterVol','masterVolTrack');
+  document.getElementById('nsMasterVolVal').textContent = v+'%';
+  updateTrack('nsMasterVol','nsMasterVolTrack');
   if (NS.masterGain) NS.masterGain.gain.value = v/100;
   document.getElementById('volIcon').textContent = v==0?'🔇':v<40?'🔉':'🔊';
 };
@@ -1736,7 +3768,7 @@ document.getElementById('carrierFreq').oninput = function() {
 // Beat
 document.getElementById('beatFreq').oninput = function() {
   const v = parseFloat(this.value).toFixed(1);
-  document.getElementById('beatVal').textContent = v+' Hz';
+  document.getElementById('nsBeatVal').textContent = v+' Hz';
   document.getElementById('sessionFreq').textContent = v+' Hz';
   updateTrack('beatFreq','beatTrack');
   if (NS.isPlaying) { stopBinaural(); startBinaural(); }
@@ -1814,7 +3846,7 @@ function initTracks() {
     ['carrierFreq','carrierTrack',80,500],
     ['beatFreq','beatTrack',0.5,40],
     ['binauralVol','binVolTrack',0,100],
-    ['masterVol','masterVolTrack',0,100],
+    ['nsMasterVol','nsMasterVolTrack',0,100],
     ['noiseVol','noiseVolTrack',0,100],
     ['fadeDuration','fadeTrack',5,300],
   ];
@@ -2187,6 +4219,7 @@ function initZikir() {
   });
 
   document.addEventListener('keydown', e => {
+    if(document.getElementById('ns').hidden)return;
     if (e.code==='Space' && document.getElementById('panel-zikir').classList.contains('active')) {
       e.preventDefault(); zikirTap();
     }
@@ -2593,6 +4626,23 @@ document.addEventListener('DOMContentLoaded', () => {
   applyPreset(PRESETS[1]); // relax default
   document.querySelector(`[data-id="relax"]`)?.classList.add('active');
 });
+
+document.getElementById('nsBack').onclick=()=>close();
+function open(){
+  document.getElementById('ns').hidden=false;
+  try{NS.ctx&&NS.ctx.resume&&NS.ctx.resume()}catch(e){}
+  window.dispatchEvent(new Event('resize'));
+  try{if(typeof HV!=='undefined'&&HV.resize){['hvCanvas','hvCanvasMed'].forEach(id=>{if(document.getElementById(id))HV.resize(id)});}}catch(e){}
+}
+function close(){
+  try{if(NS.isPlaying&&typeof stopAll==='function')stopAll()}catch(e){}
+  try{if(typeof stopBreath==='function')stopBreath()}catch(e){}
+  try{NS.ctx&&NS.ctx.suspend&&NS.ctx.suspend()}catch(e){}
+  document.getElementById('ns').hidden=true;
+  window.dispatchEvent(new CustomEvent('neuro:closed'));
+}
+return{open,close};
+})();
 </script>
 </body>
 </html>
