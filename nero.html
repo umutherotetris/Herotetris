@@ -107,9 +107,11 @@ select option{background:#0b1512;color:var(--ivory)}
 .btn.playing{box-shadow:0 0 18px rgba(201,162,39,.35), inset 0 0 12px rgba(201,162,39,.15)}
 
 /* ─────────── 3. ANA SES ÇUBUĞU ─────────── */
-.masterBar{display:flex;align-items:center;gap:10px;padding:10px 12px;position:sticky;top:8px;z-index:50}
+.masterBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;position:sticky;top:8px;z-index:50}
+.mbRow{display:flex;align-items:center;gap:9px}
+.mbRow.wrap{flex-wrap:wrap;row-gap:8px}
 .mIc{font-size:16px;flex:none}
-.masterBar input[type=range]:not(#ns *){flex:1}
+.masterBar input[type=range]:not(#ns *){flex:1;min-width:0}
 #timerBadge{font-size:11px;color:var(--goldh);min-width:0;white-space:nowrap}
 
 /* ─────────── 4. SEKMELER ─────────── */
@@ -290,6 +292,7 @@ section[hidden]{display:none}
 @keyframes recBlink{50%{opacity:.45}}
 #aveOv{position:fixed;inset:0;z-index:800;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 42%,#f6e7b4 0%,#cfa92e 65%,#8a7018 100%)}
 #bgEbru{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.55;pointer-events:none}
+#bgParticles{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .rutRow{display:flex;gap:8px;overflow-x:auto;margin:0 0 12px;padding:2px 2px 4px;scrollbar-width:none}
 .rut{flex:none;display:flex;align-items:center;gap:7px;border:1px solid var(--line2);background:rgba(201,162,39,.08);color:var(--goldh);border-radius:99px;padding:8px 13px;font-size:11.5px;cursor:pointer;white-space:nowrap}
 .rut:active{transform:scale(.96)}
@@ -384,6 +387,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 </head>
 <body>
 <canvas id="bgEbru" aria-hidden="true"></canvas>
+<canvas id="bgParticles" aria-hidden="true"></canvas>
 <div class="wrap">
 
   <!-- ═══ BAŞLIK ═══ -->
@@ -395,21 +399,25 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <!-- ═══ ANA SES ÇUBUĞU (Master) ═══ -->
   <div class="card masterBar">
-    <span class="mIc">🔊</span>
-    <input type="range" id="masterVol" min="0" max="1" step="0.01" value="0.7" aria-label="Ana ses">
-    <span id="timerBadge"></span>
-    <select id="sleepTimer" aria-label="Uyku zamanlayıcısı">
-      <option value="0">⏳ Kapalı</option>
-      <option value="10">10 dk</option>
-      <option value="20">20 dk</option>
-      <option value="30">30 dk</option>
-      <option value="60">60 dk</option>
-    </select>
-    <button class="btn" id="temaBtn" title="Tema seç">🎨</button>
-    <button class="btn" id="uiBtn" title="Görünüm modu">▤</button>
-    <button class="btn" id="recBtn" title="Seansı kaydet (.webm indirir)">⏺</button>
-    <button class="btn" id="logBtn" title="Seans günlüğü">📓</button>
-    <button class="btn danger" id="stopAll">■</button>
+    <div class="mbRow">
+      <span class="mIc">🔊</span>
+      <input type="range" id="masterVol" min="0" max="1" step="0.01" value="0.7" aria-label="Ana ses">
+      <span id="timerBadge"></span>
+    </div>
+    <div class="mbRow wrap">
+      <select id="sleepTimer" aria-label="Uyku zamanlayıcısı">
+        <option value="0">⏳ Kapalı</option>
+        <option value="10">10 dk</option>
+        <option value="20">20 dk</option>
+        <option value="30">30 dk</option>
+        <option value="60">60 dk</option>
+      </select>
+      <button class="btn" id="temaBtn" title="Tema seç">🎨</button>
+      <button class="btn" id="uiBtn" title="Görünüm modu">▤</button>
+      <button class="btn" id="recBtn" title="Seansı kaydet (.webm indirir)">⏺</button>
+      <button class="btn" id="logBtn" title="Seans günlüğü">📓</button>
+      <button class="btn danger" id="stopAll" style="margin-left:auto">■</button>
+    </div>
   </div>
 
   <!-- ═══ SEKMELER ═══ -->
@@ -701,6 +709,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 </div>
 <div id="logSheet" hidden>
   <div class="lsHead"><b>📓 Seans Günlüğü</b><span id="ls7"></span><button id="lsClose">✕</button></div>
+  <button class="btn danger" id="cacheBtn" style="width:100%;margin:0 0 11px">🗑 Önbelleği Temizle — tüm veriler</button>
   <div class="lsIns" id="lsInsight"></div>
   <div class="lsBars" id="lsBars"></div>
   <div id="lsList"></div>
@@ -710,8 +719,6 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
     <button class="btn" id="resBtn">⇩ Yedeği yükle</button>
   </div>
   <input type="file" id="bakFile" accept="application/json,.json" hidden>
-  <button class="btn danger" id="cacheBtn" style="width:100%;margin-top:9px">🗑 Önbelleği Temizle — tüm veriler</button>
-  <div style="font-size:9.5px;color:var(--dim);margin-top:6px;line-height:1.6">Ayarlar, günlük, vird, hatim/letâif ilerlemesi, rutinler, kayıtlı sesin ve kişisel frekans setlerin tamamen silinir. Önce yukarıdan yedek almanı öneririz.</div>
 </div>
 <script>
 'use strict';
@@ -2364,6 +2371,62 @@ function lsInsight(){
 
 /* ── Arka plan ebrusu — SÜKÛN zeminine yaşayan mermer ── */
 const BG={c:null,x:null,drops:[],W:0,H:0,last:0};
+/* ════ IŞILTI — her temanın kendi renginde, nazikçe parlayıp sönen ışık zerreleri ════
+   Tek sade biçim: yumuşak ışık noktası + twinkle (parlaklık dalgalanması).
+   Simetri için ekran eşit dilimlere bölünür, her ışıltı kendi diliminden doğar. */
+const PART={c:null,x:null,items:[],W:0,H:0,reduced:false,raf:null,t:0};
+const PART_COLORS={
+ zumrut:['#c9a227','#ecd27e','#efe7d3'],
+ gul:   ['#e0899f','#eab4c2','#d9a05f'],
+ gece:  ['#7fd4c1','#2e8f7f','#c9a227'],
+ col:   ['#e8a967','#c1793a','#3aa6a0'],
+ sabah: ['#a9822a','#8a6716','#1e5c4f']
+};
+function partCol(){ return PART_COLORS[document.body.dataset.tema||'zumrut']||PART_COLORS.zumrut; }
+function partMk(x,y){
+  const cs=partCol();
+  return {x,y,r:rnd(2,4),baseOp:rnd(.3,.62),tw:rnd(1.4,3.2),ph:rnd(0,Math.PI*2),
+    dx:rnd(-.045,.045),dy:rnd(-.05,-.018),col:cs[(Math.random()*cs.length)|0]};
+}
+function partSeed(){
+  if(!PART.c)return;
+  const N=PART.reduced?4:10;
+  PART.items=[];
+  const band=PART.W/N;
+  for(let i=0;i<N;i++)PART.items.push(partMk(band*i+Math.random()*band, Math.random()*PART.H));
+}
+function partRespawn(p){ Object.assign(p,partMk(Math.random()*PART.W,PART.H+12)); }
+function partLoop(){
+  PART.raf=requestAnimationFrame(partLoop);
+  if(!PART.x)return;
+  PART.t+=.016;
+  PART.x.clearRect(0,0,PART.W,PART.H);
+  for(const p of PART.items){
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x<-8)p.x=PART.W+8; else if(p.x>PART.W+8)p.x=-8;
+    const tw=Math.sin(PART.t*p.tw+p.ph); const op=p.baseOp*(.4+.6*tw*tw);
+    const g=PART.x; g.save(); g.globalAlpha=op;
+    const rg=g.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3.2);
+    rg.addColorStop(0,p.col); rg.addColorStop(1,'transparent');
+    g.fillStyle=rg; g.beginPath(); g.arc(p.x,p.y,p.r*3.2,0,Math.PI*2); g.fill(); g.restore();
+    if(p.y<-14)partRespawn(p);
+  }
+}
+function partInit(){
+  PART.c=document.getElementById('bgParticles'); if(!PART.c)return;
+  PART.x=PART.c.getContext('2d');
+  PART.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rs=()=>{
+    const d=Math.min(devicePixelRatio||1,1.4);
+    PART.W=innerWidth; PART.H=innerHeight;
+    PART.c.width=Math.round(PART.W*d); PART.c.height=Math.round(PART.H*d);
+    PART.x.setTransform(d,0,0,d,0,0);
+    partSeed();
+  };
+  rs(); addEventListener('resize',rs);
+  if(!PART.raf)partLoop();
+}
+
 function bgInit(){
   BG.c=document.getElementById('bgEbru'); if(!BG.c)return;
   BG.x=BG.c.getContext('2d');
@@ -3014,7 +3077,7 @@ window.addEventListener('pageshow',dhResumeCheck);
 
 /* ════ Önbellek temizleme ════ */
 $('#cacheBtn').onclick=()=>{
-  const ok1=confirm('⚠ TÜM UYGULAMA VERİLERİ SİLİNECEK\\n\\nAyarlar, günlük, vird, hatim/letâif ilerlemesi, rutinler, kayıtlı sesin ve kişisel frekans setlerin kalıcı olarak silinecek. Bu işlem GERİ ALINAMAZ.\\n\\nÖnce "⇪ Tam yedek indir" ile yedek almanı öneririz. Yine de devam edilsin mi?');
+  const ok1=confirm('⚠ TÜM UYGULAMA VERİLERİ SİLİNECEK\n\nAyarlar, günlük, vird, hatim/letâif ilerlemesi, rutinler, kayıtlı sesin ve kişisel frekans setlerin kalıcı olarak silinecek. Bu işlem GERİ ALINAMAZ.\n\nÖnce "⇪ Tam yedek indir" ile yedek almanı öneririz. Yine de devam edilsin mi?');
   if(!ok1)return;
   if(!confirm('Son onay: gerçekten tüm veriler silinsin mi?'))return;
   const keys=[];
@@ -3203,6 +3266,7 @@ function applyTema(k){
   const ov=$('#aveOv'); if(ov&&ph)ov.style.background=ph;
   const tc=(cs.getPropertyValue('--bg')||'').trim();
   const mt=document.querySelector('meta[name="theme-color"]'); if(mt&&tc)mt.setAttribute('content',tc);
+  partSeed();
   temaRender();
 }
 $('#temaBtn').onclick=()=>{temaRender();$('#temaSheet').hidden=false;};
@@ -3311,6 +3375,7 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   virdInit();
   vhInit();
   bgInit();
+  partInit();
   hatInit();
   ltfInit();
   rutInit();
