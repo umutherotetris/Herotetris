@@ -679,14 +679,14 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Cihazın Türkçe sesiyle bölüm bölüm okunur; okunan kısım vurgulanır. Bir bölüme dokunarak oradan başlayabilirsin. Ekranı açık tutmak için ses köprüsü devreye girer. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
       </details>
       <details class="jEd" id="dhBox" data-lvl="midi" style="margin-top:10px">
-        <summary>🕌 Delâil-ül Hayrât — salavât-ı şerife (seçme)</summary>
+        <summary>🕌 Salavât-ı Şerife — sesli okuma</summary>
         <div class="tvBar">
           <button class="btn" id="dhPlay">▶ Oku</button>
           <button class="btn" id="dhStop">■ Dur</button>
           <span id="dhProg" class="tvProg">Bölüm 0/0</span>
         </div>
         <div id="dhText" class="tvText"></div>
-        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">İmam Cezûlî'nin eserinden, matbu nüshalarda ortak yer alan salavât-ı şerife formüllerinden bir seçme; eserin tam ve icazetli hatmi için basılı bir Delâil-ül Hayrât nüshasına başvurman en doğrusudur. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Türk-İslam geleneğinde en yaygın bilinen birkaç salavât-ı şerife bir araya getirilmiştir (İbrahimiyye, Münciye, Fâtih, Tefriciye). Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
       </details>
       <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
       <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
@@ -3124,24 +3124,23 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 window.addEventListener('focus',tvResumeCheck);
 window.addEventListener('pageshow',tvResumeCheck);
 
-/* ════ Delâil-ül Hayrât — sesli okuma (Tövbe ile birebir aynı, izole motor) ════ */
-const DELAIL_P=[
-"Delâil-ül Hayrât, tam adıyla Delâilü'l-Hayrât ve Şevâriku'l-Envâr fî Zikri's-Salâti alen-Nebiyyi'l-Muhtâr, on beşinci yüzyılda yaşamış Faslı sûfî âlim İmam Muhammed bin Süleyman el-Cezûlî hazretlerinin, Peygamber Efendimize salavât-ı şerife okumaya ayırdığı meşhur bir mecmuadır.",
-"Eser gelenekte haftanın günlerine göre sekiz hizbe bölünerek okunur; her gün bir bölüm okunur ve hafta sonunda eser hatmedilmiş olur. Burada eserin icazetli tam metni değil, gelenekte en yaygın bilinen ve matbu nüshalarda ortak yer alan salavât formüllerinden bir seçme sunulmaktadır. Tam ve icazetli nüsha için matbu bir Delâil-ül Hayrât'a başvurman en doğrusudur.",
-"Peygamber Efendimize salavât getirmenin fazileti hakkında çok sayıda rivayet nakledilmiştir; bir salavâtın karşılığında kat kat rahmete nail olunacağı müjdelenmiştir. Şimdi sırasıyla okuyalım.",
-"Allahümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ salleyte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, inneke hamîdün mecîd. Allahümme bârik alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ bârekte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, fil-âlemîne inneke hamîdün mecîd.",
-"Allahümme salli alâ seyyidinâ Muhammedin salâten tüncînâ bihâ min cemî'il-ehvâli vel-âfât, ve takdî lenâ bihâ cemî'al-hâcât, ve tutahhirunâ bihâ min cemî'is-seyyiât, ve terfe'unâ bihâ a'led-derecât, ve tübelliğunâ bihâ aksal-ğâyâti min cemî'il-hayrâti fil-hayâti ve ba'del-memât, inneke alâ külli şey'in kadîr.",
-"Allahümme salli alâ seyyidinâ Muhammedinil-fâtihi limâ üglika, vel-hâtimi limâ sebeka, nâsıril-hakkı bil-hakk, vel-hâdî ilâ sırâtıkel-müstakîm, salla'llâhu aleyhi ve alâ âlihî ve ashâbihî hakka kadrihî ve mikdârihil-azîm.",
-"Allahümme salli alâ seyyidinâ Muhammedin abdike ve nebiyyike ve resûlikin-nebiyyil-ümmiyyi, ve alâ âlihî ve sahbihî ve sellim teslîmâ.",
-"Sallallâhu alâ Muhammed, sallallâhu aleyhi ve sellem. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihî ve sahbihî adede mâ ehâta bihî ilmüke, ve hattâ tekûne salâtün mines-salavât.",
+/* ════ Salavât-ı Şerife — sesli okuma (Tövbe ile birebir aynı, izole motor) ════ */
+const SALAVAT_P=[
+"Salavât-ı şerife, Peygamber Efendimize edilen dua ve rahmet niyazının adıdır. Kur'an-ı Kerim'de Allah ve meleklerinin O'na salavât getirdiği bildirilir, müminlerden de salavât getirmeleri istenir. Burada Türk-İslam geleneğinde en yaygın bilinen birkaç salavât-ı şerife bir araya getirilmiştir.",
+"Bir salavât getirmenin karşılığında kat kat rahmete nail olunacağı müjdelenmiştir. Şimdi sırasıyla okuyalım.",
+"Salavât-ı İbrahimiyye: Allahümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ salleyte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, inneke hamîdün mecîd. Allahümme bârik alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ bârekte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, fil-âlemîne inneke hamîdün mecîd.",
+"Salât-ı Münciye: Allahümme salli alâ seyyidinâ Muhammedin salâten tüncînâ bihâ min cemî'il-ehvâli vel-âfât, ve takdî lenâ bihâ cemî'al-hâcât, ve tutahhirunâ bihâ min cemî'is-seyyiât, ve terfe'unâ bihâ a'led-derecât, ve tübelliğunâ bihâ aksal-ğâyâti min cemî'il-hayrâti fil-hayâti ve ba'del-memât, inneke alâ külli şey'in kadîr.",
+"Salât-ı Fâtih: Allahümme salli alâ seyyidinâ Muhammedinil-fâtihi limâ üglika, vel-hâtimi limâ sebeka, nâsıril-hakkı bil-hakk, vel-hâdî ilâ sırâtıkel-müstakîm, salla'llâhu aleyhi ve alâ âlihî ve ashâbihî hakka kadrihî ve mikdârihil-azîm.",
+"Salavât-ı Tefriciye: Allahümme salli salâten kâmileten ve sellim selâmen tâmmen alâ seyyidinâ Muhammedinillezî tenhallü bihil-ukadü ve tenfericu bihil-kürabü ve tukdâ bihil-havâicü ve tünâlü bihir-reğâibü ve husnül-havâtimi ve yusteskal-ğamâmü bivechihil-kerîmi ve alâ âlihî ve sahbihî fî külli lemhatin ve nefesin bi-adedi külli ma'lûmin lek.",
+"Kısa salavât: Sallallâhu alâ Muhammed, sallallâhu aleyhi ve sellem. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihî ve sahbihî adede mâ ehâta bihî ilmüke, ve hattâ tekûne salâtün mines-salavât.",
 "Bu salavât-ı şerifeleri kalp huzuruyla, mümkünse yüzünü kıbleye çevirip tekrar tekrar okumak; her tekrarında Efendimizin nurunu ve şefaatini niyaz etmek edeptendir.",
 "Sübhâne Rabbike Rabbil-izzeti ammâ yasifûn, ve selâmün alel-murselîn, vel-hamdü lillâhi Rabbil-âlemîn. El-Fâtiha."
 ];
 const DH={queue:[],qi:0,playing:false,paused:false,watch:null};
 let DHLASTPI=-1;
 function dhBuild(){
-  $('#dhText').innerHTML=DELAIL_P.map((p,i)=>'<p class="tvP" data-i="'+i+'">'+p+'</p>').join('');
-  $('#dhProg').textContent='Bölüm 0/'+DELAIL_P.length;
+  $('#dhText').innerHTML=SALAVAT_P.map((p,i)=>'<p class="tvP" data-i="'+i+'">'+p+'</p>').join('');
+  $('#dhProg').textContent='Bölüm 0/'+SALAVAT_P.length;
 }
 function dhSplit(p){
   const out=[]; let buf='';
@@ -3155,11 +3154,11 @@ function dhSplit(p){
 }
 function dhQueue(){
   DH.queue=[];
-  DELAIL_P.forEach((p,pi)=>dhSplit(p).forEach(t=>DH.queue.push({pi,text:t})));
+  SALAVAT_P.forEach((p,pi)=>dhSplit(p).forEach(t=>DH.queue.push({pi,text:t})));
 }
 function dhHi(pi){
   $$('#dhText .tvP').forEach(el=>el.classList.toggle('on',+el.dataset.i===pi));
-  $('#dhProg').textContent='Bölüm '+(pi+1)+'/'+DELAIL_P.length;
+  $('#dhProg').textContent='Bölüm '+(pi+1)+'/'+SALAVAT_P.length;
   if(pi!==DHLASTPI){
     DHLASTPI=pi;
     const el=$('#dhText .tvP.on');
@@ -3219,7 +3218,7 @@ function dhPlay(){
   window.__dhPlaying=true; DH.playing=true; DH.paused=false;
   try{speechSynthesis.cancel()}catch(e){}
   ac();
-  if(window.SesCapa)SesCapa.start({title:'Delâil-ül Hayrât',
+  if(window.SesCapa)SesCapa.start({title:'Salavât-ı Şerife',
     onPause:()=>dhPause(), onPlay:()=>dhPlay(), onStop:()=>dhStop()});
   $('#dhPlay').textContent='⏸ Duraklat';
   dhNext();
@@ -3238,18 +3237,18 @@ function dhStop(finished){
   $('#dhPlay').textContent='▶ Oku';
   if(finished){
     $('#dhProg').textContent='Tamamlandı ✦';
-    LOG.push({t:Date.now(),dur:Math.max(60,DH.qi*6),detail:'🕌 Delâil-ül Hayrât okundu ✦'});
+    LOG.push({t:Date.now(),dur:Math.max(60,DH.qi*6),detail:'🕌 Salavât-ı Şerife okundu ✦'});
     try{navigator.vibrate&&navigator.vibrate([90,60,90,60,180])}catch(e){}
     DH.qi=0;
     $$('#dhText .tvP').forEach(el=>el.classList.remove('on'));
   }else{
-    $('#dhProg').textContent='Bölüm '+(DH.queue.length?Math.min(DH.qi+1,DELAIL_P.length):0)+'/'+DELAIL_P.length;
+    $('#dhProg').textContent='Bölüm '+(DH.queue.length?Math.min(DH.qi+1,SALAVAT_P.length):0)+'/'+SALAVAT_P.length;
   }
 }
 function dhInit(){
   dhBuild();
   $('#dhPlay').onclick=()=>{ if(DH.playing&&!DH.paused)dhPause(); else dhPlay(); };
-  $('#dhStop').onclick=()=>{DH.qi=0;dhStop(false);$$('#dhText .tvP').forEach(el=>el.classList.remove('on'));$('#dhProg').textContent='Bölüm 0/'+DELAIL_P.length;};
+  $('#dhStop').onclick=()=>{DH.qi=0;dhStop(false);$$('#dhText .tvP').forEach(el=>el.classList.remove('on'));$('#dhProg').textContent='Bölüm 0/'+SALAVAT_P.length;};
   $('#dhText').addEventListener('click',e=>{
     const p=e.target.closest('.tvP'); if(!p)return;
     const pi=+p.dataset.i;
