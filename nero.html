@@ -273,6 +273,32 @@ section[hidden]{display:none}
 @keyframes recBlink{50%{opacity:.45}}
 #aveOv{position:fixed;inset:0;z-index:800;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 42%,#f6e7b4 0%,#cfa92e 65%,#8a7018 100%)}
 #bgEbru{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.55;pointer-events:none}
+.rutRow{display:flex;gap:8px;overflow-x:auto;margin:0 0 12px;padding:2px 2px 4px;scrollbar-width:none}
+.rut{flex:none;display:flex;align-items:center;gap:7px;border:1px solid var(--line2);background:rgba(201,162,39,.08);color:var(--goldh);border-radius:99px;padding:8px 13px;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.rut:active{transform:scale(.96)}
+.rut .rx{color:var(--dim);padding:0 1px;font-size:13px;line-height:1}
+.rut.add{border-style:dashed;color:var(--mut);background:transparent}
+.hatStat{font-size:11.5px;color:var(--mut);margin:8px 0 7px;line-height:1.55}
+.hatStat b{color:var(--goldh)}
+.hatBar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.hatBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--goldh));border-radius:3px;transition:width .4s}
+.hatCells{display:flex;flex-wrap:wrap;gap:2.5px;margin-top:8px}
+.hatCells span{width:6px;height:6px;border-radius:2px;background:rgba(255,255,255,.08)}
+.hatCells span.d{background:var(--gold)}
+.hatCells span.a{background:var(--goldh);box-shadow:0 0 6px var(--goldh);animation:hatPulse 1.6s ease infinite}
+@keyframes hatPulse{50%{opacity:.45}}
+#ltfMap{display:flex;justify-content:center;margin-top:8px}
+#ltfMap svg{width:174px;height:auto}
+.ltfP{transition:opacity .4s}
+.ltfP.dim{opacity:.28}
+.ltfP.act circle:first-child{animation:ltfGlow 2.2s ease infinite}
+@keyframes ltfGlow{50%{opacity:.32}}
+.ltfInfo{font-size:11.5px;color:var(--mut);text-align:center;margin-top:8px;line-height:1.65;min-height:48px}
+.ltfInfo b{color:var(--goldh)}
+.ltfDots{display:flex;gap:7px;justify-content:center;margin-top:7px}
+.ltfDots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.1)}
+.ltfDots i.d{background:var(--gold)}
+.ltfDots i.a{background:var(--goldh);box-shadow:0 0 8px var(--goldh)}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -320,6 +346,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
     <button class="tab" data-t="zkr" role="tab">📿 Zikir</button>
     <button class="tabTekke" id="tekkeTab" title="Dijital Tekke — katre, ebru ve haptik seyir">۞ Tekke</button>
   </nav>
+  <div class="rutRow" id="rutRow"></div>
 
   <!-- ═══════════ SEKME 1: AMBİYANS ═══════════ -->
   <section id="tab-amb">
@@ -500,6 +527,30 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         </div>
         <div id="vhStat" style="font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.6">Kısa bir «Hû» ya da esmâ kaydet (3–6 sn); 3-7 kopya hafif detune ve pan ile halkaya dönüşür. Ses cihazından dışarı çıkmaz.</div>
       </details>
+      <details class="jEd" id="hatBox" style="margin-top:10px">
+        <summary>🕋 Esmâ Hatmi — 99 ismin seyri</summary>
+        <div id="hatStat" class="hatStat"></div>
+        <div class="hatBar"><i id="hatBarI"></i></div>
+        <div class="hatCells" id="hatCells"></div>
+        <div class="jRow" style="margin-top:9px"><b style="flex:none;color:var(--mut)">Her isim</b>
+          <select id="hatMode"><option value="11">×11</option><option value="33" selected>×33</option><option value="ebced">Ebcedi kadar</option></select>
+        </div>
+        <div class="zBtns" style="margin-top:9px">
+          <button class="btn" id="hatGo">▶ Başla</button>
+          <button class="btn" id="hatRst">↺ Sıfırla</button>
+        </div>
+      </details>
+      <details class="jEd" id="ltfBox" style="margin-top:10px">
+        <summary>🫀 Letâif Seyri — beş latîfenin zikri</summary>
+        <div id="ltfMap"></div>
+        <div id="ltfInfo" class="ltfInfo"></div>
+        <div class="ltfDots" id="ltfDots"></div>
+        <div class="zBtns" style="margin-top:9px">
+          <button class="btn" id="ltfGo">▶ Başla</button>
+          <button class="btn" id="ltfRst">↺ Sıfırla</button>
+        </div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:7px;line-height:1.6">Her latîfede ×33 «Allah» lafza-i celâli — renk ve mahaller Nakşî-Müceddidî tertibidir; usul, ehlinin rehberliğine emanettir.</div>
+      </details>
       <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
       <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
     </div>
@@ -521,6 +572,11 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   <div class="lsBars" id="lsBars"></div>
   <div id="lsList"></div>
   <button class="btn" id="lsClear" style="width:100%;margin-top:10px">Günlüğü temizle</button>
+  <div class="zBtns" style="margin-top:9px">
+    <button class="btn" id="bakBtn">⇪ Tam yedek indir</button>
+    <button class="btn" id="resBtn">⇩ Yedeği yükle</button>
+  </div>
+  <input type="file" id="bakFile" accept="application/json,.json" hidden>
 </div>
 <script>
 'use strict';
@@ -1465,7 +1521,10 @@ document.addEventListener('keydown',e=>{
     e.preventDefault(); rep();
   }
 });
-window.addEventListener('pagehide',()=>S.set('sukun.total',Z.total));
+window.addEventListener('pagehide',()=>{
+  S.set('sukun.total',Z.total);
+  try{hatSave(); ltfSave();}catch(e){}
+});
 
 /* ── Ayar kalıcılığı ── */
 function saveSettings(){
@@ -2076,6 +2135,260 @@ setInterval(()=>{
   if(busy&&Date.now()-BG.last>6500){BG.last=Date.now(); bgDrop();}
 },1200);
 
+/* ════ 6e) v1.4 — ESMÂ HATMİ • LETÂİF • RUTİNLER • YEDEK ════ */
+/* ── Esmâ Hatmi ── */
+const HATIM=Object.assign({idx:0,count:0,mode:'33',active:false,done:false,startedAt:0},S.get('sukun.hatim',{}));
+const hatItem=()=>ZIKIR.esma.items[Math.min(HATIM.idx,ZIKIR.esma.items.length-1)];
+const hatTarget=()=>HATIM.mode==='ebced'?ebced(hatItem().a):+HATIM.mode;
+function hatSave(){S.set('sukun.hatim',{idx:HATIM.idx,count:HATIM.count,mode:HATIM.mode,done:HATIM.done,startedAt:HATIM.startedAt});}
+function hatApply(){
+  Z.cat='esma'; Z.idx=HATIM.idx; Z.form='nida'; syncFormSeg();
+  Z.target=hatTarget(); Z.count=HATIM.count;
+  ensureTargetOpt(Z.target,'Hatim • '+Z.target);
+  renderCats(); renderZikir(); zUI(); hatUI();
+}
+function hatStart(){
+  if(HATIM.done){
+    if(!confirm('Hatim tamamlanmıştı — yeniden başlansın mı?'))return;
+    HATIM.idx=0; HATIM.count=0; HATIM.done=false; HATIM.startedAt=0;
+  }
+  ltfPause();
+  if(!HATIM.startedAt)HATIM.startedAt=Date.now();
+  HATIM.active=true; hatApply(); hatSave();
+}
+function hatPause(){HATIM.active=false; hatSave(); hatUI();}
+function hatAdvance(){
+  HATIM.idx++; HATIM.count=0;
+  if(HATIM.idx>=ZIKIR.esma.items.length){hatFinish();return;}
+  hatApply(); hatSave();
+}
+function hatFinish(){
+  HATIM.active=false; HATIM.done=true; HATIM.idx=ZIKIR.esma.items.length;
+  const el=Math.max(60,Math.round((Date.now()-(HATIM.startedAt||Date.now()))/1000));
+  LOG.push({t:Date.now(),dur:el,detail:'🕋 Esmâ Hatmi tamam — 99 isim ✦'});
+  try{navigator.vibrate&&navigator.vibrate([120,80,120,80,220])}catch(e){}
+  hatSave(); hatUI();
+  alert('🕋 Esmâ Hatmi tamamlandı — 99 ismin seyri bitti ✦');
+}
+function hatUI(){
+  const N=ZIKIR.esma.items.length;
+  const t=HATIM.done?1:hatTarget();
+  $('#hatStat').innerHTML=HATIM.done
+    ?'<b>✓ Hatim tamam</b> — 99 ismin seyri bitti; ↺ ile yeni bir hatme başlayabilirsin'
+    :'İsim <b>'+(HATIM.idx+1)+'/'+N+'</b> • <b>Yâ '+hatItem().t+'</b> • bu isimde '+HATIM.count+'/'+t
+     +(HATIM.active?'':' <i style="color:var(--dim)">(duraklatıldı — ▶ ile sürdür)</i>');
+  const pct=HATIM.done?100:((HATIM.idx+HATIM.count/Math.max(1,t))/N*100);
+  $('#hatBarI').style.width=pct.toFixed(1)+'%';
+  let cells='';
+  for(let i=0;i<N;i++)cells+='<span class="'+(HATIM.done||i<HATIM.idx?'d':(HATIM.active&&i===HATIM.idx?'a':''))+'"></span>';
+  $('#hatCells').innerHTML=cells;
+  $('#hatGo').textContent=HATIM.active?'⏸ Duraklat':((HATIM.idx>0||HATIM.count>0)&&!HATIM.done?'▶ Devam':'▶ Başla');
+  $('#hatMode').value=HATIM.mode;
+}
+$('#hatGo').onclick=()=>HATIM.active?hatPause():hatStart();
+$('#hatRst').onclick=()=>{
+  if(!confirm('Hatim ilerlemesi sıfırlansın mı?'))return;
+  HATIM.idx=0;HATIM.count=0;HATIM.active=false;HATIM.done=false;HATIM.startedAt=0;
+  hatSave();hatUI();
+};
+$('#hatMode').addEventListener('change',e=>{
+  HATIM.mode=e.target.value;
+  if(HATIM.active){HATIM.count=Math.min(HATIM.count,hatTarget()-1); hatApply();}
+  else hatUI();
+  hatSave();
+});
+function hatInit(){hatUI();}
+
+/* ── Letâif Seyri — Nakşî-Müceddidî tertibi ── */
+const LATAIF=[
+ {n:'Kalp',ar:'قَلْب',c:'#e8c437',x:128,y:124,el:'Sağ avuç sol göğsün iki parmak altında',d:'Zâkirin ilk kapısı — sarı nur'},
+ {n:'Ruh',ar:'رُوح',c:'#d64541',x:72,y:124,el:'Dikkat sağ göğsün iki parmak altına',d:'Aşk ve vecdin makamı — kırmızı nur'},
+ {n:'Sır',ar:'سِرّ',c:'#efe7d3',x:128,y:96,el:'Dikkat sol göğsün iki parmak üstüne',d:'İlâhî sırların mahalli — beyaz nur'},
+ {n:'Hafî',ar:'خَفِيّ',c:'#5a5a68',x:72,y:96,el:'Dikkat sağ göğsün iki parmak üstüne',d:'Gizliliğin makamı — siyah nur',ring:1},
+ {n:'Ahfâ',ar:'أَخْفَى',c:'#3fae6a',x:100,y:110,el:'Dikkat göğüs ortasına, kalbin özüne',d:'En gizli latîfe — yeşil nur'}
+];
+const LTF=Object.assign({i:0,count:0,active:false},S.get('sukun.lataif',{}));
+function ltfSave(){S.set('sukun.lataif',{i:LTF.i,count:LTF.count});}
+function ltfApply(){
+  Z.cat='temel'; Z.idx=0; Z.form='nida';
+  Z.target=33; Z.count=LTF.count;
+  $('#targetSel').value='33';
+  renderCats(); renderZikir(); zUI(); ltfUI();
+}
+function ltfStart(){
+  if(LTF.i>=5){LTF.i=0;LTF.count=0;}
+  hatPause();
+  LTF.active=true; ltfApply(); ltfSave();
+}
+function ltfPause(){LTF.active=false; ltfSave(); ltfUI();}
+function ltfAdvance(){
+  LTF.i++; LTF.count=0;
+  if(LTF.i>=5){
+    LTF.active=false;
+    LOG.push({t:Date.now(),dur:60,detail:'🫀 Letâif seyri tamam — beş latîfe ✦'});
+    try{navigator.vibrate&&navigator.vibrate([90,60,90,60,160])}catch(e){}
+    ltfSave(); ltfUI(); return;
+  }
+  ltfApply(); ltfSave();
+}
+function ltfUI(){
+  $$('#ltfMap .ltfP').forEach((gEl,i)=>{
+    gEl.classList.toggle('act',LTF.active&&i===LTF.i);
+    gEl.classList.toggle('dim',i>LTF.i);
+    const ok=gEl.querySelector('.ok'); if(ok)ok.setAttribute('opacity',i<LTF.i?'1':'0');
+  });
+  const L=LATAIF[Math.min(LTF.i,4)];
+  $('#ltfInfo').innerHTML=LTF.i>=5
+    ?'<b>✓ Beş latîfe tamam</b> — ▶ ile yeni seyir'
+    :'<b>'+(LTF.i+1)+'/5 • '+L.n+' ('+L.ar+')</b> — '+L.d+'<br>🤲 '+L.el+' • «Allah» ×33 → '+LTF.count+'/33'
+     +(LTF.active?'':' <i style="color:var(--dim)">(duraklatıldı)</i>');
+  $('#ltfDots').innerHTML=LATAIF.map((_,i)=>'<i class="'+(i<LTF.i?'d':(LTF.active&&i===LTF.i?'a':''))+'"></i>').join('');
+  $('#ltfGo').textContent=LTF.active?'⏸ Duraklat':((LTF.i>0||LTF.count>0)&&LTF.i<5?'▶ Devam':'▶ Başla');
+}
+function ltfInit(){
+  const pts=LATAIF.map((L,i)=>
+   '<g class="ltfP" data-i="'+i+'">'+
+     '<circle cx="'+L.x+'" cy="'+L.y+'" r="14" fill="'+L.c+'" opacity=".16"/>'+
+     '<circle cx="'+L.x+'" cy="'+L.y+'" r="6" fill="'+L.c+'"'+(L.ring?' stroke="#c9a227" stroke-width="1"':'')+'/>'+
+     '<circle class="ok" cx="'+L.x+'" cy="'+L.y+'" r="10.5" fill="none" stroke="#c9a227" stroke-width="1.4" opacity="0"/>'+
+   '</g>').join('');
+  $('#ltfMap').innerHTML='<svg viewBox="0 0 200 250" aria-hidden="true">'+
+   '<circle cx="100" cy="34" r="20" fill="none" stroke="rgba(201,162,39,.4)" stroke-width="1.2"/>'+
+   '<path d="M64,66 Q100,56 136,66 L144,148 Q138,206 100,232 Q62,206 56,148 Z" fill="rgba(201,162,39,.04)" stroke="rgba(201,162,39,.4)" stroke-width="1.2"/>'+
+   pts+'</svg>';
+  ltfUI();
+}
+$('#ltfGo').onclick=()=>LTF.active?ltfPause():ltfStart();
+$('#ltfRst').onclick=()=>{
+  if(confirm('Letâif seyri sıfırlansın mı?')){LTF.i=0;LTF.count=0;LTF.active=false;ltfSave();ltfUI();}
+};
+
+/* ── Rutinler — tek dokunuş düzen makroları ── */
+let RUT=S.get('sukun.rut',null);
+function rutSnap(name){
+  return {name,
+    amb:Object.fromEntries(Object.keys(AMB).map(id=>[id,chVol[id]])),
+    fr:{c:FR.c,b:FR.b,mode:FR.mode,vol:FR.vol,pink:FR.pink,playing:FR.playing},
+    fr2:{on:FR2.on,c:FR2.c,b:FR2.b},
+    zk:{cat:Z.cat,idx:Z.idx,target:Z.target,tempo:Z.tempo,form:Z.form},
+    sleep:+($('#sleepTimer').value||0), bendir:BENDIR,
+    master:+$('#masterVol').value};
+}
+function rutApply(r){
+  hardStopAll();
+  if(r.master!=null){
+    $('#masterVol').value=r.master; setFill($('#masterVol'));
+    if(ctx)master.gain.setTargetAtTime(r.master,ctx.currentTime,.2);
+  }
+  if(r.bendir!=null){BENDIR=!!r.bendir;$('#optBendir').classList.toggle('on',BENDIR);}
+  if(r.fr){
+    FR.c=+r.fr.c||FR.c; FR.b=+r.fr.b||FR.b; FR.mode=r.fr.mode||'bin';
+    FR.vol=r.fr.vol??FR.vol; FR.pink=!!r.fr.pink;
+    $('#frVol').value=FR.vol; setFill($('#frVol'));
+    $('#pinkTgl').classList.toggle('on',FR.pink);
+    $$('#modeSeg button').forEach(x=>x.classList.toggle('act',x.dataset.m===FR.mode));
+  }
+  if(r.fr2){
+    FR2.on=!!r.fr2.on; FR2.c=+r.fr2.c||FR2.c; FR2.b=+r.fr2.b||FR2.b;
+    $('#fr2Tgl').classList.toggle('on',FR2.on);
+    $('#fr2Car').value=FR2.c; $('#fr2Beat').value=FR2.b;
+    setFill($('#fr2Car')); setFill($('#fr2Beat'));
+    $('#fr2CarV').textContent=FR2.c.toFixed(1)+' Hz';
+    $('#fr2BeatV').textContent=FR2.b.toFixed(2)+' Hz';
+  }
+  if(r.amb)Object.entries(r.amb).forEach(([id,v])=>{
+    const d=AMBIENT_DEFS.find(x=>x.id===id);
+    if(d){chVol[id]=clamp(+v,0,1); chOn(d);}
+  });
+  syncMixerUI();
+  if(r.fr&&r.fr.playing)frStart(); else syncFreqUI();
+  if(r.zk){
+    Z.cat=r.zk.cat||Z.cat; Z.idx=r.zk.idx||0; Z.target=r.zk.target??Z.target;
+    Z.tempo=r.zk.tempo||Z.tempo; Z.form=r.zk.form||Z.form;
+    syncFormSeg(); ensureTargetOpt(Z.target,'Rutin • '+Z.target);
+    $('#tempoSld').value=Z.tempo; setFill($('#tempoSld'));
+    $('#tempoVal').textContent=Z.tempo.toFixed(1)+' sn';
+    renderCats(); renderZikir(false); zUI();
+  }
+  const sl=$('#sleepTimer');
+  if(sl&&r.sleep!=null){sl.value=String(r.sleep); sl.dispatchEvent(new Event('change'));}
+  saveSettings();
+}
+function rutRender(){
+  $('#rutRow').innerHTML=RUT.map((r,i)=>
+   '<div class="rut" data-i="'+i+'"><b>'+r.name+'</b><span class="rx" data-x="'+i+'">✕</span></div>').join('')+
+   '<div class="rut add" id="rutAdd">＋ Düzeni kaydet</div>';
+}
+function rutInit(){
+  if(!RUT){
+    RUT=[
+     {name:'🌅 Sabah',amb:{birds:.45,stream:.3},fr:{c:220,b:10,mode:'bin',vol:.5,pink:false,playing:true},fr2:{on:false,c:100,b:2.5},sleep:0,bendir:false,master:.7},
+     {name:'🌙 Yatış',amb:{ocean:.4,wind:.15},fr:{c:110,b:2.5,mode:'iso',vol:.45,pink:true,playing:true},fr2:{on:false,c:100,b:2.5},sleep:20,bendir:false,master:.6}
+    ];
+    S.set('sukun.rut',RUT);
+  }
+  rutRender();
+}
+$('#rutRow').addEventListener('click',e=>{
+  const x=e.target.closest('.rx');
+  if(x){
+    const i=+x.dataset.x;
+    if(confirm('«'+RUT[i].name+'» rutini silinsin mi?')){RUT.splice(i,1);S.set('sukun.rut',RUT);rutRender();}
+    return;
+  }
+  if(e.target.closest('#rutAdd')){
+    if(RUT.length>=8){alert('En çok 8 rutin saklanabilir');return;}
+    const nm=prompt('Rutin adı — şu anki tüm düzen (sesler, frekans, zikir, sayaç) kaydedilecek:','✦ Rutinim');
+    if(!nm)return;
+    RUT.push(rutSnap(nm)); S.set('sukun.rut',RUT); rutRender();
+    return;
+  }
+  const c=e.target.closest('.rut[data-i]'); if(!c)return;
+  rutApply(RUT[+c.dataset.i]);
+});
+
+/* ── Tam yedekleme — bütün sukun.* verisi tek dosyada ── */
+$('#bakBtn').onclick=()=>{
+  const out={_app:'SÜKÛN',_v:1,_t:new Date().toISOString()};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.indexOf('sukun.')===0)out[k]=localStorage.getItem(k);
+  }
+  const a=document.createElement('a'), d=new Date(), p=x=>String(x).padStart(2,'0');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));
+  a.download='sukun-yedek-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},3000);
+};
+$('#resBtn').onclick=()=>$('#bakFile').click();
+$('#bakFile').addEventListener('change',async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  try{
+    const o=JSON.parse(await f.text());
+    if(o._app!=='SÜKÛN')throw 0;
+    Object.entries(o).forEach(([k,v])=>{if(k.indexOf('sukun.')===0)localStorage.setItem(k,v);});
+    alert('Yedek yüklendi ✦ sayfa yenileniyor');
+    location.reload();
+  }catch(err){alert('Geçersiz yedek dosyası');}
+});
+
+/* ── Hatim & Letâif: zikir motoruna bağlanma ── */
+const _repM=rep;
+rep=()=>{
+  const wT=Z.target, wC=Z.count, wCat=Z.cat, wIdx=Z.idx;
+  _repM();
+  const completed = wT>0 && wC===wT-1 && Z.count===0;
+  if(HATIM.active){
+    if(wCat!=='esma'||wIdx!==HATIM.idx)hatPause();
+    else if(completed)hatAdvance();
+    else{HATIM.count=Z.count; if(Z.count%5===0)hatSave(); hatUI();}
+  }else if(LTF.active){
+    if(wCat!=='temel'||wIdx!==0)ltfPause();
+    else if(completed)ltfAdvance();
+    else{LTF.count=Z.count; ltfUI();}
+  }
+};
+
 /* ── Sarmalayıcılar ── */
 const _frStartL=frStart; frStart=()=>{_frStartL(); if(FR2.on)fr2Start();};
 const _frStopL=frStop;   frStop=()=>{_frStopL(); fr2Stop();};
@@ -2120,6 +2433,9 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   virdInit();
   vhInit();
   bgInit();
+  hatInit();
+  ltfInit();
+  rutInit();
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
 })();
