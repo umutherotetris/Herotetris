@@ -33,14 +33,31 @@
   --fD:'Cormorant Garamond',Georgia,'Times New Roman',serif;
   --fA:'Amiri','Scheherazade New',serif;
   --fB:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(19,64,53,.55),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(15,34,66,.45),transparent 60%),linear-gradient(180deg,#081310,#050b0e 55%,#04070a);
+  --ebru1:#0d2b26;--ebru2:#12352e;--ebru3:#0e2a3d;--ebru4:#173043;--ebru5:#175646;
+  --photic:radial-gradient(ellipse at 50% 42%,#f6e7b4 0%,#cfa92e 65%,#8a7018 100%);
 }
+/* ═══ TEMALAR ═══ */
+body[data-tema="zumrut"]{--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(19,64,53,.55),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(15,34,66,.45),transparent 60%),linear-gradient(180deg,#081310,#050b0e 55%,#04070a);--ebru1:#0d2b26;--ebru2:#12352e;--ebru3:#0e2a3d;--ebru4:#173043;--ebru5:#175646;--photic:radial-gradient(ellipse at 50% 42%,#f6e7b4 0%,#cfa92e 65%,#8a7018 100%)}
+body[data-tema="gul"]{--bg:#0f070a;--gold:#d9a05f;--goldh:#f0c78f;--ivory:#f3e6de;--mut:#c9a8a0;--dim:#8a6a66;--line:rgba(217,160,95,.18);--line2:rgba(217,160,95,.45);--danger:#c25b6e;--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(142,58,76,.4),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(90,26,40,.42),transparent 60%),linear-gradient(180deg,#1c0d12,#12080c 55%,#0d0609);--ebru1:#2a1016;--ebru2:#3d1620;--ebru3:#4a1a26;--ebru4:#5c2530;--ebru5:#1a0b10;--photic:radial-gradient(ellipse at 50% 42%,#f0c78f 0%,#c45a6e 60%,#6e2030 100%)}
+body[data-tema="gece"]{--bg:#080f1c;--gold:#c9a227;--goldh:#7fd4c1;--ivory:#e8eef2;--mut:#9db2bd;--dim:#5d7079;--line:rgba(46,143,127,.22);--line2:rgba(46,143,127,.5);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(46,143,127,.35),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(15,34,66,.55),transparent 60%),linear-gradient(180deg,#0d1f33,#080f1c 55%,#060b14);--ebru1:#0a1626;--ebru2:#12352e;--ebru3:#173043;--ebru4:#175646;--ebru5:#1d3a52;--photic:radial-gradient(ellipse at 50% 42%,#bfeee0 0%,#2e8f7f 62%,#14463c 100%)}
+body[data-tema="col"]{--bg:#120d09;--gold:#c1793a;--goldh:#e8a967;--ivory:#efe3d2;--mut:#c2a98d;--dim:#7d6a54;--line:rgba(193,121,58,.2);--line2:rgba(193,121,58,.48);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(110,74,42,.5),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(58,166,160,.25),transparent 60%),linear-gradient(180deg,#1d1610,#120d09 55%,#0d0906);--ebru1:#1d1610;--ebru2:#3a2a1a;--ebru3:#6e4a2a;--ebru4:#3aa6a0;--ebru5:#2a1d12;--photic:radial-gradient(ellipse at 50% 42%,#e8a967 0%,#c1793a 62%,#6e3a18 100%)}
+body[data-tema="sabah"]{--bg:#f6efdf;--gold:#a9822a;--goldh:#8a6716;--ivory:#3c3122;--mut:#6d5c42;--dim:#98876b;--line:rgba(122,94,32,.28);--line2:rgba(122,94,32,.55);--danger:#b0503a;--panel:rgba(246,239,223,.9);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(201,162,39,.14),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(30,92,79,.1),transparent 60%),linear-gradient(180deg,#f7f0e1,#eee2c8 60%,#e6d8ba);--ebru1:#d8c79a;--ebru2:#c9b380;--ebru3:#a9822a;--ebru4:#1e5c4f;--ebru5:#8a6716;--photic:radial-gradient(ellipse at 50% 42%,#fff3cf 0%,#d9b84a 60%,#a98a2a 100%)}
+/* Açık tema — koyu yüzeyleri kâğıda çevir */
+body[data-tema="sabah"] .card{background:rgba(255,255,255,.55);box-shadow:0 2px 14px rgba(60,49,34,.06)}
+body[data-tema="sabah"] select,body[data-tema="sabah"] #zSearch,body[data-tema="sabah"] .jRow input,body[data-tema="sabah"] .jRow select,body[data-tema="sabah"] input[type=number]{background:rgba(255,255,255,.72);color:#3c3122}
+body[data-tema="sabah"] .chn{background:rgba(255,255,255,.42)}
+body[data-tema="sabah"] .masterBar{background:rgba(246,239,223,.88)}
+body[data-tema="sabah"] .rut,body[data-tema="sabah"] .pre,body[data-tema="sabah"] .cat,body[data-tema="sabah"] .zItem,body[data-tema="sabah"] .sess,body[data-tema="sabah"] .seg button,body[data-tema="sabah"] .bandChips span{background:rgba(255,255,255,.45)}
+body[data-tema="sabah"] input[type=range]:not(#ns *)::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--gold) var(--val,50%),rgba(60,49,34,.16) var(--val,50%))}
+body[data-tema="sabah"] input[type=range]:not(#ns *)::-moz-range-track{background:linear-gradient(90deg,var(--gold) var(--val,50%),rgba(60,49,34,.16) var(--val,50%))}
+body[data-tema="sabah"] .sw{background:rgba(60,49,34,.14)}
+body[data-tema="sabah"] #logSheet,body[data-tema="sabah"] #rateToast,body[data-tema="sabah"] #temaSheet{background:linear-gradient(180deg,#f7f1e2,#efe4cc)}
+body[data-tema="sabah"] #bgEbru{opacity:.42;mix-blend-mode:multiply}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
   font-family:var(--fB);color:var(--ivory);min-height:100vh;line-height:1.45;
-  background:
-    radial-gradient(1100px 640px at 50% -8%, rgba(19,64,53,.55), transparent 62%),
-    radial-gradient(860px 620px at 88% 108%, rgba(15,34,66,.45), transparent 60%),
-    linear-gradient(180deg,#081310,#050b0e 55%,#04070a);
+  background:var(--bgGrad);
   background-attachment:fixed;
 }
 /* Girih (sekiz köşeli yıldız) dokusu — tıklamayı asla engellemez */
@@ -299,6 +316,40 @@ section[hidden]{display:none}
 .ltfDots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.1)}
 .ltfDots i.d{background:var(--gold)}
 .ltfDots i.a{background:var(--goldh);box-shadow:0 0 8px var(--goldh)}
+.zStage{position:relative}
+.spkBtn{position:absolute;top:10px;right:10px;z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(6,20,18,.55);color:var(--mut);font-size:14px;cursor:pointer;backdrop-filter:blur(4px)}
+.spkBtn:active{transform:scale(.92)}
+#uiBtn{font-size:13px}
+.pitBig{font:600 34px/1 "Cormorant Garamond",serif;color:var(--goldh);text-align:center;margin-top:10px;text-shadow:0 0 20px rgba(201,162,39,.25)}
+.pitSub{font-size:10.5px;color:var(--dim);text-align:center;margin-top:5px;min-height:14px}
+.pitSeg{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;justify-content:center}
+.pitSeg span{border:1px solid var(--line);border-radius:9px;padding:5px 9px;font-size:10.5px;color:var(--mut);cursor:pointer}
+.pitSeg span.act{color:var(--goldh);border-color:var(--line2)}
+.pre{position:relative}
+.pre.mine{border-color:rgba(72,200,220,.4)}
+.pre .myx{position:absolute;top:5px;right:8px;color:var(--dim);font-size:11px}
+body.mode-mini [data-lvl="midi"],body.mode-mini [data-lvl="pro"],body.mode-midi [data-lvl="pro"]{display:none!important}
+body.mode-mini .chn:not(.on){display:none}
+body.mode-mini .card{padding:14px}
+#temaSheet{position:fixed;inset:auto 0 0 0;z-index:960;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom))}
+.tkHead{display:flex;align-items:center;gap:10px;margin-bottom:11px;color:var(--goldh);font:600 13px/1 "Cormorant Garamond",serif;letter-spacing:.14em}
+.tkHead button{margin-left:auto;background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;width:30px;height:30px;cursor:pointer}
+.tkOpt{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.tkOpt:active{transform:scale(.99)}
+.tkOpt.act{border-color:var(--line2);background:rgba(201,162,39,.09)}
+.tkOpt b{font-size:12.5px;color:var(--ink);flex:1;font-weight:600}
+.tkOpt .sw5{display:flex;gap:4px}
+.tkOpt .sw5 i{width:16px;height:16px;border-radius:5px;border:1px solid rgba(255,255,255,.16)}
+.tkOpt .chk{color:var(--goldh);font-size:15px;width:16px;text-align:center}
+#temaBtn{font-size:13px}
+.tvBar{display:flex;align-items:center;gap:9px;margin:8px 0 4px}
+.tvBar .btn{flex:none;padding:8px 13px}
+.tvProg{margin-left:auto;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.tvText{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:rgba(6,20,18,.4);scrollbar-width:thin}
+.tvP{font-size:12.5px;line-height:1.72;color:var(--mut);margin:0 0 11px;padding:5px 8px;border-radius:8px;cursor:pointer;transition:background .3s,color .3s;letter-spacing:.01em}
+.tvP:last-child{margin-bottom:0}
+.tvP:hover{color:var(--ink)}
+.tvP.on{color:var(--ink);background:rgba(201,162,39,.12);box-shadow:inset 0 0 0 1px var(--line2)}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -334,6 +385,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <option value="30">30 dk</option>
       <option value="60">60 dk</option>
     </select>
+    <button class="btn" id="temaBtn" title="Tema seç">🎨</button>
+    <button class="btn" id="uiBtn" title="Görünüm modu">▤</button>
     <button class="btn" id="recBtn" title="Seansı kaydet (.webm indirir)">⏺</button>
     <button class="btn" id="logBtn" title="Seans günlüğü">📓</button>
     <button class="btn danger" id="stopAll">■</button>
@@ -434,6 +487,20 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <div class="sldRow"><label for="fr2Car">Taşıyıcı 2</label><input type="range" id="fr2Car" min="60" max="963" step="0.1" value="100"><span class="valB" id="fr2CarV">100.0 Hz</span></div>
       <div class="sldRow"><label for="fr2Beat">Vuruş 2</label><input type="range" id="fr2Beat" min="0.5" max="40" step="0.01" value="2.5"><span class="valB" id="fr2BeatV">2.50 Hz</span></div>
     </details>
+    <details class="jEd" id="pitBox">
+      <summary>🎤 Ledün Lab — sesinin frekansını bul</summary>
+      <div class="pitBig" id="pitHz">— Hz</div>
+      <div class="pitSub" id="pitNote">🎙 ile başlat; bir harf, kelime ya da cümle söyle</div>
+      <div class="pitSeg" id="pitSeg"></div>
+      <div class="zBtns" style="margin-top:9px">
+        <button class="btn" id="pitGo">🎙 Dinlemeyi başlat</button>
+        <button class="btn" id="pitUse">↧ Taşıyıcı yap</button>
+      </div>
+      <div class="zBtns" style="margin-top:8px">
+        <button class="btn" id="pitSave" style="width:100%">✦ Frekans setlerime ekle</button>
+      </div>
+      <div style="font-size:9.5px;color:var(--dim);margin-top:7px;line-height:1.6">Enerji duraklarına göre hece/kelime parçalarının ortanca perdesi çıkarılır. Hiçbir şey kaydedilmez; ses cihaz dışına çıkmaz.</div>
+    </details>
   </section>
 
   <!-- ═══════════ SEKME 3: ZİKİR ═══════════ -->
@@ -455,6 +522,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
     <!-- İmza sahne: dönen halkalar içinde yaşayan zikir -->
     <div class="card zStage" id="zStage">
+      <button class="spkBtn" id="spkOnce" title="Bu zikri cihaz sesiyle dinle">🔊</button>
       <div class="zGlow"></div>
       <div class="rings" id="ringHost">
         <div class="ring r1"></div>
@@ -508,6 +576,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div class="opt"><span>📖 Anlamı göster</span><button class="sw on" id="optMean"></button></div>
         <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv"></button></div>
         <div class="opt"><span>🥁 Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir"></button></div>
+        <div class="opt"><span>🔊 Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak"></button></div>
+        <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice"></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto"></div>
       </div>
 
       <button class="tapBtn" id="tapBtn">SAYMAK İÇİN DOKUN ✦</button>
@@ -551,6 +621,16 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         </div>
         <div style="font-size:9.5px;color:var(--dim);margin-top:7px;line-height:1.6">Her latîfede ×33 «Allah» lafza-i celâli — renk ve mahaller Nakşî-Müceddidî tertibidir; usul, ehlinin rehberliğine emanettir.</div>
       </details>
+      <details class="jEd" id="tvBox" data-lvl="midi" style="margin-top:10px">
+        <summary>🤲 Nasuh Tövbesi — sesli okuma</summary>
+        <div class="tvBar">
+          <button class="btn" id="tvPlay">▶ Oku</button>
+          <button class="btn" id="tvStop">■ Dur</button>
+          <span id="tvProg" class="tvProg">Bölüm 0/0</span>
+        </div>
+        <div id="tvText" class="tvText"></div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Cihazın Türkçe sesiyle bölüm bölüm okunur; okunan kısım vurgulanır. Bir bölüme dokunarak oradan başlayabilirsin. Ekranı açık tutmak için ses köprüsü devreye girer. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
+      </details>
       <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
       <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
     </div>
@@ -565,6 +645,10 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 <div id="rateToast" hidden>
   <div>Seans günlüğe işlendi ✦ nasıl hissettin?</div>
   <div class="rateRow" id="rateRow"></div>
+</div>
+<div id="temaSheet" hidden>
+  <div class="tkHead">🎨 TEMA <button id="tkClose">✕</button></div>
+  <div id="tkList"></div>
 </div>
 <div id="logSheet" hidden>
   <div class="lsHead"><b>📓 Seans Günlüğü</b><span id="ls7"></span><button id="lsClose">✕</button></div>
@@ -910,6 +994,105 @@ const AMBIENT_DEFS=[
     cg.gain.exponentialRampToValueAtTime(.0001,t+d);
     n.start(t); n.stop(t+d+.02);
   },130);
+}},
+{id:'kedi',icon:'🐈',name:'Kedi Mırıltısı',desc:'25 Hz mırıltı, nefes dalgalı',cal:1.1,wet:.08,build:(E,out)=>{
+  const n=E.play(src('brown')), lp=E.n(flt('lowpass',420)), bp=E.n(flt('bandpass',95,1.2)), b=E.n(g(0));
+  n.connect(lp); lp.connect(bp); bp.connect(b); b.connect(out);
+  const am=E.play(osc(25)), amd=E.n(g(.5)); am.connect(amd); amd.connect(b.gain);
+  const cs=E.play(ctx.createConstantSource()); cs.offset.value=.55; cs.connect(b.gain);
+  let inh=true;
+  (function br(){ E.later(()=>{ inh=!inh;
+    amd.gain.setTargetAtTime(inh?.5:.28,ctx.currentTime,.15);
+    cs.offset.setTargetAtTime(inh?.6:.34,ctx.currentTime,.15);
+    am.frequency.setTargetAtTime(inh?26:23,ctx.currentTime,.2);
+    br(); }, inh?900:1150); })();
+}},
+{id:'bulbul',icon:'🌹',name:'Bülbül',desc:'triller ve uzun nağmeler',cal:.85,wet:.3,build:(E,out)=>{
+  function nt(t,f0,f1,d,v){
+    const o=ctx.createOscillator(), gg=g(0);
+    o.connect(gg); gg.connect(out);
+    o.frequency.setValueAtTime(f0,t);
+    o.frequency.exponentialRampToValueAtTime(f1,t+d*.8);
+    gg.gain.setValueAtTime(0,t);
+    gg.gain.linearRampToValueAtTime(v,t+.012);
+    gg.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.start(t); o.stop(t+d+.03);
+  }
+  (function phrase(){
+    E.later(()=>{
+      let t=ctx.currentTime; const kind=Math.random();
+      if(kind<.45){
+        const f=rnd(2300,3600), n2=6+(Math.random()*8|0), gap=rnd(.055,.085);
+        for(let i=0;i<n2;i++)nt(t+i*gap,f*rnd(.98,1.02),f*rnd(1.05,1.18),gap*.9,rnd(.05,.1));
+      } else if(kind<.8){
+        nt(t,rnd(1800,3000),rnd(2800,5200),rnd(.25,.5),rnd(.06,.11));
+      } else {
+        nt(t,rnd(3800,4600),rnd(3000,3600),.06,.08);
+        nt(t+.12,rnd(3800,4600),rnd(3000,3600),.06,.08);
+        nt(t+.3,rnd(2000,2600),rnd(2600,3400),rnd(.3,.6),.1);
+      }
+      phrase();
+    }, rnd(700,3800));
+  })();
+}},
+{id:'muhabbet',icon:'🦜',name:'Muhabbet Kuşu',desc:'cıvıl cıvıl gevezelik',cal:.8,wet:.15,build:(E,out)=>{
+  function chirp(t,f,d,v){
+    const o=ctx.createOscillator(); o.type='triangle';
+    const gg=g(0), pn=ctx.createStereoPanner(); pn.pan.value=rnd(-.6,.6);
+    o.connect(gg); gg.connect(pn); pn.connect(out);
+    o.frequency.setValueAtTime(f,t);
+    o.frequency.linearRampToValueAtTime(f*rnd(.85,1.3),t+d);
+    const vib=ctx.createOscillator(); vib.frequency.value=rnd(28,45);
+    const vd=g(f*.06); vib.connect(vd); vd.connect(o.frequency);
+    gg.gain.setValueAtTime(0,t);
+    gg.gain.linearRampToValueAtTime(v,t+.008);
+    gg.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.start(t); o.stop(t+d+.02); vib.start(t); vib.stop(t+d+.02);
+  }
+  (function chatter(){
+    E.later(()=>{
+      let t=ctx.currentTime; const n2=2+(Math.random()*7|0);
+      for(let i=0;i<n2;i++){ chirp(t,rnd(2400,4200),rnd(.05,.16),rnd(.04,.09)); t+=rnd(.06,.2); }
+      chatter();
+    }, rnd(500,3200));
+  })();
+}},
+{id:'sema',icon:'🌀',name:'Semâ Usûlü',desc:'bendir düm·tek döngüsü ~96 BPM',cal:.95,wet:.3,build:(E,out)=>{
+  function dum(t,v){
+    const o=ctx.createOscillator(), gg=g(0);
+    o.frequency.setValueAtTime(150,t);
+    o.frequency.exponentialRampToValueAtTime(72,t+.11);
+    gg.gain.setValueAtTime(0,t);
+    gg.gain.linearRampToValueAtTime(v,t+.007);
+    gg.gain.exponentialRampToValueAtTime(.0001,t+.26);
+    o.connect(gg); gg.connect(out); o.start(t); o.stop(t+.3);
+    const n2=ctx.createBufferSource(); n2.buffer=NOISE.get('brown');
+    const f=flt('lowpass',280), ng=g(0);
+    n2.connect(f); f.connect(ng); ng.connect(out);
+    ng.gain.setValueAtTime(0,t);
+    ng.gain.linearRampToValueAtTime(v*.45,t+.004);
+    ng.gain.exponentialRampToValueAtTime(.0001,t+.08);
+    n2.start(t); n2.stop(t+.1);
+  }
+  function tk(t,v){
+    const n2=ctx.createBufferSource(); n2.buffer=NOISE.get('white');
+    const f=flt('bandpass',rnd(2700,3200),5), ng=g(0);
+    n2.connect(f); f.connect(ng); ng.connect(out);
+    ng.gain.setValueAtTime(0,t);
+    ng.gain.linearRampToValueAtTime(v,t+.003);
+    ng.gain.exponentialRampToValueAtTime(.0001,t+.06);
+    n2.start(t); n2.stop(t+.09);
+  }
+  const BEAT=60/96; let bar=0;
+  (function loop(){
+    const t=ctx.currentTime+.08;
+    dum(t,.5);
+    tk(t+BEAT,.22); tk(t+BEAT*1.5,.16);
+    tk(t+BEAT*2,.24);
+    dum(t+BEAT*3,.34);
+    if(++bar%4===0){ tk(t+BEAT*3.5,.18); tk(t+BEAT*3.75,.14); }
+    E.later(loop,BEAT*4*1000);
+  })();
 }}
 ];
 
@@ -1532,7 +1715,7 @@ function saveSettings(){
     mv:+$('#masterVol').value,
     fr:{c:FR.c,b:FR.b,vol:FR.vol,mode:FR.mode,pink:FR.pink},
     x2:{on:FR2.on,c:FR2.c,b:FR2.b},
-    opt2:{bendir:BENDIR,aveInt:AVE.int,vhVol:VH.vol,vhL:VH.layers},
+    opt2:{bendir:BENDIR,aveInt:AVE.int,vhVol:VH.vol,vhL:VH.layers,spkOn:SPK.on,spkRate:SPK.rate},
     z:{target:Z.target,tempo:Z.tempo,tick:Z.tick,vib:Z.vib,mean:Z.mean,adv:Z.adv,form:Z.form}
   });
 }
@@ -1559,6 +1742,7 @@ function loadSettings(){
     $('#aveInt').value=AVE.int; $('#aveIntV').textContent='%'+Math.round(AVE.int*100);
     VH.vol=+s.opt2.vhVol||VH.vol; VH.layers=+s.opt2.vhL||VH.layers;
     $('#vhVol').value=VH.vol; $('#vhLayers').value=String(VH.layers);
+    SPK.on=!!s.opt2.spkOn; SPK.rate=+s.opt2.spkRate||SPK.rate;
   }
   if(s.z)Object.assign(Z,s.z);
 }
@@ -1845,7 +2029,7 @@ $('#optBendir').onclick=()=>{
 };
 
 /* ── Kendi sesinle zikir halkası ── */
-const VH={buf:null,playing:null,layers:5,vol:.6,rec:null,chunks:[]};
+const VH={buf:null,blob:null,dur:0,playing:null,layers:5,vol:.6,rec:null,chunks:[]};
 async function vhRecord(){
   if(VH.rec){try{VH.rec.stop()}catch(e){} return;}
   try{
@@ -1857,17 +2041,27 @@ async function vhRecord(){
       st.getTracks().forEach(tr=>tr.stop());
       VH.rec=null; $('#vhRec').classList.remove('rec'); $('#vhRec').textContent='⏺ Sesini kaydet';
       const blob=new Blob(VH.chunks,{type:mr.mimeType||'audio/webm'});
+      VH.blob=blob; VH.buf=null; VH.dur=0; vhStop();
+      /* süreyi öğren (webm süresi bazen Infinity döner — korumalı) */
+      try{
+        const pa=new Audio(URL.createObjectURL(blob));
+        pa.addEventListener('loadedmetadata',()=>{
+          if(isFinite(pa.duration)&&pa.duration>0)VH.dur=pa.duration;
+          URL.revokeObjectURL(pa.src);
+        },{once:true});
+      }catch(e){}
+      /* çözebilirsek hassas tampon yolu, çözemesek de eleman yolu çalışır */
       try{
         ac();
         VH.buf=await ctx.decodeAudioData(await blob.arrayBuffer());
-        vhStop();
-        $('#vhStat').textContent='Kayıt hazır ✓ '+VH.buf.duration.toFixed(1)+' sn — ▶ ile halkayı başlat';
-        if(blob.size<2*1024*1024){
-          const r=new FileReader();
-          r.onload=()=>S.set('sukun.voice',{d:r.result});
-          r.readAsDataURL(blob);
-        }
-      }catch(e){$('#vhStat').textContent='Kayıt çözülemedi, tekrar dene';}
+        VH.dur=VH.buf.duration;
+      }catch(e){}
+      $('#vhStat').textContent='Kayıt hazır ✓'+(VH.dur?' '+VH.dur.toFixed(1)+' sn':'')+' — ▶ ile halkayı başlat';
+      if(blob.size<2*1024*1024){
+        const r=new FileReader();
+        r.onload=()=>S.set('sukun.voice',{d:r.result});
+        r.readAsDataURL(blob);
+      }
     };
     mr.start();
     $('#vhRec').classList.add('rec'); $('#vhRec').textContent='⏹ Bitir';
@@ -1878,21 +2072,35 @@ async function vhRecord(){
 async function vhLoadStored(){
   const v=S.get('sukun.voice',null); if(!v||!v.d)return false;
   try{
+    VH.blob=await (await fetch(v.d)).blob();
     ac();
-    const ab=await (await fetch(v.d)).arrayBuffer();
-    VH.buf=await ctx.decodeAudioData(ab);
+    try{
+      VH.buf=await ctx.decodeAudioData(await VH.blob.arrayBuffer());
+      VH.dur=VH.buf.duration;
+    }catch(e){}
     return true;
   }catch(e){return false;}
 }
 function vhStop(){
   if(!VH.playing)return;
-  VH.playing.E.kill(1,VH.playing.out); VH.playing=null;
+  const P=VH.playing; VH.playing=null;
+  if(P.els)P.els.forEach(a=>{try{a.pause()}catch(e){}});
+  P.E.kill(1,P.out);
+  if(P.url)setTimeout(()=>{try{URL.revokeObjectURL(P.url)}catch(e){}},1500);
   $('#vhPlay').textContent='▶ Halkayı başlat'; $('#vhPlay').classList.remove('playing');
 }
 async function vhToggle(){
   if(VH.playing){vhStop();LOG.maybeEnd();return;}
-  if(!VH.buf&&!(await vhLoadStored())){$('#vhStat').textContent='Önce kısa bir ses kaydet ⏺';return;}
-  ac();
+  if(!VH.buf&&!VH.blob&&!(await vhLoadStored())){
+    $('#vhStat').textContent='Önce kısa bir ses kaydet ⏺'; return;
+  }
+  ac(); try{await ctx.resume()}catch(e){}
+  if(VH.buf){ try{vhBufStart(); return;}catch(e){} }
+  try{vhElemStart();}
+  catch(e){$('#vhStat').textContent='Halka başlatılamadı ('+((e&&e.name)||'hata')+') — sesi yeniden kaydetmeyi dene';}
+}
+/* Yol 1: çözülmüş tampon — hassas detune */
+function vhBufStart(){
   const E=makeEnv(), out=E.n(g(0)); out.connect(master);
   const w=E.n(g(.45)); out.connect(w); w.connect(wetIn);
   const L=VH.layers, D=VH.buf.duration;
@@ -1907,6 +2115,28 @@ async function vhToggle(){
   }
   out.gain.setTargetAtTime(VH.vol,ctx.currentTime,1.2);
   VH.playing={E,out};
+  LOG.touch('halka','🎙 Ses halkası ×'+L);
+  $('#vhPlay').textContent='⏸ Halkayı durdur'; $('#vhPlay').classList.add('playing');
+}
+/* Yol 2: tarayıcı çözemezse <audio> elemanlarıyla — kaydettiğini her cihaz çalar */
+function vhElemStart(){
+  const L=VH.layers, url=URL.createObjectURL(VH.blob), D=VH.dur||4;
+  const E=makeEnv(), out=E.n(g(0)); out.connect(master);
+  const w=E.n(g(.45)); out.connect(w); w.connect(wetIn);
+  const els=[];
+  for(let i=0;i<L;i++){
+    const a=new Audio(); a.src=url; a.loop=true; a.preload='auto';
+    a.playbackRate=1+(i-(L-1)/2)*0.012;
+    try{a.preservesPitch=false; a.mozPreservesPitch=false; a.webkitPreservesPitch=false;}catch(e){}
+    const sn=E.n(ctx.createMediaElementSource(a));
+    const pn=E.n(ctx.createStereoPanner()); pn.pan.value=(L>1?(i/(L-1)-.5):0)*1.4;
+    const gg=E.n(g(.8/Math.sqrt(L)));
+    sn.connect(gg); gg.connect(pn); pn.connect(out);
+    els.push(a);
+    setTimeout(()=>{a.play().catch(()=>{})},60+i*(D/L)*900);
+  }
+  out.gain.setTargetAtTime(VH.vol,ctx.currentTime,1.2);
+  VH.playing={E,out,els,url};
   LOG.touch('halka','🎙 Ses halkası ×'+L);
   $('#vhPlay').textContent='⏸ Halkayı durdur'; $('#vhPlay').classList.add('playing');
 }
@@ -2095,7 +2325,8 @@ function bgInit(){
   };
   rs(); addEventListener('resize',rs);
 }
-const BG_PAL=['#0d2b26','#12352e','#0e2a3d','#173043','#175646'];
+let BG_PAL=['#0d2b26','#12352e','#0e2a3d','#173043','#175646'];
+let EBRU_GOLD='#c9a227';
 function bgDrop(){
   if(!BG.x)return;
   const x=rnd(30,BG.W-30), y=rnd(60,BG.H-60), r=rnd(24,60);
@@ -2112,7 +2343,7 @@ function bgDrop(){
     p[i*2]=x+Math.cos(a)*rr; p[i*2+1]=y+Math.sin(a)*rr;
   }
   const gold=Math.random()<.14;
-  BG.drops.push({p,c:gold?'#c9a227':BG_PAL[(Math.random()*BG_PAL.length)|0],s:gold});
+  BG.drops.push({p,c:gold?EBRU_GOLD:BG_PAL[(Math.random()*BG_PAL.length)|0],s:gold});
   if(BG.drops.length>40)BG.drops.shift();
   bgDraw();
 }
@@ -2389,6 +2620,361 @@ rep=()=>{
   }
 };
 
+/* ════ 6f) v1.5 — TEVHİD×99 • SESLİ ZİKİR • LEDÜN LAB • GÖRÜNÜM ════ */
+/* Tevhid kategorisine 99 esmânın kalıbı + Melik-Hak-Mübîn */
+function tevhid99(){
+  const T=ZIKIR.tevhid.items;
+  T.unshift({tr:'Lâ ilâhe illâllahü’l-Melikü’l-Hakku’l-Mübîn',
+    ar:'لَا إِلٰهَ إِلَّا اللّٰهُ الْمَلِكُ الْحَقُّ الْمُبِينُ',
+    mean:'Melik, Hak ve Mübîn olan Allah’tan başka ilâh yoktur — rızık ve feth zikri olarak meşhur'});
+  const seen=new Set(T.map(x=>x.tr.toLocaleLowerCase('tr')));
+  const keep=Z.form; Z.form='tev';
+  ZIKIR.esma.items.forEach(it=>{
+    if(it.nt)return;
+    const f=esmaForms(it);
+    const k=f.tr.toLocaleLowerCase('tr');
+    if(seen.has(k))return; seen.add(k);
+    T.push({tr:f.tr,ar:f.ar,mean:'Gerçek '+it.t+' ancak Allah’tır'});
+  });
+  Z.form=keep;
+  ZIKIR.tevhid.label='☪ Tevhid Zikirleri ('+T.length+')';
+}
+
+/* ── Sesli zikir — cihazın Türkçe sesiyle ── */
+const SPK={on:false,rate:.85,voice:null,list:[]};
+function spkVoices(){
+  if(!('speechSynthesis' in window))return;
+  SPK.list=speechSynthesis.getVoices().filter(v=>/^tr/i.test(v.lang));
+  const sel=$('#spkVoice');
+  sel.innerHTML=SPK.list.length
+    ?SPK.list.map((v,i)=>'<option value="'+i+'">'+v.name+'</option>').join('')
+    :'<option value="-1">Türkçe ses bulunamadı</option>';
+  if(SPK.list.length&&!SPK.voice)SPK.voice=SPK.list[0];
+}
+if('speechSynthesis' in window){
+  spkVoices();
+  speechSynthesis.onvoiceschanged=spkVoices;
+}
+function spkSay(txt,interrupt){
+  if(!('speechSynthesis' in window)||!txt)return;
+  if(window.__tvPlaying&&!interrupt)return;
+  try{
+    if(interrupt)speechSynthesis.cancel();
+    else if(speechSynthesis.speaking)return;   /* üst üste bindirme */
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='tr-TR'; u.rate=SPK.rate; u.pitch=.9;
+    if(SPK.voice)u.voice=SPK.voice;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+$('#spkOnce').onclick=()=>spkSay($('#zTr').textContent,true);
+$('#optSpeak').onclick=()=>{
+  SPK.on=!SPK.on;
+  $('#optSpeak').classList.toggle('on',SPK.on);
+  if(!SPK.on)try{speechSynthesis.cancel()}catch(e){}
+  saveSettings();
+};
+$('#spkVoice').addEventListener('change',e=>{SPK.voice=SPK.list[+e.target.value]||null;});
+$('#spkRate').addEventListener('input',e=>{SPK.rate=+e.target.value;setFill(e.target);saveSettings();});
+function spkInit(){
+  $('#optSpeak').classList.toggle('on',SPK.on);
+  $('#spkRate').value=SPK.rate; setFill($('#spkRate'));
+}
+
+/* ════ Nasuh Tövbesi — sesli okuma ════ */
+const TOVBE_P=["E'ûzu billâhi mineş-şeytânir-racîm. Bismillâhirrahmânirrahîm. Elhamdu lillâhi Rabbil-âlemîn. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih.", "Elif Lâm Mîm. Kâf Hâ Yâ Ayn Sâd.", "Yâ eyyuhelleżîne âmenû tûbû ilallâhi tevbeten nasûhâ, asâ rabbukum en yukeffira ankum seyyiâtikum ve yudhilekum cennâtin tecrî min tahtihel-enhâru, yevme lâ yuhzillâhu-nnebiyye vellezîne âmenû me'ah, nûruhum yes'â beyne eydîhim ve bi-eymânihim yekûlûne rabbenâ etmim lenâ nûranâ vağfir lenâ, inneke alâ kulli şey-in kadîr. Tahrim Sûresi, sekizinci ayet.", "Ey iman edenler! Samimi bir tövbe ile Allah'a dönün. Umulur ki Rabb'iniz sizin kötülüklerinizi örter. Peygamber'i ve onunla birlikte iman edenleri utandırmayacağı günde Allah sizi, içlerinden ırmaklar akan cennetlere sokar. Onların önlerinden ve sağlarından, amellerinin nurları aydınlatıp gider de, Ey Rabb'imiz! Nurumuzu bizim için tamamla, bizi bağışla; çünkü Sen her şeye kadîrsin, derler.", "Allah'ım! Senin rızan ve Resûlullah Efendi'mizin hoşnutluğu için tüm mahlukata; inslere, cinslere, hayvanlara, bitkilere, yaratmış olduğun bilmediğim tüm kullara, Ümmet-i Muhammed'e, Senin izin verdiğin tüm kullara, dünya ve ahirette, onların da üzerlerindeki tüm kul haklarımızı, Seni de şahit tutarak ebediyen helal ediyorum.", "Allah'ım! Göz, dil, el, kulak, ayak, mide ve sair azalarımızla işlediğim açık ya da gizli şirklerden; maddi ve manevi isyanlardan; lanet, ah ve kınamalar nedeniyle bedenimi hasta eden şeytanlardan, şeytani varlıklardan, şeytanların organlarıma yerleşmesinden ve bana vesveseler vermesinden; hatalarımdan ve günahlarımdan temizlenmek adına Sana el açtım. Hazreti Âdem'e kadar gelmiş ve geçmiş tüm atalar, Ümmet-i Muhammed, arafta kalan kullar ve diğer tüm yaratılmışlar adına bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allahu Teâlâ'ya eş koşmamak ve O'nu zikretmek; Allah'a ve Peygamber'ine inanmak; yetecek kadar rızık kazanmak, kişinin rızkına Allah'ın kefil olduğunu bilmek, helalinden kazanıp yemek içmek, içki içmemek, helalinden temiz elbise giymek; nimete şükretmek; abdest almak, beş vakit namaza devam etmek; oruç tutmak; zekâtı vermek ve fakirlere yardım etmek; Allah yolunda yemek yedirmek, haksız yere kimsenin malını yememek, buluğa ermemiş yetimin malını korumak; gücü yetenler için hacca gitmek; Allah'a tevekkül etmek, kanaat etmek, Allah'tan gelen kazaya razı olmak, Allah'tan gelen belaya sabretmek, günahlardan kaçıp Allah'a sığınmak, günahlardan tövbe etmek; kendini büyük görmemek; şeytanı düşman bilmek; ihlasla Allah'a ibadet etmek, delil ve hüccet ile amel etmek.", "Allah'ın sevdiğini sevip sevmediğinden uzak durmak; ana babaya iyilik etmek, akrabayı ziyaret etmek; iyiliği emretmek, kötülükten sakındırmak; emanete hıyanet etmemek; Müslüman idarecilere itaat etmek; ibret almak ve tefekkür etmek; yalan konuşmamak, yalan yere yemin etmemek, dili kötü sözlerden korumak, alay etmemek, sözünde doğru olmak; harama bakmamak; kulağı yasak şeyleri dinlemekten alıkoymak; ölçü ve tartıyı doğru yapmak; ilim öğrenmek; Allah uğrunda cihat etmek; Allah'ın azabından korkmak, Allah'ın rahmetinden ümit kesmemek; nefsin arzularına uymamak, zinadan sakınmak, livatadan sakınmak, hayız ve nifas hâllerinde zevceye yaklaşmamak, cünüplükten yıkanmak; bütün günahlardan kalbi arındırmak; ölüme hazırlanmak.", "Allah'ım! Elli dört farzın terki ile işlenmiş ve işlenecek olan tüm hata ve günahlardan temizlenmek maksadıyla bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Senin sevginin önüne başka sevgiler koymaktan, ilmini ve kudretini aklım ve bilgilerimle sınırlamaktan, uluhiyetini ve hikmetlerini yok ve imkânsız saymaktan; gizli veya açık şirk koşmaktan, sahip olduklarımı put edinmekten, Sen'den değil de kullarından korkmaktan; başıma gelen bela ve tersliklerde Seni sorumlu tutmaktan; itikadî ve amelî münafıklıktan; anne babama lanet ve beddua etmekten, onların ahlarını almaktan, helallik ve razılık almamaktan, evlat hasreti çektirmekten, sılayırahimi terk etmekten; hayatıma lanet okumaktan; Sana ve kullarına verdiğim söz ve yeminleri tutmamaktan; hakkım olmayana el uzatmaktan; tüm mahlukata zarar vermekten.", "İlgilenmekle yükümlü olduğum öksüz, yetim, yoksul, dul, komşu, yaşlı, engelli ve Ümmet-i Muhammed'in ihtiyaçlarını görmezden gelmekten, imkânlarımı onlarla paylaşmamaktan; faizin her türlüsünü yemekten ve yedirilmesine vesile olmaktan, tefecilik yapmaktan; rızkıma haram karıştırmaktan; rızkı Sen'den değil de kullardan bilmekten, kula kulluk etmekten; rızık endişesine düşmekten; haram, mundar, adak ve besmelesiz yiyecekleri yemekten; işe besmelesiz başlamaktan; abdestsiz ve gusülsüz dolaşmaktan; Allah'ın azabından emin olmaktan, günahlarımı rahmetinden büyük tutup Sen'den ümidi kesmekten bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Gıybet etmekten, gıybetin her türlüsünden, ölenin arkasından gıybet etmekten, gıybete zemin hazırlamaktan, gıybeti küçük ve önemsiz görmekten, yapılan gıybetten hoşnut olmaktan, gıybet edenleri ikaz etmemekten; vefasızlıktan, sevgisizlikten, merhametsizlikten; insanların ve diğer mahlukatın kabiliyetlerini, fıtratlarını ve özürlerini sorgulayıp eleştirerek onlarla alay etmekten, onları beğenmemekten ve kınamaktan; kalp kırmaktan, kötü sözler söylemekten; lanet, ah, kınama ve Allah'a havale etmelerden; bunları geri çekmeyerek kulların ve zürriyetlerinin başına gelecek her türlü sıkıntı, musibet ve hastalıklara sebep olmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Ümmet-i Muhammed'in tüm azalarıyla işlediği veya işlenmesine sebep olduğu günahlardan; zinanın her türlüsünden, nikâhı önemsemeyerek zinayı meşru hâle getirmekten, sonrasında nikâh tazelemeyerek aile boyu sıkıntılara sebep olmaktan; eşlerimizi kıskanmamaktan, evlilikteki mahremiyetleri başkalarına anlatmaktan; besmelesiz ve gusülsüz münasebette bulunmaktan; rızık endişesiyle çocuk yapmamaktan; düşük ve kürtaj yaptırmaktan, bunlara vesile olmaktan; sakat çocuklara ve bebek ölümlerine sebep olmaktan; verdiğin çocukları beğenmemekten, terk etmekten ve aralarında ayrım yapmaktan; tesettürü kabul etmemekten, bedenimizi teşhir ederek başkalarının günaha girmesine sebep olmaktan; şeytana hizmet eden kimselere gitmekten; helalleşme ve tövbeyle çıkış yolu aramak yerine muskalara başvurmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Ey Rabb'imiz! Sen benim Rabb'imsin. Sen'den başka ilah yoktur. Beni Sen yarattın. Ben Senin kulunum ve gücüm yettiğince Sana verdiğim sözü ve vaadimi yerine getirmeye çalışıyorum. İşlediklerimin şerrinden Sana sığınırım. Bana verdiğin nimetlerini itiraf ederim, günahlarımı da itiraf ederim. Beni bağışla; çünkü günahları Sen'den başka bağışlayacak yoktur. İlk yaratıldığım andan bu ana kadar, işlediğim ve işlenmesine sebep olduğum tüm isyanlardan ve günahlardan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Yaptığım bu nasuh tövbesini ve duaları dergâh-ı izzetinde kabul eyle. Ümmet-i Muhammed'den hak alacağı olanlar adına da yaptım; hazinenden tamamlayarak günahlarımızı affet ve bizi tüm kullarınla helalleştir. Ya Rabbi! İzzet, Celal, Kibriya ve Azamet'in hürmetine, Sen'den Senin hürmetine istiyoruz. Bu duamı, bildiğim ve bilmediğim tüm esmâ ve ism-i âzamlar ile birleştir; en kıymetli kabul anlarında, zamanlarında ve mekânlarında dolaştır. Salih kullarının sâfiyane dualarına ilhak eyle. Bedenen, kalben ve nefsen pişmanım, tövbe ediyorum. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Yevme lâ temliku nefsun linefsin şey'â, vel-emru yevme-izin lillâh. Ellezî yuvesvisu fî sudûri-nnâs, min şerri'l-vesvâsi'l-hannâs. Fesebbih bi-hamdi rabbike vestağfirhu, innehû kâne tevvâbâ. Ve lem yekun lehû kufuven ehad. İnne şâni'eke huve'l-ebter.", "Allahümme âmin. Allah; Er-Rahmân, Er-Rahîm, El-Melik, El-Kuddûs, Es-Selâm, El-Mü'min, El-Müheymin, El-Azîz, El-Cebbâr, El-Mütekebbir, El-Hâlık, El-Bâri', El-Musavvir, El-Gaffâr, El-Kahhâr, El-Vehhâb, Er-Rezzâk, El-Fettâh, El-Alîm, El-Kâbıd, El-Bâsıt, El-Hâfıd, Er-Râfi', El-Muizz, El-Müzill, Es-Semî', El-Basîr, El-Hakem, El-Adl, El-Latîf, El-Habîr, El-Halîm, El-Azîm, El-Gafûr, Eş-Şekûr, El-Aliyy, El-Kebîr, El-Hafîz, El-Mukît, El-Hasîb, El-Celîl, El-Kerîm, Er-Rakîb, El-Mucîb, El-Vâsi', El-Hakîm, El-Vedûd, El-Mecîd, El-Bâis, Eş-Şehîd, El-Hakk, El-Vekîl, El-Kavî, El-Metîn, El-Velî, El-Hamîd, El-Muhsî, El-Mübdi', El-Muîd, El-Muhyî, El-Mumît, El-Hayy, El-Kayyûm, El-Vâcid, El-Mâcid, El-Vâhid, Es-Samed, El-Kâdir, El-Muktedir, El-Mukaddim, El-Muahhir, El-Evvel, El-Âhir, Ez-Zâhir, El-Bâtın, El-Vâlî, El-Müteâlî, El-Berr, Et-Tevvâb, El-Müntakim, El-Afüvv, Er-Raûf, Mâliku'l-Mülk, Zü'l-Celâli ve'l-İkrâm, El-Muksit, El-Câmi', El-Ganî, El-Muğnî, El-Mâni', Ed-Dârr, En-Nâfi', En-Nûr, El-Hâdî, El-Bedî', El-Bâkî, El-Vâris, Er-Reşîd, Es-Sabûr.", "Allah'ım, bizlere merhamet et; Senin merhametine ve rızana muhtacız.", "Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih. Subhâne Rabbike Rabb'il-izzeti ammâ yasifûn, ve selâmun alel murselîn, vel-hamdu lillahi Rabb'il-âlemîn. El-Fâtiha."];
+const TV={queue:[],qi:0,playing:false,paused:false,keep:null};
+function tovbeBuild(){
+  $('#tvText').innerHTML=TOVBE_P.map((p,i)=>'<p class="tvP" data-i="'+i+'">'+p+'</p>').join('');
+  $('#tvProg').textContent='Bölüm 0/'+TOVBE_P.length;
+}
+function tvSplit(p){
+  const out=[]; let buf='';
+  p.split(/([.!?]\s+)/).forEach(s=>{
+    if(!s)return;
+    if((buf+s).length>200){ if(buf.trim())out.push(buf.trim()); buf=s; }
+    else buf+=s;
+  });
+  if(buf.trim())out.push(buf.trim());
+  return out.length?out:[p];
+}
+function tovbeQueue(){
+  TV.queue=[];
+  TOVBE_P.forEach((p,pi)=>tvSplit(p).forEach(t=>TV.queue.push({pi,text:t})));
+}
+function tvHi(pi){
+  $$('#tvText .tvP').forEach(el=>el.classList.toggle('on',+el.dataset.i===pi));
+  $('#tvProg').textContent='Bölüm '+(pi+1)+'/'+TOVBE_P.length;
+  const el=$('#tvText .tvP.on');
+  if(el)el.scrollIntoView({block:'center',behavior:'smooth'});
+}
+function tvNext(){
+  if(!TV.playing||TV.paused)return;
+  if(TV.qi>=TV.queue.length){tovbeStop(true);return;}
+  const it=TV.queue[TV.qi];
+  tvHi(it.pi);
+  try{
+    const u=new SpeechSynthesisUtterance(it.text);
+    u.lang='tr-TR'; u.rate=SPK.rate; u.pitch=.9;
+    if(SPK.voice)u.voice=SPK.voice;
+    u.onend=()=>{ if(TV.playing&&!TV.paused){TV.qi++;tvNext();} };
+    u.onerror=()=>{ if(TV.playing&&!TV.paused){TV.qi++;setTimeout(tvNext,120);} };
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function tovbePlay(){
+  if(!('speechSynthesis' in window)){$('#tvProg').textContent='Cihazda seslendirme yok';return;}
+  if(!SPK.list.length){$('#tvProg').textContent='Türkçe ses bulunamadı';return;}
+  if(TV.paused){
+    TV.paused=false; TV.playing=true;
+    try{speechSynthesis.resume()}catch(e){}
+    $('#tvPlay').textContent='⏸ Duraklat';
+    if(!speechSynthesis.speaking)tvNext();
+    return;
+  }
+  if(TV.playing)return;
+  if(!TV.queue.length)tovbeQueue();
+  window.__tvPlaying=true; TV.playing=true; TV.paused=false;
+  try{speechSynthesis.cancel()}catch(e){}
+  ac();
+  if(window.SesCapa)SesCapa.start({title:'Nasuh Tövbesi',
+    onPause:()=>tovbePause(), onPlay:()=>tovbePlay(), onStop:()=>tovbeStop()});
+  $('#tvPlay').textContent='⏸ Duraklat';
+  /* Chrome uzun okuma kesilmesi için nabız */
+  clearInterval(TV.keep);
+  TV.keep=setInterval(()=>{
+    if(TV.playing&&!TV.paused&&speechSynthesis.speaking){
+      try{speechSynthesis.pause();speechSynthesis.resume();}catch(e){}
+    }
+  },9000);
+  tvNext();
+}
+function tovbePause(){
+  if(!TV.playing)return;
+  TV.paused=true;
+  try{speechSynthesis.pause()}catch(e){}
+  $('#tvPlay').textContent='▶ Sürdür';
+}
+function tovbeStop(finished){
+  TV.playing=false; TV.paused=false; window.__tvPlaying=false;
+  clearInterval(TV.keep); TV.keep=null;
+  try{speechSynthesis.cancel()}catch(e){}
+  $('#tvPlay').textContent='▶ Oku';
+  if(finished){
+    $('#tvProg').textContent='Tamamlandı ✦';
+    LOG.push({t:Date.now(),dur:Math.max(60,TV.qi*6),detail:'🤲 Nasuh Tövbesi okundu ✦'});
+    try{navigator.vibrate&&navigator.vibrate([90,60,90,60,180])}catch(e){}
+    TV.qi=0;
+    $$('#tvText .tvP').forEach(el=>el.classList.remove('on'));
+  }else{
+    $('#tvProg').textContent='Bölüm '+(TV.queue.length?Math.min(TV.qi+1,TOVBE_P.length):0)+'/'+TOVBE_P.length;
+  }
+}
+function tovbeInit(){
+  tovbeBuild();
+  $('#tvPlay').onclick=()=>{ if(TV.playing&&!TV.paused)tovbePause(); else tovbePlay(); };
+  $('#tvStop').onclick=()=>{TV.qi=0;tovbeStop(false);$$('#tvText .tvP').forEach(el=>el.classList.remove('on'));$('#tvProg').textContent='Bölüm 0/'+TOVBE_P.length;};
+  $('#tvText').addEventListener('click',e=>{
+    const p=e.target.closest('.tvP'); if(!p)return;
+    const pi=+p.dataset.i;
+    if(!TV.queue.length)tovbeQueue();
+    const qi=TV.queue.findIndex(x=>x.pi===pi);
+    TV.qi=qi<0?0:qi;
+    TV.paused=false;
+    if(TV.playing){try{speechSynthesis.cancel()}catch(e){} tvNext();}
+    else tovbePlay();
+  });
+}
+
+/* ── Ledün Lab — otokorelasyonla perde bulucu ── */
+const PIT={st:null,ana:null,buf:null,small:null,run:false,hz:0,segs:[],cur:[],sil:0,fr:0};
+function noteName(hz){
+  const N=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+  const m=Math.round(12*Math.log2(hz/440))+69;
+  return N[((m%12)+12)%12]+(Math.floor(m/12)-1);
+}
+const medyan=a=>{const s=[...a].sort((x,y)=>x-y);return s[s.length>>1];};
+function acf(sm,sr){
+  let rms=0; for(let i=0;i<sm.length;i++)rms+=sm[i]*sm[i];
+  if(Math.sqrt(rms/sm.length)<.015)return -1;
+  const MIN=Math.floor(sr/500), MAX=Math.min(sm.length-2,Math.floor(sr/70));
+  let best=-1,bv=0;
+  for(let lag=MIN;lag<=MAX;lag++){
+    let c=0;
+    for(let i=0;i<sm.length-lag;i++)c+=sm[i]*sm[i+lag];
+    if(c>bv){bv=c;best=lag;}
+  }
+  return best>0?sr/best:-1;
+}
+async function pitToggle(){
+  if(PIT.run){pitStop();return;}
+  try{
+    ac(); try{await ctx.resume()}catch(e){}
+    PIT.st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false}});
+    const src2=ctx.createMediaStreamSource(PIT.st);
+    PIT.ana=ctx.createAnalyser(); PIT.ana.fftSize=2048;
+    src2.connect(PIT.ana);
+    PIT.buf=new Float32Array(2048); PIT.small=new Float32Array(1024);
+    PIT.run=true; PIT.segs=[]; PIT.cur=[]; PIT.hz=0; PIT.sil=0;
+    $('#pitGo').textContent='⏹ Bitir'; $('#pitGo').classList.add('rec');
+    $('#pitSeg').innerHTML='';
+    pitLoop();
+  }catch(e){$('#pitNote').textContent='Mikrofon izni gerekli';}
+}
+function pitStop(){
+  PIT.run=false;
+  try{PIT.st&&PIT.st.getTracks().forEach(t=>t.stop())}catch(e){}
+  PIT.st=null;
+  if(PIT.cur.length>4){PIT.segs.push(medyan(PIT.cur));PIT.cur=[];}
+  $('#pitGo').textContent='🎙 Dinlemeyi başlat'; $('#pitGo').classList.remove('rec');
+  pitSegUI();
+  if(PIT.segs.length){
+    const m=medyan(PIT.segs);
+    $('#pitNote').textContent='Ortanca: '+m.toFixed(1)+' Hz ('+noteName(m)+') • parçaya dokunup seçebilirsin';
+  }
+}
+function pitLoop(){
+  if(!PIT.run)return;
+  requestAnimationFrame(pitLoop);
+  if(++PIT.fr%2)return;                           /* her 2 karede bir — pil dostu */
+  PIT.ana.getFloatTimeDomainData(PIT.buf);
+  for(let i=0;i<1024;i++)PIT.small[i]=PIT.buf[i*2]; /* 2x seyreltme */
+  const hz=acf(PIT.small,ctx.sampleRate/2);
+  if(hz>0&&hz<600){
+    PIT.hz=PIT.hz?PIT.hz*.72+hz*.28:hz;
+    PIT.cur.push(hz); PIT.sil=0;
+    $('#pitHz').textContent=PIT.hz.toFixed(1)+' Hz';
+    $('#pitNote').textContent=noteName(PIT.hz)+' • konuşmayı sürdür, dur = parça sınırı';
+  }else if(++PIT.sil===8&&PIT.cur.length>4){
+    PIT.segs.push(medyan(PIT.cur)); PIT.cur=[]; pitSegUI();
+  }
+}
+function pitSegUI(){
+  $('#pitSeg').innerHTML=PIT.segs.map((v,i)=>
+   '<span data-s="'+i+'">P'+(i+1)+' • '+v.toFixed(0)+' Hz</span>').join('');
+}
+$('#pitSeg').addEventListener('click',e=>{
+  const s=e.target.closest('[data-s]'); if(!s)return;
+  PIT.hz=PIT.segs[+s.dataset.s];
+  $('#pitHz').textContent=PIT.hz.toFixed(1)+' Hz';
+  $('#pitNote').textContent=noteName(PIT.hz)+' • seçildi';
+  $$('#pitSeg span').forEach(x=>x.classList.toggle('act',x===s));
+});
+$('#pitGo').onclick=pitToggle;
+$('#pitUse').onclick=()=>{
+  if(!PIT.hz){$('#pitNote').textContent='Önce bir perde yakala 🎙';return;}
+  stopJourney();
+  FR.c=clamp(Math.round(PIT.hz*10)/10,60,963);
+  if(FR.playing)frRetune(.3);
+  syncFreqUI(); saveSettings();
+  $('#pitNote').textContent='Taşıyıcı '+FR.c.toFixed(1)+' Hz yapıldı ✓';
+};
+let MYFREQ=S.get('sukun.myfreq',[]);
+function myFreqRender(){
+  const host=$('#presets'); if(!host)return;
+  host.insertAdjacentHTML('beforeend',MYFREQ.map((p,i)=>
+   '<button class="pre mine" data-my="'+i+'"><span class="pIc">🎤</span><b>'+p.name+'</b><small>'+(+p.c).toFixed(1)+' Hz • vuruş '+(+p.b).toFixed(2)+'</small><span class="myx" data-mx="'+i+'">✕</span></button>').join(''));
+}
+const _rpP=renderPresets;
+renderPresets=()=>{_rpP(); myFreqRender();};
+$('#pitSave').onclick=()=>{
+  if(!PIT.hz){$('#pitNote').textContent='Önce bir perde yakala 🎙';return;}
+  const nm=prompt('Set adı:','Sesim • '+PIT.hz.toFixed(0)+' Hz');
+  if(!nm)return;
+  MYFREQ.push({name:nm,c:Math.round(PIT.hz*10)/10,b:FR.b});
+  S.set('sukun.myfreq',MYFREQ);
+  renderPresets(); syncFreqUI();
+  $('#pitNote').textContent='«'+nm+'» frekans setlerine eklendi ✦';
+};
+$('#presets').addEventListener('click',e=>{
+  const mx=e.target.closest('[data-mx]');
+  if(mx){
+    if(confirm('Bu set silinsin mi?')){MYFREQ.splice(+mx.dataset.mx,1);S.set('sukun.myfreq',MYFREQ);renderPresets();syncFreqUI();}
+    return;
+  }
+  const b=e.target.closest('[data-my]'); if(!b)return;
+  const p=MYFREQ[+b.dataset.my];
+  stopJourney(); FR.c=+p.c; FR.b=+p.b;
+  if(FR.playing)frRetune(.4); else frStart();
+  $$('.pre').forEach(x=>x.classList.remove('act')); b.classList.add('act');
+  syncFreqUI(); saveSettings();
+});
+
+/* ── Görünüm modları: Mini ◱ • Midi ▤ • Pro ⚙ ── */
+const UIM={m:S.get('sukun.ui','midi')};
+const UI_ICON={mini:'◱',midi:'▤',pro:'⚙'};
+function tagLvl(){
+  const set=(el,l)=>{if(el)el.setAttribute('data-lvl',l)};
+  [['#fr2Box','pro'],['#jEd','pro'],['#spkRow','pro'],['#pitBox','midi'],
+   ['#hatBox','midi'],['#ltfBox','midi'],['#vhBox','midi'],['#virdBox','midi'],
+   ['#beatChips','midi'],['#carChips','midi'],['#lrInfo','midi'],
+   ['#zList','midi'],['#zCats','midi']
+  ].forEach(p=>set($(p[0]),p[1]));
+  set($('#expBtn')&&$('#expBtn').closest('.zBtns'),'pro');
+  set($('#aveTgl')&&$('#aveTgl').closest('.opt'),'pro');
+  set($('#aveInt')&&$('#aveInt').closest('.sldRow'),'pro');
+  set($('#pinkTgl')&&$('#pinkTgl').closest('.opt'),'midi');
+  set($('#optBendir')&&$('#optBendir').closest('.opt'),'midi');
+  set($('#optSpeak')&&$('#optSpeak').closest('.opt'),'midi');
+  set($('#beatChips')&&$('#beatChips').previousElementSibling,'midi');
+  set($('#carChips')&&$('#carChips').previousElementSibling,'midi');
+  set($('#zSearch')&&$('#zSearch').closest('.zTools'),'midi');
+}
+function applyUI(m){
+  UIM.m=m; S.set('sukun.ui',m);
+  document.body.classList.remove('mode-mini','mode-midi','mode-pro');
+  document.body.classList.add('mode-'+m);
+  if(m==='pro')$$('details').forEach(d=>d.open=true);
+  if(m==='mini')$$('details').forEach(d=>d.open=false);
+  const b=$('#uiBtn');
+  if(b){
+    b.textContent=UI_ICON[m];
+    b.title='Görünüm: '+(m==='mini'?'Mini — sadece esaslar':m==='midi'?'Midi — dengeli':'Pro — tüm ince ayarlar')+' • değiştirmek için dokun';
+  }
+}
+$('#uiBtn').onclick=()=>applyUI(UIM.m==='mini'?'midi':UIM.m==='midi'?'pro':'mini');
+
+/* sesli zikir: her tesbihte söyle */
+const _repS=rep;
+rep=()=>{
+  _repS();
+  if(SPK.on)spkSay($('#zTr').textContent,false);
+};
+
+/* ════ 6g) v1.6 — TEMA MOTORU (5 kimlik) ════ */
+const THEMES=[
+ {k:'zumrut',n:'Zümrüt Gece',c:['#0a1a16','#1e5c4f','#c9a227','#ecd27e','#efe7d3']},
+ {k:'gul',n:'Gül-i Muhammedî',c:['#1a0b10','#8e3a4c','#c45a6e','#d9a05f','#f3e6de']},
+ {k:'gece',n:'Gece Yarısı',c:['#0a1626','#173043','#2e8f7f','#7fd4c1','#c9a227']},
+ {k:'col',n:'Çöl Toprağı',c:['#1d1610','#6e4a2a','#c1793a','#e8a967','#3aa6a0']},
+ {k:'sabah',n:'Sabah Nuru · açık',c:['#f6efdf','#e8d9b5','#a9822a','#1e5c4f','#3c3122']}
+];
+function temaRender(){
+  const cur=document.body.dataset.tema||'zumrut';
+  $('#tkList').innerHTML=THEMES.map(t=>
+   '<div class="tkOpt'+(t.k===cur?' act':'')+'" data-tk="'+t.k+'"><span class="chk">'+(t.k===cur?'✓':'')+'</span>'+
+   '<b>'+t.n+'</b><span class="sw5">'+t.c.map(c=>'<i style="background:'+c+'"></i>').join('')+'</span></div>').join('');
+}
+function applyTema(k){
+  document.body.dataset.tema=k; S.set('sukun.tema',k);
+  const cs=getComputedStyle(document.body);
+  const e=n=>(cs.getPropertyValue('--ebru'+n)||'').trim()||'#12352e';
+  BG_PAL=[e(1),e(2),e(3),e(4),e(5)];
+  EBRU_GOLD=(cs.getPropertyValue('--gold')||'').trim()||'#c9a227';
+  const ph=(cs.getPropertyValue('--photic')||'').trim();
+  const ov=$('#aveOv'); if(ov&&ph)ov.style.background=ph;
+  const tc=(cs.getPropertyValue('--bg')||'').trim();
+  const mt=document.querySelector('meta[name="theme-color"]'); if(mt&&tc)mt.setAttribute('content',tc);
+  temaRender();
+}
+$('#temaBtn').onclick=()=>{temaRender();$('#temaSheet').hidden=false;};
+$('#tkClose').onclick=()=>$('#temaSheet').hidden=true;
+$('#tkList').addEventListener('click',e=>{
+  const o=e.target.closest('[data-tk]'); if(!o)return;
+  applyTema(o.dataset.tk);
+  setTimeout(()=>$('#temaSheet').hidden=true,180);
+});
+
 /* ── Sarmalayıcılar ── */
 const _frStartL=frStart; frStart=()=>{_frStartL(); if(FR2.on)fr2Start();};
 const _frStopL=frStop;   frStop=()=>{_frStopL(); fr2Stop();};
@@ -2436,6 +3022,11 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   hatInit();
   ltfInit();
   rutInit();
+  tevhid99(); renderCats();
+  spkInit();
+  tagLvl(); applyUI(UIM.m);
+  applyTema(S.get('sukun.tema','zumrut'));
+  tovbeInit();
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
 })();
