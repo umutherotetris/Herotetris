@@ -331,7 +331,7 @@ section[hidden]{display:none}
 body.mode-mini [data-lvl="midi"],body.mode-mini [data-lvl="pro"],body.mode-midi [data-lvl="pro"]{display:none!important}
 body.mode-mini .chn:not(.on){display:none}
 body.mode-mini .card{padding:14px}
-#temaSheet{position:fixed;inset:auto 0 0 0;z-index:960;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom))}
+#temaSheet,#helpSheet{position:fixed;inset:auto 0 0 0;z-index:960;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));max-height:78vh;overflow-y:auto}
 .tkHead{display:flex;align-items:center;gap:10px;margin-bottom:11px;color:var(--goldh);font:600 13px/1 "Cormorant Garamond",serif;letter-spacing:.14em}
 .tkHead button{margin-left:auto;background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;width:30px;height:30px;cursor:pointer}
 .tkOpt{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
@@ -350,6 +350,26 @@ body.mode-mini .card{padding:14px}
 .tvP:last-child{margin-bottom:0}
 .tvP:hover{color:var(--ink)}
 .tvP.on{color:var(--ink);background:rgba(201,162,39,.12);box-shadow:inset 0 0 0 1px var(--line2)}
+.qRow{display:flex;align-items:center;gap:10px;border:1px solid var(--line2);background:rgba(201,162,39,.07);border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.qRow>div{flex:1;min-width:0}
+.qRow b{font-size:12px;color:var(--ink);font-weight:600;display:block}
+.qRow small{display:block;font-size:9.5px;color:var(--dim);margin-top:1px;font-weight:400;line-height:1.4}
+.qGuideBtn{display:none;flex:none;border:1px solid var(--line2);background:rgba(201,162,39,.12);color:var(--goldh);border-radius:9px;padding:8px 11px;font-size:10.5px;cursor:pointer;white-space:nowrap}
+body.helpOn .qGuideBtn{display:inline-flex}
+.qb{display:none;width:16px;height:15px;line-height:15px;border-radius:50%;border:1px solid var(--line2);color:var(--goldh);background:rgba(201,162,39,.14);font:600 10px/15px "Figtree",sans-serif;text-align:center;cursor:pointer;margin-left:5px;vertical-align:middle}
+body.helpOn .qb{display:inline-block}
+.qb:active{transform:scale(.9)}
+#qBubble{position:fixed;left:0;top:0;z-index:1200;max-width:264px;min-width:160px;background:linear-gradient(180deg,rgba(14,32,28,.98),rgba(8,18,15,.99));border:1px solid var(--line2);border-radius:13px;padding:11px 13px;font-size:11.5px;line-height:1.62;color:var(--ink);box-shadow:0 16px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .16s,transform .16s;pointer-events:none}
+#qBubble.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+#qBubble b{color:var(--goldh)}
+.qArrow{position:absolute;width:11px;height:11px;background:#0e211c;transform:rotate(45deg);z-index:-1}
+#qBubble.below .qArrow{top:-5px;border-left:1px solid var(--line2);border-top:1px solid var(--line2)}
+#qBubble.above .qArrow{bottom:-5px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.gRow{border-bottom:1px dashed var(--line);padding:10px 2px}
+.gRow:last-child{border-bottom:none}
+.gRow>b{display:block;font-size:12px;color:var(--goldh);margin-bottom:4px}
+.gRow p{font-size:11.5px;color:var(--mut);line-height:1.62;margin:0}
+.gRow p b{color:var(--ink)}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -411,6 +431,11 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   <!-- ═══════════ SEKME 2: FREKANSLAR ═══════════ -->
   <section id="tab-frq" hidden>
       <button class="btn" id="neuroBtn" style="width:100%;margin-bottom:12px;border-color:rgba(56,232,255,.35);color:#8fe9ff;background:rgba(20,60,90,.18)">🧠 NeuroSync AI Ultra — gelişmiş nöro laboratuvarı aç</button>
+      <div class="qRow">
+        <div><b>❓ Yardım balonları</b><small>Açınca her kontrolün yanında kısa açıklama ikonu belirir</small></div>
+        <button class="qGuideBtn" id="guideBtn">📖 Rehber</button>
+        <button class="sw" id="helpTgl" aria-label="Yardım modu"></button>
+      </div>
     <div class="card">
       <div class="orbWrap">
         <div class="orb" id="orb"></div>
@@ -420,6 +445,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         </div>
       </div>
 
+      <div class="chipLbl">MOD <span class="qb" data-h="mode">?</span></div>
       <div class="seg" id="modeSeg">
         <button data-m="bin" class="act">Binaural</button>
         <button data-m="iso">İzokronik</button>
@@ -427,26 +453,27 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       </div>
 
       <div class="sldRow">
-        <label for="carSld">Taşıyıcı</label>
+        <label for="carSld">Taşıyıcı <span class="qb" data-h="carrier">?</span></label>
         <input type="range" id="carSld" min="60" max="963" step="0.1" value="180">
         <span class="valB" id="carVal">180.0 Hz</span>
       </div>
       <div class="sldRow">
-        <label for="beatSld">Vuruş</label>
+        <label for="beatSld">Vuruş <span class="qb" data-h="beat">?</span></label>
         <input type="range" id="beatSld" min="0.5" max="40" step="0.01" value="7.83">
         <span class="valB" id="beatVal">7.83 Hz</span>
       </div>
+      <div class="chipLbl">BEYİN DALGASI BANDI <span class="qb" data-h="band">?</span></div>
       <div class="bandChips" id="bandChips">
         <span data-b="delta">Delta</span><span data-b="theta">Theta</span><span data-b="alpha">Alfa</span><span data-b="beta">Beta</span><span data-b="gamma">Gama</span>
       </div>
       <div class="chipLbl">VURUŞ HIZLARI <small id="beatBandTag"></small></div>
       <div class="bandChips wrapChips" id="beatChips"></div>
-      <div class="chipLbl">TAŞIYICI • SOLFEJ FREKANSLARI (Hz)</div>
+      <div class="chipLbl">TAŞIYICI • SOLFEJ FREKANSLARI (Hz) <span class="qb" data-h="solfej">?</span></div>
       <div class="bandChips wrapChips" id="carChips"></div>
       <div class="lrLine" id="lrInfo"></div>
       <div class="zOpts" style="margin-top:10px">
-        <div class="opt"><span>🌫 Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir</span><button class="sw" id="pinkTgl" aria-label="Pembe gürültü yastığı"></button></div>
-        <div class="opt"><span>⚡ Fotik uyarım — ekran vuruşla parlar · <b style="color:#e0908f">epilepsi uyarısı</b></span><button class="sw" id="aveTgl"></button></div>
+        <div class="opt"><span>🌫 Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir <span class="qb" data-h="pink">?</span></span><button class="sw" id="pinkTgl" aria-label="Pembe gürültü yastığı"></button></div>
+        <div class="opt"><span>⚡ Fotik uyarım — ekran vuruşla parlar · <b style="color:#e0908f">epilepsi uyarısı</b> <span class="qb" data-h="ave">?</span></span><button class="sw" id="aveTgl"></button></div>
       </div>
       <div class="sldRow"><label for="aveInt">Işık şiddeti</label><input type="range" id="aveInt" min="0.05" max="0.5" step="0.01" value="0.18"><span class="valB" id="aveIntV">%18</span></div>
       <div class="sldRow">
@@ -467,10 +494,10 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <div class="hpNote">🎧 Binaural etki yalnızca <b>kulaklıkla</b> oluşur; sol ve sağ kulağa ayrı frekans gönderilir.</div>
     </div>
 
-    <h3 class="secT">Hazır Setler</h3>
+    <h3 class="secT">Hazır Setler <span class="qb" data-h="presets">?</span></h3>
     <div class="presetGrid" id="presets"></div>
     <details class="jEd" id="jEd">
-      <summary>🜂 Kendi yolculuğunu kur — aşama aşama beyin dalgası rotası</summary>
+      <summary>🜂 Kendi yolculuğunu kur — aşama aşama beyin dalgası rotası <span class="qb" data-h="journey">?</span></summary>
       <div id="jRows"></div>
       <div class="zBtns" style="margin-top:8px">
         <button class="btn" id="jAdd">+ Aşama</button>
@@ -482,13 +509,13 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <button class="btn" id="impBtn">⇩ İçe aktar</button>
     </div>
     <details class="jEd" id="fr2Box">
-      <summary>〰 İkinci binaural katman — aynı anda çift frekans (kulaklık)</summary>
+      <summary>〰 İkinci binaural katman — aynı anda çift frekans (kulaklık) <span class="qb" data-h="fr2">?</span></summary>
       <div class="opt" style="margin-top:8px"><span>Katmanı etkinleştir — ana frekansla birlikte çalar</span><button class="sw" id="fr2Tgl"></button></div>
       <div class="sldRow"><label for="fr2Car">Taşıyıcı 2</label><input type="range" id="fr2Car" min="60" max="963" step="0.1" value="100"><span class="valB" id="fr2CarV">100.0 Hz</span></div>
       <div class="sldRow"><label for="fr2Beat">Vuruş 2</label><input type="range" id="fr2Beat" min="0.5" max="40" step="0.01" value="2.5"><span class="valB" id="fr2BeatV">2.50 Hz</span></div>
     </details>
     <details class="jEd" id="pitBox">
-      <summary>🎤 Ledün Lab — sesinin frekansını bul</summary>
+      <summary>🎤 Ledün Lab — sesinin frekansını bul <span class="qb" data-h="ledun">?</span></summary>
       <div class="pitBig" id="pitHz">— Hz</div>
       <div class="pitSub" id="pitNote">🎙 ile başlat; bir harf, kelime ya da cümle söyle</div>
       <div class="pitSeg" id="pitSeg"></div>
@@ -631,6 +658,16 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div id="tvText" class="tvText"></div>
         <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Cihazın Türkçe sesiyle bölüm bölüm okunur; okunan kısım vurgulanır. Bir bölüme dokunarak oradan başlayabilirsin. Ekranı açık tutmak için ses köprüsü devreye girer. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
       </details>
+      <details class="jEd" id="dhBox" data-lvl="midi" style="margin-top:10px">
+        <summary>🕌 Delâil-ül Hayrât — salavât-ı şerife (seçme)</summary>
+        <div class="tvBar">
+          <button class="btn" id="dhPlay">▶ Oku</button>
+          <button class="btn" id="dhStop">■ Dur</button>
+          <span id="dhProg" class="tvProg">Bölüm 0/0</span>
+        </div>
+        <div id="dhText" class="tvText"></div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">İmam Cezûlî'nin eserinden, matbu nüshalarda ortak yer alan salavât-ı şerife formüllerinden bir seçme; eserin tam ve icazetli hatmi için basılı bir Delâil-ül Hayrât nüshasına başvurman en doğrusudur. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
+      </details>
       <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
       <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
     </div>
@@ -642,6 +679,18 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   </footer>
 </div>
 <div id="aveOv" hidden></div>
+<div id="qBubble"><div class="qArrow" id="qArrow"></div><div id="qBubbleText"></div></div>
+<div id="helpSheet" hidden>
+  <div class="tkHead">📖 Frekans Sistemleri Rehberi <button id="helpClose">✕</button></div>
+  <div class="gRow"><b>🎧 Kulaklık mı, hoparlör mü?</b><p>Binaural etkisi yalnızca kulaklıkla oluşur — sol ve sağ kulağa farklı ton gider. Hoparlörde dinliyorsan İzokronik ya da Monaural modunu seç; ikisi de tek kanaldan fiziksel bir vuruş üretir.</p></div>
+  <div class="gRow"><b>〰 Binaural</b><p>İki kulağa birbirine yakın iki ayrı frekans gönderilir (ör. 200 ve 207 Hz). Beyin aradaki farkı — burada 7 Hz — bir "vuruş" olarak algılar; bu algı yalnızca iki kulak farklı sesler aynı anda duyduğunda oluşur.</p></div>
+  <div class="gRow"><b>▮▯ İzokronik</b><p>Tek bir ton doğrudan vuruş hızında açılıp kapanır. Kulakların ayrı sinyal alması gerekmez, o yüzden hoparlörde de işler; çoğu kullanıcı etkisini binauralden daha belirgin hisseder.</p></div>
+  <div class="gRow"><b>≈ Monaural</b><p>İki ton aynı kanalda birleşip fiziksel bir akustik vuruş oluşturur. Hoparlörde binauralden daha etkili, izokronik kadar keskin değildir.</p></div>
+  <div class="gRow"><b>✛ Karma</b><p>Binaural ve izokronik katmanları aynı anda çalışır — kulaklıkla her iki mekanizmadan birden faydalanmak isteyenler için.</p></div>
+  <div class="gRow"><b>🌊 Bantlar</b><p><b>Delta</b> 0.5–4 Hz derin uyku/trans · <b>Theta</b> 4–8 Hz meditasyon · <b>Alfa</b> 8–13 Hz sakin uyanıklık · <b>Beta</b> 13–30 Hz odaklanma · <b>Gama</b> 30–40 Hz yüksek farkındalık.</p></div>
+  <div class="gRow"><b>🎵 Solfej sayıları</b><p>396, 432, 528 Hz gibi taşıyıcı değerleri geleneksel "solfej" sayılarıdır; kadim metinlerde her birine farklı anlam yüklenir. Bilimsel dayanağı tartışmalıdır — taşıyıcı için hoş bir başlangıç noktası olarak düşün.</p></div>
+  <div class="gRow"><b>💡 Pratik öneriler</b><p>Sesi düşük başlat, ilk seansı 10–15 dakikada tut; araç kullanırken ya da dikkat gerektiren işte dinleme. Hoparlörde pembe gürültü yastığını dene. Fotik uyarımı yalnızca ihtiyatla ve kısa süreli kullan.</p></div>
+</div>
 <div id="rateToast" hidden>
   <div>Seans günlüğe işlendi ✦ nasıl hissettin?</div>
   <div class="rateRow" id="rateRow"></div>
@@ -661,6 +710,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
     <button class="btn" id="resBtn">⇩ Yedeği yükle</button>
   </div>
   <input type="file" id="bakFile" accept="application/json,.json" hidden>
+  <button class="btn danger" id="cacheBtn" style="width:100%;margin-top:9px">🗑 Önbelleği Temizle — tüm veriler</button>
+  <div style="font-size:9.5px;color:var(--dim);margin-top:6px;line-height:1.6">Ayarlar, günlük, vird, hatim/letâif ilerlemesi, rutinler, kayıtlı sesin ve kişisel frekans setlerin tamamen silinir. Önce yukarıdan yedek almanı öneririz.</div>
 </div>
 <script>
 'use strict';
@@ -2657,7 +2708,7 @@ if('speechSynthesis' in window){
 }
 function spkSay(txt,interrupt){
   if(!('speechSynthesis' in window)||!txt)return;
-  if(window.__tvPlaying&&!interrupt)return;
+  if((window.__tvPlaying||window.__dhPlaying)&&!interrupt)return;
   try{
     if(interrupt)speechSynthesis.cancel();
     else if(speechSynthesis.speaking)return;   /* üst üste bindirme */
@@ -2754,6 +2805,7 @@ function tvNext(){
 function tovbePlay(){
   if(!('speechSynthesis' in window)){$('#tvProg').textContent='Cihazda seslendirme yok';return;}
   if(!SPK.list.length){$('#tvProg').textContent='Türkçe ses bulunamadı';return;}
+  dhStop();
   if(TV.paused){
     TV.paused=false; TV.playing=true;
     $('#tvPlay').textContent='⏸ Duraklat';
@@ -2815,6 +2867,162 @@ function tvResumeCheck(){
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')tvResumeCheck(); });
 window.addEventListener('focus',tvResumeCheck);
 window.addEventListener('pageshow',tvResumeCheck);
+
+/* ════ Delâil-ül Hayrât — sesli okuma (Tövbe ile birebir aynı, izole motor) ════ */
+const DELAIL_P=[
+"Delâil-ül Hayrât, tam adıyla Delâilü'l-Hayrât ve Şevâriku'l-Envâr fî Zikri's-Salâti alen-Nebiyyi'l-Muhtâr, on beşinci yüzyılda yaşamış Faslı sûfî âlim İmam Muhammed bin Süleyman el-Cezûlî hazretlerinin, Peygamber Efendimize salavât-ı şerife okumaya ayırdığı meşhur bir mecmuadır.",
+"Eser gelenekte haftanın günlerine göre sekiz hizbe bölünerek okunur; her gün bir bölüm okunur ve hafta sonunda eser hatmedilmiş olur. Burada eserin icazetli tam metni değil, gelenekte en yaygın bilinen ve matbu nüshalarda ortak yer alan salavât formüllerinden bir seçme sunulmaktadır. Tam ve icazetli nüsha için matbu bir Delâil-ül Hayrât'a başvurman en doğrusudur.",
+"Peygamber Efendimize salavât getirmenin fazileti hakkında çok sayıda rivayet nakledilmiştir; bir salavâtın karşılığında kat kat rahmete nail olunacağı müjdelenmiştir. Şimdi sırasıyla okuyalım.",
+"Allahümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ salleyte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, inneke hamîdün mecîd. Allahümme bârik alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed, kemâ bârekte alâ seyyidinâ İbrâhîme ve alâ âli seyyidinâ İbrâhîm, fil-âlemîne inneke hamîdün mecîd.",
+"Allahümme salli alâ seyyidinâ Muhammedin salâten tüncînâ bihâ min cemî'il-ehvâli vel-âfât, ve takdî lenâ bihâ cemî'al-hâcât, ve tutahhirunâ bihâ min cemî'is-seyyiât, ve terfe'unâ bihâ a'led-derecât, ve tübelliğunâ bihâ aksal-ğâyâti min cemî'il-hayrâti fil-hayâti ve ba'del-memât, inneke alâ külli şey'in kadîr.",
+"Allahümme salli alâ seyyidinâ Muhammedinil-fâtihi limâ üglika, vel-hâtimi limâ sebeka, nâsıril-hakkı bil-hakk, vel-hâdî ilâ sırâtıkel-müstakîm, salla'llâhu aleyhi ve alâ âlihî ve ashâbihî hakka kadrihî ve mikdârihil-azîm.",
+"Allahümme salli alâ seyyidinâ Muhammedin abdike ve nebiyyike ve resûlikin-nebiyyil-ümmiyyi, ve alâ âlihî ve sahbihî ve sellim teslîmâ.",
+"Sallallâhu alâ Muhammed, sallallâhu aleyhi ve sellem. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihî ve sahbihî adede mâ ehâta bihî ilmüke, ve hattâ tekûne salâtün mines-salavât.",
+"Bu salavât-ı şerifeleri kalp huzuruyla, mümkünse yüzünü kıbleye çevirip tekrar tekrar okumak; her tekrarında Efendimizin nurunu ve şefaatini niyaz etmek edeptendir.",
+"Sübhâne Rabbike Rabbil-izzeti ammâ yasifûn, ve selâmün alel-murselîn, vel-hamdü lillâhi Rabbil-âlemîn. El-Fâtiha."
+];
+const DH={queue:[],qi:0,playing:false,paused:false,watch:null};
+let DHLASTPI=-1;
+function dhBuild(){
+  $('#dhText').innerHTML=DELAIL_P.map((p,i)=>'<p class="tvP" data-i="'+i+'">'+p+'</p>').join('');
+  $('#dhProg').textContent='Bölüm 0/'+DELAIL_P.length;
+}
+function dhSplit(p){
+  const out=[]; let buf='';
+  p.split(/([.!?]\s+)/).forEach(s=>{
+    if(!s)return;
+    if((buf+s).length>170){ if(buf.trim())out.push(buf.trim()); buf=s; }
+    else buf+=s;
+  });
+  if(buf.trim())out.push(buf.trim());
+  return out.length?out:[p];
+}
+function dhQueue(){
+  DH.queue=[];
+  DELAIL_P.forEach((p,pi)=>dhSplit(p).forEach(t=>DH.queue.push({pi,text:t})));
+}
+function dhHi(pi){
+  $$('#dhText .tvP').forEach(el=>el.classList.toggle('on',+el.dataset.i===pi));
+  $('#dhProg').textContent='Bölüm '+(pi+1)+'/'+DELAIL_P.length;
+  if(pi!==DHLASTPI){
+    DHLASTPI=pi;
+    const el=$('#dhText .tvP.on');
+    if(el)el.scrollIntoView({block:'center',behavior:'smooth'});
+  }
+}
+function dhClearWatch(){ if(DH.watch){clearTimeout(DH.watch);DH.watch=null;} }
+function dhArm(text){
+  dhClearWatch();
+  const base=(text.length*90)/Math.max(.5,SPK.rate);
+  const est=Math.min(16000,Math.max(3000,base))+3500;
+  DH.watch=setTimeout(()=>{
+    try{speechSynthesis.cancel()}catch(e){}
+    if(DH.playing&&!DH.paused){DH.qi++;dhNext();}
+  },est);
+}
+function dhNext(){
+  if(!DH.playing||DH.paused)return;
+  if(DH.qi>=DH.queue.length){dhClearWatch();dhStop(true);return;}
+  const it=DH.queue[DH.qi];
+  dhHi(it.pi);
+  try{speechSynthesis.cancel()}catch(e){}
+  setTimeout(()=>{
+    if(!DH.playing||DH.paused)return;
+    try{
+      let vv=SPK.voice;
+      if(vv){
+        const all=speechSynthesis.getVoices();
+        if(!all.includes(vv))vv=SPK.voice=all.find(x=>x.name===vv.name&&x.lang===vv.lang)||null;
+      }
+      const u=new SpeechSynthesisUtterance(it.text);
+      u.lang='tr-TR'; u.rate=SPK.rate; u.pitch=.9;
+      if(vv)u.voice=vv;
+      u.onend=()=>{ dhClearWatch(); if(DH.playing&&!DH.paused){DH.qi++;dhNext();} };
+      u.onerror=()=>{ dhClearWatch(); if(DH.playing&&!DH.paused){DH.qi++;dhNext();} };
+      dhArm(it.text);
+      speechSynthesis.speak(u);
+    }catch(e){
+      dhClearWatch();
+      if(DH.playing&&!DH.paused){DH.qi++;setTimeout(dhNext,150);}
+    }
+  },60);
+}
+function dhPlay(){
+  if(!('speechSynthesis' in window)){$('#dhProg').textContent='Cihazda seslendirme yok';return;}
+  if(!SPK.list.length){$('#dhProg').textContent='Türkçe ses bulunamadı';return;}
+  tovbeStop();
+  if(DH.paused){
+    DH.paused=false; DH.playing=true;
+    $('#dhPlay').textContent='⏸ Duraklat';
+    try{ if(speechSynthesis.paused)speechSynthesis.resume(); }catch(e){}
+    setTimeout(()=>{ if(DH.playing&&!DH.paused&&!speechSynthesis.speaking)dhNext(); },300);
+    return;
+  }
+  if(DH.playing)return;
+  if(!DH.queue.length)dhQueue();
+  window.__dhPlaying=true; DH.playing=true; DH.paused=false;
+  try{speechSynthesis.cancel()}catch(e){}
+  ac();
+  if(window.SesCapa)SesCapa.start({title:'Delâil-ül Hayrât',
+    onPause:()=>dhPause(), onPlay:()=>dhPlay(), onStop:()=>dhStop()});
+  $('#dhPlay').textContent='⏸ Duraklat';
+  dhNext();
+}
+function dhPause(){
+  if(!DH.playing)return;
+  DH.paused=true;
+  dhClearWatch();
+  try{speechSynthesis.pause()}catch(e){}
+  $('#dhPlay').textContent='▶ Sürdür';
+}
+function dhStop(finished){
+  DH.playing=false; DH.paused=false; window.__dhPlaying=false;
+  dhClearWatch(); DHLASTPI=-1;
+  try{speechSynthesis.cancel()}catch(e){}
+  $('#dhPlay').textContent='▶ Oku';
+  if(finished){
+    $('#dhProg').textContent='Tamamlandı ✦';
+    LOG.push({t:Date.now(),dur:Math.max(60,DH.qi*6),detail:'🕌 Delâil-ül Hayrât okundu ✦'});
+    try{navigator.vibrate&&navigator.vibrate([90,60,90,60,180])}catch(e){}
+    DH.qi=0;
+    $$('#dhText .tvP').forEach(el=>el.classList.remove('on'));
+  }else{
+    $('#dhProg').textContent='Bölüm '+(DH.queue.length?Math.min(DH.qi+1,DELAIL_P.length):0)+'/'+DELAIL_P.length;
+  }
+}
+function dhInit(){
+  dhBuild();
+  $('#dhPlay').onclick=()=>{ if(DH.playing&&!DH.paused)dhPause(); else dhPlay(); };
+  $('#dhStop').onclick=()=>{DH.qi=0;dhStop(false);$$('#dhText .tvP').forEach(el=>el.classList.remove('on'));$('#dhProg').textContent='Bölüm 0/'+DELAIL_P.length;};
+  $('#dhText').addEventListener('click',e=>{
+    const p=e.target.closest('.tvP'); if(!p)return;
+    const pi=+p.dataset.i;
+    if(!DH.queue.length)dhQueue();
+    const qi=DH.queue.findIndex(x=>x.pi===pi);
+    DH.qi=qi<0?0:qi;
+    DH.paused=false;
+    if(DH.playing)dhNext(); else dhPlay();
+  });
+}
+function dhResumeCheck(){
+  if(DH.playing&&!DH.paused)
+    setTimeout(()=>{ if(DH.playing&&!DH.paused&&!speechSynthesis.speaking&&!speechSynthesis.pending)dhNext(); },350);
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')dhResumeCheck(); });
+window.addEventListener('focus',dhResumeCheck);
+window.addEventListener('pageshow',dhResumeCheck);
+
+/* ════ Önbellek temizleme ════ */
+$('#cacheBtn').onclick=()=>{
+  const ok1=confirm('⚠ TÜM UYGULAMA VERİLERİ SİLİNECEK\\n\\nAyarlar, günlük, vird, hatim/letâif ilerlemesi, rutinler, kayıtlı sesin ve kişisel frekans setlerin kalıcı olarak silinecek. Bu işlem GERİ ALINAMAZ.\\n\\nÖnce "⇪ Tam yedek indir" ile yedek almanı öneririz. Yine de devam edilsin mi?');
+  if(!ok1)return;
+  if(!confirm('Son onay: gerçekten tüm veriler silinsin mi?'))return;
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i); if(k&&k.indexOf('sukun.')===0)keys.push(k);}
+  keys.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  alert('Önbellek temizlendi ✦ sayfa yenileniyor');
+  location.reload();
+};
 
 /* ── Ledün Lab — otokorelasyonla perde bulucu ── */
 const PIT={st:null,ana:null,buf:null,small:null,run:false,hz:0,segs:[],cur:[],sil:0,fr:0};
@@ -3005,6 +3213,60 @@ $('#tkList').addEventListener('click',e=>{
   setTimeout(()=>$('#temaSheet').hidden=true,180);
 });
 
+/* ════ 6h) v1.7 — YARDIM BALONLARI: Frekans Sistemleri Rehberi ════ */
+const Q_HINTS={
+ mode:"<b>Binaural</b>: kulağa göre iki farklı ton; yalnızca kulaklıkla işler. <b>İzokronik</b>: tek ton, vuruş hızında yanıp söner; hoparlörde de işler. <b>Karma</b>: ikisi birden. <b>Monaural</b>: iki ton tek kanalda karışır — hoparlörde binauralden etkilidir.",
+ carrier:"Taşıyıcı, kulağına gelen asıl ton (Hz) — sadece 'perde'dir. Asıl etkiyi <b>vuruş</b> belirler; taşıyıcıyı yalnızca hoş gelen bir yere ayarlaman yeterli.",
+ beat:"Vuruş (Hz), hedeflenen beyin dalgası hızıdır — bandını (Delta…Gama) bu belirler. Düşük vuruş sakinliğe, yüksek vuruş uyanıklığa doğru gider.",
+ band:"<b>Delta</b> derin uyku/trans · <b>Theta</b> meditasyon · <b>Alfa</b> sakin uyanıklık · <b>Beta</b> odaklanma · <b>Gama</b> yüksek farkındalık. Çipe dokunmak vuruşu o bandın tipik değerine ayarlar.",
+ solfej:"Bu sayılar geleneksel 'solfej' frekanslarıdır; kadim metinlerde her birine farklı anlam yüklenir. Bilimsel dayanağı tartışmalıdır — taşıyıcı için hoş bir başlangıç noktası olarak düşün.",
+ fr2:"Monroe tarzı çift katman: birinci katman bir bandı, ikinci katman başka bir bandı aynı anda hedefler. Deneyimli kullanım içindir; ilk denemede kafa karıştırıcı gelebilir.",
+ pink:"Pembe gürültü, vuruşu daha net fark etmeni sağlayan hafif bir 'zemin'dir — özellikle hoparlörde ya da gürültülü ortamda işe yarar.",
+ ave:"Ekranın vuruş hızında yanıp sönmesi — görme yoluyla da eşlemeyi hedefler, etkisi güçlü hissedilebilir. ⚠ Epilepsi/ışığa duyarlılığın varsa asla kullanma.",
+ presets:"Taşıyıcı + vuruş + modu tek dokunuşla kuran hazır bileşimler. Alt yazı hangi bandı hedeflediğini gösterir.",
+ journey:"Sabit vuruş yerine dakikalar içinde bir banttan diğerine yumuşak geçiş yapan uzun seans — inişi/çıkışı sen tasarlarsın.",
+ ledun:"Mikrofonla herhangi bir sesin Hz cinsinden perdesini ölçer; bulduğun değeri taşıyıcı yapabilir ya da kendi setine kaydedebilirsin."
+};
+const HELP={on:S.get('sukun.help',false)};
+let qOpenKey=null;
+function qPos(){
+  if(!qOpenKey)return;
+  const badge=document.querySelector('.qb[data-h="'+qOpenKey+'"]');
+  const b=$('#qBubble'); if(!badge||!b)return;
+  const r=badge.getBoundingClientRect(), bw=b.offsetWidth, bh=b.offsetHeight, vw=innerWidth, vh=innerHeight;
+  const left=clamp(r.left+r.width/2-bw/2,10,Math.max(10,vw-10-bw));
+  const below=(r.bottom+bh+14<=vh);
+  const top=below?r.bottom+10:r.top-bh-10;
+  b.style.left=left+'px'; b.style.top=Math.max(8,top)+'px';
+  b.classList.toggle('below',below); b.classList.toggle('above',!below);
+  const ax=clamp(r.left+r.width/2-left-5.5,12,Math.max(12,bw-22));
+  const ar=$('#qArrow'); if(ar)ar.style.left=ax+'px';
+}
+function qClose(){ qOpenKey=null; $('#qBubble').classList.remove('show'); }
+function qOpen(key,badge){
+  if(qOpenKey===key){qClose();return;}
+  qOpenKey=key;
+  $('#qBubbleText').innerHTML=Q_HINTS[key]||'';
+  const b=$('#qBubble'); b.style.visibility='hidden'; b.classList.add('show');
+  requestAnimationFrame(()=>{ qPos(); b.style.visibility=''; });
+}
+document.addEventListener('click',e=>{
+  const badge=e.target.closest('.qb');
+  if(badge){ e.preventDefault(); e.stopPropagation(); qOpen(badge.dataset.h,badge); return; }
+  if(qOpenKey&&!e.target.closest('#qBubble'))qClose();
+});
+addEventListener('scroll',()=>{if(qOpenKey)qClose();},{passive:true});
+addEventListener('resize',()=>{if(qOpenKey)qPos();});
+function helpApply(on){
+  HELP.on=on; S.set('sukun.help',on);
+  document.body.classList.toggle('helpOn',on);
+  $('#helpTgl').classList.toggle('on',on);
+  if(!on)qClose();
+}
+$('#helpTgl').onclick=()=>helpApply(!HELP.on);
+$('#guideBtn').onclick=()=>{$('#helpSheet').hidden=false;};
+$('#helpClose').onclick=()=>$('#helpSheet').hidden=true;
+
 /* ── Sarmalayıcılar ── */
 const _frStartL=frStart; frStart=()=>{_frStartL(); if(FR2.on)fr2Start();};
 const _frStopL=frStop;   frStop=()=>{_frStopL(); fr2Stop();};
@@ -3057,6 +3319,8 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   tagLvl(); applyUI(UIM.m);
   applyTema(S.get('sukun.tema','zumrut'));
   tovbeInit();
+  dhInit();
+  helpApply(HELP.on);
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
 })();
