@@ -613,6 +613,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div class="opt"><span>🥁 Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir"></button></div>
         <div class="opt"><span>🔊 Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak"></button></div>
         <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice"></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto"></div>
+        <div class="opt" style="margin-top:8px"><span id="arStat">🕌 Arapça ses aranıyor…</span><button class="sw" id="arTgl" aria-label="Arapça telaffuzu tercih et"></button></div>
+        <div id="arNote" style="font-size:9.5px;color:var(--dim);margin-top:5px;line-height:1.6"></div>
       </div>
 
       <button class="tapBtn" id="tapBtn">SAYMAK İÇİN DOKUN ✦</button>
@@ -1773,7 +1775,7 @@ function saveSettings(){
     mv:+$('#masterVol').value,
     fr:{c:FR.c,b:FR.b,vol:FR.vol,mode:FR.mode,pink:FR.pink},
     x2:{on:FR2.on,c:FR2.c,b:FR2.b},
-    opt2:{bendir:BENDIR,aveInt:AVE.int,vhVol:VH.vol,vhL:VH.layers,spkOn:SPK.on,spkRate:SPK.rate},
+    opt2:{bendir:BENDIR,aveInt:AVE.int,vhVol:VH.vol,vhL:VH.layers,spkOn:SPK.on,spkRate:SPK.rate,arOn:SPK.arOn},
     z:{target:Z.target,tempo:Z.tempo,tick:Z.tick,vib:Z.vib,mean:Z.mean,adv:Z.adv,form:Z.form}
   });
 }
@@ -1800,7 +1802,7 @@ function loadSettings(){
     $('#aveInt').value=AVE.int; $('#aveIntV').textContent='%'+Math.round(AVE.int*100);
     VH.vol=+s.opt2.vhVol||VH.vol; VH.layers=+s.opt2.vhL||VH.layers;
     $('#vhVol').value=VH.vol; $('#vhLayers').value=String(VH.layers);
-    SPK.on=!!s.opt2.spkOn; SPK.rate=+s.opt2.spkRate||SPK.rate;
+    SPK.on=!!s.opt2.spkOn; SPK.rate=+s.opt2.spkRate||SPK.rate; SPK.arOn=s.opt2.arOn!==false;
   }
   if(s.z)Object.assign(Z,s.z);
 }
@@ -2755,33 +2757,57 @@ function tevhid99(){
 }
 
 /* ── Sesli zikir — cihazın Türkçe sesiyle ── */
-const SPK={on:false,rate:.85,voice:null,list:[]};
+const SPK={on:false,rate:.85,voice:null,list:[],arOn:true,arVoice:null,arList:[]};
 function spkVoices(){
   if(!('speechSynthesis' in window))return;
-  SPK.list=speechSynthesis.getVoices().filter(v=>/^tr/i.test(v.lang));
+  const all=speechSynthesis.getVoices();
+  SPK.list=all.filter(v=>/^tr/i.test(v.lang));
+  SPK.arList=all.filter(v=>/^ar/i.test(v.lang));
   const sel=$('#spkVoice');
   sel.innerHTML=SPK.list.length
     ?SPK.list.map((v,i)=>'<option value="'+i+'">'+v.name+'</option>').join('')
     :'<option value="-1">Türkçe ses bulunamadı</option>';
   if(SPK.list.length&&!SPK.voice)SPK.voice=SPK.list[0];
+  if(SPK.arList.length&&!SPK.arVoice)SPK.arVoice=SPK.arList[0];
+  arStatusUI();
+}
+function arStatusUI(){
+  const st=$('#arStat'), nt=$('#arNote'); if(!st)return;
+  if(SPK.arList.length){
+    st.textContent='🕌 Arapça ses bulundu — '+SPK.arVoice.name+' ('+SPK.arList.length+' ses arasından)';
+    nt.textContent='Açıkken Esmâ ve zikirler bu Arapça sesle, Arap harfli metinden okunur — Türkçe transkripsiyondan çok daha doğru telaffuz edilir.';
+  }else{
+    st.textContent='🕌 Arapça ses bulunamadı';
+    nt.textContent='Cihazına eklemek için: Ayarlar → Sistem → Diller ve girdi → Metinden konuşmaya → (motor) ayarları → Ses verisi yükle → Arapça. Bulunana dek zikirler Türkçe transkripsiyonla okunur.';
+  }
 }
 if('speechSynthesis' in window){
   spkVoices();
   speechSynthesis.onvoiceschanged=spkVoices;
 }
-function spkSay(txt,interrupt){
+function spkSay(txt,interrupt,lang,voice){
   if(!('speechSynthesis' in window)||!txt)return;
   if((window.__tvPlaying||window.__dhPlaying)&&!interrupt)return;
   try{
     if(interrupt)speechSynthesis.cancel();
     else if(speechSynthesis.speaking)return;   /* üst üste bindirme */
     const u=new SpeechSynthesisUtterance(txt);
-    u.lang='tr-TR'; u.rate=SPK.rate; u.pitch=.9;
-    if(SPK.voice)u.voice=SPK.voice;
+    u.lang=lang||'tr-TR'; u.rate=SPK.rate; u.pitch=.9;
+    const v=voice!==undefined?voice:SPK.voice; if(v)u.voice=v;
     speechSynthesis.speak(u);
   }catch(e){}
 }
-$('#spkOnce').onclick=()=>spkSay($('#zTr').textContent,true);
+/* Zikri konuşurken: Arapça ses bulunduysa ve tercih açıksa Arap harfli metni Arapça sesle,
+   yoksa mevcut Türkçe transkripsiyonu Türkçe sesle okur. */
+function spkSayZikir(interrupt){
+  if(SPK.arOn&&SPK.arVoice){
+    const ar=$('#zAr').textContent;
+    if(ar){spkSay(ar,interrupt,SPK.arVoice.lang,SPK.arVoice);return;}
+  }
+  spkSay($('#zTr').textContent,interrupt,'tr-TR',SPK.voice);
+}
+$('#spkOnce').onclick=()=>spkSayZikir(true);
+$('#arTgl').onclick=()=>{SPK.arOn=!SPK.arOn;$('#arTgl').classList.toggle('on',SPK.arOn);saveSettings();};
 $('#optSpeak').onclick=()=>{
   SPK.on=!SPK.on;
   $('#optSpeak').classList.toggle('on',SPK.on);
@@ -2793,6 +2819,8 @@ $('#spkRate').addEventListener('input',e=>{SPK.rate=+e.target.value;setFill(e.ta
 function spkInit(){
   $('#optSpeak').classList.toggle('on',SPK.on);
   $('#spkRate').value=SPK.rate; setFill($('#spkRate'));
+  $('#arTgl').classList.toggle('on',SPK.arOn);
+  arStatusUI();
 }
 
 /* ════ Nasuh Tövbesi — sesli okuma ════ */
@@ -3239,7 +3267,7 @@ $('#uiBtn').onclick=()=>applyUI(UIM.m==='mini'?'midi':UIM.m==='midi'?'pro':'mini
 const _repS=rep;
 rep=()=>{
   _repS();
-  if(SPK.on)spkSay($('#zTr').textContent,false);
+  if(SPK.on)spkSayZikir(false);
 };
 
 /* ════ 6g) v1.6 — TEMA MOTORU (5 kimlik) ════ */
