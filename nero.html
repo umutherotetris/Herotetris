@@ -8,6 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href='data:application/manifest+json,{"name":"S%C3%9CK%C3%9BN Birle%C5%9Fik","short_name":"S%C3%9CK%C3%9BN","start_url":".","display":"standalone","background_color":"%230a1a16","theme_color":"%23c9a227"}'>
 <meta name="theme-color" content="#07110e">
 <meta name="description" content="Tasavvufî frekans üreticisi, ambiyans mikseri ve zikir terapisi">
 <title>SÜKÛN ۞ Birleşik — Frekans · Zikir · Tekke · NeuroSync</title>
@@ -238,6 +239,40 @@ section[hidden]{display:none}
 .zEb{margin-top:9px;font-size:10.5px;color:var(--gold);letter-spacing:.12em;position:relative;text-transform:uppercase}
 .ebBtn{background:rgba(201,162,39,.1);border:1px solid var(--line2);color:var(--goldh);border-radius:9px;padding:7px 11px;font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
 .ebBtn:active{transform:scale(.96)}
+#modeSeg button{font-size:11.5px;padding-left:2px;padding-right:2px}
+.jEd{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.02)}
+.jEd summary{cursor:pointer;font-size:12.5px;color:var(--goldh);letter-spacing:.04em}
+.jRow{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:11px;color:var(--dim)}
+.jRow select,.jRow input{background:rgba(6,20,18,.6);border:1px solid var(--line);border-radius:9px;padding:8px;color:var(--ink);font:inherit;font-size:12px}
+.jRow select{flex:1;min-width:0}
+.jRow input{width:58px;text-align:center}
+.jRow .x{border:1px solid var(--line);background:none;color:var(--dim);border-radius:8px;width:30px;height:34px;cursor:pointer;flex:none}
+#logBtn{font-size:15px}
+#rateToast{position:fixed;left:12px;right:12px;bottom:14px;z-index:900;background:rgba(10,26,22,.96);border:1px solid var(--line2);border-radius:14px;padding:12px 14px;font-size:12.5px;color:var(--ink);backdrop-filter:blur(10px);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.rateRow{display:flex;gap:7px;margin-top:9px;justify-content:center;flex-wrap:wrap}
+.rateRow button{font-size:12px;background:none;border:1px solid var(--line);border-radius:10px;min-width:44px;height:40px;color:var(--gold);cursor:pointer}
+.rateRow button:active{transform:scale(.92)}
+#logSheet{position:fixed;inset:auto 0 0 0;max-height:70vh;overflow-y:auto;z-index:950;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom))}
+.lsHead{display:flex;align-items:center;gap:10px;margin-bottom:8px;color:var(--goldh)}
+.lsHead span{margin-left:auto;font-size:10.5px;color:var(--dim)}
+.lsHead button{background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;width:30px;height:30px;cursor:pointer}
+.lsItem{display:flex;gap:9px;align-items:baseline;font-size:11.5px;color:var(--mut);padding:8px 2px;border-bottom:1px dashed var(--line)}
+.lsItem b{color:var(--ink);font-weight:600;flex:none}
+.lsItem .m{margin-left:auto;color:var(--gold);white-space:nowrap;flex:none}
+.lsIns{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:9px}
+.lsIns b{color:var(--goldh)}
+.lsBars{display:flex;gap:7px;align-items:flex-end;height:56px;margin:2px 2px 12px;padding:0 2px}
+.lsBars .lb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+.lsBars .lb i{display:block;width:100%;min-height:2px;background:linear-gradient(180deg,var(--goldh),var(--gold));border-radius:3px 3px 0 0;opacity:.85}
+.lsBars .lb s{text-decoration:none;font-size:8.5px;color:var(--dim)}
+#virdBar{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);background:rgba(201,162,39,.07);border-radius:12px;padding:9px 12px;margin:2px 0 10px;font-size:12px;color:var(--ink)}
+#virdBar .btn{margin-left:auto;flex:none;padding:7px 12px}
+#virdBar.done{border-color:rgba(80,190,130,.45);background:rgba(40,120,80,.12)}
+#recBtn{font-size:13px}
+#recBtn.rec,#vhRec.rec{color:#ff7a76;border-color:#ff7a76;animation:recBlink 1.1s ease infinite}
+@keyframes recBlink{50%{opacity:.45}}
+#aveOv{position:fixed;inset:0;z-index:800;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 42%,#f6e7b4 0%,#cfa92e 65%,#8a7018 100%)}
+#bgEbru{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.55;pointer-events:none}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -251,6 +286,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 </style>
 </head>
 <body>
+<canvas id="bgEbru" aria-hidden="true"></canvas>
 <div class="wrap">
 
   <!-- ═══ BAŞLIK ═══ -->
@@ -272,6 +308,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <option value="30">30 dk</option>
       <option value="60">60 dk</option>
     </select>
+    <button class="btn" id="recBtn" title="Seansı kaydet (.webm indirir)">⏺</button>
+    <button class="btn" id="logBtn" title="Seans günlüğü">📓</button>
     <button class="btn danger" id="stopAll">■</button>
   </div>
 
@@ -305,7 +343,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <div class="seg" id="modeSeg">
         <button data-m="bin" class="act">Binaural</button>
         <button data-m="iso">İzokronik</button>
-        <button data-m="mix">Karma</button>
+        <button data-m="mix">Karma</button><button data-m="mono">Monaural</button>
       </div>
 
       <div class="sldRow">
@@ -326,6 +364,11 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <div class="chipLbl">TAŞIYICI • SOLFEJ FREKANSLARI (Hz)</div>
       <div class="bandChips wrapChips" id="carChips"></div>
       <div class="lrLine" id="lrInfo"></div>
+      <div class="zOpts" style="margin-top:10px">
+        <div class="opt"><span>🌫 Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir</span><button class="sw" id="pinkTgl" aria-label="Pembe gürültü yastığı"></button></div>
+        <div class="opt"><span>⚡ Fotik uyarım — ekran vuruşla parlar · <b style="color:#e0908f">epilepsi uyarısı</b></span><button class="sw" id="aveTgl"></button></div>
+      </div>
+      <div class="sldRow"><label for="aveInt">Işık şiddeti</label><input type="range" id="aveInt" min="0.05" max="0.5" step="0.01" value="0.18"><span class="valB" id="aveIntV">%18</span></div>
       <div class="sldRow">
         <label for="frVol">Şiddet</label>
         <input type="range" id="frVol" min="0" max="1" step="0.01" value="0.5">
@@ -346,10 +389,33 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
     <h3 class="secT">Hazır Setler</h3>
     <div class="presetGrid" id="presets"></div>
+    <details class="jEd" id="jEd">
+      <summary>🜂 Kendi yolculuğunu kur — aşama aşama beyin dalgası rotası</summary>
+      <div id="jRows"></div>
+      <div class="zBtns" style="margin-top:8px">
+        <button class="btn" id="jAdd">+ Aşama</button>
+        <button class="btn" id="jRun">▶ Yolculuğu başlat</button>
+      </div>
+    </details>
+    <div class="zBtns" style="margin-top:10px">
+      <button class="btn" id="expBtn">⇪ Ayarları dışa aktar</button>
+      <button class="btn" id="impBtn">⇩ İçe aktar</button>
+    </div>
+    <details class="jEd" id="fr2Box">
+      <summary>〰 İkinci binaural katman — aynı anda çift frekans (kulaklık)</summary>
+      <div class="opt" style="margin-top:8px"><span>Katmanı etkinleştir — ana frekansla birlikte çalar</span><button class="sw" id="fr2Tgl"></button></div>
+      <div class="sldRow"><label for="fr2Car">Taşıyıcı 2</label><input type="range" id="fr2Car" min="60" max="963" step="0.1" value="100"><span class="valB" id="fr2CarV">100.0 Hz</span></div>
+      <div class="sldRow"><label for="fr2Beat">Vuruş 2</label><input type="range" id="fr2Beat" min="0.5" max="40" step="0.01" value="2.5"><span class="valB" id="fr2BeatV">2.50 Hz</span></div>
+    </details>
   </section>
 
   <!-- ═══════════ SEKME 3: ZİKİR ═══════════ -->
   <section id="tab-zkr" hidden>
+    <div id="virdBar"><span id="virdTxt"></span><button class="btn" id="virdGo">Başla</button></div>
+    <details class="jEd" id="virdBox" style="margin:0 0 10px">
+      <summary>📅 Vird programı — haftanın esmâları</summary>
+      <div id="virdRows"></div>
+    </details>
     <div class="catRow" id="zCats"></div>
     <div class="zTools">
       <div class="seg" id="formSeg">
@@ -414,6 +480,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div class="opt"><span>📳 Titreşim</span><button class="sw on" id="optVib"></button></div>
         <div class="opt"><span>📖 Anlamı göster</span><button class="sw on" id="optMean"></button></div>
         <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv"></button></div>
+        <div class="opt"><span>🥁 Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir"></button></div>
       </div>
 
       <button class="tapBtn" id="tapBtn">SAYMAK İÇİN DOKUN ✦</button>
@@ -421,6 +488,18 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <button class="btn" id="autoBtn">▶ Otomatik Akış</button>
         <button class="btn" id="resetBtn">↺ Sıfırla</button>
       </div>
+      <details class="jEd" id="vhBox" style="margin-top:10px">
+        <summary>🎙 Kendi sesinle zikir halkası</summary>
+        <div class="zBtns" style="margin-top:8px">
+          <button class="btn" id="vhRec">⏺ Sesini kaydet</button>
+          <button class="btn" id="vhPlay">▶ Halkayı başlat</button>
+        </div>
+        <div class="jRow"><b style="flex:none;color:var(--mut)">Katman</b>
+          <select id="vhLayers"><option value="3">3 ses</option><option value="5" selected>5 ses</option><option value="7">7 ses</option></select>
+          <input type="range" id="vhVol" min="0" max="1" step="0.01" value="0.6" style="flex:1;width:auto">
+        </div>
+        <div id="vhStat" style="font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.6">Kısa bir «Hû» ya da esmâ kaydet (3–6 sn); 3-7 kopya hafif detune ve pan ile halkaya dönüşür. Ses cihazından dışarı çıkmaz.</div>
+      </details>
       <button class="btn" id="tekkeBtn" style="width:100%;margin-top:8px">۞ Bu zikri Tekke'de çek — katre &amp; haptik seyri</button>
       <div class="statLine">Bu cihazda toplam zikir: <b id="totalCnt">0</b> ✦</div>
     </div>
@@ -430,6 +509,18 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
     SÜKÛN v1.0 — kalp huzuru niyetiyle ✦
   </footer>
+</div>
+<div id="aveOv" hidden></div>
+<div id="rateToast" hidden>
+  <div>Seans günlüğe işlendi ✦ nasıl hissettin?</div>
+  <div class="rateRow" id="rateRow"></div>
+</div>
+<div id="logSheet" hidden>
+  <div class="lsHead"><b>📓 Seans Günlüğü</b><span id="ls7"></span><button id="lsClose">✕</button></div>
+  <div class="lsIns" id="lsInsight"></div>
+  <div class="lsBars" id="lsBars"></div>
+  <div id="lsList"></div>
+  <button class="btn" id="lsClear" style="width:100%;margin-top:10px">Günlüğü temizle</button>
 </div>
 <script>
 'use strict';
@@ -464,10 +555,50 @@ function ac(){
     wetIn=ctx.createGain(); wetIn.gain.value=1;
     const conv=ctx.createConvolver(); conv.buffer=makeIR(2.8,2.5);
     wetIn.connect(conv); conv.connect(master);
+    SesCapa.start({title:'SÜKÛN — Frekans & Zikir',
+      onPause:()=>ctx&&ctx.suspend(),
+      onPlay:()=>ctx&&ctx.resume(),
+      onStop:()=>hardStopAll()});
   }
   if(ctx.state==='suspended') ctx.resume();
   return ctx;
 }
+/* ── Ortak ses omurgası + kilit ekranında canlı kalma (MediaSession) ── */
+window.SUKUN={ctx:()=>{ac();return ctx;}};
+const SesCapa=window.SesCapa=(function(){
+  let a=null,cb={};
+  function el(){
+    if(a)return a;
+    a=document.createElement('audio');
+    a.loop=true; a.setAttribute('playsinline','');
+    a.src='data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YUAGAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
+    a.volume=.01;
+    document.body.appendChild(a);
+    return a;
+  }
+  function start(o){
+    cb=o||{};
+    el().play().catch(()=>{});
+    if('mediaSession' in navigator){
+      try{
+        navigator.mediaSession.metadata=new MediaMetadata({
+          title:cb.title||'SÜKÛN ۞',artist:'Tasavvufî Ses Terapisi',album:'SÜKÛN Birleşik'});
+        navigator.mediaSession.playbackState='playing';
+        navigator.mediaSession.setActionHandler('play',()=>{el().play().catch(()=>{});cb.onPlay&&cb.onPlay();navigator.mediaSession.playbackState='playing';});
+        navigator.mediaSession.setActionHandler('pause',()=>{cb.onPause&&cb.onPause();navigator.mediaSession.playbackState='paused';});
+        navigator.mediaSession.setActionHandler('stop',()=>{cb.onStop&&cb.onStop();stop();});
+      }catch(e){}
+    }
+  }
+  function retitle(t){
+    try{if('mediaSession' in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'Tasavvufî Ses Terapisi',album:'SÜKÛN Birleşik'});}catch(e){}
+  }
+  function stop(){
+    try{a&&a.pause()}catch(e){}
+    try{navigator.mediaSession.playbackState='none'}catch(e){}
+  }
+  return{start,retitle,stop};
+})();
 function makeIR(dur,decay){
   const sr=ctx.sampleRate, len=Math.floor(sr*dur), buf=ctx.createBuffer(2,len,sr);
   for(let c=0;c<2;c++){const d=buf.getChannelData(c);
@@ -684,6 +815,45 @@ const AMBIENT_DEFS=[
       w.start(t,rnd(0,1.5)); w.stop(t+3.6); wash();
     },rnd(6500,14000));
   })();
+}},
+{id:'storm',icon:'⛈',name:'Fırtına',desc:'sağanak, uzak gök gürlemesi',cal:1,wet:.35,build:(E,out)=>{
+  const r=E.play(src('white')), hp=E.n(flt('highpass',700)), lp=E.n(flt('lowpass',6500)), b=E.n(g(.2));
+  r.connect(hp); hp.connect(lp); lp.connect(b); b.connect(out);
+  (function thunder(){
+    E.later(()=>{
+      const t=ctx.currentTime;
+      const c=ctx.createBufferSource(); c.buffer=NOISE.get('white');
+      const cb=flt('bandpass',rnd(900,1600),2), cg=g(0);
+      c.connect(cb); cb.connect(cg); cg.connect(out);
+      cg.gain.setValueAtTime(0,t);
+      cg.gain.linearRampToValueAtTime(rnd(.12,.22),t+.02);
+      cg.gain.exponentialRampToValueAtTime(.0001,t+rnd(.25,.5));
+      c.start(t,rnd(0,1)); c.stop(t+.7);
+      const n=ctx.createBufferSource(); n.buffer=NOISE.get('brown');
+      const f=flt('lowpass',rnd(85,170),1.4), ng=g(0);
+      n.connect(f); f.connect(ng); ng.connect(out);
+      ng.gain.setValueAtTime(0,t+.05);
+      ng.gain.linearRampToValueAtTime(rnd(.5,.9),t+rnd(.3,.7));
+      ng.gain.exponentialRampToValueAtTime(.0001,t+rnd(2.2,4));
+      f.frequency.exponentialRampToValueAtTime(55,t+3);
+      n.start(t+.03,rnd(0,1)); n.stop(t+4.3);
+      thunder();
+    },rnd(9000,26000));
+  })();
+}},
+{id:'fire',icon:'🔥',name:'Şömine Ateşi',desc:'kor çıtırtısı, sıcak uğultu',cal:1,wet:.1,build:(E,out)=>{
+  const bed=E.play(src('brown')), bl=E.n(flt('lowpass',190)), bb=E.n(g(.14));
+  bed.connect(bl); bl.connect(bb); bb.connect(out);
+  E.every(()=>{ if(Math.random()<.35)return;
+    const t=ctx.currentTime, d=rnd(.015,.05);
+    const n=ctx.createBufferSource(); n.buffer=NOISE.get('white');
+    const bp=flt('bandpass',rnd(1700,3400),4), cg=g(0);
+    n.connect(bp); bp.connect(cg); cg.connect(out);
+    cg.gain.setValueAtTime(0,t);
+    cg.gain.linearRampToValueAtTime(rnd(.06,.14),t+.004);
+    cg.gain.exponentialRampToValueAtTime(.0001,t+d);
+    n.start(t); n.stop(t+d+.02);
+  },130);
 }}
 ];
 
@@ -745,20 +915,25 @@ function applySession(s){
    İzokronik: taşıyıcı ton, vuruş hızında yumuşatılmış kare
    dalga ile kapılanır (kulaklıksız da çalışır).
    ════════════════════════════════════════════════════════════ */
-const FR={playing:false,mode:'bin',c:180,b:7.83,vol:.5,E:null,out:null,oL:null,oR:null,iso:null,gate:null};
+const FR={playing:false,mode:'bin',c:180,b:7.83,vol:.5,pink:false,E:null,out:null,oL:null,oR:null,iso:null,gate:null};
 
 function frStart(){
   if(FR.playing)return;
   ac();
   const E=makeEnv(); FR.E=E;
   const out=E.n(g(0)); out.connect(master); FR.out=out;
-  if(FR.mode!=='iso'){
+  const M=FR.mode;
+  if(M==='bin'||M==='mix'){
     const mg=E.n(ctx.createChannelMerger(2));
     FR.oL=E.play(osc(FR.c-FR.b/2)); const gl=E.n(g(.5)); FR.oL.connect(gl); gl.connect(mg,0,0);
     FR.oR=E.play(osc(FR.c+FR.b/2)); const gr=E.n(g(.5)); FR.oR.connect(gr); gr.connect(mg,0,1);
-    const bg2=E.n(g(FR.mode==='mix'?.6:1)); mg.connect(bg2); bg2.connect(out);
+    const bg2=E.n(g(M==='mix'?.6:1)); mg.connect(bg2); bg2.connect(out);
+  } else if(M==='mono'){
+    /* Monaural: iki ton tek kanalda toplanır — hoparlörde de fiziksel vuruş üretir */
+    FR.oL=E.play(osc(FR.c-FR.b/2)); FR.oR=E.play(osc(FR.c+FR.b/2));
+    const sm=E.n(g(.42)); FR.oL.connect(sm); FR.oR.connect(sm); sm.connect(out);
   } else { FR.oL=FR.oR=null; }
-  if(FR.mode!=='bin'){
+  if(M==='iso'||M==='mix'){
     FR.iso=E.play(osc(FR.c));
     const ig=E.n(g(0)); ig.gain.value=0;
     const cs=E.play(ctx.createConstantSource()); cs.offset.value=.5; cs.connect(ig.gain);
@@ -769,13 +944,18 @@ function frStart(){
     FR.iso.connect(ig); ig.connect(ig2); ig2.connect(out);
   } else { FR.iso=FR.gate=null; }
   out.gain.setTargetAtTime(FR.vol*.35,ctx.currentTime,.5);
-  FR.playing=true; syncFreqUI();
+  FR.playing=true;
+  if(FR.pink)pinkOn();
+  LOG.touch('frq',bandOf(FR.b)[1]+' '+FR.b.toFixed(2)+' Hz · '+FR.mode);
+  syncFreqUI();
 }
 function frStop(){
   if(!FR.playing)return;
   FR.E.kill(.5,FR.out);
   FR.playing=false; FR.E=null;
+  pinkOff();
   stopJourney(); syncFreqUI();
+  LOG.maybeEnd();
 }
 function frRetune(tau=.15){
   if(!FR.playing)return;
@@ -819,20 +999,21 @@ const JOURNEY=[
 const RAMP=18;
 let jTimers=[], jTick=null, jStageEnd=0, jActive=false;
 
-function startJourney(){
+function startJourney(stages){
+  stages=stages||JOURNEY;
   ac(); stopJourney();
   if(!FR.playing){FR.c=130;FR.b=6;frStart();}
   jActive=true; $('#journeyBox').hidden=false;
   (function step(i){
-    if(i>=JOURNEY.length){
+    if(i>=stages.length){
       $('#jName').textContent='Seyir hâlinde ∞';
       $('#jInfo').textContent='Derin deltada dilediğin kadar kal; bitirmek için frekansı durdur.';
       if(jTick){clearInterval(jTick);jTick=null;}
       return;
     }
-    const st=JOURNEY[i];
+    const st=stages[i];
     frRamp(st.c??FR.c,st.b,RAMP);
-    $('#jName').textContent=(i+1)+'/'+JOURNEY.length+' • '+st.n;
+    $('#jName').textContent=(i+1)+'/'+stages.length+' • '+st.n;
     jStageEnd=Date.now()+(RAMP+st.hold)*1000;
     if(!jTick)jTick=setInterval(()=>{
       const s=Math.max(0,Math.round((jStageEnd-Date.now())/1000));
@@ -1183,6 +1364,8 @@ $('#beatSld').addEventListener('input',e=>{stopJourney();FR.b=+e.target.value;fr
 $('#frVol').addEventListener('input',e=>{
   FR.vol=+e.target.value; setFill(e.target);
   if(FR.playing)FR.out.gain.setTargetAtTime(FR.vol*.35,ctx.currentTime,.15);
+  pinkGain();
+  if(FR2.E)FR2.out.gain.setTargetAtTime(FR.vol*.22,ctx.currentTime,.15);
   $('#frVolVal').textContent='%'+Math.round(FR.vol*100);
   saveSettings();
 });
@@ -1288,7 +1471,9 @@ window.addEventListener('pagehide',()=>S.set('sukun.total',Z.total));
 function saveSettings(){
   S.set('sukun.set',{
     mv:+$('#masterVol').value,
-    fr:{c:FR.c,b:FR.b,vol:FR.vol,mode:FR.mode},
+    fr:{c:FR.c,b:FR.b,vol:FR.vol,mode:FR.mode,pink:FR.pink},
+    x2:{on:FR2.on,c:FR2.c,b:FR2.b},
+    opt2:{bendir:BENDIR,aveInt:AVE.int,vhVol:VH.vol,vhL:VH.layers},
     z:{target:Z.target,tempo:Z.tempo,tick:Z.tick,vib:Z.vib,mean:Z.mean,adv:Z.adv,form:Z.form}
   });
 }
@@ -1299,6 +1484,22 @@ function loadSettings(){
     FR.c=s.fr.c??FR.c; FR.b=s.fr.b??FR.b; FR.vol=s.fr.vol??FR.vol; FR.mode=s.fr.mode??FR.mode;
     $('#frVol').value=FR.vol;
     $$('#modeSeg button').forEach(x=>x.classList.toggle('act',x.dataset.m===FR.mode));
+    FR.pink=!!s.fr.pink;
+    $('#pinkTgl').classList.toggle('on',FR.pink);
+  }
+  if(s.x2){
+    FR2.on=!!s.x2.on; FR2.c=+s.x2.c||FR2.c; FR2.b=+s.x2.b||FR2.b;
+    $('#fr2Tgl').classList.toggle('on',FR2.on);
+    $('#fr2Car').value=FR2.c; $('#fr2Beat').value=FR2.b;
+    $('#fr2CarV').textContent=FR2.c.toFixed(1)+' Hz';
+    $('#fr2BeatV').textContent=FR2.b.toFixed(2)+' Hz';
+  }
+  if(s.opt2){
+    BENDIR=!!s.opt2.bendir; $('#optBendir').classList.toggle('on',BENDIR);
+    AVE.int=+s.opt2.aveInt||AVE.int;
+    $('#aveInt').value=AVE.int; $('#aveIntV').textContent='%'+Math.round(AVE.int*100);
+    VH.vol=+s.opt2.vhVol||VH.vol; VH.layers=+s.opt2.vhL||VH.layers;
+    $('#vhVol').value=VH.vol; $('#vhLayers').value=String(VH.layers);
   }
   if(s.z)Object.assign(Z,s.z);
 }
@@ -1378,6 +1579,521 @@ $('#carChips').addEventListener('click',e=>{
 });
 
 /* ════════════════════════════════════════════════════════════
+   6c) v1.2 — PEMBE YASTIK • YOLCULUK EDİTÖRÜ • GÜNLÜK • AKTAR
+   ════════════════════════════════════════════════════════════ */
+let PINKE=null;
+function pinkOn(){
+  if(PINKE||!FR.pink)return; ac();
+  const E=makeEnv(), out=E.n(g(0)); out.connect(master);
+  const n=E.play(src('pink')), lp=E.n(flt('lowpass',3200));
+  n.connect(lp); lp.connect(out);
+  out.gain.setTargetAtTime(FR.vol*.12,ctx.currentTime,1.2);
+  PINKE={E,out};
+}
+function pinkOff(){ if(!PINKE)return; PINKE.E.kill(.8,PINKE.out); PINKE=null; }
+function pinkGain(){ if(PINKE)PINKE.out.gain.setTargetAtTime(FR.vol*.12,ctx.currentTime,.2); }
+$('#pinkTgl').onclick=()=>{
+  FR.pink=!FR.pink;
+  $('#pinkTgl').classList.toggle('on',FR.pink);
+  if(FR.pink&&FR.playing)pinkOn(); else pinkOff();
+  saveSettings();
+};
+
+const JBANDS=[['delta','Delta 0.5–4',2.5],['theta','Theta 4–8',6],['alpha','Alfa 8–13',10],['beta','Beta 13–30',18],['gamma','Gama 30–40',40]];
+let JED=S.get('sukun.journey',[{k:'theta',min:5},{k:'delta',min:8},{k:'gamma',min:1}]);
+function jRender(){
+  $('#jRows').innerHTML=JED.map((s,i)=>
+   '<div class="jRow" data-i="'+i+'"><select>'+JBANDS.map(b=>'<option value="'+b[0]+'"'+(b[0]===s.k?' selected':'')+'>'+b[1]+' Hz</option>').join('')+
+   '</select><input type="number" min="1" max="45" value="'+s.min+'"><span>dk</span><button class="x" title="Aşamayı sil">✕</button></div>').join('');
+}
+$('#jAdd').onclick=()=>{if(JED.length<8){JED.push({k:'theta',min:5});jRender();S.set('sukun.journey',JED);}};
+$('#jRows').addEventListener('input',e=>{
+  const r=e.target.closest('.jRow'); if(!r)return;
+  const i=+r.dataset.i;
+  JED[i].k=r.querySelector('select').value;
+  JED[i].min=clamp(+r.querySelector('input').value||1,1,45);
+  S.set('sukun.journey',JED);
+});
+$('#jRows').addEventListener('click',e=>{
+  if(!e.target.classList.contains('x'))return;
+  const i=+e.target.closest('.jRow').dataset.i;
+  if(JED.length>1){JED.splice(i,1);jRender();S.set('sukun.journey',JED);}
+});
+$('#jRun').onclick=()=>{
+  startJourney(JED.map((s,i)=>{
+    const b=JBANDS.find(x=>x[0]===s.k);
+    return {n:'Aşama '+(i+1)+' • '+b[1].split(' ')[0], b:b[2], hold:s.min*60};
+  }));
+};
+
+$('#expBtn').onclick=async()=>{
+  const cfg={v:1,fr:{c:FR.c,b:FR.b,mode:FR.mode,vol:FR.vol,pink:FR.pink},
+    amb:Object.fromEntries(Object.keys(AMB).map(id=>[id,chVol[id]])),
+    journey:JED};
+  const txt=JSON.stringify(cfg);
+  try{await navigator.clipboard.writeText(txt);alert('Ayar JSON panoya kopyalandı ✦');}
+  catch(e){prompt('Kopyalamak için seç:',txt);}
+};
+$('#impBtn').onclick=()=>{
+  const txt=prompt('Ayar JSON yapıştır:'); if(!txt)return;
+  try{
+    const c=JSON.parse(txt);
+    if(c.fr){
+      FR.c=+c.fr.c||FR.c; FR.b=+c.fr.b||FR.b; FR.mode=c.fr.mode||FR.mode;
+      FR.vol=c.fr.vol??FR.vol; FR.pink=!!c.fr.pink;
+      $('#frVol').value=FR.vol;
+      $('#pinkTgl').classList.toggle('on',FR.pink);
+      $$('#modeSeg button').forEach(x=>x.classList.toggle('act',x.dataset.m===FR.mode));
+      if(FR.playing)frRetune(.3);
+      syncFreqUI();
+    }
+    if(c.amb){
+      Object.keys(AMB).forEach(chOff);
+      Object.entries(c.amb).forEach(([id,v])=>{
+        const d=AMBIENT_DEFS.find(x=>x.id===id);
+        if(d){chVol[id]=clamp(+v||.5,0,1);chOn(d);}
+      });
+      syncMixerUI();
+    }
+    if(Array.isArray(c.journey)&&c.journey.length){
+      JED=c.journey.map(s=>({k:s.k||'theta',min:clamp(+s.min||5,1,45)}));
+      S.set('sukun.journey',JED); jRender();
+    }
+    saveSettings(); alert('Ayarlar uygulandı ✦');
+  }catch(e){alert('Geçersiz JSON');}
+};
+
+const LOG={cur:null};
+LOG.touch=(k,detail)=>{
+  if(!LOG.cur)LOG.cur={t0:Date.now(),parts:{}};
+  LOG.cur.parts[k]=detail;
+};
+LOG.allStopped=()=>!FR.playing&&Object.keys(AMB).length===0&&!Z.auto;
+LOG.maybeEnd=()=>{
+  if(!LOG.cur||!LOG.allStopped())return;
+  const dur=Math.round((Date.now()-LOG.cur.t0)/1000);
+  const parts=LOG.cur.parts; LOG.cur=null;
+  if(dur<90)return;
+  LOG.push({t:Date.now(),dur,detail:Object.values(parts).join(' · ')});
+  LOG.rate();
+};
+LOG.push=e=>{
+  const a=S.get('sukun.log',[]); a.push(e);
+  while(a.length>100)a.shift();
+  S.set('sukun.log',a);
+};
+LOG.rate=()=>{
+  $('#rateRow').innerHTML=[1,2,3,4,5].map(n=>'<button data-n="'+n+'">'+'✦'.repeat(n)+'</button>').join('')+'<button data-n="0" style="color:var(--dim)">Geç</button>';
+  $('#rateToast').hidden=false;
+  clearTimeout(LOG._rt); LOG._rt=setTimeout(()=>$('#rateToast').hidden=true,20000);
+};
+$('#rateToast').addEventListener('click',e=>{
+  const b=e.target.closest('[data-n]'); if(!b)return;
+  const n=+b.dataset.n;
+  if(n){const a=S.get('sukun.log',[]); if(a.length){a[a.length-1].mood=n;S.set('sukun.log',a);}}
+  $('#rateToast').hidden=true;
+});
+window.addEventListener('sukun:log',e=>{
+  const d=e.detail||{}; if(!d.dur)return;
+  LOG.push({t:Date.now(),dur:d.dur,detail:d.detail||d.kind,mood:d.mood});
+  if(d.kind==='tekke')LOG.rate();
+  Z.total=Math.max(Z.total,S.get('sukun.total',Z.total)); zUI();
+});
+function fmtDur(s){return s>=60?Math.round(s/60)+' dk':s+' sn';}
+function lsRender(){
+  const all=S.get('sukun.log',[]);
+  const a=all.slice().reverse();
+  const wk=Date.now()-7*864e5;
+  const tot=Math.round(all.filter(x=>x.t>=wk).reduce((p,x)=>p+x.dur,0)/60);
+  $('#ls7').textContent='Son 7 gün: '+tot+' dk';
+  $('#lsList').innerHTML=a.length?a.map(x=>{
+    const d=new Date(x.t);
+    const dd=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    return '<div class="lsItem"><b>'+dd+'</b><span>'+(x.detail||'')+'</span><span class="m">'+fmtDur(x.dur)+(x.mood?' · '+'✦'.repeat(x.mood):'')+'</span></div>';
+  }).join(''):'<div style="color:var(--dim);font-size:12px;padding:10px 2px">Henüz kayıt yok — 1.5 dakikadan uzun bir seans bitince burada belirir.</div>';
+}
+$('#logBtn').onclick=()=>{lsRender();$('#logSheet').hidden=false;};
+$('#lsClose').onclick=()=>$('#logSheet').hidden=true;
+$('#lsClear').onclick=()=>{if(confirm('Günlük silinsin mi?')){S.set('sukun.log',[]);lsRender();}};
+const _chOn=chOn; chOn=d=>{_chOn(d);LOG.touch('amb',d.icon+' '+d.name);};
+const _chOff=chOff; chOff=id=>{_chOff(id);LOG.maybeEnd();};
+const _autoStart=autoStart; autoStart=()=>{_autoStart();LOG.touch('zikir','📿 '+($('#zTr').textContent||'Zikir'));};
+const _autoStop=autoStop; autoStop=()=>{_autoStop();LOG.maybeEnd();};
+
+/* ════════════════════════════════════════════════════════════
+   6d) v1.3 — VİRD • SES HALKASI • BENDİR • ÇİFT KATMAN • KAYIT • AVE
+   ════════════════════════════════════════════════════════════ */
+/* ── İkinci binaural katman ── */
+const FR2={on:false,c:100,b:2.5,E:null,out:null,oL:null,oR:null};
+function fr2Start(){
+  if(FR2.E||!FR2.on)return; ac();
+  const E=makeEnv(), out=E.n(g(0)); out.connect(master);
+  const mg=E.n(ctx.createChannelMerger(2));
+  FR2.oL=E.play(osc(FR2.c-FR2.b/2)); const gl=E.n(g(.5)); FR2.oL.connect(gl); gl.connect(mg,0,0);
+  FR2.oR=E.play(osc(FR2.c+FR2.b/2)); const gr=E.n(g(.5)); FR2.oR.connect(gr); gr.connect(mg,0,1);
+  mg.connect(out);
+  out.gain.setTargetAtTime(FR.vol*.22,ctx.currentTime,.6);
+  FR2.E=E; FR2.out=out;
+}
+function fr2Stop(){ if(!FR2.E)return; FR2.E.kill(.5,FR2.out); FR2.E=null; FR2.out=null; }
+function fr2Retune(){
+  if(!FR2.E)return; const t=ctx.currentTime;
+  FR2.oL.frequency.setTargetAtTime(FR2.c-FR2.b/2,t,.15);
+  FR2.oR.frequency.setTargetAtTime(FR2.c+FR2.b/2,t,.15);
+}
+$('#fr2Tgl').onclick=()=>{
+  FR2.on=!FR2.on; $('#fr2Tgl').classList.toggle('on',FR2.on);
+  if(FR.playing)(FR2.on?fr2Start():fr2Stop());
+  saveSettings();
+};
+$('#fr2Car').addEventListener('input',e=>{FR2.c=+e.target.value;$('#fr2CarV').textContent=FR2.c.toFixed(1)+' Hz';setFill(e.target);fr2Retune();saveSettings();});
+$('#fr2Beat').addEventListener('input',e=>{FR2.b=+e.target.value;$('#fr2BeatV').textContent=FR2.b.toFixed(2)+' Hz';setFill(e.target);fr2Retune();saveSettings();});
+
+/* ── Bendir usûlü — düm & tek sentezi ── */
+let BENDIR=false;
+function drumDum(t){
+  const o=osc(140), gg=g(0);
+  o.frequency.setValueAtTime(140,t);
+  o.frequency.exponentialRampToValueAtTime(70,t+.12);
+  gg.gain.setValueAtTime(0,t);
+  gg.gain.linearRampToValueAtTime(.5,t+.008);
+  gg.gain.exponentialRampToValueAtTime(.0001,t+.28);
+  o.connect(gg); gg.connect(master);
+  const w=g(.25); gg.connect(w); w.connect(wetIn);
+  o.start(t); o.stop(t+.32);
+  const n=ctx.createBufferSource(); n.buffer=NOISE.get('brown');
+  const f=flt('lowpass',300), ng=g(0);
+  n.connect(f); f.connect(ng); ng.connect(master);
+  ng.gain.setValueAtTime(0,t);
+  ng.gain.linearRampToValueAtTime(.22,t+.004);
+  ng.gain.exponentialRampToValueAtTime(.0001,t+.09);
+  n.start(t); n.stop(t+.12);
+}
+function drumTek(t){
+  const n=ctx.createBufferSource(); n.buffer=NOISE.get('white');
+  const f=flt('bandpass',2900,5), ng=g(0);
+  n.connect(f); f.connect(ng); ng.connect(master);
+  const w=g(.3); ng.connect(w); w.connect(wetIn);
+  ng.gain.setValueAtTime(0,t);
+  ng.gain.linearRampToValueAtTime(.2,t+.003);
+  ng.gain.exponentialRampToValueAtTime(.0001,t+.07);
+  n.start(t); n.stop(t+.1);
+}
+$('#optBendir').onclick=()=>{
+  BENDIR=!BENDIR; $('#optBendir').classList.toggle('on',BENDIR);
+  if(BENDIR)ac();
+  saveSettings();
+};
+
+/* ── Kendi sesinle zikir halkası ── */
+const VH={buf:null,playing:null,layers:5,vol:.6,rec:null,chunks:[]};
+async function vhRecord(){
+  if(VH.rec){try{VH.rec.stop()}catch(e){} return;}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    VH.chunks=[];
+    const mr=new MediaRecorder(st); VH.rec=mr;
+    mr.ondataavailable=e=>{if(e.data.size)VH.chunks.push(e.data)};
+    mr.onstop=async()=>{
+      st.getTracks().forEach(tr=>tr.stop());
+      VH.rec=null; $('#vhRec').classList.remove('rec'); $('#vhRec').textContent='⏺ Sesini kaydet';
+      const blob=new Blob(VH.chunks,{type:mr.mimeType||'audio/webm'});
+      try{
+        ac();
+        VH.buf=await ctx.decodeAudioData(await blob.arrayBuffer());
+        vhStop();
+        $('#vhStat').textContent='Kayıt hazır ✓ '+VH.buf.duration.toFixed(1)+' sn — ▶ ile halkayı başlat';
+        if(blob.size<2*1024*1024){
+          const r=new FileReader();
+          r.onload=()=>S.set('sukun.voice',{d:r.result});
+          r.readAsDataURL(blob);
+        }
+      }catch(e){$('#vhStat').textContent='Kayıt çözülemedi, tekrar dene';}
+    };
+    mr.start();
+    $('#vhRec').classList.add('rec'); $('#vhRec').textContent='⏹ Bitir';
+    $('#vhStat').textContent='Kaydediliyor… «Hû» ya da esmâyı bir kez söyle (en çok 8 sn)';
+    setTimeout(()=>{if(VH.rec===mr&&mr.state==='recording')mr.stop()},8000);
+  }catch(e){$('#vhStat').textContent='Mikrofon izni verilmedi';}
+}
+async function vhLoadStored(){
+  const v=S.get('sukun.voice',null); if(!v||!v.d)return false;
+  try{
+    ac();
+    const ab=await (await fetch(v.d)).arrayBuffer();
+    VH.buf=await ctx.decodeAudioData(ab);
+    return true;
+  }catch(e){return false;}
+}
+function vhStop(){
+  if(!VH.playing)return;
+  VH.playing.E.kill(1,VH.playing.out); VH.playing=null;
+  $('#vhPlay').textContent='▶ Halkayı başlat'; $('#vhPlay').classList.remove('playing');
+}
+async function vhToggle(){
+  if(VH.playing){vhStop();LOG.maybeEnd();return;}
+  if(!VH.buf&&!(await vhLoadStored())){$('#vhStat').textContent='Önce kısa bir ses kaydet ⏺';return;}
+  ac();
+  const E=makeEnv(), out=E.n(g(0)); out.connect(master);
+  const w=E.n(g(.45)); out.connect(w); w.connect(wetIn);
+  const L=VH.layers, D=VH.buf.duration;
+  for(let i=0;i<L;i++){
+    const s=E.n(ctx.createBufferSource()); s.buffer=VH.buf; s.loop=true;
+    s.playbackRate.value=1+(i-(L-1)/2)*0.012;
+    const p=E.n(ctx.createStereoPanner()); p.pan.value=(L>1?(i/(L-1)-.5):0)*1.4;
+    const gg=E.n(g(.8/Math.sqrt(L)));
+    s.connect(gg); gg.connect(p); p.connect(out);
+    s.start(ctx.currentTime+.05+i*(D/L)*.9);
+    E.started.push(s);
+  }
+  out.gain.setTargetAtTime(VH.vol,ctx.currentTime,1.2);
+  VH.playing={E,out};
+  LOG.touch('halka','🎙 Ses halkası ×'+L);
+  $('#vhPlay').textContent='⏸ Halkayı durdur'; $('#vhPlay').classList.add('playing');
+}
+$('#vhRec').onclick=vhRecord;
+$('#vhPlay').onclick=vhToggle;
+$('#vhLayers').addEventListener('change',e=>{
+  VH.layers=+e.target.value; saveSettings();
+  if(VH.playing){vhStop();vhToggle();}
+});
+$('#vhVol').addEventListener('input',e=>{
+  VH.vol=+e.target.value; setFill(e.target);
+  if(VH.playing)VH.playing.out.gain.setTargetAtTime(VH.vol,ctx.currentTime,.2);
+  saveSettings();
+});
+function vhInit(){
+  if(S.get('sukun.voice',null))$('#vhStat').textContent='Kayıtlı sesin hazır ✓ — ▶ ile halkayı başlat';
+}
+
+/* ── Seans kaydı (.webm) ── */
+let REC=null, recDest=null;
+function recToggle(){
+  if(REC){try{REC.stop()}catch(e){} return;}
+  if(!window.MediaRecorder){alert('Bu tarayıcı kayıt desteklemiyor');return;}
+  ac();
+  if(!recDest){recDest=ctx.createMediaStreamDestination(); master.connect(recDest);}
+  let mime='audio/webm;codecs=opus';
+  if(!MediaRecorder.isTypeSupported(mime))mime='audio/webm';
+  const chunks=[], mr=new MediaRecorder(recDest.stream,{mimeType:mime});
+  mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  mr.onstop=()=>{
+    REC=null; $('#recBtn').classList.remove('rec'); $('#recBtn').textContent='⏺';
+    const blob=new Blob(chunks,{type:mime});
+    const a=document.createElement('a'), d=new Date(), p=x=>String(x).padStart(2,'0');
+    a.href=URL.createObjectURL(blob);
+    a.download='sukun-seans-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.webm';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+  };
+  mr.start(1000); REC=mr;
+  $('#recBtn').classList.add('rec'); $('#recBtn').textContent='⏹';
+}
+$('#recBtn').onclick=recToggle;
+
+/* ── Ses-tepkili orb + Fotik uyarım (AVE) ── */
+let ANA=null,anaBuf=null,ampV=0;
+const AVE={on:false,int:.18};
+function anaEnsure(){
+  if(ANA||!ctx)return;
+  ANA=ctx.createAnalyser(); ANA.fftSize=512;
+  anaBuf=new Uint8Array(ANA.fftSize);
+  master.connect(ANA);
+}
+$('#aveTgl').onclick=()=>{
+  if(!AVE.on){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){alert('Cihazda «hareketi azalt» açık — fotik uyarım devre dışı bırakıldı.');return;}
+    if(!confirm('⚠ FOTİK UYARIM UYARISI\n\nEkran, vuruş frekansında ritmik olarak parlayacak. Epilepsi ya da ışığa duyarlılık öykünüz varsa KULLANMAYIN. Rahatsızlık hissederseniz hemen kapatın.\n\nDevam edilsin mi?'))return;
+    AVE.on=true; $('#aveTgl').classList.add('on'); $('#aveOv').hidden=false;
+  }else{
+    AVE.on=false; $('#aveTgl').classList.remove('on');
+    const o=$('#aveOv'); o.style.opacity=0; o.hidden=true;
+  }
+  saveSettings();
+};
+$('#aveInt').addEventListener('input',e=>{
+  AVE.int=+e.target.value;
+  $('#aveIntV').textContent='%'+Math.round(AVE.int*100);
+  setFill(e.target); saveSettings();
+});
+(function visLoop(){
+  requestAnimationFrame(visLoop);
+  if(!ctx)return;
+  const busy=FR.playing||Object.keys(AMB).length||VH.playing;
+  if(busy){
+    anaEnsure();
+    ANA.getByteTimeDomainData(anaBuf);
+    let sum=0;
+    for(let i=0;i<anaBuf.length;i+=4){const v=(anaBuf[i]-128)/128; sum+=v*v;}
+    const rms=Math.sqrt(sum/(anaBuf.length/4));
+    ampV+=(rms-ampV)*.18;
+    const orb=$('#orb');
+    if(orb)orb.style.filter='brightness('+(1+ampV*1.6).toFixed(3)+') saturate('+(1+ampV*1.1).toFixed(3)+')';
+  }
+  const ov=$('#aveOv');
+  if(ov&&AVE.on){
+    ov.style.opacity=FR.playing
+      ? (Math.sin(2*Math.PI*FR.b*ctx.currentTime)>0?AVE.int:0).toFixed(3)
+      : 0;
+  }
+})();
+
+/* ── Vird programı — haftanın esmâları ── */
+const DAYS_TR=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const eIdx=nm=>Math.max(0,ZIKIR.esma.items.findIndex(x=>x.t===nm));
+let VIRD=S.get('sukun.vird',null);
+function virdInit(){
+  if(!VIRD||VIRD.length!==7){
+    VIRD=['Nûr','Latîf','Vedûd','Fettâh','Alîm','Selâm','Sabûr'].map(nm=>{
+      const i=eIdx(nm); return {i,n:ebced(ZIKIR.esma.items[i].a)};
+    });
+    S.set('sukun.vird',VIRD);
+  }
+  const opts=ZIKIR.esma.items.map((it,i)=>'<option value="'+i+'">Yâ '+it.t+'</option>').join('');
+  $('#virdRows').innerHTML=VIRD.map((v,d)=>
+   '<div class="jRow" data-d="'+d+'"><b style="width:72px;flex:none;color:var(--mut);font-size:10.5px">'+DAYS_TR[d]+'</b>'+
+   '<select>'+opts+'</select><input type="number" min="1" max="1000" value="'+v.n+'">'+
+   '<button class="x" title="Ebcede eşitle">🎯</button></div>').join('');
+  $$('#virdRows .jRow').forEach(r=>{r.querySelector('select').value=String(VIRD[+r.dataset.d].i);});
+  virdBanner();
+}
+function virdBanner(){
+  const d=new Date().getDay(), v=VIRD[d], it=ZIKIR.esma.items[v.i];
+  const done=S.get('sukun.vird.done',{})[new Date().toDateString()];
+  $('#virdTxt').innerHTML=(done?'✓ ':'📅 ')+DAYS_TR[d]+' virdi: <b>Yâ '+it.t+' ×'+v.n+'</b>'+(done?' — tamam ✦':'');
+  $('#virdBar').classList.toggle('done',!!done);
+  $('#virdGo').textContent=done?'Tekrar':'Başla';
+}
+$('#virdRows').addEventListener('input',e=>{
+  const r=e.target.closest('.jRow'); if(!r)return;
+  const d=+r.dataset.d;
+  VIRD[d].i=+r.querySelector('select').value;
+  VIRD[d].n=clamp(+r.querySelector('input').value||33,1,1000);
+  S.set('sukun.vird',VIRD); virdBanner();
+});
+$('#virdRows').addEventListener('click',e=>{
+  if(!e.target.classList.contains('x'))return;
+  const r=e.target.closest('.jRow'), d=+r.dataset.d;
+  VIRD[d].n=ebced(ZIKIR.esma.items[VIRD[d].i].a);
+  r.querySelector('input').value=VIRD[d].n;
+  S.set('sukun.vird',VIRD); virdBanner();
+});
+$('#virdGo').onclick=()=>{
+  const d=new Date().getDay(), v=VIRD[d];
+  Z.cat='esma'; Z.idx=v.i; Z.target=v.n; Z.count=0; Z.devir=0; Z.form='nida';
+  syncFormSeg(); ensureTargetOpt(v.n,'Vird • '+v.n);
+  renderCats(); renderZikir(); zUI();
+};
+function virdCheck(){
+  const d=new Date().getDay(), v=VIRD?VIRD[d]:null; if(!v)return;
+  if(Z.cat==='esma'&&Z.idx===v.i&&Z.devir>=1){
+    const key=new Date().toDateString();
+    const done=S.get('sukun.vird.done',{});
+    if(!done[key]){done[key]=1;S.set('sukun.vird.done',done);virdBanner();}
+  }
+}
+
+/* ── Günlük içgörüsü: seri + sana iyi gelen + 7 gün grafiği ── */
+function lsInsight(){
+  const a=S.get('sukun.log',[]);
+  const days=new Set(a.map(x=>new Date(x.t).toDateString()));
+  let streak=0;
+  for(let i=0;;i++){
+    const d=new Date(Date.now()-i*864e5).toDateString();
+    if(days.has(d))streak++; else break;
+  }
+  const m={};
+  a.forEach(x=>{if(x.mood&&x.detail)(m[x.detail]=m[x.detail]||[]).push(x.mood);});
+  let best=null,bv=0;
+  Object.entries(m).forEach(([k,v])=>{
+    if(v.length>=2){const av=v.reduce((p,c)=>p+c,0)/v.length; if(av>bv){bv=av;best=k;}}
+  });
+  $('#lsInsight').innerHTML='<b>🔥 Seri: '+streak+' gün</b>'+
+    (best?'<span>✦ Sana en iyi gelen: '+best+' ('+bv.toFixed(1)+'/5, '+m[best].length+' seans)</span>'
+         :'<span>Seansları puanladıkça «sana en iyi gelen» burada belirir</span>');
+  const KIS=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+  const bars=[...Array(7)].map((_,i)=>{
+    const d0=new Date(); d0.setHours(0,0,0,0); d0.setDate(d0.getDate()-(6-i));
+    const t0=d0.getTime(), t1=t0+864e5;
+    return {m:Math.round(a.filter(x=>x.t>=t0&&x.t<t1).reduce((p,x)=>p+x.dur,0)/60),l:KIS[d0.getDay()]};
+  });
+  const mx=Math.max(1,...bars.map(b=>b.m));
+  $('#lsBars').innerHTML=bars.map(b=>
+   '<div class="lb"><i style="height:'+Math.max(2,Math.round(b.m/mx*38))+'px" title="'+b.m+' dk"></i><s>'+b.l+'</s></div>').join('');
+}
+
+/* ── Arka plan ebrusu — SÜKÛN zeminine yaşayan mermer ── */
+const BG={c:null,x:null,drops:[],W:0,H:0,last:0};
+function bgInit(){
+  BG.c=document.getElementById('bgEbru'); if(!BG.c)return;
+  BG.x=BG.c.getContext('2d');
+  const rs=()=>{
+    const d=Math.min(devicePixelRatio||1,1.4);
+    BG.W=innerWidth; BG.H=innerHeight;
+    BG.c.width=Math.round(BG.W*d); BG.c.height=Math.round(BG.H*d);
+    BG.x.setTransform(d,0,0,d,0,0);
+    bgDraw();
+  };
+  rs(); addEventListener('resize',rs);
+}
+const BG_PAL=['#0d2b26','#12352e','#0e2a3d','#173043','#175646'];
+function bgDrop(){
+  if(!BG.x)return;
+  const x=rnd(30,BG.W-30), y=rnd(60,BG.H-60), r=rnd(24,60);
+  for(const dd of BG.drops){
+    const p=dd.p;
+    for(let i=0;i<p.length;i+=2){
+      const dx=p[i]-x,dy=p[i+1]-y,L2=dx*dx+dy*dy||1e-6,f=Math.sqrt(1+r*r/L2);
+      p[i]=x+dx*f; p[i+1]=y+dy*f;
+    }
+  }
+  const N=56,p=new Float32Array(N*2);
+  for(let i=0;i<N;i++){
+    const a=i/N*2*Math.PI,rr=r*rnd(.96,1.04);
+    p[i*2]=x+Math.cos(a)*rr; p[i*2+1]=y+Math.sin(a)*rr;
+  }
+  const gold=Math.random()<.14;
+  BG.drops.push({p,c:gold?'#c9a227':BG_PAL[(Math.random()*BG_PAL.length)|0],s:gold});
+  if(BG.drops.length>40)BG.drops.shift();
+  bgDraw();
+}
+function bgDraw(){
+  const x=BG.x; if(!x)return;
+  x.clearRect(0,0,BG.W,BG.H);
+  for(const d of BG.drops){
+    const p=d.p;
+    x.beginPath(); x.moveTo(p[0],p[1]);
+    for(let i=2;i<p.length;i+=2)x.lineTo(p[i],p[i+1]);
+    x.closePath();
+    if(d.s){x.globalAlpha=.35;x.strokeStyle=d.c;x.lineWidth=1.2;x.stroke();}
+    else{x.globalAlpha=.5;x.fillStyle=d.c;x.fill();}
+  }
+  x.globalAlpha=1;
+}
+setInterval(()=>{
+  if(!ctx)return;
+  const busy=FR.playing||Object.keys(AMB).length||Z.auto||VH.playing;
+  if(busy&&Date.now()-BG.last>6500){BG.last=Date.now(); bgDrop();}
+},1200);
+
+/* ── Sarmalayıcılar ── */
+const _frStartL=frStart; frStart=()=>{_frStartL(); if(FR2.on)fr2Start();};
+const _frStopL=frStop;   frStop=()=>{_frStopL(); fr2Stop();};
+const _repL=rep;
+rep=()=>{
+  _repL();
+  if(BENDIR&&ctx){
+    const t=ctx.currentTime;
+    drumDum(t);
+    drumTek(t+Math.min(1.2,Math.max(.25,Z.tempo/2)));
+  }
+  virdCheck();
+};
+$('#tapBtn').onclick=()=>rep();
+const _hsaL=hardStopAll; hardStopAll=()=>{_hsaL(); vhStop(); fr2Stop();};
+const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
+
+/* ════════════════════════════════════════════════════════════
    7) BAŞLATMA
    ════════════════════════════════════════════════════════════ */
 (function init(){
@@ -1400,6 +2116,10 @@ $('#carChips').addEventListener('click',e=>{
   $('#targetSel').value=String(Z.target);
   $('#tempoSld').value=Z.tempo;
   $('#tempoVal').textContent=Z.tempo.toFixed(1)+' sn';
+  jRender();
+  virdInit();
+  vhInit();
+  bgInit();
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
 })();
@@ -1615,7 +2335,8 @@ function setFill(i){const mn=+i.min||0,mx=+i.max||1;i.style.setProperty('--val',
 let ctx=null,master=null,wetIn=null;
 function ac(){
   if(ctx)return ctx;
-  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  ctx=(window.SUKUN&&window.SUKUN.ctx)?window.SUKUN.ctx():new (window.AudioContext||window.webkitAudioContext)();
+  if(window.SesCapa)SesCapa.retitle('TEKKE ۞ Katre & Umman');
   master=ctx.createGain(); master.gain.value=+$('#vMaster').value*0.9;
   master.connect(ctx.destination);
   /* mağara IR: 4 sn, gitgide koyulaşan (lowpass) yankı */
@@ -2085,7 +2806,7 @@ function onKatre(um){
 }
 
 /* ════════ 12) DURUM + ANA DÖNGÜ ════════ */
-let running=false,muted=false,bast=0,bastApplied=-1,lastT=0;
+let running=false,muted=false,bast=0,bastApplied=-1,lastT=0,tkStart=0;
 let t0=performance.now();
 const perfNow=()=>performance.now();
 function applyBast(){
@@ -2224,7 +2945,7 @@ function tkStop(){
   S.set('sukun.total',tekTotal);
   $('#telkin').classList.remove('show');
   $('#fin').classList.remove('show');
-  if(ctx&&ctx.state==='running')ctx.suspend();
+  if(window.SesCapa)SesCapa.retitle('SÜKÛN — Frekans & Zikir');
 }
 function open(h){
   if(h&&h.tr){
@@ -2243,6 +2964,11 @@ function open(h){
 function close(){
   tkStop(); root.hidden=true;
   $('#gate').classList.remove('bye');
+  if(tkStart){
+    const d=Math.round((Date.now()-tkStart)/1000); tkStart=0;
+    if(d>=60)window.dispatchEvent(new CustomEvent('sukun:log',
+      {detail:{kind:'tekke',dur:d,detail:'۞ Tekke seyri'+(SEY.done?' • seyir tamam':'')}}));
+  }
   window.dispatchEvent(new CustomEvent('tekke:closed'));
 }
 window.addEventListener('pagehide',()=>S.set('sukun.total',tekTotal));
@@ -2257,7 +2983,7 @@ function syncBridgeUI(){
 $('#gBtn').onclick=()=>{
   ac(); if(ctx.state==='suspended')ctx.resume();
   $('#gate').classList.add('bye');
-  running=true;
+  running=true; tkStart=Date.now();
   t0=performance.now();
   bast=0;bastApplied=-1;telI=-1;telHold=0;
   brReset();
@@ -4630,6 +5356,11 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('nsBack').onclick=()=>close();
 function open(){
   document.getElementById('ns').hidden=false;
+  window.__nsT0=Date.now();
+  try{window.SesCapa&&SesCapa.start({title:'NeuroSync AI Ultra',
+    onPause:()=>{try{NS.ctx&&NS.ctx.suspend()}catch(e){}},
+    onPlay:()=>{try{NS.ctx&&NS.ctx.resume()}catch(e){}},
+    onStop:()=>close()})}catch(e){}
   try{NS.ctx&&NS.ctx.resume&&NS.ctx.resume()}catch(e){}
   window.dispatchEvent(new Event('resize'));
   try{if(typeof HV!=='undefined'&&HV.resize){['hvCanvas','hvCanvasMed'].forEach(id=>{if(document.getElementById(id))HV.resize(id)});}}catch(e){}
@@ -4639,6 +5370,11 @@ function close(){
   try{if(typeof stopBreath==='function')stopBreath()}catch(e){}
   try{NS.ctx&&NS.ctx.suspend&&NS.ctx.suspend()}catch(e){}
   document.getElementById('ns').hidden=true;
+  try{
+    const d=Math.round((Date.now()-(window.__nsT0||Date.now()))/1000);
+    if(d>=60)window.dispatchEvent(new CustomEvent('sukun:log',{detail:{kind:'neuro',dur:d,detail:'🧠 NeuroSync'}}));
+  }catch(e){}
+  try{window.SesCapa&&SesCapa.retitle('SÜKÛN — Frekans & Zikir')}catch(e){}
   window.dispatchEvent(new CustomEvent('neuro:closed'));
 }
 return{open,close};
