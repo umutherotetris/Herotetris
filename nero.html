@@ -767,6 +767,11 @@ body.splash-open > .wrap{
 .lsEsma .er .bar{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
 .lsEsma .er .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--goldh))}
 .lsEsma .er .n{flex:none;color:var(--mut);font-variant-numeric:tabular-nums;width:52px;text-align:right}
+.seyAr{font-family:"Amiri",serif;font-size:22px;line-height:2.1;color:var(--goldh);text-align:center;margin:10px 0 12px;text-shadow:0 0 18px rgba(201,162,39,.25)}
+.seyTr{font-size:13px;line-height:1.75;color:var(--ivory);text-align:center;font-style:italic;margin-bottom:10px;letter-spacing:.01em}
+.seyMean{font-size:11.5px;line-height:1.65;color:var(--mut);border-left:2px solid var(--line2);padding:6px 0 6px 11px;margin-bottom:4px}
+#seyBox summary{color:var(--goldh)}
+#seyPlay.playing{color:#ff9e7a;border-color:#ff9e7a}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -1089,6 +1094,18 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
           <button class="btn" id="ltfRst">↺ Sıfırla</button>
         </div>
         <div style="font-size:9.5px;color:var(--dim);margin-top:7px;line-height:1.6">Her latîfede ×33 «Allah» lafza-i celâli — renk ve mahaller Nakşî-Müceddidî tertibidir; usul, ehlinin rehberliğine emanettir.</div>
+      </details>
+      <details class="jEd" id="seyBox" data-lvl="midi" style="margin-top:10px" open>
+        <summary>🌟 Seyyidü'l-İstiğfar — istiğfarın efendisi</summary>
+        <div class="seyAr" id="seyAr" dir="rtl">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ</div>
+        <div class="seyTr" id="seyTr">Allâhümme ente Rabbî, lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va'dike mesteta'tü, eûzü bike min şerri mâ sana'tü, ebûü leke bi-ni'metike aleyye, ve ebûü bi-zenbî, fağfir lî, fe innehû lâ yağfiruz-zünûbe illâ ente.</div>
+        <div class="seyMean">«Allah'ım! Sen benim Rabbimsin. Senden başka ilâh yoktur. Beni Sen yarattın, ben Senin kulunum. Gücüm yettiğince Sana verdiğim söz ve ahdim üzereyim. İşlediklerimin şerrinden Sana sığınırım. Bana lütfettiğin nimetleri itiraf ederim, günahımı da itiraf ederim. Beni bağışla; çünkü günahları Senden başka bağışlayacak yoktur.»</div>
+        <div class="tvBar">
+          <button class="btn" id="seyPlay">🔊 Sesli oku</button>
+          <button class="btn" id="seyStop">■ Dur</button>
+          <span id="seyProg" class="tvProg"></span>
+        </div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Buhârî'de geçen, istiğfarların en faziletlisi. Sabah-akşam okunması tavsiye edilir. Arapça ses cihazında varsa Arap harfli metinden, yoksa Türkçe okunuşundan seslendirilir (ayar: 🔊 satırı). Bu zikir «İstiğfar & Arınma» listesinde de sayaçlı olarak mevcuttur.</div>
       </details>
       <details class="jEd" id="tvBox" data-lvl="midi" style="margin-top:10px">
         <summary>🤲 Nasuh Tövbesi — sesli okuma</summary>
@@ -2273,6 +2290,7 @@ arinma:{label:'🤲 İstiğfar & Arınma',items:[
  {tr:'Sübhânallâhi ve bihamdihî',ar:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ',mean:'Allah\u2019ı hamd ile tesbih ederim • günahlara kefâret'},
  {tr:'Sübhânallâhi ve bihamdihî, sübhânallâhil-azîm',ar:'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ سُبْحَانَ اللّٰهِ الْعَظِيمِ',mean:'Dile hafif, mîzanda ağır iki cümle'},
  {tr:'Estağfirullâhel-azîm ve etûbü ileyh',ar:'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',mean:'Yüce Allah\u2019tan bağışlanma diler, O\u2019na dönerim'},
+ {tr:'Allahümme ente Rabbî lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va\u2019dike mesteta\u2019tü, eûzü bike min şerri mâ sana\u2019tü, ebûü leke bi ni\u2019metike aleyye ve ebûü bi zenbî fağfirlî, fe innehû lâ yağfiruz-zünûbe illâ ente',ar:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',mean:'Seyyidü\u2019l-İstiğfar — istiğfarın efendisi (Buhârî); sabah-akşam okunması tavsiye edilir, samimiyetle okuyup o gün/gece ölen cennetliktir müjdesi vardır'},
  {tr:'Lâ ilâhe illâ ente sübhâneke innî küntü minez-zâlimîn',ar:'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',mean:'Yûnus (as) niyâzı • darlıktan feraha çıkış'},
  {tr:'Yâ Hayyu yâ Kayyûm, bi-rahmetike estağîs',ar:'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',mean:'Kalbin ihyâsı için yardım niyâzı'},
  {tr:'Sübbûhun Kuddûsün Rabbü\u2019l-melâiketi ve\u2019r-rûh',ar:'سُبُّوحٌ قُدُّوسٌ رَبُّ الْمَلَائِكَةِ وَالرُّوحِ',mean:'Melekût âleminin tesbihi • arınma'},
@@ -3122,7 +3140,7 @@ $('#spatialTgl').onclick=()=>{
   SPATIAL=!SPATIAL; $('#spatialTgl').classList.toggle('on',SPATIAL);
   S.set('sukun.spatial',SPATIAL);
   if(SPATIAL){ac();spatialStart();}
-  else{ /* panner'ları ortaya al */ Object.values(AMB).forEach(n=>{ if(n&&n._pan&&n._pan!=='none')n._pan.pan.setTargetAtTime(0,ctx.currentTime,.3); }); }
+  else if(ctx){ /* panner'ları ortaya al */ Object.values(AMB).forEach(n=>{ if(n&&n._pan&&n._pan!=='none')n._pan.pan.setTargetAtTime(0,ctx.currentTime,.3); }); }
 };
 function spatialInit(){ $('#spatialTgl').classList.toggle('on',SPATIAL); if(SPATIAL)spatialStart(); }
 
@@ -3209,7 +3227,6 @@ function vhBufStart(){
     const gg=E.n(g(.8/Math.sqrt(L)));
     s.connect(gg); gg.connect(p); p.connect(out);
     s.start(ctx.currentTime+.05+i*(D/L)*.9);
-    E.started.push(s);
   }
   out.gain.setTargetAtTime(VH.vol,ctx.currentTime,1.2);
   VH.playing={E,out};
@@ -4255,6 +4272,54 @@ $('#csRecBtn').onclick=csRecToggle;
 $('#csPlayBtn').onclick=csPlayToggle;
 $('#csSaveBtn').onclick=csSave;
 
+/* ════ Seyyidü'l-İstiğfar — özel kart sesli okuma ════ */
+const SEY={playing:false,watch:null};
+function seyStop(finished){
+  SEY.playing=false;
+  if(SEY.watch){clearTimeout(SEY.watch);SEY.watch=null;}
+  try{speechSynthesis.cancel()}catch(e){}
+  const b=$('#seyPlay'); if(b){b.textContent='🔊 Sesli oku';b.classList.remove('playing');}
+  const pr=$('#seyProg'); if(pr)pr.textContent=finished?'Tamam ✦':'';
+}
+function seyPlay(){
+  if(SEY.playing){seyStop();return;}
+  if(!('speechSynthesis' in window)){$('#seyProg').textContent='Cihazda seslendirme yok';return;}
+  /* Tövbe/Salavât çalıyorsa durdur (tek seslendirme) */
+  try{if(window.__tvPlaying)tovbeStop();}catch(e){}
+  try{if(window.__dhPlaying)dhStop();}catch(e){}
+  const useAr = SPK.arOn && SPK.arVoice;
+  const txt = useAr ? $('#seyAr').textContent : $('#seyTr').textContent;
+  const lang = useAr ? SPK.arVoice.lang : 'tr-TR';
+  const voice = useAr ? SPK.arVoice : SPK.voice;
+  const rate = useAr ? SPK.arRate : SPK.rate;
+  const pitch = useAr ? SPK.arPitch : .9;
+  try{
+    ac();
+    speechSynthesis.cancel();
+    SEY.playing=true;
+    $('#seyPlay').textContent='⏸ Durdur'; $('#seyPlay').classList.add('playing');
+    $('#seyProg').textContent=useAr?'Arapça okunuyor…':'Türkçe okunuyor…';
+    setTimeout(()=>{
+      if(!SEY.playing)return;
+      const u=new SpeechSynthesisUtterance(txt);
+      u.lang=lang; u.rate=rate; u.pitch=pitch;
+      if(voice)u.voice=voice;
+      u.onend=()=>seyStop(true);
+      u.onerror=()=>seyStop(false);
+      /* uzun cümle güvenlik bekçisi */
+      const est=Math.min(30000,txt.length*90/Math.max(.5,rate))+4000;
+      SEY.watch=setTimeout(()=>{ if(SEY.playing)seyStop(true); },est);
+      speechSynthesis.speak(u);
+    },60);
+    LOG.touch('sey','🌟 Seyyidü\u2019l-İstiğfar');
+  }catch(e){ seyStop(false); }
+}
+function seyInit(){
+  const p=$('#seyPlay'), s=$('#seyStop');
+  if(p)p.onclick=seyPlay;
+  if(s)s.onclick=()=>seyStop(false);
+}
+
 /* ════ Nasuh Tövbesi — sesli okuma ════ */
 const TOVBE_P=["E'ûzu billâhi mineş-şeytânir-racîm. Bismillâhirrahmânirrahîm. Elhamdu lillâhi Rabbil-âlemîn. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih.", "Elif Lâm Mîm. Kâf Hâ Yâ Ayn Sâd.", "Yâ eyyuhelleżîne âmenû tûbû ilallâhi tevbeten nasûhâ, asâ rabbukum en yukeffira ankum seyyiâtikum ve yudhilekum cennâtin tecrî min tahtihel-enhâru, yevme lâ yuhzillâhu-nnebiyye vellezîne âmenû me'ah, nûruhum yes'â beyne eydîhim ve bi-eymânihim yekûlûne rabbenâ etmim lenâ nûranâ vağfir lenâ, inneke alâ kulli şey-in kadîr. Tahrim Sûresi, sekizinci ayet.", "Ey iman edenler! Samimi bir tövbe ile Allah'a dönün. Umulur ki Rabb'iniz sizin kötülüklerinizi örter. Peygamber'i ve onunla birlikte iman edenleri utandırmayacağı günde Allah sizi, içlerinden ırmaklar akan cennetlere sokar. Onların önlerinden ve sağlarından, amellerinin nurları aydınlatıp gider de, Ey Rabb'imiz! Nurumuzu bizim için tamamla, bizi bağışla; çünkü Sen her şeye kadîrsin, derler.", "Allah'ım! Senin rızan ve Resûlullah Efendi'mizin hoşnutluğu için tüm mahlukata; inslere, cinslere, hayvanlara, bitkilere, yaratmış olduğun bilmediğim tüm kullara, Ümmet-i Muhammed'e, Senin izin verdiğin tüm kullara, dünya ve ahirette, onların da üzerlerindeki tüm kul haklarımızı, Seni de şahit tutarak ebediyen helal ediyorum.", "Allah'ım! Göz, dil, el, kulak, ayak, mide ve sair azalarımızla işlediğim açık ya da gizli şirklerden; maddi ve manevi isyanlardan; lanet, ah ve kınamalar nedeniyle bedenimi hasta eden şeytanlardan, şeytani varlıklardan, şeytanların organlarıma yerleşmesinden ve bana vesveseler vermesinden; hatalarımdan ve günahlarımdan temizlenmek adına Sana el açtım. Hazreti Âdem'e kadar gelmiş ve geçmiş tüm atalar, Ümmet-i Muhammed, arafta kalan kullar ve diğer tüm yaratılmışlar adına bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allahu Teâlâ'ya eş koşmamak ve O'nu zikretmek; Allah'a ve Peygamber'ine inanmak; yetecek kadar rızık kazanmak, kişinin rızkına Allah'ın kefil olduğunu bilmek, helalinden kazanıp yemek içmek, içki içmemek, helalinden temiz elbise giymek; nimete şükretmek; abdest almak, beş vakit namaza devam etmek; oruç tutmak; zekâtı vermek ve fakirlere yardım etmek; Allah yolunda yemek yedirmek, haksız yere kimsenin malını yememek, buluğa ermemiş yetimin malını korumak; gücü yetenler için hacca gitmek; Allah'a tevekkül etmek, kanaat etmek, Allah'tan gelen kazaya razı olmak, Allah'tan gelen belaya sabretmek, günahlardan kaçıp Allah'a sığınmak, günahlardan tövbe etmek; kendini büyük görmemek; şeytanı düşman bilmek; ihlasla Allah'a ibadet etmek, delil ve hüccet ile amel etmek.", "Allah'ın sevdiğini sevip sevmediğinden uzak durmak; ana babaya iyilik etmek, akrabayı ziyaret etmek; iyiliği emretmek, kötülükten sakındırmak; emanete hıyanet etmemek; Müslüman idarecilere itaat etmek; ibret almak ve tefekkür etmek; yalan konuşmamak, yalan yere yemin etmemek, dili kötü sözlerden korumak, alay etmemek, sözünde doğru olmak; harama bakmamak; kulağı yasak şeyleri dinlemekten alıkoymak; ölçü ve tartıyı doğru yapmak; ilim öğrenmek; Allah uğrunda cihat etmek; Allah'ın azabından korkmak, Allah'ın rahmetinden ümit kesmemek; nefsin arzularına uymamak, zinadan sakınmak, livatadan sakınmak, hayız ve nifas hâllerinde zevceye yaklaşmamak, cünüplükten yıkanmak; bütün günahlardan kalbi arındırmak; ölüme hazırlanmak.", "Allah'ım! Elli dört farzın terki ile işlenmiş ve işlenecek olan tüm hata ve günahlardan temizlenmek maksadıyla bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Senin sevginin önüne başka sevgiler koymaktan, ilmini ve kudretini aklım ve bilgilerimle sınırlamaktan, uluhiyetini ve hikmetlerini yok ve imkânsız saymaktan; gizli veya açık şirk koşmaktan, sahip olduklarımı put edinmekten, Sen'den değil de kullarından korkmaktan; başıma gelen bela ve tersliklerde Seni sorumlu tutmaktan; itikadî ve amelî münafıklıktan; anne babama lanet ve beddua etmekten, onların ahlarını almaktan, helallik ve razılık almamaktan, evlat hasreti çektirmekten, sılayırahimi terk etmekten; hayatıma lanet okumaktan; Sana ve kullarına verdiğim söz ve yeminleri tutmamaktan; hakkım olmayana el uzatmaktan; tüm mahlukata zarar vermekten.", "İlgilenmekle yükümlü olduğum öksüz, yetim, yoksul, dul, komşu, yaşlı, engelli ve Ümmet-i Muhammed'in ihtiyaçlarını görmezden gelmekten, imkânlarımı onlarla paylaşmamaktan; faizin her türlüsünü yemekten ve yedirilmesine vesile olmaktan, tefecilik yapmaktan; rızkıma haram karıştırmaktan; rızkı Sen'den değil de kullardan bilmekten, kula kulluk etmekten; rızık endişesine düşmekten; haram, mundar, adak ve besmelesiz yiyecekleri yemekten; işe besmelesiz başlamaktan; abdestsiz ve gusülsüz dolaşmaktan; Allah'ın azabından emin olmaktan, günahlarımı rahmetinden büyük tutup Sen'den ümidi kesmekten bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Gıybet etmekten, gıybetin her türlüsünden, ölenin arkasından gıybet etmekten, gıybete zemin hazırlamaktan, gıybeti küçük ve önemsiz görmekten, yapılan gıybetten hoşnut olmaktan, gıybet edenleri ikaz etmemekten; vefasızlıktan, sevgisizlikten, merhametsizlikten; insanların ve diğer mahlukatın kabiliyetlerini, fıtratlarını ve özürlerini sorgulayıp eleştirerek onlarla alay etmekten, onları beğenmemekten ve kınamaktan; kalp kırmaktan, kötü sözler söylemekten; lanet, ah, kınama ve Allah'a havale etmelerden; bunları geri çekmeyerek kulların ve zürriyetlerinin başına gelecek her türlü sıkıntı, musibet ve hastalıklara sebep olmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Ümmet-i Muhammed'in tüm azalarıyla işlediği veya işlenmesine sebep olduğu günahlardan; zinanın her türlüsünden, nikâhı önemsemeyerek zinayı meşru hâle getirmekten, sonrasında nikâh tazelemeyerek aile boyu sıkıntılara sebep olmaktan; eşlerimizi kıskanmamaktan, evlilikteki mahremiyetleri başkalarına anlatmaktan; besmelesiz ve gusülsüz münasebette bulunmaktan; rızık endişesiyle çocuk yapmamaktan; düşük ve kürtaj yaptırmaktan, bunlara vesile olmaktan; sakat çocuklara ve bebek ölümlerine sebep olmaktan; verdiğin çocukları beğenmemekten, terk etmekten ve aralarında ayrım yapmaktan; tesettürü kabul etmemekten, bedenimizi teşhir ederek başkalarının günaha girmesine sebep olmaktan; şeytana hizmet eden kimselere gitmekten; helalleşme ve tövbeyle çıkış yolu aramak yerine muskalara başvurmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Ey Rabb'imiz! Sen benim Rabb'imsin. Sen'den başka ilah yoktur. Beni Sen yarattın. Ben Senin kulunum ve gücüm yettiğince Sana verdiğim sözü ve vaadimi yerine getirmeye çalışıyorum. İşlediklerimin şerrinden Sana sığınırım. Bana verdiğin nimetlerini itiraf ederim, günahlarımı da itiraf ederim. Beni bağışla; çünkü günahları Sen'den başka bağışlayacak yoktur. İlk yaratıldığım andan bu ana kadar, işlediğim ve işlenmesine sebep olduğum tüm isyanlardan ve günahlardan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Yaptığım bu nasuh tövbesini ve duaları dergâh-ı izzetinde kabul eyle. Ümmet-i Muhammed'den hak alacağı olanlar adına da yaptım; hazinenden tamamlayarak günahlarımızı affet ve bizi tüm kullarınla helalleştir. Ya Rabbi! İzzet, Celal, Kibriya ve Azamet'in hürmetine, Sen'den Senin hürmetine istiyoruz. Bu duamı, bildiğim ve bilmediğim tüm esmâ ve ism-i âzamlar ile birleştir; en kıymetli kabul anlarında, zamanlarında ve mekânlarında dolaştır. Salih kullarının sâfiyane dualarına ilhak eyle. Bedenen, kalben ve nefsen pişmanım, tövbe ediyorum. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Yevme lâ temliku nefsun linefsin şey'â, vel-emru yevme-izin lillâh. Ellezî yuvesvisu fî sudûri-nnâs, min şerri'l-vesvâsi'l-hannâs. Fesebbih bi-hamdi rabbike vestağfirhu, innehû kâne tevvâbâ. Ve lem yekun lehû kufuven ehad. İnne şâni'eke huve'l-ebter.", "Allahümme âmin. Allah; Er-Rahmân, Er-Rahîm, El-Melik, El-Kuddûs, Es-Selâm, El-Mü'min, El-Müheymin, El-Azîz, El-Cebbâr, El-Mütekebbir, El-Hâlık, El-Bâri', El-Musavvir, El-Gaffâr, El-Kahhâr, El-Vehhâb, Er-Rezzâk, El-Fettâh, El-Alîm, El-Kâbıd, El-Bâsıt, El-Hâfıd, Er-Râfi', El-Muizz, El-Müzill, Es-Semî', El-Basîr, El-Hakem, El-Adl, El-Latîf, El-Habîr, El-Halîm, El-Azîm, El-Gafûr, Eş-Şekûr, El-Aliyy, El-Kebîr, El-Hafîz, El-Mukît, El-Hasîb, El-Celîl, El-Kerîm, Er-Rakîb, El-Mucîb, El-Vâsi', El-Hakîm, El-Vedûd, El-Mecîd, El-Bâis, Eş-Şehîd, El-Hakk, El-Vekîl, El-Kavî, El-Metîn, El-Velî, El-Hamîd, El-Muhsî, El-Mübdi', El-Muîd, El-Muhyî, El-Mumît, El-Hayy, El-Kayyûm, El-Vâcid, El-Mâcid, El-Vâhid, Es-Samed, El-Kâdir, El-Muktedir, El-Mukaddim, El-Muahhir, El-Evvel, El-Âhir, Ez-Zâhir, El-Bâtın, El-Vâlî, El-Müteâlî, El-Berr, Et-Tevvâb, El-Müntakim, El-Afüvv, Er-Raûf, Mâliku'l-Mülk, Zü'l-Celâli ve'l-İkrâm, El-Muksit, El-Câmi', El-Ganî, El-Muğnî, El-Mâni', Ed-Dârr, En-Nâfi', En-Nûr, El-Hâdî, El-Bedî', El-Bâkî, El-Vâris, Er-Reşîd, Es-Sabûr.", "Allah'ım, bizlere merhamet et; Senin merhametine ve rızana muhtacız.", "Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih. Subhâne Rabbike Rabb'il-izzeti ammâ yasifûn, ve selâmun alel murselîn, vel-hamdu lillahi Rabb'il-âlemîn. El-Fâtiha."];
 const TV={queue:[],qi:0,playing:false,paused:false,watch:null};
@@ -5002,7 +5067,7 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   setTimeout(()=>dailyShow(true),650); // Her açılışta göster
   spatialInit();
   applyTema(S.get('sukun.tema','zumrut'));
-  tovbeInit();
+  tovbeInit(); seyInit();
   dhInit();
   helpApply(HELP.on);
   syncMixerUI(); syncFreqUI(); zUI();
