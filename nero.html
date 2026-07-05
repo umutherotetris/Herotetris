@@ -106,6 +106,7 @@ select option{background:#0b1512;color:var(--ivory)}
 .btn:active{transform:scale(.96)}
 .btn.danger{color:#e8b1a8;border-color:rgba(194,91,78,.45);background:linear-gradient(180deg,rgba(194,91,78,.16),rgba(194,91,78,.04))}
 .btn.playing{box-shadow:0 0 18px rgba(201,162,39,.35), inset 0 0 12px rgba(201,162,39,.15)}
+.btn.rec{color:#ff7a76;border-color:#ff7a76;animation:recBlink 1.1s ease infinite}
 
 /* ─────────── 3. ANA SES ÇUBUĞU ─────────── */
 .masterBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;position:sticky;top:8px;z-index:50}
@@ -153,6 +154,8 @@ input[type=range]:not(#ns *)::-moz-range-thumb{width:15px;height:15px;border-rad
 .chIc{font-size:19px;flex:none}
 .chName{flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.15}
 .chName small{display:block;font-weight:400;font-size:10px;color:var(--dim)}
+.chDel{flex:none;width:24px;height:24px;border-radius:7px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--dim);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.chDel:active{background:rgba(194,91,78,.18);color:#e8b1a8;border-color:rgba(194,91,78,.4)}
 
 /* ─────────── 8. FREKANS MODÜLÜ ─────────── */
 .orbWrap{display:flex;align-items:center;gap:14px;margin-bottom:10px}
@@ -338,7 +341,7 @@ section[hidden]{display:none}
 body.mode-mini [data-lvl="midi"],body.mode-mini [data-lvl="pro"],body.mode-midi [data-lvl="pro"]{display:none!important}
 body.mode-mini .chn:not(.on){display:none}
 body.mode-mini .card{padding:14px}
-#temaSheet,#helpSheet,#recSheet{position:fixed;inset:auto 0 0 0;z-index:960;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));max-height:78vh;overflow-y:auto}
+#temaSheet,#helpSheet,#recSheet,#customSoundSheet{position:fixed;inset:auto 0 0 0;z-index:960;background:linear-gradient(180deg,rgba(9,22,19,.97),rgba(6,15,13,.99));border-top:1px solid var(--line2);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));max-height:78vh;overflow-y:auto}
 .tkHead{display:flex;align-items:center;gap:10px;margin-bottom:11px;color:var(--goldh);font:600 13px/1 "Cormorant Garamond",serif;letter-spacing:.14em}
 .tkHead button{margin-left:auto;background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;width:30px;height:30px;cursor:pointer}
 .tkOpt{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
@@ -824,7 +827,8 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   <section id="tab-amb">
     <div class="sessRow" id="sessRow"></div>
     <div class="mixGrid" id="mixer"></div>
-    <p class="hint">💡 Tüm ambiyans sesleri (ney taksimi dâhil) cihazında gerçek zamanlı sentezlenir; internet ve ses dosyası gerektirmez. Gerçek bir kayıt kullanmak istersen kodun başındaki <b>SOUND_URLS</b> nesnesine mp3 bağlantısı yazman yeterli.</p>
+    <button class="btn" id="addCustomSoundBtn" style="width:100%;margin-top:10px">🎙 Mikrofonla kendi ses ekle</button>
+    <p class="hint">💡 Yerleşik ambiyans sesleri (ney taksimi dâhil) cihazında gerçek zamanlı sentezlenir; internet ve dosya gerektirmez. Traş makinesi, elektrikli süpürge gibi kendi ortam seslerini mikrofonla kaydedip yukarıdaki 🎙 düğmesiyle karışıma ekleyebilir, kartındaki 🗑 ile istediğin an silebilirsin.</p>
   </section>
 
   <!-- ═══════════ SEKME 2: FREKANSLAR ═══════════ -->
@@ -1125,6 +1129,17 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   <div class="tkHead">🎙 Kayıtlı Zikir Sesleri <button id="recSheetClose">✕</button></div>
   <div id="recList"></div>
   <button class="btn danger" id="recClearAll" style="width:100%;margin-top:10px">Tüm kayıtları sil</button>
+</div>
+<div id="customSoundSheet" hidden>
+  <div class="tkHead">🎙 Kendi Sesini Ekle <button id="customSoundClose">✕</button></div>
+  <p class="hint" style="margin:0 0 10px">Traş makinesi, elektrikli süpürge, fön gibi bir sesi telefonun mikrofonuyla kaydedip diğer ambiyans sesleri gibi karışıma ekleyebilirsin. Kaynağa yakın ve sabit tut; en az 5-6 sn kaydetmen döngüde daha pürüzsüz durur.</p>
+  <input type="text" id="csName" placeholder="Ses adı (örn. Traş Makinesi)" maxlength="24" style="width:100%;background:rgba(6,20,18,.6);border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ivory);font:inherit;font-size:12.5px;outline:none;margin-bottom:10px">
+  <button class="btn" id="csRecBtn" style="width:100%">⏺ Kaydı başlat</button>
+  <div id="csStat" style="font-size:10.5px;color:var(--dim);margin-top:8px;line-height:1.5">Hazır</div>
+  <div id="csPreview" hidden style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn" id="csPlayBtn" style="flex:1">▶ Dinle</button>
+    <button class="btn" id="csSaveBtn" style="flex:1">✓ Karışıma ekle</button>
+  </div>
 </div>
 <div id="helpSheet" hidden>
   <div class="tkHead">📖 Frekans Sistemleri Rehberi <button id="helpClose">✕</button></div>
@@ -2390,6 +2405,7 @@ function renderMixer(){
      '<div class="chTop">'+
        '<span class="chIc">'+d.icon+'</span>'+
        '<div class="chName">'+d.name+'<small>'+d.desc+'</small></div>'+
+       (d.custom?'<button class="chDel" data-del="'+d.id+'" aria-label="'+d.name+' sil" title="Bu sesi sil">🗑</button>':'')+
        '<button class="sw" data-sw="'+d.id+'" aria-label="'+d.name+' aç/kapat"></button>'+
      '</div>'+
      '<input type="range" min="0" max="1" step="0.01" value="'+chVol[d.id]+'" data-vol="'+d.id+'" aria-label="'+d.name+' ses">'+
@@ -2406,6 +2422,8 @@ function syncMixerUI(){
   });
 }
 $('#mixer').addEventListener('click',e=>{
+  const del=e.target.closest('[data-del]');
+  if(del){ csDelete(del.dataset.del); return; }
   const sw=e.target.closest('[data-sw]'); if(!sw)return;
   const id=sw.dataset.sw;
   if(AMB[id])chOff(id); else chOn(AMBIENT_DEFS.find(d=>d.id===id));
@@ -4086,6 +4104,157 @@ async function recInit(){
   itemRecSyncUI();
 }
 
+/* ════ ÖZEL AMBİYANS SESİ — mikrofonla kaydettiğin sesi mikserdeki diğer seslerin
+   (arı, kedi vb.) yanına ekle. Ayrı bir IndexedDB veritabanında kalıcı saklanır;
+   çalma tarafı zaten var olan SOUND_URLS/buildFromUrl mekanizmasını kullanır. ════ */
+const CAMB_DB=(function(){
+  let db=null;
+  function open(){
+    return new Promise((res,rej)=>{
+      if(db)return res(db);
+      if(!('indexedDB' in window))return rej('yok');
+      const rq=indexedDB.open('sukunCustomAmb',1);
+      rq.onupgradeneeded=e=>{ e.target.result.createObjectStore('sounds'); };
+      rq.onsuccess=e=>{db=e.target.result;res(db);};
+      rq.onerror=()=>rej(rq.error);
+    });
+  }
+  async function set(key,val){
+    const d=await open();
+    return new Promise((res,rej)=>{
+      const tx=d.transaction('sounds','readwrite'); tx.objectStore('sounds').put(val,key);
+      tx.oncomplete=()=>res(true); tx.onerror=()=>rej(tx.error);
+    });
+  }
+  async function del(key){
+    const d=await open();
+    return new Promise((res,rej)=>{
+      const tx=d.transaction('sounds','readwrite'); tx.objectStore('sounds').delete(key);
+      tx.oncomplete=()=>res(true); tx.onerror=()=>rej(tx.error);
+    });
+  }
+  async function all(){
+    const d=await open();
+    return new Promise((res,rej)=>{
+      const tx=d.transaction('sounds','readonly'), st=tx.objectStore('sounds'), out=[];
+      const cur=st.openCursor();
+      cur.onsuccess=e=>{
+        const c=e.target.result;
+        if(c){ out.push({key:c.key,val:c.value}); c.continue(); } else res(out);
+      };
+      cur.onerror=()=>rej(cur.error);
+    });
+  }
+  return {set,del,all};
+})();
+
+function csIconFor(name){
+  const n=name.toLowerCase();
+  if(n.includes('traş')||n.includes('tıraş'))return '🪒';
+  if(n.includes('süpürge'))return '🧹';
+  if(n.includes('fön')||n.includes('kurutma'))return '💨';
+  if(n.includes('vantilatör')||n.includes('fan'))return '🌀';
+  if(n.includes('yağmur'))return '🌧️';
+  if(n.includes('araba')||n.includes('motor')||n.includes('trafik'))return '🚗';
+  if(n.includes('tren'))return '🚆';
+  if(n.includes('çamaşır')||n.includes('bulaşık'))return '🫧';
+  return '🎙️';
+}
+function csAddToMixer(id,name,blob){
+  const url=URL.createObjectURL(blob);
+  SOUND_URLS[id]=url;
+  AMBIENT_DEFS.push({
+    id, icon:csIconFor(name), name, desc:'Kendi kaydın', cal:1, wet:.1, custom:true,
+    build:(E,out)=>{ /* SOUND_URLS[id] her zaman dolu olduğu için buraya düşülmez */ }
+  });
+  chVol[id]=.5;
+  renderMixer(); syncMixerUI();
+}
+async function csDelete(id){
+  if(!confirm('Bu ses kalıcı olarak silinsin mi?'))return;
+  if(AMB[id])chOff(id);
+  try{await CAMB_DB.del(id);}catch(e){}
+  const i=AMBIENT_DEFS.findIndex(d=>d.id===id);
+  if(i>-1)AMBIENT_DEFS.splice(i,1);
+  try{URL.revokeObjectURL(SOUND_URLS[id]);}catch(e){}
+  delete SOUND_URLS[id]; delete chVol[id];
+  renderMixer(); syncMixerUI();
+}
+async function csInit(){
+  try{
+    const list=await CAMB_DB.all();
+    list.forEach(({key,val})=>{
+      const url=URL.createObjectURL(val.blob);
+      SOUND_URLS[key]=url;
+      AMBIENT_DEFS.push({id:key,icon:csIconFor(val.name),name:val.name,desc:'Kendi kaydın',cal:1,wet:.1,custom:true,build:(E,out)=>{}});
+      chVol[key]=.5;
+    });
+    if(list.length){renderMixer(); syncMixerUI();}
+  }catch(e){}
+}
+
+let CSREC=null, CSchunks=[], CSblob=null, CSprev=null;
+function csOpen(){
+  $('#csName').value=''; CSblob=null;
+  $('#csStat').textContent='Hazır';
+  $('#csPreview').hidden=true;
+  $('#csRecBtn').classList.remove('rec'); $('#csRecBtn').textContent='⏺ Kaydı başlat';
+  $('#customSoundSheet').hidden=false;
+}
+function csClose(){
+  if(CSREC){try{CSREC.stop()}catch(e){}}
+  if(CSprev){try{CSprev.pause()}catch(e){} CSprev=null;}
+  $('#customSoundSheet').hidden=true;
+}
+async function csRecToggle(){
+  if(CSREC){ try{CSREC.stop()}catch(e){} return; }
+  if(!window.MediaRecorder){$('#csStat').textContent='Bu tarayıcı ses kaydını desteklemiyor'; return;}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    CSchunks=[];
+    let mime='audio/webm;codecs=opus';
+    if(!MediaRecorder.isTypeSupported(mime))mime='audio/webm';
+    const mr=new MediaRecorder(st,{mimeType:mime}); CSREC=mr;
+    mr.ondataavailable=e=>{if(e.data.size)CSchunks.push(e.data)};
+    mr.onstop=()=>{
+      st.getTracks().forEach(t=>t.stop());
+      CSREC=null; $('#csRecBtn').classList.remove('rec'); $('#csRecBtn').textContent='⏺ Kaydı başlat';
+      CSblob=new Blob(CSchunks,{type:mr.mimeType||'audio/webm'});
+      $('#csStat').textContent='Kayıt tamam ✓ — dinleyip karışıma ekleyebilirsin';
+      $('#csPreview').hidden=false;
+    };
+    mr.start();
+    $('#csRecBtn').classList.add('rec'); $('#csRecBtn').textContent='⏹ Bitir';
+    $('#csStat').textContent='Kaydediliyor… istediğin an ⏹ ile bitir (en çok 30 sn)';
+    setTimeout(()=>{if(CSREC===mr&&mr.state==='recording')mr.stop();},30000);
+  }catch(e){$('#csStat').textContent='Mikrofon izni verilmedi';}
+}
+function csPlayToggle(){
+  if(!CSblob)return;
+  if(CSprev){try{CSprev.pause()}catch(e){} CSprev=null; $('#csPlayBtn').textContent='▶ Dinle'; return;}
+  const url=URL.createObjectURL(CSblob), a=new Audio(url);
+  const done=()=>{$('#csPlayBtn').textContent='▶ Dinle'; CSprev=null; try{URL.revokeObjectURL(url)}catch(e){};};
+  a.onended=done; a.onerror=done;
+  a.play().catch(done);
+  CSprev=a;
+  $('#csPlayBtn').textContent='⏸ Durdur';
+}
+async function csSave(){
+  if(!CSblob)return;
+  if(CSprev){try{CSprev.pause()}catch(e){} CSprev=null;}
+  const nm=$('#csName').value.trim()||('Özel Ses '+(AMBIENT_DEFS.filter(d=>d.custom).length+1));
+  const id='c'+Date.now();
+  try{ await CAMB_DB.set(id,{name:nm,blob:CSblob}); }
+  catch(e){ alert('Kayıt cihaza kalıcı kaydedilemedi (tarayıcı desteklemiyor olabilir) — yine de bu oturumda kullanılabilir.'); }
+  csAddToMixer(id,nm,CSblob);
+  $('#customSoundSheet').hidden=true;
+}
+$('#addCustomSoundBtn').onclick=csOpen;
+$('#customSoundClose').onclick=csClose;
+$('#csRecBtn').onclick=csRecToggle;
+$('#csPlayBtn').onclick=csPlayToggle;
+$('#csSaveBtn').onclick=csSave;
+
 /* ════ Nasuh Tövbesi — sesli okuma ════ */
 const TOVBE_P=["E'ûzu billâhi mineş-şeytânir-racîm. Bismillâhirrahmânirrahîm. Elhamdu lillâhi Rabbil-âlemîn. Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih.", "Elif Lâm Mîm. Kâf Hâ Yâ Ayn Sâd.", "Yâ eyyuhelleżîne âmenû tûbû ilallâhi tevbeten nasûhâ, asâ rabbukum en yukeffira ankum seyyiâtikum ve yudhilekum cennâtin tecrî min tahtihel-enhâru, yevme lâ yuhzillâhu-nnebiyye vellezîne âmenû me'ah, nûruhum yes'â beyne eydîhim ve bi-eymânihim yekûlûne rabbenâ etmim lenâ nûranâ vağfir lenâ, inneke alâ kulli şey-in kadîr. Tahrim Sûresi, sekizinci ayet.", "Ey iman edenler! Samimi bir tövbe ile Allah'a dönün. Umulur ki Rabb'iniz sizin kötülüklerinizi örter. Peygamber'i ve onunla birlikte iman edenleri utandırmayacağı günde Allah sizi, içlerinden ırmaklar akan cennetlere sokar. Onların önlerinden ve sağlarından, amellerinin nurları aydınlatıp gider de, Ey Rabb'imiz! Nurumuzu bizim için tamamla, bizi bağışla; çünkü Sen her şeye kadîrsin, derler.", "Allah'ım! Senin rızan ve Resûlullah Efendi'mizin hoşnutluğu için tüm mahlukata; inslere, cinslere, hayvanlara, bitkilere, yaratmış olduğun bilmediğim tüm kullara, Ümmet-i Muhammed'e, Senin izin verdiğin tüm kullara, dünya ve ahirette, onların da üzerlerindeki tüm kul haklarımızı, Seni de şahit tutarak ebediyen helal ediyorum.", "Allah'ım! Göz, dil, el, kulak, ayak, mide ve sair azalarımızla işlediğim açık ya da gizli şirklerden; maddi ve manevi isyanlardan; lanet, ah ve kınamalar nedeniyle bedenimi hasta eden şeytanlardan, şeytani varlıklardan, şeytanların organlarıma yerleşmesinden ve bana vesveseler vermesinden; hatalarımdan ve günahlarımdan temizlenmek adına Sana el açtım. Hazreti Âdem'e kadar gelmiş ve geçmiş tüm atalar, Ümmet-i Muhammed, arafta kalan kullar ve diğer tüm yaratılmışlar adına bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allahu Teâlâ'ya eş koşmamak ve O'nu zikretmek; Allah'a ve Peygamber'ine inanmak; yetecek kadar rızık kazanmak, kişinin rızkına Allah'ın kefil olduğunu bilmek, helalinden kazanıp yemek içmek, içki içmemek, helalinden temiz elbise giymek; nimete şükretmek; abdest almak, beş vakit namaza devam etmek; oruç tutmak; zekâtı vermek ve fakirlere yardım etmek; Allah yolunda yemek yedirmek, haksız yere kimsenin malını yememek, buluğa ermemiş yetimin malını korumak; gücü yetenler için hacca gitmek; Allah'a tevekkül etmek, kanaat etmek, Allah'tan gelen kazaya razı olmak, Allah'tan gelen belaya sabretmek, günahlardan kaçıp Allah'a sığınmak, günahlardan tövbe etmek; kendini büyük görmemek; şeytanı düşman bilmek; ihlasla Allah'a ibadet etmek, delil ve hüccet ile amel etmek.", "Allah'ın sevdiğini sevip sevmediğinden uzak durmak; ana babaya iyilik etmek, akrabayı ziyaret etmek; iyiliği emretmek, kötülükten sakındırmak; emanete hıyanet etmemek; Müslüman idarecilere itaat etmek; ibret almak ve tefekkür etmek; yalan konuşmamak, yalan yere yemin etmemek, dili kötü sözlerden korumak, alay etmemek, sözünde doğru olmak; harama bakmamak; kulağı yasak şeyleri dinlemekten alıkoymak; ölçü ve tartıyı doğru yapmak; ilim öğrenmek; Allah uğrunda cihat etmek; Allah'ın azabından korkmak, Allah'ın rahmetinden ümit kesmemek; nefsin arzularına uymamak, zinadan sakınmak, livatadan sakınmak, hayız ve nifas hâllerinde zevceye yaklaşmamak, cünüplükten yıkanmak; bütün günahlardan kalbi arındırmak; ölüme hazırlanmak.", "Allah'ım! Elli dört farzın terki ile işlenmiş ve işlenecek olan tüm hata ve günahlardan temizlenmek maksadıyla bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Senin sevginin önüne başka sevgiler koymaktan, ilmini ve kudretini aklım ve bilgilerimle sınırlamaktan, uluhiyetini ve hikmetlerini yok ve imkânsız saymaktan; gizli veya açık şirk koşmaktan, sahip olduklarımı put edinmekten, Sen'den değil de kullarından korkmaktan; başıma gelen bela ve tersliklerde Seni sorumlu tutmaktan; itikadî ve amelî münafıklıktan; anne babama lanet ve beddua etmekten, onların ahlarını almaktan, helallik ve razılık almamaktan, evlat hasreti çektirmekten, sılayırahimi terk etmekten; hayatıma lanet okumaktan; Sana ve kullarına verdiğim söz ve yeminleri tutmamaktan; hakkım olmayana el uzatmaktan; tüm mahlukata zarar vermekten.", "İlgilenmekle yükümlü olduğum öksüz, yetim, yoksul, dul, komşu, yaşlı, engelli ve Ümmet-i Muhammed'in ihtiyaçlarını görmezden gelmekten, imkânlarımı onlarla paylaşmamaktan; faizin her türlüsünü yemekten ve yedirilmesine vesile olmaktan, tefecilik yapmaktan; rızkıma haram karıştırmaktan; rızkı Sen'den değil de kullardan bilmekten, kula kulluk etmekten; rızık endişesine düşmekten; haram, mundar, adak ve besmelesiz yiyecekleri yemekten; işe besmelesiz başlamaktan; abdestsiz ve gusülsüz dolaşmaktan; Allah'ın azabından emin olmaktan, günahlarımı rahmetinden büyük tutup Sen'den ümidi kesmekten bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Gıybet etmekten, gıybetin her türlüsünden, ölenin arkasından gıybet etmekten, gıybete zemin hazırlamaktan, gıybeti küçük ve önemsiz görmekten, yapılan gıybetten hoşnut olmaktan, gıybet edenleri ikaz etmemekten; vefasızlıktan, sevgisizlikten, merhametsizlikten; insanların ve diğer mahlukatın kabiliyetlerini, fıtratlarını ve özürlerini sorgulayıp eleştirerek onlarla alay etmekten, onları beğenmemekten ve kınamaktan; kalp kırmaktan, kötü sözler söylemekten; lanet, ah, kınama ve Allah'a havale etmelerden; bunları geri çekmeyerek kulların ve zürriyetlerinin başına gelecek her türlü sıkıntı, musibet ve hastalıklara sebep olmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Ümmet-i Muhammed'in tüm azalarıyla işlediği veya işlenmesine sebep olduğu günahlardan; zinanın her türlüsünden, nikâhı önemsemeyerek zinayı meşru hâle getirmekten, sonrasında nikâh tazelemeyerek aile boyu sıkıntılara sebep olmaktan; eşlerimizi kıskanmamaktan, evlilikteki mahremiyetleri başkalarına anlatmaktan; besmelesiz ve gusülsüz münasebette bulunmaktan; rızık endişesiyle çocuk yapmamaktan; düşük ve kürtaj yaptırmaktan, bunlara vesile olmaktan; sakat çocuklara ve bebek ölümlerine sebep olmaktan; verdiğin çocukları beğenmemekten, terk etmekten ve aralarında ayrım yapmaktan; tesettürü kabul etmemekten, bedenimizi teşhir ederek başkalarının günaha girmesine sebep olmaktan; şeytana hizmet eden kimselere gitmekten; helalleşme ve tövbeyle çıkış yolu aramak yerine muskalara başvurmaktan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Ey Rabb'imiz! Sen benim Rabb'imsin. Sen'den başka ilah yoktur. Beni Sen yarattın. Ben Senin kulunum ve gücüm yettiğince Sana verdiğim sözü ve vaadimi yerine getirmeye çalışıyorum. İşlediklerimin şerrinden Sana sığınırım. Bana verdiğin nimetlerini itiraf ederim, günahlarımı da itiraf ederim. Beni bağışla; çünkü günahları Sen'den başka bağışlayacak yoktur. İlk yaratıldığım andan bu ana kadar, işlediğim ve işlenmesine sebep olduğum tüm isyanlardan ve günahlardan bedenen, kalben ve nefsen pişmanım. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Allah'ım! Yaptığım bu nasuh tövbesini ve duaları dergâh-ı izzetinde kabul eyle. Ümmet-i Muhammed'den hak alacağı olanlar adına da yaptım; hazinenden tamamlayarak günahlarımızı affet ve bizi tüm kullarınla helalleştir. Ya Rabbi! İzzet, Celal, Kibriya ve Azamet'in hürmetine, Sen'den Senin hürmetine istiyoruz. Bu duamı, bildiğim ve bilmediğim tüm esmâ ve ism-i âzamlar ile birleştir; en kıymetli kabul anlarında, zamanlarında ve mekânlarında dolaştır. Salih kullarının sâfiyane dualarına ilhak eyle. Bedenen, kalben ve nefsen pişmanım, tövbe ediyorum. Evvelinden ahirine, tüm zerrelerimle ilmin adedince tövbe ettim ya Rabbi! Estağfirullâh. Estağfirullâh. Estağfirullâhe'l-azîm el-kerîm, ellezî lâ ilâhe illâ hû, el-Hayye'l-Kayyûm ve etûbu ileyh.", "Yevme lâ temliku nefsun linefsin şey'â, vel-emru yevme-izin lillâh. Ellezî yuvesvisu fî sudûri-nnâs, min şerri'l-vesvâsi'l-hannâs. Fesebbih bi-hamdi rabbike vestağfirhu, innehû kâne tevvâbâ. Ve lem yekun lehû kufuven ehad. İnne şâni'eke huve'l-ebter.", "Allahümme âmin. Allah; Er-Rahmân, Er-Rahîm, El-Melik, El-Kuddûs, Es-Selâm, El-Mü'min, El-Müheymin, El-Azîz, El-Cebbâr, El-Mütekebbir, El-Hâlık, El-Bâri', El-Musavvir, El-Gaffâr, El-Kahhâr, El-Vehhâb, Er-Rezzâk, El-Fettâh, El-Alîm, El-Kâbıd, El-Bâsıt, El-Hâfıd, Er-Râfi', El-Muizz, El-Müzill, Es-Semî', El-Basîr, El-Hakem, El-Adl, El-Latîf, El-Habîr, El-Halîm, El-Azîm, El-Gafûr, Eş-Şekûr, El-Aliyy, El-Kebîr, El-Hafîz, El-Mukît, El-Hasîb, El-Celîl, El-Kerîm, Er-Rakîb, El-Mucîb, El-Vâsi', El-Hakîm, El-Vedûd, El-Mecîd, El-Bâis, Eş-Şehîd, El-Hakk, El-Vekîl, El-Kavî, El-Metîn, El-Velî, El-Hamîd, El-Muhsî, El-Mübdi', El-Muîd, El-Muhyî, El-Mumît, El-Hayy, El-Kayyûm, El-Vâcid, El-Mâcid, El-Vâhid, Es-Samed, El-Kâdir, El-Muktedir, El-Mukaddim, El-Muahhir, El-Evvel, El-Âhir, Ez-Zâhir, El-Bâtın, El-Vâlî, El-Müteâlî, El-Berr, Et-Tevvâb, El-Müntakim, El-Afüvv, Er-Raûf, Mâliku'l-Mülk, Zü'l-Celâli ve'l-İkrâm, El-Muksit, El-Câmi', El-Ganî, El-Muğnî, El-Mâni', Ed-Dârr, En-Nâfi', En-Nûr, El-Hâdî, El-Bedî', El-Bâkî, El-Vâris, Er-Reşîd, Es-Sabûr.", "Allah'ım, bizlere merhamet et; Senin merhametine ve rızana muhtacız.", "Allahümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin ve alâ âlihi adede in'âmillahi ve ifdâlih. Subhâne Rabbike Rabb'il-izzeti ammâ yasifûn, ve selâmun alel murselîn, vel-hamdu lillahi Rabb'il-âlemîn. El-Fâtiha."];
 const TV={queue:[],qi:0,playing:false,paused:false,watch:null};
@@ -4827,6 +4996,7 @@ const _lsR=lsRender; lsRender=()=>{_lsR(); lsInsight();};
   tevhid99(); renderCats();
   spkInit();
   recInit();
+  csInit();
   nefsInit();
   tagLvl(); applyUI(UIM.m);
   setTimeout(()=>dailyShow(true),650); // Her açılışta göster
