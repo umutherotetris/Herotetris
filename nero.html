@@ -355,6 +355,14 @@ body.mode-mini .card{padding:14px}
 .tvBar{display:flex;align-items:center;gap:9px;margin:8px 0 4px}
 .tvBar .btn{flex:none;padding:8px 13px}
 .tvProg{margin-left:auto;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.seyBar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}
+.seyBar .btn{flex:none;width:100%;padding:9px 6px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seyBar #seyStop{grid-column:1 / -1;background:rgba(255,90,90,.08);border-color:rgba(255,120,120,.35);color:#ff9e9e}
+.seyProgRow{grid-column:1 / -1;text-align:center;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;min-height:14px}
+@media (min-width:420px){
+  .seyBar{grid-template-columns:1fr 1fr 1fr}
+  .seyBar #seyStop{grid-column:auto}
+}
 .tvText{max-height:230px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:rgba(6,20,18,.4);scrollbar-width:thin}
 .tvP{font-size:12.5px;line-height:1.72;color:var(--mut);margin:0 0 11px;padding:5px 8px;border-radius:8px;cursor:pointer;transition:background .3s,color .3s;letter-spacing:.01em}
 .tvP:last-child{margin-bottom:0}
@@ -771,7 +779,7 @@ body.splash-open > .wrap{
 .seyTr{font-size:13px;line-height:1.75;color:var(--ivory);text-align:center;font-style:italic;margin-bottom:10px;letter-spacing:.01em}
 .seyMean{font-size:11.5px;line-height:1.65;color:var(--mut);border-left:2px solid var(--line2);padding:6px 0 6px 11px;margin-bottom:4px}
 #seyBox summary{color:var(--goldh)}
-#seyTrPlay.playing,#seyArPlay.playing{color:#ff9e7a;border-color:#ff9e7a}
+#seyTrPlay.playing,#seyArPlay.playing,#seyMeanPlay.playing{color:#ff9e7a;border-color:#ff9e7a}
 footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-height:1.65;padding:0 8px}
 .hpNote{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
 @media (max-width:420px){
@@ -1099,14 +1107,15 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <summary>🌟 Seyyidü'l-İstiğfar — istiğfarın efendisi</summary>
         <div class="seyAr" id="seyAr" dir="rtl">اللَّهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ</div>
         <div class="seyTr" id="seyTr">Allâhümme ente Rabbî, lâ ilâhe illâ ente, halaktenî ve ene abdüke, ve ene alâ ahdike ve va'dike mesteta'tü, eûzü bike min şerri mâ sana'tü, ebûü leke bi-ni'metike aleyye, ve ebûü bi-zenbî, fağfir lî, fe innehû lâ yağfiruz-zünûbe illâ ente.</div>
-        <div class="seyMean">«Allah'ım! Sen benim Rabbimsin. Senden başka ilâh yoktur. Beni Sen yarattın, ben Senin kulunum. Gücüm yettiğince Sana verdiğim söz ve ahdim üzereyim. İşlediklerimin şerrinden Sana sığınırım. Bana lütfettiğin nimetleri itiraf ederim, günahımı da itiraf ederim. Beni bağışla; çünkü günahları Senden başka bağışlayacak yoktur.»</div>
-        <div class="tvBar">
-          <button class="btn" id="seyTrPlay">🔊 Türkçe dinle</button>
-          <button class="btn" id="seyArPlay">🕋 Arapça oku</button>
+        <div class="seyMean" id="seyMean">«Allah'ım! Sen benim Rabbimsin. Senden başka ilâh yoktur. Beni Sen yarattın, ben Senin kulunum. Gücüm yettiğince Sana verdiğim söz ve ahdim üzereyim. İşlediklerimin şerrinden Sana sığınırım. Bana lütfettiğin nimetleri itiraf ederim, günahımı da itiraf ederim. Beni bağışla; çünkü günahları Senden başka bağışlayacak yoktur.»</div>
+        <div class="seyBar">
+          <button class="btn" id="seyTrPlay">🔊 Türkçe</button>
+          <button class="btn" id="seyArPlay">🕋 Arapça</button>
+          <button class="btn" id="seyMeanPlay">📖 Manası</button>
           <button class="btn" id="seyStop">■ Dur</button>
-          <span id="seyProg" class="tvProg"></span>
         </div>
-        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Buhârî'de geçen, istiğfarların en faziletlisi. Sabah-akşam okunması tavsiye edilir. İki seçenek var: «🔊 Türkçe dinle» Türkçe okunuşu (transkripsiyon) Türkçe sesle; «🕋 Arapça oku» Arap harfli metni cihazdaki Arapça sesle okur — Arapça ses yoksa otomatik olarak Türkçe okunuşuna düşer. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından. Bu zikir «İstiğfar & Arınma» listesinde de sayaçlı olarak mevcuttur.</div>
+        <div id="seyProg" class="seyProgRow"></div>
+        <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Buhârî'de geçen, istiğfarların en faziletlisi. Sabah-akşam okunması tavsiye edilir. Üç seçenek var: «🔊 Türkçe dinle» Türkçe okunuşu (transkripsiyon) Türkçe sesle; «🕋 Arapça oku» Arap harfli metni cihazdaki Arapça sesle okur — Arapça ses yoksa otomatik olarak Türkçe okunuşuna düşer; «📖 Manasını dinle» duanın Türkçe anlamını (meâlini) okur. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından. Bu zikir «İstiğfar & Arınma» listesinde de sayaçlı olarak mevcuttur.</div>
       </details>
       <details class="jEd" id="tvBox" data-lvl="midi" style="margin-top:10px">
         <summary>🤲 Nasuh Tövbesi — sesli okuma</summary>
@@ -4281,6 +4290,7 @@ function seyStop(finished){
   try{speechSynthesis.cancel()}catch(e){}
   const bt=$('#seyTrPlay'); if(bt){bt.textContent='🔊 Türkçe dinle';bt.classList.remove('playing');}
   const ba=$('#seyArPlay'); if(ba){ba.textContent='🕋 Arapça oku';ba.classList.remove('playing');}
+  const bm=$('#seyMeanPlay'); if(bm){bm.textContent='📖 Manasını dinle';bm.classList.remove('playing');}
   const pr=$('#seyProg'); if(pr)pr.textContent=finished?'Tamam ✦':'';
 }
 function seyPlay(mode){
@@ -4292,7 +4302,7 @@ function seyPlay(mode){
   /* Tövbe/Salavât çalıyorsa durdur (tek seslendirme) */
   try{if(window.__tvPlaying)tovbeStop();}catch(e){}
   try{if(window.__dhPlaying)dhStop();}catch(e){}
-  const wantAr=(mode==='ar');
+  const wantAr=(mode==='ar'), wantMean=(mode==='mean');
   let txt,lang,voice,rate,pitch,prog;
   if(wantAr && SPK.arVoice){
     /* Arapça ses var → Arap harfli metni Arapça sesle oku */
@@ -4302,12 +4312,16 @@ function seyPlay(mode){
     /* Arapça ses yok → Türkçe okunuşundan (transkripsiyon) oku */
     txt=$('#seyTr').textContent; lang='tr-TR'; voice=SPK.voice;
     rate=SPK.rate; pitch=.9; prog='Arapça ses yok — Türkçe okunuşuyla…';
+  }else if(wantMean){
+    /* Türkçe mana/meâl okuma — tırnak işaretlerini temizle */
+    txt=($('#seyMean').textContent||'').replace(/[«»]/g,'').trim();
+    lang='tr-TR'; voice=SPK.voice; rate=SPK.rate; pitch=.9; prog='Mana okunuyor…';
   }else{
     /* Türkçe dinleme → Türkçe okunuşunu Türkçe sesle oku */
     txt=$('#seyTr').textContent; lang='tr-TR'; voice=SPK.voice;
     rate=SPK.rate; pitch=.9; prog='Türkçe okunuyor…';
   }
-  const btn = wantAr ? $('#seyArPlay') : $('#seyTrPlay');
+  const btn = wantAr ? $('#seyArPlay') : (wantMean ? $('#seyMeanPlay') : $('#seyTrPlay'));
   try{
     ac();
     speechSynthesis.cancel();
@@ -4331,9 +4345,10 @@ function seyPlay(mode){
   }catch(e){ seyStop(false); }
 }
 function seyInit(){
-  const t=$('#seyTrPlay'), a=$('#seyArPlay'), s=$('#seyStop');
+  const t=$('#seyTrPlay'), a=$('#seyArPlay'), m=$('#seyMeanPlay'), s=$('#seyStop');
   if(t)t.onclick=()=>seyPlay('tr');
   if(a)a.onclick=()=>seyPlay('ar');
+  if(m)m.onclick=()=>seyPlay('mean');
   if(s)s.onclick=()=>seyStop(false);
 }
 
