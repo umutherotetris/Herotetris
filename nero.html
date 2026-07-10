@@ -102,6 +102,31 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .rxIntro{background:rgba(201,162,39,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
 .rxIntro b{font-size:15px;color:var(--goldh)}
 .rxIntro p{font-size:12px;color:var(--mut);margin:6px 0 0;line-height:1.6}
+/* ═══ Mini Oynatıcı ═══ */
+#miniBar[hidden]{display:none}
+#miniBar{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:700;
+ display:flex;align-items:center;gap:11px;background:rgba(10,26,22,.93);
+ -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+ border:1px solid var(--line2);border-radius:16px;padding:10px 13px;
+ box-shadow:0 6px 24px rgba(0,0,0,.45)}
+#miniBar.paused{border-color:rgba(255,255,255,.18)}
+.mbPulse{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:15px;
+ background:radial-gradient(circle,rgba(236,210,126,.35),rgba(201,162,39,.1));animation:mbPl 2.2s ease-in-out infinite}
+#miniBar.paused .mbPulse{animation:none;opacity:.55;filter:grayscale(.6)}
+@keyframes mbPl{0%,100%{box-shadow:0 0 0 0 rgba(236,210,126,.25)}50%{box-shadow:0 0 0 8px rgba(236,210,126,0)}}
+.mbInfo{flex:1;min-width:0}
+.mbT{font-size:12.5px;font-weight:600;color:var(--goldh);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#miniBar.paused .mbT{color:var(--mut)}
+.mbS{font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbBtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line2);background:rgba(201,162,39,.1);
+ color:var(--goldh);font-size:15px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+.mbBtn.stop{color:#ff9e9e;border-color:rgba(255,120,120,.3);background:rgba(255,90,90,.06)}
+body[data-tema="sabah"] #miniBar{background:rgba(247,241,226,.95)}
+/* Bar görünürken: toast'lar yukarı, içerik altına nefes payı */
+body.mini-on #rateToast{bottom:calc(78px + env(safe-area-inset-bottom))}
+body.mini-on .rxToastMsg{bottom:calc(82px + env(safe-area-inset-bottom))}
+body.mini-on .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
 /* ═══ Mobil dokunma & kullanılabilirlik paketi ═══ */
 /* iOS Safari, odaklanılan giriş 16px altındaysa sayfayı zorla yakınlaştırır;
    tüm yazılabilir girişleri/seçimleri 16px'e sabitleyerek bunu kökten önlüyoruz. */
@@ -1319,9 +1344,21 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06h — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06i — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
+
+<!-- ══ MİNİ OYNATICI — bir şey çalarken altta sabit ══ -->
+<div id="miniBar" hidden>
+  <div class="mbPulse" id="mbPulse">〰</div>
+  <div class="mbInfo">
+    <div class="mbT" id="mbT"></div>
+    <div class="mbS" id="mbS"></div>
+  </div>
+  <button class="mbBtn" id="mbPause" aria-label="Duraklat / sürdür">⏸</button>
+  <button class="mbBtn stop" id="mbStop" aria-label="Tümünü durdur">■</button>
+</div>
+
 <div id="aveOv" hidden></div>
 <div id="qBubble"><div class="qArrow" id="qArrow"></div><div id="qBubbleText"></div></div>
 <div id="cakraViz" hidden><div class="cvOrb" id="cvOrb"></div><div class="cvName" id="cvName"></div><div class="cvHz" id="cvHz"></div><button class="cvClose" id="cvClose">✕ Kapat</button></div>
@@ -5353,6 +5390,84 @@ $('#helpClose').onclick=()=>$('#helpSheet').hidden=true;
 /* ── Sarmalayıcılar ── */
 const _frStartL=frStart; frStart=()=>{_frStartL(); if(FR2.on)fr2Start();};
 const _frStopL=frStop;   frStop=()=>{_frStopL(); fr2Stop();};
+
+/* ════ MİNİ OYNATICI ════
+   Tüm sarmalar buradan SONRA tanımlandığı için (LOG ve fr2 sarmaları dahil)
+   zincirin en dışında kalır — hiçbir mevcut davranışı ezmez. */
+const MINI={paused:false,wasAuto:false};
+function miniPlayingInfo(){
+  const parts=[];
+  let title='';
+  if(FR.playing){const b=bandOf(FR.b); title=b[1]+' · '+(FR.b<10?FR.b.toFixed(1):Math.round(FR.b))+' Hz';}
+  const ambIds=Object.keys(AMB);
+  if(ambIds.length){
+    const nm=ambIds.slice(0,2).map(id=>{const d=AMBIENT_DEFS.find(x=>x.id===id);return d?d.icon+' '+d.name.split(' ')[0]:id;});
+    parts.push(nm.join(' · ')+(ambIds.length>2?' +'+(ambIds.length-2):''));
+  }
+  if(Z.auto)parts.push('📿 '+(($('#zTr')&&$('#zTr').textContent)||'Zikir')+' '+Z.count+'/'+(Z.target>0?Z.target:'∞'));
+  if(!title)title=ambIds.length?'Ambiyans':(Z.auto?'Zikir seansı':'');
+  return {active:(FR.playing||ambIds.length>0||Z.auto), title, sub:parts.join('  •  ')};
+}
+function miniSync(){
+  const bar=$('#miniBar'); if(!bar)return;
+  if(MINI.paused){bar.hidden=false; document.body.classList.add('mini-on'); return;}
+  const i=miniPlayingInfo();
+  bar.hidden=!i.active;
+  document.body.classList.toggle('mini-on',i.active);
+  if(!i.active)return;
+  $('#mbT').textContent=i.title;
+  $('#mbS').textContent=i.sub||'—';
+}
+function miniClearPause(){
+  if(!MINI.paused)return;
+  MINI.paused=false; MINI.wasAuto=false;
+  const bar=$('#miniBar'); if(bar)bar.classList.remove('paused');
+  const p=$('#mbPause'); if(p)p.textContent='⏸';
+  const pu=$('#mbPulse'); if(pu)pu.textContent='〰';
+  try{speechSynthesis.resume()}catch(e){}
+}
+function miniPause(){
+  MINI.paused=true; MINI.wasAuto=Z.auto;
+  try{ctx&&ctx.suspend()}catch(e){}
+  if(Z.auto)autoStop();
+  try{speechSynthesis.pause()}catch(e){}
+  const bar=$('#miniBar'); bar.classList.add('paused');
+  $('#mbPause').textContent='▶'; $('#mbPulse').textContent='⏸';
+  const i=miniPlayingInfo();
+  $('#mbT').textContent='Duraklatıldı';
+  $('#mbS').textContent=(i.sub||i.title)+(MINI.wasAuto?' — zikir '+Z.count+"'de bekliyor":'');
+  miniSync();
+}
+function miniResume(){
+  const wa=MINI.wasAuto;
+  miniClearPause();
+  try{ctx&&ctx.resume()}catch(e){}
+  if(wa)autoStart();
+  miniSync();
+}
+function miniInit(){
+  const p=$('#mbPause'), st=$('#mbStop');
+  if(p)p.onclick=()=>MINI.paused?miniResume():miniPause();
+  if(st)st.onclick=()=>{
+    miniClearPause();
+    /* genişletilmiş durdurucu: hardStopAll TTS'i kapsamıyor (denetim bulgusu) */
+    try{tovbeStop()}catch(e){}
+    try{dhStop()}catch(e){}
+    try{seyStop()}catch(e){}
+    try{speechSynthesis.cancel()}catch(e){}
+    try{ctx&&ctx.resume()}catch(e){}
+    hardStopAll();
+    miniSync();
+  };
+}
+/* Kancalar: başlat/durdur olayları barı besler; yeni başlatma pause'u çözer */
+const _mChOn=chOn;      chOn=d=>{miniClearPause();_mChOn(d);miniSync();};
+const _mChOff=chOff;    chOff=id=>{_mChOff(id);miniSync();};
+const _mFrS=frStart;    frStart=()=>{miniClearPause();_mFrS();miniSync();};
+const _mFrP=frStop;     frStop=()=>{_mFrP();miniSync();};
+const _mAuS=autoStart;  autoStart=()=>{miniClearPause();_mAuS();miniSync();};
+const _mAuP=autoStop;   autoStop=()=>{_mAuP();miniSync();};
+const _mZUI=zUI;        zUI=()=>{_mZUI(); if(!MINI.paused)miniSync();};
 const _repL=rep;
 rep=()=>{
   _repL();
@@ -5900,6 +6015,7 @@ async function rxAskAI(state){
   rxInit();
   mzbzInit();
   vaultInit();
+  miniInit(); miniSync();
   helpApply(HELP.on);
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
