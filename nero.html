@@ -56,6 +56,11 @@ body[data-tema="sabah"] input[type=range]:not(#ns *)::-webkit-slider-runnable-tr
 body[data-tema="sabah"] input[type=range]:not(#ns *)::-moz-range-track{background:linear-gradient(90deg,var(--gold) var(--val,50%),rgba(60,49,34,.16) var(--val,50%))}
 body[data-tema="sabah"] .sw{background:rgba(60,49,34,.14)}
 body[data-tema="sabah"] #logSheet,body[data-tema="sabah"] #rateToast,body[data-tema="sabah"] #temaSheet{background:linear-gradient(180deg,#f7f1e2,#efe4cc)}
+body[data-tema="sabah"] .rxInputRow input,body[data-tema="sabah"] .aikeyRow input,body[data-tema="sabah"] .vaultRow input{background:rgba(255,255,255,.78);border-color:rgba(60,49,34,.28)}
+body[data-tema="sabah"] .vaultCard{background:rgba(255,255,255,.62);border-color:rgba(90,70,150,.3)}
+body[data-tema="sabah"] .vaultHead,body[data-tema="sabah"] .vaultCount,body[data-tema="sabah"] .vaultChange b{color:#5a4696}
+body[data-tema="sabah"] .vEs{color:#5a4696}
+body[data-tema="sabah"] .rxWhy,body[data-tema="sabah"] .mzbzNote,body[data-tema="sabah"] .vaultWarn{background:rgba(0,0,0,.06)}
 body[data-tema="sabah"] #bgEbru{opacity:.42;mix-blend-mode:multiply}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
@@ -75,7 +80,7 @@ body::after{
   animation:breath 9s ease-in-out infinite;
 }
 @keyframes breath{0%,100%{opacity:.45}50%{opacity:1}}
-.wrap{max-width:740px;margin:0 auto;padding:14px 12px 40px;position:relative;z-index:1}
+.wrap{max-width:740px;margin:0 auto;padding:14px 12px calc(40px + env(safe-area-inset-bottom));position:relative;z-index:1}
 
 /* ─────────── 1. BAŞLIK ─────────── */
 header{text-align:center;padding:12px 0 14px}
@@ -97,6 +102,34 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .rxIntro{background:rgba(201,162,39,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
 .rxIntro b{font-size:15px;color:var(--goldh)}
 .rxIntro p{font-size:12px;color:var(--mut);margin:6px 0 0;line-height:1.6}
+/* ═══ Mobil dokunma & kullanılabilirlik paketi ═══ */
+/* iOS Safari, odaklanılan giriş 16px altındaysa sayfayı zorla yakınlaştırır;
+   tüm yazılabilir girişleri/seçimleri 16px'e sabitleyerek bunu kökten önlüyoruz. */
+input[type=text],input[type=password],input[type=email],input[type=number],select,textarea{font-size:16px!important}
+/* Çift-dokunuş yakınlaştırma ve 300ms dokunuş gecikmesini öldür — hızlı zikir
+   çekiminde kritik (aksi hâlde art arda dokunuşlar zoom'a dönüşebiliyor). */
+button,summary,.sw,.tab,.tabTekke,.rut,.rxChip,.rxHistRow,.mzbzTap,.rxItem,.zP{touch-action:manipulation}
+/* .sw anahtarları görsel olarak 42×23; ::before ile görünmez dokunma alanını
+   her yönde 10px büyütüyoruz (knob ::after'ta, ::before boştaydı). */
+.sw::before{content:'';position:absolute;inset:-10px}
+/* Küçük yardımcı butonlar 35px ölçüldü; 40px min dokunma yüksekliği. */
+.btn{min-height:40px}
+.rxHistFav,.rxHistDel{min-width:34px;min-height:34px}
+
+.rxNowBtn{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:linear-gradient(90deg,rgba(46,143,127,.16),rgba(201,162,39,.08));border:1px solid var(--line2);border-radius:12px;padding:11px 13px;color:var(--ink);font-size:12.5px;font-family:inherit;cursor:pointer;margin-bottom:11px;transition:background .2s}
+.rxNowBtn b{color:var(--goldh)}
+.rxNowBtn span{margin-left:auto;color:var(--goldh)}
+.rxNowBtn:active{background:rgba(46,143,127,.22)}
+.rxHistTitle{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin:2px 2px 7px}
+.rxHistRow{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:7px;cursor:pointer}
+.rxHistRow:active{background:rgba(201,162,39,.08)}
+.rxHistIc{font-size:17px}
+.rxHistTt{flex:1;font-size:12.5px;color:var(--ink)}
+.rxHistFav,.rxHistDel{background:none;border:none;font-size:15px;color:var(--dim);cursor:pointer;padding:3px 6px;font-family:inherit}
+.rxHistFav.on{color:var(--goldh)}
+.rxHistDel:active{color:#ff9e9e}
+#rxHist{margin-bottom:12px}
+.rxRut{background:rgba(201,162,39,.1);border-color:var(--line2);color:var(--goldh)}
 .rxChips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
 .rxChip{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--ink);border-radius:20px;padding:7px 12px;font-size:12px;cursor:pointer;transition:background .2s,border-color .2s}
 .rxChip:hover,.rxChip:active{background:rgba(201,162,39,.12);border-color:var(--line2)}
@@ -147,7 +180,7 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .aikeyRow .btn{flex:none}
 .aikeyStatus{font-size:11px;color:var(--mut);margin-top:7px;min-height:14px}
 
-/* ═══ Yâ Mezcel • Yâ Bezcel (Berhetiyye — iç & dış arınma) ═══ */
+/* ═══ Yâ Mezcelin • Yâ Bezcelin (Berhetiyye — iç & dış arınma) ═══ */
 .mzbzCard{padding:4px 2px}
 .mzbzAr{font-size:26px;text-align:center;color:var(--goldh);letter-spacing:.02em;margin:6px 0 4px;direction:rtl;transition:text-shadow .5s,color .5s}
 .mzbzAr.glow{color:#fff;text-shadow:0 0 18px rgba(236,210,126,.8)}
@@ -166,6 +199,29 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .mzbzReset{flex:none;padding:0 15px;font-size:17px}
 .mzbzNote{font-size:11.5px;line-height:1.68;color:var(--mut);background:rgba(0,0,0,.16);border-radius:11px;padding:11px 13px;border-left:2px solid var(--line2)}
 .mzbzNote b{color:var(--goldh)}
+
+/* ═══ Gizli Kasa (Berhetiyye) ═══ */
+.vaultCard{margin-top:14px;background:rgba(10,10,20,.5);border:1px solid rgba(123,111,240,.28);border-radius:13px;padding:13px 14px}
+.vaultHead{font-size:13.5px;color:#c9c1ff;font-weight:600;margin-bottom:9px}
+.vaultInfo{font-size:11px;color:var(--mut);line-height:1.55;margin:0 0 10px}
+.vaultRow{display:flex;gap:7px}
+.vaultRow input{flex:1;min-width:0;background:rgba(6,20,18,.55);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);font-size:12.5px;font-family:inherit;letter-spacing:.05em}
+.vaultRow input:focus{outline:none;border-color:rgba(123,111,240,.5)}
+.vaultRow .btn{flex:none}
+.vaultMsg{font-size:11px;color:var(--mut);margin-top:7px;min-height:14px}
+.vaultBar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.vaultCount{font-size:11.5px;color:#c9c1ff}
+.vaultWarn{font-size:10.5px;line-height:1.6;color:var(--mut);background:rgba(0,0,0,.22);border-radius:10px;padding:10px 11px;margin-bottom:11px}
+#vaultList{display:flex;flex-direction:column;gap:9px}
+.vItem{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.vName{font-size:14px;font-weight:700;color:var(--goldh);margin-bottom:2px}
+.vEs{font-size:12px;color:#c9c1ff;margin-bottom:5px}
+.vM{font-size:12px;color:var(--ink);line-height:1.55}
+.vD{font-size:11px;color:var(--mut);margin-top:4px}
+.vI{font-size:11px;color:var(--mut);font-style:italic;margin-top:3px}
+.vaultChange{margin-top:13px;border-top:1px solid var(--line);padding-top:11px}
+.vaultChange b{font-size:12.5px;color:#c9c1ff}
+.vaultChange p{font-size:10.5px;color:var(--mut);line-height:1.5;margin:5px 0 8px}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 select:not(#ns *){
   font-family:inherit;font-size:12.5px;color:var(--ivory);
@@ -193,7 +249,10 @@ select option{background:#0b1512;color:var(--ivory)}
 #timerBadge{font-size:11px;color:var(--goldh);min-width:0;white-space:nowrap}
 
 /* ─────────── 4. SEKMELER ─────────── */
-.tabs{display:flex;gap:4px;margin:14px 0 14px;padding:4px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.tabs{display:flex;gap:4px;margin:14px 0 14px;padding:4px;border-radius:14px;border:1px solid var(--line);
+  position:sticky;top:6px;z-index:60;
+  background:rgba(7,17,14,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+body[data-tema="sabah"] .tabs{background:rgba(247,241,226,.88)}
 .tab{flex:1;text-align:center;padding:10px 4px;border-radius:10px;color:var(--mut);font-weight:600;font-size:13px;letter-spacing:.03em;transition:.2s}
 .tab.act{color:var(--goldh);background:linear-gradient(180deg,rgba(201,162,39,.16),rgba(201,162,39,.05));box-shadow:inset 0 0 0 1px var(--line2)}
 .tabTekke{cursor:pointer;font:inherit;flex:.9;display:flex;align-items:center;justify-content:center;padding:10px 4px;border-radius:10px;text-decoration:none;color:var(--goldh);font-weight:600;font-size:13px;letter-spacing:.03em;border:1px solid var(--line2);background:rgba(201,162,39,.07);box-shadow:0 0 14px rgba(201,162,39,.08) inset}
@@ -1206,20 +1265,20 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       </details>
 
       <details class="jEd" id="mzbzBox" data-lvl="midi" style="margin-top:10px">
-        <summary>🕊 Yâ Mezcel • Yâ Bezcel — iç &amp; dış arınma</summary>
+        <summary>🕊 Yâ Mezcelin • Yâ Bezcelin — iç &amp; dış arınma</summary>
         <div class="mzbzCard">
-          <div class="mzbzAr" id="mzbzAr">يَا مَزْجَل يَا بَزْجَل</div>
-          <div class="mzbzTr">Yâ Mezcel • Yâ Bezcel</div>
+          <div class="mzbzAr" id="mzbzAr">يَا مَزْجَلٍ يَا بَزْجَلٍ</div>
+          <div class="mzbzTr">Yâ Mezcelin • Yâ Bezcelin</div>
           <div class="mzbzEsma">
-            <span><b>Mezcel</b> → Yâ Kayyûm · Yâ Kâim<small>Her şeyi ayakta tutan, varlığı idare eden</small></span>
-            <span><b>Bezcel</b> → Yâ Vehhâb<small>Karşılıksız veren, lütfunu bolca ihsan eden</small></span>
+            <span><b>Mezcelin</b> → Yâ Kayyûm · Yâ Kâim<small>Her şeyi ayakta tutan, varlığı idare eden</small></span>
+            <span><b>Bezcelin</b> → Yâ Vehhâb<small>Karşılıksız veren, lütfunu bolca ihsan eden</small></span>
           </div>
           <div class="mzbzCounter">
             <button class="mzbzTap" id="mzbzTap"><span class="mzbzN" id="mzbzN">0</span><small>dokun & zikret</small></button>
             <button class="btn mzbzReset" id="mzbzReset" title="Sayacı sıfırla">↺</button>
           </div>
           <div class="mzbzNote">
-            <b>✦ Niyet:</b> Nasuh tövbesinin ardından, <b>iç ve dış temizliği/arınma</b> niyetiyle zikredilebilir. Maksat isimlerden güç devşirmek değil; Allah'ın kayyûmiyetini (her şeyi ayakta tutuşunu) ve vehhâbiyetini (karşılıksız verişini) tefekkür ederek acziyet, tevhid ve arınma hâlini yaşamaktır.
+            <b>✦ Niyet:</b> Nasuh tövbesinin ardından, <b>iç ve dış temizliği/arınma</b> niyetiyle zikredilebilir. İsimler tilavet formuyla (<i>Mezcelin · Bezcelin</i>) okunur; bu akış, zikrin dilde ve kalpte titreşimini (rezonansını) güçlendirmek içindir. Maksat isimlerden güç devşirmek değil; Allah'ın kayyûmiyetini (her şeyi ayakta tutuşunu) ve vehhâbiyetini (karşılıksız verişini) tefekkür ederek acziyet, tevhid ve arınma hâlini yaşamaktır.
           </div>
           <div style="font-size:9px;color:var(--dim);margin-top:8px;line-height:1.55">Berhetiyye geleneğindeki bu isimlerin Esmâü'l-Hüsnâ karşılıkları yorumî/sembolik eşleştirmedir; kesin nass hükmünde değildir. Tevhid, dua ve edeple okunmalıdır.</div>
         </div>
@@ -1246,7 +1305,9 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <b>🧭 İçsel Reçete — SÜKÛN Hekîm</b>
       <p>Hâlini bir cümleyle yaz; uygulamanın tüm iç hazinesinden (frekans, ambiyans, esmâ zikri, nefes) sana özel bütünsel bir reçete kurayım ve niçin işe yarayacağını anlatayım.</p>
     </div>
+    <div id="rxNow"></div>
     <div class="rxChips" id="rxChips"></div>
+    <div id="rxHist"></div>
     <div class="rxInputRow">
       <input type="text" id="rxInput" placeholder="Örn: yol yorgunuyum ve uykum var…" autocomplete="off">
       <button class="btn" id="rxGo">Reçete ✦</button>
@@ -1258,7 +1319,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06d — kalp huzuru niyetiyle ✦
+    SÜKÛN v1.0 — build 2026-07-06h — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 <div id="aveOv" hidden></div>
@@ -1330,6 +1391,35 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
       <button class="btn" id="aikeySave">Kaydet</button>
     </div>
     <div id="aikeyStatus" class="aikeyStatus"></div>
+  </div>
+
+  <div class="vaultCard" id="vaultCard" hidden>
+    <div class="vaultHead">🔐 Gizli Kasa — Berhetiyye Tefekkür Haritası</div>
+    <div id="vaultGate">
+      <p class="vaultInfo">Bu bölüm yalnızca sana özeldir ve içerik AES-256 ile şifrelidir. Doğru parola girilmeden — kaynak kodu görüntülense bile — okunamaz.</p>
+      <div class="vaultRow">
+        <input type="password" id="vaultPw" placeholder="Parola…" autocomplete="off" spellcheck="false">
+        <button class="btn" id="vaultGo">Aç</button>
+      </div>
+      <div id="vaultMsg" class="vaultMsg"></div>
+    </div>
+    <div id="vaultOpen" hidden>
+      <div class="vaultBar">
+        <span class="vaultCount">26 isim • yorumî esmâ haritası</span>
+        <button class="btn" id="vaultLock">🔒 Kilitle</button>
+      </div>
+      <div class="vaultWarn">⚠️ Bu isimlerin Esmâü'l-Hüsnâ karşılıkları yorumî/sembolik eşleştirmedir; kesin nass hükmünde değildir. Maksat güç değil, Allah'ın kudretini, rahmetini ve kulun acziyetini idrak etmektir. Tevhid ve edeple.</div>
+      <div id="vaultList"></div>
+      <div class="vaultChange">
+        <b>🔑 Parolanı değiştir</b>
+        <p>Kendi parolanı belirle. İçerik yeni parolayla yeniden şifrelenip bu cihazda kalıcı olarak saklanır (dosyayı yeniden yüklesen de kalır).</p>
+        <div class="vaultRow">
+          <input type="password" id="vaultNewPw" placeholder="Yeni parola (en az 4)…" autocomplete="off" spellcheck="false">
+          <button class="btn" id="vaultChBtn">Kaydet</button>
+        </div>
+        <div id="vaultChMsg" class="vaultMsg"></div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -4069,7 +4159,10 @@ $('#bakBtn').onclick=()=>{
   const out={_app:'SÜKÛN',_v:1,_t:new Date().toISOString()};
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(bakKey(k))out[k]=localStorage.getItem(k);
+    /* sukun.aikey bilinçli olarak HARİÇ: Claude API anahtarı yedek dosyasına
+       düz metin girmesin (dosya paylaşılırsa sızardı). Veri temizlemede yine
+       silinir; geri yüklemede dosyada bulunmayacağı için etkilenmez. */
+    if(bakKey(k) && k!=='sukun.aikey')out[k]=localStorage.getItem(k);
   }
   const a=document.createElement('a'), d=new Date(), p=x=>String(x).padStart(2,'0');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));
@@ -5418,6 +5511,7 @@ function rxRenderCard(rx, sourceLabel){
 
     '<div class="rxActions">'+
       '<button class="btn rxAll" data-rxall="1">✦ Tüm reçeteyi başlat</button>'+
+      '<button class="btn rxRut" data-rxrut="1">💾 Rutin yap</button>'+
       '<button class="btn rxAI" data-rxai="1">🪄 Daha derin açıklama (AI)</button>'+
     '</div>'+
   '</div>';
@@ -5426,13 +5520,56 @@ function rxRenderCard(rx, sourceLabel){
 /* Son üretilen reçeteyi sakla (buton eylemleri için) */
 let RX_LAST=null;
 
-function rxShow(text){
+function rxShowProfile(profile, sourceLabel, query){
   const host=$('#rxResult'); if(!host)return;
-  const profile=rxMatch(text);
   const rx=rxBuild(profile);
-  RX_LAST={rx, query:text};
-  host.innerHTML=rxRenderCard(rx, null);
+  RX_LAST={rx, query:(query||profile.title)};
+  host.innerHTML=rxRenderCard(rx, sourceLabel||null);
   host.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function rxShow(text){ rxShowProfile(rxMatch(text), null, text); }
+
+/* ── Zamana duyarlı öneri: günün saatine göre uygun profil ── */
+function rxTimeProfile(){
+  const h=new Date().getHours();
+  let id,label;
+  if(h>=5&&h<9){id='tefekkur';label='Seher';}
+  else if(h>=9&&h<17){id='odak';label='Gün içi';}
+  else if(h>=17&&h<21){id='yorgun';label='Akşam';}
+  else{id='uyku';label='Gece';}
+  return {p:RX_PROFILES.find(x=>x.id===id)||RX_FALLBACK, label};
+}
+function rxNowRender(){
+  const host=$('#rxNow'); if(!host)return;
+  const {p,label}=rxTimeProfile();
+  host.innerHTML='<button class="rxNowBtn" id="rxNowBtn">'+p.icon+' <b>'+label+' için öneri:</b> '+p.title+' <span>→</span></button>';
+  const b=$('#rxNowBtn');
+  if(b)b.onclick=()=>{ const inp=$('#rxInput'); if(inp)inp.value=''; rxShowProfile(p, 'SÜKÛN Hekîm • '+label.toLowerCase()+' önerisi'); };
+}
+
+/* ── Reçete geçmişi + favoriler (sukun.rxHist) ── */
+function rxHistLoad(){ try{return S.get('sukun.rxHist',[])||[];}catch(e){return [];} }
+function rxHistSave(a){ S.set('sukun.rxHist',a); }
+function rxHistAdd(query,pid){
+  let a=rxHistLoad().filter(x=>!(x.pid===pid&&x.q===query));
+  a.unshift({q:query,pid,t:Date.now(),fav:false});
+  const favs=a.filter(x=>x.fav), rest=a.filter(x=>!x.fav).slice(0,8);
+  rxHistSave(favs.concat(rest).slice(0,20));
+  rxHistRender();
+}
+function rxHistRender(){
+  const host=$('#rxHist'); if(!host)return;
+  const a=rxHistLoad();
+  if(!a.length){host.innerHTML='';return;}
+  host.innerHTML='<div class="rxHistTitle">🕘 Son reçetelerin</div>'+a.map((x,i)=>{
+    const p=RX_PROFILES.find(pp=>pp.id===x.pid)||RX_FALLBACK;
+    return '<div class="rxHistRow" data-hi="'+i+'">'+
+      '<span class="rxHistIc">'+p.icon+'</span>'+
+      '<span class="rxHistTt">'+p.title+'</span>'+
+      '<button class="rxHistFav'+(x.fav?' on':'')+'" data-hfav="'+i+'" aria-label="Favori">'+(x.fav?'★':'☆')+'</button>'+
+      '<button class="rxHistDel" data-hdel="'+i+'" aria-label="Sil">✕</button>'+
+    '</div>';
+  }).join('');
 }
 
 /* ── Bileşen uygulayıcıları — ana envantere doğrudan bağlanır ── */
@@ -5469,12 +5606,124 @@ function rxApplyAll(rx){
   rxApplyFreq(rx);
   rxApplyAmb(rx);
   rxApplyEsma(rx);
+  try{rxHistAdd((RX_LAST&&RX_LAST.query)||rx.profile.title, rx.profile.id)}catch(e){}
   const msg=rx.profile.icon+' Reçete hazır — frekans, ses ve zikir başladı'+(rx.br?'. Nefes için 🌬 kartına dokun.':'.');
   if(typeof showToast==='function')showToast(msg);
   else if($('#rxToast')){ const t=$('#rxToast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 }
 
-/* ── Yâ Mezcel • Yâ Bezcel sayacı (Berhetiyye — iç & dış arınma) ── */
+
+/* ════════════════════════════════════════════════════════════════
+   🔐 GİZLİ BERHETİYYE KASASI (yalnızca parolayla açılır)
+   İçerik AES-256-GCM ile GERÇEKTEN şifrelidir; kaynak kodda yalnızca
+   çözülemez şifreli metin bulunur. Doğru parola girilince Web Crypto
+   ile çözülüp gösterilir. Parola PBKDF2-SHA256 (150k) ile türetilir.
+   Kullanıcı kendi parolasını app içinden ayarlarsa, içerik yeni
+   parolayla yeniden şifrelenip localStorage'a yazılır (origin bazlı,
+   dosya yeniden yüklense de kalıcıdır) ve bundan sonra o kullanılır.
+   ════════════════════════════════════════════════════════════════ */
+const VAULT_EMBED = {"v":1,"iter":150000,"salt":"nIF44APwArOueHNhUzuRzQ==","iv":"Osyu2IfU1oi7yVIP","ct":"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"};
+const _b64ToBuf = b64 => Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+const _bufToB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+
+async function _vaultKey(pw, salt, iter, usage){
+  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt:_b64ToBuf(salt), iterations:iter, hash:'SHA-256'},
+    mat, {name:'AES-GCM', length:256}, false, usage);
+}
+async function vaultDecrypt(pw){
+  /* önce kullanıcı-özel (localStorage) blob, yoksa gömülü blob */
+  let blob;
+  try{ const ls=S.get('sukun.vaultBlob',null); blob = ls || VAULT_EMBED; }catch(e){ blob=VAULT_EMBED; }
+  const key = await _vaultKey(pw, blob.salt, blob.iter, ['decrypt']);
+  const ptBuf = await crypto.subtle.decrypt({name:'AES-GCM', iv:_b64ToBuf(blob.iv)}, key, _b64ToBuf(blob.ct));
+  return JSON.parse(new TextDecoder().decode(ptBuf));
+}
+async function vaultReencrypt(plainArr, newPw){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const iter = 150000;
+  const mat = await crypto.subtle.importKey('raw', new TextEncoder().encode(newPw), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'},
+    mat, {name:'AES-GCM', length:256}, false, ['encrypt']);
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(plainArr)));
+  return {v:1, iter, salt:_bufToB64(salt), iv:_bufToB64(iv), ct:_bufToB64(ct)};
+}
+
+let VAULT_DATA=null;   /* çözülmüş içerik (bellekte, sadece açıkken) */
+
+function vaultRenderList(arr){
+  const host=$('#vaultList'); if(!host)return;
+  host.innerHTML = arr.map(x=>
+    '<div class="vItem">'+
+      '<div class="vName">'+x.n+'</div>'+
+      '<div class="vEs">'+x.es+'</div>'+
+      '<div class="vM">'+x.m+'</div>'+
+      '<div class="vD">🧭 '+x.d+'</div>'+
+      '<div class="vI">✨ '+x.i+'</div>'+
+    '</div>').join('');
+}
+
+async function vaultTryOpen(){
+  const pwEl=$('#vaultPw'), st=$('#vaultMsg');
+  const pw=(pwEl?pwEl.value:'').trim();
+  if(!pw){ if(st)st.textContent='Parola gir.'; return; }
+  if(st)st.textContent='Çözülüyor…';
+  try{
+    const arr=await vaultDecrypt(pw);
+    VAULT_DATA=arr;
+    vaultRenderList(arr);
+    $('#vaultGate').hidden=true;
+    $('#vaultOpen').hidden=false;
+    if(pwEl)pwEl.value='';
+    if(st)st.textContent='';
+  }catch(e){
+    if(st)st.textContent='✗ Parola hatalı.';
+  }
+}
+function vaultLock(){
+  VAULT_DATA=null;
+  const host=$('#vaultList'); if(host)host.innerHTML='';
+  $('#vaultOpen').hidden=true;
+  $('#vaultGate').hidden=false;
+  const m=$('#vaultMsg'); if(m)m.textContent='';
+}
+async function vaultChangePw(){
+  const a=$('#vaultNewPw'), st=$('#vaultChMsg');
+  const np=(a?a.value:'').trim();
+  if(!VAULT_DATA){ if(st)st.textContent='Önce kasayı aç.'; return; }
+  if(np.length<4){ if(st)st.textContent='Parola en az 4 karakter olmalı.'; return; }
+  if(st)st.textContent='Şifreleniyor…';
+  try{
+    const blob=await vaultReencrypt(VAULT_DATA, np);
+    S.set('sukun.vaultBlob', blob);
+    if(a)a.value='';
+    if(st)st.textContent='✓ Yeni parola kaydedildi (bu cihazda kalıcı). Artık kasayı bu parolayla açacaksın.';
+  }catch(e){ if(st)st.textContent='✗ Kaydedilemedi.'; }
+}
+
+function vaultInit(){
+  const g=$('#vaultGo'); if(g)g.onclick=vaultTryOpen;
+  const pw=$('#vaultPw'); if(pw)pw.addEventListener('keydown',e=>{ if(e.key==='Enter')vaultTryOpen(); });
+  const lk=$('#vaultLock'); if(lk)lk.onclick=vaultLock;
+  const ch=$('#vaultChBtn'); if(ch)ch.onclick=vaultChangePw;
+  /* gizli tetik: alt bilgideki ✦ süsüne 5 kez dokununca Ayarlar açılır ve kasa görünür olur */
+  const trig=$('#vaultTrigger');
+  if(trig){
+    let c=0, tmr=null;
+    trig.addEventListener('click',()=>{
+      c++; clearTimeout(tmr); tmr=setTimeout(()=>c=0,1200);
+      if(c>=5){ c=0;
+        const card=$('#vaultCard'); if(card)card.hidden=false;
+        const sheet=$('#logSheet');
+        if(sheet && sheet.hidden){ try{lsRender();lsHeatRender();lsEsmaRender();}catch(e){} sheet.hidden=false; }
+        setTimeout(()=>{ if(card)card.scrollIntoView({behavior:'smooth',block:'center'}); },120);
+      }
+    });
+  }
+}
+
+/* ── Yâ Mezcelin • Yâ Bezcelin sayacı (Berhetiyye — iç & dış arınma) ── */
 function mzbzInit(){
   const tap=$('#mzbzTap'), rst=$('#mzbzReset'), nEl=$('#mzbzN'), ar=$('#mzbzAr');
   if(!tap)return;
@@ -5488,10 +5737,10 @@ function mzbzInit(){
     if(Z.vib&&navigator.vibrate)try{navigator.vibrate(12)}catch(e){}
     if(ar){ar.classList.remove('glow'); void ar.offsetWidth; ar.classList.add('glow');}
     if(n%33===0){ if(navigator.vibrate&&Z.vib)try{navigator.vibrate([60,40,60])}catch(e){}
-      try{LOG.touch('mzbz','🕊 Yâ Mezcel · Yâ Bezcel — arınma')}catch(e){} }
+      try{LOG.touch('mzbz','🕊 Yâ Mezcelin · Yâ Bezcelin — arınma')}catch(e){} }
   };
   if(rst)rst.onclick=()=>{
-    if(n>0 && !confirm('Yâ Mezcel · Yâ Bezcel sayacı sıfırlansın mı?'))return;
+    if(n>0 && !confirm('Yâ Mezcelin · Yâ Bezcelin sayacı sıfırlansın mı?'))return;
     n=0; S.set('sukun.mzbz',0); if(nEl)nEl.textContent='0';
   };
 }
@@ -5536,8 +5785,38 @@ function rxInit(){
       return;
     }
     if(e.target.closest('[data-rxall]')){ rxApplyAll(RX_LAST.rx); return; }
+    if(e.target.closest('[data-rxrut]')){
+      /* Önce reçeteyi uygula (durum tam otursun), sonra mevcut kanıtlanmış
+         Rutin sistemine anlık görüntü olarak kaydet. Aynı adlı eski rutin
+         varsa üzerine yazılır. */
+      rxApplyAll(RX_LAST.rx);
+      const nm=RX_LAST.rx.profile.icon+' '+RX_LAST.rx.profile.title;
+      setTimeout(()=>{ try{
+        RUT=RUT.filter(r=>r.name!==nm);
+        RUT.push(rutSnap(nm)); S.set('sukun.rut',RUT); rutRender();
+        const t=$('#rxToast'); if(t){ t.textContent='💾 «'+nm+'» rutin olarak kaydedildi — üstteki rutin şeridinden tek dokunuşla geri çağırabilirsin'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
+      }catch(e){} },350);
+      return;
+    }
     if(e.target.closest('[data-rxai]')){ rxAskAI(RX_LAST); return; }
   });
+
+  const hist=$('#rxHist');
+  if(hist)hist.addEventListener('click',e=>{
+    const fav=e.target.closest('[data-hfav]');
+    if(fav){ const a=rxHistLoad(); const x=a[+fav.dataset.hfav]; if(x){x.fav=!x.fav; rxHistSave(a); rxHistRender();} return; }
+    const del=e.target.closest('[data-hdel]');
+    if(del){ const a=rxHistLoad(); a.splice(+del.dataset.hdel,1); rxHistSave(a); rxHistRender(); return; }
+    const row=e.target.closest('[data-hi]');
+    if(row){ const x=rxHistLoad()[+row.dataset.hi]; if(!x)return;
+      const p=RX_PROFILES.find(pp=>pp.id===x.pid)||RX_FALLBACK;
+      const inp=$('#rxInput'); if(inp)inp.value=(x.q&&x.q!==p.title)?x.q:'';
+      rxShowProfile(p, 'SÜKÛN Hekîm • geçmişten', x.q);
+    }
+  });
+
+  rxNowRender();
+  rxHistRender();
 }
 
 /* ════════ ONLINE AI (opsiyonel) — kullanıcının kendi anahtarıyla ════════
@@ -5620,6 +5899,7 @@ async function rxAskAI(state){
   dhInit();
   rxInit();
   mzbzInit();
+  vaultInit();
   helpApply(HELP.on);
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
