@@ -102,6 +102,11 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .rxIntro{background:rgba(201,162,39,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
 .rxIntro b{font-size:15px;color:var(--goldh)}
 .rxIntro p{font-size:12px;color:var(--mut);margin:6px 0 0;line-height:1.6}
+/* ═══ Zikir ilerleme halkası (imza sahne katmanı) ═══ */
+.progArc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.progArc svg{transform:rotate(-90deg)}
+#zProgArc{transition:stroke-dashoffset .35s ease}
+
 /* ═══ Bugün kartı ═══ */
 .todayCard{background:linear-gradient(135deg,rgba(46,143,127,.14),rgba(201,162,39,.07));border:1px solid var(--line2);border-radius:16px;padding:14px 15px;margin:2px 0 4px}
 .tcTop{display:flex;align-items:center;gap:10px;margin-bottom:11px}
@@ -1227,6 +1232,14 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div class="ring r2"></div>
         <div class="ring r3"></div>
       </div>
+      <div class="progArc" aria-hidden="true"><svg width="276" height="276" viewBox="0 0 276 276">
+        <circle cx="138" cy="138" r="132" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="5"/>
+        <circle id="zProgArc" cx="138" cy="138" r="132" fill="none" stroke="url(#zpg)" stroke-width="5"
+          stroke-linecap="round" stroke-dasharray="829.38" stroke-dashoffset="829.38"/>
+        <defs><linearGradient id="zpg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ecd27e"/><stop offset="1" stop-color="#2e8f7f"/>
+        </linearGradient></defs>
+      </svg></div>
       <div class="zAr" id="zAr"></div>
       <div class="zTr" id="zTr"></div>
       <div class="zMean" id="zMean"></div>
@@ -1238,14 +1251,6 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
         <div class="cntNums">
           <div class="cntBig" id="cntBig">0</div>
           <div class="cntSub" id="cntSub">Hedef 33 • Devir 0</div>
-        </div>
-        <div class="progWrap">
-          <svg width="68" height="68" viewBox="0 0 68 68">
-            <circle cx="34" cy="34" r="29" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/>
-            <circle id="progC" cx="34" cy="34" r="29" fill="none" stroke="#c9a227" stroke-width="4"
-              stroke-linecap="round" stroke-dasharray="182.2" stroke-dashoffset="182.2"/>
-          </svg>
-          <span class="pc" id="progPct">0%</span>
         </div>
       </div>
 
@@ -1409,7 +1414,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06l — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06m — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 
@@ -2754,8 +2759,7 @@ function zUI(){
   $('#cntBig').textContent=Z.count;
   $('#cntSub').textContent=(Z.target>0?'Hedef '+Z.target:'Serbest sayım')+' • Devir '+Z.devir;
   const pct=Z.target>0?Z.count/Z.target:(Z.count%100)/100;
-  $('#progC').style.strokeDashoffset=182.2*(1-clamp(pct,0,1));
-  $('#progPct').textContent=Math.round(pct*100)+'%';
+  const arc=$('#zProgArc'); if(arc)arc.style.strokeDashoffset=(829.38*(1-clamp(pct,0,1))).toFixed(1);
   $('#totalCnt').textContent=Z.total;
   const ab=$('#autoBtn');
   ab.textContent=Z.auto?'⏸ Akışı Durdur':'▶ Otomatik Akış';
