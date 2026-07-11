@@ -102,6 +102,49 @@ h1{font-family:var(--fD);font-weight:600;font-size:30px;letter-spacing:.38em;tex
 .rxIntro{background:rgba(201,162,39,.06);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:12px}
 .rxIntro b{font-size:15px;color:var(--goldh)}
 .rxIntro p{font-size:12px;color:var(--mut);margin:6px 0 0;line-height:1.6}
+/* ═══ Bugün kartı ═══ */
+.todayCard{background:linear-gradient(135deg,rgba(46,143,127,.14),rgba(201,162,39,.07));border:1px solid var(--line2);border-radius:16px;padding:14px 15px;margin:2px 0 4px}
+.tcTop{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.tcMoon{font-size:26px;line-height:1}
+.tcHi{font-size:14.5px;font-weight:700;color:var(--goldh)}
+.tcSub{font-size:10.5px;color:var(--mut)}
+.tcName{display:flex;gap:7px;margin-bottom:7px}
+.tcName input{flex:1;min-width:0;background:rgba(6,20,18,.5);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);font-family:inherit}
+.tcName input:focus{outline:none;border-color:var(--line2)}
+.tcName .btn{flex:none}
+.tcSkip{display:block;width:100%;background:none;border:none;font-size:10px;color:var(--dim);text-align:center;margin-bottom:9px;cursor:pointer;font-family:inherit;padding:4px}
+.tcStats{display:flex;gap:8px;margin-bottom:11px}
+.tcStat{flex:1;background:rgba(0,0,0,.18);border-radius:11px;padding:8px 6px;text-align:center}
+.tcN{font-size:17px;font-weight:700;color:var(--goldh);font-variant-numeric:tabular-nums}
+.tcL{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.tcRow{display:flex;gap:8px}
+.tcGo{flex:1;background:rgba(46,143,127,.16);border:1px solid var(--emerald);color:#8fe3cf;border-radius:12px;padding:11px 8px;font-size:12px;text-align:center;font-weight:600;cursor:pointer;font-family:inherit;min-height:40px}
+.tcGo.alt{background:rgba(201,162,39,.1);border-color:var(--line2);color:var(--goldh)}
+body[data-tema="sabah"] .tcStat{background:rgba(0,0,0,.07)}
+body[data-tema="sabah"] .tcName input{background:rgba(255,255,255,.78);border-color:rgba(60,49,34,.28)}
+body[data-tema="sabah"] .tcGo{color:#1e5c4f}
+
+/* ═══ Numerik Hz girişi ═══ */
+.numIn{width:84px;flex:none;background:rgba(6,20,18,.5);border:1px solid var(--line);border-radius:9px;padding:7px 9px;color:var(--ink);text-align:right;font-family:inherit;font-variant-numeric:tabular-nums}
+.numIn:focus{outline:none;border-color:var(--line2)}
+#ns .numIn{margin-top:7px;background:rgba(26,27,58,.7);border-color:rgba(123,111,240,.3);color:#E8E8FF}
+body[data-tema="sabah"] .numIn{background:rgba(255,255,255,.78);border-color:rgba(60,49,34,.28)}
+
+/* ═══ Haftalık zikir seyri ═══ */
+.wkCard{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin:0 0 12px}
+.wkT{font-size:12.5px;font-weight:700;color:var(--goldh);margin-bottom:10px}
+.wkT small{font-weight:400;color:var(--dim);font-size:10px}
+.wkWeek{display:flex;align-items:flex-end;gap:7px;height:84px;margin-bottom:8px}
+.wkDay{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%}
+.wkBar{width:100%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--goldh),rgba(201,162,39,.45));min-height:4px}
+.wkBar.wkEmpty{height:7px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.14)}
+.wkDay small{font-size:9px;color:var(--dim)}
+.wkToday .wkBar:not(.wkEmpty){background:linear-gradient(180deg,#8fe3cf,var(--emerald));box-shadow:0 0 12px rgba(46,143,127,.35)}
+.wkToday small{color:#8fe3cf;font-weight:700}
+.wkStreak{display:flex;align-items:center;gap:8px;background:rgba(201,162,39,.07);border-radius:10px;padding:8px 11px;font-size:11px;color:var(--mut)}
+.wkStreak b{color:var(--goldh)}
+body[data-tema="sabah"] .wkBar.wkEmpty{background:rgba(60,49,34,.06);border-color:rgba(60,49,34,.22)}
+
 /* ═══ Mini Oynatıcı ═══ */
 #miniBar[hidden]{display:none}
 #miniBar{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:700;
@@ -987,6 +1030,26 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
     </div>
   </div>
 
+  <!-- ═══ BUGÜN KARTI ═══ -->
+  <div class="todayCard" id="todayCard">
+    <div class="tcTop"><span class="tcMoon" id="tcIcon">🌙</span>
+      <div><div class="tcHi" id="tcHi"></div><div class="tcSub" id="tcSub"></div></div></div>
+    <div class="tcName" id="tcNameRow" hidden>
+      <input type="text" id="tcNameIn" placeholder="Adın… (isteğe bağlı)" maxlength="24" autocomplete="off">
+      <button class="btn" id="tcNameSave">Kaydet</button>
+    </div>
+    <button class="tcSkip" id="tcSkip" hidden>geç — genel selamlamayla devam et</button>
+    <div class="tcStats">
+      <div class="tcStat"><div class="tcN" id="tcZk">0</div><div class="tcL">bugün zikir</div></div>
+      <div class="tcStat"><div class="tcN" id="tcStreak">—</div><div class="tcL">seri 🔥</div></div>
+      <div class="tcStat"><div class="tcN" id="tcMin">0 dk</div><div class="tcL">seans</div></div>
+    </div>
+    <div class="tcRow">
+      <button class="tcGo" id="tcRx"></button>
+      <button class="tcGo alt" id="tcRut" hidden></button>
+    </div>
+  </div>
+
   <!-- ═══ SEKMELER ═══ -->
   <nav class="tabs" role="tablist">
     <button class="tab act" data-t="amb" role="tab">🌿 Ambiyans</button>
@@ -1031,13 +1094,15 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
       <div class="sldRow">
         <label for="carSld">Taşıyıcı <span class="qb" data-h="carrier">?</span></label>
-        <input type="range" id="carSld" min="60" max="963" step="0.1" value="180">
+        <input type="range" id="carSld" min="20" max="2000" step="0.1" value="180">
         <span class="valB" id="carVal">180.0 Hz</span>
+        <input type="number" class="numIn" id="carNum" min="20" max="2000" step="0.1" inputmode="decimal" aria-label="Taşıyıcı Hz elle gir">
       </div>
       <div class="sldRow">
         <label for="beatSld">Vuruş <span class="qb" data-h="beat">?</span></label>
         <input type="range" id="beatSld" min="0.5" max="40" step="0.01" value="7.83">
         <span class="valB" id="beatVal">7.83 Hz</span>
+        <input type="number" class="numIn" id="beatNum" min="0.5" max="40" step="0.01" inputmode="decimal" aria-label="Vuruş Hz elle gir">
       </div>
       <div class="chipLbl">BEYİN DALGASI BANDI <span class="qb" data-h="band">?</span></div>
       <div class="bandChips" id="bandChips">
@@ -1344,7 +1409,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06i — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06l — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 
@@ -1409,7 +1474,12 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
   <button class="btn danger" id="cacheBtn" style="width:100%;margin:0 0 11px">🗑 Önbelleği Temizle — tüm veriler</button>
   <div class="lsIns" id="lsInsight"></div>
   <div class="lsBars" id="lsBars"></div>
-  <div class="lsHeatWrap"><div class="lsHeatT">Son 12 hafta</div><div class="lsHeat" id="lsHeat"></div></div>
+  <div class="wkCard" id="wkCard">
+    <div class="wkT">📈 Haftalık zikir seyrin <small>(adet)</small></div>
+    <div class="wkWeek" id="wkWeek"></div>
+    <div class="wkStreak" id="wkStreak"></div>
+  </div>
+  <div class="lsHeatWrap"><div class="lsHeatT">Son 12 hafta <small style="color:var(--dim)">(dakika)</small></div><div class="lsHeat" id="lsHeat"></div></div>
   <div id="lsEsma" class="lsEsma"></div>
   <button class="btn" id="halBtn" style="width:100%;margin:4px 0 10px;border-color:var(--line2);color:var(--goldh)">🖼 Hâl kartı oluştur & paylaş</button>
   <div id="lsList"></div>
@@ -2493,6 +2563,9 @@ function bandOf(b){
 function syncFreqUI(){
   const cS=$('#carSld'), bS=$('#beatSld');
   cS.value=FR.c; bS.value=FR.b; setFill(cS); setFill(bS);
+  const cN=$('#carNum'), bN=$('#beatNum');
+  if(cN&&document.activeElement!==cN)cN.value=FR.c.toFixed(1);
+  if(bN&&document.activeElement!==bN)bN.value=FR.b.toFixed(2);
   $('#carVal').textContent=FR.c.toFixed(1)+' Hz';
   $('#beatVal').textContent=FR.b.toFixed(2)+' Hz';
   const [key,nm,ds]=bandOf(FR.b);
@@ -3007,6 +3080,11 @@ $('#presets').addEventListener('click',e=>{
   }
 });
 $('#carSld').addEventListener('input',e=>{stopJourney();FR.c=+e.target.value;frRetune();syncFreqUI();saveSettings();});
+function numApply(el,lo,hi,set){const v=parseFloat(el.value);if(!isFinite(v))return syncFreqUI();stopJourney();set(clamp(v,lo,hi));frRetune();syncFreqUI();saveSettings();}
+$('#carNum').addEventListener('change',e=>numApply(e.target,20,2000,v=>FR.c=v));
+$('#beatNum').addEventListener('change',e=>numApply(e.target,0.5,40,v=>FR.b=v));
+$('#carNum').addEventListener('keydown',e=>{if(e.key==='Enter'){e.target.blur();}});
+$('#beatNum').addEventListener('keydown',e=>{if(e.key==='Enter'){e.target.blur();}});
 $('#beatSld').addEventListener('input',e=>{stopJourney();FR.b=+e.target.value;frRetune();syncFreqUI();saveSettings();});
 $('#frVol').addEventListener('input',e=>{
   FR.vol=+e.target.value; setFill(e.target);
@@ -3364,7 +3442,7 @@ function lsRender(){
     return '<div class="lsItem"><b>'+dd+'</b><span>'+(x.detail||'')+'</span><span class="m">'+fmtDur(x.dur)+(x.mood?' · '+'✦'.repeat(x.mood):'')+'</span></div>';
   }).join(''):'<div style="color:var(--dim);font-size:12px;padding:10px 2px">Henüz kayıt yok — 1.5 dakikadan uzun bir seans bitince burada belirir.</div>';
 }
-$('#logBtn').onclick=()=>{lsRender();lsHeatRender();lsEsmaRender();$('#logSheet').hidden=false;};
+$('#logBtn').onclick=()=>{lsRender();lsHeatRender();lsEsmaRender();try{weekRender()}catch(e){}$('#logSheet').hidden=false;};
 $('#lsClose').onclick=()=>$('#logSheet').hidden=true;
 $('#lsClear').onclick=()=>{if(confirm('Günlük silinsin mi?')){S.set('sukun.log',[]);lsRender();}};
 const _chOn=chOn; chOn=d=>{_chOn(d);LOG.touch('amb',d.icon+' '+d.name);};
@@ -5468,6 +5546,96 @@ const _mFrP=frStop;     frStop=()=>{_mFrP();miniSync();};
 const _mAuS=autoStart;  autoStart=()=>{miniClearPause();_mAuS();miniSync();};
 const _mAuP=autoStop;   autoStop=()=>{_mAuP();miniSync();};
 const _mZUI=zUI;        zUI=()=>{_mZUI(); if(!MINI.paused)miniSync();};
+
+/* ════ GÜNLÜK ZİKİR SAYIMI (sukun.dayZk) — Bugün kartı & haftalık grafik temeli ════ */
+function dayKey(d){const x=d||new Date();return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');}
+const _repDZ=rep; rep=()=>{
+  _repDZ();
+  try{
+    const m=S.get('sukun.dayZk',{})||{}; const k=dayKey();
+    m[k]=(m[k]||0)+1;
+    const keys=Object.keys(m).sort();           /* 14 günden eskiyi buda */
+    while(keys.length>14)delete m[keys.shift()];
+    S.set('sukun.dayZk',m);
+    const tz=$('#tcZk'); if(tz)tz.textContent=m[k];              /* canlı sayaç */
+    if(m[k]===1){const ts=$('#tcStreak'); if(ts){const st=zkStreak(m); ts.textContent=st>0?st+' gün':'—';}}
+  }catch(e){}
+};
+function weekRender(){
+  const host=$('#wkWeek'), sEl=$('#wkStreak'); if(!host)return;
+  const m=S.get('sukun.dayZk',{})||{};
+  const DL=['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];   /* getDay(): 0=Pazar */
+  const days=[]; const now=new Date();
+  for(let i=6;i>=0;i--){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    days.push({k:dayKey(d), lbl:DL[d.getDay()], n:(m[dayKey(d)]||0), today:i===0});
+  }
+  const mx=Math.max(1,...days.map(x=>x.n));
+  host.innerHTML=days.map(x=>{
+    const h=x.n>0?Math.max(12,Math.round(x.n/mx*100)):0;
+    const bar=x.n>0
+      ?'<div class="wkBar" style="height:'+h+'%" title="'+x.n+' zikir"></div>'
+      :'<div class="wkBar wkEmpty" title="0"></div>';
+    return '<div class="wkDay'+(x.today?' wkToday':'')+'">'+bar+'<small>'+x.lbl+'</small></div>';
+  }).join('');
+  const st=zkStreak(m);   /* ortak seri hesabı — Bugün kartıyla aynı kaynak */
+  const dataDays=Object.keys(m).filter(k=>m[k]>0).length;
+  if(dataDays===0)sEl.innerHTML='🌱 <span>İlk zikirle grafik canlanır — <b>veri toplandıkça dolar ✦</b></span>';
+  else if(st>0)sEl.innerHTML='🔥 <span><b>'+st+' günlük seri</b>'+(dataDays<4?' — grafik, veri toplandıkça dolar ✦':' — devam ✦')+'</span>';
+  else sEl.innerHTML='🌱 <span>Seri bugün yeniden başlayabilir ✦</span>';
+}
+
+/* ════ BUGÜN KARTI ════ */
+function zkStreak(m){
+  let st=0; const d=new Date();
+  if(!((m[dayKey(d)]||0)>0)) d.setDate(d.getDate()-1);
+  while((m[dayKey(d)]||0)>0){st++; d.setDate(d.getDate()-1);}
+  return st;
+}
+function tcGreet(){
+  const h=new Date().getHours();
+  if(h>=5&&h<9)return{i:'🌅',hi:'Hayırlı sabahlar',sub:'seher vakti · tefekkür demi'};
+  if(h>=9&&h<17)return{i:'☀️',hi:'Hayırlı günler',sub:'gün içi · odak vakti'};
+  if(h>=17&&h<21)return{i:'🌇',hi:'Hayırlı akşamlar',sub:'akşam · toparlanma vakti'};
+  return{i:'🌙',hi:'Hayırlı geceler',sub:'yatsı sonrası · gece sükûneti vakti'};
+}
+function todayRender(){
+  const card=$('#todayCard'); if(!card)return;
+  const g=tcGreet(); const nm=(S.get('sukun.name','')||'').trim();
+  $('#tcIcon').textContent=g.i;
+  $('#tcHi').textContent=g.hi+(nm?', '+nm:' ✦');
+  $('#tcSub').textContent=g.sub;
+  const showName=!nm && !S.get('sukun.nameSkip',0);
+  $('#tcNameRow').hidden=!showName; $('#tcSkip').hidden=!showName;
+  const m=S.get('sukun.dayZk',{})||{};
+  $('#tcZk').textContent=m[dayKey()]||0;
+  const st=zkStreak(m); $('#tcStreak').textContent=st>0?(st+' gün'):'—';
+  const today=dayKey();
+  const secs=(S.get('sukun.log',[])||[]).filter(e=>e&&e.t&&dayKey(new Date(e.t))===today).reduce((a,e)=>a+(+e.dur||0),0);
+  $('#tcMin').textContent=Math.round(secs/60)+' dk';
+  const tp=rxTimeProfile();
+  $('#tcRx').textContent=tp.p.icon+' '+tp.label+' reçeteni kur';
+  const rb=$('#tcRut');
+  if(typeof RUT!=='undefined'&&RUT&&RUT.length){
+    const last=RUT[RUT.length-1];
+    rb.hidden=false; rb.textContent='▶ '+(last.name.length>16?last.name.slice(0,15)+'…':last.name);
+  }else rb.hidden=true;
+}
+function todayInit(){
+  const sv=$('#tcNameSave'), inp=$('#tcNameIn'), sk=$('#tcSkip');
+  if(sv)sv.onclick=()=>{const v=(inp.value||'').trim().slice(0,24); if(v)S.set('sukun.name',v); todayRender();};
+  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')sv.click();});
+  if(sk)sk.onclick=()=>{S.set('sukun.nameSkip',1); todayRender();};
+  const rx=$('#tcRx');
+  if(rx)rx.onclick=()=>{
+    const tp=rxTimeProfile();
+    const t=document.querySelector('.tab[data-t="rx"]'); if(t)t.click();
+    rxShowProfile(tp.p,'SÜKÛN Hekîm • '+tp.label.toLowerCase()+' önerisi');
+  };
+  const rb=$('#tcRut');
+  if(rb)rb.onclick=()=>{ if(typeof RUT!=='undefined'&&RUT&&RUT.length)rutApply(RUT[RUT.length-1]); };
+  todayRender();
+}
 const _repL=rep;
 rep=()=>{
   _repL();
@@ -5831,7 +5999,7 @@ function vaultInit(){
       if(c>=5){ c=0;
         const card=$('#vaultCard'); if(card)card.hidden=false;
         const sheet=$('#logSheet');
-        if(sheet && sheet.hidden){ try{lsRender();lsHeatRender();lsEsmaRender();}catch(e){} sheet.hidden=false; }
+        if(sheet && sheet.hidden){ try{lsRender();lsHeatRender();lsEsmaRender();weekRender();}catch(e){} sheet.hidden=false; }
         setTimeout(()=>{ if(card)card.scrollIntoView({behavior:'smooth',block:'center'}); },120);
       }
     });
@@ -6016,6 +6184,7 @@ async function rxAskAI(state){
   mzbzInit();
   vaultInit();
   miniInit(); miniSync();
+  todayInit();
   helpApply(HELP.on);
   syncMixerUI(); syncFreqUI(); zUI();
   $$('input[type=range]').forEach(setFill);
@@ -7397,7 +7566,7 @@ return{open,close};
   <!-- TAB NAVIGATION -->
   <nav class="tab-nav" id="tabNav">
     <button class="tab-btn active" data-tab="panel-main"><span class="tab-emoji">🧠</span>Ana Panel</button>
-    <button class="tab-btn" data-tab="panel-zikir"><span class="tab-emoji">📿</span>Zikir</button>
+    <button class="tab-btn" id="nsZikirBridge"><span class="tab-emoji">📿</span>Zikir ۞</button>
     <button class="tab-btn" data-tab="panel-breath"><span class="tab-emoji">🌬️</span>Nefes</button>
     <button class="tab-btn" data-tab="panel-med"><span class="tab-emoji">🌀</span>Hipnoz</button>
   </nav>
@@ -7475,9 +7644,10 @@ return{open,close};
         <div class="control-row">
           <div class="control-label">Taşıyıcı Frekansı <span id="carrierVal">200 Hz</span></div>
           <div class="slider-wrap">
-            <input type="range" id="carrierFreq" min="80" max="500" value="200"/>
+            <input type="range" id="carrierFreq" min="20" max="2000" value="200"/>
             <div class="slider-track" id="carrierTrack"></div>
           </div>
+          <input type="number" class="numIn" id="carrierNum" min="20" max="2000" step="0.1" inputmode="decimal" aria-label="Taşıyıcı Hz elle gir">
         </div>
 
         <div class="control-row">
@@ -7486,6 +7656,7 @@ return{open,close};
             <input type="range" id="beatFreq" min="0.5" max="40" step="0.1" value="10"/>
             <div class="slider-track" id="beatTrack"></div>
           </div>
+          <input type="number" class="numIn" id="beatNumNS" min="0.5" max="40" step="0.01" inputmode="decimal" aria-label="Beat Hz elle gir">
         </div>
 
         <div class="control-row">
@@ -7606,62 +7777,6 @@ return{open,close};
   </div><!-- /panel-main -->
 
   <!-- ═══════════ PANEL: ZİKİR (ESMA-ÜL HÜSNA) ═══════════ -->
-  <div class="tab-panel" id="panel-zikir">
-    <div class="card section-gap">
-      <div class="card-title">Esma-ül Hüsna Zikir Motoru</div>
-      <div class="module-subtitle">Bir isim seçin; ritmik döngü, beat frekansıyla senkronize görsel zikir alanında ve sesli tekrarda akar.</div>
-
-      <div class="zikir-name-display" id="zikirDisplay">
-        <div class="zikir-arabic" id="zikirArabic">الله</div>
-        <div class="zikir-translit" id="zikirTranslit">Allah</div>
-        <div class="zikir-meaning" id="zikirMeaning">Zat-ı İlahi'nin özel ismi</div>
-      </div>
-
-      <div class="hv-stage" id="zikirHvStage">
-        <canvas id="hvCanvas"></canvas>
-        <div class="hv-focus-dot"></div>
-      </div>
-
-      <div class="zikir-counter">
-        <button class="med-ctrl-btn" id="zikirResetBtn" aria-label="Sıfırla">↺</button>
-        <div>
-          <div class="zikir-count-val" id="zikirCount">0</div>
-          <div class="zikir-count-target">/ <span id="zikirTarget">33</span> hedef</div>
-        </div>
-        <button class="med-ctrl-btn" id="zikirTargetBtn" aria-label="Hedef değiştir">🎯</button>
-      </div>
-
-      <button class="zikir-tap-btn" id="zikirTapBtn">Çek (dokun veya boşluk tuşu)</button>
-
-      <div class="zikir-mode-toggle">
-        <button class="toggle-btn active" data-zmode="manual">Manuel Tıkla</button>
-        <button class="toggle-btn" data-zmode="auto">Otomatik Döngü</button>
-      </div>
-
-      <div class="zikir-settings-row">
-        <span class="zikir-settings-label">🔊 Sesli okuma (Web Speech)</span>
-        <label class="switch"><input type="checkbox" id="zikirVoiceToggle"/><span class="switch-slider"></span></label>
-      </div>
-      <div class="zikir-settings-row">
-        <span class="zikir-settings-label">🎧 Beat frekansıyla senkronize otomatik tempo</span>
-        <label class="switch"><input type="checkbox" id="zikirSyncToggle" checked/><span class="switch-slider"></span></label>
-      </div>
-      <div class="control-row" style="margin-top:10px;">
-        <div class="control-label">Otomatik Tempo <span id="zikirTempoVal">60 bpm</span></div>
-        <div class="slider-wrap">
-          <input type="range" id="zikirTempo" min="20" max="180" value="60"/>
-          <div class="slider-track" id="zikirTempoTrack"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card section-gap">
-      <div class="card-title">99 İsim — Esma-ül Hüsna</div>
-      <div class="zikir-name-grid" id="zikirNameGrid"></div>
-    </div>
-  </div>
-
-  <!-- ═══════════ PANEL: NEFES KOÇU ═══════════ -->
   <div class="tab-panel" id="panel-breath">
     <div class="card section-gap">
       <div class="card-title">Nefes Egzersiz Koçu</div>
@@ -8546,6 +8661,16 @@ function initTabs() {
   const buttons = document.querySelectorAll('.tab-btn');
   buttons.forEach(btn => {
     btn.onclick = () => {
+      /* Zikir sekmesi artık ana SÜKÛN zikrine köprü — NS'in kopya zikir modülü
+         söküldü (99'luk ESMA listesi ana uygulamada zaten eksiksiz). */
+      if(!btn.dataset.tab){
+        try{close()}catch(e){}
+        const mt=document.querySelector('.tab[data-t="zkr"]');
+        if(mt)mt.click();
+        const st=document.getElementById('zStage');
+        if(st)setTimeout(()=>st.scrollIntoView({behavior:'smooth',block:'center'}),150);
+        return;
+      }
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -8553,7 +8678,6 @@ function initTabs() {
       if (target) target.classList.add('active');
 
       // Lazily (re)size visual-engine canvases when their tab becomes visible
-      if (btn.dataset.tab === 'panel-zikir') HV.resize('hvCanvas');
       if (btn.dataset.tab === 'panel-med') HV.resize('hvCanvasMed');
     };
   });
@@ -8743,229 +8867,6 @@ const HV = {
 // ═══════════════════════════════════════════
 //  ESMA-ÜL HÜSNA — ZİKİR MOTORU
 // ═══════════════════════════════════════════
-const ESMA = [
-  {ar:'الله',tr:'Allah',mean:"Zat-ı İlahi'nin özel ismi"},
-  {ar:'الرحمن',tr:'Er-Rahmân',mean:'Tüm yaratılmışlara merhamet eden'},
-  {ar:'الرحيم',tr:'Er-Rahîm',mean:'İnananlara özel rahmet eden'},
-  {ar:'الملك',tr:'El-Melik',mean:'Mülkün gerçek sahibi'},
-  {ar:'القدوس',tr:'El-Kuddûs',mean:'Her türlü eksiklikten uzak, tertemiz'},
-  {ar:'السلام',tr:'Es-Selâm',mean:'Selamet veren, her türlü kusurdan salim'},
-  {ar:'المؤمن',tr:'El-Mü\'min',mean:'Güven veren, emin kılan'},
-  {ar:'المهيمن',tr:'El-Müheymin',mean:'Her şeyi görüp gözeten'},
-  {ar:'العزيز',tr:'El-Azîz',mean:'Karşı durulamaz izzet sahibi'},
-  {ar:'الجبار',tr:'El-Cebbâr',mean:'Dilediğini yaptıran, eksikleri tamamlayan'},
-  {ar:'المتكبر',tr:'El-Mütekebbir',mean:'Büyüklüğünde eşi olmayan'},
-  {ar:'الخالق',tr:'El-Hâlık',mean:'Yaratan, yoktan var eden'},
-  {ar:'البارئ',tr:'El-Bâri',mean:'Her şeyi kusursuzca yaratan'},
-  {ar:'المصور',tr:'El-Musavvir',mean:'Her varlığa şekil veren'},
-  {ar:'الغفار',tr:'El-Gaffâr',mean:'Günahları çokça örten ve bağışlayan'},
-  {ar:'القهار',tr:'El-Kahhâr',mean:'Her şeye galip gelen'},
-  {ar:'الوهاب',tr:'El-Vehhâb',mean:'Karşılıksız çokça bağışta bulunan'},
-  {ar:'الرزاق',tr:'Er-Rezzâk',mean:'Tüm canlıların rızkını veren'},
-  {ar:'الفتاح',tr:'El-Fettâh',mean:'Her türlü zorluğu açan, çözen'},
-  {ar:'العليم',tr:'El-Alîm',mean:'Her şeyi hakkıyla bilen'},
-  {ar:'القابض',tr:'El-Kâbid',mean:'Dilediğini sıkıp daraltan'},
-  {ar:'الباسط',tr:'El-Bâsit',mean:'Dilediğini açıp genişleten'},
-  {ar:'الخافض',tr:'El-Hâfıd',mean:'Dilediğini alçaltan'},
-  {ar:'الرافع',tr:'Er-Râfi',mean:'Dilediğini yükselten'},
-  {ar:'المعز',tr:'El-Muizz',mean:'Dilediğini aziz eden'},
-  {ar:'المذل',tr:'El-Müzil',mean:'Dilediğini alçaltan, zelil kılan'},
-  {ar:'السميع',tr:'Es-Semî',mean:'Her şeyi işiten'},
-  {ar:'البصير',tr:'El-Basîr',mean:'Her şeyi gören'},
-  {ar:'الحكم',tr:'El-Hakem',mean:'Hak ile hükmeden'},
-  {ar:'العدل',tr:'El-Adl',mean:'Mutlak adalet sahibi'},
-  {ar:'اللطيف',tr:'El-Latîf',mean:'En ince işleri bilen, lütufkâr'},
-  {ar:'الخبير',tr:'El-Habîr',mean:'Her şeyin iç yüzünden haberdar'},
-  {ar:'الحليم',tr:'El-Halîm',mean:'Cezalandırmada acele etmeyen'},
-  {ar:'العظيم',tr:'El-Azîm',mean:'Büyüklüğü sınırsız olan'},
-  {ar:'الغفور',tr:'El-Gafûr',mean:'Çok bağışlayan'},
-  {ar:'الشكور',tr:'Eş-Şekûr',mean:'Az amele çok mükâfat veren'},
-  {ar:'العلي',tr:'El-Aliyy',mean:'Yüceliği sınırsız olan'},
-  {ar:'الكبير',tr:'El-Kebîr',mean:'Büyüklükte eşi olmayan'},
-  {ar:'الحفيظ',tr:'El-Hafîz',mean:'Her şeyi koruyan'},
-  {ar:'المقيت',tr:'El-Mukît',mean:'Rızıkları yaratıp ulaştıran'},
-  {ar:'الحسيب',tr:'El-Hasîb',mean:'Hesabı görüp yeten'},
-  {ar:'الجليل',tr:'El-Celîl',mean:'Azamet ve celal sahibi'},
-  {ar:'الكريم',tr:'El-Kerîm',mean:'Cömertliği sınırsız olan'},
-  {ar:'الرقيب',tr:'Er-Rakîb',mean:'Her şeyi gözetip denetleyen'},
-  {ar:'المجيب',tr:'El-Mucîb',mean:'Duaları kabul eden'},
-  {ar:'الواسع',tr:'El-Vâsi',mean:'İlmi ve rahmeti her şeyi kuşatan'},
-  {ar:'الحكيم',tr:'El-Hakîm',mean:'Her işi hikmetli olan'},
-  {ar:'الودود',tr:'El-Vedûd',mean:'Kullarını çok seven'},
-  {ar:'المجيد',tr:'El-Mecîd',mean:'Şanı ve şerefi yüce olan'},
-  {ar:'الباعث',tr:'El-Bâis',mean:'Ölüleri dirilten'},
-  {ar:'الشهيد',tr:'Eş-Şehîd',mean:'Her şeye şahit olan'},
-  {ar:'الحق',tr:'El-Hak',mean:'Varlığı değişmez gerçek olan'},
-  {ar:'الوكيل',tr:'El-Vekîl',mean:'Kendine güvenenlerin işini üstlenen'},
-  {ar:'القوي',tr:'El-Kaviyy',mean:'Kudreti sonsuz olan'},
-  {ar:'المتين',tr:'El-Metîn',mean:'Sarsılmaz kuvvet sahibi'},
-  {ar:'الولي',tr:'El-Veliyy',mean:'İnananların yardımcısı ve dostu'},
-  {ar:'الحميد',tr:'El-Hamîd',mean:'Övgüye en layık olan'},
-  {ar:'المحصي',tr:'El-Muhsî',mean:'Her şeyin sayısını bilen'},
-  {ar:'المبدئ',tr:'El-Mübdi',mean:'Varlıkları ilk yaratan'},
-  {ar:'المعيد',tr:'El-Muîd',mean:'Yarattıklarını yok edip yeniden yaratan'},
-  {ar:'المحيي',tr:'El-Muhyî',mean:'Can veren, dirilten'},
-  {ar:'المميت',tr:'El-Mümît',mean:'Ölümü yaratan'},
-  {ar:'الحي',tr:'El-Hayy',mean:'Ezelî ve ebedî diri olan'},
-  {ar:'القيوم',tr:'El-Kayyûm',mean:'Her şeyi varlıkta tutan'},
-  {ar:'الواجد',tr:'El-Vâcid',mean:'İstediğini istediği an bulan'},
-  {ar:'الماجد',tr:'El-Mâcid',mean:'Şan ve şeref sahibi'},
-  {ar:'الواحد',tr:'El-Vâhid',mean:'Zatında ve sıfatlarında bir olan'},
-  {ar:'الصمد',tr:'Es-Samed',mean:'Hiçbir şeye muhtaç olmayan'},
-  {ar:'القادر',tr:'El-Kâdir',mean:'Her şeye gücü yeten'},
-  {ar:'المقتدر',tr:'El-Muktedir',mean:'Kudretiyle her şeye hükmeden'},
-  {ar:'المقدم',tr:'El-Mukaddim',mean:'Dilediğini öne alan'},
-  {ar:'المؤخر',tr:'El-Müahhir',mean:'Dilediğini geri bırakan'},
-  {ar:'الأول',tr:'El-Evvel',mean:'Varlığının başlangıcı olmayan'},
-  {ar:'الآخر',tr:'El-Âhir',mean:'Varlığının sonu olmayan'},
-  {ar:'الظاهر',tr:'Ez-Zâhir',mean:'Varlığı delilleriyle apaçık olan'},
-  {ar:'الباطن',tr:'El-Bâtın',mean:'Zatı gizli, hakikati akılla kavranamayan'},
-  {ar:'الوالي',tr:'El-Vâlî',mean:'Kâinatı tek başına idare eden'},
-  {ar:'المتعالي',tr:'El-Müteâlî',mean:'Aklın tasavvüründen çok yüce olan'},
-  {ar:'البر',tr:'El-Berr',mean:'İyilik ve lütuf sahibi'},
-  {ar:'التواب',tr:'Et-Tevvâb',mean:'Tevbeleri çokça kabul eden'},
-  {ar:'المنتقم',tr:'El-Müntekım',mean:'Suçluları cezalandıran'},
-  {ar:'العفو',tr:'El-Afüvv',mean:'Affı çok olan'},
-  {ar:'الرؤوف',tr:'Er-Raûf',mean:'Çok şefkatli, esirgeyen'},
-  {ar:'مالك الملك',tr:'Mâlik-ül Mülk',mean:'Mülkün gerçek ve ebedî sahibi'},
-  {ar:'ذو الجلال والإكرام',tr:'Zü\'l-Celâli ve\'l-İkrâm',mean:'Hem büyüklük hem ikram sahibi'},
-  {ar:'المقسط',tr:'El-Muksit',mean:'Her işi denk ve adaletli yapan'},
-  {ar:'الجامع',tr:'El-Câmi',mean:'Dilediğini dilediği yerde toplayan'},
-  {ar:'الغني',tr:'El-Ganî',mean:'Hiçbir şeye ihtiyacı olmayan zengin'},
-  {ar:'المغني',tr:'El-Mugnî',mean:'Dilediğini zengin eden'},
-  {ar:'المانع',tr:'El-Mâni',mean:'İstemediği şeye mâni olan'},
-  {ar:'الضار',tr:'Ed-Dârr',mean:'İlahî hikmeti gereği zarar verdiren'},
-  {ar:'النافع',tr:'En-Nâfi',mean:'Hayır ve fayda yaratan'},
-  {ar:'النور',tr:'En-Nûr',mean:'Âlemleri nurlandıran'},
-  {ar:'الهادي',tr:'El-Hâdî',mean:'Hidayete erdiren'},
-  {ar:'البديع',tr:'El-Bedî',mean:'Eşi benzeri olmayan şeyler yaratan'},
-  {ar:'الباقي',tr:'El-Bâkî',mean:'Varlığının sonu olmayan, ebedî'},
-  {ar:'الوارث',tr:'El-Vâris',mean:'Her şeyin asıl sahibi, varisi'},
-  {ar:'الرشيد',tr:'Er-Reşîd',mean:'Doğru yola sevk eden'},
-  {ar:'الصبور',tr:'Es-Sabûr',mean:'Çok sabırlı olan'},
-];
-// Hû zikri — Esma listesine ek özel mod
-const HU_ZIKR = {ar:'هو',tr:'Hû',mean:"O — Zatına işaret eden zikir; nefesle (HÛÛÛ) çekilir"};
-
-const ZK = {
-  activeIdx: 0,
-  count: 0,
-  target: 33,
-  mode: 'manual',
-  autoTimer: null,
-  voiceOn: false,
-  syncOn: true,
-  tempo: 60,
-};
-
-function initZikir() {
-  // Render 99-name grid + Hû card
-  const grid = document.getElementById('zikirNameGrid');
-  const huCard = document.createElement('div');
-  huCard.className = 'zikir-name-card';
-  huCard.dataset.idx = '-1';
-  huCard.innerHTML = `<div class="zikir-name-card-ar">هو</div><div class="zikir-name-card-tr">Hû Zikri</div>`;
-  huCard.onclick = () => selectZikirName(-1);
-  grid.appendChild(huCard);
-
-  ESMA.forEach((e,i) => {
-    const card = document.createElement('div');
-    card.className = 'zikir-name-card';
-    card.dataset.idx = i;
-    card.innerHTML = `<div class="zikir-name-card-ar">${e.ar}</div><div class="zikir-name-card-tr">${e.tr}</div>`;
-    card.onclick = () => selectZikirName(i);
-    grid.appendChild(card);
-  });
-  selectZikirName(0);
-
-  document.getElementById('zikirTapBtn').onclick = zikirTap;
-  document.getElementById('zikirResetBtn').onclick = () => { ZK.count=0; updateZikirCount(); };
-  document.getElementById('zikirTargetBtn').onclick = cycleZikirTarget;
-  document.getElementById('zikirVoiceToggle').onchange = e => ZK.voiceOn = e.target.checked;
-  document.getElementById('zikirSyncToggle').onchange = e => {
-    ZK.syncOn = e.target.checked;
-    document.getElementById('zikirTempo').disabled = e.target.checked;
-    if (ZK.mode==='auto') restartZikirAuto();
-  };
-  document.getElementById('zikirTempo').oninput = function() {
-    ZK.tempo = parseInt(this.value);
-    document.getElementById('zikirTempoVal').textContent = this.value+' bpm';
-    updateTrack('zikirTempo','zikirTempoTrack');
-    if (ZK.mode==='auto' && !ZK.syncOn) restartZikirAuto();
-  };
-
-  document.querySelectorAll('[data-zmode]').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('[data-zmode]').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      ZK.mode = btn.dataset.zmode;
-      if (ZK.mode==='auto') { restartZikirAuto(); showToast('🔄 Otomatik zikir döngüsü başladı'); }
-      else { clearInterval(ZK.autoTimer); showToast('👆 Manuel mod'); }
-    };
-  });
-
-  document.addEventListener('keydown', e => {
-    if(document.getElementById('ns').hidden)return;
-    if (e.code==='Space' && document.getElementById('panel-zikir').classList.contains('active')) {
-      e.preventDefault(); zikirTap();
-    }
-  });
-
-  HV.start('hvCanvas');
-}
-
-function selectZikirName(idx) {
-  ZK.activeIdx = idx;
-  document.querySelectorAll('.zikir-name-card').forEach(c => c.classList.toggle('active', parseInt(c.dataset.idx)===idx));
-  const e = idx === -1 ? HU_ZIKR : ESMA[idx];
-  document.getElementById('zikirArabic').textContent = e.ar;
-  document.getElementById('zikirTranslit').textContent = e.tr;
-  document.getElementById('zikirMeaning').textContent = e.mean;
-  ZK.count = 0; updateZikirCount();
-  // Subtle hue shift per name for visual variety
-  HV.setHue(200 + (idx===-1 ? 300 : idx*3) % 160);
-}
-
-function updateZikirCount() {
-  document.getElementById('zikirCount').textContent = ZK.count;
-  if (ZK.count >= ZK.target) {
-    showToast('✨ Zikir hedefine ulaşıldı');
-  }
-}
-
-function cycleZikirTarget() {
-  const targets = [33, 99, 100, 1000];
-  const idx = targets.indexOf(ZK.target);
-  ZK.target = targets[(idx+1) % targets.length];
-  document.getElementById('zikirTarget').textContent = ZK.target;
-  showToast(`🎯 Hedef: ${ZK.target}`);
-}
-
-function zikirTap() {
-  ZK.count++;
-  updateZikirCount();
-  const btn = document.getElementById('zikirTapBtn');
-  btn.style.transform = 'scale(0.96)';
-  setTimeout(()=>btn.style.transform='scale(1)', 120);
-  if (ZK.voiceOn) speakZikirName();
-}
-
-function speakZikirName() {
-  if (!('speechSynthesis' in window)) return;
-  const e = ZK.activeIdx === -1 ? HU_ZIKR : ESMA[ZK.activeIdx];
-  const u = new SpeechSynthesisUtterance(e.tr);
-  u.lang = 'tr-TR'; u.rate = 0.9; u.pitch = 0.95;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-
-function restartZikirAuto() {
-  clearInterval(ZK.autoTimer);
-  const bpm = ZK.syncOn ? Math.max(20, Math.min(180, (parseFloat(document.getElementById('beatFreq')?.value||10))*8)) : ZK.tempo;
-  const interval = 60000 / bpm;
-  ZK.autoTimer = setInterval(() => { if (ZK.mode==='auto') zikirTap(); }, interval);
-}
-
 // ═══════════════════════════════════════════
 //  NEFES EGZERSİZ KOÇU
 // ═══════════════════════════════════════════
@@ -9304,7 +9205,25 @@ document.addEventListener('DOMContentLoaded', () => {
   startSpectrumAnim();
   initTracks();
   initTabs();
-  initZikir();
+  /* initZikir kaldırıldı — zikir ana SÜKÛN'da. Numerik Hz bağları: */
+  (function(){
+    function link(numId,sldId){
+      const n=document.getElementById(numId), sl=document.getElementById(sldId);
+      if(!n||!sl)return;
+      n.value=sl.value;
+      sl.addEventListener('input',()=>{ if(document.activeElement!==n)n.value=sl.value; });
+      n.addEventListener('change',()=>{
+        let v=parseFloat(n.value); if(!isFinite(v)){n.value=sl.value;return;}
+        v=Math.min(+sl.max,Math.max(+sl.min,v));
+        sl.value=v; n.value=v;
+        sl.dispatchEvent(new Event('input',{bubbles:true}));
+        sl.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+      n.addEventListener('keydown',e=>{if(e.key==='Enter')n.blur();});
+    }
+    link('carrierNum','carrierFreq');
+    link('beatNumNS','beatFreq');
+  })();
   initBreath();
   initMeditation();
   initHvStylePickers();
@@ -9326,22 +9245,19 @@ function open(){
   // Re-arm the Zikir hypnotic-visual canvas: close() below fully stops its RAF loop,
   // so it needs restarting each time the module is reopened. (hvCanvasMed restarts
   // on its own via openMedScript(), so it doesn't need to be handled here.)
-  try{if(typeof HV!=='undefined'&&HV.start&&document.getElementById('hvCanvas'))HV.start('hvCanvas');}catch(e){}
 }
 function close(){
   try{if(NS.isPlaying&&typeof stopAll==='function')stopAll()}catch(e){}
   try{if(typeof stopBreath==='function')stopBreath()}catch(e){}
-  // Auto-zikir and any in-progress meditation/hypnosis session were previously left
-  // running silently in the background after closing NeuroSync — stop both explicitly.
-  try{
-    clearInterval(ZK.autoTimer);
-    ZK.mode='manual';
-    document.querySelectorAll('[data-zmode]').forEach(b=>b.classList.toggle('active', b.dataset.zmode==='manual'));
-  }catch(e){}
   try{if(typeof closeMedScript==='function')closeMedScript()}catch(e){}
   try{HV.stopAll()}catch(e){}
   try{speechSynthesis.cancel()}catch(e){}
-  try{NS.ctx&&NS.ctx.suspend&&NS.ctx.suspend()}catch(e){}
+  try{
+    /* ctx artık ana SÜKÛN ile paylaşımlı — ana tarafta bir şey çalıyorsa askıya ALMA,
+       yoksa NS'i kapatmak ambiyansı/frekansı da susturuyordu. */
+    const anaMesgul=(typeof FR!=='undefined'&&FR.playing)||(typeof AMB!=='undefined'&&Object.keys(AMB).length>0)||(typeof Z!=='undefined'&&Z.auto);
+    if(!anaMesgul&&NS.ctx&&NS.ctx.suspend)NS.ctx.suspend();
+  }catch(e){}
   document.getElementById('ns').hidden=true;
   try{
     const d=Math.round((Date.now()-(window.__nsT0||Date.now()))/1000);
