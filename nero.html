@@ -362,6 +362,8 @@ input[type=range]:not(#ns *)::-moz-range-thumb{width:15px;height:15px;border-rad
 .chIc{font-size:19px;flex:none}
 .chName{flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.15}
 .chName small{display:block;font-weight:400;font-size:10px;color:var(--dim)}
+.chEdit{background:none;border:none;font-size:14px;cursor:pointer;padding:4px 6px;opacity:.75;flex:none;min-width:30px;min-height:30px}
+.chEdit:active{opacity:1}
 .chDel{flex:none;width:24px;height:24px;border-radius:7px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--dim);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.2s}
 .chDel:active{background:rgba(194,91,78,.18);color:#e8b1a8;border-color:rgba(194,91,78,.4)}
 
@@ -1414,7 +1416,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06m — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06n — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 
@@ -2846,6 +2848,7 @@ function renderMixer(){
      '<div class="chTop">'+
        '<span class="chIc">'+d.icon+'</span>'+
        '<div class="chName">'+d.name+'<small>'+d.desc+'</small></div>'+
+       (d.custom?'<button class="chEdit" data-edit="'+d.id+'" aria-label="'+d.name+' adını değiştir" title="Adını değiştir">✏️</button>':'')+
        (d.custom?'<button class="chDel" data-del="'+d.id+'" aria-label="'+d.name+' sil" title="Bu sesi sil">🗑</button>':'')+
        '<button class="sw" data-sw="'+d.id+'" aria-label="'+d.name+' aç/kapat"></button>'+
      '</div>'+
@@ -2863,6 +2866,8 @@ function syncMixerUI(){
   });
 }
 $('#mixer').addEventListener('click',e=>{
+  const ed=e.target.closest('[data-edit]');
+  if(ed){ csRename(ed.dataset.edit); return; }
   const del=e.target.closest('[data-del]');
   if(del){ csDelete(del.dataset.del); return; }
   const sw=e.target.closest('[data-sw]'); if(!sw)return;
@@ -4618,6 +4623,21 @@ function csAddToMixer(id,name,blob){
   });
   chVol[id]=.5;
   renderMixer(); syncMixerUI();
+}
+async function csRename(id){
+  const def=AMBIENT_DEFS.find(d=>d.id===id); if(!def)return;
+  const nm=prompt('Yeni ad:', def.name);
+  if(nm===null)return;                         /* iptal */
+  const clean=nm.trim().slice(0,28);
+  if(!clean||clean===def.name)return;
+  try{
+    const list=await CAMB_DB.all();
+    const rec=list.find(x=>x.key===id);
+    if(rec){ rec.val.name=clean; await CAMB_DB.set(id,rec.val); }  /* blob korunur, sadece ad */
+  }catch(e){}
+  def.name=clean; def.icon=csIconFor(clean);    /* simge de yeni isme göre tazelensin */
+  renderMixer(); syncMixerUI();
+  try{miniSync()}catch(e){}                     /* çalıyorsa mini bar'daki ad da güncellensin */
 }
 async function csDelete(id){
   if(!confirm('Bu ses kalıcı olarak silinsin mi?'))return;
