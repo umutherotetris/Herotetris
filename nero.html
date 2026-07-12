@@ -1478,7 +1478,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06t — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06u — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 
@@ -8370,21 +8370,51 @@ function updateSpecialFreqUI() {
    kayar — gerçek bir Chladni plakasındaki kum tanelerinin davranışının dijital
    benzetimi. Hz → (n,m) eşlemesi laboratuvar-hassasiyetinde değil, geniş ve
    görsel açıdan zengin bir çeşitlilik için ayarlanmıştır. */
-const CYM = {particles:[], n:3, m:4, hz:220, size:300, raf:null, ready:false, canvas:null, c2d:null};
+const CYM = {particles:[], n:3, m:4, hz:220, size:300, raf:null, ready:false, canvas:null, c2d:null, grid:null, gridN:0};
+const CYM_GRES = 84;   /* önceden-hesaplanmış genlik ızgarası çözünürlüğü */
 
 function cymModesFor(hz){
-  const n = 2 + (Math.floor(hz/43) % 9);
-  let m = 2 + (Math.floor(hz/67) % 9);
-  if (m === n) m = n + 1;
+  /* 29/57 bölenleri 24'lük Hz ızgarasının TAMAMINDA çakışmasız (n,m) çifti
+     üretecek şekilde seçildi — önceden 219 Hz ile 252 Hz BİREBİR AYNI deseni
+     üretiyordu (n=7,m=5 ikisinde de); artık 24/24 farklı. */
+  let n = 3 + (Math.floor(hz/29) % 8);
+  let m = 2 + (Math.floor(hz/57) % 9);
+  if (m === n) m = (m % 9) + 2;
   return {n, m};
 }
 function cymAmp(x,y,L,n,m){
   return Math.cos(n*Math.PI*x/L)*Math.cos(m*Math.PI*y/L) - Math.cos(m*Math.PI*x/L)*Math.cos(n*Math.PI*y/L);
 }
+/* Genlik alanı yalnızca (n,m)'ye bağlı — Hz değişmediği sürece HER KAREDE
+   yeniden hesaplamak (yoğun parçacık sayısıyla) gereksiz maliyetli. Bunun yerine
+   Hz değişince BİR KEZ düşük-çözünürlüklü bir ızgara hesaplanır; parçacıklar her
+   karede o ızgaradan ucuz bir bilinear interpolasyonla örnekler. Bu, yoğunluğu
+   (1600'den 4200'e) güvenle artırmayı mümkün kıldı. */
+function cymPrecompute(){
+  const {size,n,m} = CYM;
+  const R = CYM_GRES, g = new Float32Array((R+1)*(R+1));
+  for (let j=0;j<=R;j++){
+    const y = j/R*size;
+    for (let i=0;i<=R;i++){
+      g[j*(R+1)+i] = cymAmp(i/R*size, y, size, n, m);
+    }
+  }
+  CYM.grid = g;
+}
+function cymSample(x,y){
+  const {size,grid} = CYM; if (!grid) return 0;
+  const R = CYM_GRES, w = R+1;
+  const gx = Math.min(R, Math.max(0, x/size*R)), gy = Math.min(R, Math.max(0, y/size*R));
+  const x0 = gx|0, y0 = gy|0, x1 = Math.min(R,x0+1), y1 = Math.min(R,y0+1);
+  const fx = gx-x0, fy = gy-y0;
+  const v00=grid[y0*w+x0], v10=grid[y0*w+x1], v01=grid[y1*w+x0], v11=grid[y1*w+x1];
+  return v00*(1-fx)*(1-fy) + v10*fx*(1-fy) + v01*(1-fx)*fy + v11*fx*fy;
+}
 function cymSetHz(hz){
   CYM.hz = hz;
   const {n,m} = cymModesFor(hz);
   CYM.n = n; CYM.m = m;
+  if (CYM.size) cymPrecompute();
   const tag = document.getElementById('cymHzTag'); if (tag) tag.textContent = hz+' Hz';
   const num = document.getElementById('cymNum'); if (num && document.activeElement!==num) num.value = hz;
 }
@@ -8397,31 +8427,44 @@ function cymResize(){
   CYM.c2d.setTransform(dpr,0,0,dpr,0,0);
   CYM.size = cssSize;
   CYM.c2d.fillStyle = '#070714'; CYM.c2d.fillRect(0,0,cssSize,cssSize);
+  cymPrecompute();
 }
 function cymSeed(){
   CYM.particles = [];
-  const N = 1600;
+  const N = 4200;   /* "tuz yoğunluğu" — önceden 1600'dü, ızgara-önbellekleme
+                        sayesinde bu yoğunlukta da akıcı çalışıyor. */
   for (let i=0;i<N;i++) CYM.particles.push({x:Math.random()*CYM.size, y:Math.random()*CYM.size});
   CYM.ready = true;
 }
 function cymTick(){
-  const {c2d:c, size, particles, n, m} = CYM;
+  const {c2d:c, size, particles} = CYM;
   if (!c) return;
   c.fillStyle = 'rgba(7,7,20,0.30)'; c.fillRect(0,0,size,size);
-  c.fillStyle = 'rgba(180,205,255,0.9)';
-  const eps = 1.4, step = 0.55;
+  const eps = 1.6;
+  /* 4200 taneyi tek tek fillRect() ile çizmek (4200 ayrı çizim çağrısı) esas
+     performans darboğazıydı. Tek bir Path2D'ye toplayıp TEK fill() çağrısıyla
+     çizmek — matematik aynı kalıyor, yalnızca ekrana çizim yöntemi ucuzluyor. */
+  const path = new Path2D();
   for (let i=0;i<particles.length;i++){
     const p = particles[i];
-    const a0 = Math.abs(cymAmp(p.x,p.y,size,n,m));
-    const gx = Math.abs(cymAmp(p.x+eps,p.y,size,n,m)) - a0;
-    const gy = Math.abs(cymAmp(p.x,p.y+eps,size,n,m)) - a0;
-    const gl = Math.hypot(gx,gy) || 1;
-    p.x -= (gx/gl)*step; p.y -= (gy/gl)*step;
-    p.x += (Math.random()-0.5)*0.6; p.y += (Math.random()-0.5)*0.6;
+    const a0 = Math.abs(cymSample(p.x,p.y));
+    const gx = Math.abs(cymSample(p.x+eps,p.y)) - a0;
+    const gy = Math.abs(cymSample(p.x,p.y+eps)) - a0;
+    const gl = Math.hypot(gx,gy) || 1e-6;
+    /* Hız ve titreşim genliğe (a0) ORANTILI: düğümden uzak taneler hızla koşar,
+       düğüme yaklaştıkça YAVAŞLAYIP GERÇEKTEN OTURUR — önceki sürümde adım
+       sabitti, bu yüzden taneler düğümün etrafında sürekli titreyip asla net
+       bir çizgiye oturmuyordu (bulanık/belirsiz görünüyordu). */
+    const speed = Math.min(1.5, a0*2.4);
+    p.x -= (gx/gl)*speed; p.y -= (gy/gl)*speed;
+    const jitter = 0.12 + a0*0.85;
+    p.x += (Math.random()-0.5)*jitter; p.y += (Math.random()-0.5)*jitter;
     if (p.x<0) p.x=0; else if (p.x>size) p.x=size;
     if (p.y<0) p.y=0; else if (p.y>size) p.y=size;
-    c.fillRect(p.x,p.y,1.7,1.7);
+    path.rect(p.x,p.y,1.5,1.5);
   }
+  c.fillStyle = 'rgba(180,205,255,0.92)';
+  c.fill(path);
   CYM.raf = requestAnimationFrame(cymTick);
 }
 function cymEnter(){
