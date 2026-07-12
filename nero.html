@@ -133,6 +133,55 @@ body[data-tema="sabah"] .tcGo{color:#1e5c4f}
 .numIn{width:84px;flex:none;background:rgba(6,20,18,.5);border:1px solid var(--line);border-radius:9px;padding:7px 9px;color:var(--ink);text-align:right;font-family:inherit;font-variant-numeric:tabular-nums}
 .numIn:focus{outline:none;border-color:var(--line2)}
 #ns .numIn{margin-top:7px;background:rgba(26,27,58,.7);border-color:rgba(123,111,240,.3);color:#E8E8FF}
+#ns .octBtn{flex:none;min-width:38px;min-height:38px;margin-top:7px;background:rgba(123,111,240,.12);border:1px solid rgba(123,111,240,.3);color:#c9c1ff;border-radius:9px;font-size:11px;font-family:inherit;cursor:pointer}
+#ns .octBtn:active{background:rgba(123,111,240,.24)}
+#ns .wave-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;flex:1}
+#ns .wave-btn{background:rgba(255,255,255,.04);border:1px solid rgba(123,111,240,.22);border-radius:10px;padding:9px 4px;color:var(--ghost-dim);font-size:17px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s}
+#ns .wave-btn.active{background:rgba(123,111,240,.18);border-color:rgba(123,111,240,.6);color:#c9c1ff}
+#ns .balRow{margin-top:14px;padding-top:13px;border-top:1px solid rgba(123,111,240,.15)}
+#ns .balHead{font-size:12.5px;color:var(--ghost-dim);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+#ns .balReset{background:none;border:1px solid rgba(123,111,240,.3);color:#c9c1ff;border-radius:8px;width:26px;height:26px;font-size:13px;cursor:pointer;font-family:inherit}
+#ns .balSliders{display:flex;gap:16px}
+#ns .balCol{flex:1;display:flex;align-items:center;gap:8px}
+#ns .balCol span{font-size:11px;color:#c9c1ff;font-weight:700;width:12px}
+#ns .balCol input[type=range]{flex:1}
+#ns .balCol b{font-size:10.5px;color:var(--ghost-dim);font-variant-numeric:tabular-nums;width:36px;text-align:right}
+#ns .sweepGoBtn{background:rgba(46,232,199,.12);border:1px solid rgba(46,232,199,.4);color:#8ff0e0;border-radius:11px;padding:11px;font-size:12.5px;font-family:inherit;cursor:pointer;min-height:40px}
+#ns .sweepGoBtn.stopBtn{background:rgba(255,90,90,.1);border-color:rgba(255,120,120,.4);color:#ff9e9e}
+#ns .sweepLoop{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ghost-dim);cursor:pointer}
+#ns .sweepLoop input{width:17px;height:17px}
+#ns .libSearch{width:100%;background:rgba(26,27,58,.7);border:1px solid rgba(123,111,240,.3);border-radius:11px;padding:11px 13px;color:#E8E8FF;font-family:inherit;font-size:14px;margin-bottom:11px}
+#ns .libSearch:focus{outline:none;border-color:rgba(123,111,240,.65)}
+#ns .libAZ{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+#ns .libChip{width:28px;height:28px;flex:none;background:rgba(255,255,255,.04);border:1px solid rgba(123,111,240,.2);border-radius:8px;color:var(--ghost-dim);font-size:11px;cursor:pointer;font-family:inherit}
+#ns .libChip.active{background:rgba(123,111,240,.28);border-color:rgba(123,111,240,.7);color:#fff}
+#ns .libNote{font-size:10.5px;color:var(--ghost-faint);line-height:1.5;margin-bottom:12px}
+#ns .libEmpty{font-size:12px;color:var(--ghost-dim);text-align:center;padding:20px 0}
+#ns .libRow{background:rgba(255,255,255,.03);border:1px solid rgba(123,111,240,.16);border-left:3px solid rgba(123,111,240,.4);border-radius:11px;padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:background .2s,border-color .2s}
+#ns .libRow:active{background:rgba(123,111,240,.14)}
+#ns .libRowT{font-size:13px;font-weight:600;color:#E8E8FF;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#ns .libSrc{font-size:9px;font-weight:400;color:#8ff0e0;background:rgba(46,232,199,.1);border-radius:6px;padding:2px 6px;margin-left:auto}
+#ns .libRowS{font-size:11px;color:var(--ghost-dim);margin-top:3px;line-height:1.4}
+/* Kaynağa göre çoklu renk — SÜKÛN altın, Solfej menekşe, NeuroSync camgöbeği */
+#ns .libRow.libGold{border-left-color:#e0b84a}
+#ns .libGold .libSrc{color:#f0d68a;background:rgba(224,184,74,.14)}
+#ns .libRow.libViolet{border-left-color:#a78bfa}
+#ns .libViolet .libSrc{color:#c9b8ff;background:rgba(167,139,250,.14)}
+#ns .libRow.libCyan{border-left-color:#2ee8c7}
+#ns .libCyan .libSrc{color:#8ff0e0;background:rgba(46,232,199,.14)}
+#ns .libRow.libJourney{border-left-style:dashed;opacity:.88}
+#ns .libJT{font-size:9px;color:#ffb86b;background:rgba(255,184,107,.12);border-radius:6px;padding:2px 6px}
+#ns .cymWrap{position:relative;width:100%;aspect-ratio:1/1;border-radius:14px;overflow:hidden;border:1px solid rgba(123,111,240,.28);margin-bottom:13px;background:#070714}
+#ns #cymCanvas{width:100%;height:100%;display:block}
+#ns .cymHzTag{position:absolute;top:10px;left:10px;background:rgba(10,10,26,.72);border:1px solid rgba(123,111,240,.4);color:#c9c1ff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;font-variant-numeric:tabular-nums;pointer-events:none}
+#ns .cymPlayRow{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:14px}
+#ns .cymPlay{width:56px;height:56px;border-radius:50%;background:rgba(123,111,240,.22);border:1px solid rgba(123,111,240,.55);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#ns .cymPlay:active{background:rgba(123,111,240,.36)}
+#ns .cymSide{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(123,111,240,.25);color:var(--ghost-dim);font-size:15px;cursor:pointer}
+#ns .cymGridT{font-size:11px;color:var(--ghost-dim);margin:4px 0 8px;text-transform:uppercase;letter-spacing:.05em}
+#ns .cymGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+#ns .cym-btn{background:rgba(255,255,255,.04);border:1px solid rgba(123,111,240,.22);border-radius:9px;padding:9px 4px;color:var(--ghost-dim);font-size:11.5px;font-variant-numeric:tabular-nums;cursor:pointer;font-family:inherit}
+#ns .cym-btn.active{background:rgba(123,111,240,.28);border-color:rgba(123,111,240,.7);color:#fff}
 body[data-tema="sabah"] .numIn{background:rgba(255,255,255,.78);border-color:rgba(60,49,34,.28)}
 
 /* ═══ Haftalık zikir seyri ═══ */
@@ -1416,7 +1465,7 @@ footer{margin-top:26px;text-align:center;font-size:10.5px;color:var(--dim);line-
 
   <footer>
     🎧 Binaural mod için kulaklık şarttır • Ritmik/titreşimli uyarana duyarlılığınız varsa (epilepsi vb.) izokronik modu hekiminize danışarak kullanın • Araç kullanırken dinlemeyin.<br>
-    SÜKÛN v1.0 — build 2026-07-06n — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
+    SÜKÛN v1.0 — build 2026-07-06r — kalp huzuru niyetiyle <span id="vaultTrigger" style="cursor:default">✦</span>
   </footer>
 </div>
 
@@ -7592,6 +7641,8 @@ return{open,close};
     <button class="tab-btn active" data-tab="panel-main"><span class="tab-emoji">🧠</span>Ana Panel</button>
     <button class="tab-btn" id="nsZikirBridge"><span class="tab-emoji">📿</span>Zikir ۞</button>
     <button class="tab-btn" data-tab="panel-breath"><span class="tab-emoji">🌬️</span>Nefes</button>
+    <button class="tab-btn" data-tab="panel-lib"><span class="tab-emoji">📚</span>Kütüphane</button>
+    <button class="tab-btn" data-tab="panel-cym"><span class="tab-emoji">🔮</span>Kimatik</button>
     <button class="tab-btn" data-tab="panel-med"><span class="tab-emoji">🌀</span>Hipnoz</button>
   </nav>
 
@@ -7672,6 +7723,8 @@ return{open,close};
             <div class="slider-track" id="carrierTrack"></div>
           </div>
           <input type="number" class="numIn" id="carrierNum" min="20" max="2000" step="0.1" inputmode="decimal" aria-label="Taşıyıcı Hz elle gir">
+          <button class="octBtn" id="octDown" title="Bir oktav aşağı (½×)">½×</button>
+          <button class="octBtn" id="octUp" title="Bir oktav yukarı (2×)">2×</button>
         </div>
 
         <div class="control-row">
@@ -7696,6 +7749,54 @@ return{open,close};
           <div class="toggle-group" id="beatModeGroup">
             <button class="toggle-btn active" data-mode="binaural">Binaural</button>
             <button class="toggle-btn" data-mode="isochronic">Isochronic</button>
+          </div>
+        </div>
+
+        <div class="control-row" style="align-items:flex-start">
+          <div class="control-label" style="min-width:auto;">Dalga Tipi</div>
+          <div class="wave-grid" id="waveTypeGroup">
+            <button class="wave-btn active" data-wave="sine" title="Sine">∿</button>
+            <button class="wave-btn" data-wave="square" title="Square">⊓</button>
+            <button class="wave-btn" data-wave="sawtooth" title="Sawtooth">⩘</button>
+            <button class="wave-btn" data-wave="triangle" title="Triangle">△</button>
+          </div>
+        </div>
+
+        <div class="balRow">
+          <div class="balHead">Ses Dengesi (L/R) <button class="balReset" id="balReset" title="Sıfırla">↺</button></div>
+          <div class="balSliders">
+            <div class="balCol"><span>L</span><input type="range" id="balL" min="0" max="100" value="100"><b id="balLVal">100%</b></div>
+            <div class="balCol"><span>R</span><input type="range" id="balR" min="0" max="100" value="100"><b id="balRVal">100%</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SWEEP -->
+      <div class="card section-gap">
+        <div class="card-title" id="sweepToggle" style="cursor:pointer;user-select:none">🌊 Frekans Taraması (Sweep) <span id="sweepChev" style="float:right">▾</span></div>
+        <div id="sweepBody" hidden>
+          <div class="control-row">
+            <div class="control-label" style="min-width:auto">Başlangıç (Hz)</div>
+            <input type="number" class="numIn" id="sweepStart" value="20" min="1" max="2000" step="1">
+          </div>
+          <div class="control-row">
+            <div class="control-label" style="min-width:auto">Bitiş (Hz)</div>
+            <input type="number" class="numIn" id="sweepEnd" value="500" min="1" max="2000" step="1">
+          </div>
+          <div class="control-row">
+            <div class="control-label" style="min-width:auto">Süre (sn)</div>
+            <input type="number" class="numIn" id="sweepDur" value="10" min="0.5" max="600" step="0.5">
+          </div>
+          <div class="control-row" style="justify-content:space-between">
+            <label class="sweepLoop"><input type="checkbox" id="sweepLoop"> Döngü (Loop)</label>
+            <div class="toggle-group" id="sweepScaleGroup">
+              <button class="toggle-btn active" data-scale="log">Logaritmik</button>
+              <button class="toggle-btn" data-scale="linear">Doğrusal</button>
+            </div>
+          </div>
+          <div class="control-row">
+            <button class="btn sweepGoBtn" id="sweepGo" style="flex:1">🌊 Taramayı başlat</button>
+            <button class="btn sweepGoBtn stopBtn" id="sweepStopBtn" style="flex:1" hidden>■ Taramayı durdur</button>
           </div>
         </div>
       </div>
@@ -7801,6 +7902,40 @@ return{open,close};
   </div><!-- /panel-main -->
 
   <!-- ═══════════ PANEL: ZİKİR (ESMA-ÜL HÜSNA) ═══════════ -->
+  <!-- ═══════════ PANEL: KİMATİK ═══════════ -->
+  <div class="tab-panel" id="panel-cym">
+    <div class="card section-gap">
+      <div class="card-title">🔮 Kimatik — Sesin Desenleri</div>
+      <div class="cymWrap"><canvas id="cymCanvas"></canvas><div class="cymHzTag" id="cymHzTag">220 Hz</div></div>
+
+      <div class="cymPlayRow">
+        <button class="cymSide" id="cymPrev" aria-label="Önceki">⏮</button>
+        <button class="cymPlay" id="cymPlayBtn" aria-label="Çal/Durdur">▶</button>
+        <button class="cymSide" id="cymNext" aria-label="Sonraki">⏭</button>
+      </div>
+
+      <div class="control-row">
+        <div class="control-label" style="min-width:auto">Elle Hz gir</div>
+        <input type="number" class="numIn" id="cymNum" min="20" max="2000" step="1" value="220" inputmode="decimal">
+      </div>
+
+      <div class="cymGridT">Frekans seç [Hz]</div>
+      <div class="cymGrid" id="cymGrid"></div>
+      <div class="libNote">Chladni plaka fiziğinden ilham alan bir görselleştirme: parçacıklar titreşimin sıfır olduğu düğüm çizgilerine göçer. Bilimsel/tıbbi bir ölçüm aracı değildir — işitsel-görsel bir tefekkür aracıdır.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PANEL: FREKANS KÜTÜPHANESİ ═══════════ -->
+  <div class="tab-panel" id="panel-lib">
+    <div class="card section-gap">
+      <div class="card-title">📚 Frekans Kütüphanesi</div>
+      <input type="text" id="libSearch" class="libSearch" placeholder="Ara… (ör. uyku, kalp, 528)" autocomplete="off">
+      <div class="libAZ" id="libAZ"></div>
+      <div class="libNote">Uygulamadaki tüm frekanslar tek yerde — anlamıyla birlikte. Bir satıra dokun, taşıyıcıya uygulansın.</div>
+      <div id="libList"></div>
+    </div>
+  </div>
+
   <div class="tab-panel" id="panel-breath">
     <div class="card section-gap">
       <div class="card-title">Nefes Egzersiz Koçu</div>
@@ -7938,6 +8073,104 @@ const SPECIAL_FREQS = [
   {hz:963,name:'963 Hz',desc:'İlahi frekans, bilinç genişleme'},
 ];
 
+/* ════ FREKANS KÜTÜPHANESİ verisi ════
+   Üç mevcut, güvenli kaynaktan birleştirilir. Her girdi: ad, Hz (varsa; yolculuk
+   tipi presetlerde tek Hz yoktur), anlam metni, kaynak etiketi. */
+function libData(){
+  const out=[];
+  if (typeof FREQ_PRESETS!=='undefined') FREQ_PRESETS.forEach(p=>{
+    out.push({name:p.name, hz:(p.journey?null:p.c), sub:p.sub||'', src:'SÜKÛN', journey:!!p.journey, apply:p.journey?null:{c:p.c,b:p.b}});
+  });
+  if (typeof SOLFEJ!=='undefined') SOLFEJ.forEach(hz=>{
+    const sp=(typeof SPECIAL_FREQS!=='undefined')?SPECIAL_FREQS.find(x=>x.hz===hz):null;
+    out.push({name:hz+' Hz', hz, sub:sp?sp.desc:'Solfej frekansı', src:'Solfej', apply:{hz}});
+  });
+  if (typeof PRESETS!=='undefined') PRESETS.forEach(p=>{
+    out.push({name:p.name, hz:p.carrier, sub:(p.desc||'')+' • '+(p.hz||''), src:'NeuroSync', apply:{c:p.carrier,b:p.beat}});
+  });
+  return out;
+}
+function libLetters(data){
+  const set=new Set(data.map(x=>x.name.trim()[0].toUpperCase()).filter(c=>/[A-ZÇĞİÖŞÜ0-9]/.test(c)));
+  return [...set].sort((a,b)=>a.localeCompare(b,'tr'));
+}
+let LIB_LETTER=null, LIB_Q='';
+function libRender(){
+  const all=libData();
+  const az=$('#libAZ');
+  if (az && !az.dataset.built){
+    az.innerHTML=libLetters(all).map(L=>'<button class="libChip" data-l="'+L+'">'+L+'</button>').join('');
+    az.dataset.built='1';
+    az.addEventListener('click',e=>{
+      const b=e.target.closest('[data-l]'); if(!b)return;
+      LIB_LETTER = (LIB_LETTER===b.dataset.l) ? null : b.dataset.l;
+      az.querySelectorAll('.libChip').forEach(c=>c.classList.toggle('active', c.dataset.l===LIB_LETTER));
+      libRenderList(all);
+    });
+  }
+  libRenderList(all);
+}
+function libRenderList(all){
+  /* .toLowerCase() Türkçe İ/I harflerini standart Unicode kuralıyla çevirir
+     (İ → "i̇" nokta-birleşik, I → "i") — Türkçe klavyede yazılan "iç" gibi bir
+     arama "İç Huzur" gibi kayıtları BULAMAZ. toLocaleLowerCase('tr') Türkçe
+     büyük/küçük harf kurallarını doğru uygular. */
+  const q=LIB_Q.trim().toLocaleLowerCase('tr');
+  let list=all;
+  if (LIB_LETTER) list=list.filter(x=>x.name.trim()[0].toUpperCase()===LIB_LETTER);
+  if (q) list=list.filter(x=>x.name.toLocaleLowerCase('tr').includes(q)||x.sub.toLocaleLowerCase('tr').includes(q));
+  list=list.slice(0,120);
+  const host=$('#libList'); if(!host)return;
+  if (!list.length){ host.innerHTML='<div class="libEmpty">Eşleşme yok — başka bir kelime dene.</div>'; return; }
+  const srcClass={'SÜKÛN':'libGold','Solfej':'libViolet','NeuroSync':'libCyan'};
+  host.innerHTML=list.map((x,i)=>
+    '<div class="libRow '+(srcClass[x.src]||'')+(x.journey?' libJourney':'')+'" data-li="'+i+'">'+
+      '<div class="libRowT">'+x.name+(x.journey?' <span class="libJT">✦ yolculuk</span>':'')+'<small class="libSrc">'+x.src+'</small></div>'+
+      '<div class="libRowS">'+x.sub+'</div>'+
+    '</div>').join('');
+  host.__libList=list;
+  host.onclick=e=>{
+    const row=e.target.closest('[data-li]'); if(!row)return;
+    const item=host.__libList[+row.dataset.li]; if(!item)return;
+    if (item.journey){
+      /* Tek bir sabit Hz'i yoktur (çok aşamalı yolculuk); sessizce hiçbir şey
+         yapmamak yerine kullanıcıyı gerçek başlatma yerine yönlendir.
+         ÖNEMLİ: toast elemanı #ns İÇİNDE — close() sonrası gösterilirse
+         #ns.hidden ile birlikte görünmez kalır. Bu yüzden önce (NS hâlâ
+         açıkken) göster, kısa bir an sonra kapat+yönlendir. */
+      showToast('🜂 '+item.name+' — çok aşamalı bir yolculuk, Frekanslar sekmesine geçiliyor…');
+      setTimeout(()=>{
+        try{close()}catch(e){}
+        document.querySelector('.tab[data-t="frq"]')?.click();
+      }, 700);
+      return;
+    }
+    if (!item.apply) return;
+    libApply(item);
+  };
+}
+function libApply(item){
+  const a=item.apply;
+  if (a.c!=null){
+    document.getElementById('carrierFreq').value=Math.min(2000,Math.max(20,a.c));
+    document.getElementById('carrierFreq').dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  if (a.b!=null){
+    document.getElementById('beatFreq').value=Math.min(40,Math.max(0.5,a.b));
+    document.getElementById('beatFreq').dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  if (a.hz!=null && a.c==null){
+    document.getElementById('carrierFreq').value=Math.min(2000,Math.max(20,a.hz));
+    document.getElementById('carrierFreq').dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  document.querySelector('.tab-btn[data-tab="panel-main"]').click();
+  if (!NS.isPlaying) document.getElementById('playBtn').click();
+  showToast('📚 '+item.name+' uygulandı');
+}
+document.getElementById('libSearch')?.addEventListener('input', e=>{
+  LIB_Q=e.target.value; libRenderList(libData());
+});
+
 let activeSpecialFreq = null;
 let specialOsc = null, specialGain = null;
 
@@ -7981,11 +8214,12 @@ function startBinaural() {
   NS.binauralGain.gain.value = vol;
   NS.binauralMerger = NS.ctx.createChannelMerger(2);
 
+  const wt = NS.waveType || 'sine';
   if (NS.beatMode === 'binaural') {
     NS.binauralL = NS.ctx.createOscillator();
     NS.binauralR = NS.ctx.createOscillator();
-    NS.binauralL.type = 'sine'; NS.binauralL.frequency.value = carrier;
-    NS.binauralR.type = 'sine'; NS.binauralR.frequency.value = carrier + beat;
+    NS.binauralL.type = wt; NS.binauralL.frequency.value = carrier;
+    NS.binauralR.type = wt; NS.binauralR.frequency.value = carrier + beat;
     const splitterL = NS.ctx.createChannelSplitter(1);
     const splitterR = NS.ctx.createChannelSplitter(1);
     NS.binauralL.connect(NS.binauralMerger, 0, 0);
@@ -7994,7 +8228,7 @@ function startBinaural() {
   } else {
     // Isochronic tone
     NS.binauralL = NS.ctx.createOscillator();
-    NS.binauralL.type = 'sine'; NS.binauralL.frequency.value = carrier;
+    NS.binauralL.type = wt; NS.binauralL.frequency.value = carrier;
     const isoGain = NS.ctx.createGain();
     NS.binauralL.connect(isoGain);
     isoGain.connect(NS.binauralMerger, 0, 0);
@@ -8008,14 +8242,29 @@ function startBinaural() {
       on = !on;
     }, period / 2);
   }
-  NS.binauralMerger.connect(NS.binauralGain);
+  /* L/R ses dengesi — merger çıkışını böl, her kanala ayrı kazanç uygula, tekrar birleştir.
+     Osilatör kurulumuna dokunmadan (her iki mod için de) tek noktadan çalışır. */
+  const bal = NS.balance || {l:1,r:1};
+  NS.balSplit = NS.ctx.createChannelSplitter(2);
+  NS.balL = NS.ctx.createGain(); NS.balL.gain.value = bal.l;
+  NS.balR = NS.ctx.createGain(); NS.balR.gain.value = bal.r;
+  NS.balMerge = NS.ctx.createChannelMerger(2);
+  NS.binauralMerger.connect(NS.balSplit);
+  NS.balSplit.connect(NS.balL, 0); NS.balL.connect(NS.balMerge, 0, 0);
+  NS.balSplit.connect(NS.balR, 1); NS.balR.connect(NS.balMerge, 0, 1);
+  NS.balMerge.connect(NS.binauralGain);
   NS.binauralGain.connect(NS.masterGain);
 }
 
 function stopBinaural() {
+  if (NS.sweep && NS.sweep.active) sweepStop(false);   /* osilatör yeniden kuruluyor, taramayı sessizce sonlandır */
   if (NS.isoInterval) { clearInterval(NS.isoInterval); NS.isoInterval = null; }
   try { if(NS.binauralL){NS.binauralL.stop();NS.binauralL.disconnect();NS.binauralL=null;} } catch(e){}
   try { if(NS.binauralR){NS.binauralR.stop();NS.binauralR.disconnect();NS.binauralR=null;} } catch(e){}
+  try { if(NS.balSplit){NS.balSplit.disconnect();NS.balSplit=null;} } catch(e){}
+  try { if(NS.balL){NS.balL.disconnect();NS.balL=null;} } catch(e){}
+  try { if(NS.balR){NS.balR.disconnect();NS.balR=null;} } catch(e){}
+  try { if(NS.balMerge){NS.balMerge.disconnect();NS.balMerge=null;} } catch(e){}
   try { if(NS.binauralGain){NS.binauralGain.disconnect();NS.binauralGain=null;} } catch(e){}
   try { if(NS.binauralMerger){NS.binauralMerger.disconnect();NS.binauralMerger=null;} } catch(e){}
 }
@@ -8083,7 +8332,119 @@ function updateSpecialFreqUI() {
   document.querySelectorAll('.sf-btn').forEach(b => {
     b.classList.toggle('active', parseFloat(b.dataset.hz) === activeSpecialFreq);
   });
+  document.querySelectorAll('.cym-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.hz) === activeSpecialFreq);
+  });
+  const pb = document.getElementById('cymPlayBtn');
+  if (pb) pb.textContent = (activeSpecialFreq === CYM.hz) ? '⏸' : '▶';
 }
+
+/* ════ KİMATİK — Chladni parçacık simülasyonu ════
+   Kare bir plakanın serbest-sınır mod fonksiyonunun klasik yaklaşımı:
+   f(x,y) = cos(nπx/L)cos(mπy/L) − cos(mπx/L)cos(nπy/L)
+   Parçacıklar |f|'in küçüldüğü yöne (düğüm çizgilerine) doğru küçük adımlarla
+   kayar — gerçek bir Chladni plakasındaki kum tanelerinin davranışının dijital
+   benzetimi. Hz → (n,m) eşlemesi laboratuvar-hassasiyetinde değil, geniş ve
+   görsel açıdan zengin bir çeşitlilik için ayarlanmıştır. */
+const CYM = {particles:[], n:3, m:4, hz:220, size:300, raf:null, ready:false, canvas:null, c2d:null};
+
+function cymModesFor(hz){
+  const n = 2 + (Math.floor(hz/43) % 9);
+  let m = 2 + (Math.floor(hz/67) % 9);
+  if (m === n) m = n + 1;
+  return {n, m};
+}
+function cymAmp(x,y,L,n,m){
+  return Math.cos(n*Math.PI*x/L)*Math.cos(m*Math.PI*y/L) - Math.cos(m*Math.PI*x/L)*Math.cos(n*Math.PI*y/L);
+}
+function cymSetHz(hz){
+  CYM.hz = hz;
+  const {n,m} = cymModesFor(hz);
+  CYM.n = n; CYM.m = m;
+  const tag = document.getElementById('cymHzTag'); if (tag) tag.textContent = hz+' Hz';
+  const num = document.getElementById('cymNum'); if (num && document.activeElement!==num) num.value = hz;
+}
+function cymResize(){
+  const canvas = document.getElementById('cymCanvas'); if (!canvas) return;
+  const cssSize = canvas.clientWidth || 300;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = cssSize*dpr; canvas.height = cssSize*dpr;
+  CYM.canvas = canvas; CYM.c2d = canvas.getContext('2d');
+  CYM.c2d.setTransform(dpr,0,0,dpr,0,0);
+  CYM.size = cssSize;
+  CYM.c2d.fillStyle = '#070714'; CYM.c2d.fillRect(0,0,cssSize,cssSize);
+}
+function cymSeed(){
+  CYM.particles = [];
+  const N = 1600;
+  for (let i=0;i<N;i++) CYM.particles.push({x:Math.random()*CYM.size, y:Math.random()*CYM.size});
+  CYM.ready = true;
+}
+function cymTick(){
+  const {c2d:c, size, particles, n, m} = CYM;
+  if (!c) return;
+  c.fillStyle = 'rgba(7,7,20,0.30)'; c.fillRect(0,0,size,size);
+  c.fillStyle = 'rgba(180,205,255,0.9)';
+  const eps = 1.4, step = 0.55;
+  for (let i=0;i<particles.length;i++){
+    const p = particles[i];
+    const a0 = Math.abs(cymAmp(p.x,p.y,size,n,m));
+    const gx = Math.abs(cymAmp(p.x+eps,p.y,size,n,m)) - a0;
+    const gy = Math.abs(cymAmp(p.x,p.y+eps,size,n,m)) - a0;
+    const gl = Math.hypot(gx,gy) || 1;
+    p.x -= (gx/gl)*step; p.y -= (gy/gl)*step;
+    p.x += (Math.random()-0.5)*0.6; p.y += (Math.random()-0.5)*0.6;
+    if (p.x<0) p.x=0; else if (p.x>size) p.x=size;
+    if (p.y<0) p.y=0; else if (p.y>size) p.y=size;
+    c.fillRect(p.x,p.y,1.7,1.7);
+  }
+  CYM.raf = requestAnimationFrame(cymTick);
+}
+function cymEnter(){
+  cymResize();
+  if (!CYM.ready) cymSeed();
+  cancelAnimationFrame(CYM.raf);
+  cymTick();
+}
+function cymPauseVisual(){ cancelAnimationFrame(CYM.raf); CYM.raf=null; }
+
+function cymBuildGrid(){
+  const host = document.getElementById('cymGrid'); if (!host || host.dataset.built) return;
+  const vals=[]; const START=120, ENDV=880, STEPS=23;
+  for (let i=0;i<=STEPS;i++) vals.push(Math.round(START + (ENDV-START)*i/STEPS));
+  host.innerHTML = vals.map(hz=>'<button class="cym-btn" data-hz="'+hz+'">'+hz+'</button>').join('');
+  host.dataset.built='1';
+  host.addEventListener('click', e=>{
+    const b=e.target.closest('[data-hz]'); if(!b) return;
+    const hz=+b.dataset.hz;
+    cymSetHz(hz);
+    initAudio(); if (NS.ctx.state==='suspended') NS.ctx.resume();
+    /* playSpecialFreq zaten doğru toggle mantığına sahip: farklı Hz ise eskisini
+       durdurup yeniyi başlatır; AYNI Hz ise kapatır. Tek çağrı yeterli. */
+    playSpecialFreq(hz);
+  });
+}
+function cymPlayToggle(){
+  initAudio(); if (NS.ctx.state==='suspended') NS.ctx.resume();
+  playSpecialFreq(CYM.hz);
+}
+function cymStep(dir){
+  const START=120, ENDV=880, STEPS=23, span=(ENDV-START)/STEPS;
+  let hz = Math.round((CYM.hz-START)/span)*span+START + dir*span;
+  hz = Math.max(START, Math.min(ENDV, Math.round(hz)));
+  cymSetHz(hz);
+  const wasPlaying = (activeSpecialFreq!==null);
+  if (wasPlaying) playSpecialFreq(hz);   /* çalıyorduysa yeni Hz'e kayar (tek çağrı: önce durdurur, sonra yeniyi başlatır) */
+}
+document.getElementById('cymPlayBtn')?.addEventListener('click', cymPlayToggle);
+document.getElementById('cymPrev')?.addEventListener('click', ()=>cymStep(-1));
+document.getElementById('cymNext')?.addEventListener('click', ()=>cymStep(1));
+document.getElementById('cymNum')?.addEventListener('change', e=>{
+  const v = Math.round(parseFloat(e.target.value));
+  if (isFinite(v)) cymSetHz(Math.max(20,Math.min(2000,v)));
+});
+document.getElementById('cymNum')?.addEventListener('keydown', e=>{ if(e.key==='Enter') e.target.blur(); });
+cymBuildGrid(); cymSetHz(220);
 
 // ─── PLAY / STOP ───
 function togglePlay() {
@@ -8580,6 +8941,7 @@ document.getElementById('carrierFreq').oninput = function() {
   document.getElementById('carrierVal').textContent = this.value+' Hz';
   document.getElementById('sessionCarrier').textContent = this.value+' Hz';
   updateTrack('carrierFreq','carrierTrack');
+  if (NS.sweep && NS.sweep.active) sweepStop(true);
   if (NS.isPlaying) { stopBinaural(); startBinaural(); }
 };
 
@@ -8589,6 +8951,7 @@ document.getElementById('beatFreq').oninput = function() {
   document.getElementById('nsBeatVal').textContent = v+' Hz';
   document.getElementById('sessionFreq').textContent = v+' Hz';
   updateTrack('beatFreq','beatTrack');
+  if (NS.sweep && NS.sweep.active) sweepStop(true);
   if (NS.isPlaying) { stopBinaural(); startBinaural(); }
 };
 
@@ -8631,10 +8994,138 @@ document.getElementById('beatModeGroup').querySelectorAll('.toggle-btn').forEach
     document.getElementById('beatModeGroup').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     NS.beatMode = btn.dataset.mode;
+    if (NS.sweep && NS.sweep.active) sweepStop(true);
     if (NS.isPlaying) { stopBinaural(); startBinaural(); }
     showToast(NS.beatMode==='binaural'?'🎧 Binaural mod aktif':'🔔 Isochronic mod aktif');
   };
 });
+
+// Dalga tipi ("Frequency Generator" referansından — Sine/Square/Sawtooth/Triangle)
+NS.waveType = 'sine';
+document.getElementById('waveTypeGroup').querySelectorAll('.wave-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.getElementById('waveTypeGroup').querySelectorAll('.wave-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    NS.waveType = btn.dataset.wave;
+    if (NS.isPlaying) { stopBinaural(); startBinaural(); }
+  };
+});
+
+// L/R ses dengesi
+NS.balance = {l:1, r:1};
+function balApply(){
+  if (NS.balL) NS.balL.gain.setTargetAtTime(NS.balance.l, NS.ctx.currentTime, 0.05);
+  if (NS.balR) NS.balR.gain.setTargetAtTime(NS.balance.r, NS.ctx.currentTime, 0.05);
+}
+document.getElementById('balL').oninput = function(){
+  NS.balance.l = this.value/100; document.getElementById('balLVal').textContent = this.value+'%'; balApply();
+};
+document.getElementById('balR').oninput = function(){
+  NS.balance.r = this.value/100; document.getElementById('balRVal').textContent = this.value+'%'; balApply();
+};
+document.getElementById('balReset').onclick = function(){
+  NS.balance = {l:1,r:1};
+  document.getElementById('balL').value = 100; document.getElementById('balR').value = 100;
+  document.getElementById('balLVal').textContent = '100%'; document.getElementById('balRVal').textContent = '100%';
+  balApply();
+};
+
+// Oktav tuşları — hassas ince ayar (kaydırıcıda 1738 gibi bir değeri yakalamak zordu)
+function octJump(mult){
+  const cf = document.getElementById('carrierFreq');
+  const v = Math.min(+cf.max, Math.max(+cf.min, parseFloat(cf.value)*mult));
+  cf.value = v; cf.dispatchEvent(new Event('input', {bubbles:true}));
+}
+document.getElementById('octDown').onclick = () => octJump(0.5);
+document.getElementById('octUp').onclick = () => octJump(2);
+
+// Sweep paneli aç/kapa
+document.getElementById('sweepToggle').onclick = () => {
+  const b = document.getElementById('sweepBody'), c = document.getElementById('sweepChev');
+  b.hidden = !b.hidden; c.textContent = b.hidden ? '▾' : '▴';
+};
+document.getElementById('sweepScaleGroup').querySelectorAll('.toggle-btn').forEach(btn=>{
+  btn.onclick = () => {
+    document.getElementById('sweepScaleGroup').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+});
+
+/* ════ SWEEP (frekans taraması) ════
+   Referans uygulamadaki "Sweep generator" birebir: başlangıç/bitiş Hz, süre,
+   loop, logaritmik/doğrusal ölçek. Taşıyıcıyı (carrier) tarar; binaural moddaysa
+   beat farkı sabit kalacak şekilde R osilatörü de birlikte kayar. */
+NS.sweep = {active:false, raf:null, loopTimer:null, t0:0, dur:1, startHz:20, endHz:500, scale:'log', loop:false};
+
+function sweepVisualTick(){
+  if (!NS.sweep.active) return;
+  const el = NS.ctx.currentTime - NS.sweep.t0;
+  const p = Math.min(1, Math.max(0, el / NS.sweep.dur));
+  let hz;
+  if (NS.sweep.scale === 'log') {
+    const a = Math.log(NS.sweep.startHz), b = Math.log(NS.sweep.endHz);
+    hz = Math.exp(a + (b - a) * p);
+  } else {
+    hz = NS.sweep.startHz + (NS.sweep.endHz - NS.sweep.startHz) * p;
+  }
+  const cf = document.getElementById('carrierFreq');
+  cf.value = Math.min(+cf.max, Math.max(+cf.min, hz));
+  document.getElementById('carrierVal').textContent = hz.toFixed(1)+' Hz';
+  document.getElementById('carrierNum').value = hz.toFixed(1);
+  document.getElementById('sessionCarrier').textContent = hz.toFixed(1)+' Hz';
+  updateTrack('carrierFreq','carrierTrack');
+  if (p < 1) NS.sweep.raf = requestAnimationFrame(sweepVisualTick);
+}
+
+function sweepRun(){
+  const ct = NS.ctx.currentTime;
+  NS.sweep.active = true; NS.sweep.t0 = ct;
+  const beatOffset = (NS.beatMode === 'binaural') ? parseFloat(document.getElementById('beatFreq').value) : 0;
+  const targets = [{o:NS.binauralL, off:0}]; if (NS.binauralR) targets.push({o:NS.binauralR, off:beatOffset});
+  targets.forEach(({o,off}) => {
+    if (!o) return;
+    o.frequency.cancelScheduledValues(ct);
+    o.frequency.setValueAtTime(Math.max(0.01, NS.sweep.startHz+off), ct);
+    if (NS.sweep.scale === 'log') o.frequency.exponentialRampToValueAtTime(Math.max(0.01, NS.sweep.endHz+off), ct+NS.sweep.dur);
+    else o.frequency.linearRampToValueAtTime(Math.max(0.01, NS.sweep.endHz+off), ct+NS.sweep.dur);
+  });
+  cancelAnimationFrame(NS.sweep.raf);
+  sweepVisualTick();
+  clearTimeout(NS.sweep.loopTimer);
+  NS.sweep.loopTimer = setTimeout(() => {
+    if (!NS.sweep.active) return;
+    if (NS.sweep.loop && NS.binauralL) sweepRun();
+    else sweepStop(false);
+  }, NS.sweep.dur*1000 + 40);
+}
+
+function sweepStart(){
+  const s = parseFloat(document.getElementById('sweepStart').value);
+  const e = parseFloat(document.getElementById('sweepEnd').value);
+  const d = Math.max(0.1, parseFloat(document.getElementById('sweepDur').value) || 1);
+  if (!isFinite(s) || !isFinite(e) || s <= 0 || e <= 0) { showToast('⚠ Geçerli Hz değerleri gir'); return; }
+  NS.sweep.startHz = s; NS.sweep.endHz = e; NS.sweep.dur = d;
+  NS.sweep.loop = document.getElementById('sweepLoop').checked;
+  NS.sweep.scale = document.querySelector('#sweepScaleGroup .toggle-btn.active').dataset.scale;
+  if (!initAudio()) return;
+  if (NS.ctx.state === 'suspended') NS.ctx.resume();
+  if (!NS.isPlaying) startAll(); else if (!NS.binauralL) { stopBinaural(); startBinaural(); }
+  sweepRun();
+  document.getElementById('sweepGo').hidden = true;
+  document.getElementById('sweepStopBtn').hidden = false;
+  showToast('🌊 Tarama başladı');
+}
+
+function sweepStop(userInitiated){
+  NS.sweep.active = false;
+  cancelAnimationFrame(NS.sweep.raf);
+  clearTimeout(NS.sweep.loopTimer);
+  const go=document.getElementById('sweepGo'), sb=document.getElementById('sweepStopBtn');
+  if (go) go.hidden = false; if (sb) sb.hidden = true;
+  if (userInitiated) showToast('🌊 Tarama durdu');
+}
+document.getElementById('sweepGo').onclick = sweepStart;
+document.getElementById('sweepStopBtn').onclick = () => sweepStop(true);
 
 // Noise cards
 document.querySelectorAll('.noise-card').forEach(card => {
@@ -8703,6 +9194,8 @@ function initTabs() {
 
       // Lazily (re)size visual-engine canvases when their tab becomes visible
       if (btn.dataset.tab === 'panel-med') HV.resize('hvCanvasMed');
+      if (btn.dataset.tab === 'panel-lib') libRender();
+      if (btn.dataset.tab === 'panel-cym') cymEnter(); else cymPauseVisual();
     };
   });
 }
