@@ -167,6 +167,18 @@ function _injectCosmeticCSS(){
     .pcp-badge{ display:flex; align-items:center; gap:5px; padding:6px 10px; border-radius:20px; background:linear-gradient(135deg,rgba(255,215,64,.12),rgba(255,215,64,.04)); border:1px solid rgba(255,215,64,.3); }
     .pcp-badge-ic{ font-size:15px; }
     .pcp-badge-nm{ font-size:10px; font-weight:700; color:#ffe082; }
+    .ghp-chat-head{ display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.06); }
+    .ghp-chat-head-title{ font-size:12px; font-weight:800; color:#e8eaf6; }
+    .ghp-chat-head-online{ font-size:11px; font-weight:700; color:#69F0AE; cursor:pointer; padding:3px 9px; border-radius:12px; background:rgba(105,240,174,.1); border:1px solid rgba(105,240,174,.25); }
+    .ghp-chat-head-online:active{ transform:scale(.95); }
+    .ghp-online-ov{ position:fixed; inset:0; z-index:2147483643; background:rgba(6,8,18,.8); backdrop-filter:blur(6px); display:flex; align-items:flex-end; justify-content:center; }
+    .ghp-online-panel{ width:100%; max-width:440px; max-height:70vh; overflow-y:auto; background:linear-gradient(175deg,#151225,#0b0a16); border-radius:20px 20px 0 0; border:1px solid rgba(105,240,174,.22); padding:16px 14px 22px; }
+    .ghp-online-title{ font-size:14px; font-weight:900; color:#69F0AE; margin-bottom:11px; text-align:center; }
+    .ghp-online-row{ display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:11px; }
+    .ghp-online-row:active{ background:rgba(255,255,255,.05); }
+    .ghp-online-ava{ width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; background:rgba(255,255,255,.06); flex-shrink:0; }
+    .ghp-online-nm{ flex:1; font-size:13px; font-weight:700; color:#e8eaf6; }
+    .ghp-online-dot{ width:8px; height:8px; border-radius:50%; background:#69F0AE; box-shadow:0 0 6px rgba(105,240,174,.7); }
     .pcp-nobest{ text-align:center; font-size:11px; color:#7d8ab8; margin:12px 0 4px; }
     /* Profil arkadaş listesi */
     .pcp-frsec, .pcp-kzsec{ margin-top:14px; }
@@ -619,13 +631,14 @@ export async function openPlayerCard(uid){
         + '</div>';
     })()}
     ${_renderProfileStats(p, uid, self, _myH2H, _gameLB)}
-    ${self ? '' : `<div class="pcp-acts">
-      <button class="pcp-btn" data-pc="dm">✉️ Mesaj</button>
-      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke">👋 Dürt</button>' : ''}
-      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="invite">⚔️ Oyuna Davet</button>' : ''}
-      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="kajusend">💰 Kaju Gönder</button>' : ''}
-      <button class="pcp-btn" data-pc="fr"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
-      ${_myClanId ? '<button class="pcp-btn" data-pc="claninv">🏰 Klana Davet</button>' : ''}
+    ${self ? '' : `<div class="pcp-acts" style="flex-wrap:wrap;overflow-x:visible">
+      <button class="pcp-btn" data-pc="dm" style="flex:1 1 45%;min-width:120px">✉️ Mesaj</button>
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="poke" style="flex:1 1 45%;min-width:120px">👋 Dürt</button>' : ''}
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="invite" style="flex:1 1 45%;min-width:120px">⚔️ Oyuna Davet</button>' : ''}
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="kajusend" style="flex:1 1 45%;min-width:120px">💰 Kaju Gönder</button>' : ''}
+      ${(isFriend || _amAdmin()) ? '<button class="pcp-btn" data-pc="kozmosend" style="flex:1 1 45%;min-width:120px">🥚 Kozmo Gönder</button>' : ''}
+      <button class="pcp-btn" data-pc="fr" style="flex:1 1 45%;min-width:120px"${reqSent&&!isFriend?' disabled style="opacity:.6"':''}>${isFriend ? '✕ Arkadaşlıktan Çıkar' : (reqSent ? '⏳ İstek Gönderildi' : '👥 Arkadaş Ekle')}</button>
+      ${_myClanId ? '<button class="pcp-btn" data-pc="claninv" style="flex:1 1 45%;min-width:120px">🏰 Klana Davet</button>' : ''}
     </div>
     <div class="pcp-kajusend-box" data-el="kajuSendBox" style="display:none">
       <div class="pcp-ks-lbl">💰 ${esc(nick)} kişisine Kaju gönder</div>
@@ -703,6 +716,20 @@ export async function openPlayerCard(uid){
       goBtn.disabled = false; goBtn.textContent = 'Gönder';
     });
   }
+
+  // Kozmo (yumurta) Gönder — tek tıkla, onay sonrası doğrudan gönderir
+  const kzBtn = ov.querySelector('[data-pc="kozmosend"]');
+  if(kzBtn) kzBtn.addEventListener('click', async () => {
+    if(!confirm(nick + ' kişisine kozmo yumurtası göndermek istiyor musun?')) return;
+    kzBtn.disabled = true; const _origTxt = kzBtn.textContent; kzBtn.textContent = '⏳…';
+    try{
+      const K = await import('./kozmos.js');
+      if(K.sendEgg) await K.sendEgg(uid, nick);
+    }catch(e){
+      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Gönderilemedi', true); }catch(_){}
+    }
+    kzBtn.disabled = false; kzBtn.textContent = _origTxt;
+  });
 
   // Klana Davet
   const clanInvB = ov.querySelector('[data-pc="claninv"]');
@@ -1009,6 +1036,10 @@ export function initSocial(){
     </div>
     <div class="ghp-body">
       <div class="ghp-pane active" id="ghpPane-chat">
+        <div class="ghp-chat-head" id="ghpChatHead">
+          <span class="ghp-chat-head-title">💬 Genel Sohbet</span>
+          <span class="ghp-chat-head-online" id="ghpChatOnline" data-el="chatOnlineBtn">👥 …</span>
+        </div>
         <div class="ghp-list" id="ghpChatList"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">SOHBET YÜKLENİYOR…</div></div></div>
         <div class="ghp-quick-bar" id="ghpChatQuick"><button class="ghp-qb" data-q="😂">😂</button><button class="ghp-qb" data-q="❤️">❤️</button><button class="ghp-qb" data-q="👍">👍</button><button class="ghp-qb" data-q="🔥">🔥</button><button class="ghp-qb" data-q="😮">😮</button><button class="ghp-qb" data-q="😢">😢</button><button class="ghp-qb" data-q="🎉">🎉</button><button class="ghp-qb" data-q="💪">💪</button><span class="ghp-qb-sep"></span><button class="ghp-qb ghp-qb-text" data-q="GG">GG</button><button class="ghp-qb ghp-qb-text" data-q="Merhaba! 👋">Mrb</button><button class="ghp-qb ghp-qb-text" data-q="Tebrikler! 🎉">Tebrik</button><button class="ghp-qb ghp-qb-text" data-q="İyi oyunlar! ⚔️">İyi oyun</button></div>
         <div class="ghp-input-row"><input class="ghp-input" id="ghpChatInput" maxlength="200" placeholder="Mesaj yaz…" autocomplete="off"><button class="ghp-send" id="ghpChatSend">➤</button></div>
@@ -1063,6 +1094,7 @@ export function initSocial(){
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
   panel.querySelector('#ghpSizeBtn').addEventListener('click', cycleSize);
+  const _cob = panel.querySelector('#ghpChatOnline'); if(_cob) _cob.addEventListener('click', _showChatOnlineList);
   applySize();
   document.addEventListener('pointerdown', (e) => { if(!H.open) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
   // Sekmeler
@@ -1161,7 +1193,7 @@ function position(){
   else { panel.style.top = (fr.bottom + 8) + 'px'; panel.style.bottom = 'auto'; }
 }
 function open(){ H.open = true; const p = byId('gemHubPanel'); p.classList.remove('ghp-closing'); position(); p.classList.add('ghp-open'); markTabSeen(H.tab); }
-function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); setTimeout(() => p.classList.remove('ghp-open','ghp-closing'), 260); }
+function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); setTimeout(() => p.classList.remove('ghp-open','ghp-closing'), 260); _leaveChatRoom(); }
 function toggle(){ H.open ? close() : open(); }
 function switchTab(tab){
   H.tab = tab;
@@ -1400,9 +1432,71 @@ async function _modAction(act, uid, name){
   }
 }
 
+// ── 👥 SOHBET ODASI VARLIĞI (kim sohbette listesi) ──────────────
+// Firebase: chatPresence/{uid} = { name, avatar, joinedAt }
+// Odaya giriş: sohbet sekmesi açılınca yazılır. Çıkış: hub kapanınca / bağlantı kesilince silinir.
+// Atılan (users/{uid}/kicked===true) kullanıcılar listeden filtrelenir.
+let _chatPresenceJoined = false;
+async function _joinChatRoom(){
+  const st = Auth.getState();
+  if(!st.uid || _chatPresenceJoined) return;
+  _chatPresenceJoined = true;
+  try{
+    const myRef = fdb.ref(db, 'chatPresence/' + st.uid);
+    await fdb.set(myRef, { name: st.displayName || 'Oyuncu', avatar: (st.profile && st.profile.avatar) || '👤', joinedAt: Date.now() });
+    try{ fdb.onDisconnect(myRef).remove(); }catch(e){}
+  }catch(e){}
+  _startChatOnlineCounter();
+}
+function _leaveChatRoom(){
+  const st = Auth.getState();
+  if(!st.uid) return;
+  _chatPresenceJoined = false;
+  try{ fdb.remove(fdb.ref(db, 'chatPresence/' + st.uid)); }catch(e){}
+  if(H.offChatPresence){ try{ H.offChatPresence(); }catch(e){} H.offChatPresence = null; }
+}
+// Canlı sayaç: "👥 N" rozeti güncellemesi
+function _startChatOnlineCounter(){
+  if(H.offChatPresence) return;   // zaten dinleniyor
+  const presRef = fdb.ref(db, 'chatPresence');
+  H.offChatPresence = fdb.onValue(presRef, async (snap) => {
+    const btn = byId('ghpChatOnline'); if(!btn) return;
+    if(!snap.exists()){ btn.textContent = '👥 0'; _chatOnlineRows = []; return; }
+    const v = snap.val() || {};
+    const uids = Object.keys(v);
+    // Atılanları (kicked) filtrele
+    const rows = [];
+    for(const uid of uids){
+      let kicked = false;
+      try{ const ks = await fdb.get(fdb.ref(db, 'users/'+uid+'/kicked')); kicked = ks.exists() && ks.val() === true; }catch(e){}
+      if(!kicked) rows.push({ uid, ...v[uid] });
+    }
+    rows.sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    _chatOnlineRows = rows;
+    btn.textContent = '👥 ' + rows.length;
+  });
+}
+let _chatOnlineRows = [];
+// "👥 N" rozetine tıklayınca odadakileri listele
+function _showChatOnlineList(){
+  const old = document.getElementById('chatOnlineOv'); if(old) old.remove();
+  const ov = document.createElement('div');
+  ov.id = 'chatOnlineOv'; ov.className = 'ghp-online-ov';
+  const rowsHtml = _chatOnlineRows.length
+    ? _chatOnlineRows.map(u=>'<div class="ghp-online-row" data-pcuid="'+u.uid+'"><div class="ghp-online-ava">'+esc(u.avatar||'👤')+'</div><div class="ghp-online-nm">'+esc(u.name||'Oyuncu')+'</div><div class="ghp-online-dot"></div></div>').join('')
+    : '<div class="pcp-nobest">Şu an sohbette kimse yok</div>';
+  ov.innerHTML = '<div class="ghp-online-panel"><div class="ghp-online-title">👥 Sohbette Olanlar ('+_chatOnlineRows.length+')</div>'+rowsHtml+'</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  ov.querySelectorAll('[data-pcuid]').forEach(row=>{
+    row.addEventListener('click', ()=>{ ov.remove(); openPlayerCard(row.dataset.pcuid); });
+  });
+}
+
 // ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
 function listenChat(){
   _injectCosmeticCSS();
+  _joinChatRoom();   // odaya giriş kaydı (kim sohbette listesi için)
   const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
   H.offChat = fdb.onValue(ref, (snap) => {
     const list = byId('ghpChatList'); if(!list) return;
