@@ -1,11 +1,11 @@
-/* SÜKÛN Service Worker — build 2026-07-31
+/* SÜKÛN Service Worker — build 2026-08-04
    Strateji:
    • Çekirdek (nero.html + manifest): install'da önbelleğe alınır → tam çevrimdışı açılış.
    • Gezinti istekleri: önbellek-öncelikli (anında açılış), arka planda ağdan tazele (yeni sürüm yakala).
    • Aynı-origin GET: stale-while-revalidate. Çapraz-origin (Google Fonts gövde yazıları): ağ → önbellek yedeği.
    • Yeni sürüm: yüklendiğinde sayfaya haber verilir; sayfa "Yenile" der, SKIP_WAITING ile devralır. */
 'use strict';
-const V = 'sukun-2026-07-31';
+const V = 'sukun-2026-08-04';
 const CORE = ['./nero.html', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
