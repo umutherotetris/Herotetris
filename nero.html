@@ -564,6 +564,10 @@ input[type=range]:not(#ns *)::-moz-range-thumb{width:15px;height:15px;border-rad
 @keyframes spin{to{transform:rotate(360deg)}}
 .zGlow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(201,162,39,.13),transparent 62%);animation:breath 7s ease-in-out infinite}
 .zAr{font-family:var(--fA);font-size:33px;line-height:1.7;color:var(--goldh);direction:rtl;text-shadow:0 0 26px rgba(201,162,39,.35);position:relative;max-width:100%}
+/* uzun sûre metinleri sahneyi taşırmasın */
+.zAr.long{font-size:19px;line-height:2;max-width:34ch;text-shadow:0 0 18px rgba(201,162,39,.28)}
+.zAr.vlong{font-size:15.5px;line-height:2.05;max-width:40ch}
+.zOku{font-family:var(--fD);font-style:italic;font-size:12.5px;line-height:1.65;color:var(--mut);max-width:38ch;margin-top:7px;position:relative}
 .zTr{font-family:var(--fD);font-style:italic;font-weight:600;font-size:25px;line-height:1.25;color:var(--ivory);position:relative;max-width:30ch}
 .zMean{font-size:12px;color:var(--mut);max-width:36ch;position:relative}
 .swap .zAr,.swap .zTr,.swap .zMean{animation:swapIn .55s ease}
@@ -1807,6 +1811,7 @@ input:focus-visible,select:focus-visible{
         </linearGradient></defs>
       </svg></div>
       <div class="zAr" id="zAr"></div>
+      <div class="zOku" id="zOku" hidden></div>
       <div class="zTr" id="zTr"></div>
       <div class="zMean" id="zMean"></div>
       <div class="zEb" id="zEb"></div>
@@ -1851,7 +1856,8 @@ input:focus-visible,select:focus-visible{
         <div class="jRow" id="usulRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Usûl</b><select id="usulSel"><option value="duyek">Düyek (basit)</option><option value="sofyan">Sofyan</option><option value="devrihindi">Devr-i Hindî</option><option value="cifte">Çifte düm·tek</option></select></div>
         <div class="opt" style="margin-top:6px"><span>🌀 8D mekânsal ses — kanallar kulaklıkta çevrende döner</span><button class="sw" id="spatialTgl"></button></div>
         <div class="opt"><span>🔊 Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak"></button></div>
-        <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice"></select><select id="spkGenderSel" style="margin-left:6px"><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto"></div>
+        <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice"></select><select id="spkGenderSel" title="Tüm zikir, dua ve sûre okuyucularına uygulanır (Türkçe ve Arapça)" style="margin-left:6px"><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto"></div>
+        <div style="font-size:9px;color:var(--dim);line-height:1.55;margin:3px 0 2px">👩/👨 seçimi bütün okuyuculara işler: zikir, Âyetü'l-Kürsî, Fâtiha Seyri, Nasuh Tövbesi, Salavât, Seyyidü'l-İstiğfar ve koruyucu sûreler — hem Türkçe hem Arapça ses için. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır.</div>
         <div class="opt" style="margin-top:8px"><span id="arStat">🕌 Arapça ses aranıyor…</span><button class="sw" id="arTgl" aria-label="Arapça telaffuzu tercih et"></button></div>
         <div class="jRow" id="arVoiceRow" style="margin-top:6px;display:none"><b style="flex:none;color:var(--mut)">Arapça ses seç</b><select id="arVoiceSel" style="flex:1"></select></div>
         <div class="sldRow" style="margin-top:7px"><label for="arPitch">Ar. perde</label><input type="range" id="arPitch" min="0.5" max="1.3" step="0.02" value="0.76"><span class="valB" id="arPitchV">0.76</span></div>
@@ -2324,6 +2330,9 @@ function _wrapClear(){
 let splashTimer = null;
 
 /* ════ İLK AÇILIŞ TURU ════ */
+/* Öğretici sürümü — yeni adım eklerken bunu ve adımın since alanını güncelle.
+   Sürüm değişince tur "Yenilikler" kipinde yalnız yeni adımlarla açılır. */
+const OB_BUILD='2026-08-06-r2';
 const OB_STEPS=[
  {glyph:'<path d="M15,3 L18,12 L27,12 L20,18 L23,27 L15,21 L7,27 L10,18 L3,12 L12,12 Z" fill="currentColor"/>',
   title:'SÜKÛN’a Hoş Geldin',
@@ -2337,30 +2346,47 @@ const OB_STEPS=[
  {glyph:'<path d="M15,4 C22,4 26,10 22,15 C26,20 22,26 15,26 C8,26 4,20 8,15 C4,10 8,4 15,4 Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="15" r="2.4" fill="currentColor"/>',
   title:'۞ Tekke & 🧠 NeuroSync',
   text:'Tekke’de katre ve haptik bir seyir seni bekliyor. NeuroSync’te ise ileri binaural laboratuvar, 🔮 Kimatik (sesin görsel desenleri) ve 📚 Frekans Kütüphanesi var.'},
+ {glyph:'<path d="M15,3 L26,7 V15 C26,21 21,26 15,28 C9,26 4,21 4,15 V7 Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10,15 L13.5,18.5 L20,11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  title:'🛡️ Koruyucu Sûreler',since:'2026-08-06-r2',
+  text:'Zikir sekmesindeki «Koruyucu Sûreler» listesinde Felâk, Nâs, İhlâs, Nazar âyeti ve Âyetü’l-Kürsî tam metinleriyle var. 🔊 ile dinlerken cihazında Arapça ses varsa Arapçasını, yoksa tam okunuşunu seslendirir — artık sadece sûrenin adını söyleyip geçmez.'},
+ {glyph:'<rect x="4" y="5" width="22" height="5" rx="2" fill="currentColor" opacity=".85"/><rect x="4" y="12.5" width="22" height="5" rx="2" fill="currentColor" opacity=".6"/><rect x="4" y="20" width="22" height="5" rx="2" fill="currentColor" opacity=".35"/>',
+  title:'🕌 Âyetü’l-Kürsî — beş bölüm',since:'2026-08-06-r2',
+  text:'Âyetü’l-Kürsî artık Fâtiha Seyri gibi renkli kartlarda: her bölümün Arap harfli metni, okunuşu, meâli ve tefekkür bağı yan yana. Bir karta dokununca okuma oradan başlar.'},
+ {glyph:'<rect x="11" y="4" width="8" height="13" rx="4" fill="currentColor"/><path d="M7,15 A8,8 0 0 0 23,15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M15,23 V27" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+  title:'🎙 Kendi sesinle oku',since:'2026-08-06-r2',
+  text:'Her dua okuyucusundaki 🎙 ile kendi okuyuşunu kaydedebilirsin — süre sınırı yok, kayıt sürerken ekranda sayaç işler. Kaydın varsa ▶ düğmesi cihaz sesi yerine doğrudan onu çalar. Tecvid için en güzel yol budur.'},
+ {glyph:'<circle cx="10" cy="11" r="4.2" fill="currentColor" opacity=".75"/><path d="M4,25 C4,19 16,19 16,25" fill="currentColor" opacity=".75"/><circle cx="21" cy="12.5" r="3.6" fill="currentColor" opacity=".45"/><path d="M15.5,25 C15.5,20 26.5,20 26.5,25" fill="currentColor" opacity=".45"/>',
+  title:'👩 👨 Ses seçimi',since:'2026-08-06-r2',
+  text:'Zikir sekmesindeki «Ses / hız» satırından kadın ya da erkek ses seçebilirsin. Seçim bütün okuyuculara işler — zikir, sûreler, Âyetü’l-Kürsî, Fâtiha, tövbe, salavât — hem Türkçe hem Arapça tarafta.'},
  {glyph:'<path d="M11,7 A9,9 0 1 0 23,19 A11,11 0 0 1 11,7 Z" fill="currentColor"/>',
   title:'Hazırsın ✦',
   text:'Ayarlar\u2019dan (📓) 12 farklı temayla kendi rengini bul, seanslarını takip et. Bu turu istediğin an oradan yeniden izleyebilirsin. Kalbin huzurla.'}
 ];
-let OB_I=0;
+let OB_I=0, OB_LIST=OB_STEPS, OB_NEW=false;
 function obRender(){
-  const st=OB_STEPS[OB_I];
+  const st=OB_LIST[OB_I];
   $('#obGlyph').innerHTML='<svg width="52" height="52" viewBox="0 0 30 30" aria-hidden="true">'+st.glyph+'</svg>';
-  $('#obTitle').textContent=st.title;
+  $('#obTitle').textContent=(OB_NEW?'✦ Yeni — ':'')+st.title;
   $('#obText').textContent=st.text;
-  $('#obDots').innerHTML=OB_STEPS.map((_,i)=>'<span class="'+(i===OB_I?'on':'')+'"></span>').join('');
-  $('#obNext').textContent = OB_I===OB_STEPS.length-1 ? 'Başla ✦' : 'İleri →';
+  $('#obDots').innerHTML=OB_LIST.map((_,i)=>'<span class="'+(i===OB_I?'on':'')+'"></span>').join('');
+  $('#obNext').textContent = OB_I===OB_LIST.length-1 ? (OB_NEW?'Anladım ✦':'Başla ✦') : 'İleri →';
+  $('#obSkip').textContent = OB_NEW ? 'Kapat' : 'Geç';
 }
 function obClose(){
   S.set('sukun.onboardSeen',1);
+  S.set('sukun.obSeenBuild',OB_BUILD);   /* bu sürümün yenilikleri görüldü */
   const oc=$('#onboardCard');
   oc.classList.remove('ob-active');
   setTimeout(()=>{ oc.hidden=true; },450);
 }
 function obNext(){
-  if(OB_I>=OB_STEPS.length-1){ obClose(); return; }
+  if(OB_I>=OB_LIST.length-1){ obClose(); return; }
   OB_I++; obRender();
 }
-function obOpen(){
+function obOpen(onlyNew){
+  OB_NEW=!!onlyNew;
+  OB_LIST=OB_NEW?OB_STEPS.filter(s=>s.since===OB_BUILD):OB_STEPS;
+  if(!OB_LIST.length){ OB_NEW=false; OB_LIST=OB_STEPS; }
   OB_I=0; obRender();
   const oc=$('#onboardCard'); oc.hidden=false;
   requestAnimationFrame(()=>oc.classList.add('ob-active'));
@@ -2368,7 +2394,12 @@ function obOpen(){
 function obInit(){
   $('#obNext').onclick=obNext;
   $('#obSkip').onclick=obClose;
-  if(!S.get('sukun.onboardSeen',0)) obOpen();
+  if(!S.get('sukun.onboardSeen',0)){ obOpen(false); return; }
+  /* turu görmüş kullanıcı: sürüm değiştiyse yalnız yeni adımları göster */
+  if(S.get('sukun.obSeenBuild','')!==OB_BUILD && OB_STEPS.some(s=>s.since===OB_BUILD)){
+    window.__obNewPending=true;
+    setTimeout(()=>{ window.__obNewPending=false; obOpen(true); },900);
+  }
 }
 
 function dailyShow(force){
@@ -3585,14 +3616,14 @@ tesbih:{label:'🕌 Namaz Sonrası Tesbihatı',items:[
  {tr:'Elhamdülillah',ar:'اَلْحَمْدُ لِلّٰهِ',mean:'Namazdan sonra 33 kez — hamd',adet:33},
  {tr:'Allahüekber',ar:'اَللّٰهُ اَكْبَرُ',mean:'Namazdan sonra 33 kez (bir rivayette 34)',adet:33},
  {tr:'Lâ ilâhe illallâhü vahdehû lâ şerîke leh',ar:'لَا اِلٰهَ اِلَّا اللّٰهُ وَحْدَهُ لَا شَرٖيكَ لَهُ',mean:'Tesbihatın sonunda tamamlayıcı tehlîl (1 veya 10 kez)',adet:1},
- {tr:'Âyetü\u2019l-Kürsî',ar:'اَللّٰهُ لَٓا اِلٰهَ اِلَّا هُوَ الْحَىُّ الْقَيُّومُ',mean:'Farz namazlardan sonra okunması müstehap (Bakara 255)',adet:1}
+ {tr:'Âyetü\u2019l-Kürsî',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',oku:'Allâhü lâ ilâhe illâ hüve\'l-hayyü\'l-kayyûm. Lâ te\'huzühû sinetün velâ nevm. Lehû mâ fis-semâvâti ve mâ fil-ard. Men zellezî yeşfeu indehû illâ bi-iznih. Ya\'lemü mâ beyne eydîhim ve mâ halfehüm. Velâ yuhîtûne bi-şey\'in min ilmihî illâ bimâ şâ\'. Vesia kürsiyyühüs-semâvâti vel-ard. Velâ yeûdühû hıfzuhümâ ve hüve\'l-aliyyü\'l-azîm.',mean:'Farz namazlardan sonra okunması müstehap (Bakara 255)',adet:1}
 ]},
 koruma:{label:'🛡️ Koruyucu Sûreler',items:[
- {tr:'Felâk Sûresi',ar:'قُلْ اَعُوذُ بِرَبِّ الْفَلَقِۙ مِنْ شَرِّ مَا خَلَقَۙ وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ وَمِنْ شَرِّ النَّفَّاثَاتِ فِى الْعُقَدِۙ وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ',mean:'Nazar, haset ve kötülüklerden Allah’a sığınma (113. sûre)',adet:3},
- {tr:'Nâs Sûresi',ar:'قُلْ اَعُوذُ بِرَبِّ النَّاسِۙ مَلِكِ النَّاسِۙ اِلٰهِ النَّاسِۙ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِۙ اَلَّذِى يُوَسْوِسُ فِى صُدُورِ النَّاسِۙ مِنَ الْجِنَّةِ وَالنَّاسِ',mean:'Sinsi vesvesecinin şerrinden Allah’a sığınma (114. sûre)',adet:3},
- {tr:'İhlâs Sûresi',ar:'قُلْ هُوَ اللّٰهُ اَحَدٌۗ اَللّٰهُ الصَّمَدُۗ لَمْ يَلِدْ وَلَمْ يُولَدْۙ وَلَمْ يَكُنْ لَهُ كُفُوًا اَحَدٌ',mean:'Tevhidin özü; koruma niyetiyle 3 kez okunur (112. sûre)',adet:3},
- {tr:'Kalem 51-52 (Nazar Âyeti)',ar:'وَاِنْ يَكَادُ الَّذِينَ كَفَرُوا لَيُزْلِقُونَكَ بِاَبْصَارِهِمْ لَمَّا سَمِعُوا الذِّكْرَ وَيَقُولُونَ اِنَّهُ لَمَجْنُونٌۗ وَمَا هُوَ اِلَّ ذِكْرٌ لِلْعَالَمۖينَ',mean:'“Neredeyse seni gözleriyle devireceklerdi…” — nazara karşı okunan âyet',adet:1},
- {tr:'Âyetü\u2019l-Kürsî',ar:'اَللّٰهُ لَٓا اِلٰهَ اِلَّ هُوَ الْحَىُّ الْقَيُّومُ',mean:'Koruma âyetlerinin başı (Bakara 255) — tam metin “Âyetü’l-Kürsî” okuyucusunda',adet:1}
+ {tr:'Felâk Sûresi',ar:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِنْ شَرِّ مَا خَلَقَ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ',oku:'Kul eûzü bi-Rabbil-felak. Min şerri mâ halak. Ve min şerri ğâsikın izâ vekab. Ve min şerrin-neffâsâti fil-ukad. Ve min şerri hâsidin izâ hased.',mean:'Nazar, haset ve kötülüklerden Allah’a sığınma (113. sûre)',adet:3},
+ {tr:'Nâs Sûresi',ar:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلَٰهِ النَّاسِ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ',oku:'Kul eûzü bi-Rabbin-nâs. Melikin-nâs. İlâhin-nâs. Min şerril-vesvâsil-hannâs. Ellezî yüvesvisü fî sudûrin-nâs. Minel-cinneti ven-nâs.',mean:'Sinsi vesvesecinin şerrinden Allah’a sığınma (114. sûre)',adet:3},
+ {tr:'İhlâs Sûresi',ar:'قُلْ هُوَ اللَّهُ أَحَدٌ اللَّهُ الصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ',oku:'Kul hüvallâhü ehad. Allâhüs-samed. Lem yelid ve lem yûled. Ve lem yekün lehû küfüven ehad.',mean:'Tevhidin özü; koruma niyetiyle 3 kez okunur (112. sûre)',adet:3},
+ {tr:'Kalem 51-52 (Nazar Âyeti)',ar:'وَإِنْ يَكَادُ الَّذِينَ كَفَرُوا لَيُزْلِقُونَكَ بِأَبْصَارِهِمْ لَمَّا سَمِعُوا الذِّكْرَ وَيَقُولُونَ إِنَّهُ لَمَجْنُونٌ وَمَا هُوَ إِلَّا ذِكْرٌ لِلْعَالَمِينَ',oku:'Ve in yekâdüllezîne keferû le-yüzlikûneke bi-ebsârihim lemmâ semiûz-zikra ve yekûlûne innehû le-mecnûn. Ve mâ hüve illâ zikrun lil-âlemîn.',mean:'“Neredeyse seni gözleriyle devireceklerdi…” — nazara karşı okunan âyet',adet:1},
+ {tr:'Âyetü\u2019l-Kürsî',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',oku:'Allâhü lâ ilâhe illâ hüve\'l-hayyü\'l-kayyûm. Lâ te\'huzühû sinetün velâ nevm. Lehû mâ fis-semâvâti ve mâ fil-ard. Men zellezî yeşfeu indehû illâ bi-iznih. Ya\'lemü mâ beyne eydîhim ve mâ halfehüm. Velâ yuhîtûne bi-şey\'in min ilmihî illâ bimâ şâ\'. Vesia kürsiyyühüs-semâvâti vel-ard. Velâ yeûdühû hıfzuhümâ ve hüve\'l-aliyyü\'l-azîm.',mean:'Koruma âyetlerinin başı (Bakara 255) — bölüm bölüm seyri için “Âyetü’l-Kürsî” okuyucusuna bak',adet:1}
 ]}
 };
 
@@ -3623,7 +3654,15 @@ function renderZikir(swap=true){
   }
   if(Z.cat==='esma'){ const f=esmaForms(it); ar=f.ar; tr=f.tr; mean=f.mean; eb=f.eb; }
   else { ar=it.ar; tr=it.tr; mean=it.mean; }
-  $('#zAr').textContent=ar;
+  const arEl=$('#zAr');
+  arEl.textContent=ar;
+  /* uzun sûre/âyet metinlerinde punto küçülsün */
+  const L=(ar||'').length;
+  arEl.classList.toggle('long',L>70&&L<=200);
+  arEl.classList.toggle('vlong',L>200);
+  /* okunuş satırı — yalnız metni başlık olan sûre/âyet kayıtlarında var */
+  const okEl=$('#zOku'), oku=(it&&it.oku)?it.oku:'';
+  if(okEl){ okEl.textContent=oku; okEl.hidden=!oku; }
   $('#zTr').textContent=tr;
   $('#zMean').textContent=Z.mean?mean:'';
   $('#zEb').textContent=Z.cat==='esma'?'ebced • '+eb:'';
@@ -5380,13 +5419,17 @@ function voiceGender(v){
   /* Microsoft kalıbı: 'Microsoft Tolga' (erkek), 'Microsoft Emel/Filiz' (kadın) */
   if(/emel|filiz|se[dz]a/.test(s))return 'f';
   if(/tolga/.test(s))return 'm';
+  /* Arapça sesler — Apple/Microsoft/Google yaygın adları */
+  if(/laila|salma|zariyah|hala|amina|fatima|hoda|noura|sana|rana|maryam/.test(s))return 'f';
+  if(/maged|hamed|naayf|shakir|bassel|omar|tarik|moaz|ali\b|saleh/.test(s))return 'm';
   return '';
 }
-function spkFilteredList(){
-  if(!SPK_GENDER)return SPK.list;
-  const filt=SPK.list.filter(v=>voiceGender(v)===SPK_GENDER);
-  return filt.length?filt:SPK.list;  /* eşleşme yoksa tümünü göster */
+function spkFilterByGender(list){
+  if(!SPK_GENDER||!list||!list.length)return list||[];
+  const f=list.filter(v=>voiceGender(v)===SPK_GENDER);
+  return f.length?f:list;   /* o cinsiyette ses yoksa tümünü göster */
 }
+function spkFilteredList(){ return spkFilterByGender(SPK.list); }
 function spkVoices(){
   if(!('speechSynthesis' in window))return;
   const all=speechSynthesis.getVoices();
@@ -5402,12 +5445,15 @@ function spkVoices(){
   if(SPK_GENDER && SPK.voice && voiceGender(SPK.voice)!==SPK_GENDER && flist.length){ SPK.voice=flist[0]; }
   if(SPK.voice){ const vi=SPK.list.indexOf(SPK.voice); if(vi>=0)sel.value=String(vi); }
   const gsel=$('#spkGenderSel'); if(gsel)gsel.value=SPK_GENDER;
-  if(SPK.arList.length&&!SPK.arVoice)SPK.arVoice=SPK.arList[0];
+  /* Arapça sesler de aynı cinsiyet tercihine uysun — zikir, dua ve sûre okuyucuları hep bunu kullanır */
+  const arF=spkFilterByGender(SPK.arList);
+  if(SPK.arList.length&&!SPK.arVoice)SPK.arVoice=arF[0]||SPK.arList[0];
+  if(SPK_GENDER && SPK.arVoice && voiceGender(SPK.arVoice)!==SPK_GENDER && arF.length){ SPK.arVoice=arF[0]; }
   const arSel=$('#arVoiceSel'), arRow=$('#arVoiceRow');
   if(arSel&&arRow){
     if(SPK.arList.length>1){
       arRow.style.display='';
-      arSel.innerHTML=SPK.arList.map((v,i)=>'<option value="'+i+'">'+v.name+' ('+v.lang+')</option>').join('');
+      arSel.innerHTML=SPK.arList.map((v,i)=>'<option value="'+i+'">'+v.name+' ('+v.lang+')'+(voiceGender(v)==='f'?' 👩':voiceGender(v)==='m'?' 👨':'')+'</option>').join('');
       const cur=SPK.arList.indexOf(SPK.arVoice); if(cur>=0)arSel.value=String(cur);
     }else arRow.style.display='none';
   }
@@ -5459,7 +5505,10 @@ async function spkSayZikir(interrupt){
     const ar=$('#zAr').textContent;
     if(ar){spkSay(ar,interrupt,SPK.arVoice.lang,SPK.arVoice,SPK.arRate,SPK.arPitch);return;}
   }
-  spkSay($('#zTr').textContent,interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
+  /* Arapça ses yoksa: kaydın 'tr' alanı sûre ADI olan maddelerde (Felâk, Nâs, İhlâs,
+     Âyetü'l-Kürsî…) adını okuyup geçmesin — tam okunuşu seslendir. */
+  const _ok=$('#zOku'), oku=(_ok?_ok.textContent:'').trim();
+  spkSay(oku||$('#zTr').textContent,interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
 }
 $('#spkOnce').onclick=()=>spkSayZikir(true);
 $('#arVoiceSel').addEventListener('change',e=>{SPK.arVoice=SPK.arList[+e.target.value]||SPK.arVoice;});
@@ -9049,7 +9098,7 @@ async function rxAskAI(state){
   nefsInit();
   tagLvl(); applyUI(UIM.m);
   obInit();
-  if(S.get('sukun.onboardSeen',0)) setTimeout(()=>dailyShow(true),650); // Her açılışta göster (ilk ziyarette tur öncelikli, günlük kart bir sonraki açılışta gelir)
+  if(S.get('sukun.onboardSeen',0)&&!window.__obNewPending) setTimeout(()=>dailyShow(true),650); // Her açılışta göster (ilk ziyarette tur öncelikli, günlük kart bir sonraki açılışta gelir)
   spatialInit();
   applyTema(S.get('sukun.tema','zumrut'));
   tovbeInit(); seyInit(); akInit();
