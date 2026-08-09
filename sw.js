@@ -1,11 +1,11 @@
-/* SÜKÛN Service Worker — build 2026-08-09-r111
+/* SÜKÛN Service Worker — build 2026-08-09-r112
    Strateji:
    • Çekirdek (nero.html + manifest): install'da önbelleğe alınır → tam çevrimdışı açılış.
    • Gezinti istekleri: önbellek-öncelikli (anında açılış), arka planda ağdan tazele (yeni sürüm yakala).
    • Aynı-origin GET: stale-while-revalidate. Çapraz-origin (Google Fonts gövde yazıları): ağ → önbellek yedeği.
    • Yeni sürüm: yüklendiğinde sayfaya haber verilir; sayfa "Yenile" der, SKIP_WAITING ile devralır. */
 'use strict';
-const V = 'sukun-2026-08-09-r111';
+const V = 'sukun-2026-08-09-r112';
 const CORE = ['./nero.html', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
@@ -24,8 +24,30 @@ self.addEventListener('activate', e => {
   );
 });
 
+/* Sayfa «gelen sürümde ne değişti?» diye sorar. Yeni nero.html zaten
+   install sırasında bu SW'nin önbelleğine alındı; notu oradan okuyup
+   döneriz. Böylece kullanıcı GÜNCELLEMEDEN ÖNCE ne geleceğini görür —
+   çalışan sayfa kendi eski notlarını gösterirse yanıltıcı olurdu. */
+async function surumNotu() {
+  try {
+    const c = await caches.open(V);
+    const r = await c.match('./nero.html');
+    if (!r) return null;
+    const t = await r.text();
+    const m = t.match(/<script[^>]+id="surumNotlari"[^>]*>([\s\S]*?)<\/script>/);
+    if (!m) return null;
+    const liste = JSON.parse(m[1]);
+    return { v: V.replace(/^sukun-/, ''), notlar: liste.slice(0, 3) };
+  } catch (e) { return null; }
+}
+
 self.addEventListener('message', e => {
-  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (!e.data) return;
+  if (e.data.type === 'SKIP_WAITING') { self.skipWaiting(); return; }
+  if (e.data.type === 'SURUM_NOTU') {
+    const port = e.ports && e.ports[0];
+    surumNotu().then(n => { try { port && port.postMessage(n); } catch (x) {} });
+  }
 });
 
 async function staleWhileRevalidate(req, cacheKeyReq) {
