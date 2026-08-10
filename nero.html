@@ -124,6 +124,8 @@ body[data-tema="okyanus"]{--yuzeyK:18,25,37;--sayfaK:15,23,34;--sayfa2K:10,17,29
 body[data-tema="gumus"]{--yuzeyK:26,27,29;--sayfaK:24,25,27;--sayfa2K:18,19,21;--girdiK:23,24,26;--vurguK:44,45,47;--bg:#0d0e10;--gold:#a8b0b8;--goldh:#e0e6ea;--ivory:#eef1f3;--mut:#9aa2a8;--dim:#5c6268;--line:rgba(168,176,184,.2);--line2:rgba(168,176,184,.42);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(160,170,180,.22),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(80,90,100,.28),transparent 60%),linear-gradient(180deg,#16181a,#0d0e10 55%,#08090a);--ebru1:#1c1e20;--ebru2:#2e3236;--ebru3:#484e54;--ebru4:#666e74;--ebru5:#101214;--photic:radial-gradient(ellipse at 50% 42%,#ffffff 0%,#a8b0b8 55%,#484e54 100%);--ok:#5ab090;--rec:#d0604a;--uyari:#d0a04a;--bilgi:#7a9ab0}
 body[data-tema="sabah"]{--yuzeyK:235,228,213;--sayfaK:239,232,216;--sayfa2K:224,217,203;--girdiK:231,225,210;--vurguK:212,206,192;--bg:#f6efdf;--gold:#a9822a;--goldh:#8a6716;--ivory:#3c3122;--mut:#6d5c42;--dim:#98876b;--line:rgba(122,94,32,.28);--line2:rgba(122,94,32,.55);--danger:#b0503a;--panel:rgba(246,239,223,.9);--bgGrad:radial-gradient(1100px 640px at 50% -8%,color-mix(in srgb,var(--gold) 14%,transparent),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(30,92,79,.1),transparent 60%),linear-gradient(180deg,#f7f0e1,#eee2c8 60%,#e6d8ba);--ebru1:#d8c79a;--ebru2:#c9b380;--ebru3:#a9822a;--ebru4:#1e5c4f;--ebru5:#8a6716;--photic:radial-gradient(ellipse at 50% 42%,#fff3cf 0%,#d9b84a 60%,#a98a2a 100%);--ok:#3a9a5a;--okbg:rgba(58,154,90,.13);--rec:#c0503a;--recbg:rgba(192,80,58,.12);--uyari:#b0803a;--uyaribg:rgba(176,128,58,.13);--bilgi:#3a7a9a}
 body[data-tema="sabah"]{--teal:#1e6d5e;--emerald:#14513f;--ok:#1f7a55}
+body[data-tema="safran"]{--yuzeyK:30,18,8;--sayfaK:27,16,6;--sayfa2K:20,10,2;--girdiK:26,15,5;--vurguK:50,36,24;--bg:#1a0d00;--gold:#d4622a;--goldh:#f0a06a;--ivory:#fde8d8;--mut:#c09a84;--dim:#806050;--line:rgba(212,98,42,.2);--line2:rgba(212,98,42,.5);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(180,80,30,.5),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(120,30,10,.4),transparent 60%),linear-gradient(180deg,#2a1006,#1a0d00 55%,#0e0600);--ebru1:#2a1408;--ebru2:#4a2010;--ebru3:#6b2d0e;--ebru4:#8a3a14;--ebru5:#1a0a02;--photic:radial-gradient(ellipse at 50% 42%,#ffd4a0 0%,#d4622a 55%,#6e2808 100%);--ok:#5ab87a;--rec:#d04040;--uyari:#d4a030;--bilgi:#c09a60}
+body[data-tema="lacivert"]{--yuzeyK:16,24,52;--sayfaK:13,21,50;--sayfa2K:8,15,44;--girdiK:12,20,49;--vurguK:32,42,64;--bg:#040918;--gold:#2a4db5;--goldh:#6a9de8;--ivory:#d0dcf7;--mut:#8898c0;--dim:#485878;--line:rgba(42,77,181,.22);--line2:rgba(42,77,181,.5);--bgGrad:radial-gradient(1100px 640px at 50% -8%,rgba(42,77,200,.48),transparent 62%),radial-gradient(860px 620px at 88% 108%,rgba(10,20,80,.5),transparent 60%),linear-gradient(180deg,#0e1f4a,#040918 55%,#020510);--ebru1:#0d1f4a;--ebru2:#163070;--ebru3:#1e4294;--ebru4:#2a5ab8;--ebru5:#08112a;--photic:radial-gradient(ellipse at 50% 42%,#d0e4ff 0%,#4a80e0 55%,#0a2060 100%);--ok:#40b080;--rec:#d04060;--uyari:#c0a030;--bilgi:#5090d0}
 /* Açık tema — koyu yüzeyleri kâğıda çevir */
 body[data-tema="sabah"] .card{background:rgba(255,255,255,.55);box-shadow:0 2px 14px rgba(60,49,34,.06)}
 body[data-tema="sabah"] select,body[data-tema="sabah"] #zSearch,body[data-tema="sabah"] .jRow input,body[data-tema="sabah"] .jRow select,body[data-tema="sabah"] input[type=number]{background:rgba(255,255,255,.72);color:#3c3122}
@@ -3279,7 +3281,7 @@ input:focus-visible,select:focus-visible{
       <span class="mbDeg" id="mbVolV">50%</span>
     </div>
     <div class="mbSatir" id="mbHizSatir">
-      <span class="mbEt">Hız</span>
+      <span class="mbEt">Hız <span id="okumaHizV" style="color:var(--goldh);font-variant-numeric:tabular-nums"></span></span>
       <span class="mbHiz">
         <button data-mbhiz="1">1×</button>
         <button data-mbhiz="1.5">1,5×</button>
@@ -7424,7 +7426,7 @@ const NEURO={
         try{
           if(typeof FR!=='undefined'){ FR.b=2; FR.mode='bin'; if(FR.playing){frStop();frStart();} }
           const p2=AMBIENT_DEFS.find(d=>d.id==='gur_pembe'); if(p2&&!AMB['gur_pembe'])chOn(p2);
-          const sel=document.getElementById('timerSel');
+          const sel=document.getElementById('sleepTimer');
           if(sel){ sel.value='20'; sel.dispatchEvent(new Event('change',{bubbles:true})); }
           if(typeof syncFreqUI==='function')syncFreqUI();
         }catch(e){}
@@ -12096,7 +12098,9 @@ const THEMES=[
  {k:'altin',n:'Altın Çağ',c:['#0a0805','#4a3810','#e0af3d','#ffd76a','#f5ecd8']},
  {k:'okyanus',n:'Derin Okyanus',c:['#040c18','#123a5c','#3d8ee0','#7ec4ff','#e2eef8']},
  {k:'gumus',n:'Gümüş Ayna',c:['#0d0e10','#2e3236','#a8b0b8','#e0e6ea','#eef1f3']},
- {k:'sabah',n:'Sabah Nuru · açık',c:['#f6efdf','#e8d9b5','#a9822a','#1e5c4f','#3c3122']}
+ {k:'sabah',n:'Sabah Nuru · açık',c:['#f6efdf','#e8d9b5','#a9822a','#1e5c4f','#3c3122']},
+ {k:'safran',n:'Safran Şafağı · turuncu-gül',c:['#1a0d00','#6b2d0e','#d4622a','#f0a06a','#fde8d8']},
+ {k:'lacivert',n:'Lacivert Huzur · indigo gece',c:['#040918','#0d1f4a','#2a4db5','#6a9de8','#d0dcf7']}
 ];
 function temaRender(){
   const cur=document.body.dataset.tema||'zumrut';
@@ -14818,6 +14822,24 @@ const RX_PROFILES=[
   freq:'akis', freqAlt:'creative2', amb:{forest:.3,birds:.25,stream:.15,acemasiran:.2}, esma:'Bedî’', breath:'box',
   why:'Üretken akış Theta-Alfa sınırında doğar; bilinçaltı bağlantılar bu bantta yüzeye çıkar, sıra dışı fikir birleşimleri kolaylaşır. Orman-kuş-dere zemini zihni açık tutar; Acemaşiran taksimi geleneksel tasnifte tam bu hâl için anılır — “üretkenlik duygusu ve ilham verir, durgun duyguları canlandırır”, «Yâ Bedî’» (eşsiz güzellikte yaratan) esması üretkenlik niyetidir, box nefesi dengede tutar.',
   ritual:'Yargılamadan yaz/çiz. Zemin sesini fonda bırak, fikirleri süzme; akış gelince frekansı açık tut. Süre serbest.'},
+
+ {id:'ofke',color:'#e06030', title:'Öfke & Sinirin Dönüşümü', icon:'🔥',
+  keys:['öfke','öfkeliyim','sinir','sinirli','kızgın','kızıyorum','hiddet','tahammül','sabredemiyorum','patlamak','gergin sinir','kızdım','bağırıyorum'],
+  freq:'innerpeace', freqAlt:'calmdown', amb:{ocean:.45,stream:.2,rast:.18}, esma:'Sabûr', breath:'478',
+  why:'Öfkede sempatik sinir sistemi (adrenalin, kortizol) aşırı uyarılmıştır. Alfa frekansı bu aktivasyonu yavaşlatır; okyanus ve dere zemini kortizolü düşürür. Rast makamı geleneksel tasnifte sefa ve iç dinginliği — öfkenin tam zıddını — temsil eder. «Yâ Sabûr» (sonsuz sabır sahibi) esması sabır niyetini kalbe işler; 4-7-8 nefesi nefesin uzaması yoluyla amigdalayı (korku-öfke merkezi) yatıştırır. Amaç bastırmak değil, dönüştürmek.',
+  ritual:'Önce 3 kez derin nefes al — içine çek 4, tut 7, ver 8. Sonra okyanus sesine kulak ver ve «Yâ Sabûr» de; öfkenin enerjisini göğsünde bir ateş gibi hisset ve her nefes verişte biraz soğumasına izin ver. 15-20 dk.'},
+
+ {id:'sukran',color:'#f0c040', title:'Şükran & Bereket Farkındalığı', icon:'🙏',
+  keys:['şükran','şükür','minnet','bereket','minnettarım','teşekkür','nimetler','iyilikler','hayır','güzel','şükrettim','hamdettim','alhamdülillah'],
+  freq:'tefekkur', freqAlt:'innerpeace', amb:{birds:.35,stream:.25,forest:.2,neva:.15}, esma:'Şekûr', breath:'box',
+  why:'Şükran pratiği prefrontal korteksi (değerlendirme-karar merkezi) aktive eder ve dopamin/serotonin salınımını artırır. Theta frekansı tefekkür derinliğini sağlar; seher kuşları ve orman zemini doğanın bolluğunu hatırlatır. Nevâ makamı geleneksel tasnifte neşe ve sevinç duygusuyla anılır. «Yâ Şekûr» (şükrü en güzel değerlendiren) esması şükrün döngüsünü güçlendirir; box nefesi zihni hazır ve açık tutar.',
+  ritual:'Her nefeste içinden üç şeye şükret: beden, çevre, ilişki. «Yâ Şekûr» ile her minneti kalbe mühürle. 20 dakika.'},
+
+ {id:'yalniz',color:'#a0b8d8', title:'Yalnızlık & Bağ Arayışı', icon:'🌙',
+  keys:['yalnız','yalnızım','yalnızlık','kimsem yok','anlayan yok','soyutlanmış','uzak','bağlantı','içine kapandım','izolasyon','arkadaş','özlem'],
+  freq:'kalp', freqAlt:'sifa', amb:{ney:.45,ocean:.3,huseyni:.2}, esma:'Vedûd', breath:'box',
+  why:'Yalnızlık hissi çoğu zaman bağlantı ihtiyacının bir sinyalidir. 639 Hz (kalp çakrası tonu) bağ ve merhamet temasıyla anılır; ney doğrudan ruhun sesine benzetilir ve yalnızlığa eşlik eder, bastırmaz. Hüseynî taksimi geleneksel tasnifte özlem ve hasret duygusunu onurlandırır. «Yâ Vedûd» (çok seven, sevdiren) esması sevgi bağını içten dışa açar; yalnızlığı yeniden çerçeveler — iyileştirici bir iç halvet olarak.',
+  ritual:'Ney sesine gözlerini kapat ve nefes ver. Bu sessizliğin aslında bir huzur daveti olduğunu düşün. «Yâ Vedûd» ile kendi kalbine bağlan. 25 dk.'},
 ];
 
 /* Genel fallback profili (hiçbir kelime tutmazsa) */
@@ -14836,6 +14858,12 @@ const RX_CHIPS=[
  {label:'🕊 Kaygılıyım', q:'kaygılıyım'},
  {label:'🕯 Tefekkür', q:'tefekkür etmek istiyorum'},
  {label:'🎨 İlham', q:'üretken ilhama ihtiyacım var'},
+ {label:'🔥 Öfkeliyim', q:'öfkeliyim ve sinirimi yönetmek istiyorum'},
+ {label:'🙏 Şükran', q:'şükran ve minnet duymak istiyorum'},
+ {label:'🌙 Yalnızım', q:'yalnızım ve bağ kurmak istiyorum'},
+ {label:'😤 Stres var', q:'stres altındayım ve rahatlamak istiyorum'},
+ {label:'🌅 Gece uyanık', q:'gece uyuyamıyorum zihin durmuyor'},
+ {label:'💎 Derin meditasyon', q:'derin meditasyon ve murâkabe istiyorum'},
 ];
 
 /* Kelime skoruyla en uygun profili bul */
@@ -14908,7 +14936,10 @@ const RX_ICON_SVG = {
   kaygi: '<path d="M3,12 Q9,7 15,12 T27,12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3,18 Q9,13 15,18 T27,18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><path d="M3,24 Q9,19 15,24 T27,24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".4"/>',
   tefekkur: '<circle cx="15" cy="15" r="2.2" fill="currentColor"/><circle cx="15" cy="15" r="7" fill="none" stroke="currentColor" stroke-width=".9" opacity=".45"/><circle cx="15" cy="15" r="12" fill="none" stroke="currentColor" stroke-width=".6" opacity=".22"/>',
   uretken: '<path d="M15,4 C22,4 26,10 22,15 C26,20 22,26 15,26 C8,26 4,20 8,15 C4,10 8,4 15,4 Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="15" cy="15" r="2.4" fill="currentColor"/>',
-  genel: '<path d="M15,3 L18,12 L27,12 L20,18 L23,27 L15,21 L7,27 L10,18 L3,12 L12,12 Z" fill="currentColor" opacity=".92"/>'
+  genel: '<path d="M15,3 L18,12 L27,12 L20,18 L23,27 L15,21 L7,27 L10,18 L3,12 L12,12 Z" fill="currentColor" opacity=".92"/>',
+  ofke: '<path d="M8,8 Q15,4 22,8 Q26,12 22,16 L15,22 L8,16 Q4,12 8,8Z" fill="currentColor" opacity=".8"/><path d="M12,11 L18,11 M15,8 L15,14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>',
+  sukran: '<path d="M15,25 L6,14 Q4,10 8,7 Q12,4 15,9 Q18,4 22,7 Q26,10 24,14 Z" fill="currentColor" opacity=".88"/>',
+  yalniz: '<circle cx="15" cy="12" r="5" fill="currentColor" opacity=".85"/><path d="M7,26 Q7,19 15,19 Q23,19 23,26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="24" cy="9" r="1.5" fill="currentColor" opacity=".4"/><circle cx="26" cy="14" r="1" fill="currentColor" opacity=".3"/>'
 };
 function rxIconSvg(profileId){
   const inner = RX_ICON_SVG[profileId] || RX_ICON_SVG.genel;
@@ -15433,7 +15464,7 @@ async function rxAskAI(state){
       if(git==='tekke'){ const b=document.getElementById('tekkeBtn')||document.querySelector('[data-t="tekke"]'); if(b)b.click(); }
       else if(git==='vird'){
         const z=document.querySelector('.tab[data-t="zkr"]'); if(z)z.click();
-        setTimeout(()=>{ const d=document.getElementById('dlBugunBtn'); if(d)d.click(); },420);
+        setTimeout(()=>{ const d=document.getElementById('dlOkuBtn'); if(d)d.click(); },420);
       }
       else if(git==='zikir'){ const z=document.querySelector('.tab[data-t="zkr"]'); if(z)z.click(); }
       else if(git==='ambiyans'){ const a2=document.querySelector('.tab[data-t="amb"]'); if(a2)a2.click(); }
@@ -20041,6 +20072,10 @@ const PRESETS = [
   {id:'meditate',kat:'neuro',icon:'🧘',name:'Meditasyon',desc:'Theta dalgaları, üretkenlik',hz:'6 Hz Theta',carrier:160,beat:6,wave:1,noise:'pink',lpf:2500,hpf:60},
   {id:'energy',kat:'neuro',icon:'⚡',name:'Enerji Artışı',desc:'Uyanıklık, motivasyon',hz:'28 Hz Beta',carrier:220,beat:28,wave:3,noise:null,lpf:4000,hpf:120},
   {id:'memory',kat:'neuro',icon:'💡',name:'Hafıza & Öğrenme',desc:'Hafıza güçlendirme, öğrenme',hz:'12 Hz Alfa+',carrier:200,beat:12,wave:2,noise:null,lpf:3000,hpf:100},
+  {id:'pain',kat:'neuro',icon:'🩹',name:'Ağrı & Rahatlama',desc:'Kronik ağrı yönetimi, beyin ağrı işlemini yavaşlatır',hz:'7 Hz Theta',carrier:140,beat:7,wave:1,noise:'pink',lpf:2200,hpf:60},
+  {id:'creativity',kat:'neuro',icon:'🎨',name:'Yaratıcı Akış Zirvesi',desc:'Sağ beyin & hayal gücü aktivasyonu',hz:'5 Hz Theta',carrier:180,beat:5,wave:1,noise:null,lpf:2800,hpf:80},
+  {id:'ground',kat:'neuro',icon:'🌍',name:'Topraklanma & Denge',desc:'Aşırı düşünceyi kesmek, an\'a dönmek',hz:'3 Hz Delta+',carrier:120,beat:3,wave:0,noise:'brown',lpf:1800,hpf:40},
+  {id:'anxiety_relief',kat:'neuro',icon:'🕊',name:'Kaygı Acil Protokolü',desc:'Panik ve kaygı için hızlı parasempatik aktivasyon',hz:'9 Hz Alfa',carrier:160,beat:9,wave:2,noise:'pink',lpf:2400,hpf:70},
 ];
 
 // BRAIN WAVES
@@ -21821,6 +21856,12 @@ const BREATH_MODES = [
    phases:[{label:'Güçlü Nefes Al',sec:2,voice:'Güçlü nefes alın'},{label:'Bırak',sec:2,voice:'Bırakın'},{label:'Tut (Boş)',sec:15,voice:'Nefesi boşaltıp tutun'},{label:'Derin Al & Tut',sec:10,voice:'Derin alın ve tutun'}]},
   {id:'nadi', name:'Nadi Shodhana', desc:'Alternatif burun nefesi; zihinsel denge ve berraklık.',
    phases:[{label:'Sağ Burundan Ver',sec:4,voice:'Sağ burun deliğinden verin'},{label:'Sol Burundan Al',sec:4,voice:'Sol burun deliğinden alın'},{label:'Sol Burundan Ver',sec:4,voice:'Sol burun deliğinden verin'},{label:'Sağ Burundan Al',sec:4,voice:'Sağ burun deliğinden alın'}]},
+  {id:'sigh', name:'Fizyolojik İç Çekiş', desc:'Çift nefes + uzun veriş; stres ve kaygı için anında rahatlama.',
+   phases:[{label:'İlk Nefes Al',sec:2,voice:'Derin nefes alın'},{label:'İkinci Nefes Al',sec:1,voice:'Üstüne bir nefes daha ekleyin'},{label:'Yavaşça Ver',sec:8,voice:'Çok yavaş verin — ağzı küçük açarak'}]},
+  {id:'koherent', name:'Koherent Nefes', desc:'5.5 sn giriş · 5.5 sn çıkış; kalp ritmini dengeler.',
+   phases:[{label:'Nefes Al',sec:5,voice:'Yavaşça alın — beş buçuk saniye'},{label:'Nefes Ver',sec:6,voice:'Yavaşça verin — beş buçuk saniye'}]},
+  {id:'aslan', name:'Aslan Nefesi (Simhasana)', desc:'Güçlü veriş + ses; gerginliği hızla boşaltır.',
+   phases:[{label:'Burundan Nefes Al',sec:3,voice:'Burundan derin alın'},{label:'Ağızdan Güçlü Ver',sec:3,voice:'Ağzı açıp dili dışarı çıkarın, güçlüce verin'},{label:'Hazırlan',sec:2,voice:'Omuzları geri çekin, tekrara hazırlanın'}]},
 ];
 
 const BR = {
@@ -21986,6 +22027,45 @@ const MED_SCRIPTS = [
     'Şimdi kendinize sessizce şu telkini verin: "Hazır olduğumda, zahmetsizce odaklanırım."',
     'Bu hissi bir nefes daha alarak pekiştirin... ve bu hissin sizinle kalacağını bilin.',
     'Üçe kadar sayıp gözlerinizi açın: bir, iki, üç — şimdi tam burada, odaklanmış ve hazır.'
+   ]},
+  {id:'sukran-med', icon:'🙏', name:'Şükran & Minnet Meditasyonu', meta:'~10 dk · 11 adım', desc:'Minnettarlık duygusunu derinleştiren, kalbi açan rehberli pratik.',
+   steps:[
+    'Rahat bir pozisyonda oturun. Sırtınızı dik tutun ama kasılmayın. Gözlerinizi kapatın.',
+    'Birkaç nefes alarak bedeninize yerleşin. Her nefes verişte omuzlarınızın düştüğünü hissedin.',
+    'Şimdi bugün sabahtan bu yana yaşadıklarınızı hızlıca geçin aklınızdan. Küçük bir şey seçin — bir bardak sıcak çay, bir gülümseme, temiz bir hava.',
+    'O küçük şeye odaklanın. Sanki onu ilk kez fark ediyormuşsunuz gibi, ayrıntıyla düşünün.',
+    'Bu farkındalıkla birlikte göğsünüzde oluşan ılıklığı hissedin. Bu şükranın fiziğidir.',
+    'Şimdi bir insanı düşünün — hayatınıza dokunmuş, size bir şey öğretmiş biri. Yüzünü gözünüzde canlandırın.',
+    'İçinizden o kişiye teşekkür edin. Kelimeleri önemsemeyin; hissi önemseyin.',
+    'Daha geniş bir bakış açısıyla, bu anda sahip olduklarınızı düşünün: nefes, bilinç, an.',
+    'Her nefes alışınızla bir nimet, her nefes verişinizle bir teşekkür. Bu ritmi bir süre sürdürün.',
+    'Göğsünüzün tam ortasında, bu minnettarlıkla birlikte bir genişlik, bir açıklık hissedin.',
+    'Bu hissi mühürleyin. Günün geri kalanına bu bakış açısıyla taşıyabileceğinizi bilin. Gözlerinizi açın.'
+   ]},
+  {id:'metta', icon:'💚', name:'Metta — Şefkat Meditasyonu', meta:'~12 dk · 10 adım', desc:'Önce kendine, sonra herkese şefkat ve iyi dilek gönderme pratiği.',
+   steps:[
+    'Rahatça oturun. Gözlerinizi kapatın ve birkaç derin nefes alarak içinize dönün.',
+    'Önce kendinizi düşünün. Tam olarak şu an olduğunuz gibi — güçleriniz ve zayıflıklarınızla.',
+    'İçinizden kendinize şunu deyin: "Mutlu olayım. Sağlıklı olayım. Güvende olayım. Huzur içinde olayım."',
+    'Bu kelimeleri tekrarlarken göğsünüzde bir ılıklık oluşmasına izin verin. Zorlamayın — sadece davet edin.',
+    'Şimdi sevdiğiniz birini düşünün. Onun yüzünü zihinizde netleştirin. Ona aynı dilek cümlelerini gönderin.',
+    '"Mutlu ol. Sağlıklı ol. Güvende ol. Huzur içinde ol." — Her cümleyi bir nefesle gönderin.',
+    'Şimdi size karşı nötr olan birini düşünün — tanıdığınız ama yakın olmadığınız biri. Ona da aynı şefkati gönderin.',
+    'Şimdi size zor gelen birini düşünün. Onun da acı çektiğini, onun da iyi şeyler dilediğini hatırlayın. Gönderebileceğiniz kadar şefkat gönderin.',
+    'Son olarak tüm varlıkları — insanlar, hayvanlar, tüm canlılar — bir bütün olarak düşünün. Şefkatinizi her yöne yayın.',
+    'Bu genişlemiş sevgi hissiyle birkaç nefes daha alın. Hazır olduğunuzda gözlerinizi yavaşça açın.'
+   ]},
+  {id:'gorsellestime', icon:'✨', name:'Görselleştirme & Niyet', meta:'~8 dk · 9 adım', desc:'İçsel bir hedef veya hâli canlı biçimde hayal ederek zihni hazırlama.',
+   steps:[
+    'Rahat bir yerde oturun veya uzanın. Birkaç nefes alarak zihninizi boşaltın.',
+    'Şu an için bir niyet belirleyin. Bu bir hâl olabilir — huzur, güç, berraklık — ya da somut bir şey. Bir cümleyle netleştirin.',
+    'Gözlerinizi kapatın ve bu niyetin gerçekleştiği bir anı hayal edin. Neredesiniz? Hava nasıl? Etrafınızda kim var?',
+    'Bu hayal ettiğiniz anı ayrıntılandırın. Renkleri, sesleri, kokuları ekleyin. Ne hissediyorsunuz?',
+    'Bedeninizde bu anın hissini aramaya başlayın. Göğsünüzde, omuzlarınızda, nefesinizde bu "olmuş" hissi var mı?',
+    'Şimdi o anın içindesiniz. Kendinizi dışarıdan seyretmiyorsunuz — içindesiniz. Her duyu aktif.',
+    'Bu hissin bedeninize yerleşmesine izin verin. Bir nefes alın ve bu hissi derinleştirin.',
+    'İçinizden şunu söyleyin: "Bu hâl bende zaten var. Ben bunu hatırlıyorum."',
+    'Üç derin nefes alın. Her birinde bu hissi pekiştirin. Hazır olduğunuzda gözlerinizi açın — niyetinizi taşıyarak.'
    ]},
 ];
 
