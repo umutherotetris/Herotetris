@@ -387,6 +387,79 @@ body[data-tema="sabah"] .wkBar.wkEmpty{background:rgba(60,49,34,.06);border-colo
 #mbMekanSatir.pasif{opacity:.42}
 #mbMekanSatir input[disabled],#mbMekanSatir button[disabled]{pointer-events:none}
 #mbOnceki[hidden],#mbSonraki[hidden]{display:none!important}
+/* ── ZİKİR AÇILIŞI (r118) ───────────────────────────────────
+   Yaklaşma yalnız transform+opacity ile: ikisi de derleyici (compositor)
+   üstünde çalışır, telefonda kare düşürmez. Yerleşim özelliklerine
+   (width/top/font-size) DOKUNULMAZ. */
+/* r119: yönerge sönümü — üç açılıştan sonra tek satır, dokununca açılır */
+.zYonerge{cursor:pointer;transition:max-height .3s ease,opacity .25s ease}
+.zYonerge.kisa{max-height:1.7em;overflow:hidden;position:relative;opacity:.72;
+  white-space:nowrap;text-overflow:ellipsis}
+.zYonerge.kisa::after{content:'⌄';position:absolute;right:8px;top:7px;color:var(--dim);font-size:11px}
+
+/* r119: zikir sonu ses seçimi */
+.huSec{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.huSec .huK{font-size:11px;padding:6px 11px}
+.huSec .huK.on{background:color-mix(in srgb,var(--gold) 18%,transparent);
+  border-color:var(--gold);color:var(--goldh);font-weight:600}
+.huBar{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.huBar .btn{font-size:11px;padding:6px 11px}
+.huBar .btn.has{border-color:var(--ok);color:var(--ok)}
+.huDurum{font-size:9.5px;color:var(--dim);flex:1;min-width:110px;line-height:1.5}
+
+/* r118: «ne yapmam gerek» yönergesi — modül başında, göz yormadan */
+.zYonerge{font-size:11px;line-height:1.62;color:var(--mut);margin:8px 0 10px;
+  padding:9px 11px;border-left:2px solid var(--line2);
+  background:color-mix(in srgb,var(--gold) 5%,transparent);border-radius:0 9px 9px 0}
+.zYonerge b{color:var(--goldh);font-weight:600}
+.zaKat{position:fixed;inset:0;z-index:2147483100;display:flex;align-items:center;
+  justify-content:center;padding:26px;text-align:center;
+  background:radial-gradient(ellipse at center,rgba(var(--sayfaK),.90) 0%,rgba(0,0,0,.94) 78%);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  opacity:0;transition:opacity .30s ease;cursor:pointer}
+.zaKat.acik{opacity:1}
+.zaIc{max-width:560px;width:100%;
+  transform:scale(.62) translateZ(0);opacity:0;
+  transition:transform 1.05s cubic-bezier(.19,1,.22,1),opacity .55s ease}
+.zaKat.acik .zaIc{transform:scale(1);opacity:1}
+/* Geri çekilme: kapanırken uzaklaşarak silinir */
+.zaKat:not(.acik) .zaIc{transform:scale(1.34);opacity:0;
+  transition:transform .34s ease-in,opacity .26s ease-in}
+.zaAr{font-family:"Amiri",serif;font-size:clamp(30px,10vw,54px);line-height:1.75;
+  color:var(--gold);direction:rtl;margin-bottom:14px;
+  text-shadow:0 0 26px color-mix(in srgb,var(--gold) 34%,transparent)}
+.zaTr{font-size:clamp(15px,4.6vw,21px);font-weight:600;color:var(--goldh);letter-spacing:.02em}
+.zaAlt{font-size:11.5px;color:var(--mut);margin-top:7px;letter-spacing:.09em;text-transform:uppercase}
+/* r119: nefes yönergesi — sayının üstünde, asıl mesaj bu */
+.zaNefes{font-size:13px;color:var(--goldh);margin-top:20px;letter-spacing:.06em;
+  min-height:1.2em;opacity:.92}
+/* r119: tamamlanma anı */
+.zaKat.tamam .zaTr{font-size:clamp(17px,5.4vw,24px);color:var(--gold)}
+.zaTik{font-size:clamp(38px,12vw,58px);color:var(--gold);margin-bottom:12px;
+  text-shadow:0 0 30px color-mix(in srgb,var(--gold) 45%,transparent);
+  animation:zaTikA .9s cubic-bezier(.19,1,.22,1)}
+@keyframes zaTikA{0%{transform:scale(.4) rotate(-25deg);opacity:0}
+  60%{transform:scale(1.14) rotate(4deg);opacity:1}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.zaTik{animation:none}}
+.zaSay{font-size:clamp(24px,7vw,34px);font-weight:700;color:var(--mut);margin-top:5px;opacity:.62;
+  font-variant-numeric:tabular-nums;min-height:1.1em}
+.zaSay.vur{animation:zaVur .62s ease-out}
+@keyframes zaVur{0%{transform:scale(.72);opacity:.25}45%{transform:scale(1.1);opacity:1}100%{transform:scale(1);opacity:.9}}
+.zaAtla{margin-top:20px;font-size:10.5px;color:var(--dim);letter-spacing:.11em;text-transform:uppercase}
+/* Kısa kip — bölüm/isim geçişi: daha küçük, geri sayımsız */
+/* Kısa kipte de alttaki metin okunmasın — saydamlık düşük kalırsa
+   arkadaki yazı zikrin üstüne biner (ölçümde görüldü). */
+.zaKat.kisa{background:radial-gradient(ellipse at center,rgba(var(--sayfaK),.94) 0%,rgba(0,0,0,.96) 72%)}
+.zaKat.kisa .zaAr{font-size:clamp(24px,7.4vw,38px)}
+.zaKat.kisa .zaIc{transition:transform .5s cubic-bezier(.19,1,.22,1),opacity .3s ease}
+/* Hareket azaltma: yaklaşma yok, yalnız yumuşak geçiş */
+.zaKat.az .zaIc,.zaKat.az:not(.acik) .zaIc{transform:none;transition:opacity .3s ease}
+.zaKat.az .zaSay.vur{animation:none}
+@media (prefers-reduced-motion:reduce){
+  .zaIc,.zaKat:not(.acik) .zaIc{transform:none!important;transition:opacity .3s ease}
+  .zaSay.vur{animation:none}
+}
+
 /* ── NELER YENİLENDİ (r112) ─────────────────────────────────── */
 .nyKat{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;
   justify-content:center;background:rgba(0,0,0,.62);opacity:0;transition:opacity .22s;
@@ -2893,6 +2966,24 @@ input:focus-visible,select:focus-visible{
         <div class="opt"><span><span class="ico" data-ico="drum"></span> Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir" data-tip="Tempoya kilitli bendir usûlü (düm·tek) ekler. Zikri ritme oturtmak isteyenler için."></button></div>
         <div class="jRow" id="usulRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Usûl</b><select id="usulSel"><option value="duyek">Düyek (basit)</option><option value="sofyan">Sofyan</option><option value="devrihindi">Devr-i Hindî</option><option value="cifte">Çifte düm·tek</option></select></div>
         <div class="opt" style="margin-top:6px"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal ses — kanallar kulaklıkta çevrende döner</span><button class="sw" id="spatialTgl"></button></div>
+        <!-- r119: zikir sonu sesi — çan yerine Hû -->
+        <div class="opt" style="display:block">
+          <span style="display:block;margin-bottom:7px"><span class="ico" data-ico="speaker"></span> Zikir sonu sesi<small style="display:block;font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px">Devir (33/99…) tamamlandığında duyulur.</small></span>
+          <div class="huSec" id="huSec">
+            <button class="btn huK" data-hu="huu">Hû tınısı</button>
+            <button class="btn huK" data-hu="uclu">Üçlü Hû</button>
+            <button class="btn huK" data-hu="kendi">Kendi sesim</button>
+            <button class="btn huK" data-hu="can">Çan</button>
+            <button class="btn huK" data-hu="yok">Sessiz</button>
+          </div>
+          <div class="huBar">
+            <button class="btn" id="huDinle" title="Seçili sesi dinle">▶ Dinle</button>
+            <button class="btn" id="huKayit" title="Zikir sonu sesini kendi sesinle kaydet"><span class="ico" data-ico="mic"></span> Hû'yu kaydet</button>
+            <span class="huDurum" id="huDurum"></span>
+          </div>
+        </div>
+        <!-- r118: tören her gün açan için zorunlu olmamalı -->
+        <div class="opt"><span><span class="ico" data-ico="eye"></span> Zikir açılışı — başlarken zikri gösterip geri say<small style="display:block;font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px">Kapatırsan akış doğrudan başlar. Tören sırasında ekrana dokunmak da geçer.</small></span><button class="sw on" id="zaTgl" aria-label="Zikir açılışı"></button></div>
         <div class="opt"><span><span class="ico" data-ico="speaker"></span> Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak" data-tip="Her tesbihte zikri cihaz sesiyle söyler. Kendi kaydın varsa onunki çalınır — tecvid için en doğrusu budur."></button></div>
         <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice" data-tip="Okuma sesi. Cihazında yüklü seslerden birini seçersin; seçim bütün okuyuculara birden işler."></select><select id="spkGenderSel" title="Tüm zikir, dua ve sûre okuyucularına uygulanır (Türkçe ve Arapça)" style="margin-left:6px" data-tip="Kadın ya da erkek ses tercihi. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır."><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto" data-tip="Okuma hızı. Ezber için yavaş, tekrar için normal iyi gelir."></div>
         <div style="font-size:9px;color:var(--dim);line-height:1.55;margin:3px 0 2px">👩/👨 seçimi bütün okuyuculara işler: zikir, Âyetü'l-Kürsî, Fâtiha Seyri, Nasuh Tövbesi, Salavât, Seyyidü'l-İstiğfar ve koruyucu sûreler — hem Türkçe hem Arapça ses için. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır.</div>
@@ -2939,6 +3030,8 @@ input:focus-visible,select:focus-visible{
       </details>
       <details class="jEd" id="hatBox" style="margin-top:10px">
         <summary><span class="ico" data-ico="kaaba"></span> Esmâ Hatmi — 99 ismin seyri</summary>
+        <!-- r118: kullanıcı «başla»ya bastıktan sonra ne olacağını bilmiyordu -->
+        <div class="zYonerge">Başlattığında isim ekranda belirir, sonra <b>yukarıdaki sayaç</b> o isme geçer. Sayacı elle çekebilir ya da <b>▶ Otomatik Akış</b> ile kendini bırakabilirsin. Her isim bitince sıradakine kendiliğinden geçilir.</div>
         <div id="hatStat" class="hatStat"></div>
         <div class="hatBar"><i id="hatBarI"></i></div>
         <div class="hatCells" id="hatCells"></div>
@@ -2952,6 +3045,7 @@ input:focus-visible,select:focus-visible{
       </details>
       <details class="jEd" id="ltfBox" style="margin-top:10px">
         <summary><span class="ico" data-ico="heart"></span> Letâif Seyri — beş latîfenin zikri</summary>
+        <div class="zYonerge">Her latîfede <b>×33 «Allah»</b> okunur. Başlattığında hangi latîfeye yöneleceğin ekranda belirir; dikkatini haritada yanan noktaya ver. Sayacı elle çekebilir ya da <b>▶ Otomatik Akış</b>'ı kullanabilirsin.</div>
         <div id="ltfMap"></div>
         <div id="ltfInfo" class="ltfInfo"></div>
         <div class="ltfDots" id="ltfDots"></div>
@@ -3020,9 +3114,18 @@ input:focus-visible,select:focus-visible{
             <span><b>Mezcelin</b> → Yâ Kayyûm · Yâ Kâim<small>Her şeyi ayakta tutan, varlığı idare eden</small></span>
             <span><b>Bezcelin</b> → Yâ Vehhâb<small>Karşılıksız veren, lütfunu bolca ihsan eden</small></span>
           </div>
+          <!-- r118: «ne yapmam gerek» sorusuna cevap -->
+          <div class="zYonerge">Sayaca <b>dokunarak</b> kendin sayabilir ya da <b>Otomatik Akış</b> ile kendini akışa bırakabilirsin. Kendi sesini kaydedersen akışta senin sesin okunur.</div>
           <div class="mzbzCounter">
             <button class="mzbzTap" id="mzbzTap"><span class="mzbzN" id="mzbzN">0</span><small>dokun & zikret</small></button>
             <button class="btn mzbzReset" id="mzbzReset" title="Sayacı sıfırla">↺</button>
+          </div>
+          <!-- r118: bu zikirde otomatik akış ve kendi kaydı yoktu; yalnız
+               elle dokunmalı sayaç vardı. Öteki zikirlerle aynı seviyeye
+               getirildi. -->
+          <div class="mzbzBar">
+            <button class="btn" id="mzbzAuto" title="Otomatik akışı başlat — sen zikret, sayaç kendi ilerlesin">▶ Otomatik Akış</button>
+            <button class="btn" id="mzbzRec" title="Bu zikri kendi sesinle kaydet — akışta senin sesin okunur"><span class="ico" data-ico="mic"></span> Kendi sesim</button>
           </div>
           <div class="mzbzBar">
             <button class="btn" id="mzbzSpk" title="Bu zikri cihaz sesiyle dinle"><span class="ico" data-ico="speaker"></span> Sesli oku</button>
@@ -3118,7 +3221,7 @@ input:focus-visible,select:focus-visible{
       <input type="file" id="bakFile" accept=".json,application/json" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v10.4 — build 2026-08-14-r117</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v10.4 — build 2026-08-14-r121</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -3142,6 +3245,45 @@ input:focus-visible,select:focus-visible{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {
+  "v": "r121",
+  "t": "14 Ağustos 2026",
+  "b": [
+   "Tekke'de de bitişte çan yerine seçtiğin kapanış sesi (Hû) çalıyor — zikir hedefi, seyir sonu ve süre dolumu",
+   "«Yaratıcı» yerine «Üretken» — ilâhî sıfatlar insan melekesi için kullanılmıyor; duâ ve esmâ metinlerindeki doğru kullanım olduğu gibi duruyor"
+  ]
+ },
+ {
+  "v": "r120",
+  "t": "14 Ağustos 2026",
+  "b": [
+   "Üçlü Hû eklendi — üç nefes, sonuncusu uzun",
+   "Esmâ Hatmi bitişi, Yâ Mezcelin'in 33'ü, Letâif seyri sonu ve Tekke süresi artık aynı kapanış sesini kullanıyor",
+   "Hatim tamamlanınca ekranda da işaret beliriyor; eskiden yalnız uyarı penceresi vardı"
+  ]
+ },
+ {
+  "v": "r119",
+  "t": "14 Ağustos 2026",
+  "b": [
+   "Devir sonunda çan yerine Hû — nefes ve göğüs tınısıyla uzayan, cihazda üretilen bir ses",
+   "Zikir sonu sesini kendi sesinle kaydedebilirsin; Çan ve Sessiz seçenekleri de duruyor",
+   "Devir tamamlanınca ekranda da bir işaret beliriyor — eskiden yalnız ses vardı",
+   "Geri sayım artık «yerleş · nefes al · ver ve başla» — yarış değil, yerleşme anı",
+   "Yönerge şeritleri üç açılıştan sonra tek satıra iniyor; dokununca yeniden açılıyor"
+  ]
+ },
+ {
+  "v": "r118",
+  "t": "14 Ağustos 2026",
+  "b": [
+   "Zikre başlarken artık «şimdi başlıyor» eşiği var: zikir ekranda büyüyerek yaklaşır, geri sayım biter, akış başlar",
+   "Ekrana dokunarak geçebilir, Ayarlar'dan tamamen kapatabilirsin",
+   "Esmâ Hatmi ve Letâif Seyri'ne «ne yapmam gerek» yönergesi eklendi",
+   "Yâ Mezcelin • Yâ Bezcelin zikrine otomatik akış ve kendi ses kaydın eklendi",
+   "Hatimde isim değişince ve Letâif'te latîfe geçişinde kısa bir işaret belirir"
+  ]
+ },
  {
   "v": "r117",
   "t": "14 Ağustos 2026",
@@ -3167,7 +3309,7 @@ input:focus-visible,select:focus-visible{
    "Dil değiştirince kendi metnini üreten satırlar da artık İngilizceye dönüyor",
    "İki yeni tema: Safran Şafağı ve Lacivert Huzur",
    "Üç yeni reçete: Öfke, Şükran, Yalnızlık",
-   "Dört yeni frekans: Ağrı & Rahatlama, Yaratıcı Akış, Topraklanma, Kaygı Acil Protokolü",
+   "Dört yeni frekans: Ağrı & Rahatlama, Üretken Akış, Topraklanma, Kaygı Acil Protokolü",
    "Üç yeni nefes: Fizyolojik İç Çekiş, Koherent Nefes, Aslan Nefesi",
    "Şükran & Minnet Meditasyonu eklendi",
    "Alt çubukta okuma hızı çarpanı görünüyor",
@@ -5860,7 +6002,7 @@ const FREQ_PRESETS=[
  {id:'problemsolve',cat:'odak',icon:'🧩',name:'Problem Çözücü',sub:'Beta 13 Hz • zihin açıklığı',c:200,b:13},
  {id:'learning',cat:'odak',icon:'📚',name:'Gelişmiş Öğrenme',sub:'Alfa-SMR 12 Hz • hafıza',c:200,b:12},
 
- /* 🎨 YARATICILIK & RUH HÂLİ */
+ /* 🎨 ÜRETKENLİK & RUH HÂLİ */
  {id:'creative1',cat:'uret',icon:'🎨',name:'Üretken İmgeleme I',sub:'Alfa 10 Hz • hayal gücü',c:210,b:10},
  {id:'creative2',cat:'uret',icon:'🖌',name:'Üretken İmgeleme II',sub:'Theta 7 Hz • derin vizyon',c:180,b:7},
  {id:'moodlift1',cat:'uret',icon:'🌤',name:'Ruh Hâli Yükseltici I',sub:'Beta 15 Hz • neşe',c:220,b:15},
@@ -6284,6 +6426,115 @@ function tickSnd(){
   o.connect(gg); gg.connect(master);
   o.start(t); o.stop(t+.09);
 }
+/* ══════════════════════════════════════════════════════════════════
+   ZİKİR SONU SESİ — «Hû»   (r119)
+
+   Devir bitince çan çalıyordu; ses güzeldi ama zikrin diline yabancıydı.
+   Artık üç seçenek var:
+     • huu   — SENTEZLENMİŞ Hû (varsayılan): nefes soluğu + göğüs tınısı
+     • kendi — kullanıcının kendi sesiyle kaydı
+     • can   — eski çan (isteyen için duruyor)
+     • yok   — sessiz
+
+   ⚠ NEDEN CİHAZ SESİ (TTS) DEĞİL: konuşma motoru «Hû»yu kesik bir hece
+   gibi okur — zikrin sonundaki uzayan nefes hissi tamamen kaybolur.
+   Ayrıca TTS Web Audio dışında çalar; yankı, ton, ana ses hiçbiri işlemez
+   (r111/r113). Bu yüzden TTS bilerek seçenek DEĞİL.
+
+   SENTEZ NASIL: «Hû» iki katmandır — (1) «H» aspirasyonu: süzülmüş
+   gürültü, (2) «û» ünlüsü: alçak bir temel ses + /u/ ünlüsünün formant
+   tepeleri (~300 Hz ve ~870 Hz). İkisi yavaş açılıp uzun sönerek göğüsten
+   gelen bir Hûûû verir. Tamamı Web Audio — dosya yok. */
+const HU={ kip:'huu', anahtar:'hu:sonu' };
+try{ HU.kip=S.get('sukun.huKip','huu'); }catch(e){}
+window.HU_KIP_AL=()=>HU.kip;
+window.HU_KIP_SET=v=>{ HU.kip=v; try{S.set('sukun.huKip',v)}catch(e){} };
+
+/* r120: üç nefeslik Hû — son nefes uzun. Tekke halkalarında yaygın olan
+   üçlü tekrarın karşılığı. Aynı sentez üç kez, üçüncüsü uzatılarak.
+   ⚠ «Lâ ilâhe illâ Hû» gibi TAM bir formül sentezlenemez: sentez uzayan
+   bir ünlü üretebilir, cümle üretemez. O formülü isteyen kendi sesiyle
+   kaydetmeli — TTS ile okutmak kesik ve mekanik çıkar. */
+function huUclu(){
+  if(!ctx)return;
+  huSentez(0.9);
+  setTimeout(()=>huSentez(0.9),620);
+  setTimeout(()=>huSentez(2.6),1240);
+}
+function huSentez(uzunluk){
+  if(!ctx)return;
+  const zv=(typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1;
+  if(zv<=0.002)return;
+  const t=ctx.currentTime, SON=(typeof uzunluk==='number'&&uzunluk>0)?uzunluk:2.6;
+  const KISA=SON<1.6;   /* kısa nefeste zarf da sıkışmalı */
+
+  /* (1) «H» — nefes aspirasyonu: kısa gürültü patlaması */
+  const n=ctx.createBufferSource();
+  const len=Math.floor(ctx.sampleRate*SON);
+  const buf=ctx.createBuffer(1,len,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*0.5;
+  n.buffer=buf;
+  const nf=ctx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=900; nf.Q.value=.7;
+  const ng=g(0);
+  ng.gain.setValueAtTime(0,t);
+  ng.gain.linearRampToValueAtTime(.055*zv,t+.09);     /* «H» hemen gelir */
+  ng.gain.exponentialRampToValueAtTime(.0001,t+(KISA?SON*.42:.95));
+  n.connect(nf); nf.connect(ng); ng.connect(master); ng.connect(wetIn);
+  n.start(t); n.stop(t+SON);
+
+  /* (2) «û» — göğüs tınısı: temel + oktav, /u/ formantlarından geçer */
+  const fmt=[{f:300,q:7,k:1},{f:870,q:9,k:.55}].map(o=>{
+    const b=ctx.createBiquadFilter(); b.type='peaking';
+    b.frequency.value=o.f; b.Q.value=o.q; b.gain.value=12*o.k;
+    return b;
+  });
+  const gov=g(0);
+  gov.gain.setValueAtTime(0,t);
+  gov.gain.linearRampToValueAtTime(.10*zv,t+(KISA?.14:.30));
+  gov.gain.setValueAtTime(.10*zv,t+(KISA?SON*.48:1.15));
+  gov.gain.exponentialRampToValueAtTime(.0001,t+SON); /* uzun sönüş */
+  /* formantları zincirle */
+  let ilk=fmt[0], son=fmt[0];
+  for(let i=1;i<fmt.length;i++){ son.connect(fmt[i]); son=fmt[i]; }
+  son.connect(gov); gov.connect(master); gov.connect(wetIn);
+
+  [{f:118,tip:'sine',a:1},{f:236,tip:'sine',a:.34},{f:354,tip:'triangle',a:.14}]
+  .forEach(o=>{
+    const osc=ctx.createOscillator(); osc.type=o.tip;
+    osc.frequency.setValueAtTime(o.f,t);
+    /* hafif iniş — insan sesi gibi, sabit değil */
+    osc.frequency.exponentialRampToValueAtTime(o.f*.94,t+SON);
+    const og=g(0); og.gain.setValueAtTime(o.a,t);
+    osc.connect(og); og.connect(ilk);
+    osc.start(t); osc.stop(t+SON);
+  });
+}
+async function huKendiSes(){
+  try{
+    if(!RECKEYS.has(HU.anahtar))return false;
+    const blob=await REC_DB.get(HU.anahtar);
+    if(!blob)return false;
+    await playRecording(blob,'hu');
+    return true;
+  }catch(e){ return false; }
+}
+/* Devir/hedef tamamlandığında çalar. Eski `chime()` çağrıları buraya
+   yönlendirildi — tek kapı, tek ayar. */
+function zikirSonuSes(){
+  try{
+    if(HU.kip==='yok')return;
+    if(HU.kip==='can'){ chime(); return; }
+    if(HU.kip==='uclu'){ huUclu(); return; }
+    if(HU.kip==='kendi'){
+      huKendiSes().then(ok=>{ if(!ok)huSentez(); });   /* kayıt yoksa sentez */
+      return;
+    }
+    huSentez();
+  }catch(e){ try{chime()}catch(e2){} }
+}
+window.zikirSonuSes=zikirSonuSes;
+
 /* Devir tamamlandığında yumuşak çan */
 function chime(){
   if(!ctx)return;
@@ -6309,7 +6560,10 @@ function rep(){
   if(Z.vib&&navigator.vibrate)navigator.vibrate(12);
   if(Z.target>0&&Z.count>=Z.target){
     Z.count=0; Z.devir++;
-    chime();
+    zikirSonuSes();                       /* r119: çan yerine Hû */
+    try{ zikirTamam('Devir tamam',
+      ((document.getElementById('zTr')||{}).textContent||'').trim()+
+      ' · '+Z.devir+'. devir'); }catch(e){}
     if(Z.vib&&navigator.vibrate)navigator.vibrate([90,60,90]);
     if(Z.adv){Z.idx=(Z.idx+1)%ZIKIR[Z.cat].items.length;renderZikir();}
   }
@@ -6546,8 +6800,20 @@ async function lockOn(){try{if('wakeLock' in navigator)wl=await navigator.wakeLo
 function lockOff(){try{wl&&wl.release();}catch(e){} wl=null;}
 function autoStart(){
   if(Z.auto)return;
-  ac(); Z.auto=true;
-  Z.autoId=setInterval(rep,Z.tempo*1000);
+  ac();
+  /* r118: «başla»ya basıldı ama ilk tık tempo kadar sonra geliyordu;
+     hiçbir şey olmamış gibi duruyordu. Önce eşik gösterilir, akış
+     törenin sonunda başlar. Tören atlanabilir/kapatılabilir. */
+  const _basla=()=>{
+    if(Z.auto)return;
+    Z.auto=true;
+    Z.autoId=setInterval(rep,Z.tempo*1000);
+    try{zUI()}catch(e){}
+    try{ if(SPK.on)spkSayZikir(false); }catch(e){}   /* ilk okuma hemen */
+  };
+  try{ zikirAcilisAna('tam',_basla); }catch(e){ _basla(); }
+  return;
+  /* eski satırlar aşağıda bırakılmadı — akış _basla() içinde */
   lockOn(); zUI();
 }
 function autoStop(){
@@ -7096,6 +7362,7 @@ $('#masterVol').addEventListener('input',e=>{
   saveSettings();
 });
 function hardStopAll(){
+  try{ window.__mzbzStop&&window.__mzbzStop(); }catch(e){}   /* r118 */
   Object.keys(AMB).forEach(chOff);
   frStop(); autoStop(); syncMixerUI();
   rxEsmaBgStop();
@@ -8354,11 +8621,16 @@ function hatStart(){
   ltfPause();
   if(!HATIM.startedAt)HATIM.startedAt=Date.now();
   HATIM.active=true; hatApply(); hatSave();
+  /* r118: hatimde hangi ismin çekileceği ve kaç kere olduğu belirsizdi */
+  try{ zikirAcilisAna('tam',()=>{}); }catch(e){}
 }
 function hatPause(){HATIM.active=false; hatSave(); hatUI();}
 function hatAdvance(){
   HATIM.idx++; HATIM.count=0;
   if(HATIM.idx>=ZIKIR.esma.items.length){hatFinish();return;}
+  /* ⚠ KISA kip — 99 isim var; her birinde tam tören yapmak eşiği
+     gürültüye çevirirdi. Yalnız «isim değişti» işareti. */
+  try{ setTimeout(()=>zikirAcilisAna('kisa',()=>{}),60); }catch(e){}
   hatApply(); hatSave();
 }
 function hatFinish(){
@@ -8367,7 +8639,9 @@ function hatFinish(){
   LOG.push({t:Date.now(),dur:el,detail:'🕋 Esmâ Hatmi tamam — 99 isim ✦'});
   try{navigator.vibrate&&navigator.vibrate([120,80,120,80,220])}catch(e){}
   hatSave(); hatUI();
-  alert('🕋 Esmâ Hatmi tamamlandı — 99 ismin seyri bitti ✦');
+  /* r120: hatim bitişi eski yoldaydı — Hû ve görsel işaret yoktu */
+  try{ zikirSonuSes(); }catch(e){}
+  try{ zikirTamam('Esmâ Hatmi tamam','99 ismin seyri bitti ✦'); }catch(e){}
 }
 function hatUI(){
   const N=ZIKIR.esma.items.length;
@@ -8418,14 +8692,29 @@ function ltfStart(){
   if(LTF.i>=5){LTF.i=0;LTF.count=0;}
   hatPause();
   LTF.active=true; ltfApply(); ltfSave();
+  /* r118: Letâif seçilince hangi latîfeye yönelineceği ekranda yoktu */
+  try{
+    const L=LATAIF[Math.min(LTF.i,4)];
+    zikirAcilis({ar:((document.getElementById('zAr')||{}).textContent||'').trim(),
+      tr:((document.getElementById('zTr')||{}).textContent||'').trim(),
+      alt:(L&&L.n?L.n+' latîfesi — ':'')+'33 kere', kip:'tam', bitince:()=>{}});
+  }catch(e){}
 }
 function ltfPause(){LTF.active=false; ltfSave(); ltfUI();}
 function ltfAdvance(){
   LTF.i++; LTF.count=0;
+  /* ⚠ KISA kip: beş geçişte tam tören 40 sn ek yük demekti */
+  if(LTF.i<5)try{
+    const L=LATAIF[Math.min(LTF.i,4)];
+    setTimeout(()=>zikirAcilis({ar:((document.getElementById('zAr')||{}).textContent||'').trim(),
+      tr:((document.getElementById('zTr')||{}).textContent||'').trim(),
+      alt:(L&&L.n?L.n+' latîfesi':''), kip:'kisa', bitince:()=>{}}),60);
+  }catch(e){}
   if(LTF.i>=5){
     LTF.active=false;
     LOG.push({t:Date.now(),dur:60,detail:'🫀 Letâif seyri tamam — beş latîfe ✦'});
     try{navigator.vibrate&&navigator.vibrate([90,60,90,60,160])}catch(e){}
+    try{ zikirSonuSes(); }catch(e){}          /* r120 */
     if(typeof cakraNur==='function')cakraNur('Letâif Seyri Tamam ✦','Beş latîfenin zikri tamamlandı — kalbine nur olsun',8000);
     ltfSave(); ltfUI(); return;
   }
@@ -12112,6 +12401,218 @@ function applyUI(m){
 }
 $('#uiBtn').onclick=()=>applyUI(UIM.m==='mini'?'midi':UIM.m==='midi'?'pro':'mini');
 
+/* ══════════════════════════════════════════════════════════════════
+   ZİKİR AÇILIŞI — «şimdi başlıyor» eşiği   (r118)
+
+   Sorun: kullanıcı Esmâ, Letâif veya Hatim seçtiğinde ne yapacağını
+   bilmiyordu. «Başla»ya basıyor, ilk tık tempo kadar sonra geliyor ve
+   hiçbir şey olmamış gibi duruyor.
+
+   Bu modül eşiği görünür kılar: zikir büyüyerek yaklaşır, geri çekilip
+   silinir, ardından akış başlar. Geri sayım sırasında yerleşme fırsatı olur.
+
+   ⚠ TASARIM KARARI — HER YERDE AYNI TÖREN OLMAZ.
+   Hatimde 99, Letâif'te 5 geçiş var. Her birinde tam tören yapılırsa eşik
+   olmaktan çıkıp gürültü olur. Bu yüzden iki kip:
+     • 'tam'  — seans başlangıcı: geri sayımlı
+     • 'kisa' — bölüm/isim geçişi: geri sayımsız, ~1,1 sn işaret
+   DAİMA atlanabilir (dokun) ve ayarlardan kapatılabilir. Günde defalarca
+   açan biri için zorunlu tören eziyet olur.
+
+   Erişilebilirlik: prefers-reduced-motion açıksa yaklaşma hareketi
+   yapılmaz, yalnız yumuşak bir geçiş kalır. */
+const ZA={ acik:false, atla:null, kapali:false };
+try{ ZA.kapali=S.get('sukun.zaKapali',false); }catch(e){}
+window.ZA_KAPALI_AL=()=>ZA.kapali;
+window.ZA_KAPALI_SET=v=>{ ZA.kapali=!!v; try{S.set('sukun.zaKapali',ZA.kapali)}catch(e){} };
+
+function zaKapat(){
+  const k=document.getElementById('zaKat');
+  if(k){ k.classList.remove('acik'); setTimeout(()=>k.remove(),260); }
+  ZA.acik=false;
+  if(ZA.atla){ const f=ZA.atla; ZA.atla=null; f(); }
+}
+/* opts: {ar, tr, alt, kip:'tam'|'kisa', sayim:sn, bitince:fn} */
+function zikirAcilis(opts){
+  const o=opts||{};
+  const bitince=typeof o.bitince==='function'?o.bitince:()=>{};
+  let mesgul=false;
+  try{ mesgul=!!(window.__tvPlaying||window.__dhPlaying||window.__seyPlaying||
+                 window.__fsPlaying||(typeof DL!=='undefined'&&DL.playing)); }catch(e){}
+  if(ZA.kapali||mesgul){ bitince(); return; }
+  if(ZA.acik)zaKapat();
+
+  const kisa=o.kip==='kisa';
+  let az=false; try{ az=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  const sayim=kisa?0:(o.sayim!=null?o.sayim:3);
+
+  const k=document.createElement('div');
+  k.id='zaKat'; k.className='zaKat'+(kisa?' kisa':'')+(az?' az':'');
+  k.setAttribute('role','status'); k.setAttribute('aria-live','polite');
+  k.innerHTML='<div class="zaIc">'+
+      '<div class="zaAr" lang="ar"></div><div class="zaTr"></div><div class="zaAlt"></div>'+
+      '<div class="zaNefes"></div>'+
+      '<div class="zaSay" aria-hidden="true"></div>'+
+      '<div class="zaAtla">dokun — geç</div>'+
+    '</div>';
+  const q=x=>k.querySelector(x);
+  q('.zaAr').textContent=o.ar||'';
+  q('.zaTr').textContent=o.tr||'';
+  q('.zaAlt').textContent=o.alt||'';
+  if(!o.ar)q('.zaAr').style.display='none';
+  if(!o.alt)q('.zaAlt').style.display='none';
+  if(kisa){ q('.zaSay').style.display='none'; q('.zaAtla').style.display='none';
+            q('.zaNefes').style.display='none'; }
+
+  ZA.acik=true; ZA.atla=bitince;
+  document.body.appendChild(k);
+  requestAnimationFrame(()=>k.classList.add('acik'));
+
+  const gec=()=>{ temizle(); zaKapat(); };
+  k.addEventListener('click',gec);
+  const esc=e=>{ if(e.key==='Escape'||e.key===' '||e.key==='Enter'){ e.preventDefault(); gec(); } };
+  document.addEventListener('keydown',esc);
+  let sayId=null, kapatId=null;
+  function temizle(){
+    document.removeEventListener('keydown',esc);
+    if(sayId)clearInterval(sayId); if(kapatId)clearTimeout(kapatId);
+    sayId=kapatId=null;
+  }
+  if(kisa){ kapatId=setTimeout(()=>{ temizle(); zaKapat(); },1100); return; }
+
+  /* r119: geri sayım artık yarış değil, yerleşme.
+     «3·2·1» yerine nefes yönergesi; sayı küçük olarak altta kalır ki
+     ne kadar kaldığı da bilinsin. */
+  const NEFES=['ver ve başla','nefes al','yerleş'];
+  let kalan=sayim;
+  const sEl=q('.zaSay'), nEl=q('.zaNefes');
+  const yaz=()=>{
+    sEl.textContent=kalan>0?String(kalan):'başla';
+    if(nEl)nEl.textContent=kalan>0?(NEFES[Math.min(kalan-1,NEFES.length-1)]||''):'';
+    sEl.classList.remove('vur'); void sEl.offsetWidth; sEl.classList.add('vur'); };
+  yaz();
+  sayId=setInterval(()=>{
+    kalan--;
+    if(kalan<0){ temizle(); zaKapat(); return; }
+    yaz();
+    if(kalan===0){ try{ if(Z.vib&&navigator.vibrate)navigator.vibrate(18); }catch(e){} }
+  },1000);
+}
+/* ⚠ Bu bağlayıcı ZA tanımından SONRA olmalı. İlk denemede ayar
+   satırının yanına (satır ~8950) koymuştum: `const ZA` orada henüz
+   tanımlı olmadığı için TDZ hatası veriyor ve o noktadan sonraki
+   BÜTÜN tanımlar düşüyordu — ZA_KAPALI_AL bile yoktu. DEVIR-NOTU'ndaki
+   `const` + TDZ tuzağının aynısı; ikinci kez düştüm. */
+(function(){
+  const t=document.getElementById('zaTgl'); if(!t)return;
+  const yaz=()=>t.classList.toggle('on',!ZA.kapali);
+  yaz();
+  t.onclick=()=>{ ZA_KAPALI_SET(!ZA.kapali); yaz(); try{saveSettings()}catch(e){} };
+})();
+/* r119: zikir sonu sesi denetimleri. HU tanımı çok yukarıda (ses
+   motorunun yanında) olduğu için burada TDZ riski yok. */
+(function(){
+  const sec=document.getElementById('huSec'); if(!sec)return;
+  const durum=document.getElementById('huDurum');
+  const kayitBtn=document.getElementById('huKayit');
+  const yaz=()=>{
+    sec.querySelectorAll('.huK').forEach(b=>b.classList.toggle('on',b.dataset.hu===HU.kip));
+    let varmi=false; try{ varmi=RECKEYS.has(HU.anahtar); }catch(e){}
+    if(kayitBtn)kayitBtn.classList.toggle('has',varmi);
+    if(!durum)return;
+    durum.textContent =
+      HU.kip==='huu'   ? 'Nefes ve göğüs tınısıyla uzayan bir Hû — cihazda üretilir, dosya inmez.' :
+      HU.kip==='uclu'  ? 'Üç nefeslik Hû — son nefes uzun. «Lâ ilâhe illâ Hû» gibi tam bir formül istiyorsan kendi sesinle kaydet.' :
+      HU.kip==='kendi' ? (varmi?'Kendi Hû kaydın çalıyor.':'Henüz kayıt yok — kaydedene kadar Hû tınısı çalar.') :
+      HU.kip==='can'   ? 'Eski yumuşak çan.' : 'Devir sonunda ses çalmaz; titreşim sürer.';
+  };
+  sec.addEventListener('click',e=>{
+    const b=e.target.closest('[data-hu]'); if(!b)return;
+    HU_KIP_SET(b.dataset.hu); yaz(); try{saveSettings()}catch(err){}
+    if(HU.kip!=='yok')try{zikirSonuSes()}catch(err){}   /* seçince hemen duy */
+  });
+  const dn=document.getElementById('huDinle');
+  if(dn)dn.onclick=()=>{ try{ac()}catch(e){} try{zikirSonuSes()}catch(e){} };
+  if(kayitBtn)kayitBtn.onclick=async()=>{
+    try{
+      const st=await navigator.mediaDevices.getUserMedia(micKisit());
+      const chunks=[], mr=new MediaRecorder(st);
+      mr.ondataavailable=e=>{ if(e.data.size)chunks.push(e.data); };
+      const RS=recSessionBegin('Hû kaydı — bitirmek için 🎙',30,
+        ()=>{ if(mr.state==='recording')mr.stop(); });
+      mr.onstop=async()=>{
+        try{ st.getTracks().forEach(t=>t.stop()); }catch(e){}
+        try{ RS&&RS.end&&RS.end(); }catch(e){}
+        const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+        try{ await REC_DB.set(HU.anahtar,blob); RECKEYS.add(HU.anahtar);
+             HU_KIP_SET('kendi'); yaz();
+             if(typeof toast==='function')toast('Hû kaydedildi — devir sonunda senin sesin duyulacak'); }catch(e){}
+      };
+      mr.start(1000);
+    }catch(e){ if(typeof toast==='function')toast('Mikrofona erişilemedi'); }
+  };
+  yaz();
+})();
+/* ══ TAMAMLANMA ANI (r119) ══
+   Açılışın karşılığı. Devir bitince yalnız ses vardı, görsel karşılığı
+   yoktu. Kısa (1,4 sn), geri sayımsız, atlanabilir; açılış kapalıysa bu
+   da çıkmaz — tek ayar iki ucu birden yönetsin. */
+function zikirTamam(baslik,alt){
+  try{
+    if(ZA.kapali)return;
+    const k=document.createElement('div');
+    k.id='zaKat'; k.className='zaKat kisa tamam';
+    k.setAttribute('role','status'); k.setAttribute('aria-live','polite');
+    k.innerHTML='<div class="zaIc"><div class="zaTik">✦</div>'+
+      '<div class="zaTr"></div><div class="zaAlt"></div></div>';
+    k.querySelector('.zaTr').textContent=baslik||'Devir tamam';
+    k.querySelector('.zaAlt').textContent=alt||'';
+    const eski=document.getElementById('zaKat'); if(eski)eski.remove();
+    document.body.appendChild(k);
+    requestAnimationFrame(()=>k.classList.add('acik'));
+    const kapa=()=>{ k.classList.remove('acik'); setTimeout(()=>k.remove(),260); };
+    k.addEventListener('click',kapa);
+    setTimeout(kapa,1400);
+  }catch(e){}
+}
+window.zikirTamam=zikirTamam;
+
+/* ══ YÖNERGE SÖNÜMÜ (r119) ══
+   Yönerge şeridi ilk kez açan için gerekli, onuncu kez açan için gürültü.
+   Bir modülü 3 kez açtıktan sonra şerit tek satıra iner; dokununca
+   yeniden açılır. Sayaç modül başına tutulur. */
+function yonergeKur(){
+  document.querySelectorAll('.zYonerge').forEach(el=>{
+    if(el.dataset.kuruldu)return;
+    el.dataset.kuruldu='1';
+    const kutu=el.closest('details'); const ad=kutu&&kutu.id?kutu.id:'genel';
+    const anah='sukun.yonerge.'+ad;
+    let n=0; try{ n=+S.get(anah,0)||0; }catch(e){}
+    const kisalt=n>=3;
+    el.classList.toggle('kisa',kisalt);
+    el.setAttribute('title', kisalt?'Yönergeyi aç':'Yönergeyi kısalt');
+    el.addEventListener('click',()=>{
+      const k=el.classList.toggle('kisa');
+      el.setAttribute('title', k?'Yönergeyi aç':'Yönergeyi kısalt');
+      try{ S.set(anah, k?3:0); }catch(e){}
+    });
+    if(kutu)kutu.addEventListener('toggle',()=>{
+      if(!kutu.open)return;
+      let m=0; try{ m=+S.get(anah,0)||0; }catch(e){}
+      if(m<3){ m++; try{S.set(anah,m)}catch(e){}
+        if(m>=3){ el.classList.add('kisa'); el.setAttribute('title','Yönergeyi aç'); } }
+    });
+  });
+}
+try{ yonergeKur(); }catch(e){}
+
+function zikirAcilisAna(kip,bitince){
+  const ar=((document.getElementById('zAr')||{}).textContent||'').trim();
+  const tr=((document.getElementById('zTr')||{}).textContent||'').trim();
+  let alt=''; try{ alt=Z.target>0?(Z.target+' kere'):'serbest'; }catch(e){}
+  zikirAcilis({ar:ar,tr:tr,alt:alt,kip:kip,bitince:bitince});
+}
+
 /* ══════════════════════════════════════════════════════════════
    SESLİ ZİKİR — SAYAÇ İLE OKUMA AYNI HIZDA (r117)
 
@@ -15376,12 +15877,103 @@ function mzbzInit(){
     if(Z.vib&&navigator.vibrate)try{navigator.vibrate(12)}catch(e){}
     if(ar){ar.classList.remove('glow'); void ar.offsetWidth; ar.classList.add('glow');}
     if(n%33===0){ if(navigator.vibrate&&Z.vib)try{navigator.vibrate([60,40,60])}catch(e){}
-      try{LOG.touch('mzbz','🕊 Yâ Mezcelin · Yâ Bezcelin — arınma')}catch(e){} }
+      try{LOG.touch('mzbz','🕊 Yâ Mezcelin · Yâ Bezcelin — arınma')}catch(e){}
+      /* r120: burada yalnız titreşim vardı — öteki zikirlerle aynı
+         kapanış işareti verilsin */
+      try{ zikirSonuSes(); }catch(e){}
+      try{ zikirTamam('Devir tamam','Yâ Mezcelin · Yâ Bezcelin — '+n); }catch(e){} }
   };
   if(rst)rst.onclick=()=>{
     if(n>0 && !confirm('Yâ Mezcelin · Yâ Bezcelin sayacı sıfırlansın mı?'))return;
     n=0; S.set('sukun.mzbz',0); if(nEl)nEl.textContent='0';
   };
+  /* ── r118: OTOMATİK AKIŞ ──────────────────────────────────
+     Öteki zikirlerde olan ama burada olmayan iki şey eklendi.
+     Ana zikir sayacından bağımsız çalışır (bu zikir kendi kartında,
+     kendi kalıcı sayacıyla duruyor) ama aynı temposu, aynı tık sesini
+     ve aynı «sayaç okumayı bekler» kuralını kullanır — r117'de esmâda
+     düzeltilen kaymanın burada da olmaması için. */
+  const MZBZ_ANAHTAR='mzbz:berhetiyye';
+  const autoBtn=$('#mzbzAuto'); let mzId=null, mzBekci=null;
+  function mzOkumaSuruyor(){
+    try{ return (typeof RECPLAYING!=='undefined'&&RECPLAYING)||
+                !!(window.speechSynthesis&&speechSynthesis.speaking); }catch(e){ return false; }
+  }
+  async function mzOku(){
+    /* Kendi kaydı varsa onu çal; yoksa cihaz sesiyle oku. */
+    try{
+      if(RECKEYS.has(MZBZ_ANAHTAR)){
+        const blob=await REC_DB.get(MZBZ_ANAHTAR);
+        if(blob){ await playRecording(blob,'mzbz'); return; }
+      }
+    }catch(e){}
+    if(spk&&spk.onclick)spk.onclick();
+  }
+  function mzAdim(){
+    if(mzOkumaSuruyor())return;           /* sayaç okumadan öne geçmesin */
+    tap.click();
+    mzOku();
+  }
+  function mzAutoUI(){
+    if(!autoBtn)return;
+    const acik=!!mzId;
+    autoBtn.textContent=acik?'⏸ Akışı Durdur':'▶ Otomatik Akış';
+    autoBtn.classList.toggle('playing',acik);
+  }
+  function mzAutoStop(){
+    if(mzId){clearInterval(mzId);mzId=null;}
+    if(mzBekci){clearInterval(mzBekci);mzBekci=null;}
+    mzAutoUI();
+  }
+  function mzAutoStart(){
+    if(mzId){ mzAutoStop(); return; }
+    try{ac()}catch(e){}
+    const basla=()=>{
+      if(mzId)return;
+      mzId=setInterval(mzAdim,Math.max(0.6,Z.tempo||1.6)*1000);
+      mzAutoUI(); mzAdim();
+      /* akış dışarıdan durdurulursa (Dur düğmesi) burada da dursun */
+      mzBekci=setInterval(()=>{ if(!mzId){clearInterval(mzBekci);mzBekci=null;} },1000);
+    };
+    try{
+      zikirAcilis({ar:(ar?ar.textContent:'').trim(), tr:'Yâ Mezcelin • Yâ Bezcelin',
+        alt:'iç & dış arınma', kip:'tam', bitince:basla});
+    }catch(e){ basla(); }
+  }
+  if(autoBtn)autoBtn.onclick=mzAutoStart;
+  /* hardStopAll bu modülü bilmiyor — dışarıya bir kanca bırak */
+  window.__mzbzStop=mzAutoStop;
+  mzAutoUI();
+
+  /* ── r118: KENDİ SES KAYDI ── */
+  const recBtn=$('#mzbzRec');
+  function mzRecUI(){
+    if(!recBtn)return;
+    const var_=RECKEYS.has(MZBZ_ANAHTAR);
+    recBtn.classList.toggle('has',var_);
+    recBtn.title=var_?'Yeniden kaydet (üzerine yazar) — akışta senin sesin okunur'
+                     :'Bu zikri kendi sesinle kaydet';
+  }
+  if(recBtn)recBtn.onclick=async()=>{
+    /* itemRecToggle zikirKey()'e yazar; bu zikrin kendi anahtarı gerek */
+    try{
+      const st=await navigator.mediaDevices.getUserMedia(micKisit());
+      const chunks=[], mr=new MediaRecorder(st);
+      mr.ondataavailable=e=>{ if(e.data.size)chunks.push(e.data); };
+      const RS=recSessionBegin('Yâ Mezcelin kaydı — bitirmek için 🎙',120,
+        ()=>{ if(mr.state==='recording')mr.stop(); });
+      mr.onstop=async()=>{
+        try{ st.getTracks().forEach(t=>t.stop()); }catch(e){}
+        try{ RS&&RS.end&&RS.end(); }catch(e){}
+        const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+        try{ await REC_DB.set(MZBZ_ANAHTAR,blob); RECKEYS.add(MZBZ_ANAHTAR); mzRecUI();
+             if(typeof toast==='function')toast('Kaydedildi — akışta senin sesin okunacak'); }catch(e){}
+      };
+      mr.start(1000);
+    }catch(e){ if(typeof toast==='function')toast('Mikrofona erişilemedi'); }
+  };
+  mzRecUI();
+
   /* ── sesli oku ── */
   const spk=$('#mzbzSpk'), hint=$('#mzbzSpkHint');
   if(spk)spk.onclick=()=>{
@@ -16048,10 +16640,61 @@ document.addEventListener('visibilitychange',()=>{
 const I18N = {
   lang: 'tr',
   D: {
+"Üçlü Hû":"Triple Hû",
+"Üç nefeslik Hû — son nefes uzun. «Lâ ilâhe illâ Hû» gibi tam bir formül istiyorsan kendi sesinle kaydet.":"Three breaths of Hû, the last one sustained. For a full formula such as “Lâ ilâhe illâ Hû”, record it in your own voice.",
+"Esmâ Hatmi tamam":"Esmâ Hatm complete",
+"99 ismin seyri bitti ✦":"the journey through the 99 names is finished ✦",
+
+"Zikir sonu sesi":"Dhikr closing sound",
+"Devir (33/99…) tamamlandığında duyulur.":"Heard when a cycle (33/99…) is completed.",
+"Hû tınısı":"Hû tone",
+"Kendi sesim":"My own voice",
+"Çan":"Chime",
+"Sessiz":"Silent",
+"▶ Dinle":"▶ Listen",
+"Hû'yu kaydet":"Record your Hû",
+"Nefes ve göğüs tınısıyla uzayan bir Hû — cihazda üretilir, dosya inmez.":"A sustained Hû of breath and chest resonance — generated on your device, nothing downloaded.",
+"Kendi Hû kaydın çalıyor.":"Your own Hû recording is used.",
+"Henüz kayıt yok — kaydedene kadar Hû tınısı çalar.":"No recording yet — the Hû tone plays until you record one.",
+"Eski yumuşak çan.":"The old soft chime.",
+"Devir sonunda ses çalmaz; titreşim sürer.":"No sound at the end of a cycle; vibration continues.",
+"Devir tamam":"Cycle complete",
+"yerleş":"settle",
+"nefes al":"breathe in",
+"ver ve başla":"release and begin",
+"Yönergeyi aç":"Show the guidance",
+"Yönergeyi kısalt":"Collapse the guidance",
+"Hû kaydedildi — devir sonunda senin sesin duyulacak":"Hû recorded — your voice will be heard at the end of each cycle",
+"Kaydedildi — akışta senin sesin okunacak":"Recorded — your voice will be used in the flow",
+"Ses başlatılamadı — ekrana bir kez dokunup tekrar dene.":"Could not start audio — tap the screen once and try again.",
+
+"Zikir açılışı — başlarken zikri gösterip geri say":"Dhikr opening — show the dhikr and count down before starting",
+"Kapatırsan akış doğrudan başlar. Tören sırasında ekrana dokunmak da geçer.":"Switch it off and the flow starts straight away. Tapping the screen also skips it.",
+"Başlattığında isim ekranda belirir, sonra":"When you start, the name appears on screen, then the",
+"yukarıdaki sayaç":"counter above",
+"o isme geçer. Sayacı elle çekebilir ya da":"switches to that name. You can count by hand, or use",
+"▶ Otomatik Akış":"▶ Auto Flow",
+"ile kendini bırakabilirsin. Her isim bitince sıradakine kendiliğinden geçilir.":"to let it carry you. When a name is finished it moves to the next on its own.",
+"Her latîfede":"At each latîfa,",
+"×33 «Allah»":"×33 “Allah”",
+"okunur. Başlattığında hangi latîfeye yöneleceğin ekranda belirir; dikkatini haritada yanan noktaya ver. Sayacı elle çekebilir ya da":"is recited. When you start, the latîfa you are turning to appears on screen; place your attention on the glowing point on the map. You can count by hand, or use",
+"'ı kullanabilirsin.":".",
+"Sayaca":"Tap the counter to",
+"dokunarak":"count yourself,",
+"kendin sayabilir ya da":"or use",
+"Otomatik Akış":"Auto Flow",
+"ile kendini akışa bırakabilirsin. Kendi sesini kaydedersen akışta senin sesin okunur.":"to let the flow carry you. If you record your own voice, it is your voice you hear in the flow.",
+"dokun — geç":"tap — skip",
+"başla":"begin",
+"iç & dış arınma":"inner & outer purification",
+"latîfesi":"latîfa",
+"kere":"times",
+"serbest":"open-ended",
+
 "Ağrı & Rahatlama":"Pain & Relief",
 "Kronik ağrı yönetimi, beyin ağrı işlemini yavaşlatır":"Chronic pain management — slows the brain's pain processing",
 "Kronik ağrı yönetimi, beyin ağrı işlemini yavaşlatır • 7 Hz Theta":"Chronic pain management — slows the brain's pain processing • 7 Hz Theta",
-"Yaratıcı Akış Zirvesi":"Peak Creative Flow",
+"Üretken Akış Zirvesi":"Peak Productive Flow",
 "Sağ beyin & hayal gücü aktivasyonu":"Right-brain and imagination activation",
 "Sağ beyin & hayal gücü aktivasyonu • 5 Hz Theta":"Right-brain and imagination activation • 5 Hz Theta",
 "Topraklanma & Denge":"Grounding & Balance",
@@ -16200,7 +16843,7 @@ const I18N = {
 "“Neredeyse seni gözleriyle devireceklerdi…” — nazara karşı okunan âyet":"“They would almost fell you with their eyes…” — a verse recited against the evil eye",
 "Koruma âyetlerinin başı (Bakara 255) — tam metin “Âyetü'l-Kürsî” okuyucusunda":"The first of the protection verses (al-Baqarah 255) — full text in the “Ayat al-Kursi” reader",
 "🎙 kendi kaydın":"🎙 your recording","▶ dinle":"▶ listen","🗑 sil (TTS'e dön)":"🗑 delete (back to TTS)",
-"SÜKÛN v10.4 — build 2026-08-14-r117 — kalp huzuru niyetiyle":"SÜKÛN v10.4 — build 2026-08-14-r117 — with the intention of a heart at peace","Dinle":"Listen","Kendi sesin":"Your voice","Niyet":"Intention","Nasıl?":"How?","🎙 Kendi Sesinle Okuma — Nasıl Çalışır":"🎙 Reciting in Your Own Voice — How It Works","Neden kendi sesin?":"Why your own voice?","🔊 Dinle":"🔊 Listen","🎙 Kendi sesin":"🎙 Your own voice","🎙 Niyet":"🎙 Intention","Kayıtlarım nerede?":"Where are my recordings?","Uzun dualar için":"For long prayers","Süre":"Timer","Tema":"Theme","Görünüm":"Layout","Kaydet":"Record","Günlük":"Journal","Durdur":"Stop","Kapalı":"Off","Mini":"Mini","Midi":"Midi","Pro":"Pro","Uyku zamanlayıcısı — seçtiğin süre dolunca sesler yavaşça kısılır ve durur. Uyumadan önce dinlerken işine yarar.":"Sleep timer — when the chosen time is up, the sounds fade out and stop. Useful for listening before sleep.","Seansı kaydet — o an duyduğun sesin tamamını .webm dosyası olarak indirir. Kendi ambiyansını saklamak ya da paylaşmak için.":"Record the session — downloads everything you currently hear as a .webm file, to keep or share your own ambience.","Seans günlüğü — zikir sayıların, serilerin, dinlediğin frekanslar ve haftalık dökümün burada. Yedek alma da bu sayfada.":"Session journal — your dhikr counts, streaks, the frequencies you played and your weekly summary. Backups live here too.","Her şeyi durdur — çalan bütün sesleri, zikir akışını ve zamanlayıcıyı bir kerede kapatır.":"Stop everything — silences all playing sounds, the dhikr flow and the timer at once.","🎙 Kısım kısım kendi sesinle kaydet":"🎙 Record part by part in your own voice","▶ Kısımları sırayla oku":"▶ Play the parts in order","■ Durdur":"■ Stop","Açılış — Eûzü, Besmele ve salavât":"Opening — Isti‘adha, Basmala and salawat","Tahrim sûresi 8. âyet ve meâli":"Sûrat al-Tahrim, verse 8, with its meaning","Kul haklarında helalleşme":"Seeking pardon for the rights of others","Azaların tövbesi":"Repentance of the limbs","Elli dört farz":"The fifty-four obligations","Şirk, rızık ve haram tövbesi":"Repentance for shirk, provision and the unlawful","Dilin tövbesi — gıybet ve kalp kırmak":"Repentance of the tongue — backbiting and wounding hearts","İffet ve aile tövbesi":"Repentance concerning chastity and family","Kabul niyazı":"Supplication for acceptance","Âyetler, Esmâ-i Hüsnâ ve kapanış":"Verses, the Beautiful Names and closing","Tövbe tamam ✦":"Repentance complete ✦","Zikir / sûre kaydı — bitirmek için 🎙":"Dhikr / sûra recording — tap 🎙 to finish","Zikir halkası — bitirmek için 🎙":"Dhikr circle — tap 🎙 to finish","Niyet kaydı — bitirmek için 🎙":"Intention recording — tap 🎙 to finish","Ortam sesi — bitirmek için ⏹":"Ambient sound — tap ⏹ to finish","Kayıt çok kısa — saklanmadı":"Recording too short — not saved","Kayıt saklanamadı — cihaz depolaması dolu olabilir.":"Could not save the recording — device storage may be full.","Kaydediliyor… «Hû» ya da esmâyı bir kez söyle (en çok 20 sn)":"Recording… say “Hû” or a Name once (up to 20 s)","Kaydediliyor… istediğin an ⏹ ile bitir (en çok 2 dk)":"Recording… finish with ⏹ whenever you like (up to 2 min)","SÜRE":"DURATION","ARAYÜZ":"INTERFACE","HÂL AYARI":"STATE PRESET","SEYİR — BU SEANSTA NE OKUNUYOR":"THE JOURNEY — WHAT YOU WILL RECITE","◱ Sade":"◱ Simple","⚙ Uzman":"⚙ Expert","❓ Bu nedir? — kısa rehber":"❓ What is this? — a short guide","Bu nedir? — kısa rehber":"What is this? — a short guide","۞ BU NEDİR?":"۞ WHAT IS THIS?","ANLADIM ✦":"UNDERSTOOD ✦","NASIL İŞLER":"HOW IT WORKS","SEYİR":"THE JOURNEY","SESLER NE İŞE YARAR":"WHAT THE SOUNDS DO","HANGİ MODU SEÇMELİYİM":"WHICH MODE SHOULD I CHOOSE","Dijital Tekke — rehberli zikir ve nefes seansı (tam ekran)":"Digital Lodge — a guided dhikr and breath session (full screen)","۞ Bu zikri Tekke'de çek — rehberli nefes seansı":"۞ Take this dhikr into the Lodge — a guided breath session","Nefesini halkaya uydur. Zikri damla sesi sayıyor — dokunman ya da takip etmen gerekmez.":"Match your breath to the ring. The droplet counts the dhikr — you need not tap or keep count.","Halkayı takip et — yazan fazda al · tut · ver. Her nefes verişinde bir zikir sayılır; dokunman gerekmez.":"Follow the ring — inhale, hold, exhale as shown. Each exhalation counts one dhikr; no tapping needed.","Seyir tamam ✦ Dilediğin kadar sükûtta kal. Çıkmak için üstteki ✦ SÜKÛN.":"Journey complete ✦ Stay in stillness as long as you wish. Use ✦ SÜKÛN above to leave.","Süren doldu — dilediğin kadar kalabilirsin.":"Your time is up — you may stay as long as you wish.","📿 Bu tertibe geç":"📿 Switch to this set","Şimdi değil":"Not now","Şimdi değil — bugün bu vakit için bir daha sorma":"Not now — don't ask again for this prayer window today","🛡 Âyetü'l-Kürsî — sesli okuma":"🛡 Âyat al-Kursî — read aloud","Önce meal, sonra Arapçası (Fâtiha Seyri gibi eşli oku)":"Meaning first, then the Arabic (paired, as in the Fâtiha Journey)","Yalnız âyeti oku — meali atla":"Read the verse only — skip the meaning","🔊 Sesli oku":"🔊 Read aloud","Arap harfli metin Arapça sesle okunur":"The Arabic text is read in an Arabic voice","Cihazda seslendirme yok":"No speech voice on this device","Cihazda ses bulunamadı":"No voice found on this device","Arapça ses bulunamadı — okunuş Türkçe sesle okundu":"No Arabic voice found — the transliteration was read in the Turkish voice","1. bölüm":"Part 1","2. bölüm":"Part 2","3. bölüm":"Part 3","4. bölüm":"Part 4","5. bölüm":"Part 5","Açınca her kontrolün yanında kısa açıklama ikonu belirir":"When on, a small explanation icon appears beside every control","Zümrüt Gece":"Emerald Night","Gül-i Muhammedî":"Muhammadan Rose","Gece Yarısı":"Midnight","Çöl Toprağı":"Desert Earth","Altın Çağ":"Golden Age","Ay Moru":"Moon Violet","Gümüş Ayna":"Silver Mirror","Kızıl Alev":"Crimson Flame","Kuzey Feyzi":"Northern Grace","Derin Okyanus":"Deep Ocean","Nebula Feyzi · mor-mavi-kızıl":"Nebula Grace · violet-blue-crimson","Sabah Nuru · açık":"Morning Light · bright","Işık şiddeti":"Light intensity","Derin Uyku":"Deep Sleep","Uyku Vakti":"Bedtime","Uykuya Geçiş":"Drifting Off","Uyku Geçişi":"Sleep Transition","Derin Onarıcı Uyku":"Deep Restorative Sleep","Yatmadan Önce":"Before Bed","Derin Sükût / Uyku":"Deep Silence / Sleep","Meditasyon":"Meditation","Derin Meditasyon I":"Deep Meditation I","Derin Meditasyon II":"Deep Meditation II","Derin Meditasyon III":"Deep Meditation III","Derin Meditasyon IV":"Deep Meditation IV","Tefekkür & Murâkabe":"Contemplation & Murâqaba","Sessiz Zihin":"Silent Mind","Boşluk Hâli":"The State of Emptiness","Durgunluk":"Stillness","İç Huzur":"Inner Peace","Sakinleş":"Be Calm","Toparlan":"Regather","Doğal denge":"Natural balance","Derin Odak":"Deep Focus","Berrak Odak":"Clear Focus","Akış Hâli":"Flow State","🌊 Akış Hâli":"🌊 Flow State","Üstün Konsantrasyon":"Peak Concentration","Huzur & Odaklanma":"Calm & Focus","Zihinsel Uyarım":"Mental Stimulation","Zinde Uyanıklık":"Alert Wakefulness","Zihin Tazeleyici":"Mind Refresher","Enerji Artışı":"Energy Boost","Enerji Yükselişi":"Rising Energy","Problem Çözücü":"Problem Solver","Gelişmiş Öğrenme":"Advanced Learning","Hafıza & Öğrenme":"Memory & Learning","Stres Giderici":"Stress Relief","Derin Rahatlama":"Deep Relaxation","Derin Zihin Hâli":"Deep Mind State","Beden-Zihin Şifası I":"Body-Mind Healing I","Beden-Zihin Şifası II":"Body-Mind Healing II","Beden-Zihin Şifası III":"Body-Mind Healing III","Ruh Hâli Yükseltici I":"Mood Lifter I","Ruh Hâli Yükseltici II":"Mood Lifter II","Bağışıklık Desteği":"Immune Support","En İyi Sağlık":"Optimal Health","Astral Seyahat":"Astral Travel","Astral Projeksiyon":"Astral Projection","Berrak Rüya (Lucid)":"Lucid Dreaming","Bilinç Ötesi":"Beyond Consciousness","Geçit (Gateway)":"Gateway","İç Rehberlik":"Inner Guidance","Sezgi uyanışı":"Awakening of intuition","Zirve Farkındalık":"Peak Awareness","Vecd • Şuur Açıklığı":"Ecstasy • Clarity of Consciousness","Özel Frekanslar":"Custom Frequencies","Tüm frekanslar":"All frequencies","Om • 136.1 Hz":"Om • 136.1 Hz","Şifa • 528 Hz":"Healing • 528 Hz","Sezgi • 852 Hz":"Intuition • 852 Hz","İfade • 741 Hz":"Expression • 741 Hz","Onarım • 417 Hz":"Repair • 417 Hz","Uyanış • 963 Hz":"Awakening • 963 Hz","Korku & Suçtan Arınma • 396 Hz":"Release from Fear & Guilt • 396 Hz","İç görü • Theta 6 Hz":"Insight • Theta 6 Hz","Yüksek şuur • Gama 35 Hz":"Higher awareness • Gamma 35 Hz","Kök temizlik • Theta 7 Hz":"Root cleansing • Theta 7 Hz","Bağ & merhamet • Alfa 10 Hz":"Bond & mercy • Alpha 10 Hz","Çözüm & arınma • Beta 14 Hz":"Resolution & purification • Beta 14 Hz","Değişim & travma • Alfa 9 Hz":"Change & trauma • Alpha 9 Hz","Solfej \"mucize\" tonu • Alfa 8 Hz":"The solfeggio \"miracle\" tone • Alpha 8 Hz","İlahi frekans, bilinç genişleme":"Divine frequency, expansion of consciousness","DNA onarımı, dönüşüm":"DNA repair, transformation","Stres azaltma, sakinleştirici":"Stress reduction, calming","Bağlantı, ilişki iyileştirme":"Connection, healing relationships","Rahat odaklanma, uyanık huzur":"Easy focus, alert calm","İfade açma, çözüm":"Opening expression, resolution","🎵 Solfej sayıları":"🎵 The solfeggio numbers","🌊 Bantlar":"🌊 Bands","Kütüphane":"Library","Başlangıç (Hz)":"Start (Hz)","Bitiş (Hz)":"End (Hz)","Doğrusal":"Linear","Logaritmik":"Logarithmic","🌊 Taramayı başlat":"🌊 Start the sweep","■ Taramayı durdur":"■ Stop the sweep","Elle Hz gir":"Enter Hz manually","Beat Hz elle gir":"Enter beat Hz manually","Vuruş Hz elle gir":"Enter beat Hz manually","Taşıyıcı Hz elle gir":"Enter carrier Hz manually","Frekans seç [Hz]":"Choose a frequency [Hz]","↧ Taşıyıcı yap":"↧ Make it the carrier","Bir oktav aşağı (½×)":"One octave down (½×)","Delta 0.5–4 Hz":"Delta 0.5–4 Hz","Theta 4–8 Hz":"Theta 4–8 Hz","THETA 4–8 Hz":"THETA 4–8 Hz","Alfa 8–13 Hz":"Alpha 8–13 Hz","Beta 13–30 Hz":"Beta 13–30 Hz","Gama 30–40 Hz":"Gamma 30–40 Hz","Alfa Dalgaları":"Alpha Waves","Beat Frekansı":"Beat Frequency","Taşıyıcı Frekansı":"Carrier Frequency","Taşıyıcı 2":"Carrier 2","Vuruş 2":"Beat 2","Binaural Beat Motoru":"Binaural Beat Engine","Binaural Ses":"Binaural Sound","〰 Binaural":"〰 Binaural","▮▯ İzokronik":"▮▯ Isochronic","≈ Monaural":"≈ Monaural","✛ Karma":"✛ Mixed","Ses Dengesi (L/R)":"Stereo Balance (L/R)","Gürültü Jeneratörü":"Noise Generator","Gürültü Ses":"Noise volume","Derin bas":"Deep bass","🔽 Lowpass":"🔽 Lowpass","🔼 Highpass":"🔼 Highpass","Sol kulak 176.09 Hz ◂ ✦ ▸ Sağ kulak 183.91 Hz":"Left ear 176.09 Hz ◂ ✦ ▸ Right ear 183.91 Hz","🎧 Binaural etki yalnızca":"🎧 The binaural effect only","kulaklıkla":"with headphones","oluşur; sol ve sağ kulağa ayrı frekans gönderilir.":"arises; a separate frequency goes to the left and right ear.","Katmanı etkinleştir — ana frekansla birlikte çalar":"Enable the layer — it plays together with the main frequency","〰 İkinci binaural katman — aynı anda çift frekans (kulaklık)":"〰 A second binaural layer — two frequencies at once (headphones)","🌫 Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir":"🌫 Pink-noise bed — sharpens the beat; recommended on speakers","🌀 8D mekânsal ses — kanallar kulaklıkta çevrende döner":"🌀 8D spatial audio — the channels circle around you in headphones","⚡ Fotik uyarım — ekran vuruşla parlar ·":"⚡ Photic stimulation — the screen pulses with the beat ·","epilepsi uyarısı":"epilepsy warning","📳 Haptik vuruş (titreşim + 55 Hz darbe)":"📳 Haptic beat (vibration + 55 Hz pulse)","🜂 Kendi yolculuğunu kur — aşama aşama beyin dalgası rotası":"🜂 Build your own journey — a brainwave route, phase by phase","Theta→Delta→Gama geçişli seans (~15 dk)":"A session moving Theta→Delta→Gamma (~15 min)","Nöro Öneri Motoru":"Neuro Recommendation Engine","🔮 Kimatik — Sesin Desenleri":"🔮 Cymatics — The Patterns of Sound","Kimatik":"Cymatics","Fraktal":"Fractal","Mandala":"Mandala","Spiral":"Spiral","Protokoller":"Protocols","Hipnoz":"Hypnosis","Square":"Square","Triangle":"Triangle","Sawtooth":"Sawtooth","Isochronic":"Isochronic","Pink":"Pink","Brown":"Brown","White":"White","Gamma":"Gamma","Nefes":"Breath","NEFES":"BREATH","🌬 Nefes":"🌬 Breath","Nefes Egzersiz Koçu":"Breathing Coach","Nefes Halkası":"The Circle of Breath","Box Breathing":"Box Breathing","Kutu — 4 · 4 · 4 · 4":"Box — 4 · 4 · 4 · 4","Nadi Shodhana":"Nadi Shodhana","Tummo Nefesi":"Tummo Breath","Body Scan":"Body Scan","Konuşma Hızı":"Speech Rate","Hû nefesi — 4 al · 2 tut · 6 ver":"The Hû breath — inhale 4 · hold 2 · exhale 6","✋ Elle nefes (Hû'ya bas: al · bırak: ver)":"✋ Manual breath (press Hû: inhale · release: exhale)","Eşit kare nefes; odaklanma ve sinir sistemi dengesi.":"Equal, square breathing; focus and a balanced nervous system.","Sakinleştirici; uykuya geçiş ve kaygı azaltma için.":"Calming; for drifting into sleep and easing anxiety.","Alternatif burun nefesi; zihinsel denge ve berraklık.":"Alternate-nostril breathing; mental balance and clarity.","Enerjik; güçlü döngüsel nefes + tutma (ileri seviye).":"Energising; strong cyclic breathing with retention (advanced).","Bedeni baştan ayağa fark ederek gevşeme.":"Relaxing by noticing the body from head to foot.","Derin dinlenme; zihni sıfırlama protokolü.":"Deep rest; a protocol for resetting the mind.","Dolaylı, metaforik hipnoz dili ile derin gevşeme.":"Deep relaxation through indirect, metaphorical hypnotic language.","Gevşeme I":"Relaxation I","Gevşeme II":"Relaxation II","Gevşeme III":"Relaxation III","Gevşeme IV":"Relaxation IV","Gevşeme V":"Relaxation V","Odak & Akış Hipnozu":"Focus & Flow Hypnosis","🗣 Sesli telkin (cihaz sesi, fısıltı)":"🗣 Spoken suggestion (device voice, whisper)","🌿 Derin Rahatlama protokolü yüklendi":"🌿 The Deep Relaxation protocol is loaded","~8 dk · 9 adım":"~8 min · 9 steps","~9 dk · 10 adım":"~9 min · 10 steps","~10 dk · 12 adım":"~10 min · 12 steps","~12 dk · 11 adım":"~12 min · 11 steps","🧭 İçsel Reçete":"🧭 Inner Prescription","🧭 İçsel Reçete — SÜKÛN Hekîm":"🧭 Inner Prescription — the SÜKÛN Physician","Reçete ✦":"Prescription ✦","Analiz Et":"Analyse","✦ Niyet:":"✦ Intention:","✦ Nasıl uygulanır:":"✦ How to apply it:","💡 Pratik öneriler":"💡 Practical suggestions","Nasıl hissediyorsunuz? (örn: odaklanamıyorum, yorgunum...)":"How do you feel? (e.g. I can't focus, I'm tired…)","Durumunuzu yazın veya yukarıdan seçin...":"Describe your state, or choose one above…","Örn: yol yorgunuyum ve uykum var…":"e.g. I'm road-weary and sleepy…","😴 Uykum var":"😴 I'm sleepy","😴 Uyuyamıyorum":"😴 I can't sleep","🔋 Yorgunum":"🔋 I'm tired","⚡ Enerji lazım":"⚡ I need energy","🎯 Odaklanmalıyım":"🎯 I need to focus","🧠 Odaklanamıyorum":"🧠 I can't focus","😰 Stres / Kaygı":"😰 Stress / Anxiety","🕊 Kaygılıyım":"🕊 I'm anxious","😔 Üzgünüm":"😔 I'm sad","😔 Duygusal yorgunluk":"😔 Emotional exhaustion","🚗 Yol yorgunuyum":"🚗 I'm road-weary","📚 Çalışmak istiyorum":"📚 I want to study","🎨 İlham":"🎨 Inspiration","🌊 Meditasyon":"🌊 Meditation","🕯 Tefekkür":"🕯 Contemplation","😴 Gevşeme & Uyku":"😴 Relaxation & Sleep","🌙 Yatış":"🌙 Wind down","▶ 🌙 Yatış":"▶ 🌙 Wind down","🌅 Sabah":"🌅 Morning","🕯 Seher reçeteni kur":"🕯 Set up your pre-dawn prescription","Seher için öneri:":"A suggestion for the pre-dawn hour:","seher vakti · tefekkür demi":"the pre-dawn hour · a time for contemplation","Hayırlı sabahlar ✦":"Good morning ✦","📿 Zikir":"📿 Dhikr","📿 Temel Zikirler":"📿 Core Dhikr","🎯 Ebced":"🎯 Abjad","Ebcedi kadar":"As many as its abjad value","Ebcede eşitle":"Match the abjad value","ebced • 298":"abjad • 298","Seçili esmânın ebced değerini hedef yap":"Set the target to the abjad value of the chosen Name","Hedef 33 • Devir 0":"Target 33 • Round 0","• bu isimde 0/33":"• 0/33 on this Name","Her isim":"Each Name","dokun & zikret":"tap & remember","🕋 Hatim":"🕋 Khatm","🕋 Esmâ Hatmi — 99 ismin seyri":"🕋 Asma Khatm — a passage through the 99 Names","🫀 Letâif":"🫀 Latâif","🫀 Letâif Seyri — beş latîfenin zikri":"🫀 Latâif Journey — the dhikr of the five subtle centers","SEYİR — LETÂİF ZİKRİ":"THE JOURNEY — DHIKR OF THE LATÂIF","🪜 Nefs":"🪜 Nafs","🪜 Nefs Mertebeleri — yedi basamak seyri":"🪜 Stations of the Nafs — the seven-step ascent","🌈 Enerji":"🌈 Energy","🌈 Enerji Merkezleri — letâif & çakra frekansları":"🌈 Energy Centers — latâif & chakra frequencies","🌈 Dengeleme seansı — 7 merkezi sırayla gez (~10 dk)":"🌈 A balancing session — visit the 7 centres in turn (~10 min)","🤲 Tövbe":"🤲 Repentance","🤲 İstiğfar & Arınma":"🤲 Istighfar & Purification","🤲 Nasuh Tövbesi — sesli okuma":"🤲 The Repentance of Nasuh — read aloud","Nasuh tövbesinin ardından,":"After the repentance of Nasuh,","🌟 Seyyidü'l-İstiğfar — istiğfarın efendisi":"🌟 Sayyid al-Istighfar — the master of seeking forgiveness","🕌 Salavât":"🕌 Salawat","🕌 Salavât-ı Şerife — sesli okuma":"🕌 The Noble Salawat — read aloud","🔊 Türkçe":"🔊 Turkish","🕋 Arapça":"🕋 Arabic","Arapça ses seç":"Choose an Arabic voice","Ses / hız":"Voice / rate","🔊 Sesli zikir — her tesbihte cihaz sesiyle söyle":"🔊 Spoken dhikr — say it in the device's voice at every bead","Bu zikri cihaz sesiyle dinle":"Listen to this dhikr in the device's voice","Bu zikir için kendi sesini kaydet":"Record your own voice for this dhikr","⏺ Sesini kaydet":"⏺ Record your voice","⏺ Kaydı başlat":"⏺ Start recording","🎙 Kendi Sesini Ekle":"🎙 Add Your Own Voice","🎙 Kendi sesinle zikir halkası":"🎙 A dhikr circle in your own voice","▶ Halkayı başlat":"▶ Start the circle","🎙 Mikrofonla kendi ses ekle":"🎙 Add your own sound with the microphone","Ses adı (örn. Traş Makinesi)":"Sound name (e.g. Shaver)","🎤 Ledün Lab — sesinin frekansını bul":"🎤 Ledun Lab — find the frequency of your voice","🎙 Dinlemeyi başlat":"🎙 Start listening","🎙 ile başlat; bir harf, kelime ya da cümle söyle":"Start with 🎙 and speak a letter, a word or a sentence","🎙 Kayıtlı seslerimi yönet (":"🎙 Manage my recordings (","🔐 Gizli Kasa — Berhetiyye Tefekkür Haritası":"🔐 The Hidden Vault — a Berhetiyye map for contemplation","📜 Sır Kapısı telkini":"📜 The suggestion of the Gate of Secrets","Kabz → Bast":"Qabd → Bast","Rast → Segâh":"Rast → Segâh","🕊 Yâ Mezcelin • Yâ Bezcelin — iç & dış arınma":"🕊 Yâ Mezcelin • Yâ Bezcelin — inner & outer purification","Mezcelin · Bezcelin":"Mezcelin · Bezcelin","iç ve dış temizliği/arınma":"inner and outer cleansing / purification","Nefs-i Mutmainne":"Nafs al-Mutma'inna","Kötülüğü emreden nefs — mücadelenin başı • Yâ Kahhâr":"The soul that commands evil — the beginning of the struggle • Yâ Kahhâr","Kendini kınayan, pişman olan nefs • Yâ Gaffâr":"The self-reproaching, repentant soul • Yâ Gaffâr","İlham alan nefs — kalbin uyanışı • Yâ Vedûd":"The inspired soul — the awakening of the heart • Yâ Vedûd","Huzura eren, tatmin olan nefs • Yâ Selâm":"The soul at peace, content • Yâ Selâm","Arınmış, kâmil nefs — vuslat • Yâ Nûr":"The purified, perfected soul — union • Yâ Nûr","Kök • Muladhara":"Root • Muladhara","Sakral • Svadhisthana":"Sacral • Svadhisthana","Göbek • Manipura":"Navel • Manipura","Kalp • Anahata":"Heart • Anahata","Boğaz • Vishuddha":"Throat • Vishuddha","Alın • Ajna":"Brow • Ajna","Taç • Sahasrara":"Crown • Sahasrara","Üçüncü Göz":"Third Eye","Güven, topraklanma • letâif: Kadem/toprak":"Trust, grounding • latîfa: Qadam/earth","Sevgi, merhamet • letâif: Kalp (letâife)":"Love, mercy • latîfa: Qalb (the heart)","İfade, hakikat • letâif: Hafî":"Expression, truth • latîfa: Khafî","Sezgi, basiret • letâif: Ruh":"Intuition, insight • latîfa: Rûh","Vuslat, şuur • letâif: Ahfâ/sır":"Union, consciousness • latîfa: Akhfâ/secret","— Zâkirin ilk kapısı — sarı nur":"— the first gate of the one who remembers — yellow light","DİJİTAL TEKKE":"THE DIGITAL LODGE","TEKKEYE GİR ✦":"ENTER THE LODGE ✦","KATRE & UMMAN":"THE DROPLET & THE OCEAN","Umman":"The Ocean","Mihrap":"Mihrab","Katre sesi":"Droplet volume","💧 Katre metronomu":"💧 Droplet metronome","Her 3. damla":"Every 3rd drop","Her 4. damla":"Every 4th drop","Her 5. damla":"Every 5th drop","Her 6. damla":"Every 6th drop","🥁 Bendir usûlü — tempoya kilitli düm·tek":"🥁 Bendir rhythm — düm·tek locked to the tempo","Usûl":"Rhythm","Sofyan":"Sofyan","Düyek (basit)":"Düyek (simple)","Devr-i Hindî":"Devr-i Hindî","Çifte düm·tek":"Double düm·tek","bendir düm·tek döngüsü ~96 BPM":"a düm·tek bendir cycle at ~96 BPM","🎼 Ney":"🎼 Ney","🪨 Toprak":"🪨 Earth","Gürültü kıyıda kalsın. İçeride yalnız katre konuşur —":"Let the noise stay on the shore. Inside, only the droplet speaks —","Dilediğin kadar sükûtta kal —":"Stay in silence as long as you wish —","perde aralandı.":"the veil has parted.","nefesinle Hû'nun arasında ince bir perde var.":"between your breath and the Hû there is a thin veil.","🤲 Sağ avuç sol göğsün iki parmak altına — kalp noktasına.":"🤲 Right palm two fingers below the left breast — on the point of the heart.","〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)":"〰 Undercurrent: 136.1 Hz · 7.83 Hz binaural (headphones)","〰 Alt akım (SÜKÛN ayarı): 180.0 Hz · 7.83 Hz binaural":"〰 Undercurrent (SÜKÛN setting): 180.0 Hz · 7.83 Hz binaural","〰 Frekans":"〰 Frequency","✨ Işıltı sesi & parlamalar — dokunuşta cam tını ve altın kıvılcım":"✨ Shimmer & sparkle — a glassy chime and a golden spark at every touch","zikir nefesi — sürekli Hûûû uğultusu":"the breath of dhikr — a continuous Hûûû hum","Her şeyi ayakta tutan, varlığı idare eden":"He who sustains all things and governs existence","Karşılıksız veren, lütfunu bolca ihsan eden":"He who gives without return, bestowing His grace abundantly","Rahmeti bütün varlığı kuşatan":"He whose mercy encompasses all creation","sağanak, uzak gök gürlemesi":"downpour, distant thunder","bal arıları — huzurlu uğultu":"honeybees — a peaceful hum","gece göleti, cırcır ve vırak":"night pond, crickets and croaking","çayırda kuzu ve koyun sesleri":"lambs and sheep in the meadow","ferah metal tınılar, tesadüfi":"bright metal tones, at random","kuş • dere • alfa":"birds • stream • alpha","ney • okyanus • theta":"ney • ocean • theta","ağustos böceği • delta":"cicadas • delta","Meditasyon • tefekkür":"Meditation • contemplation","🐦 Kuş Cıvıltıları":"🐦 Birdsong","🌲 Orman Uğultusu":"🌲 Forest Hush","💧 Dere Sesi":"💧 Stream","Delta 1.5 Hz • gece":"Delta 1.5 Hz • night","Delta 2 Hz • dinlenme":"Delta 2 Hz • rest","Delta 2.5 Hz":"Delta 2.5 Hz","Delta 2.5 Hz • fenâ":"Delta 2.5 Hz • fanâ","Delta 3 Hz • derinleşme":"Delta 3 Hz • deepening","Theta-Delta 4 Hz • boşluk":"Theta-Delta 4 Hz • the void","Theta-Delta 4 Hz • dip bilinç":"Theta-Delta 4 Hz • the deep mind","Theta 4.5 Hz • REM köprüsü":"Theta 4.5 Hz • REM bridge","Theta 5 Hz • dalma":"Theta 5 Hz • sinking in","Theta 5 Hz • sükût":"Theta 5 Hz • silence","Theta 5.5 Hz • huzur":"Theta 5.5 Hz • peace","Theta 5.5 Hz • Focus 10 esini":"Theta 5.5 Hz • echoing Focus 10","Theta 6 Hz • gün sonu":"Theta 6 Hz • end of day","Theta 6 Hz • derinleşme":"Theta 6 Hz • deepening","Theta 6 Hz • sezgi":"Theta 6 Hz • intuition","Theta 6 Hz • derin onarım":"Theta 6 Hz • deep repair","Theta 6 Hz • 852 taşıyıcı":"Theta 6 Hz • 852 carrier","Theta 6 Hz • 136.1 Hz taşıyıcı":"Theta 6 Hz • 136.1 Hz carrier","Theta 6.3 Hz • beden dışı seyir":"Theta 6.3 Hz • out-of-body journey","Theta 7 Hz • giriş":"Theta 7 Hz • entry","Theta 7 Hz • çok derin":"Theta 7 Hz • very deep","Theta 7 Hz • derin vizyon":"Theta 7 Hz • deep vision","Theta 7 Hz • ayrışma eşiği":"Theta 7 Hz • threshold of detachment","Theta 7.83 Hz • Schumann":"Theta 7.83 Hz • Schumann","Alfa-Theta 8 Hz":"Alpha-Theta 8 Hz","Alfa 8 Hz • gevşeme":"Alpha 8 Hz • relaxation","Alfa 8 Hz • iç sessizlik":"Alpha 8 Hz • inner silence","Alfa 9 Hz • derin":"Alpha 9 Hz • deep","Alfa 9 Hz • sükûnet":"Alpha 9 Hz • stillness","Alfa 10 Hz • orta":"Alpha 10 Hz • middle","Alfa 10 Hz • uyum":"Alpha 10 Hz • harmony","Alfa 10 Hz • yatışma":"Alpha 10 Hz • settling","Alfa 10 Hz • hayal gücü":"Alpha 10 Hz • imagination","Alfa 10 Hz • genel denge":"Alpha 10 Hz • general balance","Alfa 10 Hz • berrak zihin":"Alpha 10 Hz • clear mind","Alfa 10 Hz • 528 taşıyıcı":"Alpha 10 Hz • 528 carrier","Alfa 10.5 Hz • dinginlik":"Alpha 10.5 Hz • calm","Alfa 12 Hz • hafif":"Alpha 12 Hz • light","Alfa-SMR 12 Hz • hafıza":"Alpha-SMR 12 Hz • memory","Beta 13 Hz • zihin açıklığı":"Beta 13 Hz • mental clarity","Beta 14 Hz • yenilenme":"Beta 14 Hz • renewal","SMR 14 Hz • çalışma":"SMR 14 Hz • study","Beta 15 Hz • neşe":"Beta 15 Hz • cheer","Beta 15 Hz • öğleden sonra":"Beta 15 Hz • afternoon","Beta 16 Hz • analiz":"Beta 16 Hz • analysis","Beta 18 Hz • güne başlarken":"Beta 18 Hz • starting the day","Beta 18 Hz • çalışma & okuma":"Beta 18 Hz • work & reading","Beta 20 Hz • canlanma":"Beta 20 Hz • revival","Gama 40 Hz • keskin şuur":"Gamma 40 Hz • sharp awareness","Gama 40 Hz • yüksek farkındalık":"Gamma 40 Hz • heightened awareness","Gama 40 Hz + derin • epifani":"Gamma 40 Hz + deep • epiphany","Binaural · vuruş 7.83 Hz":"Binaural · beat 7.83 Hz","Karma · vuruş 7.83 Hz":"Mixed · beat 7.83 Hz","Tasavvufî Frekans & Zikir Terapisi":"Sufi Frequency & Dhikr Therapy","↺ Seyri başa al":"↺ Restart the journey","▶ Yolculuğu başlat":"▶ Begin the journey","Zikre geç: Yâ Bedî’":"Go to dhikr: Yâ Bedî’","Görünüm modu":"View mode","Girişte ses açılır ve ekran uyanık tutulur. Kulaklık, mağara yankısını derinleştirir. Rahat oturun: omurga elif gibi dik, sağ el kalpte.":"Sound begins at the threshold and the screen is kept awake. Headphones deepen the echo of the cave. Sit at ease: the spine upright like an alif, the right hand on the heart.","Bu salavât-ı şerifeleri kalp huzuruyla, mümkünse yüzünü kıbleye çevirip tekrar tekrar okumak; her tekrarında Efendimizin nurunu ve şefaatini niyaz etmek edeptendir.":"It is fitting to read these noble salawat with a heart at peace, facing the qibla if you can, and to ask at each repetition for the light and the intercession of the Prophet."},
+"SÜKÛN v10.4 — build 2026-08-14-r121 — kalp huzuru niyetiyle":"SÜKÛN v10.4 — build 2026-08-14-r121 — with the intention of a heart at peace","Dinle":"Listen","Kendi sesin":"Your voice","Niyet":"Intention","Nasıl?":"How?","🎙 Kendi Sesinle Okuma — Nasıl Çalışır":"🎙 Reciting in Your Own Voice — How It Works","Neden kendi sesin?":"Why your own voice?","🔊 Dinle":"🔊 Listen","🎙 Kendi sesin":"🎙 Your own voice","🎙 Niyet":"🎙 Intention","Kayıtlarım nerede?":"Where are my recordings?","Uzun dualar için":"For long prayers","Süre":"Timer","Tema":"Theme","Görünüm":"Layout","Kaydet":"Record","Günlük":"Journal","Durdur":"Stop","Kapalı":"Off","Mini":"Mini","Midi":"Midi","Pro":"Pro","Uyku zamanlayıcısı — seçtiğin süre dolunca sesler yavaşça kısılır ve durur. Uyumadan önce dinlerken işine yarar.":"Sleep timer — when the chosen time is up, the sounds fade out and stop. Useful for listening before sleep.","Seansı kaydet — o an duyduğun sesin tamamını .webm dosyası olarak indirir. Kendi ambiyansını saklamak ya da paylaşmak için.":"Record the session — downloads everything you currently hear as a .webm file, to keep or share your own ambience.","Seans günlüğü — zikir sayıların, serilerin, dinlediğin frekanslar ve haftalık dökümün burada. Yedek alma da bu sayfada.":"Session journal — your dhikr counts, streaks, the frequencies you played and your weekly summary. Backups live here too.","Her şeyi durdur — çalan bütün sesleri, zikir akışını ve zamanlayıcıyı bir kerede kapatır.":"Stop everything — silences all playing sounds, the dhikr flow and the timer at once.","🎙 Kısım kısım kendi sesinle kaydet":"🎙 Record part by part in your own voice","▶ Kısımları sırayla oku":"▶ Play the parts in order","■ Durdur":"■ Stop","Açılış — Eûzü, Besmele ve salavât":"Opening — Isti‘adha, Basmala and salawat","Tahrim sûresi 8. âyet ve meâli":"Sûrat al-Tahrim, verse 8, with its meaning","Kul haklarında helalleşme":"Seeking pardon for the rights of others","Azaların tövbesi":"Repentance of the limbs","Elli dört farz":"The fifty-four obligations","Şirk, rızık ve haram tövbesi":"Repentance for shirk, provision and the unlawful","Dilin tövbesi — gıybet ve kalp kırmak":"Repentance of the tongue — backbiting and wounding hearts","İffet ve aile tövbesi":"Repentance concerning chastity and family","Kabul niyazı":"Supplication for acceptance","Âyetler, Esmâ-i Hüsnâ ve kapanış":"Verses, the Beautiful Names and closing","Tövbe tamam ✦":"Repentance complete ✦","Zikir / sûre kaydı — bitirmek için 🎙":"Dhikr / sûra recording — tap 🎙 to finish","Zikir halkası — bitirmek için 🎙":"Dhikr circle — tap 🎙 to finish","Niyet kaydı — bitirmek için 🎙":"Intention recording — tap 🎙 to finish","Ortam sesi — bitirmek için ⏹":"Ambient sound — tap ⏹ to finish","Kayıt çok kısa — saklanmadı":"Recording too short — not saved","Kayıt saklanamadı — cihaz depolaması dolu olabilir.":"Could not save the recording — device storage may be full.","Kaydediliyor… «Hû» ya da esmâyı bir kez söyle (en çok 20 sn)":"Recording… say “Hû” or a Name once (up to 20 s)","Kaydediliyor… istediğin an ⏹ ile bitir (en çok 2 dk)":"Recording… finish with ⏹ whenever you like (up to 2 min)","SÜRE":"DURATION","ARAYÜZ":"INTERFACE","HÂL AYARI":"STATE PRESET","SEYİR — BU SEANSTA NE OKUNUYOR":"THE JOURNEY — WHAT YOU WILL RECITE","◱ Sade":"◱ Simple","⚙ Uzman":"⚙ Expert","❓ Bu nedir? — kısa rehber":"❓ What is this? — a short guide","Bu nedir? — kısa rehber":"What is this? — a short guide","۞ BU NEDİR?":"۞ WHAT IS THIS?","ANLADIM ✦":"UNDERSTOOD ✦","NASIL İŞLER":"HOW IT WORKS","SEYİR":"THE JOURNEY","SESLER NE İŞE YARAR":"WHAT THE SOUNDS DO","HANGİ MODU SEÇMELİYİM":"WHICH MODE SHOULD I CHOOSE","Dijital Tekke — rehberli zikir ve nefes seansı (tam ekran)":"Digital Lodge — a guided dhikr and breath session (full screen)","۞ Bu zikri Tekke'de çek — rehberli nefes seansı":"۞ Take this dhikr into the Lodge — a guided breath session","Nefesini halkaya uydur. Zikri damla sesi sayıyor — dokunman ya da takip etmen gerekmez.":"Match your breath to the ring. The droplet counts the dhikr — you need not tap or keep count.","Halkayı takip et — yazan fazda al · tut · ver. Her nefes verişinde bir zikir sayılır; dokunman gerekmez.":"Follow the ring — inhale, hold, exhale as shown. Each exhalation counts one dhikr; no tapping needed.","Seyir tamam ✦ Dilediğin kadar sükûtta kal. Çıkmak için üstteki ✦ SÜKÛN.":"Journey complete ✦ Stay in stillness as long as you wish. Use ✦ SÜKÛN above to leave.","Süren doldu — dilediğin kadar kalabilirsin.":"Your time is up — you may stay as long as you wish.","📿 Bu tertibe geç":"📿 Switch to this set","Şimdi değil":"Not now","Şimdi değil — bugün bu vakit için bir daha sorma":"Not now — don't ask again for this prayer window today","🛡 Âyetü'l-Kürsî — sesli okuma":"🛡 Âyat al-Kursî — read aloud","Önce meal, sonra Arapçası (Fâtiha Seyri gibi eşli oku)":"Meaning first, then the Arabic (paired, as in the Fâtiha Journey)","Yalnız âyeti oku — meali atla":"Read the verse only — skip the meaning","🔊 Sesli oku":"🔊 Read aloud","Arap harfli metin Arapça sesle okunur":"The Arabic text is read in an Arabic voice","Cihazda seslendirme yok":"No speech voice on this device","Cihazda ses bulunamadı":"No voice found on this device","Arapça ses bulunamadı — okunuş Türkçe sesle okundu":"No Arabic voice found — the transliteration was read in the Turkish voice","1. bölüm":"Part 1","2. bölüm":"Part 2","3. bölüm":"Part 3","4. bölüm":"Part 4","5. bölüm":"Part 5","Açınca her kontrolün yanında kısa açıklama ikonu belirir":"When on, a small explanation icon appears beside every control","Zümrüt Gece":"Emerald Night","Gül-i Muhammedî":"Muhammadan Rose","Gece Yarısı":"Midnight","Çöl Toprağı":"Desert Earth","Altın Çağ":"Golden Age","Ay Moru":"Moon Violet","Gümüş Ayna":"Silver Mirror","Kızıl Alev":"Crimson Flame","Kuzey Feyzi":"Northern Grace","Derin Okyanus":"Deep Ocean","Nebula Feyzi · mor-mavi-kızıl":"Nebula Grace · violet-blue-crimson","Sabah Nuru · açık":"Morning Light · bright","Işık şiddeti":"Light intensity","Derin Uyku":"Deep Sleep","Uyku Vakti":"Bedtime","Uykuya Geçiş":"Drifting Off","Uyku Geçişi":"Sleep Transition","Derin Onarıcı Uyku":"Deep Restorative Sleep","Yatmadan Önce":"Before Bed","Derin Sükût / Uyku":"Deep Silence / Sleep","Meditasyon":"Meditation","Derin Meditasyon I":"Deep Meditation I","Derin Meditasyon II":"Deep Meditation II","Derin Meditasyon III":"Deep Meditation III","Derin Meditasyon IV":"Deep Meditation IV","Tefekkür & Murâkabe":"Contemplation & Murâqaba","Sessiz Zihin":"Silent Mind","Boşluk Hâli":"The State of Emptiness","Durgunluk":"Stillness","İç Huzur":"Inner Peace","Sakinleş":"Be Calm","Toparlan":"Regather","Doğal denge":"Natural balance","Derin Odak":"Deep Focus","Berrak Odak":"Clear Focus","Akış Hâli":"Flow State","🌊 Akış Hâli":"🌊 Flow State","Üstün Konsantrasyon":"Peak Concentration","Huzur & Odaklanma":"Calm & Focus","Zihinsel Uyarım":"Mental Stimulation","Zinde Uyanıklık":"Alert Wakefulness","Zihin Tazeleyici":"Mind Refresher","Enerji Artışı":"Energy Boost","Enerji Yükselişi":"Rising Energy","Problem Çözücü":"Problem Solver","Gelişmiş Öğrenme":"Advanced Learning","Hafıza & Öğrenme":"Memory & Learning","Stres Giderici":"Stress Relief","Derin Rahatlama":"Deep Relaxation","Derin Zihin Hâli":"Deep Mind State","Beden-Zihin Şifası I":"Body-Mind Healing I","Beden-Zihin Şifası II":"Body-Mind Healing II","Beden-Zihin Şifası III":"Body-Mind Healing III","Ruh Hâli Yükseltici I":"Mood Lifter I","Ruh Hâli Yükseltici II":"Mood Lifter II","Bağışıklık Desteği":"Immune Support","En İyi Sağlık":"Optimal Health","Astral Seyahat":"Astral Travel","Astral Projeksiyon":"Astral Projection","Berrak Rüya (Lucid)":"Lucid Dreaming","Bilinç Ötesi":"Beyond Consciousness","Geçit (Gateway)":"Gateway","İç Rehberlik":"Inner Guidance","Sezgi uyanışı":"Awakening of intuition","Zirve Farkındalık":"Peak Awareness","Vecd • Şuur Açıklığı":"Ecstasy • Clarity of Consciousness","Özel Frekanslar":"Custom Frequencies","Tüm frekanslar":"All frequencies","Om • 136.1 Hz":"Om • 136.1 Hz","Şifa • 528 Hz":"Healing • 528 Hz","Sezgi • 852 Hz":"Intuition • 852 Hz","İfade • 741 Hz":"Expression • 741 Hz","Onarım • 417 Hz":"Repair • 417 Hz","Uyanış • 963 Hz":"Awakening • 963 Hz","Korku & Suçtan Arınma • 396 Hz":"Release from Fear & Guilt • 396 Hz","İç görü • Theta 6 Hz":"Insight • Theta 6 Hz","Yüksek şuur • Gama 35 Hz":"Higher awareness • Gamma 35 Hz","Kök temizlik • Theta 7 Hz":"Root cleansing • Theta 7 Hz","Bağ & merhamet • Alfa 10 Hz":"Bond & mercy • Alpha 10 Hz","Çözüm & arınma • Beta 14 Hz":"Resolution & purification • Beta 14 Hz","Değişim & travma • Alfa 9 Hz":"Change & trauma • Alpha 9 Hz","Solfej \"mucize\" tonu • Alfa 8 Hz":"The solfeggio \"miracle\" tone • Alpha 8 Hz","İlahi frekans, bilinç genişleme":"Divine frequency, expansion of consciousness","DNA onarımı, dönüşüm":"DNA repair, transformation","Stres azaltma, sakinleştirici":"Stress reduction, calming","Bağlantı, ilişki iyileştirme":"Connection, healing relationships","Rahat odaklanma, uyanık huzur":"Easy focus, alert calm","İfade açma, çözüm":"Opening expression, resolution","🎵 Solfej sayıları":"🎵 The solfeggio numbers","🌊 Bantlar":"🌊 Bands","Kütüphane":"Library","Başlangıç (Hz)":"Start (Hz)","Bitiş (Hz)":"End (Hz)","Doğrusal":"Linear","Logaritmik":"Logarithmic","🌊 Taramayı başlat":"🌊 Start the sweep","■ Taramayı durdur":"■ Stop the sweep","Elle Hz gir":"Enter Hz manually","Beat Hz elle gir":"Enter beat Hz manually","Vuruş Hz elle gir":"Enter beat Hz manually","Taşıyıcı Hz elle gir":"Enter carrier Hz manually","Frekans seç [Hz]":"Choose a frequency [Hz]","↧ Taşıyıcı yap":"↧ Make it the carrier","Bir oktav aşağı (½×)":"One octave down (½×)","Delta 0.5–4 Hz":"Delta 0.5–4 Hz","Theta 4–8 Hz":"Theta 4–8 Hz","THETA 4–8 Hz":"THETA 4–8 Hz","Alfa 8–13 Hz":"Alpha 8–13 Hz","Beta 13–30 Hz":"Beta 13–30 Hz","Gama 30–40 Hz":"Gamma 30–40 Hz","Alfa Dalgaları":"Alpha Waves","Beat Frekansı":"Beat Frequency","Taşıyıcı Frekansı":"Carrier Frequency","Taşıyıcı 2":"Carrier 2","Vuruş 2":"Beat 2","Binaural Beat Motoru":"Binaural Beat Engine","Binaural Ses":"Binaural Sound","〰 Binaural":"〰 Binaural","▮▯ İzokronik":"▮▯ Isochronic","≈ Monaural":"≈ Monaural","✛ Karma":"✛ Mixed","Ses Dengesi (L/R)":"Stereo Balance (L/R)","Gürültü Jeneratörü":"Noise Generator","Gürültü Ses":"Noise volume","Derin bas":"Deep bass","🔽 Lowpass":"🔽 Lowpass","🔼 Highpass":"🔼 Highpass","Sol kulak 176.09 Hz ◂ ✦ ▸ Sağ kulak 183.91 Hz":"Left ear 176.09 Hz ◂ ✦ ▸ Right ear 183.91 Hz","🎧 Binaural etki yalnızca":"🎧 The binaural effect only","kulaklıkla":"with headphones","oluşur; sol ve sağ kulağa ayrı frekans gönderilir.":"arises; a separate frequency goes to the left and right ear.","Katmanı etkinleştir — ana frekansla birlikte çalar":"Enable the layer — it plays together with the main frequency","〰 İkinci binaural katman — aynı anda çift frekans (kulaklık)":"〰 A second binaural layer — two frequencies at once (headphones)","🌫 Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir":"🌫 Pink-noise bed — sharpens the beat; recommended on speakers","🌀 8D mekânsal ses — kanallar kulaklıkta çevrende döner":"🌀 8D spatial audio — the channels circle around you in headphones","⚡ Fotik uyarım — ekran vuruşla parlar ·":"⚡ Photic stimulation — the screen pulses with the beat ·","epilepsi uyarısı":"epilepsy warning","📳 Haptik vuruş (titreşim + 55 Hz darbe)":"📳 Haptic beat (vibration + 55 Hz pulse)","🜂 Kendi yolculuğunu kur — aşama aşama beyin dalgası rotası":"🜂 Build your own journey — a brainwave route, phase by phase","Theta→Delta→Gama geçişli seans (~15 dk)":"A session moving Theta→Delta→Gamma (~15 min)","Nöro Öneri Motoru":"Neuro Recommendation Engine","🔮 Kimatik — Sesin Desenleri":"🔮 Cymatics — The Patterns of Sound","Kimatik":"Cymatics","Fraktal":"Fractal","Mandala":"Mandala","Spiral":"Spiral","Protokoller":"Protocols","Hipnoz":"Hypnosis","Square":"Square","Triangle":"Triangle","Sawtooth":"Sawtooth","Isochronic":"Isochronic","Pink":"Pink","Brown":"Brown","White":"White","Gamma":"Gamma","Nefes":"Breath","NEFES":"BREATH","🌬 Nefes":"🌬 Breath","Nefes Egzersiz Koçu":"Breathing Coach","Nefes Halkası":"The Circle of Breath","Box Breathing":"Box Breathing","Kutu — 4 · 4 · 4 · 4":"Box — 4 · 4 · 4 · 4","Nadi Shodhana":"Nadi Shodhana","Tummo Nefesi":"Tummo Breath","Body Scan":"Body Scan","Konuşma Hızı":"Speech Rate","Hû nefesi — 4 al · 2 tut · 6 ver":"The Hû breath — inhale 4 · hold 2 · exhale 6","✋ Elle nefes (Hû'ya bas: al · bırak: ver)":"✋ Manual breath (press Hû: inhale · release: exhale)","Eşit kare nefes; odaklanma ve sinir sistemi dengesi.":"Equal, square breathing; focus and a balanced nervous system.","Sakinleştirici; uykuya geçiş ve kaygı azaltma için.":"Calming; for drifting into sleep and easing anxiety.","Alternatif burun nefesi; zihinsel denge ve berraklık.":"Alternate-nostril breathing; mental balance and clarity.","Enerjik; güçlü döngüsel nefes + tutma (ileri seviye).":"Energising; strong cyclic breathing with retention (advanced).","Bedeni baştan ayağa fark ederek gevşeme.":"Relaxing by noticing the body from head to foot.","Derin dinlenme; zihni sıfırlama protokolü.":"Deep rest; a protocol for resetting the mind.","Dolaylı, metaforik hipnoz dili ile derin gevşeme.":"Deep relaxation through indirect, metaphorical hypnotic language.","Gevşeme I":"Relaxation I","Gevşeme II":"Relaxation II","Gevşeme III":"Relaxation III","Gevşeme IV":"Relaxation IV","Gevşeme V":"Relaxation V","Odak & Akış Hipnozu":"Focus & Flow Hypnosis","🗣 Sesli telkin (cihaz sesi, fısıltı)":"🗣 Spoken suggestion (device voice, whisper)","🌿 Derin Rahatlama protokolü yüklendi":"🌿 The Deep Relaxation protocol is loaded","~8 dk · 9 adım":"~8 min · 9 steps","~9 dk · 10 adım":"~9 min · 10 steps","~10 dk · 12 adım":"~10 min · 12 steps","~12 dk · 11 adım":"~12 min · 11 steps","🧭 İçsel Reçete":"🧭 Inner Prescription","🧭 İçsel Reçete — SÜKÛN Hekîm":"🧭 Inner Prescription — the SÜKÛN Physician","Reçete ✦":"Prescription ✦","Analiz Et":"Analyse","✦ Niyet:":"✦ Intention:","✦ Nasıl uygulanır:":"✦ How to apply it:","💡 Pratik öneriler":"💡 Practical suggestions","Nasıl hissediyorsunuz? (örn: odaklanamıyorum, yorgunum...)":"How do you feel? (e.g. I can't focus, I'm tired…)","Durumunuzu yazın veya yukarıdan seçin...":"Describe your state, or choose one above…","Örn: yol yorgunuyum ve uykum var…":"e.g. I'm road-weary and sleepy…","😴 Uykum var":"😴 I'm sleepy","😴 Uyuyamıyorum":"😴 I can't sleep","🔋 Yorgunum":"🔋 I'm tired","⚡ Enerji lazım":"⚡ I need energy","🎯 Odaklanmalıyım":"🎯 I need to focus","🧠 Odaklanamıyorum":"🧠 I can't focus","😰 Stres / Kaygı":"😰 Stress / Anxiety","🕊 Kaygılıyım":"🕊 I'm anxious","😔 Üzgünüm":"😔 I'm sad","😔 Duygusal yorgunluk":"😔 Emotional exhaustion","🚗 Yol yorgunuyum":"🚗 I'm road-weary","📚 Çalışmak istiyorum":"📚 I want to study","🎨 İlham":"🎨 Inspiration","🌊 Meditasyon":"🌊 Meditation","🕯 Tefekkür":"🕯 Contemplation","😴 Gevşeme & Uyku":"😴 Relaxation & Sleep","🌙 Yatış":"🌙 Wind down","▶ 🌙 Yatış":"▶ 🌙 Wind down","🌅 Sabah":"🌅 Morning","🕯 Seher reçeteni kur":"🕯 Set up your pre-dawn prescription","Seher için öneri:":"A suggestion for the pre-dawn hour:","seher vakti · tefekkür demi":"the pre-dawn hour · a time for contemplation","Hayırlı sabahlar ✦":"Good morning ✦","📿 Zikir":"📿 Dhikr","📿 Temel Zikirler":"📿 Core Dhikr","🎯 Ebced":"🎯 Abjad","Ebcedi kadar":"As many as its abjad value","Ebcede eşitle":"Match the abjad value","ebced • 298":"abjad • 298","Seçili esmânın ebced değerini hedef yap":"Set the target to the abjad value of the chosen Name","Hedef 33 • Devir 0":"Target 33 • Round 0","• bu isimde 0/33":"• 0/33 on this Name","Her isim":"Each Name","dokun & zikret":"tap & remember","🕋 Hatim":"🕋 Khatm","🕋 Esmâ Hatmi — 99 ismin seyri":"🕋 Asma Khatm — a passage through the 99 Names","🫀 Letâif":"🫀 Latâif","🫀 Letâif Seyri — beş latîfenin zikri":"🫀 Latâif Journey — the dhikr of the five subtle centers","SEYİR — LETÂİF ZİKRİ":"THE JOURNEY — DHIKR OF THE LATÂIF","🪜 Nefs":"🪜 Nafs","🪜 Nefs Mertebeleri — yedi basamak seyri":"🪜 Stations of the Nafs — the seven-step ascent","🌈 Enerji":"🌈 Energy","🌈 Enerji Merkezleri — letâif & çakra frekansları":"🌈 Energy Centers — latâif & chakra frequencies","🌈 Dengeleme seansı — 7 merkezi sırayla gez (~10 dk)":"🌈 A balancing session — visit the 7 centres in turn (~10 min)","🤲 Tövbe":"🤲 Repentance","🤲 İstiğfar & Arınma":"🤲 Istighfar & Purification","🤲 Nasuh Tövbesi — sesli okuma":"🤲 The Repentance of Nasuh — read aloud","Nasuh tövbesinin ardından,":"After the repentance of Nasuh,","🌟 Seyyidü'l-İstiğfar — istiğfarın efendisi":"🌟 Sayyid al-Istighfar — the master of seeking forgiveness","🕌 Salavât":"🕌 Salawat","🕌 Salavât-ı Şerife — sesli okuma":"🕌 The Noble Salawat — read aloud","🔊 Türkçe":"🔊 Turkish","🕋 Arapça":"🕋 Arabic","Arapça ses seç":"Choose an Arabic voice","Ses / hız":"Voice / rate","🔊 Sesli zikir — her tesbihte cihaz sesiyle söyle":"🔊 Spoken dhikr — say it in the device's voice at every bead","Bu zikri cihaz sesiyle dinle":"Listen to this dhikr in the device's voice","Bu zikir için kendi sesini kaydet":"Record your own voice for this dhikr","⏺ Sesini kaydet":"⏺ Record your voice","⏺ Kaydı başlat":"⏺ Start recording","🎙 Kendi Sesini Ekle":"🎙 Add Your Own Voice","🎙 Kendi sesinle zikir halkası":"🎙 A dhikr circle in your own voice","▶ Halkayı başlat":"▶ Start the circle","🎙 Mikrofonla kendi ses ekle":"🎙 Add your own sound with the microphone","Ses adı (örn. Traş Makinesi)":"Sound name (e.g. Shaver)","🎤 Ledün Lab — sesinin frekansını bul":"🎤 Ledun Lab — find the frequency of your voice","🎙 Dinlemeyi başlat":"🎙 Start listening","🎙 ile başlat; bir harf, kelime ya da cümle söyle":"Start with 🎙 and speak a letter, a word or a sentence","🎙 Kayıtlı seslerimi yönet (":"🎙 Manage my recordings (","🔐 Gizli Kasa — Berhetiyye Tefekkür Haritası":"🔐 The Hidden Vault — a Berhetiyye map for contemplation","📜 Sır Kapısı telkini":"📜 The suggestion of the Gate of Secrets","Kabz → Bast":"Qabd → Bast","Rast → Segâh":"Rast → Segâh","🕊 Yâ Mezcelin • Yâ Bezcelin — iç & dış arınma":"🕊 Yâ Mezcelin • Yâ Bezcelin — inner & outer purification","Mezcelin · Bezcelin":"Mezcelin · Bezcelin","iç ve dış temizliği/arınma":"inner and outer cleansing / purification","Nefs-i Mutmainne":"Nafs al-Mutma'inna","Kötülüğü emreden nefs — mücadelenin başı • Yâ Kahhâr":"The soul that commands evil — the beginning of the struggle • Yâ Kahhâr","Kendini kınayan, pişman olan nefs • Yâ Gaffâr":"The self-reproaching, repentant soul • Yâ Gaffâr","İlham alan nefs — kalbin uyanışı • Yâ Vedûd":"The inspired soul — the awakening of the heart • Yâ Vedûd","Huzura eren, tatmin olan nefs • Yâ Selâm":"The soul at peace, content • Yâ Selâm","Arınmış, kâmil nefs — vuslat • Yâ Nûr":"The purified, perfected soul — union • Yâ Nûr","Kök • Muladhara":"Root • Muladhara","Sakral • Svadhisthana":"Sacral • Svadhisthana","Göbek • Manipura":"Navel • Manipura","Kalp • Anahata":"Heart • Anahata","Boğaz • Vishuddha":"Throat • Vishuddha","Alın • Ajna":"Brow • Ajna","Taç • Sahasrara":"Crown • Sahasrara","Üçüncü Göz":"Third Eye","Güven, topraklanma • letâif: Kadem/toprak":"Trust, grounding • latîfa: Qadam/earth","Sevgi, merhamet • letâif: Kalp (letâife)":"Love, mercy • latîfa: Qalb (the heart)","İfade, hakikat • letâif: Hafî":"Expression, truth • latîfa: Khafî","Sezgi, basiret • letâif: Ruh":"Intuition, insight • latîfa: Rûh","Vuslat, şuur • letâif: Ahfâ/sır":"Union, consciousness • latîfa: Akhfâ/secret","— Zâkirin ilk kapısı — sarı nur":"— the first gate of the one who remembers — yellow light","DİJİTAL TEKKE":"THE DIGITAL LODGE","TEKKEYE GİR ✦":"ENTER THE LODGE ✦","KATRE & UMMAN":"THE DROPLET & THE OCEAN","Umman":"The Ocean","Mihrap":"Mihrab","Katre sesi":"Droplet volume","💧 Katre metronomu":"💧 Droplet metronome","Her 3. damla":"Every 3rd drop","Her 4. damla":"Every 4th drop","Her 5. damla":"Every 5th drop","Her 6. damla":"Every 6th drop","🥁 Bendir usûlü — tempoya kilitli düm·tek":"🥁 Bendir rhythm — düm·tek locked to the tempo","Usûl":"Rhythm","Sofyan":"Sofyan","Düyek (basit)":"Düyek (simple)","Devr-i Hindî":"Devr-i Hindî","Çifte düm·tek":"Double düm·tek","bendir düm·tek döngüsü ~96 BPM":"a düm·tek bendir cycle at ~96 BPM","🎼 Ney":"🎼 Ney","🪨 Toprak":"🪨 Earth","Gürültü kıyıda kalsın. İçeride yalnız katre konuşur —":"Let the noise stay on the shore. Inside, only the droplet speaks —","Dilediğin kadar sükûtta kal —":"Stay in silence as long as you wish —","perde aralandı.":"the veil has parted.","nefesinle Hû'nun arasında ince bir perde var.":"between your breath and the Hû there is a thin veil.","🤲 Sağ avuç sol göğsün iki parmak altına — kalp noktasına.":"🤲 Right palm two fingers below the left breast — on the point of the heart.","〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)":"〰 Undercurrent: 136.1 Hz · 7.83 Hz binaural (headphones)","〰 Alt akım (SÜKÛN ayarı): 180.0 Hz · 7.83 Hz binaural":"〰 Undercurrent (SÜKÛN setting): 180.0 Hz · 7.83 Hz binaural","〰 Frekans":"〰 Frequency","✨ Işıltı sesi & parlamalar — dokunuşta cam tını ve altın kıvılcım":"✨ Shimmer & sparkle — a glassy chime and a golden spark at every touch","zikir nefesi — sürekli Hûûû uğultusu":"the breath of dhikr — a continuous Hûûû hum","Her şeyi ayakta tutan, varlığı idare eden":"He who sustains all things and governs existence","Karşılıksız veren, lütfunu bolca ihsan eden":"He who gives without return, bestowing His grace abundantly","Rahmeti bütün varlığı kuşatan":"He whose mercy encompasses all creation","sağanak, uzak gök gürlemesi":"downpour, distant thunder","bal arıları — huzurlu uğultu":"honeybees — a peaceful hum","gece göleti, cırcır ve vırak":"night pond, crickets and croaking","çayırda kuzu ve koyun sesleri":"lambs and sheep in the meadow","ferah metal tınılar, tesadüfi":"bright metal tones, at random","kuş • dere • alfa":"birds • stream • alpha","ney • okyanus • theta":"ney • ocean • theta","ağustos böceği • delta":"cicadas • delta","Meditasyon • tefekkür":"Meditation • contemplation","🐦 Kuş Cıvıltıları":"🐦 Birdsong","🌲 Orman Uğultusu":"🌲 Forest Hush","💧 Dere Sesi":"💧 Stream","Delta 1.5 Hz • gece":"Delta 1.5 Hz • night","Delta 2 Hz • dinlenme":"Delta 2 Hz • rest","Delta 2.5 Hz":"Delta 2.5 Hz","Delta 2.5 Hz • fenâ":"Delta 2.5 Hz • fanâ","Delta 3 Hz • derinleşme":"Delta 3 Hz • deepening","Theta-Delta 4 Hz • boşluk":"Theta-Delta 4 Hz • the void","Theta-Delta 4 Hz • dip bilinç":"Theta-Delta 4 Hz • the deep mind","Theta 4.5 Hz • REM köprüsü":"Theta 4.5 Hz • REM bridge","Theta 5 Hz • dalma":"Theta 5 Hz • sinking in","Theta 5 Hz • sükût":"Theta 5 Hz • silence","Theta 5.5 Hz • huzur":"Theta 5.5 Hz • peace","Theta 5.5 Hz • Focus 10 esini":"Theta 5.5 Hz • echoing Focus 10","Theta 6 Hz • gün sonu":"Theta 6 Hz • end of day","Theta 6 Hz • derinleşme":"Theta 6 Hz • deepening","Theta 6 Hz • sezgi":"Theta 6 Hz • intuition","Theta 6 Hz • derin onarım":"Theta 6 Hz • deep repair","Theta 6 Hz • 852 taşıyıcı":"Theta 6 Hz • 852 carrier","Theta 6 Hz • 136.1 Hz taşıyıcı":"Theta 6 Hz • 136.1 Hz carrier","Theta 6.3 Hz • beden dışı seyir":"Theta 6.3 Hz • out-of-body journey","Theta 7 Hz • giriş":"Theta 7 Hz • entry","Theta 7 Hz • çok derin":"Theta 7 Hz • very deep","Theta 7 Hz • derin vizyon":"Theta 7 Hz • deep vision","Theta 7 Hz • ayrışma eşiği":"Theta 7 Hz • threshold of detachment","Theta 7.83 Hz • Schumann":"Theta 7.83 Hz • Schumann","Alfa-Theta 8 Hz":"Alpha-Theta 8 Hz","Alfa 8 Hz • gevşeme":"Alpha 8 Hz • relaxation","Alfa 8 Hz • iç sessizlik":"Alpha 8 Hz • inner silence","Alfa 9 Hz • derin":"Alpha 9 Hz • deep","Alfa 9 Hz • sükûnet":"Alpha 9 Hz • stillness","Alfa 10 Hz • orta":"Alpha 10 Hz • middle","Alfa 10 Hz • uyum":"Alpha 10 Hz • harmony","Alfa 10 Hz • yatışma":"Alpha 10 Hz • settling","Alfa 10 Hz • hayal gücü":"Alpha 10 Hz • imagination","Alfa 10 Hz • genel denge":"Alpha 10 Hz • general balance","Alfa 10 Hz • berrak zihin":"Alpha 10 Hz • clear mind","Alfa 10 Hz • 528 taşıyıcı":"Alpha 10 Hz • 528 carrier","Alfa 10.5 Hz • dinginlik":"Alpha 10.5 Hz • calm","Alfa 12 Hz • hafif":"Alpha 12 Hz • light","Alfa-SMR 12 Hz • hafıza":"Alpha-SMR 12 Hz • memory","Beta 13 Hz • zihin açıklığı":"Beta 13 Hz • mental clarity","Beta 14 Hz • yenilenme":"Beta 14 Hz • renewal","SMR 14 Hz • çalışma":"SMR 14 Hz • study","Beta 15 Hz • neşe":"Beta 15 Hz • cheer","Beta 15 Hz • öğleden sonra":"Beta 15 Hz • afternoon","Beta 16 Hz • analiz":"Beta 16 Hz • analysis","Beta 18 Hz • güne başlarken":"Beta 18 Hz • starting the day","Beta 18 Hz • çalışma & okuma":"Beta 18 Hz • work & reading","Beta 20 Hz • canlanma":"Beta 20 Hz • revival","Gama 40 Hz • keskin şuur":"Gamma 40 Hz • sharp awareness","Gama 40 Hz • yüksek farkındalık":"Gamma 40 Hz • heightened awareness","Gama 40 Hz + derin • epifani":"Gamma 40 Hz + deep • epiphany","Binaural · vuruş 7.83 Hz":"Binaural · beat 7.83 Hz","Karma · vuruş 7.83 Hz":"Mixed · beat 7.83 Hz","Tasavvufî Frekans & Zikir Terapisi":"Sufi Frequency & Dhikr Therapy","↺ Seyri başa al":"↺ Restart the journey","▶ Yolculuğu başlat":"▶ Begin the journey","Zikre geç: Yâ Bedî’":"Go to dhikr: Yâ Bedî’","Görünüm modu":"View mode","Girişte ses açılır ve ekran uyanık tutulur. Kulaklık, mağara yankısını derinleştirir. Rahat oturun: omurga elif gibi dik, sağ el kalpte.":"Sound begins at the threshold and the screen is kept awake. Headphones deepen the echo of the cave. Sit at ease: the spine upright like an alif, the right hand on the heart.","Bu salavât-ı şerifeleri kalp huzuruyla, mümkünse yüzünü kıbleye çevirip tekrar tekrar okumak; her tekrarında Efendimizin nurunu ve şefaatini niyaz etmek edeptendir.":"It is fitting to read these noble salawat with a heart at peace, facing the qibla if you can, and to ask at each repetition for the light and the intercession of the Prophet."},
 
   /* Sözlük + iki kural. Kurallar kanal adlarını tekrar tekrar yazmaktan kurtarır. */
   look(raw){
@@ -18734,7 +19377,10 @@ function zkCount(){
   const ar=$('#zkAr');
   ar.classList.remove('zkFlash');void ar.offsetWidth;ar.classList.add('zkFlash');
   if(SEY.count>=st.target){
-    chime();
+    /* r121: Tekke'de de çan kalmasın — kapanış sesi tek ayardan yönetilir
+       (Hû / Üçlü Hû / kendi sesin / çan / sessiz). Fabrika ayrı kapsam
+       olduğu için window üzerinden çağrılır; yoksa yerel çan yedek. */
+    try{ (window.zikirSonuSes||chime)(); }catch(e){ try{chime()}catch(e2){} }
     if(navigator.vibrate&&HAP.on)try{navigator.vibrate([90,60,90])}catch(e){}
     if(SEY.i<SEYIR.length-1){
       mkGecis(); SEY.i++; SEY.count=0;
@@ -18827,7 +19473,7 @@ function finish(){
   setTimeout(()=>{
     hitamOzetYaz();
     const h=$('#hitam'); if(h)h.classList.add('show');
-    chime();
+    try{ (window.zikirSonuSes||chime)(); }catch(e){ try{chime()}catch(e2){} }   /* r121 */
   },3600);
 }
 function hitamBagla(){
@@ -19223,7 +19869,10 @@ function goalTick(){
   if(left>0){ el.classList.remove('done'); el.textContent=' / '+TKDUR+' dk'; }
   else{
     el.classList.add('done'); el.textContent=' ✦ süre doldu';
-    if(!goalHit){ goalHit=true; try{chime()}catch(e){}
+    if(!goalHit){ goalHit=true;
+      /* r120: Tekke de aynı kapanış sesini kullansın; ayar tek yerden.
+         Fabrika kapsamında zikirSonuSes yok, window üzerinden çağrılır. */
+      try{ (window.zikirSonuSes||chime)(); }catch(e){ try{chime()}catch(e2){} }
       const t=$('#telkin');
       if(t){ t.textContent='Süren doldu — dilediğin kadar kalabilirsin.'; t.classList.add('show');
              setTimeout(()=>t.classList.remove('show'),7000); }
@@ -20277,7 +20926,7 @@ const PRESETS = [
   {id:'energy',kat:'neuro',icon:'⚡',name:'Enerji Artışı',desc:'Uyanıklık, motivasyon',hz:'28 Hz Beta',carrier:220,beat:28,wave:3,noise:null,lpf:4000,hpf:120},
   {id:'memory',kat:'neuro',icon:'💡',name:'Hafıza & Öğrenme',desc:'Hafıza güçlendirme, öğrenme',hz:'12 Hz Alfa+',carrier:200,beat:12,wave:2,noise:null,lpf:3000,hpf:100},
   {id:'pain',kat:'neuro',icon:'🩹',name:'Ağrı & Rahatlama',desc:'Kronik ağrı yönetimi, beyin ağrı işlemini yavaşlatır',hz:'7 Hz Theta',carrier:140,beat:7,wave:1,noise:'pink',lpf:2200,hpf:60},
-  {id:'creativity',kat:'neuro',icon:'🎨',name:'Yaratıcı Akış Zirvesi',desc:'Sağ beyin & hayal gücü aktivasyonu',hz:'5 Hz Theta',carrier:180,beat:5,wave:1,noise:null,lpf:2800,hpf:80},
+  {id:'creativity',kat:'neuro',icon:'🎨',name:'Üretken Akış Zirvesi',desc:'Sağ beyin & hayal gücü aktivasyonu',hz:'5 Hz Theta',carrier:180,beat:5,wave:1,noise:null,lpf:2800,hpf:80},
   {id:'ground',kat:'neuro',icon:'🌍',name:'Topraklanma & Denge',desc:'Aşırı düşünceyi kesmek, an\'a dönmek',hz:'3 Hz Delta+',carrier:120,beat:3,wave:0,noise:'brown',lpf:1800,hpf:40},
   {id:'anxiety_relief',kat:'neuro',icon:'🕊',name:'Kaygı Acil Protokolü',desc:'Panik ve kaygı için hızlı parasempatik aktivasyon',hz:'9 Hz Alfa',carrier:160,beat:9,wave:2,noise:'pink',lpf:2400,hpf:70},
 ];
