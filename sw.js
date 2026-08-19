@@ -1,92 +1,313 @@
-/* SÜKÛN Service Worker — build 2026-08-17-r150
+/* SÜKÛN Service Worker — build 2026-08-19-r151
    Strateji:
    • Çekirdek (nero.html + manifest): install'da önbelleğe alınır → tam çevrimdışı açılış.
-   • Gezinti istekleri: önbellek-öncelikli (anında açılış), arka planda ağdan tazele (yeni sürüm yakala).
-   • Aynı-origin GET: stale-while-revalidate. Çapraz-origin (Google Fonts gövde yazıları): ağ → önbellek yedeği.
-   • Yeni sürüm: yüklendiğinde sayfaya haber verilir; sayfa "Yenile" der, SKIP_WAITING ile devralır. */
-'use strict';
-const V = 'sukun-2026-08-17-r150';
-const CORE = ['./nero.html', './manifest.webmanifest'];
+   • Gezinti istekleri: önbellek-öncelikli → arka planda ağdan tazele.
+   • Aynı-origin GET: stale-while-revalidate.
+   • Çapraz-origin: ağ → önbellek yedeği.
+   • Yeni sürüm: sayfaya bildirilir; SKIP_WAITING ile devralır.
+*/
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(V).then(c =>
-      Promise.allSettled(CORE.map(u => c.add(u)))   /* biri düşse de diğerleri alınsın */
-    )
+'use strict';
+
+const V = 'sukun-2026-08-19-r151';
+
+const CORE = [
+  './nero.html',
+  './manifest.webmanifest'
+];
+
+/* ═══════════════════════════════════════════════
+   INSTALL
+   Çekirdek dosyalardan biri indirilemezse
+   yeni Service Worker kurulumu başarısız olur.
+   Böylece eski cache yanlışlıkla silinmez.
+   ═══════════════════════════════════════════════ */
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(V).then(cache => {
+      return cache.addAll(CORE);
+    })
   );
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(
+
+/* ═══════════════════════════════════════════════
+   ACTIVATE
+   Eski cache sürümlerini temizle.
+   ═══════════════════════════════════════════════ */
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== V).map(k => caches.delete(k))))
+      .then(keys => {
+        return Promise.all(
+          keys
+            .filter(key => key !== V)
+            .map(key => caches.delete(key))
+        );
+      })
       .then(() => self.clients.claim())
   );
 });
 
-/* Sayfa «gelen sürümde ne değişti?» diye sorar. Yeni nero.html zaten
-   install sırasında bu SW'nin önbelleğine alındı; notu oradan okuyup
-   döneriz. Böylece kullanıcı GÜNCELLEMEDEN ÖNCE ne geleceğini görür —
-   çalışan sayfa kendi eski notlarını gösterirse yanıltıcı olurdu. */
+
+/* ═══════════════════════════════════════════════
+   SÜRÜM NOTU
+   Yeni nero.html içindeki #surumNotlari verisini
+   yeni cache üzerinden okur.
+   ═══════════════════════════════════════════════ */
+
 async function surumNotu() {
   try {
-    const c = await caches.open(V);
-    const r = await c.match('./nero.html');
-    if (!r) return null;
-    const t = await r.text();
-    const m = t.match(/<script[^>]+id="surumNotlari"[^>]*>([\s\S]*?)<\/script>/);
-    if (!m) return null;
-    const liste = JSON.parse(m[1]);
-    return { v: V.replace(/^sukun-/, ''), notlar: liste.slice(0, 3) };
-  } catch (e) { return null; }
+    const cache = await caches.open(V);
+
+    const response = await cache.match('./nero.html');
+
+    if (!response) {
+      return null;
+    }
+
+    const text = await response.text();
+
+    const match = text.match(
+      /<script[^>]+id="surumNotlari"[^>]*>([\s\S]*?)<\/script>/
+    );
+
+    if (!match) {
+      return null;
+    }
+
+    const liste = JSON.parse(match[1]);
+
+    return {
+      v: V.replace(/^sukun-/, ''),
+      notlar: Array.isArray(liste)
+        ? liste.slice(0, 3)
+        : []
+    };
+
+  } catch (error) {
+    return null;
+  }
 }
 
-self.addEventListener('message', e => {
-  if (!e.data) return;
-  if (e.data.type === 'SKIP_WAITING') { self.skipWaiting(); return; }
-  if (e.data.type === 'SURUM_NOTU') {
-    const port = e.ports && e.ports[0];
-    surumNotu().then(n => { try { port && port.postMessage(n); } catch (x) {} });
+
+/* ═══════════════════════════════════════════════
+   MESSAGE
+   ═══════════════════════════════════════════════ */
+
+self.addEventListener('message', event => {
+
+  if (!event.data) {
+    return;
   }
+
+  /* Yeni SW hemen aktif olsun */
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+
+  /* Yeni sürüm notlarını gönder */
+  if (event.data.type === 'SURUM_NOTU') {
+
+    const port =
+      event.ports &&
+      event.ports[0];
+
+    surumNotu().then(data => {
+
+      try {
+
+        if (port) {
+          port.postMessage(data);
+        }
+
+      } catch (error) {
+        /* Port kapanmış olabilir */
+      }
+
+    });
+
+  }
+
 });
 
-async function staleWhileRevalidate(req, cacheKeyReq) {
-  const c = await caches.open(V);
-  const key = cacheKeyReq || req;
-  const cached = await c.match(key);
-  const fresh = fetch(req).then(res => {
-    if (res && res.ok) c.put(key, res.clone()).catch(()=>{});
-    return res;
-  }).catch(() => null);
-  return cached || (await fresh) || new Response('Çevrimdışı', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+
+/* ═══════════════════════════════════════════════
+   STALE-WHILE-REVALIDATE
+
+   1. Cache varsa hemen döndür.
+   2. Aynı anda ağdan güncel sürümü çek.
+   3. Ağ cevabı başarılıysa cache'i güncelle.
+   4. Cache + ağ yoksa 503 döndür.
+   ═══════════════════════════════════════════════ */
+
+async function staleWhileRevalidate(
+  request,
+  cacheKeyRequest
+) {
+
+  const cache = await caches.open(V);
+
+  const cacheKey =
+    cacheKeyRequest || request;
+
+  const cached =
+    await cache.match(cacheKey);
+
+  const fresh =
+    fetch(request)
+      .then(response => {
+
+        if (response && response.ok) {
+
+          cache
+            .put(
+              cacheKey,
+              response.clone()
+            )
+            .catch(() => {});
+
+        }
+
+        return response;
+
+      })
+      .catch(() => null);
+
+  /* Cache varsa kullanıcıyı bekletme */
+  if (cached) {
+    return cached;
+  }
+
+  /* Cache yoksa ağ cevabını bekle */
+  const networkResponse =
+    await fresh;
+
+  if (networkResponse) {
+    return networkResponse;
+  }
+
+  /* Hiçbir kaynak yok */
+  return new Response(
+    'Çevrimdışı',
+    {
+      status: 503,
+      headers: {
+        'Content-Type':
+          'text/plain; charset=utf-8'
+      }
+    }
+  );
 }
 
-self.addEventListener('fetch', e => {
-  const req = e.request;
-  if (req.method !== 'GET') return;
-  const url = new URL(req.url);
 
-  /* Gezinti → tek sayfa çekirdeğinden karşıla (çevrimdışı dahil) */
-  if (req.mode === 'navigate') {
-    e.respondWith(staleWhileRevalidate(req, './nero.html'));
+/* ═══════════════════════════════════════════════
+   FETCH
+   ═══════════════════════════════════════════════ */
+
+self.addEventListener('fetch', event => {
+
+  const request =
+    event.request;
+
+  /* Sadece GET */
+  if (request.method !== 'GET') {
     return;
   }
+
+  const url =
+    new URL(request.url);
+
+
+  /* ═══════════════════════════════════════════
+     SAYFA GEZİNTİLERİ
+     Her navigation isteğini nero.html'e bağla.
+     Offline durumda da uygulama açılabilsin.
+     ═══════════════════════════════════════════ */
+
+  if (request.mode === 'navigate') {
+
+    event.respondWith(
+      staleWhileRevalidate(
+        request,
+        './nero.html'
+      )
+    );
+
+    return;
+  }
+
+
+  /* ═══════════════════════════════════════════
+     AYNI ORIGIN
+     Cache-first + network refresh
+     ═══════════════════════════════════════════ */
+
   if (url.origin === self.location.origin) {
-    e.respondWith(staleWhileRevalidate(req));
+
+    event.respondWith(
+      staleWhileRevalidate(request)
+    );
+
     return;
   }
-  /* Çapraz-origin (fonts.googleapis / gstatic): ağ öncelikli, düşerse önbellek */
-  e.respondWith(
+
+
+  /* ═══════════════════════════════════════════
+     ÇAPRAZ ORIGIN
+     Google Fonts vb.
+
+     Önce ağ.
+     Ağ başarısızsa cache.
+     ═══════════════════════════════════════════ */
+
+  event.respondWith(
+
     (async () => {
-      const c = await caches.open(V);
+
+      const cache =
+        await caches.open(V);
+
       try {
-        const res = await fetch(req);
-        if (res && (res.ok || res.type === 'opaque')) c.put(req, res.clone()).catch(()=>{});
-        return res;
-      } catch (_) {
-        const hit = await c.match(req);
-        return hit || Response.error();
+
+        const response =
+          await fetch(request);
+
+        if (
+          response &&
+          (
+            response.ok ||
+            response.type === 'opaque'
+          )
+        ) {
+
+          cache
+            .put(
+              request,
+              response.clone()
+            )
+            .catch(() => {});
+
+        }
+
+        return response;
+
+      } catch (error) {
+
+        const cached =
+          await cache.match(request);
+
+        return (
+          cached ||
+          Response.error()
+        );
       }
+
     })()
+
   );
+
 });
