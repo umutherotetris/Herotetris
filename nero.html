@@ -10888,7 +10888,12 @@ function genAyarBagla(){
   if(typeof okumaHizBagla==='function')okumaHizBagla();
   if(typeof frGelismisBagla==='function')frGelismisBagla();
   if(typeof karisimBagla==='function')karisimBagla();
-  try{ bolumOzetleri(); setInterval(bolumOzetleri,8000); }catch(e){}
+  try{
+    bolumOzetleri();
+    if(!window.__sukunBolumOzetTimer){
+      window.__sukunBolumOzetTimer=setInterval(bolumOzetleri,8000);
+    }
+  }catch(e){}
   try{ anaVakitYaz(); }catch(e){}
   if(typeof miniDenetimBagla==='function'){ miniDenetimBagla(); miniDenetimSync(); }
   if(typeof calanSayfaBagla==='function')calanSayfaBagla();
@@ -16377,7 +16382,13 @@ async function idbRestoreAll(dbName,store,data){
 }
 async function skExportData(){
   const data={app:'SUKUN',fmt:1,t:Date.now(),ls:{},idb:{}};
-  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); try{data.ls[k]=localStorage.getItem(k)}catch(_){} }
+  /* Güvenlik: Claude API anahtarı hiçbir yedek dosyasına girmez.
+     Bu, basit ve tam yedek yollarının ikisinde de zorunlu filtredir. */
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k==='sukun.aikey') continue;
+    try{data.ls[k]=localStorage.getItem(k)}catch(_){}
+  }
   data.idb.sukunRec=await idbDumpAll('sukunRec','clips');
   data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');
   return JSON.stringify(data);
@@ -16394,7 +16405,12 @@ async function skImportData(json){
     return true;
   }
   if(data.app!=='SUKUN'||!data.ls)throw new Error('Bu bir SÜKÛN yedeği değil');
-  Object.keys(data.ls).forEach(k=>{ try{localStorage.setItem(k,data.ls[k])}catch(_){} });
+  Object.keys(data.ls).forEach(k=>{
+    /* Yedek dosyası kötü niyetli/yanlışlıkla API anahtarı içeriyor olsa bile
+       mevcut cihazdaki anahtarı ezmesine izin verme. */
+    if(k==='sukun.aikey') return;
+    try{localStorage.setItem(k,data.ls[k])}catch(_){}
+  });
   if(data.idb){
     await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);
     await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb);
