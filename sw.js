@@ -1,4 +1,4 @@
-/* SÜKÛN Service Worker — build 2026-08-19-r166
+/* SÜKÛN Service Worker — build 2026-08-19-r167
    Premium Stability Layer
 
    • Çekirdek dosyalar install sırasında cache'e alınır.
@@ -11,7 +11,7 @@
 
 'use strict';
 
-const VERSION = '2026-08-19-r166';
+const VERSION = '2026-08-19-r167';
 const CACHE_NAME = `sukun-${VERSION}`;
 const CACHE_PREFIX = 'sukun-';
 
