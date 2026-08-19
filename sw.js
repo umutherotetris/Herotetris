@@ -1,4 +1,4 @@
-/* SÜKÛN Service Worker — build 2026-08-19-r160
+/* SÜKÛN Service Worker — build 2026-08-19-r162
    Premium Stability Layer
 
    Strateji:
@@ -13,7 +13,7 @@
 
 'use strict';
 
-const VERSION = '2026-08-19-r160';
+const VERSION = '2026-08-19-r162';
 const CACHE_NAME = `sukun-${VERSION}`;
 const CACHE_PREFIX = 'sukun-';
 
@@ -78,15 +78,13 @@ async function surumNotu() {
   try {
     const cache = await caches.open(CACHE_NAME);
 
-    const response =
-      await cache.match('./nero.html');
+    const response = await cache.match('./nero.html');
 
     if (!response) {
       return null;
     }
 
-    const html =
-      await response.text();
+    const html = await response.text();
 
     const match = html.match(
       /<script[^>]+id=["']surumNotlari["'][^>]*>([\s\S]*?)<\/script>/i
@@ -96,15 +94,13 @@ async function surumNotu() {
       return null;
     }
 
-    const liste =
-      JSON.parse(match[1]);
+    const liste = JSON.parse(match[1]);
 
     return {
       v: VERSION,
-      notlar:
-        Array.isArray(liste)
-          ? liste.slice(0, 3)
-          : []
+      notlar: Array.isArray(liste)
+        ? liste.slice(0, 3)
+        : []
     };
 
   } catch (error) {
@@ -119,8 +115,7 @@ async function surumNotu() {
 
 self.addEventListener('message', event => {
 
-  const data =
-    event.data;
+  const data = event.data;
 
   if (!data) {
     return;
@@ -180,14 +175,11 @@ async function staleWhileRevalidate(
   cacheKey
 ) {
 
-  const cache =
-    await caches.open(CACHE_NAME);
+  const cache = await caches.open(CACHE_NAME);
 
-  const key =
-    cacheKey || request;
+  const key = cacheKey || request;
 
-  const cached =
-    await cache.match(key);
+  const cached = await cache.match(key);
 
   const networkPromise =
     fetch(request)
@@ -209,12 +201,8 @@ async function staleWhileRevalidate(
       })
       .catch(() => null);
 
-  /* Cache mevcutsa anında dön */
   if (cached) {
-
-    /* networkPromise arkada cache'i günceller */
     networkPromise.catch(() => {});
-
     return cached;
   }
 
@@ -240,11 +228,11 @@ async function staleWhileRevalidate(
 
 /* ═══════════════════════════════════════════════
    NAVIGATION
-   Navigation sırasında gerçek route cevabını
-   nero.html anahtarına yazmıyoruz.
+   Navigation route cevabını nero.html cache
+   anahtarının üzerine yazmaz.
 
    Önce cache'deki nero.html döner.
-   Arkada doğrudan ./nero.html tazelenir.
+   Arkada gerçek nero.html tazelenir.
    ═══════════════════════════════════════════════ */
 
 async function handleNavigation() {
@@ -303,9 +291,9 @@ async function handleNavigation() {
 
 
 /* ═══════════════════════════════════════════════
-   GOOGLE FONT CACHE
-   Harici tüm istekleri cache'lemek yerine yalnız
-   Google Fonts kaynaklarını cache'ler.
+   GOOGLE FONTS
+   Harici tüm istekleri cache'lemek yerine
+   yalnız Google Fonts kaynaklarını cache'ler.
    ═══════════════════════════════════════════════ */
 
 function isGoogleFontRequest(url) {
@@ -367,10 +355,7 @@ self.addEventListener('fetch', event => {
     new URL(request.url);
 
 
-  /* ────────────────────────────────────────────
-     NAVIGATION
-     ──────────────────────────────────────────── */
-
+  /* NAVIGATION */
   if (request.mode === 'navigate') {
 
     event.respondWith(
@@ -381,10 +366,7 @@ self.addEventListener('fetch', event => {
   }
 
 
-  /* ────────────────────────────────────────────
-     SAME ORIGIN
-     ──────────────────────────────────────────── */
-
+  /* SAME ORIGIN */
   if (
     url.origin ===
     self.location.origin
@@ -400,10 +382,7 @@ self.addEventListener('fetch', event => {
   }
 
 
-  /* ────────────────────────────────────────────
-     GOOGLE FONTS
-     ──────────────────────────────────────────── */
-
+  /* GOOGLE FONTS */
   if (
     isGoogleFontRequest(url)
   ) {
@@ -418,22 +397,14 @@ self.addEventListener('fetch', event => {
   }
 
 
-  /* ────────────────────────────────────────────
-     DİĞER CROSS-ORIGIN İSTEKLER
-     Service Worker müdahale etmez.
-
-     API çağrıları, medya, dış servisler vb.
-     gereksiz yere cache'e alınmaz.
-     ──────────────────────────────────────────── */
+  /* Diğer cross-origin isteklerde
+     Service Worker müdahale etmez. */
 
 });
 
 
 /* ═══════════════════════════════════════════════
-   OPSİYONEL TEMİZLİK
-   Tarayıcı cache kotası nedeniyle gereksiz girişler
-   birikirse eski font kayıtlarının temizlenebilmesi
-   için kullanılabilecek yardımcı fonksiyon.
+   OPSİYONEL CACHE TEMİZLİĞİ
    Şimdilik otomatik çağrılmaz.
    ═══════════════════════════════════════════════ */
 
