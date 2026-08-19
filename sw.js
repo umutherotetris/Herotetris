@@ -1,19 +1,17 @@
-/* SÜKÛN Service Worker — build 2026-08-19-r162
+/* SÜKÛN Service Worker — build 2026-08-19-r164
    Premium Stability Layer
 
-   Strateji:
-   • Çekirdek dosyalar install sırasında zorunlu cache'e alınır.
+   • Çekirdek dosyalar install sırasında cache'e alınır.
    • Sadece SÜKÛN cache'leri temizlenir.
    • Navigation istekleri nero.html üzerinden karşılanır.
-   • Aynı-origin GET istekleri stale-while-revalidate.
-   • Harici kaynaklarda yalnız Google Fonts cache'lenir.
-   • Yeni sürüm notu yeni nero.html cache'inden okunur.
-   • SKIP_WAITING ile kontrollü güncelleme yapılır.
+   • Same-origin GET → stale-while-revalidate.
+   • Cross-origin → yalnız Google Fonts cache'lenir.
+   • Yeni sürüm notları cache'deki yeni nero.html'den okunur.
 */
 
 'use strict';
 
-const VERSION = '2026-08-19-r162';
+const VERSION = '2026-08-19-r164';
 const CACHE_NAME = `sukun-${VERSION}`;
 const CACHE_PREFIX = 'sukun-';
 
@@ -24,11 +22,11 @@ const CORE = [
   './icon-512.png'
 ];
 
+
 /* ═══════════════════════════════════════════════
    INSTALL
-   Çekirdek dosyalardan biri eksikse kurulum
-   başarısız olur. Böylece yarım PWA sürümü
-   aktif hale gelmez.
+   Çekirdek dosyalardan biri eksikse yeni sürüm
+   yarım kurulmuş kabul edilmez.
    ═══════════════════════════════════════════════ */
 
 self.addEventListener('install', event => {
@@ -43,14 +41,13 @@ self.addEventListener('install', event => {
 
 /* ═══════════════════════════════════════════════
    ACTIVATE
-   Sadece SÜKÛN'a ait eski cache'leri temizler.
-   Aynı origin'deki başka uygulamaların cache'ine
-   dokunmaz.
+   Yalnız SÜKÛN'a ait eski cache'leri temizler.
    ═══════════════════════════════════════════════ */
 
 self.addEventListener('activate', event => {
   event.waitUntil(
     (async () => {
+
       const keys = await caches.keys();
 
       await Promise.all(
@@ -63,28 +60,32 @@ self.addEventListener('activate', event => {
       );
 
       await self.clients.claim();
+
     })()
   );
 });
 
 
 /* ═══════════════════════════════════════════════
-   SÜRÜM NOTLARI
+   SÜRÜM NOTU
    Yeni nero.html içindeki #surumNotlari JSON'unu
-   doğrudan yeni cache'den okur.
+   yeni cache üzerinden okur.
    ═══════════════════════════════════════════════ */
 
 async function surumNotu() {
   try {
+
     const cache = await caches.open(CACHE_NAME);
 
-    const response = await cache.match('./nero.html');
+    const response =
+      await cache.match('./nero.html');
 
     if (!response) {
       return null;
     }
 
-    const html = await response.text();
+    const html =
+      await response.text();
 
     const match = html.match(
       /<script[^>]+id=["']surumNotlari["'][^>]*>([\s\S]*?)<\/script>/i
@@ -94,16 +95,18 @@ async function surumNotu() {
       return null;
     }
 
-    const liste = JSON.parse(match[1]);
+    const liste =
+      JSON.parse(match[1]);
 
     return {
       v: VERSION,
-      notlar: Array.isArray(liste)
-        ? liste.slice(0, 3)
-        : []
+      notlar:
+        Array.isArray(liste)
+          ? liste.slice(0, 3)
+          : []
     };
 
-  } catch (error) {
+  } catch (_) {
     return null;
   }
 }
@@ -133,11 +136,15 @@ self.addEventListener('message', event => {
       event.ports[0];
 
     surumNotu().then(info => {
+
       try {
+
         if (port) {
           port.postMessage(info);
         }
+
       } catch (_) {}
+
     });
 
     return;
@@ -150,7 +157,12 @@ self.addEventListener('message', event => {
    CACHE HELPERS
    ═══════════════════════════════════════════════ */
 
-async function cachePutSafe(cache, key, response) {
+async function cachePutSafe(
+  cache,
+  key,
+  response
+) {
+
   try {
 
     if (
@@ -160,10 +172,12 @@ async function cachePutSafe(cache, key, response) {
         response.type === 'opaque'
       )
     ) {
+
       await cache.put(
         key,
         response.clone()
       );
+
     }
 
   } catch (_) {}
@@ -175,11 +189,14 @@ async function staleWhileRevalidate(
   cacheKey
 ) {
 
-  const cache = await caches.open(CACHE_NAME);
+  const cache =
+    await caches.open(CACHE_NAME);
 
-  const key = cacheKey || request;
+  const key =
+    cacheKey || request;
 
-  const cached = await cache.match(key);
+  const cached =
+    await cache.match(key);
 
   const networkPromise =
     fetch(request)
@@ -189,11 +206,13 @@ async function staleWhileRevalidate(
           response &&
           response.ok
         ) {
+
           await cachePutSafe(
             cache,
             key,
             response
           );
+
         }
 
         return response;
@@ -201,17 +220,24 @@ async function staleWhileRevalidate(
       })
       .catch(() => null);
 
+
+  /* Cache varsa kullanıcıyı bekletme */
   if (cached) {
+
     networkPromise.catch(() => {});
+
     return cached;
   }
 
-  const networkResponse =
+
+  /* Cache yoksa network cevabını bekle */
+  const fresh =
     await networkPromise;
 
-  if (networkResponse) {
-    return networkResponse;
+  if (fresh) {
+    return fresh;
   }
+
 
   return new Response(
     'Çevrimdışı',
@@ -228,11 +254,11 @@ async function staleWhileRevalidate(
 
 /* ═══════════════════════════════════════════════
    NAVIGATION
-   Navigation route cevabını nero.html cache
-   anahtarının üzerine yazmaz.
+   Route cevabı nero.html cache anahtarının
+   üzerine yazılmaz.
 
-   Önce cache'deki nero.html döner.
-   Arkada gerçek nero.html tazelenir.
+   Cache'deki nero.html anında döner;
+   gerçek nero.html arkada güncellenir.
    ═══════════════════════════════════════════════ */
 
 async function handleNavigation() {
@@ -253,11 +279,13 @@ async function handleNavigation() {
           response &&
           response.ok
         ) {
+
           await cachePutSafe(
             cache,
             './nero.html',
             response
           );
+
         }
 
         return response;
@@ -265,10 +293,14 @@ async function handleNavigation() {
       })
       .catch(() => null);
 
+
   if (cached) {
+
     refresh.catch(() => {});
+
     return cached;
   }
+
 
   const fresh =
     await refresh;
@@ -276,6 +308,7 @@ async function handleNavigation() {
   if (fresh) {
     return fresh;
   }
+
 
   return new Response(
     'SÜKÛN çevrimdışı ve uygulama çekirdeği önbellekte bulunamadı.',
@@ -292,15 +325,17 @@ async function handleNavigation() {
 
 /* ═══════════════════════════════════════════════
    GOOGLE FONTS
-   Harici tüm istekleri cache'lemek yerine
-   yalnız Google Fonts kaynaklarını cache'ler.
+   Harici tüm GET'leri cache'lemek yerine
+   yalnız Google Fonts kaynaklarına müdahale edilir.
    ═══════════════════════════════════════════════ */
 
 function isGoogleFontRequest(url) {
+
   return (
     url.hostname === 'fonts.googleapis.com' ||
     url.hostname === 'fonts.gstatic.com'
   );
+
 }
 
 
@@ -405,7 +440,7 @@ self.addEventListener('fetch', event => {
 
 /* ═══════════════════════════════════════════════
    OPSİYONEL CACHE TEMİZLİĞİ
-   Şimdilik otomatik çağrılmaz.
+   Şimdilik otomatik çalıştırılmaz.
    ═══════════════════════════════════════════════ */
 
 async function trimCache(
@@ -435,9 +470,11 @@ async function trimCache(
       i < removeCount;
       i++
     ) {
+
       await cache.delete(
         keys[i]
       );
+
     }
 
   } catch (_) {}
