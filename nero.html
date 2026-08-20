@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r171 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r174 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r171">
+<meta name="sukun-build" content="r174">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r171b">
+<link rel="manifest" href="./manifest.webmanifest?v=r174">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -104,6 +104,7 @@
   --t-sahne:clamp(34px,11vw,46px);
   --f-display:"Amiri",Georgia,"Times New Roman",serif;
   --serif:var(--f-display);
+  --f-ui:"Figtree","Google Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
 
   /* r102: YÜZEY RENKLERİ TEMAYA BAĞLANDI.
@@ -1395,6 +1396,7 @@ summary .ico{margin-right:.3em;color:var(--gold)}
 #sozKutu.hadis .sozYeni{color:var(--ok)}
 .sozTur{font:700 8.5px/1 "Figtree";letter-spacing:.2em;color:var(--ok);
   display:flex;align-items:center;gap:5px;margin-bottom:8px;opacity:.9}
+.sozTur.nispet{color:var(--gold)}
 .sozTur .ico{width:1.1em;height:1.1em}
 .sozGuncel{font:400 10.5px/1.7 "Figtree";color:var(--mut);margin-top:8px;
   padding-top:8px;border-top:1px dashed color-mix(in srgb,var(--gold) 22%,transparent)}
@@ -3078,13 +3080,14 @@ input:focus-visible,select:focus-visible{
 .r168Head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.r168Head b{font-size:12px;letter-spacing:.08em}.r168Tag{font-size:9px;padding:4px 7px;border:1px solid var(--line);border-radius:999px;color:var(--dim)}
 .r168Grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.r168Cell{padding:9px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018)}.r168Cell small{display:block;font-size:10px;letter-spacing:.07em;color:var(--dim);margin-bottom:4px}.r168Cell b{font-size:12px;line-height:1.45;word-break:break-word}.r168Wide{grid-column:1/-1}.r168Break{font-family:var(--f-mono);font-size:11px;line-height:1.65;color:var(--text)}
 .r168Source{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.srcBadge{font-size:10px;padding:4px 7px;border-radius:999px;border:1px solid var(--line)}.src-havas{color:#e8b45c;background:rgba(232,180,92,.08)}.src-symbol{color:#b9a7ef;background:rgba(185,167,239,.08)}.src-note{color:var(--dim)}
+.r174Cites{margin-top:9px;border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:rgba(255,255,255,.015)}.r174Cites summary{cursor:pointer;color:var(--goldh);font-size:10.5px}.r174Cites div{font-size:10px;line-height:1.7;color:var(--mut);margin-top:7px}.r174Cites a{color:var(--goldh);text-decoration:none;border-bottom:1px dotted var(--line2)}
 .r168Note{width:100%;min-height:68px;resize:vertical;margin-top:8px;background:rgba(0,0,0,.18);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px;font:inherit;font-size:11px;box-sizing:border-box}.r168MiniRow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.r168MiniRow>*{min-width:0}.r168MiniRow select,.r168MiniRow input{background:rgba(0,0,0,.2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px;font-size:11px;max-width:100%}.r168Progress{height:6px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;margin:9px 0}.r168Progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--goldh));transition:width .2s}.r168Status{font-size:10px;line-height:1.55;color:var(--dim);min-height:30px}.r168Buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.r168Buttons .btn{padding:8px 6px;font-size:10px;min-height:34px}.r168MediaFilters{display:flex;gap:5px;overflow:auto;padding-bottom:3px}.r168MediaFilters button{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);padding:5px 8px;font-size:9px}.r168MediaFilters button.on{color:var(--goldh);border-color:color-mix(in srgb,var(--gold) 55%,var(--line));background:rgba(210,160,70,.08)}.r168MediaList{max-height:260px;overflow:auto;margin-top:8px}.r168MediaItem{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}.r168MediaItem b{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.r168MediaItem small{font-size:8px;color:var(--dim)}.r168MediaItem button{min-width:32px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--text)}
 .r168JournalList{margin-top:8px;max-height:220px;overflow:auto}.r168JournalItem{padding:7px 0;border-bottom:1px solid var(--line);font-size:10px}.r168JournalItem small{color:var(--dim);display:block;margin-top:3px}
 @media(max-width:370px){.r168Grid{grid-template-columns:1fr}.r168Wide{grid-column:auto}.r168Buttons{grid-template-columns:1fr 1fr}.r168MiniRow{align-items:stretch}.r168MiniRow select,.r168MiniRow input{width:100%}}
 </style>
 
 </head>
-<body>
+<body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
 <canvas id="bgParticles" aria-hidden="true"></canvas>
 <div class="wrap">
@@ -3327,7 +3330,7 @@ input:focus-visible,select:focus-visible{
 
           <div class="genBas" style="margin-top:16px">🎧 3B UZAMSAL SES</div>
           <div class="genNot">Ses kaynağı kafanın çevresinde yavaşça döner. <b>Yalnız kulaklıkta anlamlıdır</b> — hoparlörde etkisi kaybolur.</div>
-          <div class="opt"><span>🌀 Uzamsal dönüş <small>HRTF ile gerçek yön hissi</small></span><button class="sw" id="uzamTgl" data-tip="Ses kaynağını kafanın çevresinde yavaşça döndürür. Yalnız kulaklıkta anlamlıdır — hoparlörde etkisi kaybolur."></button></div>
+          <div class="opt"><span>🌀 Uzamsal dönüş <small>HRTF ile gerçek yön hissi</small></span><button class="sw" id="uzamTgl" aria-label="Uzamsal dönüş" data-tip="Ses kaynağını kafanın çevresinde yavaşça döndürür. Yalnız kulaklıkta anlamlıdır — hoparlörde etkisi kaybolur."></button></div>
           <div class="sldRow">
             <label for="uzamHizSld">Tur süresi</label>
             <input type="range" id="uzamHizSld" min="6" max="60" step="1" value="22" data-tip="Sesin kafanın çevresinde bir turu kaç saniyede tamamlayacağı. Yavaş olması çoğu kişi için daha rahattır.">
@@ -3352,7 +3355,7 @@ input:focus-visible,select:focus-visible{
       <div class="lrLine" id="lrInfo"></div>
       <div class="zOpts" style="margin-top:10px">
         <div class="opt"><span><span class="ico" data-ico="mist"></span> Pembe gürültü yastığı — vuruşu belirginleştirir, hoparlörde önerilir <span class="qb" data-h="pink">?</span></span><button class="sw" id="pinkTgl" aria-label="Pembe gürültü yastığı" data-tip="Vuruşun üstüne ince bir pembe gürültü yastığı serer. Hoparlörde dinliyorsan vuruşu belirginleştirir; kulaklıkta gerekmez."></button></div>
-        <div class="opt"><span>⚡ Fotik uyarım — ekran vuruşla parlar · <b style="color:#e0908f">epilepsi uyarısı</b> <span class="qb" data-h="ave">?</span></span><button class="sw" id="aveTgl" data-tip="Ekranı seçili vuruş hızında yanıp söndürür. Yanıp sönen ışığa duyarlılık veya epilepsi öyküsü varsa kullanma; rahatsızlıkta hemen kapat."></button></div>
+        <div class="opt"><span>⚡ Fotik uyarım — ekran vuruşla parlar · <b style="color:#e0908f">epilepsi uyarısı</b> <span class="qb" data-h="ave">?</span></span><button class="sw" id="aveTgl" aria-label="Fotik uyarım" data-tip="Ekranı seçili vuruş hızında yanıp söndürür. Yanıp sönen ışığa duyarlılık veya epilepsi öyküsü varsa kullanma; rahatsızlıkta hemen kapat."></button></div>
       </div>
       <div class="sldRow"><label for="aveInt">Işık şiddeti</label><input type="range" id="aveInt" min="0.05" max="0.5" step="0.01" value="0.18"><span class="valB" id="aveIntV">%18</span></div>
       <div class="sldRow">
@@ -3389,7 +3392,7 @@ input:focus-visible,select:focus-visible{
     </div>
     <details class="jEd" id="fr2Box">
       <summary>〰 İkinci binaural katman — aynı anda çift frekans (kulaklık) <span class="qb" data-h="fr2">?</span></summary>
-      <div class="opt" style="margin-top:8px"><span>Katmanı etkinleştir — ana frekansla birlikte çalar</span><button class="sw" id="fr2Tgl" data-tip="İkinci bir frekans katmanı açar. İki taşıyıcı üst üste binince ses daha dolgun olur; ikisinin vuruşu ayrı ayrı ayarlanır."></button></div>
+      <div class="opt" style="margin-top:8px"><span>Katmanı etkinleştir — ana frekansla birlikte çalar</span><button class="sw" id="fr2Tgl" aria-label="İkinci frekans katmanı" data-tip="İkinci bir frekans katmanı açar. İki taşıyıcı üst üste binince ses daha dolgun olur; ikisinin vuruşu ayrı ayrı ayarlanır."></button></div>
       <div class="sldRow"><label for="fr2Car">Taşıyıcı 2</label><input type="range" id="fr2Car" min="20" max="18000" step="0.1" value="100"><span class="valB" id="fr2CarV">100.0 Hz</span></div>
       <div class="sldRow"><label for="fr2Beat">Vuruş 2</label><input type="range" id="fr2Beat" min="0.5" max="40" step="0.01" value="2.5"><span class="valB" id="fr2BeatV">2.50 Hz</span></div>
     </details>
@@ -3441,7 +3444,7 @@ input:focus-visible,select:focus-visible{
       <div id="nefsInfo" class="nefsInfo"></div>
       <div id="nefsRows" class="nefsRows"></div>
       <div id="nefsProg" class="nefsProg"></div>
-      <div style="font-size:9.5px;color:var(--dim);margin:6px 0 2px;line-height:1.6">Kırk günün dayanağı: «Kim kırk sabah ihlâsla Allah'a yönelirse, kalbinden diline hikmet pınarları akar.» (Süyûtî, el-Câmiu's-Sağîr) — Mûsâ (a.s.)'ın Tûr'daki kırk gecesi (A'râf 7:142) bu usûlün bir başka dayanağıdır.</div>
+      <div style="font-size:9.5px;color:var(--dim);margin:6px 0 2px;line-height:1.6"><b>Erbaîn kaynak notu:</b> «Kim kırk sabah ihlâsla Allah’a yönelirse…» sözü Süyûtî’nin <i>el-Câmiu’s-Sağîr</i> derlemesinde nakledilir; hadis zinciri zayıf kabul edildiğinden sahih hadis kesinliğiyle sunulmaz. A‘râf 7:142, Mûsâ’nın kırk gecesini bildirir; bunu kırk günlük seyre dayanak yapmak doğrudan âyet emri değil, tasavvuf geleneğinin yorumudur.</div>
       <div class="zBtns" style="margin-top:9px">
         <button class="btn" id="nefsProgBtn"><span class="ico" data-ico="seedling"></span> 40 günlük seyri başlat</button>
         <button class="btn" id="nefsDayBtn"><span class="ico" data-ico="check"></span> Bugünü işaretle</button>
@@ -3477,7 +3480,7 @@ input:focus-visible,select:focus-visible{
       <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Bir merkeze dokununca taşıyıcı frekansı o değere ayarlanır ve ilgili esmâ/zikir sahneye gelir.</div>
       <div style="font-size:9.5px;border-left:2px solid color-mix(in srgb,var(--gold) 38%,transparent);padding:8px 10px;margin-top:9px;line-height:1.7;color:var(--mut);background:color-mix(in srgb,var(--gold) 4%,transparent);border-radius:0 8px 8px 0">
         <b style="color:var(--goldh);display:block;margin-bottom:3px">⚠ Kaynak ayrımı</b>
-        <b>Letâif</b> — kalp, rûh, sır, hafî, ahfâ ve nefs — Kur'ân, hadis ve kadim tasavvuf külliyatında (Nakşibendî, Kadirî, Halvetî ve diğer yollar) yer alır; İslâmî geleneğin özgün kavramlarıdır.<br><br>
+        <b>Letâif</b> — kalp, rûh ve nefs gibi kavramların Kur’ân ve dinî literatürde dayanakları vardır; fakat bunların altı/yedi merkez hâlinde sıralanması, bedendeki yerleri ve renkleri tarikatlara ve dönemlere göre değişen daha sonraki tasavvufî tertiplerdir. Buradaki merkez–renk haritası özellikle Nakşibendî yorumuna yakın <i>sembolik bir uygulama şemasıdır</i>; bütün tasavvuf yollarının ortak anatomisi veya biyomedikal gerçeklik değildir.<br><br>
         <b>Çakra</b> kavramı ise Hint-yoga ve Hindu geleneğinden gelir; İslâmî kaynaklarda geçmez. Buradaki eşleştirme, iki geleneğin enerji merkezleri haritalarının benzerliğini gösteren <i>yorumî ve sembolik</i> bir karşılaştırmadır — dini bir hüküm ya da sünnet değildir. Letâif zikrine devam edebilir, çakra kavramını yalnızca frekans referansı olarak okuyabilir ya da bu bölümü hiç kullanmayabilirsin.
       </div>
     </details>
@@ -3598,13 +3601,13 @@ input:focus-visible,select:focus-visible{
       <div class="zOpts">
         <div class="sldRow" style="margin-top:2px"><label for="zVolSld">🎚 Zikir sesi</label><input type="range" id="zVolSld" min="0" max="1" step="0.01" value="1" data-tip="Zikir sesinin seviyesi — tık, damla ve seslendirme. Ambiyans ve frekans bundan etkilenmez."><span class="valB" id="zVolVal">%100</span></div>
         <div style="font-size:9.5px;color:var(--dim);margin:0 0 6px;line-height:1.6">Ana sesten bağımsız — yalnız zikir seslerini (tık, çan, sesli zikir/TTS ve kayıtlı okuyuşlar) kısar/yükseltir.</div>
-        <div class="opt"><span>🔉 Tesbih tık sesi</span><button class="sw on" id="optTick" data-tip="Her tesbihte hafif bir tık sesi duyulur. Gözün ekranda olmadan kaç çektiğini takip etmeni sağlar."></button></div>
-        <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Titreşim</span><button class="sw on" id="optVib" data-tip="Her tesbihte telefon kısaca titrer. Ses açamadığın yerlerde sayacı hissederek takip edersin."></button></div>
-        <div class="opt"><span><span class="ico" data-ico="book"></span> Anlamı göster</span><button class="sw on" id="optMean" data-tip="Zikrin Türkçe anlamını sahnede gösterir. Ne söylediğini bilerek çekmek tefekkürü derinleştirir."></button></div>
-        <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv" data-tip="Devir dolunca listedeki sıradaki zikre kendiliğinden geçer. Hatim ya da vird çekerken elini boşta bırakır."></button></div>
-        <div class="opt"><span><span class="ico" data-ico="drum"></span> Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir" data-tip="Tempoya kilitli bendir usûlü (düm·tek) ekler. Zikri ritme oturtmak isteyenler için."></button></div>
+        <div class="opt"><span>🔉 Tesbih tık sesi</span><button class="sw on" id="optTick" aria-label="Tesbih tık sesi" data-tip="Her tesbihte hafif bir tık sesi duyulur. Gözün ekranda olmadan kaç çektiğini takip etmeni sağlar."></button></div>
+        <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Titreşim</span><button class="sw on" id="optVib" aria-label="Titreşim" data-tip="Her tesbihte telefon kısaca titrer. Ses açamadığın yerlerde sayacı hissederek takip edersin."></button></div>
+        <div class="opt"><span><span class="ico" data-ico="book"></span> Anlamı göster</span><button class="sw on" id="optMean" aria-label="Anlamı göster" data-tip="Zikrin Türkçe anlamını sahnede gösterir. Ne söylediğini bilerek çekmek tefekkürü derinleştirir."></button></div>
+        <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv" aria-label="Devirde sıradakine geç" data-tip="Devir dolunca listedeki sıradaki zikre kendiliğinden geçer. Hatim ya da vird çekerken elini boşta bırakır."></button></div>
+        <div class="opt"><span><span class="ico" data-ico="drum"></span> Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir" aria-label="Bendir usûlü" data-tip="Tempoya kilitli bendir usûlü (düm·tek) ekler. Zikri ritme oturtmak isteyenler için."></button></div>
         <div class="jRow" id="usulRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Usûl</b><select id="usulSel" aria-label="Bendir usûlü"><option value="duyek">Düyek (basit)</option><option value="sofyan">Sofyan</option><option value="devrihindi">Devr-i Hindî</option><option value="cifte">Çifte düm·tek</option></select></div>
-        <div class="opt" style="margin-top:6px"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal ses — kanallar kulaklıkta çevrende döner</span><button class="sw" id="spatialTgl"></button></div>
+        <div class="opt" style="margin-top:6px"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal ses — kanallar kulaklıkta çevrende döner</span><button class="sw" id="spatialTgl" aria-label="8D mekânsal ses"></button></div>
         <!-- r119: zikir sonu sesi — çan yerine Hû -->
         <div class="opt" style="display:block">
           <span style="display:block;margin-bottom:7px"><span class="ico" data-ico="speaker"></span> Zikir sonu sesi<small style="display:block;font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px">Devir (33/99…) tamamlandığında duyulur.</small></span>
@@ -3623,7 +3626,7 @@ input:focus-visible,select:focus-visible{
         </div>
         <!-- r118: tören her gün açan için zorunlu olmamalı -->
         <div class="opt"><span><span class="ico" data-ico="eye"></span> Zikir açılışı — başlarken zikri gösterip geri say<small style="display:block;font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px">Kapatırsan akış doğrudan başlar. Tören sırasında ekrana dokunmak da geçer.</small></span><button class="sw on" id="zaTgl" aria-label="Zikir açılışı"></button></div>
-        <div class="opt"><span><span class="ico" data-ico="speaker"></span> Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak" data-tip="Her tesbihte zikri cihaz sesiyle söyler. Kendi kaydın varsa onunki çalınır — tecvid için en doğrusu budur."></button></div>
+        <div class="opt"><span><span class="ico" data-ico="speaker"></span> Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak" aria-label="Sesli zikir" data-tip="Her tesbihte zikri cihaz sesiyle söyler. Kendi kaydın varsa onunki çalınır — tecvid için en doğrusu budur."></button></div>
         <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice" aria-label="Konuşma sesi" data-tip="Okuma sesi. Cihazında yüklü seslerden birini seçersin; seçim bütün okuyuculara birden işler."></select><select id="spkGenderSel" title="Tüm zikir, dua ve sûre okuyucularına uygulanır (Türkçe ve Arapça)" style="margin-left:6px" data-tip="Kadın ya da erkek ses tercihi. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır."><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" aria-label="Konuşma hızı" style="flex:1;width:auto" data-tip="Okuma hızı. Ezber için yavaş, tekrar için normal iyi gelir."></div>
         <div style="font-size:9px;color:var(--dim);line-height:1.55;margin:3px 0 2px">👩/👨 seçimi bütün okuyuculara işler: zikir, Âyetü'l-Kürsî, Fâtiha Seyri, Nasuh Tövbesi, Salavât, Seyyidü'l-İstiğfar ve koruyucu sûreler — hem Türkçe hem Arapça ses için. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır.</div>
         <div class="opt" style="margin-top:8px"><span id="arStat">🕌 Arapça ses aranıyor…</span><button class="sw" id="arTgl" aria-label="Arapça telaffuzu tercih et" data-tip="Zikri Arap harfli metinden okur. Cihazında Arapça ses yoksa tam okunuşuna düşer, sessiz kalmaz."></button></div>
@@ -3650,9 +3653,9 @@ input:focus-visible,select:focus-visible{
           <div class="nbTr">İlâhî ente maksûdî ve rıdâke matlûbî</div>
           <div class="nbMean">«Allah’ım! Maksûdum Sensin; matlûbum Senin rızândır.»</div>
         </div>
-        <div class="opt" style="margin-top:9px"><span><span class="ico" data-ico="sparkle"></span> Her zikir setinin başında göster</span><button class="sw" id="niyetTgl" data-tip="Seansın başında niyet cümleni okur. Her zikirde değil, yalnız açılışta bir kez."></button></div>
-        <div class="opt"><span>♻ Her devir arasında da tekrarla</span><button class="sw" id="niyetDevirTgl"></button></div>
-        <div class="opt"><span><span class="ico" data-ico="speaker"></span> Cihaz sesiyle de söyle</span><button class="sw" id="niyetSpkTgl"></button></div>
+        <div class="opt" style="margin-top:9px"><span><span class="ico" data-ico="sparkle"></span> Her zikir setinin başında göster</span><button class="sw" id="niyetTgl" aria-label="Niyeti her zikir setinin başında göster" data-tip="Seansın başında niyet cümleni okur. Her zikirde değil, yalnız açılışta bir kez."></button></div>
+        <div class="opt"><span>♻ Her devir arasında da tekrarla</span><button class="sw" id="niyetDevirTgl" aria-label="Niyeti her devir arasında tekrarla"></button></div>
+        <div class="opt"><span><span class="ico" data-ico="speaker"></span> Cihaz sesiyle de söyle</span><button class="sw" id="niyetSpkTgl" aria-label="Niyeti cihaz sesiyle söyle"></button></div>
         <div class="opt" style="margin-top:9px"><span id="niyetRecStatus">🎙️ Kendi sesin — henüz kayıt yok</span><span style="display:flex;gap:6px;flex:none"><button class="btn" id="niyetRecPlay" aria-label="Niyet kaydını dinle" style="padding:6px 10px;font-size:12px" disabled>▶</button><button class="btn danger" id="niyetRecDel" aria-label="Niyet kaydını sil" style="padding:6px 10px;font-size:12px" disabled><span class="ico" data-ico="trash"></span> </button></span></div>
         <div style="font-size:9.5px;color:var(--dim);margin:2px 0 0">Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.</div>
         <div style="font-size:9.5px;color:var(--dim);margin-top:7px;line-height:1.6">Nakşibendî yolunda zikre başlarken niyeti tazelemek için söylenegelen ifadedir; açıkken sayaç her yeni sete girerken kalbini niyete bağlaman için kısa bir hatırlatma belirir. Usul, ehlinin rehberliğine emanettir.</div>
@@ -3671,7 +3674,7 @@ input:focus-visible,select:focus-visible{
       </details>
       <div class="zGrup"><div class="zGrupBas">Seyirler</div></div>
       <details class="jEd" id="hzvBox" style="margin-top:10px">
-        <summary><span class="ico" data-ico="shield"></span> Hizbü'l-Vikâye — İbnü'l-Arabî koruma virdi</summary>
+        <summary><span class="ico" data-ico="shield"></span> Hizbü'l-Vikâye — İbnü'l-Arabî’ye nispet edilen vird</summary>
         <div class="zYonerge">On üç niyaz bendi ve kapanış münâcâtı. Her bend bir <b>esmâ çiftini</b> bir âyetle birleştirir. <b>Terkip zikirlerinin başında</b> okunması uygundur.</div>
         <div style="font-size:9.5px;color:var(--dim);line-height:1.65;margin:6px 0 8px"><b style="color:var(--goldh)">Âdâb:</b> günde bir defa, seher vakti ya da sabah namazının ardından, abdestli ve kıbleye karşı. Zorlu dönemlerde sabah ve akşam birer kez.</div>
         <!-- r136: iki «Durdur» vardı, duraklat yoktu, kayıt yoktu -->
@@ -3716,9 +3719,10 @@ input:focus-visible,select:focus-visible{
           <b style="color:var(--goldh);display:block;margin-bottom:4px">⚠ Kaynak türü</b>
           <b>âyet</b> — bu isimler Kur’ân’da birlikte geçer.<br>
           <b>gelenek</b> — tasavvufta yaygın tertip; belirli bir zâta kesin nispet iddia edilmez.<br>
-          <b>Ekberî</b> — Muhyiddin İbnü’l-Arabî’ye nispet edilen tertipler (Yâ Serîu virdleri, Hizbü’l-Vikâye).<br>
-          <b>mücerrebât</b> — <i>havâs / mücerrebât</i> literatürüne ait tertipler (Yâ Serîu formülleri: <i>Mücerrebât-ı Deyrebî</i>’ye nispet edilir). Bunlar <b>hadis değildir</b>; tecrübeye dayalı derlemelerdir.<br><br>
-          <span style="color:var(--dim)">Not: Ekberî tertiplerdeki sayılar kaynaktaki gibi bırakıldı; kaynak «Serîu» ebcedini 212 sayar, uygulamanın kendi hesabı 340 verir (Karîb 312 ve Mucîb 55 birebir tutar). «Serîu» doksan dokuz esmâ listesinde geçmez; Kur’ân’daki <i>serîu’l-hisâb</i> (hesabı çabuk gören) sıfatından türetilmiştir. Duânın kabulü Allah’ın dilemesine bağlıdır — klasik anlayışta duâ ya istenen şekilde, ya daha hayırlısıyla, ya da âhirete saklanarak karşılık bulur. Bir tertibin sonucu garanti ettiği düşünülmemeli.</span>
+          <b>Ekberî’ye nispet</b> — Muhyiddin İbnü’l-Arabî’ye nispet edilen tertipler. Hizbü’l-Vikâye için yazma geleneği vardır; Yâ Serîu adetlerinin birincil eser/sayfa karşılığı bu taramada doğrulanamadı.<br>
+          <b>derleme / mücerrebât</b> — kullanıcının sunduğu ve <i>Mücerrebât-ı Deyrebî</i>’ye nispet edilen modern tertipler. Deyrebî kitabı bibliyografik olarak doğrulandı; aşağıdaki altı formülün aynı metindeki yeri doğrulanmadığından doğrudan Deyrebî metni diye sunulmaz. Bunlar <b>hadis değildir</b>.<br><br>
+          <span style="color:var(--dim)">Not: 212, 579 ve 1060 sayıları derlemedeki <b>önerilen adet</b> olarak korunur; ebced diye sunulmaz. Standart büyük ebcedde «Serîu» 340, «Karîb» 312 ve «Mucîb» 55; üçlü toplam 707’dir. «Serîu» meşhur doksan dokuz isim listesinde yer almaz; Kur’ân’daki <i>serîu’l-hisâb</i> sıfatından hareketle kullanılan bir hitaptır. Bir tertibin sonucu garanti ettiği düşünülmemeli.</span>
+          <details class="r174Cites"><summary>Hizb ve mücerrebât kaynak kayıtları</summary><div><b>Hizbü’l-Vikâye:</b> <a href="https://www.nli.org.il/ar/manuscripts/NNL_ALEPH990032403210205171/NLI" target="_blank" rel="noopener noreferrer">İsrail Millî Kütüphanesi yazma kaydı</a>, metnin İbnü’l-Arabî adına dolaşan bir yazma geleneği bulunduğunu gösterir; geç tarihli bu kayıt müellif hattı veya kesin aidiyet kanıtı değildir.<br><b>Mücerrebât:</b> <a href="https://books.google.com/books/about/%D9%83%D8%AA%D8%A7%D8%A8_%D9%85%D8%AC%D8%B1%D8%A8%D8%A7%D8%AA_%D8%A7%D8%AD%D9%85%D8%AF_%D8%A7%D9%84%D8%AF.html?id=rB-LKoKEfdEC" target="_blank" rel="noopener noreferrer">1863 Deyrebî baskısının bibliyografik kaydı</a> eseri doğrular; Nero’daki altı Yâ Serîu formülünün o baskıdaki sayfa karşılığı henüz doğrulanmamıştır.</div></details>
         </div>
       </details>
       <details class="jEd" id="hatBox" style="margin-top:10px">
@@ -3785,6 +3789,7 @@ input:focus-visible,select:focus-visible{
           data-tip="Tövbe metnini açar ya da gizler. Kapalıyken kısımlar listesi daha kolay taranır; okunan kısım yine de vurgulanır.">Metni göster</button>
         <div id="tvText" class="tvText" hidden></div>
         <div style="font-size:9.5px;color:var(--dim);margin-top:8px;line-height:1.6">Cihazın Türkçe sesiyle bölüm bölüm okunur; okunan kısım vurgulanır. Bir bölüme dokunarak oradan başlayabilirsin. Ekranı açık tutmak için ses köprüsü devreye girer. Ses/hız ayarı Zikir sekmesindeki 🔊 satırından.</div>
+        <div style="font-size:9.5px;color:var(--mut);border-left:2px solid color-mix(in srgb,var(--gold) 38%,transparent);padding:8px 10px;margin-top:8px;line-height:1.7"><b>Metin durumu:</b> Bu uzun metin, Tahrîm 66:8 ve Seyyidü’l-İstiğfar gibi kaynaklı parçaları modern bir dua/tevbe derlemesiyle birleştirir; bütünü “Nasuh Tövbesi” adıyla rivayet edilmiş tek bir hadis veya klasik sabit metin değildir. Hastalık, vesvese ve görünmeyen varlıklara ilişkin cümleler tıbbî teşhis sayılmaz.</div>
       </details>
 
       <details class="jEd" id="mzbzBox" data-lvl="midi" style="margin-top:10px">
@@ -3794,7 +3799,7 @@ input:focus-visible,select:focus-visible{
           <div class="mzbzTr">Yâ Mezcelin • Yâ Bezcelin</div>
           <div class="mzbzEsma">
             <span><b>Mezcelin</b> → Yâ Kayyûm · Yâ Kâim<small>Her şeyi ayakta tutan, varlığı idare eden</small></span>
-            <span><b>Bezcelin</b> → Yâ Vehhâb<small>Karşılıksız veren, lütfunu bolca ihsan eden</small></span>
+            <span><b>Bezcelin</b> → Yâ Vedûd<small>Seven ve sevgisi bütün varlığı kuşatan</small></span>
           </div>
           <!-- r118: «ne yapmam gerek» sorusuna cevap -->
           <div class="zYonerge">Sayaca <b>dokunarak</b> kendin sayabilir ya da <b>Otomatik Akış</b> ile kendini akışa bırakabilirsin. Kendi sesini kaydedersen akışta senin sesin okunur.</div>
@@ -3814,7 +3819,7 @@ input:focus-visible,select:focus-visible{
             <span class="mzbzHint" id="mzbzSpkHint">Arap harfli metin Arapça sesle okunur</span>
           </div>
           <div class="mzbzNote">
-            <b>✦ Niyet:</b> Nasuh tövbesinin ardından, <b>iç ve dış temizliği/arınma</b> niyetiyle zikredilebilir. İsimler tilavet formuyla (<i>Mezcelin · Bezcelin</i>) okunur; bu akış, zikrin dilde ve kalpte titreşimini (rezonansını) güçlendirmek içindir. Maksat isimlerden güç devşirmek değil; Allah'ın kayyûmiyetini (her şeyi ayakta tutuşunu) ve vehhâbiyetini (karşılıksız verişini) tefekkür ederek acziyet, tevhid ve arınma hâlini yaşamaktır.
+            <b>✦ Niyet:</b> Nasuh tövbesinin ardından, <b>iç ve dış temizliği/arınma</b> niyetiyle zikredilebilir. İsimler tilavet formuyla (<i>Mezcelin · Bezcelin</i>) okunur; bu akış, zikrin dilde ve kalpte titreşimini (rezonansını) güçlendirmek içindir. Maksat isimlerden güç devşirmek değil; Menba şerhindeki karşılıklarla Allah'ın kayyûmiyetini (her şeyi ayakta tutuşunu) ve vedûdiyetini (sevgisini) tefekkür ederek acziyet, tevhid ve arınma hâlini yaşamaktır.
           </div>
           <div style="font-size:9px;color:var(--dim);margin-top:8px;line-height:1.55">Berhetiyye geleneğindeki bu isimlerin Esmâü'l-Hüsnâ karşılıkları yorumî/sembolik eşleştirmedir; kesin nass hükmünde değildir. Tevhid, dua ve edeple okunmalıdır.</div>
         </div>
@@ -3828,7 +3833,7 @@ input:focus-visible,select:focus-visible{
         <div class="zBtns" style="margin-top:8px">
           <button class="btn" id="ydkDisa">⭳ Tüm sesleri yedekle</button>
           <button class="btn" id="ydkIce">⭱ Yeni telefonda geri yükle</button>
-          <input type="file" id="ydkDosya" accept="application/json,.json" hidden>
+          <input type="file" id="ydkDosya" accept="application/json,.json" aria-label="Ses yedeği dosyası" hidden>
         </div>
         <div class="ydkDurum" id="ydkDurum"></div>
         <div class="ydkListe" id="ydkListe"></div>
@@ -3939,10 +3944,10 @@ input:focus-visible,select:focus-visible{
         <button class="btn" id="bakExportBtn">⬇️ Yedeği indir</button>
         <button class="btn" id="bakImportBtn">⬆️ Geri yükle</button>
       </div>
-      <input type="file" id="bakFile" accept=".json,application/json" hidden>
+      <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v13.0 — build 2026-08-20-r171</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v13.0 — build 2026-08-20-r174</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -3966,6 +3971,44 @@ input:focus-visible,select:focus-visible{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {
+  "v": "r174",
+  "t": "20 Ağustos 2026",
+  "b": [
+   "Berhetiyye 28 isim yazımı Menbaʿ Uṣûli’l-Hikme’nin 1951 matbu şerhiyle karşılaştırıldı; kaynak yazımı ve yaygın okunuş ayrıldı",
+   "Ebced değerleri doğrudan kaynak yazımından yeniden hesaplandı: 1. isim 622, 13. isim 1135, 23. isim 1156; toplam 18787",
+   "Şemsü’l-Maârif-i Kübrâ ve Menbaʿın Bûnî’ye aidiyeti artık kesin değil, modern araştırmada tartışmalı nispet olarak gösteriliyor",
+   "Ay menzillerindeki sabit tarih aralıkları gerçek zamanlı Ay konumu sanılmayacak biçimde geleneksel takvim eşlemesi olarak yeniden etiketlendi",
+   "Kaynakta bulunmayan esmâ açıklamaları ile Nero tefekkür notları ayrıldı; popüler tasavvuf sözlerinde doğrulanmamış doğrudan nispetler görünür kılındı",
+   "Kur’an 13:28 ile secde hadisini tek hadis gibi birleştiren kayıt düzeltildi; hadis derlemesinin kaynak kapsamı dürüstçe açıklandı",
+   "Letâif merkezleri ve renkleri bütün tasavvufun ortak anatomisi gibi sunulmaktan çıkarıldı; tarikatlara göre değişen sembolik tertip olduğu belirtildi",
+   "Erbaîn rivayetinin zayıf hadis durumu ile A‘râf 7:142’ye dayanan tasavvufî yorum birbirinden ayrıldı",
+   "396–963 Hz dizisinin kadim solfej metni değil modern popüler bir atıf sistemi olduğu açıklandı",
+   "Nasuh Tövbesi başlığındaki uzun metnin âyet/hadis parçalarıyla modern dua derlemesini birleştirdiği ve tıbbî teşhis olmadığı belirtildi"
+  ]
+ },
+ {
+  "v": "r173",
+  "t": "20 Ağustos 2026",
+  "b": [
+   "Tam, Dengeli ve Pil görsel profilleri eklendi; seçim cihazda saklanıyor ve ana merkezden tek dokunuşla değişiyor",
+   "Canvas motorları seçilen profile göre 60, 30 veya düşük kare hızında çalışıyor; görünmeyen NeuroSync görselleri tamamen uyuyor",
+   "Kart, sekme, durum rozeti ve düğme hiyerarşisi tek hareket diliyle cilalandı; küçük ekranlarda taşmadan yeniden düzenleniyor",
+   "Mini oynatıcı artık canlı veya duraklatılmış durumunu açık bir rozetle gösteriyor ve ekran okuyucuya duyuruyor",
+   "Pil profilinde dekoratif parıltı, ağır blur ve arka plan hareketi azaltılırken nefes ve sayaç gibi işlevsel geri bildirimler korunuyor"
+  ]
+ },
+ {
+  "v": "r172",
+  "t": "20 Ağustos 2026",
+  "b": [
+   "Kilit ekranı ve kulaklık medya tuşu artık gerçek ses köprüsüyle birlikte tüm ses motorunu duraklatıp sürdürüyor",
+   "Kilit ekranındaki Durdur ve uygulamadaki Tümünü durdur, sessiz medya köprüsünü de kapatıp oynatıcı kartını sonlandırıyor",
+   "Okuyucular arasındaki sessiz geçişlerde medya oturumu yanlışlıkla kapanmıyor; yeni ambiyans başlatmak kasıtlı duraklamayı kaldırıyor",
+   "NeuroSync'in geçersiz kalan mobil stil bloğu onarıldı; dar ekranda etiketler, kaydırıcılar ve stereo denge kontrolleri taşmıyor",
+   "Eksik arayüz yazı tipi tokenı tamamlandı; görünmeyen sayfada mini oynatıcı ve dashboard DOM yenilemeleri durduruldu"
+  ]
+ },
  {
   "v": "r171",
   "t": "20 Ağustos 2026",
@@ -4145,17 +4188,17 @@ input:focus-visible,select:focus-visible{
   "t": "17 Ağustos 2026",
   "b": [
    "Berhetiyye isimlerine ay menzilleri ve tarih aralıkları eklendi",
-   "Bugün hangi menzilin vakti olduğu hesaplanıyor; o isim «şimdi vakti» diye işaretleniyor",
-   "Kilit panelinde bugünün menzilindeki isme tek dokunuşla gidebilirsin"
+   "Sabit yıllık tarih eşlemesi eklenmişti; r174’te bunun gerçek Ay konumu olmadığı açıkça belirtilerek yeniden adlandırıldı",
+   "Kilit panelinde o günün sabit takvim eşlemesindeki isme tek dokunuşla gidilebilir"
   ]
  },
  {
   "v": "r148",
   "t": "16 Ağustos 2026",
   "b": [
-   "Kasem-i Berhetiyye kaynağa göre baştan yazıldı — 28 ismin hepsi ayrı, hepsi «n» ile bitiyor",
-   "Şemhâhirin · Şemhâhîrin · Şemhâhiyerin artık üç ayrı isim olarak duruyor",
-   "Her ismin esmâ karşılığı, mânası ve işareti ekranda görünüyor"
+   "Kasem-i Berhetiyye 28 ayrı isim olarak kurulmuştu; yazım ve son «n» varsayımı r174’te matbu kaynakla yeniden düzeltildi",
+   "Benzer görünen 22–24. isimler ayrılmıştı; kesin harf farkları r174’te kaynak yazımıyla gösterildi",
+   "Esmâ karşılığı, uygulama açıklaması ve tefekkür notu r174’te ayrı kaynak katmanlarına taşındı"
   ]
  },
  {
@@ -4567,11 +4610,11 @@ input:focus-visible,select:focus-visible{
 </div>
 <div id="altYigin">
 <div id="donguCubuk" hidden></div>
-<div id="miniBar" hidden>
+<div id="miniBar" hidden role="region" aria-label="Şu an çalan medya">
   <div class="mbUst">
     <div class="mbPulse" id="mbPulse">〰</div>
     <div class="mbInfo">
-      <div class="mbT" id="mbT"></div>
+      <div class="mbBaslikSatir"><div class="mbT" id="mbT"></div><span class="mbLive" id="mbLive" data-noi18n role="status" aria-live="polite">CANLI</span></div>
       <div class="mbS" id="mbS"></div>
     </div>
     <!-- ⚠ r107: denetimler TEK KÜMEDE.
@@ -4713,7 +4756,7 @@ input:focus-visible,select:focus-visible{
   <div class="gRow"><b>≈ Monaural</b><p>İki ton aynı kanalda birleşip fiziksel bir akustik vuruş oluşturur. Hoparlörde binauralden daha etkili, izokronik kadar keskin değildir.</p></div>
   <div class="gRow"><b>✛ Karma</b><p>Binaural ve izokronik katmanları aynı anda çalışır — kulaklıkla her iki mekanizmadan birden faydalanmak isteyenler için.</p></div>
    <div class="gRow"><b>🌊 Vuruş bantları</b><p><b>Delta</b> 0.5–4 Hz · <b>Theta</b> 4–8 Hz · <b>Alfa</b> 8–13 Hz · <b>Beta</b> 13–30 Hz · <b>Gama</b> 30–40 Hz. Bunlar ayarları gruplamak için kullanılan yaygın etiketlerdir; belirli bir zihin veya sağlık sonucu garanti etmez.</p></div>
-  <div class="gRow"><b>🎵 Solfej sayıları</b><p>396, 432, 528 Hz gibi taşıyıcı değerleri geleneksel "solfej" sayılarıdır; kadim metinlerde her birine farklı anlam yüklenir. Bilimsel dayanağı tartışmalıdır — taşıyıcı için hoş bir başlangıç noktası olarak düşün.</p></div>
+  <div class="gRow"><b>🎵 Modern “solfej frekansı” atıfları</b><p>396, 417, 528 Hz gibi anlam yüklü sayı dizileri modern popüler ses kültüründe “solfeggio frequencies” diye dolaşır; tarihî solfej eğitimi ise nota okuma heceleridir ve bu anlam listesini içermez. 432 Hz de sıklıkla aynı gruba eklenir. Bunları kadim metin veya tedavi değil, yalnız taşıyıcı perde ve sembolik tema seçeneği olarak düşün.</p></div>
   <div class="gRow"><b>💡 Pratik öneriler</b><p>Sesi düşük başlat, ilk seansı 10–15 dakikada tut; araç kullanırken ya da dikkat gerektiren işte dinleme. Hoparlörde pembe gürültü yastığını dene. Fotik uyarımı yalnızca ihtiyatla ve kısa süreli kullan.</p></div>
 </div>
 <div id="rateToast" hidden>
@@ -4735,7 +4778,7 @@ input:focus-visible,select:focus-visible{
     </div>
     <div class="genNot" id="genGenderNot"></div>
     <div class="genBas" style="margin-top:14px">🎚 ARKA PLAN TİLÂVETİ</div>
-    <div class="opt"><span>🔉 Arka plan seviyesi <small>tilâvet ambiyansın üstünde ama öne çıkmadan aksın</small></span><button class="sw" id="arkaPlanTgl"></button></div>
+    <div class="opt"><span>🔉 Arka plan seviyesi <small>tilâvet ambiyansın üstünde ama öne çıkmadan aksın</small></span><button class="sw" id="arkaPlanTgl" aria-label="Arka plan tilâveti"></button></div>
     <div class="sldRow">
       <label for="arkaSevSld">Seviye</label>
       <input type="range" id="arkaSevSld" min="0.18" max="1" step="0.02" value="0.3">
@@ -4744,11 +4787,11 @@ input:focus-visible,select:focus-visible{
     <div class="genNot">Okuma sesi kısılır ama <b>duyulur kalır</b> — en düşük seviye %18'dir. Duyulmayan ses işitme sistemi tarafından işlenemez; buradaki amaç gizli telkin değil, aşinalık ve ezberin pekişmesi için sakin bir arka plan tilâvetidir.</div>
 
     <div class="genBas" style="margin-top:14px">📿 ZİKİR & OKUMA BİRLİKTE</div>
-    <div class="opt"><span>🔀 Zikir sayacı okuma sırasında sürsün <small>metin okunurken sayaç, tık ve titreşim devam eder</small></span><button class="sw" id="zBirlikteTgl"></button></div>
+    <div class="opt"><span>🔀 Zikir sayacı okuma sırasında sürsün <small>metin okunurken sayaç, tık ve titreşim devam eder</small></span><button class="sw" id="zBirlikteTgl" aria-label="Zikir sayacı okuma sırasında sürsün"></button></div>
     <div class="genNot">Sesli zikir ile metin okuyucusu aynı konuşma motorunu kullanır; üst üste binerse ikisi de anlaşılmaz olur. Bu ayar açıkken <b>sesli zikir susar</b> ama sayaç, damla sesi ve titreşim sürer — zikri sen çekersin, tövbe ya da salavât arkadan okunur.</div>
 
     <div class="genBas" style="margin-top:14px">🧠 NEURO ENGINE</div>
-    <div class="opt"><span>🧠 Akıllı öneriler <small>vakit, süre ve ses seviyene göre öneri sunar</small></span><button class="sw on" id="neuroTgl"></button></div>
+    <div class="opt"><span>🧠 Akıllı öneriler <small>vakit, süre ve ses seviyene göre öneri sunar</small></span><button class="sw on" id="neuroTgl" aria-label="Akıllı öneriler"></button></div>
     <div class="genNot">Yapay zekâ değil, açıkça yazılmış kurallar. Motor hiçbir şeyi kendiliğinden değiştirmez — yalnız önerir, kararı sen verirsin. Her öneri hangi gözlemden çıktığını söyler.</div>
 
     <div class="genBas" style="margin-top:14px"><span class="ico" data-ico="slider"></span> SES TONU</div>
@@ -4768,11 +4811,11 @@ input:focus-visible,select:focus-visible{
     <div class="sldRow"><label for="eqTiz">Tiz</label>
       <input type="range" id="eqTiz" min="-12" max="12" step="0.5" value="0">
       <span class="valB" id="eqTizV">0 dB</span></div>
-    <div class="opt"><span>⚖ Seviye dengeleyici <small>kısık ve gür yerleri birbirine yaklaştırır</small></span><button class="sw" id="eqKompTgl"></button></div>
+    <div class="opt"><span>⚖ Seviye dengeleyici <small>kısık ve gür yerleri birbirine yaklaştırır</small></span><button class="sw" id="eqKompTgl" aria-label="Seviye dengeleyici"></button></div>
     <div class="genNot">Dengeleyici, zikir sesi ile ambiyans arasındaki farkı yumuşatır — gece kısık dinlerken faydalıdır. İşitme koruması (limiter) bundan bağımsız olarak her hâlükârda çalışmaya devam eder.</div>
 
     <div class="genBas" style="margin-top:14px">🔋 PİL & EKRAN</div>
-    <div class="opt"><span>☀️ Ekranı açık tut <small>ses çalarken ekran sönmesin — pili daha çok tüketir</small></span><button class="sw" id="wlTgl"></button></div>
+    <div class="opt"><span>☀️ Ekranı açık tut <small>ses çalarken ekran sönmesin — pili daha çok tüketir</small></span><button class="sw" id="wlTgl" aria-label="Ekranı açık tut"></button></div>
     <div class="genNot">Ekran kapansa da ses çalmaya devam eder; bu ayar yalnız ekranın sönmesini engeller. Metni takip ederken işine yarar.</div>
 
     <div class="genBas" style="margin-top:14px">⏩ OKUMA HIZI</div>
@@ -4792,9 +4835,9 @@ input:focus-visible,select:focus-visible{
 
     <div class="genBas" style="margin-top:16px"><span class="ico" data-ico="mic"></span> KAYIT VE ÇALMA</div>
     <div class="genNot">Kaydederken uygulanır — mikrofona giden sesi temizler.</div>
-    <div class="opt"><span>🔇 Arka gürültü engelleme <small>fan, trafik, uğultu</small></span><button class="sw on" id="recNoiseTgl"></button></div>
-    <div class="opt"><span>🔁 Eko / geri besleme iptali <small>oda yankısı ve hoparlör kaçağı</small></span><button class="sw on" id="recEchoTgl"></button></div>
-    <div class="opt"><span>📈 Otomatik seviye <small>kısık ve yüksek yerleri dengeler</small></span><button class="sw on" id="recGainTgl"></button></div>
+    <div class="opt"><span>🔇 Arka gürültü engelleme <small>fan, trafik, uğultu</small></span><button class="sw on" id="recNoiseTgl" aria-label="Arka gürültü engelleme"></button></div>
+    <div class="opt"><span>🔁 Eko / geri besleme iptali <small>oda yankısı ve hoparlör kaçağı</small></span><button class="sw on" id="recEchoTgl" aria-label="Eko ve geri besleme iptali"></button></div>
+    <div class="opt"><span>📈 Otomatik seviye <small>kısık ve yüksek yerleri dengeler</small></span><button class="sw on" id="recGainTgl" aria-label="Otomatik kayıt seviyesi"></button></div>
     <div class="genNot" style="margin-top:10px">Çalarken uygulanır — kaydın kendisi değişmez, dilediğinde kapatabilirsin.</div>
     <!-- r113: kullanıcı «yankı TTS'te çalışmıyor» dedi. Çalışamaz: yankı ve 8D
          sesi Web Audio grafiğine sokarak kurulur, cihaz sesi ise o grafiğin
@@ -4809,20 +4852,20 @@ input:focus-visible,select:focus-visible{
     <div class="sldRow"><label for="recRev">🕌 Mekân yankısı</label>
       <input type="range" id="recRev" min="0" max="1" step="0.02" value="0">
       <span class="valB" id="recRevV">Kapalı</span></div>
-    <div class="opt"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal çalma <small>kulaklıkta ses çevrende döner</small></span><button class="sw" id="rec8dTgl"></button></div>
+    <div class="opt"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal çalma <small>kulaklıkta ses çevrende döner</small></span><button class="sw" id="rec8dTgl" aria-label="Kayıtları 8D mekânsal çal"></button></div>
     <div class="genBas" style="margin-top:16px"><span class="ico" data-ico="note"></span> TASAVVUF SÖZLERİ</div>
-    <div class="genNot">Her açılışta bir söz ya da hadîs-i şerîf gösterilir; ↻ ile başkasını getirirsin. Derlem tükenmeden aynısı tekrar çıkmaz. Hadîsler yalnız Buhârî · Müslim gibi temel kaynaklardan, kaynağı belirtilerek alınmıştır. Şu an <span class="sozSay" id="sozSayi">—</span>.</div>
+    <div class="genNot">Her açılışta bir söz ya da hadîs-i şerîf gösterilir; ↻ ile başkasını getirirsin. Eser künyesi olmayan popüler sözler «nispet edilen» diye işaretlenir. Hadislerde kaynak künyesi gösterilir; Türkçe metin sadeleştirmedir ve liste bağımsız tahric çalışması değildir. Şu an <span class="sozSay" id="sozSayi">—</span>.</div>
     <div class="btnRow"><button class="btn" id="sozEkleBtn">＋ Söz ekle / içe aktar</button></div>
 
     <div class="genBas" style="margin-top:16px"><span class="ico" data-ico="sparkle"></span> GÖRÜNÜM</div>
-    <div class="opt"><span>🫁 Nefes halesi <small>zikir sahnesinde yavaşça genişleyip daralan ışık halkası</small></span><button class="sw on" id="breathTgl"></button></div>
+    <div class="opt"><span>🫁 Nefes halesi <small>zikir sahnesinde yavaşça genişleyip daralan ışık halkası</small></span><button class="sw on" id="breathTgl" aria-label="Nefes halesi"></button></div>
 
     <div class="genNot">Gürültü engelleme bazı cihazlarda sesi hafif boğuklaştırabilir; kaydın cılız çıkarsa kapatıp dene. Yankı ve 8D yalnız dinlerken eklenir, kaydın aslı temiz kalır.</div>
   </div>
   <div style="border-top:1px solid var(--line);margin:12px 0 4px;padding-top:12px">
     <div class="sldRow"><label for="glassA">🪟 Cam şeffaflığı</label><input type="range" id="glassA" min="0.35" max="0.98" step="0.02" value="0.82"><span class="valB" id="glassAV">%82</span></div>
     <div style="font-size:9.5px;color:var(--dim);margin-top:3px;line-height:1.6">Bilgi baloncukları ve kartların cam yoğunluğu — düşük değer daha şeffaf, yüksek değer daha dolgun.</div>
-    <div class="opt" style="margin-top:10px"><span><span class="ico" data-ico="sparkle"></span> Işıltı sesi & parlamalar — dokunuşta cam tını ve altın kıvılcım</span><button class="sw on" id="shimTgl"></button></div>
+    <div class="opt" style="margin-top:10px"><span><span class="ico" data-ico="sparkle"></span> Işıltı sesi & parlamalar — dokunuşta cam tını ve altın kıvılcım</span><button class="sw on" id="shimTgl" aria-label="Işıltı sesi ve parlamalar"></button></div>
   </div>
 </div>
 <div id="logSheet" hidden>
@@ -5447,7 +5490,7 @@ const OB_STEPS=[
   text:'Tema seçiminde <b>Mutlak Siyah · AMOLED</b> var: zemin gerçekten #000, gradyanlar ve süsleme animasyonları kapalı. OLED ekranlarda siyah piksel hiç akım çekmez, uzun seanslarda pil ömrü uzar. Ekran kapansa da ses çalmaya devam eder; istersen ayarlardan ekranı açık tutmayı da seçebilirsin.'},
  {glyph:'<path d="M8 6 h14 a2 2 0 0 1 2 2 v16 l-9-4-9 4V8a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M11 12h8M11 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
   title:'📿 Sözler & Hadîs-i Şerîfler',
-  text:'Her açılışta ana ekranda bir tasavvuf sözü ya da hadîs-i şerîf çıkar; ↻ ile başkasını getirirsin. 64 söz (Yunus Emre, Mevlânâ, Hacı Bektaş, İbn Arabî…) ve 30 hadîs var. <b>Hadîsler yalnız Buhârî ve Müslim gibi temel kaynaklardan alındı ve her biri kaynağıyla birlikte verildi</b> — istersen doğrulayabilirsin. Kendi derlemeni de ekleyebilirsin.'},
+  text:'Her açılışta ana ekranda bir tasavvuf sözü ya da hadîs-i şerîf çıkar; ↻ ile başkasını getirirsin. Eser künyesi bulunmayan popüler sözler <b>«nispet edilen»</b> diye açıkça işaretlenir. Hadislerde Buhârî, Müslim ve diğer temel derlemelerdeki künye gösterilir; Türkçe metin sadeleştirmedir ve liste bağımsız tahric çalışması değildir. Kendi derlemeni de ekleyebilirsin.'},
  {glyph:'<path d="M11,7 A9,9 0 1 0 23,19 A11,11 0 0 1 11,7 Z" fill="currentColor"/>',
   title:'Hazırsın ✦',
   text:'Ayarlar\u2019dan (📓) 12 farklı temayla kendi rengini bul, seanslarını takip et. Bu turu istediğin an oradan yeniden izleyebilirsin. Kalbin huzurla.'}
@@ -5762,7 +5805,7 @@ window.SUKUN={ctx:()=>{ac();return ctx;},
   }catch(e){} }
 };
 const SesCapa=window.SesCapa=(function(){
-  let a=null,cb={};
+  let a=null,cb={},aktif=false,sonBaslik='SÜKÛN — Frekans & Zikir';
   function el(){
     if(a)return a;
     a=document.createElement('audio');
@@ -5772,28 +5815,114 @@ const SesCapa=window.SesCapa=(function(){
     document.body.appendChild(a);
     return a;
   }
+  function durum(v){
+    try{ if('mediaSession' in navigator)navigator.mediaSession.playbackState=v; }catch(e){}
+  }
+  function hayatDurak(a){
+    try{
+      if(window.AudioLife){ AudioLife.userPaused=!!a; AudioLife.set(a?'paused':'playing',a?'media-pause':'media-play'); }
+    }catch(e){}
+  }
+  function meta(t){
+    sonBaslik=t||sonBaslik;
+    try{
+      if('mediaSession' in navigator&&window.MediaMetadata)
+        navigator.mediaSession.metadata=new MediaMetadata({
+          title:sonBaslik,artist:'Tasavvufî Ses & Tefekkür',album:'SÜKÛN Birleşik'});
+    }catch(e){}
+  }
+  function eylemBagla(ad,fn){
+    try{ navigator.mediaSession.setActionHandler(ad,fn); }catch(e){}
+  }
+  function genelDuraklat(){
+    try{
+      if(typeof miniPause==='function')miniPause();
+      else if(typeof ctx!=='undefined'&&ctx)ctx.suspend();
+    }catch(e){}
+  }
+  function genelSurdur(){
+    try{
+      if(typeof miniResume==='function'&&typeof MINI==='object'&&MINI&&MINI.paused)miniResume();
+      else if(typeof ctx!=='undefined'&&ctx)ctx.resume();
+    }catch(e){}
+  }
+  function sadeceDurumDuraklat(){
+    if(!aktif)return;
+    try{a&&a.pause()}catch(e){}
+    hayatDurak(true); durum('paused');
+  }
+  function sadeceDurumSurdur(){
+    if(!aktif)return;
+    try{el().play().catch(()=>{})}catch(e){}
+    hayatDurak(false); durum('playing');
+  }
+  function duraklat(){
+    if(!aktif)return;
+    /* Donanım/ekran kilidi tek tuşu gerçek medya elemanının durumuna bakar.
+       Yalnız AudioContext'i askıya almak sessiz köprüyü "çalıyor" bırakıyor,
+       Android de sonraki kulaklık komutunu yanlış yöne çevirebiliyordu. */
+    sadeceDurumDuraklat();
+    genelDuraklat();
+    try{cb.onPause&&cb.onPause()}catch(e){}
+  }
+  function surdur(){
+    if(!aktif)return;
+    hayatDurak(false);
+    genelSurdur();
+    try{cb.onPlay&&cb.onPlay()}catch(e){}
+    sadeceDurumSurdur();
+  }
+  function medyaDurdur(){
+    /* Modül sonradan kendi callback'ini kaydetmiş olsa da kilit ekranındaki
+       Durdur bütün uygulamanın kesin durdurma sözleşmesine uyar. */
+    let tumu=false;
+    try{ if(typeof hardStopAll==='function'){hardStopAll();tumu=true;} }catch(e){}
+    if(!tumu)try{cb.onStop&&cb.onStop()}catch(e){}
+    stop();
+  }
+  function denetimleriBagla(){
+    if(!('mediaSession' in navigator))return;
+    /* Her eylem ayrı bağlanır: bir tarayıcı "stop"u desteklemiyorsa bu,
+       play/pause işleyicilerinin kurulmasını engellemesin. */
+    eylemBagla('play',surdur);
+    eylemBagla('pause',duraklat);
+    eylemBagla('stop',medyaDurdur);
+  }
   function start(o){
     cb=o||{};
-    el().play().catch(()=>{});
-    if('mediaSession' in navigator){
-      try{
-        navigator.mediaSession.metadata=new MediaMetadata({
-           title:cb.title||'SÜKÛN ۞',artist:'Tasavvufî Ses & Tefekkür',album:'SÜKÛN Birleşik'});
-        navigator.mediaSession.playbackState='playing';
-        navigator.mediaSession.setActionHandler('play',()=>{el().play().catch(()=>{});cb.onPlay&&cb.onPlay();navigator.mediaSession.playbackState='playing';});
-        navigator.mediaSession.setActionHandler('pause',()=>{cb.onPause&&cb.onPause();navigator.mediaSession.playbackState='paused';});
-        navigator.mediaSession.setActionHandler('stop',()=>{cb.onStop&&cb.onStop();stop();});
-      }catch(e){}
-    }
+    /* start() bir kullanıcı oynatma eyleminden gelir. Önceki genel
+       duraklama bayrağı kalmışsa yeni ses görünürde çalarken ortak context
+       askıda kalmasın ve kilit ekranı "duraklatıldı" demesin. */
+    try{if(typeof MINI==='object'&&MINI&&MINI.paused&&typeof miniClearPause==='function')miniClearPause()}catch(e){}
+    try{if(typeof ctx!=='undefined'&&ctx&&ctx.state==='suspended')ctx.resume()}catch(e){}
+    aktif=true;
+    meta(cb.title||sonBaslik||'SÜKÛN ۞');
+    denetimleriBagla();
+    sadeceDurumSurdur();
   }
   function retitle(t){
-     try{if('mediaSession' in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'Tasavvufî Ses & Tefekkür',album:'SÜKÛN Birleşik'});}catch(e){}
+    sonBaslik=t||sonBaslik;
+    if(aktif)meta(sonBaslik);
   }
   function stop(){
     try{a&&a.pause()}catch(e){}
-    try{navigator.mediaSession.playbackState='none'}catch(e){}
+    try{if(a)a.currentTime=0}catch(e){}
+    aktif=false; cb={};
+    durum('none');
+    try{if('mediaSession' in navigator)navigator.mediaSession.metadata=null}catch(e){}
+    /* Platform kartında işlevsiz düğmeler kalmasın; sonraki start bunları
+       yeniden bağlar. Desteklenmeyen eylemler ayrı ayrı yutulur. */
+    if('mediaSession' in navigator){
+      eylemBagla('play',null);eylemBagla('pause',null);eylemBagla('stop',null);
+    }
   }
-  return{start,retitle,stop};
+  function ensure(t){
+    if(aktif)return;
+    start({title:t||'SÜKÛN — Frekans & Zikir',
+      onPause:()=>{},onPlay:()=>{},onStop:()=>{try{hardStopAll()}catch(e){}}});
+  }
+  return{start,retitle,stop,ensure,isActive:()=>aktif,
+         syncPaused:sadeceDurumDuraklat,syncPlaying:sadeceDurumSurdur};
 })();
 function makeIR(dur,decay){
   const sr=ctx.sampleRate, len=Math.floor(sr*dur), buf=ctx.createBuffer(2,len,sr);
@@ -5872,16 +6001,24 @@ const src=type=>{const s=ctx.createBufferSource();s.buffer=NOISE.get(type);s.loo
    Web Audio zamanlaması kayıyor. Artık TEK döngü var; görünmeyen ya da
    arka plandaki işler hiç çalışmaz. */
 const CIZ={
-  isler:new Map(), raf:null, aktif:false,
+  isler:new Map(), raf:null, aktif:false, son:0,
   ekle(ad,fn,opt){ this.isler.set(ad,{fn,opt:opt||{}}); this.basla(); },
   cikar(ad){ this.isler.delete(ad); if(!this.isler.size)this.dur(); },
   basla(){
     if(this.aktif)return;
     this.aktif=true;
-    const dongu=()=>{
+    const dongu=(simdi)=>{
       if(!this.aktif)return;
       this.raf=requestAnimationFrame(dongu);
       if(document.hidden)return;
+      /* r173: Bütün çizim sağlayıcıları tek rAF altında kalırken profil
+         gerçek kare bütçesini de belirler. Ses zamanlaması görsel süsten
+         daha önceliklidir: Tam≈60, Dengeli≈30, Pil≈8 kare/sn. */
+      const kip=document.body.dataset.perf||'dengeli';
+      const ara=kip==='tam'?16.5:(kip==='pil'?125:33);
+      simdi=Number.isFinite(simdi)?simdi:performance.now();
+      if(simdi-this.son<ara)return;
+      this.son=simdi;
       for(const [ad,is] of this.isler){
         try{
           if(is.opt.el){
@@ -7140,12 +7277,12 @@ const FREQ_PRESETS=[
  {id:'vecd',icon:'🔥',name:'Vecd • Şuur Açıklığı',sub:'Gama 40 Hz • yüksek farkındalık',c:240,b:40},
  {id:'sukut',icon:'🌙',name:'Derin Sükût / Uyku',sub:'Delta 2.5 Hz',c:110,b:2.5},
  {id:'tayy',cat:'astral',icon:'🜂',name:'Tayy-i Mekân Teması',sub:'Theta→Delta→Gama yorumî geçiş (~15 dk)',journey:true},
- {id:'sifa',icon:'🌿',name:'Dönüşüm Niyeti • 528 Hz',sub:'Geleneksel solfej atfı • Alfa 8 Hz',c:528,b:8},
+ {id:'sifa',icon:'🌿',name:'Dönüşüm Niyeti • 528 Hz',sub:'Modern solfej atfı • Alfa 8 Hz',c:528,b:8},
  {id:'kalp',icon:'💚',name:'Kalp Açılışı • 639 Hz',sub:'Bağ & merhamet • Alfa 10 Hz',c:639,b:10},
  {id:'sezgi',icon:'👁',name:'Sezgi • 852 Hz',sub:'İç görü • Theta 6 Hz',c:852,b:6},
  {id:'uyanis',icon:'🌅',name:'Uyanış • 963 Hz',sub:'Yüksek şuur • Gama 35 Hz',c:963,b:35},
- {id:'kurtulus',icon:'🕊',name:'Bırakma Niyeti • 396 Hz',sub:'Geleneksel solfej atfı • Theta 7 Hz',c:396,b:7},
- {id:'onarim',icon:'🔧',name:'Değişim Niyeti • 417 Hz',sub:'Geleneksel solfej atfı • Alfa 9 Hz',c:417,b:9},
+ {id:'kurtulus',icon:'🕊',name:'Bırakma Niyeti • 396 Hz',sub:'Modern solfej atfı • Theta 7 Hz',c:396,b:7},
+ {id:'onarim',icon:'🔧',name:'Değişim Niyeti • 417 Hz',sub:'Modern solfej atfı • Alfa 9 Hz',c:417,b:9},
  {id:'ifade',icon:'🗣',name:'İfade • 741 Hz',sub:'Çözüm & arınma • Beta 14 Hz',c:741,b:14},
  {id:'omm',icon:'🕉',name:'Om • 136.1 Hz',sub:'Geleneksel OM atfı • Theta 7.83 Hz',c:136.1,b:7.83},
  {id:'berrak',icon:'💎',name:'Berrak Odak',sub:'Beta 18 Hz • çalışma & okuma',c:200,b:18},
@@ -7421,7 +7558,7 @@ arinma:{label:'🤲 İstiğfar & Arınma',items:[
     kaydı ve hatim benzeri akışlar ona işlemiyordu. Buraya alınınca hepsi
     kendiliğinden geçerli oldu — Berhetiyye'nin arınma niyeti bu
     kategoriye zaten uygun. */
- {tr:'Yâ Mezcelin • Yâ Bezcelin',ar:'يَا مَزْجَلٍ يَا بَزْجَلٍ',mean:'Berhetiyye’den — iç ve dış arınma; Yâ Kayyûm · Yâ Kâim niyetiyle'},
+ {tr:'Yâ Mezcelin • Yâ Bezcelin',ar:'يَا مَزْجَلٍ يَا بَزْجَلٍ',mean:'Berhetiyye’den — iç ve dış arınma; Menba şerhinde Mezcel için Yâ Kayyûm/Yâ Kâim, Bezcel için Yâ Vedûd karşılığı'},
  {tr:'Hüvel-Evvelü vel-Âhiru vez-Zâhiru vel-Bâtın',ar:'هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ',mean:'Tefekkür zikri • Hadîd sûresi, 3'}
 ]},
 salavat:{label:'🌹 Salavât-ı Şerife',items:[
@@ -7439,60 +7576,56 @@ tesbih:{label:'🕌 Namaz Sonrası Tesbihatı',items:[
  {tr:'Âyetü\u2019l-Kürsî',ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',oku:'Allâhü lâ ilâhe illâ hüve\'l-hayyü\'l-kayyûm. Lâ te\'huzühû sinetün velâ nevm. Lehû mâ fis-semâvâti ve mâ fil-ard. Men zellezî yeşfeu indehû illâ bi-iznih. Ya\'lemü mâ beyne eydîhim ve mâ halfehüm. Velâ yuhîtûne bi-şey\'in min ilmihî illâ bimâ şâ\'. Vesia kürsiyyühüs-semâvâti vel-ard. Velâ yeûdühû hıfzuhümâ ve hüve\'l-aliyyü\'l-azîm.',mean:'Farz namazlardan sonra okunması müstehap (Bakara 255)',adet:1}
 ]},
 /* ══════════════════════════════════════════════════════════════════
-   KASEM-İ BERHETİYYE — 28 İsim   (r146)
+   KASEM-İ BERHETİYYE — 28 İsim   (r174 kaynak revizyonu)
 
    ⚠ KİLİTLİ ALAN. Kullanıcının açık isteği: bu bölüm bir şifreyle
    açılsın, kilitliyken kategori listesinde bile görünmesin.
 
-   ⚠ KAYNAK: Berhetiyye havâs literatürüne (Şemsü'l-Maârif ve benzeri
-   derlemeler) ait bir kasemdir. Kur'ân ya da hadis DEĞİLDİR. Kelimelerin
-   çoğunun anlamı bilinmiyor; Süryânîce/İbrânîce kökenli oldukları
-   söylenir. Okunuşlar kaynaktan kaynağa DEĞİŞİR — aşağıdaki yaygın
-   bir okuyuştur, tek doğru değildir.
+   ⚠ METİN ŞAHİDİ: 28'li sıra, Menbaʿ Uṣûli'l-Hikme içindeki Şerhu'l-
+   Berhetiyye'nin 1951 el-Bâbî el-Halebî baskısı esas alınarak yeniden
+   karşılaştırıldı. Şemsü'l-Maârif-i Kübrâ matbu metni daha kısa ve
+   farklı bir sıra taşır; ikisi aynı şahit değildir.
 
-   ⚠ GELENEĞİN KENDİ UYARISI: klasik havâs kaynakları bu kasemi «ağır»
-   sayar ve mürşid nezaretinde, edeple okunmasını şart koşar. Bu uyarı
-   arayüzde de yazılıdır — kullanıcıya saklanmıyor. */
+   ⚠ AİDİYET: Menbaʿ ve büyük Şems gelenekte Ahmed el-Bûnî'ye nispet
+   edilir; modern yazma araştırması bu aidiyeti kesin kabul etmez ve
+   eserleri daha geç Bûnî külliyatı içinde değerlendirir.
+
+   ⚠ SINIR: Kur'ân veya hadis değildir. Kaynak şerhindeki esmâ karşılıkları
+   metin-içi açıklamalardır; kanonik Esmâü'l-Hüsnâ listesi ya da kesin
+   etimoloji sayılmaz. Arapça kaynak yazımı, Türkçe yaygın tilavet ve
+   Nero'nun tefekkür notu ayrı alanlarda tutulur. */
 berhet:{label:'🔒 Kasem-i Berhetiyye — 28 İsim',gizli:true,items:[
- /* ══ r148: kaynağa göre BAŞTAN yazıldı ══
-    ⚠ Önceki listede üç kusur vardı, kullanıcı bildirdi:
-      · 1. isim yanlıştı (Berheşin yazılmıştı; doğrusu Berhetîhin —
-        Berheşin 8. sıradadır)
-      · «Berheşin ×2» ve «Şemhâhîrin ×3» diye YİNELEME sanılan kayıtlar
-        aslında AYRI isimlerdi; incelik işaretleri kaybolduğu için aynı
-        görünüyorlardı. Doğrusu: Şemhâhirin · Şemhâhîrin · Şemhâhiyerin
-      · Üç isim «n» ile bitmiyordu (Berhayûlâ, Ğayâhâ, Keydehûlâ);
-        Berhetiyye isimlerinin hepsi tenvinli, yani «-n» ile biter.
-    ⚠ Arapça yazım, verilen Türkçe okunuştan türetilmiştir; okunuş
-    esastır. Esmâ karşılıkları ve mânalar kaynaktan alınmıştır. */
- {tr:'Berhetîhin',ar:'بَرْهَتِيهٍ',mean:'1. İsim · Yâ Kuddûs · Yâ Sübbûh — Her türlü noksanlıktan uzak, mukaddes, tertemiz olan. Tenzih, arınma, iç temizliği.',harf:'ا',eb:662,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'eş-Şartayn',may:[4,15,4,30],isaret:'Allah bütün eksikliklerden münezzehtir.',adet:28},
- {tr:'Kerîrin',ar:'كَرِيرٍ',mean:'2. İsim · Yâ Allah · Yâ İlâh — Bütün varlığın Rabbi, ibadete lâyık tek ilâh. Tevhid, teslimiyet, kulluk bilinci.',harf:'ب',eb:430,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Butayn',may:[5,1,5,13],isaret:'Her şey O’ndan gelir, her şey O’na döner.',adet:28},
- {tr:'Tetlîhin',ar:'تَتْلِيهٍ',mean:'3. İsim · Yâ Kuddûs · Yâ Kâdir (derin: Yâ Mucîr · Yâ Habîr) — Koruyan, kudretiyle kuşatan, her şeyden haberdar olan. Korunma, ilâhî gözetim, hikmetli tedbir.',harf:'ج',eb:845,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'es-Süreyyâ',may:[5,14,5,26],isaret:'Allah hem korur hem bilir.',adet:28},
- {tr:'Tûrânin',ar:'طُورَانٍ',mean:'4. İsim · Yâ Hayy · Yâ Muhyî — Daima diri olan, ölü kalpleri dirilten. Hayat, diriliş, kalbin uyanışı.',harf:'د',eb:266,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ed-Deberân',may:[5,27,6,8],isaret:'Gerçek hayat Allah ile dirilir.',adet:28},
- {tr:'Mezcelin',ar:'مَزْجَلٍ',mean:'5. İsim · Yâ Kayyûm · Yâ Kâim — Her şeyi ayakta tutan, varlığı idare eden. Düzen, süreklilik, ilâhî yönetim.',harf:'هـ',eb:80,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Hek‘â',may:[6,9,6,21],isaret:'Kâinat kendi başına değil, Allah’ın kayyûmiyetiyle ayaktadır.',adet:28},
- {tr:'Bezcelin',ar:'بَزْجَلٍ',mean:'6. İsim · Yâ Vehhâb (yaygın: Yâ Vedûd · Yâ Allah) — Karşılıksız veren, lütfunu bolca ihsan eden. İhsan, bağış, cömertlik.',harf:'و',eb:42,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Hen‘â',may:[6,22,7,4],isaret:'Allah vermek için kulun kusursuz olmasını beklemez.',adet:28},
- {tr:'Terkabin',ar:'تَرْقَبٍ',mean:'7. İsim · Yâ Selâm (derin: Yâ Câmi‘) — Barış veren, dağılmış olanı bir araya getiren. Sulh, birlik, toparlanma.',harf:'ز',eb:702,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zirâ‘',may:[7,5,7,17],isaret:'Dağılan kalbi de, dağılan hayatı da toplayan Allah’tır.',adet:28},
- {tr:'Berheşin',ar:'بَرْهَشٍ',mean:'8. İsim · Yâ Muktedir · Yâ Allah (derin: Yâ Münîr) — Nurlandıran, aydınlatan, karanlığı gideren. Nur, basiret, iç aydınlanma.',harf:'ح',eb:507,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nesre',may:[7,18,7,30],isaret:'Allah nur verirse insan yalnız görmez; doğru da görür.',adet:28},
- {tr:'Galmeşin',ar:'غَلْمَشٍ',mean:'9. İsim · Yâ Hamîd · Yâ Mecîd (derin: Yâ Nûr) — Övgüye lâyık, yüce, nurlandıran. Hamd, şeref, ilâhî parlaklık.',harf:'ط',eb:1370,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'et-Tarfe',may:[7,31,8,12],isaret:'Bütün güzelliklerin gerçek kaynağı Allah’tır.',adet:28},
- {tr:'Hûtîrin',ar:'خُوتِيرٍ',mean:'10. İsim · Yâ Kaviyy · Yâ Metîn (celâlî: Yâ Cebbâr · Yâ Müntakim) — Güçlü, sarsılmaz, adaleti ikame eden. Kuvvet, adalet, zulme karşı ilâhî celâl.',harf:'ي',eb:825,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Cebhe',may:[8,13,8,25],isaret:'Allah’ın merhameti sığınaktır; adaleti ise zulme karşı heybetlidir.',adet:28},
- {tr:'Kalnehûdin',ar:'قَلْنَهُودٍ',mean:'11. İsim · Yâ Semî‘ · Yâ Metîn (geniş: Yâ Muhît · Yâ Bedî‘ · Yâ Basîr) — Her şeyi işiten, kuşatan, sağlam hüküm sahibi. İşitilmek, kuşatılmak, ilâhî farkındalık.',harf:'ك',eb:195,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zübrâ',may:[8,26,9,7],isaret:'Duyulmayan duâ yoktur; sadece cevabın vakti ve hikmeti vardır.',adet:28},
- {tr:'Berşânin',ar:'بَرْشَانٍ',mean:'12. İsim · Yâ Muhît · Yâ Allah — İlmi ve kudretiyle her şeyi kuşatan. Kuşatıcılık, hâkimiyet, varlığın Allah’la çevrili oluşu.',harf:'ل',eb:553,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'es-Sarfe',may:[9,8,9,20],isaret:'Hiçbir yer Allah’ın ilminden dışarıda değildir.',adet:28},
- {tr:'Kazhîrin',ar:'كَظْهِيرٍ',mean:'13. İsim · Yâ Sübhân · Yâ Kaviyy — Noksanlıktan uzak, şânı yüce, kuvvet sahibi. Tenzih, yücelik, kudret.',harf:'م',eb:935,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Avvâ',may:[9,21,10,3],isaret:'Allah’ın kudreti eksiklikten münezzehtir.',adet:28},
- {tr:'Nemûşelahin',ar:'نَمُوشَلَخٍ',mean:'14. İsim · Yâ Azîz · Yâ Allah — İzzet sahibi, mağlup edilemez, mutlak üstün. İzzet, vakar, ilâhî üstünlük.',harf:'ن',eb:1026,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'es-Semâk',may:[10,4,10,16],isaret:'İzzet Allah’tandır; kulda kalıcı izzet ancak O’na yakınlıkla olur.',adet:28},
- {tr:'Berheyûlen',ar:'بَرْهَيُولٍ',mean:'15. İsim · Yâ Kâfî · Yâ Sâni‘ (rahmet: Yâ Mucîb · Yâ Semî‘ · Yâ Kerîm · Yâ Şekûr) — Kullarına yeten, yaratan, cevap veren, ikram eden. İcabet, rahmet, yetinme, teslimiyet.',harf:'س',eb:254,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Gafir',may:[10,17,10,29],isaret:'Ben yetemem; Sen Kâfî’sin. Ben bilemem; Sen Hakîm’sin.',adet:28},
- {tr:'Beşkeylahin',ar:'بَشْكَيْلَخٍ',mean:'16. İsim · Yâ Mü’min — Güven veren, iman eden kullarını emniyete alan. Emniyet, iman, korunma.',harf:'ع',eb:962,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ez-Zübânâ',may:[10,30,11,11],isaret:'Gerçek güven, Allah’a sığınan kalpte doğar.',adet:28},
- {tr:'Kâzmezin',ar:'كَاظْمَزٍ',mean:'17. İsim · Yâ Müheymin — Gözeten, koruyan, denetleyen, himâye eden. İlâhî gözetim, himâye, koruyucu kudret.',harf:'ف',eb:154,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Eklîl',may:[11,12,11,24],isaret:'Allah görür, bilir, korur; hiçbir hâl başıboş değildir.',adet:28},
- {tr:'Engalelîtin',ar:'أَنْغَلَلِيطٍ',mean:'18. İsim · Yâ Azîm · Yâ Hakîm (incelik: Yâ Latîf · Yâ Habîr) — Yüce, hikmet sahibi, en ince sırları bilen. Hikmet, letâfet, sır idraki.',harf:'ص',eb:1130,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Kalb',may:[11,25,12,7],isaret:'Allah’ın bazı işleri görünürde sert, hakikatte latiftir.',adet:28},
- {tr:'Kaberâtin',ar:'قَبَرَاتٍ',mean:'19. İsim · Yâ Bâkî — Varlığı sonsuz olan, kalıcı olan. Bekâ, fânîlik bilinci, ebediyet.',harf:'ق',eb:703,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'eş-Şevle',may:[12,8,12,20],isaret:'Fânî olana tutunan yorulur; Bâkî olana yönelen huzur bulur.',adet:28},
- {tr:'Gayâhen',ar:'غَيَاهٍ',mean:'20. İsim · Yâ Kerîm · Yâ Kâdir (celâlî: Yâ Kahhâr · Yâ Cebbâr · Yâ Kâdî) — İkram eden, kudret sahibi, hükmü galip gelen. Hüküm, kader, galebe, celâl.',harf:'ر',eb:1017,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nuâîm',may:[12,21,1,2],isaret:'Allah’ın hükmü gecikse de eksik kalmaz.',adet:28},
- {tr:'Keydehûlen',ar:'كَيْدَهُولٍ',mean:'21. İsim · Yâ Kadîm · Yâ Kahhâr (kudret: Yâ Serî‘ · Yâ Kadîr) — Öncesiz, mutlak kudret sahibi, hükmü süratle yerine gelen. Kıdem, hız, kudret, hâkimiyet.',harf:'ش',eb:76,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Belde',may:[1,3,1,15],isaret:'Allah için uzak-yakın, erken-geç, zor-kolay yoktur.',adet:28},
- {tr:'Şemhâhirin',ar:'شَمْخَاهِرٍ',mean:'22. İsim · Yâ Tevvâb — Tövbeleri kabul eden, kulunu tekrar kapısına alan. Tövbe, dönüş, affa yöneliş.',harf:'ت',eb:1146,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'Sa‘dü’z-Zâbih',may:[1,16,1,28],isaret:'Kul dönerse kapı kapanmaz; Allah Tevvâb’dır.',adet:28},
- {tr:'Şemhâhîrin',ar:'شَمْخَاهِيرٍ',mean:'23. İsim · Yâ Habîr · Yâ Müteâlî — Her şeyden haberdar olan, yüceler yücesi. Haber, bilinç, yücelik.',harf:'ث',eb:1165,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'Sa‘dü’l-Beli‘',may:[1,29,2,10],isaret:'Allah hem en yakını bilir hem en yüce olandır.',adet:28},
- {tr:'Şemhâhiyerin',ar:'شَمْخَاهِيَرٍ',mean:'24. İsim · Yâ Rahmân · Yâ Rahîm — Sonsuz merhamet sahibi, kullarına rahmetiyle muamele eden. Rahmet, şefkat, bağışlanma.',harf:'خ',eb:561,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'Sa‘dü’s-Su‘ûd',may:[2,11,2,23],isaret:'Allah’ın rahmeti, kulun hatasından büyüktür.',adet:28},
- {tr:'Bikehtahûniyyetin',ar:'بِكَهْتَهُونِيَّةٍ',mean:'25. İsim · Yâ Mü’min · Yâ Müheymin (zaman: Yâ Kadîm · Yâ Dâim · Yâ Evvel · Yâ Âhir) — Güven veren, gözeten, evvel ve âhir olan. Zaman üstü idrak, süreklilik, ilâhî kuşatma.',harf:'ذ',eb:112,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'Sa‘dü’l-Ahbiyye',may:[2,24,3,8],isaret:'Zaman akar; fakat Allah zamanın mahkûmu değildir.',adet:28},
- {tr:'Beşârişin',ar:'بَشَارِشٍ',mean:'26. İsim · Yâ Câmi‘ · Yâ Kâdir — Dağılmış olanı toplayan, dilediğini bir araya getiren. Cem, toparlanma, kaderin parçalarını birleştirme.',harf:'ض',eb:803,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Ferğü’l-Mukaddem',may:[3,9,3,21],isaret:'Allah dilerse kopan bağlar birleşir, dağılan yollar buluşur.',adet:28},
- {tr:'Tûneşin',ar:'طُونَشٍ',mean:'27. İsim · Yâ Şekûr — Az amele çok karşılık veren, şükrü zâyi etmeyen. Şükür, bereket, karşılık.',harf:'ظ',eb:365,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Ferğü’l-Muahhir',may:[3,22,4,3],isaret:'Allah katında samimi az, gafletli çoktan değerlidir.',adet:28},
- {tr:'Şemhabârûhin',ar:'شَمْخَبَارُوخٍ',mean:'28. İsim · Yâ Muktedir · Yâ Kâdir — Mutlak kudret sahibi, her şeye gücü yeten. Kudret, hâkimiyet, tasarruf.',harf:'غ',eb:1750,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'er-Reşâ',may:[4,4,4,14],isaret:'Kudret Allah’ındır; kulun payı edep, duâ ve teslimiyettir.',adet:28},
+ /* Kaynak Arapçası matbu başlıklardan aktarılır; hareke/tenvin ve Türkçe
+    tilavet varyantı yazılı ebcede eklenmez. Ebced = kaynak yazımının
+    standart büyük ebced toplamıdır; 28 adın toplamı 18787'dir. */
+ {tr:'Berhetîhi',oku:'Berhetîhin',ar:'برهتيه',serh:'el-Kuddûs / es-Sübbûh',mean:'Tenzih, arınma ve iç temizlik üzerine uygulama yorumu.',harf:'ا',eb:622,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'eş-Şartayn (Menba: en-Nath)',may:[4,15,4,30],isaret:'Allah bütün eksikliklerden münezzehtir.',varyant:'Matbu yazım برهتيه’dir. Türkçe tilavetteki son “n” yazılı bir ن değildir ve ebcede katılmaz.',adet:28},
+ {tr:'Kerîr',oku:'Kerîrin',ar:'كرير',serh:'İlâhu kulli şey / yâ Allah',mean:'Tevhid, teslimiyet ve kulluk bilinci üzerine uygulama yorumu.',harf:'ب',eb:430,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Butayn',may:[5,1,5,13],isaret:'Her şey O’ndan gelir, her şey O’na döner.',adet:28},
+ {tr:'Tetlîh',oku:'Tetlîhin',ar:'تتليه',serh:'el-Kuddûs, el-Kādir; varyantlarda el-Habîr / el-Mucîr',mean:'Korunma, ilâhî gözetim ve hikmetli tedbir üzerine uygulama yorumu.',harf:'ج',eb:845,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'es-Süreyyâ',may:[5,14,5,26],isaret:'Allah hem korur hem bilir.',adet:28},
+ {tr:'Tûrân',oku:'Tûrânin',ar:'طوران',serh:'yâ Hayy / yâ Muhyî',mean:'Hayat, diriliş ve kalbin uyanışı üzerine uygulama yorumu.',harf:'د',eb:266,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ed-Deberân',may:[5,27,6,8],isaret:'Gerçek hayat Allah ile dirilir.',adet:28},
+ {tr:'Mezcel',oku:'Mezcelin',ar:'مزجل',serh:'yâ Kayyûm / yâ Kâim',mean:'Düzen, süreklilik ve kayyûmiyet üzerine uygulama yorumu.',harf:'هـ',eb:80,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Hek‘â',may:[6,9,6,21],isaret:'Kâinat kendi başına değil, Allah’ın kayyûmiyetiyle ayaktadır.',adet:28},
+ {tr:'Bezcel',oku:'Bezcelin',ar:'بزجل',serh:'yâ Vedûd; varyantlarda yâ Bâkî, Kahhâr, Hakîm, Vâhid',mean:'İhsan, bağış ve sevgi üzerine uygulama yorumu.',harf:'و',eb:42,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Hen‘â',may:[6,22,7,4],isaret:'Lütuf, kulun kusursuzluğuna bağlı değildir.',varyant:'Önceki “Vehhâb” eşlemesi bu şerhin açık karşılığı değildi; kaynakta Vedûd ve başka varyantlar geçer.',adet:28},
+ {tr:'Terkab',oku:'Terkabin',ar:'ترقب',serh:'yâ Selâm',mean:'Sulh, birlik ve toparlanma üzerine uygulama yorumu.',harf:'ز',eb:702,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zirâ‘',may:[7,5,7,17],isaret:'Dağılan kalbi de, dağılan hayatı da toplayan Allah’tır.',adet:28},
+ {tr:'Berheş',oku:'Berheşin',ar:'برهش',serh:'yâ Muktedir; yâ Allah hitabı',mean:'Nur, basiret ve iç aydınlanma üzerine uygulama yorumu.',harf:'ح',eb:507,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nesre',may:[7,18,7,30],isaret:'Allah nur verirse insan yalnız görmez; doğru da görür.',adet:28},
+ {tr:'Galmeş',oku:'Galmeşin',ar:'غلمش',serh:'yâ Hamîd / yâ Mecîd; yâ Melik',mean:'Hamd, şeref ve ilâhî parlaklık üzerine uygulama yorumu.',harf:'ط',eb:1370,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'et-Tarfe',may:[7,31,8,12],isaret:'Bütün güzelliklerin gerçek kaynağı Allah’tır.',adet:28},
+ {tr:'Hûtîr',oku:'Hûtîrin',ar:'خوطير',serh:'yâ Kaviyy / yâ Metîn; yâ Aliyy / yâ Hakîm',mean:'Kuvvet, metanet ve adalet üzerine uygulama yorumu.',harf:'ي',eb:825,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Cebhe',may:[8,13,8,25],isaret:'Merhamet sığınak, adalet zulme karşı heybet olur.',adet:28},
+ {tr:'Kalnehûd',oku:'Kalnehûdin',ar:'قلنهود',serh:'yâ Metîn; yâ Semî‘/Basîr veya Bedî‘; yâ Muğnî; yâ Muhît',mean:'İşitilme, kuşatılma ve farkındalık üzerine uygulama yorumu.',harf:'ك',eb:195,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zübrâ (Menba: el-Hartân)',may:[8,26,9,7],isaret:'Duyulmayan duâ yoktur; cevabın vakti ve hikmeti vardır.',adet:28},
+ {tr:'Berşân',oku:'Berşânin',ar:'برشان',serh:'yâ Muhît; yâ Allah / yâ Azîz',mean:'Kuşatıcılık ve ilâhî ilim üzerine uygulama yorumu.',harf:'ل',eb:553,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'es-Sarfe',may:[9,8,9,20],isaret:'Hiçbir yer Allah’ın ilminden dışarıda değildir.',adet:28},
+ {tr:'Kazhîr',oku:'Kazhîrin',ar:'كظهير',serh:'Sübhânallah; yâ Kaviyy / yâ Metîn; varyantta yâ Rahîm',mean:'Tenzih, yücelik ve kudret üzerine uygulama yorumu.',harf:'م',eb:1135,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Avvâ',may:[9,21,10,3],isaret:'Allah’ın kudreti eksiklikten münezzehtir.',varyant:'كظهير standart ebcedle 1135 eder; önceki 935 değeri bu yazımla uyuşmuyordu.',adet:28},
+ {tr:'Nemûşelah',oku:'Nemûşelahin',ar:'نموشلخ',serh:'yâ Allah / yâ Azîz; yâ Kaviyy / Metîn; yâ Hû',mean:'İzzet, vakar ve ilâhî üstünlük üzerine uygulama yorumu.',harf:'ن',eb:1026,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'es-Semâk',may:[10,4,10,16],isaret:'İzzet Allah’tandır; kuldaki izzet O’na yakınlıkla kalıcılaşır.',adet:28},
+ {tr:'Berheyûlâ',oku:'Berheyûlen',ar:'برهيولا',serh:'Sübhânallah; yâ Kâfî / yâ Semî‘',mean:'İcabet, rahmet, yetinme ve teslimiyet üzerine uygulama yorumu.',harf:'س',eb:254,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Gafir',may:[10,17,10,29],isaret:'Ben yetemem; Sen Kâfî’sin. Ben bilemem; Sen Hakîm’sin.',varyant:'Matbu başlık final elifle برهيولا’dır; “Berheyûlen” uygulamada korunan yaygın Türkçe tilavet biçimidir.',adet:28},
+ {tr:'Beşkeylah',oku:'Beşkeylahin',ar:'بشكيلخ',serh:'yâ Mü’min; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'Emniyet, iman ve korunma üzerine uygulama yorumu.',harf:'ع',eb:962,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ez-Zübânâ',may:[10,30,11,11],isaret:'Gerçek güven, Allah’a sığınan kalpte doğar.',adet:28},
+ {tr:'Kazmaz',oku:'Kazmazın',ar:'قزمز',serh:'yâ Müheymin; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'İlâhî gözetim ve himaye üzerine uygulama yorumu.',harf:'ف',eb:154,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Eklîl',may:[11,12,11,24],isaret:'Allah görür, bilir, korur; hiçbir hâl başıboş değildir.',varyant:'Kaynak yazımı قزمز’dir. Önceki كاظمز yazımı saklanan 154 değeriyle uyuşmuyordu.',adet:28},
+ {tr:'Engalelît',oku:'Engalelîtin',ar:'أنغلليط',serh:'yâ Azîm / Hakîm; yâ Habîr / Latîf; er-Rahmân er-Rahîm',mean:'Hikmet, letâfet ve sır idraki üzerine uygulama yorumu.',harf:'ص',eb:1130,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Kalb',may:[11,25,12,7],isaret:'Bazı işler görünürde sert, hakikatte latif olabilir.',adet:28},
+ {tr:'Kaberât',oku:'Kaberâtin',ar:'قبرات',serh:'yâ Azîz, Bâkî, Halîm, Hakîm; yâ Kâfî / Kerîm',mean:'Bekâ ve fânîlik bilinci üzerine uygulama yorumu.',harf:'ق',eb:703,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'eş-Şevle',may:[12,8,12,20],isaret:'Fânî olana tutunan yorulur; Bâkî olana yönelen huzur bulur.',adet:28},
+ {tr:'Gayâhâ',oku:'Gayâhen',ar:'غياها',serh:'yâ Kerîm; yâ Kahhâr/Kâdî; yâ Azîz / Cebbâr',mean:'Hüküm, kader ve ilâhî galebe üzerine uygulama yorumu.',harf:'ر',eb:1017,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nuâîm',may:[12,21,1,2],isaret:'Allah’ın hükmü gecikse de eksik kalmaz.',varyant:'Matbu başlık final elifle غياها’dır; “Gayâhen” yaygın Türkçe tilavet biçimi olarak ayrıca korunur.',adet:28},
+ {tr:'Keydehûlâ',oku:'Keydehûlen',ar:'كيدهولا',serh:'el-Kādir hüve’llah; yâ Kadîm / Kahhâr / Kadîr; yâ Serî‘',mean:'Kıdem, sürat ve kudret üzerine uygulama yorumu.',harf:'ش',eb:76,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Belde',may:[1,3,1,15],isaret:'Allah için uzak-yakın, erken-geç, zor-kolay yoktur.',varyant:'Matbu başlık final elifle كيدهولا’dır; “Keydehûlen” yaygın Türkçe tilavet biçimidir.',adet:28},
+ {tr:'Şemḫâhir',oku:'Şemhâhirin',ar:'شمخاهر',serh:'Teâleyte yâ Aliyy yâ Alîm',mean:'Yücelik ve ilim üzerine uygulama yorumu.',harf:'ت',eb:1146,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'Sa‘dü’z-Zâbih',may:[1,16,1,28],isaret:'İlim ve yücelik yalnız Allah’a nispetle anlam kazanır.',varyant:'22–24. başlıklar benzer görünür fakat kaynak harfleri ayrıdır: شمخاهر / شمخاهير / شمهاهير.',adet:28},
+ {tr:'Şemḫâhîr',oku:'Şemhâhîrin',ar:'شمخاهير',serh:'yâ Kâfî; yâ Hû; yâ Rabb',mean:'Kifayet, yöneliş ve rubûbiyet üzerine uygulama yorumu.',harf:'ث',eb:1156,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'Sa‘dü’l-Beli‘',may:[1,29,2,10],isaret:'Kula yeten ve onu terbiye eden Allah’tır.',varyant:'شمخاهير standart ebcedle 1156 eder; önceki 1165 rakam aktarımı ters çevrilmişti.',adet:28},
+ {tr:'Şemhâhîr',oku:'Şemhâhîrin (h ile)',ar:'شمهاهير',serh:'yâ Kadîr/Kādir; yâ Kâfî / Azîz / Cebbâr',mean:'Kudret, kifayet ve izzet üzerine uygulama yorumu.',harf:'خ',eb:561,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'Sa‘dü’s-Su‘ûd',may:[2,11,2,23],isaret:'Kudret Allah’ın; kula düşen güven ve edeptir.',varyant:'Bu başlıkta خ değil ه vardır: شمهاهير. Önceki شمخاهيار yazımı kaynakla ve 561 toplamıyla uyuşmuyordu.',adet:28},
+ {tr:'Bikehtahûniye',oku:'Bikehtahûniyyetin',ar:'بكهطهونيه',serh:'yâ Kadîm / yâ Dâim',mean:'Süreklilik ve zaman üstü ilâhîlik üzerine uygulama yorumu.',harf:'ذ',eb:112,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'Sa‘dü’l-Ahbiyye',may:[2,24,3,8],isaret:'Zaman akar; fakat Allah zamanın mahkûmu değildir.',varyant:'Menba baskısı varyantları kaydeder ve بكهطهونيه biçimini “doğru” diye tercih eder.',adet:28},
+ {tr:'Beşâriş',oku:'Beşârişin',ar:'بشارش',serh:'yâ Kādir alâ kulli şey',mean:'Kudret ve dağılmış olanın toparlanması üzerine uygulama yorumu.',harf:'ض',eb:803,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Ferğü’l-Mukaddem',may:[3,9,3,21],isaret:'Allah dilerse kopan bağlar birleşir, dağılan yollar buluşur.',adet:28},
+ {tr:'Tûneş',oku:'Tûneşin',ar:'طونش',serh:'yâ Şekûr; hüve’llâhu’l-Kerîm',mean:'Şükür ve bereket üzerine uygulama yorumu.',harf:'ظ',eb:365,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Ferğü’l-Muahhir',may:[3,22,4,3],isaret:'Samimi az amel, gafletli çokluktan değerlidir.',varyant:'Menba; طوش، طرش، طوياش varyantlarını da kaydeder ve ilk yazım طونش’i tercih eder.',adet:28},
+ {tr:'Şemḫâ Bârûḫ',oku:'Şemhabârûhin',ar:'شمخا باروخ',serh:'el-Kādir hüve’llâhu’l-Kerîm',mean:'Kudret, hâkimiyet ve teslimiyet üzerine uygulama yorumu.',harf:'غ',eb:1750,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'er-Reşâ',may:[4,4,4,14],isaret:'Kudret Allah’ındır; kulun payı edep, duâ ve teslimiyettir.',varyant:'Kaynakta iki kelime ve ilk bölümün sonunda elif vardır: شمخا باروخ.',adet:28},
 ]},
 terkip:{label:'⚯ Esmâ Terkipleri — grup zikri',items:[
  /* ═══ ESMÂ TERKİPLERİ (r129) ═══
@@ -7513,19 +7646,20 @@ terkip:{label:'⚯ Esmâ Terkipleri — grup zikri',items:[
     ⚠ Bunlar hadis değil, HAVÂS/MÜCERREBÂT geleneğine ait tertiplerdir.
     Arayüzde `mucerrebat` rozetiyle ayrı gösteriliyor ki kullanıcı
     kaynağın türünü bilsin. */
- /* r131: Ekberî kaynağa göre güncellendi — ebced 212, üç ayrı tertip */
+ /* r174: 212/579/1060 kaynak sayfasıyla doğrulanmış ebced değil;
+    kullanıcı derlemesindeki önerilen adet olarak korunur. */
  {tr:'Yâ Serîu',ar:'يَا سَرِيعُ',c:'#e8b14a',grup:'seriu',oku:'Yâ Serîu',n:1,kay:'ekberi',adet:212,
-  mean:'Hesabı en süratli gören, duâya gecikmeksizin karşılık veren — «Serîu’l-hisâb» sıfatından · ebced 212',
+  mean:'«Serîu’l-hisâb» sıfatından hareketle kullanılan hitap · derleme adedi 212 · yazım ebcedi 340',
   vird:'<b>212</b> defa seher vakti; ardından: «Yâ Serîa’l-hisâbi iğfir lî ve’kdi hâcetî bi-lutfike yâ Erhame’r-râhimîn.»'},
 
  {tr:'Yâ Serîu • Yâ Karîb • Yâ Mucîb (579)',
   ar:'يَا سَرِيعُ يَا قَرِيبُ يَا مُجِيبُ',c:'#d98a3f',grup:'seriu',oku:'Yâ Serîu • Yâ Karîb • Yâ Mucîb',n:3,kay:'ekberi',adet:579,
-  mean:'Ağır kriz ve tıkanıklıkların çözülmesi için — ebced toplamı 212 + 312 + 55 = 579',
+  mean:'Darlıkta yöneliş için derleme tertibi · önerilen adet 579 · standart yazım ebcedi 340 + 312 + 55 = 707',
   vird:'<b>579</b> defa · yatsıdan sonra ya da seher vaktinde'},
 
  {tr:'Feth-i Karîb — Yâ Serîu • Yâ Kâfî (1060)',
   ar:'يَا سَرِيعُ يَا كَافِي',c:'#c96a4a',grup:'seriu',oku:'Yâ Serîu • Yâ Kâfî',n:2,kay:'ekberi',adet:1060,
-  mean:'Yakın fetih ve yeterlilik niyeti',
+  mean:'Yakın fetih ve yeterlilik niyeti · 1060 derleme adedidir, ebced toplamı değildir',
   vird:'<b>7 gün</b> boyunca aynı saatte: 2 rekât hâcet namazı, 100 istiğfar, 100 salavât; ardından <b>1060</b> defa'},
 
  {tr:'Formül 1 — Rızık ve Maddî Tıkanıklık',
@@ -7777,8 +7911,8 @@ function renderZikir(swap=true){
           :k==='mucerrebat'?'mucerrebat':k==='ekberi'?'ekberi':'gelenek');
         rz.textContent = k==='ayet' ? 'âyet'
           : k==='kendi' ? 'kendi terkibin'
-          : k==='mucerrebat' ? 'mücerrebât'
-          : k==='ekberi' ? 'Ekberî' : 'gelenek';
+          : k==='mucerrebat' ? 'derleme · mücerrebât'
+          : k==='ekberi' ? 'Ekberî’ye nispet' : 'gelenek';
         /* r131: kaynakta belirtilen adet varsa hedefi ona ayarla —
            212 / 579 / 1060 gibi sayılar tertibin parçası. */
         try{ if(it.adet && typeof ensureTargetOpt==='function'){
@@ -7796,12 +7930,11 @@ function renderZikir(swap=true){
        aşağıda `okEl`); sonuç: sûrelerde Latin okunuş İKİ KEZ yazılıyor,
        anlam ekrandan aşağı itiliyordu. Fazlalık kaldırıldı; tek alan
        `#zOku` kaldı ve o zaten bütün `oku` alanlı kayıtları kapsıyor. */
-    /* ══ r149: AY MENZİLİ ══
-       Havâs geleneğinde her Berhetiyye ismi 28 ay menzilinden birine
-       denk gelir; o menzil günlerinde okunması tavsiye edilir. Uygulama
-       bugünün menzilini HESAPLIYOR ve «şimdi vakti» olanı işaretliyor.
-       ⚠ Tarihler burç derecelerinden YAKLAŞIK hesaplanmıştır; kesin gün
-       için o yılın ay takvimi takip edilmelidir — arayüzde yazılı. */
+    /* ══ r174: MENZİL + SABİT TAKVİM EŞLEMESİ ══
+       Menba şerhi 28 ismi 28 harf ve 28 ay menziliyle eşler. `may`
+       alanındaki yıllık sabit günler ise Ay'ın anlık ekliptik konumunu
+       hesaplamaz; güneş/takvim temelli yaklaşık bir eşlemedir. Bu yüzden
+       artık «bugünün ay menzili» veya «şimdi vakti» diye sunulmaz. */
     const mz=document.getElementById('zMenzil');
     if(mz){
       const M=it&&it.menzil, A=it&&it.may;
@@ -7815,8 +7948,8 @@ function renderZikir(swap=true){
           const p=(m,g)=>m*100+g, t=p(bm,bg), a=p(m1,g1), z=p(m2,g2);
           return a<=z ? (t>=a&&t<=z) : (t>=a||t<=z);
         };
-        const simdi=ic(A[0],A[1],A[2],A[3]);
-        mz.classList.toggle('simdi',simdi);
+        const takvimde=ic(A[0],A[1],A[2],A[3]);
+        mz.classList.toggle('simdi',takvimde);
         /* r150: matris satırı — harf · ebced · unsur · tabiat */
         const mat=[];
         if(it.harf)mat.push('<span class="mzH" lang="ar">'+it.harf+'</span>');
@@ -7824,9 +7957,10 @@ function renderZikir(swap=true){
         if(it.unsur)mat.push('<span class="mzU u-'+
           ({'Ateş':'ates','Toprak':'toprak','Hava':'hava','Su':'su'}[it.unsur]||'')+'">'+it.unsur+'</span>');
         if(it.tabiat)mat.push(it.tabiat);
-        mz.innerHTML='<b>Menzil:</b> '+M+' · '+A[1]+' '+AY[A[0]-1]+' – '+A[3]+' '+AY[A[2]-1]+
-          (simdi?' <span class="mzSimdi">şimdi vakti</span>':'')+
-          (mat.length?'<div class="mzMat">'+mat.join(' · ')+'</div>':'');
+        mz.innerHTML='<b>Menzil eşlemesi:</b> '+M+' · sabit takvim '+A[1]+' '+AY[A[0]-1]+' – '+A[3]+' '+AY[A[2]-1]+
+          (takvimde?' <span class="mzSimdi">takvim aralığında</span>':'')+
+          (mat.length?'<div class="mzMat">'+mat.join(' · ')+'</div>':'')+
+          '<div class="mzMat">Bu aralık Ay’ın gökyüzündeki anlık menzilini göstermez; gerçek Ay konumu bu sürümde hesaplanmıyor.</div>';
       }
     }
     /* r146: kilitli bölümün kaynak ve edeb uyarısı — kullanıcıdan
@@ -7835,10 +7969,10 @@ function renderZikir(swap=true){
     if(uy){
       const gz=(ZIKIR[Z.cat]||{}).gizli;
       uy.hidden=!gz;
-      if(gz)uy.innerHTML='<b>⚠ Kaynak:</b> Berhetiyye havâs literatürüne aittir; '+
-        'Kur’ân ya da hadis değildir. Kelimelerin çoğunun anlamı bilinmez, '+
-        'okunuşlar kaynaktan kaynağa değişir. Klasik kaynaklar bu kasemi ağır '+
-        'sayar ve <b>mürşid nezaretinde, edeple</b> okunmasını şart koşar.';
+      if(gz)uy.innerHTML='<b>⚠ Metin durumu:</b> 28’li sıra, Bûnî’ye nispet edilen fakat aidiyeti modern araştırmada tartışmalı '+
+        '<i>Menbaʿ Uṣûli’l-Hikme</i> içindeki Berhetiyye şerhinin 1951 matbu yazımına göre gösterilir. '+
+        'Şemsü’l-Maârif-i Kübrâ başka/kısa bir varyant taşır. Bu metin <b>Kur’ân veya hadis değildir</b>; '+
+        'şerhteki esmâ karşılıkları da kesin etimoloji ya da kanonik ilâhî isim listesi sayılmaz.';
     }
     const nz=document.getElementById('zNiyet');
     if(nz){
@@ -7848,7 +7982,7 @@ function renderZikir(swap=true){
       const hizbli = it && (it.kay==='ekberi'||it.kay==='mucerrebat');
       nz.hidden=!(n||hizbli);
       let g='';
-      if(n)g+=(it.isaret?'<b>İşaret:</b> ':(it.niyet?'<b>Niyet:</b> ':'<b>Vird:</b> '))+n;
+      if(n)g+=(it.isaret?'<b>Nero tefekkür notu:</b> ':(it.niyet?'<b>Niyet:</b> ':'<b>Vird:</b> '))+n;
       if(hizbli)g+=(n?'<br>':'')+
         '<a href="#" id="zHvkAc" style="color:var(--goldh);text-decoration:none;border-bottom:1px dotted">'+
         '🛡 Başta Hizbü’l-Vikâye oku →</a>';
@@ -7872,7 +8006,10 @@ function renderZikir(swap=true){
     Z.target=it.adet; ensureTargetOpt(it.adet,String(it.adet));
   }
   if(_kat==='esma'){ const f=esmaForms(it); ar=f.ar; tr=f.tr; mean=f.mean; eb=f.eb; }
-  else { ar=it.ar; tr=it.tr; mean=it.mean; }
+  else {
+    ar=it.ar; tr=it.tr; mean=it.mean;
+    if(_kat==='berhet'&&it.serh)mean='Menba şerhinde zikredilen karşılık: '+it.serh+(it.mean?' · '+it.mean:'');
+  }
   const arEl=$('#zAr');
   arEl.textContent=ar;
   /* uzun sûre/âyet metinlerinde punto küçülsün */
@@ -9088,6 +9225,19 @@ function hardStopAll(){
   }catch(e){}
   /* Uyku fade'i kesildiyse ana ses seviyesi sıfıra doğru yürümeye devam etmesin. */
   try{if(ctx&&master){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(+$('#masterVol').value,ctx.currentTime,.08)}}catch(e){}
+  /* r172: Sessiz MediaSession köprüsü de gerçek bir oynatıcıdır. Bunu açık
+     bırakmak kilit ekranındaki kartı ve kulaklık medya odağını canlı tutar;
+     kullanıcı sesi uygulamadan durdursa bile telefon "çalıyor" sanır. */
+  try{window.SesCapa&&SesCapa.stop()}catch(e){}
+  /* Duraklatılmış durumdan kesin durdurmaya geçildiyse mini çubuk eski
+     "Duraklatıldı" etiketini taşımamalı; burada TTS'i sürdürmeden yalnız
+     taşıma durumunu sıfırlarız. */
+  try{
+    if(typeof MINI==='object'&&MINI){MINI.paused=false;MINI.wasAuto=false;}
+    const bar=document.getElementById('miniBar');if(bar)bar.classList.remove('paused');
+    const p=document.getElementById('mbPause');if(p)p.textContent='⏸';
+    const pu=document.getElementById('mbPulse');if(pu)pu.textContent='〰';
+  }catch(e){}
 }
 $('#stopAll').onclick=hardStopAll;
 
@@ -10749,7 +10899,7 @@ const SK_YEDEK_KEYS=new Set(`
   sukun.kapi7 sukun.karisim sukun.kilitPin sukun.lang sukun.lastBackup
   sukun.lataif sukun.log sukun.maneviGunluk sukun.muhasebe sukun.myfreq
   sukun.mzbz sukun.name sukun.nameSkip sukun.nefs sukun.nefsprog sukun.neuro
-  sukun.neuroHedefGun sukun.niyet sukun.obSeenBuild sukun.okumaHiz
+  sukun.neuroHedefGun sukun.niyet sukun.obSeenBuild sukun.okumaHiz sukun.perf
   sukun.onboardSeen sukun.play8d sukun.playReverb sukun.prefilter sukun.preopen
   sukun.recEcho sukun.recGain sukun.recNoise sukun.rut sukun.rxHist
   sukun.rxesmabg sukun.rxesmaint sukun.salavatAtla sukun.set sukun.shimmer
@@ -10990,7 +11140,7 @@ function ydkListe(){
   sif.onclick=e=>{ e.preventDefault();
     if(confirm('Şifre sıfırlansın mı? Kayıtların ve sayaçların silinmez.')){
       kltSifirla(); yaz(); if(typeof toast==='function')toast('Şifre sıfırlandı'); } };
-  /* r149: bugünün ay menzili — açıkken kısayol göster */
+  /* r174: sabit geleneksel takvim eşlemesi — gerçek Ay konumu değildir */
   function bugunYaz(){
     const el=document.getElementById('kltBugun'); if(!el)return;
     if(!KLT_ACIK()){ el.hidden=true; return; }
@@ -11003,8 +11153,8 @@ function ydkListe(){
         return a<=z ? (t>=a&&t<=z) : (t>=a||t<=z); });
       if(i<0){ el.hidden=true; return; }
       el.hidden=false;
-      el.innerHTML='🌙 Bugün <b>'+it[i].menzil+'</b> menzili — '+
-        '<a href="#" data-i="'+i+'">'+it[i].tr+'</a> vakti';
+      el.innerHTML='🗓 Bugünün sabit takvim eşlemesi: <b>'+it[i].menzil+'</b> · '+
+        '<a href="#" data-i="'+i+'">'+it[i].tr+'</a>. Ay’ın anlık menzili hesaplanmaz.';
       const a=el.querySelector('a');
       if(a)a.onclick=e=>{ e.preventDefault();
         Z.cat='berhet'; Z.idx=+a.dataset.i; Z.count=0;
@@ -13945,7 +14095,7 @@ const AYETULKURSI=[
   bag:"Âyet, kulun yükünü indirdiği yerde biter. Bütün âlemi taşımak O'na ağır gelmiyorsa, senin derdin de O'na ağır gelmez."}
 ];
 window.AYETULKURSI=AYETULKURSI;
-const AK_GIRIS="Âyetü'l-Kürsî, Bakara sûresinin 255. âyetidir. Sahih hadislerde Kur'an'ın en büyük âyeti olarak bildirilir; sabah-akşam ve yatmadan önce okunması tavsiye edilmiştir.";
+const AK_GIRIS="Âyetü'l-Kürsî, Bakara sûresinin 255. âyetidir. Sahîh-i Müslim 810’da Kur’an’ın en büyük âyeti olarak anılır; Sahîh-i Buhârî 2311’de yatmadan önce okunmasına dair rivayet vardır. Sabah-akşam ve namaz sonrasına ilişkin fazilet rivayetleri farklı kaynak ve derecelerdedir; burada hepsi tek bir sahih hadis gibi birleştirilmez.";
 const AK_EDEB="Kalp huzuruyla, mümkünse yüzünü kıbleye çevirip okumak edeptendir. Bölümlere dokunarak oradan başlatabilirsin.";
 const AK={queue:[],qi:0,playing:false,paused:false,watch:null};
 let AK_MANAONCE=S.get('sukun.akManaOnce',1);  /* 1: önce mana sonra Arapça (eşli) */
@@ -16265,8 +16415,8 @@ const Q_HINTS={
    en:"<b>Delta</b>, <b>Theta</b>, <b>Alpha</b>, <b>Beta</b> and <b>Gamma</b> are common labels used here to group beat ranges. Tapping a chip sets a sample value in that range; it does not guarantee a mental state."
  },
  solfej:{
-   tr:"Bu sayılar geleneksel ‘solfej’ atıflarıdır. Kendilerine yüklenen anlamlar bilimsel olarak doğrulanmış sonuçlar değildir; onları yalnızca taşıyıcı perde seçenekleri ve kültürel temalar olarak düşün.",
-   en:"These numbers are traditional ‘solfeggio’ attributions. Their associated meanings are not scientifically established outcomes; treat them only as carrier-pitch choices and cultural themes."
+   tr:"Bu diziler modern popüler ses kültüründe ‘solfeggio frequencies’ diye anılır; tarihî solfej eğitiminin nota okuma heceleriyle aynı şey değildir. Yüklenen anlamlar bilimsel olarak doğrulanmış sonuçlar değildir; onları yalnızca taşıyıcı perde seçenekleri ve sembolik temalar olarak düşün.",
+   en:"These sets are known as ‘solfeggio frequencies’ in modern popular sound culture; they are not the same as the sight-singing syllables of historical solfège. Their associated meanings are not scientifically established outcomes; treat them only as carrier-pitch choices and symbolic themes."
  },
  fr2:{
    tr:"İki ayrı taşıyıcı ve vuruş katmanını aynı anda çalar. Bu, daha yoğun bir ses dokusu üretir; biyolojik bir sonuç veya belirli bir deneyim vaat etmez.",
@@ -16778,14 +16928,22 @@ function miniPlayingInfo(){
         ek:DONGU.toplam>0?((DONGU.toplam-DONGU.kalan)+'/'+DONGU.toplam):'süresiz'}); }catch(e){}
   return {active:!!aktif, title, sub:ozet, adet:parts.length, tam:tamListe};
 }
-setInterval(()=>{try{miniSync()}catch(e){}},700);
+setInterval(()=>{if(!document.hidden)try{miniSync()}catch(e){}},700);
+function miniDurumYaz(duraklatildi){
+  const e=$('#mbLive');if(!e)return;
+  const en=!!(window.I18N&&window.I18N.lang==='en');
+  const metin=duraklatildi?(en?'PAUSED':'DURAKLATILDI'):(en?'LIVE':'CANLI');
+  if(e.textContent!==metin)e.textContent=metin;
+  e.classList.toggle('paused',!!duraklatildi);
+}
 function miniSync(){
   const bar=$('#miniBar'); if(!bar)return;
-  if(MINI.paused){bar.hidden=false; document.body.classList.add('mini-on'); return;}
+  if(MINI.paused){bar.hidden=false; document.body.classList.add('mini-on'); miniDurumYaz(true); return;}
   const i=miniPlayingInfo();
   bar.hidden=!i.active;
   document.body.classList.toggle('mini-on',i.active);
   if(!i.active)return;
+  miniDurumYaz(false);
   $('#mbT').textContent=i.title;
   $('#mbS').textContent=i.sub||'—';
 }
@@ -16795,9 +16953,15 @@ function miniClearPause(){
   const bar=$('#miniBar'); if(bar)bar.classList.remove('paused');
   const p=$('#mbPause'); if(p)p.textContent='⏸';
   const pu=$('#mbPulse'); if(pu)pu.textContent='〰';
+  miniDurumYaz(false);
   try{ttsSurdur()}catch(e){}
+  /* Yeni bir sesi elle başlatmak da kasıtlı duraklamayı bitirir. Kilit
+     ekranı ve kulaklık tuşu bu geçişi aynı anda görmeli. */
+  try{window.SesCapa&&SesCapa.syncPlaying()}catch(e){}
+  try{if(window.AudioLife)AudioLife.userPaused=false}catch(e){}
 }
 function miniPause(){
+  if(MINI.paused)return;
   MINI.paused=true; MINI.wasAuto=Z.auto;
   try{ctx&&ctx.suspend()}catch(e){}
   if(Z.auto)autoStop();
@@ -16817,8 +16981,11 @@ function miniPause(){
      duraklatılmalı. NOT: Android Chrome'da pause() bazı sürümlerde
      cümlenin sonunu bekler — anında susmayabilir, sürdürme yine çalışır. */
   try{ ttsDurakla(); }catch(e){}
+  try{window.SesCapa&&SesCapa.syncPaused()}catch(e){}
+  try{if(window.AudioLife){AudioLife.userPaused=true;AudioLife.set('paused','mini-pause')}}catch(e){}
   const bar=$('#miniBar'); bar.classList.add('paused');
   $('#mbPause').textContent='▶'; $('#mbPulse').textContent='⏸';
+  miniDurumYaz(true);
   const i=miniPlayingInfo();
   $('#mbT').textContent='Duraklatıldı';
   try{ tvkBtnTazele(); }catch(e){}
@@ -16826,6 +16993,7 @@ function miniPause(){
   miniSync();
 }
 function miniResume(){
+  if(!MINI.paused)return;
   const wa=MINI.wasAuto;
   miniClearPause();
   try{ctx&&ctx.resume()}catch(e){}
@@ -16833,6 +17001,8 @@ function miniResume(){
   try{ SES.ler.forEach(a=>{ if(a._miniDurdu){ a._miniDurdu=0; a.play().catch(()=>{}); } }); }catch(e){}
   try{ if(TVK&&TVK.audio&&TVK.audio._miniDurdu){TVK.audio._miniDurdu=0;TVK.audio.play().catch(()=>{});} }catch(e){}
   try{ ttsSurdur(); }catch(e){}
+  try{window.SesCapa&&SesCapa.syncPlaying()}catch(e){}
+  try{if(window.AudioLife){AudioLife.userPaused=false;AudioLife.set('playing','mini-resume')}}catch(e){}
   try{ tvkBtnTazele(); }catch(e){}
   if(wa)autoStart();
   miniSync();
@@ -17045,12 +17215,18 @@ function virdVakitSug(cur){
    hatırlanır, derlem tükenmeden aynı söz iki kez çıkmaz. */
 const SOZLER=[{"s": "Sevelim sevilelim, dünya kimseye kalmaz.", "k": "Yunus Emre"}, {"s": "İlim ilim bilmektir, ilim kendin bilmektir. Sen kendini bilmezsin, ya nice okumaktır.", "k": "Yunus Emre", "g": "İlim, ilmi bilmektir; asıl ilim kendini bilmektir. Kendini bilmiyorsan, bunca okumak neye yarar?"}, {"s": "Bir ben vardır bende, benden içeri.", "k": "Yunus Emre"}, {"s": "Yaratılanı severiz, Yaratan'dan ötürü.", "k": "Yunus Emre"}, {"s": "Gelin tanış olalım, işi kolay kılalım.", "k": "Yunus Emre"}, {"s": "Cennet cennet dedikleri birkaç köşkle birkaç hûri; isteyene ver anları, bana seni gerek seni.", "k": "Yunus Emre"}, {"s": "Mal sahibi, mülk sahibi… Hani bunun ilk sahibi?", "k": "Yunus Emre"}, {"s": "Söz ola kese savaşı, söz ola kestire başı; söz ola ağulu aşı bal ile yağ ede bir söz.", "k": "Yunus Emre", "g": "Bir söz vardır savaşı bitirir, bir söz vardır başı kestirir; bir söz vardır zehirli aşı bal ile yağa çevirir."}, {"s": "Ben gelmedim dava için, benim işim sevi için.", "k": "Yunus Emre", "g": "Ben kavga etmeye gelmedim; benim işim sevmek."}, {"s": "Dervişlik dedikleri hırka ile tâc değil; gönlün derviş eyleyen hırkaya muhtaç değil.", "k": "Yunus Emre", "g": "Dervişlik hırka ve taç giymek değildir; gönlü derviş olanın hırkaya ihtiyacı yoktur."}, {"s": "Aşk gelicek cümle eksikler biter.", "k": "Yunus Emre", "g": "Aşk gelince bütün eksikler tamamlanır."}, {"s": "Ete kemiğe büründüm, Yûnus diye göründüm.", "k": "Yunus Emre", "g": "Et ve kemik giyindim, Yunus adıyla göründüm."}, {"s": "Hak cihana doludur, kimseler Hakk'ı bilmez.", "k": "Yunus Emre", "g": "Hakikat bütün âleme dolmuş, ama kimse onu görmüyor."}, {"s": "Miskinlikte buldular kimde erlik var ise.", "k": "Yunus Emre", "g": "Gerçek yiğitliği, alçakgönüllü olanlarda buldular."}, {"s": "Bu dünyada bir nesneye yanar içim göynür özüm; yiğit iken ölenlere gök ekini biçmiş gibi.", "k": "Yunus Emre", "g": "Bu dünyada bir şeye çok yanarım: genç yaşta ölenlere — henüz olgunlaşmamış ekin biçilmiş gibi."}, {"s": "Gönül Çalab'ın tahtı, Çalab gönüle baktı; iki cihan bedbahtı, kim gönül yıkar ise.", "k": "Yunus Emre", "g": "Gönül, Allah'ın tahtıdır; Allah gönle bakar. İki dünyada da bahtsız olan, gönül yıkandır."}, {"s": "Bir kez gönül yıktın ise, bu kıldığın namaz değil.", "k": "Yunus Emre", "g": "Bir kez bir gönül yıktıysan, kıldığın namazın hükmü kalmaz."}, {"s": "Ballar balını buldum, kovanım yağma olsun.", "k": "Yunus Emre", "g": "Balların en güzelini buldum; artık kovanım talan olsa da umurumda değil."}, {"s": "Sabır saâdet-i ebedî, sabır cümle işin başı.", "k": "Yunus Emre", "g": "Sabır sonsuz mutluluktur; sabır her işin başıdır."}, {"s": "Çok mal haramsız, çok söz yalansız olmaz.", "k": "Yunus Emre"}, {"s": "Eline, diline, beline sahip ol.", "k": "Hacı Bektaş Velî"}, {"s": "İncinsen de incitme.", "k": "Hacı Bektaş Velî"}, {"s": "Bir olalım, iri olalım, diri olalım.", "k": "Hacı Bektaş Velî"}, {"s": "Okunacak en büyük kitap insandır.", "k": "Hacı Bektaş Velî"}, {"s": "Düşünce karanlığına ışık tutanlara ne mutlu.", "k": "Hacı Bektaş Velî"}, {"s": "Nefsine ağır geleni kimseye tatbik etme.", "k": "Hacı Bektaş Velî"}, {"s": "Hiçbir milleti ve insanı ayıplamayınız.", "k": "Hacı Bektaş Velî"}, {"s": "İlimden gidilmeyen yolun sonu karanlıktır.", "k": "Hacı Bektaş Velî"}, {"s": "Murada ermek sabır iledir.", "k": "Hacı Bektaş Velî"}, {"s": "Ara, bul.", "k": "Hacı Bektaş Velî"}, {"s": "Marifet, nefsi silmek değil bilmektir.", "k": "Hacı Bektaş Velî"}, {"s": "Kadınları okutunuz.", "k": "Hacı Bektaş Velî"}, {"s": "Özünde ve sözünde temiz olmayanların imanı tam değildir.", "k": "Hacı Bektaş Velî"}, {"s": "Her ne arar isen kendinde ara.", "k": "Hacı Bektaş Velî"}, {"s": "Küfrün rengi karadır, imanın rengi ise nurdur.", "k": "Hacı Bektaş Velî"}, {"s": "Hamdım, piştim, yandım.", "k": "Mevlânâ"}, {"s": "Dinle, bu ney nasıl şikâyet ediyor; ayrılıkları anlatıyor.", "k": "Mevlânâ", "e": "Mesnevî"}, {"s": "Ya olduğun gibi görün, ya göründüğün gibi ol.", "k": "Mevlânâ"}, {"s": "Nice insanlar gördüm üzerinde elbise yok; nice elbiseler gördüm içinde insan yok.", "k": "Mevlânâ"}, {"s": "Aynı dili konuşanlar değil, aynı duyguları paylaşanlar anlaşır.", "k": "Mevlânâ"}, {"s": "Kuyuya düşen, ipin ucunu bırakmaz.", "k": "Mevlânâ"}, {"s": "Dün dünde kaldı cancağızım, bugün yeni şeyler söylemek lâzım.", "k": "Mevlânâ"}, {"s": "Susmak, cevapların en güzelidir.", "k": "Mevlânâ"}, {"s": "Şekle değil öze bak; kabuğa değil içine.", "k": "Mevlânâ"}, {"s": "Aşk, ölümü bile tatlı kılar.", "k": "Mevlânâ"}, {"s": "Hak şerleri hayreyler, zannetme ki gayreyler; ârif anı seyreyler, Mevlâ görelim neyler — neylerse güzel eyler.", "k": "İbrahim Hakkı Erzurumî", "e": "Tefviznâme"}, {"s": "Sen Hakk'a tevekkül kıl, tefvîz et ve rahat bul.", "k": "İbrahim Hakkı Erzurumî", "e": "Tefviznâme"}, {"s": "Deme şu niçin şöyle, yerincedir ol öyle.", "k": "İbrahim Hakkı Erzurumî", "e": "Tefviznâme"}, {"s": "Hallâk-ı rahîm elbet, kulun sever, görür hâlin.", "k": "İbrahim Hakkı Erzurumî", "e": "Tefviznâme"}, {"s": "Nâçâr kalacak yerde, nâgâh açar ol perde.", "k": "İbrahim Hakkı Erzurumî", "e": "Tefviznâme"}, {"s": "Kalbim her sûreti kabul eder oldu: ceylanlara otlak, rahiplere manastır.", "k": "İbn Arabî", "e": "Tercümânü'l-Eşvâk"}, {"s": "Kendini bilen Rabb'ini bilir.", "k": "İbn Arabî"}, {"s": "İlim, mâlûma tâbidir.", "k": "İbn Arabî", "g": "Bilgi, bilinen şeye göre şekillenir."}, {"s": "Kalbini Allah'tan başka her şeyden temizle.", "k": "Abdülkadir Geylânî", "e": "Fütûhu'l-Gayb"}, {"s": "Sabır, belânın ilk anındadır.", "k": "Abdülkadir Geylânî"}, {"s": "Dünya, âhiret yolunda bir köprüdür; üzerinde ev yapılmaz.", "k": "Abdülkadir Geylânî"}, {"s": "Her ne ararsan kendinde ara.", "k": "Şems-i Tebrîzî"}, {"s": "Bilgi, insanı kibre değil edebe götürmeli.", "k": "Şems-i Tebrîzî"}, {"s": "Bilmek istersen seni, cân içre ara canı.", "k": "Hacı Bayram-ı Velî", "g": "Kendini tanımak istiyorsan, canının içindeki canı ara."}, {"s": "Nâgehan ol şâra vardım, ol şârı yapılır gördüm.", "k": "Hacı Bayram-ı Velî", "g": "Birden o şehre vardım; o şehrin hâlâ yapılmakta olduğunu gördüm."}, {"s": "Çalabım bir şâr yaratmış, iki cihan âresinde.", "k": "Hacı Bayram-ı Velî", "g": "Rabbim bir şehir yaratmış, iki dünyanın arasında."}, {"s": "Edeb bir tâc imiş nûr-ı Hüdâ'dan; giy ol tâcı, emin ol her belâdan.", "k": "Anonim (tasavvuf edebiyatı)", "g": "Edep, Allah'ın nurundan bir taçmış; o tacı giy, her beladan emin ol."}, {"s": "Az yemek, az uyumak, az konuşmak — riyâzetin üç esası.", "k": "Tasavvuf esasları"}, {"s": "Halk içinde Hak ile olmak: dest ber-kâr, dil ber-yâr.", "k": "Nakşibendî düsturu", "g": "Halkın içinde Hak ile olmak: el işte, gönül Sevgili'de."}];
 /* ════ HADÎS-İ ŞERÎFLER ════
-   ÖLÇÜ: Yalnız Buhârî · Müslim gibi temel kaynaklarda yer alan, üzerinde
-   ittifak edilen rivayetler alındı; her biri kaynağıyla birlikte verildi ki
-   doğrulanabilsin. Zayıf ya da tartışmalı rivayetlere yer verilmedi —
-   Efendimize ait olmayan bir sözü ona nispet etmek ağır bir sorumluluktur.
-   Meâller yaygın Türkçe neşirlere uygun sadeleştirilmiş hâlleridir. */
+   r174 KAYNAK SINIRI: Kayıtlar Buhârî, Müslim, Ebû Dâvûd, Tirmizî,
+   İbn Mâce ve Muvatta gibi eserlerden künyeleriyle derlenmiştir. Liste
+   bağımsız isnad/tahric çalışması değildir; sıhhat derecesi için verilen
+   kaynağın ilmî neşrine başvurulmalıdır. Metinler Türkçe sadeleştirmedir. */
 const HADIS=[{"s": "Ameller ancak niyetlere göredir; herkese niyet ettiği şey vardır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Bedü'l-vahy 1 · Müslim, İmâre 155", "tur": "hadis"}, {"s": "Sizden biriniz, kendisi için istediğini kardeşi için de istemedikçe iman etmiş olmaz.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Îmân 7 · Müslim, Îmân 71", "tur": "hadis"}, {"s": "Müslüman, diğer müslümanların elinden ve dilinden emin olduğu kimsedir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Îmân 4 · Müslim, Îmân 64", "tur": "hadis"}, {"s": "Merhamet etmeyene merhamet edilmez.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Edeb 18 · Müslim, Fedâil 65", "tur": "hadis"}, {"s": "Merhametli olanlara Rahmân da merhamet eder. Yerdekilere merhamet edin ki göktekiler de size merhamet etsin.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Ebû Dâvûd, Edeb 58 · Tirmizî, Birr 16", "tur": "hadis"}, {"s": "Allah'a ve âhiret gününe iman eden ya hayır söylesin ya sussun.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Edeb 31 · Müslim, Îmân 74", "tur": "hadis"}, {"s": "Allah sizin ne suretlerinize ne mallarınıza bakar; kalplerinize ve amellerinize bakar.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Birr 34", "tur": "hadis"}, {"s": "Kardeşinin yüzüne tebessüm etmen bir sadakadır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Tirmizî, Birr 36", "tur": "hadis"}, {"s": "Güzel söz sadakadır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Edeb 34 · Müslim, Zekât 56", "tur": "hadis"}, {"s": "Bir hayra öncülük eden, onu yapan gibi ecir alır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, İmâre 133", "tur": "hadis"}, {"s": "Hayâ imandandır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Îmân 16 · Müslim, Îmân 57", "tur": "hadis"}, {"s": "Zarar vermek de zarara zararla karşılık vermek de yoktur.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "İbn Mâce, Ahkâm 17 · Muvatta, Akdiye 31", "tur": "hadis"}, {"s": "Allah güzeldir, güzelliği sever.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Îmân 147", "tur": "hadis"}, {"s": "İnsan öldüğünde ameli kesilir; ancak üç şey müstesna: sadaka-i câriye, faydalanılan ilim ve kendisine dua eden hayırlı evlat.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Vasiyyet 14", "tur": "hadis"}, {"s": "Hepiniz çobansınız ve hepiniz güttüğünüzden sorumlusunuz.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Cum'a 11 · Müslim, İmâre 20", "tur": "hadis"}, {"s": "Mü'min mü'mine karşı, parçaları birbirini destekleyen bir bina gibidir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Salât 88 · Müslim, Birr 65", "tur": "hadis"}, {"s": "Sizin en hayırlınız Kur'ân'ı öğrenen ve öğretendir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Fedâilü'l-Kur'ân 21", "tur": "hadis"}, {"s": "İlim öğrenmek için bir yola çıkanın Allah cennete giden yolunu kolaylaştırır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Zikir 39", "tur": "hadis"}, {"s": "Mü'min aynı delikten iki kez ısırılmaz.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Edeb 83 · Müslim, Zühd 63", "tur": "hadis"}, {"s": "Kuvvetli mü'min, zayıf mü'minden Allah katında daha hayırlı ve daha sevimlidir; ama her ikisinde de hayır vardır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Kader 34", "tur": "hadis"}, {"s": "«Allah'a iman ettim» de, sonra dosdoğru ol.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Îmân 62", "tur": "hadis"}, {"s": "Nerede olursan ol Allah'tan sakın; kötülüğün ardından iyilik yap ki onu silsin; insanlara güzel ahlâkla davran.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Tirmizî, Birr 55", "tur": "hadis"}, {"s": "Kolaylaştırınız, güçleştirmeyiniz; müjdeleyiniz, nefret ettirmeyiniz.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, İlim 11 · Müslim, Cihâd 6", "tur": "hadis"}, {"s": "Din nasihattir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Îmân 95", "tur": "hadis"}, {"s": "Kişinin kendisini ilgilendirmeyen şeyi terk etmesi, müslümanlığının güzelliğindendir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Tirmizî, Zühd 11 · İbn Mâce, Fiten 12", "tur": "hadis"}, {"s": "Sabır, ilk sarsıntı anındadır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Cenâiz 32 · Müslim, Cenâiz 14", "tur": "hadis"}, {"s": "Zulüm, kıyamet gününde katmerli karanlıklardır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Buhârî, Mezâlim 8 · Müslim, Birr 56", "tur": "hadis"}, {"s": "Allah'ım! Senden hidayet, takvâ, iffet ve gönül zenginliği isterim.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Zikir 72", "tur": "hadis"}, {"s": "Kalpler ancak Allah'ı anmakla huzur bulur; kulun kalbi Rabbine en yakın olduğu an secde ânıdır.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Salât 215", "tur": "hadis"}, {"s": "Dünya mü'minin zindanı, kâfirin cennetidir.", "k": "Hz. Muhammed (sallallâhü aleyhi ve sellem)", "e": "Müslim, Zühd 1", "tur": "hadis"}];
+/* Kaynak düzeltmeleri veriyi tekrar kopyalamadan uygulanır. */
+{
+  const i=SOZLER.findIndex(x=>x.s==='Sabır, belânın ilk anındadır.'&&x.k==='Abdülkadir Geylânî');
+  if(i>=0)SOZLER.splice(i,1); /* aynı söz aşağıda sahih hadis künyesiyle zaten var */
+  const h=HADIS.find(x=>x.s&&x.s.startsWith('Kalpler ancak Allah\'ı anmakla huzur bulur;'));
+  if(h){h.s='Kulun Rabbine en yakın olduğu an secdede olduğu andır; o hâlde duayı çoğaltın.';h.e='Müslim, Salât 215';}
+}
 const SOZ={
   ek: sozKayitDizisi(S.get('sukun.sozEk',[])), /* kullanıcının eklediği sözler */
   gecmis: (()=>{const a=S.get('sukun.sozGecmis',[]);return Array.isArray(a)?a.filter(Number.isInteger).slice(0,2000):[]})()
@@ -17075,14 +17251,15 @@ function sozGoster(yeni){
   kutu.hidden=false;
   /* Eski Türkçe sözlerde aslı korunur, altına bugünkü karşılığı yazılır —
      söz o zata ait olduğu için metni değiştirmiyoruz, sadeleştirmesini ekliyoruz. */
-  const hadisMi = x.tur==='hadis';
+  const hadisMi = x.tur==='hadis', nispetMi=!hadisMi&&!x.e;
   const cevir=v=>(window.I18N&&window.I18N.t)?window.I18N.t(v):v;
   kutu.classList.toggle('hadis',hadisMi);
   kutu.innerHTML=
-    (hadisMi?'<div class="sozTur"><span class="ico" data-ico="dove"></span> HADÎS-İ ŞERÎF</div>':'')+
+    (hadisMi?'<div class="sozTur"><span class="ico" data-ico="dove"></span> HADÎS-İ ŞERÎF · KAYNAK KÜNYESİ AŞAĞIDA</div>':
+      (nispetMi?'<div class="sozTur nispet">NİSPET EDİLEN SÖZ · ESER KÜNYESİ YOK</div>':'<div class="sozTur nispet">ESER KÜNYESİ VERİLMİŞ ALINTI</div>'))+
     '<div class="sozMetin">'+hesc(cevir(x.s))+'</div>'+
     (x.g?'<div class="sozGuncel">'+hesc(cevir(x.g))+'</div>':'')+
-    '<div class="sozKim">— '+hesc(cevir(x.k))+(x.e?' <i>· '+hesc(cevir(x.e))+'</i>':'')+'</div>'+
+    '<div class="sozKim">— '+hesc(cevir(x.k))+(nispetMi?' <i>· nispet</i>':(x.e?' <i>· '+hesc(cevir(x.e))+'</i>':''))+'</div>'+
     '<button class="sozYeni" id="sozYeniBtn" title="Başka bir söz">↻</button>';
   const b=document.getElementById('sozYeniBtn');
   if(b)b.onclick=()=>{ sozGoster(true); vib&&vib(8); sfx&&sfx('tick'); };
@@ -17321,7 +17498,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r171b',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r174',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -17842,7 +18019,8 @@ $$('.mrX').forEach(b=>b.onclick=()=>mrClose(b.dataset.x));
 $$('.mrSheet').forEach(s=>s.addEventListener('click',e=>{ if(e.target===s)s.hidden=true; }));
 
 /* ── 1) MERTEBE REHBERİ — âyet delili, sıfatlar, hikmet (kaynak belgeden) ── */
-/* Dört Esas-ı Riyâzet — Gazzâlî (İhyâ) + çok sayıda tasavvuf kaynağıyla doğrulanmıştır */
+/* Dört Esas-ı Riyâzet — farklı tasavvuf çevrelerinde görülen geleneksel tertip;
+   aşağıdaki kısa açıklamalar kaynak metin alıntısı değil uygulama özetidir. */
 const RIYAZET=[
  {ic:'🍚',t:'Az yemek',d:'Kıllet-i taâm — şehveti kırar, rûhu inceltip berraklaştırır.'},
  {ic:'😴',t:'Az uyumak',d:'Kıllet-i nevm — kalbi cilalandırır, Allah\u2019a dönüşün ifadesidir.'},
@@ -17969,7 +18147,7 @@ function rehberOpen(i){
    +(i===0?'<div class="mrSec">Dört Esas-ı Riyâzet</div>'+RIYAZET.map(x=>riyRow(x.ic,x.t,x.d)).join(''):'')
    +(i===0?kapiHTML():'')
    +(i===4?'<div class="mrSec">Üç Yakîn Mertebesi</div>'+YAKIN.map((x,k)=>riyRow(String(k+1),x.t,x.d)).join(''):'')
-   +'<div style="font-size:9px;color:var(--dim);opacity:.75;margin-top:10px">Kaynak: Marifet-i İlahiyye Tarîkat-ı Aliyye — Erenköylü M. Hikmet Efendi</div>'
+   +'<div style="font-size:9px;color:var(--dim);opacity:.75;margin-top:10px">Bu mertebe eşlemelerinin kaynağı: <i>Marifet-i İlahiyye Tarîkat-ı Aliyye</i> — Erenköylü M. Hikmet Efendi. Belirli bir eser tertibidir; bütün tarikatların ortak şeması olarak sunulmaz.</div>'
    +(i===0?'<button class="mrGo alt" id="mrHay">🐾 Nefs hayvanları — istiare haritası</button>':'')
    +(i===3?'<button class="mrGo alt" id="mrYks">☀️ Yükseliş Virdi — dört nidâ</button>':'')
    +'<button class="mrGo alt" id="mrFat"><span class="ico" data-ico="book"></span> Fâtiha Seyri — bu âyeti gör</button>'
@@ -19642,14 +19820,19 @@ const MUHR={
 
   /* Görünmezken döngüyü SÜRDÜRMEK yerine BIRAK: sekmeye dönünce wake() uyandırır.
      (Eskisi her karede getElementById çağırıp boş dönüyordu.) */
-  wake(){ if(!this.raf && !this.reduced && this.x){ this.last=performance.now(); this.loop(); } },
+  wake(){
+    if(document.body.dataset.perf==='pil'){ this.draw(); return; }
+    if(!this.raf && !this.reduced && this.x){ this.last=performance.now(); this.loop(); }
+  },
 
   loop(){
     const sec=document.getElementById('tab-zkr');
     if(!this.x||document.hidden||!sec||sec.hidden){ this.raf=null; return; }   /* uyu */
+    if(document.body.dataset.perf==='pil'){ this.raf=null; this.draw(); return; }
     this.raf=requestAnimationFrame(()=>this.loop());
     const now=performance.now();
-    if(now-this.last<32)return;
+    const kare=document.body.dataset.perf==='tam'?16:32;
+    if(now-this.last<kare)return;
     const dt=Math.min(.1,(now-this.last)/1000);
     this.last=now;
 
@@ -19808,16 +19991,21 @@ const FRM={
     x.stroke();
   },
 
-  wake(){ if(!this.raf && !this.reduced && this.x){ this.last=performance.now(); this.loop(); } },
+  wake(){
+    if(document.body.dataset.perf==='pil'){ this.draw(0); return; }
+    if(!this.raf && !this.reduced && this.x){ this.last=performance.now(); this.loop(); }
+  },
 
   loop(){
     const sec=document.getElementById('tab-frq');
     if(!this.x||document.hidden||!sec||sec.hidden){ this.raf=null; return; }   /* uyu */
+    if(document.body.dataset.perf==='pil'){ this.raf=null; this.draw(0); return; }
     this.raf=requestAnimationFrame(()=>this.loop());
     const box=$('#frMirror');
     if(box&&box.clientWidth&&Math.abs(box.clientWidth-this.W)>1){ this.resize(); }
     const now=performance.now();
-    if(now-this.last<32)return;
+    const kare=document.body.dataset.perf==='tam'?16:32;
+    if(now-this.last<kare)return;
     const dt=Math.min(.1,(now-this.last)/1000);
     this.last=now;
     this.draw(dt);
@@ -20017,7 +20205,7 @@ const I18N = {
 
 "⚠ Kaynak ayrımı":"⚠ Source distinction",
 "Letâif":"Latâif",
-"kalp, rûh, sır, hafî, ahfâ ve nefs — Kur'ân, hadis ve kadim tasavvuf külliyatında (Nakşibendî, Kadirî, Halvetî ve diğer yollar) yer alır; İslâmî geleneğin özgün kavramlarıdır.":"heart, spirit, secret, hidden, most hidden and ego-self — are found in the Qurʾān, ḥadīth, and classical Sufi literature (Naqshbandī, Qādirī, Khalwatī and other orders); they are authentic concepts of the Islamic tradition.",
+"kalp, rûh ve nefs gibi kavramların Kur’ân ve dinî literatürde dayanakları vardır; fakat bunların altı/yedi merkez hâlinde sıralanması, bedendeki yerleri ve renkleri tarikatlara ve dönemlere göre değişen daha sonraki tasavvufî tertiplerdir. Buradaki merkez–renk haritası özellikle Nakşibendî yorumuna yakın sembolik bir uygulama şemasıdır; bütün tasavvuf yollarının ortak anatomisi veya biyomedikal gerçeklik değildir.":"Concepts such as the heart, spirit and self have Qurʾānic and religious antecedents; arranging them as six or seven centres, with bodily locations and colours, belongs to later Sufi systems that vary by order and period. This centre–colour map is a symbolic practice scheme closest to a Naqshbandī interpretation; it is neither a universal Sufi anatomy nor a biomedical reality.",
 "Çakra":"Chakra",
 "kavramı ise Hint-yoga ve Hindu geleneğinden gelir; İslâmî kaynaklarda geçmez. Buradaki eşleştirme, iki geleneğin enerji merkezleri haritalarının benzerliğini gösteren":"is a concept from the Hindu–yoga tradition and does not appear in Islamic sources. The mapping presented here is",
 "yorumî ve sembolik":"interpretive and symbolic",
@@ -20415,10 +20603,10 @@ Object.assign(I18N.D, {"Teheccüd":"Tahajjud","Seher · Fecir":"Sahar · Fajr","
 Object.assign(I18N.D, {"Emmâre":"Ammâra","Levvâme":"Lawwâma","Mülhime":"Mulhima","Mutmainne":"Mutma’inna","Râzıye":"Râdiya","Marzıyye":"Mardiyya","Sâfiye":"Sâfiya","Son 30 gün":"Last 30 days","Yedi Kapı Kapandı ✦":"The Seven Gates Have Closed ✦","Cennetin kapısı aralandı — nefs, arınma yolunda":"The gate of Paradise stands ajar — the nafs is on the path of purification","Hınzır (domuz)":"Swine","Haram ile iştigal":"Occupation with the forbidden","Fil":"Elephant","Kibir":"Arrogance","Köpek":"Dog","Gazab ve şer":"Wrath and evil","Yılan":"Snake","Ezâ ve cefâ":"Injury and cruelty","Akrep":"Scorpion","Dil ile azap":"Harm by the tongue","Fare":"Mouse","Sû-i zan":"Ill opinion of others","Katır":"Mule","İtaatsizlik, ihlâssızlık":"Disobedience, insincerity","Merkep":"Donkey","Şehvete tâbiiyet":"Subservience to lust","Kaplan":"Tiger","Kurt":"Wolf","Hased, tâatte hırsızlık":"Envy; theft in worship","Ayı, pars":"Bear, leopard","Gadab":"Wrath","Karınca":"Ant","Hırs":"Greed","Maymun":"Monkey","Laf taşımak":"Talebearing","Tilki":"Fox","Hile ve tezvir":"Cunning and deceit","Azgın deve":"Unruly camel","Şehvet, hırs, kin":"Lust, greed, rancour","Azgın öküz":"Unruly ox","İtaatsizlik":"Disobedience","Kedi":"Cat","Şeytan vesvesesi":"Satanic whispering","Sansar":"Marten","Gaflet":"Heedlessness","Sarhoş edici içmek":"Drinking intoxicants","Harama meyil":"Inclination to the forbidden","Meyhâne, kahvehâne":"Tavern, coffee-house","Fikrin fesâdı":"Corruption of thought","Çöplük, necis yer":"Refuse heap, filthy place","Şehvâniyet":"Carnality","Oyun âletleri, çalgı":"Instruments of play and music","Hevâya tâbiiyet":"Following caprice","Ölü görmek":"Seeing the dead","Cehil ve gaflet":"Ignorance and heedlessness","Çıplaklık, karanlık":"Nakedness, darkness","Keyifsizlik":"Malaise","Çiğ et, çamura düşmek":"Raw meat; falling into mud","Dünyalığa meyil":"Inclination to the worldly","Yüklü deve":"Laden camel","Ruha sıkıntı":"Distress upon the spirit","Yüksüz deve":"Unladen camel","Ruha meyil":"Inclination toward the spirit","Koyun, keçi, sığır":"Sheep, goat, cattle","Helâl menfaat":"Lawful benefit","Balık":"Fish","Helâl kazanç":"Lawful earning","Tavuk, güvercin":"Hen, dove","Helâle hırs":"Eagerness for the lawful","Sakin at":"Calm horse","Sadakat":"Fidelity","Azgın at":"Unruly horse","Nefsin galebesi":"Dominance of the nafs","Aslan":"Lion","Dinde salâbet":"Firmness in religion","Balarısı":"Honeybee","Güzel ahlâk":"Fine character","Kurbağa":"Frog","Ruhun nefisten nefreti":"The spirit's aversion to the nafs","Pişmiş yemek":"Cooked food","Nefsin ruha tâbiiyeti":"The nafs' obedience to the spirit","Yeni elbise, döşeli ev":"New clothes, furnished house","Sâlih amel":"Righteous deeds","Yanmayan mum, fırın":"Unlit candle, cold oven","Meyveli ağaç, yeşil çayır":"Fruit tree, green meadow","Süt, bal, yağ":"Milk, honey, oil","Ruha kuvvet ve safâ":"Strength and delight for the spirit","Ana-babaya sarılmak":"Embracing one's parents","İtaat ve rızâ":"Obedience and contentment","Sarı renk":"The colour yellow","Emmârenin galebesi":"Dominance of the ammâra","Necâseti gidermek":"Removing filth","Haramı terk":"Abandoning the forbidden","Kan aldırmak":"Being bled (cupping)","Nefsi ıslah":"Reforming the nafs","Diş çektirmek":"Having a tooth pulled","Ruha ağır geleni gidermek":"Removing what burdens the spirit","Tıraş olmak":"Being shaved","Nûrun ziyâdeleşmesi":"Increase of light","Câhil ve avam":"The ignorant and the common","Hâllerine meyil":"Inclining to their ways","Kadın görmek":"Seeing a woman","Tedbirde noksan, dünyaya meyil":"Deficient prudence, worldly inclination","Çıplak":"Naked person","Amelsizlik":"Lack of deeds","Eşkıyâ":"Brigands","Nefsin tuğyânı":"Rebellion of the nafs","Şeytan":"Satan","Şeytana uymak":"Following Satan","Topallık":"Lameness","Hak yolunda az bulunmak":"Being seldom on the path of Truth","Körlük":"Blindness","Hakk’ı görmezden gelmek":"Ignoring the Truth","Sağırlık":"Deafness","İşitip amel etmemek":"Hearing without acting","Dilsizlik":"Muteness","Hakk’ı söylememek":"Not speaking the Truth","Köselik":"Beardlessness","Sünneti terk":"Abandoning the Sunna","Hamamcı":"Bath attendant","Günahtan temizlik":"Cleansing from sin","Tuzcu":"Salt seller","Nefsin salâhı":"Soundness of the nafs","Ağaç dikmek, tohum saçmak":"Planting trees, sowing seed","Hayra işaret":"A sign of good","Beyaz renk":"The colour white","Mülhimenin galebesi":"Dominance of the mulhima","Kız çocuğu":"A baby girl","Dünyaya meyil":"Worldly inclination","Erkek çocuğu":"A baby boy","Abdest, gusül":"Ablution, ritual bath","Günahlardan temizlenme":"Being cleansed of sins","Namaz kılmak":"Performing prayer","Takvâ":"God-wariness","Kıbleye dönmek":"Turning to the qibla","İstikamet":"Uprightness","Kur’ân görmek, okumak":"Seeing or reciting the Qur'an","Kalbin tasfiyesi, matlûba eriş":"Purification of the heart; attaining the goal","Peygamberleri görmek":"Seeing the prophets","Dinde kuvvet":"Strength in religion","Evliyâ görmek":"Seeing the saints","Emniyet, murâda nâiliyet":"Safety; attaining one's wish","Şeyhler":"Shaykhs","Nefsin irşâdı":"Guidance of the nafs","Sultan":"A sultan","Vücûda tasarruf":"Command over the body","Hekim":"A physician","İsyânı sâlih amelle ilâçlamak":"Treating rebellion with righteous deeds","Kadı":"A judge","İlâhî hükümleri icrâ":"Executing the divine rulings","İmam, âlim, şehid":"Imam, scholar, martyr","Emre ittibâ":"Following the command","Mekke, Medine, Kudüs, cami":"Mecca, Medina, Jerusalem, mosques","Kalbin temizliği":"Purity of the heart","Tesbih":"Prayer beads","Matlûba erişmek":"Attaining the goal","Din kitapları, güzel koku":"Religious books, sweet scent","Güzellik":"Beauty","Yeşil renk":"The colour green","Mutmainne alâmeti":"A sign of the mutma'inna","Melekler, hûriler, cennet":"Angels, houris, Paradise","Aklın kemâli, mârifet":"Perfection of intellect; gnosis","Suda yüzüp geçmek":"Swimming across water","Yüksek dereceler":"Lofty degrees","Havada uçmak":"Flying through the air","Gemiye binip geçmek":"Crossing by ship","Derecelere nâiliyet":"Attaining degrees","Ateşte yanıp safâlanmak":"Burning in fire yet finding delight","Nurlanma — İbrâhimî sır":"Illumination — the Abrahamic secret","Yedi kat gökler":"The seven heavens","Marzıyye alâmeti":"A sign of the mardiyya","Ay, güneş, yıldızlar":"Moon, sun and stars","Yıldırım, alevli ateş":"Lightning, blazing fire","Yanan mum ve kandiller":"Burning candles and lamps","Gök gürültüsü, zelzele":"Thunder, earthquake","Dağ ve tepede yalnızlık":"Solitude on mountain and hill","Kar ve yağmur":"Snow and rain","Rahmet-i ilâhî":"Divine mercy","Dolu":"Hail","Esrâr zevkinde mübâlağa":"Abundance in the savour of the secrets","Irmak, çeşme, kuyu, deryâ":"Rivers, fountains, wells, seas","Kalbin kemâli":"Perfection of the heart","Kaynaklar":"Springs","Fenâ sıfatı":"The attribute of annihilation"});
 Object.assign(I18N.D, {"Dört Esas-ı Riyâzet":"The Four Foundations of Spiritual Discipline","Az yemek":"Eating little","Kıllet-i taâm — şehveti kırar, rûhu inceltip berraklaştırır.":"Qillat al-ta'âm — it breaks desire and refines the spirit.","Az uyumak":"Sleeping little","Kıllet-i nevm — kalbi cilalandırır, Allah'a dönüşün ifadesidir.":"Qillat al-nawm — it polishes the heart; an expression of turning to God.","Az konuşmak":"Speaking little","Kıllet-i kelâm — dilini tutanın günahı az, kalbi rahat olur.":"Qillat al-kalâm — one who guards the tongue sins less and finds the heart at ease.","Halvet (uzlet)":"Khalwa (seclusion)","Kalpten mâsivâyı çıkarmaktır; kırk gün (erbaîn) tatbik edilir.":"To clear the heart of all but God; practised over forty days (arba'în).","Yedi Kapı — nefis arındıkça kapanır (Hicr 15:44)":"The Seven Gates — they close as the self is purified (Hijr 15:44)","Bir kapıya dokun: o sıfattan arındığını hissettiğinde kapansın. Eşleşme sembolik-sıralı bir tertiptir.":"Tap a gate: let it close when you feel purified of that trait. The pairing is a symbolic, sequential arrangement.","Üç Yakîn Mertebesi":"The Three Degrees of Certainty","Kaynak: Marifet-i İlahiyye Tarîkat-ı Aliyye — Erenköylü M. Hikmet Efendi":"Source: Ma'rifat-i İlâhiyye Tarîkat-i \u2018Aliyye — Erenköylü M. Hikmet Efendi","Kırk günün dayanağı: «Kim kırk sabah ihlâsla Allah'a yönelirse, kalbinden diline hikmet pınarları akar.» (Süyûtî, el-Câmiu's-Sağîr) — Mûsâ (a.s.)'ın Tûr'daki kırk gecesi (A'râf 7:142) bu usûlün bir başka dayanağıdır.":"Basis of the forty days: \u201cWhoever devotes forty mornings sincerely to God, springs of wisdom flow from his heart to his tongue.\u201d (al-Suyûtî, al-Jâmi' al-Saghîr) — Moses' (peace be upon him) forty nights on the Mount (al-A'râf 7:142) is a further basis for this practice.","«İlâhî ente maksûdî» için kendi sesini kaydet":"Record your own voice for \u2018İlâhî ente maksûdî'","🎙️ Kendi sesin — henüz kayıt yok":"🎙️ Your own voice — no recording yet","Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.":"Tap the gold 🎙 icon on the dhikr stage to record or stop (up to 8 s). If a recording exists it plays; otherwise the device voice (TTS) is used."});
 Object.assign(I18N.D, {"Rast Taksimi":"Rast Taksim","Rast makamı • sefa, iç huzur":"rast maqam • joy, inner peace","Hicaz Taksimi":"Hicaz Taksim","Hicaz makamı • tevazu, gece seyri":"hicaz maqam • humility, a night journey","Saba Taksimi":"Saba Taksim","Saba makamı • cesaret, seher":"saba maqam • courage, the pre-dawn hour","Hüseynî Taksimi":"Hüseynî Taksim","Hüseynî makamı • sükûnet, güven":"hüseynî maqam • calm, confidence","Nihavent Tanburu":"Nihavent Tanbur","Nihavent makamı • güç, barış":"nihavent maqam • strength, peace","Nevâ Kanunu":"Nevâ Kanun","Nevâ makamı • teselli, gönül ferahlığı":"nevâ maqam • comfort, ease of heart","Acemaşiran Neyi":"Acemaşiran Ney","Acemaşiran makamı • ilham, canlanma":"acemaşiran maqam • inspiration, revival","Isfahan Taksimi":"Isfahan Taksim","Isfahan makamı • zihin açıklığı, güven":"isfahan maqam • mental clarity, confidence","🎼 Rast, Hicaz, Saba, Hüseynî, Nihavent, Nevâ, Acemaşiran ve Isfahan taksimleri; makamların duygu durumlarıyla ilişkisi üzerine Fârâbî'den İbn Sînâ'ya uzanan ve TÜMATA (Türk Musikisini Araştırma ve Tanıtma Grubu) tarafından derlenen geleneksel tasnife göre etiketlenmiştir. Bu bir tedavi reçetesi değil, asırlık bir dinleme geleneğinin yansımasıdır; enstrüman sesleri de otantik kayıt değil, en yakın tamperamanlı yaklaşıklıkla cihazda sentezlenir.":"🎼 The Rast, Hicaz, Saba, Hüseynî, Nihavent, Nevâ, Acemaşiran and Isfahan taksims are labelled according to the traditional classification of maqams and their associated moods — a lineage running from Fârâbî to Ibn Sînâ, compiled by TÜMATA (the Turkish Music Research and Promotion Group). This is not a course of treatment but the reflection of a centuries-old listening tradition; the instrument sounds, too, are not authentic recordings but the nearest tempered approximation, synthesised on the device."});
-/* r169–r171: sonradan eklenen/yenilenen metinler için tekil düzeltme katmanı. */
+/* r169–r174: sonradan eklenen/yenilenen metinler için tekil düzeltme katmanı. */
 Object.assign(I18N.D,{
   "Tasavvufî Ses, Zikir & Tefekkür":"Sufi Sound, Dhikr & Contemplation",
-  "SÜKÛN v13.0 — build 2026-08-20-r171":"SÜKÛN v13.0 — build 2026-08-20-r171",
+  "SÜKÛN v13.0 — build 2026-08-20-r174":"SÜKÛN v13.0 — build 2026-08-20-r174",
   "28 isim • yorumî esmâ haritası":"28 names • interpretive map of the Names",
   "Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.":"Tap the gold 🎙 icon on the dhikr stage to record or stop. <b>There is effectively no duration limit</b>; a timer remains visible while recording. Your recording is preferred, otherwise the device voice (TTS) is used.",
   "API anahtarı bu cihazda saklanır. “Daha derin açıklama” çalıştırıldığında anahtarın, yazdığın hâl cümlesinin ve oluşturulan reçetenin açıklamayı üretmek üzere doğrudan Anthropic'e gönderilmesine izin vermiş olursun; SÜKÛN sunucusuna aktarılmaz. Boş bırakırsan reçete çevrimdışı çalışır.":"The API key is stored on this device. When you request a deeper explanation, the key, your state sentence and the generated arrangement are sent directly to Anthropic to produce it; they are not sent to a SÜKÛN server. Leave it empty to stay offline.",
@@ -20566,6 +20754,47 @@ Object.assign(I18N.D,{
   "Üretken çalışma için yargısız bir başlangıç ritüeli ve dikkat dağıtmayan bir ses zemini seçildi. Theta-Alfa etiketi yaratıcı düşünce niyetini anlatır; bilinçaltı veya beyin üzerinde kesin sonuç vaat etmez. Orman-kuş-dere dokusu ortamı örter, Acemaşiran geleneksel tasnifte ilhamla anılır, «Yâ Bedî’» üretme niyetini taşır.":"A non-judging start ritual and an unobtrusive sound bed were chosen for creative work. Theta–Alpha describes an intention of creative thinking; it promises no definite effect on the brain or subconscious. Forest, birds and stream mask the room, Acemaşiran is traditionally linked with inspiration, and ‘Yâ Badî’ carries an intention to create.",
   "Öfkede tepki vermeden önce yavaşlamak, uzun nefes vermek ve dikkati sabit bir sese taşımak bir ara alan açabilir. Alfa etiketi tıbbî bir sinir sistemi müdahalesi değildir. Okyanus ve dere yumuşak bir zemin kurar, Rast geleneksel tasnifte iç dinginlikle anılır, «Yâ Sabûr» sabır niyetini taşır. Amaç duyguyu bastırmak değil, davranıştan önce mesafe kurmaktır.":"Before reacting in anger, slowing down, extending the exhale and moving attention to a steady sound can create a pause. Alpha is not a medical nervous-system intervention. Ocean and stream make a soft bed, Rast is traditionally linked with inner calm, and ‘Yâ Sabûr’ carries patience. The aim is not suppression, but space before action.",
   "Şükran pratiği dikkati elde olana çevirmek için yapılandırılmış bir tefekkürdür. Theta etiketi sakin bir dinleme niyetini anlatır; nörotransmitter sonucu vaat etmez. Seher kuşları ve orman zemini bolluk temasını destekler, Nevâ geleneksel tasnifte neşeyle anılır, «Yâ Şekûr» şükür niyetini taşır; eşit nefes ritim sağlar.":"Gratitude practice is structured contemplation that turns attention toward what is present. Theta describes a calm listening intention and promises no neurotransmitter outcome. Dawn birds and forest support a theme of abundance, Nevâ is traditionally linked with joy, ‘Yâ Shakûr’ carries gratitude, and even breathing provides rhythm."
+});
+
+/* r174 kaynak bütünlüğü: eski sözlükte kalan kesin nispetleri son katmanda
+   düzelt; kaynak metni, nispet, mekanik hesap ve uygulama yorumu ayrılır. */
+Object.assign(I18N.D,{
+  "Erbaîn kaynak notu:":"Arbaʿīn source note:",
+  "«Kim kırk sabah ihlâsla Allah’a yönelirse…» sözü Süyûtî’nin el-Câmiu’s-Sağîr derlemesinde nakledilir; hadis zinciri zayıf kabul edildiğinden sahih hadis kesinliğiyle sunulmaz. A‘râf 7:142, Mûsâ’nın kırk gecesini bildirir; bunu kırk günlük seyre dayanak yapmak doğrudan âyet emri değil, tasavvuf geleneğinin yorumudur.":"The saying ‘Whoever devotes forty mornings sincerely to God…’ is transmitted in al-Suyūṭī’s al-Jāmiʿ al-Ṣaghīr; its chain is considered weak, so it is not presented with the certainty of an authenticated hadith. Qurʾān 7:142 reports Moses’ forty nights; treating it as a basis for a forty-day retreat is a Sufi interpretation, not a direct command of the verse.",
+  "Bu mertebe eşlemelerinin kaynağı:":"Source of these station correspondences:",
+  "Belirli bir eser tertibidir; bütün tarikatların ortak şeması olarak sunulmaz.":"This is the arrangement of a particular work; it is not presented as a scheme shared by every Sufi order.",
+  "Ekberî’ye nispet":"Attributed to the Akbarian tradition",
+  "derleme · mücerrebât":"compilation · mujarrabāt",
+  "Hizbü'l-Vikâye — İbnü'l-Arabî’ye nispet edilen vird":"Hizb al-Wiqāya — a litany attributed to Ibn ʿArabī",
+  "Hizb ve mücerrebât kaynak kayıtları":"Source records for the litany and mujarrabāt",
+  "🎵 Modern “solfej frekansı” atıfları":"🎵 Modern ‘solfeggio frequency’ attributions",
+  "396, 417, 528 Hz gibi anlam yüklü sayı dizileri modern popüler ses kültüründe “solfeggio frequencies” diye dolaşır; tarihî solfej eğitimi ise nota okuma heceleridir ve bu anlam listesini içermez. 432 Hz de sıklıkla aynı gruba eklenir. Bunları kadim metin veya tedavi değil, yalnız taşıyıcı perde ve sembolik tema seçeneği olarak düşün.":"Meaning-laden sets such as 396, 417 and 528 Hz circulate in modern popular sound culture as ‘solfeggio frequencies’; historical solfège is a system of sight-singing syllables and contains no such list of meanings. 432 Hz is also often grouped with them. Treat these as carrier-pitch and symbolic-theme options, not as ancient texts or treatment.",
+  "Modern solfej atfı • Alfa 8 Hz":"Modern solfeggio attribution • Alpha 8 Hz",
+  "Modern solfej atfı • Theta 7 Hz":"Modern solfeggio attribution • Theta 7 Hz",
+  "Modern solfej atfı • Alfa 9 Hz":"Modern solfeggio attribution • Alpha 9 Hz",
+  "Modern solfej atfı: dönüşüm":"Modern solfeggio attribution: transformation",
+  "Seven ve sevgisi bütün varlığı kuşatan":"The Loving, whose love encompasses creation",
+  "Berhetiyye’den — iç ve dış arınma; Menba şerhinde Mezcel için Yâ Kayyûm/Yâ Kâim, Bezcel için Yâ Vedûd karşılığı":"From the Barhatiyya — an intention of inner and outer purification; the Manbaʿ commentary corresponds Mezjal with Yā Qayyūm/Yā Qāʾim and Bazjal with Yā Wadūd",
+  "NİSPET EDİLEN SÖZ · ESER KÜNYESİ YOK":"ATTRIBUTED SAYING · NO WORK CITED",
+  "ESER KÜNYESİ VERİLMİŞ ALINTI":"QUOTATION WITH A WORK CITED",
+  "HADÎS-İ ŞERÎF · KAYNAK KÜNYESİ AŞAĞIDA":"HADITH · SOURCE CITATION BELOW",
+  "Kulun Rabbine en yakın olduğu an secdede olduğu andır; o hâlde duayı çoğaltın.":"The servant is nearest to his Lord while prostrating; therefore make abundant supplication.",
+  "Müslim, Salât 215":"Muslim, Ṣalāh 215",
+  "Âyetü'l-Kürsî, Bakara sûresinin 255. âyetidir. Sahîh-i Müslim 810’da Kur’an’ın en büyük âyeti olarak anılır; Sahîh-i Buhârî 2311’de yatmadan önce okunmasına dair rivayet vardır. Sabah-akşam ve namaz sonrasına ilişkin fazilet rivayetleri farklı kaynak ve derecelerdedir; burada hepsi tek bir sahih hadis gibi birleştirilmez.":"Āyat al-Kursī is Qurʾān 2:255. Ṣaḥīḥ Muslim 810 calls it the greatest verse of the Qurʾān, and Ṣaḥīḥ al-Bukhārī 2311 transmits its recitation before sleep. Reports concerning morning, evening and post-prayer recitation come through different sources and grades; they are not combined here as one authenticated hadith.",
+  "Metin durumu:":"Textual status:",
+  "Bu uzun metin, Tahrîm 66:8 ve Seyyidü’l-İstiğfar gibi kaynaklı parçaları modern bir dua/tevbe derlemesiyle birleştirir; bütünü “Nasuh Tövbesi” adıyla rivayet edilmiş tek bir hadis veya klasik sabit metin değildir. Hastalık, vesvese ve görünmeyen varlıklara ilişkin cümleler tıbbî teşhis sayılmaz.":"This long text combines sourced passages such as Qurʾān 66:8 and Sayyid al-Istighfār with a modern compilation of supplication and repentance. As a whole, it is not a single hadith or fixed classical text transmitted under the title ‘Nasuh Repentance’. Statements concerning illness, whispering and unseen beings are not medical diagnoses.",
+  "KAYNAK TRANSKRİPSİYONU":"SOURCE TRANSCRIPTION",
+  "YAYGIN TÜRKÇE TİLAVET":"COMMON TURKISH RECITATION",
+  "KAYNAK ARAPÇA YAZIMI":"SOURCE ARABIC SPELLING",
+  "YAZIMDAN EBCED":"ABJAD FROM SPELLING",
+  "KAYITLI HEDEF":"SAVED TARGET",
+  "HARF / MENZİL":"LETTER / LUNAR MANSION",
+  "TÜRETİLMİŞ UNSUR / TABİAT":"DERIVED ELEMENT / QUALITY",
+  "HARF HARF EBCED":"LETTER-BY-LETTER ABJAD",
+  "MENBA ŞERHİNDE ZİKREDİLEN KARŞILIK":"CORRESPONDENCE STATED IN THE MANBAʿ COMMENTARY",
+  "NERO TEFEKKÜR NOTU · KAYNAK METNİ DEĞİL":"NERO CONTEMPLATION NOTE · NOT SOURCE TEXT",
+  "VARYANT / OKUNUŞ NOTU":"VARIANT / RECITATION NOTE",
+  "Kaynak künyesi ve metin durumu":"Source citation and textual status"
 });
 
 window.I18N=I18N;   /* const olduğu için window'da yoktu; modüller erişebilsin */
@@ -21210,7 +21439,7 @@ summary{display:flex;align-items:center;gap:8px}
     </div>
     <div class="row"><label>Ana ses</label><input type="range" id="vMaster" min="0" max="1" step="0.01" value="0.75" aria-label="Tekke ana ses düzeyi"><span class="valB"></span></div>
     <div class="row"><label>Katre sesi</label><input type="range" id="katVol" min="0" max="1" step="0.01" value="0.7" aria-label="Katre sesi düzeyi"><span class="valB" id="katVolV">%70</span></div>
-    <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Haptik vuruş — damlada hafif titreşim</span><button class="sw on" id="hapTgl"></button></div>
+    <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Haptik vuruş — damlada hafif titreşim</span><button class="sw on" id="hapTgl" aria-label="Haptik vuruş"></button></div>
   </div>
 
   <div class="pSec">
@@ -21218,14 +21447,14 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="pD">Hazır tertipler yerine kendi esmâ dizinini kur, adıyla kaydet. Vird takip ediyorsan buradan uygulayabilirsin.</div>
     <div id="ozelListe" class="ozelListe"></div>
     <div class="btnRow" style="margin-top:8px"><button class="btn" id="ozelKurBtn"><span class="ico" data-ico="pencil"></span> Yeni seyir kur</button></div>
-    <div class="opt" style="margin-top:10px"><span>◌ Makamlar arası sükût <small>her makam sonunda kısa sessizlik</small></span><button class="sw on" id="araSukutTgl"></button></div>
-    <div class="opt"><span>🍃 Sakin mod <small>süsleme animasyonlarını durdurur — pil ve ısı için</small></span><button class="sw" id="sakinTgl"></button></div>
+    <div class="opt" style="margin-top:10px"><span>◌ Makamlar arası sükût <small>her makam sonunda kısa sessizlik</small></span><button class="sw on" id="araSukutTgl" aria-label="Makamlar arası sükût"></button></div>
+    <div class="opt"><span>🍃 Sakin mod <small>süsleme animasyonlarını durdurur — pil ve ısı için</small></span><button class="sw" id="sakinTgl" aria-label="Sakin mod"></button></div>
   </div>
 
   <div class="pSec">
     <div class="pT">SESLİ REHBER · UZANARAK</div>
     <div class="pD">Gözlerin kapalıyken hangi makamda olduğunu ve ne çektiğini sesle söyler. Ekrana bakmana gerek kalmaz.</div>
-    <div class="opt"><span>🎧 Sesli rehber</span><button class="sw" id="rehberTgl"></button></div>
+    <div class="opt"><span>🎧 Sesli rehber</span><button class="sw" id="rehberTgl" aria-label="Sesli rehber"></button></div>
     <div class="row"><label>Anlatıcı yankısı</label><input type="range" id="rehberEko" min="0" max="1" step="0.05" value="0.35" aria-label="Anlatıcı yankısı"><span class="valB"></span></div>
 
   </div>
@@ -21234,7 +21463,7 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="pT">TEFEKKÜR SETLERİ</div>
     <div class="pD">Sesli yönlendirmeli tahayyül. Uzan, gözlerini kapat, sadece dinle. <b>Bunlar tefekkür egzersizidir</b> — fiilî ziyaret ya da ibadet yerine geçmez, keyfiyete dair bir iddia taşımaz. <i>Ve'llâhu a'lem — en doğrusunu Allah (celle celâlühû) bilir.</i></div>
     <div class="imgeGrid" id="imgeRow"></div>
-    <div class="opt" style="margin-top:8px"><span><span class="ico" data-ico="spiral"></span> 8D anlatıcı <small>ses çevrende bir hacim içinde durur</small></span><button class="sw" id="rehber8dTgl"></button></div>
+    <div class="opt" style="margin-top:8px"><span><span class="ico" data-ico="spiral"></span> 8D anlatıcı <small>ses çevrende bir hacim içinde durur</small></span><button class="sw" id="rehber8dTgl" aria-label="8D anlatıcı"></button></div>
 
   </div>
 
@@ -21258,7 +21487,7 @@ summary{display:flex;align-items:center;gap:8px}
       <button data-tt="nar"><span class="ico" data-ico="flame"></span> Nar Ocağı</button>
       <button data-tt="seher"><span class="ico" data-ico="sparkle"></span> Çöl Seheri</button>
     </div>
-    <div class="opt" style="margin-top:8px"><span><span class="ico" data-ico="sparkle"></span> Efektler</span><button class="sw on" id="tkEfektTgl"></button></div>
+    <div class="opt" style="margin-top:8px"><span><span class="ico" data-ico="sparkle"></span> Efektler</span><button class="sw on" id="tkEfektTgl" aria-label="Tekke efektleri"></button></div>
   </div>
 
   <div class="pSec">
@@ -21275,9 +21504,9 @@ summary{display:flex;align-items:center;gap:8px}
       <input type="range" id="brHizSld" min="0.7" max="2" step="0.05" value="1" aria-label="Nefes temposu">
       <span class="valB" id="brHizV">normal</span></div>
     <div class="pD" style="margin-top:-4px">Sağa kaydırdıkça nefes yavaşlar. Yetişemiyorsan 1.4–1.6 arası dene.</div>
-    <div class="opt"><span><span class="ico" data-ico="note"></span> Sır Kapısı telkini — ekranda beliren kısa tefekkür cümleleri</span><button class="sw on" id="telTgl"></button></div>
-    <div class="opt" data-tlvl="uzman"><span>🗣 Sesli telkin (cihaz sesi, fısıltı)</span><button class="sw" id="voiceTgl"></button></div>
-    <div class="opt" data-tlvl="uzman"><span>✋ Elle nefes — halkayı takip etmek yerine Hû'ya bas: basılıyken al, bırakınca ver</span><button class="sw" id="manTgl"></button></div>
+    <div class="opt"><span><span class="ico" data-ico="note"></span> Sır Kapısı telkini — ekranda beliren kısa tefekkür cümleleri</span><button class="sw on" id="telTgl" aria-label="Sır Kapısı telkini"></button></div>
+    <div class="opt" data-tlvl="uzman"><span>🗣 Sesli telkin (cihaz sesi, fısıltı)</span><button class="sw" id="voiceTgl" aria-label="Sesli telkin"></button></div>
+    <div class="opt" data-tlvl="uzman"><span>✋ Elle nefes — halkayı takip etmek yerine Hû'ya bas: basılıyken al, bırakınca ver</span><button class="sw" id="manTgl" aria-label="Elle nefes"></button></div>
   </div>
 
   <div class="pSec" data-tlvl="uzman">
@@ -21292,9 +21521,9 @@ summary{display:flex;align-items:center;gap:8px}
         <option value="6">Her 6. damla</option>
       </select>
     </div>
-    <div class="opt"><span><span class="ico" data-ico="droplet"></span> Katre metronomu</span><button class="sw on" id="katTgl"></button></div>
-    <div class="opt"><span>۞ HÛ sesi — nefesle canlı</span><button class="sw on" id="huTgl"></button></div>
-    <div class="opt"><span><span class="ico" data-ico="drum"></span> Meditatif davul — nefes döngüsüne kilitli yumuşak vuruş</span><button class="sw" id="tkDavulTgl"></button></div>
+    <div class="opt"><span><span class="ico" data-ico="droplet"></span> Katre metronomu</span><button class="sw on" id="katTgl" aria-label="Katre metronomu"></button></div>
+    <div class="opt"><span>۞ HÛ sesi — nefesle canlı</span><button class="sw on" id="huTgl" aria-label="Hû sesi"></button></div>
+    <div class="opt"><span><span class="ico" data-ico="drum"></span> Meditatif davul — nefes döngüsüne kilitli yumuşak vuruş</span><button class="sw" id="tkDavulTgl" aria-label="Meditatif davul"></button></div>
     <div class="row" data-tlvl="uzman"><label>Davul sesi</label><input type="range" id="tkDavulVol" min="0" max="1" step="0.02" value="0.35" aria-label="Meditatif davul sesi"><span class="valB"></span></div>
   </div>
 
@@ -21306,7 +21535,7 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="row"><label>🪨 Toprak</label><input type="range" id="vToprak" min="0" max="1" step="0.01" value="0.2" aria-label="Toprak sesi düzeyi"><span class="valB"></span></div>
     <div class="row"><label>🌬 Hava</label><input type="range" id="vHava" min="0" max="1" step="0.01" value="0.15" aria-label="Hava sesi düzeyi"><span class="valB"></span></div>
     <div class="row"><label>🔥 Ateş</label><input type="range" id="vAtes" min="0" max="1" step="0.01" value="0.08" aria-label="Ateş sesi düzeyi"><span class="valB"></span></div>
-    <div class="opt"><span id="binLbl">〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)</span><button class="sw" id="binTgl"></button></div>
+    <div class="opt"><span id="binLbl">〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)</span><button class="sw" id="binTgl" aria-label="Alt akım binaural ses"></button></div>
   </div>
 
   <div style="text-align:center;font-size:9.5px;color:var(--dim);line-height:1.7;padding:2px 6px 4px">
@@ -23971,15 +24200,32 @@ window.Tekke=(function(){
   margin-bottom:10px;padding-bottom:10px;
   border-bottom:1px solid var(--ghost-faint);
 }#ns .ai-footer{font-size:0.67rem;color:var(--ghost-faint);margin-top:8px;text-align:right;}#ns .ai-fullrx{display:block;width:100%;margin:10px 0 4px;padding:12px;background:rgba(46,232,199,0.1);border:1px solid rgba(46,232,199,0.35);border-radius:13px;color:#8ff0e0;font-size:0.8rem;font-family:inherit;cursor:pointer;transition:background 0.2s}#ns .ai-fullrx:hover{background:rgba(46,232,199,0.18)}#ns /* ─── TYPING ANIMATION ─── */
-.typing-wrap{display:flex;align-items:center;gap:12px;padding:4px 0;}#ns ::-webkit-scrollbar{width:6px;}#ns ::-webkit-scrollbar-track{background:transparent;}#ns ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}#ns /* ─── MOBILE ─── */
+.typing-wrap{display:flex;align-items:center;gap:12px;padding:4px 0;}#ns ::-webkit-scrollbar{width:6px;}#ns ::-webkit-scrollbar-track{background:transparent;}#ns ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+/* ─── MOBILE ───
+   r171'de yorumdan önce kalan yalın "#ns", @media bloğunu geçersiz bir
+   seçiciye dönüştürüyordu. Kurallar artık hem geçerli hem panelle sınırlı. */
 @media(max-width:600px){
-  .app{padding:12px 12px 60px;}
-  .header{padding:12px 16px;}
-  .logo-text{font-size:1rem;}
-  .preset-grid{grid-template-columns:1fr 1fr;}
-  .noise-grid{grid-template-columns:repeat(3,1fr);}
-  .brainwave-hero{padding:18px 14px;}
-  #spectrumCanvas{height:104px;}
+  #ns .app{padding:12px 12px 60px;}
+  #ns .header{padding:12px 16px;}
+  #ns .logo-text{font-size:1rem;}
+  #ns .preset-grid{grid-template-columns:1fr 1fr;}
+  #ns .noise-grid{grid-template-columns:repeat(3,1fr);}
+  #ns .brainwave-hero{padding:18px 14px;}
+  #ns #spectrumCanvas{height:104px;}
+  #ns .card{padding:18px 14px;}
+  #ns .control-row{align-items:stretch;gap:8px;flex-wrap:wrap;}
+  #ns .control-label{min-width:0!important;flex:1 1 100%;}
+  #ns .control-row>.slider-wrap{flex:1 1 100%;min-width:0;}
+  #ns .balSliders{flex-direction:column;gap:10px;}
+  #ns .balCol{min-width:0;}
+  #ns .master-vol{flex-wrap:wrap;padding:12px 14px;}
+  #ns .master-vol .slider-wrap{min-width:120px;}
+  #ns .timer-btn,#ns .toggle-btn,#ns .tab-btn,#ns .cym-btn{min-height:44px;}
+  #ns .toast{max-width:calc(100vw - 24px);white-space:normal;text-align:center;}
+}
+@media(max-width:360px){
+  #ns .preset-grid,#ns .noise-grid{grid-template-columns:1fr 1fr;}
+  #ns .cymGrid{grid-template-columns:repeat(3,1fr);}
 }#ns /* ══════════════════════════════════════════════
    TAB NAVIGATION
    ══════════════════════════════════════════════ */
@@ -24178,6 +24424,124 @@ body.prModalOpen{overflow:hidden}
 #prDiagOverlay{position:fixed;inset:0;z-index:12010;background:rgba(0,0,0,.68);display:flex;align-items:flex-end;justify-content:center}#prDiagOverlay[hidden]{display:none}.prDiagSheet{width:min(720px,100%);max-height:82vh;overflow:auto;border:1px solid var(--pr-line-strong);border-radius:24px 24px 0 0;background:var(--bg2);padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom));box-shadow:0 -22px 60px rgba(0,0,0,.45)}.prDiagHead{display:flex;justify-content:space-between;align-items:center}.prDiagHead h3{margin:0;color:var(--goldh);font-family:var(--serif)}.prDiagGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:14px 0}.prDiagCell{padding:11px;border:1px solid var(--pr-line);border-radius:14px}.prDiagCell small{display:block;color:var(--dim);font-size:9px}.prDiagCell b{font-size:13px}.prErrList{font:10px/1.5 monospace;white-space:pre-wrap;color:var(--dim);background:rgba(0,0,0,.16);padding:10px;border-radius:12px;max-height:220px;overflow:auto}
 @media(max-width:480px){#prDashboard{padding:13px}.prMetrics{gap:6px}.prMetric{padding:9px}.prMetric b{font-size:18px}.prDashTitle{font-size:20px}.prKeyHint{display:none}.r168Grid{grid-template-columns:1fr}.r168Wide{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+</style>
+<style id="r173-visual-system">
+/* ════════════════════════════════════════════════════════════════
+   r173 — ölçülü görsel makyaj + gerçek performans profili
+   İşlevsel hareket (nefes, sayaç, ilerleme) korunur; yalnız süs katmanı
+   Tam / Dengeli / Pil seçimine göre hafifler.
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --r173-ease:cubic-bezier(.2,.78,.22,1);
+  --r173-spring:cubic-bezier(.16,1,.3,1);
+  --r173-hi:color-mix(in srgb,var(--goldh) 12%,transparent);
+  --r173-surface:linear-gradient(145deg,color-mix(in srgb,var(--bg2) 94%,transparent),color-mix(in srgb,var(--bg) 90%,transparent));
+}
+
+/* Ana merkez: durum ve görsel profil aynı hizada, birbirinden ayırt edilir. */
+#prDashboard{isolation:isolate;overflow:hidden}
+#prDashboard>*{position:relative;z-index:1}
+.prDashStatus{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.prPerfBtn,.prState{
+  min-height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border-radius:999px;background:color-mix(in srgb,var(--gold) 7%,transparent);
+  transition:transform .22s var(--r173-ease),border-color .22s,color .22s,background .22s;
+}
+.prPerfBtn{
+  padding:7px 10px;border:1px solid var(--pr-line);color:var(--mut);font:650 10px/1 var(--f-ui);
+  letter-spacing:.03em;white-space:nowrap;cursor:pointer
+}
+.prPerfBtn::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 12%,transparent)}
+body[data-perf="tam"] .prPerfBtn{color:var(--goldh);border-color:var(--pr-line-strong)}
+body[data-perf="tam"] .prPerfBtn::before{box-shadow:0 0 9px var(--goldh),0 0 0 3px color-mix(in srgb,var(--gold) 14%,transparent)}
+body[data-perf="pil"] .prPerfBtn{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+body[data-perf="pil"] .prPerfBtn::before{background:var(--ok);box-shadow:none}
+.prState::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
+.prState.on::before{opacity:1;box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 35%,transparent);animation:r173State 2.1s ease-out infinite}
+@keyframes r173State{55%{box-shadow:0 0 0 6px transparent}100%{box-shadow:0 0 0 6px transparent}}
+
+/* Kart hiyerarşisi: daha net yüzey, daha sakin etkileşim. */
+.prMetric,.prNow,.prSearchBtn,.prDiagBtn,
+.box>summary,.preAcc>summary{
+  transition:transform .22s var(--r173-ease),border-color .22s,background .22s,box-shadow .22s;
+}
+.prMetric{position:relative;overflow:hidden}
+.prMetric::after{content:'';position:absolute;inset:auto 12px 0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.34}
+.prMetric b{font-variant-numeric:tabular-nums lining-nums}
+.prNow{background:linear-gradient(105deg,color-mix(in srgb,var(--gold) 7%,transparent),rgba(0,0,0,.11))}
+.tabs .tab.act{box-shadow:inset 0 -2px color-mix(in srgb,var(--goldh) 72%,transparent),0 8px 22px -18px var(--goldh)}
+.btn,.tab,.tabTekke,.dockItem,.pre,.sess,.cat,.zActBtn,.mbBtn{
+  transition:transform .18s var(--r173-ease),border-color .2s,background .2s,color .2s,box-shadow .2s;
+}
+.box>summary,.preAcc>summary{border-radius:12px}
+details.box[open]>summary,details.preAcc[open]>summary{color:var(--goldh)}
+
+/* Mini oynatıcı: çalıyor/duraklatıldı durumu gözle taranabilir. */
+#miniBar{isolation:isolate;overflow:hidden}
+.mbBaslikSatir{display:flex;align-items:center;gap:7px;min-width:0}
+.mbBaslikSatir .mbT{flex:1;min-width:0}
+.mbLive{
+  flex:none;display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:999px;
+  color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 32%,transparent);
+  background:color-mix(in srgb,var(--ok) 8%,transparent);font:700 8px/1 var(--f-ui);letter-spacing:.08em
+}
+.mbLive::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+.mbLive.paused{color:var(--uyari);border-color:color-mix(in srgb,var(--uyari) 34%,transparent);background:color-mix(in srgb,var(--uyari) 8%,transparent)}
+.mbLive.paused::before{box-shadow:none}
+.mbBtn:focus-visible,.prPerfBtn:focus-visible{outline:2px solid var(--goldh);outline-offset:3px}
+
+/* Sekme değişiminde tek, kısa giriş — sürekli dönmez. */
+@keyframes r173TabIn{from{opacity:.35;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes r173Aura{0%,100%{transform:translate3d(-2%,0,0) scale(.98);opacity:.55}50%{transform:translate3d(8%,4%,0) scale(1.07);opacity:.9}}
+@media (prefers-reduced-motion:no-preference){
+  .r173-tab-in{animation:r173TabIn .38s var(--r173-spring) both}
+  body[data-perf="tam"] #prDashboard::before{animation:r173Aura 11s ease-in-out infinite}
+  body[data-perf="dengeli"] #prDashboard::before{animation:r173Aura 20s ease-in-out infinite}
+}
+
+@media (hover:hover) and (pointer:fine){
+  .prPerfBtn:hover,.prState:hover,.prSearchBtn:hover,.prDiagBtn:hover{transform:translateY(-1px);border-color:var(--pr-line-strong);background:var(--r173-hi)}
+  .prMetric:hover{transform:translateY(-2px);border-color:var(--pr-line-strong);box-shadow:0 10px 24px -18px var(--goldh)}
+  .btn:hover,.mbBtn:hover{transform:translateY(-1px);border-color:var(--line2)}
+}
+.btn:active,.tab:active,.tabTekke:active,.dockItem:active,.prPerfBtn:active,.mbBtn:active{transform:translateY(1px) scale(.985)}
+
+/* Pil profili: ağır süs gider; anlam taşıyan sayaç ve nefes sürer. */
+body[data-perf="pil"] #ebruC,
+body[data-perf="pil"] #ns .ambient,
+body[data-perf="pil"] .girih,
+body[data-perf="pil"] .rStar,
+body[data-perf="pil"] .spark,
+body[data-perf="pil"] .zerre{display:none!important}
+body[data-perf="pil"] #miniBar::before,
+body[data-perf="pil"] .mbPulse,
+body[data-perf="pil"] .chEq s,
+body[data-perf="pil"] .prState.on::before,
+body[data-perf="pil"] #prDashboard::before{animation:none!important}
+body[data-perf="pil"] .card:not(#ns *),
+body[data-perf="pil"] .tabs,
+body[data-perf="pil"] #miniBar,
+body[data-perf="pil"] #prDashboard,
+body[data-perf="pil"] #prSearchOverlay,
+body[data-perf="pil"] .prSearchBox,
+body[data-perf="pil"] .prDiagSheet{
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:var(--e1)!important
+}
+body[data-perf="pil"] *{scroll-behavior:auto}
+
+@media(max-width:520px){
+  .prDashTop{align-items:flex-start}.prDashStatus{max-width:54%}
+  .prPerfBtn,.prState{min-height:32px;padding:6px 9px}
+  .mbBaslikSatir{align-items:flex-start}.mbLive{margin-top:1px}
+}
+@media(max-width:370px){
+  .prDashTop{display:block}.prDashStatus{max-width:none;justify-content:flex-start;margin-top:10px}
+  .prMetrics{grid-template-columns:1fr 1fr}.prMetric:last-child{grid-column:1/-1}
+  .mbLive{font-size:7.5px;padding:4px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+  .r173-tab-in,.prState.on::before,#prDashboard::before{animation:none!important}
+}
 </style>
 <div id="ns" hidden></div>
 <!-- r99: bu panelin isaretlemesi acilista DOM'a kurulmaz.
@@ -24681,7 +25045,7 @@ const WAVES = [
 // SPECIAL FREQUENCIES
 const SPECIAL_FREQS = [
   {hz:432,name:'432 Hz',desc:'Geleneksel atıf: uyum ve ahenk'},
-  {hz:528,name:'528 Hz',desc:'Geleneksel solfej atfı: dönüşüm'},
+  {hz:528,name:'528 Hz',desc:'Modern solfej atfı: dönüşüm'},
   {hz:639,name:'639 Hz',desc:'Geleneksel atıf: bağ ve merhamet'},
   {hz:741,name:'741 Hz',desc:'Geleneksel atıf: ifade ve çözüm'},
   {hz:852,name:'852 Hz',desc:'Geleneksel atıf: sezgi'},
@@ -25075,6 +25439,10 @@ function cymSeed(){
 function cymTick(){
   const {c2d:c, size, particles} = CYM;
   if (!c) return;
+  const simdi=performance.now(), kip=document.body.dataset.perf||'dengeli';
+  const ara=kip==='tam'?16:(kip==='pil'?125:33);
+  if(CYM._lastFrame&&simdi-CYM._lastFrame<ara){CYM.raf=requestAnimationFrame(cymTick);return;}
+  CYM._lastFrame=simdi;
   c.fillStyle = 'rgba(7,7,20,0.30)'; c.fillRect(0,0,size,size);
   const eps = 1.6;
   /* Ton çalmıyorsa taban enerji çok düşük (plaka neredeyse durgun); çalarken
@@ -25311,7 +25679,7 @@ window.addEventListener('pageshow',()=>{if(NS.sleepEnd)neuroTimerTick()});
 const SPEC = {
   cv:null, c:null, raf:null, map:null, buf:null,
   N:72, F0:20, F1:8000,
-  vals:null, peak:null, silent:99, frozen:false, W:0, H:0, dpr:1,
+  vals:null, peak:null, silent:99, frozen:false, W:0, H:0, dpr:1, last:0,
 
   rgba(h,a){
     h=(h||'').trim(); if(h.charAt(0)!=='#')return h;
@@ -25387,6 +25755,10 @@ const SPEC = {
     this.raf=requestAnimationFrame(()=>this.loop());
     if(!this.map && !this.build()) return;     /* analyser sonradan doğabilir */
     if(!this.fit()) return;                    /* panel/sekme gizli → offsetWidth 0 */
+    const simdi=performance.now(), kip=document.body.dataset.perf||'dengeli';
+    const ara=kip==='tam'?16:(kip==='pil'?125:33);
+    if(simdi-this.last<ara)return;
+    this.last=simdi;
     this.draw();
   },
 
@@ -26327,12 +26699,20 @@ const HV = {
         Object.keys(this.rafIds).forEach(id => this.resize(id));
       });
     }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { this.render(canvasId); return; }
+    const perf=document.body.dataset.perf||'dengeli';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || perf==='pil') { this.render(canvasId); return; }
     if (this.rafIds[canvasId]) return; // already animating, just keep going
-    const draw = () => {
+    let son=0;
+    const draw = (simdi) => {
       this.rafIds[canvasId] = requestAnimationFrame(draw);
       const canvas=document.getElementById(canvasId);
       if(document.hidden||!canvas||canvas.offsetParent===null)return;
+      const kip=document.body.dataset.perf||'dengeli';
+      if(kip==='pil'){ this.stop(canvasId); this.render(canvasId); return; }
+      const ara=kip==='tam'?16:33;
+      simdi=Number.isFinite(simdi)?simdi:performance.now();
+      if(simdi-son<ara)return;
+      son=simdi;
       this.render(canvasId);
     };
     draw();
@@ -27156,12 +27536,19 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){if(x.durati
 const AudioLife=window.AudioLife={
   state:'idle',reason:'init',wasBusy:false,userPaused:false,lastChange:Date.now(),providers:new Map(),
   register(name,fn){if(name&&typeof fn==='function')this.providers.set(name,fn);},
-  set(n,r){if(this.state===n&&this.reason===r)return;this.state=n;this.reason=r||'';this.lastChange=Date.now();window.dispatchEvent(new CustomEvent('sukun:audiostate',{detail:{state:n,reason:r}}));dashUpdate();},
+  set(n,r){if(this.state===n&&this.reason===r)return;this.state=n;this.reason=r||'';this.lastChange=Date.now();window.dispatchEvent(new CustomEvent('sukun:audiostate',{detail:{state:n,reason:r}}));if(!document.hidden)dashUpdate();},
   busy(){
     try{
       if((typeof FR!=='undefined'&&FR.playing)||(typeof Z!=='undefined'&&Z.auto)||(typeof AMB!=='undefined'&&Object.keys(AMB).length)||(typeof VH!=='undefined'&&VH.playing))return true;
       if(typeof SES!=='undefined'&&SES.ler&&SES.ler.size)return true;
       if('speechSynthesis' in window&&(speechSynthesis.speaking||speechSynthesis.pending))return true;
+      /* Okuyucularda cümleler arasında kısa sessiz boşluk olur. Yalnız
+         speechSynthesis.speaking'e bakmak bu arada medya oturumunu kapatıp
+         Android'in sonraki bölümü arka planda reddetmesine yol açabilir. */
+      if(window.__tvPlaying||window.__dhPlaying||window.__akPlaying||window.__fsPlaying||
+         window.__seyPlaying||window.__hzvPlaying)return true;
+      try{if(typeof DL!=='undefined'&&(DL.playing||DL.kayitCaliyor))return true}catch(e){}
+      try{if(typeof DONGU!=='undefined'&&DONGU.aktif)return true}catch(e){}
       const bs=window.BERHET_SEYIR;if(bs&&bs.run&&!bs.paused)return true;
       for(const fn of this.providers.values()){try{if(fn())return true}catch(e){}}
       return false;
@@ -27180,13 +27567,15 @@ try{if(typeof autoStart==='function'){const f=autoStart;autoStart=function(...a)
 try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){const r=f.apply(this,a);setTimeout(()=>{const busy=AudioLife.busy();AudioLife.userPaused=!busy;AudioLife.set(busy?'playing':'paused','zikir-stop')},20);return r}}}catch(e){}
 try{if(typeof frStart==='function'){const f=frStart;frStart=function(...a){AudioLife.userPaused=false;AudioLife.set('preparing','frequency');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','frequency'),20);return r}}}catch(e){}
 try{if(typeof frStop==='function'){const f=frStop;frStop=function(...a){const r=f.apply(this,a);setTimeout(()=>AudioLife.set(AudioLife.busy()?'playing':'idle','frequency-stop'),20);return r}}}catch(e){}
+try{if(typeof chOn==='function'){const f=chOn;chOn=function(...a){AudioLife.userPaused=false;AudioLife.set('preparing','ambience');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','ambience'),20);return r}}}catch(e){}
+try{if(window.Tekke&&typeof Tekke.open==='function'){const f=Tekke.open;Tekke.open=function(...a){AudioLife.userPaused=false;return f.apply(this,a)}}}catch(e){}
 try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function(...a){AudioLife.set('stopping','all-stop');const r=f.apply(this,a);AudioLife.userPaused=true;setTimeout(()=>AudioLife.set('idle','stopped'),80);return r};const b=document.getElementById('stopAll');if(b)b.onclick=hardStopAll}}catch(e){}
 
 /* ═══ 3) KİŞİSEL DASHBOARD ═══ */
 function todayLog(){try{const a=typeof logTemizle==='function'?logTemizle(typeof S!=='undefined'?S.get('sukun.log',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
 function todayTekke(){try{const a=typeof tekkeDefterTemizle==='function'?tekkeDefterTemizle(typeof S!=='undefined'?S.get('tekke.defter',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
 function currentZikir(){try{const it=ZIKIR[Z.cat].items[Z.idx];return (it&&(it.t||it.tr||it.nm))||'Zikir seçilmedi'}catch(e){return'Zikir seçilmedi'}}
-function dashCreate(){if(document.getElementById('prDashboard'))return;const tabs=document.querySelector('.tabs');if(!tabs)return;const d=document.createElement('section');d.id='prDashboard';d.innerHTML=`<div class="prDashTop"><div><div class="prEyebrow">KİŞİSEL MERKEZ</div><div class="prDashTitle">Bugünkü Sükûn</div></div><button class="prState" id="prState">hazır</button></div><div class="prMetrics"><div class="prMetric"><b id="prDz">0</b><small>BUGÜN ZİKİR</small></div><div class="prMetric"><b id="prDm">0 dk</b><small>SEANS</small></div><div class="prMetric"><b id="prDf">—</b><small>FREKANS</small></div></div><div class="prNow"><div class="prNowText"><small>ŞU AN / SON SEÇİM</small><b id="prDNow">—</b></div><button class="btn" id="prDGo">Devam et</button></div><div class="prDashActions"><button class="prSearchBtn" id="prSearchOpen">⌕ &nbsp; Esmâ, frekans, ambiyans, dua ara… <small class="prKeyHint">Ctrl K</small></button><button class="prDiagBtn" id="prDiagOpen" aria-label="Sistem durumu">◉</button></div>`;tabs.parentNode.insertBefore(d,tabs);const tc=document.getElementById('todayCard');if(tc)tc.classList.add('prCompanion');d.querySelector('#prSearchOpen').onclick=searchOpen;d.querySelector('#prDiagOpen').onclick=diagOpen;d.querySelector('#prState').onclick=diagOpen;d.querySelector('#prDGo').onclick=()=>{const t=document.querySelector('.tab[data-t="zkr"]');if(t)t.click();setTimeout(()=>{const z=document.getElementById('zCounterCard')||document.getElementById('zStage');z&&z.scrollIntoView({behavior:'smooth',block:'center'})},80)};dashUpdate()}
+function dashCreate(){if(document.getElementById('prDashboard'))return;const tabs=document.querySelector('.tabs');if(!tabs)return;const d=document.createElement('section');d.id='prDashboard';d.innerHTML=`<div class="prDashTop"><div><div class="prEyebrow">KİŞİSEL MERKEZ</div><div class="prDashTitle">Bugünkü Sükûn</div></div><div class="prDashStatus"><button class="prPerfBtn" id="prPerfBtn" data-noi18n aria-label="Görsel performans profili">◐ Dengeli</button><button class="prState" id="prState">hazır</button></div></div><div class="prMetrics"><div class="prMetric"><b id="prDz">0</b><small>BUGÜN ZİKİR</small></div><div class="prMetric"><b id="prDm">0 dk</b><small>SEANS</small></div><div class="prMetric"><b id="prDf">—</b><small>FREKANS</small></div></div><div class="prNow"><div class="prNowText"><small>ŞU AN / SON SEÇİM</small><b id="prDNow">—</b></div><button class="btn" id="prDGo">Devam et</button></div><div class="prDashActions"><button class="prSearchBtn" id="prSearchOpen">⌕ &nbsp; Esmâ, frekans, ambiyans, dua ara… <small class="prKeyHint">Ctrl K</small></button><button class="prDiagBtn" id="prDiagOpen" aria-label="Sistem durumu">◉</button></div>`;tabs.parentNode.insertBefore(d,tabs);const tc=document.getElementById('todayCard');if(tc)tc.classList.add('prCompanion');d.querySelector('#prSearchOpen').onclick=searchOpen;d.querySelector('#prDiagOpen').onclick=diagOpen;d.querySelector('#prState').onclick=diagOpen;d.querySelector('#prDGo').onclick=()=>{const t=document.querySelector('.tab[data-t="zkr"]');if(t)t.click();setTimeout(()=>{const z=document.getElementById('zCounterCard')||document.getElementById('zStage');z&&z.scrollIntoView({behavior:'smooth',block:'center'})},80)};dashUpdate()}
 function dashUpdate(){
   const d=document.getElementById('prDashboard');if(!d)return;
   let z=0,m=0;
@@ -27220,8 +27609,8 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLower
 
 /* ═══ 5) SİSTEM DURUMU / DIAGNOSTICS ═══ */
 let DIAG_RETURN=null;
-function diagCreate(){if(document.getElementById('prDiagOverlay'))return;const o=document.createElement('div');o.id='prDiagOverlay';o.hidden=true;o.innerHTML=`<div class="prDiagSheet" role="dialog" aria-modal="true" aria-labelledby="prDiagTitle"><div class="prDiagHead"><h3 id="prDiagTitle">Sistem Durumu</h3><button class="btn" id="prDiagX">Kapat</button></div><div class="prDiagGrid"><div class="prDiagCell"><small>SES DURUMU</small><b id="prDa">—</b></div><div class="prDiagCell"><small>AUDIO CONTEXT</small><b id="prDc">—</b></div><div class="prDiagCell"><small>UZUN İŞLER</small><b id="prDl">0</b></div><div class="prDiagCell"><small>HATA KAYDI</small><b id="prDe">0</b></div></div><div class="prErrList" id="prErrList">Kayıt yok.</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="prRecover">Ses motorunu toparla</button><button class="btn" id="prErrClear">Hataları temizle</button></div></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o)diagClose()};o.querySelector('#prDiagX').onclick=diagClose;o.querySelector('#prRecover').onclick=()=>AudioLife.recover('manual');o.querySelector('#prErrClear').onclick=()=>{PRERR.clear();diagRender()}}
-function diagRender(){diagCreate();const a=id=>document.getElementById(id);const errs=PRERR.get();a('prDa').textContent=AudioLife.state+' · '+AudioLife.reason;a('prDc').textContent=(typeof ctx!=='undefined'&&ctx)?ctx.state:'kurulmadı';a('prDl').textContent=PR_LONG+(PR_LASTLONG?' · son '+PR_LASTLONG+'ms':'');a('prDe').textContent=errs.length;a('prErrList').textContent=errs.length?errs.slice(0,20).map(x=>new Date(x.t).toLocaleTimeString()+' ['+x.kind+'] '+x.msg+(x.extra?' · '+x.extra:'')).join('\n'):'Kayıt yok.'}
+function diagCreate(){if(document.getElementById('prDiagOverlay'))return;const o=document.createElement('div');o.id='prDiagOverlay';o.hidden=true;o.innerHTML=`<div class="prDiagSheet" role="dialog" aria-modal="true" aria-labelledby="prDiagTitle"><div class="prDiagHead"><h3 id="prDiagTitle">Sistem Durumu</h3><button class="btn" id="prDiagX">Kapat</button></div><div class="prDiagGrid"><div class="prDiagCell"><small>SES DURUMU</small><b id="prDa">—</b></div><div class="prDiagCell"><small>AUDIO CONTEXT</small><b id="prDc">—</b></div><div class="prDiagCell"><small>KİLİT EKRANI</small><b id="prDms">—</b></div><div class="prDiagCell"><small>GÖRSEL PROFİL</small><b id="prDp">—</b></div><div class="prDiagCell"><small>UZUN İŞLER</small><b id="prDl">0</b></div><div class="prDiagCell"><small>HATA KAYDI</small><b id="prDe">0</b></div></div><div class="prErrList" id="prErrList">Kayıt yok.</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="prRecover">Ses motorunu toparla</button><button class="btn" id="prErrClear">Hataları temizle</button></div></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o)diagClose()};o.querySelector('#prDiagX').onclick=diagClose;o.querySelector('#prRecover').onclick=()=>AudioLife.recover('manual');o.querySelector('#prErrClear').onclick=()=>{PRERR.clear();diagRender()}}
+function diagRender(){diagCreate();const a=id=>document.getElementById(id);const errs=PRERR.get();a('prDa').textContent=AudioLife.state+' · '+AudioLife.reason;a('prDc').textContent=(typeof ctx!=='undefined'&&ctx)?ctx.state:'kurulmadı';a('prDms').textContent=('mediaSession' in navigator)?((window.SesCapa&&SesCapa.isActive&&SesCapa.isActive())?(navigator.mediaSession.playbackState||'etkin'):'kapalı'):'destek yok';a('prDp').textContent=document.body.dataset.perf||'dengeli';a('prDl').textContent=PR_LONG+(PR_LASTLONG?' · son '+PR_LASTLONG+'ms':'');a('prDe').textContent=errs.length;a('prErrList').textContent=errs.length?errs.slice(0,20).map(x=>new Date(x.t).toLocaleTimeString()+' ['+x.kind+'] '+x.msg+(x.extra?' · '+x.extra:'')).join('\n'):'Kayıt yok.'}
 function diagKeys(e){
   if(e.key!=='Tab')return;
   const o=document.getElementById('prDiagOverlay');if(!o||o.hidden)return;
@@ -27233,7 +27622,18 @@ function diagKeys(e){
 function diagOpen(){DIAG_RETURN=document.activeElement;diagRender();const o=document.getElementById('prDiagOverlay');o.hidden=false;if(!o.dataset.trap){o.addEventListener('keydown',diagKeys);o.dataset.trap='1'}document.body.classList.add('prModalOpen');setTimeout(()=>document.getElementById('prDiagX')?.focus(),20)}
 function diagClose(){const o=document.getElementById('prDiagOverlay');if(o)o.hidden=true;if(document.getElementById('prSearchOverlay')?.hidden!==false)document.body.classList.remove('prModalOpen');if(DIAG_RETURN&&DIAG_RETURN.isConnected)DIAG_RETURN.focus();DIAG_RETURN=null}
 
-function audioLifePoll(){const busy=AudioLife.busy();if(busy){AudioLife.userPaused=false;if(!['playing','preparing','recovering'].includes(AudioLife.state))AudioLife.set('playing','provider-sync');else dashUpdate()}else if(AudioLife.state==='playing')AudioLife.set('idle','provider-sync');else dashUpdate()}
+function audioLifePoll(){
+  const busy=AudioLife.busy();
+  if(busy){
+    if(!AudioLife.userPaused){
+      try{window.SesCapa&&SesCapa.ensure('SÜKÛN — Frekans & Zikir')}catch(e){}
+      if(!['playing','preparing','recovering'].includes(AudioLife.state))AudioLife.set('playing','provider-sync');else if(!document.hidden)dashUpdate();
+    }else if(!document.hidden)dashUpdate();
+  }else{
+    if(!AudioLife.userPaused)try{window.SesCapa&&SesCapa.isActive&&SesCapa.isActive()&&SesCapa.stop()}catch(e){}
+    if(AudioLife.state==='playing')AudioLife.set('idle','provider-sync');else if(!document.hidden)dashUpdate();
+  }
+}
 function initPremium(){dashCreate();searchCreate();dashUpdate();setInterval(audioLifePoll,1500);AudioLife.set(AudioLife.busy()?'playing':'idle','ready')}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(initPremium,50));else setTimeout(initPremium,50);
 })();
@@ -27246,10 +27646,15 @@ const R168={};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* ═══ KAYNAK SINIFLANDIRMA ═══
-   Bu katman bir doğrulama motoru değildir; uygulamadaki mevcut çerçeveyi
-   kullanıcıya görünür kılar. */
+   r174: Doğrudan metin şahidi, mekanik türetim ve Nero yorumu ayrılır. */
 R168.sourceFor=function(cat){
-  if(cat==='berhet')return [{c:'src-havas',t:'📜 Havas literatürü'},{c:'src-symbol',t:'◇ Esmâ eşleştirmesi: yorumî/sembolik'},{c:'src-note',t:'Kur’ân/hadis değildir'}];
+  if(cat==='berhet')return [
+    {c:'src-havas',t:'📜 Menbaʿ 1951 matbu şerh'},
+    {c:'src-note',t:'Bûnî’ye nispet · aidiyet tartışmalı'},
+    {c:'src-symbol',t:'Ebced: kaynak yazımından hesap'},
+    {c:'src-symbol',t:'Unsur/tabiat: harf şemasından türetim'},
+    {c:'src-note',t:'Kur’ân/hadis değildir'}
+  ];
   if(['koruma','tesbih'].includes(cat))return [{c:'src-note',t:'📖 Dinî metin / geleneksel okuma'}];
   if(cat==='esma')return [{c:'src-note',t:'🕌 Esmâü’l-Hüsnâ'}];
   return [{c:'src-note',t:'◈ Uygulama tertibi / geleneksel çalışma'}];
@@ -27343,10 +27748,10 @@ function atlasRender(){
   const noteKey='sukun.berhet.note.'+idx,note=LS.get(noteKey,'');
   const src=R168.sourceFor('berhet').map(x=>'<span class="srcBadge '+x.c+'">'+x.t+'</span>').join('');
   const body=document.getElementById('berhetAtlasBody');
-  const renderKey=[idx,stored,calc,it.ar,it.tr].join('|');
+  const renderKey=[idx,stored,calc,it.ar,it.tr,it.oku,it.serh,it.varyant].join('|');
   if(body.dataset.renderKey===renderKey)return;
   body.dataset.renderKey=renderKey;
-  body.innerHTML=`<div class="r168Grid"><div class="r168Cell"><small>${idx+1}. İSİM</small><b>${esc(it.tr)}</b></div><div class="r168Cell"><small>ARAPÇA</small><b dir="rtl">${esc(it.ar)}</b></div><div class="r168Cell"><small>MATRİS EBCEDİ</small><b>${stored||'—'}</b></div><div class="r168Cell"><small>YAZIMDAN HESAP</small><b>${calc||'—'}${stored&&calc&&stored!==calc?' · ⚠ yazım farkı — otomatik düzeltilmez':''}</b></div><div class="r168Cell"><small>MENZİL</small><b>${esc(it.menzil||'—')}</b></div><div class="r168Cell"><small>UNSUR / TABİAT</small><b>${esc((it.unsur||'—')+' · '+(it.tabiat||'—'))}</b></div><div class="r168Cell r168Wide"><small>HARF HARF EBCED</small><div class="r168Break">${breakdown}</div></div><div class="r168Cell r168Wide"><small>İŞARET / GELENEKSEL NİSPET</small><b>${esc(it.isaret||'Kaynakta kesin bir nispet belirtilmemiş.')}</b></div><div class="r168Cell r168Wide"><small>OKUNUŞ VARYANTI NOTU</small><b>Okunuşlar havâs kaynakları ve nüshalar arasında değişebilir; uygulamadaki transliterasyon tek doğru olarak sunulmaz.</b></div></div><div class="r168Source">${src}</div><textarea class="r168Note" id="berhetNote" placeholder="Bu isimle çalışırken kişisel gözlemini yaz…">${esc(note)}</textarea>`;
+  body.innerHTML=`<div class="r168Grid"><div class="r168Cell"><small>${idx+1}. KAYNAK TRANSKRİPSİYONU</small><b>${esc(it.tr)}</b></div><div class="r168Cell"><small>YAYGIN TÜRKÇE TİLAVET</small><b>${esc(it.oku||it.tr)}</b></div><div class="r168Cell r168Wide"><small>KAYNAK ARAPÇA YAZIMI</small><b dir="rtl">${esc(it.ar)}</b></div><div class="r168Cell"><small>YAZIMDAN EBCED</small><b>${calc||'—'}${stored===calc?' · ✓':' · ⚠ veri/yazım uyuşmazlığı'}</b></div><div class="r168Cell"><small>KAYITLI HEDEF</small><b>${stored||'—'}</b></div><div class="r168Cell"><small>HARF / MENZİL</small><b>${esc((it.harf||'—')+' · '+(it.menzil||'—'))}</b></div><div class="r168Cell"><small>TÜRETİLMİŞ UNSUR / TABİAT</small><b>${esc((it.unsur||'—')+' · '+(it.tabiat||'—'))}</b></div><div class="r168Cell r168Wide"><small>HARF HARF EBCED</small><div class="r168Break">${breakdown}</div></div><div class="r168Cell r168Wide"><small>MENBA ŞERHİNDE ZİKREDİLEN KARŞILIK</small><b>${esc(it.serh||'Şerhte açık bir karşılık bulunamadı.')}</b></div><div class="r168Cell r168Wide"><small>NERO TEFEKKÜR NOTU · KAYNAK METNİ DEĞİL</small><b>${esc(it.isaret||it.mean||'—')}</b></div><div class="r168Cell r168Wide"><small>VARYANT / OKUNUŞ NOTU</small><b>${esc(it.varyant||'Harekeleme ve okunuş nüshalar arasında değişebilir; gösterilen Türkçe tilavet tek doğru olarak sunulmaz.')}</b></div></div><div class="r168Source">${src}</div><details class="r174Cites"><summary>Kaynak künyesi ve metin durumu</summary><div><b>Birincil karşılaştırma:</b> <a href="https://archive.org/details/20220917_20220917_1454" target="_blank" rel="noopener noreferrer">Menbaʿ Uṣûli’l-Hikme, Şerhu’l-Berhetiyye, el-Bâbî el-Halebî 1951, s. 67–74</a>.<br><b>Varyant şahidi:</b> <a href="https://archive.org/details/shams_al_maarif" target="_blank" rel="noopener noreferrer">Şemsü’l-Maârif-i Kübrâ matbu nüsha</a> — sıra daha kısa ve farklıdır.<br><b>Bibliyografya:</b> <a href="https://www.nli.org.il/ar/books/NNL_ALEPH990036991710205171/NLI" target="_blank" rel="noopener noreferrer">İsrail Millî Kütüphanesi Menbaʿ kaydı</a>.<br><b>Modern metin tarihi:</b> <a href="https://www.lancaster.ac.uk/jais/volume/docs/vol12/v12_04_Gardiner_081-143.pdf" target="_blank" rel="noopener noreferrer">Noah Gardiner, “Forbidden Knowledge?”</a>. Büyük Şems ve Menbaʿın doğrudan Ahmed el-Bûnî’ye aidiyeti kesin değil, tartışmalıdır.</div></details><textarea class="r168Note" id="berhetNote" aria-label="Berhetiyye isim gözlemi" placeholder="Bu isimle çalışırken kişisel gözlemini yaz…">${esc(note)}</textarea>`;
   const ta=document.getElementById('berhetNote');if(ta)ta.oninput=()=>LS.set(noteKey,ta.value);
 }
 
@@ -27354,7 +27759,7 @@ function atlasRender(){
 const BS=window.BERHET_SEYIR={run:false,paused:false,i:0,rep:0,totalDone:0,token:0,shown:-1,key:'sukun.berhet.seyir.state'};
 function seyirCreate(){
   if(document.getElementById('berhetSeyir'))return;const a=document.getElementById('berhetAtlas');if(!a)return;
-  const d=document.createElement('details');d.id='berhetSeyir';d.innerHTML=`<summary class="r168Head"><b>✦ 28 İSİM SEYRİ</b><span class="r168Tag">kaldığın yerden sürer</span></summary><div class="r168MiniRow"><label>Her isim <select id="bsMode"><option value="1">1 kez</option><option value="28">28 kez</option><option value="ebced">Ebcedi kadar</option><option value="custom">Özel</option></select></label><input id="bsCustom" type="number" min="1" max="9999" value="33" style="width:78px" hidden><label>Ara <select id="bsGap"><option value="350">0.35 sn</option><option value="900" selected>0.9 sn</option><option value="2000">2 sn</option><option value="5000">5 sn</option></select></label></div><div class="r168Progress"><i id="bsBar"></i></div><div class="r168Status" id="bsStatus">Hazır · kayıt varsa kendi sesin, yoksa transliterasyon/TTS.</div><div class="r168Buttons"><button class="btn" id="bsStart">▶ Başlat / Sürdür</button><button class="btn" id="bsPause">⏸ Duraklat</button><button class="btn" id="bsNext">⏭ Sonraki İsim</button><button class="btn" id="bsStop">■ Bitir</button><button class="btn" id="bsReset">↺ Baştan</button></div>`;
+  const d=document.createElement('details');d.id='berhetSeyir';d.innerHTML=`<summary class="r168Head"><b>✦ 28 İSİM SEYRİ</b><span class="r168Tag">kaldığın yerden sürer</span></summary><div class="r168MiniRow"><label>Her isim <select id="bsMode"><option value="1">1 kez</option><option value="28">28 kez</option><option value="ebced">Ebcedi kadar</option><option value="custom">Özel</option></select></label><input id="bsCustom" type="number" min="1" max="9999" value="33" aria-label="Her isim için özel tekrar sayısı" style="width:78px" hidden><label>Ara <select id="bsGap"><option value="350">0.35 sn</option><option value="900" selected>0.9 sn</option><option value="2000">2 sn</option><option value="5000">5 sn</option></select></label></div><div class="r168Progress"><i id="bsBar"></i></div><div class="r168Status" id="bsStatus">Hazır · kayıt varsa kendi sesin, yoksa transliterasyon/TTS.</div><div class="r168Buttons"><button class="btn" id="bsStart">▶ Başlat / Sürdür</button><button class="btn" id="bsPause">⏸ Duraklat</button><button class="btn" id="bsNext">⏭ Sonraki İsim</button><button class="btn" id="bsStop">■ Bitir</button><button class="btn" id="bsReset">↺ Baştan</button></div>`;
   a.insertAdjacentElement('afterend',d);bindSeyir();restoreSeyir();
 }
 function repeatCount(it){const m=document.getElementById('bsMode')?.value||'1';if(m==='ebced')return Math.max(1,+it.eb||1);if(m==='custom')return Math.max(1,+document.getElementById('bsCustom')?.value||1);return +m||1}
@@ -27407,11 +27812,11 @@ function bindSeyir(){
 
 /* ═══ KENDİ SESLERİM — MEDYA KÜTÜPHANESİ ═══ */
 function recCategory(k){if(k.startsWith('esma:'))return'esma';if(k.startsWith('berhet:'))return'berhet';if(k.startsWith('dua:salavat'))return'salavat';if(k.startsWith('dua:'))return'dua';if(k.startsWith('tekke:'))return'tekke';return'diger'}
-function mediaCreate(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('sesKutuphane'))return;const d=document.createElement('div');d.id='sesKutuphane';d.innerHTML=`<div class="r168Head"><b>🎙 KENDİ SESLERİM KÜTÜPHANESİ</b><span class="r168Tag" id="r168RecStat">0 kayıt</span></div><div class="r168MediaFilters" id="r168Filters"></div><input id="r168RecSearch" placeholder="Kayıt ara…" style="width:100%;box-sizing:border-box;margin-top:7px;background:rgba(0,0,0,.18);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px"><div class="r168MediaList" id="r168MediaList"></div>`;y.querySelector('.ydkListe')?.insertAdjacentElement('beforebegin',d);const cats=[['all','Tümü'],['esma','Esmâ'],['berhet','Berhetiyye'],['salavat','Salavât'],['dua','Dualar'],['tekke','Tekke'],['diger','Diğer']];const f=d.querySelector('#r168Filters');cats.forEach((x,i)=>{const b=document.createElement('button');b.textContent=x[1];b.dataset.f=x[0];if(!i)b.classList.add('on');b.onclick=()=>{f.querySelectorAll('button').forEach(q=>q.classList.remove('on'));b.classList.add('on');mediaRender()};f.appendChild(b)});d.querySelector('#r168RecSearch').oninput=mediaRender;mediaRender()}
+function mediaCreate(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('sesKutuphane'))return;const d=document.createElement('div');d.id='sesKutuphane';d.innerHTML=`<div class="r168Head"><b>🎙 KENDİ SESLERİM KÜTÜPHANESİ</b><span class="r168Tag" id="r168RecStat">0 kayıt</span></div><div class="r168MediaFilters" id="r168Filters"></div><input id="r168RecSearch" aria-label="Kayıt ara" placeholder="Kayıt ara…" style="width:100%;box-sizing:border-box;margin-top:7px;background:rgba(0,0,0,.18);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px"><div class="r168MediaList" id="r168MediaList"></div>`;y.querySelector('.ydkListe')?.insertAdjacentElement('beforebegin',d);const cats=[['all','Tümü'],['esma','Esmâ'],['berhet','Berhetiyye'],['salavat','Salavât'],['dua','Dualar'],['tekke','Tekke'],['diger','Diğer']];const f=d.querySelector('#r168Filters');cats.forEach((x,i)=>{const b=document.createElement('button');b.textContent=x[1];b.dataset.f=x[0];if(!i)b.classList.add('on');b.onclick=()=>{f.querySelectorAll('button').forEach(q=>q.classList.remove('on'));b.classList.add('on');mediaRender()};f.appendChild(b)});d.querySelector('#r168RecSearch').oninput=mediaRender;mediaRender()}
 async function mediaRender(){const list=document.getElementById('r168MediaList');if(!list)return;let keys=[];try{keys=await REC_DB.keys();RECKEYS=new Set(keys)}catch(e){}const filter=document.querySelector('#r168Filters button.on')?.dataset.f||'all',q=(document.getElementById('r168RecSearch')?.value||'').toLocaleLowerCase('tr');keys=keys.filter(k=>(filter==='all'||recCategory(k)===filter)&&keyLabel(k).toLocaleLowerCase('tr').includes(q));document.getElementById('r168RecStat').textContent=keys.length+' kayıt';list.innerHTML='';for(const k of keys){const row=document.createElement('div');row.className='r168MediaItem';row.innerHTML='<span><b>'+esc(keyLabel(k))+'</b><small>'+esc(recCategory(k))+' · '+esc(k)+'</small></span><button title="Dinle">▶</button><button title="Sil">×</button>';const bs=row.querySelectorAll('button');bs[0].onclick=async()=>{const b=await REC_DB.get(k);if(b)await playRecording(b,'lib:'+k)};bs[1].onclick=async()=>{if(confirm('Bu kayıt silinsin mi?')){await REC_DB.del(k);RECKEYS.delete(k);mediaRender();try{ydkListe()}catch(e){}}};list.appendChild(row)}}
 
 /* ═══ NEFS–LETÂİF SEYİR GÜNLÜĞÜ ═══ */
-function journalCreate(){const hub=document.getElementById('nefsLtfHub');if(!hub||document.getElementById('maneviGunluk'))return;const d=document.createElement('details');d.id='maneviGunluk';d.innerHTML=`<summary class="r168Head"><b>📓 SEYİR GÜNLÜĞÜ</b><span class="r168Tag">öz gözlem · hüküm vermez</span></summary><div class="r168MiniRow"><select id="mgAlan"><option>Nefs</option><option>Letâif</option><option>Genel tefekkür</option></select><input id="mgKonu" maxlength="120" placeholder="Çalışılan mertebe/latîfe"></div><textarea class="r168Note" id="mgNot" maxlength="4000" placeholder="Bugünkü hâlini ve gözlemini yaz. Uygulama bu nottan manevî mertebe hükmü çıkarmaz."></textarea><button class="btn" id="mgKaydet" style="width:100%">Gözlemi kaydet</button><div class="r168JournalList" id="mgListe"></div>`;hub.appendChild(d);document.getElementById('mgKaydet').onclick=()=>{const n=(document.getElementById('mgNot').value||'').trim().slice(0,4000);if(!n)return;const raw=LS.get('sukun.maneviGunluk',[]),a=Array.isArray(raw)?raw:[];a.unshift({t:Date.now(),alan:document.getElementById('mgAlan').value,konu:document.getElementById('mgKonu').value.trim().slice(0,120),not:n});LS.set('sukun.maneviGunluk',a.slice(0,300));document.getElementById('mgNot').value='';journalRender()};d.addEventListener('toggle',()=>{if(d.open)journalRender()})}
+function journalCreate(){const hub=document.getElementById('nefsLtfHub');if(!hub||document.getElementById('maneviGunluk'))return;const d=document.createElement('details');d.id='maneviGunluk';d.innerHTML=`<summary class="r168Head"><b>📓 SEYİR GÜNLÜĞÜ</b><span class="r168Tag">öz gözlem · hüküm vermez</span></summary><div class="r168MiniRow"><select id="mgAlan" aria-label="Gözlem alanı"><option>Nefs</option><option>Letâif</option><option>Genel tefekkür</option></select><input id="mgKonu" maxlength="120" aria-label="Çalışılan mertebe veya latîfe" placeholder="Çalışılan mertebe/latîfe"></div><textarea class="r168Note" id="mgNot" maxlength="4000" aria-label="Bugünkü hâl ve gözlem" placeholder="Bugünkü hâlini ve gözlemini yaz. Uygulama bu nottan manevî mertebe hükmü çıkarmaz."></textarea><button class="btn" id="mgKaydet" style="width:100%">Gözlemi kaydet</button><div class="r168JournalList" id="mgListe"></div>`;hub.appendChild(d);document.getElementById('mgKaydet').onclick=()=>{const n=(document.getElementById('mgNot').value||'').trim().slice(0,4000);if(!n)return;const raw=LS.get('sukun.maneviGunluk',[]),a=Array.isArray(raw)?raw:[];a.unshift({t:Date.now(),alan:document.getElementById('mgAlan').value,konu:document.getElementById('mgKonu').value.trim().slice(0,120),not:n});LS.set('sukun.maneviGunluk',a.slice(0,300));document.getElementById('mgNot').value='';journalRender()};d.addEventListener('toggle',()=>{if(d.open)journalRender()})}
 function journalRender(){const b=document.getElementById('mgListe');if(!b)return;const raw=LS.get('sukun.maneviGunluk',[]),a=(Array.isArray(raw)?raw:[]).filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).slice(0,50);b.innerHTML=a.length?a.map(x=>{const t=Number(x.t);return '<div class="r168JournalItem"><b>'+esc(String(x.alan||'Gözlem').slice(0,80)+(x.konu?' · '+String(x.konu).slice(0,120):''))+'</b><small>'+(Number.isFinite(t)?new Date(t).toLocaleString('tr-TR'):'—')+'</small><div>'+esc(String(x.not||'').slice(0,4000))+'</div></div>'}).join(''):'<div class="r168Status">Henüz gözlem kaydı yok.</div>'}
 
 /* renderZikir sonrası Atlası güncelle */
@@ -27419,6 +27824,125 @@ try{if(typeof renderZikir==='function'){const old=renderZikir;renderZikir=functi
 
 function init(){sourceLayerRender();atlasCreate();atlasRender();seyirCreate();mediaCreate();journalCreate();try{document.querySelectorAll('#zCats .cat').forEach(()=>{})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,120),{once:true});else setTimeout(init,120);
+})();
+</script>
+
+<script id="r173-visual-runtime">
+(()=>{
+'use strict';
+const ANAHTAR='sukun.perf';
+const SIRA=['tam','dengeli','pil'];
+const METIN={
+  tr:{
+    tam:{ad:'Tam',acik:'Tam görsel profil: süs animasyonları yaklaşık 60 kare/saniye'},
+    dengeli:{ad:'Dengeli',acik:'Dengeli görsel profil: akıcılık ve pil kullanımı birlikte gözetilir'},
+    pil:{ad:'Pil',acik:'Pil görsel profil: dekoratif hareket, blur ve kare hızı azaltılır'}
+  },
+  en:{
+    tam:{ad:'Full',acik:'Full visual profile: decorative animation at about 60 frames per second'},
+    dengeli:{ad:'Balanced',acik:'Balanced visual profile: preserves fluidity while reducing power use'},
+    pil:{ad:'Battery',acik:'Battery visual profile: reduces decorative motion, blur and frame rate'}
+  }
+};
+function oku(){
+  try{
+    const ham=localStorage.getItem(ANAHTAR);if(ham==null)return null;
+    try{return JSON.parse(ham)}catch(e){return ham}
+  }catch(e){return null}
+}
+function yaz(v){try{localStorage.setItem(ANAHTAR,JSON.stringify(v))}catch(e){}}
+let kullaniciSecti=!!oku();
+const azalt=matchMedia('(prefers-reduced-motion: reduce)');
+const ilk=oku();
+
+const GORSEL=window.SukunPerformance={
+  mode:SIRA.includes(ilk)?ilk:(azalt.matches?'pil':'dengeli'),
+  meta(){const dil=(window.I18N&&I18N.lang==='en')?'en':'tr';return METIN[dil][this.mode]},
+  render(){
+    const b=document.getElementById('prPerfBtn'),m=this.meta();
+    if(b){
+      if(b.textContent!==m.ad)b.textContent=m.ad;
+      b.title=m.acik;
+      const en=!!(window.I18N&&I18N.lang==='en');
+      b.setAttribute('aria-label',m.acik+(en?'; tap to change':'; değiştirmek için dokun'));
+    }
+    const d=document.getElementById('prDp');if(d)d.textContent=m.ad;
+  },
+  uyut(){
+    try{if(typeof HV!=='undefined')HV.stopAll()}catch(e){}
+    try{if(typeof SPEC!=='undefined')SPEC.stop()}catch(e){}
+    try{if(typeof cymPauseVisual==='function')cymPauseVisual()}catch(e){}
+  },
+  uyandir(){
+    if(document.hidden||this.mode==='pil'){
+      try{if(typeof MUHR!=='undefined')MUHR.draw()}catch(e){}
+      try{if(typeof FRM!=='undefined')FRM.draw(0)}catch(e){}
+      return;
+    }
+    try{if(window.CIZ&&CIZ.isler&&CIZ.isler.size)CIZ.basla()}catch(e){}
+    try{if(typeof MUHR!=='undefined')MUHR.wake()}catch(e){}
+    try{if(typeof FRM!=='undefined')FRM.wake()}catch(e){}
+    const ns=document.getElementById('ns');
+    if(ns&&!ns.hidden){
+      try{if(typeof SPEC!=='undefined')SPEC.start()}catch(e){}
+      try{
+        const med=document.getElementById('panel-med');
+        if(med&&med.classList.contains('active')&&typeof MED!=='undefined'&&MED.scriptIdx>=0&&typeof HV!=='undefined')HV.start('hvCanvasMed');
+      }catch(e){}
+      try{
+        const cym=document.getElementById('panel-cym');
+        if(cym&&cym.classList.contains('active')&&typeof cymEnter==='function')cymEnter();
+      }catch(e){}
+    }
+  },
+  apply(kip,bildir=false,kaydet=true){
+    if(!SIRA.includes(kip))kip='dengeli';
+    this.mode=kip;document.body.dataset.perf=kip;
+    if(kaydet)yaz(kip);
+    this.render();
+    if(kip==='pil')this.uyut();else this.uyandir();
+    window.dispatchEvent(new CustomEvent('sukun:performance',{detail:{mode:kip}}));
+    if(bildir){
+      const m=this.meta(),dil=(window.I18N&&I18N.lang==='en')?'en':'tr';
+      const mesaj=(dil==='en'?'Visual profile: ':'Görsel profil: ')+m.ad;
+      try{if(typeof toast==='function')toast(mesaj)}catch(e){}
+    }
+  },
+  cycle(){
+    kullaniciSecti=true;
+    const i=SIRA.indexOf(this.mode);
+    this.apply(SIRA[(i+1)%SIRA.length],true,true);
+  }
+};
+
+function dugmeBagla(deneme=0){
+  const b=document.getElementById('prPerfBtn');
+  if(!b){if(deneme<30)setTimeout(()=>dugmeBagla(deneme+1),80);return}
+  if(!b.dataset.r173){b.dataset.r173='1';b.addEventListener('click',()=>GORSEL.cycle())}
+  GORSEL.render();
+}
+function sekmeGirisi(e){
+  const b=e.target.closest&&e.target.closest('.tab[data-t]');
+  if(!b||GORSEL.mode==='pil'||azalt.matches)return;
+  setTimeout(()=>{
+    const s=document.getElementById('tab-'+b.dataset.t);if(!s||s.hidden)return;
+    s.classList.remove('r173-tab-in');void s.offsetWidth;s.classList.add('r173-tab-in');
+    s.addEventListener('animationend',()=>s.classList.remove('r173-tab-in'),{once:true});
+  },0);
+}
+document.addEventListener('click',sekmeGirisi);
+document.addEventListener('visibilitychange',()=>document.hidden?GORSEL.uyut():GORSEL.uyandir());
+window.addEventListener('pagehide',()=>GORSEL.uyut());
+window.addEventListener('pageshow',()=>GORSEL.uyandir());
+try{azalt.addEventListener('change',e=>{if(!kullaniciSecti)GORSEL.apply(e.matches?'pil':'dengeli',false,true)})}catch(e){}
+try{
+  if(window.I18N&&typeof I18N.set==='function'){
+    const onceki=I18N.set;
+    I18N.set=function(...a){const r=onceki.apply(this,a);setTimeout(()=>GORSEL.render(),0);return r};
+  }
+}catch(e){}
+function basla(){GORSEL.apply(GORSEL.mode,false,true);dugmeBagla()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(basla,90),{once:true});else setTimeout(basla,90);
 })();
 </script>
 
