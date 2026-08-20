@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r170 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r171 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,9 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="sukun-build" content="r171">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r170">
+<link rel="manifest" href="./manifest.webmanifest?v=r171b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3602,7 +3603,7 @@ input:focus-visible,select:focus-visible{
         <div class="opt"><span><span class="ico" data-ico="book"></span> Anlamı göster</span><button class="sw on" id="optMean" data-tip="Zikrin Türkçe anlamını sahnede gösterir. Ne söylediğini bilerek çekmek tefekkürü derinleştirir."></button></div>
         <div class="opt"><span>⏭ Devirde sıradakine geç</span><button class="sw" id="optAdv" data-tip="Devir dolunca listedeki sıradaki zikre kendiliğinden geçer. Hatim ya da vird çekerken elini boşta bırakır."></button></div>
         <div class="opt"><span><span class="ico" data-ico="drum"></span> Bendir usûlü — tempoya kilitli düm·tek</span><button class="sw" id="optBendir" data-tip="Tempoya kilitli bendir usûlü (düm·tek) ekler. Zikri ritme oturtmak isteyenler için."></button></div>
-        <div class="jRow" id="usulRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Usûl</b><select id="usulSel"><option value="duyek">Düyek (basit)</option><option value="sofyan">Sofyan</option><option value="devrihindi">Devr-i Hindî</option><option value="cifte">Çifte düm·tek</option></select></div>
+        <div class="jRow" id="usulRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Usûl</b><select id="usulSel" aria-label="Bendir usûlü"><option value="duyek">Düyek (basit)</option><option value="sofyan">Sofyan</option><option value="devrihindi">Devr-i Hindî</option><option value="cifte">Çifte düm·tek</option></select></div>
         <div class="opt" style="margin-top:6px"><span><span class="ico" data-ico="spiral"></span> 8D mekânsal ses — kanallar kulaklıkta çevrende döner</span><button class="sw" id="spatialTgl"></button></div>
         <!-- r119: zikir sonu sesi — çan yerine Hû -->
         <div class="opt" style="display:block">
@@ -3623,10 +3624,10 @@ input:focus-visible,select:focus-visible{
         <!-- r118: tören her gün açan için zorunlu olmamalı -->
         <div class="opt"><span><span class="ico" data-ico="eye"></span> Zikir açılışı — başlarken zikri gösterip geri say<small style="display:block;font-size:9px;color:var(--dim);line-height:1.5;margin-top:2px">Kapatırsan akış doğrudan başlar. Tören sırasında ekrana dokunmak da geçer.</small></span><button class="sw on" id="zaTgl" aria-label="Zikir açılışı"></button></div>
         <div class="opt"><span><span class="ico" data-ico="speaker"></span> Sesli zikir — her tesbihte cihaz sesiyle söyle</span><button class="sw" id="optSpeak" data-tip="Her tesbihte zikri cihaz sesiyle söyler. Kendi kaydın varsa onunki çalınır — tecvid için en doğrusu budur."></button></div>
-        <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice" data-tip="Okuma sesi. Cihazında yüklü seslerden birini seçersin; seçim bütün okuyuculara birden işler."></select><select id="spkGenderSel" title="Tüm zikir, dua ve sûre okuyucularına uygulanır (Türkçe ve Arapça)" style="margin-left:6px" data-tip="Kadın ya da erkek ses tercihi. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır."><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" style="flex:1;width:auto" data-tip="Okuma hızı. Ezber için yavaş, tekrar için normal iyi gelir."></div>
+        <div class="jRow" id="spkRow" style="margin-top:6px"><b style="flex:none;color:var(--mut)">Ses / hız</b><select id="spkVoice" aria-label="Konuşma sesi" data-tip="Okuma sesi. Cihazında yüklü seslerden birini seçersin; seçim bütün okuyuculara birden işler."></select><select id="spkGenderSel" title="Tüm zikir, dua ve sûre okuyucularına uygulanır (Türkçe ve Arapça)" style="margin-left:6px" data-tip="Kadın ya da erkek ses tercihi. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır."><option value="">Tüm sesler</option><option value="f">👩 Kadın</option><option value="m">👨 Erkek</option></select><input type="range" id="spkRate" min="0.6" max="1.2" step="0.05" value="0.85" aria-label="Konuşma hızı" style="flex:1;width:auto" data-tip="Okuma hızı. Ezber için yavaş, tekrar için normal iyi gelir."></div>
         <div style="font-size:9px;color:var(--dim);line-height:1.55;margin:3px 0 2px">👩/👨 seçimi bütün okuyuculara işler: zikir, Âyetü'l-Kürsî, Fâtiha Seyri, Nasuh Tövbesi, Salavât, Seyyidü'l-İstiğfar ve koruyucu sûreler — hem Türkçe hem Arapça ses için. Cihazında o cinsiyette ses yoksa mevcut sesler kullanılır.</div>
         <div class="opt" style="margin-top:8px"><span id="arStat">🕌 Arapça ses aranıyor…</span><button class="sw" id="arTgl" aria-label="Arapça telaffuzu tercih et" data-tip="Zikri Arap harfli metinden okur. Cihazında Arapça ses yoksa tam okunuşuna düşer, sessiz kalmaz."></button></div>
-        <div class="jRow" id="arVoiceRow" style="margin-top:6px;display:none"><b style="flex:none;color:var(--mut)">Arapça ses seç</b><select id="arVoiceSel" style="flex:1" data-tip="Arapça metinleri okuyacak ses. Yalnız Arapça tarafı etkiler."></select></div>
+        <div class="jRow" id="arVoiceRow" style="margin-top:6px;display:none"><b style="flex:none;color:var(--mut)">Arapça ses seç</b><select id="arVoiceSel" aria-label="Arapça okuma sesi" style="flex:1" data-tip="Arapça metinleri okuyacak ses. Yalnız Arapça tarafı etkiler."></select></div>
         <div class="sldRow" style="margin-top:7px"><label for="arPitch">Ar. perde</label><input type="range" id="arPitch" min="0.5" max="1.3" step="0.02" value="0.76" data-tip="Arapça okuma sesinin perdesi. Daha pes bir ton tilâvete yaklaştırır — ama tecvidin yerini tutmaz."><span class="valB" id="arPitchV">0.76</span></div>
         <div class="sldRow"><label for="arRate">Ar. hız</label><input type="range" id="arRate" min="0.45" max="1.1" step="0.02" value="0.7" data-tip="Arapça okuma hızı. Medleri duyabilmek için yavaş dene."><span class="valB" id="arRateV">0.70</span></div>
         <div id="arNote" style="font-size:9.5px;color:var(--dim);margin-top:5px;line-height:1.6"></div>
@@ -3663,8 +3664,8 @@ input:focus-visible,select:focus-visible{
           <button class="btn" id="vhPlay">▶ Halkayı başlat</button>
         </div>
         <div class="jRow"><b style="flex:none;color:var(--mut)">Katman</b>
-          <select id="vhLayers"><option value="3">3 ses</option><option value="5" selected>5 ses</option><option value="7">7 ses</option></select>
-          <input type="range" id="vhVol" min="0" max="1" step="0.01" value="0.6" style="flex:1;width:auto">
+          <select id="vhLayers" aria-label="Ses halkası katman sayısı"><option value="3">3 ses</option><option value="5" selected>5 ses</option><option value="7">7 ses</option></select>
+          <input type="range" id="vhVol" min="0" max="1" step="0.01" value="0.6" aria-label="Ses halkası seviyesi" style="flex:1;width:auto">
         </div>
         <div id="vhStat" style="font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.6">Kısa bir «Hû» ya da esmâ kaydet (en çok 20 sn — halka için kısa olması daha güzel durur); 3-7 kopya hafif detune ve pan ile halkaya dönüşür. Ses cihazından dışarı çıkmaz.</div>
       </details>
@@ -3728,7 +3729,7 @@ input:focus-visible,select:focus-visible{
         <div class="hatBar"><i id="hatBarI"></i></div>
         <div class="hatCells" id="hatCells"></div>
         <div class="jRow" style="margin-top:9px"><b style="flex:none;color:var(--mut)">Her isim</b>
-          <select id="hatMode" data-tip="Her isim için kaç tesbih çekileceği. Ebced değeri seçilirse her isim kendi sayısınca çekilir — hatim uzun sürer."><option value="11">×11</option><option value="33" selected>×33</option><option value="ebced">Ebcedi kadar</option></select>
+          <select id="hatMode" aria-label="Hatimde her isim için tekrar" data-tip="Her isim için kaç tesbih çekileceği. Ebced değeri seçilirse her isim kendi sayısınca çekilir — hatim uzun sürer."><option value="11">×11</option><option value="33" selected>×33</option><option value="ebced">Ebcedi kadar</option></select>
         </div>
         <div class="zBtns" style="margin-top:9px">
           <button class="btn" id="hatGo" data-tip="99 ismin tamamını sırayla çeker. Yarıda bırakırsan kaldığın yerden sürer.">▶ Başla</button>
@@ -3941,7 +3942,7 @@ input:focus-visible,select:focus-visible{
       <input type="file" id="bakFile" accept=".json,application/json" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v13.0 — build 2026-08-20-r170</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v13.0 — build 2026-08-20-r171</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -3965,6 +3966,19 @@ input:focus-visible,select:focus-visible{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {
+  "v": "r171",
+  "t": "20 Ağustos 2026",
+  "b": [
+   "Tümünü durdur artık Berhetiyye seyri, Tekke ön izlemesi, NeuroSync, uyku fade'leri ve özel frekans tonlarını da kapsıyor",
+   "NeuroSync özel frekans osilatörü kapanışta tamamen ayrılıyor; arka planda ses ve düğüm kalmıyor",
+   "NeuroSync uyku zamanlayıcısı ekran kilitlense de mutlak zamana göre doğru ilerliyor",
+   "Berhetiyye seyri yalnız gerçekten duyulan tekrarları sayıyor ve ses başarısızlığında güvenle duraklıyor",
+   "Tamamlanmış Berhetiyye seyri yeniden açıldığında son ismi yanlışlıkla tekrarlamıyor",
+   "Beyin dalgası etiketleri artık erişilebilir ve dokunulduğunda vuruşu gerçekten önerilen değere ayarlıyor",
+   "PWA güncellemesi aynı adlı eski dosyayı önbellekten göstermesin diye r171 cache anahtarı yenilendi"
+  ]
+ },
  {
   "v": "r170",
   "t": "20 Ağustos 2026",
@@ -4636,7 +4650,7 @@ input:focus-visible,select:focus-visible{
   </div>
   <div class="virdChain" id="virdChain"></div>
   <div class="virdAdd">
-    <select id="virdSel"></select>
+    <select id="virdSel" aria-label="Vird seçimi"></select>
     <input type="number" id="virdAdet" min="1" max="9999" value="33" aria-label="Vird tekrar adedi" title="Adet">
     <button class="btn" id="virdAddBtn" style="flex:none">+ Ekle</button>
   </div>
@@ -9037,6 +9051,11 @@ $('#masterVol').addEventListener('input',e=>{
   saveSettings();
 });
 function hardStopAll(){
+  /* Elle ya da başka bir modülden gelen kesin durdurma, ana uyku sayacının
+     gecikmiş fade callback'ini de iptal eder. Aksi hâlde ses sustuktan birkaç
+     saniye sonra eski callback yeniden çalışıp ana gain'i değiştirebilirdi. */
+  try{clearInterval(stInt);stInt=null;stEnd=0;clearTimeout(stFade);stFade=null}catch(e){}
+  try{const sl=$('#sleepTimer');if(sl)sl.value='0';const tb=$('#timerBadge');if(tb)tb.textContent=''}catch(e){}
   try{ window.__mzbzStop&&window.__mzbzStop(); }catch(e){}   /* r118 */
   try{ window.__hzvStop&&window.__hzvStop(); }catch(e){}     /* r131 */
   Object.keys(AMB).forEach(chOff);
@@ -9052,10 +9071,27 @@ function hardStopAll(){
      kaldığı yerden sürer — kayıp yok, yalnız durum dürüstleşir. */
   try{ if(typeof HATIM!=='undefined'&&HATIM.active)hatPause(); }catch(e){}
   try{ if(typeof LTF!=='undefined'&&LTF.active)ltfPause(); }catch(e){}
+  /* r171: Sonradan eklenen bağımsız modüller de aynı "Tümünü durdur"
+     sözleşmesine uyar. Tembel modüller gereksiz yere kurulmaz; yalnız
+     gerçekten etkin olan sağlayıcı durdurulur ve ilerlemesi korunur. */
+  try{
+    const bs=window.BERHET_SEYIR;
+    if(bs&&typeof bs.stopAll==='function'&&(bs.run||bs.paused))bs.stopAll('all-stop');
+  }catch(e){}
+  try{
+    const aktif=window.Tekke&&((Tekke.isActive&&Tekke.isActive())||(Tekke.isRunning&&Tekke.isRunning()));
+    if(aktif&&Tekke.stop)Tekke.stop('all-stop');
+  }catch(e){}
+  try{
+    const aktif=window.Neuro&&((Neuro.isActive&&Neuro.isActive())||(Neuro.isPlaying&&Neuro.isPlaying()));
+    if(aktif&&Neuro.stop)Neuro.stop(true);
+  }catch(e){}
+  /* Uyku fade'i kesildiyse ana ses seviyesi sıfıra doğru yürümeye devam etmesin. */
+  try{if(ctx&&master){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(+$('#masterVol').value,ctx.currentTime,.08)}}catch(e){}
 }
 $('#stopAll').onclick=hardStopAll;
 
-let stInt=null, stEnd=0;
+let stInt=null, stEnd=0, stFade=null;
 $('#sleepTimer').addEventListener('change',e=>{
   if(typeof dockLblGuncelle==='function')dockLblGuncelle();
   clearInterval(stInt); stInt=null; $('#timerBadge').textContent='';
@@ -9073,7 +9109,9 @@ $('#sleepTimer').addEventListener('change',e=>{
 });
 function fadeOutAll(){
   if(ctx)master.gain.setTargetAtTime(.0001,ctx.currentTime,4);
-  setTimeout(()=>{
+  clearTimeout(stFade);
+  stFade=setTimeout(()=>{
+    stFade=null;
     hardStopAll();
     if(ctx)master.gain.setTargetAtTime(+$('#masterVol').value,ctx.currentTime,.4);
   },13000);
@@ -17283,7 +17321,10 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r170').then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r171b',{updateViaCache:'none'}).then(reg=>{
+      /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
+         kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
+      try{reg.update().catch(()=>{})}catch(e){}
       /* r112: gelen sürümün notunu SW'den iste. SW yeni nero.html'i zaten
          önbelleğe aldı; notu oradan çıkarıp döner. Cevap gelmezse (eski
          SW, dosya okunamadı vb.) bildirim yine çıkar, yalnız sürüm adı
@@ -20374,10 +20415,10 @@ Object.assign(I18N.D, {"Teheccüd":"Tahajjud","Seher · Fecir":"Sahar · Fajr","
 Object.assign(I18N.D, {"Emmâre":"Ammâra","Levvâme":"Lawwâma","Mülhime":"Mulhima","Mutmainne":"Mutma’inna","Râzıye":"Râdiya","Marzıyye":"Mardiyya","Sâfiye":"Sâfiya","Son 30 gün":"Last 30 days","Yedi Kapı Kapandı ✦":"The Seven Gates Have Closed ✦","Cennetin kapısı aralandı — nefs, arınma yolunda":"The gate of Paradise stands ajar — the nafs is on the path of purification","Hınzır (domuz)":"Swine","Haram ile iştigal":"Occupation with the forbidden","Fil":"Elephant","Kibir":"Arrogance","Köpek":"Dog","Gazab ve şer":"Wrath and evil","Yılan":"Snake","Ezâ ve cefâ":"Injury and cruelty","Akrep":"Scorpion","Dil ile azap":"Harm by the tongue","Fare":"Mouse","Sû-i zan":"Ill opinion of others","Katır":"Mule","İtaatsizlik, ihlâssızlık":"Disobedience, insincerity","Merkep":"Donkey","Şehvete tâbiiyet":"Subservience to lust","Kaplan":"Tiger","Kurt":"Wolf","Hased, tâatte hırsızlık":"Envy; theft in worship","Ayı, pars":"Bear, leopard","Gadab":"Wrath","Karınca":"Ant","Hırs":"Greed","Maymun":"Monkey","Laf taşımak":"Talebearing","Tilki":"Fox","Hile ve tezvir":"Cunning and deceit","Azgın deve":"Unruly camel","Şehvet, hırs, kin":"Lust, greed, rancour","Azgın öküz":"Unruly ox","İtaatsizlik":"Disobedience","Kedi":"Cat","Şeytan vesvesesi":"Satanic whispering","Sansar":"Marten","Gaflet":"Heedlessness","Sarhoş edici içmek":"Drinking intoxicants","Harama meyil":"Inclination to the forbidden","Meyhâne, kahvehâne":"Tavern, coffee-house","Fikrin fesâdı":"Corruption of thought","Çöplük, necis yer":"Refuse heap, filthy place","Şehvâniyet":"Carnality","Oyun âletleri, çalgı":"Instruments of play and music","Hevâya tâbiiyet":"Following caprice","Ölü görmek":"Seeing the dead","Cehil ve gaflet":"Ignorance and heedlessness","Çıplaklık, karanlık":"Nakedness, darkness","Keyifsizlik":"Malaise","Çiğ et, çamura düşmek":"Raw meat; falling into mud","Dünyalığa meyil":"Inclination to the worldly","Yüklü deve":"Laden camel","Ruha sıkıntı":"Distress upon the spirit","Yüksüz deve":"Unladen camel","Ruha meyil":"Inclination toward the spirit","Koyun, keçi, sığır":"Sheep, goat, cattle","Helâl menfaat":"Lawful benefit","Balık":"Fish","Helâl kazanç":"Lawful earning","Tavuk, güvercin":"Hen, dove","Helâle hırs":"Eagerness for the lawful","Sakin at":"Calm horse","Sadakat":"Fidelity","Azgın at":"Unruly horse","Nefsin galebesi":"Dominance of the nafs","Aslan":"Lion","Dinde salâbet":"Firmness in religion","Balarısı":"Honeybee","Güzel ahlâk":"Fine character","Kurbağa":"Frog","Ruhun nefisten nefreti":"The spirit's aversion to the nafs","Pişmiş yemek":"Cooked food","Nefsin ruha tâbiiyeti":"The nafs' obedience to the spirit","Yeni elbise, döşeli ev":"New clothes, furnished house","Sâlih amel":"Righteous deeds","Yanmayan mum, fırın":"Unlit candle, cold oven","Meyveli ağaç, yeşil çayır":"Fruit tree, green meadow","Süt, bal, yağ":"Milk, honey, oil","Ruha kuvvet ve safâ":"Strength and delight for the spirit","Ana-babaya sarılmak":"Embracing one's parents","İtaat ve rızâ":"Obedience and contentment","Sarı renk":"The colour yellow","Emmârenin galebesi":"Dominance of the ammâra","Necâseti gidermek":"Removing filth","Haramı terk":"Abandoning the forbidden","Kan aldırmak":"Being bled (cupping)","Nefsi ıslah":"Reforming the nafs","Diş çektirmek":"Having a tooth pulled","Ruha ağır geleni gidermek":"Removing what burdens the spirit","Tıraş olmak":"Being shaved","Nûrun ziyâdeleşmesi":"Increase of light","Câhil ve avam":"The ignorant and the common","Hâllerine meyil":"Inclining to their ways","Kadın görmek":"Seeing a woman","Tedbirde noksan, dünyaya meyil":"Deficient prudence, worldly inclination","Çıplak":"Naked person","Amelsizlik":"Lack of deeds","Eşkıyâ":"Brigands","Nefsin tuğyânı":"Rebellion of the nafs","Şeytan":"Satan","Şeytana uymak":"Following Satan","Topallık":"Lameness","Hak yolunda az bulunmak":"Being seldom on the path of Truth","Körlük":"Blindness","Hakk’ı görmezden gelmek":"Ignoring the Truth","Sağırlık":"Deafness","İşitip amel etmemek":"Hearing without acting","Dilsizlik":"Muteness","Hakk’ı söylememek":"Not speaking the Truth","Köselik":"Beardlessness","Sünneti terk":"Abandoning the Sunna","Hamamcı":"Bath attendant","Günahtan temizlik":"Cleansing from sin","Tuzcu":"Salt seller","Nefsin salâhı":"Soundness of the nafs","Ağaç dikmek, tohum saçmak":"Planting trees, sowing seed","Hayra işaret":"A sign of good","Beyaz renk":"The colour white","Mülhimenin galebesi":"Dominance of the mulhima","Kız çocuğu":"A baby girl","Dünyaya meyil":"Worldly inclination","Erkek çocuğu":"A baby boy","Abdest, gusül":"Ablution, ritual bath","Günahlardan temizlenme":"Being cleansed of sins","Namaz kılmak":"Performing prayer","Takvâ":"God-wariness","Kıbleye dönmek":"Turning to the qibla","İstikamet":"Uprightness","Kur’ân görmek, okumak":"Seeing or reciting the Qur'an","Kalbin tasfiyesi, matlûba eriş":"Purification of the heart; attaining the goal","Peygamberleri görmek":"Seeing the prophets","Dinde kuvvet":"Strength in religion","Evliyâ görmek":"Seeing the saints","Emniyet, murâda nâiliyet":"Safety; attaining one's wish","Şeyhler":"Shaykhs","Nefsin irşâdı":"Guidance of the nafs","Sultan":"A sultan","Vücûda tasarruf":"Command over the body","Hekim":"A physician","İsyânı sâlih amelle ilâçlamak":"Treating rebellion with righteous deeds","Kadı":"A judge","İlâhî hükümleri icrâ":"Executing the divine rulings","İmam, âlim, şehid":"Imam, scholar, martyr","Emre ittibâ":"Following the command","Mekke, Medine, Kudüs, cami":"Mecca, Medina, Jerusalem, mosques","Kalbin temizliği":"Purity of the heart","Tesbih":"Prayer beads","Matlûba erişmek":"Attaining the goal","Din kitapları, güzel koku":"Religious books, sweet scent","Güzellik":"Beauty","Yeşil renk":"The colour green","Mutmainne alâmeti":"A sign of the mutma'inna","Melekler, hûriler, cennet":"Angels, houris, Paradise","Aklın kemâli, mârifet":"Perfection of intellect; gnosis","Suda yüzüp geçmek":"Swimming across water","Yüksek dereceler":"Lofty degrees","Havada uçmak":"Flying through the air","Gemiye binip geçmek":"Crossing by ship","Derecelere nâiliyet":"Attaining degrees","Ateşte yanıp safâlanmak":"Burning in fire yet finding delight","Nurlanma — İbrâhimî sır":"Illumination — the Abrahamic secret","Yedi kat gökler":"The seven heavens","Marzıyye alâmeti":"A sign of the mardiyya","Ay, güneş, yıldızlar":"Moon, sun and stars","Yıldırım, alevli ateş":"Lightning, blazing fire","Yanan mum ve kandiller":"Burning candles and lamps","Gök gürültüsü, zelzele":"Thunder, earthquake","Dağ ve tepede yalnızlık":"Solitude on mountain and hill","Kar ve yağmur":"Snow and rain","Rahmet-i ilâhî":"Divine mercy","Dolu":"Hail","Esrâr zevkinde mübâlağa":"Abundance in the savour of the secrets","Irmak, çeşme, kuyu, deryâ":"Rivers, fountains, wells, seas","Kalbin kemâli":"Perfection of the heart","Kaynaklar":"Springs","Fenâ sıfatı":"The attribute of annihilation"});
 Object.assign(I18N.D, {"Dört Esas-ı Riyâzet":"The Four Foundations of Spiritual Discipline","Az yemek":"Eating little","Kıllet-i taâm — şehveti kırar, rûhu inceltip berraklaştırır.":"Qillat al-ta'âm — it breaks desire and refines the spirit.","Az uyumak":"Sleeping little","Kıllet-i nevm — kalbi cilalandırır, Allah'a dönüşün ifadesidir.":"Qillat al-nawm — it polishes the heart; an expression of turning to God.","Az konuşmak":"Speaking little","Kıllet-i kelâm — dilini tutanın günahı az, kalbi rahat olur.":"Qillat al-kalâm — one who guards the tongue sins less and finds the heart at ease.","Halvet (uzlet)":"Khalwa (seclusion)","Kalpten mâsivâyı çıkarmaktır; kırk gün (erbaîn) tatbik edilir.":"To clear the heart of all but God; practised over forty days (arba'în).","Yedi Kapı — nefis arındıkça kapanır (Hicr 15:44)":"The Seven Gates — they close as the self is purified (Hijr 15:44)","Bir kapıya dokun: o sıfattan arındığını hissettiğinde kapansın. Eşleşme sembolik-sıralı bir tertiptir.":"Tap a gate: let it close when you feel purified of that trait. The pairing is a symbolic, sequential arrangement.","Üç Yakîn Mertebesi":"The Three Degrees of Certainty","Kaynak: Marifet-i İlahiyye Tarîkat-ı Aliyye — Erenköylü M. Hikmet Efendi":"Source: Ma'rifat-i İlâhiyye Tarîkat-i \u2018Aliyye — Erenköylü M. Hikmet Efendi","Kırk günün dayanağı: «Kim kırk sabah ihlâsla Allah'a yönelirse, kalbinden diline hikmet pınarları akar.» (Süyûtî, el-Câmiu's-Sağîr) — Mûsâ (a.s.)'ın Tûr'daki kırk gecesi (A'râf 7:142) bu usûlün bir başka dayanağıdır.":"Basis of the forty days: \u201cWhoever devotes forty mornings sincerely to God, springs of wisdom flow from his heart to his tongue.\u201d (al-Suyûtî, al-Jâmi' al-Saghîr) — Moses' (peace be upon him) forty nights on the Mount (al-A'râf 7:142) is a further basis for this practice.","«İlâhî ente maksûdî» için kendi sesini kaydet":"Record your own voice for \u2018İlâhî ente maksûdî'","🎙️ Kendi sesin — henüz kayıt yok":"🎙️ Your own voice — no recording yet","Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.":"Tap the gold 🎙 icon on the dhikr stage to record or stop (up to 8 s). If a recording exists it plays; otherwise the device voice (TTS) is used."});
 Object.assign(I18N.D, {"Rast Taksimi":"Rast Taksim","Rast makamı • sefa, iç huzur":"rast maqam • joy, inner peace","Hicaz Taksimi":"Hicaz Taksim","Hicaz makamı • tevazu, gece seyri":"hicaz maqam • humility, a night journey","Saba Taksimi":"Saba Taksim","Saba makamı • cesaret, seher":"saba maqam • courage, the pre-dawn hour","Hüseynî Taksimi":"Hüseynî Taksim","Hüseynî makamı • sükûnet, güven":"hüseynî maqam • calm, confidence","Nihavent Tanburu":"Nihavent Tanbur","Nihavent makamı • güç, barış":"nihavent maqam • strength, peace","Nevâ Kanunu":"Nevâ Kanun","Nevâ makamı • teselli, gönül ferahlığı":"nevâ maqam • comfort, ease of heart","Acemaşiran Neyi":"Acemaşiran Ney","Acemaşiran makamı • ilham, canlanma":"acemaşiran maqam • inspiration, revival","Isfahan Taksimi":"Isfahan Taksim","Isfahan makamı • zihin açıklığı, güven":"isfahan maqam • mental clarity, confidence","🎼 Rast, Hicaz, Saba, Hüseynî, Nihavent, Nevâ, Acemaşiran ve Isfahan taksimleri; makamların duygu durumlarıyla ilişkisi üzerine Fârâbî'den İbn Sînâ'ya uzanan ve TÜMATA (Türk Musikisini Araştırma ve Tanıtma Grubu) tarafından derlenen geleneksel tasnife göre etiketlenmiştir. Bu bir tedavi reçetesi değil, asırlık bir dinleme geleneğinin yansımasıdır; enstrüman sesleri de otantik kayıt değil, en yakın tamperamanlı yaklaşıklıkla cihazda sentezlenir.":"🎼 The Rast, Hicaz, Saba, Hüseynî, Nihavent, Nevâ, Acemaşiran and Isfahan taksims are labelled according to the traditional classification of maqams and their associated moods — a lineage running from Fârâbî to Ibn Sînâ, compiled by TÜMATA (the Turkish Music Research and Promotion Group). This is not a course of treatment but the reflection of a centuries-old listening tradition; the instrument sounds, too, are not authentic recordings but the nearest tempered approximation, synthesised on the device."});
-/* r169–r170: sonradan eklenen/yenilenen metinler için tekil düzeltme katmanı. */
+/* r169–r171: sonradan eklenen/yenilenen metinler için tekil düzeltme katmanı. */
 Object.assign(I18N.D,{
   "Tasavvufî Ses, Zikir & Tefekkür":"Sufi Sound, Dhikr & Contemplation",
-  "SÜKÛN v13.0 — build 2026-08-20-r170":"SÜKÛN v13.0 — build 2026-08-20-r170",
+  "SÜKÛN v13.0 — build 2026-08-20-r171":"SÜKÛN v13.0 — build 2026-08-20-r171",
   "28 isim • yorumî esmâ haritası":"28 names • interpretive map of the Names",
   "Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.":"Tap the gold 🎙 icon on the dhikr stage to record or stop. <b>There is effectively no duration limit</b>; a timer remains visible while recording. Your recording is preferred, otherwise the device voice (TTS) is used.",
   "API anahtarı bu cihazda saklanır. “Daha derin açıklama” çalıştırıldığında anahtarın, yazdığın hâl cümlesinin ve oluşturulan reçetenin açıklamayı üretmek üzere doğrudan Anthropic'e gönderilmesine izin vermiş olursun; SÜKÛN sunucusuna aktarılmaz. Boş bırakırsan reçete çevrimdışı çalışır.":"The API key is stored on this device. When you request a deeper explanation, the key, your state sentence and the generated arrangement are sent directly to Anthropic to produce it; they are not sent to a SÜKÛN server. Leave it empty to stay offline.",
@@ -20459,6 +20500,11 @@ Object.assign(I18N.D,{
   "Hataları temizle":"Clear errors",
   "Kayıt yok.":"No entries.",
   "hazır":"ready","hazırlanıyor":"preparing","çalıyor":"playing","duraklatıldı":"paused","kesildi":"interrupted","toparlanıyor":"recovering","duruyor":"stopping",
+  "Önceki seyir tamamlanmış. Başlatırsan yeniden başlar.":"The previous journey is complete. Starting will begin a new one.",
+  "Kaldığın yer hazır.":"Your saved place is ready.",
+  "Tüm sesler durduruldu · kaldığın yer saklandı":"All audio stopped · your place was saved",
+  "Ses başlatılamadı — sistem durumundan sesi toparlayıp sürdür":"Audio could not start — recover it from System Status, then continue",
+  "Seyir tamamlandı ✦":"Journey complete ✦",
   "⚠ yazım farkı — otomatik düzeltilmez":"⚠ spelling difference — not corrected automatically",
   "Online aktarım yapılmadı. Çevrimdışı reçeten hazır ve kullanılabilir.":"Nothing was sent online. Your offline arrangement is ready to use.",
   "VURUŞ BANDI · YAYGIN ETİKET":"BEAT RANGE · COMMON LABEL",
@@ -21162,8 +21208,8 @@ summary{display:flex;align-items:center;gap:8px}
       <button data-pr="derin">Derinleşme<small>çok yavaş · koyu</small></button>
       <button data-pr="uyanis">Uyanış<small>diri · berrak</small></button>
     </div>
-    <div class="row"><label>Ana ses</label><input type="range" id="vMaster" min="0" max="1" step="0.01" value="0.75"><span class="valB"></span></div>
-    <div class="row"><label>Katre sesi</label><input type="range" id="katVol" min="0" max="1" step="0.01" value="0.7"><span class="valB" id="katVolV">%70</span></div>
+    <div class="row"><label>Ana ses</label><input type="range" id="vMaster" min="0" max="1" step="0.01" value="0.75" aria-label="Tekke ana ses düzeyi"><span class="valB"></span></div>
+    <div class="row"><label>Katre sesi</label><input type="range" id="katVol" min="0" max="1" step="0.01" value="0.7" aria-label="Katre sesi düzeyi"><span class="valB" id="katVolV">%70</span></div>
     <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Haptik vuruş — damlada hafif titreşim</span><button class="sw on" id="hapTgl"></button></div>
   </div>
 
@@ -21180,7 +21226,7 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="pT">SESLİ REHBER · UZANARAK</div>
     <div class="pD">Gözlerin kapalıyken hangi makamda olduğunu ve ne çektiğini sesle söyler. Ekrana bakmana gerek kalmaz.</div>
     <div class="opt"><span>🎧 Sesli rehber</span><button class="sw" id="rehberTgl"></button></div>
-    <div class="row"><label>Anlatıcı yankısı</label><input type="range" id="rehberEko" min="0" max="1" step="0.05" value="0.35"><span class="valB"></span></div>
+    <div class="row"><label>Anlatıcı yankısı</label><input type="range" id="rehberEko" min="0" max="1" step="0.05" value="0.35" aria-label="Anlatıcı yankısı"><span class="valB"></span></div>
 
   </div>
 
@@ -21196,7 +21242,7 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="pT">KENDİ SESİNLE ANLATICI</div>
     <div class="pD">Her adımı kendi sesinle kaydedebilirsin; o adım geldiğinde cihaz sesi yerine senin kaydın çalar. Kayıtlı adım varsa 8D tam uygulanır.</div>
     <div class="row"><label>Set</label>
-      <select id="imgRecSet"></select></div>
+      <select id="imgRecSet" aria-label="İmgeleme kayıt seti"></select></div>
     <div class="pD" id="imgRecStat" style="margin:6px 0"></div>
     <div id="imgRecList"></div>
   </div>
@@ -21219,14 +21265,14 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="pT">NEFES</div>
     <div class="pD">Ortadaki halkanın ritmi. «Hû nefesi» çoğu kişi için en rahatıdır; verişi uzun olduğu için sakinleştirir.</div>
     <div class="row"><label>Desen</label>
-      <select id="patSel">
+      <select id="patSel" aria-label="Nefes deseni">
         <option value="hu" selected>Hû nefesi — 4 al · 2 tut · 6 ver</option>
         <option value="box">Kutu — 4 al · 4 tut · 4 ver · 4 boş bekle</option>
         <option value="coh">Koherent — 5.5 al · 5.5 ver</option>
       </select>
     </div>
     <div class="row"><label>Tempo</label>
-      <input type="range" id="brHizSld" min="0.7" max="2" step="0.05" value="1">
+      <input type="range" id="brHizSld" min="0.7" max="2" step="0.05" value="1" aria-label="Nefes temposu">
       <span class="valB" id="brHizV">normal</span></div>
     <div class="pD" style="margin-top:-4px">Sağa kaydırdıkça nefes yavaşlar. Yetişemiyorsan 1.4–1.6 arası dene.</div>
     <div class="opt"><span><span class="ico" data-ico="note"></span> Sır Kapısı telkini — ekranda beliren kısa tefekkür cümleleri</span><button class="sw on" id="telTgl"></button></div>
@@ -21237,9 +21283,9 @@ summary{display:flex;align-items:center;gap:8px}
   <div class="pSec" data-tlvl="uzman">
     <div class="pT">KATRE &amp; UMMAN</div>
     <div class="pD">Katre = zikri sayan damla. Umman = belirli aralıklarla gelen derin dalga. Damla hızı seyrin süresini de belirler.</div>
-    <div class="row"><label>Damla</label><input type="range" id="bpmSld" min="40" max="72" step="1" value="54"><span class="valB" id="bpmVal">54 BPM</span></div>
+    <div class="row"><label>Damla</label><input type="range" id="bpmSld" min="40" max="72" step="1" value="54" aria-label="Damla temposu"><span class="valB" id="bpmVal">54 BPM</span></div>
     <div class="row"><label>Umman</label>
-      <select id="umSel">
+      <select id="umSel" aria-label="Umman dalgası aralığı">
         <option value="3">Her 3. damla</option>
         <option value="4" selected>Her 4. damla</option>
         <option value="5">Her 5. damla</option>
@@ -21249,17 +21295,17 @@ summary{display:flex;align-items:center;gap:8px}
     <div class="opt"><span><span class="ico" data-ico="droplet"></span> Katre metronomu</span><button class="sw on" id="katTgl"></button></div>
     <div class="opt"><span>۞ HÛ sesi — nefesle canlı</span><button class="sw on" id="huTgl"></button></div>
     <div class="opt"><span><span class="ico" data-ico="drum"></span> Meditatif davul — nefes döngüsüne kilitli yumuşak vuruş</span><button class="sw" id="tkDavulTgl"></button></div>
-    <div class="row" data-tlvl="uzman"><label>Davul sesi</label><input type="range" id="tkDavulVol" min="0" max="1" step="0.02" value="0.35"><span class="valB"></span></div>
+    <div class="row" data-tlvl="uzman"><label>Davul sesi</label><input type="range" id="tkDavulVol" min="0" max="1" step="0.02" value="0.35" aria-label="Meditatif davul sesi"><span class="valB"></span></div>
   </div>
 
   <div class="pSec" data-tlvl="uzman">
     <div class="pT">MAKAM &amp; ANÂSIR-I ERBAA <small>Rast → Segâh</small></div>
     <div class="pD">Ortamın dokusu: dört unsur ve ney. Hepsini kısarsan yalnız katre ve nefes kalır.</div>
-    <div class="row"><label>🎼 Ney</label><input type="range" id="vNey" min="0" max="1" step="0.01" value="0.35"><span class="valB"></span></div>
-    <div class="row"><label>💧 Su</label><input type="range" id="vSu" min="0" max="1" step="0.01" value="0.3"><span class="valB"></span></div>
-    <div class="row"><label>🪨 Toprak</label><input type="range" id="vToprak" min="0" max="1" step="0.01" value="0.2"><span class="valB"></span></div>
-    <div class="row"><label>🌬 Hava</label><input type="range" id="vHava" min="0" max="1" step="0.01" value="0.15"><span class="valB"></span></div>
-    <div class="row"><label>🔥 Ateş</label><input type="range" id="vAtes" min="0" max="1" step="0.01" value="0.08"><span class="valB"></span></div>
+    <div class="row"><label>🎼 Ney</label><input type="range" id="vNey" min="0" max="1" step="0.01" value="0.35" aria-label="Ney sesi düzeyi"><span class="valB"></span></div>
+    <div class="row"><label>💧 Su</label><input type="range" id="vSu" min="0" max="1" step="0.01" value="0.3" aria-label="Su sesi düzeyi"><span class="valB"></span></div>
+    <div class="row"><label>🪨 Toprak</label><input type="range" id="vToprak" min="0" max="1" step="0.01" value="0.2" aria-label="Toprak sesi düzeyi"><span class="valB"></span></div>
+    <div class="row"><label>🌬 Hava</label><input type="range" id="vHava" min="0" max="1" step="0.01" value="0.15" aria-label="Hava sesi düzeyi"><span class="valB"></span></div>
+    <div class="row"><label>🔥 Ateş</label><input type="range" id="vAtes" min="0" max="1" step="0.01" value="0.08" aria-label="Ateş sesi düzeyi"><span class="valB"></span></div>
     <div class="opt"><span id="binLbl">〰 Alt akım: 136.1 Hz · 7.83 Hz binaural (kulaklık)</span><button class="sw" id="binTgl"></button></div>
   </div>
 
@@ -23320,13 +23366,16 @@ function tkStop(){
   katStop(); huStop();
   if(NEY){NEY.E.kill(1,NEY.out);NEY=null;}
   Object.keys(CH).forEach(k=>{CH[k].E.kill(1,CH[k].out);delete CH[k];});
-  binOff(); running=false;
+  binOff(); running=false; PANELDURDU=false;
   try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
   lockOff();
   S.set('sukun.total',tekTotal);
   $('#telkin').classList.remove('show');
   $('#fin').classList.remove('show');
   if(window.SesCapa)SesCapa.retitle('SÜKÛN — Frekans & Zikir');
+}
+function tkAktif(){
+  return !!(running||PANELDURDU||NEY||BIN||HU.E||katT||Object.keys(CH).length);
 }
 function open(h){
   /* Tekke tam ekran; arkadaki SÜKÛN sayfası kaymasın.
@@ -23611,7 +23660,7 @@ function tkGorunumBagla(){
   rehberBagla();
 })();
 
-return{open,close,isRunning:()=>running};
+return{open,close,stop:tkStop,isRunning:()=>running,isActive:tkAktif};
 };
 
 /* ── r99: TEMBEL KURULUM ────────────────────────────────────────────
@@ -23633,7 +23682,9 @@ window.Tekke=(function(){
     hazirla,
     open(...a){ return hazirla().open(...a); },
     close(...a){ return m?m.close(...a):undefined; },
+    stop(...a){ return m&&m.stop?m.stop(...a):undefined; },
     isRunning(){ return !!(m&&m.isRunning&&m.isRunning()); },
+    isActive(){ return !!(m&&m.isActive&&m.isActive()); },
   };
 })();
 
@@ -23729,7 +23780,7 @@ window.Tekke=(function(){
 }#ns .bw-label{
   display:flex;flex-direction:column;align-items:center;gap:4px;
   cursor:pointer;transition:transform 0.2s;
-}#ns .bw-label:hover{transform:translateY(-2px);}#ns .bw-name{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}#ns .bw-hz{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ghost-dim);}#ns .bw-bar{width:3px;height:16px;border-radius:3px;margin:0 auto;transition:all 0.45s;}#ns #bwCanvas{width:100%;height:90px;display:block;}#ns .bw-active-info{
+}#ns .bw-label:hover{transform:translateY(-2px);}#ns .bw-label:focus-visible{outline:2px solid var(--cyan);outline-offset:5px;border-radius:6px;}#ns .bw-name{font-family:'Space Grotesk',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}#ns .bw-hz{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--ghost-dim);}#ns .bw-bar{width:3px;height:16px;border-radius:3px;margin:0 auto;transition:all 0.45s;}#ns #bwCanvas{width:100%;height:90px;display:block;}#ns .bw-active-info{
   display:flex;justify-content:center;align-items:center;gap:16px;
   margin-top:12px;padding-top:12px;border-top:1px solid var(--ghost-faint);
 }#ns .bw-active-name{
@@ -24206,7 +24257,7 @@ body.prModalOpen{overflow:hidden}
       <span class="master-vol-icon" id="volIcon">🔊</span>
       <span class="master-vol-label">Ses <span id="nsMasterVolVal" style="font-family:'JetBrains Mono';font-size:0.72rem;color:var(--cyan);">70%</span></span>
       <div class="slider-wrap" style="flex:1;position:relative;">
-        <input type="range" id="nsMasterVol" min="0" max="100" value="70"/>
+        <input type="range" id="nsMasterVol" min="0" max="100" value="70" aria-label="NeuroSync ana ses düzeyi"/>
         <div class="slider-track" id="nsMasterVolTrack" style="width:70%"></div>
       </div>
     </div>
@@ -24282,7 +24333,7 @@ body.prModalOpen{overflow:hidden}
         <div class="control-row">
           <div class="control-label">Beat Frekansı <span id="nsBeatVal">10.0 Hz</span></div>
           <div class="slider-wrap">
-            <input type="range" id="beatFreq" min="0.5" max="40" step="0.1" value="10"/>
+            <input type="range" id="beatFreq" min="0.5" max="40" step="0.1" value="10" aria-label="Vuruş frekansı"/>
             <div class="slider-track" id="beatTrack"></div>
           </div>
           <input type="number" class="numIn" id="beatNumNS" min="0.5" max="40" step="0.01" inputmode="decimal" aria-label="Beat Hz elle gir">
@@ -24291,7 +24342,7 @@ body.prModalOpen{overflow:hidden}
         <div class="control-row">
           <div class="control-label">Binaural Ses <span id="binVolVal">60%</span></div>
           <div class="slider-wrap">
-            <input type="range" id="binauralVol" min="0" max="100" value="60"/>
+            <input type="range" id="binauralVol" min="0" max="100" value="60" aria-label="Binaural ses düzeyi"/>
             <div class="slider-track" id="binVolTrack"></div>
           </div>
         </div>
@@ -24317,8 +24368,8 @@ body.prModalOpen{overflow:hidden}
         <div class="balRow">
           <div class="balHead">Ses Dengesi (L/R) <button class="balReset" id="balReset" title="Sıfırla">↺</button></div>
           <div class="balSliders">
-            <div class="balCol"><span>L</span><input type="range" id="balL" min="0" max="100" value="100"><b id="balLVal">100%</b></div>
-            <div class="balCol"><span>R</span><input type="range" id="balR" min="0" max="100" value="100"><b id="balRVal">100%</b></div>
+            <div class="balCol"><span>L</span><input type="range" id="balL" min="0" max="100" value="100" aria-label="Sol kanal dengesi"><b id="balLVal">100%</b></div>
+            <div class="balCol"><span>R</span><input type="range" id="balR" min="0" max="100" value="100" aria-label="Sağ kanal dengesi"><b id="balRVal">100%</b></div>
           </div>
         </div>
       </div>
@@ -24329,15 +24380,15 @@ body.prModalOpen{overflow:hidden}
         <div id="sweepBody" hidden>
           <div class="control-row">
             <div class="control-label" style="min-width:auto">Başlangıç (Hz)</div>
-            <input type="number" class="numIn" id="sweepStart" value="20" min="1" max="2000" step="1">
+            <input type="number" class="numIn" id="sweepStart" value="20" min="1" max="2000" step="1" aria-label="Sweep başlangıç frekansı">
           </div>
           <div class="control-row">
             <div class="control-label" style="min-width:auto">Bitiş (Hz)</div>
-            <input type="number" class="numIn" id="sweepEnd" value="500" min="1" max="2000" step="1">
+            <input type="number" class="numIn" id="sweepEnd" value="500" min="1" max="2000" step="1" aria-label="Sweep bitiş frekansı">
           </div>
           <div class="control-row">
             <div class="control-label" style="min-width:auto">Süre (sn)</div>
-            <input type="number" class="numIn" id="sweepDur" value="10" min="0.5" max="600" step="0.5">
+            <input type="number" class="numIn" id="sweepDur" value="10" min="0.5" max="600" step="0.5" aria-label="Sweep süresi">
           </div>
           <div class="control-row" style="justify-content:space-between">
             <label class="sweepLoop"><input type="checkbox" id="sweepLoop"> Döngü (Loop)</label>
@@ -24376,7 +24427,7 @@ body.prModalOpen{overflow:hidden}
         <div class="control-row" style="margin-top:14px;">
           <div class="control-label">Gürültü Ses <span id="noiseVolVal">0%</span></div>
           <div class="slider-wrap">
-            <input type="range" id="noiseVol" min="0" max="100" value="0"/>
+            <input type="range" id="noiseVol" min="0" max="100" value="0" aria-label="Gürültü düzeyi"/>
             <div class="slider-track" id="noiseVolTrack" style="width:0%"></div>
           </div>
         </div>
@@ -24388,11 +24439,11 @@ body.prModalOpen{overflow:hidden}
         <div class="filter-row">
           <div class="filter-card">
             <div class="filter-title">🔽 Lowpass <span id="lpfVal" style="font-family:'JetBrains Mono';font-size:0.7rem;color:var(--cyan);">2000 Hz</span></div>
-            <input type="range" id="lpfFreq" min="200" max="8000" value="2000"/>
+            <input type="range" id="lpfFreq" min="200" max="8000" value="2000" aria-label="Alçak geçiren süzgeç frekansı"/>
           </div>
           <div class="filter-card">
             <div class="filter-title">🔼 Highpass <span id="hpfVal" style="font-family:'JetBrains Mono';font-size:0.7rem;color:var(--pink);">80 Hz</span></div>
-            <input type="range" id="hpfFreq" min="20" max="2000" value="80"/>
+            <input type="range" id="hpfFreq" min="20" max="2000" value="80" aria-label="Yüksek geçiren süzgeç frekansı"/>
           </div>
         </div>
         <div class="control-row">
@@ -24413,7 +24464,7 @@ body.prModalOpen{overflow:hidden}
         <div class="card-title">Nöro Öneri Motoru</div>
         <div class="mood-chips" id="moodChips"></div>
         <div class="ai-input-wrap" style="margin-top:10px;">
-          <input class="ai-input" id="aiInput" type="text" maxlength="500" placeholder="Nasıl hissediyorsunuz? (örn: odaklanamıyorum, yorgunum...)"/>
+          <input class="ai-input" id="aiInput" type="text" maxlength="500" aria-label="Hâl açıklaması" placeholder="Nasıl hissediyorsunuz? (örn: odaklanamıyorum, yorgunum...)"/>
           <button class="ai-send" id="aiSendBtn" onclick="sendAI()" aria-label="Analiz Et"><span class="ico" data-ico="sparkle"></span> </button>
         </div>
         <div class="ai-response" id="aiResponse">
@@ -24426,17 +24477,17 @@ body.prModalOpen{overflow:hidden}
         <div class="card-title">Sleep Timer</div>
         <div class="timer-display" id="timerDisplay">—</div>
         <div class="timer-presets">
-          <button class="timer-btn" onclick="setTimer(15)">15d</button>
-          <button class="timer-btn" onclick="setTimer(30)">30d</button>
-          <button class="timer-btn" onclick="setTimer(45)">45d</button>
-          <button class="timer-btn" onclick="setTimer(60)">60d</button>
-          <button class="timer-btn" onclick="setTimer(90)">90d</button>
-          <button class="timer-btn" onclick="setTimer(0)" id="timerCancelBtn" style="color:var(--pink);border-color:rgba(255,107,157,0.3);">İptal</button>
+          <button type="button" class="timer-btn" data-min="15" onclick="setTimer(15,this)" aria-label="15 dakikalık uyku zamanlayıcısı">15d</button>
+          <button type="button" class="timer-btn" data-min="30" onclick="setTimer(30,this)" aria-label="30 dakikalık uyku zamanlayıcısı">30d</button>
+          <button type="button" class="timer-btn" data-min="45" onclick="setTimer(45,this)" aria-label="45 dakikalık uyku zamanlayıcısı">45d</button>
+          <button type="button" class="timer-btn" data-min="60" onclick="setTimer(60,this)" aria-label="60 dakikalık uyku zamanlayıcısı">60d</button>
+          <button type="button" class="timer-btn" data-min="90" onclick="setTimer(90,this)" aria-label="90 dakikalık uyku zamanlayıcısı">90d</button>
+          <button type="button" class="timer-btn" data-min="0" onclick="setTimer(0,this)" id="timerCancelBtn" style="color:var(--pink);border-color:rgba(255,107,157,0.3);">İptal</button>
         </div>
         <div class="control-row" style="margin-top:14px;">
           <div class="control-label">Fade-Out <span id="fadeVal">60s</span></div>
           <div class="slider-wrap">
-            <input type="range" id="fadeDuration" min="5" max="300" value="60" step="5"/>
+            <input type="range" id="fadeDuration" min="5" max="300" value="60" step="5" aria-label="Sönümleme süresi"/>
             <div class="slider-track" id="fadeTrack"></div>
           </div>
         </div>
@@ -24468,7 +24519,7 @@ body.prModalOpen{overflow:hidden}
 
       <div class="control-row">
         <div class="control-label" style="min-width:auto">Elle Hz gir</div>
-        <input type="number" class="numIn" id="cymNum" min="20" max="2000" step="1" value="220" inputmode="decimal">
+        <input type="number" class="numIn" id="cymNum" min="20" max="2000" step="1" value="220" inputmode="decimal" aria-label="Kimatik frekansı">
       </div>
 
       <div class="cymGridT">Frekans seç [Hz]</div>
@@ -24481,7 +24532,7 @@ body.prModalOpen{overflow:hidden}
   <div class="tab-panel" id="panel-lib">
     <div class="card section-gap">
       <div class="card-title">📚 Frekans Kütüphanesi</div>
-      <input type="text" id="libSearch" class="libSearch" placeholder="Ara… (ör. uyku, kalp, 528)" autocomplete="off">
+      <input type="text" id="libSearch" class="libSearch" aria-label="Frekans kütüphanesinde ara" placeholder="Ara… (ör. uyku, kalp, 528)" autocomplete="off">
       <div class="libAZ" id="libAZ"></div>
       <div class="libNote">Uygulamadaki tüm frekanslar tek yerde — anlamıyla birlikte. Bir satıra dokun, taşıyıcıya uygulansın.</div>
       <div id="libList"></div>
@@ -24543,12 +24594,12 @@ body.prModalOpen{overflow:hidden}
         </div>
         <div class="med-voice-settings">
           <span style="font-size:0.78rem;color:var(--ghost-dim);">Ses</span>
-          <select id="medVoiceSelect"></select>
+          <select id="medVoiceSelect" aria-label="Meditasyon anlatım sesi"></select>
         </div>
         <div class="control-row" style="margin-top:10px;">
           <div class="control-label">Konuşma Hızı <span id="medRateVal">0.85x</span></div>
           <div class="slider-wrap">
-            <input type="range" id="medRate" min="0.6" max="1.2" step="0.05" value="0.85"/>
+            <input type="range" id="medRate" min="0.6" max="1.2" step="0.05" value="0.85" aria-label="Meditasyon anlatım hızı"/>
             <div class="slider-track" id="medRateTrack"></div>
           </div>
         </div>
@@ -24620,11 +24671,11 @@ const PRESETS = [
 
 // BRAIN WAVES
 const WAVES = [
-  {name:'Delta',hz:'0.5–4 Hz',color:'#7B6FF0',state:'Çok yavaş vuruş ayarı',freqRange:[0.5,4]},
-  {name:'Theta',hz:'4–8 Hz',color:'#2EE8C7',state:'Yavaş vuruş ayarı',freqRange:[4,8]},
-  {name:'Alfa',hz:'8–13 Hz',color:'#A78BFA',state:'Orta-yavaş vuruş ayarı',freqRange:[8,13]},
-  {name:'Beta',hz:'13–30 Hz',color:'#FF6B9D',state:'Orta-hızlı vuruş ayarı',freqRange:[13,30]},
-  {name:'Gama',hz:'30–100 Hz',color:'#F59E0B',state:'Hızlı vuruş ayarı',freqRange:[30,100]},
+  {name:'Delta',hz:'0.5–4 Hz',color:'#7B6FF0',state:'Çok yavaş vuruş ayarı',freqRange:[0.5,4],pick:2},
+  {name:'Theta',hz:'4–8 Hz',color:'#2EE8C7',state:'Yavaş vuruş ayarı',freqRange:[4,8],pick:6},
+  {name:'Alfa',hz:'8–13 Hz',color:'#A78BFA',state:'Orta-yavaş vuruş ayarı',freqRange:[8,13],pick:10},
+  {name:'Beta',hz:'13–30 Hz',color:'#FF6B9D',state:'Orta-hızlı vuruş ayarı',freqRange:[13,30],pick:20},
+  {name:'Gama',hz:'30–100 Hz',color:'#F59E0B',state:'Hızlı vuruş ayarı',freqRange:[30,100],pick:40},
 ];
 
 // SPECIAL FREQUENCIES
@@ -24902,10 +24953,18 @@ function stopNoise() {
 }
 
 // ─── SPECIAL FREQ ───
+function stopSpecialFreq(ui=true) {
+  if(specialOsc){try{specialOsc.stop()}catch(e){}try{specialOsc.disconnect()}catch(e){}specialOsc=null;}
+  if(specialGain){try{specialGain.disconnect()}catch(e){}specialGain=null;}
+  activeSpecialFreq=null;
+  if(ui)updateSpecialFreqUI();
+}
 function playSpecialFreq(hz) {
   if (!NS.ctx) return;
-  if (specialOsc) { try{specialOsc.stop();}catch(e){} specialOsc=null; }
-  if (activeSpecialFreq === hz) { activeSpecialFreq = null; updateSpecialFreqUI(); return; }
+  if (activeSpecialFreq === hz && specialOsc) { stopSpecialFreq(); return; }
+  /* Önceki osilatörün GainNode'u master'a bağlı kalmasın. Çok kez frekans
+     değiştirilen uzun oturumlarda bu görünmez düğümler birikiyordu. */
+  stopSpecialFreq(false);
   activeSpecialFreq = hz;
   specialOsc = NS.ctx.createOscillator();
   specialGain = NS.ctx.createGain();
@@ -25118,6 +25177,12 @@ document.getElementById('cymNum')?.addEventListener('keydown', e=>{ if(e.key==='
 cymBuildGrid(); cymSetHz(220);
 
 // ─── PLAY / STOP ───
+function neuroSesAktif(){
+  return !!(NS.isPlaying||specialOsc||(typeof BR!=='undefined'&&BR.running)||(typeof MED!=='undefined'&&MED.playing));
+}
+function neuroEtkin(){
+  return !!(neuroSesAktif()||(typeof BR!=='undefined'&&BR.paused)||(NS.sweep&&NS.sweep.active));
+}
 function togglePlay() {
   if (!initAudio()) return;
   if (NS.ctx.state === 'suspended') NS.ctx.resume();
@@ -25129,20 +25194,34 @@ function startAll() {
   startBinaural();
   if (NS.noiseType) startNoise(NS.noiseType);
   NS.sessionStart = Date.now();
+  clearInterval(NS.sessionTimer);
   NS.sessionTimer = setInterval(updateSessionTimer, 1000);
+  updateSessionTimer();
   document.getElementById('playBtn').classList.add('playing');
   document.getElementById('statusText').textContent = 'Aktif Seans';
   startSpectrumAnim();
   showToast('🧠 Seans başladı');
 }
 
-function stopAll() {
+function stopAll(silent=false) {
   NS.isPlaying = false;
   stopBinaural(); stopNoise();
+  stopSpecialFreq();
+  if(NS.sweep&&NS.sweep.active)sweepStop(false);
   clearInterval(NS.sessionTimer);
+  NS.sessionTimer=null;
+  neuroTimerTemizle();
+  clearTimeout(NS.fadeTimer);NS.fadeTimer=null;
+  try{
+    if(NS.masterGain&&NS.ctx){
+      const v=parseFloat(document.getElementById('nsMasterVol').value)/100;
+      NS.masterGain.gain.cancelScheduledValues(NS.ctx.currentTime);
+      NS.masterGain.gain.setValueAtTime(isFinite(v)?v:.7,NS.ctx.currentTime);
+    }
+  }catch(e){}
   document.getElementById('playBtn').classList.remove('playing');
   document.getElementById('statusText').textContent = 'Hazır';
-  showToast('Seans durduruldu');
+  if(!silent)showToast('Seans durduruldu');
 }
 
 // ─── TIMER ───
@@ -25154,29 +25233,37 @@ function updateSessionTimer() {
 }
 
 let sleepRemaining = 0;
-function setTimer(mins) {
+function neuroTimerTemizle(goster=true) {
   clearInterval(NS.sleepTimer);
+  NS.sleepTimer=null;
+  NS.sleepEnd=null;
+  sleepRemaining=0;
   document.querySelectorAll('.timer-btn').forEach(b=>b.classList.remove('active'));
+  if(goster){const d=document.getElementById('timerDisplay');if(d)d.textContent='—';}
+}
+function neuroTimerTick() {
+  if(!NS.sleepEnd)return;
+  sleepRemaining=Math.max(0,Math.ceil((NS.sleepEnd-Date.now())/1000));
+  updateTimerDisplay();
+  if(sleepRemaining<=0){
+    clearInterval(NS.sleepTimer);NS.sleepTimer=null;NS.sleepEnd=null;
+    document.querySelectorAll('.timer-btn').forEach(b=>b.classList.remove('active'));
+    startFadeOut();
+  }
+}
+function setTimer(mins,sourceEl) {
+  neuroTimerTemizle(false);
   if (mins === 0) {
-    sleepRemaining = 0;
     document.getElementById('timerDisplay').textContent = '—';
     showToast('Timer iptal edildi');
     return;
   }
   sleepRemaining = mins * 60;
-  event.target.classList.add('active');
+  const aktif=sourceEl||document.querySelector('.timer-btn[data-min="'+mins+'"]');
+  if(aktif)aktif.classList.add('active');
   NS.sleepEnd = Date.now() + sleepRemaining*1000;
-  updateTimerDisplay();
-  NS.sleepTimer = setInterval(() => {
-    sleepRemaining--;
-    updateTimerDisplay();
-    if (sleepRemaining <= 0) {
-      clearInterval(NS.sleepTimer);
-      startFadeOut();
-    } else if (sleepRemaining <= NS.fadeDuration) {
-      // fade already handled in startFadeOut
-    }
-  }, 1000);
+  neuroTimerTick();
+  NS.sleepTimer = setInterval(neuroTimerTick,1000);
   showToast(`⏱ ${mins} dakika timer ayarlandı`);
 }
 
@@ -25187,12 +25274,16 @@ function updateTimerDisplay() {
 }
 
 function startFadeOut() {
-  if (!NS.isPlaying || !NS.masterGain) return;
+  if (!neuroSesAktif() || !NS.masterGain) return;
   const fd = NS.fadeDuration;
+  try{NS.masterGain.gain.cancelScheduledValues(NS.ctx.currentTime)}catch(e){}
   NS.masterGain.gain.linearRampToValueAtTime(0, NS.ctx.currentTime + fd);
   showToast('🌙 Fade-out başladı...');
-  setTimeout(() => { if(NS.isPlaying) stopAll(); NS.masterGain.gain.value = parseFloat(document.getElementById('nsMasterVol').value)/100; }, fd*1000+200);
+  clearTimeout(NS.fadeTimer);
+  NS.fadeTimer=setTimeout(() => { if(neuroSesAktif()) stopAll(true); }, fd*1000+200);
 }
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&NS.sleepEnd)neuroTimerTick()});
+window.addEventListener('pageshow',()=>{if(NS.sleepEnd)neuroTimerTick()});
 
 // ═══════════════════════════════════════════════════════════════
 //  SPEKTRUM ANALİZÖRÜ — yeniden yazıldı
@@ -25477,19 +25568,37 @@ function initBrainwaveUI() {
   WAVES.forEach((w, i) => {
     const div = document.createElement('div');
     div.className = 'bw-label';
+    div.setAttribute('role','button');
+    div.tabIndex = 0;
+    div.setAttribute('aria-label',w.name+' vuruşunu '+w.pick+' Hz olarak ayarla');
     const color=/^#[0-9a-f]{6}$/i.test(w.color)?w.color:'#d6b25e';
     div.innerHTML = `<div class="bw-name" style="color:${color}">${hesc(w.name)}</div>
       <div class="bw-bar" id="bwBar${i}" style="background:${color};opacity:0.3"></div>
       <div class="bw-hz">${hesc(w.hz)}</div>`;
     div.onclick = () => highlightWave(i);
+    div.onkeydown = e => {
+      if(e.key!=='Enter'&&e.key!==' ')return;
+      e.preventDefault();
+      highlightWave(i);
+    };
     labels.appendChild(div);
   });
   startBrainwaveAnim();
 }
 
 function highlightWave(idx) {
-  document.getElementById('bwActiveName').textContent = WAVES[idx].name + ' Dalgaları';
-  document.getElementById('bwActiveState').textContent = WAVES[idx].state;
+  const wave=WAVES[idx]; if(!wave)return;
+  document.getElementById('bwActiveName').textContent = wave.name + ' Dalgaları';
+  document.getElementById('bwActiveState').textContent = wave.state;
+  /* Bilgi metni dokunmanın vuruşu ayarladığını söylüyor; önceki kod yalnız
+     başlığı değiştiriyordu ve bir sonraki animasyon karesinde geri alıyordu. */
+  const beat=document.getElementById('beatFreq');
+  if(beat){
+    beat.value=String(Math.max(+beat.min||0.5,Math.min(+beat.max||40,wave.pick)));
+    beat.dispatchEvent(new Event('input',{bubbles:true}));
+    const num=document.getElementById('beatNumNS'); if(num)num.value=(+beat.value).toFixed(1);
+  }
+  try{showToast(wave.name+' · '+wave.pick+' Hz vuruş ayarlandı')}catch(e){}
 }
 
 function getActiveBeatWave() {
@@ -26932,12 +27041,15 @@ function open(){
   // so it needs restarting each time the module is reopened. (hvCanvasMed restarts
   // on its own via openMedScript(), so it doesn't need to be handled here.)
 }
-function close(){
-  try{if(NS.isPlaying&&typeof stopAll==='function')stopAll()}catch(e){}
+function stop(silent=true){
+  try{if(typeof stopAll==='function')stopAll(!!silent)}catch(e){}
   try{if(typeof stopBreath==='function')stopBreath()}catch(e){}
-  try{if(typeof closeMedScript==='function')closeMedScript()}catch(e){}
-  try{HV.stopAll()}catch(e){}
+  try{if(typeof MED!=='undefined'&&MED.scriptIdx>=0&&typeof closeMedScript==='function')closeMedScript()}catch(e){}
   try{speechSynthesis.cancel()}catch(e){}
+}
+function close(){
+  stop(true);
+  try{HV.stopAll()}catch(e){}
   try{
     /* ctx artık ana SÜKÛN ile paylaşımlı — ana tarafta bir şey çalıyorsa askıya ALMA,
        yoksa NS'i kapatmak ambiyansı/frekansı da susturuyordu. */
@@ -26972,7 +27084,7 @@ function startBreathById(id){
   return true;
 }
 
-return{open,close,startBreathById,isPlaying:()=>!!NS.isPlaying};
+return{open,close,stop,startBreathById,isPlaying:neuroSesAktif,isActive:neuroEtkin};
 };
 
 /* ── r99: TEMBEL KURULUM ────────────────────────────────────────────
@@ -26994,8 +27106,10 @@ window.Neuro=(function(){
     hazirla,
     open(...a){ return hazirla().open(...a); },
     close(...a){ return m?m.close(...a):undefined; },
+    stop(...a){ return m&&m.stop?m.stop(...a):undefined; },
     startBreathById(...a){ return hazirla().startBreathById(...a); },
     isPlaying(){ return !!(m&&m.isPlaying&&m.isPlaying()); },
+    isActive(){ return !!(m&&m.isActive&&m.isActive()); },
   };
 })();
 
@@ -27046,13 +27160,16 @@ const AudioLife=window.AudioLife={
   busy(){
     try{
       if((typeof FR!=='undefined'&&FR.playing)||(typeof Z!=='undefined'&&Z.auto)||(typeof AMB!=='undefined'&&Object.keys(AMB).length)||(typeof VH!=='undefined'&&VH.playing))return true;
+      if(typeof SES!=='undefined'&&SES.ler&&SES.ler.size)return true;
+      if('speechSynthesis' in window&&(speechSynthesis.speaking||speechSynthesis.pending))return true;
+      const bs=window.BERHET_SEYIR;if(bs&&bs.run&&!bs.paused)return true;
       for(const fn of this.providers.values()){try{if(fn())return true}catch(e){}}
       return false;
     }catch(e){return false}
   },
   async recover(src){if(this.userPaused)return;this.set('recovering',src||'resume');try{if(typeof ctx!=='undefined'&&ctx&&ctx.state!=='running')await ctx.resume();}catch(e){PRERR.push('audio-resume',e.message||e,src)}try{if(typeof kesintiDenetle==='function')kesintiDenetle()}catch(e){}setTimeout(()=>this.set(this.busy()?'playing':'idle','recovered'),120)}
 };
-AudioLife.register('tekke',()=>!!(window.Tekke&&window.Tekke.isRunning&&window.Tekke.isRunning()));
+AudioLife.register('tekke',()=>!!(window.Tekke&&((window.Tekke.isActive&&window.Tekke.isActive())||(window.Tekke.isRunning&&window.Tekke.isRunning()))));
 AudioLife.register('neuro',()=>!!(window.Neuro&&window.Neuro.isPlaying&&window.Neuro.isPlaying()));
 function lifeHidden(src){AudioLife.wasBusy=AudioLife.busy();if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.set('interrupted',src)}
 function lifeVisible(src){if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.recover(src);else AudioLife.set(AudioLife.busy()?'playing':'idle',src)}
@@ -27060,10 +27177,10 @@ document.addEventListener('visibilitychange',()=>document.hidden?lifeHidden('vis
 window.addEventListener('pagehide',()=>lifeHidden('pagehide'));window.addEventListener('pageshow',()=>lifeVisible('pageshow'));window.addEventListener('blur',()=>{if(document.hidden)lifeHidden('blur')});window.addEventListener('focus',()=>lifeVisible('focus'));
 document.addEventListener('freeze',()=>lifeHidden('freeze'));document.addEventListener('resume',()=>lifeVisible('resume'));
 try{if(typeof autoStart==='function'){const f=autoStart;autoStart=function(...a){AudioLife.userPaused=false;AudioLife.set('preparing','zikir');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','zikir'),20);return r}}}catch(e){}
-try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){AudioLife.userPaused=true;const r=f.apply(this,a);setTimeout(()=>AudioLife.set(AudioLife.busy()?'playing':'paused','zikir-stop'),20);return r}}}catch(e){}
+try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){const r=f.apply(this,a);setTimeout(()=>{const busy=AudioLife.busy();AudioLife.userPaused=!busy;AudioLife.set(busy?'playing':'paused','zikir-stop')},20);return r}}}catch(e){}
 try{if(typeof frStart==='function'){const f=frStart;frStart=function(...a){AudioLife.userPaused=false;AudioLife.set('preparing','frequency');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','frequency'),20);return r}}}catch(e){}
 try{if(typeof frStop==='function'){const f=frStop;frStop=function(...a){const r=f.apply(this,a);setTimeout(()=>AudioLife.set(AudioLife.busy()?'playing':'idle','frequency-stop'),20);return r}}}catch(e){}
-try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function(...a){AudioLife.set('stopping','all-stop');const r=f.apply(this,a);AudioLife.userPaused=false;setTimeout(()=>AudioLife.set('idle','stopped'),80);return r}}}catch(e){}
+try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function(...a){AudioLife.set('stopping','all-stop');const r=f.apply(this,a);AudioLife.userPaused=true;setTimeout(()=>AudioLife.set('idle','stopped'),80);return r};const b=document.getElementById('stopAll');if(b)b.onclick=hardStopAll}}catch(e){}
 
 /* ═══ 3) KİŞİSEL DASHBOARD ═══ */
 function todayLog(){try{const a=typeof logTemizle==='function'?logTemizle(typeof S!=='undefined'?S.get('sukun.log',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
@@ -27116,7 +27233,7 @@ function diagKeys(e){
 function diagOpen(){DIAG_RETURN=document.activeElement;diagRender();const o=document.getElementById('prDiagOverlay');o.hidden=false;if(!o.dataset.trap){o.addEventListener('keydown',diagKeys);o.dataset.trap='1'}document.body.classList.add('prModalOpen');setTimeout(()=>document.getElementById('prDiagX')?.focus(),20)}
 function diagClose(){const o=document.getElementById('prDiagOverlay');if(o)o.hidden=true;if(document.getElementById('prSearchOverlay')?.hidden!==false)document.body.classList.remove('prModalOpen');if(DIAG_RETURN&&DIAG_RETURN.isConnected)DIAG_RETURN.focus();DIAG_RETURN=null}
 
-function audioLifePoll(){const busy=AudioLife.busy();if(busy&&!['playing','preparing','recovering'].includes(AudioLife.state))AudioLife.set('playing','provider-sync');else if(!busy&&AudioLife.state==='playing')AudioLife.set('idle','provider-sync');else dashUpdate()}
+function audioLifePoll(){const busy=AudioLife.busy();if(busy){AudioLife.userPaused=false;if(!['playing','preparing','recovering'].includes(AudioLife.state))AudioLife.set('playing','provider-sync');else dashUpdate()}else if(AudioLife.state==='playing')AudioLife.set('idle','provider-sync');else dashUpdate()}
 function initPremium(){dashCreate();searchCreate();dashUpdate();setInterval(audioLifePoll,1500);AudioLife.set(AudioLife.busy()?'playing':'idle','ready')}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(initPremium,50));else setTimeout(initPremium,50);
 })();
@@ -27242,26 +27359,49 @@ function seyirCreate(){
 }
 function repeatCount(it){const m=document.getElementById('bsMode')?.value||'1';if(m==='ebced')return Math.max(1,+it.eb||1);if(m==='custom')return Math.max(1,+document.getElementById('bsCustom')?.value||1);return +m||1}
 function seyirSave(){LS.set(BS.key,{i:BS.i,rep:BS.rep,totalDone:BS.totalDone,mode:document.getElementById('bsMode')?.value||'1',custom:+document.getElementById('bsCustom')?.value||33,gap:+document.getElementById('bsGap')?.value||900})}
-function restoreSeyir(){const x=LS.get(BS.key,null);if(!x)return;BS.i=Math.min(27,+x.i||0);BS.rep=+x.rep||0;BS.totalDone=+x.totalDone||0;BS.shown=-1;const m=document.getElementById('bsMode');if(m)m.value=x.mode||'1';const c=document.getElementById('bsCustom');if(c){c.value=x.custom||33;c.hidden=(m?.value!=='custom')}const g=document.getElementById('bsGap');if(g)g.value=String(x.gap||900);seyirUI('Kaldığın yer hazır.')}
-function seyirUI(msg){const list=ZIKIR.berhet.items,it=list[BS.i]||list[0],n=repeatCount(it);const st=document.getElementById('bsStatus');if(st)st.textContent=(msg?msg+' · ':'')+(BS.i+1)+'/28 '+it.tr+' · '+Math.min(BS.rep,n)+'/'+n+' tekrar';const bar=document.getElementById('bsBar');if(bar)bar.style.width=(((BS.i+(n?Math.min(BS.rep,n)/n:0))/28)*100).toFixed(2)+'%';}
+function restoreSeyir(){const x=LS.get(BS.key,null);if(!x)return;BS.i=Math.min(28,Math.max(0,+x.i||0));BS.rep=Math.max(0,+x.rep||0);BS.totalDone=Math.max(0,+x.totalDone||0);BS.shown=-1;const m=document.getElementById('bsMode');if(m)m.value=x.mode||'1';const c=document.getElementById('bsCustom');if(c){c.value=x.custom||33;c.hidden=(m?.value!=='custom')}const g=document.getElementById('bsGap');if(g)g.value=String(x.gap||900);seyirUI(BS.i>=28?'Önceki seyir tamamlanmış. Başlatırsan yeniden başlar.':'Kaldığın yer hazır.')}
+function seyirUI(msg){
+  const list=ZIKIR.berhet.items,st=document.getElementById('bsStatus'),bar=document.getElementById('bsBar');
+  if(BS.i>=list.length){if(st)st.textContent=(msg?msg+' · ':'')+'28/28 · seyir tamam';if(bar)bar.style.width='100%';return}
+  const it=list[BS.i]||list[0],n=repeatCount(it);
+  if(st)st.textContent=(msg?msg+' · ':'')+(BS.i+1)+'/28 '+it.tr+' · '+Math.min(BS.rep,n)+'/'+n+' tekrar';
+  if(bar)bar.style.width=(((BS.i+(n?Math.min(BS.rep,n)/n:0))/28)*100).toFixed(2)+'%';
+}
+function seyirKes(msg='Duraklatıldı',duraklat=true){
+  BS.paused=!!duraklat;BS.run=false;BS.token++;
+  try{sesDurdur('seyir-stop');r168TtsCancel('seyir-stop')}catch(e){}
+  seyirSave();seyirUI(msg);
+}
+BS.stopAll=()=>seyirKes('Tüm sesler durduruldu · kaldığın yer saklandı',true);
 async function seyirLoop(token){
   const list=ZIKIR.berhet.items;
   while(BS.run&&!BS.paused&&token===BS.token&&BS.i<list.length){const it=list[BS.i],limit=repeatCount(it);
     if(BS.shown!==BS.i){Z.cat='berhet';Z.idx=BS.i;try{renderZikir(false);zUI()}catch(e){sukunReport('seyir-render',e,BS.i)}BS.shown=BS.i}
     while(BS.run&&!BS.paused&&token===BS.token&&BS.rep<limit){
-      const r=await R168.AudioResolver.play('berhet',BS.i,it);if(!BS.run||BS.paused||token!==BS.token)break;BS.rep++;BS.totalDone++;seyirUI(r.source==='recording'?'🎙 Kendi sesin':'🔊 TTS');seyirSave();const gap=+document.getElementById('bsGap')?.value||900;await new Promise(r=>setTimeout(r,gap));
+      const r=await R168.AudioResolver.play('berhet',BS.i,it);
+      if(!BS.run||BS.paused||token!==BS.token)break;
+      /* Duyulmayan/başlatılamayan okuma sayaçta tamamlanmış görünmesin.
+         Hata halinde hızlı ve sessizce binlerce tekrar saymak yerine seyir
+         kaldığı yerde duraklar; kullanıcı ses motorunu düzelterek sürdürür. */
+      if(!r||!r.ok){
+        BS.run=false;BS.paused=true;BS.token++;seyirSave();
+        seyirUI('Ses başlatılamadı — sistem durumundan sesi toparlayıp sürdür');
+        try{sukunReport('berhetiyye-audio','Okuma tamamlanmadı',r&&r.source||'bilinmiyor')}catch(e){}
+        break;
+      }
+      BS.rep++;BS.totalDone++;seyirUI(r.source==='recording'?'🎙 Kendi sesin':'🔊 TTS');seyirSave();const gap=+document.getElementById('bsGap')?.value||900;await new Promise(r=>setTimeout(r,gap));
     }
     if(!BS.run||BS.paused||token!==BS.token)break;BS.i++;BS.rep=0;BS.shown=-1;seyirSave();
   }
-  if(BS.i>=28&&BS.run){BS.run=false;BS.paused=false;seyirUI('Seyir tamamlandı ✦');try{LOG.push({t:Date.now(),dur:0,detail:'✦ Berhetiyye 28 İsim Seyri · '+BS.totalDone+' tekrar'})}catch(e){} }
+  if(BS.i>=28&&BS.run){BS.run=false;BS.paused=false;seyirSave();seyirUI('Seyir tamamlandı ✦');try{LOG.push({t:Date.now(),dur:0,detail:'✦ Berhetiyye 28 İsim Seyri · '+BS.totalDone+' tekrar'})}catch(e){} }
 }
 function bindSeyir(){
   const m=document.getElementById('bsMode'),c=document.getElementById('bsCustom');
   if(m)m.onchange=()=>{if(c)c.hidden=m.value!=='custom';seyirSave();seyirUI()};
   document.getElementById('bsStart').onclick=()=>{if(BS.i>=28){BS.i=0;BS.rep=0;BS.shown=-1}BS.run=true;BS.paused=false;BS.token++;seyirUI('Başladı');seyirLoop(BS.token)};
-  document.getElementById('bsPause').onclick=()=>{BS.paused=true;BS.run=false;BS.token++;try{sesDurdur('seyir-pause');r168TtsCancel('seyir-pause')}catch(e){}seyirSave();seyirUI('Duraklatıldı')};
-  document.getElementById('bsNext').onclick=()=>{BS.i=Math.min(27,BS.i+1);BS.rep=0;BS.shown=-1;BS.token++;try{sesDurdur('seyir-next');r168TtsCancel('seyir-next')}catch(e){}seyirSave();seyirUI('Sonraki isme geçildi');if(BS.run){BS.token++;seyirLoop(BS.token)}};
-  document.getElementById('bsStop').onclick=()=>{BS.run=false;BS.paused=false;BS.token++;try{sesDurdur('seyir-stop');r168TtsCancel('seyir-stop')}catch(e){}seyirSave();seyirUI('Bitirildi')};
+  document.getElementById('bsPause').onclick=()=>seyirKes('Duraklatıldı',true);
+  document.getElementById('bsNext').onclick=()=>{BS.i=Math.min(28,BS.i+1);BS.rep=0;BS.shown=-1;BS.token++;try{sesDurdur('seyir-next');r168TtsCancel('seyir-next')}catch(e){}seyirSave();seyirUI('Sonraki isme geçildi');if(BS.run){BS.token++;seyirLoop(BS.token)}};
+  document.getElementById('bsStop').onclick=()=>seyirKes('Bitirildi',false);
   document.getElementById('bsReset').onclick=()=>{BS.run=false;BS.paused=false;BS.token++;try{sesDurdur('seyir-reset');r168TtsCancel('seyir-reset')}catch(e){}BS.i=0;BS.rep=0;BS.totalDone=0;BS.shown=-1;seyirSave();seyirUI('Başa alındı')};
 }
 

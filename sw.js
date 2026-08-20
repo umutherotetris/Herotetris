@@ -2,7 +2,7 @@
 'use strict';
 
 const SURUM='r171';
-const CACHE='sukun-'+SURUM+'-20260820';
+const CACHE='sukun-'+SURUM+'-20260820b';
 const KABUK=[
   './nero.html',
   './manifest.webmanifest',
@@ -13,11 +13,12 @@ const KABUK=[
 const NOTLAR=[
   'Tümünü durdur, Berhetiyye, Tekke ön izlemesi, NeuroSync ve bekleyen uyku fade’lerini birlikte kapatıyor.',
   'NeuroSync özel tonları ve zamanlayıcıları arka plan dönüşlerinde güvenle temizleniyor.',
-  'Berhetiyye yalnız duyulan tekrarları sayıyor; erişilebilir kontrol adları kaynakta kalıcılaştırıldı.'
+  'Berhetiyye yalnız duyulan tekrarları sayıyor; erişilebilir kontrol adları kaynakta kalıcılaştırıldı.',
+  'Android ve kurulu PWA için eski r170 kabuğunu bırakan önbellek yolu yenilendi.'
 ];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(KABUK)));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(KABUK)).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
