@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r174 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r187 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r174">
+<meta name="sukun-build" content="r187">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r174">
+<link rel="manifest" href="./manifest.webmanifest?v=r187">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1633,6 +1633,22 @@ input[type=range]:not(#ns *)::-moz-range-thumb{width:15px;height:15px;border-rad
 .cat.act{color:var(--goldh);border-color:var(--line2);background:color-mix(in srgb,var(--gold) 10%,transparent)}
 .zList{display:flex;flex-wrap:wrap;gap:8px;max-height:142px;overflow-y:auto;padding:2px 2px 8px;scrollbar-width:thin}
 .zList::-webkit-scrollbar{display:none}
+/* r181 — Esmâ/Berhetiyye varsayılan tek-sıra kompakt liste.
+   Kullanıcı isterse tüm isimleri açar; arama sırasında liste otomatik tam görünür. */
+.zList.compactOneRow{flex-wrap:nowrap;max-height:40px;overflow:hidden;padding-bottom:2px;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 91%,transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 91%,transparent 100%)}
+.zList.showAllNames{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none;padding-bottom:8px}
+.zListToggle{width:100%;margin:4px 0 10px;padding:8px 12px;min-height:34px;border-radius:11px;
+  border:1px solid color-mix(in srgb,var(--gold) 22%,var(--line));
+  background:color-mix(in srgb,var(--gold) 6%,transparent);color:var(--goldh);
+  font:600 11.5px/1.2 inherit;letter-spacing:.01em;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:.18s ease}
+.zListToggle:hover{background:color-mix(in srgb,var(--gold) 10%,transparent);border-color:var(--line2)}
+.zListToggle:active{transform:scale(.985)}
+.zListToggle[hidden]{display:none!important}
+.zListToggle .zltCount{color:var(--dim);font-size:10px;font-weight:500}
+body[data-tema="sabah"] .zListToggle{background:rgba(255,255,255,.45)}
 .zItem{flex:none;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:8px 12px;border-radius:13px;font-size:12.5px;color:var(--ivory);border:1px solid var(--line);background:rgba(255,255,255,.03)}
 .zItem.act{color:var(--goldh);border-color:var(--line2);background:color-mix(in srgb,var(--gold) 10%,transparent)}
 
@@ -3086,6 +3102,511 @@ input:focus-visible,select:focus-visible{
 @media(max-width:370px){.r168Grid{grid-template-columns:1fr}.r168Wide{grid-column:auto}.r168Buttons{grid-template-columns:1fr 1fr}.r168MiniRow{align-items:stretch}.r168MiniRow select,.r168MiniRow input{width:100%}}
 </style>
 
+<style id="sukun-r183-polish">
+:root{--s1:6px;--s2:8px;--s3:12px;--s4:16px;--s5:24px}
+.ar,.arabic,[lang=ar]{line-height:1.95!important;text-wrap:balance}
+.sukun-focus-btn{position:fixed;right:14px;bottom:88px;z-index:8500;border:1px solid rgba(212,175,55,.32);background:rgba(10,11,14,.82);backdrop-filter:blur(18px);color:#d4af37;border-radius:999px;padding:9px 13px;font:600 12px system-ui}
+body.sukun-focus-mode{overflow:hidden;background:#050506}
+body.sukun-focus-mode header,body.sukun-focus-mode nav:not(.sukun-bottom-nav),body.sukun-focus-mode footer{opacity:0!important;pointer-events:none!important}
+body.sukun-focus-mode main>*{opacity:.08;filter:blur(1px);pointer-events:none;transition:.22s ease}
+body.sukun-focus-mode #zikirCard,body.sukun-focus-mode #counterCard,body.sukun-focus-mode .zikir-card,body.sukun-focus-mode .counter-card{opacity:1!important;filter:none!important;pointer-events:auto!important;position:relative;z-index:8200;transform:scale(1.015)}
+.sukun-bottom-nav{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,calc(100% - 24px));z-index:8000;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:5px;border:1px solid rgba(212,175,55,.18);border-radius:18px;background:rgba(9,10,13,.80);backdrop-filter:blur(20px);box-shadow:0 16px 44px rgba(0,0,0,.28)}
+.sukun-bottom-nav button{border:0;background:transparent;color:inherit;border-radius:14px;padding:9px 6px;font:600 11px system-ui;opacity:.68}
+.sukun-bottom-nav button.active{opacity:1;background:rgba(212,175,55,.10);box-shadow:inset 0 0 0 1px rgba(212,175,55,.14)}
+#zikirCard,#counterCard,.zikir-card,.counter-card{isolation:isolate;position:relative}
+body.sukun-count-pulse #zikirCard,body.sukun-count-pulse #counterCard,body.sukun-count-pulse .zikir-card,body.sukun-count-pulse .counter-card{animation:sukunPulse .22s ease-out}
+@keyframes sukunPulse{50%{filter:drop-shadow(0 0 12px rgba(212,175,55,.20));transform:scale(1.006)}}
+body[data-theme*=amoled],body.amoled{background:#000!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+<style id="sukun-r184-final-polish">
+/* r184 — piksel düzeyi son makyaj */
+:root{
+  --ux1:6px;--ux2:8px;--ux3:12px;--ux4:16px;--ux5:24px;
+  --uxRadius:14px;--uxRadiusL:18px;--uxEase:cubic-bezier(.2,.72,.28,1);
+}
+
+/* r183 focus selector düzeltmesi */
+body.sukun-focus-mode main>*{opacity:1!important;filter:none!important;pointer-events:auto!important}
+body.sukun-focus-mode #prDashboard,
+body.sukun-focus-mode .tabs,
+body.sukun-focus-mode #tab-amb,
+body.sukun-focus-mode #tab-frq,
+body.sukun-focus-mode #tab-rx,
+body.sukun-focus-mode #vakitBox,
+body.sukun-focus-mode .todayCard,
+body.sukun-focus-mode .rutRow{opacity:0!important;pointer-events:none!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;border:0!important}
+body.sukun-focus-mode #tab-zkr{display:block!important;opacity:1!important;filter:none!important}
+body.sukun-focus-mode #tab-zkr>*:not(#zStage):not(.zCtl){opacity:.055!important;filter:blur(1.5px);pointer-events:none!important;max-height:22px;overflow:hidden;transition:opacity .22s var(--uxEase),max-height .22s var(--uxEase)}
+body.sukun-focus-mode #zStage,
+body.sukun-focus-mode .zCtl{opacity:1!important;filter:none!important;pointer-events:auto!important;position:relative;z-index:8250;max-height:none!important}
+body.sukun-focus-mode #zStage{margin-top:10px!important}
+body.sukun-focus-mode .zCtl{margin-bottom:82px!important}
+
+/* Zikir hero sahnesi */
+#zStage{
+  padding:clamp(18px,4.5vw,28px)!important;
+  border-radius:20px!important;
+  background:
+   radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--gold) 8%,transparent),transparent 46%),
+   linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.006)),var(--panel)!important;
+  box-shadow:0 18px 44px -34px #000,inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+#zStage .zAr{
+  font-size:clamp(31px,8vw,48px)!important;line-height:1.72!important;text-align:center!important;
+  padding:8px 8px 5px;margin:0 auto;color:var(--ivory);text-wrap:balance;
+  text-shadow:0 0 24px color-mix(in srgb,var(--gold) 10%,transparent)
+}
+#zStage .zOku{font-size:12px!important;line-height:1.7!important;text-align:center;color:var(--mut)!important;margin-top:6px}
+#zStage .zTr{font-size:clamp(15px,4.1vw,20px)!important;line-height:1.45!important;text-align:center;color:var(--goldh)!important;margin-top:7px;font-weight:600}
+#zStage .zMean{font-size:11.5px!important;line-height:1.72!important;max-width:660px;margin:10px auto 0!important;color:var(--mut)!important;text-align:center}
+#zStage .zEb,#zStage .zMenzil,#zStage .zNiyet,#zStage .zUyari{max-width:680px;margin-inline:auto}
+#zStage .zBar{margin-top:16px!important;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--gold) 10%,var(--line))}
+
+/* Sayaç: ana görsel odak */
+.zCtl{border-radius:20px!important;padding:16px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 3%,transparent),transparent 28%),var(--panel)!important}
+.zCountVisual{transition:transform .18s var(--uxEase),filter .18s var(--uxEase)}
+.zCountVisual:active{transform:scale(.986)}
+.cntBig{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+#cntRemain,#cntTargetView{font-variant-numeric:tabular-nums}
+
+/* Esmâ / Berhetiyye seçili kart hiyerarşisi */
+#zList{gap:7px!important}
+#zList .zItem{padding:7px 11px!important;border-radius:12px!important;opacity:.74;transition:opacity .18s var(--uxEase),transform .18s var(--uxEase),background .18s,border-color .18s}
+#zList .zItem:hover{opacity:.94}
+#zList .zItem.act{opacity:1!important;transform:translateY(-1px);font-weight:650;box-shadow:0 8px 20px -15px color-mix(in srgb,var(--gold) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.04)}
+#zList.compactOneRow .zItem.act{position:sticky;left:0;z-index:2}
+
+/* İsim Perdesi: daha rafine */
+#r183NameToast,.r183NameToast{backdrop-filter:blur(18px) saturate(1.12);-webkit-backdrop-filter:blur(18px) saturate(1.12)}
+
+/* Ambiyans Mixer */
+#tab-amb .sessRow{gap:7px!important}
+#tab-amb .sess{min-height:76px;border-radius:15px!important;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel)!important}
+#tab-amb .preAcc{border-radius:16px!important;overflow:hidden}
+#tab-amb .preAccHead{min-height:46px;padding:11px 13px!important}
+#tab-amb .mixGrid{grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:9px!important}
+#tab-amb .chn{position:relative;padding:10px 10px 9px!important;border-radius:14px!important;min-height:76px;background:linear-gradient(145deg,rgba(255,255,255,.024),transparent 58%),var(--panel)!important}
+#tab-amb .chn::after{content:"";position:absolute;left:10px;right:10px;bottom:6px;height:2px;border-radius:99px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold) 14%,transparent),transparent);opacity:.15;pointer-events:none}
+#tab-amb .chn.on{transform:translateY(-1px);box-shadow:0 12px 30px -24px #000,0 0 22px color-mix(in srgb,var(--gold) 7%,transparent)!important}
+#tab-amb .chn.on::after{opacity:.8;animation:r184MixerBreath 1.7s ease-in-out infinite}
+@keyframes r184MixerBreath{50%{transform:scaleX(.58);opacity:.34}}
+#tab-amb .chIc{font-size:18px!important;filter:saturate(.85)}
+#tab-amb .chName b{font-size:12px!important;letter-spacing:.01em}
+#tab-amb .chName small{font-size:9px!important;opacity:.82}
+#tab-amb .chEq{transform:scale(.82);transform-origin:center}
+#tab-amb .chn input[type=range]{margin-top:8px!important}
+#calanSerit{position:sticky;top:6px;z-index:30;padding:7px 8px;border:1px solid color-mix(in srgb,var(--gold) 12%,transparent);border-radius:13px;background:rgba(var(--sayfa2K),.82);backdrop-filter:blur(14px)}
+
+/* Makam seçimi: yatay, sakin */
+#tab-amb [data-ambacc="makam"] .mixGrid,#tab-amb [data-ambacc="ney"] .mixGrid{display:flex!important;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px;scrollbar-width:none}
+#tab-amb [data-ambacc="makam"] .mixGrid::-webkit-scrollbar,#tab-amb [data-ambacc="ney"] .mixGrid::-webkit-scrollbar{display:none}
+#tab-amb [data-ambacc="makam"] .chn,#tab-amb [data-ambacc="ney"] .chn{min-width:min(72vw,220px);scroll-snap-align:start}
+
+/* Kendi Seslerim / Stüdyo */
+.r168MediaList{padding:3px;border-radius:14px;background:rgba(0,0,0,.08)}
+.r168MediaItem{margin:4px 2px;padding:9px 8px!important;border:1px solid transparent!important;border-radius:11px;background:rgba(255,255,255,.018);transition:.18s var(--uxEase)}
+.r168MediaItem:hover{border-color:var(--line)!important;background:rgba(255,255,255,.028)}
+.r168MediaItem b{font-size:10.5px!important}
+#r170Studio{overflow:hidden}
+#r170Wave{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 9%,transparent),inset 0 -18px 38px rgba(0,0,0,.14)!important}
+#r170Studio .r170StudioMeta div{border-radius:11px!important;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent)!important}
+
+/* İstatistik: tek sakin dashboard hissi */
+#r170Stats .r170Grid{gap:8px!important}
+#r170Stats .r170Card{background:rgba(255,255,255,.018)!important;border-radius:13px!important;box-shadow:none!important}
+#r170Stats .r170Bars{align-items:end;padding-top:8px}
+#r170Stats .r170Bars i{border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--goldh),color-mix(in srgb,var(--ok) 65%,var(--gold)))!important;opacity:.74}
+#r170Stats .r170StatLine .track{height:5px!important;border-radius:99px;overflow:hidden}
+
+/* Akordeon ve panel boşluk sistemi */
+#tab-zkr>.zAnaGrup,#tab-zkr>.nlHub,#tab-zkr>details,#tab-zkr>.card{margin-block:var(--ux3)!important}
+.zAnaGrup>summary,.nlHub>summary,.preAccHead{letter-spacing:.015em}
+
+/* Alt ikinci navigasyon; ana bottom-nav'in üstünde */
+.sukun-bottom-nav{bottom:max(76px,calc(env(safe-area-inset-bottom) + 66px))!important;width:min(480px,calc(100% - 34px))!important;padding:4px!important;border-radius:15px!important;box-shadow:0 10px 30px -20px #000!important}
+.sukun-bottom-nav button{padding:7px 5px!important;font-size:10px!important;min-height:32px!important}
+
+/* Odak düğmesi */
+.sukun-focus-btn{bottom:max(126px,calc(env(safe-area-inset-bottom) + 116px))!important;padding:8px 11px!important;font-size:10.5px!important;opacity:.84}
+body.sukun-focus-mode .sukun-bottom-nav{opacity:0!important;pointer-events:none!important}
+body.sukun-focus-mode .sukun-focus-btn{bottom:max(18px,env(safe-area-inset-bottom))!important;opacity:1}
+
+/* AMOLED: gerçek siyah ve daha az glow */
+body[data-tema="amoled"],body.amoled{background:#000!important}
+body[data-tema="amoled"]::before,body.amoled::before{opacity:.15!important}
+body[data-tema="amoled"] .card,body[data-tema="amoled"] .preAcc,body[data-tema="amoled"] .chn,body.amoled .card,body.amoled .preAcc,body.amoled .chn{background:#030303!important;box-shadow:none!important}
+body[data-tema="amoled"] #zStage,body.amoled #zStage{background:#020202!important}
+body[data-tema="amoled"] .zItem.act,body.amoled .zItem.act{box-shadow:inset 0 0 0 1px rgba(201,162,39,.08)!important}
+
+/* Dar ekran */
+@media(max-width:390px){
+ #zStage{padding:16px 13px!important}.zCtl{padding:13px 9px!important}
+ #tab-amb .mixGrid{grid-template-columns:1fr 1fr!important;gap:7px!important}
+ #tab-amb .chn{padding:9px 8px 8px!important}
+ .sukun-bottom-nav{width:calc(100% - 24px)!important}
+}
+@media(max-width:340px){#tab-amb .mixGrid{grid-template-columns:1fr!important}.zCounterSide{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#tab-amb .chn.on::after{animation:none!important}}
+</style>
+<style id="sukun-r185-mobile-pixel">
+/* r185 — 360–430 px gerçek cihaz ergonomisi */
+:root{--safe-b:env(safe-area-inset-bottom,0px);--mobileDock:68px}
+
+/* Genel taşma güvenliği */
+html,body{max-width:100%;overflow-x:hidden}
+.wrap{min-width:0}
+.card,.preAcc,.zAnaGrup,.nlHub,.r170Hub{max-width:100%;box-sizing:border-box}
+button,input,select,textarea{max-width:100%}
+
+/* Üst sekmeler: küçük telefonda metni ezme, kaydırılabilirliği hissettir */
+.tabs{overflow-x:auto!important;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs .tab{flex:0 0 auto!important;min-width:74px;padding-inline:10px!important}
+
+/* Zikir listesi: tek satır gerçekten kompakt */
+#zList.compactOneRow{min-height:42px!important;max-height:42px!important;align-items:center!important;padding-bottom:2px!important}
+#zList.compactOneRow .zItem{min-height:30px!important;display:inline-flex;align-items:center}
+#zList.compactOneRow .zListToggle,#zListCompactToggle{min-height:30px!important}
+
+/* Zikir hero */
+#zStage{overflow:clip!important}
+#zStage .zAr{word-break:normal;overflow-wrap:anywhere}
+#zStage .zOku,#zStage .zTr,#zStage .zMean{overflow-wrap:anywhere}
+#zStage .zBar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+#zStage .zBar .spkBtn{min-width:0!important;width:100%!important;justify-content:center!important;padding:9px 5px!important;font-size:10px!important}
+#zStage .zBar .spkBtn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Sayaç: yan değerler çemberi sıkıştırmasın */
+.zCounterRow{display:grid!important;grid-template-columns:minmax(52px,.72fr) minmax(188px,1.9fr) minmax(52px,.72fr)!important;align-items:center!important;gap:6px!important}
+.zCounterSide{min-width:0!important;padding-inline:2px!important}
+.zCounterSide small{font-size:8px!important;letter-spacing:.08em}
+.zCounterSide b{font-size:clamp(16px,5vw,22px)!important;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.zCounterSide em{font-size:7.5px!important;white-space:normal!important;line-height:1.2}
+.zCountVisual{width:min(60vw,244px)!important;height:min(60vw,244px)!important;min-width:0!important;min-height:0!important;margin:auto}
+.zCountVisual .progArc,.zCountVisual .progArc svg{width:100%!important;height:100%!important}
+.zCountVisual .cntBig{font-size:clamp(50px,16vw,78px)!important}
+.zCountVisual .cntPct{font-size:10px!important}
+.zCountVisual .cntNums small{font-size:8px!important}
+
+/* Hedef paneli: 360–390 px'te iki sütun yerine kontrollü tek kolon */
+.targetModeRow{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:7px!important;align-items:center}
+.targetModeSeg{min-width:0!important}
+.targetModeBtn,.targetManualBtn{min-width:0!important}
+.targetDetailCard{max-width:100%;overflow:hidden}
+.targetDetailCol{min-width:0}
+.targetDetailActions{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:7px}
+.targetValueBox,.targetValueInput{min-width:0!important;width:100%!important;box-sizing:border-box}
+.targetHint{width:100%!important;box-sizing:border-box;text-align:left}
+
+/* Seçenekler ve switch satırları */
+.zOpts .opt{min-height:38px!important;gap:9px!important}
+.zOpts .opt>span{min-width:0!important;line-height:1.35;overflow-wrap:anywhere}
+.zOpts .sw{flex:0 0 34px!important}
+
+/* Ambiyans: kanal kartları 360px'te ezilmesin */
+#tab-amb .mixGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#tab-amb .chn{min-width:0!important;min-height:72px!important}
+#tab-amb .chName{min-width:0!important}
+#tab-amb .chName b,#tab-amb .chName small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tab-amb .preAccBody{padding-inline:9px!important}
+#calanSerit{max-width:100%;overflow-x:auto;scrollbar-width:none}
+#calanSerit::-webkit-scrollbar{display:none}
+
+/* Kendi Seslerim: aksiyonlar küçük ekranda kırılmasın */
+.r168MediaItem{grid-template-columns:minmax(0,1fr) 34px 34px!important;gap:5px!important}
+.r168MediaItem button{width:34px!important;min-width:34px!important;padding:0!important}
+.r168MediaItem small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#r170Studio .r170Row{grid-template-columns:1fr 1fr!important}
+#r170Studio .r170Btn{font-size:9px!important;padding-inline:6px!important}
+#r170Wave{height:82px!important}
+
+/* İstatistik */
+#r170Stats .r170Grid{grid-template-columns:1fr 1fr!important}
+#r170Stats .r170Full{grid-column:1 / -1!important}
+#r170Stats .r170Card{min-width:0}
+#r170Stats .r170Card>b{font-size:clamp(18px,7vw,28px)}
+
+/* Akordeon başlıkları: uzun açıklamaları tek satıra sıkıştırma */
+.zAnaGrup>summary,.nlHub>summary,.r170Hub>summary{min-width:0}
+.zAnaGrup>summary>span:last-child,.nlHub>summary>span:last-child,.r170Hub>summary>span:last-child{min-width:0}
+.zAnaGrup>summary small,.nlHub>summary small,.r170Hub>summary small{
+  display:block!important;white-space:normal!important;line-height:1.35!important;margin-top:2px!important
+}
+
+/* İkinci alt nav ve odak butonu: gerçek güvenli alan */
+.sukun-bottom-nav{
+  bottom:calc(var(--safe-b) + 70px)!important;
+  width:min(470px,calc(100% - 20px))!important;
+  z-index:7600!important
+}
+.sukun-focus-btn{
+  right:10px!important;
+  bottom:calc(var(--safe-b) + 116px)!important;
+  z-index:7700!important
+}
+body{padding-bottom:calc(var(--safe-b) + 118px)!important}
+body.sukun-focus-mode{padding-bottom:0!important}
+
+/* 390 px altı */
+@media(max-width:390px){
+  .wrap{padding-inline:10px!important}
+  .tabs{gap:5px!important;padding-inline:2px!important}
+  .tabs .tab{min-width:69px!important;font-size:9px!important;padding:8px 8px!important}
+  #zStage{padding:15px 11px!important;border-radius:17px!important}
+  #zStage .zAr{font-size:clamp(28px,9vw,38px)!important;line-height:1.62!important}
+  #zStage .zTr{font-size:14px!important}
+  #zStage .zMean{font-size:10.5px!important}
+  #zStage .zBar{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .zCtl{padding:12px 8px!important;border-radius:17px!important}
+  .zCounterRow{grid-template-columns:48px minmax(172px,1fr) 48px!important;gap:3px!important}
+  .zCountVisual{width:min(58vw,218px)!important;height:min(58vw,218px)!important}
+  .targetModeRow{grid-template-columns:1fr!important}
+  .targetModeLabel{display:none!important}
+  .targetModeSeg{display:grid!important;grid-template-columns:1fr 1fr!important}
+  .targetManualBtn{width:100%!important}
+  .targetDetailCard{grid-template-columns:1fr!important}
+  .targetOr{display:none!important}
+  .targetDetailCol+ .targetDetailCol{border-top:1px solid var(--line);padding-top:10px;margin-top:3px}
+  .sldRow{grid-template-columns:74px minmax(0,1fr) auto!important;gap:6px!important}
+  .sldRow label{font-size:9px!important}
+  #tab-amb .mixGrid{gap:7px!important}
+  #tab-amb .chn{padding:8px 7px!important}
+  #r170Studio .r170StudioMeta{grid-template-columns:repeat(3,1fr)!important;gap:5px!important}
+  #r170Studio .r170StudioMeta div{padding:6px 3px!important}
+  #r170Stats .r170Grid{gap:6px!important}
+  .sukun-bottom-nav{bottom:calc(var(--safe-b) + 66px)!important}
+}
+
+/* 350 px altı: asıl sıkışma eşiği */
+@media(max-width:350px){
+  .wrap{padding-inline:8px!important}
+  .tabs .tab{min-width:64px!important;font-size:8.5px!important}
+  #zStage .zBar{grid-template-columns:1fr 1fr!important}
+  .zCounterRow{grid-template-columns:42px minmax(160px,1fr) 42px!important}
+  .zCounterSide b{font-size:15px!important}
+  .zCounterSide em{display:none!important}
+  .zCountVisual{width:min(58vw,198px)!important;height:min(58vw,198px)!important}
+  #tab-amb .mixGrid{grid-template-columns:1fr!important}
+  #r170Studio .r170Row{grid-template-columns:1fr!important}
+  #r170Stats .r170Grid{grid-template-columns:1fr!important}
+  #r170Stats .r170Full{grid-column:auto!important}
+}
+
+/* Hareket azaltma */
+@media(prefers-reduced-motion:reduce){
+  .sukun-bottom-nav,.sukun-focus-btn,#zStage,.zCtl,.chn{transition:none!important}
+}
+</style>
+
+
+<style id="sukun-r186-calm-fix">
+/* ═══════════════════════════════════════════════════════════
+   r186 — sakin zikir geri bildirimi
+   Eski .pulse, her tıkta yoğun text-shadow üretiyordu.
+   ═══════════════════════════════════════════════════════════ */
+#zStage .pulse{
+  animation:r186ZikirTap .18s cubic-bezier(.2,.72,.3,1)!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+@keyframes r186ZikirTap{
+  0%{transform:scale(1);opacity:1}
+  48%{transform:scale(1.012);opacity:.88}
+  100%{transform:scale(1);opacity:1}
+}
+
+/* Seçili isim: neon kutu değil, yalnız sessiz seçili durum */
+#zList .zItem.act{
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 34%,transparent)!important;
+  background:color-mix(in srgb,var(--gold) 6%,rgba(255,255,255,.012))!important;
+  transform:none!important;
+}
+#zList .zItem.act::before{
+  width:2px!important;
+  height:44%!important;
+  box-shadow:none!important;
+}
+#zList .zItem:active{
+  transform:scale(.985)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 28%,transparent)!important;
+}
+
+/* Devir tamamlanmasındaki toz kalabilir ama daha sakin */
+.zStage.toz::before{opacity:.42!important;filter:none!important}
+.zStage.tozAkis::before{opacity:.12!important}
+
+/* ═══ ESMÂ 0. LAFZA-İ CELÂL ═══ */
+#zList .esmaZero{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:31px;
+  padding:6px 10px;
+  border-radius:11px;
+  border:1px dashed color-mix(in srgb,var(--gold) 25%,transparent);
+  background:color-mix(in srgb,var(--gold) 3.5%,transparent);
+  color:var(--mut);
+  white-space:nowrap;
+  user-select:none;
+}
+#zList .esmaZero b{
+  color:var(--goldh);
+  font:650 10.5px/1 "Figtree",sans-serif;
+}
+#zList .esmaZero span{
+  font:500 8.5px/1 "Figtree",sans-serif;
+  color:var(--dim);
+}
+
+/* ═══ ESMÂ ÖNCEKİ / SIRADAKİ ═══ */
+#esmaStepNav{
+  display:none;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:7px;
+  align-items:center;
+  margin:8px 0 10px;
+}
+#esmaStepNav.on{display:grid}
+#esmaStepNav button{
+  min-width:0;
+  min-height:36px;
+  border-radius:11px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.018);
+  color:var(--goldh);
+  font:600 10px/1 "Figtree",sans-serif;
+  padding:8px 7px;
+}
+#esmaStepNav button:active{transform:scale(.98)}
+#esmaStepNow{
+  min-width:58px;
+  text-align:center;
+  font:700 9px/1.2 "JetBrains Mono",monospace;
+  color:var(--mut);
+  padding:0 3px;
+}
+
+/* ═══ MAKAMLAR — GERÇEK YATAY KART ŞERİDİ ═══
+   r185'in genel .mixGrid grid kuralından DAHA spesifik. */
+#tab-amb #mixer [data-ambacc="makam"] .preAccInner{
+  overflow:hidden!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] .mixGrid{
+  display:flex!important;
+  grid-template-columns:none!important;
+  gap:9px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-snap-type:x mandatory!important;
+  scroll-padding-inline:4px;
+  padding:4px 4px 10px!important;
+  scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+}
+#tab-amb #mixer [data-ambacc="makam"] .mixGrid::-webkit-scrollbar{display:none}
+#tab-amb #mixer [data-ambacc="makam"] .chn{
+  flex:0 0 clamp(148px,42vw,184px)!important;
+  width:clamp(148px,42vw,184px)!important;
+  min-width:148px!important;
+  max-width:184px!important;
+  min-height:96px!important;
+  scroll-snap-align:start;
+  padding:10px 9px!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] .chTop{
+  display:grid!important;
+  grid-template-columns:22px minmax(0,1fr) 20px auto!important;
+  gap:5px!important;
+  align-items:center!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] .chName b{
+  white-space:normal!important;
+  line-height:1.2!important;
+  font-size:10.5px!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] .chName small{
+  white-space:normal!important;
+  line-height:1.25!important;
+  display:-webkit-box!important;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] .chPrev{
+  width:27px!important;height:27px!important;min-width:27px!important;
+  padding:0!important;border-radius:8px!important;
+}
+#tab-amb #mixer [data-ambacc="makam"] input[type="range"]{
+  width:100%!important;margin-top:9px!important;
+}
+
+/* ═══ ODAK MODU — TEK ALT KONTROL ═══ */
+body.sukun-focus-mode #miniBar,
+body.sukun-focus-mode .sukun-bottom-nav,
+body.sukun-focus-mode #r170NowBar,
+body.sukun-focus-mode [class*="nowPlaying" i]{
+  display:none!important;
+}
+body.sukun-focus-mode.mini-on{padding-bottom:0!important}
+body.sukun-focus-mode .sukun-focus-btn{
+  right:12px!important;
+  left:auto!important;
+  bottom:max(16px,env(safe-area-inset-bottom))!important;
+  max-width:160px!important;
+  z-index:9900!important;
+}
+
+/* Mini player normal modda yeni alt-nav ile çakışmasın */
+body:not(.sukun-focus-mode) #miniBar{
+  bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
+}
+body.mini-on:not(.sukun-focus-mode) .sukun-bottom-nav{
+  bottom:calc(env(safe-area-inset-bottom) + 82px)!important;
+}
+body.mini-on:not(.sukun-focus-mode) .sukun-focus-btn{
+  bottom:calc(env(safe-area-inset-bottom) + 126px)!important;
+}
+
+/* Alt kaçak literal text için body sonundaki sahipsiz metni görünür kılan
+   eski white-space davranışlarına karşı güvenlik. */
+body>script+br:last-child{display:none!important}
+
+@media(max-width:390px){
+  #esmaStepNav{grid-template-columns:1fr 52px 1fr!important}
+  #esmaStepNav button{font-size:9px!important;padding-inline:5px!important}
+  #tab-amb #mixer [data-ambacc="makam"] .chn{
+    flex-basis:154px!important;width:154px!important;min-width:154px!important;
+  }
+}
+</style>
+
+
+<style id="sukun-r187-record-safety">
+.recOriginWarn{
+  margin:9px 0;padding:10px 11px;border-radius:12px;
+  border:1px solid color-mix(in srgb,#e7a747 34%,var(--line));
+  background:color-mix(in srgb,#e7a747 6%,var(--panel));
+  color:var(--mut);font:500 9.5px/1.55 "Figtree",sans-serif
+}
+.recOriginWarn b{color:var(--goldh);display:block;margin-bottom:3px}
+.recOriginWarn code{font:600 8.5px/1.2 "JetBrains Mono",monospace;color:var(--ink)}
+.recRescueBar{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;
+  margin:8px 0 4px;padding:8px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(255,255,255,.015)
+}
+.recRescueStat{min-width:0;color:var(--mut);font:500 9px/1.4 "Figtree",sans-serif}
+.recRescueStat b{display:block;color:var(--ink);font-size:10px}
+.recRescueBtn{min-height:32px!important;padding:6px 9px!important;font-size:9px!important;white-space:nowrap}
+@media(max-width:360px){
+ .recRescueBar{grid-template-columns:1fr}
+ .recRescueBtn{width:100%}
+}
+</style>
+
 </head>
 <body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
@@ -3947,7 +4468,7 @@ input:focus-visible,select:focus-visible{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v13.0 — build 2026-08-20-r174</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v14.3 — build 2026-08-20-r187</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -3971,6 +4492,43 @@ input:focus-visible,select:focus-visible{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r187","t":"20 Ağustos 2026","b":["Berhetiyye 28 İsim görünür ve okunan adları n/tenvin sonlarıyla kanonik olarak sabitlendi","Kayıt veritabanı aynı sukunRec/clips deposunda tutulmaya devam ediyor; yeniden tarama/kurtarma aracı eklendi","content:// veya file:// yerel kopyada eski GitHub kayıtlarının görünmemesi için origin uyarısı eklendi"]},
+ {"v":"r186","t":"20 Ağustos 2026","b":["Her zikir tıkında oluşan uyumsuz neon/parlama kaldırıldı; yalnız sakin mikro geri bildirim bırakıldı","Makam kartları mobilde yatay kaydırılan okunabilir kartlara dönüştürüldü; sıkışma giderildi","Odak Modunda mini canlı akış barı ve alt çubuklar gizleniyor; çakışma kaldırıldı","Esmâü’l-Hüsnâ 1–99 numaralandırıldı, Lafza-i Celâl 0. bilgi satırı olarak eklendi ve Önceki/Sıradaki Esmâ kontrolleri getirildi","Sayfanın altında görünen literal \\n\\n metin sızıntıları temizlendi"]},
+ {"v":"r185","t":"20 Ağustos 2026","b":["360–430 px mobil ekranlarda Zikir, sayaç, hedef paneli ve Ambiyans Mixer taşmaları temizlendi","Okumalar/Seyirler/Araçlar alt çubuğu ve Odak düğmesi güvenli alanlara göre yeniden konumlandı","sayacaGit aktif sekme sınıfı act ile eşitlendi; bazı yönlendirme akışlarının sessizce başarısız olması giderildi"]},
+ {"v":"r184","t":"20 Ağustos 2026","b":["Odak Modu gerçek zikir sahnesine bağlandı; r183 selector uyumsuzluğu giderildi","Okumalar / Seyirler / Araçlar alt navigasyonu gerçek grup ID’leriyle çalışıyor","Zikir sahnesi, Arapça tipografi, Esmâ/Berhetiyye seçili kartı, Ambiyans Mixer, Kendi Seslerim, istatistik ve AMOLED görünümü rafine edildi"]},
+ {"v":"r183","t":"20 Ağustos 2026","b":["İsim Perdesi eklendi: Esmâü’l-Hüsnâ ve Berhetiyye seçimlerinde ayrı premium isim bildirimi","Kapalı / Sade / Bilgili modları eklendi; tercih cihazda hatırlanıyor","Esmâ Hatmi ve Berhetiyye 28 İsim Seyri otomatik geçişleri kontrollü isim bildirimiyle bütünleştirildi"]},
+ {"v":"r181","t":"20 Ağustos 2026","b":["Esmâü’l-Hüsnâ ve Berhetiyye isim listeleri varsayılan tek satır kompakt görünüme alındı","Tüm isimleri göster / İsimleri gizle kontrolü eklendi; açık-kapalı tercih kategori bazında hatırlanıyor","Arama sırasında liste otomatik tam açılıyor; eşleşmeler kompakt görünümün ardında saklanmıyor"]},
+ {"v":"r180","t":"20 Ağustos 2026","b":["Ambiyans 4.0: prosedürel sentez ile gerçek saha/kayıt loop'ları aynı kanalda crossfade hibrit olarak çalışabiliyor","Gerçek Katman yöneticisi eklendi: kuş, doğa, ney ve makam kanallarına cihazdan gerçek ses bağlama, karışım oranı ve kaldırma","Gerçek loop kayıtları tam yedekleme/geri yükleme zincirine dahil edildi; sample yoksa prosedürel motor kesintisiz fallback olarak sürüyor"]},
+ {"v":"r179","t":"20 Ağustos 2026","b":["Ney ve makam taksim motorları nefes, kamış/mızrap atağı, karar-güçlü seyri ve doğal cümle aralarıyla yenilendi","Bülbül, muhabbet kuşu, kuzu-koyun, arı, kurbağa ve kedi sesleri daha formantlı ve doğal çağrı kümeleriyle yeniden tasarlandı","Kumru, Serçe, Baykuş ile Segâh, Kürdî ve Mâhur taksimleri eklendi"]},
+ {
+  "v":"r177",
+  "t":"20 Ağustos 2026",
+  "b":[
+   "Hero görsel turu: Zikir sahnesi, Berhetiyye Atlası, Kayıt Stüdyosu ve Akıllı Seans ayrı premium kimliklere kavuştu",
+   "Zikir sahnesinde törensel fakat sakin derinlik; Atlas'ta araştırma masası; Stüdyo'da ses laboratuvarı; Seans'ta ritüel planlayıcı dili kuruldu",
+   "Şimdi Çalıyor barı dört ana modülü birleştiren daha rafine medya yüzeyine dönüştürüldü"
+  ]
+ },
+ {
+  "v":"r176",
+  "t":"20 Ağustos 2026",
+  "b":[
+   "Premium görsel katman: kartlar, sekmeler, butonlar, akordeonlar ve mini oynatıcı tek yüzey diline bağlandı",
+   "Mikro animasyonlar yalnız durum değişimlerinde çalışıyor; reduced-motion ve pil profilleri korunuyor",
+   "Dokunma hedefleri, mobil taşmalar, odak halkaları ve slider/toggle ölçüleri görsel olarak yeniden dengelendi"
+  ]
+ },
+ {
+  "v":"r175",
+  "t":"20 Ağustos 2026",
+  "b":[
+   "r174 tabanı korundu; kaybolan Akıllı Seans Oluşturucu ve tek Şimdi Çalıyor kuyruğu geri getirildi ve kalıcı seans anahtarları sürümden bağımsızlaştırıldı",
+   "Kendi Seslerim Kayıt Stüdyosu geri getirildi: dalga görünümü, analiz, normalize, baş/son sessizlik kırpma ve aynı kaydın üzerine yeniden kayıt",
+   "Berhetiyye Atlası arama, önceki/sonraki ve iki İsim karşılaştırmasıyla derinleştirildi",
+   "Mevcut güvenli tam yedekleme sistemine içerik önizlemesi; Sistem Durumu paneline ses aygıtı ve yaşam-döngüsü izi eklendi",
+   "r174'te zaten daha gelişmiş olan istatistik, kaynak doğrulama, performans profili ve güvenli importer yinelenmedi"
+  ]
+ },
  {
   "v": "r174",
   "t": "20 Ağustos 2026",
@@ -7059,6 +7617,446 @@ const AMBIENT_DEFS=[
 {id:'isfahan',kat:'makam',icon:'🪕',name:'Isfahan Taksimi',desc:'Isfahan makamı • zihin açıklığı, güven',cal:0.64,wet:.5,
  build:makamMizrap([392.00,415.30,493.88,523.25,587.33,622.25,739.99,783.99],3)}
 ];
+/* ══════════════════════════════════════════════════════════════════
+   r178 — AMBİYANS GERÇEKÇİLİK MOTORU 2.0
+   Tek bant gürültü/tek osilatör hissini azaltır. Doğa seslerinde
+   spektral katman, düzensiz yoğunluk, stereo hareket ve seyrek mikro
+   olaylar kullanılır. Var olan ID'ler korunur; preset/rutinler bozulmaz.
+   ══════════════════════════════════════════════════════════════════ */
+function ambDef(id){ return AMBIENT_DEFS.find(d=>d.id===id); }
+function ambPatch(id,patch){ const d=ambDef(id); if(d)Object.assign(d,patch); }
+function ambPanNode(E,pan){ const p=E.n(ctx.createStereoPanner()); p.pan.value=clamp(pan,-1,1); return p; }
+function ambNoiseShot(E,out,opt={}){
+  if(!E.alive())return;
+  const t=ctx.currentTime+(opt.delay||0), dur=opt.dur||.12;
+  const n=ctx.createBufferSource(); n.buffer=NOISE.get(opt.noise||'white');
+  const f=E.n(flt(opt.ftype||'bandpass',opt.freq||1800,opt.q||1.5)), gg=E.n(g(0));
+  const pan=ambPanNode(E,opt.pan??rnd(-.75,.75));
+  n.connect(f); f.connect(gg); gg.connect(pan); pan.connect(out);
+  const peak=opt.peak||.08, attack=Math.min(dur*.45,opt.attack||.01);
+  gg.gain.setValueAtTime(.0001,t);
+  gg.gain.linearRampToValueAtTime(peak,t+attack);
+  gg.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  n.start(t,rnd(0,1.8)); n.stop(t+dur+.03);
+}
+function ambNoiseBed(E,out,noise,filterType,freq,q,level,pan=0){
+  const n=E.play(src(noise)), f=E.n(flt(filterType,freq,q||.7)), gg=E.n(g(level));
+  const p=ambPanNode(E,pan); n.connect(f); f.connect(gg); gg.connect(p); p.connect(out);
+  return {n,f,g:gg,p};
+}
+
+ambPatch('rain',{desc:'doğal sağanak • yakın/uzak damlalar',cal:.64,wet:.18,build:(E,out)=>{
+  const far=ambNoiseBed(E,out,'pink','bandpass',2500,.65,.19,-.12);
+  const near=ambNoiseBed(E,out,'white','highpass',4200,.7,.085,.14);
+  const low=ambNoiseBed(E,out,'brown','lowpass',520,.6,.07,0);
+  E.every(()=>{
+    const t=ctx.currentTime, k=rnd(.65,1.25);
+    far.g.gain.setTargetAtTime(.19*k,t,.8);
+    near.g.gain.setTargetAtTime(.085*rnd(.65,1.35),t,.45);
+    far.f.frequency.setTargetAtTime(rnd(1800,3600),t,.9);
+  },rnd(1600,2500));
+  (function drops(){
+    E.later(()=>{
+      const cluster=1+(Math.random()<.22?1:0)+(Math.random()<.07?2:0);
+      for(let i=0;i<cluster;i++)ambNoiseShot(E,out,{delay:i*rnd(.018,.07),dur:rnd(.025,.085),freq:rnd(1800,7600),q:rnd(2.2,6),peak:rnd(.025,.09),pan:rnd(-.95,.95)});
+      drops();
+    },rnd(75,310));
+  })();
+}});
+
+ambPatch('birds',{desc:'seher korosu • düzensiz uzak/yakın ötüşler',cal:.82,wet:.32,build:(E,out)=>{
+  const air=ambNoiseBed(E,out,'pink','highpass',3400,.7,.012,0);
+  E.every(()=>air.g.gain.setTargetAtTime(rnd(.006,.02),ctx.currentTime,1.8),3000);
+  function phrase(kind=0){
+    if(!E.alive())return;
+    const t0=ctx.currentTime+.03, notes=kind?2+Math.floor(rnd(1,4)):3+Math.floor(rnd(1,6));
+    const p=ambPanNode(E,rnd(-.92,.92)); p.connect(out);
+    let t=t0, base=kind?rnd(1350,2600):rnd(2300,4800);
+    for(let i=0;i<notes;i++){
+      const o=ctx.createOscillator(); o.type=(Math.random()<.7?'sine':'triangle');
+      const body=E.n(flt('bandpass',base*rnd(.8,1.35),rnd(2.5,5))), gg=E.n(g(0));
+      const d=rnd(.045,.18), f0=base*rnd(.78,1.28), f1=f0*rnd(.62,1.62);
+      o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(Math.max(600,f1),t+d);
+      o.connect(body); body.connect(gg); gg.connect(p);
+      gg.gain.setValueAtTime(.0001,t); gg.gain.linearRampToValueAtTime(rnd(.025,.09),t+.008); gg.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.start(t); o.stop(t+d+.02); t+=d+rnd(.025,.17);
+    }
+  }
+  (function flock(){ E.later(()=>{ phrase(Math.random()<.3?1:0); if(Math.random()<.25)E.later(()=>phrase(0),rnd(180,650)); flock(); },rnd(650,3600)); })();
+}});
+
+ambPatch('forest',{desc:'orman içi • yaprak, uzak rüzgâr, seyrek dal sesi',cal:.72,wet:.24,build:(E,out)=>{
+  const low=ambNoiseBed(E,out,'brown','lowpass',430,.7,.16,-.1);
+  const leafL=ambNoiseBed(E,out,'pink','bandpass',3100,.75,.045,-.55);
+  const leafR=ambNoiseBed(E,out,'pink','bandpass',4200,.8,.035,.6);
+  E.every(()=>{
+    const t=ctx.currentTime;
+    low.g.gain.setTargetAtTime(rnd(.10,.22),t,2.4);
+    leafL.g.gain.setTargetAtTime(rnd(.018,.07),t,1.1);
+    leafR.g.gain.setTargetAtTime(rnd(.015,.065),t,1.4);
+    leafL.f.frequency.setTargetAtTime(rnd(2200,4800),t,1.2);
+  },rnd(2600,4800));
+  (function twig(){ E.later(()=>{ if(Math.random()<.55)ambNoiseShot(E,out,{dur:rnd(.018,.055),freq:rnd(900,2600),q:5,peak:rnd(.02,.055)}); twig(); },rnd(3500,11000)); })();
+}});
+
+ambPatch('cicada',{desc:'yaz gecesi • çoklu böcek korosu',cal:.78,wet:.2,build:(E,out)=>{
+  function colony(center,rate,level,pan){
+    const n=E.play(src('white')), bp=E.n(flt('bandpass',center,12)), amp=E.n(g(level));
+    const p=ambPanNode(E,pan); n.connect(bp); bp.connect(amp); amp.connect(p); p.connect(out);
+    const lfo=E.play(osc(rate,'square')), depth=E.n(g(level*.55)); lfo.connect(depth); depth.connect(amp.gain);
+    E.every(()=>{
+      amp.gain.setTargetAtTime(level*rnd(.55,1.18),ctx.currentTime,.55);
+      bp.frequency.setTargetAtTime(center*rnd(.9,1.1),ctx.currentTime,.35);
+    },rnd(1700,3300));
+  }
+  colony(4300,118,.045,-.58); colony(5200,151,.035,.48); colony(6100,189,.022,.12);
+  const night=ambNoiseBed(E,out,'pink','highpass',3000,.7,.008,0);
+  E.every(()=>night.g.gain.setTargetAtTime(rnd(.004,.013),ctx.currentTime,2),3500);
+}});
+
+ambPatch('stream',{desc:'taşlı dere • akış, köpük ve düzensiz kabarcık',cal:.7,wet:.18,build:(E,out)=>{
+  const body=ambNoiseBed(E,out,'white','bandpass',1350,.65,.18,0);
+  const foam=ambNoiseBed(E,out,'pink','highpass',3200,.7,.065,.18);
+  const low=ambNoiseBed(E,out,'brown','bandpass',520,1,.07,-.22);
+  E.every(()=>{
+    const t=ctx.currentTime; body.f.frequency.setTargetAtTime(rnd(850,2100),t,.22);
+    body.g.gain.setTargetAtTime(rnd(.13,.24),t,.35); foam.g.gain.setTargetAtTime(rnd(.04,.09),t,.25);
+  },rnd(350,720));
+  (function bubbles(){ E.later(()=>{
+    const n=1+(Math.random()<.32?1:0);
+    for(let i=0;i<n;i++){
+      const t=ctx.currentTime+i*.035, o=ctx.createOscillator(), gg=E.n(g(0)), p=ambPanNode(E,rnd(-.8,.8));
+      const f0=rnd(280,920); o.type='sine'; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f0*rnd(1.35,2.15),t+.045);
+      o.connect(gg); gg.connect(p); p.connect(out); gg.gain.setValueAtTime(.0001,t); gg.gain.linearRampToValueAtTime(rnd(.012,.045),t+.006); gg.gain.exponentialRampToValueAtTime(.0001,t+.065);
+      o.start(t);o.stop(t+.08);
+    }
+    bubbles();
+  },rnd(120,530)); })();
+}});
+
+ambPatch('wind',{desc:'doğal esinti • geniş stereo rüzgâr ve seyrek hamleler',cal:.82,wet:.2,build:(E,out)=>{
+  const l=ambNoiseBed(E,out,'pink','bandpass',520,.45,.16,-.55), r=ambNoiseBed(E,out,'pink','bandpass',760,.5,.13,.55);
+  const low=ambNoiseBed(E,out,'brown','lowpass',260,.6,.07,0);
+  E.every(()=>{
+    const t=ctx.currentTime, gust=rnd(.55,1.35);
+    l.g.gain.setTargetAtTime(.16*gust,t,1.5); r.g.gain.setTargetAtTime(.13*rnd(.5,1.4),t,1.9);
+    l.f.frequency.setTargetAtTime(rnd(260,950),t,1.6); r.f.frequency.setTargetAtTime(rnd(380,1300),t,1.9);
+    low.g.gain.setTargetAtTime(rnd(.04,.1),t,2.2);
+  },rnd(2200,4300));
+}});
+
+ambPatch('ocean',{desc:'kıyı dalgaları • dip uğultusu, köpük ve geri çekilme',cal:.66,wet:.22,build:(E,out)=>{
+  const deep=ambNoiseBed(E,out,'brown','lowpass',360,.65,.16,0);
+  const air=ambNoiseBed(E,out,'pink','bandpass',1250,.7,.035,.05);
+  E.every(()=>deep.g.gain.setTargetAtTime(rnd(.11,.2),ctx.currentTime,2.5),4000);
+  function wave(){
+    if(!E.alive())return;
+    const t=ctx.currentTime+.05, dur=rnd(4.2,7.2);
+    const n=ctx.createBufferSource(); n.buffer=NOISE.get('white');
+    const hp=E.n(flt('highpass',rnd(650,1150),.65)), lp=E.n(flt('lowpass',rnd(4300,7200),.65)), gg=E.n(g(.0001)), p=ambPanNode(E,rnd(-.35,.35));
+    n.connect(hp); hp.connect(lp); lp.connect(gg); gg.connect(p); p.connect(out);
+    gg.gain.setValueAtTime(.0001,t); gg.gain.linearRampToValueAtTime(rnd(.1,.19),t+dur*.28); gg.gain.setValueAtTime(rnd(.07,.13),t+dur*.5); gg.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    hp.frequency.setValueAtTime(rnd(520,820),t); hp.frequency.exponentialRampToValueAtTime(rnd(1500,2600),t+dur*.48);
+    n.start(t,rnd(0,1));n.stop(t+dur+.1);
+    E.later(wave,rnd(4300,8500));
+  }
+  wave();
+}});
+
+ambPatch('storm',{desc:'yoğun yağmur • rüzgâr ve katmanlı uzak gök gürültüsü',cal:.88,wet:.28,build:(E,out)=>{
+  const rain1=ambNoiseBed(E,out,'white','bandpass',2600,.55,.12,-.12), rain2=ambNoiseBed(E,out,'pink','highpass',4300,.7,.07,.18);
+  const wind=ambNoiseBed(E,out,'brown','bandpass',430,.5,.08,0);
+  E.every(()=>{ const t=ctx.currentTime; rain1.g.gain.setTargetAtTime(rnd(.09,.18),t,.7); wind.g.gain.setTargetAtTime(rnd(.04,.12),t,1.7); },1800);
+  function thunder(){
+    E.later(()=>{
+      const t=ctx.currentTime, near=Math.random()<.22;
+      if(near)ambNoiseShot(E,out,{dur:.12,freq:rnd(850,1800),q:1.4,peak:rnd(.12,.22),pan:rnd(-.5,.5)});
+      [0,.18,.45].forEach((d,i)=>{
+        const n=ctx.createBufferSource(); n.buffer=NOISE.get('brown'); const lp=E.n(flt('lowpass',rnd(75,150),.8)), gg=E.n(g(.0001)), p=ambPanNode(E,rnd(-.4,.4));
+        n.connect(lp);lp.connect(gg);gg.connect(p);p.connect(out);
+        gg.gain.setValueAtTime(.0001,t+d);gg.gain.linearRampToValueAtTime(rnd(.16,.38)/(i+1),t+d+rnd(.22,.55));gg.gain.exponentialRampToValueAtTime(.0001,t+d+rnd(2.3,4.8));
+        n.start(t+d,rnd(0,1));n.stop(t+d+5);
+      });
+      thunder();
+    },rnd(8500,26000));
+  }
+  thunder();
+}});
+
+ambPatch('fire',{desc:'odun şöminesi • kor uğultusu ve düzensiz çıtırtı kümeleri',cal:1.3,wet:.08,build:(E,out)=>{
+  const ember=ambNoiseBed(E,out,'brown','lowpass',240,.7,.075,0), flame=ambNoiseBed(E,out,'pink','bandpass',820,.65,.035,.08);
+  E.every(()=>{ ember.g.gain.setTargetAtTime(rnd(.05,.095),ctx.currentTime,1.2); flame.g.gain.setTargetAtTime(rnd(.018,.055),ctx.currentTime,.8); },1500);
+  (function crack(){ E.later(()=>{
+    const count=1+(Math.random()<.35?1:0)+(Math.random()<.1?2:0);
+    for(let i=0;i<count;i++)ambNoiseShot(E,out,{delay:i*rnd(.015,.065),dur:rnd(.012,.055),freq:rnd(1300,5200),q:rnd(2,7),peak:rnd(.035,.11),pan:rnd(-.72,.72)});
+    crack();
+  },rnd(120,1200)); })();
+}});
+
+ambPatch('kurbaga',{desc:'gece göleti • farklı uzaklıklarda kurbağa ve cırcırlar',cal:2.25,wet:.22,build:(E,out)=>{
+  const insects=ambNoiseBed(E,out,'white','bandpass',3900,12,.012,.22);
+  const ring=E.play(osc(132,'square')), rd=E.n(g(.006)); ring.connect(rd); rd.connect(insects.g.gain);
+  const pond=ambNoiseBed(E,out,'brown','lowpass',300,.8,.018,-.15);
+  function croak(){
+    if(!E.alive())return;
+    const t=ctx.currentTime+.02, base=rnd(105,245), pulses=2+Math.floor(rnd(0,4)), p=ambPanNode(E,rnd(-.9,.9));p.connect(out);
+    for(let i=0;i<pulses;i++){
+      const o=ctx.createOscillator();o.type='sawtooth';const bp=E.n(flt('bandpass',rnd(240,480),5)),gg=E.n(g(.0001));
+      o.frequency.setValueAtTime(base*rnd(.9,1.08),t+i*.075);o.frequency.exponentialRampToValueAtTime(base*rnd(.65,.82),t+i*.075+.06);
+      o.connect(bp);bp.connect(gg);gg.connect(p);gg.gain.setValueAtTime(.0001,t+i*.075);gg.gain.linearRampToValueAtTime(rnd(.025,.07),t+i*.075+.012);gg.gain.exponentialRampToValueAtTime(.0001,t+i*.075+.068);
+      o.start(t+i*.075);o.stop(t+i*.075+.08);
+    }
+    E.later(croak,rnd(1300,5200));
+  }
+  croak(); E.later(croak,rnd(500,1800));
+}});
+
+/* Yeni gerçekçi ambiyanslar */
+AMBIENT_DEFS.push(
+{id:'light_rain',kat:'su',icon:'🌦️',name:'Hafif Yağmur',desc:'ince yağış • pencere önü sakinliği',cal:.78,wet:.16,build:(E,out)=>{
+  const veil=ambNoiseBed(E,out,'pink','bandpass',2800,.7,.07,0); const hi=ambNoiseBed(E,out,'white','highpass',5200,.7,.025,.1);
+  E.every(()=>veil.g.gain.setTargetAtTime(rnd(.045,.085),ctx.currentTime,1.3),2200);
+  (function d(){E.later(()=>{ambNoiseShot(E,out,{dur:rnd(.018,.055),freq:rnd(2500,7200),q:4,peak:rnd(.012,.04)});d();},rnd(180,620));})();
+}},
+{id:'night_rain',kat:'su',icon:'🌧️',name:'Gece Yağmuru',desc:'koyu yağmur • uzak şehir uğultusu',cal:.72,wet:.22,build:(E,out)=>{
+  const r=ambNoiseBed(E,out,'pink','bandpass',2200,.6,.11,0); const city=ambNoiseBed(E,out,'brown','lowpass',180,.7,.025,-.2);
+  E.every(()=>r.g.gain.setTargetAtTime(rnd(.075,.14),ctx.currentTime,1.6),2800);
+  (function d(){E.later(()=>{if(Math.random()<.7)ambNoiseShot(E,out,{dur:rnd(.02,.07),freq:rnd(1600,5800),q:3,peak:rnd(.018,.055)});d();},rnd(120,470));})();
+}},
+{id:'waterfall',kat:'su',icon:'🏞️',name:'Şelale',desc:'geniş su perdesi • derin köpük',cal:.58,wet:.16,build:(E,out)=>{
+  const low=ambNoiseBed(E,out,'brown','lowpass',520,.6,.16,0), mid=ambNoiseBed(E,out,'pink','bandpass',1450,.55,.15,-.15), hi=ambNoiseBed(E,out,'white','highpass',4200,.7,.065,.18);
+  E.every(()=>{mid.f.frequency.setTargetAtTime(rnd(1000,2100),ctx.currentTime,.7);hi.g.gain.setTargetAtTime(rnd(.045,.085),ctx.currentTime,.8);},1700);
+}},
+{id:'shore',kat:'su',icon:'🏖️',name:'Sahil Dalgaları',desc:'kıyıya vuran kısa dalga ve çakıl geri çekilişi',cal:.74,wet:.18,build:(E,out)=>{
+  const deep=ambNoiseBed(E,out,'brown','lowpass',320,.65,.09,0);
+  function wave(){const t=ctx.currentTime,dur=rnd(2.8,4.8),n=ctx.createBufferSource();n.buffer=NOISE.get('white');const bp=E.n(flt('bandpass',rnd(1200,2600),.55)),gg=E.n(g(.0001)),p=ambPanNode(E,rnd(-.4,.4));n.connect(bp);bp.connect(gg);gg.connect(p);p.connect(out);gg.gain.setValueAtTime(.0001,t);gg.gain.linearRampToValueAtTime(rnd(.09,.16),t+dur*.22);gg.gain.exponentialRampToValueAtTime(.0001,t+dur);n.start(t,rnd(0,1));n.stop(t+dur+.1);E.later(wave,rnd(3000,6000));} wave();
+}},
+{id:'cave_drip',kat:'mekan',icon:'🪨',name:'Mağara Damlaları',desc:'taş boşluk • seyrek damla ve uzun yankı',cal:1.15,wet:.78,build:(E,out)=>{
+  const room=ambNoiseBed(E,out,'brown','lowpass',150,.7,.015,0);
+  (function drip(){E.later(()=>{const t=ctx.currentTime,o=ctx.createOscillator(),gg=E.n(g(.0001)),p=ambPanNode(E,rnd(-.78,.78)),f=rnd(520,1250);o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.72,t+.13);o.connect(gg);gg.connect(p);p.connect(out);gg.gain.setValueAtTime(.0001,t);gg.gain.linearRampToValueAtTime(rnd(.035,.09),t+.005);gg.gain.exponentialRampToValueAtTime(.0001,t+.22);o.start(t);o.stop(t+.25);drip();},rnd(850,4300));})();
+}},
+{id:'leaves',kat:'doga',icon:'🍃',name:'Yaprak Hışırtısı',desc:'ağaç tepeleri • hafif ve düzensiz esinti',cal:.95,wet:.12,build:(E,out)=>{
+  const l=ambNoiseBed(E,out,'pink','highpass',2500,.7,.035,-.55),r=ambNoiseBed(E,out,'pink','highpass',3100,.7,.03,.55);
+  E.every(()=>{const t=ctx.currentTime;l.g.gain.setTargetAtTime(rnd(.015,.065),t,.7);r.g.gain.setTargetAtTime(rnd(.012,.06),t,.9);},rnd(900,2100));
+}},
+{id:'night_crickets',kat:'doga',icon:'🌌',name:'Gece Cırcırları',desc:'seyrek cırcır korosu • geniş gece alanı',cal:.9,wet:.16,build:(E,out)=>{
+  function c(center,rate,level,pan){const n=E.play(src('white')),bp=E.n(flt('bandpass',center,15)),gg=E.n(g(level)),p=ambPanNode(E,pan);n.connect(bp);bp.connect(gg);gg.connect(p);p.connect(out);const l=E.play(osc(rate,'square')),d=E.n(g(level*.7));l.connect(d);d.connect(gg.gain);} c(4100,74,.018,-.6);c(5200,91,.014,.55);c(6100,63,.008,.1);
+}},
+{id:'distant_thunder',kat:'su',icon:'🌩️',name:'Uzak Gök Gürültüsü',desc:'yağmursuz ufuk • seyrek derin gök sesi',cal:.95,wet:.4,build:(E,out)=>{
+  (function th(){E.later(()=>{const t=ctx.currentTime;[0,.32,.7].forEach((d,i)=>{const n=ctx.createBufferSource();n.buffer=NOISE.get('brown');const lp=E.n(flt('lowpass',rnd(65,125),.7)),gg=E.n(g(.0001)),p=ambPanNode(E,rnd(-.55,.55));n.connect(lp);lp.connect(gg);gg.connect(p);p.connect(out);gg.gain.setValueAtTime(.0001,t+d);gg.gain.linearRampToValueAtTime(rnd(.1,.24)/(i+1),t+d+.4);gg.gain.exponentialRampToValueAtTime(.0001,t+d+rnd(2.8,5.3));n.start(t+d,rnd(0,1));n.stop(t+d+5.5);});th();},rnd(12000,34000));})();
+}},
+{id:'meadow',kat:'doga',icon:'🌾',name:'Çayır Esintisi',desc:'ot hışırtısı • uzak böcekler ve açık alan',cal:.92,wet:.14,build:(E,out)=>{
+  const grass=ambNoiseBed(E,out,'pink','bandpass',3300,.65,.028,0),air=ambNoiseBed(E,out,'brown','lowpass',300,.7,.028,-.15);
+  E.every(()=>{grass.g.gain.setTargetAtTime(rnd(.014,.055),ctx.currentTime,1.2);grass.f.frequency.setTargetAtTime(rnd(2400,4400),ctx.currentTime,1.1);},1800);
+  (function insect(){E.later(()=>{if(Math.random()<.6)ambNoiseShot(E,out,{dur:rnd(.025,.08),freq:rnd(3800,6500),q:10,peak:rnd(.006,.018)});insect();},rnd(900,3600));})();
+}}
+);
+
+
+
+/* ══════════════════════════════════════════════════════════════════
+   r179 — AMBİYANS GERÇEKÇİLİK MOTORU 3.0
+   Ney, makam taksimleri ve canlı seslerde gerçekçilik katmanı.
+   Amaç: sabit oscillator hissini azaltmak; nefes/atak/formant, doğal
+   cümle araları, makamda karar-güçlü davranışı ve hayvanlarda çağrı
+   kümeleri + mesafe + stereo çeşitliliği eklemek.
+   ══════════════════════════════════════════════════════════════════ */
+function ambNodeNote(E,out,opt={}){
+  if(!E.alive())return;
+  const t=ctx.currentTime+(opt.delay||0), dur=Math.max(.06,opt.dur||.6), f=Math.max(45,opt.f||440);
+  const pan=ambPanNode(E,opt.pan??rnd(-.55,.55)); pan.connect(out);
+  const amp=E.n(g(.0001)); amp.connect(pan);
+  const partials=opt.partials||[[1,1],[2,.16],[3,.05]];
+  partials.forEach(([mul,lev],i)=>{
+    const o=ctx.createOscillator(); E.n(o); o.type=i===0?(opt.type||'sine'):'sine';
+    const cents=(i===0?(opt.cents||rnd(-7,7)):rnd(-3,3));
+    const fs=f*mul*Math.pow(2,cents/1200);
+    o.frequency.setValueAtTime(fs*(opt.glideFrom||1),t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(30,fs),t+Math.min(.12,dur*.18));
+    const pg=E.n(g(lev)); o.connect(pg); pg.connect(amp);
+    if(i===0 && opt.vibrato!==false){
+      const v=ctx.createOscillator(), vg=E.n(g(f*(opt.vibDepth||.0045))); E.n(v);
+      v.frequency.value=opt.vibRate||rnd(4.4,5.8); v.connect(vg); vg.connect(o.frequency);
+      v.start(t+dur*.2); v.stop(t+dur+.03);
+    }
+    o.start(t); o.stop(t+dur+.04);
+  });
+  const pk=opt.peak||.09, attack=opt.attack??Math.min(.055,dur*.12), release=opt.release??Math.max(.08,dur*.32);
+  amp.gain.setValueAtTime(.0001,t);
+  amp.gain.linearRampToValueAtTime(pk,t+attack);
+  amp.gain.setTargetAtTime(pk*(opt.sustain??.78),t+attack,.08);
+  amp.gain.setTargetAtTime(.0001,t+dur-release,release/3);
+
+  if(opt.breath){
+    const n=ctx.createBufferSource(); E.n(n); n.buffer=NOISE.get(opt.breathNoise||'pink');
+    const bp=E.n(flt('bandpass',opt.breathFreq||Math.min(3800,Math.max(850,f*3.1)),opt.breathQ||1.1));
+    const ng=E.n(g(.0001)); n.connect(bp); bp.connect(ng); ng.connect(pan);
+    ng.gain.setValueAtTime(.0001,t);
+    ng.gain.linearRampToValueAtTime(opt.breathLevel||pk*.22,t+Math.min(.035,dur*.1));
+    ng.gain.setTargetAtTime((opt.breathLevel||pk*.22)*.45,t+dur*.35,.12);
+    ng.gain.setTargetAtTime(.0001,t+dur-release,release/3);
+    n.start(t,rnd(0,1.7)); n.stop(t+dur+.03);
+  }
+}
+
+function maqamPick(profile,idx,pos,total){
+  const n=profile.scale.length, karar=profile.karar??0, guclu=profile.guclu??Math.min(n-1,3);
+  if(pos===total-1 && Math.random()<(profile.cadence||.82))return karar;
+  if(pos===Math.floor(total*.55) && Math.random()<.5)return guclu;
+  const r=Math.random(); let step;
+  if(r<.58)step=Math.random()<.5?-1:1;
+  else if(r<.82)step=Math.random()<.5?-2:2;
+  else step=Math.random()<.5?-3:3;
+  if(idx<=1)step=Math.abs(step); if(idx>=n-2)step=-Math.abs(step);
+  return clamp(idx+step,0,n-1);
+}
+
+function makamNefes3(profile){
+  return (E,out)=>{
+    let idx=profile.start??profile.guclu??2;
+    function phrase(){
+      if(!E.alive())return;
+      const total=3+Math.floor(rnd(0,6)); let elapsed=.04;
+      for(let i=0;i<total;i++){
+        idx=makamPick(profile,idx,i,total);
+        const f=profile.scale[idx], last=i===total-1;
+        const dur=last?rnd(1.4,3.5):rnd(.38,1.25);
+        ambNodeNote(E,out,{delay:elapsed,f,dur,pan:rnd(-.32,.32),peak:rnd(.055,.095),type:'sine',
+          partials:[[1,1],[2,.11],[3,.035],[4,.015]],breath:true,breathLevel:rnd(.012,.024),breathFreq:rnd(950,2100),
+          vibRate:rnd(4.5,5.5),vibDepth:last?.0065:.0038,glideFrom:rnd(.985,1.015),attack:rnd(.035,.09),release:last?rnd(.45,.8):rnd(.18,.42)});
+        if(Math.random()<.38) ambNoiseShot(E,out,{delay:elapsed+.015,dur:rnd(.018,.04),freq:rnd(1700,3600),q:1.4,peak:rnd(.006,.015),pan:rnd(-.3,.3)});
+        elapsed+=dur+rnd(.03,.18);
+      }
+      E.later(phrase,elapsed*1000+rnd(1400,5200));
+    }
+    phrase();
+  };
+}
+
+function makamMizrap3(profile){
+  return (E,out)=>{
+    let idx=profile.start??profile.guclu??2;
+    function phrase(){
+      if(!E.alive())return;
+      const total=4+Math.floor(rnd(0,7)); let elapsed=.03;
+      for(let i=0;i<total;i++){
+        idx=makamPick(profile,idx,i,total); const f=profile.scale[idx], last=i===total-1;
+        const dur=last?rnd(.9,2.1):rnd(.28,.78), tdelay=elapsed;
+        ambNodeNote(E,out,{delay:tdelay,f,dur,pan:rnd(-.38,.38),peak:rnd(.045,.085),type:'triangle',vibrato:false,
+          partials:[[1,1],[2,.34],[3,.12],[4,.055],[5,.02]],attack:.004,release:dur*.72,sustain:.24,glideFrom:1});
+        ambNoiseShot(E,out,{delay:tdelay,dur:rnd(.012,.028),freq:rnd(1800,5200),q:rnd(1.5,3.5),peak:rnd(.012,.028),pan:rnd(-.35,.35)});
+        elapsed+=dur*rnd(.68,.96)+rnd(.025,.12);
+      }
+      E.later(phrase,elapsed*1000+rnd(1700,4800));
+    }
+    phrase();
+  };
+}
+
+const MAQAM_PROFILES={
+  rast:{scale:[293.66,329.63,339.29,392,440,493.88,587.33],karar:0,guclu:3,start:3},
+  hicaz:{scale:[293.66,311.13,369.99,392,440,466.16,523.25,587.33],karar:0,guclu:3,start:3},
+  saba:{scale:[293.66,311.13,349.23,369.99,440,466.16,523.25,587.33],karar:0,guclu:3,start:2},
+  huseyni:{scale:[329.63,369.99,392,440,493.88,523.25,587.33,659.25],karar:0,guclu:3,start:3},
+  nihavent:{scale:[261.63,293.66,311.13,349.23,392,415.3,466.16,523.25],karar:0,guclu:4,start:4},
+  neva:{scale:[220,246.94,277.18,293.66,329.63,369.99,392,440],karar:0,guclu:3,start:3},
+  acemasiran:{scale:[349.23,392,440,466.16,523.25,587.33,659.25,698.46],karar:0,guclu:4,start:4},
+  isfahan:{scale:[392,415.3,493.88,523.25,587.33,622.25,739.99,783.99],karar:0,guclu:3,start:3},
+  segah:{scale:[246.94,269.4,293.66,329.63,349.23,392,440,493.88],karar:0,guclu:3,start:3},
+  kurdi:{scale:[293.66,311.13,349.23,392,440,466.16,523.25,587.33],karar:0,guclu:3,start:3},
+  mahur:{scale:[261.63,293.66,329.63,349.23,392,440,493.88,523.25],karar:0,guclu:4,start:4}
+};
+
+/* Ney: kamış rezonansı + nefes atağı + cümle/karar davranışı */
+ambPatch('ney',{name:'Ney Taksimi',desc:'nefesli kamış • Uşşak esintili serbest taksim',cal:.64,wet:.62,
+  build:makamNefes3({scale:[220,246.94,261.63,293.66,329.63,349.23,392,440,493.88,523.25],karar:0,guclu:3,start:3,cadence:.88})});
+
+/* Eski makam ID'leri korunur; preset/rutinler bozulmaz. */
+ambPatch('rast',{desc:'Rast • karar ve güçlü etrafında nefesli seyir',cal:.62,build:makamNefes3(MAQAM_PROFILES.rast)});
+ambPatch('hicaz',{desc:'Hicaz • karakteristik aralıklarla nefesli seyir',cal:.62,build:makamNefes3(MAQAM_PROFILES.hicaz)});
+ambPatch('saba',{desc:'Saba • mızraplı, kırık cümleli seyir',cal:.72,build:makamMizrap3(MAQAM_PROFILES.saba)});
+ambPatch('huseyni',{desc:'Hüseynî • yumuşak karar dönüşlü nefesli seyir',cal:.62,build:makamNefes3(MAQAM_PROFILES.huseyni)});
+ambPatch('nihavent',{desc:'Nihavent • tanbur karakterli mızraplı seyir',cal:.72,build:makamMizrap3(MAQAM_PROFILES.nihavent)});
+ambPatch('neva',{desc:'Nevâ • kanun karakterli kısa mızrap cümleleri',cal:.76,build:makamMizrap3(MAQAM_PROFILES.neva)});
+ambPatch('acemasiran',{desc:'Acemaşiran • geniş nefesli taksim',cal:.62,build:makamNefes3(MAQAM_PROFILES.acemasiran)});
+ambPatch('isfahan',{desc:'Isfahan • mızraplı serbest seyir',cal:.72,build:makamMizrap3(MAQAM_PROFILES.isfahan)});
+
+/* Canlı ses motorları */
+ambPatch('kedi',{desc:'doğal mırıltı • göğüs rezonansı ve nefes döngüsü',cal:1.05,wet:.06,build:(E,out)=>{
+  const body=E.play(osc(26,'sine')), h2=E.play(osc(52,'sine')), h3=E.play(osc(104,'sine'));
+  const bg=E.n(g(.055)), g2=E.n(g(.028)), g3=E.n(g(.011)); body.connect(bg);h2.connect(g2);h3.connect(g3);
+  const lp=E.n(flt('lowpass',420,.7)), amp=E.n(g(.0001)); bg.connect(lp);g2.connect(lp);g3.connect(lp);lp.connect(amp);amp.connect(out);
+  const pulse=E.play(osc(25,'square')), pd=E.n(g(.26)), dc=E.play(ctx.createConstantSource());dc.offset.value=.48;pulse.connect(pd);pd.connect(amp.gain);dc.connect(amp.gain);
+  const breath=E.play(osc(.17,'sine')), bd=E.n(g(.17));breath.connect(bd);bd.connect(amp.gain);
+  const n=E.play(src('brown')), nf=E.n(flt('bandpass',180,1.2)), ng=E.n(g(.012));n.connect(nf);nf.connect(ng);ng.connect(out);
+}});
+
+ambPatch('bulbul',{desc:'uzun nağme • trill, kaydırma ve doğal susuşlar',cal:1.05,wet:.34,build:(E,out)=>{
+  function motif(){
+    if(!E.alive())return; const pan=rnd(-.9,.9), base=rnd(1800,3300), total=4+Math.floor(rnd(0,9)); let e=.02;
+    for(let i=0;i<total;i++){
+      const dur=rnd(.055,.22), f=base*rnd(.72,1.55), trill=Math.random()<.42;
+      ambNodeNote(E,out,{delay:e,f,dur,pan,peak:rnd(.025,.07),type:'sine',partials:[[1,1],[2,.05]],vibRate:trill?rnd(18,34):rnd(5,8),vibDepth:trill?.022:.006,attack:.008,release:dur*.38,glideFrom:rnd(.86,1.14)});
+      e+=dur+rnd(.018,.12);
+    }
+    E.later(motif,e*1000+rnd(800,4200));
+  } motif(); E.later(motif,rnd(350,1400));
+}});
+
+ambPatch('muhabbet',{desc:'muhabbet kuşu • kısa heceler, gevezelik kümeleri',cal:1.35,wet:.13,build:(E,out)=>{
+  function chatter(){
+    if(!E.alive())return; const pan=rnd(-.75,.75), n=3+Math.floor(rnd(0,10)); let e=.01;
+    for(let i=0;i<n;i++){
+      const f=rnd(1800,4800), dur=rnd(.035,.12);
+      ambNodeNote(E,out,{delay:e,f,dur,pan:clamp(pan+rnd(-.18,.18),-1,1),peak:rnd(.018,.055),type:'triangle',partials:[[1,1],[2,.09]],vibRate:rnd(24,48),vibDepth:.012,attack:.005,release:dur*.35,glideFrom:rnd(.75,1.25)});
+      e+=dur+rnd(.018,.095);
+    }
+    E.later(chatter,e*1000+rnd(650,3800));
+  } chatter();
+}});
+
+ambPatch('kuzu',{desc:'kuzu & koyun • formantlı meleme, yakın/uzak çağrı',cal:1.6,wet:.26,build:(E,out)=>{
+  const field=ambNoiseBed(E,out,'pink','highpass',2600,.7,.012,0);
+  function bleat(young=true,delay=0){
+    const t=ctx.currentTime+delay,dur=young?rnd(.35,.72):rnd(.55,1.05),base=young?rnd(250,390):rnd(150,250),pan=ambPanNode(E,rnd(-.85,.85));pan.connect(out);
+    const o=ctx.createOscillator();E.n(o);o.type='sawtooth';const a=E.n(g(.0001));o.connect(a);
+    [[young?650:480,5,.72],[young?1250:900,7,.42],[young?2200:1650,8,.18]].forEach(([fq,q,lv])=>{const bp=E.n(flt('bandpass',fq,q)),gg=E.n(g(lv));a.connect(bp);bp.connect(gg);gg.connect(pan);});
+    const vib=ctx.createOscillator(),vg=E.n(g(base*rnd(.035,.065)));E.n(vib);vib.frequency.value=rnd(6.5,10);vib.connect(vg);vg.connect(o.frequency);
+    o.frequency.setValueAtTime(base,t);o.frequency.linearRampToValueAtTime(base*rnd(.82,1.08),t+dur);
+    a.gain.setValueAtTime(.0001,t);a.gain.linearRampToValueAtTime(rnd(.08,.15),t+.07);a.gain.setTargetAtTime(.0001,t+dur*.78,dur*.08);
+    o.start(t);o.stop(t+dur+.04);vib.start(t);vib.stop(t+dur+.04);
+  }
+  (function herd(){E.later(()=>{const y=Math.random()<.62;bleat(y);if(Math.random()<.32)bleat(!y,rnd(.28,.9));herd();},rnd(1800,6200));})();
+}});
+
+ambPatch('ari',{desc:'arı sürüsü • yumuşak koloni ve yakın geçişler',cal:1.25,wet:.1,build:(E,out)=>{
+  const swarm=ambNoiseBed(E,out,'brown','bandpass',230,3,.028,0);
+  [196,218,241,267].forEach((f,i)=>{const o=E.play(osc(f,'sawtooth')),lp=E.n(flt('lowpass',780,.8)),gg=E.n(g(.012/(1+i*.18))),p=ambPanNode(E,[-.55,-.18,.2,.58][i]);o.connect(lp);lp.connect(gg);gg.connect(p);p.connect(out);});
+  function flyby(){if(!E.alive())return;const t=ctx.currentTime,d=rnd(.7,1.8),o=ctx.createOscillator();E.n(o);o.type='sawtooth';const lp=E.n(flt('lowpass',950,.8)),gg=E.n(g(.0001)),p=ambPanNode(E,Math.random()<.5?-1:1);o.connect(lp);lp.connect(gg);gg.connect(p);p.connect(out);const f=rnd(190,285);o.frequency.setValueAtTime(f*.9,t);o.frequency.exponentialRampToValueAtTime(f*1.12,t+d*.5);o.frequency.exponentialRampToValueAtTime(f*.92,t+d);p.pan.linearRampToValueAtTime(-p.pan.value,t+d);gg.gain.setValueAtTime(.0001,t);gg.gain.linearRampToValueAtTime(rnd(.025,.055),t+d*.45);gg.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.03);E.later(flyby,rnd(1800,6500));}flyby();
+}});
+
+ambPatch('kurbaga',{desc:'gece göleti • formantlı vıraklar ve uzak cırcırlar',cal:1.55,wet:.28,build:(E,out)=>{
+  const insects=ambNoiseBed(E,out,'white','bandpass',4300,14,.008,.2),pond=ambNoiseBed(E,out,'brown','lowpass',240,.8,.012,-.15);
+  function croak(){if(!E.alive())return;const t=ctx.currentTime,base=rnd(85,170),p=ambPanNode(E,rnd(-.9,.9));p.connect(out),n=2+Math.floor(rnd(0,4));
+    for(let i=0;i<n;i++){const o=ctx.createOscillator();E.n(o);o.type='sawtooth';const a=E.n(g(.0001));o.connect(a);[[240,5,.75],[520,7,.4],[950,8,.14]].forEach(([fq,q,lv])=>{const bp=E.n(flt('bandpass',fq*rnd(.88,1.12),q)),gg=E.n(g(lv));a.connect(bp);bp.connect(gg);gg.connect(p);});const tt=t+i*rnd(.07,.11);o.frequency.setValueAtTime(base*rnd(.92,1.08),tt);o.frequency.exponentialRampToValueAtTime(base*rnd(.62,.8),tt+.075);a.gain.setValueAtTime(.0001,tt);a.gain.linearRampToValueAtTime(rnd(.035,.075),tt+.012);a.gain.exponentialRampToValueAtTime(.0001,tt+.085);o.start(tt);o.stop(tt+.1);}E.later(croak,rnd(1100,4800));
+  } croak();
+}});
+
+/* Yeni canlılar */
+AMBIENT_DEFS.push(
+{id:'kumru',kat:'canli',icon:'🕊️',name:'Kumru',desc:'yumuşak üçlü ötüş • sakin uzaklık',cal:1.15,wet:.34,build:(E,out)=>{
+  function coo(){const base=rnd(340,430),pan=rnd(-.75,.75);[1,.92,.84].forEach((m,i)=>ambNodeNote(E,out,{delay:i*.28,f:base*m,dur:.42,pan,peak:rnd(.025,.055),type:'sine',partials:[[1,1],[2,.12]],vibrato:false,attack:.07,release:.2}));E.later(coo,rnd(2800,8500));}coo();
+}},
+{id:'serce',kat:'canli',icon:'🐦',name:'Serçe',desc:'kısa cıvıltı kümeleri • yakın/uzak',cal:1.05,wet:.2,build:(E,out)=>{
+  function chirps(){const n=2+Math.floor(rnd(0,6)),pan=rnd(-.9,.9);for(let i=0;i<n;i++)ambNodeNote(E,out,{delay:i*rnd(.07,.15),f:rnd(2600,5900),dur:rnd(.035,.09),pan,peak:rnd(.012,.045),type:'triangle',partials:[[1,1],[2,.05]],vibRate:rnd(18,32),vibDepth:.015,attack:.004,release:.025,glideFrom:rnd(.78,1.2)});E.later(chirps,rnd(900,5200));}chirps();
+}},
+{id:'baykus',kat:'canli',icon:'🦉',name:'Baykuş',desc:'gece • uzak çift heceli huuuu',cal:1.15,wet:.62,build:(E,out)=>{
+  function hoot(){const f=rnd(290,390),pan=rnd(-.8,.8);ambNodeNote(E,out,{f,dur:rnd(.65,1.05),pan,peak:rnd(.035,.07),type:'sine',partials:[[1,1],[2,.18],[3,.05]],vibRate:4.2,vibDepth:.006,attack:.12,release:.38});if(Math.random()<.65)ambNodeNote(E,out,{delay:rnd(.8,1.25),f:f*.92,dur:rnd(.55,.9),pan,peak:rnd(.028,.06),type:'sine',partials:[[1,1],[2,.15]],vibRate:4,vibDepth:.005,attack:.1,release:.34});E.later(hoot,rnd(6500,18000));}hoot();
+}},
+{id:'segah',kat:'makam',icon:'🎼',name:'Segâh Taksimi',desc:'Segâh • mikrotonal renkli nefesli seyir',cal:.62,wet:.58,build:makamNefes3(MAQAM_PROFILES.segah)},
+{id:'kurdi',kat:'makam',icon:'🪕',name:'Kürdî Taksimi',desc:'Kürdî • sade mızraplı seyir',cal:.72,wet:.5,build:makamMizrap3(MAQAM_PROFILES.kurdi)},
+{id:'mahur',kat:'makam',icon:'🎼',name:'Mâhur Taksimi',desc:'Mâhur • açık ve geniş nefesli seyir',cal:.62,wet:.54,build:makamNefes3(MAQAM_PROFILES.mahur)}
+);
 
 /* Aktif kanallar */
 const AMB={};
@@ -7595,37 +8593,42 @@ tesbih:{label:'🕌 Namaz Sonrası Tesbihatı',items:[
    etimoloji sayılmaz. Arapça kaynak yazımı, Türkçe yaygın tilavet ve
    Nero'nun tefekkür notu ayrı alanlarda tutulur. */
 berhet:{label:'🔒 Kasem-i Berhetiyye — 28 İsim',gizli:true,items:[
+ /* r187 KANONİK GÖRÜNÜR/OKUNUR ADLAR:
+    Kullanıcının yerleşik 28'li matrisi korunur. Türkçe tilavet adları
+    Berhetîhin, Kerîrin ... Şemhabârûhin biçimindedir ve son -n/tenvin
+    DÜŞÜRÜLMEZ. Kaynak Arapçası/ebced alanı ayrı katmandır; sonraki
+    kaynak revizyonları `tr` / `oku` adlarını sessizce değiştiremez. */
  /* Kaynak Arapçası matbu başlıklardan aktarılır; hareke/tenvin ve Türkçe
     tilavet varyantı yazılı ebcede eklenmez. Ebced = kaynak yazımının
     standart büyük ebced toplamıdır; 28 adın toplamı 18787'dir. */
- {tr:'Berhetîhi',oku:'Berhetîhin',ar:'برهتيه',serh:'el-Kuddûs / es-Sübbûh',mean:'Tenzih, arınma ve iç temizlik üzerine uygulama yorumu.',harf:'ا',eb:622,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'eş-Şartayn (Menba: en-Nath)',may:[4,15,4,30],isaret:'Allah bütün eksikliklerden münezzehtir.',varyant:'Matbu yazım برهتيه’dir. Türkçe tilavetteki son “n” yazılı bir ن değildir ve ebcede katılmaz.',adet:28},
- {tr:'Kerîr',oku:'Kerîrin',ar:'كرير',serh:'İlâhu kulli şey / yâ Allah',mean:'Tevhid, teslimiyet ve kulluk bilinci üzerine uygulama yorumu.',harf:'ب',eb:430,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Butayn',may:[5,1,5,13],isaret:'Her şey O’ndan gelir, her şey O’na döner.',adet:28},
- {tr:'Tetlîh',oku:'Tetlîhin',ar:'تتليه',serh:'el-Kuddûs, el-Kādir; varyantlarda el-Habîr / el-Mucîr',mean:'Korunma, ilâhî gözetim ve hikmetli tedbir üzerine uygulama yorumu.',harf:'ج',eb:845,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'es-Süreyyâ',may:[5,14,5,26],isaret:'Allah hem korur hem bilir.',adet:28},
- {tr:'Tûrân',oku:'Tûrânin',ar:'طوران',serh:'yâ Hayy / yâ Muhyî',mean:'Hayat, diriliş ve kalbin uyanışı üzerine uygulama yorumu.',harf:'د',eb:266,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ed-Deberân',may:[5,27,6,8],isaret:'Gerçek hayat Allah ile dirilir.',adet:28},
- {tr:'Mezcel',oku:'Mezcelin',ar:'مزجل',serh:'yâ Kayyûm / yâ Kâim',mean:'Düzen, süreklilik ve kayyûmiyet üzerine uygulama yorumu.',harf:'هـ',eb:80,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Hek‘â',may:[6,9,6,21],isaret:'Kâinat kendi başına değil, Allah’ın kayyûmiyetiyle ayaktadır.',adet:28},
- {tr:'Bezcel',oku:'Bezcelin',ar:'بزجل',serh:'yâ Vedûd; varyantlarda yâ Bâkî, Kahhâr, Hakîm, Vâhid',mean:'İhsan, bağış ve sevgi üzerine uygulama yorumu.',harf:'و',eb:42,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Hen‘â',may:[6,22,7,4],isaret:'Lütuf, kulun kusursuzluğuna bağlı değildir.',varyant:'Önceki “Vehhâb” eşlemesi bu şerhin açık karşılığı değildi; kaynakta Vedûd ve başka varyantlar geçer.',adet:28},
- {tr:'Terkab',oku:'Terkabin',ar:'ترقب',serh:'yâ Selâm',mean:'Sulh, birlik ve toparlanma üzerine uygulama yorumu.',harf:'ز',eb:702,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zirâ‘',may:[7,5,7,17],isaret:'Dağılan kalbi de, dağılan hayatı da toplayan Allah’tır.',adet:28},
- {tr:'Berheş',oku:'Berheşin',ar:'برهش',serh:'yâ Muktedir; yâ Allah hitabı',mean:'Nur, basiret ve iç aydınlanma üzerine uygulama yorumu.',harf:'ح',eb:507,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nesre',may:[7,18,7,30],isaret:'Allah nur verirse insan yalnız görmez; doğru da görür.',adet:28},
- {tr:'Galmeş',oku:'Galmeşin',ar:'غلمش',serh:'yâ Hamîd / yâ Mecîd; yâ Melik',mean:'Hamd, şeref ve ilâhî parlaklık üzerine uygulama yorumu.',harf:'ط',eb:1370,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'et-Tarfe',may:[7,31,8,12],isaret:'Bütün güzelliklerin gerçek kaynağı Allah’tır.',adet:28},
- {tr:'Hûtîr',oku:'Hûtîrin',ar:'خوطير',serh:'yâ Kaviyy / yâ Metîn; yâ Aliyy / yâ Hakîm',mean:'Kuvvet, metanet ve adalet üzerine uygulama yorumu.',harf:'ي',eb:825,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Cebhe',may:[8,13,8,25],isaret:'Merhamet sığınak, adalet zulme karşı heybet olur.',adet:28},
- {tr:'Kalnehûd',oku:'Kalnehûdin',ar:'قلنهود',serh:'yâ Metîn; yâ Semî‘/Basîr veya Bedî‘; yâ Muğnî; yâ Muhît',mean:'İşitilme, kuşatılma ve farkındalık üzerine uygulama yorumu.',harf:'ك',eb:195,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zübrâ (Menba: el-Hartân)',may:[8,26,9,7],isaret:'Duyulmayan duâ yoktur; cevabın vakti ve hikmeti vardır.',adet:28},
- {tr:'Berşân',oku:'Berşânin',ar:'برشان',serh:'yâ Muhît; yâ Allah / yâ Azîz',mean:'Kuşatıcılık ve ilâhî ilim üzerine uygulama yorumu.',harf:'ل',eb:553,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'es-Sarfe',may:[9,8,9,20],isaret:'Hiçbir yer Allah’ın ilminden dışarıda değildir.',adet:28},
- {tr:'Kazhîr',oku:'Kazhîrin',ar:'كظهير',serh:'Sübhânallah; yâ Kaviyy / yâ Metîn; varyantta yâ Rahîm',mean:'Tenzih, yücelik ve kudret üzerine uygulama yorumu.',harf:'م',eb:1135,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Avvâ',may:[9,21,10,3],isaret:'Allah’ın kudreti eksiklikten münezzehtir.',varyant:'كظهير standart ebcedle 1135 eder; önceki 935 değeri bu yazımla uyuşmuyordu.',adet:28},
- {tr:'Nemûşelah',oku:'Nemûşelahin',ar:'نموشلخ',serh:'yâ Allah / yâ Azîz; yâ Kaviyy / Metîn; yâ Hû',mean:'İzzet, vakar ve ilâhî üstünlük üzerine uygulama yorumu.',harf:'ن',eb:1026,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'es-Semâk',may:[10,4,10,16],isaret:'İzzet Allah’tandır; kuldaki izzet O’na yakınlıkla kalıcılaşır.',adet:28},
- {tr:'Berheyûlâ',oku:'Berheyûlen',ar:'برهيولا',serh:'Sübhânallah; yâ Kâfî / yâ Semî‘',mean:'İcabet, rahmet, yetinme ve teslimiyet üzerine uygulama yorumu.',harf:'س',eb:254,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Gafir',may:[10,17,10,29],isaret:'Ben yetemem; Sen Kâfî’sin. Ben bilemem; Sen Hakîm’sin.',varyant:'Matbu başlık final elifle برهيولا’dır; “Berheyûlen” uygulamada korunan yaygın Türkçe tilavet biçimidir.',adet:28},
- {tr:'Beşkeylah',oku:'Beşkeylahin',ar:'بشكيلخ',serh:'yâ Mü’min; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'Emniyet, iman ve korunma üzerine uygulama yorumu.',harf:'ع',eb:962,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ez-Zübânâ',may:[10,30,11,11],isaret:'Gerçek güven, Allah’a sığınan kalpte doğar.',adet:28},
- {tr:'Kazmaz',oku:'Kazmazın',ar:'قزمز',serh:'yâ Müheymin; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'İlâhî gözetim ve himaye üzerine uygulama yorumu.',harf:'ف',eb:154,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Eklîl',may:[11,12,11,24],isaret:'Allah görür, bilir, korur; hiçbir hâl başıboş değildir.',varyant:'Kaynak yazımı قزمز’dir. Önceki كاظمز yazımı saklanan 154 değeriyle uyuşmuyordu.',adet:28},
- {tr:'Engalelît',oku:'Engalelîtin',ar:'أنغلليط',serh:'yâ Azîm / Hakîm; yâ Habîr / Latîf; er-Rahmân er-Rahîm',mean:'Hikmet, letâfet ve sır idraki üzerine uygulama yorumu.',harf:'ص',eb:1130,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Kalb',may:[11,25,12,7],isaret:'Bazı işler görünürde sert, hakikatte latif olabilir.',adet:28},
- {tr:'Kaberât',oku:'Kaberâtin',ar:'قبرات',serh:'yâ Azîz, Bâkî, Halîm, Hakîm; yâ Kâfî / Kerîm',mean:'Bekâ ve fânîlik bilinci üzerine uygulama yorumu.',harf:'ق',eb:703,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'eş-Şevle',may:[12,8,12,20],isaret:'Fânî olana tutunan yorulur; Bâkî olana yönelen huzur bulur.',adet:28},
- {tr:'Gayâhâ',oku:'Gayâhen',ar:'غياها',serh:'yâ Kerîm; yâ Kahhâr/Kâdî; yâ Azîz / Cebbâr',mean:'Hüküm, kader ve ilâhî galebe üzerine uygulama yorumu.',harf:'ر',eb:1017,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nuâîm',may:[12,21,1,2],isaret:'Allah’ın hükmü gecikse de eksik kalmaz.',varyant:'Matbu başlık final elifle غياها’dır; “Gayâhen” yaygın Türkçe tilavet biçimi olarak ayrıca korunur.',adet:28},
- {tr:'Keydehûlâ',oku:'Keydehûlen',ar:'كيدهولا',serh:'el-Kādir hüve’llah; yâ Kadîm / Kahhâr / Kadîr; yâ Serî‘',mean:'Kıdem, sürat ve kudret üzerine uygulama yorumu.',harf:'ش',eb:76,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Belde',may:[1,3,1,15],isaret:'Allah için uzak-yakın, erken-geç, zor-kolay yoktur.',varyant:'Matbu başlık final elifle كيدهولا’dır; “Keydehûlen” yaygın Türkçe tilavet biçimidir.',adet:28},
- {tr:'Şemḫâhir',oku:'Şemhâhirin',ar:'شمخاهر',serh:'Teâleyte yâ Aliyy yâ Alîm',mean:'Yücelik ve ilim üzerine uygulama yorumu.',harf:'ت',eb:1146,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'Sa‘dü’z-Zâbih',may:[1,16,1,28],isaret:'İlim ve yücelik yalnız Allah’a nispetle anlam kazanır.',varyant:'22–24. başlıklar benzer görünür fakat kaynak harfleri ayrıdır: شمخاهر / شمخاهير / شمهاهير.',adet:28},
- {tr:'Şemḫâhîr',oku:'Şemhâhîrin',ar:'شمخاهير',serh:'yâ Kâfî; yâ Hû; yâ Rabb',mean:'Kifayet, yöneliş ve rubûbiyet üzerine uygulama yorumu.',harf:'ث',eb:1156,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'Sa‘dü’l-Beli‘',may:[1,29,2,10],isaret:'Kula yeten ve onu terbiye eden Allah’tır.',varyant:'شمخاهير standart ebcedle 1156 eder; önceki 1165 rakam aktarımı ters çevrilmişti.',adet:28},
- {tr:'Şemhâhîr',oku:'Şemhâhîrin (h ile)',ar:'شمهاهير',serh:'yâ Kadîr/Kādir; yâ Kâfî / Azîz / Cebbâr',mean:'Kudret, kifayet ve izzet üzerine uygulama yorumu.',harf:'خ',eb:561,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'Sa‘dü’s-Su‘ûd',may:[2,11,2,23],isaret:'Kudret Allah’ın; kula düşen güven ve edeptir.',varyant:'Bu başlıkta خ değil ه vardır: شمهاهير. Önceki شمخاهيار yazımı kaynakla ve 561 toplamıyla uyuşmuyordu.',adet:28},
- {tr:'Bikehtahûniye',oku:'Bikehtahûniyyetin',ar:'بكهطهونيه',serh:'yâ Kadîm / yâ Dâim',mean:'Süreklilik ve zaman üstü ilâhîlik üzerine uygulama yorumu.',harf:'ذ',eb:112,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'Sa‘dü’l-Ahbiyye',may:[2,24,3,8],isaret:'Zaman akar; fakat Allah zamanın mahkûmu değildir.',varyant:'Menba baskısı varyantları kaydeder ve بكهطهونيه biçimini “doğru” diye tercih eder.',adet:28},
- {tr:'Beşâriş',oku:'Beşârişin',ar:'بشارش',serh:'yâ Kādir alâ kulli şey',mean:'Kudret ve dağılmış olanın toparlanması üzerine uygulama yorumu.',harf:'ض',eb:803,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Ferğü’l-Mukaddem',may:[3,9,3,21],isaret:'Allah dilerse kopan bağlar birleşir, dağılan yollar buluşur.',adet:28},
- {tr:'Tûneş',oku:'Tûneşin',ar:'طونش',serh:'yâ Şekûr; hüve’llâhu’l-Kerîm',mean:'Şükür ve bereket üzerine uygulama yorumu.',harf:'ظ',eb:365,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Ferğü’l-Muahhir',may:[3,22,4,3],isaret:'Samimi az amel, gafletli çokluktan değerlidir.',varyant:'Menba; طوش، طرش، طوياش varyantlarını da kaydeder ve ilk yazım طونش’i tercih eder.',adet:28},
- {tr:'Şemḫâ Bârûḫ',oku:'Şemhabârûhin',ar:'شمخا باروخ',serh:'el-Kādir hüve’llâhu’l-Kerîm',mean:'Kudret, hâkimiyet ve teslimiyet üzerine uygulama yorumu.',harf:'غ',eb:1750,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'er-Reşâ',may:[4,4,4,14],isaret:'Kudret Allah’ındır; kulun payı edep, duâ ve teslimiyettir.',varyant:'Kaynakta iki kelime ve ilk bölümün sonunda elif vardır: شمخا باروخ.',adet:28},
+ {tr:'Berhetîhin',oku:'Berhetîhin',ar:'برهتيه',serh:'el-Kuddûs / es-Sübbûh',mean:'Tenzih, arınma ve iç temizlik üzerine uygulama yorumu.',harf:'ا',eb:622,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'eş-Şartayn (Menba: en-Nath)',may:[4,15,4,30],isaret:'Allah bütün eksikliklerden münezzehtir.',varyant:'Matbu yazım برهتيه’dir. Türkçe tilavetteki son “n” yazılı bir ن değildir ve ebcede katılmaz.',adet:28},
+ {tr:'Kerîrin',oku:'Kerîrin',ar:'كرير',serh:'İlâhu kulli şey / yâ Allah',mean:'Tevhid, teslimiyet ve kulluk bilinci üzerine uygulama yorumu.',harf:'ب',eb:430,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Butayn',may:[5,1,5,13],isaret:'Her şey O’ndan gelir, her şey O’na döner.',adet:28},
+ {tr:'Tetlîhin',oku:'Tetlîhin',ar:'تتليه',serh:'el-Kuddûs, el-Kādir; varyantlarda el-Habîr / el-Mucîr',mean:'Korunma, ilâhî gözetim ve hikmetli tedbir üzerine uygulama yorumu.',harf:'ج',eb:845,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'es-Süreyyâ',may:[5,14,5,26],isaret:'Allah hem korur hem bilir.',adet:28},
+ {tr:'Tûrânin',oku:'Tûrânin',ar:'طوران',serh:'yâ Hayy / yâ Muhyî',mean:'Hayat, diriliş ve kalbin uyanışı üzerine uygulama yorumu.',harf:'د',eb:266,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ed-Deberân',may:[5,27,6,8],isaret:'Gerçek hayat Allah ile dirilir.',adet:28},
+ {tr:'Mezcelin',oku:'Mezcelin',ar:'مزجل',serh:'yâ Kayyûm / yâ Kâim',mean:'Düzen, süreklilik ve kayyûmiyet üzerine uygulama yorumu.',harf:'هـ',eb:80,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Hek‘â',may:[6,9,6,21],isaret:'Kâinat kendi başına değil, Allah’ın kayyûmiyetiyle ayaktadır.',adet:28},
+ {tr:'Bezcelin',oku:'Bezcelin',ar:'بزجل',serh:'yâ Vedûd; varyantlarda yâ Bâkî, Kahhâr, Hakîm, Vâhid',mean:'İhsan, bağış ve sevgi üzerine uygulama yorumu.',harf:'و',eb:42,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Hen‘â',may:[6,22,7,4],isaret:'Lütuf, kulun kusursuzluğuna bağlı değildir.',varyant:'Önceki “Vehhâb” eşlemesi bu şerhin açık karşılığı değildi; kaynakta Vedûd ve başka varyantlar geçer.',adet:28},
+ {tr:'Terkabin',oku:'Terkabin',ar:'ترقب',serh:'yâ Selâm',mean:'Sulh, birlik ve toparlanma üzerine uygulama yorumu.',harf:'ز',eb:702,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zirâ‘',may:[7,5,7,17],isaret:'Dağılan kalbi de, dağılan hayatı da toplayan Allah’tır.',adet:28},
+ {tr:'Berheşin',oku:'Berheşin',ar:'برهش',serh:'yâ Muktedir; yâ Allah hitabı',mean:'Nur, basiret ve iç aydınlanma üzerine uygulama yorumu.',harf:'ح',eb:507,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nesre',may:[7,18,7,30],isaret:'Allah nur verirse insan yalnız görmez; doğru da görür.',adet:28},
+ {tr:'Galmeşin',oku:'Galmeşin',ar:'غلمش',serh:'yâ Hamîd / yâ Mecîd; yâ Melik',mean:'Hamd, şeref ve ilâhî parlaklık üzerine uygulama yorumu.',harf:'ط',eb:1370,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'et-Tarfe',may:[7,31,8,12],isaret:'Bütün güzelliklerin gerçek kaynağı Allah’tır.',adet:28},
+ {tr:'Hûtîrin',oku:'Hûtîrin',ar:'خوطير',serh:'yâ Kaviyy / yâ Metîn; yâ Aliyy / yâ Hakîm',mean:'Kuvvet, metanet ve adalet üzerine uygulama yorumu.',harf:'ي',eb:825,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Cebhe',may:[8,13,8,25],isaret:'Merhamet sığınak, adalet zulme karşı heybet olur.',adet:28},
+ {tr:'Kalnehûdin',oku:'Kalnehûdin',ar:'قلنهود',serh:'yâ Metîn; yâ Semî‘/Basîr veya Bedî‘; yâ Muğnî; yâ Muhît',mean:'İşitilme, kuşatılma ve farkındalık üzerine uygulama yorumu.',harf:'ك',eb:195,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'ez-Zübrâ (Menba: el-Hartân)',may:[8,26,9,7],isaret:'Duyulmayan duâ yoktur; cevabın vakti ve hikmeti vardır.',adet:28},
+ {tr:'Berşânin',oku:'Berşânin',ar:'برشان',serh:'yâ Muhît; yâ Allah / yâ Azîz',mean:'Kuşatıcılık ve ilâhî ilim üzerine uygulama yorumu.',harf:'ل',eb:553,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'es-Sarfe',may:[9,8,9,20],isaret:'Hiçbir yer Allah’ın ilminden dışarıda değildir.',adet:28},
+ {tr:'Kazhîrin',oku:'Kazhîrin',ar:'كظهير',serh:'Sübhânallah; yâ Kaviyy / yâ Metîn; varyantta yâ Rahîm',mean:'Tenzih, yücelik ve kudret üzerine uygulama yorumu.',harf:'م',eb:1135,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Avvâ',may:[9,21,10,3],isaret:'Allah’ın kudreti eksiklikten münezzehtir.',varyant:'كظهير standart ebcedle 1135 eder; önceki 935 değeri bu yazımla uyuşmuyordu.',adet:28},
+ {tr:'Nemûşelahin',oku:'Nemûşelahin',ar:'نموشلخ',serh:'yâ Allah / yâ Azîz; yâ Kaviyy / Metîn; yâ Hû',mean:'İzzet, vakar ve ilâhî üstünlük üzerine uygulama yorumu.',harf:'ن',eb:1026,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'es-Semâk',may:[10,4,10,16],isaret:'İzzet Allah’tandır; kuldaki izzet O’na yakınlıkla kalıcılaşır.',adet:28},
+ {tr:'Berheyûlen',oku:'Berheyûlen',ar:'برهيولا',serh:'Sübhânallah; yâ Kâfî / yâ Semî‘',mean:'İcabet, rahmet, yetinme ve teslimiyet üzerine uygulama yorumu.',harf:'س',eb:254,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Gafir',may:[10,17,10,29],isaret:'Ben yetemem; Sen Kâfî’sin. Ben bilemem; Sen Hakîm’sin.',varyant:'Matbu başlık final elifle برهيولا’dır; “Berheyûlen” uygulamada korunan yaygın Türkçe tilavet biçimidir.',adet:28},
+ {tr:'Beşkeylahin',oku:'Beşkeylahin',ar:'بشكيلخ',serh:'yâ Mü’min; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'Emniyet, iman ve korunma üzerine uygulama yorumu.',harf:'ع',eb:962,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'ez-Zübânâ',may:[10,30,11,11],isaret:'Gerçek güven, Allah’a sığınan kalpte doğar.',adet:28},
+ {tr:'Kâzmezin',oku:'Kâzmezin',ar:'قزمز',serh:'yâ Müheymin; azze’llâhu’r-Rahmânu’r-Rahîm',mean:'İlâhî gözetim ve himaye üzerine uygulama yorumu.',harf:'ف',eb:154,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Eklîl',may:[11,12,11,24],isaret:'Allah görür, bilir, korur; hiçbir hâl başıboş değildir.',varyant:'Kaynak yazımı قزمز’dir. Önceki كاظمز yazımı saklanan 154 değeriyle uyuşmuyordu.',adet:28},
+ {tr:'Engalelîtin',oku:'Engalelîtin',ar:'أنغلليط',serh:'yâ Azîm / Hakîm; yâ Habîr / Latîf; er-Rahmân er-Rahîm',mean:'Hikmet, letâfet ve sır idraki üzerine uygulama yorumu.',harf:'ص',eb:1130,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Kalb',may:[11,25,12,7],isaret:'Bazı işler görünürde sert, hakikatte latif olabilir.',adet:28},
+ {tr:'Kaberâtin',oku:'Kaberâtin',ar:'قبرات',serh:'yâ Azîz, Bâkî, Halîm, Hakîm; yâ Kâfî / Kerîm',mean:'Bekâ ve fânîlik bilinci üzerine uygulama yorumu.',harf:'ق',eb:703,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'eş-Şevle',may:[12,8,12,20],isaret:'Fânî olana tutunan yorulur; Bâkî olana yönelen huzur bulur.',adet:28},
+ {tr:'Gayâhen',oku:'Gayâhen',ar:'غياها',serh:'yâ Kerîm; yâ Kahhâr/Kâdî; yâ Azîz / Cebbâr',mean:'Hüküm, kader ve ilâhî galebe üzerine uygulama yorumu.',harf:'ر',eb:1017,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'en-Nuâîm',may:[12,21,1,2],isaret:'Allah’ın hükmü gecikse de eksik kalmaz.',varyant:'Matbu başlık final elifle غياها’dır; “Gayâhen” yaygın Türkçe tilavet biçimi olarak ayrıca korunur.',adet:28},
+ {tr:'Keydehûlen',oku:'Keydehûlen',ar:'كيدهولا',serh:'el-Kādir hüve’llah; yâ Kadîm / Kahhâr / Kadîr; yâ Serî‘',mean:'Kıdem, sürat ve kudret üzerine uygulama yorumu.',harf:'ش',eb:76,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'el-Belde',may:[1,3,1,15],isaret:'Allah için uzak-yakın, erken-geç, zor-kolay yoktur.',varyant:'Matbu başlık final elifle كيدهولا’dır; “Keydehûlen” yaygın Türkçe tilavet biçimidir.',adet:28},
+ {tr:'Şemhâhirin',oku:'Şemhâhirin',ar:'شمخاهر',serh:'Teâleyte yâ Aliyy yâ Alîm',mean:'Yücelik ve ilim üzerine uygulama yorumu.',harf:'ت',eb:1146,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'Sa‘dü’z-Zâbih',may:[1,16,1,28],isaret:'İlim ve yücelik yalnız Allah’a nispetle anlam kazanır.',varyant:'22–24. başlıklar benzer görünür fakat kaynak harfleri ayrıdır: شمخاهر / شمخاهير / شمهاهير.',adet:28},
+ {tr:'Şemhâhîrin',oku:'Şemhâhîrin',ar:'شمخاهير',serh:'yâ Kâfî; yâ Hû; yâ Rabb',mean:'Kifayet, yöneliş ve rubûbiyet üzerine uygulama yorumu.',harf:'ث',eb:1156,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'Sa‘dü’l-Beli‘',may:[1,29,2,10],isaret:'Kula yeten ve onu terbiye eden Allah’tır.',varyant:'شمخاهير standart ebcedle 1156 eder; önceki 1165 rakam aktarımı ters çevrilmişti.',adet:28},
+ {tr:'Şemhâhiyerin',oku:'Şemhâhiyerin',ar:'شمهاهير',serh:'yâ Kadîr/Kādir; yâ Kâfî / Azîz / Cebbâr',mean:'Kudret, kifayet ve izzet üzerine uygulama yorumu.',harf:'خ',eb:561,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'Sa‘dü’s-Su‘ûd',may:[2,11,2,23],isaret:'Kudret Allah’ın; kula düşen güven ve edeptir.',varyant:'Bu başlıkta خ değil ه vardır: شمهاهير. Önceki شمخاهيار yazımı kaynakla ve 561 toplamıyla uyuşmuyordu.',adet:28},
+ {tr:'Bikehtahûniyyetin',oku:'Bikehtahûniyyetin',ar:'بكهطهونيه',serh:'yâ Kadîm / yâ Dâim',mean:'Süreklilik ve zaman üstü ilâhîlik üzerine uygulama yorumu.',harf:'ذ',eb:112,unsur:'Ateş',tabiat:'Kuru – Sıcak',menzil:'Sa‘dü’l-Ahbiyye',may:[2,24,3,8],isaret:'Zaman akar; fakat Allah zamanın mahkûmu değildir.',varyant:'Menba baskısı varyantları kaydeder ve بكهطهونيه biçimini “doğru” diye tercih eder.',adet:28},
+ {tr:'Beşârişin',oku:'Beşârişin',ar:'بشارش',serh:'yâ Kādir alâ kulli şey',mean:'Kudret ve dağılmış olanın toparlanması üzerine uygulama yorumu.',harf:'ض',eb:803,unsur:'Toprak',tabiat:'Kuru – Soğuk',menzil:'el-Ferğü’l-Mukaddem',may:[3,9,3,21],isaret:'Allah dilerse kopan bağlar birleşir, dağılan yollar buluşur.',adet:28},
+ {tr:'Tûneşin',oku:'Tûneşin',ar:'طونش',serh:'yâ Şekûr; hüve’llâhu’l-Kerîm',mean:'Şükür ve bereket üzerine uygulama yorumu.',harf:'ظ',eb:365,unsur:'Hava',tabiat:'Nemli – Sıcak',menzil:'el-Ferğü’l-Muahhir',may:[3,22,4,3],isaret:'Samimi az amel, gafletli çokluktan değerlidir.',varyant:'Menba; طوش، طرش، طوياش varyantlarını da kaydeder ve ilk yazım طونش’i tercih eder.',adet:28},
+ {tr:'Şemhabârûhin',oku:'Şemhabârûhin',ar:'شمخا باروخ',serh:'el-Kādir hüve’llâhu’l-Kerîm',mean:'Kudret, hâkimiyet ve teslimiyet üzerine uygulama yorumu.',harf:'غ',eb:1750,unsur:'Su',tabiat:'Nemli – Soğuk',menzil:'er-Reşâ',may:[4,4,4,14],isaret:'Kudret Allah’ındır; kulun payı edep, duâ ve teslimiyettir.',varyant:'Kaynakta iki kelime ve ilk bölümün sonunda elif vardır: شمخا باروخ.',adet:28},
 ]},
 terkip:{label:'⚯ Esmâ Terkipleri — grup zikri',items:[
  /* ═══ ESMÂ TERKİPLERİ (r129) ═══
@@ -7869,19 +8872,71 @@ function renderCats(){
   $('#formSeg').style.display=esmaVar?'':'none';
   renderList();
 }
+/* r181 — uzun isim listeleri ekranda yer kaplamasın.
+   Yalnız Esmâü’l-Hüsnâ ve Berhetiyye kompakt başlar; tercih kategori bazında saklanır. */
+const ZLIST_COMPACT_CATS=new Set(['esma','berhet']);
+let ZLIST_OPEN={};
+try{ ZLIST_OPEN=S.get('sukun.zListOpen',{})||{}; }catch(e){ ZLIST_OPEN={}; }
+function zListToggleEnsure(){
+  const host=document.getElementById('zList'); if(!host)return null;
+  let b=document.getElementById('zListToggle');
+  if(!b){
+    b=document.createElement('button'); b.id='zListToggle'; b.className='zListToggle'; b.type='button';
+    b.setAttribute('aria-controls','zList');
+    host.insertAdjacentElement('afterend',b);
+    b.onclick=()=>{
+      if(!ZLIST_COMPACT_CATS.has(Z.cat))return;
+      ZLIST_OPEN[Z.cat]=!ZLIST_OPEN[Z.cat];
+      try{S.set('sukun.zListOpen',ZLIST_OPEN)}catch(e){}
+      renderList();
+      if(!ZLIST_OPEN[Z.cat]){ try{host.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){} }
+    };
+  }
+  return b;
+}
 function renderList(){
   const q=($('#zSearch').value||'').trim().toLocaleLowerCase('tr');
   const items=ZIKIR[Z.cat].items;
-  $('#zList').innerHTML=items.map((it,i)=>{
+  const host=$('#zList');
+  const kompaktKat=ZLIST_COMPACT_CATS.has(Z.cat);
+  const acik=!!ZLIST_OPEN[Z.cat];
+  /* Arama bir görünürlük filtresidir: sonuçları 'kapalı liste'nin ardında saklama. */
+  const tekSira=kompaktKat&&!q&&!acik;
+  host.classList.toggle('compactOneRow',tekSira);
+  host.classList.toggle('showAllNames',kompaktKat&&(!tekSira));
+  host.innerHTML=items.map((it,i)=>{
     const nm=it.t||it.tr, hay=(nm+' '+(it.m||it.mean||'')).toLocaleLowerCase('tr');
     if(q&&!hay.includes(q))return '';
     /* r139: öğenin kendi rengi varsa düğme onu taşısın — Yâ Serîu
        ailesinin her üyesi ayrı renkte görünsün diye. */
     const renk=typeof it.c==='string'&&/^#[0-9a-f]{3,8}$/i.test(it.c)?it.c:'';
     const c=renk?' style="--ic:'+renk+'"':'';
+    const listeAd = Z.cat==='esma' ? ((i+1)+'. '+nm) :
+                    Z.cat==='berhet' ? ((i+1)+'. '+nm) : nm;
     return '<button class="zItem'+(i===Z.idx?' act':'')+(renk?' renkli':'')+
-      '" data-i="'+i+'"'+c+'>'+hesc(nm)+'</button>';
+      '" data-i="'+i+'"'+c+'>'+hesc(listeAd)+'</button>';
   }).join('')||'<div class="noHit">Eşleşme yok</div>';
+
+  /* r186: 99'lu yaygın sıralamayı bozmadan Allah ism-i şerifini
+     0. bilgi satırı olarak göster. Sayaç/Hatim indeksi 1–99'da kalır. */
+  if(Z.cat==='esma' && !q){
+    const zero=document.createElement('div');
+    zero.className='esmaZero';
+    zero.innerHTML='<b>0. Allah</b><span>Lafza-i Celâl · İsm-i Zât</span>';
+    host.insertBefore(zero,host.firstChild);
+  }
+
+  const t=zListToggleEnsure();
+  if(t){
+    t.hidden=!kompaktKat||!!q;
+    if(!t.hidden){
+      t.setAttribute('aria-expanded',acik?'true':'false');
+      t.innerHTML=acik
+        ? '⌃ İsimleri gizle <span class="zltCount">tek sıraya dön</span>'
+        : '⌄ Tüm isimleri göster <span class="zltCount">'+items.length+' isim</span>';
+    }
+  }
+  if(tekSira)host.scrollLeft=0;
 }
 function renderZikir(swap=true){
   /* ⚠ r128: öğe yoksa BÜTÜN çizim çöküyordu (`it.ar` → TypeError) ve
@@ -8753,7 +9808,7 @@ const AMB_CAT_MAP={
 /* Açılışta yalnız iki grup açık gelir — 55 kanalın tamamı açık gelirse
    gruplama işe yaramaz, liste yine 5 ekran olur. */
 let AMB_OPEN=new Set(S.get('sukun.ambopen',['su']));
-const MAQAM8=new Set(['rast','hicaz','saba','huseyni','nihavent','neva','acemasiran','isfahan']);
+const MAQAM8=new Set(['rast','hicaz','saba','huseyni','nihavent','neva','acemasiran','isfahan','segah','kurdi','mahur']);
 const PREVIEW={timer:null,id:null};
 function previewMaqam(id){
   if(AMB[id])return;                    /* zaten kalıcı çalıyorsa önizlemeye gerek yok */
@@ -17498,7 +18553,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r174',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r187',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -17565,8 +18620,11 @@ async function idbDumpAll(dbName,store){
                 const b64=await blob64(v);
                 if(b64)out[outKey]={__blob:b64,type:v.type||''};
               }else if(dbName==='sukunCustomAmb'&&v&&typeof v==='object'&&!Array.isArray(v)&&v.blob instanceof Blob){
-                const b64=await blob64(v.blob),name=String(v.name||'').trim().slice(0,28);
-                if(b64&&name)out[outKey]={__audioRecord:{name,blob:b64}};
+                const b64=await blob64(v.blob),name=String(v.name||'').trim().slice(0,64);
+                if(b64&&name){
+                  if(/^h:[a-z0-9_-]{1,60}$/i.test(outKey))out[outKey]={__hybridRecord:{name,blob:b64,mix:isFinite(+v.mix)?Math.max(0,Math.min(1,+v.mix)):.42}};
+                  else out[outKey]={__audioRecord:{name,blob:b64}};
+                }
               }else if(dbName!=='sukunRec'&&dbName!=='sukunCustomAmb')out[outKey]={__val:v};
             }
           }catch(_){}
@@ -17600,10 +18658,11 @@ async function idbRestoreAll(dbName,store,data){
             toplam+=it.__blob.length;if(it.__blob.length>90*1024*1024||toplam>260*1024*1024){db.close();return res(0)}
             try{const r=await fetch(it.__blob),b=await r.blob();if(/^audio\//i.test(b.type||'')&&b.size<=64*1024*1024)entries.push([String(k).slice(0,200),b]);}catch(_){}
           }else if(dbName==='sukunCustomAmb'){
-            const a=it&&it.__audioRecord,d=a&&a.blob,name=String(a&&a.name||'').trim().slice(0,28);
-            if(!/^c\d{8,20}$/.test(String(k))||!name||typeof d!=='string'||!sesUri.test(d))continue;
+            const isH=/^h:[a-z0-9_-]{1,60}$/i.test(String(k));
+            const a=isH?(it&&it.__hybridRecord):(it&&it.__audioRecord),d=a&&a.blob,name=String(a&&a.name||'').trim().slice(0,isH?64:28);
+            if((!isH&&!/^c\d{8,20}$/.test(String(k)))||!name||typeof d!=='string'||!sesUri.test(d))continue;
             toplam+=d.length;if(d.length>90*1024*1024||toplam>260*1024*1024){db.close();return res(0)}
-            try{const r=await fetch(d),b=await r.blob();if(/^audio\//i.test(b.type||'')&&b.size<=64*1024*1024)entries.push([String(k),{name,blob:b}]);}catch(_){}
+            try{const r=await fetch(d),b=await r.blob();if(/^audio\//i.test(b.type||'')&&b.size<=64*1024*1024)entries.push([String(k),isH?{name,blob:b,mix:isFinite(+a.mix)?Math.max(0,Math.min(1,+a.mix)):.42,hybrid:true}:{name,blob:b}]);}catch(_){}
           }else if(it&&Object.prototype.hasOwnProperty.call(it,'__val')){
             let boy=0;try{boy=JSON.stringify(it.__val).length}catch(_){continue}
             toplam+=boy;if(boy>2*1024*1024||toplam>260*1024*1024){db.close();return res(false)}
@@ -20606,7 +21665,7 @@ Object.assign(I18N.D, {"Rast Taksimi":"Rast Taksim","Rast makamı • sefa, iç 
 /* r169–r174: sonradan eklenen/yenilenen metinler için tekil düzeltme katmanı. */
 Object.assign(I18N.D,{
   "Tasavvufî Ses, Zikir & Tefekkür":"Sufi Sound, Dhikr & Contemplation",
-  "SÜKÛN v13.0 — build 2026-08-20-r174":"SÜKÛN v13.0 — build 2026-08-20-r174",
+  "SÜKÛN v13.1 — build 2026-08-20-r175":"SÜKÛN v13.1 — build 2026-08-20-r175",
   "28 isim • yorumî esmâ haritası":"28 names • interpretive map of the Names",
   "Kaydetmek veya durdurmak için zikir sahnesindeki altın 🎙 simgesine dokun. <b>Süre sınırı pratikte yok</b> — Âyetü'l-Kürsî gibi uzun sûreleri baştan sona okuyabilirsin; bitirmek için aynı simgeye tekrar dokun. Kayıt sürerken ekranın tepesinde sayaç görünür ve ekran uyanık tutulur. Varsa kaydın çalar; yoksa cihaz sesi (TTS) kullanılır.":"Tap the gold 🎙 icon on the dhikr stage to record or stop. <b>There is effectively no duration limit</b>; a timer remains visible while recording. Your recording is preferred, otherwise the device voice (TTS) is used.",
   "API anahtarı bu cihazda saklanır. “Daha derin açıklama” çalıştırıldığında anahtarın, yazdığın hâl cümlesinin ve oluşturulan reçetenin açıklamayı üretmek üzere doğrudan Anthropic'e gönderilmesine izin vermiş olursun; SÜKÛN sunucusuna aktarılmaz. Boş bırakırsan reçete çevrimdışı çalışır.":"The API key is stored on this device. When you request a deeper explanation, the key, your state sentence and the generated arrangement are sent directly to Anthropic to produce it; they are not sent to a SÜKÛN server. Leave it empty to stay offline.",
@@ -27946,5 +29005,1175 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="r175-workflow-css">
+/* r170 — bağlı sistem + motion language */
+:root{--motion-fast:160ms;--motion-med:220ms;--motion-slow:360ms}
+.r170Hub{margin:12px 0 18px;border:1px solid color-mix(in srgb,var(--gold) 22%,var(--line));border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(0,0,0,.12));overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.16)}
+.r170Hub>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer}.r170Hub>summary::-webkit-details-marker{display:none}.r170Hub>summary b{font-size:11px;letter-spacing:.09em}.r170Hub>summary small{display:block;color:var(--dim);font-size:9px;margin-top:2px}.r170Hub>summary:after{content:'⌄';margin-left:auto;color:var(--gold);transition:transform var(--motion-med)}.r170Hub[open]>summary:after{transform:rotate(180deg)}
+.r170Body{padding:0 12px 13px;animation:r170Reveal var(--motion-med) ease both}@keyframes r170Reveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.r170Grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.r170Card{border:1px solid var(--line);border-radius:13px;padding:10px;background:rgba(255,255,255,.018)}.r170Card h4{font-size:10px;margin:0 0 6px;color:var(--goldh);letter-spacing:.06em}.r170Card p{font-size:9px;line-height:1.55;color:var(--dim);margin:0}.r170Full{grid-column:1/-1}
+.r170Row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.r170Row>*{min-width:0}.r170Input,.r170Select{background:rgba(0,0,0,.2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px;font:inherit;font-size:10px}.r170Select{min-height:36px}.r170Grow{flex:1 1 160px}.r170Btn{border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line));background:linear-gradient(180deg,rgba(222,174,85,.09),rgba(222,174,85,.025));color:var(--text);border-radius:10px;padding:8px 10px;font-size:10px;min-height:36px;transition:transform var(--motion-fast),border-color var(--motion-fast),background var(--motion-fast)}.r170Btn:active{transform:scale(.975)}.r170Btn.on{border-color:var(--gold);color:var(--goldh);background:rgba(222,174,85,.12)}
+.r170Pills{display:flex;gap:5px;overflow:auto;padding:2px 0 5px}.r170Pills button{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);padding:6px 9px;font-size:9px}.r170Pills button.on{color:var(--goldh);border-color:color-mix(in srgb,var(--gold) 65%,var(--line));background:rgba(222,174,85,.08)}
+.r170Queue{margin-top:8px;max-height:220px;overflow:auto}.r170Step{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:7px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--line)}.r170Step>i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);font-style:normal;font-size:8px}.r170Step.active{background:rgba(222,174,85,.05)}.r170Step.active>i{border-color:var(--gold);color:var(--gold)}.r170Step b{font-size:10px}.r170Step small{display:block;color:var(--dim);font-size:8px;margin-top:2px}
+#r170Now{position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:calc(72px + env(safe-area-inset-bottom));z-index:1200;border:1px solid color-mix(in srgb,var(--gold) 32%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(18px);box-shadow:0 16px 45px rgba(0,0,0,.32);padding:9px 10px;display:none;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}#r170Now.show{display:grid;animation:r170Up var(--motion-med) ease both}@keyframes r170Up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}#r170Now small{font-size:8px;color:var(--dim);display:block}#r170Now b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.r170NowBtns{display:flex;gap:4px}.r170NowBtns button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--text)}
+.r170Progress{height:5px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin-top:6px}.r170Progress i{height:100%;width:0;display:block;background:linear-gradient(90deg,var(--gold),var(--goldh));transition:width var(--motion-med)}
+#r170Wave{width:100%;height:96px;border-radius:12px;background:rgba(0,0,0,.18);border:1px solid var(--line);display:block}.r170StudioMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.r170StudioMeta div{text-align:center;border:1px solid var(--line);border-radius:10px;padding:7px}.r170StudioMeta b{font-size:10px;display:block}.r170StudioMeta small{font-size:7px;color:var(--dim)}
+.r170Bars{display:flex;align-items:end;gap:4px;height:92px;padding:8px 0}.r170Bars i{flex:1;min-width:7px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,var(--goldh),color-mix(in srgb,var(--gold) 35%,transparent));opacity:.75}.r170StatLine{display:grid;grid-template-columns:96px 1fr auto;gap:7px;align-items:center;margin:6px 0}.r170StatLine span{font-size:8px;color:var(--dim)}.r170StatLine .track{height:5px;background:rgba(255,255,255,.05);border-radius:999px;overflow:hidden}.r170StatLine .track i{display:block;height:100%;background:var(--gold);border-radius:999px}.r170StatLine b{font-size:9px}
+.r170SourceItem{padding:9px 0;border-bottom:1px solid var(--line)}.r170SourceItem b{font-size:10px}.r170SourceItem p{margin:3px 0 0;font-size:9px;line-height:1.5;color:var(--dim)}
+.r170Diag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;line-height:1.7;background:rgba(0,0,0,.18);border:1px solid var(--line);padding:9px;border-radius:11px;white-space:pre-wrap;max-height:230px;overflow:auto}.r170Good{color:#8ed4ad}.r170Warn{color:#e6b45d}.r170Bad{color:#e48d82}
+.r170BackupPreview{margin-top:8px;border:1px solid var(--line);border-radius:11px;padding:9px;font-size:9px;line-height:1.7}.r170BackupPreview b{color:var(--goldh)}
+.r170AtlasNav{display:grid;grid-template-columns:auto 1fr auto;gap:6px;margin:7px 0}.r170AtlasNav input{width:100%;box-sizing:border-box}.r170Compare{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.r170Compare>div{border:1px solid var(--line);border-radius:11px;padding:8px}.r170Compare b{font-size:10px}.r170Compare small{display:block;color:var(--dim);font-size:8px;margin:3px 0}.r170Compare .ar{font-size:18px;text-align:center;margin:6px 0;color:var(--goldh)}
+.motionPulse{animation:r170Pulse .5s ease}@keyframes r170Pulse{0%{box-shadow:0 0 0 0 rgba(222,174,85,.3)}100%{box-shadow:0 0 0 18px rgba(222,174,85,0)}}
+@media(max-width:390px){.r170Grid,.r170Compare{grid-template-columns:1fr}.r170Full{grid-column:auto}.r170StudioMeta{grid-template-columns:1fr 1fr}.r170StatLine{grid-template-columns:78px 1fr auto}}
+@media(prefers-reduced-motion:reduce){.r170Body,#r170Now.show,.motionPulse{animation:none!important}.r170Btn,.r170Progress i,.r170Hub>summary:after{transition:none!important}}
+</style>
+<script id="r175-workflow-system">
+(()=>{
+'use strict';
+const R170=window.R170=window.R170||{};
+const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* r175: r170 deneme dalından kalan seansları kaybetme; yeni anahtara bir kez taşı. */
+try{
+  if(!localStorage.getItem('sukun.sessions.v2')&&localStorage.getItem('sukun.r170.sessions'))
+    localStorage.setItem('sukun.sessions.v2',localStorage.getItem('sukun.r170.sessions'));
+  if(!localStorage.getItem('sukun.session.player.v2')&&localStorage.getItem('sukun.r170.player'))
+    localStorage.setItem('sukun.session.player.v2',localStorage.getItem('sukun.r170.player'));
+}catch(e){}
+
+function selectedItem(){try{return {cat:Z.cat,idx:Z.idx,it:ZIKIR[Z.cat].items[Z.idx]}}catch(e){return null}}
+function labelOf(cat,idx){try{const it=ZIKIR[cat].items[idx];return it.tr||it.t||it.nm||('Öğe '+(idx+1))}catch(e){return 'Öğe'}}
+function reveal(id){const el=document.getElementById(id);if(!el)return;try{window.zMegaReveal&&zMegaReveal(el)}catch(e){};if(el.tagName==='DETAILS')el.open=true;setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),40)}
+
+/* ═══ 1 + 2 + 7: SEANS OLUŞTURUCU · ŞİMDİ ÇALIYOR · SNAPSHOT ═══ */
+const P=R170.Player={queue:[],i:0,playing:false,paused:false,token:0,name:'',started:0,stepStarted:0,key:'sukun.session.player.v2',lastSource:'',
+ save(){ls.set(this.key,{queue:this.queue,i:this.i,name:this.name,playing:this.playing,paused:this.paused,unfinished:!!(this.queue.length&&(this.playing||this.paused||this.i>0&&this.i<this.queue.length-1)),t:Date.now()})},
+ restore(){const x=ls.get(this.key,null);if(!x||!Array.isArray(x.queue)||!x.queue.length||!x.unfinished)return false;if(Date.now()-(+x.t||0)>14*24*3600*1000)return false;this.queue=x.queue;this.i=Math.min(x.i||0,x.queue.length-1);this.name=x.name||'Yarım kalan seans';this.playing=false;this.paused=true;return true},
+ set(q,name){this.stop(false);this.queue=q||[];this.i=0;this.name=name||'Seans';this.save();nowRender();queueRender()},
+ async play(){if(!this.queue.length)return;this.playing=true;this.paused=false;this.token++;this.started=this.started||Date.now();this.save();nowRender();this.loop(this.token)},
+ pause(){this.paused=true;this.playing=false;this.token++;try{sesDurdur();speechSynthesis.cancel()}catch(e){};this.save();nowRender()},
+ stop(clear=true){this.playing=false;this.paused=false;this.token++;try{sesDurdur();speechSynthesis.cancel()}catch(e){};if(clear){this.i=0;this.started=0}this.save();nowRender();queueRender()},
+ prev(){this.token++;this.i=Math.max(0,this.i-1);this.playing=false;try{sesDurdur();speechSynthesis.cancel()}catch(e){};this.save();nowRender();queueRender()},
+ next(){this.token++;this.i=Math.min(Math.max(0,this.queue.length-1),this.i+1);this.playing=false;try{sesDurdur();speechSynthesis.cancel()}catch(e){};this.save();nowRender();queueRender()},
+ async one(step,token){if(!step||token!==this.token)return;this.stepStarted=Date.now();if(step.type==='silence'){this.lastSource='sükût';await sleep(Math.max(200,+step.ms||1000));return}
+   if(step.type==='zikir'){try{Z.cat=step.cat;Z.idx=step.idx;renderZikir(false);zUI()}catch(e){};const it=ZIKIR[step.cat]?.items?.[step.idx];if(!it)return;const reps=Math.max(1,+step.reps||1);for(let n=0;n<reps&&this.playing&&!this.paused&&token===this.token;n++){const r=await (window.R168?.AudioResolver?.play?R168.AudioResolver.play(step.cat,step.idx,it):Promise.resolve({source:'tts'}));this.lastSource=r?.source||'ses';nowRender();if(n<reps-1)await sleep(+step.gap||600)}return}
+   if(step.type==='frequency'){try{FR.c=+step.c||FR.c;FR.b=+step.b||FR.b;FR.mode=step.mode||FR.mode;if(FR.playing)frRetune(.25);else frStart();this.lastSource='frekans';nowRender();await sleep(Math.max(1000,+step.ms||60000));if(step.stop!==false&&FR.playing)frStop()}catch(e){}return}},
+ async loop(token){while(this.playing&&!this.paused&&token===this.token&&this.i<this.queue.length){queueRender();nowRender();await this.one(this.queue[this.i],token);if(!this.playing||this.paused||token!==this.token)return;this.i++;this.save()}if(this.i>=this.queue.length&&this.playing){this.playing=false;this.paused=false;this.i=0;this.save();nowRender('Seans tamamlandı ✦');try{vib&&vib([25,40,45]);sfx&&sfx('done')}catch(e){}}}
+};
+function stepTitle(s){if(s.type==='zikir')return labelOf(s.cat,s.idx)+(s.reps>1?' ×'+s.reps:'');if(s.type==='silence')return 'Sükût · '+Math.round((s.ms||0)/1000)+' sn';if(s.type==='frequency')return (s.c||'')+' Hz · '+(s.b||'')+' Hz vuruş';return s.type}
+function nowCreate(){if(document.getElementById('r170Now'))return;const d=document.createElement('div');d.id='r170Now';d.innerHTML='<div><small id="r170NowTop">ŞİMDİ ÇALIYOR</small><b id="r170NowTitle">—</b><div class="r170Progress"><i id="r170NowBar"></i></div></div><div class="r170NowBtns"><button id="r170Prev">‹</button><button id="r170Play">▶</button><button id="r170Next">›</button><button id="r170Stop">■</button></div>';document.body.appendChild(d);d.querySelector('#r170Prev').onclick=()=>P.prev();d.querySelector('#r170Play').onclick=()=>P.playing?P.pause():P.play();d.querySelector('#r170Next').onclick=()=>P.next();d.querySelector('#r170Stop').onclick=()=>P.stop();try{if('mediaSession'in navigator){navigator.mediaSession.setActionHandler('play',()=>P.play());navigator.mediaSession.setActionHandler('pause',()=>P.pause());navigator.mediaSession.setActionHandler('previoustrack',()=>P.prev());navigator.mediaSession.setActionHandler('nexttrack',()=>P.next());navigator.mediaSession.setActionHandler('stop',()=>P.stop())}}catch(e){}}
+function nowRender(msg){const d=document.getElementById('r170Now');if(!d)return;const s=P.queue[P.i];d.classList.toggle('show',!!(P.queue.length&&(P.playing||P.paused)));document.getElementById('r170NowTop').textContent=msg||(P.paused?'DURAKLATILDI':P.name||'ŞİMDİ ÇALIYOR');document.getElementById('r170NowTitle').textContent=s?stepTitle(s):'—';document.getElementById('r170Play').textContent=P.playing?'Ⅱ':'▶';const b=document.getElementById('r170NowBar');if(b)b.style.width=(P.queue.length?Math.min(100,((P.i+(P.playing?.25:0))/P.queue.length)*100):0)+'%';try{if('mediaSession'in navigator&&s){navigator.mediaSession.metadata=new MediaMetadata({title:stepTitle(s),artist:'SÜKÛN',album:P.name||'Seans'})}}catch(e){}}
+
+const PRESETS={
+ sabah:{name:'Sabah Sükûnu',make:()=>[{type:'zikir',cat:'temel',idx:Math.max(0,ZIKIR.temel.items.findIndex(x=>(x.tr||'').includes('Estağfir'))),reps:3,gap:500},{type:'silence',ms:5000},{type:'zikir',cat:'esma',idx:Math.max(0,ZIKIR.esma.items.findIndex(x=>(x.tr||'').includes('Nûr'))),reps:11,gap:600}]},
+ istigfar:{name:'İstiğfar Akışı',make:()=>[{type:'zikir',cat:'temel',idx:Math.max(0,ZIKIR.temel.items.findIndex(x=>(x.tr||'').includes('Estağfir'))),reps:33,gap:500},{type:'silence',ms:8000}]},
+ korunma:{name:'Korunma Okumaları',make:()=>['Felâk','Nâs','İhlâs','Kalem'].map(n=>{let idx=ZIKIR.koruma.items.findIndex(x=>(x.tr||'').includes(n));return{type:'zikir',cat:'koruma',idx:Math.max(0,idx),reps:n==='İhlâs'?3:1,gap:800}})},
+ berhet:{name:'Berhetiyye 28 İsim · 1 tur',make:()=>ZIKIR.berhet.items.map((_,i)=>({type:'zikir',cat:'berhet',idx:i,reps:1,gap:900}))},
+ uyku:{name:'Gece Sükûtu',make:()=>[{type:'frequency',c:180,b:2.5,mode:'bin',ms:10*60*1000,stop:true},{type:'silence',ms:30000}]}
+};
+function sessionHost(){let anchor=document.getElementById('prDashboard')||document.querySelector('.tabs');if(!anchor)return null;let d=document.getElementById('r170SessionHub');if(d)return d;d=document.createElement('details');d.id='r170SessionHub';d.className='r170Hub';d.open=false;d.innerHTML=`<summary><span>✦</span><span><b>AKILLI SEANS OLUŞTURUCU</b><small>niyet · ses · sükût · frekans · kaldığın yerden devam</small></span></summary><div class="r170Body"><div class="r170Pills" id="r170PresetPills"></div><div class="r170Row"><button class="r170Btn" id="r170CurrentAdd">+ Şu anki zikri ekle</button><button class="r170Btn" id="r170SilenceAdd">+ 10 sn sükût</button><button class="r170Btn" id="r170FreqAdd">+ Şu anki frekansı ekle</button><button class="r170Btn" id="r170ClearQ">Temizle</button></div><div class="r170Queue" id="r170Queue"></div><div class="r170Row" style="margin-top:8px"><input class="r170Input r170Grow" id="r170SessionName" placeholder="Seans adı"><button class="r170Btn" id="r170SaveSession">Kaydet</button><button class="r170Btn" id="r170StartSession">▶ Başlat</button></div><div class="r170Pills" id="r170SavedSessions" style="margin-top:6px"></div><div id="r170Resume" class="r170BackupPreview" hidden></div></div>`;anchor.insertAdjacentElement('afterend',d);const pills=d.querySelector('#r170PresetPills');Object.entries(PRESETS).forEach(([k,p])=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{P.set(p.make().filter(s=>s.idx!==-1),p.name);d.querySelector('#r170SessionName').value=p.name};pills.appendChild(b)});d.querySelector('#r170CurrentAdd').onclick=()=>{const x=selectedItem();if(!x)return;P.queue.push({type:'zikir',cat:x.cat,idx:x.idx,reps:1,gap:600});P.save();queueRender()};d.querySelector('#r170SilenceAdd').onclick=()=>{P.queue.push({type:'silence',ms:10000});P.save();queueRender()};d.querySelector('#r170FreqAdd').onclick=()=>{try{P.queue.push({type:'frequency',c:FR.c,b:FR.b,mode:FR.mode,ms:5*60*1000,stop:true});P.save();queueRender()}catch(e){}};d.querySelector('#r170ClearQ').onclick=()=>P.set([],'');d.querySelector('#r170StartSession').onclick=()=>{P.name=(d.querySelector('#r170SessionName').value||P.name||'Seans').trim();P.play()};d.querySelector('#r170SaveSession').onclick=()=>{const a=ls.get('sukun.sessions.v2',[]),name=(d.querySelector('#r170SessionName').value||P.name||'Seans').trim();if(!P.queue.length)return;a.unshift({id:Date.now(),name,queue:P.queue});ls.set('sukun.sessions.v2',a.slice(0,20));savedRender()};savedRender();if(P.restore()){const r=d.querySelector('#r170Resume');r.hidden=false;r.innerHTML='<b>Yarım kalan seans:</b> '+esc(P.name)+' · '+(P.i+1)+'/'+P.queue.length+' <button class="r170Btn" id="r170ResumeBtn" style="float:right;min-height:28px;padding:4px 8px">Devam</button>';r.querySelector('#r170ResumeBtn').onclick=()=>{P.play();d.open=true}}return d}
+function queueRender(){const q=document.getElementById('r170Queue');if(!q)return;q.innerHTML=P.queue.length?P.queue.map((s,i)=>`<div class="r170Step ${i===P.i?'active':''}" data-i="${i}"><i>${i+1}</i><span><b>${esc(stepTitle(s))}</b><small>${esc(s.type)}</small></span><button class="r170Btn" data-del="${i}" style="min-height:28px;padding:3px 7px">×</button></div>`).join(''):'<div class="r168Status">Henüz adım yok. Bir hazır akış seç veya adım ekle.</div>';q.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{P.queue.splice(+b.dataset.del,1);P.i=Math.min(P.i,Math.max(0,P.queue.length-1));P.save();queueRender()})}
+function savedRender(){const h=document.getElementById('r170SavedSessions');if(!h)return;h.innerHTML='';for(const s of ls.get('sukun.sessions.v2',[])){const b=document.createElement('button');b.textContent='↻ '+s.name;b.onclick=()=>{P.set(s.queue,s.name);const n=document.getElementById('r170SessionName');if(n)n.value=s.name};h.appendChild(b)}}
+
+/* ═══ 3: KENDİ SESLERİM STÜDYOSU ═══ */
+const Studio=R170.Studio={key:null,stream:null,mr:null,chunks:[],raf:0,audioCtx:null};
+function wavFromBuffer(buf,scale=1,start=0,end=buf.length){const ch=buf.numberOfChannels,sr=buf.sampleRate,len=Math.max(0,end-start),ab=new ArrayBuffer(44+len*ch*2),v=new DataView(ab);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+len*ch*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,len*ch*2,true);let o=44;for(let i=start;i<end;i++)for(let c=0;c<ch;c++){let x=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]*scale));v.setInt16(o,x<0?x*32768:x*32767,true);o+=2}return new Blob([ab],{type:'audio/wav'})}
+async function decodeBlob(blob){const a=await blob.arrayBuffer();let c=null;try{c=ctx||new AudioContext()}catch(e){c=new AudioContext()}return await c.decodeAudioData(a.slice(0))}
+async function analyzeKey(key,draw=true){const blob=await REC_DB.get(key);if(!blob)return null;const b=await decodeBlob(blob);let peak=0,sum=0,n=0;for(let c=0;c<b.numberOfChannels;c++){const d=b.getChannelData(c);for(let i=0;i<d.length;i+=Math.max(1,Math.floor(d.length/200000))){const x=Math.abs(d[i]);peak=Math.max(peak,x);sum+=x*x;n++}}const rms=Math.sqrt(sum/Math.max(1,n)),dur=b.duration;if(draw)drawWave(b);return{b,peak,rms,dur,size:blob.size}}
+function drawWave(b,live){const cv=document.getElementById('r170Wave');if(!cv)return;const dpr=Math.min(2,devicePixelRatio||1),w=cv.clientWidth||300,h=cv.clientHeight||96;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,w,h);x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#c99a42';x.lineWidth=1;const d=b.getChannelData?b.getChannelData(0):b,step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const y=d[Math.min(d.length-1,i*step+j)]||0;mn=Math.min(mn,y);mx=Math.max(mx,y)}x.moveTo(i,(1+mn)*h/2);x.lineTo(i,(1+mx)*h/2)}x.stroke()}
+function studioCreate(){const lib=document.getElementById('sesKutuphane');if(!lib||document.getElementById('r170Studio'))return;const d=document.createElement('details');d.id='r170Studio';d.className='r170Hub';d.innerHTML=`<summary><span>🎙</span><span><b>KAYIT STÜDYOSU</b><small>analiz · normalize · sessizlik kırp · yeniden kayıt</small></span></summary><div class="r170Body"><select class="r170Select" id="r170StudioSel" style="width:100%"><option value="">Bir kayıt seç…</option></select><canvas id="r170Wave"></canvas><div class="r170StudioMeta"><div><b id="r170Dur">—</b><small>SÜRE</small></div><div><b id="r170Peak">—</b><small>TEPE</small></div><div><b id="r170Size">—</b><small>BOYUT</small></div></div><div class="r170Row" style="margin-top:8px"><button class="r170Btn" id="r170Analyze">Analiz et</button><button class="r170Btn" id="r170Norm">Normalize</button><button class="r170Btn" id="r170Trim">Sessizliği kırp</button><button class="r170Btn" id="r170ReRec">Yeniden kaydet</button></div><div class="r168Status" id="r170StudioStat">Bir kayıt seç.</div></div>`;lib.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)studioKeys()});d.querySelector('#r170StudioSel').onchange=e=>{Studio.key=e.target.value;if(Studio.key)studioAnalyze()};d.querySelector('#r170Analyze').onclick=studioAnalyze;d.querySelector('#r170Norm').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key);if(!a)return;const scale=a.peak>.001?Math.min(4,.92/a.peak):1;await REC_DB.set(Studio.key,wavFromBuffer(a.b,scale));document.getElementById('r170StudioStat').textContent='Normalize edildi · tepe ≈ %92';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170Trim').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key),b=a?.b;if(!b)return;const d0=b.getChannelData(0),th=.012;let s=0,e=d0.length-1;while(s<e&&Math.abs(d0[s])<th)s++;while(e>s&&Math.abs(d0[e])<th)e--;const pad=Math.round(b.sampleRate*.08);s=Math.max(0,s-pad);e=Math.min(d0.length,e+pad);await REC_DB.set(Studio.key,wavFromBuffer(b,1,s,e));document.getElementById('r170StudioStat').textContent='Baş/son sessizlik kırpıldı.';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170ReRec').onclick=studioRecord}
+async function studioKeys(){const s=document.getElementById('r170StudioSel');if(!s)return;const cur=s.value;let keys=[];try{keys=await REC_DB.keys()}catch(e){}s.innerHTML='<option value="">Bir kayıt seç…</option>'+keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyLabel(k))+'</option>').join('');if(keys.includes(cur))s.value=cur}
+async function studioAnalyze(){if(!Studio.key)return;const st=document.getElementById('r170StudioStat');try{st.textContent='Analiz ediliyor…';const a=await analyzeKey(Studio.key);document.getElementById('r170Dur').textContent=a.dur.toFixed(1)+' sn';document.getElementById('r170Peak').textContent=Math.round(a.peak*100)+'%';document.getElementById('r170Size').textContent=(a.size/1024).toFixed(0)+' KB';st.textContent='Hazır · RMS '+Math.round(a.rms*100)+'%'}catch(e){st.textContent='Analiz yapılamadı: '+e.message}}
+async function studioRecord(){if(!Studio.key){document.getElementById('r170StudioStat').textContent='Önce üzerine yazılacak kaydı seç.';return}const st=document.getElementById('r170StudioStat');try{if(Studio.mr&&Studio.mr.state==='recording'){Studio.mr.stop();return}st.textContent='3…';await sleep(700);st.textContent='2…';await sleep(700);st.textContent='1…';await sleep(700);const stream=await navigator.mediaDevices.getUserMedia({audio:typeof micKisit==='function'?micKisit().audio:true});Studio.stream=stream;const mr=new MediaRecorder(stream);Studio.mr=mr;Studio.chunks=[];mr.ondataavailable=e=>{if(e.data?.size)Studio.chunks.push(e.data)};mr.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(Studio.chunks,{type:mr.mimeType||'audio/webm'});await REC_DB.set(Studio.key,blob);st.textContent='Yeni kayıt kaydedildi ✦';Studio.mr=null;studioAnalyze();try{mediaRender()}catch(e){}};mr.start(250);st.textContent='⏺ Kayıt sürüyor — “Yeniden kaydet” düğmesine tekrar basınca biter.';const AC=window.AudioContext||window.webkitAudioContext;const c=new AC(),src=c.createMediaStreamSource(stream),an=c.createAnalyser();an.fftSize=512;src.connect(an);const arr=new Float32Array(an.fftSize);const live=()=>{if(!Studio.mr||Studio.mr.state!=='recording'){try{c.close()}catch(e){};return}an.getFloatTimeDomainData(arr);drawWave(arr,true);Studio.raf=requestAnimationFrame(live)};live()}catch(e){st.textContent='Mikrofon açılamadı: '+e.message}}
+
+/* ═══ 4: İSTATİSTİK ═══ */
+function statsCreate(){let a=document.getElementById('r170SessionHub');if(!a)return;let d=document.getElementById('r170Stats');if(d)return;d=document.createElement('details');d.id='r170Stats';d.className='r170Hub';d.innerHTML=`<summary><span>◫</span><span><b>7 GÜNLÜK SEYİR ÖZETİ</b><small>süreklilik görünümü · manevî puanlama yok</small></span></summary><div class="r170Body"><div class="r170Grid"><div class="r170Card"><h4>TOPLAM ZİKİR</h4><b id="r170StatZ">0</b></div><div class="r170Card"><h4>SEANS SÜRESİ</h4><b id="r170StatM">0 dk</b></div><div class="r170Card r170Full"><h4>SON 7 GÜN</h4><div class="r170Bars" id="r170Bars"></div></div><div class="r170Card r170Full"><h4>EN ÇOK ÇALIŞILANLAR</h4><div id="r170Top"></div></div></div></div>`;a.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)statsRender()})}
+function statsRender(){let logs=[];try{logs=(typeof S!=='undefined'?S.get('sukun.log',[]):[])||[]}catch(e){};const now=new Date();now.setHours(23,59,59,999);const days=[];for(let i=6;i>=0;i--){const e=new Date(now);e.setDate(e.getDate()-i);const s=new Date(e);s.setHours(0,0,0,0);let z=0,sec=0;for(const x of logs){const t=x.t||x.t0||0;if(t>=s.getTime()&&t<=e.getTime()){z+=+x.count||+x.zikir||0;sec+=+x.dur||0}}days.push({lab:s.toLocaleDateString('tr-TR',{weekday:'short'}),z,sec})}const totalZ=days.reduce((a,b)=>a+b.z,0),totalSec=days.reduce((a,b)=>a+b.sec,0);document.getElementById('r170StatZ').textContent=totalZ.toLocaleString('tr-TR');document.getElementById('r170StatM').textContent=Math.round(totalSec/60)+' dk';const mx=Math.max(1,...days.map(x=>x.z||x.sec/10));document.getElementById('r170Bars').innerHTML=days.map(x=>'<i title="'+x.lab+' · '+x.z+'" style="height:'+Math.max(8,Math.round(((x.z||x.sec/10)/mx)*82))+'px"></i>').join('');const tops={};for(const x of logs){const d=x.detail||x.nm||x.name||'';if(d)tops[d]=(tops[d]||0)+1}const arr=Object.entries(tops).sort((a,b)=>b[1]-a[1]).slice(0,5),m=Math.max(1,...arr.map(x=>x[1]));document.getElementById('r170Top').innerHTML=arr.length?arr.map(([k,v])=>`<div class="r170StatLine"><span>${esc(k.slice(0,32))}</span><div class="track"><i style="width:${v/m*100}%"></i></div><b>${v}</b></div>`).join(''):'<div class="r168Status">Henüz yeterli günlük verisi yok.</div>'}
+
+/* ═══ 5: BERHETİYYE ATLAS 2.0 ═══ */
+function atlas2(){const a=document.getElementById('berhetAtlasBody');if(!a||document.getElementById('r170AtlasTools'))return;const d=document.createElement('div');d.id='r170AtlasTools';d.innerHTML=`<div class="r170AtlasNav"><button class="r170Btn" id="r170AtlasPrev">‹</button><input class="r170Input" id="r170AtlasSearch" placeholder="28 İsim içinde ara…"><button class="r170Btn" id="r170AtlasNext">›</button></div><div class="r170Row"><select class="r170Select r170Grow" id="r170CmpA"></select><span style="font-size:9px;color:var(--dim)">↔</span><select class="r170Select r170Grow" id="r170CmpB"></select></div><div class="r170Compare" id="r170Compare"></div>`;a.insertAdjacentElement('beforebegin',d);const items=ZIKIR.berhet.items,opts=items.map((x,i)=>'<option value="'+i+'">'+(i+1)+'. '+esc(x.tr)+'</option>').join('');d.querySelector('#r170CmpA').innerHTML=opts;d.querySelector('#r170CmpB').innerHTML=opts;d.querySelector('#r170CmpB').value='1';const nav=dir=>{Z.cat='berhet';Z.idx=(Z.idx+dir+items.length)%items.length;renderZikir(false);zUI();try{atlasRender()}catch(e){}};d.querySelector('#r170AtlasPrev').onclick=()=>nav(-1);d.querySelector('#r170AtlasNext').onclick=()=>nav(1);d.querySelector('#r170AtlasSearch').oninput=e=>{const q=e.target.value.trim().toLocaleLowerCase('tr');if(!q)return;const i=items.findIndex(x=>((x.tr||'')+' '+(x.ar||'')+' '+(x.menzil||'')+' '+(x.unsur||'')).toLocaleLowerCase('tr').includes(q));if(i>=0){Z.cat='berhet';Z.idx=i;renderZikir(false);zUI();try{atlasRender()}catch(_){}}};d.querySelectorAll('select').forEach(s=>s.onchange=compareRender);compareRender()}
+function compareRender(){const box=document.getElementById('r170Compare');if(!box)return;const items=ZIKIR.berhet.items,a=items[+document.getElementById('r170CmpA').value||0],b=items[+document.getElementById('r170CmpB').value||1];const one=x=>`<div><b>${esc(x.tr)}</b><div class="ar" dir="rtl">${esc(x.ar)}</div><small>Ebced</small><b>${x.eb||'—'}</b><small>Menzil</small><b>${esc(x.menzil||'—')}</b><small>Unsur</small><b>${esc((x.unsur||'—')+' · '+(x.tabiat||'—'))}</b></div>`;box.innerHTML=one(a)+one(b)}
+
+/* ═══ 6: KAYNAK MERKEZİ ═══ */
+function sourceCenter(){const host=document.getElementById('zmgAraclar')?.querySelector('.zMegaBody')||document.getElementById('tab-zkr');if(!host||document.getElementById('r170Sources'))return;const d=document.createElement('details');d.id='r170Sources';d.className='r170Hub';d.innerHTML=`<summary><span>⌘</span><span><b>KAYNAK MERKEZİ</b><small>metin · gelenek · havas · yorum katmanlarını ayır</small></span></summary><div class="r170Body"><div class="r170SourceItem"><b>📖 Kur’ân / dinî metin</b><p>Âyet ve sûreler bu katmanda gösterilir. Uygulama bunları frekans veya sembolik yorumlarla aynı kaynak düzeyinde sunmaz.</p></div><div class="r170SourceItem"><b>🕌 Esmâ / tasavvufî gelenek</b><p>Esmâ-i Hüsnâ ve tasavvufî uygulama notları geleneksel pratik katmanıdır; kullanıcı tertipleri ayrıca belirtilir.</p></div><div class="r170SourceItem"><b>📜 Berhetiyye / havâs literatürü</b><p>Berhetiyye Kur’ân veya hadis değildir. Uygulamadaki okunuşlar ve nispetler varyantlı literatür olarak işaretlenir; tek doğru okunuş iddiası kurulmaz.</p></div><div class="r170SourceItem"><b>◇ Sembolik / Nero yorumu</b><p>Element, renk, ses, frekans veya çağrışım eşlemeleri kaynak metinden ayrı bir yorum katmanı olarak tutulur.</p></div><div class="r170BackupPreview">Bir kartta <b>Kaynak</b> etiketi görünmüyorsa o bilgi otomatik olarak tarihî kaynak kabul edilmemelidir.</div></div>`;host.appendChild(d)}
+
+/* ═══ 8: SES TANILAMA ═══ */
+const Diag=R170.Diag={events:[],push(k,v){this.events.unshift({t:Date.now(),k,v:String(v)});this.events=this.events.slice(0,40);diagRender()}};
+function diagCreate(){const host=document.getElementById('zmgAraclar')?.querySelector('.zMegaBody')||document.getElementById('tab-zkr');if(!host||document.getElementById('r170Diag'))return;const d=document.createElement('details');d.id='r170Diag';d.className='r170Hub';d.innerHTML=`<summary><span>◉</span><span><b>SES TANILAMA</b><small>AudioContext · ekran kilidi · kulaklık · kesinti izi</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170DiagRun">Tanı testi</button><button class="r170Btn" id="r170DiagRecover">Ses motorunu toparla</button><button class="r170Btn" id="r170DiagClear">Logu temizle</button></div><div class="r170Diag" id="r170DiagText" style="margin-top:8px"></div></div>`;host.appendChild(d);d.querySelector('#r170DiagRun').onclick=diagRun;d.querySelector('#r170DiagRecover').onclick=async()=>{try{await window.AudioLife?.recover?.('manual-diagnostic');Diag.push('recover','tamam')}catch(e){Diag.push('recover-error',e.message)}};d.querySelector('#r170DiagClear').onclick=()=>{Diag.events=[];diagRender()};['visibilitychange','freeze','resume'].forEach(ev=>document.addEventListener(ev,()=>Diag.push(ev,document.visibilityState||'')));window.addEventListener('pageshow',()=>Diag.push('pageshow',''));window.addEventListener('pagehide',()=>Diag.push('pagehide',''));diagRender()}
+async function diagRun(){let lines=[];lines.push('Zaman: '+new Date().toLocaleString('tr-TR'));lines.push('Görünürlük: '+document.visibilityState);lines.push('PWA: '+(matchMedia('(display-mode: standalone)').matches?'standalone':'browser'));lines.push('MediaSession: '+('mediaSession'in navigator?'var':'yok'));lines.push('WakeLock: '+('wakeLock'in navigator?'var':'yok'));lines.push('Speech: '+('speechSynthesis'in window?'var':'yok'));try{lines.push('AudioContext: '+(ctx?ctx.state:'henüz kurulmadı')+(ctx?' · '+ctx.sampleRate+' Hz':''))}catch(e){lines.push('AudioContext: erişilemedi')}try{lines.push('Kayıt sayısı: '+(await REC_DB.keys()).length)}catch(e){}try{if(navigator.mediaDevices?.enumerateDevices){const ds=await navigator.mediaDevices.enumerateDevices();lines.push('Ses çıkışı/girişi: '+ds.filter(x=>/audio/.test(x.kind)).length+' aygıt')}}catch(e){}Diag.push('test',lines.join(' | '));diagRender(lines)}
+function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b)return;let s='';if(extra)s+=extra.join('\n')+'\n\n';s+=Diag.events.map(x=>new Date(x.t).toLocaleTimeString('tr-TR')+'  '+x.k+'  '+x.v).join('\n');b.textContent=s||'Henüz tanı kaydı yok.'}
+
+/* ═══ 9: TAM YEDEK 2.0 ═══ */
+function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r175',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey')continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
+async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r175-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey')continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
+
+/* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
+function motionBind(){document.addEventListener('click',e=>{const b=e.target.closest('button,.cat,.tab,.r170Btn');if(!b)return;b.classList.remove('motionPulse');void b.offsetWidth;if(/done|tamam|kaydet|uygula|başlat|ekle/i.test(b.textContent||''))b.classList.add('motionPulse')},{passive:true});window.addEventListener('sukun:audiostate',()=>nowRender());}
+
+
+/* r175: r174'ün güvenli yedek sistemine sadece ÖNİZLEME ekle; ikinci bir importer yaratma. */
+function enhanceExistingBackup(){
+  const box=document.getElementById('bakStat');if(!box||document.getElementById('r175BackupPreview'))return;
+  const p=document.createElement('div');p.id='r175BackupPreview';p.className='r170BackupPreview';p.style.marginTop='7px';p.textContent='Yedek içeriğini görmek için “Önizle”ye dokun.';
+  const b=document.createElement('button');b.className='r170Btn';b.textContent='Yedeği önizle';b.style.marginTop='7px';
+  box.insertAdjacentElement('afterend',p);p.insertAdjacentElement('beforebegin',b);
+  b.onclick=async()=>{try{
+    const raw=await skExportData(),data=JSON.parse(raw);
+    const rec=Object.keys(data.idb?.sukunRec||{}).length,amb=Object.keys(data.idb?.sukunCustomAmb||{}).length;
+    let sess=0,gun=0;try{sess=JSON.parse(data.ls?.['sukun.sessions.v2']||'[]').length}catch(e){}
+    try{gun=JSON.parse(data.ls?.['sukun.maneviGunluk']||'[]').length}catch(e){}
+    p.innerHTML='<b>'+rec+' kendi ses kaydı</b> · '+amb+' özel ambiyans · '+sess+' kişisel seans · '+gun+' seyir günlüğü · '+Object.keys(data.ls||{}).length+' ayar/veri<br><span style="color:var(--dim)">API anahtarı ve tanılama verisi yedeğe alınmaz.</span>';
+  }catch(e){p.textContent='Önizleme hazırlanamadı: '+e.message}};
+}
+
+/* r175: zaten var olan Sistem Durumu paneline yaşam-döngüsü ve cihaz satırları ekle. */
+const R175Life={last:'—'};
+['visibilitychange','freeze','resume'].forEach(ev=>document.addEventListener(ev,()=>{R175Life.last=ev+' · '+(document.visibilityState||'')+' · '+new Date().toLocaleTimeString('tr-TR')},{passive:true}));
+window.addEventListener('pageshow',()=>{R175Life.last='pageshow · '+new Date().toLocaleTimeString('tr-TR')},{passive:true});
+window.addEventListener('pagehide',()=>{R175Life.last='pagehide · '+new Date().toLocaleTimeString('tr-TR')},{passive:true});
+function enhanceExistingDiag(){
+  const grid=document.querySelector('#prDiagOverlay .prDiagGrid');if(!grid||document.getElementById('prDdev'))return;
+  const cell=(lab,id)=>{const d=document.createElement('div');d.className='prDiagCell';d.innerHTML='<small>'+lab+'</small><b id="'+id+'">—</b>';grid.appendChild(d)};
+  cell('SES AYGITLARI','prDdev');cell('SON YAŞAM OLAYI','prDlife');
+  const refresh=async()=>{const a=document.getElementById('prDdev'),l=document.getElementById('prDlife');if(l)l.textContent=R175Life.last;try{const ds=await navigator.mediaDevices?.enumerateDevices?.();if(a)a.textContent=ds?ds.filter(x=>/audio/.test(x.kind)).length+' aygıt':'izin yok'}catch(e){if(a)a.textContent='erişilemedi'}};
+  const obs=new MutationObserver(()=>{if(document.getElementById('prDiagOverlay')?.hidden===false)refresh()});obs.observe(document.getElementById('prDiagOverlay'),{attributes:true,attributeFilter:['hidden']});refresh();
+}
+
+function init(){nowCreate();sessionHost();studioCreate();atlas2();sourceCenter();queueRender();nowRender();enhanceExistingBackup();enhanceExistingDiag()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,250),{once:true});else setTimeout(init,250);
+})();
+</script>
+
+
+<style id="r176-visual-polish">
+/* ════════════════════════════════════════════════════════════════
+   SÜKÛN r176 — PREMIUM VISUAL POLISH
+   İşlevleri değiştirmez; yüzey, hiyerarşi ve mikro-hareket katmanı.
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --pr-radius:18px;
+  --pr-radius-sm:13px;
+  --pr-border:color-mix(in srgb,var(--gold) 22%,transparent);
+  --pr-border-hot:color-mix(in srgb,var(--goldh) 48%,transparent);
+  --pr-surface:linear-gradient(145deg,
+    color-mix(in srgb,rgba(var(--yuzeyK),.88) 94%,white 6%),
+    rgba(var(--sayfa2K),.82));
+  --pr-elev:0 12px 34px -22px rgba(0,0,0,.86),
+             inset 0 1px 0 rgba(255,255,255,.035);
+  --pr-elev-hot:0 15px 38px -24px rgba(0,0,0,.9),
+                 0 0 28px color-mix(in srgb,var(--gold) 8%,transparent),
+                 inset 0 1px 0 rgba(255,255,255,.05);
+  --pr-fast:150ms;
+  --pr-mid:230ms;
+  --pr-ease:cubic-bezier(.2,.72,.28,1);
+}
+
+/* Sayfa: daha sakin derinlik, okunurluk için merkezde kontrollü ışık */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse at 50% 4%,color-mix(in srgb,var(--gold) 4%,transparent),transparent 34%);
+}
+.wrap{isolation:isolate}
+
+/* Kart dili */
+.card:not(#ns *):not(#tk *),
+.zStage,.preAcc,.tvkBox,.rxIntro,.vaultCard,
+.r170Card,.r175Card,.r170Now,.r170Studio,.r170Atlas,.r170Sources{
+  border-radius:var(--pr-radius)!important;
+  border:1px solid var(--pr-border)!important;
+  background:var(--pr-surface)!important;
+  box-shadow:var(--pr-elev)!important;
+  backdrop-filter:blur(14px) saturate(1.06);
+  -webkit-backdrop-filter:blur(14px) saturate(1.06);
+}
+.card:not(#ns *):not(#tk *){
+  position:relative;overflow:clip;
+  transition:border-color var(--pr-mid) var(--pr-ease),box-shadow var(--pr-mid) var(--pr-ease),transform var(--pr-mid) var(--pr-ease);
+}
+.card:not(#ns *):not(#tk *)::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(118deg,rgba(255,255,255,.035),transparent 24%,transparent 76%,color-mix(in srgb,var(--gold) 4%,transparent));
+  opacity:.75;
+}
+@media (hover:hover){
+  .card:not(#ns *):not(#tk *):hover{border-color:color-mix(in srgb,var(--gold) 30%,transparent)!important;box-shadow:var(--pr-elev-hot)!important}
+}
+
+/* Başlık: daha temiz marka hiyerarşisi */
+header{padding-top:clamp(12px,3vw,22px)}
+header h1{letter-spacing:.16em;text-indent:.16em;text-shadow:0 0 18px color-mix(in srgb,var(--gold) 15%,transparent)}
+header .sub{letter-spacing:.09em;opacity:.78}
+.logo{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--gold) 24%,transparent))}
+
+/* Ana sekmeler: yüzen segment bar */
+.tabs{
+  border:1px solid color-mix(in srgb,var(--gold) 15%,transparent)!important;
+  border-radius:17px!important;padding:5px!important;
+  background:rgba(var(--sayfa2K),.66)!important;
+  box-shadow:0 10px 28px -22px #000,inset 0 1px 0 rgba(255,255,255,.03);
+  backdrop-filter:blur(15px);
+}
+.tab,.tabTekke{
+  border-radius:12px!important;border:1px solid transparent!important;
+  transition:background var(--pr-fast) var(--pr-ease),color var(--pr-fast),border-color var(--pr-fast),transform var(--pr-fast) var(--pr-ease)!important;
+}
+.tab.act{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 12%,transparent),color-mix(in srgb,var(--gold) 5%,transparent))!important;
+  border-color:color-mix(in srgb,var(--gold) 26%,transparent)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 8px 18px -16px color-mix(in srgb,var(--gold) 60%,#000)!important;
+}
+.tab:active,.tabTekke:active{transform:scale(.96)}
+.tab.act::after{height:2px!important;left:28%!important;right:28%!important;bottom:2px!important;border-radius:9px!important;opacity:.8!important}
+
+/* Buton dili — şişkin değil, metal-cam yüzey */
+.btn,.zNav button,.mbBtn,.pre,.sess,.cat,.rxChip,
+button[data-mbhiz],.targetMode,.zStepBtn,.zAutoMain{
+  border-radius:12px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,transparent)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 5px 14px -13px #000!important;
+  transition:transform var(--pr-fast) var(--pr-ease),border-color var(--pr-fast),background var(--pr-fast),box-shadow var(--pr-fast),color var(--pr-fast)!important;
+}
+.btn{min-height:40px!important;padding:9px 14px!important;font-weight:620!important;letter-spacing:.015em}
+.btn:active,.zNav button:active,.mbBtn:active,.pre:active,.sess:active,.cat:active,.rxChip:active,
+.targetMode:active,.zStepBtn:active,.zAutoMain:active{transform:scale(.975)!important}
+.btn.primary,.btn.act,.cat.act,.pre.act,.sess.act,.rxChip.act,.targetMode.act{
+  border-color:var(--pr-border-hot)!important;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 15%,rgba(var(--girdiK),.5)),color-mix(in srgb,var(--gold) 6%,rgba(var(--girdiK),.5)))!important;
+}
+
+/* Toggle: ince ve kesin ölçü — global minimum yükseklikten bağımsız */
+.sw{width:34px!important;height:18px!important;min-width:34px!important;min-height:18px!important;max-height:18px!important;padding:0!important;border-radius:999px!important;
+  background:rgba(var(--girdiK),.72)!important;border:1px solid color-mix(in srgb,var(--gold) 22%,transparent)!important;box-shadow:inset 0 1px 3px rgba(0,0,0,.35)!important}
+.sw::after,.sw::before{transition:transform var(--pr-fast) var(--pr-ease),background var(--pr-fast),box-shadow var(--pr-fast)!important}
+.sw.on{background:color-mix(in srgb,var(--gold) 28%,rgba(var(--girdiK),.72))!important;border-color:color-mix(in srgb,var(--goldh) 48%,transparent)!important;box-shadow:0 0 14px color-mix(in srgb,var(--gold) 10%,transparent),inset 0 1px 3px rgba(0,0,0,.3)!important}
+
+/* Slider: daha ince ray, belirgin ama küçük thumb */
+input[type="range"]{height:24px!important;background:transparent!important}
+input[type="range"]::-webkit-slider-runnable-track{height:4px!important;border-radius:999px!important;background:linear-gradient(90deg,var(--gold) 0 var(--val,50%),color-mix(in srgb,var(--line2) 58%,transparent) var(--val,50%) 100%)!important}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none!important;width:16px!important;height:16px!important;margin-top:-6px!important;border-radius:50%!important;background:var(--goldh)!important;border:2px solid color-mix(in srgb,var(--gold) 60%,#fff)!important;box-shadow:0 0 0 3px rgba(var(--sayfaK),.75),0 0 12px color-mix(in srgb,var(--gold) 28%,transparent)!important}
+input[type="range"]::-moz-range-track{height:4px!important;border-radius:999px!important;background:color-mix(in srgb,var(--line2) 58%,transparent)!important}
+input[type="range"]::-moz-range-progress{height:4px!important;border-radius:999px!important;background:var(--gold)!important}
+input[type="range"]::-moz-range-thumb{width:14px!important;height:14px!important;border-radius:50%!important;background:var(--goldh)!important;border:2px solid var(--gold)!important;box-shadow:0 0 10px color-mix(in srgb,var(--gold) 24%,transparent)!important}
+
+/* Form alanları */
+input:not([type="range"]),select,textarea{
+  border-radius:12px!important;border:1px solid color-mix(in srgb,var(--gold) 18%,transparent)!important;
+  background:rgba(var(--girdiK),.72)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  transition:border-color var(--pr-fast),box-shadow var(--pr-fast),background var(--pr-fast)!important;
+}
+input:not([type="range"]):focus,select:focus,textarea:focus{
+  border-color:color-mix(in srgb,var(--goldh) 52%,transparent)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 9%,transparent)!important;
+  outline:none!important;
+}
+
+/* Akordeon/details: gerçek başlık şeridi ve yön oku */
+details{border-radius:var(--pr-radius-sm);overflow:hidden}
+details>summary{
+  min-height:46px;padding:11px 42px 11px 13px!important;border-radius:var(--pr-radius-sm)!important;
+  position:relative;cursor:pointer;list-style:none!important;
+  transition:background var(--pr-fast),color var(--pr-fast),border-color var(--pr-fast)!important;
+}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{
+  content:"⌄";position:absolute;right:14px;top:50%;transform:translateY(-52%) rotate(0);color:var(--goldh);font-size:16px;opacity:.72;
+  transition:transform var(--pr-mid) var(--pr-ease),opacity var(--pr-fast);
+}
+details[open]>summary::after{transform:translateY(-48%) rotate(180deg);opacity:1}
+details[open]>summary{background:color-mix(in srgb,var(--gold) 5%,transparent)}
+
+/* Nefs/Letâif ve Okumalar-Seyirler-Araçlar ana akordeonları */
+.zAnaGrup,.nlHub,.preAcc{margin-block:9px!important}
+.zAnaGrup>summary,.preAcc>summary,.nlHub>summary{
+  border:1px solid color-mix(in srgb,var(--gold) 16%,transparent)!important;
+  background:linear-gradient(180deg,rgba(var(--girdiK),.52),rgba(var(--sayfa2K),.42))!important;
+  font-weight:680!important;letter-spacing:.025em!important;
+}
+
+/* Sayaç sahnesi: metin/sayaç ayrımını daha görünür yap */
+.zStage{padding:16px 14px 14px!important}
+.zCounterRow{position:relative}
+.zCounterSide{background:rgba(var(--girdiK),.42)!important;border:1px solid color-mix(in srgb,var(--gold) 12%,transparent)!important;border-radius:14px!important}
+.zCountVisual{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--gold) 8%,transparent))}
+.zCountVisual .cntBig{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+
+/* Mini player: yüzen native-media hissi */
+#miniBar{
+  border:1px solid color-mix(in srgb,var(--gold) 24%,transparent)!important;
+  background:linear-gradient(145deg,rgba(var(--sayfaK),.94),rgba(var(--sayfa2K),.91))!important;
+  box-shadow:0 18px 50px -22px rgba(0,0,0,.95),0 0 28px color-mix(in srgb,var(--gold) 7%,transparent)!important;
+  backdrop-filter:blur(20px) saturate(1.08)!important;
+}
+#miniBar .mbBtn{border-radius:10px!important;min-width:38px!important;min-height:36px!important}
+#miniBar .mbBtn.stop{border-color:color-mix(in srgb,var(--danger) 48%,transparent)!important}
+
+/* Toast / overlay */
+.skToast,.toast,.rxToastMsg,#dockTip{
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--gold) 22%,transparent)!important;
+  background:rgba(var(--sayfaK),.94)!important;backdrop-filter:blur(18px)!important;
+  box-shadow:0 18px 42px -22px rgba(0,0,0,.9)!important;
+}
+
+/* Yalnız durum değişiminde kısa mikro animasyon */
+@media (prefers-reduced-motion:no-preference){
+  section:not([hidden])>.card,section:not([hidden])>.rxIntro{animation:prEnter .28s var(--pr-ease) both}
+  details[open]>*:not(summary){animation:prReveal .2s var(--pr-ease) both}
+  .btn.done,.celebrate,.zStage.zVurgu{animation:prSoftPulse .48s var(--pr-ease)}
+  @keyframes prEnter{from{opacity:.82;transform:translateY(5px)}to{opacity:1;transform:none}}
+  @keyframes prReveal{from{opacity:.58;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  @keyframes prSoftPulse{0%,100%{filter:none}45%{filter:brightness(1.08);box-shadow:0 0 26px color-mix(in srgb,var(--gold) 12%,transparent)}}
+}
+
+/* Erişilebilir odak */
+:where(button,[role="button"],a,input,select,textarea,summary):focus-visible{
+  outline:2px solid color-mix(in srgb,var(--goldh) 76%,white 8%)!important;
+  outline-offset:3px!important;
+}
+
+/* Mobil incelik */
+@media(max-width:430px){
+  :root{--pr-radius:16px;--pr-radius-sm:12px}
+  .card:not(#ns *):not(#tk *){padding-left:12px!important;padding-right:12px!important}
+  .tabs{gap:3px!important}
+  .tbL{font-size:9.7px!important}
+  .btn{min-height:38px!important;padding:8px 11px!important}
+  details>summary{min-height:44px;padding-left:11px!important}
+}
+@media(max-width:350px){
+  .tabs{padding:4px!important}.tab,.tabTekke{padding-left:1px!important;padding-right:1px!important}
+  .tbL{font-size:9px!important}
+}
+
+/* AMOLED: cam katman gerçek siyahı bozmasın */
+body[data-tema="amoled"] .card:not(#ns *):not(#tk *),
+body[data-tema="amoled"] #miniBar{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(8,8,8,.96)!important}
+
+/* Reduced motion: r176 ek hareketlerinin tümünü kapat */
+@media(prefers-reduced-motion:reduce){
+  .card,.tab,.tabTekke,.btn,.zNav button,.mbBtn,.pre,.sess,.cat,.rxChip,.sw,details>summary,details>summary::after{transition:none!important;animation:none!important}
+}
+</style>
+<script id="r176-visual-state">
+(()=>{
+  'use strict';
+  /* Dokunmada kalıcı sınıf bırakmadan kısa yüzey geri bildirimi. */
+  const sel='.btn,.tab,.tabTekke,.cat,.pre,.sess,.rxChip,.mbBtn,.zNav button,.targetMode,.zStepBtn,.zAutoMain';
+  document.addEventListener('pointerdown',e=>{
+    const b=e.target.closest&&e.target.closest(sel);if(!b)return;
+    b.classList.add('prPressed');
+  },{passive:true});
+  const clear=e=>{const b=e.target.closest&&e.target.closest(sel);if(b)b.classList.remove('prPressed')};
+  document.addEventListener('pointerup',clear,{passive:true});
+  document.addEventListener('pointercancel',clear,{passive:true});
+  /* Tema değişince tarayıcı chrome rengini de mümkün olduğunca eşle. */
+  function metaTheme(){
+    try{
+      let m=document.querySelector('meta[name="theme-color"]');
+      if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}
+      const c=getComputedStyle(document.body).getPropertyValue('--bg').trim()||'#07110e';m.content=c;
+    }catch(e){}
+  }
+  new MutationObserver(metaTheme).observe(document.body,{attributes:true,attributeFilter:['data-tema','class']});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',metaTheme,{once:true});else metaTheme();
+})();
+</script>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AMBİYANS 4.0 — GERÇEK LOOP HİBRİT KATMANI (r180)
+     Prosedürel taban + kullanıcı saha/kayıt loop'u; sample yoksa fallback.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="hybridAmbCss">
+.hybridLaunch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 14px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--gold) 22%,transparent);border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 7%,transparent),rgba(255,255,255,.018));box-shadow:inset 0 1px rgba(255,255,255,.025)}
+.hybridLaunchText{min-width:0}.hybridLaunchText b{display:block;font-size:12px;letter-spacing:.04em}.hybridLaunchText small{display:block;color:var(--dim);font-size:10px;line-height:1.45;margin-top:2px}.hybridLaunch .btn{min-height:34px;height:34px;padding:0 12px;white-space:nowrap;font-size:10px}
+#hybridSheet{position:fixed;inset:0;z-index:10040;background:rgba(4,6,7,.68);backdrop-filter:blur(10px);display:grid;place-items:end center;padding:14px}#hybridSheet[hidden]{display:none}
+.hybridPanel{width:min(580px,100%);max-height:min(82vh,760px);overflow:auto;border:1px solid color-mix(in srgb,var(--gold) 28%,transparent);border-radius:24px 24px 18px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--card) 96%,#09100d),color-mix(in srgb,var(--bg) 98%,#050706));box-shadow:0 -24px 70px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.04);padding:16px}
+.hybridHead{display:flex;align-items:center;gap:10px;margin-bottom:14px}.hybridHead h3{font-size:14px;margin:0;flex:1}.hybridHead button{border:0;background:transparent;color:var(--dim);font-size:20px;padding:6px}
+.hybridGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hybridBox{border:1px solid rgba(255,255,255,.065);border-radius:15px;background:rgba(255,255,255,.025);padding:11px}.hybridBox label{display:block;font-size:9px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.hybridBox select,.hybridBox input[type=file]{width:100%;font-size:11px}.hybridBox select{height:36px;border-radius:10px;background:var(--bg);color:var(--fg);border:1px solid rgba(255,255,255,.09);padding:0 9px}.hybridFull{grid-column:1/-1}.hybridStatus{font-size:11px;line-height:1.55;color:var(--dim);min-height:38px}.hybridStatus strong{color:var(--goldh)}
+.hybridMeter{display:grid;grid-template-columns:72px 1fr 42px;gap:8px;align-items:center}.hybridMeter span{font-size:10px;color:var(--dim)}.hybridMeter b{text-align:right;font:600 10px monospace;color:var(--goldh)}
+.hybridActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.hybridActions button{min-height:38px}.hybridHint{margin-top:12px;padding:10px 11px;border-radius:12px;background:color-mix(in srgb,var(--gold) 6%,transparent);font-size:10px;line-height:1.55;color:var(--dim)}
+.hybridBadge{display:inline-flex;align-items:center;gap:4px;border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);border-radius:999px;padding:2px 7px;font-size:8px;margin-left:5px;vertical-align:middle}
+@media(max-width:420px){.hybridGrid{grid-template-columns:1fr}.hybridFull{grid-column:auto}.hybridLaunch{align-items:flex-start;flex-direction:column}.hybridLaunch .btn{width:100%}}
+</style>
+<div id="hybridSheet" hidden aria-hidden="true">
+  <div class="hybridPanel" role="dialog" aria-modal="true" aria-labelledby="hybridTitle">
+    <div class="hybridHead"><h3 id="hybridTitle">🎧 Gerçek Katman · Hibrit Ambiyans</h3><button id="hybridClose" aria-label="Kapat">×</button></div>
+    <div class="hybridGrid">
+      <div class="hybridBox hybridFull"><label>Ambiyans kanalı</label><select id="hybridSel"></select></div>
+      <div class="hybridBox hybridFull"><label>Gerçek saha / enstrüman kaydı</label><input id="hybridFile" type="file" accept="audio/*"></div>
+      <div class="hybridBox hybridFull">
+        <label>Gerçek kayıt oranı</label>
+        <div class="hybridMeter"><span>Prosedürel</span><input id="hybridMix" type="range" min="0" max="1" step="0.01" value="0.42"><b id="hybridMixV">42%</b></div>
+      </div>
+      <div class="hybridBox hybridFull hybridStatus" id="hybridStat">Bir kanal seç. Gerçek kayıt yoksa Nero mevcut prosedürel sesi kullanmaya devam eder.</div>
+    </div>
+    <div class="hybridActions"><button class="btn" id="hybridTest">▶ Hibriti dinle</button><button class="btn" id="hybridRemove">🗑 Gerçek katmanı kaldır</button></div>
+    <div class="hybridHint">En iyi sonuç için 10–90 saniyelik temiz WAV/MP3/OGG kayıt kullan. Nero loop sınırlarını kısa crossfade ile örter; gerçek kayıt ana dokuyu taşırken prosedürel katman düşük seviyede çeşitlilik verir. Makam/taksimde aynı cümlenin çok sık tekrar etmemesi için 30 saniyeden uzun kayıt tercih edilir.</div>
+  </div>
+</div>
+<script>
+'use strict';
+/* ── r180 gerçek loop hibrit motoru ───────────────────────────── */
+const HYBRID_AMB={
+  blobs:new Map(), buffers:new Map(), mix:S.get('sukun.hybrid.mix',{})||{},
+  capable:new Set(['ney','rain','birds','forest','cicada','stream','wind','ocean','storm','fire','kedi','bulbul','muhabbet','kuzu','ari','kurbaga','kumru','serce','baykus','rast','hicaz','saba','huseyni','nihavent','neva','acemasiran','isfahan','segah','kurdi','mahur','hafif_yagmur','gece_yagmur','selale','sahil','magara_damla','yaprak','gece_circir','uzak_gok','cayir'])
+};
+function hybridKey(id){return 'h:'+String(id||'').replace(/[^a-z0-9_-]/gi,'').slice(0,60)}
+function hybridMix(id){const v=+HYBRID_AMB.mix[id];return isFinite(v)?clamp(v,0,1):.42}
+async function hybridLoadAll(){
+  try{
+    const list=await CAMB_DB.all();
+    list.forEach(({key,val})=>{
+      if(!/^h:[a-z0-9_-]{1,60}$/i.test(String(key)))return;
+      const id=String(key).slice(2),blob=val&&val.blob;
+      if(!(blob instanceof Blob)||!/^audio\//i.test(blob.type||''))return;
+      HYBRID_AMB.blobs.set(id,blob);
+      if(val&&isFinite(+val.mix))HYBRID_AMB.mix[id]=clamp(+val.mix,0,1);
+    });
+    try{S.set('sukun.hybrid.mix',HYBRID_AMB.mix)}catch(e){}
+    hybridRefreshUI();
+  }catch(e){}
+}
+async function hybridDecode(id){
+  if(HYBRID_AMB.buffers.has(id))return HYBRID_AMB.buffers.get(id);
+  const blob=HYBRID_AMB.blobs.get(id); if(!blob)return null;
+  ac();
+  try{
+    const ab=await blob.arrayBuffer();
+    const b=await ctx.decodeAudioData(ab.slice(0));
+    HYBRID_AMB.buffers.set(id,b);return b;
+  }catch(e){return null}
+}
+function hybridScheduleBuffer(id,buf,E,out){
+  if(!buf||!E||!E.alive())return null;
+  const dur=buf.duration;if(!isFinite(dur)||dur<1)return null;
+  const field=E.n(g(0));field.connect(out);
+  const xfade=Math.min(1.25,Math.max(.12,dur*.08));
+  const step=Math.max(.5,dur-xfade);
+  let next=ctx.currentTime+.04,alive=true;
+  const schedule=()=>{
+    if(!alive||!E.alive())return;
+    const horizon=ctx.currentTime+Math.max(18,dur*2.4);
+    while(next<horizon){
+      const src2=ctx.createBufferSource();src2.buffer=buf;
+      const gg=E.n(g(0));src2.connect(gg);gg.connect(field);E.n(src2);
+      const t=next,end=t+dur;
+      gg.gain.setValueAtTime(.0001,t);
+      gg.gain.linearRampToValueAtTime(1,t+xfade);
+      gg.gain.setValueAtTime(1,Math.max(t+xfade,end-xfade));
+      gg.gain.linearRampToValueAtTime(.0001,end);
+      try{src2.start(t);src2.stop(end+.03)}catch(e){}
+      next+=step;
+    }
+    E.later(schedule,Math.max(1800,Math.min(7000,step*1000*.75)));
+  };
+  field.gain.setTargetAtTime(hybridMix(id),ctx.currentTime,.25);
+  schedule();
+  return field;
+}
+async function hybridAttach(id,channel){
+  if(!channel||channel.hybridBus||!HYBRID_AMB.blobs.has(id))return;
+  const token=channel.E;
+  const b=await hybridDecode(id);
+  if(!b||!AMB[id]||AMB[id].E!==token||!token.alive())return;
+  const bus=hybridScheduleBuffer(id,b,token,channel.gain);
+  if(bus)channel.hybridBus=bus;
+}
+const _chOnR179=chOn;
+chOn=function(def){
+  if(AMB[def.id])return;
+  ac();
+  const E=makeEnv();
+  const gain=E.n(g(0));gain.connect(master);
+  const w=E.n(g(def.wet??.25));gain.connect(w);w.connect(wetIn);
+  /* Özel kullanıcı ambiyansları eski davranışını korur: doğrudan gerçek dosya.
+     Yerleşik kanallarda ise prosedürel taban ayrı bus'ta kalır ve gerçek katman
+     arttıkça hafifçe geriye çekilir; böylece gerçekten hibrit bir oran oluşur. */
+  let synthBus=null;
+  if(def.custom&&SOUND_URLS[def.id]){
+    buildFromUrl(SOUND_URLS[def.id],E,gain);
+  }else{
+    synthBus=E.n(g(1));synthBus.connect(gain);def.build(E,synthBus);
+  }
+  gain.gain.setTargetAtTime(chVol[def.id]*def.cal,ctx.currentTime,.35);
+  const c=AMB[def.id]={E,gain,def,synthBus};
+  if(!def.custom&&HYBRID_AMB.capable.has(def.id)&&HYBRID_AMB.blobs.has(def.id)){
+    const m=hybridMix(def.id);
+    if(synthBus)synthBus.gain.setTargetAtTime(1-.55*m,ctx.currentTime,.2);
+    hybridAttach(def.id,c);
+  }
+};
+function hybridRestart(id){
+  if(!AMB[id])return;
+  const def=AMB[id].def;chOff(id);setTimeout(()=>{chOn(def);syncMixerUI();},90);
+}
+function hybridCapableDefs(){return AMBIENT_DEFS.filter(d=>!d.custom&&HYBRID_AMB.capable.has(d.id))}
+function hybridRefreshUI(){
+  const sel=document.getElementById('hybridSel');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=hybridCapableDefs().map(d=>'<option value="'+hesc(d.id)+'">'+hesc((d.icon||'♪')+' '+d.name)+(HYBRID_AMB.blobs.has(d.id)?' · ✓ gerçek':'')+'</option>').join('');
+  if(cur&&[...sel.options].some(o=>o.value===cur))sel.value=cur;
+  hybridSyncPanel();
+  try{renderMixer();syncMixerUI()}catch(e){}
+}
+function hybridSyncPanel(){
+  const sel=document.getElementById('hybridSel'),stat=document.getElementById('hybridStat'),mix=document.getElementById('hybridMix'),mv=document.getElementById('hybridMixV');
+  if(!sel||!stat)return;const id=sel.value,def=AMBIENT_DEFS.find(d=>d.id===id),has=HYBRID_AMB.blobs.has(id),m=hybridMix(id);
+  mix.value=m;mv.textContent=Math.round(m*100)+'%';
+  stat.innerHTML=has?'<strong>✓ Gerçek katman bağlı.</strong> '+hesc(def?.name||id)+' prosedürel motorla birlikte hibrit çalacak.':'<strong>Prosedürel mod.</strong> '+hesc(def?.name||id)+' için henüz gerçek kayıt bağlanmadı.';
+  const rm=document.getElementById('hybridRemove');if(rm)rm.disabled=!has;
+}
+function hybridOpen(){
+  const sh=document.getElementById('hybridSheet');if(!sh)return;hybridRefreshUI();sh.hidden=false;sh.setAttribute('aria-hidden','false');
+}
+function hybridClose(){const sh=document.getElementById('hybridSheet');if(sh){sh.hidden=true;sh.setAttribute('aria-hidden','true')}}
+async function hybridStoreFile(id,file){
+  if(!id||!(file instanceof Blob)||!/^audio\//i.test(file.type||''))throw new Error('Geçerli bir ses dosyası seç');
+  if(file.size>64*1024*1024)throw new Error('Dosya 64 MB sınırını aşıyor');
+  ac();
+  let duration=0;
+  try{const b=await ctx.decodeAudioData((await file.arrayBuffer()).slice(0));duration=b.duration;if(duration<2)throw new Error('Loop en az 2 saniye olmalı');HYBRID_AMB.buffers.set(id,b)}catch(e){if(e.message&&e.message.includes('2 saniye'))throw e;throw new Error('Ses dosyası çözülemedi')}
+  const rec={name:'Gerçek Katman · '+id,blob:file,mix:hybridMix(id),hybrid:true};
+  await CAMB_DB.set(hybridKey(id),rec);HYBRID_AMB.blobs.set(id,file);
+  hybridRestart(id);hybridRefreshUI();return duration;
+}
+function hybridInjectLauncher(){
+  const mix=document.getElementById('mixer');if(!mix||document.getElementById('hybridLaunch'))return;
+  const d=document.createElement('div');d.id='hybridLaunch';d.className='hybridLaunch';d.innerHTML='<div class="hybridLaunchText"><b>🎧 Gerçek Katman · Hibrit Ses</b><small>Prosedürel atmosferin üstüne gerçek saha / ney / taksim kaydı bağla.</small></div><button class="btn" id="hybridOpen">Yönet</button>';
+  mix.parentNode.insertBefore(d,mix);document.getElementById('hybridOpen').onclick=hybridOpen;
+}
+(function hybridInit(){
+  const sel=document.getElementById('hybridSel'),file=document.getElementById('hybridFile'),mix=document.getElementById('hybridMix');
+  document.getElementById('hybridClose').onclick=hybridClose;document.getElementById('hybridSheet').addEventListener('click',e=>{if(e.target.id==='hybridSheet')hybridClose()});
+  sel.onchange=hybridSyncPanel;
+  mix.oninput=e=>{const id=sel.value,v=clamp(+e.target.value,0,1);HYBRID_AMB.mix[id]=v;S.set('sukun.hybrid.mix',HYBRID_AMB.mix);document.getElementById('hybridMixV').textContent=Math.round(v*100)+'%';const c=AMB[id];if(c&&c.hybridBus)c.hybridBus.gain.setTargetAtTime(v,ctx.currentTime,.12);if(c&&c.synthBus)c.synthBus.gain.setTargetAtTime(1-.55*v,ctx.currentTime,.12)};
+  file.onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const id=sel.value,st=document.getElementById('hybridStat');st.textContent='Ses hazırlanıyor…';try{const dur=await hybridStoreFile(id,f);st.innerHTML='<strong>✓ Gerçek katman bağlandı.</strong> '+dur.toFixed(1)+' sn · '+(f.size/1024/1024).toFixed(1)+' MB';}catch(err){st.textContent='⚠ '+(err.message||err)}};
+  document.getElementById('hybridRemove').onclick=async()=>{const id=sel.value;if(!HYBRID_AMB.blobs.has(id))return;if(!confirm('Bu kanalın gerçek loop katmanı kaldırılsın mı? Prosedürel ses kalır.'))return;try{await CAMB_DB.del(hybridKey(id))}catch(e){}HYBRID_AMB.blobs.delete(id);HYBRID_AMB.buffers.delete(id);hybridRestart(id);hybridRefreshUI()};
+  document.getElementById('hybridTest').onclick=()=>{const id=sel.value,def=AMBIENT_DEFS.find(d=>d.id===id);if(!def)return;if(AMB[id])chOff(id);else chOn(def);syncMixerUI()};
+  hybridInjectLauncher();hybridLoadAll();
+})();
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     r183 — İSİM PERDESİ · Esmâ / Berhetiyye premium bildirim katmanı
+     Normal toast sisteminden ayrıdır; tek kart yaşar, üst üste birikmez.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="r183NameToastCSS">
+.nameToastMode{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px;padding:9px 10px;border:1px solid color-mix(in srgb,var(--line) 86%,transparent);border-radius:13px;background:color-mix(in srgb,var(--card) 80%,transparent)}
+.nameToastMode>span{font-size:10px;color:var(--mut);font-weight:650;white-space:nowrap}
+.nameToastSeg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;min-width:190px;padding:3px;border-radius:10px;background:rgba(0,0,0,.18);border:1px solid color-mix(in srgb,var(--line) 72%,transparent)}
+.nameToastSeg button{appearance:none;border:0;border-radius:8px;min-height:28px;padding:4px 7px;background:transparent;color:var(--dim);font:600 9.5px/1.1 inherit;letter-spacing:.01em;transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease}
+.nameToastSeg button[aria-pressed="true"]{color:var(--goldh);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 16%,transparent),color-mix(in srgb,var(--gold) 7%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 30%,transparent),0 4px 14px rgba(0,0,0,.14)}
+.nameToastSeg button:active{transform:scale(.97)}
+#nameToastLayer{position:fixed;z-index:2147481200;left:50%;top:max(66px,calc(env(safe-area-inset-top,0px) + 54px));width:min(88vw,430px);pointer-events:none;transform:translate(-50%,-12px) scale(.975);opacity:0;visibility:hidden;transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1),visibility 0s linear .24s}
+#nameToastLayer.show{opacity:1;visibility:visible;transform:translate(-50%,0) scale(1);transition-delay:0s}
+.nameToastCard{position:relative;overflow:hidden;text-align:center;padding:13px 18px 12px;border-radius:18px;border:1px solid color-mix(in srgb,var(--gold) 42%,var(--line));background:linear-gradient(145deg,color-mix(in srgb,var(--card) 94%,#06100d),color-mix(in srgb,var(--bg) 94%,#000));box-shadow:0 18px 50px rgba(0,0,0,.38),0 0 28px color-mix(in srgb,var(--gold) 10%,transparent);backdrop-filter:blur(16px) saturate(1.12);-webkit-backdrop-filter:blur(16px) saturate(1.12)}
+.nameToastCard::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% -30%,color-mix(in srgb,var(--gold) 18%,transparent),transparent 56%);pointer-events:none}
+.nameToastKicker{position:relative;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:.78;margin-bottom:3px}
+.nameToastAr{position:relative;font-family:"Amiri",serif;font-size:clamp(25px,7vw,36px);line-height:1.16;color:var(--goldh);text-shadow:0 0 18px color-mix(in srgb,var(--gold) 18%,transparent);direction:rtl}
+.nameToastTr{position:relative;margin-top:2px;font-size:13px;font-weight:750;color:var(--text);letter-spacing:.015em}
+.nameToastMeta{position:relative;margin-top:6px;padding-top:6px;border-top:1px solid color-mix(in srgb,var(--gold) 15%,transparent);font-size:9.5px;color:var(--mut);line-height:1.45}
+.nameToastSub{display:block;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:390px){.nameToastMode{align-items:flex-start;flex-direction:column}.nameToastSeg{width:100%;min-width:0}#nameToastLayer{width:92vw}.nameToastCard{padding:11px 14px 10px}.nameToastAr{font-size:28px}}
+@media(prefers-reduced-motion:reduce){#nameToastLayer,.nameToastSeg button{transition:none!important}}
+</style>
+<script id="r183NameToastJS">
+(function(){
+  'use strict';
+  const KEY='sukun.nameToastMode';
+  const VALID=new Set(['off','simple','info']);
+  let mode='simple',hideT=null,lastKey='',lastAutoAt=0,lastShownAt=0;
+  try{const x=S.get(KEY,'simple');mode=VALID.has(x)?x:'simple'}catch(e){}
+
+  function current(cat,idx){
+    try{
+      if(cat!=='esma'&&cat!=='berhet')return null;
+      const list=ZIKIR[cat]&&ZIKIR[cat].items;
+      const it=list&&list[idx]; if(!it)return null;
+      const ar=String(it.a||it.ar||'').trim();
+      const tr=String(cat==='berhet'?(it.oku||it.tr||''):(it.t||it.tr||'')).trim();
+      let eb=''; try{eb=(typeof zEbcedDegeri==='function'?zEbcedDegeri(it):(it.eb||''))}catch(e){eb=it.eb||''}
+      const meta=cat==='berhet'
+        ? [String(idx+1)+'. İsim',eb?('Ebced '+eb):'',it.unsur||''].filter(Boolean).join(' · ')
+        : [eb?('Ebced '+eb):'',Z&&Z.target?('Hedef '+Z.target):''].filter(Boolean).join(' · ');
+      const sub=cat==='berhet'?(it.menzil||''):(it.m||it.mean||'');
+      return {cat,idx,it,ar,tr,meta,sub,key:cat+':'+idx};
+    }catch(e){return null}
+  }
+  function ensureLayer(){
+    let l=document.getElementById('nameToastLayer');
+    if(l)return l;
+    l=document.createElement('div');l.id='nameToastLayer';l.setAttribute('role','status');l.setAttribute('aria-live','polite');l.setAttribute('aria-atomic','true');
+    l.innerHTML='<div class="nameToastCard"><div class="nameToastKicker"></div><div class="nameToastAr"></div><div class="nameToastTr"></div><div class="nameToastMeta"></div></div>';
+    document.body.appendChild(l);return l;
+  }
+  function hide(){const l=document.getElementById('nameToastLayer');if(l)l.classList.remove('show');}
+  function show(data,opt){
+    opt=opt||{}; if(mode==='off'||!data)return false;
+    const now=Date.now();
+    if(!opt.force){
+      if(data.key===lastKey)return false;
+      if(now-lastAutoAt<1850){lastKey=data.key;return false;}
+      lastAutoAt=now;
+    }
+    lastKey=data.key;lastShownAt=now;
+    const l=ensureLayer(),kick=l.querySelector('.nameToastKicker'),ar=l.querySelector('.nameToastAr'),tr=l.querySelector('.nameToastTr'),meta=l.querySelector('.nameToastMeta');
+    kick.textContent=data.cat==='berhet'?'Kasem-i Berhetiyye':'Esmâü’l-Hüsnâ';
+    ar.textContent=data.ar||'—';tr.textContent=data.tr||'—';
+    if(mode==='info'){
+      meta.hidden=false;meta.textContent='';
+      const a=document.createTextNode(data.meta||'');meta.appendChild(a);
+      if(data.sub){const sm=document.createElement('span');sm.className='nameToastSub';sm.textContent=data.sub;meta.appendChild(sm)}
+    }else meta.hidden=true;
+    clearTimeout(hideT);l.classList.remove('show');void l.offsetWidth;l.classList.add('show');
+    hideT=setTimeout(hide,mode==='info'?2300:1750);return true;
+  }
+  function refreshButtons(){document.querySelectorAll('[data-name-toast-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.nameToastMode===mode?'true':'false'))}
+  function setMode(m){if(!VALID.has(m))return;mode=m;try{S.set(KEY,m)}catch(e){}refreshButtons();if(m==='off')hide();else{const d=current(Z.cat,Z.idx);if(d)show(d,{force:true})}}
+  function addSettings(){
+    if(document.getElementById('nameToastMode'))return;
+    const opts=document.querySelector('#p-zikir .zOpts')||document.querySelector('.zOpts');if(!opts)return;
+    const row=document.createElement('div');row.id='nameToastMode';row.className='nameToastMode';
+    row.innerHTML='<span>✦ İsim bildirimi</span><div class="nameToastSeg" role="group" aria-label="İsim bildirimi modu"><button type="button" data-name-toast-mode="off">Kapalı</button><button type="button" data-name-toast-mode="simple">Sade</button><button type="button" data-name-toast-mode="info">Bilgili</button></div>';
+    const firstOpt=opts.querySelector('.opt');if(firstOpt)opts.insertBefore(row,firstOpt);else opts.prepend(row);
+    row.addEventListener('click',e=>{const b=e.target.closest('[data-name-toast-mode]');if(b)setMode(b.dataset.nameToastMode)});refreshButtons();
+  }
+  function currentMaybe(force){const d=current(Z.cat,Z.idx);if(d)show(d,{force:!!force})}
+
+  // renderZikir bütün manuel/Hatim/Seyir geçişlerinin ortak kapısıdır.
+  // Yalnız gerçek isim değiştiğinde ve sadece iki isim kategorisinde tetiklenir.
+  try{
+    const original=renderZikir;
+    renderZikir=function(){const r=original.apply(this,arguments);try{currentMaybe(false)}catch(e){}return r};
+  }catch(e){}
+
+  // Elle dokunuşta otomatik throttle beklenmez; kullanıcı seçiminin cevabı anında görünür.
+  const zl=document.getElementById('zList');
+  if(zl)zl.addEventListener('click',e=>{if(e.target.closest('[data-i]'))setTimeout(()=>currentMaybe(true),0)});
+
+  // İlk yüklemede kart patlamasın; mevcut seçimi sadece dedupe anahtarı olarak belleğe al.
+  try{const d=current(Z.cat,Z.idx);if(d)lastKey=d.key}catch(e){}
+  addSettings();
+  window.NameToast={showCurrent:()=>currentMaybe(true),setMode,getMode:()=>mode,hide};
+})();
+</script>
+
+<script id="sukun-r183-runtime">
+(()=>{'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+document.addEventListener('DOMContentLoaded',()=>{
+ if(!$('.sukun-focus-btn')){const b=document.createElement('button');b.className='sukun-focus-btn';b.textContent='◉ Odak';b.onclick=()=>{const on=document.body.classList.toggle('sukun-focus-mode');b.textContent=on?'× Odaktan çık':'◉ Odak'};document.body.appendChild(b)}
+ if(!$('.sukun-bottom-nav')){const n=document.createElement('nav');n.className='sukun-bottom-nav';[['Okumalar','okumalar'],['Seyirler','seyirler'],['Araçlar','araclar']].forEach((x,i)=>{const b=document.createElement('button');b.textContent=x[0];if(!i)b.className='active';b.onclick=()=>{const t=$('#'+x[1]+',[data-route="'+x[1]+'"],[data-tab="'+x[1]+'"]');if(t){t.matches('button,a,[role=tab]')?t.click():t.scrollIntoView({behavior:'smooth'})}$$('.sukun-bottom-nav button').forEach(q=>q.classList.toggle('active',q===b))};n.appendChild(b)});document.body.appendChild(n)}
+ document.addEventListener('pointerup',e=>{if(e.target.closest?.('#countBtn,#counterBtn,#zikirBtn,[data-action=count],.count-btn,.counter-btn')){document.body.classList.remove('sukun-count-pulse');void document.body.offsetWidth;document.body.classList.add('sukun-count-pulse');setTimeout(()=>document.body.classList.remove('sukun-count-pulse'),240)}},{passive:true});
+ $$('[id*=ambiyans i],[class*=ambiyans i],[id*=mixer i],[class*=mixer i]').forEach(x=>{x.style.setProperty('transition','border-color .2s ease,box-shadow .2s ease')});
+});
+})();
+</script>
+<script id="sukun-r184-runtime">
+(()=>{'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function rebuildSubnav(){
+  const old=$('.sukun-bottom-nav'); if(old)old.remove();
+  const nav=document.createElement('nav');nav.className='sukun-bottom-nav';nav.setAttribute('aria-label','Zikir alt bölümleri');
+  const defs=[['◈','Okumalar','zmgOkumalar'],['✦','Seyirler','zmgSeyirler'],['⌘','Araçlar','zmgAraclar']];
+  defs.forEach(([ic,label,id],i)=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span aria-hidden="true">'+ic+'</span> '+label;if(i===0)b.classList.add('active');b.onclick=()=>{const t=document.getElementById(id);if(!t)return;const z=document.querySelector('.tab[data-t="zkr"]');if(z&&!z.classList.contains('act'))z.click();setTimeout(()=>{try{if(t.tagName==='DETAILS'&&!t.open)t.open=true;t.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}},60);$$('.sukun-bottom-nav button').forEach(x=>x.classList.toggle('active',x===b));};nav.appendChild(b)});
+  document.body.appendChild(nav);
+}
+function fixFocus(){
+ const b=$('.sukun-focus-btn');if(!b)return;
+ b.onclick=()=>{const on=document.body.classList.toggle('sukun-focus-mode');b.textContent=on?'× Odaktan çık':'◉ Odak';b.setAttribute('aria-pressed',String(on));if(on){const z=document.querySelector('.tab[data-t="zkr"]');if(z&&!z.classList.contains('act'))z.click();setTimeout(()=>$('#zStage')?.scrollIntoView({behavior:'smooth',block:'start'}),80)}};
+}
+function mixerState(){
+ const sync=()=>$$('#mixer .chn').forEach(c=>c.classList.toggle('r184-live',c.classList.contains('on')));
+ document.addEventListener('click',e=>{if(e.target.closest('#mixer .sw,#mixer [data-prev]'))setTimeout(sync,80)},{passive:true});sync();
+}
+function activeNameIntoView(){
+ const z=$('#zList');if(!z)return;const mo=new MutationObserver(()=>{const a=z.querySelector('.zItem.act');if(a&&z.classList.contains('compactOneRow')){try{a.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}}});mo.observe(z,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
+}
+function focusEscape(){document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('sukun-focus-mode'))$('.sukun-focus-btn')?.click()})}
+function init(){rebuildSubnav();fixFocus();mixerState();activeNameIntoView();focusEscape();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0));else setTimeout(init,0);
+})();
+</script>
+<script id="sukun-r185-mobile-runtime">
+(()=>{
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+function syncSubnav(){
+  const nav=$('.sukun-bottom-nav'), focus=$('.sukun-focus-btn');
+  const z=$('.tab[data-t="zkr"]');
+  const on=!!(z&&z.classList.contains('act'));
+  if(nav)nav.style.display=on?'grid':'none';
+  if(focus)focus.style.display=on?'block':'none';
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('.tab'))setTimeout(syncSubnav,0);
+},{passive:true});
+document.addEventListener('DOMContentLoaded',()=>setTimeout(syncSubnav,60));
+})();
+</script>
+
+
+<script id="sukun-r186-runtime">
+(()=>{
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+function esmaNavEnsure(){
+  let nav=document.getElementById('esmaStepNav');
+  if(nav)return nav;
+  const list=document.getElementById('zList');
+  if(!list)return null;
+
+  nav=document.createElement('div');
+  nav.id='esmaStepNav';
+  nav.innerHTML=
+    '<button type="button" id="esmaPrevBtn">‹ Önceki Esmâ</button>'+
+    '<span id="esmaStepNow">1 / 99</span>'+
+    '<button type="button" id="esmaNextBtn">Sıradaki Esmâ ›</button>';
+
+  const toggle=document.getElementById('zListToggle');
+  (toggle||list).insertAdjacentElement('afterend',nav);
+
+  const step=(d)=>{
+    try{
+      if(typeof Z==='undefined'||Z.cat!=='esma')return;
+      const n=ZIKIR.esma.items.length;
+      Z.idx=(Z.idx+d+n)%n;
+      if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(true);
+      renderZikir(); zUI(); saveSettings();
+      try{window.NameToast&&NameToast.showCurrent&&NameToast.showCurrent()}catch(e){}
+      syncEsmaNav();
+    }catch(e){console.debug('[r186 esma nav]',e)}
+  };
+  document.getElementById('esmaPrevBtn').onclick=()=>step(-1);
+  document.getElementById('esmaNextBtn').onclick=()=>step(1);
+  return nav;
+}
+
+function syncEsmaNav(){
+  const nav=esmaNavEnsure(); if(!nav)return;
+  const on=typeof Z!=='undefined'&&Z.cat==='esma';
+  nav.classList.toggle('on',on);
+  if(!on)return;
+  const n=ZIKIR.esma.items.length;
+  const now=document.getElementById('esmaStepNow');
+  if(now)now.textContent=(Z.idx+1)+' / '+n;
+  const p=document.getElementById('esmaPrevBtn');
+  const nx=document.getElementById('esmaNextBtn');
+  if(p){
+    const pi=(Z.idx-1+n)%n;
+    p.title=(pi+1)+'. '+(ZIKIR.esma.items[pi].t||ZIKIR.esma.items[pi].tr||'');
+  }
+  if(nx){
+    const ni=(Z.idx+1)%n;
+    nx.title=(ni+1)+'. '+(ZIKIR.esma.items[ni].t||ZIKIR.esma.items[ni].tr||'');
+  }
+}
+
+function removeLiteralLeaks(){
+  /* Eski r183/r184 eklemelerinde DOM text node olarak kalan "\\n" parçaları */
+  [...document.body.childNodes].forEach(n=>{
+    if(n.nodeType===Node.TEXT_NODE && /^[\s\\n]+$/.test(n.nodeValue||'')){
+      if((n.nodeValue||'').includes('\\n')) n.remove();
+    }
+  });
+}
+
+function syncMakamHeight(){
+  try{
+    const a=document.querySelector('#mixer [data-ambacc="makam"]');
+    if(!a||!a.classList.contains('open'))return;
+    const body=a.querySelector('.preAccBody'), inner=a.querySelector('.preAccInner');
+    if(body&&inner)body.style.maxHeight=(inner.scrollHeight+8)+'px';
+  }catch(e){}
+}
+
+function focusCleaner(){
+  const body=document.body;
+  const mo=new MutationObserver(()=>{
+    const on=body.classList.contains('sukun-focus-mode');
+    const mb=document.getElementById('miniBar');
+    if(mb)mb.setAttribute('aria-hidden',on?'true':'false');
+  });
+  mo.observe(body,{attributes:true,attributeFilter:['class']});
+}
+
+function hookRenders(){
+  try{
+    const oldRenderList=window.renderList||renderList;
+    if(!oldRenderList.__r186){
+      const wrapped=function(){
+        const r=oldRenderList.apply(this,arguments);
+        setTimeout(syncEsmaNav,0);
+        return r;
+      };
+      wrapped.__r186=true;
+      window.renderList=wrapped;
+      try{renderList=wrapped}catch(e){}
+    }
+  }catch(e){}
+  try{
+    const oldRenderZ=window.renderZikir||renderZikir;
+    if(!oldRenderZ.__r186){
+      const wrapped=function(){
+        const r=oldRenderZ.apply(this,arguments);
+        setTimeout(syncEsmaNav,0);
+        return r;
+      };
+      wrapped.__r186=true;
+      window.renderZikir=wrapped;
+      try{renderZikir=wrapped}catch(e){}
+    }
+  }catch(e){}
+}
+
+function init(){
+  removeLiteralLeaks();
+  esmaNavEnsure(); syncEsmaNav();
+  hookRenders();
+  focusCleaner();
+  syncMakamHeight();
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest('#zList [data-i],#zCats [data-c]'))setTimeout(syncEsmaNav,20);
+    if(e.target.closest('[data-ambacctgl="makam"]'))setTimeout(syncMakamHeight,240);
+  },{passive:true});
+
+  window.addEventListener('resize',()=>setTimeout(syncMakamHeight,80),{passive:true});
+}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0));
+else setTimeout(init,0);
+})();
+</script>
+
+
+<script id="sukun-r187-record-safety-runtime">
+(()=>{
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+
+function localOriginMode(){
+  try{
+    return location.protocol==='file:' || location.protocol==='content:' ||
+           location.origin==='null' || !/^https?:$/.test(location.protocol);
+  }catch(e){return false}
+}
+
+async function rescanRecordings(showMessage){
+  let keys=[];
+  try{
+    keys=await REC_DB.keys();
+    RECKEYS=new Set(keys);
+    try{itemRecSyncUI()}catch(e){}
+    try{recCountUI()}catch(e){}
+    try{recMgrRender()}catch(e){}
+    try{ydkListe()}catch(e){}
+    try{if(typeof svkInit==='function')await svkInit()}catch(e){}
+    try{if(typeof tvkInit==='function')await tvkInit()}catch(e){}
+    try{if(typeof veriDurumYaz==='function')await veriDurumYaz()}catch(e){}
+    if(showMessage){
+      const msg=keys.length
+        ? ('🎙 '+keys.length+' kayıt bulundu ve yeniden bağlandı')
+        : (localOriginMode()
+            ? 'Bu yerel dosya deposunda kayıt bulunamadı. GitHub sürümünü aynı tarayıcıda aç.'
+            : 'Bu alan adının kayıt deposunda kayıt bulunamadı.');
+      try{typeof toast==='function'?toast(msg):typeof showToast==='function'&&showToast(msg)}catch(e){}
+    }
+  }catch(e){
+    if(showMessage)try{typeof toast==='function'&&toast('Kayıt deposu okunamadı')}catch(_){}
+  }
+  syncSafetyUI(keys);
+  return keys;
+}
+window.SUKUN_REC_RESCAN=rescanRecordings;
+
+function ensureSafetyUI(){
+  const targets=[
+    document.getElementById('ydkBox'),
+    document.getElementById('recSheet'),
+    document.getElementById('r168MediaHub')
+  ].filter(Boolean);
+  const host=targets[0];
+  if(!host || document.getElementById('r187RecRescue'))return;
+
+  const wrap=document.createElement('div');
+  wrap.id='r187RecRescue';
+  wrap.innerHTML=
+    (localOriginMode()
+      ? '<div class="recOriginWarn"><b>⚠ Yerel dosya modu</b>'+
+        'Bu sayfa <code>'+String(location.protocol).replace(/[<>]/g,'')+'</code> üzerinden açıldı. '+
+        'Tarayıcı ses kayıtlarını alan adına göre ayırır; <b>GitHub’da kaydettiğin sesler burada görünmez ama bu onların silindiği anlamına gelmez.</b> '+
+        'Aynı tarayıcıda jtherotetris.github.io sürümünü aç veya daha önce aldığın ses yedeğini geri yükle.</div>'
+      : '')+
+    '<div class="recRescueBar">'+
+      '<div class="recRescueStat" id="r187RecStat"><b>Kayıt deposu denetleniyor…</b><span>sukunRec / clips</span></div>'+
+      '<button type="button" class="btn recRescueBtn" id="r187RecRescan">↻ Kayıtları yeniden tara</button>'+
+    '</div>';
+
+  const summary=host.querySelector('summary');
+  if(summary)summary.insertAdjacentElement('afterend',wrap);
+  else host.prepend(wrap);
+
+  const b=document.getElementById('r187RecRescan');
+  if(b)b.onclick=()=>rescanRecordings(true);
+}
+
+function syncSafetyUI(keys){
+  const st=document.getElementById('r187RecStat');if(!st)return;
+  const n=(keys||[]).length;
+  const origin=localOriginMode()?'yerel kopya':location.host;
+  st.innerHTML='<b>'+n+' kayıt görünüyor</b><span>'+origin+' · sukunRec / clips</span>';
+}
+
+async function delayedRecovery(){
+  /* Bazı Android/WebView açılışlarında IndexedDB ilk tick'te geç hazır olur.
+     İki sessiz yeniden tarama UI'nin yanlışlıkla "0 kayıt" kalmasını önler. */
+  await new Promise(r=>setTimeout(r,350));
+  let keys=await rescanRecordings(false);
+  if(!keys.length){
+    await new Promise(r=>setTimeout(r,1100));
+    keys=await rescanRecordings(false);
+  }
+}
+
+function init(){
+  ensureSafetyUI();
+  delayedRecovery();
+}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+})();
+</script>
+
 </body>
 </html>
+
+<style id="r177-hero-polish">
+/* SÜKÛN r177 — HERO LEVEL: Zikir · Atlas · Stüdyo · Akıllı Seans */
+:root{
+  --hero-gold:color-mix(in srgb,var(--goldh) 86%,#fff 14%);
+  --hero-amber:color-mix(in srgb,var(--gold) 72%,#c98937 28%);
+  --hero-line:color-mix(in srgb,var(--gold) 26%,transparent);
+  --hero-glow:color-mix(in srgb,var(--goldh) 12%,transparent);
+  --hero-green:color-mix(in srgb,var(--ok) 15%,transparent);
+}
+
+/* ── 1. ZİKİR ANA SAHNESİ ───────────────────────────── */
+#zStage{
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--gold) 34%,var(--line));
+  border-radius:24px;
+  background:
+    radial-gradient(110% 75% at 50% -12%,color-mix(in srgb,var(--gold) 13%,transparent),transparent 62%),
+    radial-gradient(70% 58% at 50% 108%,color-mix(in srgb,var(--ok) 8%,transparent),transparent 72%),
+    linear-gradient(160deg,rgba(255,255,255,.025),rgba(0,0,0,.16));
+  box-shadow:0 24px 60px -36px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.05);
+  padding-top:22px;padding-bottom:18px;
+}
+#zStage::before{
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;opacity:.25;
+  background-image:
+    linear-gradient(30deg,transparent 48%,color-mix(in srgb,var(--gold) 8%,transparent) 49%,transparent 51%),
+    linear-gradient(-30deg,transparent 48%,color-mix(in srgb,var(--gold) 6%,transparent) 49%,transparent 51%);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.75),transparent 68%);
+}
+#zStage::after{
+  content:"";position:absolute;left:50%;top:12px;width:64%;height:1px;transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,var(--hero-gold),transparent);opacity:.45;
+  box-shadow:0 0 18px var(--hero-glow);
+}
+#zStage .zAr{
+  position:relative;margin-inline:auto;max-width:92%;
+  text-shadow:0 2px 18px color-mix(in srgb,var(--gold) 15%,transparent);
+  transition:transform .22s var(--pr-ease),text-shadow .22s var(--pr-ease),color .22s var(--pr-ease);
+}
+#zStage .zTr{max-width:92%;margin-inline:auto;letter-spacing:.015em}
+#zStage .zMean,#zStage .zOku,#zStage #zNiyet,#zStage #zMenzil{
+  max-width:94%;margin-inline:auto;
+}
+#zStage:focus-within .zAr,#zStage:hover .zAr{color:var(--hero-gold);text-shadow:0 0 24px var(--hero-glow)}
+#zStage .zCountHero,#zStage .zCounterWrap,#zStage .zSayacPanel{
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.08));
+  border-color:color-mix(in srgb,var(--gold) 20%,var(--line));
+}
+
+/* ── 2. BERHETİYYE ATLASI: araştırma masası ────────── */
+#berhetAtlas{
+  border-radius:22px!important;overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line))!important;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--bg2) 84%,transparent),color-mix(in srgb,var(--bg) 92%,transparent));
+  box-shadow:0 20px 54px -38px rgba(0,0,0,.92),inset 0 1px 0 rgba(255,255,255,.035);
+}
+#berhetAtlas>summary{
+  min-height:58px;padding:14px 15px!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 7%,transparent),transparent 66%);
+  border-bottom:1px solid transparent;
+}
+#berhetAtlas[open]>summary{border-bottom-color:color-mix(in srgb,var(--gold) 13%,var(--line))}
+#berhetAtlasBody{padding-top:4px}
+#r170AtlasTools{
+  margin:8px 12px 12px;padding:10px;border-radius:15px;
+  border:1px solid color-mix(in srgb,var(--gold) 16%,var(--line));
+  background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(0,0,0,.1));
+}
+#r170AtlasTools .r170AtlasNav{grid-template-columns:38px minmax(0,1fr) 38px;gap:8px}
+#r170AtlasTools #r170AtlasPrev,#r170AtlasTools #r170AtlasNext{
+  border-radius:12px;font-size:20px;padding:0;min-height:38px;
+}
+#r170AtlasSearch{
+  min-height:38px;border-radius:12px!important;padding-inline:12px!important;
+  background:rgba(0,0,0,.19)!important;
+}
+#berhetAtlasBody .r168Grid{gap:8px;padding:0 12px 12px}
+#berhetAtlasBody .r168Cell{
+  position:relative;overflow:hidden;border-radius:14px;
+  border:1px solid color-mix(in srgb,var(--gold) 13%,var(--line));
+  background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(0,0,0,.08));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+#berhetAtlasBody .r168Cell::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(var(--hero-gold),transparent);opacity:.38;
+}
+#berhetAtlasBody .r168Cell small{letter-spacing:.08em}
+#berhetAtlasBody .r168Cell b[dir="rtl"]{font-size:clamp(22px,7vw,34px);line-height:1.8;color:var(--hero-gold)}
+#r170Compare>div{
+  background:linear-gradient(160deg,rgba(255,255,255,.028),rgba(0,0,0,.1));
+  border-color:color-mix(in srgb,var(--gold) 17%,var(--line));
+}
+#r170Compare .ar{font-size:24px!important;line-height:1.65}
+
+/* ── 3. KAYIT STÜDYOSU: ses laboratuvarı ───────────── */
+#r170Studio{
+  border-color:color-mix(in srgb,#b982ff 22%,var(--line));
+  background:
+    radial-gradient(85% 70% at 85% 0%,rgba(136,86,190,.075),transparent 68%),
+    linear-gradient(155deg,rgba(255,255,255,.026),rgba(0,0,0,.14));
+}
+#r170Studio>summary{min-height:58px;background:linear-gradient(90deg,rgba(151,103,211,.07),transparent 72%)}
+#r170Studio>summary>span:first-child{
+  width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+  background:rgba(150,104,210,.09);border:1px solid rgba(170,125,225,.16);
+  box-shadow:0 0 24px rgba(147,94,210,.07);
+}
+#r170Studio .r170Body{padding-top:3px}
+#r170StudioSel{min-height:42px!important;border-radius:12px!important;margin-bottom:8px;background:rgba(0,0,0,.2)!important}
+#r170Wave{
+  height:118px!important;border-radius:16px!important;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+    radial-gradient(circle at 50% 50%,rgba(153,100,214,.06),rgba(0,0,0,.22));
+  background-size:18px 18px,18px 18px,auto;
+  border-color:rgba(165,119,221,.18)!important;
+  box-shadow:inset 0 0 28px rgba(0,0,0,.25);
+}
+#r170Studio .r170StudioMeta{gap:8px;margin-top:9px}
+#r170Studio .r170StudioMeta div{
+  border-radius:12px;padding:9px 7px;
+  background:linear-gradient(180deg,rgba(161,113,219,.045),rgba(0,0,0,.05));
+  border-color:rgba(165,119,221,.13);
+}
+#r170Studio .r170StudioMeta b{font-size:12px;color:#d8b9ff}
+#r170Studio .r170Row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#r170Studio .r170Btn{width:100%;min-height:40px;border-radius:12px}
+#r170StudioStat{
+  margin-top:9px;padding:9px 10px;border-radius:11px;
+  background:rgba(0,0,0,.12);border:1px solid rgba(165,119,221,.1);
+}
+
+/* ── 4. AKILLI SEANS: ritüel planlayıcı ────────────── */
+#r170SessionHub{
+  border-color:color-mix(in srgb,var(--ok) 20%,var(--line));
+  background:
+    radial-gradient(90% 65% at 10% 0%,color-mix(in srgb,var(--ok) 7%,transparent),transparent 70%),
+    linear-gradient(150deg,rgba(255,255,255,.025),rgba(0,0,0,.13));
+}
+#r170SessionHub>summary{min-height:62px;background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 6%,transparent),transparent 70%)}
+#r170SessionHub>summary>span:first-child{
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  color:var(--hero-gold);font-size:17px;
+  border:1px solid color-mix(in srgb,var(--gold) 25%,var(--line));
+  background:radial-gradient(circle,color-mix(in srgb,var(--gold) 10%,transparent),transparent 70%);
+  box-shadow:0 0 26px var(--hero-glow);
+}
+#r170SessionHub .r170Pills{gap:7px;padding:3px 0 8px;scrollbar-width:none}
+#r170SessionHub .r170Pills::-webkit-scrollbar{display:none}
+#r170SessionHub .r170Pills button{
+  min-height:34px;padding:7px 11px;border-radius:12px;
+  background:rgba(255,255,255,.018);
+}
+#r170SessionHub .r170Pills button:hover,#r170SessionHub .r170Pills button.on{
+  background:color-mix(in srgb,var(--ok) 8%,rgba(255,255,255,.025));
+  border-color:color-mix(in srgb,var(--gold) 33%,var(--line));
+}
+#r170SessionHub>.r170Body>.r170Row:first-of-type{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+}
+#r170SessionHub>.r170Body>.r170Row:first-of-type .r170Btn{width:100%;min-height:40px}
+#r170Queue{
+  position:relative;max-height:260px;padding:3px 7px;margin:8px 0 9px;
+  border-radius:14px;border:1px solid color-mix(in srgb,var(--ok) 10%,var(--line));
+  background:rgba(0,0,0,.11);
+}
+#r170Queue:empty::before{
+  content:"Seans adımlarını yukarıdan ekle";display:block;padding:17px 8px;text-align:center;
+  color:var(--dim);font-size:9px;letter-spacing:.03em;
+}
+#r170Queue .r170Step{border-bottom-color:color-mix(in srgb,var(--ok) 8%,var(--line));border-radius:10px;padding:9px 5px}
+#r170Queue .r170Step.active{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 7%,transparent),transparent);
+  box-shadow:inset 2px 0 0 var(--gold);
+}
+#r170SessionName{min-height:40px;border-radius:12px!important;padding-inline:11px!important}
+#r170SaveSession,#r170StartSession{min-height:40px}
+#r170StartSession{
+  color:#10130f;background:linear-gradient(135deg,var(--goldh),var(--gold));
+  border-color:transparent;font-weight:700;box-shadow:0 8px 22px -14px color-mix(in srgb,var(--gold) 60%,transparent);
+}
+#r170Resume{
+  border-color:color-mix(in srgb,var(--gold) 30%,var(--line));
+  background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 8%,transparent),transparent);
+}
+
+/* Şimdi çalıyor — dört hero modülü birleştiren medya yüzeyi */
+#r170Now{
+  border-radius:18px!important;
+  border-color:color-mix(in srgb,var(--gold) 34%,var(--line))!important;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--bg) 92%,transparent),color-mix(in srgb,var(--bg2) 88%,transparent))!important;
+  box-shadow:0 22px 56px -26px rgba(0,0,0,.92),0 0 28px var(--hero-glow)!important;
+}
+#r170NowTop{letter-spacing:.12em;color:var(--gold)!important}
+#r170NowTitle{font-size:11px!important}
+#r170NowBar{box-shadow:0 0 12px color-mix(in srgb,var(--goldh) 38%,transparent)}
+#r170Now .r170NowBtns button{border-radius:10px;transition:transform .14s var(--pr-ease),background .14s var(--pr-ease)}
+#r170Now .r170NowBtns button:active{transform:scale(.93)}
+#r170Play{border-color:color-mix(in srgb,var(--gold) 34%,var(--line))!important;color:var(--goldh)!important;background:color-mix(in srgb,var(--gold) 7%,transparent)!important}
+
+@media(max-width:390px){
+  #zStage{border-radius:20px;padding-inline:10px}
+  #r170Studio .r170Row,#r170SessionHub>.r170Body>.r170Row:first-of-type{grid-template-columns:1fr 1fr}
+  #r170AtlasTools{margin-inline:8px}
+  #berhetAtlasBody .r168Grid{padding-inline:8px}
+}
+@media(max-width:340px){
+  #r170Studio .r170Row,#r170SessionHub>.r170Body>.r170Row:first-of-type{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  #zStage .zAr,#r170Now .r170NowBtns button{transition:none!important}
+}
+</style>
