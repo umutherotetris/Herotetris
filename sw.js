@@ -1,8 +1,8 @@
-/* SÜKÛN r422 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r428 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r422';
-const CACHE = 'sukun-r422-20260821a';
+const SURUM = 'r428';
+const CACHE = 'sukun-r428-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,12 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'SÜKÛN başlığı, Akıllı Seans başlığı ve Tefekkür sahnesine düşük opaklıklı soyut hat kıvrımları eklendi; kutsal kelime dekor olarak kullanılmadı.',
+  'Tefekkür tipografisi sakinleştirildi; Akıllı Seans Ayarlar geçişi ipeksi hale getirildi; Şimdi Çalıyor yüzeyi Tefekkür diliyle birleştirildi.',
+  'Akıllı Seans kartları sade-premium görünüme geçirildi; ayar satırları toparlandı. Tefekkür moduna daha derin ve huzurlu bir nur sisi atmosferi eklendi.',
+  'Devam/Duraklat nefes animasyonu inceltildi: oynarken hafif altın, duraklatınca loş; bitime 30 saniye kala aynı dil hafif kehribar ısınıyor.',
+  'Devam/Duraklat görseli hızlı blink yerine nefes gibi yavaş altın nabza geçirildi; mini oynatıcı halkası da sakinleştirildi.',
+  'Tekke sekmesindeki ۞ logo ile Tekke etiketi gerçek #tekkeTab markup üzerinde ayrıldı; logo yukarı taşındı ve mobilde çakışma engellendi.',
   'r422 stabilizasyon: Akıllı Seans Şimdi Çalıyor tek görünür renderer ve tek state akışına birleştirildi; eski r417–r421 üst üste render katmanları kaldırıldı.',
   'Aktif adım, ses kaynağı, faz, sıradaki adım, mod/tekrar/ara, seviye ve kalan süre aynı anda sabit alanlarda gösteriliyor; kaynak seans başlamadan önceden çözülüyor.',
   'Kalan süre doğrudan state üzerinden okunuyor; son 30 saniyede sakin kehribar vurgu korunuyor. Frekans adımları duraklatılıp devam ettirildiğinde kalan süre korunuyor.',
