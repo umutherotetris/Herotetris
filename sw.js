@@ -1,8 +1,8 @@
-/* SÜKÛN r174 — küçük, aynı-kaynaklı uygulama kabuğu önbelleği */
+/* SÜKÛN r402 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r174';
-const CACHE = 'sukun-' + SURUM + '-20260820';
+const SURUM = 'r402';
+const CACHE = 'sukun-r402-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,123 +13,187 @@ const KABUK = [
 ];
 
 const NOTLAR = [
-  'Berhetiyye yazımı Menbaʿ Uṣûli’l-Hikme’nin 1951 matbu şerhiyle satır satır karşılaştırıldı.',
-  '28 ismin ebcedi kaynak yazımından yeniden hesaplandı; toplam 18.787 olarak doğrulandı.',
-  'Şemsü’l-Maârif ve Menbaʿın Bûnî’ye aidiyeti kesin eser adı yerine tartışmalı nispet olarak gösteriliyor.',
-  'Kaynak metni, varyant okunuş, mekanik ebced ve Nero tefekkür yorumu ayrı katmanlara ayrıldı.',
-  'Letâif ve erbaîn açıklamalarındaki kaynak kesinliği ile tarikatlara göre değişen yorum sınırı düzeltildi.'
+  'Kendi Sesin kartındaki çift mikrofon ikonu tekilleştirildi; Now Playing başlık kararlılığı da korundu.',
+  'Ortak Seçim modeli eklendi: Zikir, Berhetiyye, Frekans ve AI seanslarında seçili öğe tek state üzerinden Seç-Hedef/Süre/Ses-Akışa ekle/Başlat davranışına bağlandı.',
+  'Berhetiyye, Frekans ve AI seansları seç-ayarla-başlat-kontrol et-bitir ortak davranış diline bağlandı; playback düğme metinleri merkezi duruma göre eşitleniyor.',
+  'UX akış katmanı eklendi: Seans Merkezi kuyruk durumuna göre eylemleri etkinleştiriyor, modal kapatma ve seçili öğeyi görünür tutma davranışları standartlaştırıldı.',
+  'UI/UX denetiminde sabit alt katmanlar, mini player, zikir nav, Tefekkür, toast, adaptif ve sonuç pencereleri mobil safe-area sözleşmesine bağlandı.',
+  'Adaptif Seans ve Seans Sonucu yüzen düğmeleri kaldırılıp Düzen sekmesindeki bütünleşik Seans Merkezine taşındı.',
+  'Seans Sonu Değerlendirme ve sonuç hafızası eklendi; yeni AI seansları yalnız müdahalelerden değil hangi reçetelerin iyi veya zorlayıcı sonuçlandığından da öğreniyor.',
+  'Adaptif Hafıza geçmiş geri bildirimlerden saat, seans aşaması ve frekans örüntülerini çıkarıp yeni AI seanslarını başlamadan kontrollü biçimde kişiselleştiriyor.',
+  'Adaptif Seans Motoru kullanıcı geri bildirimine göre aktif adımı koruyup kalan Global Queueyu güvenli sınırlar içinde yeniden düzenleyebiliyor.',
+  'AI Reçete 5–10 adımlı nefes, frekans, zikir, sükût ve ambiyans seanslarını doğrulayıp Global Queueya aktarabiliyor.',
+  'AI Reçete çıktısı yerel SÜKÛN envanterine doğrulanan yapılandırılmış plana ve Global Queue aktarımına dönüştürüldü.',
+  'AI Rehberi Groq, OpenRouter, Gemini ve Anthropic arasında otomatik fallback ve circuit breaker kullanan çoklu sağlayıcı mimarisine geçirildi.',
+  'Berhetiyye gizlilik politikası favoriler, kayıtlı seanslar, ses kütüphanesi, stüdyo, istatistik, yedek/geri yükleme ve Now Playing katmanlarına genişletildi.',
+  'Berhetiyye Global Queue erişimi mevcut şifre kilidine bağlandı; kilitliyken gizli öğe görünmez, eklenmez ve restore edilmez.',
+  'Kalıcı Global Queue zikir, sükût, frekans ve ayrı okuyucuları tek motorlar-arası sırada çalıştırıyor.',
+  'Global Queue kuyruk ve kaldığı öğeyi cihazda saklıyor; yarım kalan akış sürdürülebiliyor.',
+  'Felâk → Nâs → 2 dk sükût → 6 Hz → Berhetiyye 1–7 → Salavât örnek şablonu eklendi.',
+  'Global Now Playing Store aktif modül, bölüm, kaynak, tekrar, ilerleme ve kalan süreyi tek state içinde yayınlıyor.',
+  'Mini oynatıcı ve MediaSession aynı Now Playing state’inden besleniyor.',
+  'Destekleyen kilit ekranlarında MediaSession position state ile gerçek veya tahmini konum yayınlanıyor.',
+  'Tüm okuyucular sukun:nowplayingchange olayına ve PlaybackController.subscribe API’sine bağlanabiliyor.',
+  'Duraklatılan bütün gerçek oynatıcı kontrolleri aynı düğmede Devam Ettir durumuna geçiyor.',
+  'Akıllı Seans ana Başlat düğmesi oynarken Duraklat, duraklatılmışken Devam Ettir olarak çalışıyor.',
+  'Okuyucular, Hatim, Letâif, Hizbü’l-Vikâye, Fâtiha ve Berhetiyye Seyri ortak pause/resume diline bağlandı.',
+  'Mini oynatıcı ve Şimdi Çalıyor ikonlarının erişilebilir adları oynatma durumuyla eşitleniyor.',
+  'Gerçek stop eylemleri Duraklat etiketinden ayrıldı; Ses Halkası Bitir olarak gösteriliyor.',
+  'Akıllı Seans için dokunulabilir süre-oranlı zaman çizelgesi eklendi.',
+  'Her adım için bağımsız ses seviyesi kayıt, TTS ve frekans motoruna uygulanıyor.',
+  'Adım sonu otomatik geç veya burada bekle davranışı seçilebilir.',
+  'Zikirlerde sabit, süreli ve kullanıcı Sonraki diyene kadar koşullu tekrar destekleniyor.',
+  'Kayıtlı seanslar favori şablon olarak yıldızlanıp tek dokunuşla yüklenebilir.',
+  'r252 düzenleme, doğrulama, geri al ve hata kurtarma sistemi korunuyor.'
 ];
 
-/* ---------------------------------------------------------
- * INSTALL
- * Uygulama kabuğunu önbelleğe alır.
- * --------------------------------------------------------- */
+async function kabuguHazirla() {
+  const cache = await caches.open(CACHE);
+
+  /*
+   * Tek bir eksik opsiyonel ikon tüm Service Worker
+   * kurulumunu düşürmesin.
+   */
+  await Promise.allSettled(
+    KABUK.map(async yol => {
+      const req = new Request(yol, {
+        cache: 'reload'
+      });
+
+      const res = await fetch(req);
+
+      if (res && res.ok) {
+        await cache.put(req, res.clone());
+      }
+    })
+  );
+}
+
+
+/* ─────────────────────────────────────────────
+   INSTALL
+───────────────────────────────────────────── */
+
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches
-      .open(CACHE)
-      .then(cache => cache.addAll(KABUK))
+    kabuguHazirla()
       .then(() => self.skipWaiting())
   );
 });
 
-/* ---------------------------------------------------------
- * ACTIVATE
- * Eski SÜKÛN önbelleklerini temizler ve yeni SW'yi
- * açık sekmeler için hemen devreye alır.
- * --------------------------------------------------------- */
+
+/* ─────────────────────────────────────────────
+   ACTIVATE
+───────────────────────────────────────────── */
+
 self.addEventListener('activate', event => {
   event.waitUntil(
     Promise.all([
       caches.keys().then(keys =>
         Promise.all(
           keys
-            .filter(key => key.startsWith('sukun-') && key !== CACHE)
+            .filter(
+              key =>
+                key.startsWith('sukun-') &&
+                key !== CACHE
+            )
             .map(key => caches.delete(key))
         )
       ),
+
       self.clients.claim()
     ])
   );
 });
 
-/* ---------------------------------------------------------
- * NETWORK FIRST
- * Sayfa gezinmelerinde önce ağı dener.
- * Ağ yoksa önbelleğe, ardından nero.html'e döner.
- * --------------------------------------------------------- */
+
+/* ─────────────────────────────────────────────
+   NETWORK FIRST
+   Sayfa navigasyonları
+───────────────────────────────────────────── */
+
 async function agOncelikli(request) {
   try {
     const response = await fetch(request);
 
-    if (response && response.ok) {
+    if (
+      response &&
+      response.ok &&
+      response.type !== 'opaque'
+    ) {
       const cache = await caches.open(CACHE);
 
-      cache.put(request, response.clone()).catch(() => {
-        // Önbelleğe yazma hatası uygulamayı durdurmasın.
-      });
+      cache
+        .put(request, response.clone())
+        .catch(() => {});
     }
 
     return response;
+
   } catch (_) {
-    const cachedPage = await caches.match(request, {
-      ignoreSearch: true
-    });
 
-    if (cachedPage) {
-      return cachedPage;
-    }
-
-    const fallback = await caches.match('./nero.html', {
-      ignoreSearch: true
-    });
-
-    if (fallback) {
-      return fallback;
-    }
-
-    return Response.error();
+    return (
+      await caches.match(
+        request,
+        { ignoreSearch: true }
+      )
+    ) || (
+      await caches.match(
+        './nero.html',
+        { ignoreSearch: true }
+      )
+    ) || Response.error();
   }
 }
 
-/* ---------------------------------------------------------
- * CACHE FIRST
- * Statik dosyalarda önce önbelleği kullanır.
- * Dosya yoksa ağdan getirip önbelleğe ekler.
- * --------------------------------------------------------- */
+
+/* ─────────────────────────────────────────────
+   CACHE FIRST
+   Statik uygulama kaynakları
+───────────────────────────────────────────── */
+
 async function onbellekOncelikli(request) {
-  const cached = await caches.match(request, {
-    ignoreSearch: true
-  });
+
+  const cached = await caches.match(
+    request,
+    { ignoreSearch: true }
+  );
 
   if (cached) {
     return cached;
   }
 
   try {
+
     const response = await fetch(request);
 
-    if (response && response.ok) {
+    if (
+      response &&
+      response.ok &&
+      response.type !== 'opaque'
+    ) {
       const cache = await caches.open(CACHE);
 
-      cache.put(request, response.clone()).catch(() => {
-        // Önbelleğe yazma hatası uygulamayı durdurmasın.
-      });
+      cache
+        .put(request, response.clone())
+        .catch(() => {});
     }
 
     return response;
+
   } catch (_) {
+
     return Response.error();
   }
 }
 
-/* ---------------------------------------------------------
- * FETCH
- * Sadece GET ve aynı origin isteklerini ele alır.
- * Navigasyonlarda network-first,
- * diğer statik kaynaklarda cache-first kullanılır.
- * --------------------------------------------------------- */
+
+/* ─────────────────────────────────────────────
+   FETCH
+───────────────────────────────────────────── */
+
 self.addEventListener('fetch', event => {
+
   const request = event.request;
 
   if (request.method !== 'GET') {
@@ -138,38 +202,82 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
+  /*
+   * Yalnız aynı origin üzerindeki uygulama
+   * kaynaklarına müdahale et.
+   */
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  if (request.mode === 'navigate') {
-    event.respondWith(agOncelikli(request));
-    return;
-  }
-
-  event.respondWith(onbellekOncelikli(request));
+  event.respondWith(
+    request.mode === 'navigate'
+      ? agOncelikli(request)
+      : onbellekOncelikli(request)
+  );
 });
 
-/* ---------------------------------------------------------
- * MESSAGE
- * Sayfadan gelen Service Worker komutlarını işler.
- * --------------------------------------------------------- */
+
+/* ─────────────────────────────────────────────
+   MESSAGE API
+───────────────────────────────────────────── */
+
 self.addEventListener('message', event => {
+
   const veri = event.data || {};
 
+
+  /* Yeni Service Worker'ı hemen etkinleştir */
+
   if (veri.type === 'SKIP_WAITING') {
+
     self.skipWaiting();
+
     return;
   }
 
+
+  /* Sürüm bilgisini uygulamaya gönder */
+
   if (veri.type === 'SURUM_NOTU') {
-    const port = event.ports && event.ports[0];
+
+    const port =
+      event.ports &&
+      event.ports[0];
 
     if (port) {
+
       port.postMessage({
         v: SURUM,
         notlar: NOTLAR
       });
     }
+  }
+
+
+  /* Uygulama kabuğunu manuel yenile */
+
+  if (veri.type === 'CACHE_REFRESH') {
+
+    const port =
+      event.ports &&
+      event.ports[0];
+
+    event.waitUntil(
+      kabuguHazirla()
+        .then(() => {
+
+          try {
+
+            if (port) {
+              port.postMessage({
+                ok: true,
+                v: SURUM
+              });
+            }
+
+          } catch (_) {}
+        })
+    );
   }
 });
