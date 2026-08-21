@@ -1,8 +1,8 @@
-/* SÜKÛN r431 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r432 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r431';
-const CACHE = 'sukun-r431-20260821a';
+const SURUM = 'r432';
+const CACHE = 'sukun-r432-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Yarım kalan Global Queue restore durumunda playback sayılmıyor; boşta kalan sabit bar kapanıyor. Tümünü Durdur Global Queue ve Akıllı Seansı da kesin sıfırlıyor.',
   'Flash-free owner lock: tek dock artık sabit compositor yüzeyinde kalıyor; Akıllı Seans ile global miks görünürlük için yarışmıyor ve show/display animasyonu yeniden başlamıyor.',
   'Tek oynatıcı yüzeyi: Akıllı Seans, ambiyans, frekans ve diğer eşzamanlı sesler tek r170 dock içinde birleşiyor; global mini/döngü barları ayrı görünmüyor.',
   'Akıllı Seans çalışırken ikinci global mini oynatıcı ve hub içindeki küçük tekrar durum satırı gizleniyor; seans bittiğinde bağımsız ses varsa mini bar geri geliyor.',
