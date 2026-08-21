@@ -1,8 +1,8 @@
-/* SÜKÛN r402 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r405 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r402';
-const CACHE = 'sukun-r402-20260821a';
+const SURUM = 'r405';
+const CACHE = 'sukun-r405-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,9 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Akıllı Seans zikir kaynak doğrulaması düzeltildi; Korunma Okumaları Felâk, Nâs, İhlâs ve Kalem kaynaklarını yeniden doğru çözüyor.',
+  'Üst SÜKÛN marka başlığı ve sakin altın animasyonu geri getirildi; r194 shimmer görünürlük çakışması düzeltildi.',
+  'Tefekkür modunda Çık düğmesi yatay alt aksiyona taşındı; Berhetiyye isimleri tek satıra sabitlendi.',
   'Kendi Sesin kartındaki çift mikrofon ikonu tekilleştirildi; Now Playing başlık kararlılığı da korundu.',
   'Ortak Seçim modeli eklendi: Zikir, Berhetiyye, Frekans ve AI seanslarında seçili öğe tek state üzerinden Seç-Hedef/Süre/Ses-Akışa ekle/Başlat davranışına bağlandı.',
   'Berhetiyye, Frekans ve AI seansları seç-ayarla-başlat-kontrol et-bitir ortak davranış diline bağlandı; playback düğme metinleri merkezi duruma göre eşitleniyor.',
@@ -51,8 +54,8 @@ async function kabuguHazirla() {
   const cache = await caches.open(CACHE);
 
   /*
-   * Tek bir eksik opsiyonel ikon tüm Service Worker
-   * kurulumunu düşürmesin.
+   * Tek bir eksik opsiyonel ikon
+   * bütün Service Worker kurulumunu düşürmesin.
    */
   await Promise.allSettled(
     KABUK.map(async yol => {
@@ -70,9 +73,9 @@ async function kabuguHazirla() {
 }
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    INSTALL
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -82,9 +85,9 @@ self.addEventListener('install', event => {
 });
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    ACTIVATE
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -107,10 +110,10 @@ self.addEventListener('activate', event => {
 });
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    NETWORK FIRST
    Sayfa navigasyonları
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 async function agOncelikli(request) {
   try {
@@ -147,13 +150,12 @@ async function agOncelikli(request) {
 }
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    CACHE FIRST
    Statik uygulama kaynakları
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 async function onbellekOncelikli(request) {
-
   const cached = await caches.match(
     request,
     { ignoreSearch: true }
@@ -164,7 +166,6 @@ async function onbellekOncelikli(request) {
   }
 
   try {
-
     const response = await fetch(request);
 
     if (
@@ -188,12 +189,11 @@ async function onbellekOncelikli(request) {
 }
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    FETCH
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 self.addEventListener('fetch', event => {
-
   const request = event.request;
 
   if (request.method !== 'GET') {
@@ -203,8 +203,8 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
 
   /*
-   * Yalnız aynı origin üzerindeki uygulama
-   * kaynaklarına müdahale et.
+   * Yalnız aynı origin üzerindeki
+   * uygulama kaynaklarına müdahale et.
    */
   if (url.origin !== self.location.origin) {
     return;
@@ -218,35 +218,30 @@ self.addEventListener('fetch', event => {
 });
 
 
-/* ─────────────────────────────────────────────
+/* ─────────────────────────────────────
    MESSAGE API
-───────────────────────────────────────────── */
+───────────────────────────────────── */
 
 self.addEventListener('message', event => {
-
   const veri = event.data || {};
 
 
   /* Yeni Service Worker'ı hemen etkinleştir */
 
   if (veri.type === 'SKIP_WAITING') {
-
     self.skipWaiting();
-
     return;
   }
 
 
-  /* Sürüm bilgisini uygulamaya gönder */
+  /* Sürüm notlarını uygulamaya gönder */
 
   if (veri.type === 'SURUM_NOTU') {
-
     const port =
       event.ports &&
       event.ports[0];
 
     if (port) {
-
       port.postMessage({
         v: SURUM,
         notlar: NOTLAR
@@ -258,7 +253,6 @@ self.addEventListener('message', event => {
   /* Uygulama kabuğunu manuel yenile */
 
   if (veri.type === 'CACHE_REFRESH') {
-
     const port =
       event.ports &&
       event.ports[0];
@@ -266,16 +260,13 @@ self.addEventListener('message', event => {
     event.waitUntil(
       kabuguHazirla()
         .then(() => {
-
           try {
-
             if (port) {
               port.postMessage({
                 ok: true,
                 v: SURUM
               });
             }
-
           } catch (_) {}
         })
     );
