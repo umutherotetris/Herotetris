@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r435 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r436 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r435">
+<meta name="sukun-build" content="r436">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r435">
+<link rel="manifest" href="./manifest.webmanifest?v=r436">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8067,6 +8067,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r436","t":"21 Ağustos 2026","b":["Tekke seansı başlarken birleşik oynatıcı artık otomatik açılmıyor; Tekke sahnesi varsayılan olarak tamamen açık kalıyor","Tekke üst çubuğuna küçük Oynatıcı düğmesi eklendi; kullanıcı isterse barı tek dokunuşla açıp yine aynı yerden kapatabiliyor","Tekke içinde barın kendi Gizle düğmesi de yalnız Tekke görünümünü kapatıyor; uygulama genelindeki oynatıcı gizleme tercihini yanlışlıkla değiştirmiyor","Tekke kapatılınca geçici oynatıcı tercihi temizleniyor; ana SÜKÛN ekranındaki normal dock davranışı aynen geri geliyor","Tekke giriş kapısındaki SÜKÛN geri dönüş katmanı body-state ile sağlamlaştırıldı; DOM sibling sırasına bağlı kalmıyor"]},
  {"v":"r435","t":"21 Ağustos 2026","b":["Tekke giriş kapısı açıkken SÜKÛN’a dön düğmesi artık giriş katmanının üstünde ve doğrudan tıklanabilir","Giriş yapılmadan önce yalnız geri dönüş düğmesi üst katmanda aktif tutuluyor; sayaç, yardım, ses ve Mihrap kontrolleri yanlışlıkla etkileşim almıyor","TEKKEYE GİR demeden ana uygulamaya geri dönmek artık tek dokunuşla mümkün"]},
  {"v":"r434","t":"21 Ağustos 2026","b":["Detaylar artık ayrı alt sayfa açmıyor; tek oynatıcı kendi içinde yumuşak mini-akordeon olarak genişliyor","Akordeonda ana ses ve aktif katmanlar ayrı ayrı yönetiliyor: ambiyans kanalı, frekans, okuma/kayıt, zikir, döngü, Tekke ve gerektiğinde Akıllı Seansın mevcut adımı kendi kontrolünü gösteriyor","Ambiyans katmanlarında 5/10/20/45 dakika veya süresiz zamanlayıcı ve tek katman kapatma; frekansta vuruş ve seviye; zikirde tempo ve seviye doğrudan dock içinde","Eski barın okuma hızı, ton profili, yankı ve 8D kontrolleri tek dockun detay bölümüne taşındı","Kendi kayıt ses seviyesi artık Web Audio grafiğine bağlı kayıtlarda da Zikir/Okuma seviyesiyle gerçekten ölçekleniyor","Gizle davranışı korunuyor; detay açıkken gizlemeye basılırsa akordeon kapanıyor ve Tefekkür sahnesi küçük geri çağırma tutamacı dışında boş kalıyor"]},
  {"v":"r433","t":"21 Ağustos 2026","b":["Tek oynatıcıya iki yeni işlem eklendi: Detaylar ve Gizle","Detaylar düğmesi eski gelişmiş Şu An Çalanlar sayfasını açıyor; her aktif sesi ayrı kısma, süre verme ve kapatma denetimleri yeni barda da erişilebilir oldu","Gizle düğmesi sabit oynatıcıyı alta kaydırıp yalnız küçük bir geri çağırma tutamacı bırakıyor; Tefekkür ekranı ve zikir çemberi örtülmüyor","Geri çağırma tutamacı yalnız gerçekten aktif bir oturum varken görünür; oynatıcı tekrar tek dokunuşla geri gelir","Birleşik bar kompakt kaldı, ileri seviye miks işlemleri ise tek dokunuşta açılan detay katmanına taşındı"]},
@@ -22371,7 +22372,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r435',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r436',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -26620,6 +26621,7 @@ summary{display:flex;align-items:center;gap:8px}
   <div id="topR">
     <button class="pillLink" id="backSukun" title="SÜKÛN'a dön"><span class="ico" data-ico="sparkle"></span> SÜKÛN</button>
     <span id="sesT">0:00</span><span id="tkGoal"></span>
+    <button class="iBtn" id="r436TekkePlayerBtn" title="Oynatıcıyı göster" aria-label="Oynatıcıyı göster" aria-pressed="false">▱</button>
     <button class="iBtn" id="helpBtn" title="Bu nedir? — kısa rehber">?</button>
     <button class="iBtn" id="muteBtn" title="Sesi aç/kapat">🕯</button>
     <button class="iBtn" id="panelBtn" title="Mihrap">☰</button>
@@ -28842,6 +28844,14 @@ function open(h){
     SEY.i=0;SEY.count=0;SEY.done=false;
   }
   root.hidden=false;
+  /* r436: Tekke açılır açılmaz player varsayılan olarak kapalıdır.
+     Kapı katmanında da önceki r435 SÜKÛN geri dönüş düzeltmesine kesin
+     bir body state veriyoruz; sibling sırasına bağlı CSS kalmıyor. */
+  try{
+    document.body.classList.add('r436-tekke-open','r436-tekke-gate');
+    document.body.classList.remove('r436-tekke-active','r436-tekke-player-open');
+    window.dispatchEvent(new CustomEvent('tekke:opened'));
+  }catch(e){}
   try{ tkTemaUygula(TKTEMA); }catch(e){}   /* r144: palet Tekke'nin olsun */
   if(ctx&&ctx.state==='suspended')ctx.resume();
   ebResize(); syncBridgeUI();
@@ -28855,6 +28865,12 @@ function close(){
      renginde kalırdı. */
   try{ if(typeof applyTema==='function')applyTema(document.body.dataset.tema||'zumrut'); }catch(e){}
   tkStop(); root.hidden=true;
+  try{
+    document.body.classList.remove(
+      'r436-tekke-open','r436-tekke-gate',
+      'r436-tekke-active','r436-tekke-player-open'
+    );
+  }catch(e){}
   if(goalTimer){clearInterval(goalTimer);goalTimer=null;}
   tkHelpShow(false);
   $('#gate').classList.remove('bye');
@@ -28886,6 +28902,13 @@ function mkGecis(){
 $('#gBtn').onclick=()=>{
   ac(); if(ctx.state==='suspended')ctx.resume();
   $('#gate').classList.add('bye');
+  /* r436: seans başlamadan ÖNCE dock kapalı bağlama geçsin; böylece
+     Now Playing state ilk kez yayınlanırken tek bir frame bile bar sıçramaz. */
+  try{
+    document.body.classList.remove('r436-tekke-gate','r436-tekke-player-open');
+    document.body.classList.add('r436-tekke-open','r436-tekke-active');
+    window.dispatchEvent(new CustomEvent('tekke:started'));
+  }catch(e){}
   running=true; tkStart=Date.now();
   MKBAS=Date.now(); MKSURE=[]; kaldiIzle(true);
   t0=performance.now();
@@ -33381,10 +33404,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r435',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r436',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r435-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r436-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -41193,6 +41216,200 @@ window.SukunDockDetails={version:BUILD,open:()=>setOpen(true),close:()=>setOpen(
   }
 }
 </style>
+
+
+<style id="r436-tekke-optional-dock-style">
+/* ═══════════════════════════════════════════════════════════════
+   r436 — TEKKE'DE OYNATICI İSTEĞE BAĞLI
+   Tekke kendi sahnesini zaten yönetiyor; birleşik dock yalnız kullanıcı
+   "Oynatıcı" düğmesine dokunursa açılır.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Tekke seansı aktif, kullanıcı henüz istemedi: dock tamamen sahneden çıkar. */
+body.r436-tekke-active:not(.r436-tekke-player-open) #r170Now{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transform:translate3d(0,110%,0)!important;
+  transition:
+    opacity .16s ease,
+    transform .20s cubic-bezier(.2,.72,.2,1),
+    visibility 0s linear .20s!important;
+}
+
+/* Kullanıcı Tekke üstündeki Oynatıcı düğmesine bastı:
+   r433'ün global "hidden" tercihi olsa bile BU Tekke oturumu için aç. */
+body.r436-tekke-active.r436-tekke-player-open.r431-dock-visible #r170Now{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transform:translate3d(0,0,0)!important;
+  transition:
+    opacity .18s ease,
+    transform .22s cubic-bezier(.2,.72,.2,1),
+    visibility 0s linear 0s!important;
+}
+
+/* Eski global geri çağırma tutamacı Tekke'de ikinci bir kontrol yüzeyi olmasın. */
+body.r436-tekke-open #r433DockPeek{
+  display:none!important;
+}
+
+/* Tekke'de dock kapalıyken SÜKÛN ana sayfası için ayrılan player rezervini
+   görsel olarak kullanma; Tekke zaten fixed tam ekran. */
+body.r436-tekke-active:not(.r436-tekke-player-open){
+  --r436-tekke-dock-reserve:0px;
+}
+
+/* Küçük üst-bar düğmesi: yalnız gerçek Tekke seansında görünür. */
+#tk #r436TekkePlayerBtn{
+  display:none;
+  flex:none;
+  font-size:15px;
+  line-height:1;
+}
+body.r436-tekke-active #tk #r436TekkePlayerBtn{
+  display:grid;
+}
+body.r436-tekke-active.r436-tekke-player-open #tk #r436TekkePlayerBtn{
+  color:var(--goldh);
+  border-color:var(--line2);
+  background:color-mix(in srgb,var(--gold) 12%,rgba(10,22,38,.62));
+  box-shadow:0 0 18px color-mix(in srgb,var(--gold) 12%,transparent);
+}
+
+/* r435'te kullanılan sibling seçiciyi body-state ile sağlamlaştır:
+   giriş kapısı açıkken SÜKÛN düğmesi gerçekten kapının üstünde kalır. */
+body.r436-tekke-gate #tk #top{
+  z-index:75!important;
+  pointer-events:none!important;
+}
+body.r436-tekke-gate #tk #brand,
+body.r436-tekke-gate #tk #sesT,
+body.r436-tekke-gate #tk #tkGoal,
+body.r436-tekke-gate #tk #r436TekkePlayerBtn,
+body.r436-tekke-gate #tk #helpBtn,
+body.r436-tekke-gate #tk #muteBtn,
+body.r436-tekke-gate #tk #panelBtn{
+  display:none!important;
+}
+body.r436-tekke-gate #tk #topR{
+  pointer-events:none!important;
+  justify-content:flex-end!important;
+}
+body.r436-tekke-gate #tk #backSukun{
+  display:flex!important;
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:1!important;
+  min-width:auto!important;
+  flex:none!important;
+}
+
+/* Bar açıldığında Tekke sahnesinin dibinde biraz güvenli alan bırak;
+   kapalıyken hiçbir alan çalmaz. */
+body.r436-tekke-active.r436-tekke-player-open #tk #telkin{
+  padding-bottom:190px;
+  transition:padding-bottom .22s ease;
+}
+body.r436-tekke-active:not(.r436-tekke-player-open) #tk #telkin{
+  padding-bottom:0;
+  transition:padding-bottom .22s ease;
+}
+
+@media(max-width:400px){
+  body.r436-tekke-active #tk #topR{gap:5px}
+  #tk #r436TekkePlayerBtn{width:30px;height:30px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.r436-tekke-active #r170Now,
+  body.r436-tekke-active #tk #telkin{
+    transition:none!important;
+  }
+}
+</style>
+
+<script id="r436-tekke-optional-dock-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R436_TEKKE_OPTIONAL_DOCK__)return;
+window.__SUKUN_R436_TEKKE_OPTIONAL_DOCK__=1;
+
+let playerOpen=false;
+const body=document.body;
+
+function tekkeActive(){
+  return body?.classList.contains('r436-tekke-active');
+}
+function button(){
+  return document.getElementById('r436TekkePlayerBtn');
+}
+function syncButton(){
+  const b=button(); if(!b)return;
+  const on=tekkeActive()&&playerOpen;
+  b.setAttribute('aria-pressed',on?'true':'false');
+  b.setAttribute('aria-label',on?'Oynatıcıyı gizle':'Oynatıcıyı göster');
+  b.title=on?'Oynatıcıyı gizle':'Oynatıcıyı göster';
+  b.textContent=on?'▾':'▱';
+}
+function apply(){
+  body?.classList.toggle(
+    'r436-tekke-player-open',
+    !!(tekkeActive()&&playerOpen)
+  );
+  syncButton();
+}
+function reset(){
+  playerOpen=false;
+  apply();
+}
+
+/* Tekke her açılışta temiz başlar: bar otomatik gelmez. */
+window.addEventListener('tekke:opened',reset,{passive:true});
+window.addEventListener('tekke:started',reset,{passive:true});
+window.addEventListener('tekke:closed',()=>{
+  playerOpen=false;
+  body?.classList.remove('r436-tekke-player-open');
+},{passive:true});
+
+/* Üst bardaki isteğe bağlı oynatıcı düğmesi. */
+document.addEventListener('click',e=>{
+  const b=e.target.closest?.('#r436TekkePlayerBtn');
+  if(!b||!tekkeActive())return;
+  e.preventDefault();
+  playerOpen=!playerOpen;
+  apply();
+  try{typeof vib==='function'&&vib(8)}catch(err){}
+},false);
+
+/* Tek dock içindeki "Gizle" Tekke sırasında global tercihi değiştirmesin.
+   Capture aşamasında eski r433 handlerına ulaşmadan yalnız bu oturumu kapat. */
+document.addEventListener('click',e=>{
+  const b=e.target.closest?.('#r433HideBtn');
+  if(!b||!tekkeActive())return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  playerOpen=false;
+  apply();
+  try{typeof vib==='function'&&vib(8)}catch(err){}
+},true);
+
+/* Eğer Tekke dışından dönerken state olayı geç gelirse sınıf taşınmasın. */
+window.addEventListener('tekke:closed',()=>setTimeout(()=>{
+  body?.classList.remove('r436-tekke-player-open');
+},0),{passive:true});
+
+syncButton();
+
+window.SukunTekkeDock={
+  version:'r436',
+  show(){if(tekkeActive()){playerOpen=true;apply()}},
+  hide(){if(tekkeActive()){playerOpen=false;apply()}},
+  toggle(){if(tekkeActive()){playerOpen=!playerOpen;apply()}},
+  isOpen:()=>!!(tekkeActive()&&playerOpen)
+};
+})();
+</script>
 
 </body>
 </html>

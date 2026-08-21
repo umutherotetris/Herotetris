@@ -1,8 +1,8 @@
-/* SÜKÛN r435 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r436 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r435';
-const CACHE = 'sukun-r435-20260821a';
+const SURUM = 'r436';
+const CACHE = 'sukun-r436-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Tekke oynatıcısı isteğe bağlı: seans başlarken dock otomatik açılmıyor; Tekke üstündeki küçük Oynatıcı düğmesiyle gösterilip gizleniyor.',
   'Tekke giriş kapısı açıkken SÜKÛN geri dönüş düğmesi kapı katmanının üstüne alındı; giriş yapmadan ana uygulamaya dönülebiliyor.',
   'Dock Detaylar artık ayrı sheet değil: tek oynatıcı içinde mini-akordeon; aktif sesleri ayrı kısma/kapatma, ambiyans süresi, frekans vuruşu, zikir temposu, okuma hızı, ton, yankı ve 8D aynı yüzeyde.',
   'Tek docka Detaylar ve Gizle eklendi: Detaylar eski gelişmiş Şu An Çalanlar sayfasını açıyor; Gizle oynatıcıyı alta indirip küçük geri çağırma tutamacı bırakıyor.',
