@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r409 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r413 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r409">
+<meta name="sukun-build" content="r413">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r409">
+<link rel="manifest" href="./manifest.webmanifest?v=r413">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r409</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r413</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,8 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r411","t":"21 Ağustos 2026","b":["Tefekkürden Çık düğmesi zikir çemberinin hemen altındaki normal belge akışına taşındı; sayaç kontrol düğmelerinin üzerine binmesi yapısal olarak engellendi","Çıkış düğmesi yarı şeffaf kırmızı-mor-mavi neon geçişli kapsül olarak yeniden tasarlandı","Düğme artık fixed/absolute değildir; ekran yüksekliği, mini player veya alt navigasyon değişse bile kendi alanını korur","Tefekkür dışındayken r408 kompakt Tefekkür davranışı aynen korunuyor"]},
+ {"v":"r410","t":"21 Ağustos 2026","b":["Alt navigasyondaki Tekke logosu ile Tekke yazısının üst üste binmesi düzeltildi","Tekke ikonu kendi sabit ikon kutusuna alındı; yazı ayrı satırda ve bağımsız line-height ile hizalanıyor","Tekke sekmesinde ikon absolute/floating konumlandırma kalıntıları etkisizleştirildi; küçük ekranlarda da merkez hizası korunuyor"]},
  {"v":"r409","t":"21 Ağustos 2026","b":["Ambiyans kartlarına tek dokunuşluk Detay/İpucu eylemi eklendi; uzun açıklamalar artık kartta kırpılıp kaybolmuyor","Benzer ambiyanslar fark rozetiyle ayrıştırılıyor; örneğin iki Şelale, yağmur varyantları, gece ortamları ve su/dalga seslerinin karakter farkı açıklanıyor","Detay paneli Ne duyarsın, Dinleme hissi, Ne zaman tercih edilebilir ve Benzerlerinden farkı bölümlerini gösteriyor","Etki ifadeleri tıbbi iddia yerine sesin algısal karakteri ve kullanım ipucu olarak çerçevelendi","Özel/kullanıcı sesleri de aynı bilgi paneline uyumlu hale getirildi"]},
  {"v":"r408","t":"21 Ağustos 2026","b":["Tefekkür kontrolü uzun floating bardan çıkarılıp bağlamsal kompakt kontrol modeline geçirildi","Bir şey çalarken Tefekkür mini oynatıcının kontrol kümesine taşınıyor; ayrı bir ekran katmanı oluşturmuyor","Çalma yokken Tefekkür yalnız küçük bir sağ-alt kapsül olarak görünüyor; sabit 36 px yüksekliği sayesinde dikey bara dönüşemiyor","Tefekkür modunda r407 sayaç altı çıkış düğmesi aynen korunuyor","Eski r244 çakışma motorunun Tefekkür düğmesini yukarı-aşağı sürüklemesi r408 yönetiminde devre dışı bırakıldı"]},
  {"v":"r407","t":"21 Ağustos 2026","b":["Tefekkürden Çık düğmesi sabit/floating katmandan çıkarılıp zikir sayacının kendi akışına alındı","Çıkış düğmesi çember ve Hedef/Devir özetinin hemen altında, −1 / Saymaya Başla / +1 kontrollerinden önce konumlanıyor","Tefekkür çıkışı artık sayaç düğmelerinin üzerine binmiyor; ekran boyu değişse bile normal belge akışında yer tutuyor","Tefekkür modu kapanınca aynı düğme eski global konumuna geri dönüyor; mevcut toggle davranışı korunuyor"]},
@@ -22339,7 +22341,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r409',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r413',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33349,7 +33351,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r409',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r413',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r290-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -37438,58 +37440,126 @@ window.SukunMiniStable={version:'r406',applyInfo,applyNow};
 
 
 <style id="r407-tefekkur-exit-flow">
-/* r407 — Çıkış artık floating değildir.
-   Tefekkür modunda sayaç çemberinin altındaki kendi slotunda normal akışa girer. */
+/* r411 — Tefekkürden Çık, zikir çemberinin hemen altında NORMAL AKIŞTA.
+   Fixed/absolute koordinat yok: başka kontrollere fiziksel olarak binemez. */
 #r407TefekkurExitSlot{
   display:none;
   width:100%;
-}
-
-body.sukun-tefekkur-mode #r407TefekkurExitSlot{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:10px 0 14px;
-  padding:0 6px;
   box-sizing:border-box;
 }
 
-/* r403'ün fixed koordinatlarını kesin olarak geçersiz kıl. */
-body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+body.sukun-tefekkur-mode #r407TefekkurExitSlot{
   display:flex!important;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  margin:14px 0 10px!important;
+  padding:0 12px!important;
+  box-sizing:border-box;
+  position:relative!important;
+  z-index:3;
+}
+
+/* Kırmızı → mor → mavi; yarı şeffaf ve sakin neon. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+
   position:relative!important;
   inset:auto!important;
-  left:auto!important;
-  right:auto!important;
   top:auto!important;
+  right:auto!important;
   bottom:auto!important;
+  left:auto!important;
   transform:none!important;
 
-  width:min(72%,250px)!important;
-  max-width:250px!important;
-  min-width:156px!important;
-  min-height:38px!important;
+  width:min(68vw,238px)!important;
+  min-width:172px!important;
+  max-width:238px!important;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+
   margin:0!important;
-  padding:9px 16px!important;
+  padding:0 17px!important;
+  overflow:hidden!important;
 
+  border-radius:999px!important;
+  border:1px solid rgba(205,137,255,.42)!important;
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(226,70,86,.23) 0%,
+      rgba(167,78,220,.25) 48%,
+      rgba(64,130,255,.23) 100%
+    )!important;
+
+  color:rgba(248,236,255,.96)!important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 12px rgba(217,72,127,.15),
+    0 0 20px rgba(148,76,229,.12),
+    0 0 28px rgba(70,124,255,.10)!important;
+
+  backdrop-filter:blur(14px) saturate(1.18)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.18)!important;
+
+  font:650 11px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.035em!important;
+  white-space:nowrap!important;
+
+  opacity:.92!important;
   z-index:1!important;
-  opacity:.88!important;
-  flex:0 0 auto;
+  flex:0 0 auto!important;
+
+  transition:
+    transform .14s ease,
+    opacity .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease!important;
 }
 
-/* Basarken yalnız kendi yerinde küçülsün; yatay kayma olmasın. */
+/* Çıkış işareti de aynı neon ailesinde, fakat metinden rol çalmaz. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn::before{
+  content:"×"!important;
+  display:grid!important;
+  place-items:center!important;
+  width:18px!important;
+  height:18px!important;
+  flex:0 0 18px!important;
+  margin:0!important;
+  border-radius:50%!important;
+  border:1px solid rgba(232,180,255,.38)!important;
+  background:rgba(89,45,120,.18)!important;
+  color:#ffdbe7!important;
+  font:700 12px/1 system-ui!important;
+}
+
 body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn:active{
-  transform:scale(.985)!important;
+  transform:scale(.975)!important;
+  opacity:1!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 16px rgba(226,70,86,.20),
+    0 0 24px rgba(157,79,232,.18),
+    0 0 32px rgba(64,130,255,.15)!important;
 }
 
-/* Sayaç kontrolleri çıkışın altında ayrı katmanda kalsın. */
+/* Çember → Çıkış → Hedef/Devir → kontrol düğmeleri.
+   Her biri normal akışta kendi alanında. */
+body.sukun-tefekkur-mode #cntSub{
+  margin-top:9px!important;
+}
 body.sukun-tefekkur-mode .zCounterActions{
-  position:relative;
-  z-index:2;
-  margin-top:0!important;
+  position:relative!important;
+  z-index:2!important;
 }
 
-/* r403'te fixed çıkış için ayrılmış gereksiz alt boşluğu azalt. */
+/* Fixed çıkış dönemlerinden kalan ekstra boşlukları temizle. */
 body.sukun-tefekkur-mode #tab-zkr{
   padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
 }
@@ -37497,21 +37567,24 @@ body.sukun-tefekkur-mode .zCtl{
   margin-bottom:max(18px,env(safe-area-inset-bottom))!important;
 }
 
-/* Küçük telefonlarda da düğme üçlü sayaç kontrolüne değmesin. */
 @media(max-width:390px){
   body.sukun-tefekkur-mode #r407TefekkurExitSlot{
-    margin:8px 0 12px;
+    margin:12px 0 9px!important;
+    padding-inline:8px!important;
   }
   body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
-    width:min(76%,230px)!important;
-    min-height:36px!important;
-    padding:8px 14px!important;
+    width:min(72vw,220px)!important;
+    min-width:164px!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    font-size:10.5px!important;
   }
 }
 
-@media(max-height:720px){
-  body.sukun-tefekkur-mode #r407TefekkurExitSlot{
-    margin:7px 0 10px;
+@media(prefers-reduced-motion:reduce){
+  body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+    transition:none!important;
   }
 }
 </style>
@@ -37534,16 +37607,19 @@ function ensureSlot(){
   slot=document.getElementById('r407TefekkurExitSlot');
   if(slot)return slot;
 
-  const sub=document.getElementById('cntSub');
-  if(!sub)return null;
+  const ctl=document.querySelector('.zCtl');
+  const counterRow=ctl?.querySelector('.zCounterRow');
+  const sub=ctl?.querySelector('.cntSub');
+  if(!ctl||!counterRow)return null;
 
   slot=document.createElement('div');
   slot.id='r407TefekkurExitSlot';
   slot.setAttribute('aria-label','Tefekkür çıkış alanı');
 
-  /* Çemberin altındaki Hedef/Devir özetinden hemen sonra,
-     sayaç eylemlerinden önce. */
-  sub.insertAdjacentElement('afterend',slot);
+  /* r413: çıkış sayaç kartının GERÇEK grid satırı.
+     Çemberden sonra, Hedef/Devir bilgisinden önce. */
+  if(sub)ctl.insertBefore(slot,sub);
+  else counterRow.insertAdjacentElement('afterend',slot);
   return slot;
 }
 
@@ -37612,7 +37688,7 @@ if(document.readyState==='loading'){
 }
 
 window.SukunTefekkurExitFlow={
-  version:'r407',
+  version:'r413',
   sync,
   moveIntoCounter,
   restore
@@ -37859,6 +37935,8 @@ function sync(){
      sayaç altındaki çıkış düğmesine dokunmuyoruz. */
   if(document.body.classList.contains('sukun-tefekkur-mode')){
     b.classList.remove('r408-mini');
+    /* r411: r407/r411 akışı son sözü söylesin. */
+    try{window.SukunTefekkurExitFlow?.moveIntoCounter?.()}catch(e){}
     return;
   }
 
@@ -38222,6 +38300,306 @@ if(mixer)mo.observe(mixer,{childList:true,subtree:true});
 window.SukunAmbientInfo={version:'r409',open:openInfo,close:closeInfo,sync,similars};
 })();
 </script>
+
+
+<style id="r410-tekke-nav-alignment">
+/* r410 — Tekke: ikon ve etiket birbirinin alanına giremez. */
+#bottomNav .tab[data-tab="tekke"],
+#bottomNav [data-tab="tekke"],
+.bottomNav .tab[data-tab="tekke"],
+.navBottom .tab[data-tab="tekke"]{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  overflow:hidden!important;
+  padding-top:7px!important;
+  padding-bottom:6px!important;
+  line-height:1!important;
+}
+
+/* Tekke düğmesindeki ilk görsel/ikon katmanına ayrılmış sabit alan. */
+#bottomNav [data-tab="tekke"] > :is(svg,img,.ico,.icon,.tabIcon,.navIcon):first-child,
+.bottomNav [data-tab="tekke"] > :is(svg,img,.ico,.icon,.tabIcon,.navIcon):first-child,
+.navBottom [data-tab="tekke"] > :is(svg,img,.ico,.icon,.tabIcon,.navIcon):first-child{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+  transform:none!important;
+  display:block!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  height:24px!important;
+  max-width:24px!important;
+  max-height:24px!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+  line-height:24px!important;
+}
+
+/* Metin kendi satırında. */
+#bottomNav [data-tab="tekke"] :is(.lbl,.label,.tabLabel,.navLabel),
+.bottomNav [data-tab="tekke"] :is(.lbl,.label,.tabLabel,.navLabel),
+.navBottom [data-tab="tekke"] :is(.lbl,.label,.tabLabel,.navLabel){
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  display:block!important;
+  width:100%!important;
+  height:14px!important;
+  min-height:14px!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  line-height:14px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Mevcut markup ikon/yazıyı özel sınıflarla ayırmıyorsa runtime'ın
+   eklediği sınıflar kesin düzeni sağlar. */
+.r410TekkeIcon{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 24px!important;
+  width:24px!important;height:24px!important;
+  margin:0 auto!important;
+  line-height:24px!important;
+}
+.r410TekkeLabel{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  display:block!important;
+  flex:0 0 14px!important;
+  width:100%!important;height:14px!important;
+  margin:0!important;padding:0!important;
+  text-align:center!important;
+  line-height:14px!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:390px){
+  #bottomNav [data-tab="tekke"],
+  .bottomNav [data-tab="tekke"],
+  .navBottom [data-tab="tekke"]{
+    gap:4px!important;
+  }
+  .r410TekkeIcon{width:22px!important;height:22px!important;flex-basis:22px!important}
+  .r410TekkeLabel{font-size:9px!important}
+}
+</style>
+
+<script id="r410-tekke-nav-runtime">
+(()=>{
+'use strict';
+
+function findTekke(){
+  return document.querySelector(
+    '#bottomNav [data-tab="tekke"],.bottomNav [data-tab="tekke"],.navBottom [data-tab="tekke"],[data-tab="tekke"].tab'
+  );
+}
+function fix(){
+  const b=findTekke(); if(!b)return;
+
+  /* Etiketi metin içeriğinden güvenli biçimde bul. */
+  let label=[...b.children].find(el=>/^\s*Tekke\s*$/i.test(el.textContent||''));
+  if(label)label.classList.add('r410TekkeLabel');
+
+  /* Label dışındaki ilk ikon-benzeri doğrudan çocuk. */
+  let icon=[...b.children].find(el=>
+    el!==label && (
+      el.matches?.('svg,img,.ico,.icon,.tabIcon,.navIcon') ||
+      (el.textContent||'').trim().length<=3
+    )
+  );
+  if(icon)icon.classList.add('r410TekkeIcon');
+
+  /* Eski inline kaydırmalar yeniden çakışma üretmesin. */
+  [icon,label].filter(Boolean).forEach(el=>{
+    ['top','right','bottom','left','transform','margin-top','margin-bottom']
+      .forEach(k=>el.style.removeProperty(k));
+  });
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(fix,120),{once:true});
+}else setTimeout(fix,120);
+
+window.addEventListener('resize',fix,{passive:true});
+window.addEventListener('orientationchange',fix,{passive:true});
+window.SukunTekkeNavFix={version:'r410',fix};
+})();
+</script>
+
+
+<style id="r413-tefekkur-compact-counter-flow">
+/* r413 — Sayaç ekranında bütün temel kontroller aynı kompakt grid akışında.
+   En kritik değişiklik: ring satırı artık 1fr ile bütün boş yüksekliği yutmaz. */
+body.sukun-tefekkur-mode .zCtl{
+  display:grid!important;
+  grid-template-rows:
+    auto     /* başlık */
+    auto     /* çember + hedef/kalan */
+    auto     /* Tefekkürden Çık */
+    auto     /* Hedef • Devir */
+    auto!important; /* −1 / Başlat / +1 */
+  align-content:start!important;
+  justify-items:stretch!important;
+  height:100%!important;
+  gap:clamp(5px,.75dvh,8px)!important;
+  overflow:hidden!important;
+}
+
+/* r197'nin eski satır numaralarını r413 akışına geçir. */
+body.sukun-tefekkur-mode .zCtl > .zCountTitle{
+  display:flex!important;
+  grid-row:1!important;
+}
+body.sukun-tefekkur-mode .zCtl > .zCounterRow{
+  display:grid!important;
+  grid-row:2!important;
+  align-self:start!important;
+}
+body.sukun-tefekkur-mode .zCtl > #r407TefekkurExitSlot{
+  display:flex!important;
+  grid-row:3!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:100%!important;
+  margin:2px 0 1px!important;
+  padding:0!important;
+  align-items:center!important;
+  justify-content:center!important;
+  z-index:5!important;
+}
+body.sukun-tefekkur-mode .zCtl > .cntSub{
+  display:block!important;
+  grid-row:4!important;
+  margin:1px 0 0!important;
+}
+body.sukun-tefekkur-mode .zCtl > .zCounterActions{
+  display:grid!important;
+  grid-row:5!important;
+  margin:2px auto 0!important;
+}
+
+/* Çıkış butonu: neon görünüm korunur ama artık kendi satırında. */
+body.sukun-tefekkur-mode .zCtl > #r407TefekkurExitSlot > .sukun-focus-btn{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:min(66vw,226px)!important;
+  min-width:166px!important;
+  max-width:226px!important;
+  height:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  margin:0!important;
+  padding:0 15px!important;
+  flex:0 0 auto!important;
+}
+
+/* Çember biraz daha kompakt: boşluk yerine kontroller görünür. */
+body.sukun-tefekkur-mode .zCounterRow{
+  --tf-ring-safe:min(
+    57vw,
+    36dvh,
+    292px,
+    calc(100vw - (var(--tf-side) * 2) - (var(--tf-gap) * 2) - 42px)
+  )!important;
+  min-height:0!important;
+  align-self:start!important;
+}
+
+/* Sayaç kartının üst ve alt boşluğunu daha işlevsel yap. */
+body.sukun-tefekkur-mode .zCtl{
+  padding:
+    clamp(6px,.8dvh,9px)
+    clamp(7px,2vw,12px)
+    clamp(7px,1dvh,10px)!important;
+}
+
+/* Hedef/Devir ve ana butonlar her durumda görünür yükseklikte. */
+body.sukun-tefekkur-mode .cntSub{
+  min-height:17px!important;
+  line-height:17px!important;
+}
+body.sukun-tefekkur-mode .zCounterActions{
+  min-height:40px!important;
+}
+body.sukun-tefekkur-mode .zCounterActions button{
+  min-height:40px!important;
+  max-height:44px!important;
+}
+
+/* Kısa ekranlarda ring daha da küçülür; temel kontroller feda edilmez. */
+@media(max-height:760px){
+  body.sukun-tefekkur-mode #tab-zkr{
+    grid-template-rows:minmax(76px,16dvh) minmax(0,1fr)!important;
+    gap:4px!important;
+  }
+  body.sukun-tefekkur-mode .zCounterRow{
+    --tf-ring-safe:min(
+      52vw,
+      31dvh,
+      250px,
+      calc(100vw - (var(--tf-side) * 2) - (var(--tf-gap) * 2) - 38px)
+    )!important;
+  }
+  body.sukun-tefekkur-mode .zCounterSide{
+    min-height:70px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl > #r407TefekkurExitSlot > .sukun-focus-btn{
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+  }
+  body.sukun-tefekkur-mode .zCounterActions button{
+    min-height:36px!important;
+    max-height:40px!important;
+    padding-block:5px!important;
+  }
+}
+
+/* Çok kısa ekranlarda isim alanı da bir kademe küçülür. */
+@media(max-height:660px){
+  body.sukun-tefekkur-mode #tab-zkr{
+    grid-template-rows:minmax(66px,14dvh) minmax(0,1fr)!important;
+  }
+  body.sukun-tefekkur-mode #zStage .zAr{
+    font-size:clamp(24px,7.2vw,34px)!important;
+  }
+  body.sukun-tefekkur-mode #zStage .zTr{
+    font-size:11px!important;
+  }
+  body.sukun-tefekkur-mode .zCounterRow{
+    --tf-ring-safe:min(
+      48vw,
+      28dvh,
+      220px,
+      calc(100vw - (var(--tf-side) * 2) - (var(--tf-gap) * 2) - 34px)
+    )!important;
+  }
+}
+
+/* Dar ekranlarda da yatay kontrol üçlüsü korunur. */
+@media(max-width:350px){
+  body.sukun-tefekkur-mode .zCounterRow{
+    --tf-ring-safe:min(60vw,30dvh,210px)!important;
+  }
+  body.sukun-tefekkur-mode .zCtl > #r407TefekkurExitSlot > .sukun-focus-btn{
+    width:min(68vw,204px)!important;
+    min-width:158px!important;
+  }
+}
+</style>
 
 </body>
 </html>
