@@ -1,8 +1,8 @@
-/* SÜKÛN r405 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r409 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r405';
-const CACHE = 'sukun-r405-20260821a';
+const SURUM = 'r409';
+const CACHE = 'sukun-r409-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,10 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Ambiyans kartlarına detay ve kullanım ipucu paneli eklendi; benzer seslerin farkları özellikle Şelale, yağmur, dalga, gece ve gürültü renklerinde açıklanıyor.',
+  'Tefekkür kontrolü uzun floating bardan çıkarıldı; çalarken mini player içine, boşta küçük kompakt kapsüle taşındı ve eski collision konumlandırması devre dışı bırakıldı.',
+  'Tefekkürden Çık düğmesi floating katmandan çıkarılıp zikir çemberinin altındaki sayaç akışına taşındı; sayaç eylemleriyle üst üste binme giderildi.',
+  'Mini oynatıcı ana başlığı sabitlendi; beat, taşıyıcı, bant, motor ve ambiyans ayrıntıları tek satırlık Çalan Detayları akışına taşındı.',
   'Akıllı Seans zikir kaynak doğrulaması düzeltildi; Korunma Okumaları Felâk, Nâs, İhlâs ve Kalem kaynaklarını yeniden doğru çözüyor.',
   'Üst SÜKÛN marka başlığı ve sakin altın animasyonu geri getirildi; r194 shimmer görünürlük çakışması düzeltildi.',
   'Tefekkür modunda Çık düğmesi yatay alt aksiyona taşındı; Berhetiyye isimleri tek satıra sabitlendi.',
@@ -202,10 +206,6 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
-  /*
-   * Yalnız aynı origin üzerindeki
-   * uygulama kaynaklarına müdahale et.
-   */
   if (url.origin !== self.location.origin) {
     return;
   }
@@ -226,15 +226,11 @@ self.addEventListener('message', event => {
   const veri = event.data || {};
 
 
-  /* Yeni Service Worker'ı hemen etkinleştir */
-
   if (veri.type === 'SKIP_WAITING') {
     self.skipWaiting();
     return;
   }
 
-
-  /* Sürüm notlarını uygulamaya gönder */
 
   if (veri.type === 'SURUM_NOTU') {
     const port =
@@ -249,8 +245,6 @@ self.addEventListener('message', event => {
     }
   }
 
-
-  /* Uygulama kabuğunu manuel yenile */
 
   if (veri.type === 'CACHE_REFRESH') {
     const port =
