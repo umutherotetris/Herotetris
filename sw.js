@@ -7,9 +7,9 @@ const CACHE = 'sukun-r402-20260821a';
 const KABUK = [
   './nero.html',
   './manifest.webmanifest',
-  './sukun-icon.svg',
-  './sukun-icon-192.png',
-  './sukun-icon-512.png'
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 const NOTLAR = [
