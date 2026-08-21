@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r406 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r409 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r406">
+<meta name="sukun-build" content="r409">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r406">
+<link rel="manifest" href="./manifest.webmanifest?v=r409">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r406</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r409</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,9 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r409","t":"21 Ağustos 2026","b":["Ambiyans kartlarına tek dokunuşluk Detay/İpucu eylemi eklendi; uzun açıklamalar artık kartta kırpılıp kaybolmuyor","Benzer ambiyanslar fark rozetiyle ayrıştırılıyor; örneğin iki Şelale, yağmur varyantları, gece ortamları ve su/dalga seslerinin karakter farkı açıklanıyor","Detay paneli Ne duyarsın, Dinleme hissi, Ne zaman tercih edilebilir ve Benzerlerinden farkı bölümlerini gösteriyor","Etki ifadeleri tıbbi iddia yerine sesin algısal karakteri ve kullanım ipucu olarak çerçevelendi","Özel/kullanıcı sesleri de aynı bilgi paneline uyumlu hale getirildi"]},
+ {"v":"r408","t":"21 Ağustos 2026","b":["Tefekkür kontrolü uzun floating bardan çıkarılıp bağlamsal kompakt kontrol modeline geçirildi","Bir şey çalarken Tefekkür mini oynatıcının kontrol kümesine taşınıyor; ayrı bir ekran katmanı oluşturmuyor","Çalma yokken Tefekkür yalnız küçük bir sağ-alt kapsül olarak görünüyor; sabit 36 px yüksekliği sayesinde dikey bara dönüşemiyor","Tefekkür modunda r407 sayaç altı çıkış düğmesi aynen korunuyor","Eski r244 çakışma motorunun Tefekkür düğmesini yukarı-aşağı sürüklemesi r408 yönetiminde devre dışı bırakıldı"]},
+ {"v":"r407","t":"21 Ağustos 2026","b":["Tefekkürden Çık düğmesi sabit/floating katmandan çıkarılıp zikir sayacının kendi akışına alındı","Çıkış düğmesi çember ve Hedef/Devir özetinin hemen altında, −1 / Saymaya Başla / +1 kontrollerinden önce konumlanıyor","Tefekkür çıkışı artık sayaç düğmelerinin üzerine binmiyor; ekran boyu değişse bile normal belge akışında yer tutuyor","Tefekkür modu kapanınca aynı düğme eski global konumuna geri dönüyor; mevcut toggle davranışı korunuyor"]},
  {"v":"r406","t":"21 Ağustos 2026","b":["Mini oynatıcıda aynı frekans seansı sırasında Theta, beat ve taşıyıcı değerlerinin ana başlık olarak sırayla görünmesine neden olan yarış düzeltildi","Ana başlık gerçek seans/modül kimliğine sabitlendi; frekans teknik değerleri ayrı Çalan Detayları satırına taşındı","Çalan Detayları tek satır sabit yükseklikte ve taşarsa yumuşak yatay akışla gösteriliyor; kart yüksekliği değişmiyor","miniSync ile Global Now Playing renderMini artık aynı kararlı görünüm modelini kullanıyor"]},
  {"v":"r405","t":"21 Ağustos 2026","b":["Akıllı Seansın Felâk/Nâs/İhlâs/Kalem adımlarını yanlışlıkla kaynaksız saymasına neden olan global ZIKIR erişim hatası düzeltildi","Seans editörü, gelişmiş tekrar motoru, Korunma çözümleyicisi ve Now Playing katmanı aynı gerçek ZIKIR envanterine bağlandı","Korunma Okumaları doğrulaması artık dört geçerli adımı hatalı biçimde 4 sorun olarak göstermiyor","Eski yarım kalan Korunma kuyrukları da doğru kategori/indeks varsa yeniden çalışabilir"]},
  {"v":"r404","t":"21 Ağustos 2026","b":["Üst SÜKÛN marka başlığının kaybolmasına neden olan r194 shimmer çakışması düzeltildi","SÜKÛN yazısı altın varak geçişiyle yeniden görünür ve hafif animasyonlu hale getirildi","Üst mühür/girih sembolüne sakin nefes-parıltı hareketi geri verildi; reduced-motion tercihi korunuyor","Başlık animasyonu içerikle yarışmayacak düşük yoğunlukta ve yalnız marka alanında çalışıyor"]},
@@ -13547,6 +13550,7 @@ function chnCardHTML(d){
        '<div class="chName" title="'+dname+'"><b>'+dname+'</b><small>'+ddesc+'</small></div>'+
        '<i class="chEq" aria-hidden="true"><s></s><s></s><s></s><s></s></i>'+
        (MAQAM8.has(d.id)?'<button class="chPrev" data-prev="'+did+'" aria-label="'+dname+' — kısa dinle" title="Kısa dinle (~3sn)">▶</button>':'')+
+       '<button class="chInfo" data-ambinfo="'+did+'" aria-label="'+dname+' hakkında bilgi" title="Detay ve kullanım ipucu">i</button>'+
        '<button class="sw" data-sw="'+did+'" aria-label="'+dname+' aç/kapat"></button>'+
      '</div>'+
      (d.custom?(
@@ -22335,7 +22339,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r406',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r409',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33345,7 +33349,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r406',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r409',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r290-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -35293,7 +35297,7 @@ const Collision=window.SukunFloatingCollision={
   targets:'.csX,[aria-label*="kapat" i],[title*="kapat" i],#r170Now,.r170NowBtns,#miniBar,#csBox,#csNow,.csEt',
   rectHit(a,b,pad=6){return !(a.right+pad<b.left||a.left-pad>b.right||a.bottom+pad<b.top||a.top-pad>b.bottom)},
   sync(){
-    const b=document.querySelector('.sukun-focus-btn');if(!b||b.style.display==='none'||document.body.classList.contains('sukun-tefekkur-mode'))return;
+    const b=document.querySelector('.sukun-focus-btn');if(!b||b.style.display==='none'||b.classList.contains('r408-managed')||document.body.classList.contains('sukun-tefekkur-mode'))return;
     b.classList.add('r244-collision-safe');b.style.top='auto';b.style.right='14px';
     const base=Math.max(126,(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0)+116);let bottom=base;
     const vw=innerWidth,vh=innerHeight;
@@ -37429,6 +37433,793 @@ const timer=setInterval(()=>{
 
 window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
 window.SukunMiniStable={version:'r406',applyInfo,applyNow};
+})();
+</script>
+
+
+<style id="r407-tefekkur-exit-flow">
+/* r407 — Çıkış artık floating değildir.
+   Tefekkür modunda sayaç çemberinin altındaki kendi slotunda normal akışa girer. */
+#r407TefekkurExitSlot{
+  display:none;
+  width:100%;
+}
+
+body.sukun-tefekkur-mode #r407TefekkurExitSlot{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:10px 0 14px;
+  padding:0 6px;
+  box-sizing:border-box;
+}
+
+/* r403'ün fixed koordinatlarını kesin olarak geçersiz kıl. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+  display:flex!important;
+  position:relative!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+
+  width:min(72%,250px)!important;
+  max-width:250px!important;
+  min-width:156px!important;
+  min-height:38px!important;
+  margin:0!important;
+  padding:9px 16px!important;
+
+  z-index:1!important;
+  opacity:.88!important;
+  flex:0 0 auto;
+}
+
+/* Basarken yalnız kendi yerinde küçülsün; yatay kayma olmasın. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn:active{
+  transform:scale(.985)!important;
+}
+
+/* Sayaç kontrolleri çıkışın altında ayrı katmanda kalsın. */
+body.sukun-tefekkur-mode .zCounterActions{
+  position:relative;
+  z-index:2;
+  margin-top:0!important;
+}
+
+/* r403'te fixed çıkış için ayrılmış gereksiz alt boşluğu azalt. */
+body.sukun-tefekkur-mode #tab-zkr{
+  padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+}
+body.sukun-tefekkur-mode .zCtl{
+  margin-bottom:max(18px,env(safe-area-inset-bottom))!important;
+}
+
+/* Küçük telefonlarda da düğme üçlü sayaç kontrolüne değmesin. */
+@media(max-width:390px){
+  body.sukun-tefekkur-mode #r407TefekkurExitSlot{
+    margin:8px 0 12px;
+  }
+  body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+    width:min(76%,230px)!important;
+    min-height:36px!important;
+    padding:8px 14px!important;
+  }
+}
+
+@media(max-height:720px){
+  body.sukun-tefekkur-mode #r407TefekkurExitSlot{
+    margin:7px 0 10px;
+  }
+}
+</style>
+
+<script id="r407-tefekkur-exit-flow-runtime">
+(()=>{
+'use strict';
+
+let originalParent=null;
+let originalNext=null;
+let slot=null;
+
+function button(){
+  return document.querySelector('.sukun-focus-btn');
+}
+
+function ensureSlot(){
+  if(slot && slot.isConnected)return slot;
+
+  slot=document.getElementById('r407TefekkurExitSlot');
+  if(slot)return slot;
+
+  const sub=document.getElementById('cntSub');
+  if(!sub)return null;
+
+  slot=document.createElement('div');
+  slot.id='r407TefekkurExitSlot';
+  slot.setAttribute('aria-label','Tefekkür çıkış alanı');
+
+  /* Çemberin altındaki Hedef/Devir özetinden hemen sonra,
+     sayaç eylemlerinden önce. */
+  sub.insertAdjacentElement('afterend',slot);
+  return slot;
+}
+
+function moveIntoCounter(){
+  const b=button(), s=ensureSlot();
+  if(!b||!s)return;
+
+  if(!originalParent){
+    originalParent=b.parentNode;
+    originalNext=b.nextSibling;
+  }
+
+  if(b.parentNode!==s)s.appendChild(b);
+
+  /* Eski inline çakışma koordinatlarını temizle. */
+  b.style.removeProperty('top');
+  b.style.removeProperty('right');
+  b.style.removeProperty('bottom');
+  b.style.removeProperty('left');
+
+  b.textContent='Tefekkürden Çık';
+  b.setAttribute('aria-label','Tefekkür modundan çık');
+  b.title='Tefekkür modundan çık';
+}
+
+function restore(){
+  const b=button();
+  if(!b||!originalParent)return;
+  if(originalNext && originalNext.parentNode===originalParent){
+    originalParent.insertBefore(b,originalNext);
+  }else{
+    originalParent.appendChild(b);
+  }
+}
+
+function sync(){
+  if(document.body.classList.contains('sukun-tefekkur-mode')){
+    moveIntoCounter();
+  }else{
+    restore();
+  }
+}
+
+function install(){
+  ensureSlot();
+  sync();
+
+  const mo=new MutationObserver(()=>{
+    clearTimeout(install._t);
+    install._t=setTimeout(sync,30);
+  });
+
+  mo.observe(document.body,{
+    attributes:true,
+    attributeFilter:['class']
+  });
+
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('orientationchange',sync,{passive:true});
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(install,100),{once:true});
+}else{
+  setTimeout(install,100);
+}
+
+window.SukunTefekkurExitFlow={
+  version:'r407',
+  sync,
+  moveIntoCounter,
+  restore
+};
+})();
+</script>
+
+
+<style id="r408-tefekkur-control-system">
+/* ─────────────────────────────────────────────────────────────
+   r408 — Tefekkür tek bir kontrol, üç bağlam:
+   1) normal Zikir: küçük kapsül
+   2) mini player açık: mini player kontrolü
+   3) Tefekkür modu: r407 sayaç altı "Tefekkürden Çık"
+   ───────────────────────────────────────────────────────────── */
+
+#r408TefekkurDock{
+  display:none;
+  position:fixed;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:calc(env(safe-area-inset-bottom) + 108px);
+  z-index:8050;
+  pointer-events:none;
+}
+
+/* Çalma yokken kibar, küçük kapsül. Kesin yükseklik:
+   eski bug'daki gibi top+bottom arasında uzayamaz. */
+body.sukun-zikir-tab:not(.mini-on):not(.sukun-tefekkur-mode) #r408TefekkurDock{
+  display:block;
+}
+
+#r408TefekkurDock > .sukun-focus-btn{
+  pointer-events:auto;
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  transform:none!important;
+
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+
+  width:auto!important;
+  min-width:92px!important;
+  max-width:116px!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+
+  padding:0 12px!important;
+  margin:0!important;
+  overflow:hidden!important;
+
+  border-radius:999px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 24%,transparent)!important;
+  background:color-mix(in srgb,var(--panel) 88%,transparent)!important;
+  color:var(--goldh)!important;
+
+  font:650 10.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.015em!important;
+  white-space:nowrap!important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 8px 24px -18px rgba(0,0,0,.75)!important;
+
+  backdrop-filter:blur(14px) saturate(1.08)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.08)!important;
+  opacity:.88!important;
+  z-index:1!important;
+}
+
+#r408TefekkurDock > .sukun-focus-btn::before{
+  content:"◉"!important;
+  display:inline!important;
+  width:auto!important;height:auto!important;
+  margin:0!important;
+  border:0!important;border-radius:0!important;
+  color:var(--goldh)!important;
+  font-size:10px!important;
+}
+
+/* Mini player açıkken düğme artık floating değil:
+   mbKontrol içindeki gerçek bir medya kontrolü. */
+#miniBar .mbKontrol > .sukun-focus-btn.r408-mini{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  display:inline-grid!important;
+  place-items:center!important;
+
+  width:40px!important;
+  min-width:40px!important;
+  max-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+
+  border-radius:12px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 22%,var(--line))!important;
+  background:color-mix(in srgb,var(--gold) 5%,transparent)!important;
+  color:var(--goldh)!important;
+  box-shadow:none!important;
+  opacity:.86!important;
+  font-size:0!important;
+  line-height:1!important;
+  flex:0 0 40px!important;
+  z-index:auto!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+#miniBar .mbKontrol > .sukun-focus-btn.r408-mini::before{
+  content:"◉"!important;
+  display:block!important;
+  width:auto!important;height:auto!important;
+  margin:0!important;
+  border:0!important;
+  color:var(--goldh)!important;
+  font:700 15px/1 system-ui!important;
+}
+
+/* Mini player kontrolünün üzerine gelince/basınca geri bildirim. */
+#miniBar .mbKontrol > .sukun-focus-btn.r408-mini:active{
+  transform:scale(.96)!important;
+}
+
+/* r407 Tefekkürden Çık akışı en yüksek öncelik:
+   r408 mini/dock stilleri focus moduna taşınmaz. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot > .sukun-focus-btn{
+  font-size:10.5px!important;
+}
+
+/* Küçük ekran: kapsül daha da sade. */
+@media(max-width:390px){
+  #r408TefekkurDock{
+    right:max(9px,env(safe-area-inset-right));
+  }
+  #r408TefekkurDock > .sukun-focus-btn{
+    min-width:86px!important;
+    max-width:102px!important;
+    height:34px!important;
+    min-height:34px!important;
+    max-height:34px!important;
+    padding-inline:10px!important;
+    font-size:10px!important;
+  }
+  #miniBar .mbKontrol > .sukun-focus-btn.r408-mini{
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    height:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+    flex-basis:38px!important;
+  }
+}
+</style>
+
+<script id="r408-tefekkur-control-runtime">
+(()=>{
+'use strict';
+
+let dock=null;
+let timer=0;
+
+function btn(){
+  return document.querySelector('.sukun-focus-btn');
+}
+
+function ensureDock(){
+  if(dock&&dock.isConnected)return dock;
+  dock=document.getElementById('r408TefekkurDock');
+  if(dock)return dock;
+
+  dock=document.createElement('div');
+  dock.id='r408TefekkurDock';
+  dock.setAttribute('aria-label','Tefekkür kısayolu');
+  document.body.appendChild(dock);
+  return dock;
+}
+
+function miniVisible(){
+  const bar=document.getElementById('miniBar');
+  return !!(bar && !bar.hidden && document.body.classList.contains('mini-on'));
+}
+
+function setCompactText(b){
+  if(!b)return;
+  b.textContent='Tefekkür';
+  b.setAttribute('aria-label','Tefekkür moduna geç');
+  b.title='Tefekkür moduna geç';
+  b.setAttribute('aria-pressed','false');
+}
+
+function moveToMini(b){
+  const controls=document.querySelector('#miniBar .mbKontrol');
+  if(!controls||!b)return false;
+
+  if(b.parentNode!==controls){
+    /* Detay düğmesinden önce: medya eylemlerinden ayrışsın,
+       ama mini player'ın dışına taşmasın. */
+    const detail=document.getElementById('mbDetay');
+    controls.insertBefore(b,detail||controls.firstChild);
+  }
+
+  b.classList.add('r408-mini');
+  setCompactText(b);
+  return true;
+}
+
+function moveToDock(b){
+  const d=ensureDock();
+  if(!d||!b)return;
+
+  if(b.parentNode!==d)d.appendChild(b);
+  b.classList.remove('r408-mini');
+  setCompactText(b);
+}
+
+function clearLegacyPosition(b){
+  if(!b)return;
+  /* r244 ve daha eski sürümlerin inline top/bottom/right kalıntıları
+     bir daha uzun dikey bar üretemesin. */
+  ['top','right','bottom','left','width','height'].forEach(k=>b.style.removeProperty(k));
+  b.classList.add('r408-managed');
+}
+
+function sync(){
+  const b=btn();
+  if(!b)return;
+
+  clearLegacyPosition(b);
+
+  /* Tefekkür modunda r407 kontrolü yönetiyor:
+     sayaç altındaki çıkış düğmesine dokunmuyoruz. */
+  if(document.body.classList.contains('sukun-tefekkur-mode')){
+    b.classList.remove('r408-mini');
+    return;
+  }
+
+  if(!document.body.classList.contains('sukun-zikir-tab')){
+    ensureDock().style.display='none';
+    return;
+  }
+
+  if(miniVisible()){
+    ensureDock().style.display='none';
+    moveToMini(b);
+  }else{
+    moveToDock(b);
+    /* CSS görünürlüğü body state'i üzerinden yönetir. */
+    ensureDock().style.removeProperty('display');
+  }
+}
+
+function schedule(ms=25){
+  clearTimeout(timer);
+  timer=setTimeout(sync,ms);
+}
+
+function install(){
+  ensureDock();
+  schedule(80);
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('.tab,#mbPause,#mbStop,#mbOnceki,#mbSonraki,.sukun-focus-btn')){
+      schedule(60);
+    }
+  },{passive:true});
+
+  ['sukun:playbackchange','sukun:nowplayingchange'].forEach(ev=>
+    window.addEventListener(ev,()=>schedule(40),{passive:true})
+  );
+
+  const mo=new MutationObserver(()=>schedule(35));
+  mo.observe(document.body,{
+    subtree:true,
+    attributes:true,
+    attributeFilter:['class','hidden']
+  });
+
+  window.addEventListener('resize',()=>schedule(20),{passive:true});
+  window.addEventListener('orientationchange',()=>schedule(60),{passive:true});
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',install,{once:true});
+}else{
+  install();
+}
+
+window.SukunTefekkurControl={
+  version:'r408',
+  sync,
+  dock:()=>ensureDock()
+};
+})();
+</script>
+
+
+<style id="r409-ambient-info-style">
+/* Kart açıklaması iki kısa satırda okunabilir; tam metin bilgi panelinde. */
+#tab-amb .chName small{
+  white-space:normal!important;
+  overflow:hidden!important;
+  display:-webkit-box!important;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  line-height:1.28!important;
+  min-height:24px;
+}
+
+/* Küçük ama gerçek dokunma hedefi. */
+#tab-amb .chInfo{
+  flex:0 0 28px;
+  width:28px;height:28px;min-height:28px;
+  display:grid;place-items:center;
+  padding:0;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--gold) 24%,var(--line));
+  background:color-mix(in srgb,var(--gold) 5%,transparent);
+  color:var(--goldh);
+  font:700 11px/1 Georgia,serif;
+  cursor:pointer;
+}
+#tab-amb .chInfo:active{transform:scale(.93)}
+#tab-amb .chTop{align-items:flex-start}
+
+/* Benzer ses fark rozeti */
+.r409AmbDiff{
+  display:inline-flex;align-items:center;gap:4px;
+  margin-top:4px;padding:3px 6px;border-radius:999px;
+  max-width:100%;
+  font:600 8px/1.2 "Figtree",sans-serif;
+  color:color-mix(in srgb,var(--goldh) 75%,var(--mut));
+  border:1px solid color-mix(in srgb,var(--gold) 18%,transparent);
+  background:color-mix(in srgb,var(--gold) 4%,transparent);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Bilgi sheet */
+#r409AmbInfo{
+  position:fixed;inset:0;z-index:9950;
+  display:none;align-items:flex-end;justify-content:center;
+  padding:16px max(12px,env(safe-area-inset-right))
+          max(14px,calc(env(safe-area-inset-bottom) + 10px))
+          max(12px,env(safe-area-inset-left));
+  background:rgba(0,0,0,.52);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+#r409AmbInfo.on{display:flex}
+.r409AmbSheet{
+  width:min(100%,620px);max-height:min(78dvh,650px);overflow:auto;
+  border:1px solid var(--line2);
+  border-radius:20px;
+  padding:14px;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--gold) 5%,transparent),transparent 35%),
+    var(--panel);
+  box-shadow:0 22px 60px -30px #000;
+  overscroll-behavior:contain;
+}
+.r409AmbHead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.r409AmbIcon{font-size:25px}
+.r409AmbHead b{display:block;font-size:16px;color:var(--ivory)}
+.r409AmbHead small{display:block;margin-top:2px;font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.r409AmbClose{width:38px;height:38px;min-height:38px;border-radius:12px;border:1px solid var(--line);color:var(--mut);background:transparent;font-size:18px}
+.r409AmbLead{margin:11px 0 6px;font-size:11.5px;line-height:1.55;color:var(--mut)}
+.r409AmbGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.r409AmbBlock{
+  padding:10px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.018)
+}
+.r409AmbBlock.wide{grid-column:1/-1}
+.r409AmbBlock strong{display:block;margin-bottom:5px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--goldh)}
+.r409AmbBlock p{font-size:10.5px;line-height:1.5;color:var(--mut);margin:0}
+.r409AmbSimilar{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.r409AmbSimilar button{
+  min-height:30px;padding:5px 8px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--mut);
+  font-size:9px
+}
+.r409AmbNote{margin-top:10px;font-size:8.5px;line-height:1.45;color:var(--dim)}
+
+@media(max-width:390px){
+  .r409AmbGrid{grid-template-columns:1fr}
+  .r409AmbBlock.wide{grid-column:auto}
+  .r409AmbSheet{max-height:82dvh}
+}
+</style>
+
+<div id="r409AmbInfo" aria-hidden="true">
+  <section class="r409AmbSheet" role="dialog" aria-modal="true" aria-labelledby="r409AmbTitle">
+    <div class="r409AmbHead">
+      <span class="r409AmbIcon" id="r409AmbIcon">♪</span>
+      <div><b id="r409AmbTitle">Ambiyans</b><small id="r409AmbCat">ses katmanı</small></div>
+      <button class="r409AmbClose" type="button" aria-label="Kapat">×</button>
+    </div>
+    <p class="r409AmbLead" id="r409AmbLead"></p>
+    <div class="r409AmbGrid">
+      <div class="r409AmbBlock"><strong>Ne duyarsın?</strong><p id="r409AmbHear"></p></div>
+      <div class="r409AmbBlock"><strong>Dinleme hissi</strong><p id="r409AmbFeel"></p></div>
+      <div class="r409AmbBlock"><strong>Ne zaman tercih edilebilir?</strong><p id="r409AmbUse"></p></div>
+      <div class="r409AmbBlock"><strong>Karışım ipucu</strong><p id="r409AmbMix"></p></div>
+      <div class="r409AmbBlock wide" id="r409DiffBlock"><strong>Benzerlerinden farkı</strong><p id="r409AmbDiffText"></p><div class="r409AmbSimilar" id="r409AmbSimilar"></div></div>
+    </div>
+    <p class="r409AmbNote">Bu açıklamalar sesin işitsel karakterini ve kullanım bağlamını anlatır; tıbbi/terapötik etki iddiası değildir.</p>
+  </section>
+</div>
+
+<script id="r409-ambient-info-runtime">
+(()=>{
+'use strict';
+
+const $=s=>document.querySelector(s);
+const catLabel={
+  su:'Su / yağış',doga:'Doğa',uyku:'Sabit zemin',gurultu:'Gürültü rengi',
+  mekan:'Mekân',canli:'Canlı doğa',asmr:'ASMR',sakin:'Sakin tını',
+  zikir:'Zikir eşliği',makam:'Makam / taksim',ozel:'Kendi sesi'
+};
+
+const groupMap={
+  selale:['selale','waterfall'],
+  yagmur:['rain','light_rain','night_rain','cam_yagmur','storm'],
+  dalga:['ocean','shore','dalga_kayalik'],
+  gece:['gece_circi','night_crickets','kurbaga','baykus','distant_thunder'],
+  su:['stream','avlu_sadirvan','su_fokurdama','su_bardak','cave_drip'],
+  noise:['gur_beyaz','gur_pembe','gur_kahve','gur_mor','gur_gri','gur_yesil'],
+  ugultu:['beyaz_fan','ucak_kabin'],
+  ates:['fire','mangal']
+};
+
+const exactDiff={
+  selale:'Daha parlak ve doğrudan düşen su uğultusu; sürekli beyaz-su perdesine yakın.',
+  waterfall:'Daha geniş ve derin su perdesi; köpük ve alt frekans gövdesi daha belirgin.',
+  rain:'Nötr, genel yağmur katmanı; belirgin bir mekân veya gece rengi taşımaz.',
+  light_rain:'Daha ince ve seyrek yağış; diğer yağmur türlerine göre daha az yoğun bir arka plan.',
+  night_rain:'Daha koyu yağmur zemini ve uzak şehir hissi; hafif yağmurdan daha dolgun.',
+  cam_yagmur:'Damlalar yüzeye/pencereye vurduğu için tekil vuruşlar genel yağmurdan daha seçilir.',
+  storm:'Yağmura seyrek gök gürültüsü ekler; sakin yağmur varyantlarından daha dramatiktir.',
+  ocean:'Uzun gelgit nefesi; dalgalar daha geniş ve periyodik.',
+  shore:'Kısa kıyı vuruşları ve çakıl geri çekilişi; okyanusa göre daha yakın ve ayrıntılı.',
+  dalga_kayalik:'Dalganın kayaya kırılması daha sert ve köpüklü; kıyı sesinden daha vurucu.',
+  gece_circi:'Cırcır zemininin yanında uzak köpek ve açık yaz gecesi hissi bulunur.',
+  night_crickets:'Daha sade, seyrek bir cırcır korosu; Yaz Gecesi kadar olaylı değildir.',
+  kurbaga:'Cırcır tabanına belirgin kurbağa çağrıları eklenir.',
+  distant_thunder:'Yağmurdan çok ufuktaki seyrek ve pes gök sesi öne çıkar.',
+  beyaz_fan:'Mekanik, sabit fan karakteri; spektral gürültü renklerine göre daha gerçek-mekânsal.',
+  ucak_kabin:'Fan benzeri sabitlik fakat daha pes, kabin/araç rezonanslı ve kapalı alan hissi verir.',
+  fire:'Kapalı mekân şömine karakteri; çıtırtı daha yakın ve sıcak.',
+  mangal:'Açık hava ateşine rüzgâr katılır; şömineye göre daha hareketli ve dış mekân hissi taşır.'
+};
+
+function groupsFor(id){
+  return Object.entries(groupMap).filter(([,ids])=>ids.includes(id)).map(([k])=>k);
+}
+function similars(def){
+  const ids=new Set();
+  groupsFor(def.id).forEach(g=>groupMap[g].forEach(id=>{if(id!==def.id)ids.add(id)}));
+  return [...ids].map(id=>AMBIENT_DEFS.find(x=>x.id===id)).filter(Boolean);
+}
+function soundCharacter(def){
+  const d=(def.desc||'').replace(/\s*•\s*/g,', ');
+  return d || 'Katmanlı bir ambiyans sesi.';
+}
+function feel(def){
+  const k=def.kat;
+  if(k==='gurultu')return 'Sürekli ve öngörülebilir bir ses tabanı kurar; çevredeki değişken seslerin dikkat çekiciliğini azaltan bir maskeleme hissi verebilir.';
+  if(k==='su')return 'Akış ve tekrar hissi öne çıkar. Sabit su perdeleri daha örtücü; tekil damla ve kıyı sesleri daha ayrıntılı algılanır.';
+  if(k==='doga')return 'Mekân hissini genişletir ve ses sahnesini daha organik, daha az steril hissettirebilir.';
+  if(k==='uyku')return 'Az olaylı, monoton ve devamlı bir zemin karakteri taşır; dikkat çekmekten çok arka planda kalmak üzere tasarlanmıştır.';
+  if(k==='asmr')return 'Yakın, küçük ve seçilebilir ses olayları içerir; detay dinlemeyi seven kullanıcıya daha dokunsal/yakın bir his verebilir.';
+  if(k==='mekan')return 'Belirli bir fiziksel ortam varmış hissi yaratır; sessizliği tamamen doldurmadan mekânsal ipuçları ekler.';
+  if(k==='canli')return 'Canlı ve aralıklı ses olayları nedeniyle statik gürültüden daha hareketli ve doğal hissedilir.';
+  if(k==='makam')return 'Arka plan gürültüsünden ziyade müzikal bir odak oluşturur; diğer ambiyanslara göre dikkati daha çok kendine çekebilir.';
+  if(k==='zikir')return 'Ritmik veya nefes benzeri tekrar içerir; sessiz bir zemin yerine uygulamadaki zikir akışına eşlik eden belirgin bir katmandır.';
+  return 'Yumuşak bir işitsel zemin oluşturur; karakteri sesin ritim ve yoğunluğuna göre değişir.';
+}
+function useHint(def){
+  const k=def.kat;
+  if(k==='gurultu'||k==='uyku')return 'Daha az değişken bir arka plan istediğinde veya ortam seslerini tek bir sabit zemin altında toplamak istediğinde.';
+  if(k==='su')return 'Okuma, tefekkür veya dinlenme sırasında hareket hissi olan fakat söz içermeyen bir arka plan istediğinde.';
+  if(k==='asmr')return 'Arka plan yerine küçük ses ayrıntılarını bilinçli dinlemek istediğinde; düşük seviyede kullanmak genellikle daha dengeli olur.';
+  if(k==='makam')return 'Müzikal seyri özellikle duymak istediğinde; zikir/okuyucu ile birlikteyse ses seviyesini daha düşük tutmak daha anlaşılır bir karışım verir.';
+  if(k==='zikir')return 'Ritmik eşlik istediğinde; başka ritmik katmanlarla üst üste bindirildiğinde yoğunlaşabileceğini hesaba kat.';
+  if(k==='canli'||k==='doga')return 'Sessizliği canlı ama sözcüksüz bir doğa sahnesiyle doldurmak istediğinde.';
+  if(k==='mekan')return 'Bir “yer” hissi istediğinde: avlu, mağara, kütüphane veya kahve dükkânı gibi.';
+  return 'Düşük seviyede genel arka plan katmanı olarak.';
+}
+function mixHint(def){
+  if(def.kat==='makam')return 'Okuyucu/zikir varsa yaklaşık düşük-orta seviyede tut; müzikal çizgi sözü bastırmasın.';
+  if(def.kat==='gurultu'||def.kat==='uyku')return 'Tek başına taban olarak iyi çalışır. Birden fazla sabit uğultuyu üst üste koymak gereksiz yoğunluk yaratabilir.';
+  if(def.kat==='su')return 'İki su katmanı birlikte kullanılabilir; biri sürekli perde, diğeri seyrek ayrıntı olduğunda farkları daha iyi duyulur.';
+  if(def.kat==='asmr')return 'Yakın transientler nedeniyle düşük ses seviyesiyle başlamak daha kontrollüdür.';
+  if(def.kat==='zikir')return 'Frekans veya başka ritmik ambiyansla kullanırken ritimlerin birbirini maskelemediğini dinleyerek kontrol et.';
+  return 'Önce tek başına dinle, sonra ikinci katmanı düşük seviyeden ekleyerek farkı koru.';
+}
+function diffText(def,similar){
+  if(exactDiff[def.id])return exactDiff[def.id];
+  if(def.kat==='gurultu'){
+    const map={
+      gur_beyaz:'Tizleri ve ayrıntıları daha fazla öne çıkaran, en keskin maskeleme karakteri.',
+      gur_pembe:'Beyaza göre daha yumuşak ve dengeli; düşük frekanslara biraz daha ağırlık verir.',
+      gur_kahve:'En pes ve derin varyantlardan; uğultu/şelale benzeri gövdeli bir zemin.',
+      gur_mor:'Tiz ağırlıklı ve keskin; diğer gürültü renklerinden daha parlak algılanır.',
+      gur_gri:'İşitilen yüksekliği daha dengeli hissettirmeyi amaçlayan spektral şekillendirme.',
+      gur_yesil:'Orta frekansları öne alan, doğa zeminine benzeyen daha merkezli bir karakter.'
+    };
+    return map[def.id]||'Gürültü renkleri aynı “sabit zemin” ailesindedir; farkları frekans dağılımındadır.';
+  }
+  return similar.length
+    ? 'Aynı ailedeki seslerden ritim, yoğunluk, yakınlık ve mekân hissi bakımından ayrılır. Kartları tek tek açıp “Ne duyarsın?” bölümünden karşılaştırabilirsin.'
+    : 'Bu kanala çok yakın bir eş bulunmadı; kendine özgü bir ambiyans karakteri taşıyor.';
+}
+
+function addBadges(){
+  document.querySelectorAll('#mixer .chn').forEach(card=>{
+    const id=(card.id||'').replace(/^chn-/,'');
+    const def=AMBIENT_DEFS.find(d=>d.id===id);
+    if(!def)return;
+    const sim=similars(def);
+    let badge=card.querySelector('.r409AmbDiff');
+    if(sim.length){
+      if(!badge){
+        badge=document.createElement('span');
+        badge.className='r409AmbDiff';
+        const name=card.querySelector('.chName');
+        name?.appendChild(badge);
+      }
+      const short=exactDiff[def.id] || ('Benzerlerinden '+(sim.length>2?'karakter farkıyla ayrılır':'farklı'));
+      badge.textContent='≠ '+short.replace(/[.;].*$/,'').slice(0,44);
+      badge.title=short;
+    }else badge?.remove();
+  });
+}
+
+function openInfo(id){
+  const def=AMBIENT_DEFS.find(d=>d.id===id);if(!def)return;
+  const sim=similars(def);
+  $('#r409AmbIcon').textContent=def.icon||'♪';
+  $('#r409AmbTitle').textContent=def.name;
+  $('#r409AmbCat').textContent=catLabel[def.kat]||def.kat||'Ambiyans';
+  $('#r409AmbLead').textContent=def.desc||'Ambiyans kanalı';
+  $('#r409AmbHear').textContent=soundCharacter(def);
+  $('#r409AmbFeel').textContent=feel(def);
+  $('#r409AmbUse').textContent=useHint(def);
+  $('#r409AmbMix').textContent=mixHint(def);
+  $('#r409AmbDiffText').textContent=diffText(def,sim);
+
+  const host=$('#r409AmbSimilar');
+  host.innerHTML='';
+  sim.slice(0,6).forEach(x=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.textContent=(x.icon||'♪')+' '+x.name;
+    b.dataset.openAmb=x.id;
+    host.appendChild(b);
+  });
+  $('#r409DiffBlock').hidden=false;
+  const panel=$('#r409AmbInfo');
+  panel.classList.add('on');
+  panel.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function closeInfo(){
+  const panel=$('#r409AmbInfo');
+  panel.classList.remove('on');
+  panel.setAttribute('aria-hidden','true');
+  document.body.style.removeProperty('overflow');
+}
+
+document.addEventListener('click',e=>{
+  const i=e.target.closest?.('[data-ambinfo]');
+  if(i){e.preventDefault();e.stopPropagation();openInfo(i.dataset.ambinfo);return}
+  const jump=e.target.closest?.('[data-open-amb]');
+  if(jump){openInfo(jump.dataset.openAmb);return}
+  if(e.target.closest?.('.r409AmbClose')){closeInfo();return}
+  if(e.target.id==='r409AmbInfo')closeInfo();
+},true);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#r409AmbInfo')?.classList.contains('on')){
+    closeInfo();e.preventDefault();
+  }
+});
+
+function sync(){
+  addBadges();
+  try{if(typeof syncAmbAccHeights==='function')syncAmbAccHeights()}catch(e){}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,300),{once:true});
+else setTimeout(sync,300);
+
+const mo=new MutationObserver(()=>{clearTimeout(sync._t);sync._t=setTimeout(sync,80)});
+const mixer=document.getElementById('mixer');
+if(mixer)mo.observe(mixer,{childList:true,subtree:true});
+
+window.SukunAmbientInfo={version:'r409',open:openInfo,close:closeInfo,sync,similars};
 })();
 </script>
 
