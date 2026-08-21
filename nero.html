@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r428 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r429 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r428">
+<meta name="sukun-build" content="r429">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r428">
+<link rel="manifest" href="./manifest.webmanifest?v=r429">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v17.5 — build 2026-08-21-r428</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v17.6 — build 2026-08-21-r429</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r429","t":"21 Ağustos 2026","b":["Akıllı Seans çalışırken ikinci global mini oynatıcı artık gösterilmiyor; tek yetkili yüzey ayrıntılı Akıllı Seans Şimdi Çalıyor kartı","Akıllı Seans içindeki küçük tekrar Şimdi satırı da aynı anda gizleniyor; çift bar ve çift durum bilgisi kaldırıldı","Mini oynatıcıya ait mini-on alt boşluğu Akıllı Seans sırasında temizleniyor; alt navigasyon gereksiz yere ikinci kez yukarı taşınmıyor","Akıllı Seans bittiğinde veya durdurulduğunda başka bağımsız sesler çalıyorsa global mini oynatıcı otomatik olarak geri geliyor"]},
  {"v":"r428","t":"21 Ağustos 2026","b":["Ana başlığa çok ince, soyut hat kıvrımı eklendi; SÜKÛN logosunun altında sessiz bir imza gibi duruyor","Akıllı Seans başlığının altına küçük hat esintili mühür çizgisi yerleştirildi; kart yoğunluğu artırılmadı","Tefekkür sahnesine yalnız mod açıkken görünen düşük opaklıklı hat kıvrımı eklendi; merkez zikri ve sayacı kapatmıyor","Kutsal kelime veya okunması gereken Arapça metin dekor olarak kullanılmadı; süsleme yalnız soyut hat/arabez kıvrımlarından oluşuyor"]},
  {"v":"r427","t":"21 Ağustos 2026","b":["Tefekkür tipografisi sakinleştirildi: Arapça, okunuş, sayaç başlığı ve yardımcı metinlerin ağırlık/harf aralıkları yumuşatıldı","Akıllı Seans kartlarının Ayarlar aç/kapa hareketi display sıçraması yerine ipeksi yükseklik + opaklık geçişine çevrildi","Şimdi Çalıyor yüzeyi Tefekkür diliyle birleştirildi: koyu saydam zemin, ince altın çizgi, yumuşak tipografi ve daha sessiz durum rozetleri kullanılıyor","r426 kart dekorasyon polling runtimeı kaldırıldı; mevcut r422 expanded state doğrudan kullanılıyor"]},
  {"v":"r426","t":"21 Ağustos 2026","b":["Akıllı Seans kartları sade-premium görünüme geçirildi; ayar satırları varsayılan olarak toparlandı ve isteğe göre açılıyor","Aktif adım altın vurgu ve daha net hiyerarşiyle öne çıkıyor; meta ve kaynak bilgileri daha sindirilebilir hale geldi","Tefekkür modu daha derin bir görsel atmosfere kavuştu: yavaş hareketli nur sisi, hafif vinyet ve daha sakin merkez parıltısı eklendi"]},
@@ -22350,7 +22351,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r428',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r429',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33360,10 +33361,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r428',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r429',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r428-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r429-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -40074,6 +40075,131 @@ function boot(n=0){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(),{once:true});
 else boot();
+})();
+</script>
+
+
+<style id="r429-single-player-surface-style">
+/* r429 — Akıllı Seans açıkken tek oynatıcı yüzeyi.
+   Ayrıntılı #r170Now görünürken global #miniBar ve hub içindeki küçük
+   .sukunNowMini ikinci kez aynı durumu göstermesin. */
+body.r429-smart-player-exclusive #miniBar{
+  display:none!important;
+}
+body.r429-smart-player-exclusive #r170SessionHub .sukunNowMini{
+  display:none!important;
+}
+body.r429-smart-player-exclusive #r170SessionHub[data-now-active="1"] .sukunNowMini{
+  display:none!important;
+}
+
+/* Eski mini-on sınıfı bir frame gecikmeyle geri yazılsa bile
+   ikinci bar için ayrılmış büyük alt boşluğu kullanma. */
+body.r429-smart-player-exclusive.mini-on .wrap{
+  padding-bottom:calc(env(safe-area-inset-bottom) + 225px)!important;
+}
+body.r429-smart-player-exclusive.mini-on .sukun-bottom-nav{
+  bottom:calc(var(--r370-safe-b, env(safe-area-inset-bottom)) + 68px)!important;
+}
+body.r429-smart-player-exclusive.mini-on .sukun-focus-btn{
+  bottom:calc(var(--r370-safe-b, env(safe-area-inset-bottom)) + 112px)!important;
+}
+</style>
+
+<script id="r429-single-player-surface-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R429_SINGLE_PLAYER_SURFACE__)return;
+window.__SUKUN_R429_SINGLE_PLAYER_SURFACE__=1;
+
+const body=document.body;
+const smartPlayer=()=>window.R170?.Player||null;
+const smartNow=()=>document.getElementById('r170Now');
+const mini=()=>document.getElementById('miniBar');
+
+function isSmartVisible(){
+  const P=smartPlayer(), now=smartNow();
+  if(!P||!now)return false;
+  const active=!!(P.playing||P.paused);
+  const shown=now.classList.contains('show') && !now.hidden;
+  return active && shown;
+}
+
+function suppressMini(){
+  const bar=mini();
+  if(bar)bar.hidden=true;
+  body?.classList.remove('mini-on');
+}
+
+function syncExclusive(){
+  const on=isSmartVisible();
+  body?.classList.toggle('r429-smart-player-exclusive',on);
+  if(on){
+    suppressMini();
+    return;
+  }
+  /* Akıllı Seans bittiğinde altta başka bir bağımsız ses kalmış olabilir.
+     Mevcut miniSync tek kaynak hakemidir; ona yeniden değerlendirme yaptır. */
+  try{
+    const fn=window.__SUKUN_R429_ORIGINAL_MINISYNC__;
+    if(typeof fn==='function')fn();
+  }catch(e){}
+}
+
+function installMiniGuard(){
+  let current=null;
+  try{current=window.miniSync||miniSync}catch(e){}
+  if(typeof current!=='function')return false;
+  if(current.__r429SingleSurface)return true;
+
+  window.__SUKUN_R429_ORIGINAL_MINISYNC__=current;
+  const guarded=function(){
+    if(isSmartVisible()){
+      body?.classList.add('r429-smart-player-exclusive');
+      suppressMini();
+      return;
+    }
+    body?.classList.remove('r429-smart-player-exclusive');
+    return current.apply(this,arguments);
+  };
+  guarded.__r429SingleSurface=1;
+  try{window.miniSync=guarded}catch(e){}
+  try{miniSync=guarded}catch(e){}
+  return true;
+}
+
+function bind(){
+  installMiniGuard();
+  syncExclusive();
+
+  const now=smartNow();
+  if(now && !now.dataset.r429SingleWatch){
+    now.dataset.r429SingleWatch='1';
+    new MutationObserver(()=>queueMicrotask(syncExclusive))
+      .observe(now,{attributes:true,attributeFilter:['class','style','hidden']});
+  }
+  return !!now;
+}
+
+/* Store ve transport olayları anında senkron etsin; polling eklemiyoruz. */
+['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
+  .forEach(ev=>window.addEventListener(ev,()=>queueMicrotask(syncExclusive),{passive:true}));
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')setTimeout(()=>{installMiniGuard();syncExclusive()},60);
+});
+window.addEventListener('pageshow',()=>setTimeout(()=>{installMiniGuard();syncExclusive()},60));
+
+(function boot(n=0){
+  const ok=bind();
+  if((!ok || !installMiniGuard()) && n<40)setTimeout(()=>boot(n+1),120);
+})();
+
+window.SukunSinglePlayerSurface={
+  version:'r429',
+  sync:syncExclusive,
+  active:isSmartVisible
+};
 })();
 </script>
 

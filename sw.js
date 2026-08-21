@@ -1,8 +1,8 @@
-/* SÜKÛN r428 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r429 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r428';
-const CACHE = 'sukun-r428-20260821a';
+const SURUM = 'r429';
+const CACHE = 'sukun-r429-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Akıllı Seans çalışırken ikinci global mini oynatıcı ve hub içindeki küçük tekrar durum satırı gizleniyor; seans bittiğinde bağımsız ses varsa mini bar geri geliyor.',
   'SÜKÛN başlığı, Akıllı Seans başlığı ve Tefekkür sahnesine düşük opaklıklı soyut hat kıvrımları eklendi; kutsal kelime dekor olarak kullanılmadı.',
   'Tefekkür tipografisi sakinleştirildi; Akıllı Seans Ayarlar geçişi ipeksi hale getirildi; Şimdi Çalıyor yüzeyi Tefekkür diliyle birleştirildi.',
   'Akıllı Seans kartları sade-premium görünüme geçirildi; ayar satırları toparlandı. Tefekkür moduna daha derin ve huzurlu bir nur sisi atmosferi eklendi.',
