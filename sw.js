@@ -1,8 +1,8 @@
-/* SÜKÛN r417 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r422 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r417';
-const CACHE = 'sukun-r417-20260821a';
+const SURUM = 'r422';
+const CACHE = 'sukun-r422-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,11 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r422 stabilizasyon: Akıllı Seans Şimdi Çalıyor tek görünür renderer ve tek state akışına birleştirildi; eski r417–r421 üst üste render katmanları kaldırıldı.',
+  'Aktif adım, ses kaynağı, faz, sıradaki adım, mod/tekrar/ara, seviye ve kalan süre aynı anda sabit alanlarda gösteriliyor; kaynak seans başlamadan önceden çözülüyor.',
+  'Kalan süre doğrudan state üzerinden okunuyor; son 30 saniyede sakin kehribar vurgu korunuyor. Frekans adımları duraklatılıp devam ettirildiğinde kalan süre korunuyor.',
+  'Akıllı Seans kartları mobilde özet görünüm + isteğe bağlı Ayarlar yapısına geçirildi; kaynak rozeti kartta önceden görünür.',
+  'Sürüm kimliği HTML, Service Worker, cache, footer ve yedek dosya adında r422 olarak eşitlendi.',
   'Akıllı Seans Şimdi Çalıyor kartı sabitlendi: Seans, Adım, Kaynak, Detay ve Süre ayrı satırlarda; frekans/ses/sükût bilgileri artık birbirinin yerine zıplamıyor.',
   'Akıllı Seans sükût adımları artık Şimdi Çalıyor barında süre anonsu + canlı geri sayım gösteriyor; her süre için kendi anons kaydı varsa TTS yerine o çalıyor.',
   'Akıllı Seans Oluşturucu mobilde yeniden yerleştirildi: iç kuyruk scrollu kaldırıldı, adım ayarları satırlara ayrıldı ve Şimdi Çalıyor için gerçek alt boşluk ayrıldı.',
