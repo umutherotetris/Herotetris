@@ -1,16 +1,62 @@
 {
-  "id": "./nero.html",
-  "name": "SÜKÛN — Tasavvufî Frekans & Zikir",
+  "name": "SÜKÛN — Tasavvufî Ses, Zikir & Tefekkür",
   "short_name": "SÜKÛN",
-  "description": "Tasavvufî frekans, zikir, Dijital Tekke ve NeuroSync deneyimi.",
-  "lang": "tr",
-  "dir": "ltr",
-  "start_url": "./nero.html?source=pwa&r=r151",
+  "description": "Tasavvufî ses, zikir, sükûn, frekans ve tefekkür uygulaması.",
+  "id": "./nero.html",
+  "start_url": "./nero.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#07110e",
-  "theme_color": "#07110e",
-  "categories": ["lifestyle", "music"],
-  "prefer_related_applications": false
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#05090c",
+  "theme_color": "#05090c",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": [
+    "lifestyle",
+    "music"
+  ],
+  "icons": [
+    {
+      "src": "./sukun-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "SÜKÛN'u Aç",
+      "short_name": "SÜKÛN",
+      "url": "./nero.html",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

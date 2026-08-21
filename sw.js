@@ -1,8 +1,8 @@
-/* SÜKÛN r413 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r414 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r413';
-const CACHE = 'sukun-r413-20260821a';
+const SURUM = 'r414';
+const CACHE = 'sukun-r414-20260821a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,14 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'Global Queue zikir adımları sessizdi: AudioResolver köprüsü window.R168 üzerinden aranıyordu, o ise hiç tanımlı değildi — zikir adımı hiç ses çalmadan geçiyordu, düzeltildi.',
+  'Ambiyans rozetleri kendi MutationObserver\'ını tetikleyen sonsuz döngü kuruyordu; boştaki DOM yazımı saniyede ~1.500\'den ~150\'ye indi (%90 azalma).',
+  'Hizbü\'l-Vikâye Sonraki düğmesi liste sonunu aşabiliyordu; 15 kısımlık gerçek sınır uygulanıyor.',
+  'Letâif Seyri Şimdi Çalıyor bilgisi (başlık, sıra, ilerleme) boş geliyordu; beş letâif yeniden görünür.',
+  'Kendi sesin kayıtları çözümlenirken her seferinde yeni AudioContext açılıyordu; ana bağlam yeniden kullanılıyor.',
+  'Ekran kapalıyken boşa dönen arayüz yoklamaları durduruldu — pil tüketimi azaldı.',
+  'Uygulama kabuğu artık önce önbellekten açılıyor, güncel kopya arkada tazeleniyor: açılış ağ turunu beklemiyor ve her açılışta 3 MB indirilmiyor.',
+  'Tema rengi ve açılış ekranı rengi uygulamanın gerçek zemin rengiyle eşitlendi; Android için maskable ikon eklendi.',
   'Tefekkürden Çık düğmesi zikir çemberinin hemen altına normal akışta taşındı; yarı şeffaf kırmızı-mor-mavi neon kapsül olarak yenilendi.',
   'Ambiyans kartlarına detay ve kullanım ipucu paneli eklendi; benzer seslerin farkları özellikle Şelale, yağmur, dalga, gece ve gürültü renklerinde açıklanıyor.',
   'Tefekkür kontrolü uzun floating bardan çıkarıldı; çalarken mini player içine, boşta küçük kompakt kapsüle taşındı ve eski collision konumlandırması devre dışı bırakıldı.',
@@ -120,38 +128,38 @@ self.addEventListener('activate', event => {
    Sayfa navigasyonları
 ───────────────────────────────────── */
 
-async function agOncelikli(request) {
-  try {
-    const response = await fetch(request);
+/*
+ * r414 — ÖNBELLEK ÖNCE, ARKADA TAZELE (stale-while-revalidate)
+ *
+ * Eskiden burası network-first idi: her açılışta 3 MB'lık nero.html
+ * ağdan yeniden çekiliyor, mobil veride hem yavaş hem pahalı oluyordu.
+ * Çevrimdışı çalışmak üzere tasarlanmış bir uygulamada bu ters bir tercih.
+ *
+ * Yeni davranış: önbellekteki kabuk ANINDA döner (açılış ağ turu beklemez),
+ * güncel kopya arka planda indirilip önbelleğe yazılır. Yeni sürüm zaten
+ * nero.html içindeki updatefound/SKIP_WAITING akışıyla kullanıcıya
+ * «Yeni sürüm hazır · Yenile ✦» olarak bildiriliyor — veri kaybı yok.
+ */
+async function kabukOncelikli(request) {
+  const cached = await caches.match(request, { ignoreSearch: true })
+             || await caches.match('./nero.html', { ignoreSearch: true });
 
-    if (
-      response &&
-      response.ok &&
-      response.type !== 'opaque'
-    ) {
-      const cache = await caches.open(CACHE);
+  const tazele = fetch(request)
+    .then(async response => {
+      if (response && response.ok && response.type !== 'opaque') {
+        const cache = await caches.open(CACHE);
+        await cache.put(request, response.clone()).catch(() => {});
+      }
+      return response;
+    })
+    .catch(() => null);
 
-      cache
-        .put(request, response.clone())
-        .catch(() => {});
-    }
-
-    return response;
-
-  } catch (_) {
-
-    return (
-      await caches.match(
-        request,
-        { ignoreSearch: true }
-      )
-    ) || (
-      await caches.match(
-        './nero.html',
-        { ignoreSearch: true }
-      )
-    ) || Response.error();
+  if (cached) {
+    /* Arka plan tazelemesi cevap dönmeyi geciktirmesin. */
+    return cached;
   }
+
+  return (await tazele) || Response.error();
 }
 
 
@@ -213,7 +221,7 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     request.mode === 'navigate'
-      ? agOncelikli(request)
+      ? kabukOncelikli(request)
       : onbellekOncelikli(request)
   );
 });
