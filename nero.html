@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r429 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r430 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r429">
+<meta name="sukun-build" content="r430">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r429">
+<link rel="manifest" href="./manifest.webmanifest?v=r430">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v17.6 — build 2026-08-21-r429</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v17.7 — build 2026-08-21-r430</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r430","t":"21 Ağustos 2026","b":["Oynatıcı mimarisi tek yüzeye indirildi: global mini bar ve döngü barı artık ayrı ayrı görünmüyor; bütün sesler r170 tek oynatıcı yüzeyinde toplanıyor","Korunma/Akıllı Seans ana içerik olarak gösterilirken ambiyans, frekans ve diğer eşzamanlı sesler aynı kartta ARKA PLAN katmanları olarak listeleniyor","Akıllı Seans yokken aynı tek bar Ambiyans, Frekans, okuyucular, zikir ve Tekke durumunu Global Now Playing state üzerinden gösteriyor","Akıllı Seans çalışırken oluşturucudaki ikinci büyük Duraklat düğmesi gizleniyor; taşıma kontrolleri yalnız sabit tek oynatıcıda kalıyor","Tek oynatıcı düğmeleri bağlama göre Akıllı Seans veya Global PlaybackController komutlarına yönleniyor; ikinci kontrol yüzeyi oluşmuyor"]},
  {"v":"r429","t":"21 Ağustos 2026","b":["Akıllı Seans çalışırken ikinci global mini oynatıcı artık gösterilmiyor; tek yetkili yüzey ayrıntılı Akıllı Seans Şimdi Çalıyor kartı","Akıllı Seans içindeki küçük tekrar Şimdi satırı da aynı anda gizleniyor; çift bar ve çift durum bilgisi kaldırıldı","Mini oynatıcıya ait mini-on alt boşluğu Akıllı Seans sırasında temizleniyor; alt navigasyon gereksiz yere ikinci kez yukarı taşınmıyor","Akıllı Seans bittiğinde veya durdurulduğunda başka bağımsız sesler çalıyorsa global mini oynatıcı otomatik olarak geri geliyor"]},
  {"v":"r428","t":"21 Ağustos 2026","b":["Ana başlığa çok ince, soyut hat kıvrımı eklendi; SÜKÛN logosunun altında sessiz bir imza gibi duruyor","Akıllı Seans başlığının altına küçük hat esintili mühür çizgisi yerleştirildi; kart yoğunluğu artırılmadı","Tefekkür sahnesine yalnız mod açıkken görünen düşük opaklıklı hat kıvrımı eklendi; merkez zikri ve sayacı kapatmıyor","Kutsal kelime veya okunması gereken Arapça metin dekor olarak kullanılmadı; süsleme yalnız soyut hat/arabez kıvrımlarından oluşuyor"]},
  {"v":"r427","t":"21 Ağustos 2026","b":["Tefekkür tipografisi sakinleştirildi: Arapça, okunuş, sayaç başlığı ve yardımcı metinlerin ağırlık/harf aralıkları yumuşatıldı","Akıllı Seans kartlarının Ayarlar aç/kapa hareketi display sıçraması yerine ipeksi yükseklik + opaklık geçişine çevrildi","Şimdi Çalıyor yüzeyi Tefekkür diliyle birleştirildi: koyu saydam zemin, ince altın çizgi, yumuşak tipografi ve daha sessiz durum rozetleri kullanılıyor","r426 kart dekorasyon polling runtimeı kaldırıldı; mevcut r422 expanded state doğrudan kullanılıyor"]},
@@ -22351,7 +22352,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r429',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r430',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33361,10 +33362,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r429',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r430',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r429-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r430-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -40200,6 +40201,281 @@ window.SukunSinglePlayerSurface={
   sync:syncExclusive,
   active:isSmartVisible
 };
+})();
+</script>
+
+
+<style id="r430-universal-single-dock-style">
+/* ═══════════════════════════════════════════════════════════════
+   r430 — TEK OYNATICI YÜZEYİ
+   #r170Now artık Akıllı Seans + global miks için tek sabit dock.
+   ═══════════════════════════════════════════════════════════════ */
+body.r430-universal-ready #miniBar,
+body.r430-universal-ready #donguCubuk{
+  display:none!important;
+}
+body.r430-universal-dock-active .sukunNowMini{
+  display:none!important;
+}
+
+#r170Now.r430-universal{
+  border-color:color-mix(in srgb,var(--gold) 17%,var(--line))!important;
+}
+#r170Now.r430-universal #r430Layers{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  overflow:hidden;
+  min-height:19px;
+}
+#r430Layers[hidden]{display:none!important}
+#r430Layers .r430LayerLabel{
+  flex:none;
+  color:var(--dim);
+  font:700 7.5px/1 'JetBrains Mono',ui-monospace,monospace;
+  letter-spacing:.08em;
+}
+#r430Layers .r430LayerRail{
+  display:flex;
+  gap:5px;
+  min-width:0;
+  overflow:hidden;
+}
+#r430Layers .r430LayerChip{
+  display:inline-flex;
+  align-items:center;
+  min-width:0;
+  max-width:165px;
+  padding:3px 7px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--gold) 10%,var(--line));
+  background:rgba(255,255,255,.024);
+  color:color-mix(in srgb,var(--goldh) 50%,var(--mut));
+  font:550 8px/1.12 'Figtree',system-ui,sans-serif;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#r430Layers .r430LayerMore{flex:none;max-width:none;color:var(--dim)}
+
+/* Global miks görünümünde Akıllı Seans'a özel "Sıradaki" satırı yerine
+   eşzamanlı katmanlar konuşur; kart biraz daha kompakt olur. */
+#r170Now.r430-global-mode #r422NowNext{display:none!important}
+#r170Now.r430-global-mode #r422NowInfo{gap:5px!important}
+#r170Now.r430-global-mode #r422NowCurrent{font-size:15px!important}
+#r170Now.r430-global-mode #r422RemainPill{min-width:128px!important}
+#r170Now.r430-global-mode.r430-no-progress #r422Progress{opacity:.28!important}
+
+/* Seans çalışırken oluşturucudaki ikinci büyük Duraklat/Devam yüzeyi kalkar.
+   Sabit tek dock her zaman erişilebilir olduğu için işlev kaybolmaz. */
+body.r430-smart-active #r170StartSession{display:none!important}
+body.r430-smart-active #r170SessionHub .r415SessionSaveRow #r170SaveSession{
+  grid-column:1/-1!important;
+  width:100%!important;
+}
+body.r430-smart-active #r170SessionHub .r415SessionSaveRow::after{
+  content:'Oynatma kontrolleri alttaki tek çubukta';
+  grid-column:1/-1;
+  display:block;
+  padding:2px 4px 0;
+  color:var(--dim);
+  font:500 8px/1.35 'JetBrains Mono',ui-monospace,monospace;
+  letter-spacing:.02em;
+  text-align:center;
+  opacity:.64;
+}
+
+/* Eski mini-on sınıfı global motor tarafından yazılsa bile ikinci bar için
+   ilave alt rezerv oluşturmasın. r415, #r170Now yüksekliğini tek başına ayırır. */
+body.r430-universal-dock-active.mini-on .wrap{
+  padding-bottom:calc(env(safe-area-inset-bottom) + 225px)!important;
+}
+body.r430-universal-dock-active.mini-on.sukun-zikir-tab .wrap{
+  padding-bottom:calc(env(safe-area-inset-bottom) + 305px)!important;
+}
+
+@media(max-width:430px){
+  #r430Layers .r430LayerChip{max-width:116px;font-size:7.5px;padding:3px 6px}
+  #r430Layers .r430LayerLabel{font-size:7px}
+  body.r430-smart-active #r170SessionHub .r415SessionSaveRow::after{font-size:7.5px}
+}
+</style>
+
+<script id="r430-universal-single-dock-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R430_UNIVERSAL_DOCK__)return;
+window.__SUKUN_R430_UNIVERSAL_DOCK__=1;
+
+const BUILD='r430';
+const P=window.R170?.Player;
+const NP=window.SukunNowPlayingStore;
+const PC=window.PlaybackController;
+const $=id=>document.getElementById(id);
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const setText=(el,v)=>{if(!el)return;v=String(v??'');if(el.textContent!==v)el.textContent=v};
+const fmtMs=ms=>{if(ms==null||!Number.isFinite(+ms))return'—';let s=Math.max(0,Math.ceil(+ms/1000));const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60),x=s%60,z=n=>String(n).padStart(2,'0');return h?`${h}:${z(m)}:${z(x)}`:`${z(m)}:${z(x)}`};
+const masterPct=()=>{const el=$('masterVol');const v=el?+el.value:NaN;return Number.isFinite(v)?'%'+Math.round(clamp(v,0,1)*100):'—'};
+
+function miniInfo(){
+  try{return typeof miniPlayingInfo==='function'?miniPlayingInfo():{active:false,tam:[],title:'',sub:'',adet:0}}
+  catch(e){return{active:false,tam:[],title:'',sub:'',adet:0}}
+}
+function smartActive(){return !!P&&(P.playing||P.paused)&&Array.isArray(P.queue)&&P.queue.length>0}
+function smartStep(){return smartActive()?P.queue[P.i]||null:null}
+function niceType(t){return({okuyucu:'Okuma',kayit:'Kendi kayıt',frekans:'Frekans',ambiyans:'Ambiyans',zikir:'Zikir',dongu:'Döngü',tekke:'Tekke'}[t]||String(t||'Miks'))}
+function providerType(n,mi){
+  const list=mi?.tam||[];
+  const kinds=[...new Set(list.map(x=>x.tur).filter(Boolean))];
+  if(kinds.length>1)return'Miks';
+  if(kinds.length===1)return niceType(kinds[0]);
+  return ({recording:'Kendi kayıt',tts:'TTS',frequency:'Frekans',silence:'Sükût',ambient:'Ambiyans',zikir:'Zikir',mix:'Miks'}[n?.sourceKind]||'Miks');
+}
+function stateLabel(n){return n?.state==='paused'?'Duraklatıldı':n?.state==='playing'?'Çalıyor':'Hazır'}
+function layerText(x){
+  if(!x)return'';
+  const a=String(x.ad||'').trim(),e=String(x.ek||'').trim();
+  return e?`${a} · ${e}`:a;
+}
+function backgroundLayers(mi,smart){
+  let arr=[...(mi?.tam||[])];
+  if(smart){
+    const s=smartStep();
+    /* Akıllı Seans'ın kendi sesini arka plan diye ikinci kez yazma. */
+    arr=arr.filter(x=>x.tur!=='kayit');
+    if(s?.type==='frequency')arr=arr.filter(x=>x.tur!=='frekans');
+    if(s?.type==='zikir')arr=arr.filter(x=>!(x.tur==='zikir'&&/zikir/i.test(String(x.ad||''))));
+  }
+  const seen=new Set();
+  return arr.filter(x=>{const k=(x.tur||'')+'|'+layerText(x);if(!layerText(x)||seen.has(k))return false;seen.add(k);return true});
+}
+
+function ensureDock(){
+  const now=$('r170Now');if(!now)return false;
+  now.classList.add('r422-unified','r430-universal');
+  let info=$('r422NowInfo');
+  if(!info){
+    info=document.createElement('div');info.id='r422NowInfo';
+    info.innerHTML=`<div id="r422NowHead"><span id="r422NowSession">—</span><span id="r422NowLive">CANLI</span></div><div class="r422NowLine"><span class="r422NowIcon">◈</span><span id="r422NowCurrent">—</span></div><div class="r422NowLine"><span class="r422NowIcon">🎙</span><span id="r422NowSource">—</span></div><div class="r422NowLine"><span class="r422NowIcon">◌</span><span id="r422NowPhase">—</span></div><div class="r422NowLine"><span class="r422NowIcon">›</span><span id="r422NowNext">—</span></div><div id="r422NowMeta"><div class="r422MetaRow"><span class="r422Pill"><span class="k">MOD</span><span id="r422Mod">—</span></span><span class="r422Pill"><span class="k">TEKRAR</span><span id="r422Repeat">—</span></span><span class="r422Pill"><span class="k">ARA</span><span id="r422Gap">—</span></span></div><div class="r422MetaRow"><span class="r422Pill"><span class="k">SEVİYE</span><span id="r422Level">—</span></span><span class="r422Pill" id="r422RemainPill"><span class="k">KALAN</span><span id="r422Remaining">—</span></span></div></div><div id="r422Progress"><i></i></div>`;
+    const btns=now.querySelector('.r170NowBtns');now.insertBefore(info,btns||null);
+  }
+  let layers=$('r430Layers');
+  if(!layers){
+    layers=document.createElement('div');layers.id='r430Layers';layers.hidden=true;
+    layers.innerHTML='<span class="r430LayerLabel">ARKA PLAN</span><span class="r430LayerRail"></span>';
+    const meta=$('r422NowMeta');info.insertBefore(layers,meta||null);
+  }
+  document.body?.classList.add('r430-universal-ready');
+  bindControls();
+  return true;
+}
+
+function renderLayers(mi,smart){
+  const box=$('r430Layers'),rail=box?.querySelector('.r430LayerRail');if(!box||!rail)return;
+  const arr=backgroundLayers(mi,smart);
+  box.hidden=!arr.length;
+  if(!arr.length){rail.replaceChildren();return}
+  const sig=arr.map(layerText).join('|');if(rail.dataset.sig===sig)return;rail.dataset.sig=sig;
+  rail.replaceChildren();
+  const visible=arr.slice(0,3);
+  visible.forEach(x=>{const s=document.createElement('span');s.className='r430LayerChip';s.textContent=layerText(x);rail.appendChild(s)});
+  if(arr.length>3){const s=document.createElement('span');s.className='r430LayerChip r430LayerMore';s.textContent='+'+(arr.length-3);rail.appendChild(s)}
+}
+function setMetaLabels(globalMode){
+  const ks=[...document.querySelectorAll('#r422NowMeta .k')];
+  const labels=globalMode?['TÜR','DURUM','KATMAN','SES','KALAN']:['MOD','TEKRAR','ARA','SEVİYE','KALAN'];
+  ks.forEach((el,i)=>{if(labels[i])setText(el,labels[i])});
+}
+function renderGlobal(n,mi){
+  const now=$('r170Now');if(!now)return;
+  now.classList.add('show','r430-global-mode');
+  const activeCount=mi?.tam?.length||mi?.adet||0;
+  setText($('r422NowSession'),n?.moduleTitle&&n.moduleTitle!==n.sectionTitle?n.moduleTitle:'SÜKÛN');
+  setText($('r422NowLive'),n?.state==='paused'?'DURAKLATILDI':'CANLI');
+  setText($('r422NowCurrent'),n?.sectionTitle||mi?.title||'SÜKÛN');
+  const src=n?.sourceLabel&&n.sourceLabel!=='—'?n.sourceLabel:providerType(n,mi);
+  setText($('r422NowSource'),src+(n?.sourceReason?' · '+String(n.sourceReason).slice(0,64):''));
+  setText($('r422NowPhase'),stateLabel(n));
+  setText($('r422NowNext'),'');
+  setMetaLabels(true);
+  setText($('r422Mod'),providerType(n,mi));
+  setText($('r422Repeat'),n?.sectionCount?`${n.sectionIndex||1}/${n.sectionCount}`:stateLabel(n));
+  setText($('r422Gap'),activeCount?`${activeCount} aktif`:'1 aktif');
+  setText($('r422Level'),masterPct());
+  setText($('r422Remaining'),fmtMs(n?.remaining));
+  const near=Number.isFinite(+n?.remaining)&&+n.remaining>0&&+n.remaining<=30000;
+  $('r422NowInfo')?.classList.toggle('r422-near-end',near);
+  const fill=$('r422Progress')?.firstElementChild,progress=Number.isFinite(+n?.progress)?clamp(+n.progress,0,100):null;
+  now.classList.toggle('r430-no-progress',progress==null);
+  if(fill){const w=(progress==null?0:progress).toFixed(1)+'%';if(fill.style.width!==w)fill.style.width=w}
+  renderLayers(mi,false);
+}
+function renderSmart(mi){
+  const now=$('r170Now');if(!now)return;
+  now.classList.add('show');now.classList.remove('r430-global-mode','r430-no-progress');
+  setMetaLabels(false);
+  renderLayers(mi,true);
+}
+
+function syncButtons(smart,n){
+  const prev=$('r170Prev'),play=$('r170Play'),next=$('r170Next'),stop=$('r170Stop');
+  const paused=smart?!!P?.paused:n?.state==='paused';
+  const playing=smart?!!P?.playing:n?.state==='playing';
+  if(play){play.textContent=paused?'▶':(playing?'Ⅱ':'▶');play.setAttribute('aria-label',paused?'Devam Ettir':playing?'Duraklat':'Başlat');play.title=play.getAttribute('aria-label')}
+  if(stop){stop.setAttribute('aria-label',smart?'Seansı durdur':'Tümünü durdur');stop.title=stop.getAttribute('aria-label')}
+  if(!smart){
+    let cap={};try{cap=PC?.snapshot?.()?.capabilities||{}}catch(e){}
+    if(prev){prev.disabled=!cap.previous;prev.setAttribute('aria-disabled',String(!cap.previous))}
+    if(next){next.disabled=!cap.next;next.setAttribute('aria-disabled',String(!cap.next))}
+  }else{
+    if(prev){prev.disabled=(P.i<=0);prev.setAttribute('aria-disabled',String(P.i<=0))}
+    if(next){const d=P.i>=P.queue.length-1;next.disabled=d;next.setAttribute('aria-disabled',String(d))}
+  }
+}
+function bindControls(){
+  const prev=$('r170Prev'),play=$('r170Play'),next=$('r170Next'),stop=$('r170Stop');
+  if(!prev||!play||!next||!stop)return;
+  if(prev.dataset.r430Universal==='1')return;
+  [prev,play,next,stop].forEach(b=>b.dataset.r430Universal='1');
+  prev.onclick=e=>{e?.preventDefault?.();if(smartActive())PC?.previous?.('smart-session');else PC?.previous?.()};
+  play.onclick=e=>{e?.preventDefault?.();if(smartActive())PC?.toggle?.('smart-session');else PC?.toggle?.()};
+  next.onclick=e=>{e?.preventDefault?.();if(smartActive())PC?.next?.('smart-session');else PC?.next?.()};
+  stop.onclick=e=>{e?.preventDefault?.();if(smartActive())PC?.stop?.('smart-session');else PC?.stopAll?.()};
+}
+
+let lastN=null;
+function render(n=lastN){
+  if(!ensureDock())return;
+  lastN=n||NP?.get?.()||null;
+  const mi=miniInfo(),smart=smartActive();
+  const active=smart||!!mi.active||(lastN&&['playing','paused'].includes(lastN.state));
+  const now=$('r170Now');
+  document.body?.classList.toggle('r430-universal-dock-active',!!active);
+  document.body?.classList.toggle('r430-smart-active',!!smart);
+  if(!active){
+    now?.classList.remove('show','r430-global-mode','r430-no-progress');
+    $('r430Layers')?.setAttribute('hidden','');
+    return;
+  }
+  if(smart)renderSmart(mi);else renderGlobal(lastN,mi);
+  syncButtons(smart,lastN);
+}
+
+let unsub=null;
+if(NP?.subscribe)unsub=NP.subscribe(n=>{lastN=n;queueMicrotask(()=>render(n))},{immediate:true});
+['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:source','sukun:smartphase']
+  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>render()),{passive:true}));
+/* Kullanıcının ambiyans/frekans anahtarına dokunması da katman listesini hemen tazeler. */
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#tab-amb button,#tab-amb .sw,#tab-frq button,#tab-frq .sw,#r170SessionHub button,.dockItem'))setTimeout(()=>render(),80);
+},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(()=>render(),70)});
+window.addEventListener('pageshow',()=>setTimeout(()=>render(),70));
+window.addEventListener('pagehide',()=>{try{unsub?.()}catch(e){}},{once:true});
+
+(function boot(n=0){if(ensureDock()){render(NP?.get?.());return}if(n<40)setTimeout(()=>boot(n+1),120)})();
+window.SukunUniversalDock={version:BUILD,render,active:()=>document.body.classList.contains('r430-universal-dock-active')};
 })();
 </script>
 
