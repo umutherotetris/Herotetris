@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r405 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r406 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r405">
+<meta name="sukun-build" content="r406">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r405">
+<link rel="manifest" href="./manifest.webmanifest?v=r406">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r405</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v16.6 — build 2026-08-21-r406</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r406","t":"21 Ağustos 2026","b":["Mini oynatıcıda aynı frekans seansı sırasında Theta, beat ve taşıyıcı değerlerinin ana başlık olarak sırayla görünmesine neden olan yarış düzeltildi","Ana başlık gerçek seans/modül kimliğine sabitlendi; frekans teknik değerleri ayrı Çalan Detayları satırına taşındı","Çalan Detayları tek satır sabit yükseklikte ve taşarsa yumuşak yatay akışla gösteriliyor; kart yüksekliği değişmiyor","miniSync ile Global Now Playing renderMini artık aynı kararlı görünüm modelini kullanıyor"]},
  {"v":"r405","t":"21 Ağustos 2026","b":["Akıllı Seansın Felâk/Nâs/İhlâs/Kalem adımlarını yanlışlıkla kaynaksız saymasına neden olan global ZIKIR erişim hatası düzeltildi","Seans editörü, gelişmiş tekrar motoru, Korunma çözümleyicisi ve Now Playing katmanı aynı gerçek ZIKIR envanterine bağlandı","Korunma Okumaları doğrulaması artık dört geçerli adımı hatalı biçimde 4 sorun olarak göstermiyor","Eski yarım kalan Korunma kuyrukları da doğru kategori/indeks varsa yeniden çalışabilir"]},
  {"v":"r404","t":"21 Ağustos 2026","b":["Üst SÜKÛN marka başlığının kaybolmasına neden olan r194 shimmer çakışması düzeltildi","SÜKÛN yazısı altın varak geçişiyle yeniden görünür ve hafif animasyonlu hale getirildi","Üst mühür/girih sembolüne sakin nefes-parıltı hareketi geri verildi; reduced-motion tercihi korunuyor","Başlık animasyonu içerikle yarışmayacak düşük yoğunlukta ve yalnız marka alanında çalışıyor"]},
  {"v":"r403","t":"21 Ağustos 2026","b":["Tefekkür modundaki uzun dikey Çık kontrolü kaldırılıp sayaç alanının altında yatay kompakt çıkış düğmesine dönüştürüldü","Çık düğmesi düşük parlaklıklı pembe-kırmızı-mürdüm geçişiyle ikincil fakat anlaşılır tehlike eylemi olarak yeniden tasarlandı","Berhetiyye Latin isimleri Tefekkür modunda tek satıra sabitlendi; uzun isimler satır kırmak yerine ekran genişliğine göre kontrollü küçülüyor","Kısa ekranlarda çıkış düğmesi sayaç veya alt kontrollerle çakışmayacak safe-area konumuna bağlandı"]},
@@ -21776,6 +21777,7 @@ function miniSync(){
   miniDurumYaz(false);
   $('#mbT').textContent=i.title;
   $('#mbS').textContent=i.sub||'—';
+  try{window.SukunMiniStable?.applyInfo?.(i)}catch(e){}
 }
 function miniClearPause(){
   if(!MINI.paused)return;
@@ -22333,7 +22335,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r405',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r406',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33343,7 +33345,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r405',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r406',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r290-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -35851,7 +35853,7 @@ function publish(reason='tick'){
   renderMini(n);renderReaders(n);clearTimeout(mediaTimer);mediaTimer=setTimeout(()=>renderMedia(n),0);return n;
 }
 function ensureMini(){const info=document.querySelector('#miniBar .mbInfo');if(!info)return;let m=$('mbNowMeta');if(!m){m=document.createElement('div');m.id='mbNowMeta';info.appendChild(m)}let tr=$('mbNowTrack');if(!tr){tr=document.createElement('div');tr.id='mbNowTrack';tr.innerHTML='<i></i>';info.appendChild(tr)}}
-function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if(n.state==='idle'&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
+function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if(n.state==='idle'&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}try{window.SukunMiniStable?.applyNow?.(n)}catch(e){}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
 const readerRoots={tovbe:'#tvBox',ayetulkursi:'#akBox',salavat:'#dhBox',fatiha:'#fsBox',hizb:'#hzvBox',berhetiyye:'#berhetSeyir',hatim:'#hatimBox,#esmaHatim',lataif:'#lataifBox,#latifSeyir','smart-session':'#r170SessionHub'};
 function renderReaders(n){Object.entries(readerRoots).forEach(([id,sel])=>{let root=null;try{root=document.querySelector(sel)}catch(e){};if(!root)return;const active=n.id===id&&(n.state==='playing'||n.state==='paused');root.dataset.nowActive=active?'1':'0';let d=root.querySelector('.sukunNowMini');if(!d){d=document.createElement('div');d.className='sukunNowMini';root.appendChild(d)}if(active){const b=[];if(n.sectionIndex&&n.sectionCount)b.push(n.sectionIndex+'/'+n.sectionCount);if(n.repeatTotal)b.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(n.sourceLabel)b.push(n.sourceLabel);if(n.remaining!=null)b.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));d.innerHTML='<b>Şimdi:</b> '+escapeHtml(n.sectionTitle)+(b.length?' · '+escapeHtml(b.join(' · ')):'')}})}
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -37193,6 +37195,240 @@ try{
     });
   }
 }catch(e){}
+})();
+</script>
+
+
+<style id="r406-stable-nowplaying-details">
+/* Başlık ve alt bilgi hiçbir metadata güncellemesinde yüksekliği değiştirmesin. */
+#miniBar .mbInfo{min-width:0;overflow:hidden}
+#miniBar #mbT{
+  display:block;min-height:18px;line-height:18px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+#miniBar #mbS{
+  display:block;min-height:15px;line-height:15px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+#mbStableDetails{
+  position:relative;
+  height:16px;line-height:16px;
+  margin-top:3px;
+  overflow:hidden;
+  white-space:nowrap;
+  font:500 8.7px/16px "JetBrains Mono",monospace;
+  color:var(--muted-soft);
+  mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);
+}
+#mbStableDetails[hidden]{display:none}
+#mbStableDetails>span{
+  display:inline-block;
+  min-width:max-content;
+  padding-inline:10px;
+  transform:translateX(0);
+}
+#mbStableDetails.flow>span{
+  animation:r406DetailFlow var(--flow-dur,14s) linear infinite;
+}
+@keyframes r406DetailFlow{
+  0%,10%{transform:translateX(0)}
+  90%,100%{transform:translateX(var(--flow-x,0px))}
+}
+@media(prefers-reduced-motion:reduce){
+  #mbStableDetails.flow>span{animation:none!important;transform:none!important}
+}
+</style>
+
+<script id="r406-stable-nowplaying">
+(()=>{
+'use strict';
+
+let sessionKey='', stableTitle='', stableSub='', lastDetails='';
+
+const clean=x=>String(x??'').replace(/\s+/g,' ').trim();
+const technicalTitle=t=>/^(?:theta|delta|alfa|alpha|beta|gamma|gama|mu|sigma|\d+(?:[.,]\d+)?\s*(?:hz|khz)|.*taşıyıcı|.*vuruş|.*beat)/i.test(clean(t));
+
+function bandName(){
+  try{
+    if(typeof bandOf==='function' && typeof FR!=='undefined'){
+      const b=bandOf(FR.b);
+      return clean(b?.[1]||b?.name||'');
+    }
+  }catch(e){}
+  return '';
+}
+
+function frequencyActive(n){
+  try{if(typeof FR!=='undefined'&&FR?.playing)return true}catch(e){}
+  return n?.id==='frequency'||n?.sourceKind==='frequency';
+}
+
+function currentKey(n,info){
+  if(n){
+    /* Teknik source değişimleri kimliği değiştirmez.
+       Gerçek modül/bölüm değişimi değiştirir. */
+    return [
+      n.id||'',
+      n.id==='smart-session'?(n.sectionIndex??''):'',
+      n.id==='global-queue'?(n.sectionIndex??''):''
+    ].join('|');
+  }
+  if(info){
+    try{
+      if(typeof FR!=='undefined'&&FR?.playing)return'frequency';
+    }catch(e){}
+    return clean(info.title||'session');
+  }
+  return'';
+}
+
+function ensureDetails(){
+  const info=document.querySelector('#miniBar .mbInfo');
+  if(!info)return null;
+  let d=document.getElementById('mbStableDetails');
+  if(!d){
+    d=document.createElement('div');
+    d.id='mbStableDetails';
+    d.hidden=true;
+    d.innerHTML='<span></span>';
+    const meta=document.getElementById('mbNowMeta');
+    if(meta)info.insertBefore(d,meta);
+    else info.appendChild(d);
+  }
+  return d;
+}
+
+function detailParts(n,info){
+  const parts=[];
+
+  if(frequencyActive(n)){
+    try{
+      if(typeof FR!=='undefined'){
+        const bn=bandName();
+        if(bn)parts.push(bn);
+        if(Number.isFinite(+FR.b))parts.push('vuruş '+(+FR.b<10?(+FR.b).toFixed(1):Math.round(+FR.b))+' Hz');
+        if(Number.isFinite(+FR.c))parts.push('taşıyıcı '+Math.round(+FR.c)+' Hz');
+        const mode=FR.mode==='iso'?'İzokronik':FR.mode==='mono'?'Monaural':FR.mode==='mix'?'Karma':'Binaural';
+        parts.push(mode);
+        if(FR.harmonik)parts.push(FR.harmonik+' harmonik');
+        if(FR.uzam)parts.push('3B');
+      }
+    }catch(e){}
+  }
+
+  /* miniPlayingInfo tam listesi; ambiyans, kayıt, okuyucu gibi eşzamanlı katmanlar */
+  try{
+    const full=info?.tam || (typeof miniPlayingInfo==='function'?miniPlayingInfo()?.tam:null);
+    if(Array.isArray(full)){
+      for(const x of full){
+        if(x?.tur==='frekans')continue;
+        const p=[clean(x?.ad),clean(x?.ek)].filter(Boolean).join(' · ');
+        if(p&&!parts.includes(p))parts.push(p);
+      }
+    }
+  }catch(e){}
+
+  if(n?.sourceLabel&&n.sourceLabel!=='—'&&!parts.some(p=>p.includes(n.sourceLabel)))parts.push(n.sourceLabel);
+  if(n?.repeatTotal)parts.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');
+  if(n?.remaining!=null){
+    try{parts.push('kalan '+(typeof fmtMs==='function'?fmtMs(n.remaining):Math.ceil(n.remaining/1000)+' sn'))}catch(e){}
+  }
+
+  return parts.filter(Boolean);
+}
+
+function chooseTitle(n,info){
+  const freq=frequencyActive(n);
+
+  if(freq){
+    /* Kullanıcının yön bulduğu başlık teknik değerden bağımsızdır. */
+    return 'Frekans Seansı';
+  }
+
+  if(n){
+    const module=clean(n.moduleTitle);
+    const section=clean(n.sectionTitle);
+    if(module&&!technicalTitle(module))return module;
+    if(section&&!technicalTitle(section))return section;
+  }
+
+  const it=clean(info?.title);
+  return technicalTitle(it)?'Şimdi Çalıyor':(it||'SÜKÛN');
+}
+
+function chooseSub(n,info){
+  if(frequencyActive(n)){
+    const b=bandName();
+    try{
+      const mode=typeof FR!=='undefined'?(FR.mode==='iso'?'İzokronik':FR.mode==='mono'?'Monaural':FR.mode==='mix'?'Karma':'Binaural'):'';
+      return [b,mode].filter(Boolean).join(' · ')||'Frekans motoru';
+    }catch(e){return b||'Frekans motoru'}
+  }
+
+  if(n){
+    const section=clean(n.sectionTitle);
+    const module=clean(n.moduleTitle);
+    if(section&&section!==module&&!technicalTitle(section))return section;
+    if(n.sectionIndex&&n.sectionCount)return n.sectionIndex+'/'+n.sectionCount+'. bölüm';
+  }
+
+  return clean(info?.sub)||'—';
+}
+
+function setDetails(parts){
+  const d=ensureDetails();if(!d)return;
+  const text=parts.join('  •  ');
+  d.hidden=!text;
+  if(!text)return;
+  const span=d.firstElementChild;
+  if(lastDetails!==text){lastDetails=text;span.textContent=text}
+  requestAnimationFrame(()=>{
+    const overflow=Math.max(0,span.scrollWidth-d.clientWidth+20);
+    d.classList.toggle('flow',overflow>8);
+    d.style.setProperty('--flow-x',(-overflow)+'px');
+    d.style.setProperty('--flow-dur',Math.max(10,Math.min(28,8+overflow/24))+'s');
+  });
+}
+
+function paint(n,info){
+  const key=currentKey(n,info);
+  if(!stableTitle||key!==sessionKey){
+    sessionKey=key;
+    stableTitle=chooseTitle(n,info);
+  }
+  /* Alt satır da yalnız gerçek kimlik değişiminde veya mod değişiminde yenilenir;
+     carrier/beat sayıları burada yer almadığı için zıplama üretmez. */
+  const sub=chooseSub(n,info);
+  if(!stableSub||key!==sessionKey||sub!==stableSub)stableSub=sub;
+
+  const t=document.getElementById('mbT'),s=document.getElementById('mbS');
+  if(t&&stableTitle)t.textContent=stableTitle;
+  if(s)s.textContent=stableSub||'—';
+  setDetails(detailParts(n,info));
+}
+
+function applyInfo(info){paint(null,info)}
+function applyNow(n){
+  let info=null;try{if(typeof miniPlayingInfo==='function')info=miniPlayingInfo()}catch(e){}
+  paint(n,info);
+}
+
+/* İki eski render motoru farklı zamanlarda yazsa bile son sözü tek katman söyler. */
+window.addEventListener('sukun:nowplayingchange',e=>requestAnimationFrame(()=>applyNow(e.detail)),{passive:true});
+window.addEventListener('sukun:playbackchange',()=>setTimeout(()=>{try{applyNow(window.SukunNowPlayingStore?.get?.())}catch(e){}},40),{passive:true});
+
+const timer=setInterval(()=>{
+  if(document.hidden)return;
+  const bar=document.getElementById('miniBar');
+  if(!bar||bar.hidden)return;
+  try{applyNow(window.SukunNowPlayingStore?.get?.())}catch(e){
+    try{applyInfo(miniPlayingInfo())}catch(_){}
+  }
+},500);
+
+window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
+window.SukunMiniStable={version:'r406',applyInfo,applyNow};
 })();
 </script>
 
