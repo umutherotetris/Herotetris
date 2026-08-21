@@ -7,7 +7,7 @@ const CACHE = 'sukun-r402-20260821a';
 const KABUK = [
   './nero.html',
   './manifest.webmanifest',
-  './icon.svg',
+  './sukun-icon.svg',
   './icon-192.png',
   './icon-512.png'
 ];
