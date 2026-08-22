@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r459 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r464 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r463">
+<meta name="sukun-build" content="r464">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r463">
+<link rel="manifest" href="./manifest.webmanifest?v=r464">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -7468,713 +7468,6 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
 .r350MemoryRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;padding-top:7px;border-top:1px solid var(--line);font-size:9px;color:var(--dim)}
 .r350MemoryRow span{flex:1}.r350MemoryRow button{font-size:9px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text)}
 </style>
-
-<style id="r460-tefekkur-polish">
-/* ═════════ r460 — Tefekkür sayacı son yerleşim cilası ═════════ */
-body.sukun-tefekkur-mode .zCtl>.zCounterRow{
-  display:grid!important;
-  grid-template-columns:minmax(82px,.80fr) minmax(0,220px) minmax(82px,.80fr)!important;
-  align-items:center!important;
-  justify-content:center!important;
-  column-gap:clamp(16px,4.2vw,28px)!important;
-  row-gap:0!important;
-  padding-inline:clamp(6px,2.2vw,14px)!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
-  width:min(100%,220px)!important;
-  max-width:220px!important;
-  min-width:0!important;
-  margin-inline:auto!important;
-  transform:translateX(-1px)!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
-  width:min(100%,88px)!important;
-  min-width:80px!important;
-  max-width:88px!important;
-  min-height:104px!important;
-  padding:14px 10px!important;
-  justify-self:center!important;
-  position:relative!important;
-  z-index:2!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:first-child{
-  transform:translateX(-1px)!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
-  transform:translateX(5px)!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide small{
-  font-size:10px!important;
-  letter-spacing:.13em!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide b{
-  font-size:28px!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide em{
-  font-size:9px!important;
-}
-
-/* Alt control island daha dengeli dursun */
-body.sukun-tefekkur-mode #r442StepRail{
-  width:min(92%,360px)!important;
-  margin:0 auto!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack{
-  width:min(100%,230px)!important;
-  margin-inline:auto!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
-  width:100%!important;
-  margin-inline:auto!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#cntSub{
-  width:max-content!important;
-  max-width:100%!important;
-  margin:2px auto 0!important;
-  padding:8px 14px!important;
-  border-radius:999px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line))!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015))!important;
-}
-
-/* Tefekkürden Çık daha belirgin ama hâlâ zarif */
-body.sukun-tefekkur-mode #r444TefExit{
-  width:min(86%,320px)!important;
-  min-width:0!important;
-  height:32px!important;
-  min-height:32px!important;
-  margin:0 auto!important;
-  padding:0 14px!important;
-  border-radius:999px!important;
-  color:#ece9ff!important;
-  letter-spacing:.14em!important;
-  background:
-    linear-gradient(90deg,rgba(170,92,255,.13),rgba(79,126,255,.10))!important;
-  border:1px solid color-mix(in srgb,#b07cff 44%,#58adff 31%)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 0 0 1px rgba(190,164,255,.08),
-    0 0 0 1px rgba(160,110,255,.10),
-    0 0 14px rgba(106,81,255,.16),
-    0 0 24px rgba(53,118,255,.10)!important;
-  opacity:1!important;
-}
-body.sukun-tefekkur-mode #r444TefExit::before{
-  width:18px!important;
-  height:18px!important;
-  font-size:12px!important;
-  border-color:color-mix(in srgb,#d5b4ff 40%,var(--line))!important;
-  box-shadow:0 0 10px rgba(164,112,255,.18)!important;
-}
-body.sukun-tefekkur-mode #r444TefExit:active{
-  transform:translateY(1px) scale(.992)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 0 10px rgba(106,81,255,.12)!important;
-}
-
-/* Dar ekranda taşma koruması */
-@media (max-width:390px){
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow{
-    grid-template-columns:minmax(76px,.82fr) minmax(0,208px) minmax(76px,.82fr)!important;
-    column-gap:12px!important;
-    padding-inline:4px!important;
-  }
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
-    width:min(100%,208px)!important;
-    max-width:208px!important;
-  }
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
-    max-width:82px!important;
-    min-width:76px!important;
-    min-height:98px!important;
-    padding-inline:8px!important;
-  }
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
-    transform:translateX(7px)!important;
-  }
-}
-@media (max-width:360px){
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow{
-    grid-template-columns:minmax(72px,.84fr) minmax(0,196px) minmax(72px,.84fr)!important;
-    column-gap:10px!important;
-  }
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
-    width:min(100%,196px)!important;
-    max-width:196px!important;
-  }
-  body.sukun-tefekkur-mode #r444TefExit{
-    width:min(90%,300px)!important;
-  }
-}
-</style>
-
-
-<style id="r461-sacred-slab">
-/* ═════════ r461 — Sacred Control Slab / Tefekkür premium compositing ═════════ */
-body.sukun-tefekkur-mode #r442StepRail{
-  position:relative!important;
-  width:min(92%,372px)!important;
-  margin:14px auto 0!important;
-  padding:18px 16px 16px!important;
-  border-radius:34px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 16%, rgba(160,110,255,.44))!important;
-  background:
-    radial-gradient(130% 110% at 50% 0%, rgba(200,165,255,.08), transparent 46%),
-    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018)),
-    linear-gradient(135deg, rgba(76,123,255,.06), rgba(181,112,255,.05) 52%, rgba(255,210,120,.04));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    inset 0 0 0 1px rgba(255,255,255,.025),
-    0 12px 32px rgba(0,0,0,.22),
-    0 0 0 1px rgba(176,124,255,.08),
-    0 0 20px rgba(110,90,255,.10)!important;
-  overflow:hidden!important;
-  isolation:isolate!important;
-}
-body.sukun-tefekkur-mode #r442StepRail::before{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.03), transparent 34%),
-    radial-gradient(90% 48% at 50% -6%, rgba(253,219,129,.08), transparent 52%);
-  pointer-events:none;
-  z-index:0;
-}
-body.sukun-tefekkur-mode #r442StepRail::after{
-  content:"";
-  position:absolute; left:18px; right:18px; bottom:58px; height:1px;
-  background:linear-gradient(90deg, transparent, rgba(214,194,255,.18), transparent);
-  pointer-events:none;
-}
-body.sukun-tefekkur-mode #r442StepRail > *{
-  position:relative!important;
-  z-index:1!important;
-}
-
-body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
-body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
-  border-radius:25px!important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018)),
-    linear-gradient(135deg, rgba(40,60,120,.16), rgba(110,70,180,.12))!important;
-  border:1px solid color-mix(in srgb, rgba(255,255,255,.12) 42%, var(--line))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.09),
-    0 8px 18px rgba(0,0,0,.16),
-    0 0 0 1px rgba(170,120,255,.07)!important;
-}
-body.sukun-tefekkur-mode #r442StepRail>#undoBtn b,
-body.sukun-tefekkur-mode #r442StepRail>#plusBtn b{
-  font-size:24px!important;
-  letter-spacing:-.02em!important;
-}
-body.sukun-tefekkur-mode #r442StepRail>#undoBtn span,
-body.sukun-tefekkur-mode #r442StepRail>#plusBtn span{
-  opacity:.82!important;
-}
-body.sukun-tefekkur-mode #r442StepRail>#undoBtn:active,
-body.sukun-tefekkur-mode #r442StepRail>#plusBtn:active{
-  transform:translateY(1px) scale(.985)!important;
-}
-
-/* merkez stack slab içinde taş gibi otursun */
-body.sukun-tefekkur-mode #r444CenterStack{
-  width:min(100%,228px)!important;
-  margin-inline:auto!important;
-  gap:9px!important;
-  align-content:center!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
-  min-height:62px!important;
-  height:62px!important;
-  border-radius:28px!important;
-  padding:0 16px!important;
-  border:1px solid color-mix(in srgb,#84a8ff 20%, #b783ff 40%)!important;
-  background:
-    radial-gradient(100% 180% at 50% 0%, rgba(248,219,116,.08), transparent 42%),
-    linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.018)),
-    linear-gradient(135deg, rgba(50,70,140,.22), rgba(122,79,218,.16))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    inset 0 0 18px rgba(255,255,255,.02),
-    0 0 0 1px rgba(170,128,255,.08),
-    0 8px 24px rgba(0,0,0,.18),
-    0 0 18px rgba(119,98,255,.10)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#autoBtn::before{
-  content:"";
-  position:absolute; left:14px; top:50%; transform:translateY(-50%);
-  width:32px; height:32px; border-radius:50%;
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.10);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 0 12px rgba(255,219,120,.09);
-  pointer-events:none;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{
-  letter-spacing:.06em!important;
-  font-size:12px!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#autoBtn small{
-  opacity:.7!important;
-  font-size:10px!important;
-}
-
-/* meta pill slab içinde daha tok */
-body.sukun-tefekkur-mode #r444CenterStack>#cntSub{
-  width:max-content!important;
-  max-width:100%!important;
-  margin:0 auto!important;
-  padding:9px 16px!important;
-  border-radius:999px!important;
-  color:#dbe5ff!important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.018)),
-    linear-gradient(90deg, rgba(96,111,255,.08), rgba(169,113,255,.08))!important;
-  border:1px solid color-mix(in srgb,var(--gold) 18%, rgba(163,114,255,.26))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 4px 12px rgba(0,0,0,.10)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack>#cntSub::before{
-  content:"";
-  display:inline-block;
-  width:7px; height:7px; margin:0 9px 1px 0;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 35%, #d8dcff 0 32%, #8ea6ff 50%, #6b56ef 100%);
-  box-shadow:0 0 10px rgba(123,108,255,.18);
-  vertical-align:middle;
-}
-
-/* tefekkürden çık slab alt satırda sakin ama net */
-body.sukun-tefekkur-mode #r444TefExit{
-  width:min(86%,304px)!important;
-  height:34px!important;
-  min-height:34px!important;
-  margin:2px auto 0!important;
-  background:
-    linear-gradient(90deg, rgba(172,95,255,.13), rgba(80,129,255,.11))!important;
-  border:1px solid color-mix(in srgb,#c08dff 48%,#6eb2ff 30%)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 0 0 1px rgba(255,255,255,.03),
-    0 0 14px rgba(128,88,255,.18),
-    0 0 24px rgba(82,122,255,.10)!important;
-}
-body.sukun-tefekkur-mode #r444TefExit::before{
-  width:18px!important;
-  height:18px!important;
-  font-size:12px!important;
-}
-
-/* alt satır slab içinde nefes alan boşluk */
-body.sukun-tefekkur-mode #r444BottomMeta{
-  margin-top:4px!important;
-}
-
-/* küçük ekranlar */
-@media (max-width:390px){
-  body.sukun-tefekkur-mode #r442StepRail{
-    width:min(94%,356px)!important;
-    padding:16px 13px 15px!important;
-    border-radius:30px!important;
-  }
-  body.sukun-tefekkur-mode #r442StepRail::after{
-    left:14px; right:14px; bottom:56px;
-  }
-  body.sukun-tefekkur-mode #r444CenterStack{
-    width:min(100%,214px)!important;
-    gap:8px!important;
-  }
-  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
-    min-height:58px!important;
-    height:58px!important;
-    border-radius:24px!important;
-  }
-  body.sukun-tefekkur-mode #r444TefExit{
-    width:min(89%,294px)!important;
-  }
-}
-@media (max-width:360px){
-  body.sukun-tefekkur-mode #r442StepRail{
-    width:min(95%,344px)!important;
-    padding:14px 12px!important;
-  }
-  body.sukun-tefekkur-mode #r444CenterStack{
-    width:min(100%,202px)!important;
-  }
-}
-</style>
-
-
-<style id="r462-tef-align-fix">
-/* ═════════ r462 — Tefekkür hizalama / merkezleme düzeltmesi ═════════ */
-body.sukun-tefekkur-mode .zCounterRow{
-  --tf-ring-safe:min(60vw, 248px)!important;
-  grid-template-columns:72px minmax(0,var(--tf-ring-safe)) 72px!important;
-  justify-content:center!important;
-  align-items:center!important;
-  column-gap:12px!important;
-  row-gap:10px!important;
-}
-body.sukun-tefekkur-mode .zCountVisual{
-  width:var(--tf-ring-safe)!important;
-  height:var(--tf-ring-safe)!important;
-  margin-inline:auto!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
-  width:72px!important;
-  min-width:72px!important;
-  max-width:72px!important;
-  align-self:center!important;
-  justify-self:center!important;
-  transform:none!important;
-}
-body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
-  transform:none!important;
-}
-body.sukun-tefekkur-mode #r442StepRail{
-  display:grid!important;
-  grid-template-columns:72px minmax(0,1fr) 72px!important;
-  grid-template-areas:
-    "undo center plus"
-    "meta meta meta"
-    "exit exit exit"!important;
-  align-items:center!important;
-  justify-items:center!important;
-  column-gap:14px!important;
-  row-gap:14px!important;
-  width:min(92%,374px)!important;
-  max-width:374px!important;
-  margin:18px auto 0!important;
-  padding:16px 16px 14px!important;
-}
-body.sukun-tefekkur-mode #r442StepRail > #undoBtn{
-  grid-area:undo!important;
-  justify-self:start!important;
-  align-self:center!important;
-}
-body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
-  grid-area:plus!important;
-  justify-self:end!important;
-  align-self:center!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack{
-  grid-area:center!important;
-  width:100%!important;
-  max-width:324px!important;
-  margin:0 auto!important;
-  align-self:center!important;
-  justify-self:center!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:0!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
-  width:100%!important;
-  min-height:72px!important;
-  height:72px!important;
-  border-radius:24px!important;
-  overflow:hidden!important;
-  margin:0 auto!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn::before{
-  left:14px!important;
-  top:50%!important;
-  transform:translateY(-50%)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
-  display:block!important;
-  width:100%!important;
-  text-align:center!important;
-  padding-inline:40px 16px!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #cntSub{
-  display:none!important;
-}
-body.sukun-tefekkur-mode #r458Devir{
-  grid-area:meta!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  justify-self:center!important;
-  margin:0 auto!important;
-  min-width:148px!important;
-  padding:10px 18px!important;
-  border-radius:999px!important;
-  text-align:center!important;
-}
-body.sukun-tefekkur-mode #r444TefExit{
-  grid-area:exit!important;
-  justify-self:center!important;
-  align-self:center!important;
-  width:min(100%,254px)!important;
-  margin:0 auto!important;
-  border-width:1.4px!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 0 0 1px rgba(185,126,255,.18),
-    0 0 20px rgba(136,110,255,.16)!important;
-}
-body.sukun-tefekkur-mode #r444TefExit b,
-body.sukun-tefekkur-mode #r444TefExit span{
-  letter-spacing:.08em!important;
-}
-body.sukun-tefekkur-mode #r442StepRail .r444-divider,
-body.sukun-tefekkur-mode #r442StepRail hr{
-  display:none!important;
-}
-
-@media (max-width:390px){
-  body.sukun-tefekkur-mode .zCounterRow{
-    --tf-ring-safe:min(61vw, 236px)!important;
-    grid-template-columns:64px minmax(0,var(--tf-ring-safe)) 64px!important;
-    column-gap:10px!important;
-  }
-  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
-    width:64px!important; min-width:64px!important; max-width:64px!important;
-  }
-  body.sukun-tefekkur-mode #r442StepRail{
-    width:min(94%,356px)!important;
-    max-width:356px!important;
-    grid-template-columns:64px minmax(0,1fr) 64px!important;
-    column-gap:10px!important;
-    padding:14px 14px 12px!important;
-  }
-  body.sukun-tefekkur-mode #r444CenterStack{max-width:292px!important}
-  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
-    min-height:68px!important;height:68px!important;
-  }
-  body.sukun-tefekkur-mode #r458Devir{
-    min-width:136px!important;
-    padding:9px 16px!important;
-  }
-}
-@media (max-height:760px){
-  body.sukun-tefekkur-mode .zCounterRow{
-    --tf-ring-safe:min(54vw, 214px)!important;
-  }
-  body.sukun-tefekkur-mode #r442StepRail{
-    margin-top:14px!important;
-  }
-}
-</style>
-
-
-<style id="r463-tef-slab-dual">
-/* ═════════ r463 — Tefekkür slab: çift katmanlı kutsal panel ═════════ */
-body.sukun-tefekkur-mode #r442StepRail{
-  position:relative!important;
-  width:min(92%,388px)!important;
-  max-width:388px!important;
-  margin:22px auto 0!important;
-  padding:20px 18px 18px!important;
-  display:grid!important;
-  grid-template-columns:72px minmax(0,1fr) 72px!important;
-  grid-template-areas:
-    "meta meta meta"
-    "exit exit exit"
-    "undo center plus"!important;
-  column-gap:14px!important;
-  row-gap:14px!important;
-  align-items:center!important;
-  justify-items:center!important;
-  border-radius:34px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 16%, rgba(160,110,255,.35))!important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
-    linear-gradient(135deg, rgba(56,82,140,.06), rgba(142,106,220,.06), rgba(200,175,88,.04))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    inset 0 0 0 1px rgba(255,255,255,.018),
-    0 12px 40px rgba(0,0,0,.20),
-    0 0 0 1px rgba(170,120,255,.06)!important;
-  overflow:visible!important;
-  isolation:isolate!important;
-}
-body.sukun-tefekkur-mode #r442StepRail::before,
-body.sukun-tefekkur-mode #r442StepRail::after{
-  content:"";
-  position:absolute;
-  left:12px; right:12px;
-  border-radius:28px;
-  pointer-events:none;
-  z-index:0;
-}
-body.sukun-tefekkur-mode #r442StepRail::before{
-  top:12px;
-  height:100px;
-  background:
-    radial-gradient(120% 110% at 50% 0%, rgba(183,140,255,.10), transparent 50%),
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
-    linear-gradient(135deg, rgba(255,255,255,.018), rgba(255,255,255,.008));
-  border:1px solid rgba(186,139,255,.20);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.09),
-    inset 0 0 0 1px rgba(255,255,255,.02),
-    0 10px 28px rgba(0,0,0,.12),
-    0 0 20px rgba(154,120,255,.08);
-}
-body.sukun-tefekkur-mode #r442StepRail::after{
-  bottom:12px;
-  height:102px;
-  background:
-    radial-gradient(120% 140% at 50% 0%, rgba(255,215,140,.08), transparent 50%),
-    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.018)),
-    linear-gradient(135deg, rgba(255,255,255,.014), rgba(255,255,255,.006));
-  border:1px solid rgba(255,215,150,.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    inset 0 0 0 1px rgba(255,255,255,.018),
-    0 12px 28px rgba(0,0,0,.14);
-}
-body.sukun-tefekkur-mode #r442StepRail > *{
-  position:relative!important;
-  z-index:1!important;
-}
-body.sukun-tefekkur-mode #r458Devir{
-  grid-area:meta!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  min-width:160px!important;
-  margin:4px auto 0!important;
-  padding:11px 18px!important;
-  border-radius:999px!important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)),
-    linear-gradient(135deg, rgba(88,98,255,.06), rgba(182,120,255,.05))!important;
-  border:1px solid rgba(190,154,255,.24)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 0 0 1px rgba(255,255,255,.02),
-    0 0 16px rgba(144,120,255,.08)!important;
-  letter-spacing:.08em!important;
-}
-body.sukun-tefekkur-mode #r444TefExit{
-  grid-area:exit!important;
-  justify-self:center!important;
-  width:min(100%,264px)!important;
-  min-height:44px!important;
-  margin:0 auto!important;
-  border-radius:999px!important;
-  border:1.2px solid color-mix(in srgb, var(--gold) 24%, rgba(183,124,255,.52))!important;
-  background:
-    linear-gradient(90deg, rgba(166,72,72,.10), rgba(91,110,255,.08) 54%, rgba(151,93,255,.10)),
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 0 0 1px rgba(170,118,255,.09),
-    0 0 24px rgba(160,110,255,.12),
-    0 0 10px rgba(255,216,140,.08)!important;
-}
-body.sukun-tefekkur-mode #r444TefExit b,
-body.sukun-tefekkur-mode #r444TefExit span{
-  text-shadow:0 0 14px rgba(186,156,255,.16)!important;
-  letter-spacing:.10em!important;
-}
-body.sukun-tefekkur-mode #r442StepRail > #undoBtn{
-  grid-area:undo!important;
-  justify-self:start!important;
-}
-body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
-  grid-area:plus!important;
-  justify-self:end!important;
-}
-body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
-body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
-  width:72px!important; min-width:72px!important; max-width:72px!important;
-  height:72px!important; min-height:72px!important; max-height:72px!important;
-  border-radius:22px!important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
-    linear-gradient(135deg, rgba(85,102,220,.05), rgba(255,208,125,.04))!important;
-  border:1px solid rgba(190,156,255,.18)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    0 8px 24px rgba(0,0,0,.14),
-    0 0 14px rgba(154,120,255,.06)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack{
-  grid-area:center!important;
-  width:100%!important;
-  max-width:236px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  margin:0 auto!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
-  width:100%!important;
-  min-height:74px!important;
-  height:74px!important;
-  margin:0 auto!important;
-  border-radius:24px!important;
-  background:
-    radial-gradient(110% 120% at 50% 0%, rgba(255,220,120,.09), transparent 52%),
-    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)),
-    linear-gradient(135deg, rgba(74,95,208,.06), rgba(189,142,255,.07), rgba(255,225,142,.04))!important;
-  border:1px solid rgba(196,164,255,.26)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.09),
-    0 0 0 1px rgba(255,255,255,.02),
-    0 12px 28px rgba(0,0,0,.16),
-    0 0 26px rgba(161,125,255,.10)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn::before{
-  width:34px!important;height:34px!important;left:14px!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.10),
-    0 0 0 1px rgba(255,255,255,.03),
-    0 0 16px rgba(255,219,120,.09)!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
-  font-size:13px!important;
-  letter-spacing:.08em!important;
-  text-shadow:0 0 14px rgba(170,140,255,.14)!important;
-  padding-inline:42px 16px!important;
-}
-body.sukun-tefekkur-mode #r444CenterStack > #cntSub{
-  display:none!important;
-}
-body.sukun-tefekkur-mode #r442StepRail .r444-divider,
-body.sukun-tefekkur-mode #r442StepRail hr{
-  display:none!important;
-}
-@media (max-width:390px){
-  body.sukun-tefekkur-mode #r442StepRail{
-    width:min(94%,364px)!important;
-    grid-template-columns:64px minmax(0,1fr) 64px!important;
-    padding:18px 14px 16px!important;
-    row-gap:12px!important; column-gap:10px!important;
-  }
-  body.sukun-tefekkur-mode #r442StepRail::before{height:96px!important}
-  body.sukun-tefekkur-mode #r442StepRail::after{height:96px!important}
-  body.sukun-tefekkur-mode #r444CenterStack{max-width:220px!important}
-  body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
-  body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
-    width:64px!important; min-width:64px!important; max-width:64px!important;
-    height:64px!important; min-height:64px!important; max-height:64px!important;
-  }
-  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
-    min-height:68px!important; height:68px!important;
-  }
-  body.sukun-tefekkur-mode #r458Devir{
-    min-width:146px!important;
-    padding:10px 16px!important;
-  }
-}
-@media (max-height:760px){
-  body.sukun-tefekkur-mode #r442StepRail{
-    margin-top:16px!important;
-  }
-}
-</style>
-
 </head>
 <body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
@@ -9044,7 +8337,7 @@ body.sukun-tefekkur-mode #r442StepRail hr{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.11 — build 2026-08-22-r459</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.14 — build 2026-08-22-r464</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -9068,6 +8361,7 @@ body.sukun-tefekkur-mode #r442StepRail hr{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r464","t":"22 Ağustos 2026","b":["Kilit ekranından dönüşte otomatik zikir scheduler'ı görünmezken durduruluyor; dönüşte tek debounce kapısından sessiz duvar-saati telafisiyle yeniden kuruluyor","Web Audio dönüşü 140 ms master fade-in ile yumuşatıldı; ilk otomatik tık için kısa sessiz pencere eklenerek pıt-pıt burst engellendi","AudioLife ile eski Android/PWA recovery aynı anda ctx.resume çağırmayacak şekilde tek recovery akışında birleştirildi; visibility/pageshow/focus tetikleri coalesce ediliyor","r460-r463 kozmetik CSS katmanları kaldırıldı; dosyada daha sonra gelen r458 bunları eziyordu. Tefekkür yerleşiminin tek son otoritesi r464 oldu","Zikir halkası Hedef/Kalan ile çakışmayacak şekilde küçültülüp gerçek merkez gridine alındı; yan künyeler simetrik kolonlara kilitlendi","Tefekkür slab üstte −1 / ana eylem / +1, altta Devir ve neonik Tefekkürden Çık olmak üzere iki görsel katmanda yeniden kuruldu","Footer, meta build, manifest/SW query, yedek kimliği ve Service Worker cache r464 ile eşitlendi"]},
  {"v":"r463","t":"22 Ağustos 2026","b":["Tefekkür sahnesindeki kontrol alanı tek premium sacred slab olarak yeniden işlendi; butonlar, meta ve çıkış hattı tek aile gibi davranıyor.","−1 / Durdur / +1 hattı ile merkez CTA daha heykelsi, daha dengeli ve daha premium cam yüzey estetiğiyle güçlendirildi.","Devir ve Tefekkürden Çık satırları slab içinde yeniden rafine edilerek daha sakin ve okunur hale getirildi."]},
  {"v":"r460","t":"22 Ağustos 2026","b":["Tefekkür sayacında zikir çemberi bir miktar küçültülüp yeniden merkezlendi; Hedef/Kalan kartları ile çakışma giderildi.","Tefekkürden Çık düğmesi neonik premium çerçeve ve daha belirgin kontrast ile güçlendirildi.","Tefekkür sahnesinin son düzeni build/manifest/SW ile r460 olarak eşitlendi."]},
  {"v":"r459","t":"22 Ağustos 2026","b":["r458 denetiminde bulunan bozuk sürüm notları JSON'u düzeltildi; Neler Yenilendi geçmişi yeniden parse edilebilir durumda","Diagnostics build kilidi kaldırıldı; Runtime Probe ve Regression ekranı sürümü meta[name=sukun-build] üzerinden dinamik okuyor","Tam Yedek 2.0 payload ve dosya adı r459 ile eşitlendi","Tefekkürde 480 ms polling tamamen kaldırıldı; Control Island düzeltmesi yalnız gerçek childList değişimlerinde çalışan dar event-driven observer ile korunuyor","Sayarken çalışan sonsuz box-shadow r458Nefes animasyonu kaldırıldı; playing görünümü statik ve düşük paint maliyetli kaldı","DEVİR observer yaşam döngüsü temizlendi; Tefekkürden çıkınca #cntSub observer'ı disconnect oluyor ve aynı hedef için gereksiz yeniden kurulum yapılmıyor","HTML build, footer, manifest/SW query, yedek kimliği ve yeni Service Worker cache r459 ile eşitlendi"]},
@@ -13852,7 +13146,8 @@ function pulseZ(){
 }
 /* Tesbih tanesi tıkırtısı */
 function tickSnd(){
-  if(!ctx)return;
+  if(!ctx||document.hidden)return;
+  if(typeof _zAutoSessizUntil!=='undefined'&&Date.now()<_zAutoSessizUntil)return;
   const zv=(typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1;
   if(zv<=0.002)return;
   const t=ctx.currentTime, o=ctx.createOscillator();
@@ -14360,6 +13655,7 @@ function lockOff(){try{wl&&wl.release();}catch(e){} wl=null;}
    kullanılır. Kaç tur kaçırıldığı Date.now() ile hesaplanır; kaçan sayımlar
    SESSİZ tamamlanır, ses hiçbir zaman burst şeklinde telafi edilmez. */
 let _zAutoSon=0;
+let _zAutoUyanTO=0,_zAutoUyanSeq=0,_zAutoSessizUntil=0,_zAutoHiddenAt=0;
 function zAutoTempoMs(){ return Math.max(180,Math.round((+Z.tempo||1)*1000)); }
 function zSessizTamamla(n){
   n=Math.max(0,Math.min(20000,Math.floor(n||0)));
@@ -14404,22 +13700,39 @@ function zAutoKur(yeniden){
   const bekle=Math.max(40,ms-Math.max(0,Date.now()-_zAutoSon));
   Z.autoId=setTimeout(dongu,bekle);
 }
-function zAutoUyan(){
-  if(!Z.auto)return;
+function zAutoUyan(reason){
+  if(!Z.auto||document.hidden)return;
   const ms=zAutoTempoMs(), now=Date.now();
   const sesli=!!(SPK.on&&!ZIKIR_BIRLIKTE);
   const kacirilan=Math.max(0,Math.floor((now-_zAutoSon)/ms));
-  /* Ekran geri geldiği anda ses çıkarmadan sayacı saatle eşitle; ilk gerçek
-     pıt tam bir tempo sonra gelsin. Böylece resume anında click patlaması yok. */
   if(!sesli&&kacirilan>0)zSessizTamamla(kacirilan);
   _zAutoSon=now;
-  try{ctx&&ctx.resume&&ctx.resume().catch(()=>{})}catch(e){}
+  _zAutoSessizUntil=now+Math.min(1800,Math.max(900,Math.round(ms*.9)));
   zAutoKur(true);
+  try{
+    document.body.classList.add('sukun-resume-settling');
+    setTimeout(()=>document.body.classList.remove('sukun-resume-settling'),1250);
+  }catch(e){}
+}
+function zAutoUyanPlanla(reason){
+  if(!Z.auto)return;
+  clearTimeout(_zAutoUyanTO);
+  const seq=++_zAutoUyanSeq;
+  _zAutoUyanTO=setTimeout(()=>{
+    if(seq!==_zAutoUyanSeq||document.hidden||!Z.auto)return;
+    zAutoUyan(reason);
+  },360);
 }
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&Z.auto)setTimeout(zAutoUyan,140);
+  if(document.hidden){
+    _zAutoHiddenAt=Date.now();
+    clearTimeout(_zAutoUyanTO);
+    if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
+    return;
+  }
+  if(Z.auto)zAutoUyanPlanla('visibility');
 });
-window.addEventListener('pageshow',()=>{ if(Z.auto)setTimeout(zAutoUyan,140); });
+window.addEventListener('pageshow',()=>{if(Z.auto)zAutoUyanPlanla('pageshow')});
 
 function autoStart(){
   if(Z.auto)return;
@@ -23527,7 +22840,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r463',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r464',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33933,6 +33246,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){if(x.durati
 /* ═══ 2) AUDIO/LIFECYCLE STATE MACHINE ═══ */
 const AudioLife=window.AudioLife={
   state:'idle',reason:'init',wasBusy:false,userPaused:false,lastChange:Date.now(),providers:new Map(),
+  _recoverPromise:null,_visibleTO:0,
   register(name,fn){if(name&&typeof fn==='function')this.providers.set(name,fn);},
   set(n,r){if(this.state===n&&this.reason===r)return;this.state=n;this.reason=r||'';this.lastChange=Date.now();window.dispatchEvent(new CustomEvent('sukun:audiostate',{detail:{state:n,reason:r}}));if(!document.hidden)dashUpdate();},
   busy(){
@@ -33952,12 +33266,48 @@ const AudioLife=window.AudioLife={
       return false;
     }catch(e){return false}
   },
-  async recover(src){if(this.userPaused)return;this.set('recovering',src||'resume');try{if(typeof ctx!=='undefined'&&ctx&&ctx.state!=='running')await ctx.resume();}catch(e){PRERR.push('audio-resume',e.message||e,src)}try{if(typeof kesintiDenetle==='function')kesintiDenetle()}catch(e){}setTimeout(()=>this.set(this.busy()?'playing':'idle','recovered'),120)}
+  async recover(src){
+    if(this.userPaused)return false;
+    if(this._recoverPromise)return this._recoverPromise;
+    this._recoverPromise=(async()=>{
+      this.set('recovering',src||'resume');
+      try{
+        if(typeof ctx!=='undefined'&&ctx&&ctx.state!=='running'){
+          await ctx.resume();
+          try{
+            if(master&&ctx.state==='running'){
+              const el=document.getElementById('masterVol');
+              const hedef=Math.max(.0001,+(el?.value||master.gain.value||.7));
+              const t=ctx.currentTime;
+              master.gain.cancelScheduledValues(t);
+              master.gain.setValueAtTime(.0001,t);
+              master.gain.exponentialRampToValueAtTime(hedef,t+.14);
+            }
+          }catch(_){ }
+        }
+      }catch(e){PRERR.push('audio-resume',e.message||e,src)}
+      try{if(typeof kesintiDenetle==='function')kesintiDenetle()}catch(e){}
+      setTimeout(()=>this.set(this.busy()?'playing':'idle','recovered'),150);
+      return true;
+    })().finally(()=>{this._recoverPromise=null});
+    return this._recoverPromise;
+  }
 };
 AudioLife.register('tekke',()=>!!(window.Tekke&&((window.Tekke.isActive&&window.Tekke.isActive())||(window.Tekke.isRunning&&window.Tekke.isRunning()))));
 AudioLife.register('neuro',()=>!!(window.Neuro&&window.Neuro.isPlaying&&window.Neuro.isPlaying()));
-function lifeHidden(src){AudioLife.wasBusy=AudioLife.busy();if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.set('interrupted',src)}
-function lifeVisible(src){if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.recover(src);else AudioLife.set(AudioLife.busy()?'playing':'idle',src)}
+function lifeHidden(src){
+  clearTimeout(AudioLife._visibleTO);
+  AudioLife.wasBusy=AudioLife.busy();
+  if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.set('interrupted',src);
+}
+function lifeVisible(src){
+  clearTimeout(AudioLife._visibleTO);
+  AudioLife._visibleTO=setTimeout(()=>{
+    if(document.hidden)return;
+    if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.recover(src);
+    else AudioLife.set(AudioLife.busy()?'playing':'idle',src);
+  },300);
+}
 document.addEventListener('visibilitychange',()=>document.hidden?lifeHidden('visibility-hidden'):lifeVisible('visibility-visible'));
 window.addEventListener('pagehide',()=>lifeHidden('pagehide'));window.addEventListener('pageshow',()=>lifeVisible('pageshow'));window.addEventListener('blur',()=>{if(document.hidden)lifeHidden('blur')});window.addEventListener('focus',()=>lifeVisible('focus'));
 document.addEventListener('freeze',()=>lifeHidden('freeze'));document.addEventListener('resume',()=>lifeVisible('resume'));
@@ -34559,10 +33909,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r459',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r464',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r459-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r464-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -36106,17 +35456,29 @@ function hookMedia(){
 }
 
 /* ── 3) ANDROID / PWA KURTARMA + ADAPTİF WATCHDOG ─────────────── */
-const Watch=window.SukunAudioWatch={timer:0,last:'hazır',fail:0,nextTry:0};
+const Watch=window.SukunAudioWatch={timer:0,last:'hazır',fail:0,nextTry:0,recovering:false};
 async function recover(reason){
   if(Hub.userPaused||(window.AudioLife&&AudioLife.userPaused))return false;
   if(!Hub.busy()&&!(window.AudioLife&&AudioLife.busy&&AudioLife.busy()))return false;
-  if(now()<Watch.nextTry)return false;
-  Hub.recoveries++;Journal.event('recover-start',reason);Hub.set('recovering',reason);let ok=false;
-  try{if(typeof ctx!=='undefined'&&ctx&&ctx.state!=='running'){await ctx.resume();ok=ctx.state==='running'}else ok=true}catch(e){Watch.fail++;diag('r228-resume',e.message||e,reason)}
-  try{await window.AudioLife?.recover?.('r228:'+reason)}catch(e){}
-  try{window.SesCapa?.ensure?.(Hub.title||'SÜKÛN');window.SesCapa?.syncPlaying?.()}catch(e){}
-  try{if(typeof wakeLockAyarla==='function'&&typeof SESWL_ISTEK!=='undefined'&&SESWL_ISTEK)wakeLockAyarla(true)}catch(e){}
-  Watch.last=(ok?'✓ ':'△ ')+reason+' · '+new Date().toLocaleTimeString('tr-TR');Watch.nextTry=now()+(ok?1200:Math.min(30000,1800*Math.max(1,Watch.fail)));Hub.set(Hub.busy()?'playing':'idle',ok?'recovered':'recover-pending');Journal.event(ok?'recover-ok':'recover-pending',reason);Hub.render();renderJournal();return ok;
+  if(Watch.recovering||now()<Watch.nextTry)return false;
+  Watch.recovering=true;
+  Watch.nextTry=now()+1000;
+  Hub.recoveries++;Journal.event('recover-start',reason);Hub.set('recovering',reason);
+  let ok=false;
+  try{
+    if(window.AudioLife?.recover){
+      await AudioLife.recover('r228:'+reason);
+      ok=(typeof ctx==='undefined'||!ctx||ctx.state==='running');
+    }else{
+      try{if(typeof ctx!=='undefined'&&ctx&&ctx.state!=='running'){await ctx.resume();ok=ctx.state==='running'}else ok=true}catch(e){Watch.fail++;diag('r228-resume',e.message||e,reason)}
+    }
+    try{window.SesCapa?.ensure?.(Hub.title||'SÜKÛN');window.SesCapa?.syncPlaying?.()}catch(e){}
+    try{if(typeof wakeLockAyarla==='function'&&typeof SESWL_ISTEK!=='undefined'&&SESWL_ISTEK)wakeLockAyarla(true)}catch(e){}
+    Watch.last=(ok?'✓ ':'△ ')+reason+' · '+new Date().toLocaleTimeString('tr-TR');
+    Watch.nextTry=now()+(ok?1400:Math.min(30000,1800*Math.max(1,Watch.fail)));
+    Hub.set(Hub.busy()?'playing':'idle',ok?'recovered':'recover-pending');
+    Journal.event(ok?'recover-ok':'recover-pending',reason);Hub.render();renderJournal();return ok;
+  }finally{Watch.recovering=false;}
 }
 function watchdogTick(){
   const busy=Hub.busy()||(window.AudioLife&&AudioLife.busy&&AudioLife.busy());if(!busy||Hub.userPaused)return;
@@ -47803,6 +47165,64 @@ body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden):not(.r434-inli
   },{capture:true});
 })();
 </script>
+
+
+<style id="r464-tefekkur-final-layout">
+body.sukun-tefekkur-mode .zCtl{grid-template-rows:auto auto auto!important;align-content:start!important;row-gap:clamp(14px,2.1dvh,20px)!important;padding-bottom:18px!important}
+body.sukun-tefekkur-mode .zCtl>.zCountTitle{grid-row:1!important}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow{grid-row:2!important}
+body.sukun-tefekkur-mode .zCtl>#r442StepRail{grid-row:3!important}
+
+body.sukun-tefekkur-mode .zCounterRow{--r464-ring:min(58vw,30dvh,226px)!important;display:grid!important;grid-template-columns:64px var(--r464-ring) 64px!important;justify-content:center!important;align-items:center!important;column-gap:10px!important;width:100%!important;max-width:390px!important;margin:0 auto!important;padding:0!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCountVisual{grid-column:2!important;width:var(--r464-ring)!important;height:var(--r464-ring)!important;max-width:none!important;margin:0 auto!important;transform:none!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide{width:64px!important;min-width:64px!important;max-width:64px!important;padding:6px 2px!important;margin:0!important;justify-self:center!important;align-self:center!important;transform:none!important;text-align:center!important;border:none!important;background:none!important;box-shadow:none!important;overflow:visible!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide:first-child{grid-column:1!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide:last-child{grid-column:3!important;transform:none!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide small{display:block!important;font:650 8px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.16em!important;white-space:nowrap!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide b{display:block!important;margin:8px 0 5px!important;font-size:30px!important;font-variant-numeric:lining-nums tabular-nums!important}
+body.sukun-tefekkur-mode .zCounterRow>.zCounterSide em{font-size:9px!important;white-space:nowrap!important}
+
+body.sukun-tefekkur-mode #r442StepRail{position:relative!important;z-index:12!important;width:min(92vw,386px)!important;max-width:386px!important;margin:2px auto 0!important;padding:15px 14px 13px!important;display:grid!important;grid-template-columns:60px minmax(0,1fr) 60px!important;grid-template-areas:"undo cta plus" "meta meta meta" "exit exit exit"!important;column-gap:10px!important;row-gap:10px!important;align-items:center!important;justify-items:center!important;border-radius:28px!important;border:1px solid color-mix(in srgb,var(--gold) 15%,rgba(154,112,255,.26))!important;background:linear-gradient(180deg,rgba(255,255,255,.020),rgba(255,255,255,.010))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 18px 36px -30px rgba(0,0,0,.76)!important;overflow:hidden!important;contain:layout paint!important}
+body.sukun-tefekkur-mode #r442StepRail::before,body.sukun-tefekkur-mode #r442StepRail::after{content:""!important;display:block!important;position:absolute!important;left:8px!important;right:8px!important;border-radius:22px!important;pointer-events:none!important;z-index:0!important}
+body.sukun-tefekkur-mode #r442StepRail::before{top:8px!important;height:74px!important;background:radial-gradient(110% 140% at 50% 0%,rgba(230,203,130,.055),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.038),rgba(255,255,255,.014))!important;border:1px solid rgba(190,157,255,.10)!important}
+body.sukun-tefekkur-mode #r442StepRail::after{bottom:8px!important;height:83px!important;background:linear-gradient(180deg,rgba(120,92,190,.038),rgba(255,255,255,.008))!important;border:1px solid rgba(157,119,255,.10)!important}
+body.sukun-tefekkur-mode #r442StepRail>*{position:relative!important;z-index:2!important}
+
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn{grid-area:undo!important;justify-self:start!important}
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn{grid-area:plus!important;justify-self:end!important}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn,body.sukun-tefekkur-mode #r442StepRail>#plusBtn{width:60px!important;min-width:60px!important;max-width:60px!important;height:60px!important;min-height:60px!important;max-height:60px!important;margin:0!important;padding:0!important;border-radius:18px!important;display:grid!important;place-items:center!important;border:1px solid rgba(188,155,255,.16)!important;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.014))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important;transform:none!important}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn b,body.sukun-tefekkur-mode #r442StepRail>#plusBtn b{font:650 21px/1 "Figtree",system-ui,sans-serif!important;font-variant-numeric:lining-nums tabular-nums!important}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn span,body.sukun-tefekkur-mode #r442StepRail>#plusBtn span,body.sukun-tefekkur-mode #r442StepRail>#undoBtn small,body.sukun-tefekkur-mode #r442StepRail>#plusBtn small{display:none!important}
+
+body.sukun-tefekkur-mode #r442StepRail>#r444CenterStack{grid-area:cta!important;width:100%!important;max-width:none!important;min-width:0!important;height:60px!important;min-height:60px!important;margin:0!important;padding:0!important;display:flex!important;align-items:stretch!important;justify-content:center!important}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{width:100%!important;min-width:0!important;max-width:none!important;height:60px!important;min-height:60px!important;max-height:60px!important;margin:0!important;padding:0 13px!important;border-radius:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;border:1px solid color-mix(in srgb,var(--gold) 45%,rgba(151,115,255,.28))!important;background:linear-gradient(180deg,rgba(238,213,139,.15),rgba(238,213,139,.055))!important;color:var(--goldh)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(255,255,255,.018)!important;transform:none!important;animation:none!important}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{font:780 clamp(10px,3vw,12.5px)/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.055em!important;white-space:nowrap!important;color:inherit!important}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn small{display:none!important}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn.playing{background:linear-gradient(180deg,rgba(157,133,255,.13),rgba(113,91,186,.055))!important;border-color:rgba(187,158,255,.28)!important;color:#d8dcff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 0 16px rgba(125,105,255,.08)!important;animation:none!important}
+
+body.sukun-tefekkur-mode #r442StepRail>#r450FocusMetaSlot{grid-area:meta!important;width:100%!important;min-height:31px!important;margin:2px 0 0!important;padding:10px 0 0!important;display:flex!important;align-items:center!important;justify-content:center!important;border-top:1px solid rgba(190,158,255,.10)!important;background:none!important}
+body.sukun-tefekkur-mode #r450FocusMetaSlot #cntSub{display:none!important}
+body.sukun-tefekkur-mode #r450FocusMetaSlot #r458Devir{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:118px!important;margin:0 auto!important;padding:6px 13px!important;border-radius:999px!important;border:1px solid rgba(184,149,255,.13)!important;background:rgba(255,255,255,.016)!important;box-shadow:none!important;font:650 9px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.14em!important;color:color-mix(in srgb,var(--goldh) 58%,var(--dim))!important}
+body.sukun-tefekkur-mode #r442StepRail>#r444TefExit{grid-area:exit!important;width:min(82%,242px)!important;max-width:242px!important;height:38px!important;min-height:38px!important;max-height:38px!important;margin:0 auto!important;padding:0 14px!important;border-radius:999px!important;display:flex!important;align-items:center!important;justify-content:center!important;border:1px solid rgba(169,119,255,.44)!important;background:linear-gradient(90deg,rgba(164,80,255,.10),rgba(79,124,255,.075))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(174,124,255,.08),0 0 16px rgba(127,95,255,.11)!important;color:#d9d7ef!important;opacity:1!important;font:700 9px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.13em!important;transform:none!important}
+
+body.sukun-resume-settling.sukun-tefekkur-mode #zCountVisual::before,body.sukun-resume-settling.sukun-tefekkur-mode #zCountVisual::after,body.sukun-resume-settling.sukun-tefekkur-mode .tefNurField,body.sukun-resume-settling.sukun-tefekkur-mode .tefRosette::before,body.sukun-resume-settling.sukun-tefekkur-mode .tefRosette::after{animation:none!important;transition:none!important}
+body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden):not(.r434-inline-details-open) #tab-zkr{padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
+
+@media(max-width:390px){
+  body.sukun-tefekkur-mode .zCounterRow{--r464-ring:min(56vw,29dvh,210px)!important;grid-template-columns:60px var(--r464-ring) 60px!important;column-gap:8px!important}
+  body.sukun-tefekkur-mode .zCounterRow>.zCounterSide{width:60px!important;min-width:60px!important;max-width:60px!important}
+  body.sukun-tefekkur-mode #r442StepRail{width:min(94vw,354px)!important;max-width:354px!important;grid-template-columns:56px minmax(0,1fr) 56px!important;column-gap:8px!important;padding:13px 12px 11px!important}
+  body.sukun-tefekkur-mode #r442StepRail>#undoBtn,body.sukun-tefekkur-mode #r442StepRail>#plusBtn{width:56px!important;min-width:56px!important;max-width:56px!important;height:56px!important;min-height:56px!important;max-height:56px!important}
+  body.sukun-tefekkur-mode #r442StepRail>#r444CenterStack,body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{height:56px!important;min-height:56px!important;max-height:56px!important}
+}
+@media(max-width:350px){
+  body.sukun-tefekkur-mode .zCounterRow{--r464-ring:min(55vw,28dvh,196px)!important;grid-template-columns:55px var(--r464-ring) 55px!important;column-gap:6px!important}
+  body.sukun-tefekkur-mode .zCounterRow>.zCounterSide{width:55px!important;min-width:55px!important;max-width:55px!important}
+  body.sukun-tefekkur-mode #r442StepRail{grid-template-columns:50px minmax(0,1fr) 50px!important;column-gap:7px!important}
+  body.sukun-tefekkur-mode #r442StepRail>#undoBtn,body.sukun-tefekkur-mode #r442StepRail>#plusBtn{width:50px!important;min-width:50px!important;max-width:50px!important}
+}
+@media(max-height:760px){body.sukun-tefekkur-mode .zCounterRow{--r464-ring:min(53vw,27dvh,205px)!important}body.sukun-tefekkur-mode .zCtl{row-gap:12px!important}body.sukun-tefekkur-mode #r442StepRail{margin-top:0!important}}
+</style>
 
 </body>
 </html>
