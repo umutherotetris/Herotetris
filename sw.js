@@ -1,8 +1,8 @@
-/* SÜKÛN r439 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r443 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r439';
-const CACHE = 'sukun-r439-20260822a';
+const SURUM = 'r443';
+const CACHE = 'sukun-r443-20260822a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,10 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r443: Tefekkür bar kontrolü ikon-only yapıldı; yaklaşık 520 ms uzun basmada açıklama balonu açılıyor ve uzun basma modu yanlışlıkla tetiklemiyor.',
+  'r442: Tefekkür kontrolü tek bara taşındı; Tefekkür barı kompaktlaştırıldı, −1/+1 yukarı alındı ve sayaç başlatma kontrolleri için güvenli alan ayrıldı.',
+  'r441: gizli oynatıcı geri çağırma görünümü Geniş düğme / Yan sekme olarak seçilebilir ve tercih yerel olarak saklanır.',
+  'r440: gizli oynatıcıyı geri-aç butonu büyütüldü, netleştirildi ve daha kolay tıklanır hale getirildi.',
   'r439: Detaylar panelinde tüm aktif katmanların ayrı ses/kapatma kontrolleri geri geldi; ana pause/stop bütün miks katmanlarını yönetiyor.',
   'r438 ses sözleşmesi denetimi: TTS watchdog yarışları, çift stop, Delâil kayıt-next, okuyucu provider kimliği ve hedefli bar stop davranışı sertleştirildi.',
   'Delâil bar Durdur doğrudan aktif okuyucuyu kesiyor; Vikâye tek Durdur düzenine ve sağlam kayıt→TTS fallback akışına geçirildi.',
