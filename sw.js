@@ -1,8 +1,8 @@
-/* SÜKÛN r438 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r439 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r438';
-const CACHE = 'sukun-r438-20260822a';
+const SURUM = 'r439';
+const CACHE = 'sukun-r439-20260822a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r439: Detaylar panelinde tüm aktif katmanların ayrı ses/kapatma kontrolleri geri geldi; ana pause/stop bütün miks katmanlarını yönetiyor.',
   'r438 ses sözleşmesi denetimi: TTS watchdog yarışları, çift stop, Delâil kayıt-next, okuyucu provider kimliği ve hedefli bar stop davranışı sertleştirildi.',
   'Delâil bar Durdur doğrudan aktif okuyucuyu kesiyor; Vikâye tek Durdur düzenine ve sağlam kayıt→TTS fallback akışına geçirildi.',
   'Tekke oynatıcısı isteğe bağlı: seans başlarken dock otomatik açılmıyor; Tekke üstündeki küçük Oynatıcı düğmesiyle gösterilip gizleniyor.',

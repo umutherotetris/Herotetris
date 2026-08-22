@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r438 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r439 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r438">
+<meta name="sukun-build" content="r439">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r438">
+<link rel="manifest" href="./manifest.webmanifest?v=r439">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v18.3 — build 2026-08-22-r438</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v18.4 — build 2026-08-22-r439</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r439","t":"22 Ağustos 2026","b":["Detaylar mini-akordeonunu görünmez bırakan overflow ve paint-containment çakışması giderildi","Detaylar açıldığında bütün aktif ambiyans, frekans, okuyucu ve diğer katmanlar tek tek açık gelir; her birinde ayrı ses seviyesi ve kapatma denetimi görünür","Ambiyans kanallarının 5/10/20/45 dakika veya süresiz zamanlayıcı kontrolleri yeniden barın Detaylar bölümünde erişilebilir","Ana bardaki Duraklat artık yalnız baskın okuyucuyu değil tüm aktif miks katmanlarını birlikte duraklatıyor; ambiyans ve frekans arkada devam etmiyor","Ana bardaki Durdur bütün aktif katmanları kesin durduruyor; tek tek kapatma Detaylar içinde kalıyor","Kulaklık ve kilit ekranı pause/play/stop eylemleri de aynı toplu miks sözleşmesine bağlandı","Alt footer dahil görünür build etiketi, HTML meta, Service Worker ve yedek sürümü r439 ile eşitlendi"]},
  {"v":"r438","t":"22 Ağustos 2026","b":["Bar ve ses motoru çapraz denetlendi; Tövbe, Âyetü’l-Kürsî, Salavât ve Fâtiha watchdog timeoutları artık okuyucu durmuşsa yeni başlayan TTS sesini yanlışlıkla iptal etmiyor","hardStopAll içindeki Hizbü’l-Vikâye çift durdurma/cancel yolu kaldırıldı; okuyucu tek merkezi stop sözleşmesinden kapanıyor","Delâilü’l-Hayrât Sıradaki komutu kendi kayıt çalarken de çalışıyor; kayıt yolu ile TTS yolu aynı transport davranışına getirildi","Seyyidü’l-İstiğfar PlaybackController’a provider olarak eklendi; bardan duraklat, devam ve durdur artık doğrudan bu okuyucuyu yönetiyor","Now Playing ve Detaylar okuyucu adını regex ile tahmin etmek yerine provider kimliği taşıyor; yanlış okuyucunun durdurulma riski azaltıldı","Tekke yalnız gerçekten çalışan/aktif bir Tekke sesi varsa playback katmanı sayılıyor; yalnız giriş ekranının açık olması barı aktif göstermiyor","Delâil ve Seyyid okuyucu panelleri Now Playing state köprüsüne eklendi","SukunAudioGuard eklendi: provider sözleşmesini, okuyucu kimliklerini, bayat pause/Now Playing stateini denetliyor ve tanılama stres testine raporluyor","Ana bardaki Durdur aktif providerı hedefliyor; adaptör sessizce başarısız kalırsa kısa gecikmeyle doğrudan modül stop kontratına güvenli fallback uygulanıyor"]},
  {"v":"r437","t":"22 Ağustos 2026","b":["Delâilü’l-Hayrât PlaybackController’a birinci sınıf okuyucu olarak bağlandı; ana bardaki kare Durdur artık aktif Delâil akışını doğrudan durduruyor","Delâil için gerçek duraklat/devam state’i eklendi; TTS ve kendi kayıt yolu aynı transport sözleşmesine uyuyor","Birleşik barın Durdur düğmesi okuyucu/seans aktifken yalnız o aktif kaynağı durduruyor; Tümünü Durdur gelişmiş Detaylar içinde kalıyor","Hizbü’l-Vikâye oynarken yinelenen Durdur düğmesi kaldırıldı: boşta Oku, oynarken Duraklat + tek Durdur görünür","Hizbü’l-Vikâye kaynak çözümü gerçek kayıt Blob’unu doğruluyor; bozuk/eski kayıt işareti varsa otomatik TTS’ye düşüyor","Delâil’den Vikâye’ye geçişte Android speechSynthesis cancel yarışı için güvenli başlangıç aralığı eklendi; ilk TTS cümlesinin sessizce kesilmesi önlendi","Vikâye kayıt oynatımı playRecording sözleşmesine uyarlandı; kayıt bitince sonraki bölüme ilerliyor, kayıt açılamazsa TTS fallback yapıyor"]},
  {"v":"r436","t":"21 Ağustos 2026","b":["Tekke seansı başlarken birleşik oynatıcı artık otomatik açılmıyor; Tekke sahnesi varsayılan olarak tamamen açık kalıyor","Tekke üst çubuğuna küçük Oynatıcı düğmesi eklendi; kullanıcı isterse barı tek dokunuşla açıp yine aynı yerden kapatabiliyor","Tekke içinde barın kendi Gizle düğmesi de yalnız Tekke görünümünü kapatıyor; uygulama genelindeki oynatıcı gizleme tercihini yanlışlıkla değiştirmiyor","Tekke kapatılınca geçici oynatıcı tercihi temizleniyor; ana SÜKÛN ekranındaki normal dock davranışı aynen geri geliyor","Tekke giriş kapısındaki SÜKÛN geri dönüş katmanı body-state ile sağlamlaştırıldı; DOM sibling sırasına bağlı kalmıyor"]},
@@ -22503,7 +22504,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r438',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r439',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33535,10 +33536,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r438',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r439',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r438-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r439-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -41277,21 +41278,61 @@ function toolsHtml(){
 function signature(ls){return ls.map(x=>x.__r434key+'|'+x.tur+'|'+(x.id||'')+'|'+String(x.ad||'')+'|'+String(x.ek||'')).join('||')+'|'+owner()}
 function refresh(force){
   if(!ensure())return;
-  if(!isActive()){setOpen(false);return}
-  const ls=layers();
-  if(opened&&!seeded){seeded=true;if(ls.length<=3)ls.forEach(x=>openLayers.add(x.__r434key));else if(ls[0])openLayers.add(ls[0].__r434key)}
-  const sig=signature(ls),panel=$('r434InlineDetails');
+  const panel=$('r434InlineDetails');
+  if(!isActive()){
+    setOpen(false);
+    if(panel)panel.hidden=true;
+    return;
+  }
+
+  /* r439: önce panel görünürlüğü güncellenir. Katman renderında bir hata
+     olsa bile "Detaylar" açık görünüp içerik kaybolmaz. */
+  if(panel)panel.hidden=!opened;
+
+  let ls=[];
+  try{
+    ls=layers();
+  }catch(err){
+    if(panel&&!panel.hidden){
+      const box=$('r434LayerList');
+      if(box)box.innerHTML='<div class="r434Note">Katman listesi yenilenemedi; ana oynatma kontrolleri çalışmaya devam ediyor.</div>';
+    }
+    try{window.sukunReport?.('r439-details-layers',err)}catch(_){}
+    return;
+  }
+
+  /* Eski güçlü davranış: Detaylar açılınca bütün aktif sesler doğrudan
+     slider + kapatma kontrolleriyle açık görünür. */
+  if(opened&&!seeded){
+    seeded=true;
+    ls.forEach(x=>openLayers.add(x.__r434key));
+  }
+
+  const sig=signature(ls);
   if(force||sig!==lastSig){
-    // Slider/keyboard kullanılırken canlı DOM'u söküp kurma.
     if(!(panel&&panel.matches(':focus-within')&&!force)){
-      lastSig=sig;
-      $('r434Count').textContent=ls.length+' katman';
-      $('r434LayerList').innerHTML=ls.length?ls.map(layerHtml).join(''):'<div class="r434Note">Aktif bağımsız ses katmanı yok. Oynatma seansı yine üstteki ana kontrollerden yönetiliyor.</div>';
-      $('r434Tools').innerHTML=toolsHtml();
+      try{
+        lastSig=sig;
+        $('r434Count').textContent=ls.length+' katman';
+        $('r434LayerList').innerHTML=ls.length
+          ?ls.map(layerHtml).join('')
+          :'<div class="r434Note">Aktif bağımsız ses katmanı yok. Oynatma seansı yine üstteki ana kontrollerden yönetiliyor.</div>';
+        $('r434Tools').innerHTML=toolsHtml();
+      }catch(err){
+        const box=$('r434LayerList');
+        if(box)box.innerHTML='<div class="r434Note">Detay kontrolleri hazırlanamadı. Ana bar çalışmaya devam ediyor.</div>';
+        try{window.sukunReport?.('r439-details-render',err)}catch(_){}
+      }
     }
   }
-  const master=$('masterVol'),mv=$('r434MasterVol');if(master&&mv){mv.value=master.value;$('r434MasterVal').textContent=pct(master.value);try{setFill?.(mv)}catch(e){}}
-  panel.hidden=!opened;
+
+  const master=$('masterVol'),mv=$('r434MasterVol');
+  if(master&&mv){
+    mv.value=master.value;
+    $('r434MasterVal').textContent=pct(master.value);
+    try{setFill?.(mv)}catch(e){}
+  }
+  if(panel)panel.hidden=!opened;
   requestAnimationFrame(reserve);
 }
 function onClick(e){
@@ -41698,6 +41739,239 @@ try{
 
 window.SukunAudioGuard={version:'r438',audit,repair,stopCurrent,refresh};
 setTimeout(()=>{try{repair()}catch(e){}},280);
+})();
+</script>
+
+
+<style id="r439-dock-details-transport-style">
+/* Detaylar görünürlüğünü kırpan eski dock kısıtlarını yalnız açıkken kaldır. */
+body.r434-inline-details-open #r170Now.r431-owner-dock{
+  overflow:visible!important;
+  contain:none!important;
+  align-items:start!important;
+}
+body.r434-inline-details-open #r170Now.r422-unified{
+  overflow:visible!important;
+  grid-template-rows:auto auto!important;
+}
+body.r434-inline-details-open #r170Now>#r434InlineDetails{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  grid-column:1/-1!important;
+  max-height:min(52dvh,520px)!important;
+  min-height:118px;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Detaylar açıldığında tüm katman kartları güçlü eski görünüm gibi doğrudan açık. */
+body.r434-inline-details-open #r434LayerList .r434LayerBody{
+  grid-template-rows:1fr!important;
+  opacity:1!important;
+}
+body.r434-inline-details-open #r434LayerList .r434LayerInner{
+  padding-bottom:9px!important;
+}
+body.r434-inline-details-open #r434LayerList .r434Chevron{
+  transform:rotate(180deg)!important;
+}
+body.r434-inline-details-open #r433DetailBtn{
+  min-width:96px!important;
+}
+@media(max-width:430px){
+  body.r434-inline-details-open #r170Now>#r434InlineDetails{
+    max-height:min(50dvh,460px)!important;
+  }
+}
+</style>
+
+<script id="r439-mix-transport-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R439_MIX_TRANSPORT__)return;
+window.__SUKUN_R439_MIX_TRANSPORT__=1;
+
+const PC=window.PlaybackController;
+if(!PC)return;
+
+let paused=false;
+let pausedProviders=[];
+
+function info(){
+  try{return typeof miniPlayingInfo==='function'?miniPlayingInfo():{active:false,tam:[]}}
+  catch(e){return{active:false,tam:[]}}
+}
+function state(id){
+  try{return PC.snapshot(id)?.state||'idle'}catch(e){return'idle'}
+}
+function playingProviders(){
+  const out=[];
+  for(const id of (PC.list?.()||[])){
+    if(id==='mix')continue;
+    try{if(state(id)==='playing')out.push(id)}catch(e){}
+  }
+  return out;
+}
+function refresh(){
+  try{PC.sync?.()}catch(e){}
+  try{window.SukunNowPlayingStore?.refresh?.()}catch(e){}
+  try{window.SukunDockDetails?.refresh?.()}catch(e){}
+  try{window.SukunAudioGuard?.refresh?.()}catch(e){}
+  setTimeout(syncButton,0);
+}
+
+/* Ana bar artık bütün aktif seslerin ortak transportudur. */
+function pauseAll(){
+  if(paused)return true;
+
+  pausedProviders=playingProviders();
+
+  /* Önce provider state'lerini pause'a al; kuyruk/watchdog da dursun. */
+  pausedProviders.forEach(id=>{
+    try{PC.pause(id)}catch(e){}
+  });
+
+  /* Sonra Web Audio + bağımsız audio + TTS katmanını birlikte dondur. */
+  try{
+    if(typeof MINI==='object'&&MINI&&!MINI.paused&&typeof miniPause==='function'){
+      miniPause();
+    }else{
+      try{ctx?.suspend?.()}catch(e){}
+      try{typeof ttsDurakla==='function'&&ttsDurakla()}catch(e){}
+      try{
+        SES?.ler?.forEach?.(a=>{
+          if(!a.paused){a._r439MixPause=1;a.pause()}
+        });
+      }catch(e){}
+    }
+  }catch(e){}
+
+  paused=true;
+  document.body?.classList.add('r439-mix-paused');
+  refresh();
+  return true;
+}
+
+function resumeAll(){
+  if(!paused)return true;
+
+  /* Önce ses altyapısı, sonra yalnız bizim pause ettiğimiz providerlar. */
+  try{
+    if(typeof MINI==='object'&&MINI?.paused&&typeof miniResume==='function'){
+      miniResume();
+    }else{
+      try{ctx?.resume?.()}catch(e){}
+      try{typeof ttsSurdur==='function'&&ttsSurdur()}catch(e){}
+      try{
+        SES?.ler?.forEach?.(a=>{
+          if(a._r439MixPause){
+            a._r439MixPause=0;
+            const p=a.play?.();
+            p?.catch?.(()=>{});
+          }
+        });
+      }catch(e){}
+    }
+  }catch(e){}
+
+  const ids=[...pausedProviders];
+  pausedProviders=[];
+  ids.forEach(id=>{
+    try{if(state(id)==='paused')PC.resume(id)}catch(e){}
+  });
+
+  paused=false;
+  document.body?.classList.remove('r439-mix-paused');
+  refresh();
+  return true;
+}
+
+function stopAll(){
+  paused=false;
+  pausedProviders=[];
+  document.body?.classList.remove('r439-mix-paused');
+  try{
+    if(typeof hardStopAll==='function')hardStopAll();
+    else PC.stopAll?.();
+  }catch(e){
+    try{PC.stopAll?.()}catch(_){}
+  }
+  setTimeout(refresh,80);
+  return true;
+}
+
+function toggle(){return paused?resumeAll():pauseAll()}
+function active(){return !!info().active}
+
+/* r170 tek dock: pause ve stop bütün miks katmanlarını yönetir.
+   Capture aşaması eski r431 onclick'inden önce çalışır. */
+document.addEventListener('click',e=>{
+  const play=e.target.closest?.('#r170Play');
+  if(play&&active()){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    toggle();
+    return;
+  }
+  const stop=e.target.closest?.('#r170Stop');
+  if(stop&&active()){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    stopAll();
+  }
+},true);
+
+function syncButton(){
+  const play=document.getElementById('r170Play');
+  const stop=document.getElementById('r170Stop');
+
+  if(play&&active()){
+    if(paused){
+      play.textContent='▶';
+      play.setAttribute('aria-label','Tüm sesleri sürdür');
+      play.title='Tüm sesleri sürdür';
+    }else{
+      play.textContent='Ⅱ';
+      play.setAttribute('aria-label','Tüm sesleri duraklat');
+      play.title='Tüm sesleri duraklat';
+    }
+  }
+  if(stop){
+    stop.setAttribute('aria-label','Tümünü durdur');
+    stop.title='Tümünü durdur';
+  }
+}
+
+['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
+  .forEach(ev=>window.addEventListener(ev,()=>setTimeout(syncButton,30),{passive:true}));
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')setTimeout(syncButton,60);
+});
+document.addEventListener('click',()=>setTimeout(syncButton,0),true);
+
+/* Kulaklık / kilit ekranı medya tuşları da aynı aggregate transportu kullansın. */
+try{
+  if('mediaSession' in navigator){
+    navigator.mediaSession.setActionHandler('pause',()=>pauseAll());
+    navigator.mediaSession.setActionHandler('play',()=>paused?resumeAll():PC.play());
+    navigator.mediaSession.setActionHandler('stop',()=>stopAll());
+  }
+}catch(e){}
+
+window.SukunMixTransport={
+  version:'r439',
+  pause:pauseAll,
+  resume:resumeAll,
+  toggle,
+  stopAll,
+  isPaused:()=>paused,
+  capturedProviders:()=>[...pausedProviders]
+};
+
+setTimeout(syncButton,120);
 })();
 </script>
 
