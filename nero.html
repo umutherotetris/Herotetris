@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r459">
+<meta name="sukun-build" content="r461">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r459">
+<link rel="manifest" href="./manifest.webmanifest?v=r461">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -7468,6 +7468,345 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
 .r350MemoryRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;padding-top:7px;border-top:1px solid var(--line);font-size:9px;color:var(--dim)}
 .r350MemoryRow span{flex:1}.r350MemoryRow button{font-size:9px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text)}
 </style>
+
+<style id="r460-tefekkur-polish">
+/* ═════════ r460 — Tefekkür sayacı son yerleşim cilası ═════════ */
+body.sukun-tefekkur-mode .zCtl>.zCounterRow{
+  display:grid!important;
+  grid-template-columns:minmax(82px,.80fr) minmax(0,220px) minmax(82px,.80fr)!important;
+  align-items:center!important;
+  justify-content:center!important;
+  column-gap:clamp(16px,4.2vw,28px)!important;
+  row-gap:0!important;
+  padding-inline:clamp(6px,2.2vw,14px)!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
+  width:min(100%,220px)!important;
+  max-width:220px!important;
+  min-width:0!important;
+  margin-inline:auto!important;
+  transform:translateX(-1px)!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
+  width:min(100%,88px)!important;
+  min-width:80px!important;
+  max-width:88px!important;
+  min-height:104px!important;
+  padding:14px 10px!important;
+  justify-self:center!important;
+  position:relative!important;
+  z-index:2!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:first-child{
+  transform:translateX(-1px)!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
+  transform:translateX(5px)!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide small{
+  font-size:10px!important;
+  letter-spacing:.13em!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide b{
+  font-size:28px!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide em{
+  font-size:9px!important;
+}
+
+/* Alt control island daha dengeli dursun */
+body.sukun-tefekkur-mode #r442StepRail{
+  width:min(92%,360px)!important;
+  margin:0 auto!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack{
+  width:min(100%,230px)!important;
+  margin-inline:auto!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+  width:100%!important;
+  margin-inline:auto!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#cntSub{
+  width:max-content!important;
+  max-width:100%!important;
+  margin:2px auto 0!important;
+  padding:8px 14px!important;
+  border-radius:999px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015))!important;
+}
+
+/* Tefekkürden Çık daha belirgin ama hâlâ zarif */
+body.sukun-tefekkur-mode #r444TefExit{
+  width:min(86%,320px)!important;
+  min-width:0!important;
+  height:32px!important;
+  min-height:32px!important;
+  margin:0 auto!important;
+  padding:0 14px!important;
+  border-radius:999px!important;
+  color:#ece9ff!important;
+  letter-spacing:.14em!important;
+  background:
+    linear-gradient(90deg,rgba(170,92,255,.13),rgba(79,126,255,.10))!important;
+  border:1px solid color-mix(in srgb,#b07cff 44%,#58adff 31%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 0 0 1px rgba(190,164,255,.08),
+    0 0 0 1px rgba(160,110,255,.10),
+    0 0 14px rgba(106,81,255,.16),
+    0 0 24px rgba(53,118,255,.10)!important;
+  opacity:1!important;
+}
+body.sukun-tefekkur-mode #r444TefExit::before{
+  width:18px!important;
+  height:18px!important;
+  font-size:12px!important;
+  border-color:color-mix(in srgb,#d5b4ff 40%,var(--line))!important;
+  box-shadow:0 0 10px rgba(164,112,255,.18)!important;
+}
+body.sukun-tefekkur-mode #r444TefExit:active{
+  transform:translateY(1px) scale(.992)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 10px rgba(106,81,255,.12)!important;
+}
+
+/* Dar ekranda taşma koruması */
+@media (max-width:390px){
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow{
+    grid-template-columns:minmax(76px,.82fr) minmax(0,208px) minmax(76px,.82fr)!important;
+    column-gap:12px!important;
+    padding-inline:4px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
+    width:min(100%,208px)!important;
+    max-width:208px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
+    max-width:82px!important;
+    min-width:76px!important;
+    min-height:98px!important;
+    padding-inline:8px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
+    transform:translateX(7px)!important;
+  }
+}
+@media (max-width:360px){
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow{
+    grid-template-columns:minmax(72px,.84fr) minmax(0,196px) minmax(72px,.84fr)!important;
+    column-gap:10px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCountVisual{
+    width:min(100%,196px)!important;
+    max-width:196px!important;
+  }
+  body.sukun-tefekkur-mode #r444TefExit{
+    width:min(90%,300px)!important;
+  }
+}
+</style>
+
+
+<style id="r461-sacred-slab">
+/* ═════════ r461 — Sacred Control Slab / Tefekkür premium compositing ═════════ */
+body.sukun-tefekkur-mode #r442StepRail{
+  position:relative!important;
+  width:min(92%,372px)!important;
+  margin:14px auto 0!important;
+  padding:18px 16px 16px!important;
+  border-radius:34px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 16%, rgba(160,110,255,.44))!important;
+  background:
+    radial-gradient(130% 110% at 50% 0%, rgba(200,165,255,.08), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.018)),
+    linear-gradient(135deg, rgba(76,123,255,.06), rgba(181,112,255,.05) 52%, rgba(255,210,120,.04));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(255,255,255,.025),
+    0 12px 32px rgba(0,0,0,.22),
+    0 0 0 1px rgba(176,124,255,.08),
+    0 0 20px rgba(110,90,255,.10)!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+body.sukun-tefekkur-mode #r442StepRail::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), transparent 34%),
+    radial-gradient(90% 48% at 50% -6%, rgba(253,219,129,.08), transparent 52%);
+  pointer-events:none;
+  z-index:0;
+}
+body.sukun-tefekkur-mode #r442StepRail::after{
+  content:"";
+  position:absolute; left:18px; right:18px; bottom:58px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(214,194,255,.18), transparent);
+  pointer-events:none;
+}
+body.sukun-tefekkur-mode #r442StepRail > *{
+  position:relative!important;
+  z-index:1!important;
+}
+
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+  border-radius:25px!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018)),
+    linear-gradient(135deg, rgba(40,60,120,.16), rgba(110,70,180,.12))!important;
+  border:1px solid color-mix(in srgb, rgba(255,255,255,.12) 42%, var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    0 8px 18px rgba(0,0,0,.16),
+    0 0 0 1px rgba(170,120,255,.07)!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn b,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn b{
+  font-size:24px!important;
+  letter-spacing:-.02em!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn span,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn span{
+  opacity:.82!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn:active,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn:active{
+  transform:translateY(1px) scale(.985)!important;
+}
+
+/* merkez stack slab içinde taş gibi otursun */
+body.sukun-tefekkur-mode #r444CenterStack{
+  width:min(100%,228px)!important;
+  margin-inline:auto!important;
+  gap:9px!important;
+  align-content:center!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+  min-height:62px!important;
+  height:62px!important;
+  border-radius:28px!important;
+  padding:0 16px!important;
+  border:1px solid color-mix(in srgb,#84a8ff 20%, #b783ff 40%)!important;
+  background:
+    radial-gradient(100% 180% at 50% 0%, rgba(248,219,116,.08), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.052), rgba(255,255,255,.018)),
+    linear-gradient(135deg, rgba(50,70,140,.22), rgba(122,79,218,.16))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 0 18px rgba(255,255,255,.02),
+    0 0 0 1px rgba(170,128,255,.08),
+    0 8px 24px rgba(0,0,0,.18),
+    0 0 18px rgba(119,98,255,.10)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn::before{
+  content:"";
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  width:32px; height:32px; border-radius:50%;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 0 12px rgba(255,219,120,.09);
+  pointer-events:none;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{
+  letter-spacing:.06em!important;
+  font-size:12px!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn small{
+  opacity:.7!important;
+  font-size:10px!important;
+}
+
+/* meta pill slab içinde daha tok */
+body.sukun-tefekkur-mode #r444CenterStack>#cntSub{
+  width:max-content!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  padding:9px 16px!important;
+  border-radius:999px!important;
+  color:#dbe5ff!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.018)),
+    linear-gradient(90deg, rgba(96,111,255,.08), rgba(169,113,255,.08))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 18%, rgba(163,114,255,.26))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 4px 12px rgba(0,0,0,.10)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#cntSub::before{
+  content:"";
+  display:inline-block;
+  width:7px; height:7px; margin:0 9px 1px 0;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #d8dcff 0 32%, #8ea6ff 50%, #6b56ef 100%);
+  box-shadow:0 0 10px rgba(123,108,255,.18);
+  vertical-align:middle;
+}
+
+/* tefekkürden çık slab alt satırda sakin ama net */
+body.sukun-tefekkur-mode #r444TefExit{
+  width:min(86%,304px)!important;
+  height:34px!important;
+  min-height:34px!important;
+  margin:2px auto 0!important;
+  background:
+    linear-gradient(90deg, rgba(172,95,255,.13), rgba(80,129,255,.11))!important;
+  border:1px solid color-mix(in srgb,#c08dff 48%,#6eb2ff 30%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 0 1px rgba(255,255,255,.03),
+    0 0 14px rgba(128,88,255,.18),
+    0 0 24px rgba(82,122,255,.10)!important;
+}
+body.sukun-tefekkur-mode #r444TefExit::before{
+  width:18px!important;
+  height:18px!important;
+  font-size:12px!important;
+}
+
+/* alt satır slab içinde nefes alan boşluk */
+body.sukun-tefekkur-mode #r444BottomMeta{
+  margin-top:4px!important;
+}
+
+/* küçük ekranlar */
+@media (max-width:390px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(94%,356px)!important;
+    padding:16px 13px 15px!important;
+    border-radius:30px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail::after{
+    left:14px; right:14px; bottom:56px;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{
+    width:min(100%,214px)!important;
+    gap:8px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+    min-height:58px!important;
+    height:58px!important;
+    border-radius:24px!important;
+  }
+  body.sukun-tefekkur-mode #r444TefExit{
+    width:min(89%,294px)!important;
+  }
+}
+@media (max-width:360px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(95%,344px)!important;
+    padding:14px 12px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{
+    width:min(100%,202px)!important;
+  }
+}
+</style>
+
 </head>
 <body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
@@ -8361,6 +8700,8 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r461","t":"22 Ağustos 2026","b":["Tefekkür sahnesindeki kontrol alanı tek premium sacred slab olarak yeniden işlendi; butonlar, meta ve çıkış hattı tek aile gibi davranıyor.","−1 / Durdur / +1 hattı ile merkez CTA daha heykelsi, daha dengeli ve daha premium cam yüzey estetiğiyle güçlendirildi.","Devir ve Tefekkürden Çık satırları slab içinde yeniden rafine edilerek daha sakin ve okunur hale getirildi."]},
+ {"v":"r460","t":"22 Ağustos 2026","b":["Tefekkür sayacında zikir çemberi bir miktar küçültülüp yeniden merkezlendi; Hedef/Kalan kartları ile çakışma giderildi.","Tefekkürden Çık düğmesi neonik premium çerçeve ve daha belirgin kontrast ile güçlendirildi.","Tefekkür sahnesinin son düzeni build/manifest/SW ile r460 olarak eşitlendi."]},
  {"v":"r459","t":"22 Ağustos 2026","b":["r458 denetiminde bulunan bozuk sürüm notları JSON'u düzeltildi; Neler Yenilendi geçmişi yeniden parse edilebilir durumda","Diagnostics build kilidi kaldırıldı; Runtime Probe ve Regression ekranı sürümü meta[name=sukun-build] üzerinden dinamik okuyor","Tam Yedek 2.0 payload ve dosya adı r459 ile eşitlendi","Tefekkürde 480 ms polling tamamen kaldırıldı; Control Island düzeltmesi yalnız gerçek childList değişimlerinde çalışan dar event-driven observer ile korunuyor","Sayarken çalışan sonsuz box-shadow r458Nefes animasyonu kaldırıldı; playing görünümü statik ve düşük paint maliyetli kaldı","DEVİR observer yaşam döngüsü temizlendi; Tefekkürden çıkınca #cntSub observer'ı disconnect oluyor ve aynı hedef için gereksiz yeniden kurulum yapılmıyor","HTML build, footer, manifest/SW query, yedek kimliği ve yeni Service Worker cache r459 ile eşitlendi"]},
  {"v":"r458","t":"22 Ağustos 2026","b":["Tefekkürde Saymaya Başla düğmesi artık kendi hücresinde: grid alanının adı \u201Cauto\u201D idi, bu bir CSS anahtar kelimesi olduğu için düğme hiçbir zaman o alana yerleşmiyor, ekranın soluna taşıp Çık düğmesinin üstüne biniyordu.","Sayaç ekranı yeniden düzenlendi: halka optik merkeze alındı, kontroller başparmağın eriştiği alta indi; altta boş duran alan değerlendirildi.","Saymaya Başla ekrandaki tek dolu öğe oldu; \u22121 ve +1 sessiz hayalet düğmelere indi. Sayarken düğme parlak levha yerine sakin bir dış hatta dönüşüyor.","Seans çalarken alttaki dock, Çık bağlantısını ve devir satırını kapatıyordu \u2014 artık üstünde kalıyorlar.","Künye satırındaki \u201CHedef\u201D tekrarı kaldırıldı; yan künyeler zaten gösteriyor, burada yalnız devir var.","Rakamlar hizalandı: KALAN 31 eski-stil serif figürüyle \u201C3I\u201D gibi okunuyordu.","Tefekkür rayını her 480 ms yeniden dizen bekçi idempotent yapıldı: boştaki DOM hareketi 8 saniyede 238\u2019den 0\u2019a indi."]},
 {"v":"r457","t":"22 Ağustos 2026","b":["Tefekkür içindeki Saymaya Başla düğmesi için zorunlu parent/DOM-order normalizasyonu eklendi","autoBtn her sync turunda center stack içine yeniden sabitleniyor; eski akış scriptleri taşısa bile geri alınıyor","Tefekkür modunda stray/eski autoBtn görünümü gizlendi ve ana CTA için daha güçlü CSS reset uygulandı","−1 / Saymaya Başla / +1 yükseklik ve hizası eşitlendi; ana CTA genişliği artırıldı","Kısa aralıklı ek guard ile tefekkür sırasında yerleşim kayması otomatik düzeltiliyor","Build, footer ve Service Worker r457 ile güncellendi"]},
@@ -22818,7 +23159,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r459',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r461',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
