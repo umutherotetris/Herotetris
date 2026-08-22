@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r455 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r456 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r455">
+<meta name="sukun-build" content="r456">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r455">
+<link rel="manifest" href="./manifest.webmanifest?v=r456">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -8336,7 +8336,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.8 — build 2026-08-22-r455</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.9 — build 2026-08-22-r456</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8360,6 +8360,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r456","t":"22 Ağustos 2026","b":["Tefekkür Control Island ekran görüntüsündeki yerleşim bozulması düzeltildi; Tefekkür · Çık artık −1 üzerine taşmıyor","Kök neden giderildi: r453 konsolidasyonunda Çık düğmesi yanlışlıkla centerStack içine alınmıştı; CSS grid exit alanı ise rayın doğrudan çocuğunu bekliyordu","Çık, −1, ana Saymaya Başla/Durdur, +1 ve Hedef/Devir artık deterministik tek DOM sırası ve doğrudan grid-area sahipliğiyle yerleşiyor","Ana Saymaya Başla/Durdur tekrar görünür ve tam merkezde; −1/+1 simetrik 56–62 px yan kontrol olarak dengelendi","Control Island yüksekliği küçültüldü; sayaç çemberine daha fazla dikey alan bırakıldı","Tefekkür ilk açılışta kullanıcının kalıcı dock tercihini değiştirmeden Mini dock ile başlıyor; çıkışta önceki seviye geri geliyor","Diagnostics derin Tefekkür testi artık bounding-box ile exit/−1/ana/+1 çakışmasını ve ana CTA merkezlemesini otomatik denetliyor","Footer, HTML build, Service Worker cache ve yedek adı r456 ile eşitlendi"]},
  {"v":"r455","t":"22 Ağustos 2026","b":["Diagnostics + regression test altyapısı kuruldu; geliştirici ekranı footer sürüm etiketine 5 dokunuş veya Ctrl+Shift+D ile açılıyor","Boot seviyesinde timer, interval, requestAnimationFrame, MutationObserver, AudioContext, lifecycle, runtime error ve long-task takibi eklendi","Tek geliştirici ekranında aktif session/provider, Audio State Machine durumu, aggregate pause state, AudioContext, timer, observer, DOM, heap ve state/lifecycle logları izleniyor","Güvenli regression suite build senkronizasyonu, duplicate ID, tek dock, Audio Session Registry kontratı, provider kapsamı, state geçişleri, Now Playing r300 kilidi, Zikir, Tefekkür, Tekke, lifecycle ve performans bütçelerini otomatik denetliyor","Derin regression suite yalnız ses motoru boşta iken mock Audio State Machine ve çoklu session pause/resume testlerini; Zikir stabilizasyonu, Tefekkür enter/exit, Tekke open/gate/close ve lifecycle pageshow smoke senaryolarını çalıştırıyor","Gerçek hidden → visible lifecycle döngüsü ayrıca izleniyor; kullanıcı uygulamayı arka plana alıp döndüğünde güvenli suite bunu otomatik doğrulayabiliyor","Diagnostics JSON raporu cihazdan dışa aktarılabiliyor; state ve hata kayıtları hata ayıklama için rapora ekleniyor","Footer, HTML build, Service Worker cache ve yedek adı r455 ile eşitlendi"]},
  {"v":"r454","t":"22 Ağustos 2026","b":["Audio State Machine ve Audio Session Registry merkezileştirildi; resmi yaşam döngüsü idle → playing → paused → stopping → ended oldu","Her audio session için tek kontrat eklendi: play / pause / resume / stop / volume / state; session(id) API’si bu kontratı doğrudan sunuyor","PlaybackController geriye uyumlu facade olarak korunuyor; gerçek session state ve komut otoritesi artık SukunAudioSessionRegistry","r439 aggregate transport WebAudio, TTS ve audio elementlerine ikinci kez doğrudan dokunmuyor; pauseAll / resumeAll / stopAll yalnız registry üzerinden ilerliyor","Aggregate pause yalnız aktif providerları yakalıyor; arka-plan miks katmanı varsa ayrıca mix session kaydediliyor ve resume yalnız yakalanan sessionları geri açıyor","stopAll aktif sessionları önce stopping durumuna geçiriyor, hard stop tamamlandığında ended yayınlıyor ve kısa settle sonrasında idle’a dönüyor","Mix session için merkezi master volume kontratı eklendi; volume desteklemeyen sessionlar false/null ile açıkça unsupported davranıyor","Now Playing Store şeması r300 olarak korundu; controller sürümünü artık r290’a geri yazmıyor ve ended boşta durumunda eski kartı canlı tutmuyor","MediaSession play/pause/stop komutları registry aggregate transportuna bağlandı","Footer, HTML build, Service Worker cache ve yedek adı r454 ile eşitlendi"]},
  {"v":"r453","t":"22 Ağustos 2026","b":["Core Cleanup / Consolidation I tamamlandı; r452 görsel tasarımı donduruldu ve değiştirilmedi","Tefekkür UI sahipliği r442/r443/r444/r445/r446/r450 dağınık runtime katmanlarından tek SukunUIRuntime denetleyicisine taşındı","Dock Mini/Geniş ve Focus Calm davranışı r447 ile ayrı koordinatör r448 yerine aynı merkezi runtime içinde birleştirildi","Gizli oynatıcı çağırma tercihi r441 observer tabanlı yapıdan event/wrapper tabanlı yapıya geçirildi; görünüm tercihi ve API uyumluluğu korundu","Eski global API adları compatibility shim olarak korunuyor; diğer modüllerin mevcut çağrıları kırılmıyor","Tefekkürden çıkışta Hedef/Devir özetinin normal sayaç DOM konumuna geri dönmesi merkezi olarak garanti edildi","Aynı state için tekrar tekrar çalışan document listener, retry timer ve observer katmanları kaldırıldı","Footer, HTML build, Service Worker cache ve yedek adı r453 ile eşitlendi"]},
@@ -22813,7 +22814,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r455',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r456',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33845,10 +33846,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r455',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r456',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r455-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r456-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -44835,6 +44836,8 @@ let detailsWrapped=false;
 let lastSig='';
 let lastAutoPlaying=false;
 let lastAppliedLevel='';
+let tefWasActive=false;
+let tefReturnLevel=null;
 
 try{
   const x=localStorage.getItem(LEVEL_KEY);
@@ -44984,7 +44987,7 @@ function ensureCenterStack(){
   if(!s){
     s=document.createElement('div');
     s.id='r444CenterStack';
-    s.setAttribute('aria-label','Tefekkür sayaç ana kontrolleri');
+    s.setAttribute('aria-label','Tefekkür sayaç ana eylemi');
   }
   let exit=$('r444TefExit');
   if(!exit){
@@ -45006,7 +45009,13 @@ function ensureCenterStack(){
   exit.textContent='Tefekkür · Çık';
   exit.setAttribute('aria-label','Tefekkür modundan çık');
   exit.title='Tefekkür modundan çık';
-  if(exit.parentNode!==s) s.prepend(exit);
+
+  /* r456: Çık düğmesi centerStack'in ÇOCUĞU değildi.
+     CSS grid'de "exit" alanı #r442StepRail'e aittir. Önceki DOM
+     yerleşimi exit'i stack içinde bıraktığı için implicit grid hücresi
+     oluşuyor; −1 üzerine taşıyor ve ana autoBtn'i görünmez/sıkışık hale
+     getiriyordu. Artık exit rayın doğrudan çocuğu. */
+  if(exit.parentNode!==r) r.appendChild(exit);
   if(s.parentNode!==r) r.appendChild(s);
   return s;
 }
@@ -45024,14 +45033,17 @@ function ensureMetaSlot(){
 }
 function mountTefControls(){
   const r=ensureRail(),s=ensureCenterStack(),slot=ensureMetaSlot();
+  const exit=$('r444TefExit');
   const undo=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn');
   const meta=document.querySelector('.cntSub');
-  if(!r||!s||!undo||!auto||!plus) return false;
+  if(!r||!s||!exit||!undo||!auto||!plus) return false;
 
-  if(undo.parentNode!==r) r.insertBefore(undo,r.firstChild);
-  if(s.parentNode!==r) r.appendChild(s);
+  /* r456: tek ve deterministik DOM sırası.
+     Grid-area görsel yerleşimi yapar; DOM sırası erişilebilirlik ve
+     eski CSS katmanlarının birbirini ezmemesi için sabit tutulur. */
   if(auto.parentNode!==s) s.appendChild(auto);
-  if(plus.parentNode!==r) r.appendChild(plus);
+  r.append(exit,undo,s,plus);
+  if(slot) r.appendChild(slot);
   if(slot&&meta&&meta.parentNode!==slot) slot.appendChild(meta);
 
   meta?.classList.remove('r449-focus-meta');
@@ -45065,6 +45077,7 @@ function restoreTefControls(){
   }
   meta?.classList.remove('r449-focus-meta','r450-focus-meta');
   $('r450FocusMetaSlot')?.remove();
+  $('r444TefExit')?.remove();
   $('r444CenterStack')?.remove();
 }
 
@@ -45268,10 +45281,26 @@ function syncAll(){
   wrapDetails();
   applyPeek();
   syncTefButton();
-  setDockLevel(dockLevel,false,false);
+
+  /* r456: Tefekkür'e ilk girişte büyük dock sayaç çemberini örtmesin.
+     Kullanıcının saklanan seviyesi değişmez; yalnız bu Tefekkür oturumu
+     mini ile başlar. Kullanıcı isterse handle ile tekrar genişletebilir.
+     Çıkışta önceki seviye geri gelir. */
+  const tefNow=inTef();
+  if(tefNow&&!tefWasActive){
+    tefReturnLevel=dockLevel;
+    if(!body.classList.contains('r434-inline-details-open'))
+      setDockLevel('mini',false,false);
+  }else if(!tefNow&&tefWasActive&&tefReturnLevel){
+    setDockLevel(tefReturnLevel,false,false);
+    tefReturnLevel=null;
+  }else{
+    setDockLevel(dockLevel,false,false);
+  }
+  tefWasActive=tefNow;
   forceExpandedForDetails();
 
-  if(inTef()){
+  if(tefNow){
     applyNoFlash();
     mountTefControls();
   }else{
@@ -46018,8 +46047,13 @@ async function tefekkurSmoke(){
   try{
     toggle();await sleep(180);
     const entered=document.body.classList.contains('sukun-tefekkur-mode');
-    const mounted=$('autoBtn')?.parentNode===$('r444CenterStack');
-    if(!entered||!mounted)throw new Error(`enter ${entered} · mounted ${mounted}`);
+    const mounted=$('autoBtn')?.parentNode===$('r444CenterStack')&&$('r444TefExit')?.parentNode===$('r442StepRail');
+    const rail=$('r442StepRail'),undo=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn'),exit=$('r444TefExit');
+    const rr=rail?.getBoundingClientRect(),ur=undo?.getBoundingClientRect(),ar0=auto?.getBoundingClientRect(),pr=plus?.getBoundingClientRect(),er=exit?.getBoundingClientRect();
+    const overlap=(a,b)=>!!(a&&b&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top);
+    const centered=!!(rr&&ar0&&Math.abs((ar0.left+ar0.width/2)-(rr.left+rr.width/2))<=6);
+    const geometry=!!(rr&&ur&&ar0&&pr&&er&&!overlap(er,ur)&&!overlap(er,ar0)&&!overlap(er,pr)&&!overlap(ur,ar0)&&!overlap(ar0,pr)&&centered&&ar0.width>120&&ar0.height>40);
+    if(!entered||!mounted||!geometry)throw new Error(`enter ${entered} · mounted ${mounted} · geometry ${geometry}`);
     if(typeof window.SUKUN_TEFEKKUR?.exit==='function')window.SUKUN_TEFEKKUR.exit();
     else toggle();
     await sleep(180);
@@ -46027,7 +46061,7 @@ async function tefekkurSmoke(){
     const actions=document.querySelector('.zCounterActions');
     const restored=actions&&['undoBtn','autoBtn','plusBtn'].every(id=>$(id)?.parentNode===actions);
     if(!exited||!restored)throw new Error(`exit ${exited} · restore ${!!restored}`);
-    return{status:'PASS',detail:'enter → Control Island mount → exit → sayaç restore'};
+    return{status:'PASS',detail:'enter → direct-grid Control Island → no-overlap geometry → exit → sayaç restore'};
   }finally{
     try{scrollTo({top:y,behavior:'instant'})}catch(e){try{scrollTo(0,y)}catch(_){}}
     if(!already&&document.body.classList.contains('sukun-tefekkur-mode')){
@@ -46204,6 +46238,270 @@ window.SukunDiagnostics={
 };
 })();
 </script>
+
+<style id="r456-tefekkur-control-island-repair">
+/* ═══════════════════════════════════════════════════════════════
+   r456 — TEFEKKÜR CONTROL ISLAND REPAIR
+   Screenshot regression:
+   - Tefekkür · Çık −1'in üstüne taşmıştı
+   - ana Saymaya Başla görünmüyor/sıkışıyordu
+   - island gereksiz yüksek kalıyordu
+   Sebep DOM/CSS grid ownership uyuşmazlığıydı.
+   ═══════════════════════════════════════════════════════════════ */
+
+body.sukun-tefekkur-mode #r442StepRail{
+  width:min(92vw,430px)!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0 auto 8px!important;
+  padding:8px 10px 9px!important;
+
+  display:grid!important;
+  grid-template-columns:62px minmax(158px,1fr) 62px!important;
+  grid-template-rows:26px 62px 30px!important;
+  grid-template-areas:
+    ". exit ."
+    "undo auto plus"
+    "meta meta meta"!important;
+
+  align-items:center!important;
+  justify-items:stretch!important;
+  column-gap:9px!important;
+  row-gap:6px!important;
+
+  border-radius:22px!important;
+  overflow:hidden!important;
+  contain:layout paint!important;
+}
+
+/* Çık artık RAYIN doğrudan çocuğu ve gerçek "exit" hücresinde. */
+body.sukun-tefekkur-mode #r442StepRail > #r444TefExit{
+  grid-area:exit!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:2!important;
+
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  width:min(100%,190px)!important;
+  min-width:0!important;
+  max-width:190px!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  margin:0 auto!important;
+  padding:0 12px!important;
+
+  border-radius:999px!important;
+  font:720 9px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.075em!important;
+  white-space:nowrap!important;
+  text-transform:uppercase!important;
+}
+
+/* Stack artık sadece ana CTA'yı taşır; implicit grid satırı üretmez. */
+body.sukun-tefekkur-mode #r442StepRail > #r444CenterStack{
+  grid-area:auto!important;
+  position:relative!important;
+  z-index:2!important;
+
+  width:100%!important;
+  min-width:0!important;
+  max-width:240px!important;
+  height:62px!important;
+  min-height:62px!important;
+  margin:0 auto!important;
+
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+  gap:0!important;
+  padding:0!important;
+}
+
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+
+  display:flex!important;
+  flex:1 1 auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:62px!important;
+  min-height:62px!important;
+  max-height:62px!important;
+  margin:0!important;
+  padding:0 14px!important;
+  border-radius:18px!important;
+
+  font:800 12.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.045em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
+  display:inline!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font:800 12.5px/1 "Figtree",system-ui,sans-serif!important;
+}
+
+/* Yan butonlar simetrik ve ana CTA ile aynı dikey eksende. */
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn{
+  grid-area:undo!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+  grid-area:plus!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:2!important;
+
+  width:62px!important;
+  min-width:62px!important;
+  max-width:62px!important;
+  height:62px!important;
+  min-height:62px!important;
+  max-height:62px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:18px!important;
+
+  display:grid!important;
+  place-items:center!important;
+  font-size:0!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn b,
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn b,
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn strong,
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn strong{
+  font:780 24px/1 "Figtree",system-ui,sans-serif!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn span:not(.val),
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn span:not(.val),
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn small,
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn small{
+  display:none!important;
+}
+
+/* Hedef/Devir aynı island'ın sakin alt bilgi satırı. */
+body.sukun-tefekkur-mode #r442StepRail > #r450FocusMetaSlot{
+  grid-area:meta!important;
+  position:relative!important;
+  z-index:2!important;
+  width:100%!important;
+  height:30px!important;
+  min-height:30px!important;
+  margin:0!important;
+  padding:2px 0 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot::before{
+  top:0!important;
+  left:12%!important;
+  right:12%!important;
+  opacity:.45!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot .cntSub{
+  max-width:82%!important;
+  min-height:27px!important;
+  margin:0!important;
+  padding:6px 13px!important;
+  font-size:10px!important;
+  line-height:1!important;
+}
+
+/* Island artık daha kısa: çember yukarı kazanır. */
+body.sukun-tefekkur-mode .zCtl{
+  gap:clamp(3px,.42dvh,5px)!important;
+}
+body.sukun-tefekkur-mode .zCtl > .zCounterRow{
+  margin-top:0!important;
+}
+
+/* Tefekkür ilk giriş mini dock ile başladığı için bu rezerv gerçek yüksekliğe yakın. */
+body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden):not(.r434-inline-details-open) #tab-zkr{
+  padding-bottom:calc(116px + env(safe-area-inset-bottom))!important;
+}
+
+/* Tefekkür mini dock: çemberi mümkün olduğunca az örtsün. */
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now{
+  min-height:96px!important;
+  max-height:108px!important;
+  padding:12px 9px 8px!important;
+}
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowPhase,
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowNext,
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r430Layers,
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowMeta,
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r433DockOps,
+body.sukun-tefekkur-mode.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r434InlineDetails{
+  display:none!important;
+}
+
+/* Dar telefonlarda tek satır ana CTA bozulmasın. */
+@media(max-width:390px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(94vw,370px)!important;
+    grid-template-columns:56px minmax(150px,1fr) 56px!important;
+    grid-template-rows:25px 58px 29px!important;
+    column-gap:7px!important;
+    row-gap:5px!important;
+    padding:7px 8px 8px!important;
+    border-radius:20px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+    width:56px!important;min-width:56px!important;max-width:56px!important;
+    height:58px!important;min-height:58px!important;max-height:58px!important;
+    border-radius:17px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail > #r444CenterStack{
+    height:58px!important;min-height:58px!important;max-width:220px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+    height:58px!important;min-height:58px!important;max-height:58px!important;
+    padding-inline:10px!important;
+    font-size:11.5px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
+    font-size:11.5px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail > #r444TefExit{
+    height:25px!important;min-height:25px!important;max-height:25px!important;
+    font-size:8.2px!important;
+  }
+}
+@media(max-width:340px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    grid-template-columns:52px minmax(136px,1fr) 52px!important;
+    column-gap:6px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+    width:52px!important;min-width:52px!important;max-width:52px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn,
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
+    font-size:10.8px!important;
+  }
+}
+</style>
 
 </body>
 </html>
