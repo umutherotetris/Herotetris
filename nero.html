@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r461">
+<meta name="sukun-build" content="r463">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r461">
+<link rel="manifest" href="./manifest.webmanifest?v=r463">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -7807,6 +7807,374 @@ body.sukun-tefekkur-mode #r444BottomMeta{
 }
 </style>
 
+
+<style id="r462-tef-align-fix">
+/* ═════════ r462 — Tefekkür hizalama / merkezleme düzeltmesi ═════════ */
+body.sukun-tefekkur-mode .zCounterRow{
+  --tf-ring-safe:min(60vw, 248px)!important;
+  grid-template-columns:72px minmax(0,var(--tf-ring-safe)) 72px!important;
+  justify-content:center!important;
+  align-items:center!important;
+  column-gap:12px!important;
+  row-gap:10px!important;
+}
+body.sukun-tefekkur-mode .zCountVisual{
+  width:var(--tf-ring-safe)!important;
+  height:var(--tf-ring-safe)!important;
+  margin-inline:auto!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
+  width:72px!important;
+  min-width:72px!important;
+  max-width:72px!important;
+  align-self:center!important;
+  justify-self:center!important;
+  transform:none!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide:last-child{
+  transform:none!important;
+}
+body.sukun-tefekkur-mode #r442StepRail{
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr) 72px!important;
+  grid-template-areas:
+    "undo center plus"
+    "meta meta meta"
+    "exit exit exit"!important;
+  align-items:center!important;
+  justify-items:center!important;
+  column-gap:14px!important;
+  row-gap:14px!important;
+  width:min(92%,374px)!important;
+  max-width:374px!important;
+  margin:18px auto 0!important;
+  padding:16px 16px 14px!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn{
+  grid-area:undo!important;
+  justify-self:start!important;
+  align-self:center!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+  grid-area:plus!important;
+  justify-self:end!important;
+  align-self:center!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack{
+  grid-area:center!important;
+  width:100%!important;
+  max-width:324px!important;
+  margin:0 auto!important;
+  align-self:center!important;
+  justify-self:center!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+  width:100%!important;
+  min-height:72px!important;
+  height:72px!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  margin:0 auto!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn::before{
+  left:14px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
+  display:block!important;
+  width:100%!important;
+  text-align:center!important;
+  padding-inline:40px 16px!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #cntSub{
+  display:none!important;
+}
+body.sukun-tefekkur-mode #r458Devir{
+  grid-area:meta!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-self:center!important;
+  margin:0 auto!important;
+  min-width:148px!important;
+  padding:10px 18px!important;
+  border-radius:999px!important;
+  text-align:center!important;
+}
+body.sukun-tefekkur-mode #r444TefExit{
+  grid-area:exit!important;
+  justify-self:center!important;
+  align-self:center!important;
+  width:min(100%,254px)!important;
+  margin:0 auto!important;
+  border-width:1.4px!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 0 0 1px rgba(185,126,255,.18),
+    0 0 20px rgba(136,110,255,.16)!important;
+}
+body.sukun-tefekkur-mode #r444TefExit b,
+body.sukun-tefekkur-mode #r444TefExit span{
+  letter-spacing:.08em!important;
+}
+body.sukun-tefekkur-mode #r442StepRail .r444-divider,
+body.sukun-tefekkur-mode #r442StepRail hr{
+  display:none!important;
+}
+
+@media (max-width:390px){
+  body.sukun-tefekkur-mode .zCounterRow{
+    --tf-ring-safe:min(61vw, 236px)!important;
+    grid-template-columns:64px minmax(0,var(--tf-ring-safe)) 64px!important;
+    column-gap:10px!important;
+  }
+  body.sukun-tefekkur-mode .zCtl>.zCounterRow>.zCounterSide{
+    width:64px!important; min-width:64px!important; max-width:64px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(94%,356px)!important;
+    max-width:356px!important;
+    grid-template-columns:64px minmax(0,1fr) 64px!important;
+    column-gap:10px!important;
+    padding:14px 14px 12px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{max-width:292px!important}
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+    min-height:68px!important;height:68px!important;
+  }
+  body.sukun-tefekkur-mode #r458Devir{
+    min-width:136px!important;
+    padding:9px 16px!important;
+  }
+}
+@media (max-height:760px){
+  body.sukun-tefekkur-mode .zCounterRow{
+    --tf-ring-safe:min(54vw, 214px)!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail{
+    margin-top:14px!important;
+  }
+}
+</style>
+
+
+<style id="r463-tef-slab-dual">
+/* ═════════ r463 — Tefekkür slab: çift katmanlı kutsal panel ═════════ */
+body.sukun-tefekkur-mode #r442StepRail{
+  position:relative!important;
+  width:min(92%,388px)!important;
+  max-width:388px!important;
+  margin:22px auto 0!important;
+  padding:20px 18px 18px!important;
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr) 72px!important;
+  grid-template-areas:
+    "meta meta meta"
+    "exit exit exit"
+    "undo center plus"!important;
+  column-gap:14px!important;
+  row-gap:14px!important;
+  align-items:center!important;
+  justify-items:center!important;
+  border-radius:34px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 16%, rgba(160,110,255,.35))!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
+    linear-gradient(135deg, rgba(56,82,140,.06), rgba(142,106,220,.06), rgba(200,175,88,.04))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 0 0 1px rgba(255,255,255,.018),
+    0 12px 40px rgba(0,0,0,.20),
+    0 0 0 1px rgba(170,120,255,.06)!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+body.sukun-tefekkur-mode #r442StepRail::before,
+body.sukun-tefekkur-mode #r442StepRail::after{
+  content:"";
+  position:absolute;
+  left:12px; right:12px;
+  border-radius:28px;
+  pointer-events:none;
+  z-index:0;
+}
+body.sukun-tefekkur-mode #r442StepRail::before{
+  top:12px;
+  height:100px;
+  background:
+    radial-gradient(120% 110% at 50% 0%, rgba(183,140,255,.10), transparent 50%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
+    linear-gradient(135deg, rgba(255,255,255,.018), rgba(255,255,255,.008));
+  border:1px solid rgba(186,139,255,.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 0 0 0 1px rgba(255,255,255,.02),
+    0 10px 28px rgba(0,0,0,.12),
+    0 0 20px rgba(154,120,255,.08);
+}
+body.sukun-tefekkur-mode #r442StepRail::after{
+  bottom:12px;
+  height:102px;
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(255,215,140,.08), transparent 50%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.018)),
+    linear-gradient(135deg, rgba(255,255,255,.014), rgba(255,255,255,.006));
+  border:1px solid rgba(255,215,150,.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(255,255,255,.018),
+    0 12px 28px rgba(0,0,0,.14);
+}
+body.sukun-tefekkur-mode #r442StepRail > *{
+  position:relative!important;
+  z-index:1!important;
+}
+body.sukun-tefekkur-mode #r458Devir{
+  grid-area:meta!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:160px!important;
+  margin:4px auto 0!important;
+  padding:11px 18px!important;
+  border-radius:999px!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)),
+    linear-gradient(135deg, rgba(88,98,255,.06), rgba(182,120,255,.05))!important;
+  border:1px solid rgba(190,154,255,.24)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 0 1px rgba(255,255,255,.02),
+    0 0 16px rgba(144,120,255,.08)!important;
+  letter-spacing:.08em!important;
+}
+body.sukun-tefekkur-mode #r444TefExit{
+  grid-area:exit!important;
+  justify-self:center!important;
+  width:min(100%,264px)!important;
+  min-height:44px!important;
+  margin:0 auto!important;
+  border-radius:999px!important;
+  border:1.2px solid color-mix(in srgb, var(--gold) 24%, rgba(183,124,255,.52))!important;
+  background:
+    linear-gradient(90deg, rgba(166,72,72,.10), rgba(91,110,255,.08) 54%, rgba(151,93,255,.10)),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 0 1px rgba(170,118,255,.09),
+    0 0 24px rgba(160,110,255,.12),
+    0 0 10px rgba(255,216,140,.08)!important;
+}
+body.sukun-tefekkur-mode #r444TefExit b,
+body.sukun-tefekkur-mode #r444TefExit span{
+  text-shadow:0 0 14px rgba(186,156,255,.16)!important;
+  letter-spacing:.10em!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn{
+  grid-area:undo!important;
+  justify-self:start!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+  grid-area:plus!important;
+  justify-self:end!important;
+}
+body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
+body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+  width:72px!important; min-width:72px!important; max-width:72px!important;
+  height:72px!important; min-height:72px!important; max-height:72px!important;
+  border-radius:22px!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+    linear-gradient(135deg, rgba(85,102,220,.05), rgba(255,208,125,.04))!important;
+  border:1px solid rgba(190,156,255,.18)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 8px 24px rgba(0,0,0,.14),
+    0 0 14px rgba(154,120,255,.06)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack{
+  grid-area:center!important;
+  width:100%!important;
+  max-width:236px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0 auto!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+  width:100%!important;
+  min-height:74px!important;
+  height:74px!important;
+  margin:0 auto!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(110% 120% at 50% 0%, rgba(255,220,120,.09), transparent 52%),
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.02)),
+    linear-gradient(135deg, rgba(74,95,208,.06), rgba(189,142,255,.07), rgba(255,225,142,.04))!important;
+  border:1px solid rgba(196,164,255,.26)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    0 0 0 1px rgba(255,255,255,.02),
+    0 12px 28px rgba(0,0,0,.16),
+    0 0 26px rgba(161,125,255,.10)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn::before{
+  width:34px!important;height:34px!important;left:14px!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 0 0 1px rgba(255,255,255,.03),
+    0 0 16px rgba(255,219,120,.09)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #autoBtn b{
+  font-size:13px!important;
+  letter-spacing:.08em!important;
+  text-shadow:0 0 14px rgba(170,140,255,.14)!important;
+  padding-inline:42px 16px!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack > #cntSub{
+  display:none!important;
+}
+body.sukun-tefekkur-mode #r442StepRail .r444-divider,
+body.sukun-tefekkur-mode #r442StepRail hr{
+  display:none!important;
+}
+@media (max-width:390px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(94%,364px)!important;
+    grid-template-columns:64px minmax(0,1fr) 64px!important;
+    padding:18px 14px 16px!important;
+    row-gap:12px!important; column-gap:10px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail::before{height:96px!important}
+  body.sukun-tefekkur-mode #r442StepRail::after{height:96px!important}
+  body.sukun-tefekkur-mode #r444CenterStack{max-width:220px!important}
+  body.sukun-tefekkur-mode #r442StepRail > #undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail > #plusBtn{
+    width:64px!important; min-width:64px!important; max-width:64px!important;
+    height:64px!important; min-height:64px!important; max-height:64px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack > #autoBtn{
+    min-height:68px!important; height:68px!important;
+  }
+  body.sukun-tefekkur-mode #r458Devir{
+    min-width:146px!important;
+    padding:10px 16px!important;
+  }
+}
+@media (max-height:760px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    margin-top:16px!important;
+  }
+}
+</style>
+
 </head>
 <body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
@@ -8700,7 +9068,7 @@ body.sukun-tefekkur-mode #r444BottomMeta{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
- {"v":"r461","t":"22 Ağustos 2026","b":["Tefekkür sahnesindeki kontrol alanı tek premium sacred slab olarak yeniden işlendi; butonlar, meta ve çıkış hattı tek aile gibi davranıyor.","−1 / Durdur / +1 hattı ile merkez CTA daha heykelsi, daha dengeli ve daha premium cam yüzey estetiğiyle güçlendirildi.","Devir ve Tefekkürden Çık satırları slab içinde yeniden rafine edilerek daha sakin ve okunur hale getirildi."]},
+ {"v":"r463","t":"22 Ağustos 2026","b":["Tefekkür sahnesindeki kontrol alanı tek premium sacred slab olarak yeniden işlendi; butonlar, meta ve çıkış hattı tek aile gibi davranıyor.","−1 / Durdur / +1 hattı ile merkez CTA daha heykelsi, daha dengeli ve daha premium cam yüzey estetiğiyle güçlendirildi.","Devir ve Tefekkürden Çık satırları slab içinde yeniden rafine edilerek daha sakin ve okunur hale getirildi."]},
  {"v":"r460","t":"22 Ağustos 2026","b":["Tefekkür sayacında zikir çemberi bir miktar küçültülüp yeniden merkezlendi; Hedef/Kalan kartları ile çakışma giderildi.","Tefekkürden Çık düğmesi neonik premium çerçeve ve daha belirgin kontrast ile güçlendirildi.","Tefekkür sahnesinin son düzeni build/manifest/SW ile r460 olarak eşitlendi."]},
  {"v":"r459","t":"22 Ağustos 2026","b":["r458 denetiminde bulunan bozuk sürüm notları JSON'u düzeltildi; Neler Yenilendi geçmişi yeniden parse edilebilir durumda","Diagnostics build kilidi kaldırıldı; Runtime Probe ve Regression ekranı sürümü meta[name=sukun-build] üzerinden dinamik okuyor","Tam Yedek 2.0 payload ve dosya adı r459 ile eşitlendi","Tefekkürde 480 ms polling tamamen kaldırıldı; Control Island düzeltmesi yalnız gerçek childList değişimlerinde çalışan dar event-driven observer ile korunuyor","Sayarken çalışan sonsuz box-shadow r458Nefes animasyonu kaldırıldı; playing görünümü statik ve düşük paint maliyetli kaldı","DEVİR observer yaşam döngüsü temizlendi; Tefekkürden çıkınca #cntSub observer'ı disconnect oluyor ve aynı hedef için gereksiz yeniden kurulum yapılmıyor","HTML build, footer, manifest/SW query, yedek kimliği ve yeni Service Worker cache r459 ile eşitlendi"]},
  {"v":"r458","t":"22 Ağustos 2026","b":["Tefekkürde Saymaya Başla düğmesi artık kendi hücresinde: grid alanının adı \u201Cauto\u201D idi, bu bir CSS anahtar kelimesi olduğu için düğme hiçbir zaman o alana yerleşmiyor, ekranın soluna taşıp Çık düğmesinin üstüne biniyordu.","Sayaç ekranı yeniden düzenlendi: halka optik merkeze alındı, kontroller başparmağın eriştiği alta indi; altta boş duran alan değerlendirildi.","Saymaya Başla ekrandaki tek dolu öğe oldu; \u22121 ve +1 sessiz hayalet düğmelere indi. Sayarken düğme parlak levha yerine sakin bir dış hatta dönüşüyor.","Seans çalarken alttaki dock, Çık bağlantısını ve devir satırını kapatıyordu \u2014 artık üstünde kalıyorlar.","Künye satırındaki \u201CHedef\u201D tekrarı kaldırıldı; yan künyeler zaten gösteriyor, burada yalnız devir var.","Rakamlar hizalandı: KALAN 31 eski-stil serif figürüyle \u201C3I\u201D gibi okunuyordu.","Tefekkür rayını her 480 ms yeniden dizen bekçi idempotent yapıldı: boştaki DOM hareketi 8 saniyede 238\u2019den 0\u2019a indi."]},
@@ -23159,7 +23527,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r461',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r463',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}

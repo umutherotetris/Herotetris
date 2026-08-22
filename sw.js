@@ -1,8 +1,8 @@
-/* SÜKÛN r461 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r463 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r461';
-const CACHE = 'sukun-r461-20260822c';
+const SURUM = 'r463';
+const CACHE = 'sukun-r463-20260822c';
 
 const KABUK = [
   './nero.html',
@@ -13,7 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
-  'r461 r458 audit fixes: release JSON, dinamik Diagnostics build, yedek sürümü, event-driven Tefekkür layout guard, statik playing görünümü ve observer lifecycle temizliği.',
+  'r463 r458 audit fixes: release JSON, dinamik Diagnostics build, yedek sürümü, event-driven Tefekkür layout guard, statik playing görünümü ve observer lifecycle temizliği.',
   'r458 Claude düzenlemesi: Tefekkür Control Island grid alanı cta olarak düzeltildi; halka/başparmak yerleşimi, Devir künyesi ve dock rezervi yeniden düzenlendi.',
   'r457 Tefekkür Saymaya Başla hizası için zorunlu normalizasyon ve stray autoBtn gizleme düzeltmesi.',
   'r456 Tefekkür Control Island repair: exit/−1 çakışması giderildi, ana CTA merkezlendi, island kompaktlaştırıldı ve Tefekkür mini dock başlangıcı eklendi.',
