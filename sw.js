@@ -1,8 +1,8 @@
-/* SÜKÛN r465 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r469 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r465';
-const CACHE = 'sukun-r465-20260822a';
+const SURUM = 'r469';
+const CACHE = 'sukun-r469-20260822a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,10 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r469 Tefekkür sesli zikir düzeltmesi: kayıt varsa kayıt, yoksa TTS; sayaç okuma bitmeden ilerlemiyor.',
+  'r468 Tefekkür alanı iki panelli grid/flex iskeletine taşındı; üst görsel, alt kontrol yapısı ayrıştırıldı.',
+  'r467 Tefekkür çemberi, yan istatistikler ve alt kontrol slabı mücevher hissiyle yeniden dengelendi.',
+  'r466 Tefekkür üst başlık tipografisi inceltildi; sayaç alanına daha fazla dikey yer açıldı.',
   'r465 Tefekkür slab kompaktlaştırma: ana/çık butonları küçültüldü, focus-calm görünürlüğü dengelendi ve sabit akış barı için güvenli alt rezerv büyütüldü.',
   'r464 kilit ekranı toparlama + final Tefekkür layout: auto-zikir resume burst önlendi, tek audio recovery kapısı ve tek son CSS otoritesi eklendi.',
   'r463 r458 audit fixes: release JSON, dinamik Diagnostics build, yedek sürümü, event-driven Tefekkür layout guard, statik playing görünümü ve observer lifecycle temizliği.',
