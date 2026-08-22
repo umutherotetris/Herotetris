@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r470 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r472 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r470">
+<meta name="sukun-build" content="r472">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r470">
+<link rel="manifest" href="./manifest.webmanifest?v=r472">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5103,257 +5103,7 @@ body[data-focus="1"] .zCtl{
 .r350MemoryRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;padding-top:7px;border-top:1px solid var(--line);font-size:9px;color:var(--dim)}
 .r350MemoryRow span{flex:1}.r350MemoryRow button{font-size:9px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text)}
 </style>
-<style id="r470-tefekkur-canonical-style">
-:root{
-  --sukun-dock-safe:12px;
-  --tf-ring:224px;
-  --tf-top-h:96px;
-  --tf-side-w:70px;
-  --tf-gap:10px;
-}
 
-/* ---- Canonical full-screen Tefekkür surface ---- */
-body.sukun-tefekkur-mode{
-  position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;
-  min-height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important;
-  margin:0!important;padding:0!important;background:#020403!important;touch-action:manipulation;
-}
-body.sukun-tefekkur-mode header,
-body.sukun-tefekkur-mode footer,
-body.sukun-tefekkur-mode .tabs,
-body.sukun-tefekkur-mode #prDashboard,
-body.sukun-tefekkur-mode #vakitBox,
-body.sukun-tefekkur-mode .todayCard,
-body.sukun-tefekkur-mode .rutRow,
-body.sukun-tefekkur-mode #miniBar,
-body.sukun-tefekkur-mode .sukun-bottom-nav,
-body.sukun-tefekkur-mode #r407TefekkurExitSlot,
-body.sukun-tefekkur-mode #r408TefekkurDock,
-body.sukun-tefekkur-mode #r442StepRail,
-body.sukun-tefekkur-mode .sukun-focus-btn{
-  display:none!important;
-}
-body.sukun-tefekkur-mode main,
-body.sukun-tefekkur-mode .wrap{
-  width:100%!important;max-width:none!important;height:100dvh!important;min-height:0!important;
-  margin:0!important;padding:0!important;overflow:hidden!important;
-}
-body.sukun-tefekkur-mode #tab-zkr{
-  position:fixed!important;inset:0!important;z-index:9100!important;width:100%!important;height:100dvh!important;
-  min-height:100dvh!important;box-sizing:border-box!important;display:grid!important;
-  grid-template-rows:var(--tf-top-h) minmax(0,1fr)!important;
-  gap:clamp(5px,.8dvh,8px)!important;
-  padding:max(7px,env(safe-area-inset-top)) clamp(8px,2.4vw,14px)
-          calc(var(--sukun-dock-safe) + env(safe-area-inset-bottom))!important;
-  overflow:hidden!important;opacity:1!important;filter:none!important;pointer-events:auto!important;
-  background:
-    radial-gradient(70% 42% at 50% 0%,color-mix(in srgb,var(--gold) 6%,transparent),transparent 70%),
-    radial-gradient(80% 54% at 50% 100%,rgba(103,78,158,.07),transparent 70%),
-    linear-gradient(180deg,#06100d 0%,#020504 55%,#010202 100%)!important;
-}
-body.sukun-tefekkur-mode #tab-zkr::before{
-  content:"";position:absolute;inset:max(5px,env(safe-area-inset-top)) 6px calc(var(--sukun-dock-safe) - 4px);
-  border:1px solid color-mix(in srgb,var(--gold) 9%,transparent);border-radius:24px;pointer-events:none;opacity:.68;
-}
-body.sukun-tefekkur-mode #tab-zkr>*{display:none!important}
-body.sukun-tefekkur-mode #tab-zkr>#zStage,
-body.sukun-tefekkur-mode #tab-zkr>.zCtl{display:flex!important;position:relative!important;z-index:2!important}
-
-/* ---- Top zikir identity ---- */
-body.sukun-tefekkur-mode #zStage{
-  grid-row:1!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
-  width:100%!important;margin:0!important;padding:4px 44px 2px!important;border:0!important;background:none!important;
-  box-shadow:none!important;overflow:hidden!important;
-}
-body.sukun-tefekkur-mode #zStage>*{display:none!important}
-body.sukun-tefekkur-mode #zStage>.zAr,
-body.sukun-tefekkur-mode #zStage>.zTr,
-body.sukun-tefekkur-mode #zStage>#zModBadge{display:block!important}
-body.sukun-tefekkur-mode #zStage .zAr{
-  margin:0!important;padding:0!important;max-width:100%!important;text-align:center!important;
-  color:color-mix(in srgb,var(--goldh) 90%,white 10%)!important;
-  font-size:clamp(24px,6.5vw,38px)!important;line-height:1.14!important;font-weight:500!important;
-  text-shadow:none!important;filter:none!important;
-}
-body.sukun-tefekkur-mode #zStage .zTr{
-  margin:2px auto 0!important;max-width:94%!important;text-align:center!important;
-  color:color-mix(in srgb,var(--goldh) 68%,var(--ivory))!important;
-  font-size:clamp(11px,3vw,15px)!important;line-height:1.25!important;font-weight:620!important;letter-spacing:.025em!important;
-}
-body.sukun-tefekkur-mode #zStage #zModBadge{margin:3px auto 0!important;padding:3px 7px!important;font-size:7.5px!important;opacity:.58!important}
-
-/* ---- Counter shell: only canonical root is visible ---- */
-body.sukun-tefekkur-mode .zCtl{
-  grid-row:2!important;align-self:stretch!important;width:100%!important;height:100%!important;min-height:0!important;
-  margin:0!important;padding:9px 9px 10px!important;border:0!important;border-radius:22px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,.004)),rgba(5,10,11,.48)!important;
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 9%,transparent)!important;overflow:hidden!important;
-}
-body.sukun-tefekkur-mode .zCtl>*{display:none!important}
-body.sukun-tefekkur-mode .zCtl>#tfRefinedLayout{display:grid!important}
-body.sukun-tefekkur-mode #tfRefinedLayout{
-  width:100%!important;height:100%!important;min-height:0!important;
-  grid-template-rows:minmax(0,1fr) auto!important;gap:8px!important;align-items:stretch!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel{
-  display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;gap:4px!important;min-height:0!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCountTitle{
-  display:flex!important;align-items:center!important;justify-content:center!important;min-height:20px!important;margin:0!important;
-  color:color-mix(in srgb,var(--goldh) 75%,var(--ivory))!important;font-size:clamp(11px,2.7vw,13px)!important;
-  letter-spacing:.19em!important;line-height:1!important;opacity:.78!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterRow{
-  display:grid!important;grid-template-columns:var(--tf-side-w) var(--tf-ring) var(--tf-side-w)!important;
-  gap:var(--tf-gap)!important;align-items:center!important;justify-content:center!important;justify-items:center!important;
-  min-height:0!important;margin:0!important;overflow:visible!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{
-  width:var(--tf-side-w)!important;min-width:var(--tf-side-w)!important;max-width:var(--tf-side-w)!important;
-  min-height:88px!important;padding:10px 5px!important;border-radius:16px!important;display:flex!important;
-  flex-direction:column!important;align-items:center!important;justify-content:center!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(0,0,0,.12))!important;
-  border:1px solid color-mix(in srgb,var(--gold) 11%,rgba(255,255,255,.05))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;transform:none!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide small{font-size:7.5px!important;letter-spacing:.13em!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide b{margin:5px 0 2px!important;font-size:clamp(19px,5.4vw,27px)!important;line-height:1!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide em{font-size:7px!important;line-height:1.1!important;text-align:center!important;opacity:.78!important}
-body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{
-  width:var(--tf-ring)!important;height:var(--tf-ring)!important;min-width:var(--tf-ring)!important;min-height:var(--tf-ring)!important;
-  max-width:var(--tf-ring)!important;max-height:var(--tf-ring)!important;margin:0 auto!important;transform:none!important;
-  background:transparent!important;box-shadow:none!important;filter:none!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .progArc,
-body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .progArc svg{width:100%!important;height:100%!important}
-body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .cntBig{font-size:clamp(42px,13vw,66px)!important}
-body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .cntPct{font-size:clamp(8px,2.4vw,10px)!important}
-
-/* ---- Two-layer control slab ---- */
-body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{
-  display:grid!important;grid-template-rows:auto auto!important;gap:6px!important;width:min(94vw,356px)!important;margin:0 auto!important;
-  padding:9px 10px 8px!important;border-radius:22px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 15%,rgba(166,120,228,.26))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
-    radial-gradient(120% 120% at 50% 0%,rgba(156,120,223,.09),transparent 58%),rgba(7,10,16,.58)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 10px 24px rgba(0,0,0,.20)!important;
-  backdrop-filter:blur(10px)!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .tfPrimaryControls{display:block!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions{
-  display:grid!important;grid-template-columns:48px minmax(0,1fr) 48px!important;gap:7px!important;width:100%!important;margin:0!important;align-items:center!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions button{
-  margin:0!important;border-radius:14px!important;border:1px solid rgba(190,154,255,.14)!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;animation:none!important;transform:none!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn{
-  width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn b{font-size:17px!important;line-height:1!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn span{display:none!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain{
-  width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 9px!important;
-  color:var(--goldh)!important;border-color:rgba(190,154,255,.21)!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain b{font-size:clamp(9px,2.65vw,10.8px)!important;letter-spacing:.045em!important;white-space:nowrap!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain small{display:none!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain.playing{color:#d8dcff!important;background:linear-gradient(180deg,rgba(157,133,255,.10),rgba(113,91,186,.04))!important;animation:none!important}
-
-body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow{
-  display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;gap:6px!important;align-items:center!important;
-  padding-top:6px!important;border-top:1px solid rgba(190,158,255,.075)!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap{display:flex!important;justify-content:flex-end!important;min-width:0!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap #cntSub{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;width:max-content!important;max-width:100%!important;
-  margin:0!important;padding:5px 9px!important;border-radius:999px!important;border:1px solid rgba(184,149,255,.10)!important;
-  background:rgba(255,255,255,.012)!important;color:color-mix(in srgb,var(--goldh) 58%,var(--dim))!important;
-  font:650 7.7px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.075em!important;white-space:nowrap!important;
-}
-body.sukun-tefekkur-mode #r470VoiceSource{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
-  min-width:80px!important;max-width:120px!important;padding:5px 8px!important;border-radius:999px!important;
-  border:1px solid rgba(123,166,220,.14)!important;background:rgba(80,118,168,.055)!important;
-  color:#c7d7e8!important;font:700 7.4px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.07em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
-}
-body.sukun-tefekkur-mode #r470VoiceSource[data-kind="recording"]{border-color:rgba(216,182,103,.24)!important;color:#ecd995!important;background:rgba(206,171,91,.055)!important}
-body.sukun-tefekkur-mode #r470VoiceSource[data-kind^="tts"]{border-color:rgba(118,163,224,.22)!important;color:#c8dcf4!important}
-body.sukun-tefekkur-mode #tfRefinedLayout .tfExitWrap{display:flex!important;justify-content:flex-start!important}
-body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;width:min(100%,174px)!important;
-  height:27px!important;min-height:27px!important;max-height:27px!important;margin:0!important;padding:0 11px!important;border-radius:999px!important;
-  border:1px solid rgba(169,119,255,.36)!important;background:linear-gradient(90deg,rgba(164,80,255,.07),rgba(79,124,255,.05))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 0 11px rgba(127,95,255,.065)!important;
-  color:#d9d7ef!important;font:700 7.8px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.09em!important;
-}
-
-/* Never allow autonomous Tefekkür flashing/pulsing. */
-body.sukun-tefekkur-mode #breathHalo,
-body.sukun-tefekkur-mode .tefMotionBg,
-body.sukun-tefekkur-mode .tefCinema,
-body.sukun-tefekkur-mode .tefFilmGrain,
-body.sukun-tefekkur-mode .tefDust,
-body.sukun-tefekkur-mode .tefCineRing,
-body.sukun-tefekkur-mode .tefNurField,
-body.sukun-tefekkur-mode .tefNurHalo,
-body.sukun-tefekkur-mode .tefIncense,
-body.sukun-tefekkur-mode .tefRosette,
-body.sukun-tefekkur-mode .tefMihrapBeam,
-body.sukun-tefekkur-mode .r208Aura,
-body.sukun-tefekkur-mode .r208Pulse,
-body.sukun-tefekkur-mode .r208Rim,
-body.sukun-tefekkur-mode .r208Dust{display:none!important;animation:none!important}
-body.sukun-tefekkur-mode #zStage,
-body.sukun-tefekkur-mode .zCtl,
-body.sukun-tefekkur-mode #zStage .zAr,
-body.sukun-tefekkur-mode #zStage .zTr{animation:none!important}
-body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout>.tfControlPanel{opacity:.34!important;transform:none!important;pointer-events:none!important;filter:none!important}
-body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout .zCounterSide{opacity:.46!important;transform:none!important}
-
-/* Dock is measured, not guessed. */
-body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) #r170Now{z-index:9400!important}
-
-/* Effective performance profile */
-body[data-perf-effective="sakin"].sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel,
-body[data-perf-effective="pil"].sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{backdrop-filter:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important}
-body[data-perf-effective="pil"].sukun-tefekkur-mode #tab-zkr::before{opacity:.42!important}
-body[data-perf-effective="pil"].sukun-tefekkur-mode #zCountVisual .zGlow{display:none!important}
-
-/* Session summary */
-#r470SessionSummary[hidden]{display:none!important}
-#r470SessionSummary{position:fixed;inset:0;z-index:2147483300;display:grid;place-items:end center;padding:18px 14px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(transparent 45%,rgba(0,0,0,.42));pointer-events:none}
-#r470SessionSummary .r470SummaryCard{pointer-events:auto;width:min(100%,420px);padding:16px;border-radius:22px;border:1px solid color-mix(in srgb,var(--gold) 20%,rgba(255,255,255,.08));background:rgba(7,11,14,.94);box-shadow:0 18px 48px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.05)}
-#r470SessionSummary small{display:block;color:var(--gold);font:700 9px/1 "Figtree";letter-spacing:.14em}
-#r470SessionSummary b{display:block;margin-top:8px;font:700 18px/1.2 var(--f-display,serif);color:var(--ivory)}
-#r470SessionSummary p{margin:8px 0 12px;color:var(--mut);font-size:11px;line-height:1.55}
-#r470SessionSummary button{width:100%;min-height:38px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--goldh);font:700 11px "Figtree"}
-
-@media(max-width:390px){
-  :root{--tf-side-w:58px;--tf-gap:8px}
-  body.sukun-tefekkur-mode #zStage{padding-inline:38px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{min-height:82px!important;padding-inline:3px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{width:min(94vw,338px)!important;padding:8px 9px 7px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions{grid-template-columns:44px minmax(0,1fr) 44px!important;gap:6px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn{width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain{height:44px!important;min-height:44px!important;max-height:44px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow{gap:4px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap #cntSub{font-size:7.1px!important;padding-inline:7px!important}
-  body.sukun-tefekkur-mode #r470VoiceSource{min-width:70px!important;max-width:96px!important;font-size:6.9px!important;padding-inline:6px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{width:min(100%,154px)!important;font-size:7.2px!important;padding-inline:8px!important}
-}
-@media(max-height:720px){
-  body.sukun-tefekkur-mode #tab-zkr{gap:4px!important}
-  body.sukun-tefekkur-mode #zStage .zAr{font-size:clamp(22px,6vw,32px)!important}
-  body.sukun-tefekkur-mode #zStage .zTr{font-size:clamp(10px,2.7vw,13px)!important}
-  body.sukun-tefekkur-mode .zCtl{padding-top:6px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout{gap:5px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{padding-top:7px!important;padding-bottom:6px!important}
-}
-@media(prefers-reduced-motion:reduce){body.sukun-tefekkur-mode *{scroll-behavior:auto!important}}
-</style>
 </head>
 <body data-perf="dengeli">
 <canvas id="bgEbru" aria-hidden="true"></canvas>
@@ -6223,7 +5973,7 @@ body[data-perf-effective="pil"].sukun-tefekkur-mode #zCountVisual .zGlow{display
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.20 — build 2026-08-22-r470</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.22 — build 2026-08-23-r472</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6247,6 +5997,8 @@ body[data-perf-effective="pil"].sukun-tefekkur-mode #zCountVisual .zGlow{display
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r472","t":"23 Ağustos 2026","b":["Akıllı Seans zikirlerinde ses kaynağı önceliği görünür ve işlevsel hale getirildi: kendi kayıt varsa ilk tercih, yoksa erkek TTS","Berhetiyye 28 İsim gibi seanslarda kayıt çözümleyici doğrudan IndexedDB anahtarlarını ve güvenli eski anahtar eşleşmelerini deniyor","Her zikir adımının Ayarlar bölümüne Otomatik, Kendi kayıt, Erkek TTS, Kadın TTS ve Varsayılan TTS seçenekleri eklendi","Cihazda gerçek erkek TTS sesi varsa seçiliyor; yoksa sessiz kalmak yerine daha pes TTS tınısına güvenli fallback yapılıyor","Normal ekrandaki ve universal player içindeki anlaşılmaz nokta Tefekkür kontrolleri küçük ✦ Tefekkür pill tasarımına çevrildi; hover/focus açıklaması ve erişilebilir etiket eklendi"]},
+ {"v":"r471","t":"23 Ağustos 2026","b":["Tefekkürden Çık kontrolü canonical DOM içinde gerçekten oluşturulup Zikir Sayaç başlığı ile halka arasındaki merkez satıra taşındı","Üst Arapça zikir alanının ölçülen yüksekliği ve satır yüksekliği büyütüldü; yazının üst kenara ezilmesi engellendi","Normal ekrandaki Tefekkür giriş kontrolü 38 px zarif dairesel butona indirildi; eski collision yöneticisinin top+bottom kaynaklı dev dikey pill hatası kapatıldı","Canonical Tefekkür stylesheet dosyanın en sonuna taşındı; eski selector katmanları artık final geometriyi ezemiyor","Hedef/Kalan, halka, CTA, ses kaynağı ve dock-safe r470 altyapısı korunarak yeni çıkış satırı yapısal olarak eklendi"]},
  {"v":"r470","t":"22 Ağustos 2026","b":["Tefekkür CSS borcu temizlendi; r197–r208 ve r403/r407/r408/r413/r426/r442–r450/r456–r468 arasındaki artık kullanılmayan Tefekkür stil katmanları kaldırılıp tek canonical stylesheet’e indirildi","Tefekkür kontrol sahipliği legacy r442/r444 rayından çıkarıldı; tek #tfRefinedLayout içinde üst sayaç paneli ve alt kontrol paneli kalıcı grid/flex iskeletine bağlandı","Smart Tefekkür Layout Engine visualViewport ve gerçek oynatıcı yüksekliğini ölçerek çember çapını, üst alanı ve dock safe-area rezervini event-driven biçimde hesaplıyor; sabit 210/248px tahminleri kaldırıldı","Audio lifecycle recovery visibility/pageshow/focus/AudioContext state/devicechange olaylarında coalesce edilerek güçlendirildi; TTS resume, registry sync ve otomatik zikir uyanışı tek kurtarma kapısından geçiyor","Tefekkür ses kaynağı rozeti eklendi: kendi kayıt / Arapça TTS / TTS kaynağı canlı gösteriliyor ve kayıt her zaman TTS’den önce çözülüyor","Seans hafızası zikir, sayaç, devir, hedef, tempo, form, Tefekkür durumu ve aktif playback metadata’sını saklıyor; autoplay kısıtında otomatik akış ilk kullanıcı dokunuşunda güvenli şekilde devam ediyor","Mevcut Tam/Dengeli/Pil görsel profilleri adaptif etkin profile bağlandı; Tefekkürde Sakin, arka planda Pil ve tekrarlayan long-task baskısında geçici Pil modu uygulanıyor","Haptik ritim yumuşatıldı: her zikir kısa dokunsal vuruş, devir tamamında farklı kısa imza kullanıyor","Tefekkürden çıkışta süre, zikir, devir ve kullanılan ses kaynağını gösteren seans özeti ve son 50 seansı saklayan özet geçmişi eklendi","Diagnostics 2.0 canonical layout sahipliği, gerçek dock overlap, voice resolver, session memory ve adaptif performans kontrolleriyle genişletildi; derin Tefekkür smoke testi yeni iskelete uyarlandı"]},
  {"v":"r469","t":"22 Ağustos 2026","b":["Tefekkür modunda sesli zikir kontratı düzeltildi; normal ayardan bağımsız olarak Tefekkürde her sayım ses kaynağı resolverından geçiyor","Seçili zikir için kendi kayıt varsa IndexedDB kaydı TTS’den önce kullanılıyor; kayıt yoksa Arapça/Türkçe TTS’ye güvenli fallback yapılıyor","Kayıt anahtarları Tefekkür girişinde yeniden yükleniyor; IndexedDB hazır olma yarışı için düşük maliyetli probe eklendi","TTS veya kayıt sürerken sayaç yeni turu bindirmiyor; 1 sayım = 1 okuma davranışı Tefekkür modunda da korunuyor","Android/PWA tam ekran ve kilit dönüşünde paused kalan speechSynthesis girişte ve okumadan önce resume ediliyor"]},
  {"v":"r468","t":"22 Ağustos 2026","b":["Tefekkür alanı yeni bir grid/flex iskeletine oturtuldu; üst görsel panel ve alt kontrol paneli ayrıştırıldı","Sayaç sahnesindeki Hedef – Çember – Kalan dengesi yapısal olarak temizlendi; meta ve çıkış satırı tek kontrol panelinde toplandı","Observer yaşam döngüsü kontrollü kuruldu; iskelet yalnız bir kez inşa edilip sonra gözlemci kendini kapatıyor"]},
@@ -20785,7 +20537,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r470',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r472',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -31854,10 +31606,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r470',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r472',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r470-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r472-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -42364,7 +42116,7 @@ window.SukunDiagnostics={
 </script>
 
 
-<script id="r470-canonical-runtime">
+<script id="r471-canonical-runtime">
 (()=>{
 'use strict';
 window.__SUKUN_CANONICAL_TEF__=1;
@@ -42384,9 +42136,30 @@ function ensureLayout(){
     const status=document.createElement('div');status.className='tfStatusRow';
     const meta=document.createElement('div');meta.className='tfMetaWrap';
     const voice=document.createElement('div');voice.id='r470VoiceSource';voice.dataset.kind='idle';voice.textContent='SES · HAZIR';voice.title='Tefekkür zikir ses kaynağı';
-    const exit=document.createElement('div');exit.className='tfExitWrap';
-    status.append(meta,voice,exit);controls.append(primary,status);root.append(visual,controls);
+    const exitWrap=document.createElement('div');exitWrap.className='tfExitWrap';
+    const exitBtn=document.createElement('button');
+    exitBtn.id='tefExitBtn';exitBtn.className='tefExitBtn';exitBtn.type='button';
+    exitBtn.textContent='× Tefekkürden Çık';
+    exitBtn.setAttribute('aria-label','Tefekkür modundan çık');
+    exitWrap.append(exitBtn);
+    visual.append(exitWrap);
+    status.append(meta,voice);
+    controls.append(primary,status);
+    root.append(visual,controls);
     ctl.insertBefore(root,ctl.firstChild);
+  }else{
+    let exitWrap=root.querySelector('.tfExitWrap');
+    if(!exitWrap){exitWrap=document.createElement('div');exitWrap.className='tfExitWrap'}
+    let exitBtn=$('tefExitBtn');
+    if(!exitBtn){
+      exitBtn=document.createElement('button');
+      exitBtn.id='tefExitBtn';exitBtn.className='tefExitBtn';exitBtn.type='button';
+      exitBtn.textContent='× Tefekkürden Çık';
+      exitBtn.setAttribute('aria-label','Tefekkür modundan çık');
+    }
+    if(exitBtn.parentNode!==exitWrap)exitWrap.append(exitBtn);
+    const visual=root.querySelector('.tfVisualPanel');
+    if(visual&&exitWrap.parentNode!==visual)visual.append(exitWrap);
   }
   return root;
 }
@@ -42398,8 +42171,13 @@ function mount(){
   const row=ctl.querySelector('.zCounterRow')||document.querySelector('.zCounterRow');
   let actions=document.querySelector('.zCounterActions');
   const u=$('undoBtn'),a=$('autoBtn'),p=$('plusBtn'),meta=$('cntSub'),exit=$('tefExitBtn');
-  if(title&&title.parentNode!==visual)visual.appendChild(title);
-  if(row&&row.parentNode!==visual)visual.appendChild(row);
+  if(title&&row&&exitWrap){
+    visual.replaceChildren(title,exitWrap,row);
+  }else{
+    if(title&&title.parentNode!==visual)visual.appendChild(title);
+    if(exitWrap&&exitWrap.parentNode!==visual)visual.appendChild(exitWrap);
+    if(row&&row.parentNode!==visual)visual.appendChild(row);
+  }
   if(actions&&actions.parentNode!==primary)primary.appendChild(actions);
   if(actions&&u&&u.parentNode!==actions)actions.appendChild(u);
   if(actions&&a&&a.parentNode!==actions)actions.appendChild(a);
@@ -42407,8 +42185,8 @@ function mount(){
   if(actions&&u&&a&&p)actions.replaceChildren(u,a,p);
   if(meta&&meta.parentNode!==metaWrap)metaWrap.appendChild(meta);
   if(exit&&exit.parentNode!==exitWrap)exitWrap.appendChild(exit);
-  if(exit&&!exit.dataset.r470ExitBound){
-    exit.dataset.r470ExitBound='1';
+  if(exit&&!exit.dataset.r471ExitBound){
+    exit.dataset.r471ExitBound='1';
     exit.addEventListener('click',e=>{
       e.preventDefault();e.stopPropagation();
       try{window.SUKUN_TEFEKKUR?.exit?.()}catch(err){document.querySelector('.sukun-focus-btn')?.click()}
@@ -42416,14 +42194,14 @@ function mount(){
   }
   $('r442StepRail')?.replaceChildren();
   $('r444CenterStack')?.remove();$('r444TefExit')?.remove();$('r450FocusMetaSlot')?.remove();
-  ctl.dataset.tfCanonical='r470';
-  return !!(visual&&primary&&metaWrap&&exitWrap);
+  ctl.dataset.tfCanonical='r471';
+  return !!(visual&&primary&&metaWrap&&exitWrap&&exit);
 }
 
 /* ── 2. Voice source resolver / badge ────────────────────── */
 let voiceState={kind:'idle',label:'HAZIR',detail:'',at:Date.now()};
 const Voice=window.SukunVoiceSource={
-  version:'r470',
+  version:'r471',
   set(kind,label,detail=''){
     voiceState={kind:String(kind||'idle'),label:String(label||'HAZIR'),detail:String(detail||''),at:Date.now()};
     const el=$('r470VoiceSource');if(el){el.dataset.kind=voiceState.kind;el.textContent='SES · '+voiceState.label;el.title=voiceState.detail||voiceState.label}
@@ -42448,7 +42226,7 @@ function measure(){
   const vv=window.visualViewport;const vw=vv?.width||innerWidth,vh=vv?.height||innerHeight;
   const dockReserve=dockHeight();
   const short=vh<730,veryShort=vh<650;
-  const topH=clamp(Math.round(vh*(veryShort?.105:short?.12:.135)),68,108);
+  const topH=clamp(Math.round(vh*(veryShort?.145:short?.155:.17)),96,146);
   const controlH=short?112:120;
   const verticalBudget=Math.max(160,vh-topH-dockReserve-controlH-56);
   let ring=Math.min(vw*.55,verticalBudget,252);
@@ -42487,7 +42265,32 @@ function bindResize(){
     if(r&&r!==rootNode){if(rootNode)try{ro.unobserve(rootNode)}catch(e){};rootNode=r;ro.observe(r)}
   }
 }
-window.SukunLayoutEngine={version:'r470',measure,schedule,snapshot:()=>({...layout})};
+window.SukunLayoutEngine={version:'r471',measure,schedule,snapshot:()=>({...layout})};
+
+/* r471: eski floating collision manager, Tefekkür giriş kontrolünü yukarı
+   tırmandırıp top+bottom birlikte bırakarak dev bir dikey pill üretebiliyordu.
+   Canonical kontrol sabit 38px; collision sadece yeniden ölçüm isteyebilir. */
+try{
+  if(window.SukunFloatingCollision&&!window.SukunFloatingCollision.__r471Compact){
+    window.SukunFloatingCollision.__r471Compact=1;
+    const oldSchedule=window.SukunFloatingCollision.schedule?.bind(window.SukunFloatingCollision);
+    window.SukunFloatingCollision.sync=function(){
+      const b=document.querySelector('.sukun-focus-btn');
+      if(!b||document.body.classList.contains('sukun-tefekkur-mode'))return;
+      b.style.setProperty('top','auto','important');
+      b.style.setProperty('height','38px','important');
+      b.style.setProperty('min-height','38px','important');
+      b.style.setProperty('max-height','38px','important');
+      b.style.setProperty('width','38px','important');
+      b.style.setProperty('min-width','38px','important');
+      b.style.setProperty('max-width','38px','important');
+    };
+    window.SukunFloatingCollision.schedule=function(){
+      clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync(),40);
+    };
+    oldSchedule?.();
+  }
+}catch(e){}
 
 /* ── 4. Adaptive performance: requested profile stays user-owned;
           effective profile may calm itself under pressure. ───── */
@@ -42503,7 +42306,7 @@ function applyPerf(){
   return eff;
 }
 try{new PerformanceObserver(list=>{for(const x of list.getEntries()){if(x.duration>=180){perf.pressure++;if(perf.pressure>=3){perf.until=Date.now()+30000;perf.pressure=0;applyPerf()}}}}).observe({type:'longtask',buffered:false})}catch(e){}
-window.SukunAdaptivePerformance={version:'r470',apply:applyPerf,snapshot:()=>({...perf})};
+window.SukunAdaptivePerformance={version:'r471',apply:applyPerf,snapshot:()=>({...perf})};
 
 /* ── 5. Session memory ───────────────────────────────────── */
 const MEMKEY='sukun.session.r470';let saveTO=0,restoring=false,pendingResume=null;
@@ -42594,5 +42397,804 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.SukunCanonicalTefekkur={version:'r470',mount,ensureLayout};
 })();
 </script>
+
+<style id="r471-tefekkur-canonical-style">
+:root{
+  --sukun-dock-safe:12px;
+  --tf-ring:224px;
+  --tf-top-h:96px;
+  --tf-side-w:70px;
+  --tf-gap:10px;
+}
+
+/* ---- Canonical full-screen Tefekkür surface ---- */
+body.sukun-tefekkur-mode{
+  position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;
+  min-height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important;
+  margin:0!important;padding:0!important;background:#020403!important;touch-action:manipulation;
+}
+body.sukun-tefekkur-mode header,
+body.sukun-tefekkur-mode footer,
+body.sukun-tefekkur-mode .tabs,
+body.sukun-tefekkur-mode #prDashboard,
+body.sukun-tefekkur-mode #vakitBox,
+body.sukun-tefekkur-mode .todayCard,
+body.sukun-tefekkur-mode .rutRow,
+body.sukun-tefekkur-mode #miniBar,
+body.sukun-tefekkur-mode .sukun-bottom-nav,
+body.sukun-tefekkur-mode #r407TefekkurExitSlot,
+body.sukun-tefekkur-mode #r408TefekkurDock,
+body.sukun-tefekkur-mode #r442StepRail,
+body.sukun-tefekkur-mode .sukun-focus-btn{
+  display:none!important;
+}
+body.sukun-tefekkur-mode main,
+body.sukun-tefekkur-mode .wrap{
+  width:100%!important;max-width:none!important;height:100dvh!important;min-height:0!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+}
+body.sukun-tefekkur-mode #tab-zkr{
+  position:fixed!important;inset:0!important;z-index:9100!important;width:100%!important;height:100dvh!important;
+  min-height:100dvh!important;box-sizing:border-box!important;display:grid!important;
+  grid-template-rows:var(--tf-top-h) minmax(0,1fr)!important;
+  gap:clamp(5px,.8dvh,8px)!important;
+  padding:max(7px,env(safe-area-inset-top)) clamp(8px,2.4vw,14px)
+          calc(var(--sukun-dock-safe) + env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;opacity:1!important;filter:none!important;pointer-events:auto!important;
+  background:
+    radial-gradient(70% 42% at 50% 0%,color-mix(in srgb,var(--gold) 6%,transparent),transparent 70%),
+    radial-gradient(80% 54% at 50% 100%,rgba(103,78,158,.07),transparent 70%),
+    linear-gradient(180deg,#06100d 0%,#020504 55%,#010202 100%)!important;
+}
+body.sukun-tefekkur-mode #tab-zkr::before{
+  content:"";position:absolute;inset:max(5px,env(safe-area-inset-top)) 6px calc(var(--sukun-dock-safe) - 4px);
+  border:1px solid color-mix(in srgb,var(--gold) 9%,transparent);border-radius:24px;pointer-events:none;opacity:.68;
+}
+body.sukun-tefekkur-mode #tab-zkr>*{display:none!important}
+body.sukun-tefekkur-mode #tab-zkr>#zStage,
+body.sukun-tefekkur-mode #tab-zkr>.zCtl{display:flex!important;position:relative!important;z-index:2!important}
+
+/* ---- Top zikir identity ---- */
+body.sukun-tefekkur-mode #zStage{
+  grid-row:1!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;margin:0!important;padding:14px 44px 8px!important;border:0!important;background:none!important;
+  box-shadow:none!important;overflow:visible!important;
+}
+body.sukun-tefekkur-mode #zStage>*{display:none!important}
+body.sukun-tefekkur-mode #zStage>.zAr,
+body.sukun-tefekkur-mode #zStage>.zTr,
+body.sukun-tefekkur-mode #zStage>#zModBadge{display:block!important}
+body.sukun-tefekkur-mode #zStage .zAr{
+  margin:0!important;padding:0!important;max-width:100%!important;text-align:center!important;
+  color:color-mix(in srgb,var(--goldh) 90%,white 10%)!important;
+  font-size:clamp(24px,6.5vw,38px)!important;line-height:1.30!important;font-weight:500!important;
+  text-shadow:none!important;filter:none!important;
+}
+body.sukun-tefekkur-mode #zStage .zTr{
+  margin:6px auto 0!important;max-width:94%!important;text-align:center!important;
+  color:color-mix(in srgb,var(--goldh) 68%,var(--ivory))!important;
+  font-size:clamp(11px,3vw,15px)!important;line-height:1.25!important;font-weight:620!important;letter-spacing:.025em!important;
+}
+body.sukun-tefekkur-mode #zStage #zModBadge{margin:3px auto 0!important;padding:3px 7px!important;font-size:7.5px!important;opacity:.58!important}
+
+/* ---- Counter shell: only canonical root is visible ---- */
+body.sukun-tefekkur-mode .zCtl{
+  grid-row:2!important;align-self:stretch!important;width:100%!important;height:100%!important;min-height:0!important;
+  margin:0!important;padding:9px 9px 10px!important;border:0!important;border-radius:22px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,.004)),rgba(5,10,11,.48)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 9%,transparent)!important;overflow:hidden!important;
+}
+body.sukun-tefekkur-mode .zCtl>*{display:none!important}
+body.sukun-tefekkur-mode .zCtl>#tfRefinedLayout{display:grid!important}
+body.sukun-tefekkur-mode #tfRefinedLayout{
+  width:100%!important;height:100%!important;min-height:0!important;
+  grid-template-rows:minmax(0,1fr) auto!important;gap:8px!important;align-items:stretch!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel{
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  gap:6px!important;
+  min-height:0!important;
+  align-items:center!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCountTitle{
+  display:flex!important;align-items:center!important;justify-content:center!important;min-height:20px!important;margin:0!important;
+  color:color-mix(in srgb,var(--goldh) 75%,var(--ivory))!important;font-size:clamp(11px,2.7vw,13px)!important;
+  letter-spacing:.19em!important;line-height:1!important;opacity:.78!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterRow{
+  display:grid!important;grid-template-columns:var(--tf-side-w) var(--tf-ring) var(--tf-side-w)!important;
+  gap:var(--tf-gap)!important;align-items:center!important;justify-content:center!important;justify-items:center!important;
+  min-height:0!important;margin:0!important;overflow:visible!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{
+  width:var(--tf-side-w)!important;min-width:var(--tf-side-w)!important;max-width:var(--tf-side-w)!important;
+  min-height:88px!important;padding:10px 5px!important;border-radius:16px!important;display:flex!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(0,0,0,.12))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 11%,rgba(255,255,255,.05))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;transform:none!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide small{font-size:7.5px!important;letter-spacing:.13em!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide b{margin:5px 0 2px!important;font-size:clamp(19px,5.4vw,27px)!important;line-height:1!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide em{font-size:7px!important;line-height:1.1!important;text-align:center!important;opacity:.78!important}
+body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{
+  width:var(--tf-ring)!important;height:var(--tf-ring)!important;min-width:var(--tf-ring)!important;min-height:var(--tf-ring)!important;
+  max-width:var(--tf-ring)!important;max-height:var(--tf-ring)!important;margin:0 auto!important;transform:none!important;
+  background:transparent!important;box-shadow:none!important;filter:none!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .progArc,
+body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .progArc svg{width:100%!important;height:100%!important}
+body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .cntBig{font-size:clamp(42px,13vw,66px)!important}
+body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual .cntPct{font-size:clamp(8px,2.4vw,10px)!important}
+
+/* ---- Two-layer control slab ---- */
+body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{
+  display:grid!important;grid-template-rows:auto auto!important;gap:6px!important;width:min(94vw,356px)!important;margin:0 auto!important;
+  padding:9px 10px 8px!important;border-radius:22px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 15%,rgba(166,120,228,.26))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
+    radial-gradient(120% 120% at 50% 0%,rgba(156,120,223,.09),transparent 58%),rgba(7,10,16,.58)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 10px 24px rgba(0,0,0,.20)!important;
+  backdrop-filter:blur(10px)!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .tfPrimaryControls{display:block!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions{
+  display:grid!important;grid-template-columns:48px minmax(0,1fr) 48px!important;gap:7px!important;width:100%!important;margin:0!important;align-items:center!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions button{
+  margin:0!important;border-radius:14px!important;border:1px solid rgba(190,154,255,.14)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;animation:none!important;transform:none!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn{
+  width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn b{font-size:17px!important;line-height:1!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn span{display:none!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain{
+  width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 9px!important;
+  color:var(--goldh)!important;border-color:rgba(190,154,255,.21)!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain b{font-size:clamp(9px,2.65vw,10.8px)!important;letter-spacing:.045em!important;white-space:nowrap!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain small{display:none!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain.playing{color:#d8dcff!important;background:linear-gradient(180deg,rgba(157,133,255,.10),rgba(113,91,186,.04))!important;animation:none!important}
+
+body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow{
+  display:grid!important;
+  grid-template-columns:max-content max-content!important;
+  justify-content:center!important;
+  gap:6px!important;
+  align-items:center!important;
+  padding-top:6px!important;
+  border-top:1px solid rgba(190,158,255,.075)!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap{
+  display:flex!important;justify-content:center!important;min-width:0!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap #cntSub{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;width:max-content!important;max-width:100%!important;
+  margin:0!important;padding:5px 9px!important;border-radius:999px!important;border:1px solid rgba(184,149,255,.10)!important;
+  background:rgba(255,255,255,.012)!important;color:color-mix(in srgb,var(--goldh) 58%,var(--dim))!important;
+  font:650 7.7px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.075em!important;white-space:nowrap!important;
+}
+body.sukun-tefekkur-mode #r470VoiceSource{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  min-width:80px!important;max-width:120px!important;padding:5px 8px!important;border-radius:999px!important;
+  border:1px solid rgba(123,166,220,.14)!important;background:rgba(80,118,168,.055)!important;
+  color:#c7d7e8!important;font:700 7.4px/1 "Figtree",system-ui,sans-serif!important;letter-spacing:.07em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+body.sukun-tefekkur-mode #r470VoiceSource[data-kind="recording"]{border-color:rgba(216,182,103,.24)!important;color:#ecd995!important;background:rgba(206,171,91,.055)!important}
+body.sukun-tefekkur-mode #r470VoiceSource[data-kind^="tts"]{border-color:rgba(118,163,224,.22)!important;color:#c8dcf4!important}
+body.sukun-tefekkur-mode #tfRefinedLayout .tfExitWrap{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  min-height:30px!important;
+  margin:0!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:min(52vw,158px)!important;
+  height:29px!important;min-height:29px!important;max-height:29px!important;
+  margin:0 auto!important;padding:0 12px!important;
+  border-radius:999px!important;
+  border:1px solid rgba(169,119,255,.38)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.006)),
+    linear-gradient(90deg,rgba(164,80,255,.065),rgba(79,124,255,.045))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 0 0 1px rgba(174,124,255,.035),
+    0 0 10px rgba(127,95,255,.055)!important;
+  color:#ddd9ef!important;
+  font:700 7.7px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.085em!important;
+  white-space:nowrap!important;
+  animation:none!important;
+  transform:none!important;
+}
+
+/* Never allow autonomous Tefekkür flashing/pulsing. */
+body.sukun-tefekkur-mode #breathHalo,
+body.sukun-tefekkur-mode .tefMotionBg,
+body.sukun-tefekkur-mode .tefCinema,
+body.sukun-tefekkur-mode .tefFilmGrain,
+body.sukun-tefekkur-mode .tefDust,
+body.sukun-tefekkur-mode .tefCineRing,
+body.sukun-tefekkur-mode .tefNurField,
+body.sukun-tefekkur-mode .tefNurHalo,
+body.sukun-tefekkur-mode .tefIncense,
+body.sukun-tefekkur-mode .tefRosette,
+body.sukun-tefekkur-mode .tefMihrapBeam,
+body.sukun-tefekkur-mode .r208Aura,
+body.sukun-tefekkur-mode .r208Pulse,
+body.sukun-tefekkur-mode .r208Rim,
+body.sukun-tefekkur-mode .r208Dust{display:none!important;animation:none!important}
+body.sukun-tefekkur-mode #zStage,
+body.sukun-tefekkur-mode .zCtl,
+body.sukun-tefekkur-mode #zStage .zAr,
+body.sukun-tefekkur-mode #zStage .zTr{animation:none!important}
+body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout>.tfControlPanel{opacity:.34!important;transform:none!important;pointer-events:none!important;filter:none!important}
+body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout .zCounterSide{opacity:.46!important;transform:none!important}
+
+/* Dock is measured, not guessed. */
+body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) #r170Now{z-index:9400!important}
+
+/* Effective performance profile */
+body[data-perf-effective="sakin"].sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel,
+body[data-perf-effective="pil"].sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{backdrop-filter:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important}
+body[data-perf-effective="pil"].sukun-tefekkur-mode #tab-zkr::before{opacity:.42!important}
+body[data-perf-effective="pil"].sukun-tefekkur-mode #zCountVisual .zGlow{display:none!important}
+
+/* Session summary */
+#r470SessionSummary[hidden]{display:none!important}
+#r470SessionSummary{position:fixed;inset:0;z-index:2147483300;display:grid;place-items:end center;padding:18px 14px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(transparent 45%,rgba(0,0,0,.42));pointer-events:none}
+#r470SessionSummary .r470SummaryCard{pointer-events:auto;width:min(100%,420px);padding:16px;border-radius:22px;border:1px solid color-mix(in srgb,var(--gold) 20%,rgba(255,255,255,.08));background:rgba(7,11,14,.94);box-shadow:0 18px 48px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.05)}
+#r470SessionSummary small{display:block;color:var(--gold);font:700 9px/1 "Figtree";letter-spacing:.14em}
+#r470SessionSummary b{display:block;margin-top:8px;font:700 18px/1.2 var(--f-display,serif);color:var(--ivory)}
+#r470SessionSummary p{margin:8px 0 12px;color:var(--mut);font-size:11px;line-height:1.55}
+#r470SessionSummary button{width:100%;min-height:38px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--goldh);font:700 11px "Figtree"}
+
+@media(max-width:390px){
+  :root{--tf-side-w:58px;--tf-gap:8px}
+  body.sukun-tefekkur-mode #zStage{padding-inline:38px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{min-height:82px!important;padding-inline:3px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{width:min(94vw,338px)!important;padding:8px 9px 7px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions{grid-template-columns:44px minmax(0,1fr) 44px!important;gap:6px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .zStepBtn{width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .zAutoMain{height:44px!important;min-height:44px!important;max-height:44px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow{gap:4px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout .tfMetaWrap #cntSub{font-size:7.1px!important;padding-inline:7px!important}
+  body.sukun-tefekkur-mode #r470VoiceSource{min-width:70px!important;max-width:96px!important;font-size:6.9px!important;padding-inline:6px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{width:min(100%,154px)!important;font-size:7.2px!important;padding-inline:8px!important}
+}
+@media(max-height:720px){
+  body.sukun-tefekkur-mode #tab-zkr{gap:4px!important}
+  body.sukun-tefekkur-mode #zStage{padding-top:10px!important;padding-bottom:6px!important}
+  body.sukun-tefekkur-mode #zStage .zAr{font-size:clamp(22px,6vw,32px)!important;line-height:1.28!important}
+  body.sukun-tefekkur-mode #zStage .zTr{font-size:clamp(10px,2.7vw,13px)!important;margin-top:4px!important}
+  body.sukun-tefekkur-mode .zCtl{padding-top:6px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout{gap:5px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{padding-top:7px!important;padding-bottom:6px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{width:min(48vw,146px)!important;height:27px!important;min-height:27px!important;max-height:27px!important}
+}
+@media(prefers-reduced-motion:reduce){body.sukun-tefekkur-mode *{scroll-behavior:auto!important}}
+
+/* ---- Normal-mode Tefekkür entry: compact, polite, collision-proof ---- */
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn{
+  display:grid!important;
+  place-items:center!important;
+  position:fixed!important;
+  top:auto!important;
+  right:12px!important;
+  left:auto!important;
+  bottom:calc(env(safe-area-inset-bottom) + 112px)!important;
+  width:38px!important;min-width:38px!important;max-width:38px!important;
+  height:38px!important;min-height:38px!important;max-height:38px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  font-size:0!important;
+  line-height:1!important;
+  writing-mode:horizontal-tb!important;
+  transform:none!important;
+  opacity:.88!important;
+  border:1px solid color-mix(in srgb,var(--gold) 22%,rgba(255,255,255,.08))!important;
+  background:rgba(var(--sayfa2K),.90)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 22px rgba(0,0,0,.22)!important;
+  backdrop-filter:blur(12px)!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn::before{
+  content:"◉";
+  display:block;
+  color:var(--goldh)!important;
+  font:700 14px/1 system-ui,sans-serif!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+  flex:0 0 32px!important;
+  width:32px!important;min-width:32px!important;max-width:32px!important;
+  height:32px!important;min-height:32px!important;max-height:32px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  font-size:0!important;
+  writing-mode:horizontal-tb!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
+  content:"◉";
+  color:var(--goldh)!important;
+  font:700 11px/1 system-ui,sans-serif!important;
+}
+
+</style>
+
+<style id="r472-smart-session-source-and-tefekkur-ui">
+/* ═══════════════════════════════════════════════════════════════
+   r472 — Akıllı Seans ses kaynağı + anlaşılır Tefekkür girişleri
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Akıllı Seans: kaynak seçimi Ayarlar açıldığında görünür. */
+#r170Queue .r472SourceCtl{
+  flex:1 1 100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  margin:2px 0 3px;
+  padding:7px 8px;
+  border:1px solid color-mix(in srgb,var(--gold) 12%,var(--line));
+  border-radius:11px;
+  background:rgba(255,255,255,.018);
+}
+#r170Queue .r472SourceCtl>span{
+  color:var(--dim);
+  font:700 8px/1 "Figtree",system-ui,sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+#r170Queue .r472SourceCtl select{
+  width:100%;
+  min-width:0;
+  height:31px;
+  border-radius:9px;
+  border:1px solid color-mix(in srgb,var(--gold) 16%,var(--line));
+  background:rgba(var(--sayfa2K),.88);
+  color:var(--text);
+  padding:0 8px;
+  font:650 9px/1 "Figtree",system-ui,sans-serif;
+}
+#r170Queue .r422SourceBadge[data-r472-kind="recording"]{
+  color:#ecd995!important;
+  border-color:color-mix(in srgb,#dfbe70 38%,var(--line))!important;
+  background:color-mix(in srgb,#dfbe70 5%,transparent)!important;
+}
+#r170Queue .r422SourceBadge[data-r472-kind="tts-m"]{
+  color:#b7d4f2!important;
+  border-color:color-mix(in srgb,#7eb4ea 34%,var(--line))!important;
+}
+#r170Queue .r422SourceBadge[data-r472-kind="tts-f"]{
+  color:#dcc7ef!important;
+  border-color:color-mix(in srgb,#c59ee6 30%,var(--line))!important;
+}
+#r170Queue .r472RecHint{
+  flex:1 1 100%;
+  color:var(--dim);
+  font:500 8px/1.45 "Figtree",system-ui,sans-serif;
+  padding:0 2px;
+}
+
+/* Normal ekrandaki bağımsız Tefekkür girişi: nokta değil, okunur mini pill. */
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  position:fixed!important;
+  top:auto!important;
+  right:12px!important;
+  left:auto!important;
+  bottom:calc(env(safe-area-inset-bottom) + 112px)!important;
+  width:104px!important;min-width:104px!important;max-width:104px!important;
+  height:36px!important;min-height:36px!important;max-height:36px!important;
+  padding:0 11px!important;
+  border-radius:999px!important;
+  overflow:visible!important;
+  font:700 9.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.045em!important;
+  writing-mode:horizontal-tb!important;
+  color:var(--goldh)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
+    rgba(var(--sayfa2K),.92)!important;
+  border:1px solid color-mix(in srgb,var(--gold) 25%,rgba(255,255,255,.08))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px rgba(0,0,0,.22)!important;
+  backdrop-filter:blur(12px)!important;
+  opacity:.94!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn::before{
+  content:"✦"!important;
+  position:static!important;
+  display:inline!important;
+  color:var(--gold)!important;
+  font:700 10px/1 system-ui!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn::after,
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::after{
+  content:attr(data-tef-tip);
+  position:absolute;
+  right:0;
+  bottom:calc(100% + 7px);
+  z-index:20;
+  width:max-content;
+  max-width:210px;
+  padding:7px 9px;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line));
+  border-radius:9px;
+  background:rgba(var(--sayfa2K),.97);
+  color:var(--mut);
+  font:600 8.5px/1.35 "Figtree",system-ui,sans-serif;
+  letter-spacing:0;
+  box-shadow:0 10px 26px rgba(0,0,0,.30);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(3px);
+  transition:opacity .14s ease,transform .14s ease,visibility .14s ease;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn:hover::after,
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn:focus-visible::after,
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn:hover::after,
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn:focus-visible::after{
+  opacity:1;visibility:visible;transform:none;
+}
+
+/* Universal player içindeki Tefekkür kontrolü de yazılı ve küçük. */
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+  position:relative!important;
+  flex:0 0 auto!important;
+  width:auto!important;min-width:88px!important;max-width:118px!important;
+  height:30px!important;min-height:30px!important;max-height:30px!important;
+  padding:0 10px!important;
+  border-radius:999px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  overflow:visible!important;
+  font:700 9px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.04em!important;
+  writing-mode:horizontal-tb!important;
+  color:color-mix(in srgb,var(--goldh) 90%,var(--mut))!important;
+}
+body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
+  content:"✦"!important;
+  position:static!important;
+  color:var(--gold)!important;
+  font:700 9px/1 system-ui!important;
+}
+
+@media(max-width:390px){
+  body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn{
+    width:94px!important;min-width:94px!important;max-width:94px!important;
+    height:34px!important;min-height:34px!important;max-height:34px!important;
+    font-size:9px!important;
+    right:9px!important;
+  }
+  body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+    min-width:82px!important;max-width:104px!important;
+    padding-inline:8px!important;
+    font-size:8.5px!important;
+  }
+  #r170Queue .r472SourceCtl{grid-template-columns:1fr;gap:5px}
+}
+</style>
+
+
+<script id="r472-smart-session-source-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R472_SOURCE__)return;
+window.__SUKUN_R472_SOURCE__=1;
+
+const P=window.R170?.Player;
+const E=window.SukunSessionEditor;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const norm=s=>String(s||'').normalize('NFC').toLocaleLowerCase('tr-TR')
+  .replace(/[’'`]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+
+function itemForStep(s){
+  try{return s?.type==='zikir'?ZIKIR?.[s.cat]?.items?.[s.idx]||null:null}catch(e){return null}
+}
+function canonicalKey(cat,idx,item){
+  try{return window.AudioResolver?.keyFor?.(cat,idx,item)||`${cat}:${idx}`}catch(e){return `${cat}:${idx}`}
+}
+function candidateKeys(cat,idx,item){
+  const a=[];
+  const add=k=>{k=String(k||'').trim();if(k&&!a.includes(k))a.push(k)};
+  add(canonicalKey(cat,idx,item));
+  add(`${cat}:${idx}`);
+  try{
+    if(typeof Z!=='undefined'&&Z.cat===cat&&+Z.idx===+idx&&typeof zikirKey==='function')add(zikirKey());
+  }catch(e){}
+  if(String(item?.tr||item?.t||'')==='Yâ Mezcelin • Yâ Bezcelin')add('mzbz:berhetiyye');
+  return a;
+}
+async function recordingFor(cat,idx,item){
+  if(typeof REC_DB==='undefined')return null;
+  for(const key of candidateKeys(cat,idx,item)){
+    try{
+      const blob=await REC_DB.get(key);
+      if(blob)return{key,blob};
+    }catch(e){}
+  }
+  /* Eski/yedek anahtarlarla saklanmış kayıtları okunur ad üzerinden de bul.
+     Sadece tam/kuvvetli eşleşme kabul edilir; yanlış zikre ses bağlamaz. */
+  try{
+    if(typeof REC_DB.keys==='function'&&typeof keyLabel==='function'){
+      const want=norm(item?.tr||item?.t||'');
+      if(want){
+        const keys=await REC_DB.keys();
+        for(const key of keys){
+          const label=norm(keyLabel(key));
+          if(label===want || (want.length>8&&label.length>8&&(label.includes(want)||want.includes(label)))){
+            const blob=await REC_DB.get(key);
+            if(blob)return{key:String(key),blob};
+          }
+        }
+      }
+    }
+  }catch(e){}
+  return null;
+}
+function genderOf(v){
+  try{if(typeof voiceGender==='function')return voiceGender(v)||''}catch(e){}
+  const n=String(v?.name||'').toLocaleLowerCase('tr-TR');
+  if(/male|erkek|man|adam|cem|murat|mehmet|ahmet/.test(n))return'm';
+  if(/female|kadın|kadin|woman|ayşe|ayse|zeynep|filiz/.test(n))return'f';
+  return'';
+}
+function voicesFor(lang='tr'){
+  try{
+    const all=speechSynthesis.getVoices()||[];
+    const p=String(lang||'tr').slice(0,2).toLowerCase();
+    return all.filter(v=>String(v.lang||'').toLowerCase().startsWith(p));
+  }catch(e){return[]}
+}
+function pickVoice(gender,lang='tr-TR'){
+  const list=voicesFor(lang);
+  if(gender==='m'||gender==='f'){
+    const hit=list.find(v=>genderOf(v)===gender);
+    if(hit)return{voice:hit,realGender:true};
+  }
+  try{
+    if(typeof SPK!=='undefined'&&SPK.voice&&String(SPK.voice.lang||'tr').toLowerCase().startsWith(String(lang).slice(0,2).toLowerCase()))
+      return{voice:SPK.voice,realGender:genderOf(SPK.voice)===gender};
+  }catch(e){}
+  return{voice:list[0]||null,realGender:false};
+}
+function maleAvailable(){return voicesFor('tr').some(v=>genderOf(v)==='m')}
+function femaleAvailable(){return voicesFor('tr').some(v=>genderOf(v)==='f')}
+
+let ttsSeq=0;
+async function tts(text,{gender='m',lang='tr-TR',title='Okuma'}={}){
+  text=String(text||'').trim();
+  if(!text||!('speechSynthesis'in window))return{ok:false,source:'tts'};
+  const seq=++ttsSeq;
+  try{speechSynthesis.cancel()}catch(e){}
+  await sleep(135);
+  if(seq!==ttsSeq)return{ok:false,source:'tts',cancelled:true};
+  const {voice,realGender}=pickVoice(gender,lang);
+  const label=gender==='m'?(realGender?'Erkek TTS':'TTS · erkek ton'):gender==='f'?(realGender?'Kadın TTS':'TTS · kadın ton'):'Cihaz sesi (TTS)';
+  try{window.sukunSourceSet?.('tts',label,title)}catch(e){}
+  return await new Promise(resolve=>{
+    let done=false,timer=0,u;
+    const finish=ok=>{
+      if(done)return;done=true;clearTimeout(timer);
+      try{u.onend=null;u.onerror=null}catch(e){}
+      resolve({ok:!!ok,source:gender==='m'?'tts-m':gender==='f'?'tts-f':'tts',label,voice:voice?.name||'',text});
+    };
+    try{
+      u=new SpeechSynthesisUtterance(typeof sukunTtsPrepare==='function'?sukunTtsPrepare(text):text);
+      u.lang=lang;
+      if(voice)u.voice=voice;
+      try{u.rate=(typeof SPK!=='undefined'?SPK.rate:0.86)*(window.OKUMA_HIZ||1)}catch(e){u.rate=.86}
+      /* Gerçek cinsiyete uygun ses yoksa pitch yalnız yedek tınıyı yaklaştırır. */
+      u.pitch=gender==='m'?(realGender?.92:.68):gender==='f'?(realGender?.98:1.10):.9;
+      try{u.volume=Math.min(1,Math.max(.05,((typeof ZVOL==='number'?ZVOL:1)*(window.okumaSeviyesi?.()||1))))}catch(e){u.volume=1}
+      u.onend=()=>finish(seq===ttsSeq);
+      u.onerror=()=>finish(false);
+      timer=setTimeout(()=>finish(false),Math.max(12000,Math.min(120000,text.length*190+7000)));
+      speechSynthesis.speak(u);
+      setTimeout(()=>{try{if(!done&&seq===ttsSeq&&!speechSynthesis.speaking&&!speechSynthesis.pending)finish(false)}catch(e){}},950);
+    }catch(e){finish(false)}
+  });
+}
+
+function sourceMode(step){
+  return String(step?._r472SourceMode||'auto');
+}
+function sourceGender(step){
+  const mode=sourceMode(step);
+  if(mode==='tts-f')return'f';
+  if(mode==='tts-default')return'';
+  return'm'; /* auto ve kayıt fallback'i erkek TTS */
+}
+function textFor(item){return String(item?.oku||item?.translit||item?.tr||item?.t||'').trim()}
+
+async function resolveStep(step){
+  if(!step||step.type!=='zikir')return{kind:'none',label:'—',record:null};
+  const item=itemForStep(step),mode=sourceMode(step);
+  let record=null;
+  if(mode==='auto'||mode==='recording')record=await recordingFor(step.cat,step.idx,item);
+  if(record)return{kind:'recording',label:'Kendi kayıt · öncelikli',record};
+  if(mode==='recording')return{kind:maleAvailable()?'tts-m':'tts-m',label:maleAvailable()?'Kayıt yok · Erkek TTS':'Kayıt yok · TTS erkek ton',record:null};
+  if(mode==='tts-f')return{kind:'tts-f',label:femaleAvailable()?'Kadın TTS':'TTS · kadın ton',record:null};
+  if(mode==='tts-default')return{kind:'tts',label:'Cihaz sesi (TTS)',record:null};
+  return{kind:'tts-m',label:maleAvailable()?'Erkek TTS':'TTS · erkek ton',record:null};
+}
+
+/* Akıllı seans gerçek oynatma kontratı:
+   AUTO = kendi kayıt varsa kayıt; yoksa erkek TTS.
+   Bu override yalnız final source resolver'dır; frekans/sükût akışına dokunmaz. */
+const A=window.AudioResolver;
+if(A?.play&&!A.play.__r472){
+  const wrapped=async function(cat,idx,item,opt={}){
+    const step=(opt?.session&&P?.queue?.[P.i]?.type==='zikir')?P.queue[P.i]:null;
+    const mode=sourceMode(step);
+    if(step&&(mode==='auto'||mode==='recording')){
+      const rec=await recordingFor(cat,idx,item);
+      if(rec){
+        try{window.sukunSourceSet?.('recording','Kendi kayıt · Akıllı Seans önceliği',(item?.tr||item?.t||cat))}catch(e){}
+        try{
+          const r=await playRecording(rec.blob,'r472-smart:'+rec.key,{detail:true,resume:false,reason:'Akıllı Seans · kendi kayıt öncelikli',title:(item?.tr||item?.t||cat)});
+          if(r?.ok)return{ok:true,source:'recording',key:rec.key};
+          if(r&&!['play-rejected','error','exception'].includes(r.reason))return{ok:false,source:'recording',cancelled:true,key:rec.key};
+        }catch(e){}
+      }
+    }
+    if(step){
+      const gender=sourceGender(step);
+      const r=await tts(textFor(item),{gender,lang:opt.lang||'tr-TR',title:(item?.tr||item?.t||cat)});
+      return{...r,key:canonicalKey(cat,idx,item)};
+    }
+    return A.__r472OldPlay(cat,idx,item,opt);
+  };
+  A.__r472OldPlay=A.play.bind(A);
+  wrapped.__r472=1;
+  A.play=wrapped;
+}
+
+/* Kartlarda kaynak durumunu gerçek IndexedDB'ye göre güncelle ve Ayarlar'a
+   kaynak tercihi ekle. */
+let refreshSeq=0;
+async function refreshCards(){
+  if(!P)return;
+  const my=++refreshSeq;
+  const cards=[...document.querySelectorAll('#r170Queue .r252Step')];
+  for(const card of cards){
+    if(my!==refreshSeq)return;
+    const i=+card.dataset.i,step=P.queue?.[i];
+    if(!step||step.type!=='zikir')continue;
+    const state=await resolveStep(step);
+    if(my!==refreshSeq||!card.isConnected)return;
+    try{Object.defineProperty(step,'_r422Source',{value:{kind:state.kind,label:state.label,at:Date.now()},writable:true,configurable:true,enumerable:false})}catch(e){step._r422Source={kind:state.kind,label:state.label,at:Date.now()}}
+    const badge=card.querySelector('.r422SourceBadge');
+    if(badge){badge.textContent=state.label;badge.dataset.r472Kind=state.kind}
+
+    const tools=card.querySelector('.r252Tools');
+    if(!tools)continue;
+    let ctl=tools.querySelector('.r472SourceCtl');
+    if(!ctl){
+      ctl=document.createElement('label');
+      ctl.className='r472SourceCtl';
+      ctl.innerHTML='<span>Ses kaynağı</span><select aria-label="Akıllı Seans ses kaynağı">'+
+        '<option value="auto">Otomatik · Kendi kayıt → Erkek TTS</option>'+
+        '<option value="recording">Kendi kayıt (varsa)</option>'+
+        '<option value="tts-m">Erkek TTS</option>'+
+        '<option value="tts-f">Kadın TTS</option>'+
+        '<option value="tts-default">Varsayılan TTS</option>'+
+        '</select>';
+      tools.prepend(ctl);
+      const hint=document.createElement('div');
+      hint.className='r472RecHint';
+      ctl.after(hint);
+      ctl.querySelector('select').addEventListener('change',e=>{
+        step._r472SourceMode=e.target.value;
+        try{P.save?.()}catch(_){}
+        refreshCards();
+      });
+    }
+    const sel=ctl.querySelector('select');
+    if(sel)sel.value=sourceMode(step);
+    const recOpt=sel?.querySelector('option[value="recording"]');
+    if(recOpt)recOpt.textContent=state.record?'Kendi kayıt ✓':'Kendi kayıt (yoksa Erkek TTS)';
+    const hint=tools.querySelector('.r472RecHint');
+    if(hint)hint.textContent=state.record
+      ? 'Bu adımda kendi kaydın ilk tercih. İstersen Ayarlar’dan TTS’e zorlayabilirsin.'
+      : 'Kayıt bulunamadı. Otomatik mod erkek TTS kullanır; cihazda erkek ses yoksa daha pes TTS tınısına düşer.';
+  }
+}
+
+/* r422 primeQueue sonradan eski etiketi yazsa bile kart resolver'ı final sözü söyler. */
+if(E?.render&&!E.__r472SourceRender){
+  E.__r472SourceRender=1;
+  const old=E.render.bind(E);
+  E.render=function(){
+    const r=old();
+    queueMicrotask(refreshCards);
+    setTimeout(refreshCards,220);
+    setTimeout(refreshCards,650);
+    return r;
+  };
+}
+const q=document.getElementById('r170Queue');
+if(q){
+  const mo=new MutationObserver(()=>{clearTimeout(mo._t);mo._t=setTimeout(refreshCards,80)});
+  mo.observe(q,{childList:true,subtree:true});
+}
+['voiceschanged','sukun:source','sukun:playbackchange'].forEach(ev=>{
+  const target=ev==='voiceschanged'?window.speechSynthesis:window;
+  try{target?.addEventListener?.(ev,()=>setTimeout(refreshCards,60),{passive:true})}catch(e){}
+});
+setTimeout(refreshCards,350);
+window.SukunSmartSessionSource={version:'r472',recordingFor,resolveStep,refresh:refreshCards,maleAvailable,femaleAvailable};
+
+/* Tefekkür girişlerini kullanıcıya anlaşılır kıl.
+   Eski runtime metni tekrar ◉ yapsa MutationObserver geri düzeltir. */
+function polishTefButtons(){
+  const inTef=document.body.classList.contains('sukun-tefekkur-mode');
+  const f=document.querySelector('.sukun-focus-btn');
+  if(f&&!inTef){
+    if(f.textContent.trim()!=='Tefekkür')f.textContent='Tefekkür';
+    f.dataset.tefTip='Zikir sayacını tam ekran Tefekkür görünümünde aç';
+    f.setAttribute('aria-label','Tefekkür moduna geç');
+    f.title='Tefekkür moduna geç';
+  }
+  const b=document.getElementById('r442TefekkurBtn');
+  if(b&&!inTef){
+    if(b.textContent.trim()!=='Tefekkür')b.textContent='Tefekkür';
+    b.dataset.tefTip='Tam ekran Tefekkür moduna geç';
+    b.setAttribute('aria-label','Tefekkür moduna geç');
+    b.title='Tefekkür moduna geç';
+  }
+}
+polishTefButtons();
+const tefObs=new MutationObserver(()=>{clearTimeout(tefObs._t);tefObs._t=setTimeout(polishTefButtons,20)});
+tefObs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
+
+/* r471 compact collision 38px'e zorluyordu; r472 pill genişliği sabittir,
+   ama yine top+bottom aynı anda bırakılmaz. */
+try{
+  if(window.SukunFloatingCollision){
+    window.SukunFloatingCollision.__r472Labeled=true;
+    window.SukunFloatingCollision.sync=function(){
+      const b=document.querySelector('.sukun-focus-btn');
+      if(!b||document.body.classList.contains('sukun-tefekkur-mode'))return;
+      b.style.setProperty('top','auto','important');
+      b.style.setProperty('right','12px','important');
+      b.style.setProperty('width',innerWidth<=390?'94px':'104px','important');
+      b.style.setProperty('min-width',innerWidth<=390?'94px':'104px','important');
+      b.style.setProperty('max-width',innerWidth<=390?'94px':'104px','important');
+      b.style.setProperty('height',innerWidth<=390?'34px':'36px','important');
+      b.style.setProperty('min-height',innerWidth<=390?'34px':'36px','important');
+      b.style.setProperty('max-height',innerWidth<=390?'34px':'36px','important');
+      polishTefButtons();
+    };
+    window.SukunFloatingCollision.schedule=function(){
+      clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync(),40);
+    };
+    window.SukunFloatingCollision.sync();
+  }
+}catch(e){}
+})();
+</script>
+
 </body>
 </html>
