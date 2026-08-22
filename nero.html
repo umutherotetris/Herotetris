@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r436 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r438 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r436">
+<meta name="sukun-build" content="r438">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r436">
+<link rel="manifest" href="./manifest.webmanifest?v=r438">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -7769,7 +7769,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
         <div class="zBtns">
           <button class="btn" id="hzvOku">&#9654; Oku</button>
           <button class="btn" id="hzvDurakla" hidden>&#9208; Duraklat</button>
-          <button class="btn" id="hzvDur">&#9632; Durdur</button>
+          <button class="btn" id="hzvDur" hidden>&#9632; Durdur</button>
           <button class="btn" id="hzvKayit" title="Bu bölümü kendi sesinle kaydet"><span class="ico" data-ico="mic"></span> Kendi sesim</button>
         </div>
         <div id="hzvProg" style="font-size:10px;color:var(--dim);margin-top:7px">Hazır</div>
@@ -8043,7 +8043,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v18.1 — build 2026-08-21-r434</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v18.3 — build 2026-08-22-r438</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8067,8 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r438","t":"22 Ağustos 2026","b":["Bar ve ses motoru çapraz denetlendi; Tövbe, Âyetü’l-Kürsî, Salavât ve Fâtiha watchdog timeoutları artık okuyucu durmuşsa yeni başlayan TTS sesini yanlışlıkla iptal etmiyor","hardStopAll içindeki Hizbü’l-Vikâye çift durdurma/cancel yolu kaldırıldı; okuyucu tek merkezi stop sözleşmesinden kapanıyor","Delâilü’l-Hayrât Sıradaki komutu kendi kayıt çalarken de çalışıyor; kayıt yolu ile TTS yolu aynı transport davranışına getirildi","Seyyidü’l-İstiğfar PlaybackController’a provider olarak eklendi; bardan duraklat, devam ve durdur artık doğrudan bu okuyucuyu yönetiyor","Now Playing ve Detaylar okuyucu adını regex ile tahmin etmek yerine provider kimliği taşıyor; yanlış okuyucunun durdurulma riski azaltıldı","Tekke yalnız gerçekten çalışan/aktif bir Tekke sesi varsa playback katmanı sayılıyor; yalnız giriş ekranının açık olması barı aktif göstermiyor","Delâil ve Seyyid okuyucu panelleri Now Playing state köprüsüne eklendi","SukunAudioGuard eklendi: provider sözleşmesini, okuyucu kimliklerini, bayat pause/Now Playing stateini denetliyor ve tanılama stres testine raporluyor","Ana bardaki Durdur aktif providerı hedefliyor; adaptör sessizce başarısız kalırsa kısa gecikmeyle doğrudan modül stop kontratına güvenli fallback uygulanıyor"]},
+ {"v":"r437","t":"22 Ağustos 2026","b":["Delâilü’l-Hayrât PlaybackController’a birinci sınıf okuyucu olarak bağlandı; ana bardaki kare Durdur artık aktif Delâil akışını doğrudan durduruyor","Delâil için gerçek duraklat/devam state’i eklendi; TTS ve kendi kayıt yolu aynı transport sözleşmesine uyuyor","Birleşik barın Durdur düğmesi okuyucu/seans aktifken yalnız o aktif kaynağı durduruyor; Tümünü Durdur gelişmiş Detaylar içinde kalıyor","Hizbü’l-Vikâye oynarken yinelenen Durdur düğmesi kaldırıldı: boşta Oku, oynarken Duraklat + tek Durdur görünür","Hizbü’l-Vikâye kaynak çözümü gerçek kayıt Blob’unu doğruluyor; bozuk/eski kayıt işareti varsa otomatik TTS’ye düşüyor","Delâil’den Vikâye’ye geçişte Android speechSynthesis cancel yarışı için güvenli başlangıç aralığı eklendi; ilk TTS cümlesinin sessizce kesilmesi önlendi","Vikâye kayıt oynatımı playRecording sözleşmesine uyarlandı; kayıt bitince sonraki bölüme ilerliyor, kayıt açılamazsa TTS fallback yapıyor"]},
  {"v":"r436","t":"21 Ağustos 2026","b":["Tekke seansı başlarken birleşik oynatıcı artık otomatik açılmıyor; Tekke sahnesi varsayılan olarak tamamen açık kalıyor","Tekke üst çubuğuna küçük Oynatıcı düğmesi eklendi; kullanıcı isterse barı tek dokunuşla açıp yine aynı yerden kapatabiliyor","Tekke içinde barın kendi Gizle düğmesi de yalnız Tekke görünümünü kapatıyor; uygulama genelindeki oynatıcı gizleme tercihini yanlışlıkla değiştirmiyor","Tekke kapatılınca geçici oynatıcı tercihi temizleniyor; ana SÜKÛN ekranındaki normal dock davranışı aynen geri geliyor","Tekke giriş kapısındaki SÜKÛN geri dönüş katmanı body-state ile sağlamlaştırıldı; DOM sibling sırasına bağlı kalmıyor"]},
  {"v":"r435","t":"21 Ağustos 2026","b":["Tekke giriş kapısı açıkken SÜKÛN’a dön düğmesi artık giriş katmanının üstünde ve doğrudan tıklanabilir","Giriş yapılmadan önce yalnız geri dönüş düğmesi üst katmanda aktif tutuluyor; sayaç, yardım, ses ve Mihrap kontrolleri yanlışlıkla etkileşim almıyor","TEKKEYE GİR demeden ana uygulamaya geri dönmek artık tek dokunuşla mümkün"]},
  {"v":"r434","t":"21 Ağustos 2026","b":["Detaylar artık ayrı alt sayfa açmıyor; tek oynatıcı kendi içinde yumuşak mini-akordeon olarak genişliyor","Akordeonda ana ses ve aktif katmanlar ayrı ayrı yönetiliyor: ambiyans kanalı, frekans, okuma/kayıt, zikir, döngü, Tekke ve gerektiğinde Akıllı Seansın mevcut adımı kendi kontrolünü gösteriyor","Ambiyans katmanlarında 5/10/20/45 dakika veya süresiz zamanlayıcı ve tek katman kapatma; frekansta vuruş ve seviye; zikirde tempo ve seviye doğrudan dock içinde","Eski barın okuma hızı, ton profili, yankı ve 8D kontrolleri tek dockun detay bölümüne taşındı","Kendi kayıt ses seviyesi artık Web Audio grafiğine bağlı kayıtlarda da Zikir/Okuma seviyesiyle gerçekten ölçekleniyor","Gizle davranışı korunuyor; detay açıkken gizlemeye basılırsa akordeon kapanıyor ve Tefekkür sahnesi küçük geri çağırma tutamacı dışında boş kalıyor"]},
@@ -14006,7 +14008,9 @@ function hardStopAll(){
   try{clearInterval(stInt);stInt=null;stEnd=0;clearTimeout(stFade);stFade=null}catch(e){}
   try{const sl=$('#sleepTimer');if(sl)sl.value='0';const tb=$('#timerBadge');if(tb)tb.textContent=''}catch(e){}
   try{ window.__mzbzStop&&window.__mzbzStop(); }catch(e){}   /* r118 */
-  try{ window.__hzvStop&&window.__hzvStop(); }catch(e){}     /* r131 */
+  /* r438: Hizbü'l-Vikâye okuyucularDurdur() içinde zaten durur.
+     Burada ikinci kez stop/cancel çalıştırmak TTS geçişlerinde yarış üretiyordu. */
+  try{ if(typeof okuyucularDurdur!=='function')window.__hzvStop&&window.__hzvStop(); }catch(e){}
   Object.keys(AMB).forEach(chOff);
   frStop(); autoStop(); syncMixerUI();
   rxEsmaBgStop();
@@ -16141,7 +16145,7 @@ window.hizbOner=hizbOner;
 
    ⚠ Sesli okuma cihaz sesiyle yapılır; kullanıcı kendi sesini
    kaydederse (`dua:hizb`) o çalar — ötekiler gibi. */
-const HZV={ i:-1, playing:false, audio:null, zincir:false };
+const HZV={ i:-1, playing:false, paused:false, audio:null, zincir:false, seq:0 };
 const HZV_ANAHTAR='dua:hizb';
 
 /* r138: her bend kendi rengini `--bc` olarak taşır; sıra numarası ve
@@ -16221,21 +16225,27 @@ function hzvMetin(k){
 function hzvDugmeler(){
   const o=document.getElementById('hzvOku');
   const d=document.getElementById('hzvDurakla');
-  if(o)o.textContent=HZV.playing?'\u25A0 Durdur':'\u25B6 Oku';
+  const s=document.getElementById('hzvDur');
+  if(o){o.hidden=!!HZV.playing;o.textContent='\u25B6 Oku';}
   if(d){
     d.hidden=!HZV.playing;
     d.textContent=HZV.paused?'\u25B6 Devam Ettir':'\u23F8 Duraklat';
   }
+  if(s)s.hidden=!HZV.playing;
 }
 function hzvDurdur(){
+  HZV.seq=(HZV.seq||0)+1;
   HZV.playing=false; HZV.zincir=false; HZV.paused=false; HZV.i=-1;
   window.__hzvPlaying=false;
-  if(HZV.audio){ try{HZV.audio.pause()}catch(e){} try{SES.ler.delete(HZV.audio)}catch(e){} HZV.audio=null; }
-  try{ if(typeof ttsDurdur==='function')ttsDurdur(); else speechSynthesis.cancel(); }catch(e){}
+  try{ if(typeof window.sukunTtsCancel==='function')window.sukunTtsCancel('hzv-stop');else speechSynthesis.cancel(); }catch(e){}
+  try{ if(typeof sesDurdur==='function')sesDurdur('hzv-stop'); }catch(e){}
+  HZV.audio=null;
   document.querySelectorAll('#hzvKisim .tvkRow').forEach(el=>el.classList.remove('cal'));
   document.querySelectorAll('#hzvText .tvP').forEach(el=>el.classList.remove('on'));
   hzvDugmeler();
   const p=document.getElementById('hzvProg'); if(p)p.textContent='Hazır';
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
+  try{ window.SukunNowPlayingStore?.refresh?.(); }catch(e){}
   try{ if(typeof miniDenetimSync==='function')miniDenetimSync(); }catch(e){}
   try{ if(typeof miniSync==='function')miniSync(); }catch(e){}
 }
@@ -16246,88 +16256,137 @@ function hzvDuraklaCevir(){
   if(HZV.paused){
     HZV.paused=false;
     try{ if(typeof ttsSurdur==='function')ttsSurdur(); }catch(e){}
-    if(HZV.audio){ try{HZV.audio.play()}catch(e){} }
+    try{ if(typeof sesSurdur==='function')sesSurdur(); }catch(e){}
   }else{
     HZV.paused=true;
     try{ if(typeof ttsDurakla==='function')ttsDurakla(); }catch(e){}
-    if(HZV.audio){ try{HZV.audio.pause()}catch(e){} }
+    try{ if(typeof sesDuraklat==='function')sesDuraklat(); }catch(e){}
   }
   hzvDugmeler();
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
+  try{ window.SukunNowPlayingStore?.refresh?.(); }catch(e){}
   try{ if(typeof miniSync==='function')miniSync(); }catch(e){}
+}
+
+function hzvTtsOku(metin,token){
+  return new Promise(res=>{
+    if(!HZV.zincir||token!==HZV.seq){res(false);return;}
+    try{
+      if(!('speechSynthesis'in window)||!metin){res(false);return;}
+      const u=new SpeechSynthesisUtterance(metin);
+      try{
+        u.lang='tr-TR';
+        if(typeof SPK!=='undefined'&&SPK.voice)u.voice=SPK.voice;
+        if(typeof SPK!=='undefined')u.rate=(SPK.rate||1)*(window.OKUMA_HIZ||1);
+        if(typeof spkPitch==='function')u.pitch=spkPitch(.9);
+        u.volume=Math.min(1,Math.max(0,((typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1)*(window.okumaSeviyesi?window.okumaSeviyesi():1)));
+      }catch(e){}
+      let done=false;
+      const finish=ok=>{if(done)return;done=true;res(!!ok)};
+      u.onend=()=>finish(token===HZV.seq&&HZV.zincir);
+      u.onerror=()=>finish(false);
+      try{window.sukunSourceSet?.('tts','Kayıt yok; cihaz sesi kullanılıyor','Hizbü’l-Vikâye')}catch(e){}
+      speechSynthesis.speak(u);
+    }catch(e){res(false)}
+  });
 }
 
 /* Belirli bir bölüme git — çubuktaki ⏮/⏭ ve listeden tıklama buraya gelir */
 function hzvGit(hedef){
   if(hedef<0||hedef>=HZV_KISIM.length)return;
-  try{ if(typeof ttsDurdur==='function')ttsDurdur(); else speechSynthesis.cancel(); }catch(e){}
-  if(HZV.audio){ try{HZV.audio.pause()}catch(e){} HZV.audio=null; }
+  const token=(HZV.seq=(HZV.seq||0)+1);
+  try{ if(typeof window.sukunTtsCancel==='function')window.sukunTtsCancel('hzv-nav');else speechSynthesis.cancel(); }catch(e){}
+  try{ if(typeof sesDurdur==='function')sesDurdur('hzv-nav'); }catch(e){}
   HZV.i=hedef-1; HZV.paused=false;
   if(!HZV.playing){ HZV.playing=true; HZV.zincir=true; window.__hzvPlaying=true; }
   hzvDugmeler();
-  hzvAdim();
+  setTimeout(()=>{if(HZV.zincir&&token===HZV.seq)hzvAdim(token)},100);
 }
 window.hzvGit=hzvGit;
 
-async function hzvAdim(){
-  if(!HZV.zincir)return;
+async function hzvAdim(token=HZV.seq){
+  if(!HZV.zincir||token!==HZV.seq)return;
   const sira=hzvSira();
-  /* sıradaki okunacak bölümü bul (atlananları geç) */
   let sonraki=HZV.i+1;
   while(sonraki<HZV_KISIM.length && sira.indexOf(sonraki)<0)sonraki++;
   HZV.i=sonraki;
   if(HZV.i>=HZV_KISIM.length){
     hzvDurdur();
     try{ zikirSonuSes(); }catch(e){}
-    try{ zikirTamam('Hizbü\u2019l-Vik\u00e2ye tamam','koruma virdi bitti \u2726'); }catch(e){}
-    try{ LOG.touch('hizb','\ud83d\udee1 Hizb\u00fc\u2019l-Vik\u00e2ye'); }catch(e){}
+    try{ zikirTamam('Hizbü’l-Vikâye tamam','koruma virdi bitti ✦'); }catch(e){}
+    try{ LOG.touch('hizb','🛡 Hizbü’l-Vikâye'); }catch(e){}
     return;
   }
   const k=HZV_KISIM[HZV.i];
   hzvKisimYaz();
-  const kendiSesi=(typeof RECKEYS!=='undefined')&&RECKEYS.has(hzvKey(HZV.i));
+
+  /* Kayıt işareti sadece gerçek Blob varsa geçerlidir. RECKEYS eski kalmışsa
+     TTS'ye temiz biçimde düşer; arayüz de yanlış "kendi sesin" demez. */
+  let blob=null;
+  const key=hzvKey(HZV.i);
+  try{
+    if(typeof RECKEYS!=='undefined'&&RECKEYS.has(key)){
+      blob=await REC_DB.get(key);
+      if(!blob){RECKEYS.delete(key);hzvKisimYaz();}
+    }
+  }catch(e){blob=null}
+  if(!HZV.zincir||token!==HZV.seq)return;
+
   const p=document.getElementById('hzvProg');
-  if(p)p.innerHTML='<span class="okAd">B\u00f6l\u00fcm '+(HZV.i+1)+'/'+HZV_KISIM.length+
-    ' \u2014 '+k.ad+' \u00b7 '+(kendiSesi?'kendi sesin':'cihaz sesi')+'</span>';
+  if(p)p.innerHTML='<span class="okAd">Bölüm '+(HZV.i+1)+'/'+HZV_KISIM.length+
+    ' — '+k.ad+' · '+(blob?'kendi sesin':'cihaz sesi')+'</span>';
   const satir=document.querySelector('#hzvKisim [data-i="'+HZV.i+'"]');
   if(satir)satir.scrollIntoView({behavior:'smooth',block:'nearest'});
   document.querySelectorAll('#hzvText .tvP').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('#hzvText .tvBlok').forEach(el=>el.classList.remove('on'));
   const blok=document.querySelector('#hzvText [data-k="'+HZV.i+'"]');
   if(blok){ blok.classList.add('on'); blok.scrollIntoView({behavior:'smooth',block:'nearest'}); }
-  /* r138: okunuş VE anlam birlikte vurgulanır — kullanıcı ikisini de
-     görmek istiyor; hangisinin gösterileceğini kulakçık belirler. */
   k.p.forEach(i=>{ const el=document.querySelector('#hzvText [data-i="'+i+'"]'); if(el)el.classList.add('on'); });
   try{ if(typeof miniDenetimSync==='function')miniDenetimSync(); }catch(e){}
   try{ if(typeof miniSync==='function')miniSync(); }catch(e){}
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
+  try{ window.SukunNowPlayingStore?.refresh?.(); }catch(e){}
 
-  /* kendi kaydı varsa onu çal, yoksa cihaz sesi */
-  if(kendiSesi){
+  if(blob){
+    let rr=false;
     try{
-      const blob=await REC_DB.get(hzvKey(HZV.i));
-      if(blob){
-        const a=await playRecording(blob,'hzv');
-        HZV.audio=a||null;
-        if(a){ a.onended=()=>{ if(HZV.zincir&&!HZV.paused)setTimeout(hzvAdim,320); }; return; }
-      }
-    }catch(e){}
+      rr=await playRecording(blob,'hzv:'+HZV.i,{detail:true,title:k.ad,reason:'Bu bölüm için kendi kaydın bulundu'});
+    }catch(e){rr={ok:false,reason:'exception'}}
+    if(!HZV.zincir||token!==HZV.seq)return;
+    if(rr&&rr.ok){setTimeout(()=>{if(HZV.zincir&&!HZV.paused&&token===HZV.seq)hzvAdim(token)},320);return;}
+    /* Kayıt gerçekten çalamadıysa kullanıcı sessiz kalmasın: TTS fallback. */
+    try{window.sukunSourceSet?.('tts','Kendi kayıt açılamadı; cihaz sesine geçildi','Hizbü’l-Vikâye')}catch(e){}
   }
-  try{
-    const u=new SpeechSynthesisUtterance(hzvMetin(k));
-    try{ if(typeof sesAyarla==='function')sesAyarla(u); }catch(e){}
-    u.onend=()=>{ if(HZV.zincir&&!HZV.paused)setTimeout(hzvAdim,320); };
-    u.onerror=()=>{ if(HZV.zincir&&!HZV.paused)setTimeout(hzvAdim,320); };
-    speechSynthesis.speak(u);
-  }catch(e){ if(HZV.zincir)setTimeout(hzvAdim,600); }
+
+  const ok=await hzvTtsOku(hzvMetin(k),token);
+  if(!HZV.zincir||token!==HZV.seq)return;
+  /* TTS motoru anlık hata verirse bölümü atlamak yerine bir kez temiz yeniden dene. */
+  if(!ok&&!HZV.paused){
+    await new Promise(r=>setTimeout(r,180));
+    if(!HZV.zincir||token!==HZV.seq)return;
+    const tekrar=await hzvTtsOku(hzvMetin(k),token);
+    if(!tekrar&&!HZV.paused){
+      const pr=document.getElementById('hzvProg');
+      if(pr)pr.innerHTML='<span class="okAd">Bölüm '+(HZV.i+1)+'/'+HZV_KISIM.length+' — '+k.ad+' · cihaz sesi başlatılamadı</span>';
+      return;
+    }
+  }
+  if(HZV.zincir&&!HZV.paused&&token===HZV.seq)setTimeout(()=>hzvAdim(token),320);
 }
 function hzvBasla(){
   if(HZV.playing){ hzvDurdur(); return; }
   try{ hardStopAll(); }catch(e){}
   try{ ac(); }catch(e){}
+  const token=(HZV.seq=(HZV.seq||0)+1);
   HZV.playing=true; HZV.zincir=true; HZV.paused=false; HZV.i=-1;
   window.__hzvPlaying=true;
   hzvDugmeler();
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
   try{ if(typeof miniDenetimSync==='function')miniDenetimSync(); }catch(e){}
-  hzvAdim();
+  /* hardStopAll içindeki Android cancel çağrılarının kuyruğu boşalsın.
+     Özellikle Delâil → Vikâye geçişinde ilk TTS cümlesinin 80 ms sonra
+     kesilmesini bu kısa güvenlik aralığı önler. */
+  setTimeout(()=>{if(HZV.zincir&&token===HZV.seq)hzvAdim(token)},140);
 }
 
 /* ── kendi sesiyle kayıt (r136) — itemRecToggle kalıbı ── */
@@ -18149,23 +18208,52 @@ $('#csPlayBtn').onclick=csPlayToggle;
 $('#csSaveBtn').onclick=csSave;
 
 /* ════ Seyyidü'l-İstiğfar — özel kart sesli okuma ════ */
-const SEY={playing:false,mode:null,gen:0,watch:null};
+const SEY={playing:false,paused:false,mode:null,gen:0,watch:null,watchEnd:0,watchRemain:0};
 async function seyPlayRec(){
-  window.__seyPlaying=true; SEY.playing=true; SEY.mode='ar'; $('#seyProg').textContent='🎙 kendi kaydın çalıyor…';
+  window.__seyPlaying=true; SEY.playing=true; SEY.paused=false; SEY.mode='ar'; $('#seyProg').textContent='🎙 kendi kaydın çalıyor…';
   ac();
   const ok=await duaRecPlay('seyyid');
-  window.__seyPlaying=false; SEY.playing=false; SEY.mode=null;
+  window.__seyPlaying=false; SEY.playing=false; SEY.paused=false; SEY.mode=null;
   if(ok){ $('#seyProg').textContent='Tamamlandı ✦'; LOG.push({t:Date.now(),dur:60,detail:'🌟 Seyyidü\u2019l-İstiğfar (kendi sesin) ✦'}); }
   return ok;
 }
 function seyStop(finished){
-  SEY.playing=false; SEY.mode=null; window.__seyPlaying=false;
+  SEY.playing=false; SEY.paused=false; SEY.mode=null; window.__seyPlaying=false;
   if(SEY.watch){clearTimeout(SEY.watch);SEY.watch=null;}
+  SEY.watchEnd=0;SEY.watchRemain=0;
   try{speechSynthesis.cancel()}catch(e){}
   const bt=$('#seyTrPlay'); if(bt){bt.textContent='🔊 Türkçe dinle';bt.classList.remove('playing');}
   const ba=$('#seyArPlay'); if(ba){ba.textContent='🕋 Arapça oku';ba.classList.remove('playing');}
   const bm=$('#seyMeanPlay'); if(bm){bm.textContent='📖 Manasını dinle';bm.classList.remove('playing');}
   const pr=$('#seyProg'); if(pr)pr.textContent=finished?'Tamam ✦':'';
+}
+function seyPause(){
+  if(!SEY.playing||SEY.paused)return false;
+  SEY.paused=true;
+  if(SEY.watch){
+    SEY.watchRemain=Math.max(600,SEY.watchEnd-Date.now());
+    clearTimeout(SEY.watch);SEY.watch=null;
+  }
+  try{if(typeof ttsDurakla==='function')ttsDurakla()}catch(e){}
+  try{if(typeof sesDuraklat==='function')sesDuraklat()}catch(e){}
+  const pr=$('#seyProg');if(pr)pr.textContent='Duraklatıldı';
+  try{window.SukunNowPlayingStore?.refresh?.()}catch(e){}
+  return true;
+}
+function seyResume(){
+  if(!SEY.playing||!SEY.paused)return false;
+  SEY.paused=false;
+  try{if(typeof ttsSurdur==='function')ttsSurdur()}catch(e){}
+  try{if(typeof sesSurdur==='function')sesSurdur()}catch(e){}
+  const g=SEY.gen, rem=Math.max(600,SEY.watchRemain||12000);
+  if(SEY.watchRemain){
+    SEY.watchEnd=Date.now()+rem;
+    SEY.watch=setTimeout(()=>{if(SEY.gen===g&&SEY.playing&&!SEY.paused)seyStop(true)},rem);
+  }
+  SEY.watchRemain=0;
+  const pr=$('#seyProg');if(pr)pr.textContent='Devam ediyor…';
+  try{window.SukunNowPlayingStore?.refresh?.()}catch(e){}
+  return true;
 }
 function seyPlay(mode){
   /* aynı butona tekrar basılırsa durdur (aç/kapa) */
@@ -18203,7 +18291,7 @@ function seyPlay(mode){
     ac();
     speechSynthesis.cancel();
     const g=++SEY.gen;
-    SEY.playing=true; SEY.mode=mode; window.__seyPlaying=true;
+    SEY.playing=true; SEY.paused=false; SEY.mode=mode; window.__seyPlaying=true;
     if(btn){btn.textContent='⏸ Durdur'; btn.classList.add('playing');}
     $('#seyProg').textContent=prog;
     setTimeout(()=>{
@@ -18216,7 +18304,8 @@ function seyPlay(mode){
       u.onerror=()=>{ if(SEY.gen===g)seyStop(false); };
       /* uzun cümle güvenlik bekçisi */
       const est=Math.min(30000,txt.length*90/Math.max(.5,rate))+4000;
-      SEY.watch=setTimeout(()=>{ if(SEY.gen===g && SEY.playing)seyStop(true); },est);
+      SEY.watchEnd=Date.now()+est;SEY.watchRemain=0;
+      SEY.watch=setTimeout(()=>{ if(SEY.gen===g && SEY.playing&&!SEY.paused)seyStop(true); },est);
       speechSynthesis.speak(u);
     },60);
     LOG.touch('sey','🌟 Seyyidü\u2019l-İstiğfar');
@@ -18655,6 +18744,7 @@ function tvArm(text){
   const base=(text.length*90)/Math.max(.5,SPK.rate);
   const est=Math.min(16000,Math.max(3000,base))+3500;
   TV.watch=setTimeout(()=>{
+    if(!TV.playing||TV.paused)return;
     try{speechSynthesis.cancel()}catch(e){}
     if(TV.playing&&!TV.paused){TV.qi++;tvNext();}
   },est);
@@ -19014,6 +19104,7 @@ function akArm(text,ar){
   const base=(text.length*(ar?125:90))/rate;
   const est=Math.min(22000,Math.max(3000,base))+3500;
   AK.watch=setTimeout(()=>{
+    if(!AK.playing||AK.paused)return;
     try{speechSynthesis.cancel()}catch(e){}
     if(AK.playing&&!AK.paused){AK.qi++;akNext();}
   },est);
@@ -19176,7 +19267,7 @@ function dlMetinDepoTemizle(raw){
   return out;
 }
 const DL={metin:dlMetinDepoTemizle(S.get('sukun.delail',{})), has:{}, rec:null, aktif:null, sess:null,
-          playing:false, qi:0, queue:[], hedefHizb:null};
+          playing:false, paused:false, kayitCaliyor:false, qi:0, queue:[], hedefHizb:null};
 const dlId=i=>DELAIL_HIZB[i].id;
 const dlKey=i=>'dua:delail:'+dlId(i);
 /* Kullanıcı düzenlemesi yerleşik metnin üstüne yazar; hiç düzenlemediyse
@@ -19380,6 +19471,7 @@ function dlIlerlemeYaz(){
 }
 /* Tek bölüm okuma. Söz döndürür → zincir sırayla ilerler. */
 async function dlOku(i){
+  DL.paused=false;
   /* ⚠ r108: 'delail' hariç tutulmalı. Merkezî durdurma artık dlStop()
      çağırıyor (zinciri de kırıyor); hariç tutulmazsa Delâil kendi
      zincirini ilk adımda koparırdı. */
@@ -19435,9 +19527,23 @@ async function dlOku(i){
 }
 /* «Sıradakine geç» — o anki parçayı bırakıp bir sonrakine atlar */
 function dlSonraki(){
+  /* r438: kendi kayıt çalarken DL.playing=false, DL.kayitCaliyor=true idi;
+     bu nedenle bardaki Sıradaki hiçbir şey yapmıyordu. Kayıt yolu da
+     aynı transport sözleşmesine alındı. */
+  if(DL.kayitCaliyor){
+    const mevcut=Math.max(0,+DL.hedefHizb||0), zincir=!!DL.zincir;
+    try{ if(typeof sesDurdur==='function')sesDurdur('delail-next'); }catch(e){}
+    DL.kayitCaliyor=false;
+    dlIlerlemeYaz();
+    if(!zincir){
+      const sonraki=Math.min(DELAIL_HIZB.length-1,mevcut+1);
+      if(sonraki!==mevcut)setTimeout(()=>dlOku(sonraki),90);
+    }
+    return;
+  }
   if(!DL.playing)return;
   try{ speechSynthesis.cancel(); }catch(e){}
-  const f=DL._ilerle; if(f)setTimeout(f,60);
+  const f=DL._ilerle; if(f)setTimeout(()=>{if(DL.playing&&!DL.paused)f()},60);
 }
 function dlSatirVurgula(i){
   document.querySelectorAll('#dlList .dlRow').forEach(r=>r.classList.toggle('okunuyor',+r.dataset.i===i));
@@ -19519,8 +19625,28 @@ async function dlTamOku(mod){
   }
   DL.zincir=false; dlCalarGoster(false);
 }
+function dlPause(){
+  if(DL.paused||(!DL.playing&&!DL.kayitCaliyor))return false;
+  DL.paused=true;
+  try{ if(typeof ttsDurakla==='function')ttsDurakla(); }catch(e){}
+  try{ if(typeof sesDuraklat==='function')sesDuraklat(); }catch(e){}
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
+  try{ window.SukunNowPlayingStore?.refresh?.(); }catch(e){}
+  return true;
+}
+function dlResume(){
+  if(!DL.paused)return false;
+  DL.paused=false;
+  try{
+    if(DL.kayitCaliyor&&typeof sesSurdur==='function')sesSurdur();
+    else if(DL.playing&&typeof ttsSurdur==='function')ttsSurdur();
+  }catch(e){}
+  try{ window.PlaybackController?.sync?.(); }catch(e){}
+  try{ window.SukunNowPlayingStore?.refresh?.(); }catch(e){}
+  return true;
+}
 function dlStop(){
-  DL.playing=false; DL.zincir=false;
+  DL.playing=false; DL.paused=false; DL.zincir=false;
   try{speechSynthesis.cancel()}catch(e){}
   /* Android Chrome'da cancel() ara sıra ilk çağrıda tutmuyor (bilinen
      tarayıcı kusuru). DL.playing zaten false olduğu için ikinci çağrı
@@ -19539,7 +19665,7 @@ function dlStop(){
                   (typeof SVK!=='undefined'&&SVK.zincir)); }catch(e2){}
     if(!DL.playing && !baska && speechSynthesis.speaking)speechSynthesis.cancel();
   }catch(e){} },80);
-  if(typeof sesDurdur==='function')sesDurdur();
+  if(typeof sesDurdur==='function')sesDurdur('delail-stop');
   DL.kayitCaliyor=false;
   dlWatchOff(); dlSatirVurgula(-1); dlCalarGoster(false); dlIlerlemeYaz(); dlRender();
   const c=DL._cozul; DL._cozul=null; c&&c();
@@ -19886,6 +20012,7 @@ function dhArm(text){
   const base=(text.length*90)/Math.max(.5,SPK.rate);
   const est=Math.min(16000,Math.max(3000,base))+3500;
   DH.watch=setTimeout(()=>{
+    if(!DH.playing||DH.paused)return;
     try{speechSynthesis.cancel()}catch(e){}
     if(DH.playing&&!DH.paused){DH.qi++;dhNext();}
   },est);
@@ -21713,13 +21840,13 @@ function miniPlayingInfo(){
 
   /* — okuyucular (sesli metin) — */
   const okuyucular=[];
-  if(window.__tvPlaying) okuyucular.push({ad:'🤲 Nasuh Tövbesi', ek:_m('#tvProg .okAd')});
-  if(window.__dhPlaying) okuyucular.push({ad:'🕌 Salavât', ek:_m('#dhProg .okAd')});
-  if(window.__akPlaying) okuyucular.push({ad:'🛡 Âyetü’l-Kürsî', ek:_m('#akProg')});
-  if(window.__fsPlaying) okuyucular.push({ad:'📖 Fâtiha Seyri', ek:_m('#fsProg')});
-  if(window.__seyPlaying)okuyucular.push({ad:'🤍 Seyyidü’l-İstiğfar', ek:''});
+  if(window.__tvPlaying) okuyucular.push({provider:'tovbe',ad:'🤲 Nasuh Tövbesi', ek:_m('#tvProg .okAd')});
+  if(window.__dhPlaying) okuyucular.push({provider:'salavat',ad:'🕌 Salavât', ek:_m('#dhProg .okAd')});
+  if(window.__akPlaying) okuyucular.push({provider:'ayetulkursi',ad:'🛡 Âyetü’l-Kürsî', ek:_m('#akProg')});
+  if(window.__fsPlaying) okuyucular.push({provider:'fatiha',ad:'📖 Fâtiha Seyri', ek:_m('#fsProg')});
+  if(window.__seyPlaying)okuyucular.push({provider:'seyyid',ad:'🤍 Seyyidü’l-İstiğfar', ek:''});
   try{ if(typeof DL!=='undefined'&&(DL.playing||DL.kayitCaliyor))
-    okuyucular.push({ad:'📗 Delâilü’l-Hayrât', ek:_m('#dlProg .okAd')||''}); }catch(e){}
+    okuyucular.push({provider:'delail',ad:'📗 Delâilü’l-Hayrât', ek:_m('#dlProg .okAd')||''}); }catch(e){}
   /* ⚠ r137: Hizbü'l-Vikâye bu listede YOKTU. r136'da çubuğun İÇ
      denetimlerine (hız satırı, ⏮/⏭) tanıtmıştım ama çubuğun kendisinin
      AÇILIP AÇILMAYACAĞINA burası karar veriyor. Sonuç: vird okunuyor,
@@ -21727,7 +21854,7 @@ function miniPlayingInfo(){
      «Bir okuyucuyu çubuğa bağlamak» iki ayrı yer demek:
        miniPlayingInfo → çubuk AÇILSIN mı
        miniDenetimSync → açılan çubukta NE görünsün */
-  if(window.__hzvPlaying) okuyucular.push({ad:'🛡 Hizbü’l-Vikâye', ek:_m('#hzvProg .okAd')||''});
+  if(window.__hzvPlaying) okuyucular.push({provider:'hizb',ad:'🛡 Hizbü’l-Vikâye', ek:_m('#hzvProg .okAd')||''});
   okuyucular.forEach(o=>parts.push(o.ad+(o.ek?' — '+o.ek.slice(0,38):'')));
 
   /* — kendi kaydın çalıyor mu — */
@@ -21755,8 +21882,12 @@ function miniPlayingInfo(){
 
   /* — Tekke seansı — */
   let tekkeAcik=false;
-  try{ const tk=document.getElementById('tk');
-       tekkeAcik=!!(tk&&!tk.hidden&&getComputedStyle(tk).display!=='none'); }catch(e){}
+  try{
+    tekkeAcik=!!(window.Tekke&&(
+      (Tekke.isRunning&&Tekke.isRunning())||
+      (Tekke.isActive&&Tekke.isActive())
+    ));
+  }catch(e){}
   if(tekkeAcik)parts.push('۞ Tekke seansı');
 
   if(!title){
@@ -21773,7 +21904,7 @@ function miniPlayingInfo(){
                (parts.length>2 ? '  •  +'+(parts.length-2) : '');
   /* Tam liste: ambiyans kanalları tek tek açılır */
   const tamListe=[];
-  okuyucular.forEach(o=>tamListe.push({tur:'okuyucu', ad:o.ad, ek:o.ek||''}));
+  okuyucular.forEach(o=>tamListe.push({tur:'okuyucu', provider:o.provider||'', ad:o.ad, ek:o.ek||''}));
   try{ if(SES.ler.size && [...SES.ler].some(a=>!a.paused))
         tamListe.push({tur:'kayit', ad:'🎙 Kendi kaydın', ek:'çalıyor'}); }catch(e){}
   if(FR.playing){
@@ -22372,7 +22503,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r436',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r438',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -23167,7 +23298,7 @@ function fsClearWatch(){ if(FS.watch){clearTimeout(FS.watch);FS.watch=null;} }
 function fsArm(text){
   fsClearWatch();
   const base=(text.length*95)/Math.max(.5,SPK.rate);
-  FS.watch=setTimeout(()=>{ try{speechSynthesis.cancel()}catch(e){} if(FS.playing&&!FS.paused){FS.qi++;fsNext();} },Math.min(17000,Math.max(3200,base))+3500);
+  FS.watch=setTimeout(()=>{ if(!FS.playing||FS.paused)return; try{speechSynthesis.cancel()}catch(e){} if(FS.playing&&!FS.paused){FS.qi++;fsNext();} },Math.min(17000,Math.max(3200,base))+3500);
 }
 function fsNext(){
   if(!FS.playing||FS.paused)return;
@@ -33404,10 +33535,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r436',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r438',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r436-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r438-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -35768,6 +35899,8 @@ function registerBuiltins(){
   if(typeof AK==='object')register('ayetulkursi',{priority:100,title:'Âyetü’l-Kürsî',getState:()=>AK.playing&&!AK.paused?'playing':AK.paused?'paused':'idle',play:()=>akPlay(),resume:()=>akPlay(),pause:()=>akPause(),stop:()=>akStop(false),previous:()=>queuePrev(AK,akNext,cancelSpeech),next:()=>queueNext(AK,akNext,cancelSpeech)});
   if(typeof DH==='object')register('salavat',{priority:100,title:'Salavât-ı Şerife',getState:()=>DH.playing&&!DH.paused?'playing':DH.paused?'paused':'idle',play:()=>dhPlay(),resume:()=>dhPlay(),pause:()=>dhPause(),stop:()=>dhStop(false),previous:()=>queuePrev(DH,dhNext,cancelSpeech),next:()=>queueNext(DH,dhNext,cancelSpeech)});
   if(typeof FS==='object')register('fatiha',{priority:100,title:'Fâtiha Seyri',getState:()=>FS.playing&&!FS.paused?'playing':FS.paused?'paused':'idle',play:()=>fsPlay(),resume:()=>fsPlay(),pause:()=>fsPause(),stop:()=>fsStop(false),previous:()=>queuePrev(FS,fsNext,cancelSpeech),next:()=>queueNext(FS,fsNext,cancelSpeech)});
+  if(typeof SEY==='object')register('seyyid',{priority:100,title:'Seyyidü’l-İstiğfar',getState:()=>SEY.playing?(SEY.paused?'paused':'playing'):'idle',play:()=>SEY.playing?(SEY.paused?seyResume():true):seyPlay('tr'),resume:()=>seyResume(),pause:()=>seyPause(),stop:()=>seyStop(false)});
+  if(typeof DL==='object')register('delail',{priority:99,title:'Delâilü’l-Hayrât',getState:()=>((DL.playing||DL.kayitCaliyor)?(DL.paused?'paused':'playing'):'idle'),play:()=>DL.paused?dlResume():(DL.playing||DL.kayitCaliyor?true:dlTamOku('gun')),resume:()=>dlResume(),pause:()=>dlPause(),stop:()=>dlStop(),next:()=>dlSonraki()});
   if(typeof HZV==='object')register('hizb',{priority:98,title:'Hizbü’l-Vikâye',getState:()=>HZV.playing?(HZV.paused?'paused':'playing'):'idle',play:()=>HZV.playing?(HZV.paused?hzvDuraklaCevir():true):hzvBasla(),resume:()=>{if(HZV.paused)hzvDuraklaCevir();else if(!HZV.playing)hzvBasla()},pause:()=>{if(HZV.playing&&!HZV.paused)hzvDuraklaCevir()},stop:()=>hzvDurdur(),previous:()=>hzvGit(Math.max(0,(+HZV.i||0)-1)),next:()=>hzvGit(Math.min((typeof HZV_KISIM!=='undefined'?HZV_KISIM.length:999)-1,(+HZV.i||0)+1))});
   let hatPcPaused=false,ltfPcPaused=false;
   if(typeof HATIM==='object')register('hatim',{priority:70,title:'Esmâ Hatmi',getState:()=>HATIM.active?'playing':hatPcPaused?'paused':'idle',play:()=>{hatPcPaused=false;return hatStart()},resume:()=>{hatPcPaused=false;return hatStart()},pause:()=>{hatPcPaused=true;return hatPause()},stop:()=>{hatPcPaused=false;return hatPause()},previous:()=>{if(HATIM.active)hatPause();hatPcPaused=true;HATIM.idx=Math.max(0,(+HATIM.idx||0)-1);HATIM.count=0;hatApply();hatSave()},next:()=>{if(HATIM.idx<ZIKIR.esma.items.length-1){HATIM.idx++;HATIM.count=0;hatPcPaused=true;hatApply();hatSave()}}});
@@ -35780,7 +35913,7 @@ function registerBuiltins(){
 function providerFromTitle(t=''){
   const x=String(t).toLocaleLowerCase('tr');
   if(x.includes('akıllı seans')||x.includes('korunma okumaları'))return'smart-session';
-  if(x.includes('nasuh'))return'tovbe';if(x.includes('kürs'))return'ayetulkursi';if(x.includes('salav'))return'salavat';if(x.includes('fâtiha')||x.includes('fatiha'))return'fatiha';if(x.includes('vikâye')||x.includes('vikaye'))return'hizb';if(x.includes('berheti'))return'berhetiyye';return null;
+  if(x.includes('nasuh'))return'tovbe';if(x.includes('kürs'))return'ayetulkursi';if(x.includes('salav'))return'salavat';if(x.includes('fâtiha')||x.includes('fatiha'))return'fatiha';if(x.includes('seyyid')||x.includes('istiğfar')||x.includes('istigfar'))return'seyyid';if(x.includes('vikâye')||x.includes('vikaye'))return'hizb';if(x.includes('delâil')||x.includes('delail')||x.includes('hayrât')||x.includes('hayrat'))return'delail';if(x.includes('berheti'))return'berhetiyye';return null;
 }
 function hookSesCapa(){const sc=window.SesCapa;if(!sc||sc.__playback270)return;sc.__playback270=1;const oldStart=sc.start?.bind(sc),oldStop=sc.stop?.bind(sc);if(oldStart)sc.start=function(o={}){const r=oldStart(o),id=providerFromTitle(o?.title);if(id)activate(id,'sescapa-start');setTimeout(bindMediaSession,0);return r};if(oldStop)sc.stop=function(){const r=oldStop();setTimeout(()=>{discover();bindMediaSession();emit('sescapa-stop')},0);return r}}
 
@@ -35796,7 +35929,8 @@ function bindMediaSession(){
 const binds=[
  ['tvPlay','tovbe','toggle'],['tvStop','tovbe','stop'],['akPlay','ayetulkursi','toggle'],['akStop','ayetulkursi','stop'],['dhPlay','salavat','toggle'],['dhStop','salavat','stop'],['fsPlay','fatiha','toggle'],['fsStop','fatiha','stop'],
  ['bsStart','berhetiyye','toggle'],['bsPause','berhetiyye','toggle'],['bsStop','berhetiyye','stop'],['bsNext','berhetiyye','next'],
- ['hatGo','hatim','toggle'],['ltfGo','lataif','toggle'],['hzvDurakla','hizb','toggle'],
+ ['hatGo','hatim','toggle'],['ltfGo','lataif','toggle'],['hzvDurakla','hizb','toggle'],['hzvDur','hizb','stop'],
+ ['seyStop','seyyid','stop'],['dlStopBtn','delail','stop'],['dlSonrakiBtn','delail','next'],
  ['r170StartSession','smart-session','toggle'],['r170Play','smart-session','toggle'],['r170Prev','smart-session','previous'],['r170Next','smart-session','next'],['r170Stop','smart-session','stop'],
  ['mbPause','mix','toggle'],['mbPrev',null,'previous'],['mbNext',null,'next']
 ];
@@ -35813,7 +35947,7 @@ const poll=setInterval(()=>{if(document.hidden)return;discover();bindMediaSessio
 window.addEventListener('sukun:audiostate',()=>schedule('audio-state'));
 window.PlaybackController={version:'r270',register,unregister,activate,play,pause,resume,toggle,stop,stopAll,previous,next,capabilities,snapshot,sync:()=>schedule('manual'),list:()=>[...providers.keys()]};
 /* Tanılama / stres testi entegrasyonu */
-try{const ST=window.SukunAudioStress;if(ST?.run&&!ST.__r270){ST.__r270=1;const old=ST.run.bind(ST);ST.run=async function(){const r=await old();const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','hizb','hatim','lataif','mix'];const missing=req.filter(x=>!providers.has(x));r.tests.push({name:'r270 PlaybackController',ok:!missing.length,detail:missing.length?'eksik: '+missing.join(', '):req.length+' adaptör kayıtlı'});r.tests.push({name:'r270 Global transport API',ok:['play','pause','resume','toggle','stop','stopAll','previous','next'].every(k=>typeof window.PlaybackController?.[k]==='function'),detail:'tek transport sözleşmesi'});r.total=r.tests.length;r.passed=r.tests.filter(x=>x.ok).length;window.renderStress?.(r);return r}}}catch(e){}
+try{const ST=window.SukunAudioStress;if(ST?.run&&!ST.__r270){ST.__r270=1;const old=ST.run.bind(ST);ST.run=async function(){const r=await old();const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','seyyid','delail','hizb','hatim','lataif','mix'];const missing=req.filter(x=>!providers.has(x));r.tests.push({name:'r270 PlaybackController',ok:!missing.length,detail:missing.length?'eksik: '+missing.join(', '):req.length+' adaptör kayıtlı'});r.tests.push({name:'r270 Global transport API',ok:['play','pause','resume','toggle','stop','stopAll','previous','next'].every(k=>typeof window.PlaybackController?.[k]==='function'),detail:'tek transport sözleşmesi'});r.total=r.tests.length;r.passed=r.tests.filter(x=>x.ok).length;window.renderStress?.(r);return r}}}catch(e){}
 })();
 </script>
 
@@ -35895,6 +36029,8 @@ function derive(snap){
     else if(id==='ayetulkursi'&&typeof AK!=='undefined')Object.assign(d,queueState(AK.queue,AK.qi));
     else if(id==='salavat'&&typeof DH!=='undefined')Object.assign(d,queueState(DH.queue,DH.qi));
     else if(id==='fatiha'&&typeof FS!=='undefined')Object.assign(d,queueState(FS.queue,FS.qi));
+    else if(id==='seyyid'&&typeof SEY!=='undefined'){d.sectionTitle='Seyyidü’l-İstiğfar';d.sectionIndex=1;d.sectionCount=1;d.progress=null;}
+    else if(id==='delail'&&typeof DL!=='undefined'){const q=(typeof DELAIL_HIZB!=='undefined'?DELAIL_HIZB:[]),i=clamp(+DL.hedefHizb||0,0,Math.max(0,q.length-1));d.sectionTitle=labelAny(q[i])||'Delâilü’l-Hayrât';d.sectionIndex=q.length?i+1:null;d.sectionCount=q.length||null;d.progress=q.length?clamp((i/q.length)*100,0,100):null;d.queue=q;}
     else if(id==='hizb'&&typeof HZV!=='undefined'){
       const q=(typeof HZV_KISIM!=='undefined'?HZV_KISIM:[]),i=clamp(+HZV.i||0,0,Math.max(0,q.length-1));d.sectionTitle=labelAny(q[i]);d.sectionIndex=q.length?i+1:null;d.sectionCount=q.length||null;d.progress=q.length?clamp((i/q.length)*100,0,100):null;d.queue=q;
     }else if(id==='hatim'&&typeof HATIM!=='undefined'){
@@ -35922,7 +36058,7 @@ function publish(reason='tick'){
 }
 function ensureMini(){const info=document.querySelector('#miniBar .mbInfo');if(!info)return;let m=$('mbNowMeta');if(!m){m=document.createElement('div');m.id='mbNowMeta';info.appendChild(m)}let tr=$('mbNowTrack');if(!tr){tr=document.createElement('div');tr.id='mbNowTrack';tr.innerHTML='<i></i>';info.appendChild(tr)}}
 function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if(n.state==='idle'&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}try{window.SukunMiniStable?.applyNow?.(n)}catch(e){}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
-const readerRoots={tovbe:'#tvBox',ayetulkursi:'#akBox',salavat:'#dhBox',fatiha:'#fsBox',hizb:'#hzvBox',berhetiyye:'#berhetSeyir',hatim:'#hatimBox,#esmaHatim',lataif:'#lataifBox,#latifSeyir','smart-session':'#r170SessionHub'};
+const readerRoots={tovbe:'#tvBox',ayetulkursi:'#akBox',salavat:'#dhBox',fatiha:'#fsBox',seyyid:'#seyBox',delail:'#dlBox',hizb:'#hzvBox',berhetiyye:'#berhetSeyir',hatim:'#hatimBox,#esmaHatim',lataif:'#lataifBox,#latifSeyir','smart-session':'#r170SessionHub'};
 function renderReaders(n){Object.entries(readerRoots).forEach(([id,sel])=>{let root=null;try{root=document.querySelector(sel)}catch(e){};if(!root)return;const active=n.id===id&&(n.state==='playing'||n.state==='paused');root.dataset.nowActive=active?'1':'0';let d=root.querySelector('.sukunNowMini');if(!d){d=document.createElement('div');d.className='sukunNowMini';root.appendChild(d)}if(active){const b=[];if(n.sectionIndex&&n.sectionCount)b.push(n.sectionIndex+'/'+n.sectionCount);if(n.repeatTotal)b.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(n.sourceLabel)b.push(n.sourceLabel);if(n.remaining!=null)b.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));d.innerHTML='<b>Şimdi:</b> '+escapeHtml(n.sectionTitle)+(b.length?' · '+escapeHtml(b.join(' · ')):'')}})}
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function renderMedia(n){if(!('mediaSession'in navigator))return;try{navigator.mediaSession.playbackState=n.state==='playing'?'playing':n.state==='paused'?'paused':'none'}catch(e){};if(n.state==='idle'||!n.id)return;try{if(window.MediaMetadata)navigator.mediaSession.metadata=new MediaMetadata({title:n.sectionTitle||n.moduleTitle||'SÜKÛN',artist:n.sourceLabel||'Tasavvufî Ses & Tefekkür',album:n.moduleTitle||'SÜKÛN'})}catch(e){};try{if(typeof navigator.mediaSession.setPositionState==='function'&&n.duration!=null&&n.elapsed!=null&&n.duration>=1000){const dur=Math.max(1,n.duration/1000),pos=clamp(n.elapsed/1000,0,Math.max(0,dur-.001));navigator.mediaSession.setPositionState({duration:dur,position:pos,playbackRate:1})}}catch(e){}
@@ -40535,10 +40671,10 @@ function syncButtons(n){
     play.textContent=paused?'▶':(playing?'Ⅱ':'▶');
     play.setAttribute('aria-label',paused?'Devam Ettir':playing?'Duraklat':'Başlat');
     play.title=play.getAttribute('aria-label');
-    let cap={};try{cap=PC?.snapshot?.()?.capabilities||{}}catch(e){}
+    let snap=null,cap={};try{snap=PC?.snapshot?.();cap=snap?.capabilities||{}}catch(e){}
     prev.disabled=!cap.previous;
     next.disabled=!cap.next;
-    stop.setAttribute('aria-label','Tümünü durdur');
+    stop.setAttribute('aria-label',snap?.id&&snap.id!=='mix'?'Durdur':'Tümünü durdur');
   }
   stop.title=stop.getAttribute('aria-label');
 }
@@ -40566,7 +40702,13 @@ function bindControls(){
   };
   stop.onclick=e=>{
     e?.preventDefault?.();
-    if(owner==='smart')PC?.stop?.('smart-session');
+    if(owner==='smart'){
+      PC?.stop?.('smart-session');
+      return;
+    }
+    try{if(window.SukunAudioGuard?.stopCurrent?.())return}catch(err){}
+    let snap=null;try{snap=PC?.snapshot?.()}catch(err){}
+    if(snap?.id&&snap.id!=='mix')PC?.stop?.(snap.id);
     else PC?.stopAll?.();
   };
 }
@@ -40984,7 +41126,7 @@ function owner(){try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e
 function isActive(){return document.body?.classList.contains('r431-dock-visible')&&owner()!=='none'}
 function zvol(){try{return Number.isFinite(+ZVOL)?clamp(+ZVOL,0,1):1}catch(e){return 1}}
 function pct(v){return '%'+Math.round(clamp(+v||0,0,1)*100)}
-function layerKey(x,i){if(x.tur==='ambiyans'&&x.id)return'amb:'+x.id;if(x.tur==='okuyucu')return'reader:'+String(x.ad||i).replace(/\s+/g,'-').toLowerCase();return String(x.tur||'layer')+':'+i}
+function layerKey(x,i){if(x.tur==='ambiyans'&&x.id)return'amb:'+x.id;if(x.tur==='okuyucu')return'reader:'+(x.provider||String(x.ad||i).replace(/\s+/g,'-').toLowerCase());return String(x.tur||'layer')+':'+i}
 function layerVol(x){
   try{
     if(x.tur==='ambiyans'&&x.id)return clamp(+chVol[x.id]||0,0,1);
@@ -41079,8 +41221,14 @@ function setLayerVol(key,v){
   }catch(e){}
   const val=document.querySelector('[data-r434-val="'+CSS.escape(key)+'"]');if(val)val.textContent=pct(v);
 }
-function stopReader(ad){
-  const s=String(ad||'');
+function stopReader(x){
+  const provider=String(x?.provider||'');
+  try{
+    if(provider&&window.PlaybackController?.list?.().includes(provider))
+      return window.PlaybackController.stop(provider);
+  }catch(e){}
+  /* Eski kayıt/yedeklerden provider gelmezse yalnız geriye dönük fallback. */
+  const s=String(x?.ad||x||'');
   try{if(/Nasuh|Tövbe/i.test(s)&&typeof tovbeStop==='function')return tovbeStop(false)}catch(e){}
   try{if(/Salav/i.test(s)&&typeof dhStop==='function')return dhStop(false)}catch(e){}
   try{if(/Kürs|Âyet|Ayet/i.test(s)&&typeof akStop==='function')return akStop(false)}catch(e){}
@@ -41098,7 +41246,7 @@ function stopLayer(key){
     else if(x.tur==='zikir')autoStop?.();
     else if(x.tur==='dongu')DONGU?.durdur?.();
     else if(x.tur==='kayit')sesDurdur?.('dock-layer-stop');
-    else if(x.tur==='okuyucu')stopReader(x.ad);
+    else if(x.tur==='okuyucu')stopReader(x);
     else if(x.tur==='tekke')window.Tekke?.stop?.('dock-layer-stop');
     else if(x.tur==='seans'){const P=window.R170?.Player;if(P?.playing||P?.paused)P.next?.();}
   }catch(e){}
@@ -41408,6 +41556,148 @@ window.SukunTekkeDock={
   toggle(){if(tekkeActive()){playerOpen=!playerOpen;apply()}},
   isOpen:()=>!!(tekkeActive()&&playerOpen)
 };
+})();
+</script>
+
+
+<script id="r438-audio-contract-guard">
+(()=>{
+'use strict';
+if(window.__SUKUN_R438_AUDIO_GUARD__)return;
+window.__SUKUN_R438_AUDIO_GUARD__=1;
+
+const PC=window.PlaybackController, NP=window.SukunNowPlayingStore;
+if(!PC)return;
+
+const required=[
+  'smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha',
+  'seyyid','delail','hizb','hatim','lataif','mix','global-queue'
+];
+
+const directStop={
+  'smart-session':()=>window.R170?.Player?.stop?.(),
+  berhetiyye:()=>typeof seyirKes==='function'&&seyirKes('Bitirildi',false),
+  tovbe:()=>typeof tovbeStop==='function'&&tovbeStop(false),
+  ayetulkursi:()=>typeof akStop==='function'&&akStop(false),
+  salavat:()=>typeof dhStop==='function'&&dhStop(false),
+  fatiha:()=>typeof fsStop==='function'&&fsStop(false),
+  seyyid:()=>typeof seyStop==='function'&&seyStop(false),
+  delail:()=>typeof dlStop==='function'&&dlStop(),
+  hizb:()=>typeof hzvDurdur==='function'&&hzvDurdur(),
+  hatim:()=>typeof hatPause==='function'&&hatPause(),
+  lataif:()=>typeof ltfPause==='function'&&ltfPause(),
+  'global-queue':()=>window.GlobalQueue?.stop?.(true)
+};
+
+const stateProbe={
+  tovbe:()=>!!(window.TV&&(TV.playing||TV.paused)),
+  ayetulkursi:()=>!!(window.AK&&(AK.playing||AK.paused)),
+  salavat:()=>!!(window.DH&&(DH.playing||DH.paused)),
+  fatiha:()=>!!(window.FS&&(FS.playing||FS.paused)),
+  seyyid:()=>!!(window.SEY&&(SEY.playing||SEY.paused)),
+  delail:()=>!!(window.DL&&(DL.playing||DL.kayitCaliyor||DL.paused)),
+  hizb:()=>!!(window.HZV&&HZV.playing),
+  'smart-session':()=>!!(window.R170?.Player&&(R170.Player.playing||R170.Player.paused)),
+  'global-queue':()=>!!(window.GlobalQueue?.state&&(GlobalQueue.state.playing||GlobalQueue.state.paused))
+};
+
+function providerState(id){
+  try{return PC.snapshot(id)?.state||'idle'}catch(e){return'idle'}
+}
+function refresh(){
+  try{PC.sync?.()}catch(e){}
+  try{NP?.clearOverride?.()}catch(e){}
+  try{NP?.refresh?.()}catch(e){}
+  try{typeof miniSync==='function'&&miniSync()}catch(e){}
+}
+function stopCurrent(){
+  let snap=null;try{snap=PC.snapshot()}catch(e){}
+  const id=snap?.id;
+  if(id&&id!=='mix'){
+    let ok=false;
+    try{ok=PC.stop(id)!==false}catch(e){}
+    /* Adaptör sessizce başarısız olmuşsa doğrudan modül kontratına düş. */
+    setTimeout(()=>{
+      try{
+        if(stateProbe[id]?.()||['playing','paused'].includes(providerState(id))){
+          directStop[id]?.();
+          refresh();
+        }
+      }catch(e){}
+    },180);
+    return ok||!!directStop[id];
+  }
+  try{PC.stopAll();return true}catch(e){
+    try{window.hardStopAll?.();refresh();return true}catch(_){}
+  }
+  return false;
+}
+function audit(){
+  const listed=new Set(PC.list?.()||[]);
+  const issues=[];
+  required.forEach(id=>{if(!listed.has(id))issues.push('provider eksik: '+id)});
+  const mi=(()=>{try{return miniPlayingInfo?.()||{tam:[],active:false}}catch(e){return{tam:[],active:false}}})();
+  (mi.tam||[]).filter(x=>x.tur==='okuyucu').forEach(x=>{
+    if(!x.provider)issues.push('okuyucu provider kimliği yok: '+String(x.ad||''));
+    else if(!listed.has(x.provider))issues.push('okuyucu provider kayıtlı değil: '+x.provider);
+  });
+  const snap=(()=>{try{return PC.snapshot()}catch(e){return{id:null,state:'idle'}}})();
+  if(snap.id&&snap.id!=='mix'&&stateProbe[snap.id]&&!stateProbe[snap.id]()&&['playing','paused'].includes(snap.state))
+    issues.push('provider state bayat: '+snap.id);
+  return {ok:issues.length===0,issues,providers:[...listed],snapshot:snap};
+}
+function repair(){
+  const a=audit();
+  /* Hiç gerçek ses/okuyucu yokken geçmişten kalan global pause veya
+     Now Playing override barı ekranda tutmasın. */
+  let any=false;
+  try{any=!!miniPlayingInfo?.().active}catch(e){}
+  if(!any){
+    try{if(typeof MINI==='object'&&MINI){MINI.paused=false;MINI.wasAuto=false}}catch(e){}
+    refresh();
+  }
+  return audit();
+}
+
+/* Playback değişimlerinde yalnız tutarlılık tazelemesi yap; kullanıcı
+   isteği olmadan aktif sesi zorla durdurma. */
+let rt=null;
+window.addEventListener('sukun:playbackchange',()=>{
+  clearTimeout(rt);rt=setTimeout(()=>{try{repair()}catch(e){}},90);
+},{passive:true});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')setTimeout(()=>{try{repair()}catch(e){}},100);
+});
+
+/* Tanılama panelindeki mevcut stres testine ses sözleşmesi denetimini ekle. */
+try{
+  const ST=window.SukunAudioStress;
+  if(ST?.run&&!ST.__r438){
+    ST.__r438=1;
+    const old=ST.run.bind(ST);
+    ST.run=async function(){
+      const r=await old();
+      try{
+        const a=audit();
+        r.tests.push({name:'r438 Ses sağlayıcı sözleşmesi',ok:a.ok,
+          detail:a.ok?(a.providers.length+' provider tutarlı'):a.issues.join(' · ')});
+        const readers=(()=>{try{return (miniPlayingInfo?.().tam||[]).filter(x=>x.tur==='okuyucu')}catch(e){return[]}})();
+        r.tests.push({name:'r438 Okuyucu → provider kimliği',
+          ok:readers.every(x=>!!x.provider),
+          detail:readers.length?readers.map(x=>x.provider||'?').join(', '):'aktif okuyucu yok'});
+        r.tests.push({name:'r438 Ana bar hedefli stop',
+          ok:typeof window.SukunAudioGuard?.stopCurrent==='function',
+          detail:'aktif provider → doğrudan stop; mix → stopAll'});
+        r.total=r.tests.length;r.passed=r.tests.filter(x=>x.ok).length;
+        window.renderStress?.(r);
+      }catch(e){}
+      return r;
+    }
+  }
+}catch(e){}
+
+window.SukunAudioGuard={version:'r438',audit,repair,stopCurrent,refresh};
+setTimeout(()=>{try{repair()}catch(e){}},280);
 })();
 </script>
 
