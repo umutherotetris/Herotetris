@@ -1,8 +1,8 @@
-/* SÜKÛN r443 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r455 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r443';
-const CACHE = 'sukun-r443-20260822a';
+const SURUM = 'r455';
+const CACHE = 'sukun-r455-20260822a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,18 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r455 Diagnostics + regression: runtime probe, geliştirici ekranı, güvenli/derin test suite ve JSON tanılama raporu eklendi.',
+  'r454 Audio State Machine / Session Registry: play-pause-resume-stop-volume-state kontratı merkezileştirildi; aggregate transport registry üzerinden çalışıyor.',
+  'r453 Core Cleanup I: Tefekkür, dock/focus ve peek runtime sahipliği tek SukunUIRuntime altında birleştirildi; r452 görsel tasarımı donduruldu.',
+  'r452 nihai kalite turu: tefekkür minimalleştirildi, dock/control bar sadeleştirildi, tipografi ve boşluk sistemi standardize edildi.',
+  'r451 son premium rötuş: ana CTA güçlendirildi, yan butonlar inceltildi, zikir odak halkasına çok hafif nefes efekti eklendi.',
+  'r450 premium capsule: tefekkür üst kontrol adası tek bütün premium control island hâline getirildi; Hedef/Devir özeti kapsül içine taşındı.',
+  'r449 hizalama rötuşu: tefekkür üst kontrol adası ortalandı, Hedef/Devir özeti kontrollerin altına taşındı, CANLI rozeti handle ile çakışmayacak yere alındı.',
+  'r448 performans stabilizasyonu: global DOM observer ve render fırtınası kaldırıldı; tefekkür sürekli animasyonları statikleştirildi, dock senkronizasyonu tek koordinatörde birleştirildi.',
+  'r447: tek oynatıcı Mini/Geniş iki seviyeli premium dock oldu; Tefekkür Focus otomatik sakinleşiyor ve tüm mikro hareketler 180–220 ms SÜKÛN motion diline bağlandı.',
+  'r446: Tefekkür sayaç kontrolleri premium Control Island düzenine geçirildi; ana eylem, −/+ ve çıkış daha net ve erişilebilir hale getirildi.',
+  'r445: Tefekkürde kalan flashing/titreme katmanları kapatıldı; breath halo ve pulse tint bastırıldı.',
+  'r444: Tefekkürde Tefekkürden Çık ve Saymaya Başla, −/+ arasındaki kompakt merkez stack içine taşındı; sayaç sahnesi kısaldı ve görsel hiyerarşi sadeleştirildi.',
   'r443: Tefekkür bar kontrolü ikon-only yapıldı; yaklaşık 520 ms uzun basmada açıklama balonu açılıyor ve uzun basma modu yanlışlıkla tetiklemiyor.',
   'r442: Tefekkür kontrolü tek bara taşındı; Tefekkür barı kompaktlaştırıldı, −1/+1 yukarı alındı ve sayaç başlatma kontrolleri için güvenli alan ayrıldı.',
   'r441: gizli oynatıcı geri çağırma görünümü Geniş düğme / Yan sekme olarak seçilebilir ve tercih yerel olarak saklanır.',

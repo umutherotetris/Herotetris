@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r443 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r455 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r443">
+<meta name="sukun-build" content="r455">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r443">
+<link rel="manifest" href="./manifest.webmanifest?v=r455">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3715,6 +3715,299 @@ body>script+br:last-child{display:none!important}
 }
 </style>
 
+
+
+<script id="r455-boot-runtime-probe">
+(()=>{
+'use strict';
+if(window.__SUKUN_R455_PROBE__)return;
+window.__SUKUN_R455_PROBE__=1;
+
+const bootAt=performance.now();
+const native={
+  setTimeout:window.setTimeout.bind(window),
+  clearTimeout:window.clearTimeout.bind(window),
+  setInterval:window.setInterval.bind(window),
+  clearInterval:window.clearInterval.bind(window),
+  raf:window.requestAnimationFrame?.bind(window),
+  caf:window.cancelAnimationFrame?.bind(window),
+  MO:window.MutationObserver,
+  AC:window.AudioContext,
+  WAC:window.webkitAudioContext
+};
+const activeTimeouts=new Map();
+const activeIntervals=new Map();
+const activeRaf=new Map();
+const activeObservers=new Map();
+const contexts=new Set();
+const lifecycle=[];
+const errors=[];
+const longTasks=[];
+const totals={
+  timeoutCreated:0,
+  intervalCreated:0,
+  rafCreated:0,
+  observerCreated:0,
+  audioContextCreated:0,
+  longTaskCount:0
+};
+
+function cap(a,n=40){if(a.length>n)a.splice(0,a.length-n)}
+function fnLabel(fn){
+  if(typeof fn!=='function')return String(fn).slice(0,60);
+  if(fn.name)return fn.name.slice(0,60);
+  try{
+    const s=Function.prototype.toString.call(fn).replace(/\s+/g,' ');
+    return s.slice(0,60);
+  }catch(e){return'anon'}
+}
+function targetLabel(t){
+  try{
+    if(t===document)return'document';
+    if(t===document.documentElement)return'html';
+    if(t===document.body)return'body';
+    if(t?.id)return'#'+t.id;
+    if(t?.nodeName)return String(t.nodeName).toLowerCase();
+  }catch(e){}
+  return'node';
+}
+
+/* Timer takibi: API davranışını değiştirmeden yalnız aktif kayıt tutulur. */
+window.setTimeout=function(fn,delay,...args){
+  if(typeof fn!=='function')return native.setTimeout(fn,delay,...args);
+  let id;
+  const createdAt=performance.now();
+  const wrapped=function(...cbArgs){
+    activeTimeouts.delete(id);
+    return fn.apply(this,cbArgs);
+  };
+  id=native.setTimeout(wrapped,delay,...args);
+  totals.timeoutCreated++;
+  activeTimeouts.set(id,{createdAt,delay:+delay||0,label:fnLabel(fn)});
+  return id;
+};
+window.clearTimeout=function(id){
+  activeTimeouts.delete(id);
+  return native.clearTimeout(id);
+};
+window.setInterval=function(fn,delay,...args){
+  if(typeof fn!=='function')return native.setInterval(fn,delay,...args);
+  const id=native.setInterval(fn,delay,...args);
+  totals.intervalCreated++;
+  activeIntervals.set(id,{createdAt:performance.now(),delay:+delay||0,label:fnLabel(fn)});
+  return id;
+};
+window.clearInterval=function(id){
+  activeIntervals.delete(id);
+  return native.clearInterval(id);
+};
+if(native.raf&&native.caf){
+  window.requestAnimationFrame=function(fn){
+    let id;
+    const createdAt=performance.now();
+    const wrapped=t=>{
+      activeRaf.delete(id);
+      return fn(t);
+    };
+    id=native.raf(wrapped);
+    totals.rafCreated++;
+    activeRaf.set(id,{createdAt,label:fnLabel(fn)});
+    return id;
+  };
+  window.cancelAnimationFrame=function(id){
+    activeRaf.delete(id);
+    return native.caf(id);
+  };
+}
+
+/* MutationObserver: oluşturulan ve gerçekten observe() durumunda olan
+   observer'ları say. disconnect sonrası kayıt düşer, tekrar observe aktif eder. */
+if(native.MO){
+  try{
+    const WrappedMO=new Proxy(native.MO,{
+      construct(Target,args){
+        const obs=Reflect.construct(Target,args);
+        const meta={createdAt:performance.now(),targets:[],active:false};
+        totals.observerCreated++;
+        const observeNative=obs.observe.bind(obs);
+        const disconnectNative=obs.disconnect.bind(obs);
+        try{
+          Object.defineProperty(obs,'observe',{
+            configurable:true,
+            value:function(target,options){
+              meta.active=true;
+              const label=targetLabel(target);
+              if(!meta.targets.includes(label))meta.targets.push(label);
+              activeObservers.set(obs,meta);
+              return observeNative(target,options);
+            }
+          });
+          Object.defineProperty(obs,'disconnect',{
+            configurable:true,
+            value:function(){
+              meta.active=false;
+              activeObservers.delete(obs);
+              return disconnectNative();
+            }
+          });
+        }catch(e){
+          /* Bazı WebView sürümleri native observer instance'ına own property
+             yazılmasına izin vermeyebilir. Tanılama eksik kalsın ama uygulama
+             observer'ı asla bozulmasın. */
+        }
+        return obs;
+      }
+    });
+    window.MutationObserver=WrappedMO;
+  }catch(e){}
+}
+
+/* AudioContext'ler erken aşamadan itibaren izlenir. */
+function trackContext(ctx,kind){
+  if(!ctx||contexts.has(ctx))return ctx;
+  contexts.add(ctx);
+  totals.audioContextCreated++;
+  try{ctx.__sukunDiagKind=kind||'AudioContext'}catch(e){}
+  return ctx;
+}
+function wrapAudio(name,NativeCtor){
+  if(!NativeCtor)return null;
+  try{
+    return new Proxy(NativeCtor,{
+      construct(Target,args){
+        const ctx=Reflect.construct(Target,args);
+        trackContext(ctx,name);
+        return ctx;
+      }
+    });
+  }catch(e){return NativeCtor}
+}
+if(native.AC)window.AudioContext=wrapAudio('AudioContext',native.AC);
+if(native.WAC){
+  if(native.WAC===native.AC)window.webkitAudioContext=window.AudioContext;
+  else window.webkitAudioContext=wrapAudio('webkitAudioContext',native.WAC);
+}
+
+/* Long Task gözlemi — destekleyen tarayıcıda jank kaynağını görünür yapar. */
+try{
+  if('PerformanceObserver'in window){
+    const po=new PerformanceObserver(list=>{
+      list.getEntries().forEach(e=>{
+        totals.longTaskCount++;
+        longTasks.push({
+          at:Math.round(performance.now()),
+          duration:Math.round(e.duration*10)/10,
+          name:e.name||'longtask'
+        });
+      });
+      cap(longTasks,60);
+    });
+    po.observe({entryTypes:['longtask']});
+  }
+}catch(e){}
+
+/* Gerçek lifecycle ve hata akışı. */
+function life(type,extra=''){
+  lifecycle.push({
+    type,
+    at:Date.now(),
+    perf:Math.round(performance.now()),
+    visibility:document.visibilityState,
+    extra
+  });
+  cap(lifecycle,60);
+}
+window.addEventListener('pageshow',e=>life('pageshow',e.persisted?'bfcache':''),{passive:true});
+window.addEventListener('pagehide',e=>life('pagehide',e.persisted?'bfcache':''),{passive:true});
+document.addEventListener('visibilitychange',()=>life('visibilitychange',document.visibilityState),{passive:true});
+window.addEventListener('online',()=>life('online'),{passive:true});
+window.addEventListener('offline',()=>life('offline'),{passive:true});
+window.addEventListener('error',e=>{
+  errors.push({
+    type:'error',
+    at:Date.now(),
+    message:String(e.message||e.error?.message||'runtime error').slice(0,240),
+    source:String(e.filename||'').slice(-120),
+    line:e.lineno||0
+  });
+  cap(errors,50);
+});
+window.addEventListener('unhandledrejection',e=>{
+  errors.push({
+    type:'unhandledrejection',
+    at:Date.now(),
+    message:String(e.reason?.message||e.reason||'promise rejection').slice(0,240)
+  });
+  cap(errors,50);
+});
+life('probe-init');
+
+function listTimers(map,kind){
+  const now=performance.now();
+  return [...map.entries()].map(([id,x])=>({
+    kind,id:String(id),
+    label:x.label,
+    delay:x.delay??null,
+    age:Math.round(now-x.createdAt)
+  })).sort((a,b)=>b.age-a.age).slice(0,30);
+}
+function snapshot(){
+  const ctx=[...contexts].map((c,i)=>({
+    i,
+    kind:c.__sukunDiagKind||'AudioContext',
+    state:String(c.state||'unknown'),
+    sampleRate:+c.sampleRate||0,
+    currentTime:Number.isFinite(c.currentTime)?Math.round(c.currentTime*10)/10:0
+  }));
+  const obs=[...activeObservers.values()].map((x,i)=>({
+    i,
+    age:Math.round(performance.now()-x.createdAt),
+    targets:x.targets.slice(0,8)
+  }));
+  let heap=null;
+  try{
+    if(performance.memory)heap={
+      used:performance.memory.usedJSHeapSize,
+      total:performance.memory.totalJSHeapSize,
+      limit:performance.memory.jsHeapSizeLimit
+    };
+  }catch(e){}
+  return{
+    version:'r455',
+    uptime:Math.round(performance.now()-bootAt),
+    active:{
+      timeouts:activeTimeouts.size,
+      intervals:activeIntervals.size,
+      raf:activeRaf.size,
+      observers:activeObservers.size,
+      audioContexts:ctx.filter(x=>x.state!=='closed').length
+    },
+    totals:{...totals},
+    timers:[
+      ...listTimers(activeIntervals,'interval'),
+      ...listTimers(activeTimeouts,'timeout'),
+      ...listTimers(activeRaf,'raf')
+    ].sort((a,b)=>b.age-a.age).slice(0,40),
+    observers:obs,
+    audioContexts:ctx,
+    lifecycle:lifecycle.slice(),
+    errors:errors.slice(),
+    longTasks:longTasks.slice(),
+    heap
+  };
+}
+
+window.SukunRuntimeProbe={
+  version:'r455',
+  snapshot,
+  lifecycle:()=>lifecycle.slice(),
+  errors:()=>errors.slice(),
+  longTasks:()=>longTasks.slice(),
+  trackContext,
+  clearLongTasks(){longTasks.length=0;totals.longTaskCount=0}
+};
+})();
+</script>
 
 <script id="sukun-r189-local-watchdog">
 (()=>{
@@ -8043,7 +8336,7 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v18.8 — build 2026-08-22-r443</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.8 — build 2026-08-22-r455</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -8067,6 +8360,18 @@ body.sukun-tefekkur-mode #zCountVisual:active *{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r455","t":"22 Ağustos 2026","b":["Diagnostics + regression test altyapısı kuruldu; geliştirici ekranı footer sürüm etiketine 5 dokunuş veya Ctrl+Shift+D ile açılıyor","Boot seviyesinde timer, interval, requestAnimationFrame, MutationObserver, AudioContext, lifecycle, runtime error ve long-task takibi eklendi","Tek geliştirici ekranında aktif session/provider, Audio State Machine durumu, aggregate pause state, AudioContext, timer, observer, DOM, heap ve state/lifecycle logları izleniyor","Güvenli regression suite build senkronizasyonu, duplicate ID, tek dock, Audio Session Registry kontratı, provider kapsamı, state geçişleri, Now Playing r300 kilidi, Zikir, Tefekkür, Tekke, lifecycle ve performans bütçelerini otomatik denetliyor","Derin regression suite yalnız ses motoru boşta iken mock Audio State Machine ve çoklu session pause/resume testlerini; Zikir stabilizasyonu, Tefekkür enter/exit, Tekke open/gate/close ve lifecycle pageshow smoke senaryolarını çalıştırıyor","Gerçek hidden → visible lifecycle döngüsü ayrıca izleniyor; kullanıcı uygulamayı arka plana alıp döndüğünde güvenli suite bunu otomatik doğrulayabiliyor","Diagnostics JSON raporu cihazdan dışa aktarılabiliyor; state ve hata kayıtları hata ayıklama için rapora ekleniyor","Footer, HTML build, Service Worker cache ve yedek adı r455 ile eşitlendi"]},
+ {"v":"r454","t":"22 Ağustos 2026","b":["Audio State Machine ve Audio Session Registry merkezileştirildi; resmi yaşam döngüsü idle → playing → paused → stopping → ended oldu","Her audio session için tek kontrat eklendi: play / pause / resume / stop / volume / state; session(id) API’si bu kontratı doğrudan sunuyor","PlaybackController geriye uyumlu facade olarak korunuyor; gerçek session state ve komut otoritesi artık SukunAudioSessionRegistry","r439 aggregate transport WebAudio, TTS ve audio elementlerine ikinci kez doğrudan dokunmuyor; pauseAll / resumeAll / stopAll yalnız registry üzerinden ilerliyor","Aggregate pause yalnız aktif providerları yakalıyor; arka-plan miks katmanı varsa ayrıca mix session kaydediliyor ve resume yalnız yakalanan sessionları geri açıyor","stopAll aktif sessionları önce stopping durumuna geçiriyor, hard stop tamamlandığında ended yayınlıyor ve kısa settle sonrasında idle’a dönüyor","Mix session için merkezi master volume kontratı eklendi; volume desteklemeyen sessionlar false/null ile açıkça unsupported davranıyor","Now Playing Store şeması r300 olarak korundu; controller sürümünü artık r290’a geri yazmıyor ve ended boşta durumunda eski kartı canlı tutmuyor","MediaSession play/pause/stop komutları registry aggregate transportuna bağlandı","Footer, HTML build, Service Worker cache ve yedek adı r454 ile eşitlendi"]},
+ {"v":"r453","t":"22 Ağustos 2026","b":["Core Cleanup / Consolidation I tamamlandı; r452 görsel tasarımı donduruldu ve değiştirilmedi","Tefekkür UI sahipliği r442/r443/r444/r445/r446/r450 dağınık runtime katmanlarından tek SukunUIRuntime denetleyicisine taşındı","Dock Mini/Geniş ve Focus Calm davranışı r447 ile ayrı koordinatör r448 yerine aynı merkezi runtime içinde birleştirildi","Gizli oynatıcı çağırma tercihi r441 observer tabanlı yapıdan event/wrapper tabanlı yapıya geçirildi; görünüm tercihi ve API uyumluluğu korundu","Eski global API adları compatibility shim olarak korunuyor; diğer modüllerin mevcut çağrıları kırılmıyor","Tefekkürden çıkışta Hedef/Devir özetinin normal sayaç DOM konumuna geri dönmesi merkezi olarak garanti edildi","Aynı state için tekrar tekrar çalışan document listener, retry timer ve observer katmanları kaldırıldı","Footer, HTML build, Service Worker cache ve yedek adı r453 ile eşitlendi"]},
+ {"v":"r452","t":"22 Ağustos 2026","b":["Nihai kalite turu tamamlandı: tefekkür için minimal master pass uygulandı","Dock / control bar sadeleştirildi; başlık, meta ve kontrol düğmeleri daha premium ve okunur hâle getirildi","Tipografi ve boşluk sistemi tefekkür ile dock arasında standardize edildi","Detay / gizle / kulakçık bölümleri daha tutarlı ve sakin bir dilde yeniden dengelendi","Footer, HTML build, Service Worker cache ve yedek adı r452 ile eşitlendi"]},
+ {"v":"r451","t":"22 Ağustos 2026","b":["Son premium rötuş uygulandı: Saymaya Başla / Durdur daha belirgin bir birincil aksiyon hâline getirildi","−1 ve +1 butonları daha sessiz ve lüks bir dilde yeniden dengelendi","Zikir odak halkasına performans dostu çok hafif nefes/sweep efekti eklendi","Premium görünüm korunurken ağır blur ya da maliyetli animasyonlar eklenmedi","Footer, HTML build, Service Worker cache ve yedek adı r451 ile eşitlendi"]},
+ {"v":"r450","t":"22 Ağustos 2026","b":["Tefekkür üst kontrolleri tek premium capsule / control island hâline getirildi","−1 ve +1 yan kapsüllerde, Saymaya Başla ve Tefekkür · Çık merkez aks üzerinde yeniden dengelendi","Hedef · Devir özeti control island içine alındı; alt satırda ince premium bilgi chip’i olarak yerleştirildi","CANLI rozeti handle ile karışmayacak şekilde dock başlığında ayrı bir noktaya taşındı","Footer, HTML build, Service Worker cache ve yedek adı r450 ile eşitlendi"]},
+ {"v":"r449","t":"22 Ağustos 2026","b":["Tefekkür kontrol adası yeniden hizalandı: −1 ve +1 sabit yanlarda, orta yığın tam merkeze alındı; Saymaya Başla / Durdur daha dengeli görünür oldu","Hedef · Devir özeti artık zikrin altında dağılmıyor; tefekkürde kontrol adasının hemen altına taşındı ve küçük bir premium chip hâline getirildi","Dock içindeki CANLI rozeti kulakçık/handle ile çakışmayacak şekilde başlık satırının alt-soluna alındı","Tefekkür düzeni için hafif senkron script eklendi; sayaç özeti ve kontrol adası gerektiğinde yeniden yerleşiyor, ek performans yükü oluşturmuyor","Footer, HTML build, Service Worker cache ve yedek adı r449 ile eşitlendi"]},
+ {"v":"r448","t":"22 Ağustos 2026","b":["Performans denetiminde en büyük kasma nedeni bulundu: r445 tüm DOM’daki her class değişiminde document çapında sorgu ve style yazımı yapıyordu; bu global observer tamamen kaldırıldı","r447 her Now Playing/state olayında dock seviyesini yeniden uygulayıp Detaylar panelini tekrar render ediyordu; seviye güncellemesi idempotent yapıldı ve Detaylar yalnız gerçek kullanıcı değişiminde yenileniyor","Tefekkür için üst üste çalışan body MutationObserver katmanları tek r448 koordinatöründe birleştirildi; yalnız anlamlı class imzası değişirse bir requestAnimationFrame içinde senkronizasyon yapılıyor","autoBtn üzerindeki iki ayrı observer tek hafif observer’a indirildi","Premium Control Island backdrop-filter blur kaldırıldı; görünüm gradient ve inset shadow ile korunurken mobil GPU yükü azaltıldı","Sabit oynatıcıda min-height, padding ve box-shadow animasyonları kaldırıldı; yalnız opacity/transform/border gibi daha ucuz geçişler kaldı","Tefekkürde sürekli çalışan blur, aura, incense, nur parçacığı, rozet, shimmer ve ışık yürüyüşü animasyonları statikleştirildi; etkileşim ve kontrol işlevleri korunuyor","Mobilde büyük gölgeler hafifletildi; sabit dock ve Focus sahnesinin paint maliyeti azaltıldı","Footer, HTML build, Service Worker cache ve yedek adı r448 ile eşitlendi"]},
+ {"v":"r447","t":"22 Ağustos 2026","b":["Tek oynatıcı premium iki seviyeli yapıya geçirildi: Mini görünüm günlük kullanım için ana bilgi ve transportu koruyor; Geniş görünüm katman, meta, Detaylar, Gizle ve Tefekkür kontrollerini açıyor","Barın üstüne ince bir tutamak eklendi; dokunma veya dikey sürükleme ile Mini/Geniş geçiş yapılabiliyor ve tercih cihazda saklanıyor","Detaylar açılırsa bar otomatik Geniş moda geçiyor; Detaylar paneli kapanınca kullanıcının seçtiği seviye korunuyor","Tefekkür Focus otomatik sayım başladıktan yaklaşık 2,7 saniye sonra sakinleşiyor: −/+, çıkış ve yardımcı sayaç bilgileri geri çekiliyor, sayı ve ana dokunma alanı önde kalıyor","Focus sakin durumundayken ekrana dokunmak kontrolleri geçici olarak geri getiriyor; otomatik sayım sürüyorsa kısa süre sonra yeniden sakinleşiyor","Bar ve Zikir Focus mikro etkileşimleri 180–220 ms tek SÜKÛN hareket dili altında toplandı; flashing/pulse kullanılmadan opacity, transform ve border geçişleri standardize edildi","Mini bar rezervi küçültüldü; Tefekkür Focus sırasında açık bar ekranı daha az örtüyor","Footer, build, Service Worker ve yedek sürümü r447 ile eşitlendi"]},
+ {"v":"r446","t":"22 Ağustos 2026","b":["Tefekkür sayaç kontrolleri premium Control Island düzenine geçirildi; −1, ana eylem ve +1 tek bir dengeli kontrol yüzeyinde toplandı","Ana Saymaya Başla/Durdur eylemi görsel hiyerarşide birincil hale getirildi; oynatma durumu ikon, renk ve erişilebilir aria state ile netleşti","Tefekkürden Çık ikincil ve ince bir üst eyleme dönüştürüldü; yanlış dokunma riskini azaltırken tek dokunuş erişimi korundu","−/+ butonlarının dokunma hedefleri büyütüldü, metin gürültüsü azaltıldı ve focus-visible/active geri bildirimi eklendi","Sayaç Hedef/Kalan yan kartları ve alt özet daha dengeli yüzeylere dönüştürüldü; flashing olmadan premium derinlik verildi","Kontrol adası dar ekranlarda otomatik sıkışıyor; 340–430 px telefonlarda minimum dokunma alanı korunuyor","Footer, build, Service Worker ve yedek sürümü r446 ile eşitlendi"]},
+ {"v":"r445","t":"22 Ağustos 2026","b":["Tefekkür sahnesinde kalan titremeli/flashing katmanlar bastırıldı; nefes halosu ve pulse tint kapatıldı","Zikir çemberi üzerinde kalan breath halo artık tefekkürde ve normal görünümde gösterilmiyor; istemsiz titreşim kaldırıldı","Tefekkür görseli sakinleştirildi: pulse tint, golden rim tepkisel parlaması ve kart üstü hareketli overlay devre dışı bırakıldı","Varsayılan nefes halosu tercihi kapalıya çekildi ve mevcut sayfa açılışında da zorla pasifleştiriliyor","Footer, build, Service Worker ve yedek sürümü r445 ile eşitlendi"]},
+ {"v":"r444","t":"22 Ağustos 2026","b":["Tefekkür sayaç sahnesinde −1 ve +1 arasındaki boşluk gerçek bir merkez kontrol alanına dönüştürüldü","Tefekkürden Çık ve Saymaya Başla kontrolleri çemberin altından kaldırılıp −/+ arasına taşındı; sayaç sahnesi daha kısa ve dengeli oldu","Merkez alan iki katmanlı mini stack oldu: üstte ince Tefekkürden Çık, altta daha belirgin Saymaya Başla/Durdur","−/+ düğmeleri daha küçük, eşit ve sakin pill biçimine getirildi; merkez stack ile aynı optik hatta hizalandı","Eski Tefekkür çıkış slotu tefekkürde görsel olarak bastırılıyor; çıkış işlevi yeni merkez düğme üzerinden aynı SUKUN_TEFEKKUR akışını kullanıyor","Tefekkürden çıkıldığında Saymaya Başla düğmesi eski sayaç kontrol satırına otomatik geri taşınıyor; normal zikir görünümü bozulmuyor","Footer, build etiketi, Service Worker ve yedek sürümü r444 ile eşitlendi"]},
  {"v":"r443","t":"22 Ağustos 2026","b":["Bar içindeki Tefekkür kontrolü yalnız simgeye indirildi; yatay alan tüketimi azaltıldı ve Detaylar/Gizle satırı daha ferah hale geldi","Normal durumda ◉, Tefekkür açıkken × simgesi gösteriliyor; görünür metin kaldırılırken aria-label ve title erişilebilirliği korunuyor","Tefekkür simgesine yaklaşık yarım saniye basılı tutulduğunda kısa bir açıklama balonu açılıyor; uzun basma yanlışlıkla moda girip çıkarmıyor","Açıklama balonu dokunma, pointer cancel, ekran yönü değişimi ve Tefekkür state değişimlerinde güvenli biçimde kapanıyor","Footer, build etiketi, Service Worker ve yedek sürümü r443 ile eşitlendi"]},
  {"v":"r442","t":"22 Ağustos 2026","b":["Tefekkür modu seçeneği birleşik oynatıcı barının içine taşındı; aktifken aynı düğme Tefekkürden Çık işlevine dönüşüyor","Bar açıkken eski bağımsız Tefekkür kapsülü gizleniyor; bar gizlenirse kullanıcı tam ekranda mahsur kalmasın diye sayaç içindeki emniyet çıkışı geri geliyor","Tefekkür sırasında oynatıcı barı özel kompakt görünüme geçiyor: kaynak/faz/meta/arka plan satırları gizleniyor, taşıma düğmeleri tek yatay satıra iniyor","Tefekkür sahnesinin altına kompakt bar yüksekliği kadar güvenli alan ayrıldı; bar artık zikir sayacı ve başlatma kontrollerinin üstüne binmiyor","−1 ve +1 sayaç düzeltme düğmeleri başlığın hemen altındaki küçük bir raya taşındı; ana Saymaya Başla düğmesi tek başına daha erişilebilir kaldı","Sayaç çemberi zaten dokunarak saydığı için Tefekkür modunda büyük SAYMAK İÇİN DOKUN düğmesi gizlendi ve dikey alan geri kazanıldı","Footer ve build etiketleri r442 ile eşitlendi"]},
  {"v":"r441","t":"22 Ağustos 2026","b":["Gizli oynatıcı geri çağırma görünümü kullanıcı seçimine açıldı: Geniş düğme veya Yan sekme","Seçim Detaylar bölümünde “Gizli Oynatıcı Çağırma” altında yapılır ve cihazda kalıcı olarak saklanır","Geniş düğme r440’taki büyük, yüksek dokunma alanlı görünümü korur","Yan sekme sağ ekran kenarında 56–58 px dokunma hedefiyle daha minimal bir alternatif sunar; metni gizler ama erişilebilir etiketi korur","Görünüm değişikliği oynatmayı, gizleme durumunu veya ses katmanlarını etkilemez","Footer ve build etiketleri r441 ile eşitlendi"]},
@@ -22508,7 +22813,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r443',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r455',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33540,10 +33845,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r443',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r455',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r443-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r455-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -35818,84 +36123,533 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 \n\n<!-- ═══ r270 — GLOBAL PLAYBACKCONTROLLER API ═══ -->
-<script id="r270-playback-controller">
+<script id="r454-audio-session-registry-runtime">
+
 (()=>{
 'use strict';
-if(window.PlaybackController?.version==='r270')return;
+if(window.SukunAudioSessionRegistry?.version==='r454')return;
+
+const STATES=Object.freeze({
+  IDLE:'idle',
+  PLAYING:'playing',
+  PAUSED:'paused',
+  STOPPING:'stopping',
+  ENDED:'ended'
+});
+const ACTIVE_STATES=new Set([STATES.PLAYING,STATES.PAUSED,STATES.STOPPING]);
 const providers=new Map();
+const sessions=new Map();
+const listeners=new Set();
 const $=id=>document.getElementById(id);
+
 let activeId=null,lastActiveId=null,seq=0,syncTimer=0;
-const safe=(fn,fallback)=>{try{return typeof fn==='function'?fn():fallback}catch(e){try{window.sukunReport?.('playback-controller',e)}catch(_){}return fallback}};
-const normState=s=>['playing','paused','idle','stopped','ended','error'].includes(s)?s:'idle';
-function emit(reason='sync'){
-  seq++;
-  const snap=snapshot();
-  try{document.body.dataset.playbackState=snap.state;document.body.dataset.playbackProvider=snap.id||''}catch(e){}
-  try{window.SukunPauseContract?.sync?.()}catch(e){}
-  try{window.dispatchEvent(new CustomEvent('sukun:playbackchange',{detail:{...snap,reason,seq}}))}catch(e){}
-  return snap;
+let aggregate={
+  paused:false,
+  providerIds:[],
+  mixCaptured:false,
+  reason:'',
+  changedAt:Date.now()
+};
+
+const safe=(fn,fallback)=>{
+  try{return typeof fn==='function'?fn():fallback}
+  catch(e){
+    try{window.sukunReport?.('audio-session-registry',e)}catch(_){}
+    return fallback
+  }
+};
+const observedState=s=>{
+  s=String(s||'idle').toLowerCase();
+  if(s==='playing'||s==='running'||s==='play')return STATES.PLAYING;
+  if(s==='paused'||s==='pause')return STATES.PAUSED;
+  if(s==='stopping')return STATES.STOPPING;
+  if(s==='ended'||s==='stopped'||s==='complete'||s==='completed')return STATES.ENDED;
+  return STATES.IDLE;
+};
+const allowed={
+  idle:new Set(['idle','playing','paused','ended']),
+  playing:new Set(['playing','paused','stopping','ended']),
+  paused:new Set(['paused','playing','stopping','ended']),
+  stopping:new Set(['stopping','ended']),
+  ended:new Set(['ended','idle','playing','paused'])
+};
+
+function rawProviderState(p){
+  if(!p)return STATES.IDLE;
+  if(typeof p.getState==='function')return observedState(safe(()=>p.getState(),STATES.IDLE));
+  if(safe(()=>p.isPaused?.(),false))return STATES.PAUSED;
+  if(safe(()=>p.isPlaying?.(),false))return STATES.PLAYING;
+  return STATES.IDLE;
+}
+function sessionRecord(id){
+  return sessions.get(id)||null;
+}
+function publicSession(s){
+  if(!s)return null;
+  const p=providers.get(s.id);
+  return{
+    id:s.id,
+    title:safe(()=>typeof p?.title==='function'?p.title():p?.title,s.id),
+    state:s.state,
+    observedState:s.observedState,
+    priority:+p?.priority||0,
+    volume:s.volume,
+    lastCommand:s.lastCommand,
+    lastReason:s.lastReason,
+    lastError:s.lastError?String(s.lastError?.message||s.lastError):'',
+    changedAt:s.changedAt,
+    startedAt:s.startedAt,
+    endedAt:s.endedAt,
+    capabilities:capabilities(s.id)
+  };
+}
+function dispatchSession(s,prev,reason){
+  const detail={
+    version:'r454',
+    seq:++seq,
+    reason,
+    previousState:prev,
+    session:publicSession(s),
+    aggregate:aggregateSnapshot()
+  };
+  try{window.dispatchEvent(new CustomEvent('sukun:audiosessionchange',{detail}))}catch(e){}
+  listeners.forEach(fn=>{try{fn(detail)}catch(e){}});
+}
+function settleEnded(s){
+  clearTimeout(s.settleTimer);
+  s.settleTimer=setTimeout(()=>{
+    if(s.state!==STATES.ENDED)return;
+    const obs=rawProviderState(providers.get(s.id));
+    s.observedState=obs;
+    if(obs===STATES.IDLE){
+      transition(s,STATES.IDLE,'ended-settled',true);
+      schedule('ended-settled:'+s.id);
+    }
+  },260);
+}
+function transition(s,next,reason='transition',force=false){
+  if(!s)return false;
+  next=observedState(next);
+  const prev=s.state;
+  if(prev===next){
+    s.lastReason=reason;
+    s.changedAt=Date.now();
+    return true;
+  }
+  if(!force&&!allowed[prev]?.has(next)){
+    /* Eski modüllerin beklenmeyen state sıçramalarını uygulamayı bozmak
+       yerine gözleme göre emniyetli biçimde kabul et. */
+    force=true;
+  }
+  /* Geçerli geçişler normal olarak, beklenmeyen ama gözlenmiş sıçramalar
+     ise force ile kabul edilir. */
+  s.state=next;
+  s.lastReason=reason;
+  s.changedAt=Date.now();
+  if(next===STATES.PLAYING&&!s.startedAt)s.startedAt=s.changedAt;
+  if(next===STATES.ENDED){
+    s.endedAt=s.changedAt;
+    settleEnded(s);
+  }
+  if(next===STATES.IDLE){
+    s.startedAt=0;
+    s.endedAt=0;
+    s.lastCommand='';
+  }
+  dispatchSession(s,prev,reason);
+  return true;
+}
+function reconcileOne(id,reason='reconcile'){
+  const s=sessions.get(id),p=providers.get(id);
+  if(!s||!p)return null;
+  const obs=rawProviderState(p);
+  s.observedState=obs;
+
+  if(obs===STATES.PLAYING)transition(s,STATES.PLAYING,reason,true);
+  else if(obs===STATES.PAUSED)transition(s,STATES.PAUSED,reason,true);
+  else if(obs===STATES.STOPPING)transition(s,STATES.STOPPING,reason,true);
+  else if(obs===STATES.ENDED)transition(s,STATES.ENDED,reason,true);
+  else if(obs===STATES.IDLE){
+    if(s.state===STATES.STOPPING||s.state===STATES.PLAYING||s.state===STATES.PAUSED)
+      transition(s,STATES.ENDED,reason+':ended',true);
+    else if(s.state!==STATES.ENDED)
+      transition(s,STATES.IDLE,reason,true);
+  }
+  return s;
+}
+function reconcileAll(reason='reconcile-all'){
+  for(const id of providers.keys())reconcileOne(id,reason);
 }
 function register(id,a={}){
-  if(!id||typeof id!=='string')throw new TypeError('PlaybackController.register(id, adapter): id gerekli');
-  const adapter={id,priority:50,title:id,...a};providers.set(id,adapter);schedule('register:'+id);return adapter;
+  if(!id||typeof id!=='string')throw new TypeError('AudioSessionRegistry.register(id, adapter): id gerekli');
+  const adapter={id,priority:50,title:id,...a};
+  providers.set(id,adapter);
+  const existing=sessions.get(id);
+  if(existing){
+    existing.observedState=rawProviderState(adapter);
+    existing.volume=readVolume(id);
+  }else{
+    sessions.set(id,{
+      id,
+      state:STATES.IDLE,
+      observedState:rawProviderState(adapter),
+      volume:null,
+      lastCommand:'',
+      lastReason:'register',
+      lastError:null,
+      changedAt:Date.now(),
+      startedAt:0,
+      endedAt:0,
+      settleTimer:0
+    });
+  }
+  const s=sessions.get(id);
+  s.volume=readVolume(id);
+  reconcileOne(id,'register:'+id);
+  schedule('register:'+id);
+  return adapter;
 }
-function unregister(id){providers.delete(id);if(activeId===id)activeId=null;schedule('unregister:'+id)}
-function stateOf(p){
-  if(!p)return'idle';
-  if(typeof p.getState==='function')return normState(safe(()=>p.getState(),'idle'));
-  if(safe(()=>p.isPaused?.(),false))return'paused';
-  if(safe(()=>p.isPlaying?.(),false))return'playing';
-  return'idle';
+function unregister(id){
+  const s=sessions.get(id);
+  if(s)clearTimeout(s.settleTimer);
+  providers.delete(id);
+  sessions.delete(id);
+  if(activeId===id)activeId=null;
+  schedule('unregister:'+id);
 }
 function discover(){
+  reconcileAll('discover');
   let best=null;
-  for(const p of providers.values()){
-    if(p.id==='mix')continue;
-    const st=stateOf(p);if(st!=='playing'&&st!=='paused')continue;
-    const score=(+p.priority||0)+(st==='playing'?1000:500)+(p.id===activeId?25:0);
-    if(!best||score>best.score)best={id:p.id,score,st};
+  for(const [id,p] of providers){
+    if(id==='mix')continue;
+    const s=sessions.get(id);
+    if(!s||!ACTIVE_STATES.has(s.state))continue;
+    const score=(+p.priority||0)+(s.state===STATES.PLAYING?1000:s.state===STATES.PAUSED?500:250)+(id===activeId?25:0);
+    if(!best||score>best.score)best={id,score};
   }
-  if(best){if(activeId!==best.id){lastActiveId=activeId;activeId=best.id;}return best.id}
-  if(activeId&&providers.has(activeId)&&stateOf(providers.get(activeId))!=='idle')return activeId;
-  activeId=null;return null;
+  if(best){
+    if(activeId!==best.id){lastActiveId=activeId;activeId=best.id}
+    return best.id;
+  }
+  activeId=null;
+  return null;
+}
+function resolveId(id){
+  if(id&&providers.has(id))return id;
+  return discover()||'mix';
 }
 function resolve(id){
-  if(id&&providers.has(id))return providers.get(id);
-  const found=discover();if(found)return providers.get(found);
-  return providers.get('mix')||null;
+  const rid=resolveId(id);
+  return providers.get(rid)||null;
 }
-function activate(id,reason='activate'){if(id&&providers.has(id)){lastActiveId=activeId;activeId=id;emit(reason)}return resolve(id)}
+function activate(id,reason='activate'){
+  if(id&&providers.has(id)&&id!=='mix'){
+    lastActiveId=activeId;
+    activeId=id;
+    schedule(reason+':'+id);
+  }
+  return resolve(id);
+}
+function capabilities(id){
+  const rid=id&&providers.has(id)?id:resolveId(id);
+  const p=providers.get(rid);
+  return{
+    play:!!(p?.play||p?.resume),
+    pause:!!p?.pause,
+    resume:!!(p?.resume||p?.play),
+    stop:!!p?.stop,
+    previous:!!p?.previous,
+    next:!!p?.next,
+    volume:!!(p?.setVolume||p?.getVolume)
+  };
+}
+function readVolume(id){
+  const p=providers.get(id);
+  if(!p)return null;
+  if(typeof p.getVolume==='function'){
+    const v=safe(()=>p.getVolume(),null);
+    return Number.isFinite(+v)?+v:null;
+  }
+  return sessions.get(id)?.volume??null;
+}
+function volume(id,value){
+  const rid=resolveId(id),p=providers.get(rid),s=sessions.get(rid);
+  if(!p||!s)return value===undefined?null:false;
+  if(value===undefined){
+    s.volume=readVolume(rid);
+    return s.volume;
+  }
+  const n=+value;
+  if(!Number.isFinite(n))return false;
+  if(typeof p.setVolume!=='function')return false;
+  let out=false;
+  try{out=p.setVolume(n)}catch(e){s.lastError=e;return false}
+  if(out!==false){
+    s.volume=Number.isFinite(+out)?+out:n;
+    s.lastCommand='volume';
+    s.lastReason='volume';
+    s.changedAt=Date.now();
+    dispatchSession(s,s.state,'volume');
+    schedule('volume:'+rid);
+    return s.volume;
+  }
+  return false;
+}
+function state(id){
+  const rid=resolveId(id);
+  const s=reconcileOne(rid,'state-read');
+  return s?.state||STATES.IDLE;
+}
+function session(id){
+  if(!providers.has(id))return null;
+  return{
+    id,
+    play:()=>play(id),
+    pause:()=>pause(id),
+    resume:()=>resume(id),
+    stop:()=>stop(id),
+    volume:function(v){return arguments.length?volume(id,v):volume(id)},
+    state:()=>state(id),
+    previous:()=>previous(id),
+    next:()=>next(id),
+    snapshot:()=>sessionSnapshot(id)
+  };
+}
 function invoke(action,id){
-  const p=resolve(id);if(!p)return false;
-  const st=stateOf(p);
+  const rid=resolveId(id),p=providers.get(rid),s=sessions.get(rid);
+  if(!p||!s)return false;
+  reconcileOne(rid,'before:'+action);
+  const current=s.state;
   let fn=null;
-  if(action==='play')fn=(st==='paused'?(p.resume||p.play):p.play);
+  if(action==='play')fn=(current===STATES.PAUSED?(p.resume||p.play):p.play);
   else if(action==='resume')fn=p.resume||p.play;
   else fn=p[action];
   if(typeof fn!=='function')return false;
-  if(p.id!=='mix')activate(p.id,action);
-  let out;try{out=fn.call(p)}catch(e){try{window.sukunReport?.('playback-'+action,e,p.id)}catch(_){};emit('error:'+action);return false}
-  Promise.resolve(out).catch(e=>{try{window.sukunReport?.('playback-'+action,e,p.id)}catch(_){};}).finally(()=>schedule(action+':'+p.id));
-  schedule(action+':'+p.id);return out===undefined?true:out;
+
+  if(rid!=='mix')activate(rid,action);
+  s.lastCommand=action;
+  s.lastError=null;
+
+  if(action==='play'||action==='resume')transition(s,STATES.PLAYING,'command:'+action,true);
+  else if(action==='pause')transition(s,STATES.PAUSED,'command:pause',true);
+  else if(action==='stop')transition(s,STATES.STOPPING,'command:stop',true);
+
+  let out;
+  try{out=fn.call(p)}
+  catch(e){
+    s.lastError=e;
+    try{window.sukunReport?.('audio-session-'+action,e,rid)}catch(_){}
+    if(action==='stop')transition(s,STATES.ENDED,'stop-error',true);
+    else reconcileOne(rid,'command-error:'+action);
+    schedule('error:'+action+':'+rid);
+    return false;
+  }
+
+  Promise.resolve(out).catch(e=>{
+    s.lastError=e;
+    try{window.sukunReport?.('audio-session-'+action,e,rid)}catch(_){}
+  }).finally(()=>{
+    if(action==='stop'){
+      reconcileOne(rid,'stop-complete');
+      if(s.state===STATES.STOPPING)transition(s,STATES.ENDED,'stop-complete',true);
+    }else reconcileOne(rid,'complete:'+action);
+    schedule(action+':'+rid);
+  });
+  schedule(action+':'+rid);
+  return out===undefined?true:out;
 }
 function play(id){return invoke('play',id)}
 function pause(id){return invoke('pause',id)}
 function resume(id){return invoke('resume',id)}
-function toggle(id){const p=resolve(id),st=stateOf(p);return st==='playing'?pause(p?.id):play(p?.id)}
+function toggle(id){
+  const rid=resolveId(id),st=state(rid);
+  return st===STATES.PLAYING?pause(rid):play(rid);
+}
 function stop(id){return invoke('stop',id)}
 function previous(id){return invoke('previous',id)}
 function next(id){return invoke('next',id)}
-function stopAll(){const mix=providers.get('mix');if(mix?.stop){try{mix.stop()}catch(e){}}else try{window.hardStopAll?.()}catch(e){};activeId=null;emit('stopAll');return true}
-function capabilities(id){const p=resolve(id);return{play:!!(p?.play||p?.resume),pause:!!p?.pause,stop:!!p?.stop,previous:!!p?.previous,next:!!p?.next}}
-function snapshot(id){const p=resolve(id),st=p?stateOf(p):'idle',cap=capabilities(p?.id);return{id:p?.id||null,title:safe(()=>typeof p?.title==='function'?p.title():p?.title,p?.id||''),state:st,active:activeId,previousActive:lastActiveId,capabilities:cap,providers:[...providers.keys()]}}
-function schedule(reason='sync'){clearTimeout(syncTimer);syncTimer=setTimeout(()=>{discover();emit(reason);bindMediaSession();syncControls()},20)}
+
+/* Aggregate pause yalnız merkezi registry üzerinden yapılır.
+   Okuyucu providerları kendi state'lerini pause eder; yalnız gerçekten
+   arka-plan katmanı varsa genel mix de dondurulur. */
+function backgroundMixNeeded(){
+  try{
+    const mi=typeof miniPlayingInfo==='function'?miniPlayingInfo():null;
+    const arr=mi?.tam||[];
+    return arr.some(x=>x&&x.tur!=='okuyucu');
+  }catch(e){return false}
+}
+function activeProviderIds(){
+  reconcileAll('aggregate-scan');
+  const out=[];
+  for(const [id,s] of sessions){
+    if(id==='mix')continue;
+    if(s.state===STATES.PLAYING)out.push(id);
+  }
+  return out;
+}
+function aggregateSnapshot(){
+  return{
+    paused:aggregate.paused,
+    providerIds:[...aggregate.providerIds],
+    mixCaptured:aggregate.mixCaptured,
+    reason:aggregate.reason,
+    changedAt:aggregate.changedAt
+  };
+}
+function setAggregate(next,reason){
+  aggregate={...aggregate,...next,reason,changedAt:Date.now()};
+  bodyClassAggregate();
+  try{window.dispatchEvent(new CustomEvent('sukun:audioaggregatechange',{detail:aggregateSnapshot()}))}catch(e){}
+}
+function bodyClassAggregate(){
+  try{document.body?.classList.toggle('r439-mix-paused',!!aggregate.paused)}catch(e){}
+}
+function pauseAll(){
+  if(aggregate.paused)return true;
+  const ids=activeProviderIds();
+  const mixNeeded=backgroundMixNeeded();
+  ids.forEach(id=>{try{pause(id)}catch(e){}});
+  if(mixNeeded){
+    try{
+      const ms=sessions.get('mix');
+      if(ms&&state('mix')===STATES.PLAYING)pause('mix');
+    }catch(e){}
+  }
+  setAggregate({paused:true,providerIds:ids,mixCaptured:!!mixNeeded},'pauseAll');
+  schedule('pauseAll');
+  return true;
+}
+function resumeAll(){
+  if(!aggregate.paused)return true;
+  const ids=[...aggregate.providerIds],mixCaptured=aggregate.mixCaptured;
+  if(mixCaptured){
+    try{if(state('mix')===STATES.PAUSED)resume('mix')}catch(e){}
+  }
+  ids.forEach(id=>{
+    try{if(providers.has(id)&&state(id)===STATES.PAUSED)resume(id)}catch(e){}
+  });
+  setAggregate({paused:false,providerIds:[],mixCaptured:false},'resumeAll');
+  schedule('resumeAll');
+  return true;
+}
+function stopAll(){
+  const touched=[];
+  for(const [id,s] of sessions){
+    reconcileOne(id,'stopAll-scan');
+    if(ACTIVE_STATES.has(s.state)){
+      touched.push(id);
+      transition(s,STATES.STOPPING,'stopAll',true);
+    }
+  }
+  setAggregate({paused:false,providerIds:[],mixCaptured:false},'stopAll');
+
+  const mix=providers.get('mix');
+  let out=true;
+  try{
+    if(typeof mix?.stop==='function')out=mix.stop();
+    else if(typeof hardStopAll==='function')out=hardStopAll();
+  }catch(e){
+    try{window.sukunReport?.('audio-session-stopAll',e)}catch(_){}
+    out=false;
+  }
+
+  Promise.resolve(out).catch(()=>{}).finally(()=>{
+    touched.forEach(id=>{
+      const s=sessions.get(id);
+      if(s)transition(s,STATES.ENDED,'stopAll-complete',true);
+    });
+    activeId=null;
+    schedule('stopAll-complete');
+  });
+  activeId=null;
+  schedule('stopAll');
+  return out===undefined?true:out;
+}
+function aggregateState(){
+  if(aggregate.paused)return STATES.PAUSED;
+  reconcileAll('aggregate-state');
+  if([...sessions.values()].some(s=>s.state===STATES.STOPPING))return STATES.STOPPING;
+  if([...sessions.values()].some(s=>s.state===STATES.PLAYING))return STATES.PLAYING;
+  if([...sessions.values()].some(s=>s.state===STATES.PAUSED))return STATES.PAUSED;
+  return STATES.IDLE;
+}
+function sessionSnapshot(id){
+  const rid=id&&providers.has(id)?id:resolveId(id);
+  const s=reconcileOne(rid,'session-snapshot');
+  return publicSession(s);
+}
+function snapshot(id){
+  const rid=id&&providers.has(id)?id:resolveId(id);
+  const p=providers.get(rid),s=reconcileOne(rid,'snapshot');
+  const cap=capabilities(rid);
+  const st=s?.state||STATES.IDLE;
+  return{
+    id:p?.id||null,
+    title:safe(()=>typeof p?.title==='function'?p.title():p?.title,p?.id||''),
+    state:st,
+    active:activeId,
+    previousActive:lastActiveId,
+    capabilities:cap,
+    providers:[...providers.keys()],
+    aggregate:aggregateSnapshot(),
+    machine:publicSession(s)
+  };
+}
+function getState(){
+  const s=snapshot();
+  return{
+    id:s.id,
+    state:s.state,
+    status:s.state,
+    playing:s.state===STATES.PLAYING,
+    paused:s.state===STATES.PAUSED,
+    stopping:s.state===STATES.STOPPING,
+    ended:s.state===STATES.ENDED,
+    active:ACTIVE_STATES.has(s.state),
+    hasPrev:!!s.capabilities.previous,
+    hasNext:!!s.capabilities.next,
+    capabilities:s.capabilities,
+    aggregate:s.aggregate
+  };
+}
+function emit(reason='sync'){
+  const snap=snapshot();
+  try{
+    document.body.dataset.playbackState=snap.state;
+    document.body.dataset.playbackProvider=snap.id||'';
+  }catch(e){}
+  try{window.SukunPauseContract?.sync?.()}catch(e){}
+  try{
+    window.dispatchEvent(new CustomEvent('sukun:playbackchange',{
+      detail:{...snap,reason,seq:++seq}
+    }))
+  }catch(e){}
+  return snap;
+}
+function schedule(reason='sync'){
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>{
+    reconcileAll(reason);
+    discover();
+    emit(reason);
+    bindMediaSession();
+    syncControls();
+  },24);
+}
+function subscribe(fn,{immediate=true}={}){
+  if(typeof fn!=='function')return()=>{};
+  listeners.add(fn);
+  if(immediate){
+    try{fn({version:'r454',reason:'subscribe',session:publicSession(sessions.get(resolveId())),aggregate:aggregateSnapshot()})}catch(e){}
+  }
+  return()=>listeners.delete(fn);
+}
 
 /* ── Ortak kuyruk geri/ileri yardımcıları ── */
 function queuePrev(obj,nextFn,cancelFn){if(!obj)return false;try{cancelFn?.()}catch(e){};obj.qi=Math.max(0,(+obj.qi||0)-1);if(obj.paused){obj.paused=false;obj.playing=true}try{nextFn?.()}catch(e){}return true}
 function queueNext(obj,nextFn,cancelFn){if(!obj)return false;try{cancelFn?.()}catch(e){};obj.qi=Math.min(obj.queue?.length||999999,(+obj.qi||0)+1);if(obj.paused){obj.paused=false;obj.playing=true}try{nextFn?.()}catch(e){}return true}
 function cancelSpeech(){try{speechSynthesis.cancel()}catch(e){};try{window.sesDurdur?.('playback-nav')}catch(e){}}
-
-/* ── Modül adaptörleri ── */
 function registerBuiltins(){
   const P=window.R170?.Player;
   if(P)register('smart-session',{priority:110,title:()=>P.name||'Akıllı Seans',getState:()=>P.playing?'playing':P.paused?'paused':'idle',play:()=>P.play(),resume:()=>P.play(),pause:()=>P.pause(),stop:()=>P.stop(),previous:()=>P.prev(),next:()=>P.next()});
@@ -35911,10 +36665,52 @@ function registerBuiltins(){
   if(typeof HATIM==='object')register('hatim',{priority:70,title:'Esmâ Hatmi',getState:()=>HATIM.active?'playing':hatPcPaused?'paused':'idle',play:()=>{hatPcPaused=false;return hatStart()},resume:()=>{hatPcPaused=false;return hatStart()},pause:()=>{hatPcPaused=true;return hatPause()},stop:()=>{hatPcPaused=false;return hatPause()},previous:()=>{if(HATIM.active)hatPause();hatPcPaused=true;HATIM.idx=Math.max(0,(+HATIM.idx||0)-1);HATIM.count=0;hatApply();hatSave()},next:()=>{if(HATIM.idx<ZIKIR.esma.items.length-1){HATIM.idx++;HATIM.count=0;hatPcPaused=true;hatApply();hatSave()}}});
   if(typeof LTF==='object')register('lataif',{priority:70,title:'Letâif Seyri',getState:()=>LTF.active?'playing':ltfPcPaused?'paused':'idle',play:()=>{ltfPcPaused=false;return ltfStart()},resume:()=>{ltfPcPaused=false;return ltfStart()},pause:()=>{ltfPcPaused=true;return ltfPause()},stop:()=>{ltfPcPaused=false;return ltfPause()},previous:()=>{if(LTF.active)ltfPause();ltfPcPaused=true;LTF.i=Math.max(0,(+LTF.i||0)-1);LTF.count=0;ltfApply();ltfSave()},next:()=>{if(LTF.i<4){LTF.i++;LTF.count=0;ltfPcPaused=true;ltfApply();ltfSave()}}});
   /* Genel miks: alt mini oynatıcı ve Tümünü Durdur davranışı. */
-  register('mix',{priority:0,title:'SÜKÛN — Genel Oynatma',getState:()=>{try{if(typeof MINI==='object'&&MINI?.paused)return'paused';const inf=miniPlayingInfo?.();return inf?.active?'playing':'idle'}catch(e){return'idle'}},play:()=>{try{if(typeof MINI==='object'&&MINI?.paused)return miniResume();}catch(e){};try{ctx?.resume?.()}catch(e){}},resume:()=>{try{return miniResume()}catch(e){try{return ctx?.resume?.()}catch(_){}}},pause:()=>{try{return miniPause()}catch(e){try{return ctx?.suspend?.()}catch(_){}}},stop:()=>{try{return hardStopAll()}catch(e){}},previous:()=>activeId&&activeId!=='mix'?previous(activeId):(typeof miniAtla==='function'?miniAtla(-1):false),next:()=>activeId&&activeId!=='mix'?next(activeId):(typeof miniAtla==='function'?miniAtla(1):false)});
+  register('mix',{
+    priority:0,
+    title:'SÜKÛN — Genel Oynatma',
+    getState:()=>{
+      try{
+        if(typeof MINI==='object'&&MINI?.paused)return'paused';
+        const inf=miniPlayingInfo?.();
+        return inf?.active?'playing':'idle';
+      }catch(e){return'idle'}
+    },
+    play:()=>{
+      try{if(typeof MINI==='object'&&MINI?.paused)return miniResume()}catch(e){}
+      try{ctx?.resume?.()}catch(e){}
+    },
+    resume:()=>{
+      try{return miniResume()}catch(e){try{return ctx?.resume?.()}catch(_){}}
+    },
+    pause:()=>{
+      try{return miniPause()}catch(e){try{return ctx?.suspend?.()}catch(_){}}
+    },
+    stop:()=>{try{return hardStopAll()}catch(e){}},
+    getVolume:()=>{
+      try{
+        const el=$('masterVol');
+        const n=el?+el.value:NaN;
+        return Number.isFinite(n)?n:null;
+      }catch(e){return null}
+    },
+    setVolume:v=>{
+      try{
+        const el=$('masterVol');
+        if(!el)return false;
+        const min=Number.isFinite(+el.min)?+el.min:0;
+        const max=Number.isFinite(+el.max)?+el.max:1;
+        const n=Math.max(min,Math.min(max,+v));
+        if(!Number.isFinite(n))return false;
+        el.value=String(n);
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        return n;
+      }catch(e){return false}
+    },
+    previous:()=>activeId&&activeId!=='mix'?previous(activeId):(typeof miniAtla==='function'?miniAtla(-1):false),
+    next:()=>activeId&&activeId!=='mix'?next(activeId):(typeof miniAtla==='function'?miniAtla(1):false)
+  });
 }
 
-/* Başlık üzerinden eski SesCapa.start çağrısını sağlayıcıya eşle. */
 function providerFromTitle(t=''){
   const x=String(t).toLocaleLowerCase('tr');
   if(x.includes('akıllı seans')||x.includes('korunma okumaları'))return'smart-session';
@@ -35922,15 +36718,32 @@ function providerFromTitle(t=''){
 }
 function hookSesCapa(){const sc=window.SesCapa;if(!sc||sc.__playback270)return;sc.__playback270=1;const oldStart=sc.start?.bind(sc),oldStop=sc.stop?.bind(sc);if(oldStart)sc.start=function(o={}){const r=oldStart(o),id=providerFromTitle(o?.title);if(id)activate(id,'sescapa-start');setTimeout(bindMediaSession,0);return r};if(oldStop)sc.stop=function(){const r=oldStop();setTimeout(()=>{discover();bindMediaSession();emit('sescapa-stop')},0);return r}}
 
+
 function bindMediaSession(){
   if(!('mediaSession'in navigator))return;
   const bind=(a,fn)=>{try{navigator.mediaSession.setActionHandler(a,fn)}catch(e){}};
-  bind('play',()=>play());bind('pause',()=>pause());bind('stop',()=>stopAll());bind('previoustrack',()=>previous());bind('nexttrack',()=>next());
-  const s=snapshot();try{navigator.mediaSession.playbackState=s.state==='playing'?'playing':s.state==='paused'?'paused':'none'}catch(e){}
-  try{if(s.id&&window.MediaMetadata)navigator.mediaSession.metadata=new MediaMetadata({title:s.title||'SÜKÛN',artist:'Tasavvufî Ses & Tefekkür',album:'SÜKÛN'})}catch(e){}
+  bind('play',()=>aggregate.paused?resumeAll():play());
+  bind('pause',()=>pauseAll());
+  bind('stop',()=>stopAll());
+  bind('previoustrack',()=>previous());
+  bind('nexttrack',()=>next());
+  const s=snapshot();
+  try{
+    navigator.mediaSession.playbackState=
+      s.state===STATES.PLAYING?'playing':
+      s.state===STATES.PAUSED?'paused':'none';
+  }catch(e){}
+  try{
+    if(s.id&&window.MediaMetadata)
+      navigator.mediaSession.metadata=new MediaMetadata({
+        title:s.title||'SÜKÛN',
+        artist:'Tasavvufî Ses & Tefekkür',
+        album:'SÜKÛN'
+      });
+  }catch(e){}
 }
 
-/* Düğmeler artık doğrudan PlaybackController üzerinden kendi adaptörünü çağırır. */
+
 const binds=[
  ['tvPlay','tovbe','toggle'],['tvStop','tovbe','stop'],['akPlay','ayetulkursi','toggle'],['akStop','ayetulkursi','stop'],['dhPlay','salavat','toggle'],['dhStop','salavat','stop'],['fsPlay','fatiha','toggle'],['fsStop','fatiha','stop'],
  ['bsStart','berhetiyye','toggle'],['bsPause','berhetiyye','toggle'],['bsStop','berhetiyye','stop'],['bsNext','berhetiyye','next'],
@@ -35946,14 +36759,106 @@ function syncControls(){
   try{window.SukunPauseContract?.sync?.()}catch(e){}
 }
 
-registerBuiltins();hookSesCapa();bindControls();discover();bindMediaSession();emit('init');
-const observer=new MutationObserver(()=>{clearTimeout(observer._t);observer._t=setTimeout(()=>{bindControls();hookSesCapa();schedule('dom')},60)});observer.observe(document.documentElement,{subtree:true,childList:true});
-const poll=setInterval(()=>{if(document.hidden)return;discover();bindMediaSession();syncControls()},650);window.addEventListener('pagehide',()=>clearInterval(poll),{once:true});
-window.addEventListener('sukun:audiostate',()=>schedule('audio-state'));
-window.PlaybackController={version:'r270',register,unregister,activate,play,pause,resume,toggle,stop,stopAll,previous,next,capabilities,snapshot,sync:()=>schedule('manual'),list:()=>[...providers.keys()]};
-/* Tanılama / stres testi entegrasyonu */
-try{const ST=window.SukunAudioStress;if(ST?.run&&!ST.__r270){ST.__r270=1;const old=ST.run.bind(ST);ST.run=async function(){const r=await old();const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','seyyid','delail','hizb','hatim','lataif','mix'];const missing=req.filter(x=>!providers.has(x));r.tests.push({name:'r270 PlaybackController',ok:!missing.length,detail:missing.length?'eksik: '+missing.join(', '):req.length+' adaptör kayıtlı'});r.tests.push({name:'r270 Global transport API',ok:['play','pause','resume','toggle','stop','stopAll','previous','next'].every(k=>typeof window.PlaybackController?.[k]==='function'),detail:'tek transport sözleşmesi'});r.total=r.tests.length;r.passed=r.tests.filter(x=>x.ok).length;window.renderStress?.(r);return r}}}catch(e){}
+
+registerBuiltins();
+hookSesCapa();
+bindControls();
+reconcileAll('init');
+discover();
+bindMediaSession();
+emit('init');
+
+const domObserver=new MutationObserver(()=>{
+  clearTimeout(domObserver._t);
+  domObserver._t=setTimeout(()=>{
+    bindControls();
+    hookSesCapa();
+    schedule('dom');
+  },70);
+});
+domObserver.observe(document.documentElement,{subtree:true,childList:true});
+
+window.addEventListener('sukun:audiostate',()=>schedule('audio-state'),{passive:true});
+window.addEventListener('sukun:source',()=>schedule('source'),{passive:true});
+window.addEventListener('pageshow',()=>schedule('pageshow'),{passive:true});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible')schedule('visible');
+},{passive:true});
+
+const Registry={
+  version:'r454',
+  STATES,
+  register,
+  unregister,
+  activate,
+  session,
+  list:()=>[...providers.keys()],
+  play,pause,resume,toggle,stop,previous,next,
+  pauseAll,resumeAll,stopAll,
+  volume,
+  state,
+  getState,
+  snapshot:sessionSnapshot,
+  controllerSnapshot:snapshot,
+  aggregateState,
+  aggregateSnapshot,
+  subscribe,
+  sync:()=>schedule('registry-manual')
+};
+
+const PlaybackFacade={
+  version:'r454',
+  register,unregister,activate,
+  play,pause,resume,toggle,stop,stopAll,previous,next,
+  pauseAll,resumeAll,
+  volume,
+  state,
+  getState,
+  capabilities,
+  snapshot,
+  sync:()=>schedule('manual'),
+  list:()=>[...providers.keys()],
+  session
+};
+
+window.SukunAudioSessionRegistry=Registry;
+window.PlaybackController=PlaybackFacade;
+
+/* r454 sözleşme tanılaması */
+try{
+  const ST=window.SukunAudioStress;
+  if(ST?.run&&!ST.__r454){
+    ST.__r454=1;
+    const old=ST.run.bind(ST);
+    ST.run=async function(){
+      const r=await old();
+      const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','seyyid','delail','hizb','hatim','lataif','mix'];
+      const missing=req.filter(x=>!providers.has(x));
+      const contract=['play','pause','resume','stop','volume','state'];
+      r.tests.push({
+        name:'r454 Audio Session Registry',
+        ok:!missing.length,
+        detail:missing.length?'eksik: '+missing.join(', '):(providers.size+' session kayıtlı')
+      });
+      r.tests.push({
+        name:'r454 Session kontratı',
+        ok:contract.every(k=>typeof Registry[k]==='function'),
+        detail:'play / pause / resume / stop / volume / state'
+      });
+      r.tests.push({
+        name:'r454 State machine',
+        ok:['idle','playing','paused','stopping','ended'].every(x=>Object.values(STATES).includes(x)),
+        detail:'idle → playing → paused → stopping → ended'
+      });
+      r.total=r.tests.length;
+      r.passed=r.tests.filter(x=>x.ok).length;
+      window.renderStress?.(r);
+      return r;
+    };
+  }
+}catch(e){}
 })();
+
 </script>
 
 \n\n<!-- ═══ r290 — GLOBAL NOW PLAYING STORE ═══ -->
@@ -36062,7 +36967,7 @@ function publish(reason='tick'){
   renderMini(n);renderReaders(n);clearTimeout(mediaTimer);mediaTimer=setTimeout(()=>renderMedia(n),0);return n;
 }
 function ensureMini(){const info=document.querySelector('#miniBar .mbInfo');if(!info)return;let m=$('mbNowMeta');if(!m){m=document.createElement('div');m.id='mbNowMeta';info.appendChild(m)}let tr=$('mbNowTrack');if(!tr){tr=document.createElement('div');tr.id='mbNowTrack';tr.innerHTML='<i></i>';info.appendChild(tr)}}
-function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if(n.state==='idle'&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}try{window.SukunMiniStable?.applyNow?.(n)}catch(e){}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
+function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if((n.state==='idle'||n.state==='ended')&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}try{window.SukunMiniStable?.applyNow?.(n)}catch(e){}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
 const readerRoots={tovbe:'#tvBox',ayetulkursi:'#akBox',salavat:'#dhBox',fatiha:'#fsBox',seyyid:'#seyBox',delail:'#dlBox',hizb:'#hzvBox',berhetiyye:'#berhetSeyir',hatim:'#hatimBox,#esmaHatim',lataif:'#lataifBox,#latifSeyir','smart-session':'#r170SessionHub'};
 function renderReaders(n){Object.entries(readerRoots).forEach(([id,sel])=>{let root=null;try{root=document.querySelector(sel)}catch(e){};if(!root)return;const active=n.id===id&&(n.state==='playing'||n.state==='paused');root.dataset.nowActive=active?'1':'0';let d=root.querySelector('.sukunNowMini');if(!d){d=document.createElement('div');d.className='sukunNowMini';root.appendChild(d)}if(active){const b=[];if(n.sectionIndex&&n.sectionCount)b.push(n.sectionIndex+'/'+n.sectionCount);if(n.repeatTotal)b.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(n.sourceLabel)b.push(n.sourceLabel);if(n.remaining!=null)b.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));d.innerHTML='<b>Şimdi:</b> '+escapeHtml(n.sectionTitle)+(b.length?' · '+escapeHtml(b.join(' · ')):'')}})}
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -36072,7 +36977,7 @@ function subscribe(fn,{immediate=true}={}){if(typeof fn!=='function')return()=>{
 function manual(partial={},reason='manual',ttl=2500){manualPatch={...manualPatch,...partial};manualUntil=Date.now()+Math.max(0,+ttl||0);lastKey='';return publish(reason)}
 function clearManual(){manualPatch={};manualUntil=0;lastKey='';return publish('manual-clear')}
 window.SukunNowPlayingStore={version:'r300',get:()=>({...state}),subscribe,publish:manual,clearOverride:clearManual,refresh:()=>publish('manual-refresh')};
-PC.nowPlaying=()=>window.SukunNowPlayingStore.get();PC.subscribe=subscribe;PC.publishNowPlaying=manual;PC.clearNowPlayingOverride=clearManual;PC.version='r290';
+PC.nowPlaying=()=>window.SukunNowPlayingStore.get();PC.subscribe=subscribe;PC.publishNowPlaying=manual;PC.clearNowPlayingOverride=clearManual;PC.nowPlayingVersion='r290';
 window.addEventListener('sukun:playbackchange',()=>setTimeout(()=>publish('playbackchange'),0));
 window.addEventListener('sukun:source',()=>publish('source'));
 window.addEventListener('sukun:audiostate',()=>publish('audiostate'));
@@ -41835,120 +42740,33 @@ body.r434-inline-details-open #r433DetailBtn{
 if(window.__SUKUN_R439_MIX_TRANSPORT__)return;
 window.__SUKUN_R439_MIX_TRANSPORT__=1;
 
+const AR=window.SukunAudioSessionRegistry;
 const PC=window.PlaybackController;
-if(!PC)return;
+if(!AR||!PC)return;
 
-let paused=false;
-let pausedProviders=[];
-
-function info(){
-  try{return typeof miniPlayingInfo==='function'?miniPlayingInfo():{active:false,tam:[]}}
-  catch(e){return{active:false,tam:[]}}
+function active(){
+  try{
+    const st=AR.aggregateState?.();
+    if(st==='playing'||st==='paused'||st==='stopping')return true;
+    return !!(typeof miniPlayingInfo==='function'&&miniPlayingInfo()?.active);
+  }catch(e){return false}
 }
-function state(id){
-  try{return PC.snapshot(id)?.state||'idle'}catch(e){return'idle'}
-}
-function playingProviders(){
-  const out=[];
-  for(const id of (PC.list?.()||[])){
-    if(id==='mix')continue;
-    try{if(state(id)==='playing')out.push(id)}catch(e){}
-  }
-  return out;
+function pauseAll(){return AR.pauseAll()}
+function resumeAll(){return AR.resumeAll()}
+function stopAll(){return AR.stopAll()}
+function toggle(){
+  return AR.aggregateSnapshot?.().paused?resumeAll():pauseAll();
 }
 function refresh(){
   try{PC.sync?.()}catch(e){}
   try{window.SukunNowPlayingStore?.refresh?.()}catch(e){}
   try{window.SukunDockDetails?.refresh?.()}catch(e){}
   try{window.SukunAudioGuard?.refresh?.()}catch(e){}
-  setTimeout(syncButton,0);
+  syncButton();
 }
 
-/* Ana bar artık bütün aktif seslerin ortak transportudur. */
-function pauseAll(){
-  if(paused)return true;
-
-  pausedProviders=playingProviders();
-
-  /* Önce provider state'lerini pause'a al; kuyruk/watchdog da dursun. */
-  pausedProviders.forEach(id=>{
-    try{PC.pause(id)}catch(e){}
-  });
-
-  /* Sonra Web Audio + bağımsız audio + TTS katmanını birlikte dondur. */
-  try{
-    if(typeof MINI==='object'&&MINI&&!MINI.paused&&typeof miniPause==='function'){
-      miniPause();
-    }else{
-      try{ctx?.suspend?.()}catch(e){}
-      try{typeof ttsDurakla==='function'&&ttsDurakla()}catch(e){}
-      try{
-        SES?.ler?.forEach?.(a=>{
-          if(!a.paused){a._r439MixPause=1;a.pause()}
-        });
-      }catch(e){}
-    }
-  }catch(e){}
-
-  paused=true;
-  document.body?.classList.add('r439-mix-paused');
-  refresh();
-  return true;
-}
-
-function resumeAll(){
-  if(!paused)return true;
-
-  /* Önce ses altyapısı, sonra yalnız bizim pause ettiğimiz providerlar. */
-  try{
-    if(typeof MINI==='object'&&MINI?.paused&&typeof miniResume==='function'){
-      miniResume();
-    }else{
-      try{ctx?.resume?.()}catch(e){}
-      try{typeof ttsSurdur==='function'&&ttsSurdur()}catch(e){}
-      try{
-        SES?.ler?.forEach?.(a=>{
-          if(a._r439MixPause){
-            a._r439MixPause=0;
-            const p=a.play?.();
-            p?.catch?.(()=>{});
-          }
-        });
-      }catch(e){}
-    }
-  }catch(e){}
-
-  const ids=[...pausedProviders];
-  pausedProviders=[];
-  ids.forEach(id=>{
-    try{if(state(id)==='paused')PC.resume(id)}catch(e){}
-  });
-
-  paused=false;
-  document.body?.classList.remove('r439-mix-paused');
-  refresh();
-  return true;
-}
-
-function stopAll(){
-  paused=false;
-  pausedProviders=[];
-  document.body?.classList.remove('r439-mix-paused');
-  try{
-    if(typeof hardStopAll==='function')hardStopAll();
-    else PC.stopAll?.();
-  }catch(e){
-    try{PC.stopAll?.()}catch(_){}
-  }
-  setTimeout(refresh,80);
-  return true;
-}
-
-function toggle(){return paused?resumeAll():pauseAll()}
-function active(){return !!info().active}
-
-/* r170 tek dock: pause ve stop bütün miks katmanlarını yönetir.
-   Capture aşaması eski r431 onclick'inden önce çalışır. */
+/* Tek dock'un aggregate transportu artık doğrudan AudioSessionRegistry'dir.
+   WebAudio/TTS/audio elementlerine burada ikinci kez dokunulmaz. */
 document.addEventListener('click',e=>{
   const play=e.target.closest?.('#r170Play');
   if(play&&active()){
@@ -41968,9 +42786,10 @@ document.addEventListener('click',e=>{
 function syncButton(){
   const play=document.getElementById('r170Play');
   const stop=document.getElementById('r170Stop');
+  const agg=AR.aggregateSnapshot?.()||{paused:false};
 
   if(play&&active()){
-    if(paused){
+    if(agg.paused){
       play.textContent='▶';
       play.setAttribute('aria-label','Tüm sesleri sürdür');
       play.title='Tüm sesleri sürdür';
@@ -41986,30 +42805,23 @@ function syncButton(){
   }
 }
 
-['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
-  .forEach(ev=>window.addEventListener(ev,()=>setTimeout(syncButton,30),{passive:true}));
+window.addEventListener('sukun:audioaggregatechange',()=>setTimeout(syncButton,0),{passive:true});
+window.addEventListener('sukun:audiosessionchange',()=>setTimeout(syncButton,0),{passive:true});
+window.addEventListener('sukun:nowplayingchange',()=>setTimeout(syncButton,20),{passive:true});
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible')setTimeout(syncButton,60);
-});
-document.addEventListener('click',()=>setTimeout(syncButton,0),true);
-
-/* Kulaklık / kilit ekranı medya tuşları da aynı aggregate transportu kullansın. */
-try{
-  if('mediaSession' in navigator){
-    navigator.mediaSession.setActionHandler('pause',()=>pauseAll());
-    navigator.mediaSession.setActionHandler('play',()=>paused?resumeAll():PC.play());
-    navigator.mediaSession.setActionHandler('stop',()=>stopAll());
-  }
-}catch(e){}
+  if(document.visibilityState==='visible')setTimeout(syncButton,40);
+},{passive:true});
 
 window.SukunMixTransport={
-  version:'r439',
+  version:'r454',
   pause:pauseAll,
   resume:resumeAll,
   toggle,
   stopAll,
-  isPaused:()=>paused,
-  capturedProviders:()=>[...pausedProviders]
+  isPaused:()=>!!AR.aggregateSnapshot?.().paused,
+  capturedProviders:()=>[...(AR.aggregateSnapshot?.().providerIds||[])],
+  state:()=>AR.aggregateState?.()||'idle',
+  refresh
 };
 
 setTimeout(syncButton,120);
@@ -42181,147 +42993,7 @@ body.r441-peek-tab.r433-dock-hidden.mini-on.sukun-zikir-tab .wrap{
 }
 </style>
 
-<script id="r441-peek-style-runtime">
-(()=>{
-'use strict';
-if(window.__SUKUN_R441_PEEK_STYLE__)return;
-window.__SUKUN_R441_PEEK_STYLE__=1;
-
-const KEY='sukun.dock.peekStyle';
-let mode='pill';
-try{
-  const x=localStorage.getItem(KEY);
-  if(x==='pill'||x==='tab')mode=x;
-}catch(e){}
-
-function save(){
-  try{localStorage.setItem(KEY,mode)}catch(e){}
-}
-function apply(){
-  const b=document.body;
-  b.classList.toggle('r441-peek-pill',mode==='pill');
-  b.classList.toggle('r441-peek-tab',mode==='tab');
-
-  const peek=document.getElementById('r433DockPeek');
-  if(peek){
-    peek.setAttribute('data-peek-style',mode);
-    peek.setAttribute(
-      'aria-label',
-      mode==='tab'?'Oynatıcıyı yan sekmeden geri getir':'Oynatıcıyı geri getir'
-    );
-  }
-
-  document.querySelectorAll('[data-r441-peek]').forEach(btn=>{
-    const on=btn.dataset.r441Peek===mode;
-    btn.classList.toggle('on',on);
-    btn.setAttribute('aria-pressed',on?'true':'false');
-  });
-}
-
-function prefHtml(){
-  return '<div id="r441PeekPref">'+
-    '<div class="r441PeekTitle">GİZLİ OYNATICI ÇAĞIRMA</div>'+
-    '<div class="r441PeekChoices">'+
-      '<button type="button" class="r441PeekChoice" data-r441-peek="pill" aria-pressed="false">'+
-        '<span class="r441Demo pill" aria-hidden="true"></span>'+
-        '<span class="r441PeekCopy"><b>Geniş düğme</b><small>En kolay dokunma · ortada</small></span>'+
-      '</button>'+
-      '<button type="button" class="r441PeekChoice" data-r441-peek="tab" aria-pressed="false">'+
-        '<span class="r441Demo tab" aria-hidden="true"></span>'+
-        '<span class="r441PeekCopy"><b>Yan sekme</b><small>Daha minimal · sağ kenarda</small></span>'+
-      '</button>'+
-    '</div>'+
-  '</div>';
-}
-
-function ensurePref(){
-  const tools=document.getElementById('r434Tools');
-  if(!tools)return false;
-  if(!document.getElementById('r441PeekPref')){
-    tools.insertAdjacentHTML('beforeend',prefHtml());
-  }
-  apply();
-  return true;
-}
-
-document.addEventListener('click',e=>{
-  const btn=e.target.closest?.('[data-r441-peek]');
-  if(!btn)return;
-  const next=btn.dataset.r441Peek;
-  if(next!=='pill'&&next!=='tab')return;
-  mode=next;
-  save();
-  apply();
-  try{typeof vib==='function'&&vib(8)}catch(err){}
-},false);
-
-/* r434Tools refresh sırasında innerHTML ile yeniden kuruluyor.
-   Observer yalnız tercih satırı kaybolursa tekrar ekler. */
-let obs=null;
-function watch(){
-  const tools=document.getElementById('r434Tools');
-  if(!tools)return false;
-  if(!tools.dataset.r441Watch){
-    tools.dataset.r441Watch='1';
-    obs=new MutationObserver(()=>{
-      if(!document.getElementById('r441PeekPref'))queueMicrotask(ensurePref);
-      else apply();
-    });
-    obs.observe(tools,{childList:true});
-  }
-  ensurePref();
-  return true;
-}
-
-/* Detaylar API'sini bozmadan refresh sonrasında tercihi tekrar ekle. */
-function wrapDetails(){
-  const d=window.SukunDockDetails;
-  if(!d||d.__r441)return false;
-  d.__r441=1;
-  const oldRefresh=d.refresh?.bind(d);
-  if(oldRefresh){
-    d.refresh=function(){
-      const r=oldRefresh();
-      queueMicrotask(()=>{watch();ensurePref()});
-      return r;
-    };
-  }
-  const oldOpen=d.open?.bind(d);
-  if(oldOpen){
-    d.open=function(){
-      const r=oldOpen();
-      setTimeout(()=>{watch();ensurePref()},0);
-      return r;
-    };
-  }
-  return true;
-}
-
-['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate']
-  .forEach(ev=>window.addEventListener(ev,()=>setTimeout(()=>{watch();apply()},70),{passive:true}));
-document.addEventListener('click',e=>{
-  if(e.target.closest?.('#r433DetailBtn'))setTimeout(()=>{watch();ensurePref()},20);
-},{passive:true});
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible')setTimeout(()=>{watch();apply()},80);
-});
-
-(function boot(n=0){
-  apply();
-  const a=watch(),b=wrapDetails();
-  if((!a||!b)&&n<50)setTimeout(()=>boot(n+1),100);
-})();
-
-window.SukunPeekStyle={
-  version:'r441',
-  get:()=>mode,
-  set(v){
-    if(v!=='pill'&&v!=='tab')return false;
-    mode=v;save();apply();ensurePref();return true;
-  }
-};
-})();
-</script>
+<script id="r441-peek-style-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
 
 
 <style id="r442-tefekkur-dock-compact-style">
@@ -42539,158 +43211,7 @@ body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) .zCounterRow{
 }
 </style>
 
-<script id="r442-tefekkur-dock-compact-runtime">
-(()=>{
-'use strict';
-if(window.__SUKUN_R442_TEFEKKUR_DOCK__)return;
-window.__SUKUN_R442_TEFEKKUR_DOCK__=1;
-
-const $=id=>document.getElementById(id);
-let rail=null;
-
-function active(){return document.body.classList.contains('sukun-tefekkur-mode')}
-function dockVisible(){
-  return document.body.classList.contains('r431-dock-visible') &&
-         !document.body.classList.contains('r433-dock-hidden');
-}
-
-function ensureTefButton(){
-  const ops=$('r433DockOps');
-  if(!ops)return null;
-  let b=$('r442TefekkurBtn');
-  if(!b){
-    b=document.createElement('button');
-    b.id='r442TefekkurBtn';
-    b.type='button';
-    b.className='r433DockAct';
-    b.setAttribute('aria-label','Tefekkür moduna geç');
-
-    const hide=$('r433HideBtn');
-    ops.insertBefore(b,hide||null);
-
-    b.addEventListener('click',e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      try{
-        if(window.SUKUN_TEFEKKUR?.toggle){
-          window.SUKUN_TEFEKKUR.toggle();
-        }else{
-          document.querySelector('.sukun-focus-btn')?.click();
-        }
-      }catch(err){
-        document.querySelector('.sukun-focus-btn')?.click();
-      }
-      setTimeout(sync,40);
-    });
-  }
-  return b;
-}
-
-function syncTefButton(){
-  const b=ensureTefButton();
-  if(!b)return;
-  const on=active();
-  b.textContent=on?'× Tefekkürden Çık':'◉ Tefekkür';
-  b.setAttribute('aria-pressed',on?'true':'false');
-  b.setAttribute('aria-label',on?'Tefekkür modundan çık':'Tefekkür moduna geç');
-  b.title=b.getAttribute('aria-label');
-}
-
-function ensureRail(){
-  if(rail&&rail.isConnected)return rail;
-  rail=$('r442StepRail');
-  if(rail)return rail;
-
-  const ctl=document.querySelector('.zCtl');
-  const title=ctl?.querySelector('.zCountTitle');
-  if(!ctl||!title)return null;
-
-  rail=document.createElement('div');
-  rail.id='r442StepRail';
-  rail.setAttribute('aria-label','Hızlı sayaç düzeltme');
-  title.insertAdjacentElement('afterend',rail);
-  return rail;
-}
-
-function moveStepsUp(){
-  const r=ensureRail(),undo=$('undoBtn'),plus=$('plusBtn');
-  if(!r||!undo||!plus)return;
-  if(undo.parentNode!==r)r.appendChild(undo);
-  if(plus.parentNode!==r)r.appendChild(plus);
-}
-
-function restoreSteps(){
-  const actions=document.querySelector('.zCounterActions');
-  const undo=$('undoBtn'),plus=$('plusBtn'),auto=$('autoBtn');
-  if(!actions||!undo||!plus)return;
-
-  if(undo.parentNode!==actions){
-    if(auto&&auto.parentNode===actions)actions.insertBefore(undo,auto);
-    else actions.prepend(undo);
-  }
-  if(plus.parentNode!==actions){
-    if(auto&&auto.parentNode===actions)auto.insertAdjacentElement('afterend',plus);
-    else actions.appendChild(plus);
-  }
-}
-
-function sync(){
-  syncTefButton();
-
-  if(active()){
-    moveStepsUp();
-  }else{
-    restoreSteps();
-  }
-
-  /* r407/r408 eski Tefekkür butonu bar açıkken görünürlük sahibi değildir.
-     Bar gizlenirse emniyet çıkışını r407 yeniden yerleştirir. */
-  try{
-    if(active()&&!dockVisible()){
-      window.SukunTefekkurExitFlow?.moveIntoCounter?.();
-    }
-  }catch(e){}
-}
-
-let queued=false;
-function schedule(){
-  if(queued)return;
-  queued=true;
-  requestAnimationFrame(()=>{queued=false;sync()});
-}
-
-['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
- .forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
-
-document.addEventListener('click',e=>{
-  if(e.target.closest?.(
-    '#r433HideBtn,#r433DockPeek,#r170Play,#r170Stop,'+
-    '.sukun-focus-btn,#r442TefekkurBtn,#autoBtn,#undoBtn,#plusBtn'
-  ))setTimeout(schedule,30);
-},{passive:true});
-
-const mo=new MutationObserver(schedule);
-mo.observe(document.body,{attributes:true,attributeFilter:['class']});
-
-window.addEventListener('pageshow',()=>setTimeout(schedule,80));
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible')setTimeout(schedule,60);
-});
-
-(function boot(n=0){
-  const ok=!!ensureTefButton()&&!!ensureRail();
-  sync();
-  if(!ok&&n<45)setTimeout(()=>boot(n+1),100);
-})();
-
-window.SukunTefekkurDockUI={
-  version:'r442',
-  sync,
-  moveStepsUp,
-  restoreSteps
-};
-})();
-</script>
+<script id="r442-tefekkur-dock-compact-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
 
 <style id="r443-tefekkur-icon-longpress-style">
 /* r443 — Tefekkür bar kontrolü: ikon-only + uzun basma açıklaması */
@@ -42739,66 +43260,2948 @@ body.sukun-tefekkur-mode #r433DockOps #r442TefekkurBtn::before{
 }
 @media(prefers-reduced-motion:reduce){#r443TefHelp{transition:none!important}}
 </style>
-<script id="r443-tefekkur-icon-longpress-runtime">
+<script id="r443-tefekkur-icon-longpress-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+<style id="r444-tefekkur-center-stack-style">
+/* ═══════════════════════════════════════════════════════════════
+   r444 — TEFEKKÜR MERKEZ STACK
+   −1   [ Çık / Saymaya Başla ]   +1
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Tefekkürde eski alttaki çıkış slotu ve aksiyon alanı sahneden çekilir.
+   AutoBtn gerçek buton olarak merkez stack'e taşınır. */
+body.sukun-tefekkur-mode #r407TefekkurExitSlot{
+  display:none!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterActions{
+  min-height:0!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+/* r442StepRail artık üç kolonlu gerçek bir üst kontrol rayı. */
+body.sukun-tefekkur-mode #r442StepRail{
+  display:grid!important;
+  grid-template-columns:minmax(58px,1fr) minmax(132px,176px) minmax(58px,1fr)!important;
+  gap:9px!important;
+  width:min(88vw,430px)!important;
+  margin:3px auto 8px!important;
+  align-items:center!important;
+  justify-items:stretch!important;
+}
+
+/* −/+ daha küçük, sakin ve eşit. */
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+  min-width:0!important;
+  width:100%!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  padding:0 9px!important;
+  border-radius:16px!important;
+  display:grid!important;
+  place-content:center!important;
+  gap:2px!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.026),rgba(255,255,255,.01))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 16%,var(--line))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  opacity:.78!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn b,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn b{
+  font:600 13px/1 "Cormorant Garamond",Georgia,serif!important;
+  color:var(--goldh)!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn span,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn span{
+  display:block!important;
+  font:650 6.8px/1 "JetBrains Mono",ui-monospace,monospace!important;
+  letter-spacing:.07em!important;
+  color:var(--dim)!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn:active,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn:active{
+  transform:scale(.97)!important;
+  opacity:1!important;
+}
+
+/* Merkez: iki kontrollü mini stack. */
+#r444CenterStack{display:none}
+body.sukun-tefekkur-mode #r444CenterStack{
+  display:grid!important;
+  grid-template-rows:28px 46px!important;
+  gap:5px!important;
+  width:100%!important;
+  min-width:0!important;
+  align-self:center!important;
+}
+
+/* Üstteki çıkış: çok ince, sakin, ikincil. */
+#r444TefExit{
+  appearance:none;
+  width:100%;
+  min-width:0;
+  height:28px;
+  min-height:28px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line));
+  background:color-mix(in srgb,var(--gold) 3%,rgba(255,255,255,.018));
+  color:var(--mut);
+  padding:0 8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font:650 8.5px/1 "Figtree",system-ui,sans-serif;
+  white-space:nowrap;
+  cursor:pointer;
+  opacity:.82;
+}
+#r444TefExit::before{
+  content:"×";
+  width:16px;height:16px;
+  display:grid;place-items:center;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--gold) 15%,var(--line));
+  color:var(--goldh);
+  font:700 11px/1 system-ui,sans-serif;
+}
+#r444TefExit:active{
+  transform:scale(.98);
+  opacity:1;
+}
+
+/* Saymaya Başla: merkezde tek ana eylem. */
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+  width:100%!important;
+  min-width:0!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border-radius:15px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--blue) 8%,rgba(255,255,255,.018)),
+      color-mix(in srgb,var(--violet) 7%,rgba(255,255,255,.012)))!important;
+  border:1px solid color-mix(in srgb,var(--blue) 20%,var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.03),
+    0 8px 20px rgba(0,0,0,.10)!important;
+  color:var(--blue)!important;
+  font:760 9.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.03em!important;
+  white-space:nowrap!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{
+  font:760 9.5px/1 "Figtree",system-ui,sans-serif!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn small{
+  display:none!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn.playing{
+  color:#f2a28f!important;
+  border-color:color-mix(in srgb,#d87361 32%,var(--line))!important;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,#b94b3f 10%,rgba(255,255,255,.014)),
+      rgba(255,255,255,.008))!important;
+}
+
+/* Çemberi bir miktar yukarı al; alt tarafta boşluk birikmesin. */
+body.sukun-tefekkur-mode .zCtl{
+  gap:clamp(3px,.45dvh,6px)!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow{
+  margin-top:0!important;
+}
+body.sukun-tefekkur-mode .zCtl>.cntSub{
+  margin-top:5px!important;
+  margin-bottom:4px!important;
+}
+
+/* Tefekkürde artık actions satırı içerik taşımadığı için grid 4 satıra iner:
+   başlık → merkez ray → çember → hedef/devir. */
+body.sukun-tefekkur-mode .zCtl{
+  grid-template-rows:auto auto auto auto!important;
+}
+body.sukun-tefekkur-mode .zCtl>.zCountTitle{grid-row:1!important}
+body.sukun-tefekkur-mode #r442StepRail{grid-row:2!important}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow{grid-row:3!important}
+body.sukun-tefekkur-mode .zCtl>.cntSub{grid-row:4!important}
+body.sukun-tefekkur-mode .zCtl>.zCounterActions{grid-row:4!important}
+
+/* Çok dar telefonlarda merkez düğmeler sıkışmasın. */
+@media(max-width:390px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    grid-template-columns:minmax(52px,1fr) minmax(124px,158px) minmax(52px,1fr)!important;
+    width:min(92vw,390px)!important;
+    gap:7px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+    height:43px!important;
+    min-height:43px!important;
+    max-height:43px!important;
+    border-radius:14px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{
+    grid-template-rows:26px 43px!important;
+    gap:4px!important;
+  }
+  #r444TefExit{
+    height:26px;min-height:26px;
+    padding-inline:5px;
+    font-size:8px;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+    height:43px!important;
+    min-height:43px!important;
+    max-height:43px!important;
+    font-size:8.8px!important;
+    padding-inline:6px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{
+    font-size:8.8px!important;
+  }
+}
+
+@media(max-width:340px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    grid-template-columns:54px minmax(112px,146px) 54px!important;
+    width:min(94vw,326px)!important;
+    gap:6px!important;
+  }
+  #r444TefExit{
+    font-size:7.5px;
+  }
+}
+</style>
+
+<script id="r444-tefekkur-center-stack-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+<style id="r445-tefekkur-no-flash-style">
+/* ═══════════════════════════════════════════════════════════════
+   r445 — TEFEKKÜR TITREME / FLASH KATMANLARINI KALDIR
+   Amaç: sayaç ve tefekkür sahnesinde kalan nefes halo/pulse tint
+   katmanlarını tamamen susturmak; “yanıp sönme” hissini silmek.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Nefes halosu tamamen kapalı: hem normal görünümde hem tefekkürde */
+#breathHalo,
+.breathHalo,
+.breathHalo.on{
+  display:none!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  filter:none!important;
+  box-shadow:none!important;
+}
+
+/* Tefekkürde kalan pulse / tint / rim / overlay katmanları sustur */
+body.sukun-tefekkur-mode [class*="tefPulse"],
+body.sukun-tefekkur-mode .tefGoldenRim,
+body.sukun-tefekkur-mode .tefGoalNur,
+body.sukun-tefekkur-mode .tefGoalNur::before,
+body.sukun-tefekkur-mode .tefGoalNur::after,
+body.sukun-tefekkur-mode #zCounterCard::after,
+body.sukun-tefekkur-mode .zCounterCard::after,
+body.sukun-tefekkur-mode #zCountVisual::before,
+body.sukun-tefekkur-mode #zCountVisual::after{
+  animation:none!important;
+  transition:none!important;
+  opacity:0!important;
+  filter:none!important;
+  box-shadow:none!important;
+}
+
+/* Çemberde yalnız sakin esas içerik kalsın */
+body.sukun-tefekkur-mode .tefRosette::before,
+body.sukun-tefekkur-mode .tefRosette::after{
+  animation:none!important;
+  opacity:.16!important;
+}
+body.sukun-tefekkur-mode .tefNurField,
+body.sukun-tefekkur-mode .tefNurField i,
+body.sukun-tefekkur-mode .tefIncense{
+  animation:none!important;
+  transition:none!important;
+}
+body.sukun-tefekkur-mode .tefNurField{
+  opacity:.56!important;
+}
+body.sukun-tefekkur-mode .tefNurField i{
+  opacity:.32!important;
+}
+body.sukun-tefekkur-mode .tefIncense{
+  opacity:.42!important;
+}
+
+/* Erişilebilirlik: reduced motion varsa tüm ek tefekkür efektleri zaten kapalı olsun */
+@media (prefers-reduced-motion:reduce){
+  body.sukun-tefekkur-mode [class*="tef"],
+  body.sukun-tefekkur-mode [class*="breath"]{
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
+<script id="r445-tefekkur-no-flash-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+<style id="r446-premium-tefekkur-controls-style">
+/* ═══════════════════════════════════════════════════════════════
+   r446 — PREMIUM TEFEKKÜR CONTROL ISLAND
+   Statik, yüksek kontrastlı, tek elle rahat ve flashing'siz.
+   ═══════════════════════════════════════════════════════════════ */
+
+body.sukun-tefekkur-mode #r442StepRail{
+  grid-template-columns:54px minmax(148px,190px) 54px!important;
+  gap:7px!important;
+  width:min(90vw,390px)!important;
+  margin:4px auto 10px!important;
+  padding:7px!important;
+  border:1px solid transparent!important;
+  border-radius:24px!important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--panel) 93%,rgba(255,255,255,.028)),
+      color-mix(in srgb,var(--panel) 98%,rgba(0,0,0,.05))) padding-box,
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--gold) 25%,transparent),
+      color-mix(in srgb,var(--blue) 14%,transparent) 46%,
+      color-mix(in srgb,var(--violet) 18%,transparent)) border-box!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 18px 48px -34px rgba(0,0,0,.88)!important;
+  backdrop-filter:blur(18px) saturate(1.06)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.06)!important;
+  isolation:isolate!important;
+}
+
+/* Yan kontroller: büyük dokunma hedefi, düşük görsel gürültü. */
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+  width:54px!important;
+  min-width:54px!important;
+  max-width:54px!important;
+  height:54px!important;
+  min-height:54px!important;
+  max-height:54px!important;
+  align-self:center!important;
+  justify-self:center!important;
+  padding:0!important;
+  border-radius:18px!important;
+  display:grid!important;
+  place-content:center!important;
+  gap:0!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.038),rgba(255,255,255,.012))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 8px 20px -18px rgba(0,0,0,.8)!important;
+  opacity:1!important;
+  transition:transform .10s ease,border-color .14s ease,background-color .14s ease!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn b,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn b{
+  font:650 16px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:-.02em!important;
+  color:color-mix(in srgb,var(--goldh) 84%,var(--ivory))!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn span,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn span{
+  display:none!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb,var(--gold) 9%,rgba(255,255,255,.035)),
+      rgba(255,255,255,.012))!important;
+  border-color:color-mix(in srgb,var(--gold) 28%,var(--line))!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn:active,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn:active{
+  transform:translateY(1px) scale(.965)!important;
+  background:color-mix(in srgb,var(--gold) 8%,rgba(255,255,255,.025))!important;
+}
+body.sukun-tefekkur-mode #r442StepRail>#undoBtn:focus-visible,
+body.sukun-tefekkur-mode #r442StepRail>#plusBtn:focus-visible,
+body.sukun-tefekkur-mode #r444TefExit:focus-visible,
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--blue) 64%,var(--goldh))!important;
+  outline-offset:2px!important;
+}
+
+/* Merkez iki kat: çıkış ince, ana eylem güçlü. */
+body.sukun-tefekkur-mode #r444CenterStack{
+  grid-template-rows:25px 54px!important;
+  gap:5px!important;
+  width:100%!important;
+  align-self:center!important;
+}
+body.sukun-tefekkur-mode #r444TefExit{
+  height:25px!important;
+  min-height:25px!important;
+  padding:0 9px!important;
+  border-radius:999px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 15%,var(--line))!important;
+  background:rgba(255,255,255,.014)!important;
+  color:color-mix(in srgb,var(--mut) 88%,var(--ivory))!important;
+  font:650 8px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+  opacity:.84!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+body.sukun-tefekkur-mode #r444TefExit::before{
+  width:14px!important;height:14px!important;flex-basis:14px!important;
+  border:0!important;background:transparent!important;
+  color:color-mix(in srgb,var(--goldh) 68%,var(--ivory))!important;
+  font-size:11px!important;
+}
+body.sukun-tefekkur-mode #r444TefExit:active{
+  transform:translateY(1px) scale(.985)!important;
+  opacity:1!important;
+}
+
+/* Ana eylem: font-size 0 ile eski ▷/■ text node saklanır; ikon pseudo ile kontrollü. */
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  height:54px!important;
+  min-height:54px!important;
+  max-height:54px!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border-radius:18px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  overflow:hidden!important;
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+  font-size:0!important;
+  line-height:1!important;
+  color:#dce8ff!important;
+  border:1px solid color-mix(in srgb,var(--blue) 34%,var(--line))!important;
+  background:
+    radial-gradient(120% 120% at 12% 0%,rgba(255,255,255,.08),transparent 42%),
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--blue) 18%,#10151c),
+      color-mix(in srgb,var(--violet) 16%,#11121a))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.075),
+    inset 0 -1px 0 rgba(0,0,0,.22),
+    0 12px 28px -20px color-mix(in srgb,var(--blue) 45%,#000)!important;
+  text-shadow:none!important;
+  transition:transform .10s ease,border-color .14s ease,box-shadow .14s ease!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn::before{
+  content:"▶";
+  width:22px;height:22px;flex:0 0 22px;
+  display:grid;place-items:center;
+  border-radius:8px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.07);
+  color:#e9f0ff;
+  font:800 9px/1 system-ui,sans-serif;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{
+  display:inline-block!important;
+  font:760 9.2px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.075em!important;
+  color:inherit!important;
+  white-space:nowrap!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn small{display:none!important}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn:active{
+  transform:translateY(1px) scale(.985)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn.playing{
+  color:#ffe7df!important;
+  border-color:color-mix(in srgb,#e88b75 42%,var(--line))!important;
+  background:
+    radial-gradient(120% 120% at 12% 0%,rgba(255,255,255,.065),transparent 42%),
+    linear-gradient(135deg,
+      color-mix(in srgb,#a74d43 22%,#151111),
+      color-mix(in srgb,#7e445b 16%,#121116))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -1px 0 rgba(0,0,0,.20),
+    0 12px 28px -22px rgba(170,72,62,.62)!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack>#autoBtn.playing::before{
+  content:"■";
+  color:#ffd9cf;
+  background:rgba(220,102,86,.10);
+  border-color:rgba(235,135,115,.14);
+}
+
+/* Hedef/Kalan: kontrol adasıyla aynı premium dil. */
+body.sukun-tefekkur-mode .zCounterSide{
+  border:1px solid color-mix(in srgb,var(--gold) 15%,var(--line))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.009))!important;
+  border-radius:17px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+body.sukun-tefekkur-mode .zCounterSide b{
+  color:color-mix(in srgb,var(--blue) 60%,var(--goldh))!important;
+  font-variant-numeric:tabular-nums!important;
+}
+body.sukun-tefekkur-mode .cntSub{
+  width:max-content!important;
+  max-width:86%!important;
+  margin:4px auto 2px!important;
+  padding:5px 10px!important;
+  min-height:0!important;
+  border:1px solid color-mix(in srgb,var(--gold) 12%,var(--line))!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.012)!important;
+  color:color-mix(in srgb,var(--mut) 88%,var(--ivory))!important;
+  font-size:9px!important;
+  letter-spacing:.025em!important;
+  line-height:1!important;
+  opacity:.86!important;
+}
+
+/* Tefekkürde kontrolleri çembere optik olarak yaklaştır. */
+body.sukun-tefekkur-mode .zCtl{
+  gap:clamp(3px,.4dvh,5px)!important;
+}
+body.sukun-tefekkur-mode #r442StepRail{grid-row:2!important}
+body.sukun-tefekkur-mode .zCtl>.zCounterRow{grid-row:3!important}
+body.sukun-tefekkur-mode .zCtl>.cntSub{grid-row:4!important}
+
+@media(max-width:390px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    grid-template-columns:50px minmax(134px,172px) 50px!important;
+    width:min(92vw,370px)!important;
+    gap:6px!important;padding:6px!important;border-radius:22px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+    width:50px!important;min-width:50px!important;max-width:50px!important;
+    height:50px!important;min-height:50px!important;max-height:50px!important;
+    border-radius:16px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{grid-template-rows:24px 50px!important;gap:4px!important}
+  body.sukun-tefekkur-mode #r444TefExit{height:24px!important;min-height:24px!important;font-size:7.5px!important}
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{height:50px!important;min-height:50px!important;max-height:50px!important;border-radius:16px!important}
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{font-size:8.6px!important}
+}
+@media(max-width:340px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    grid-template-columns:47px minmax(120px,154px) 47px!important;
+    width:min(94vw,326px)!important;
+    gap:5px!important;
+  }
+  body.sukun-tefekkur-mode #r442StepRail>#undoBtn,
+  body.sukun-tefekkur-mode #r442StepRail>#plusBtn{
+    width:47px!important;min-width:47px!important;max-width:47px!important;
+    height:47px!important;min-height:47px!important;max-height:47px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{grid-template-rows:23px 47px!important}
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn{height:47px!important;min-height:47px!important;max-height:47px!important;padding-inline:7px!important}
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn::before{width:19px;height:19px;flex-basis:19px}
+  body.sukun-tefekkur-mode #r444CenterStack>#autoBtn b{font-size:8px!important;letter-spacing:.055em!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body.sukun-tefekkur-mode #r442StepRail button{transition:none!important}
+}
+</style>
+
+<script id="r446-premium-tefekkur-controls-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+<style id="r447-premium-dock-focus-style">
+/* ═══════════════════════════════════════════════════════════════
+   r447 — PREMIUM TWO-LEVEL DOCK + ADAPTIVE ZIKIR FOCUS
+   Hareket dili: 180–220 ms, flashing/pulse yok.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --sukun-move-fast:180ms;
+  --sukun-move:210ms;
+  --sukun-move-slow:220ms;
+  --sukun-ease:cubic-bezier(.2,.72,.2,1);
+  --sukun-ease-soft:cubic-bezier(.22,.68,.25,1);
+}
+
+/* ── Premium dock yüzeyi ───────────────────────────────────── */
+body.r447-dock-ready #r170Now{
+  border-color:color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  background:
+    radial-gradient(120% 90% at 8% 0%,rgba(255,255,255,.035),transparent 48%),
+    linear-gradient(180deg,rgba(8,13,15,.975),rgba(5,9,11,.985))!important;
+  box-shadow:
+    0 22px 56px -32px rgba(0,0,0,.9),
+    0 0 0 1px rgba(255,255,255,.018) inset,
+    inset 0 1px 0 rgba(255,255,255,.035)!important;
+  transition:
+    opacity var(--sukun-move-fast) ease,
+    transform var(--sukun-move) var(--sukun-ease),
+    min-height var(--sukun-move) var(--sukun-ease),
+    padding var(--sukun-move) var(--sukun-ease),
+    border-color var(--sukun-move-fast) ease!important;
+}
+body.r447-dock-ready #r170Now button,
+body.r447-dock-ready #r170Now .r433DockAct,
+body.sukun-tefekkur-mode #r442StepRail button,
+body.sukun-tefekkur-mode #r444CenterStack button{
+  transition:
+    opacity var(--sukun-move-fast) ease,
+    transform var(--sukun-move-fast) var(--sukun-ease),
+    border-color var(--sukun-move-fast) ease,
+    background-color var(--sukun-move-fast) ease,
+    box-shadow var(--sukun-move-fast) ease!important;
+}
+
+/* Üst tutamak: hem affordance hem açık erişilebilir buton. */
+#r447DockHandle{
+  position:absolute;
+  left:50%;top:5px;
+  transform:translateX(-50%);
+  z-index:12;
+  appearance:none;
+  width:72px;height:22px;
+  padding:0;border:0;background:transparent;
+  display:grid;place-items:center;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+#r447DockHandle::before{
+  content:"";
+  width:38px;height:4px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--goldh) 30%,var(--line));
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset;
+  transition:
+    width var(--sukun-move-fast) var(--sukun-ease),
+    background var(--sukun-move-fast) ease,
+    transform var(--sukun-move) var(--sukun-ease);
+}
+#r447DockHandle::after{
+  content:"⌃";
+  position:absolute;
+  top:6px;right:5px;
+  color:var(--dim);
+  font:700 9px/1 system-ui,sans-serif;
+  opacity:.62;
+  transition:transform var(--sukun-move) var(--sukun-ease),opacity var(--sukun-move-fast) ease;
+}
+body.r447-dock-expanded #r447DockHandle::before{
+  width:46px;
+  background:color-mix(in srgb,var(--goldh) 42%,var(--line));
+}
+body.r447-dock-expanded #r447DockHandle::after{transform:rotate(180deg);opacity:.82}
+#r447DockHandle:focus-visible{outline:2px solid color-mix(in srgb,var(--blue) 55%,var(--goldh));outline-offset:2px;border-radius:999px}
+
+/* ── MINI: ana bilgi + transport. Geri kalan güç tek dokunuş uzakta. ── */
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now{
+  min-height:112px!important;
+  max-height:none!important;
+  padding:13px 10px 9px!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowInfo{
+  min-height:0!important;
+  gap:4px!important;
+  padding-top:4px!important;
+  align-self:center!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowPhase,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowNext,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r430Layers,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowMeta,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r433DockOps,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r434InlineDetails{
+  display:none!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowHead{
+  margin:0!important;
+  min-height:17px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowSession{
+  max-width:46vw!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  font-size:10px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowCurrent{
+  font-size:16px!important;line-height:1.12!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  max-width:58vw!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowSource{
+  font-size:10px!important;line-height:1.25!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  max-width:58vw!important;
+  opacity:.82!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422Progress{
+  height:3px!important;margin-top:4px!important;opacity:.64!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now .r170NowBtns{
+  display:grid!important;
+  grid-template-columns:repeat(2,39px)!important;
+  grid-template-rows:repeat(2,39px)!important;
+  gap:6px!important;
+  align-self:center!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now .r170NowBtns button{
+  width:39px!important;min-width:39px!important;max-width:39px!important;
+  height:39px!important;min-height:39px!important;max-height:39px!important;
+  padding:0!important;border-radius:12px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Play{
+  border-color:color-mix(in srgb,var(--blue) 28%,var(--line))!important;
+  background:color-mix(in srgb,var(--blue) 8%,rgba(255,255,255,.025))!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Stop{
+  border-color:color-mix(in srgb,#d87361 20%,var(--line))!important;
+  background:color-mix(in srgb,#b94b3f 5%,rgba(255,255,255,.018))!important;
+}
+
+/* Mini reserve: bar sayaç/ekran içeriğini gereksiz yere yukarı itmesin. */
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .wrap,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden).mini-on .wrap{
+  padding-bottom:calc(env(safe-area-inset-bottom) + 142px)!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden).sukun-zikir-tab .wrap,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden).mini-on.sukun-zikir-tab .wrap{
+  padding-bottom:calc(env(safe-area-inset-bottom) + 158px)!important;
+}
+
+/* ── EXPANDED: mevcut güçlü özelliklerin tamamı. ──────────── */
+body.r447-dock-expanded.r431-dock-visible:not(.r433-dock-hidden) #r170Now{
+  padding-top:15px!important;
+}
+body.r447-dock-expanded.r431-dock-visible:not(.r433-dock-hidden) #r433DockOps{
+  opacity:1!important;
+}
+
+/* Detaylar paneli açılırsa premium expanded state her zaman görünür. */
+body.r434-inline-details-open #r447DockHandle{pointer-events:auto!important}
+
+/* ── ZİKİR FOCUS: sayım akarken otomatik sakinleşme ──────── */
+body.sukun-tefekkur-mode #r442StepRail,
+body.sukun-tefekkur-mode .zCounterSide,
+body.sukun-tefekkur-mode .cntSub,
+body.sukun-tefekkur-mode .zCountTitle{
+  transition:
+    opacity var(--sukun-move-slow) ease,
+    transform var(--sukun-move-slow) var(--sukun-ease-soft),
+    filter var(--sukun-move-slow) ease!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #r442StepRail{
+  opacity:.06!important;
+  transform:translateY(-5px) scale(.97)!important;
+  filter:saturate(.72)!important;
+  pointer-events:none!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm .zCounterSide{
+  opacity:.18!important;
+  transform:scale(.985)!important;
+  pointer-events:none!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm .cntSub{
+  opacity:.14!important;
+  transform:translateY(3px)!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm .zCountTitle{
+  opacity:.44!important;
+  transform:translateY(-2px)!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #zCountVisual,
+body.sukun-tefekkur-mode.r447-focus-calm .cntBig{
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+}
+
+/* Focus sakinleştiğinde dock otomatik olarak mini yoğunluğa iner; kullanıcı
+   tutamağa dokunursa runtime önce kontrolleri uyandırır. */
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r422NowPhase,
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r422NowNext,
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r430Layers,
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r422NowMeta,
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r433DockOps,
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r434InlineDetails{
+  display:none!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #r170Now{
+  min-height:104px!important;
+  padding-top:13px!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm.r431-dock-visible:not(.r433-dock-hidden) #tab-zkr{
+  padding-bottom:calc(112px + env(safe-area-inset-bottom))!important;
+}
+
+/* Sakin moda geçişte hiçbir pulse / flashing kullanılmaz. */
+body.r447-dock-ready #r170Now,
+body.sukun-tefekkur-mode #r442StepRail,
+body.sukun-tefekkur-mode #r444CenterStack,
+body.sukun-tefekkur-mode .zCounterSide,
+body.sukun-tefekkur-mode .cntSub{
+  animation:none!important;
+}
+
+@media(max-width:390px){
+  body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now{
+    min-height:106px!important;padding-inline:8px!important;
+  }
+  body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now .r170NowBtns{
+    grid-template-columns:repeat(2,36px)!important;
+    grid-template-rows:repeat(2,36px)!important;
+    gap:5px!important;
+  }
+  body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r170Now .r170NowBtns button{
+    width:36px!important;min-width:36px!important;max-width:36px!important;
+    height:36px!important;min-height:36px!important;max-height:36px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #r447DockHandle::before,#r447DockHandle::after,
+  body.r447-dock-ready #r170Now,
+  body.r447-dock-ready #r170Now button,
+  body.sukun-tefekkur-mode #r442StepRail,
+  body.sukun-tefekkur-mode .zCounterSide,
+  body.sukun-tefekkur-mode .cntSub,
+  body.sukun-tefekkur-mode .zCountTitle{
+    transition:none!important;
+  }
+}
+</style>
+
+<script id="r447-premium-dock-focus-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+<style id="r448-performance-stabilization-style">
+/* ═══════════════════════════════════════════════════════════════
+   r448 — PERFORMANS STABİLİZASYONU
+   Premium görünüm korunur; mobilde sürekli GPU/paint isteyen katmanlar
+   ve layout animasyonları kapatılır.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Control Island'daki backdrop blur mobil GPU'da pahalıydı.
+   Aynı derinlik opak gradient + inset shadow ile korunuyor. */
+body.sukun-tefekkur-mode #r442StepRail{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+/* Sabit player'da height/padding/box-shadow animasyonu layout+paint zinciri
+   oluşturmasın; yalnız compositor dostu opacity/transform/border kalsın. */
+body.r447-dock-ready #r170Now{
+  transition:
+    opacity 160ms ease,
+    transform 190ms cubic-bezier(.2,.72,.2,1),
+    border-color 160ms ease!important;
+}
+body.r447-dock-ready #r170Now button,
+body.r447-dock-ready #r170Now .r433DockAct{
+  transition:
+    opacity 140ms ease,
+    transform 140ms cubic-bezier(.2,.72,.2,1),
+    border-color 140ms ease,
+    background-color 140ms ease!important;
+}
+
+/* Focus sakinleşirken filter transition yok; opacity+transform yeterli. */
+body.sukun-tefekkur-mode #r442StepRail,
+body.sukun-tefekkur-mode .zCounterSide,
+body.sukun-tefekkur-mode .cntSub,
+body.sukun-tefekkur-mode .zCountTitle{
+  transition:
+    opacity 180ms ease,
+    transform 190ms cubic-bezier(.22,.68,.25,1)!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #r442StepRail{
+  filter:none!important;
+}
+
+/* Sürekli çalışan eski tefekkür efektleri artık statik.
+   Mikro etkileşimler korunabilir ama arka planda sonsuz animasyon yok. */
+body.sukun-tefekkur-mode .tefChromAura,
+body.sukun-tefekkur-mode .tefChromAura::before,
+body.sukun-tefekkur-mode .tefChromAura::after,
+body.sukun-tefekkur-mode .tefNurHalo,
+body.sukun-tefekkur-mode .tefNurHalo::before,
+body.sukun-tefekkur-mode .tefRosette::before,
+body.sukun-tefekkur-mode .tefRosette::after,
+body.sukun-tefekkur-mode .tefIncense i,
+body.sukun-tefekkur-mode .tefNurField i,
+body.sukun-tefekkur-mode .tefAdabSweep,
+body.sukun-tefekkur-mode .tefMihrapBeam::before,
+body.sukun-tefekkur-mode .zCountTitle,
+body.sukun-tefekkur-mode #zStage .zTr{
+  animation:none!important;
+}
+
+/* Blur tabakalarını statik ve hafif tut. */
+body.sukun-tefekkur-mode .tefChromAura{
+  filter:none!important;
+  opacity:.28!important;
+}
+body.sukun-tefekkur-mode .tefNurHalo{
+  filter:none!important;
+  opacity:.20!important;
+}
+body.sukun-tefekkur-mode .tefIncense{
+  display:none!important;
+}
+body.sukun-tefekkur-mode .tefNurField{
+  opacity:.20!important;
+}
+body.sukun-tefekkur-mode .tefNurField i{
+  opacity:.18!important;
+}
+
+/* Eski shimmer metinleri tefekkürde sürekli repaint üretmesin. */
+body.sukun-tefekkur-mode .shimmer-text,
+body.sukun-tefekkur-mode .shimmer-logo{
+  animation:none!important;
+  background-position:50% 50%!important;
+}
+
+@media(max-width:600px){
+  /* Mobilde geniş gölgeleri biraz ucuzlat. */
+  body.sukun-tefekkur-mode #r442StepRail{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.035),
+      0 12px 28px -24px rgba(0,0,0,.72)!important;
+  }
+  body.r447-dock-ready #r170Now{
+    box-shadow:
+      0 16px 34px -26px rgba(0,0,0,.82),
+      inset 0 1px 0 rgba(255,255,255,.025)!important;
+  }
+}
+</style>
+
+<script id="r448-ui-performance-coordinator">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+
+<style id="r450-tefekkur-premium-capsule-style">
+body.sukun-tefekkur-mode #r442StepRail{
+  position:relative!important;
+  width:min(100%, 488px)!important;
+  margin:0 auto 10px!important;
+  padding:12px 12px 11px!important;
+  display:grid!important;
+  grid-template-columns:84px minmax(196px,1fr) 84px!important;
+  grid-template-rows:30px minmax(54px,auto) auto!important;
+  grid-template-areas:
+    ". exit ."
+    "undo auto plus"
+    "meta meta meta"!important;
+  align-items:center!important;
+  column-gap:12px!important;
+  row-gap:9px!important;
+  border-radius:26px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 24%,var(--line))!important;
+  background:
+    radial-gradient(120% 145% at 50% 0%, rgba(255,240,195,.035), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,.032), rgba(255,255,255,.016))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    inset 0 -1px 0 rgba(0,0,0,.22),
+    0 18px 42px -28px rgba(0,0,0,.72),
+    0 0 0 1px rgba(255,220,155,.035)!important;
+  overflow:hidden!important;
+}
+body.sukun-tefekkur-mode #r442StepRail::before{
+  content:"";
+  position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(255,231,174,.07), transparent 24%, transparent 72%, rgba(0,0,0,.06)),
+    radial-gradient(80% 65% at 50% -12%, rgba(236,205,126,.09), transparent 60%);
+  opacity:.9;
+}
+body.sukun-tefekkur-mode #r442StepRail::after{
+  content:"";
+  position:absolute; left:14px; right:14px; top:43px;
+  height:1px; border-radius:999px;
+  background:linear-gradient(90deg,transparent, color-mix(in srgb,var(--gold) 18%,var(--line)), transparent);
+  opacity:.9; pointer-events:none;
+}
+body.sukun-tefekkur-mode #undoBtn{grid-area:undo!important;align-self:center!important;justify-self:start!important}
+body.sukun-tefekkur-mode #plusBtn{grid-area:plus!important;align-self:center!important;justify-self:end!important}
+body.sukun-tefekkur-mode #r444CenterStack{
+  grid-area:auto!important; width:100%!important; max-width:292px!important; min-width:0!important;
+  margin:0 auto!important; display:grid!important; grid-template-rows:28px minmax(48px,auto)!important;
+  align-items:center!important; justify-items:stretch!important; row-gap:8px!important;
+}
+body.sukun-tefekkur-mode #r444TefExit{
+  grid-area:exit!important; width:100%!important; max-width:292px!important; margin:0 auto!important;
+  justify-self:center!important; align-self:center!important; height:28px!important; min-height:28px!important;
+  background:rgba(255,255,255,.016)!important;
+  border-color:color-mix(in srgb,var(--gold) 16%,var(--line))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+body.sukun-tefekkur-mode #autoBtn{
+  width:100%!important; max-width:292px!important; min-width:0!important; justify-content:center!important;
+  padding-inline:18px!important; min-height:48px!important; border-radius:18px!important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 12px 26px -22px rgba(0,0,0,.66)!important;
+}
+body.sukun-tefekkur-mode #autoBtn > *{pointer-events:none}
+body.sukun-tefekkur-mode #undoBtn,
+body.sukun-tefekkur-mode #plusBtn{
+  width:84px!important; min-width:84px!important; min-height:84px!important; border-radius:22px!important;
+  background: linear-gradient(180deg, rgba(255,255,255,.026), rgba(255,255,255,.014))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 20%,var(--line))!important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 12px 26px -22px rgba(0,0,0,.62)!important;
+}
+body.sukun-tefekkur-mode #undoBtn:hover,
+body.sukun-tefekkur-mode #plusBtn:hover,
+body.sukun-tefekkur-mode #autoBtn:hover{
+  border-color:color-mix(in srgb,var(--gold) 34%,var(--line))!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot{
+  grid-area:meta!important; width:100%!important; margin:0!important; display:flex!important;
+  justify-content:center!important; align-items:center!important; min-height:36px!important;
+  padding-top:4px!important; position:relative!important; z-index:1!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot::before{
+  content:""; position:absolute; left:8px; right:8px; top:0; height:1px;
+  background:linear-gradient(90deg,transparent, color-mix(in srgb,var(--gold) 14%,var(--line)), transparent);
+  opacity:.86;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot .cntSub,
+body.sukun-tefekkur-mode .cntSub.r450-focus-meta{
+  margin:0!important; padding:7px 14px!important; border-radius:999px!important;
+  display:inline-flex!important; align-items:center!important; justify-content:center!important;
+  min-height:30px!important; background:rgba(255,255,255,.018)!important;
+  border:1px solid color-mix(in srgb,var(--gold) 15%,var(--line))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.022)!important;
+  color:color-mix(in srgb,var(--goldh) 74%,var(--text))!important;
+  font:650 11px/1.1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.02em!important; text-align:center!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot .cntSub::before{
+  content:"◎"; font-size:10px; opacity:.68; margin-right:7px;
+}
+#r422NowHead{
+  display:grid!important; grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:start!important; column-gap:8px!important; row-gap:4px!important;
+}
+#r422NowSession{grid-column:1 / 3!important}
+#r422NowLive{grid-column:1 / 2!important; justify-self:start!important; margin-top:1px!important; padding:4px 10px!important}
+#r447DockHandle{top:8px!important; right:10px!important}
+@media (max-width: 420px){
+  body.sukun-tefekkur-mode #r442StepRail{
+    width:min(100%, 100%)!important; padding:11px 10px 10px!important;
+    grid-template-columns:72px minmax(150px,1fr) 72px!important; column-gap:10px!important; row-gap:8px!important;
+    border-radius:24px!important;
+  }
+  body.sukun-tefekkur-mode #undoBtn,
+  body.sukun-tefekkur-mode #plusBtn{
+    width:72px!important; min-width:72px!important; min-height:76px!important; border-radius:20px!important;
+  }
+  body.sukun-tefekkur-mode #r444CenterStack{max-width:250px!important}
+  body.sukun-tefekkur-mode #autoBtn,
+  body.sukun-tefekkur-mode #r444TefExit{max-width:250px!important}
+}
+</style>
+
+
+
+<script id="r450-tefekkur-premium-capsule-runtime">/* r453: consolidated into SukunUIRuntime; compatibility anchor only. */</script>
+
+
+<style id="r451-premium-final-polish-style">
+/* r451 — Son premium rötuş paketi
+   Amaç: ana CTA daha kutsî/odaklı, yan butonlar daha sessiz-lüks,
+   zikrin merkezinde performans dostu hafif “nefes” hissi. */
+
+/* 1) Ana aks: Saymaya Başla / Durdur daha birincil aksiyon olsun */
+body.sukun-tefekkur-mode #autoBtn{
+  position:relative!important;
+  isolation:isolate!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.042), rgba(255,255,255,.018)),
+    linear-gradient(135deg, rgba(212,168,88,.11), rgba(87,120,255,.065))!important;
+  border:1px solid color-mix(in srgb,var(--gold) 34%,var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 14px 30px -22px rgba(0,0,0,.62),
+    0 0 0 1px rgba(255,216,142,.04)!important;
+  font-weight:800!important;
+  letter-spacing:.04em!important;
+}
+body.sukun-tefekkur-mode #autoBtn::before{
+  content:"";
+  position:absolute; inset:1px;
+  border-radius:inherit;
+  background:
+    linear-gradient(180deg, rgba(255,249,227,.075), transparent 42%),
+    radial-gradient(65% 70% at 50% 10%, rgba(255,228,150,.08), transparent 72%);
+  opacity:.9;
+  pointer-events:none;
+  z-index:-1;
+}
+body.sukun-tefekkur-mode #autoBtn::after{
+  content:"";
+  position:absolute; left:14%; right:14%; top:0;
+  height:42%;
+  border-radius:0 0 999px 999px;
+  background:linear-gradient(180deg, rgba(255,245,214,.14), transparent);
+  opacity:.65;
+  filter:none;
+  pointer-events:none;
+}
+body.sukun-tefekkur-mode #autoBtn .ic,
+body.sukun-tefekkur-mode #autoBtn .material-symbols-outlined,
+body.sukun-tefekkur-mode #autoBtn svg{
+  transform:scale(1.04);
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.08));
+}
+body.sukun-tefekkur-mode #autoBtn.playing{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.036), rgba(255,255,255,.015)),
+    linear-gradient(135deg, rgba(214,109,124,.11), rgba(121,89,255,.055))!important;
+  border-color:color-mix(in srgb,var(--gold) 28%,rgba(203,120,139,.45))!important;
+}
+body.sukun-tefekkur-mode #autoBtn:hover{
+  transform:translateY(-1px)!important;
+  border-color:color-mix(in srgb,var(--gold) 40%,var(--line))!important;
+}
+body.sukun-tefekkur-mode #autoBtn:active{
+  transform:translateY(0)!important;
+}
+
+/* 2) -1 / +1 daha sessiz ama lüks */
+body.sukun-tefekkur-mode #undoBtn,
+body.sukun-tefekkur-mode #plusBtn{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.010))!important;
+  border-color:color-mix(in srgb,var(--gold) 16%,var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.024),
+    0 12px 24px -24px rgba(0,0,0,.52)!important;
+}
+body.sukun-tefekkur-mode #undoBtn .lab,
+body.sukun-tefekkur-mode #plusBtn .lab{
+  opacity:.76!important;
+  letter-spacing:.06em!important;
+  font-weight:650!important;
+}
+body.sukun-tefekkur-mode #undoBtn .val,
+body.sukun-tefekkur-mode #plusBtn .val,
+body.sukun-tefekkur-mode #undoBtn strong,
+body.sukun-tefekkur-mode #plusBtn strong{
+  font-weight:760!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.03);
+}
+body.sukun-tefekkur-mode #undoBtn:hover,
+body.sukun-tefekkur-mode #plusBtn:hover{
+  transform:translateY(-1px)!important;
+  border-color:color-mix(in srgb,var(--gold) 26%,var(--line))!important;
+}
+
+/* 3) Focus ring — hafif, performans dostu nefes hissi */
+@keyframes r451FocusBreath{
+  0%,100%{ transform:translateZ(0) scale(1); opacity:.34; }
+  50%{ transform:translateZ(0) scale(1.018); opacity:.48; }
+}
+@keyframes r451FocusSweep{
+  0%{ opacity:.00; transform:rotate(0deg); }
+  12%{ opacity:.32; }
+  58%{ opacity:.08; }
+  100%{ opacity:.00; transform:rotate(360deg); }
+}
+body.sukun-tefekkur-mode #zCountVisual,
+body.sukun-tefekkur-mode .cntBig{
+  position:relative!important;
+}
+body.sukun-tefekkur-mode #zCountVisual::after{
+  content:"";
+  position:absolute; inset:9%;
+  border-radius:50%;
+  pointer-events:none;
+  border:1px solid rgba(232,197,126,.15);
+  box-shadow:
+    0 0 0 1px rgba(255,224,153,.025),
+    0 0 22px -14px rgba(226,193,127,.22);
+  animation:r451FocusBreath 5.8s ease-in-out infinite;
+}
+body.sukun-tefekkur-mode #zCountVisual::before{
+  content:"";
+  position:absolute; inset:4.8%;
+  border-radius:50%;
+  pointer-events:none;
+  background:conic-gradient(from 0deg,
+    transparent 0 73%,
+    rgba(237,205,135,.18) 78%,
+    rgba(170,152,255,.16) 83%,
+    transparent 88% 100%);
+  mix-blend-mode:screen;
+  opacity:.22;
+  animation:r451FocusSweep 11s linear infinite;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #zCountVisual::after{
+  opacity:.28;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #zCountVisual::before{
+  opacity:.14;
+}
+
+/* küçük ekranlarda abartmasın */
+@media (max-width:420px){
+  body.sukun-tefekkur-mode #autoBtn{
+    letter-spacing:.03em!important;
+  }
+  body.sukun-tefekkur-mode #zCountVisual::before{
+    inset:5.5%;
+    opacity:.18;
+  }
+}
+</style>
+
+<style id="r452-final-quality-master-pass">
+/* r452 — Nihai kalite turu
+   1) Tefekkür minimal master pass
+   2) Dock / control bar sadeleştirme
+   3) Tipografi + boşluk standardizasyonu */
+
+/* ─────────────────────────────
+   Ortak kalite tokenları
+───────────────────────────── */
+:root{
+  --r452-tight: 4px;
+  --r452-gap: 8px;
+  --r452-gap-lg: 12px;
+  --r452-pill-h: 31px;
+  --r452-title-ls: .015em;
+  --r452-meta-ls: .025em;
+  --r452-soft-border: color-mix(in srgb,var(--gold) 14%,var(--line));
+  --r452-soft-fill: linear-gradient(180deg, rgba(255,255,255,.024), rgba(255,255,255,.012));
+  --r452-soft-shadow: inset 0 1px 0 rgba(255,255,255,.024), 0 12px 30px -26px rgba(0,0,0,.6);
+}
+
+/* ─────────────────────────────
+   1) TEFEKKÜR MODU — minimal master pass
+───────────────────────────── */
+body.sukun-tefekkur-mode #r442StepRail{
+  padding:10px 10px 9px!important;
+  row-gap:7px!important;
+  border-color:color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.011)),
+    radial-gradient(100% 120% at 50% 0%, rgba(234,207,145,.03), transparent 54%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.028),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 16px 36px -30px rgba(0,0,0,.72)!important;
+}
+body.sukun-tefekkur-mode #r442StepRail::before{
+  opacity:.56!important;
+}
+body.sukun-tefekkur-mode #r442StepRail::after{
+  opacity:.44!important;
+}
+body.sukun-tefekkur-mode #r444TefExit{
+  height:26px!important;
+  min-height:26px!important;
+  font:700 11px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  opacity:.92!important;
+}
+body.sukun-tefekkur-mode #r444CenterStack{
+  row-gap:7px!important;
+}
+body.sukun-tefekkur-mode #autoBtn{
+  min-height:46px!important;
+  border-radius:17px!important;
+  font:800 14px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.055em!important;
+}
+body.sukun-tefekkur-mode #undoBtn,
+body.sukun-tefekkur-mode #plusBtn{
+  min-height:78px!important;
+  border-radius:20px!important;
+}
+body.sukun-tefekkur-mode #undoBtn .lab,
+body.sukun-tefekkur-mode #plusBtn .lab{
+  font-size:10px!important;
+  letter-spacing:.09em!important;
+  text-transform:uppercase!important;
+}
+body.sukun-tefekkur-mode #undoBtn .val,
+body.sukun-tefekkur-mode #plusBtn .val,
+body.sukun-tefekkur-mode #undoBtn strong,
+body.sukun-tefekkur-mode #plusBtn strong{
+  font-size:30px!important;
+  line-height:1!important;
+}
+body.sukun-tefekkur-mode #r450FocusMetaSlot .cntSub,
+body.sukun-tefekkur-mode .cntSub.r450-focus-meta{
+  min-height:28px!important;
+  padding:6px 13px!important;
+  font:650 10.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.04em!important;
+  opacity:.96!important;
+}
+body.sukun-tefekkur-mode #zCountVisual::before{
+  opacity:.15!important;
+}
+body.sukun-tefekkur-mode #zCountVisual::after{
+  opacity:.34!important;
+}
+body.sukun-tefekkur-mode .cntBig,
+body.sukun-tefekkur-mode #zCountVisual .cntBig{
+  letter-spacing:-.02em!important;
+  text-shadow:0 2px 22px rgba(232,198,126,.055)!important;
+}
+
+/* hedef/kalan yan kartları biraz daha olgunlaştır */
+body.sukun-tefekkur-mode .zCounterRow .miniCard,
+body.sukun-tefekkur-mode .zCounterRow .countCard,
+body.sukun-tefekkur-mode .zCounterRow > .glass{
+  border-color:var(--r452-soft-border)!important;
+  background:var(--r452-soft-fill)!important;
+  box-shadow:var(--r452-soft-shadow)!important;
+}
+body.sukun-tefekkur-mode .zCounterRow .lbl,
+body.sukun-tefekkur-mode .zCounterRow .sub{
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  font-size:10px!important;
+  opacity:.84!important;
+}
+
+/* ─────────────────────────────
+   2) DOCK / CONTROL BAR sadeleştirme
+───────────────────────────── */
+#r170Now.r422-unified{
+  border-radius:22px!important;
+  padding:11px 11px 10px!important;
+  border-color:color-mix(in srgb,var(--gold) 16%,var(--line))!important;
+  background:
+    linear-gradient(180deg, rgba(6,10,14,.94), rgba(7,10,14,.91)),
+    radial-gradient(130% 150% at 50% 0%, rgba(222,189,123,.03), transparent 50%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.02),
+    0 18px 36px -28px rgba(0,0,0,.72)!important;
+}
+#r422NowInfo{
+  gap:5px!important;
+}
+#r422NowHead{
+  gap:7px!important;
+  margin-bottom:1px!important;
+}
+#r422NowSession{
+  color:var(--goldh)!important;
+  font:700 11px/1.05 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  opacity:.92!important;
+}
+#r422NowLive{
+  background:rgba(85,130,106,.08)!important;
+  border-color:color-mix(in srgb,#69e2aa 24%,var(--line))!important;
+  color:#a8e9c1!important;
+  font:800 10px/1 "JetBrains Mono",ui-monospace,monospace!important;
+  letter-spacing:.11em!important;
+}
+#r422NowCurrent{
+  font:750 16px/1.2 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:var(--r452-title-ls)!important;
+}
+#r422NowSource{
+  font:630 12px/1.2 "Figtree",system-ui,sans-serif!important;
+  color:#b9dcc9!important;
+  letter-spacing:.005em!important;
+}
+#r422NowPhase{
+  font:620 11px/1.2 "Figtree",system-ui,sans-serif!important;
+  color:color-mix(in srgb,var(--goldh) 66%,var(--mut))!important;
+}
+#r422NowNext{
+  font:540 10px/1.22 "Figtree",system-ui,sans-serif!important;
+  color:color-mix(in srgb,var(--text) 44%,var(--mut))!important;
+  letter-spacing:.01em!important;
+}
+#r422NowMeta{
+  gap:5px!important;
+  margin-top:2px!important;
+}
+.r422MetaRow{
+  gap:6px!important;
+}
+.r422Pill{
+  min-height:var(--r452-pill-h)!important;
+  padding:6px 10px!important;
+  border-radius:999px!important;
+  border-color:var(--r452-soft-border)!important;
+  background:rgba(255,255,255,.015)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;
+}
+.r422Pill .k{
+  font:760 10px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+}
+#r422Remaining{
+  font:820 14px/1 "JetBrains Mono",ui-monospace,monospace!important;
+  letter-spacing:.025em!important;
+}
+#r422Progress{
+  height:3px!important;
+  background:rgba(255,255,255,.055)!important;
+  margin-top:2px!important;
+}
+#r170Now.r422-unified .r170NowBtns{
+  gap:7px!important;
+}
+#r170Now.r422-unified .r170NowBtns > button,
+#r170Now.r422-unified .r170NowBtns > .btn,
+#r170Now.r422-unified .r170NowBtns > div{
+  min-width:44px!important;
+  min-height:44px!important;
+  border-radius:14px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 14%,var(--line))!important;
+  background:linear-gradient(180deg, rgba(255,255,255,.016), rgba(255,255,255,.008))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018), 0 8px 20px -18px rgba(0,0,0,.55)!important;
+}
+#r170Now.r422-unified .r170NowBtns > button:hover,
+#r170Now.r422-unified .r170NowBtns > .btn:hover{
+  border-color:color-mix(in srgb,var(--gold) 24%,var(--line))!important;
+}
+#r170Now.r422-unified .r170NowBtns .stop,
+#r170Now.r422-unified .r170NowBtns > button[aria-label*="dur" i]{
+  border-color:color-mix(in srgb,#d66d7c 28%,var(--line))!important;
+}
+#r447DockHandle{
+  width:54px!important;
+  min-height:36px!important;
+  border-radius:999px!important;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.008))!important;
+  border-color:color-mix(in srgb,var(--gold) 14%,var(--line))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;
+}
+body.r433-dock-hidden #r447DockHandle{
+  width:158px!important;
+  min-height:48px!important;
+  border-radius:18px!important;
+  padding-inline:18px!important;
+  font:700 13px/1.15 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.02em!important;
+}
+body.r433-dock-hidden #r447DockHandle small,
+body.r433-dock-hidden #r447DockHandle .sub{
+  font:560 11px/1.2 "Figtree",system-ui,sans-serif!important;
+  opacity:.8!important;
+}
+
+/* detay / gizle satırı daha sakin ve tutarlı */
+#r170Now .r422Expand,
+#r170Now .r433HideBtn,
+#r170Now .r447MiniAction,
+#r170Now .r446MiniAction{
+  min-height:34px!important;
+  border-radius:14px!important;
+  padding:7px 13px!important;
+  font:680 12px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.025em!important;
+  border-color:var(--r452-soft-border)!important;
+  background:rgba(255,255,255,.012)!important;
+}
+
+/* ─────────────────────────────
+   3) Tipografi / boşluk standardizasyonu
+───────────────────────────── */
+#r170Now,
+#r170Now * ,
+body.sukun-tefekkur-mode #r442StepRail,
+body.sukun-tefekkur-mode #r442StepRail *{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+#r170Now .mono,
+#r170Now [class*="mono"],
+body.sukun-tefekkur-mode .mono{
+  font-variant-numeric:tabular-nums!important;
+}
+#r170Now .r422NowLine,
+#r170Now .r422MetaRow{
+  margin:0!important;
+}
+#r170Now .r422NowLine + .r422NowLine{
+  margin-top:1px!important;
+}
+#r170Now .r422Pill,
+#r170Now .r422NowLine,
+#r170Now #r422NowHead,
+body.sukun-tefekkur-mode #r450FocusMetaSlot .cntSub{
+  letter-spacing:var(--r452-meta-ls)!important;
+}
+@media (max-width:430px){
+  #r170Now.r422-unified{
+    padding:10px 10px 9px!important;
+    border-radius:20px!important;
+  }
+  #r170Now.r422-unified .r170NowBtns{
+    gap:6px!important;
+  }
+  #r170Now.r422-unified .r170NowBtns > button,
+  #r170Now.r422-unified .r170NowBtns > .btn,
+  #r170Now.r422-unified .r170NowBtns > div{
+    min-width:42px!important;
+    min-height:42px!important;
+    border-radius:13px!important;
+  }
+  #r422NowCurrent{font-size:15px!important}
+  #r422NowSource{font-size:11.5px!important}
+  #r422NowSession{font-size:10.5px!important}
+  body.sukun-tefekkur-mode #autoBtn{font-size:13px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  body.sukun-tefekkur-mode #autoBtn,
+  body.sukun-tefekkur-mode #undoBtn,
+  body.sukun-tefekkur-mode #plusBtn,
+  #r170Now.r422-unified .r170NowBtns > button{
+    transition:none!important;
+  }
+}
+</style>
+
+<script id="r453-core-ui-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R443_TEFEKKUR_ICON__)return;
-window.__SUKUN_R443_TEFEKKUR_ICON__=1;
-let holdTimer=0, hideTimer=0, suppressClick=false, boundBtn=null;
+if(window.__SUKUN_R453_CORE_UI__) return;
+window.__SUKUN_R453_CORE_UI__ = 1;
+
+/* Eski patch runtime'larının sonradan tekrar kurulmasını engelle. */
+[
+  '__SUKUN_R441_PEEK_STYLE__',
+  '__SUKUN_R442_TEFEKKUR_DOCK__',
+  '__SUKUN_R443_TEFEKKUR_ICON__',
+  '__SUKUN_R444_CENTER_STACK__',
+  '__SUKUN_R445_NO_FLASH__',
+  '__SUKUN_R446_PREMIUM_CONTROLS__',
+  '__SUKUN_R447_PREMIUM_DOCK_FOCUS__',
+  '__SUKUN_R448_COORD__',
+  '__SUKUN_R450_TEFEKKUR_CAPSULE__'
+].forEach(k=>{ try{ window[k]=1 }catch(e){} });
+
 const body=document.body;
-function button(){return document.getElementById('r442TefekkurBtn')}
-function help(){
-  let h=document.getElementById('r443TefHelp');
-  if(h)return h;
-  h=document.createElement('div');h.id='r443TefHelp';
-  h.setAttribute('role','status');h.setAttribute('aria-live','polite');
-  document.body.appendChild(h);return h;
+const $=id=>document.getElementById(id);
+const LEVEL_KEY='sukun.dock.level';
+const PEEK_KEY='sukun.dock.peekStyle';
+
+let dockLevel='mini';
+let peekMode='pill';
+let dragY=null;
+let raf=0;
+let retryTimer=0;
+let calmTimer=0;
+let wakeTimer=0;
+let helpHold=0;
+let helpHide=0;
+let suppressTefClick=false;
+let boundTefBtn=null;
+let boundAuto=null;
+let autoObs=null;
+let detailsWrapped=false;
+let lastSig='';
+let lastAutoPlaying=false;
+let lastAppliedLevel='';
+
+try{
+  const x=localStorage.getItem(LEVEL_KEY);
+  if(x==='mini'||x==='expanded') dockLevel=x;
+}catch(e){}
+try{
+  const x=localStorage.getItem(PEEK_KEY);
+  if(x==='pill'||x==='tab') peekMode=x;
+}catch(e){}
+
+const inTef=()=>body.classList.contains('sukun-tefekkur-mode');
+const zikirTab=()=>body.classList.contains('sukun-zikir-tab');
+const dockVisible=()=>body.classList.contains('r431-dock-visible')&&!body.classList.contains('r433-dock-hidden');
+const autoPlaying=()=>!!$('autoBtn')?.classList.contains('playing');
+
+function signature(){
+  return [
+    inTef()?'t1':'t0',
+    zikirTab()?'z1':'z0',
+    body.classList.contains('r431-dock-visible')?'d1':'d0',
+    body.classList.contains('r433-dock-hidden')?'h1':'h0',
+    body.classList.contains('r434-inline-details-open')?'x1':'x0',
+    body.classList.contains('r447-focus-calm')?'c1':'c0'
+  ].join('|');
+}
+
+/* ── Tefekkür dock düğmesi ── */
+function ensureTefButton(){
+  const ops=$('r433DockOps');
+  if(!ops) return null;
+  let b=$('r442TefekkurBtn');
+  if(!b){
+    b=document.createElement('button');
+    b.id='r442TefekkurBtn';
+    b.type='button';
+    b.className='r433DockAct';
+    const hide=$('r433HideBtn');
+    ops.insertBefore(b,hide||null);
+  }
+  if(b!==boundTefBtn){
+    boundTefBtn=b;
+    b.addEventListener('pointerdown',startTefHold,{passive:true});
+    b.addEventListener('pointerup',cancelTefHold,{passive:true});
+    b.addEventListener('pointercancel',cancelTefHold,{passive:true});
+    b.addEventListener('pointerleave',cancelTefHold,{passive:true});
+    b.addEventListener('click',onTefButtonClick,true);
+  }
+  return b;
+}
+function syncTefButton(){
+  const b=ensureTefButton();
+  if(!b) return;
+  const on=inTef();
+  b.textContent=on?'×':'◉';
+  b.setAttribute('aria-pressed',on?'true':'false');
+  b.setAttribute('aria-label',on?'Tefekkür modundan çık':'Tefekkür moduna geç; açıklama için basılı tut');
+  b.setAttribute('aria-describedby','r443TefHelp');
+  b.title='Tefekkür · açıklama için basılı tut';
+}
+function toggleTef(){
+  try{
+    if(window.SUKUN_TEFEKKUR?.toggle) return window.SUKUN_TEFEKKUR.toggle();
+    document.querySelector('.sukun-focus-btn')?.click();
+  }catch(e){
+    document.querySelector('.sukun-focus-btn')?.click();
+  }
+}
+function onTefButtonClick(e){
+  if(suppressTefClick){
+    suppressTefClick=false;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
+  e.preventDefault();
+  e.stopPropagation();
+  toggleTef();
+  setTimeout(schedule,30);
+}
+
+/* ── Uzun basma açıklaması ── */
+function helpEl(){
+  let h=$('r443TefHelp');
+  if(!h){
+    h=document.createElement('div');
+    h.id='r443TefHelp';
+    h.setAttribute('role','status');
+    h.setAttribute('aria-live','polite');
+    body.appendChild(h);
+  }
+  return h;
 }
 function helpText(){
-  return body.classList.contains('sukun-tefekkur-mode')
+  return inTef()
     ? '<b>Tefekkür açık.</b> Normal görünüme dönmek için simgeye kısa dokun.'
     : '<b>Tefekkür</b> tam ekran odak görünümüdür. Zikir sayacı korunur; oynatıcı sahneden çekilir.';
 }
-function hide(){clearTimeout(hideTimer);const h=document.getElementById('r443TefHelp');if(h)h.classList.remove('show')}
-function show(){const h=help();h.innerHTML=helpText();h.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(hide,2800)}
-function cancelHold(){clearTimeout(holdTimer);holdTimer=0;button()?.classList.remove('r443-hold')}
-function startHold(e){
-  if(e.button!=null&&e.button!==0)return;
-  suppressClick=false;cancelHold();
-  const b=button();if(!b)return;b.classList.add('r443-hold');
-  holdTimer=setTimeout(()=>{holdTimer=0;suppressClick=true;b.classList.remove('r443-hold');show();try{navigator.vibrate?.(18)}catch(err){}},520);
+function hideHelp(){
+  clearTimeout(helpHide);
+  const h=$('r443TefHelp');
+  if(h) h.classList.remove('show');
 }
-function endHold(){cancelHold()}
-function bind(){
-  const b=button();if(!b||b===boundBtn)return !!b;boundBtn=b;
-  b.setAttribute('aria-describedby','r443TefHelp');
-  b.title='Tefekkür · açıklama için basılı tut';
-  b.addEventListener('pointerdown',startHold,{passive:true});
-  b.addEventListener('pointerup',endHold,{passive:true});
-  b.addEventListener('pointercancel',endHold,{passive:true});
-  b.addEventListener('pointerleave',endHold,{passive:true});
-  b.addEventListener('click',e=>{if(!suppressClick)return;suppressClick=false;e.preventDefault();e.stopImmediatePropagation()},true);
+function showHelp(){
+  const h=helpEl();
+  h.innerHTML=helpText();
+  h.classList.add('show');
+  clearTimeout(helpHide);
+  helpHide=setTimeout(hideHelp,2800);
+}
+function startTefHold(e){
+  if(e.button!=null&&e.button!==0) return;
+  suppressTefClick=false;
+  cancelTefHold();
+  boundTefBtn?.classList.add('r443-hold');
+  helpHold=setTimeout(()=>{
+    helpHold=0;
+    suppressTefClick=true;
+    boundTefBtn?.classList.remove('r443-hold');
+    showHelp();
+    try{navigator.vibrate?.(18)}catch(err){}
+  },520);
+}
+function cancelTefHold(){
+  clearTimeout(helpHold);
+  helpHold=0;
+  boundTefBtn?.classList.remove('r443-hold');
+}
+
+/* ── Sayaç rayı / merkez stack ── */
+function ensureRail(){
+  let r=$('r442StepRail');
+  if(r) return r;
+  const ctl=document.querySelector('.zCtl');
+  const title=ctl?.querySelector('.zCountTitle');
+  if(!ctl||!title) return null;
+  r=document.createElement('div');
+  r.id='r442StepRail';
+  r.setAttribute('aria-label','Hızlı sayaç düzeltme');
+  title.insertAdjacentElement('afterend',r);
+  return r;
+}
+function actions(){ return document.querySelector('.zCounterActions') }
+function ensureCenterStack(){
+  const r=ensureRail();
+  if(!r) return null;
+  let s=$('r444CenterStack');
+  if(!s){
+    s=document.createElement('div');
+    s.id='r444CenterStack';
+    s.setAttribute('aria-label','Tefekkür sayaç ana kontrolleri');
+  }
+  let exit=$('r444TefExit');
+  if(!exit){
+    exit=document.createElement('button');
+    exit.id='r444TefExit';
+    exit.type='button';
+    exit.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      try{
+        if(window.SUKUN_TEFEKKUR?.exit) window.SUKUN_TEFEKKUR.exit();
+        else document.querySelector('.sukun-focus-btn')?.click();
+      }catch(err){
+        document.querySelector('.sukun-focus-btn')?.click();
+      }
+      setTimeout(schedule,30);
+    });
+  }
+  exit.textContent='Tefekkür · Çık';
+  exit.setAttribute('aria-label','Tefekkür modundan çık');
+  exit.title='Tefekkür modundan çık';
+  if(exit.parentNode!==s) s.prepend(exit);
+  if(s.parentNode!==r) r.appendChild(s);
+  return s;
+}
+function ensureMetaSlot(){
+  const r=ensureRail();
+  if(!r) return null;
+  let slot=$('r450FocusMetaSlot');
+  if(!slot){
+    slot=document.createElement('div');
+    slot.id='r450FocusMetaSlot';
+    slot.setAttribute('aria-hidden','true');
+  }
+  if(slot.parentNode!==r) r.appendChild(slot);
+  return slot;
+}
+function mountTefControls(){
+  const r=ensureRail(),s=ensureCenterStack(),slot=ensureMetaSlot();
+  const undo=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn');
+  const meta=document.querySelector('.cntSub');
+  if(!r||!s||!undo||!auto||!plus) return false;
+
+  if(undo.parentNode!==r) r.insertBefore(undo,r.firstChild);
+  if(s.parentNode!==r) r.appendChild(s);
+  if(auto.parentNode!==s) s.appendChild(auto);
+  if(plus.parentNode!==r) r.appendChild(plus);
+  if(slot&&meta&&meta.parentNode!==slot) slot.appendChild(meta);
+
+  meta?.classList.remove('r449-focus-meta');
+  meta?.classList.add('r450-focus-meta');
+
+  const playing=auto.classList.contains('playing');
+  auto.setAttribute('aria-pressed',playing?'true':'false');
+  auto.setAttribute('aria-label',playing?'Otomatik sayımı durdur':'Otomatik saymaya başla');
+  auto.title=playing?'Otomatik sayımı durdur':'Otomatik saymaya başla';
+  undo.title='Bir sayım geri al';
+  undo.setAttribute('aria-label','Bir sayım geri al');
+  plus.title='Bir zikir ekle';
+  plus.setAttribute('aria-label','Bir zikir ekle');
+
   return true;
 }
-function sync(){
-  if(bind()){
-    const b=button();
-    if(b){
-      b.setAttribute('aria-label',body.classList.contains('sukun-tefekkur-mode')?'Tefekkür modundan çık':'Tefekkür moduna geç; açıklama için basılı tut');
-      b.title='Tefekkür · açıklama için basılı tut';
+function restoreTefControls(){
+  const a=actions(),undo=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn');
+  const meta=document.querySelector('.cntSub');
+  const row=document.querySelector('.zCounterRow');
+  if(a&&undo&&auto&&plus){
+    if(undo.parentNode!==a) a.appendChild(undo);
+    if(auto.parentNode!==a) a.appendChild(auto);
+    if(plus.parentNode!==a) a.appendChild(plus);
+    a.replaceChildren(undo,auto,plus);
+  }
+  if(meta&&row&&meta.parentNode!==row.parentNode){
+    row.insertAdjacentElement('afterend',meta);
+  }else if(meta&&row&&row.nextElementSibling!==meta){
+    row.insertAdjacentElement('afterend',meta);
+  }
+  meta?.classList.remove('r449-focus-meta','r450-focus-meta');
+  $('r450FocusMetaSlot')?.remove();
+  $('r444CenterStack')?.remove();
+}
+
+/* ── No-flash güvenliği ── */
+function applyNoFlash(){
+  try{localStorage.setItem('sukun.breath','0')}catch(e){}
+  try{sessionStorage.setItem('sukun.breath','0')}catch(e){}
+  try{if(typeof breathToggle==='function') breathToggle(0)}catch(e){}
+  const h=$('breathHalo');
+  if(h){
+    h.classList.remove('on');
+    h.setAttribute('aria-hidden','true');
+  }
+}
+
+/* ── Dock mini / expanded ── */
+function ensureDockHandle(){
+  const dock=$('r170Now');
+  if(!dock) return null;
+  let h=$('r447DockHandle');
+  if(!h){
+    h=document.createElement('button');
+    h.id='r447DockHandle';
+    h.type='button';
+    dock.appendChild(h);
+    h.addEventListener('click',e=>{
+      e.preventDefault(); e.stopPropagation();
+      wakeFocus(false);
+      setDockLevel(dockLevel==='mini'?'expanded':'mini',true,true);
+      try{navigator.vibrate?.(7)}catch(err){}
+    });
+    dock.addEventListener('pointerdown',e=>{
+      if(e.target.closest?.('button,input,select,a')) return;
+      dragY=e.clientY;
+    },{passive:true});
+    dock.addEventListener('pointerup',e=>{
+      if(dragY==null) return;
+      const dy=e.clientY-dragY; dragY=null;
+      if(Math.abs(dy)<24) return;
+      wakeFocus(false);
+      setDockLevel(dy<0?'expanded':'mini',true,true);
+    },{passive:true});
+    dock.addEventListener('pointercancel',()=>{dragY=null},{passive:true});
+  }
+  return h;
+}
+function syncHandleLabel(){
+  const h=ensureDockHandle();
+  if(!h) return;
+  const expanded=dockLevel==='expanded';
+  h.setAttribute('aria-expanded',expanded?'true':'false');
+  h.setAttribute('aria-label',expanded?'Oynatıcıyı küçült':'Oynatıcıyı genişlet');
+  h.title=expanded?'Mini oynatıcıya dön':'Oynatıcıyı genişlet';
+}
+function saveLevel(){
+  try{localStorage.setItem(LEVEL_KEY,dockLevel)}catch(e){}
+}
+function setDockLevel(next,persist=false,refreshDetails=false){
+  if(next!=='mini'&&next!=='expanded') return false;
+  const changed=dockLevel!==next || lastAppliedLevel!==next ||
+    body.classList.contains('r447-dock-mini')!==(next==='mini') ||
+    body.classList.contains('r447-dock-expanded')!==(next==='expanded');
+  dockLevel=next;
+  if(changed){
+    body.classList.toggle('r447-dock-mini',next==='mini');
+    body.classList.toggle('r447-dock-expanded',next==='expanded');
+    lastAppliedLevel=next;
+    syncHandleLabel();
+  }
+  if(persist) saveLevel();
+  if(changed&&refreshDetails){
+    queueMicrotask(()=>{try{window.SukunDockDetails?.refresh?.()}catch(e){}});
+  }
+  return changed;
+}
+function forceExpandedForDetails(){
+  if(body.classList.contains('r434-inline-details-open')&&dockLevel!=='expanded'){
+    setDockLevel('expanded',false,false);
+  }
+}
+
+/* ── Focus calm state ── */
+function clearCalmTimers(){
+  clearTimeout(calmTimer); clearTimeout(wakeTimer);
+  calmTimer=0; wakeTimer=0;
+}
+function enterCalm(){
+  if(inTef()&&autoPlaying()) body.classList.add('r447-focus-calm');
+}
+function armCalm(delay=2700){
+  clearTimeout(calmTimer);
+  if(!inTef()||!autoPlaying()){
+    body.classList.remove('r447-focus-calm');
+    return;
+  }
+  calmTimer=setTimeout(enterCalm,delay);
+}
+function wakeFocus(rearm=true){
+  body.classList.remove('r447-focus-calm');
+  clearTimeout(wakeTimer);
+  if(rearm&&inTef()&&autoPlaying()){
+    wakeTimer=setTimeout(()=>armCalm(0),3500);
+  }
+}
+function syncFocus(){
+  const playing=inTef()&&autoPlaying();
+  if(!playing){
+    clearCalmTimers();
+    body.classList.remove('r447-focus-calm');
+    lastAutoPlaying=false;
+    return;
+  }
+  if(!lastAutoPlaying){
+    body.classList.remove('r447-focus-calm');
+    armCalm(2700);
+  }
+  lastAutoPlaying=true;
+}
+
+/* ── Peek preference — observer yok ── */
+function savePeek(){
+  try{localStorage.setItem(PEEK_KEY,peekMode)}catch(e){}
+}
+function applyPeek(){
+  body.classList.toggle('r441-peek-pill',peekMode==='pill');
+  body.classList.toggle('r441-peek-tab',peekMode==='tab');
+  const peek=$('r433DockPeek');
+  if(peek){
+    peek.setAttribute('data-peek-style',peekMode);
+    peek.setAttribute('aria-label',peekMode==='tab'?'Oynatıcıyı yan sekmeden geri getir':'Oynatıcıyı geri getir');
+  }
+  document.querySelectorAll('[data-r441-peek]').forEach(btn=>{
+    const on=btn.dataset.r441Peek===peekMode;
+    btn.classList.toggle('on',on);
+    btn.setAttribute('aria-pressed',on?'true':'false');
+  });
+}
+function peekPrefHtml(){
+  return '<div id="r441PeekPref">'+
+    '<div class="r441PeekTitle">GİZLİ OYNATICI ÇAĞIRMA</div>'+
+    '<div class="r441PeekChoices">'+
+      '<button type="button" class="r441PeekChoice" data-r441-peek="pill" aria-pressed="false">'+
+        '<span class="r441Demo pill" aria-hidden="true"></span>'+
+        '<span class="r441PeekCopy"><b>Geniş düğme</b><small>En kolay dokunma · ortada</small></span>'+
+      '</button>'+
+      '<button type="button" class="r441PeekChoice" data-r441-peek="tab" aria-pressed="false">'+
+        '<span class="r441Demo tab" aria-hidden="true"></span>'+
+        '<span class="r441PeekCopy"><b>Yan sekme</b><small>Daha minimal · sağ kenarda</small></span>'+
+      '</button>'+
+    '</div>'+
+  '</div>';
+}
+function ensurePeekPref(){
+  const tools=$('r434Tools');
+  if(!tools) return false;
+  if(!$('r441PeekPref')) tools.insertAdjacentHTML('beforeend',peekPrefHtml());
+  applyPeek();
+  return true;
+}
+function wrapDetails(){
+  const d=window.SukunDockDetails;
+  if(!d||detailsWrapped) return !!d;
+  detailsWrapped=true;
+  const oldRefresh=d.refresh?.bind(d);
+  if(oldRefresh){
+    d.refresh=function(){
+      const r=oldRefresh();
+      queueMicrotask(ensurePeekPref);
+      return r;
+    };
+  }
+  const oldOpen=d.open?.bind(d);
+  if(oldOpen){
+    d.open=function(){
+      const r=oldOpen();
+      queueMicrotask(ensurePeekPref);
+      return r;
+    };
+  }
+  return true;
+}
+
+/* ── Tek koordinatör ── */
+function bindAuto(){
+  const a=$('autoBtn');
+  if(!a||a===boundAuto) return;
+  boundAuto=a;
+  autoObs?.disconnect?.();
+  autoObs=new MutationObserver(()=>{
+    syncFocus();
+    if(inTef()) mountTefControls();
+  });
+  autoObs.observe(a,{attributes:true,attributeFilter:['class']});
+}
+function syncAll(){
+  body.classList.add('r447-dock-ready');
+  ensureTefButton();
+  ensureRail();
+  ensureDockHandle();
+  bindAuto();
+  wrapDetails();
+  applyPeek();
+  syncTefButton();
+  setDockLevel(dockLevel,false,false);
+  forceExpandedForDetails();
+
+  if(inTef()){
+    applyNoFlash();
+    mountTefControls();
+  }else{
+    restoreTefControls();
+    hideHelp();
+  }
+  syncFocus();
+
+  try{
+    if(inTef()&&!dockVisible()) window.SukunTefekkurExitFlow?.moveIntoCounter?.();
+  }catch(e){}
+}
+function schedule(){
+  if(raf) return;
+  raf=requestAnimationFrame(()=>{
+    raf=0;
+    const s=signature();
+    if(s===lastSig){
+      syncFocus();
+      return;
+    }
+    lastSig=s;
+    syncAll();
+  });
+}
+
+const bodyObs=new MutationObserver(schedule);
+bodyObs.observe(body,{attributes:true,attributeFilter:['class']});
+
+/* Tek delegasyon katmanı: eski runtime'lardaki dağınık document click
+   listener'larının yerini alır. */
+document.addEventListener('click',e=>{
+  const peekChoice=e.target.closest?.('[data-r441-peek]');
+  if(peekChoice){
+    const next=peekChoice.dataset.r441Peek;
+    if(next==='pill'||next==='tab'){
+      peekMode=next;
+      savePeek();
+      applyPeek();
+      try{typeof vib==='function'&&vib(8)}catch(err){}
+    }
+    return;
+  }
+
+  if(e.target.closest?.('#r433DetailBtn')){
+    queueMicrotask(()=>{
+      forceExpandedForDetails();
+      ensurePeekPref();
+    });
+  }
+
+  if(e.target.closest?.(
+    '#autoBtn,#undoBtn,#plusBtn,#r444TefExit,#r442TefekkurBtn,'+
+    '#r447DockHandle,#r433DetailBtn,#r433HideBtn,#r433DockPeek,'+
+    '.sukun-focus-btn,#r170Play,#r170Stop'
+  )){
+    wakeFocus(true);
+    setTimeout(()=>{lastSig='';schedule()},0);
+  }
+},{passive:true});
+
+document.addEventListener('pointerdown',e=>{
+  if(!body.classList.contains('r447-focus-calm')) return;
+  if(!e.target.closest?.('#tab-zkr')) return;
+  if(e.target.closest?.('#zCountVisual,.cntBig')) return;
+  wakeFocus(true);
+},{capture:true,passive:true});
+
+['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
+  .forEach(ev=>window.addEventListener(ev,()=>{
+    bindAuto();
+    syncFocus();
+    schedule();
+  },{passive:true}));
+
+window.addEventListener('pageshow',()=>{
+  lastSig='';
+  applyNoFlash();
+  schedule();
+},{passive:true});
+
+window.addEventListener('orientationchange',()=>{
+  cancelTefHold();
+  hideHelp();
+  lastSig='';
+  schedule();
+},{passive:true});
+
+window.addEventListener('pagehide',()=>{
+  cancelTefHold();
+  hideHelp();
+  clearCalmTimers();
+},{passive:true});
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    lastSig='';
+    schedule();
+  }else{
+    cancelTefHold();
+    hideHelp();
+    clearCalmTimers();
+  }
+});
+
+(function boot(n=0){
+  const ready=!!ensureRail()&&!!$('autoBtn')&&!!$('undoBtn')&&!!$('plusBtn');
+  syncAll();
+  if(!ready&&n<30){
+    clearTimeout(retryTimer);
+    retryTimer=setTimeout(()=>boot(n+1),120);
+  }
+})();
+
+/* Eski API adları korunuyor: başka modüller bozulmaz. */
+window.SukunUIRuntime={
+  version:'r453',
+  sync:()=>{lastSig='';schedule()},
+  mountTefControls,
+  restoreTefControls,
+  setDockLevel,
+  wakeFocus,
+  applyPeek
+};
+window.SukunTefekkurDockUI={
+  version:'r453',
+  sync:()=>{lastSig='';schedule()},
+  moveStepsUp:mountTefControls,
+  restoreSteps:restoreTefControls
+};
+window.SukunTefekkurIconControl={
+  version:'r453',
+  showHelp,
+  hideHelp,
+  sync:syncTefButton
+};
+window.SukunTefekkurCenterStack={
+  version:'r453',
+  sync:()=>{lastSig='';schedule()},
+  mount:mountTefControls,
+  restore:restoreTefControls
+};
+window.SukunNoFlash={version:'r453',sync:applyNoFlash};
+window.SukunPremiumTefekkurControls={version:'r453',sync:mountTefControls};
+window.SukunPremiumDock={
+  version:'r453',
+  getLevel:()=>dockLevel,
+  mini:()=>setDockLevel('mini',true,true),
+  expand:()=>setDockLevel('expanded',true,true),
+  toggle:()=>setDockLevel(dockLevel==='mini'?'expanded':'mini',true,true),
+  wakeFocus:()=>wakeFocus(true),
+  sync:()=>{lastSig='';schedule()},
+  syncFocus
+};
+window.SukunPerformanceCoordinator={
+  version:'r453',
+  sync:()=>{lastSig='';schedule()}
+};
+window.SukunPremiumTefekkurCapsule={
+  version:'r453',
+  sync:mountTefControls
+};
+window.SukunPeekStyle={
+  version:'r453',
+  get:()=>peekMode,
+  set(v){
+    if(v!=='pill'&&v!=='tab') return false;
+    peekMode=v; savePeek(); applyPeek(); ensurePeekPref(); return true;
+  }
+};
+})();
+</script>
+
+<style id="r455-diagnostics-style">
+#r455Diag[hidden]{display:none!important}
+#r455Diag{
+  position:fixed;inset:0;z-index:2147483500;
+  background:rgba(4,7,10,.965);
+  color:var(--text,#eef2f3);
+  font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#r455Diag *{box-sizing:border-box}
+#r455Diag .dShell{width:min(1120px,100%);margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
+#r455Diag .dHead{
+  position:sticky;top:0;z-index:3;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;
+  margin:-2px -2px 14px;padding:10px 2px 12px;
+  background:linear-gradient(180deg,rgba(4,7,10,.99),rgba(4,7,10,.91) 82%,transparent);
+}
+#r455Diag .dTitle{font-size:18px;font-weight:800;letter-spacing:.015em}
+#r455Diag .dSub{margin-top:3px;color:var(--mut,#9aa6aa);font-size:11px}
+#r455Diag .dHeadBtns{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+#r455Diag button{
+  appearance:none;border:1px solid color-mix(in srgb,var(--gold,#d6b36b) 20%,rgba(255,255,255,.10));
+  background:rgba(255,255,255,.035);color:inherit;border-radius:12px;
+  min-height:38px;padding:8px 12px;font:700 11px/1 "Figtree",system-ui;cursor:pointer
+}
+#r455Diag button:active{transform:translateY(1px)}
+#r455Diag .dPrimary{border-color:color-mix(in srgb,var(--gold,#d6b36b) 42%,rgba(255,255,255,.12));color:var(--goldh,#ecd27e)}
+#r455Diag .dDanger{border-color:rgba(219,103,118,.35);color:#efa6b0}
+#r455Diag .dGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:12px}
+#r455Diag .dCard{
+  min-width:0;padding:10px 11px;border-radius:14px;border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.016));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+#r455Diag .dCard small{display:block;color:var(--mut,#9aa6aa);font-size:8px;letter-spacing:.11em;text-transform:uppercase}
+#r455Diag .dCard b{display:block;margin-top:6px;font:800 18px/1.1 "JetBrains Mono",ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis}
+#r455Diag .dCard em{display:block;margin-top:4px;color:var(--dim,#7c878b);font-style:normal;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#r455Diag .dOk{color:#8fe0b3!important}#r455Diag .dWarn{color:#e4bf73!important}#r455Diag .dFail{color:#f08b9b!important}#r455Diag .dSkip{color:#91a0a8!important}
+#r455Diag details{
+  margin:9px 0;border:1px solid rgba(255,255,255,.065);border-radius:14px;
+  background:rgba(255,255,255,.015);overflow:hidden
+}
+#r455Diag summary{
+  list-style:none;cursor:pointer;padding:12px 13px;font-weight:760;font-size:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px
+}
+#r455Diag summary::-webkit-details-marker{display:none}
+#r455Diag .dBody{padding:0 12px 12px}
+#r455Diag .dTableWrap{overflow:auto;border-radius:10px;border:1px solid rgba(255,255,255,.045)}
+#r455Diag table{width:100%;border-collapse:collapse;min-width:620px;font-size:10px}
+#r455Diag th,#r455Diag td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.045);text-align:left;vertical-align:top}
+#r455Diag th{position:sticky;top:0;background:#0b1015;color:var(--mut,#9aa6aa);font-size:8px;letter-spacing:.08em;text-transform:uppercase}
+#r455Diag tr:last-child td{border-bottom:0}
+#r455Diag code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9px;color:#c7d5d8}
+#r455Diag .dTests{display:grid;gap:6px}
+#r455Diag .dTest{
+  display:grid;grid-template-columns:62px 116px minmax(0,1fr) auto;gap:8px;align-items:start;
+  padding:8px 9px;border-radius:10px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.045)
+}
+#r455Diag .dBadge{font:800 9px/1 "JetBrains Mono",monospace;letter-spacing:.06em}
+#r455Diag .dArea{color:var(--mut,#9aa6aa);font-size:9px;font-weight:700}
+#r455Diag .dTestName{font-size:10px;font-weight:700}
+#r455Diag .dDetail{grid-column:3/5;color:var(--dim,#7c878b);font-size:9px;line-height:1.45}
+#r455Diag .dMs{color:var(--dim,#7c878b);font:600 8px/1 "JetBrains Mono",monospace}
+#r455Diag .dNote{color:var(--mut,#9aa6aa);font-size:9px;line-height:1.55;margin:4px 0 9px}
+#r455Diag .dLog{max-height:330px;overflow:auto;font:500 9px/1.45 "JetBrains Mono",ui-monospace,monospace}
+#r455Diag .dLogLine{padding:5px 2px;border-bottom:1px solid rgba(255,255,255,.035);word-break:break-word}
+#r455Diag .dEmpty{padding:12px;color:var(--dim,#7c878b);font-size:10px}
+@media(max-width:780px){
+  #r455Diag .dGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #r455Diag .dHead{grid-template-columns:1fr}
+  #r455Diag .dHeadBtns{justify-content:flex-start}
+}
+@media(max-width:430px){
+  #r455Diag .dGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #r455Diag .dTest{grid-template-columns:56px minmax(0,1fr) auto}
+  #r455Diag .dArea{grid-column:2/3}
+  #r455Diag .dTestName{grid-column:2/3}
+  #r455Diag .dMs{grid-column:3/4;grid-row:1}
+  #r455Diag .dDetail{grid-column:2/4}
+}
+</style>
+
+<script id="r455-diagnostics-regression-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R455_DIAGNOSTICS__)return;
+window.__SUKUN_R455_DIAGNOSTICS__=1;
+
+const BUILD='r455';
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const eventLog=[];
+const testHistory=[];
+let lastResults=[];
+let refreshTimer=0;
+let tapCount=0,tapReset=0;
+let running=false;
+let prevHtmlOverflow='';
+
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtBytes=n=>{
+  n=+n||0;
+  if(n<1024)return n+' B';
+  if(n<1048576)return(n/1024).toFixed(1)+' KB';
+  return(n/1048576).toFixed(1)+' MB';
+};
+const clock=ms=>{
+  let s=Math.floor((+ms||0)/1000),m=Math.floor(s/60);s%=60;
+  return m?m+'m '+s+'s':s+'s';
+};
+function pushLog(type,detail){
+  eventLog.push({at:Date.now(),type,detail});
+  if(eventLog.length>140)eventLog.splice(0,eventLog.length-140);
+  if(!document.getElementById('r455Diag')?.hidden)renderLog();
+}
+['sukun:audiosessionchange','sukun:audioaggregatechange','sukun:playbackchange','sukun:nowplayingchange','tekke:opened','tekke:closed']
+  .forEach(ev=>window.addEventListener(ev,e=>pushLog(ev,e.detail||{}),{passive:true}));
+document.addEventListener('visibilitychange',()=>pushLog('visibility',document.visibilityState),{passive:true});
+window.addEventListener('pageshow',e=>pushLog('pageshow',{persisted:!!e.persisted}),{passive:true});
+window.addEventListener('pagehide',e=>pushLog('pagehide',{persisted:!!e.persisted}),{passive:true});
+
+function ensureUI(){
+  let root=$('r455Diag');
+  if(root)return root;
+  root=document.createElement('div');
+  root.id='r455Diag';
+  root.hidden=true;
+  root.setAttribute('role','dialog');
+  root.setAttribute('aria-modal','true');
+  root.setAttribute('aria-label','SÜKÛN Geliştirici Tanılama');
+  root.innerHTML=`
+    <div class="dShell">
+      <div class="dHead">
+        <div>
+          <div class="dTitle">SÜKÛN Diagnostics <span style="color:var(--goldh,#ecd27e)">r455</span></div>
+          <div class="dSub" id="r455DiagSub">runtime · state machine · regression</div>
+        </div>
+        <div class="dHeadBtns">
+          <button class="dPrimary" id="r455SafeBtn">Güvenli Test</button>
+          <button id="r455DeepBtn">Derin Test</button>
+          <button id="r455ExportBtn">JSON Rapor</button>
+          <button class="dDanger" id="r455CloseBtn">Kapat</button>
+        </div>
+      </div>
+      <div class="dGrid" id="r455MetricGrid"></div>
+
+      <details open>
+        <summary><span>Regression Testleri</span><span id="r455TestScore">—</span></summary>
+        <div class="dBody">
+          <div class="dNote">Güvenli test kullanıcı verisini değiştirmez. Derin test yalnız ses motoru boşta ise mock session state-machine, çoklu pause/resume, Tefekkür giriş/çıkış, Tekke giriş/çıkış ve sentetik lifecycle smoke testi çalıştırır.</div>
+          <div class="dTests" id="r455Tests"></div>
+        </div>
+      </details>
+
+      <details open>
+        <summary><span>Audio Sessions / Providers</span><span id="r455SessionSum">—</span></summary>
+        <div class="dBody"><div class="dTableWrap"><table>
+          <thead><tr><th>ID</th><th>State</th><th>Observed</th><th>Priority</th><th>Volume</th><th>Capabilities</th><th>Son komut</th></tr></thead>
+          <tbody id="r455Sessions"></tbody>
+        </table></div></div>
+      </details>
+
+      <details>
+        <summary><span>Runtime — Timer / Observer / AudioContext</span><span id="r455RuntimeSum">—</span></summary>
+        <div class="dBody">
+          <div class="dTableWrap"><table>
+            <thead><tr><th>Tür</th><th>Etiket</th><th>Delay</th><th>Yaş</th></tr></thead>
+            <tbody id="r455Timers"></tbody>
+          </table></div>
+          <div style="height:8px"></div>
+          <div class="dTableWrap"><table>
+            <thead><tr><th>AudioContext</th><th>State</th><th>Sample rate</th><th>Current time</th></tr></thead>
+            <tbody id="r455Contexts"></tbody>
+          </table></div>
+          <div style="height:8px"></div>
+          <div class="dTableWrap"><table>
+            <thead><tr><th>Observer</th><th>Hedefler</th><th>Yaş</th></tr></thead>
+            <tbody id="r455Observers"></tbody>
+          </table></div>
+        </div>
+      </details>
+
+      <details>
+        <summary><span>State / Lifecycle Log</span><span id="r455LogSum">—</span></summary>
+        <div class="dBody"><div class="dLog" id="r455Log"></div></div>
+      </details>
+
+      <details>
+        <summary><span>Errors / Long Tasks</span><span id="r455ErrorSum">—</span></summary>
+        <div class="dBody"><div class="dLog" id="r455Errors"></div></div>
+      </details>
+    </div>`;
+  document.body.appendChild(root);
+
+  $('r455CloseBtn').addEventListener('click',close);
+  $('r455SafeBtn').addEventListener('click',()=>runSafe('manual'));
+  $('r455DeepBtn').addEventListener('click',()=>runDeep());
+  $('r455ExportBtn').addEventListener('click',exportReport);
+  return root;
+}
+
+function healthClass(status){
+  return status==='PASS'?'dOk':status==='WARN'?'dWarn':status==='FAIL'?'dFail':'dSkip';
+}
+function probe(){return window.SukunRuntimeProbe?.snapshot?.()||null}
+function ar(){return window.SukunAudioSessionRegistry}
+function sessionRows(){
+  const A=ar();
+  if(!A?.list)return[];
+  return A.list().map(id=>{
+    let s=null;
+    try{s=A.snapshot(id)}catch(e){}
+    return s||{id,state:'?',observedState:'?',capabilities:{}};
+  });
+}
+function snapshot(){
+  const p=probe();
+  const A=ar();
+  let ctl=null,np=null;
+  try{ctl=A?.controllerSnapshot?.()}catch(e){}
+  try{np=window.SukunNowPlayingStore?.get?.()}catch(e){}
+  const nodes=document.getElementsByTagName('*').length;
+  const sessions=sessionRows();
+  return{
+    build:BUILD,
+    at:new Date().toISOString(),
+    runtime:p,
+    audio:{
+      aggregate:A?.aggregateSnapshot?.()||null,
+      aggregateState:A?.aggregateState?.()||'unavailable',
+      controller:ctl,
+      sessions
+    },
+    nowPlaying:np,
+    ui:{
+      nodes,
+      tefekkur:document.body.classList.contains('sukun-tefekkur-mode'),
+      tekkeOpen:document.body.classList.contains('r436-tekke-open'),
+      tekkeActive:document.body.classList.contains('r436-tekke-active'),
+      tekkePlayerOpen:document.body.classList.contains('r436-tekke-player-open'),
+      dockHidden:document.body.classList.contains('r433-dock-hidden'),
+      dockMini:document.body.classList.contains('r447-dock-mini'),
+      dockExpanded:document.body.classList.contains('r447-dock-expanded')
+    },
+    tests:lastResults.slice(),
+    events:eventLog.slice(-140)
+  };
+}
+
+function render(){
+  const root=ensureUI();
+  if(root.hidden)return;
+  const s=snapshot(),p=s.runtime||{active:{},totals:{},longTasks:[],errors:[],heap:null};
+  const activeSessions=s.audio.sessions.filter(x=>['playing','paused','stopping'].includes(x.state));
+  const agg=s.audio.aggregateState||'—';
+  const lt=(p.longTasks||[]).filter(x=>x.duration>=50);
+  const worst=lt.reduce((m,x)=>Math.max(m,+x.duration||0),0);
+  const errs=p.errors?.length||0;
+  const score=lastResults.length?{
+    pass:lastResults.filter(x=>x.status==='PASS').length,
+    warn:lastResults.filter(x=>x.status==='WARN').length,
+    fail:lastResults.filter(x=>x.status==='FAIL').length,
+    skip:lastResults.filter(x=>x.status==='SKIP').length
+  }:null;
+  const overall=score?(score.fail?'FAIL':score.warn?'WARN':'PASS'):(errs?'WARN':'PASS');
+
+  $('r455DiagSub').textContent=`uptime ${clock(p.uptime||0)} · DOM ${s.ui.nodes} · ${navigator.userAgent.slice(0,72)}`;
+  $('r455MetricGrid').innerHTML=[
+    ['Health',overall,score?`${score.pass} pass · ${score.warn} warn · ${score.fail} fail`:'test bekliyor',healthClass(overall)],
+    ['Audio',agg,`${activeSessions.length} aktif session`,agg==='playing'?'dOk':agg==='paused'?'dWarn':''],
+    ['Provider',s.audio.controller?.id||'—',s.audio.controller?.state||'idle',''],
+    ['AudioContext',p.active?.audioContexts??0,`${(p.audioContexts||[]).map(x=>x.state).join(', ')||'yok'}`,''],
+    ['Timers',`${p.active?.timeouts??0}/${p.active?.intervals??0}`,`timeout / interval · RAF ${p.active?.raf??0}`,''],
+    ['Observers',p.active?.observers??0,`toplam oluşturulan ${p.totals?.observerCreated??0}`,''],
+    ['Long task',p.totals?.longTaskCount??0,`en kötü ${worst.toFixed(1)} ms`,worst>=200?'dFail':worst>=100?'dWarn':''],
+    ['Errors',errs,errs?(p.errors.at(-1)?.message||'hata'):'runtime temiz',errs?'dFail':'dOk'],
+    ['DOM',s.ui.nodes,`Tefekkür ${s.ui.tefekkur?'ON':'off'} · Tekke ${s.ui.tekkeActive?'ON':'off'}`,''],
+    ['Heap',p.heap?fmtBytes(p.heap.used):'—',p.heap?`toplam ${fmtBytes(p.heap.total)}`:'API yok',''],
+    ['Lifecycle',(p.lifecycle||[]).length,document.visibilityState,''],
+    ['Build',BUILD,window.SukunNowPlayingStore?.version||'NP —','dOk']
+  ].map(([k,v,e,c])=>`<div class="dCard"><small>${esc(k)}</small><b class="${c||''}">${esc(v)}</b><em>${esc(e)}</em></div>`).join('');
+
+  renderSessions(s.audio.sessions);
+  renderRuntime(p);
+  renderLog();
+  renderErrors(p);
+  renderTests();
+
+  $('r455SessionSum').textContent=`${activeSessions.length} aktif / ${s.audio.sessions.length}`;
+  $('r455RuntimeSum').textContent=`T ${p.active?.timeouts??0} · I ${p.active?.intervals??0} · O ${p.active?.observers??0} · RAF ${p.active?.raf??0}`;
+  $('r455LogSum').textContent=`${eventLog.length} olay`;
+  $('r455ErrorSum').textContent=`${errs} hata · ${p.totals?.longTaskCount??0} long task`;
+}
+function renderSessions(rows){
+  $('r455Sessions').innerHTML=rows.length?rows.map(s=>{
+    const cap=Object.entries(s.capabilities||{}).filter(([,v])=>v).map(([k])=>k).join(' · ');
+    return `<tr>
+      <td><code>${esc(s.id)}</code><br>${esc(s.title||'')}</td>
+      <td class="${s.state==='playing'?'dOk':s.state==='paused'?'dWarn':s.state==='stopping'?'dFail':''}">${esc(s.state)}</td>
+      <td>${esc(s.observedState||'')}</td>
+      <td>${esc(s.priority??'')}</td>
+      <td>${esc(s.volume==null?'—':s.volume)}</td>
+      <td>${esc(cap||'—')}</td>
+      <td>${esc(s.lastCommand||'—')}<br><small>${esc(s.lastReason||'')}</small></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="7" class="dEmpty">Session yok</td></tr>`;
+}
+function renderRuntime(p){
+  const timers=p.timers||[];
+  $('r455Timers').innerHTML=timers.length?timers.map(x=>`<tr>
+    <td>${esc(x.kind)}</td><td><code>${esc(x.label)}</code></td>
+    <td>${x.delay==null?'—':esc(x.delay+' ms')}</td><td>${esc(clock(x.age))}</td>
+  </tr>`).join(''):`<tr><td colspan="4" class="dEmpty">Aktif timer kaydı yok</td></tr>`;
+
+  const ctx=p.audioContexts||[];
+  $('r455Contexts').innerHTML=ctx.length?ctx.map(x=>`<tr>
+    <td>${esc(x.kind+' #'+x.i)}</td><td>${esc(x.state)}</td>
+    <td>${esc(x.sampleRate||'—')}</td><td>${esc(x.currentTime+' s')}</td>
+  </tr>`).join(''):`<tr><td colspan="4" class="dEmpty">AudioContext oluşturulmadı</td></tr>`;
+
+  const obs=p.observers||[];
+  $('r455Observers').innerHTML=obs.length?obs.map(x=>`<tr>
+    <td>#${x.i+1}</td><td><code>${esc((x.targets||[]).join(', ')||'—')}</code></td><td>${esc(clock(x.age))}</td>
+  </tr>`).join(''):`<tr><td colspan="3" class="dEmpty">Aktif observer yok</td></tr>`;
+}
+function renderLog(){
+  const el=$('r455Log');if(!el)return;
+  const life=window.SukunRuntimeProbe?.lifecycle?.()||[];
+  const rows=[
+    ...life.map(x=>({at:x.at,type:'lifecycle:'+x.type,detail:{visibility:x.visibility,extra:x.extra}})),
+    ...eventLog
+  ].sort((a,b)=>a.at-b.at).slice(-160);
+  el.innerHTML=rows.length?rows.map(x=>{
+    let d='';try{d=JSON.stringify(x.detail)}catch(e){d=String(x.detail)}
+    return `<div class="dLogLine"><span style="color:var(--dim,#788)">${new Date(x.at).toLocaleTimeString()}</span> · <b>${esc(x.type)}</b> · ${esc(d.slice(0,420))}</div>`;
+  }).join(''):`<div class="dEmpty">Henüz lifecycle/state olayı yok</div>`;
+  el.scrollTop=el.scrollHeight;
+}
+function renderErrors(p){
+  const el=$('r455Errors');if(!el)return;
+  const rows=[
+    ...(p.errors||[]).map(x=>({kind:'ERROR',at:x.at,txt:x.message+(x.source?' · '+x.source+':'+x.line:'')})),
+    ...(p.longTasks||[]).map(x=>({kind:'LONG',at:Date.now()-(p.uptime-x.at),txt:`${x.duration} ms · ${x.name}`}))
+  ].sort((a,b)=>a.at-b.at).slice(-100);
+  el.innerHTML=rows.length?rows.map(x=>`<div class="dLogLine"><b class="${x.kind==='ERROR'?'dFail':'dWarn'}">${x.kind}</b> · ${esc(x.txt)}</div>`).join(''):`<div class="dEmpty dOk">Runtime hata/long-task kaydı temiz.</div>`;
+}
+
+function result(area,name,status,detail='',ms=0){
+  return{area,name,status,detail:String(detail||''),ms:Math.round(ms*10)/10,at:Date.now()};
+}
+async function check(area,name,fn){
+  const t=performance.now();
+  try{
+    const r=await fn();
+    if(r&&typeof r==='object'&&r.status)return result(area,name,r.status,r.detail,performance.now()-t);
+    if(r===true||r==null)return result(area,name,'PASS','',performance.now()-t);
+    if(r===false)return result(area,name,'FAIL','koşul sağlanmadı',performance.now()-t);
+    return result(area,name,'PASS',String(r),performance.now()-t);
+  }catch(e){
+    return result(area,name,'FAIL',e?.message||String(e),performance.now()-t);
+  }
+}
+function status(ok,detail,fail='FAIL'){return{status:ok?'PASS':fail,detail}}
+function uniqueIdAudit(){
+  const map=new Map();
+  document.querySelectorAll('[id]').forEach(el=>map.set(el.id,(map.get(el.id)||0)+1));
+  const dup=[...map].filter(([,n])=>n>1);
+  return{dup,total:map.size};
+}
+function lifecycleCycle(){
+  const l=window.SukunRuntimeProbe?.lifecycle?.()||[];
+  let hidden=-1;
+  for(let i=0;i<l.length;i++){
+    if(l[i].type==='visibilitychange'&&l[i].visibility==='hidden')hidden=i;
+    if(hidden>=0&&i>hidden&&l[i].type==='visibilitychange'&&l[i].visibility==='visible')return true;
+  }
+  return false;
+}
+function transitionAudit(){
+  const allowed={
+    idle:new Set(['idle','playing','paused','ended']),
+    playing:new Set(['playing','paused','stopping','ended']),
+    paused:new Set(['paused','playing','stopping','ended']),
+    stopping:new Set(['stopping','ended']),
+    ended:new Set(['ended','idle','playing','paused'])
+  };
+  const bad=[];
+  eventLog.filter(x=>x.type==='sukun:audiosessionchange').forEach(x=>{
+    const d=x.detail||{},a=d.previousState,b=d.session?.state;
+    if(a&&b&&a!==b&&!allowed[a]?.has(b))bad.push(`${a}→${b}`);
+  });
+  return bad;
+}
+
+async function safeSuite(){
+  const R=[];
+  const A=ar(),p=probe();
+
+  R.push(await check('CORE','Build senkronizasyonu',()=>{
+    const meta=document.querySelector('meta[name="sukun-build"]')?.content;
+    const footer=$('surumEtiket')?.textContent||'';
+    return status(meta==='r455'&&footer.includes('r455'),`meta ${meta||'—'} · footer ${footer.slice(0,48)}`);
+  }));
+  R.push(await check('CORE','Duplicate ID denetimi',()=>{
+    const a=uniqueIdAudit();
+    return status(!a.dup.length,a.dup.length?`çakışan: ${a.dup.slice(0,8).map(x=>x[0]+'×'+x[1]).join(', ')}`:`${a.total} benzersiz ID`);
+  }));
+  R.push(await check('DOCK','Tek universal player',()=>{
+    const n=document.querySelectorAll('#r170Now').length;
+    return status(n===1,`${n} adet #r170Now`);
+  }));
+  R.push(await check('AUDIO','Audio Session Registry kontratı',()=>{
+    const req=['play','pause','resume','stop','volume','state','session','pauseAll','resumeAll','stopAll'];
+    const miss=req.filter(k=>typeof A?.[k]!=='function');
+    return status(!miss.length,miss.length?'eksik: '+miss.join(', '):`registry ${A?.version||'—'}`);
+  }));
+  R.push(await check('AUDIO','Provider kapsamı',()=>{
+    const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','seyyid','delail','hizb','hatim','lataif','mix'];
+    const list=A?.list?.()||[],miss=req.filter(x=>!list.includes(x));
+    return status(!miss.length,miss.length?'eksik: '+miss.join(', '):`${list.length} provider kayıtlı`);
+  }));
+  R.push(await check('AUDIO','State machine geçiş günlüğü',()=>{
+    const bad=transitionAudit();
+    return status(!bad.length,bad.length?'geçersiz: '+bad.slice(0,6).join(', '):'geçişler sözleşmeye uygun');
+  }));
+  R.push(await check('NOW','Now Playing schema lock',()=>{
+    return status(window.SukunNowPlayingStore?.version==='r300',`version ${window.SukunNowPlayingStore?.version||'—'}`);
+  }));
+  R.push(await check('ZİKİR','Sayaç çekirdeği',()=>{
+    const req=['undoBtn','autoBtn','plusBtn','zCountVisual','cntBig','cntRemain'];
+    const miss=req.filter(id=>!$(id));
+    return status(!miss.length,miss.length?'eksik: '+miss.join(', '):'−1 / ana aksiyon / +1 / sayaç mevcut');
+  }));
+  R.push(await check('TEFEKKÜR','Control Island sahipliği',()=>{
+    const active=document.body.classList.contains('sukun-tefekkur-mode');
+    const u=$('undoBtn'),a=$('autoBtn'),pl=$('plusBtn');
+    if(!u||!a||!pl)return status(false,'sayaç düğmeleri eksik');
+    if(active){
+      const rail=$('r442StepRail'),stack=$('r444CenterStack');
+      return status(!!rail&&!!stack&&u.parentNode===rail&&pl.parentNode===rail&&a.parentNode===stack,'aktif modda merkezi DOM sahipliği');
+    }
+    const actions=document.querySelector('.zCounterActions');
+    return status(!!actions&&u.parentNode===actions&&a.parentNode===actions&&pl.parentNode===actions,'normal modda özgün sayaç sırası');
+  }));
+  R.push(await check('TEFEKKÜR','Flash koruması',()=>{
+    if(!document.body.classList.contains('sukun-tefekkur-mode'))
+      return{status:'PASS',detail:'mod kapalı · no-flash runtime hazır'};
+    const sels=['#breathHalo','.tefPulseTint','.tefGoldenRim','.tefGoalNur'];
+    const bad=[];
+    sels.forEach(sel=>document.querySelectorAll(sel).forEach(el=>{
+      const c=getComputedStyle(el);
+      const safe=c.display==='none'||c.visibility==='hidden'||+c.opacity===0||c.animationName==='none';
+      if(!safe)bad.push(sel+':'+c.animationName);
+    }));
+    return status(!bad.length,bad.length?bad.join(', '):'otonom flash katmanı yok');
+  }));
+  R.push(await check('TEKKE','Tekke API / dock sözleşmesi',()=>{
+    const ok=typeof window.Tekke?.open==='function'&&typeof window.Tekke?.close==='function'&&
+      typeof window.Tekke?.isActive==='function'&&typeof window.SukunTekkeDock?.isOpen==='function';
+    return status(ok,ok?'lazy Tekke + optional dock API hazır':'Tekke API eksik');
+  }));
+  R.push(await check('TEKKE','Tekke body-state tutarlılığı',()=>{
+    const b=document.body.classList;
+    const gate=b.contains('r436-tekke-gate'),open=b.contains('r436-tekke-open');
+    const active=b.contains('r436-tekke-active'),player=b.contains('r436-tekke-player-open');
+    const ok=(!gate||open)&&(!player||active);
+    return status(ok,`open ${open} · gate ${gate} · active ${active} · player ${player}`);
+  }));
+  R.push(await check('LIFECYCLE','Gerçek arka plan/geri dönüş',()=>{
+    const ok=lifecycleCycle();
+    return ok?{status:'PASS',detail:'hidden → visible gerçek döngüsü gözlendi'}:{status:'WARN',detail:'henüz gerçek hidden → visible döngüsü gözlenmedi; monitör aktif'};
+  }));
+  R.push(await check('RUNTIME','Timer / Observer bütçesi',()=>{
+    if(!p)return{status:'WARN',detail:'runtime probe yok'};
+    const a=p.active||{};
+    const heavy=(a.intervals||0)>70||(a.observers||0)>55||(a.timeouts||0)>140||(a.raf||0)>30;
+    const warn=(a.intervals||0)>50||(a.observers||0)>40||(a.timeouts||0)>100||(a.raf||0)>18;
+    return{status:heavy?'FAIL':warn?'WARN':'PASS',detail:`timeout ${a.timeouts||0} · interval ${a.intervals||0} · observer ${a.observers||0} · RAF ${a.raf||0}`};
+  }));
+  R.push(await check('RUNTIME','Long task bütçesi',()=>{
+    const rows=p?.longTasks||[],worst=rows.reduce((m,x)=>Math.max(m,+x.duration||0),0);
+    return{status:worst>=250?'FAIL':worst>=120?'WARN':'PASS',detail:`${rows.length} kayıt · max ${worst.toFixed(1)} ms`};
+  }));
+  R.push(await check('RUNTIME','Runtime errors',()=>{
+    const n=p?.errors?.length||0,last=p?.errors?.at(-1);
+    return{status:n?'WARN':'PASS',detail:n?`${n} kayıt · ${last?.message||''}`:'boot sonrası yakalanmış hata yok'};
+  }));
+  return R;
+}
+
+async function mockStateMachineTest(){
+  const A=ar();
+  if(!A?.register)return{status:'SKIP',detail:'registry yok'};
+  if(A.aggregateState?.()!=='idle')return{status:'SKIP',detail:'gerçek audio aktif; kullanıcı seansı bozulmadı'};
+  const id='__diag_state__';
+  let st='idle',vol=.42;
+  try{
+    A.register(id,{
+      priority:-9999,title:'Diagnostics State Mock',
+      getState:()=>st,
+      play:()=>{st='playing'},
+      pause:()=>{st='paused'},
+      resume:()=>{st='playing'},
+      stop:()=>{st='idle'},
+      getVolume:()=>vol,
+      setVolume:v=>{vol=+v;return vol}
+    });
+    const s=A.session(id);
+    s.play();await sleep(45);if(s.state()!=='playing')throw new Error('play→'+s.state());
+    s.pause();await sleep(45);if(s.state()!=='paused')throw new Error('pause→'+s.state());
+    s.resume();await sleep(45);if(s.state()!=='playing')throw new Error('resume→'+s.state());
+    const v=s.volume(.73);if(Math.abs(v-.73)>.001)throw new Error('volume→'+v);
+    s.stop();await sleep(70);
+    const end=s.state();if(!['ended','idle'].includes(end))throw new Error('stop→'+end);
+    await sleep(280);
+    return{status:'PASS',detail:'play → pause → resume → stopping/ended → idle + volume'};
+  }finally{
+    try{A.unregister(id)}catch(e){}
+  }
+}
+async function mockMultiAudioTest(){
+  const A=ar();
+  if(!A?.register)return{status:'SKIP',detail:'registry yok'};
+  if(A.aggregateState?.()!=='idle')return{status:'SKIP',detail:'gerçek audio aktif; aggregate test atlandı'};
+  const ids=['__diag_multi_a__','__diag_multi_b__'];
+  const state={};
+  try{
+    ids.forEach((id,i)=>{
+      state[id]='idle';
+      A.register(id,{
+        priority:-9900+i,title:'Diagnostics Multi '+(i+1),
+        getState:()=>state[id],
+        play:()=>{state[id]='playing'},
+        pause:()=>{state[id]='paused'},
+        resume:()=>{state[id]='playing'},
+        stop:()=>{state[id]='idle'}
+      });
+    });
+    ids.forEach(id=>A.play(id));await sleep(60);
+    if(ids.some(id=>A.state(id)!=='playing'))throw new Error('iki mock playing olmadı');
+    A.pauseAll();await sleep(70);
+    if(!A.aggregateSnapshot?.().paused||ids.some(id=>A.state(id)!=='paused'))throw new Error('pauseAll yakalama başarısız');
+    A.resumeAll();await sleep(70);
+    if(A.aggregateSnapshot?.().paused||ids.some(id=>A.state(id)!=='playing'))throw new Error('resumeAll başarısız');
+    ids.forEach(id=>A.stop(id));await sleep(80);
+    return{status:'PASS',detail:'2 session · play → pauseAll → resumeAll → stop'};
+  }finally{
+    ids.forEach(id=>{try{A.unregister(id)}catch(e){}});
+    try{
+      const ag=A.aggregateSnapshot?.();
+      if(ag?.paused)A.resumeAll?.();
+    }catch(e){}
+  }
+}
+async function tefekkurSmoke(){
+  const A=ar();
+  if(A?.aggregateState?.()!=='idle')return{status:'SKIP',detail:'audio aktif; Tefekkür toggle yapılmadı'};
+  if(document.body.classList.contains('r436-tekke-open'))return{status:'SKIP',detail:'Tekke açık; Tefekkür toggle yapılmadı'};
+  const already=document.body.classList.contains('sukun-tefekkur-mode');
+  if(already){
+    window.SukunUIRuntime?.sync?.();await sleep(80);
+    const ok=$('r442StepRail')&&$('r444CenterStack')&&$('autoBtn')?.parentNode===$('r444CenterStack');
+    return{status:ok?'PASS':'FAIL',detail:'mevcut Tefekkür modu yerleşimi doğrulandı'};
+  }
+  const toggle=window.SUKUN_TEFEKKUR?.toggle;
+  if(typeof toggle!=='function')return{status:'SKIP',detail:'SUKUN_TEFEKKUR.toggle API yok'};
+  const y=scrollY;
+  try{
+    toggle();await sleep(180);
+    const entered=document.body.classList.contains('sukun-tefekkur-mode');
+    const mounted=$('autoBtn')?.parentNode===$('r444CenterStack');
+    if(!entered||!mounted)throw new Error(`enter ${entered} · mounted ${mounted}`);
+    if(typeof window.SUKUN_TEFEKKUR?.exit==='function')window.SUKUN_TEFEKKUR.exit();
+    else toggle();
+    await sleep(180);
+    const exited=!document.body.classList.contains('sukun-tefekkur-mode');
+    const actions=document.querySelector('.zCounterActions');
+    const restored=actions&&['undoBtn','autoBtn','plusBtn'].every(id=>$(id)?.parentNode===actions);
+    if(!exited||!restored)throw new Error(`exit ${exited} · restore ${!!restored}`);
+    return{status:'PASS',detail:'enter → Control Island mount → exit → sayaç restore'};
+  }finally{
+    try{scrollTo({top:y,behavior:'instant'})}catch(e){try{scrollTo(0,y)}catch(_){}}
+    if(!already&&document.body.classList.contains('sukun-tefekkur-mode')){
+      try{window.SUKUN_TEFEKKUR?.exit?.()}catch(e){}
     }
   }
-  if(!body.classList.contains('sukun-zikir-tab')&&!body.classList.contains('sukun-tefekkur-mode'))hide();
 }
-['sukun:playbackchange','sukun:nowplayingchange','sukun:audiostate','sukun:smartphase']
- .forEach(ev=>window.addEventListener(ev,()=>setTimeout(sync,35),{passive:true}));
-const mo=new MutationObserver(()=>requestAnimationFrame(sync));
-mo.observe(body,{attributes:true,attributeFilter:['class']});
-window.addEventListener('orientationchange',()=>{cancelHold();hide()},{passive:true});
-window.addEventListener('pagehide',()=>{cancelHold();hide()});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'){cancelHold();hide()}else setTimeout(sync,50)});
-(function boot(n=0){if(bind()){sync();return}if(n<50)setTimeout(()=>boot(n+1),100)})();
-window.SukunTefekkurIconControl={version:'r443',showHelp:show,hideHelp:hide,sync};
+async function zikirSmoke(){
+  const before=['undoBtn','autoBtn','plusBtn'].map(id=>$(id)?.parentNode);
+  window.SukunUIRuntime?.sync?.();
+  await sleep(80);
+  const numeric=[$('cntBig')?.textContent,$('cntRemain')?.textContent].every(v=>v!=null&&!Number.isNaN(Number(String(v).replace(/[^\d.-]/g,''))));
+  const buttons=['undoBtn','autoBtn','plusBtn'].every(id=>!!$(id));
+  const parents=['undoBtn','autoBtn','plusBtn'].map(id=>$(id)?.parentNode);
+  const stable=buttons&&parents.every(Boolean);
+  return{status:numeric&&stable?'PASS':'FAIL',detail:`counter numeric ${numeric} · controls stable ${stable} · kullanıcı sayacı değiştirilmedi`};
+}
+async function tekkeSmoke(){
+  const A=ar();
+  if(A?.aggregateState?.()!=='idle')return{status:'SKIP',detail:'audio aktif; Tekke smoke atlandı'};
+  if(typeof window.Tekke?.open!=='function'||typeof window.Tekke?.close!=='function')
+    return{status:'SKIP',detail:'Tekke API yok'};
+  const already=document.body.classList.contains('r436-tekke-open');
+  if(already){
+    const gate=document.body.classList.contains('r436-tekke-gate');
+    const active=document.body.classList.contains('r436-tekke-active');
+    return{status:'PASS',detail:`mevcut Tekke doğrulandı · gate ${gate} · active ${active}`};
+  }
+  const y=scrollY;
+  try{
+    window.Tekke.open();await sleep(180);
+    const opened=document.body.classList.contains('r436-tekke-open');
+    const gate=document.body.classList.contains('r436-tekke-gate');
+    const back=!!document.querySelector('#tk #backSukun');
+    if(!opened||!gate||!back)throw new Error(`open ${opened} · gate ${gate} · back ${back}`);
+    window.Tekke.close();await sleep(180);
+    const closed=!document.body.classList.contains('r436-tekke-open');
+    if(!closed)throw new Error('close body-state temizlenmedi');
+    return{status:'PASS',detail:'lazy open → gate/back contract → close'};
+  }finally{
+    if(!already&&document.body.classList.contains('r436-tekke-open')){
+      try{window.Tekke.close()}catch(e){}
+    }
+    try{scrollTo({top:y,behavior:'instant'})}catch(e){try{scrollTo(0,y)}catch(_){}}
+  }
+}
+async function lifecycleSmoke(){
+  const P=window.SukunRuntimeProbe;
+  if(!P)return{status:'SKIP',detail:'runtime probe yok'};
+  const e0=P.errors?.().length||0,l0=P.lifecycle?.().length||0;
+  window.dispatchEvent(new Event('pageshow'));
+  await sleep(120);
+  const e1=P.errors?.().length||0,l1=P.lifecycle?.().length||0;
+  return{status:e1===e0&&l1>l0?'PASS':'WARN',detail:`sentetik pageshow · lifecycle ${l0}→${l1} · errors ${e0}→${e1}`};
+}
+
+async function runSafe(reason='auto'){
+  if(running)return lastResults;
+  running=true;
+  try{
+    lastResults=await safeSuite();
+    testHistory.push({kind:'safe',reason,at:Date.now(),results:lastResults});
+    if(testHistory.length>12)testHistory.shift();
+    render();
+    return lastResults;
+  }finally{running=false}
+}
+async function runDeep(){
+  if(running)return lastResults;
+  running=true;
+  const btn=$('r455DeepBtn');if(btn){btn.disabled=true;btn.textContent='Test çalışıyor…'}
+  try{
+    const base=await safeSuite();
+    const extra=[];
+    extra.push(await check('AUDIO-DEEP','State-machine mock',mockStateMachineTest));
+    extra.push(await check('AUDIO-DEEP','Çoklu session aggregate',mockMultiAudioTest));
+    extra.push(await check('ZİKİR-DEEP','Zikir stabilizasyon smoke',zikirSmoke));
+    extra.push(await check('TEFEKKÜR-DEEP','Tefekkür enter/exit smoke',tefekkurSmoke));
+    extra.push(await check('TEKKE-DEEP','Tekke open/gate/close smoke',tekkeSmoke));
+    extra.push(await check('LIFECYCLE-DEEP','pageshow smoke',lifecycleSmoke));
+    lastResults=[...base,...extra];
+    testHistory.push({kind:'deep',at:Date.now(),results:lastResults});
+    if(testHistory.length>12)testHistory.shift();
+    render();
+    return lastResults;
+  }finally{
+    running=false;
+    if(btn){btn.disabled=false;btn.textContent='Derin Test'}
+  }
+}
+function renderTests(){
+  const el=$('r455Tests');if(!el)return;
+  if(!lastResults.length){
+    el.innerHTML='<div class="dEmpty">Henüz test çalışmadı.</div>';
+    $('r455TestScore').textContent='—';
+    return;
+  }
+  const pass=lastResults.filter(x=>x.status==='PASS').length;
+  const warn=lastResults.filter(x=>x.status==='WARN').length;
+  const fail=lastResults.filter(x=>x.status==='FAIL').length;
+  const skip=lastResults.filter(x=>x.status==='SKIP').length;
+  $('r455TestScore').innerHTML=`<span class="${fail?'dFail':warn?'dWarn':'dOk'}">${pass}✓ ${warn}△ ${fail}✕ ${skip}–</span>`;
+  el.innerHTML=lastResults.map(x=>`<div class="dTest">
+    <div class="dBadge ${healthClass(x.status)}">${esc(x.status)}</div>
+    <div class="dArea">${esc(x.area)}</div>
+    <div class="dTestName">${esc(x.name)}</div>
+    <div class="dMs">${esc(x.ms+' ms')}</div>
+    <div class="dDetail">${esc(x.detail||'—')}</div>
+  </div>`).join('');
+}
+function exportReport(){
+  const data=snapshot();
+  data.testHistory=testHistory.slice();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`sukun-diagnostics-${BUILD}-${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function open(){
+  const root=ensureUI();
+  root.hidden=false;
+  prevHtmlOverflow=document.documentElement.style.overflow;
+  document.documentElement.style.overflow='hidden';
+  render();
+  clearInterval(refreshTimer);
+  refreshTimer=setInterval(function diagTick(){render()},1000);
+  if(!lastResults.length)setTimeout(()=>runSafe('open'),100);
+}
+function close(){
+  const root=ensureUI();
+  root.hidden=true;
+  document.documentElement.style.overflow=prevHtmlOverflow;
+  clearInterval(refreshTimer);refreshTimer=0;
+}
+
+/* Mobil gizli giriş: footer sürümüne 5 dokunuş. Masaüstü: Ctrl+Shift+D. */
+function bindEntry(){
+  const v=$('surumEtiket');
+  if(v&&!v.dataset.r455DiagBound){
+    v.dataset.r455DiagBound='1';
+    v.addEventListener('click',()=>{
+      tapCount++;
+      clearTimeout(tapReset);
+      tapReset=setTimeout(()=>{tapCount=0},2200);
+      if(tapCount>=5){tapCount=0;clearTimeout(tapReset);open()}
+    },{passive:true});
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.shiftKey&&(e.key==='D'||e.key==='d')){
+    e.preventDefault();
+    const root=ensureUI();
+    root.hidden?open():close();
+  }
+});
+window.addEventListener('pageshow',()=>bindEntry(),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindEntry,{once:true});
+else bindEntry();
+
+/* Açılıştan sonra sessiz güvenli suite: sonuçlar yalnız Diagnostics açılırsa gösterilir. */
+setTimeout(()=>runSafe('boot'),1800);
+
+window.SukunDiagnostics={
+  version:BUILD,
+  open,close,
+  snapshot,
+  runSafe:()=>runSafe('api'),
+  runDeep,
+  results:()=>lastResults.slice(),
+  events:()=>eventLog.slice(),
+  exportReport
+};
 })();
 </script>
 
