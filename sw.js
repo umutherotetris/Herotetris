@@ -1,18 +1,26 @@
-/* SÜKÛN r478 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r479 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r478';
-const CACHE = 'sukun-r478-20260823a';
+const SURUM = 'r479';
+const CACHE = 'sukun-r479-20260823a';
 
 const KABUK = [
   './nero.html',
   './manifest.webmanifest',
   './sukun-icon.svg',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-512-maskable.png'
 ];
 
 const NOTLAR = [
+  'r479 Okuyucular üst üste binebiliyordu: yedi modülün "çalıyor mu" yoklaması window üzerinden bakıyordu ama bu modüller window\'a atanmıyor — yoklama kalıcı false dönüyordu, yeni okuyucu başlarken öncekini durduran yedek yol hiç devreye girmiyordu.',
+  'r479 Berhetiyye 28 İsim Seyri oynatma kontratına hiç kaydolmuyordu; artık merkezi durdurma, global duraklat ve Şimdi Çalıyor akışına dahil.',
+  'r479 Sağlık denetimi çalan modül için yanlış "provider state bayat" uyarısı üretip onarım rutinini sağlıklı oturuma müdahale ettiriyordu.',
+  'r479 Boşta duran ekranda saniyede binlerce gereksiz DOM yazımı vardı; 11 koşulsuz yazım idempotent yapıldı (6 saniyede 11.057 → 3.454 mutasyon).',
+  'r479 Ambiyans anahtarları 44x24\'e çıkarıldı (dokunma hedefi asgarisi); satır yüksekliği aynı kaldı, anahtar düğmesi orantılandı.',
+  'r479 Oynatıcı tutamağının ekran okuyucu adı yoktu; eklendi.',
+  'r479 Uygulama ikonları (icon-192, icon-512, sukun-icon.svg) depoda yoktu ve manifest üçünü de işaret ettiği için hepsi 404 dönüyordu — Android yükleme istemi bu yüzden çalışmıyordu. İkonlar vektörden yeniden üretildi, ayrıca adaptif maske için güvenli alanlı maskable sürüm eklendi.',
   'r478 Universal bar: CANLI küçültüldü; mini/midi görünümde sayım, kalan ve Esmâ/Berhetiyye sıra bilgisi gösteriliyor.',
   'r477 Tek dokunuş otomatik başlatma; kilitte kendi kayıt için 8D+yankı+tempo OfflineAudio ile native loopa basıldı; dönüşte anti-pop crossfade.',
   'r476 Kilit ekranı zikir: kendi kayıt sürekli native audio loop; TTS uzun ön-kuyruk; dönüşte sessiz sayaç uzlaştırması. Yandaki Tefekkür girişi kaldırıldı.',
