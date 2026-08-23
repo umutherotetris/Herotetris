@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r485 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r486 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r485">
+<meta name="sukun-build" content="r486">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r485">
+<link rel="manifest" href="./manifest.webmanifest?v=r486">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.34 — build 2026-08-23-r485</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.35 — build 2026-08-23-r486</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r486","t":"23 Ağustos 2026","b":["Toggle kayıklığının gerçek cascade nedeni bulundu: eski .sw:not(#ns *):not(#tk *) selectorü :not içindeki iki ID nedeniyle r485 component selectoründen daha yüksek specificity taşıyordu","Component authority gerçek cihazdaki legacy 36x20 ve top 2px değerlerini kesin geçersiz kılacak specificity ile düzeltildi","Toggle rayı 46x26, knob 20x20 ve top/left tam 3px olarak piksel bazlı kilitlendi; yüzde top/translateY kaldırıldı","Açık durumda knob yalnız X ekseninde 20px hareket eder; neon cam ışıltısı korunur","Zikir, Tekke ve dua satırlarındaki eski 34x18/32x17 switch kuralları aynı 46x26 component geometrisine zorlandı"]},
  {"v":"r485","t":"23 Ağustos 2026","b":["İlâhî ente maksûdî ve rıdâke matlûbî artık sayaç turu sayılmaz; niyet sesi bitmeden Berhetiyye/Esmâ sayacı ilerlemez","Niyet kayıt/TTS yolu awaitable hale getirildi ve strict ses schedulerına voice-busy olarak bağlandı; niyet sırasında 0.8 tempo dahil fazladan sayaç turu oluşmaz","r480 strict 1 sayı = 1 ses ve r482 transactional Esmâ geçiş motoru tekrar tek fonksiyonel bazda birleştirildi; r483/r484 eski bazlı kozmetik regresyonları taşınmadı","Tüm .sw toggle kontrolleri sk-toggle componentine, .sldRow kaydırıcıları sk-slider componentine ve bilgi düğmeleri sk-info componentine bağlandı","Toggle/slider/info geometrileri tek final-authority CSS katmanında tanımlandı; eski özel pseudo-element ve zikir/kanal switch ölçüleri component sınıfları tarafından geçersiz kılınır","Dinamik Ambiyans kanal kartları MutationObserver ile aynı component sistemine otomatik dahil edilir; polling eklenmedi"]},
  {"v":"r482","t":"23 Ağustos 2026","b":["Esmâ/Berhetiyye hedef geçişi transaction haline getirildi: son sayaç önce mevcut zikri gerçekten okur, ancak ses bitince devir ve sonraki isim commit edilir","Önceki sürümde rep() hedefte Z.idx değerini ses başlamadan değiştiriyordu; bu nedenle son sayım yeni isme kayıp bazı geçişlerde sayaç ilerlerken ses atlayabiliyordu","Seri sesli modda hedefe ulaşınca sayaç hedef değerinde bekler; kayıt/TTS promise tamamlandıktan sonra sayaç sıfırlanır ve sonraki Esmâ render edilir","Yeni Esmâ’nın sayaç turu, önceki Esmâ’nın son okuması tamamlanmadan başlayamaz; 0.8 tempo dahil 1 sayı = 1 ses kontratı geçiş sınırında da korunur","Kullanıcı okuma sırasında başka zikre elle geçerse bekleyen eski transition yeni seçimi ezmez; stale geçiş güvenli biçimde iptal edilir","Kilit ekranı sessiz sayaç uzlaştırması synchronous transition kullanmaya devam eder; foreground transaction kilidi background catch-up akışına sızmaz"]},
  {"v":"r481","t":"23 Ağustos 2026","b":["Kilit ekranında kendi kayıt sesinin cüce/inceleşme nedeni giderildi: OfflineAudioContext artık playbackRate ile pitch değiştirmiyor","Kendi kayıt kilit track’i orijinal pitch’te render ediliyor; hız native HTMLAudio playbackRate + preservesPitch ile uygulanıyor","8D pan ve tempo duvar saati ritmine göre yeniden hesaplandı; hız değişse de kilit loop temposu korunuyor","Kilit TTS’sindeki dev tek tekrar metni kaldırıldı; seçili sesle 120 normal utterance önceden kuyruğa veriliyor, böylece Android TTS prosodi/pitch bozulması azaltıldı","TTS kilit sesinde voice adı/lang yeniden doğrulanıyor ve pitch güvenli doğal aralıkta tutuluyor; sistemin yanlış yüksek varsayılan sese düşme ihtimali azaltıldı","Kilit geçişindeki faz dönüşümü yeni native playbackRate’e göre düzeltildi; dönüş crossfade ve sessiz sayaç uzlaştırması korunuyor"]},
@@ -21362,7 +21363,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r485',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r486',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32458,7 +32459,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r485',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r486',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -44763,7 +44764,7 @@ window.SukunDockTelemetry={version:'r478',sync:schedule,snapshot:ctx};
 </script>
 
 
-<style id="r485-control-component-style">
+<style id="r486-control-component-style">
 /* ═══════════════════════════════════════════════════════════════
    r485 — SÜKÛN CONTROL COMPONENT SYSTEM
    Tek geometri: toggle · slider · info.
@@ -44800,11 +44801,15 @@ body.r485-controls .sk-control--toggle> :first-child{
 }
 
 /* ---- TEK toggle ---- */
-body.r485-controls .sk-toggle,
-body.r485-controls button.sw.sk-toggle,
-body.r485-controls #tab-zkr button.sw.sk-toggle,
-body.r485-controls #tab-zkr .sw.sk-toggle,
-body.r485-controls #tk .sw.sk-toggle{
+
+/*
+   r486 — switch geometry correction.
+   Legacy `.sw:not(#ns *):not(#tk *)` has two ID selectors inside :not(),
+   so it outranked r485 on real devices. This selector deliberately has
+   higher specificity and exact pixel geometry.
+*/
+html body.r485-controls .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls button.sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c){
   appearance:none!important;
   -webkit-appearance:none!important;
   position:relative!important;
@@ -44812,17 +44817,11 @@ body.r485-controls #tk .sw.sk-toggle{
   top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
   display:block!important;
   box-sizing:border-box!important;
-  width:var(--sk-toggle-w)!important;
-  min-width:var(--sk-toggle-w)!important;
-  max-width:var(--sk-toggle-w)!important;
-  height:var(--sk-toggle-h)!important;
-  min-height:var(--sk-toggle-h)!important;
-  max-height:var(--sk-toggle-h)!important;
-  flex:0 0 var(--sk-toggle-w)!important;
-  padding:0!important;
-  margin:0!important;
-  align-self:center!important;
-  justify-self:end!important;
+  width:46px!important;min-width:46px!important;max-width:46px!important;
+  height:26px!important;min-height:26px!important;max-height:26px!important;
+  flex:0 0 46px!important;
+  padding:0!important;margin:0!important;
+  align-self:center!important;justify-self:end!important;
   border-radius:999px!important;
   border:1px solid color-mix(in srgb,var(--goldh) 30%,var(--line))!important;
   background:
@@ -44834,40 +44833,34 @@ body.r485-controls #tk .sw.sk-toggle{
     0 2px 9px rgba(0,0,0,.14)!important;
   overflow:visible!important;
   transform:none!important;
-  line-height:0!important;
-  font-size:0!important;
+  line-height:0!important;font-size:0!important;
   cursor:pointer!important;
   transition:border-color .2s ease,background .2s ease,box-shadow .2s ease!important;
 }
-body.r485-controls .sk-toggle::before,
-body.r485-controls button.sw.sk-toggle::before{
-  content:none!important;
-  display:none!important;
+html body.r485-controls .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::before,
+html body.r485-controls button.sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::before{
+  content:none!important;display:none!important;inset:auto!important;
 }
-body.r485-controls .sk-toggle::after,
-body.r485-controls button.sw.sk-toggle::after,
-body.r485-controls #tab-zkr .sw.sk-toggle::after,
-body.r485-controls #tk .sw.sk-toggle::after{
+html body.r485-controls .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::after,
+html body.r485-controls button.sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::after{
   content:""!important;
   position:absolute!important;
-  top:50%!important;
-  left:3px!important;
-  width:var(--sk-toggle-knob)!important;
-  height:var(--sk-toggle-knob)!important;
+  top:3px!important;left:3px!important;right:auto!important;bottom:auto!important;
+  width:20px!important;min-width:20px!important;max-width:20px!important;
+  height:20px!important;min-height:20px!important;max-height:20px!important;
   margin:0!important;
   border-radius:50%!important;
-  transform:translate(0,-50%)!important;
+  transform:translateX(0)!important;
+  box-sizing:border-box!important;
   background:
     radial-gradient(circle at 34% 30%,#f6fbff 0%,#dbeeff 38%,#a9cff5 72%,#78a8df 100%)!important;
   border:1px solid rgba(255,255,255,.22)!important;
-  box-shadow:
-    0 1px 5px rgba(0,0,0,.30),
-    inset 0 1px 2px rgba(255,255,255,.32)!important;
+  box-shadow:0 1px 5px rgba(0,0,0,.30),inset 0 1px 2px rgba(255,255,255,.32)!important;
   transition:transform .22s cubic-bezier(.22,.61,.36,1),box-shadow .2s ease,background .2s ease!important;
 }
-body.r485-controls .sk-toggle.on,
-body.r485-controls button.sw.sk-toggle.on,
-body.r485-controls .duaOnlyRow.on .sk-toggle{
+html body.r485-controls .sw.sk-toggle.on:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls button.sw.sk-toggle.on:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls .duaOnlyRow.on .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c){
   border-color:color-mix(in srgb,#b9efff 68%,var(--goldh))!important;
   background:
     linear-gradient(90deg,rgba(130,77,255,.66),rgba(72,154,255,.72) 52%,rgba(73,232,209,.66)),
@@ -44878,10 +44871,11 @@ body.r485-controls .duaOnlyRow.on .sk-toggle{
     0 0 24px rgba(151,94,255,.17),
     inset 0 1px 0 rgba(255,255,255,.12)!important;
 }
-body.r485-controls .sk-toggle.on::after,
-body.r485-controls button.sw.sk-toggle.on::after,
-body.r485-controls .duaOnlyRow.on .sk-toggle::after{
-  transform:translate(20px,-50%)!important;
+html body.r485-controls .sw.sk-toggle.on:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::after,
+html body.r485-controls button.sw.sk-toggle.on:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::after,
+html body.r485-controls .duaOnlyRow.on .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c)::after{
+  top:3px!important;left:3px!important;
+  transform:translateX(20px)!important;
   background:
     radial-gradient(circle at 32% 28%,#fff 0%,#f7fbff 36%,#d9f1ff 69%,#afcaff 100%)!important;
   box-shadow:
@@ -44890,12 +44884,20 @@ body.r485-controls .duaOnlyRow.on .sk-toggle::after{
     0 0 18px rgba(170,112,255,.28),
     0 1px 5px rgba(0,0,0,.20)!important;
 }
-body.r485-controls .sk-toggle:focus-visible{
+html body.r485-controls .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c):focus-visible{
   outline:none!important;
   box-shadow:
     0 0 0 2px rgba(126,210,255,.24),
     0 0 0 5px rgba(162,103,255,.10),
     inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+html body.r485-controls #tab-zkr .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls #tab-zkr button.sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls #tab-zkr .duaOnlyRow .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c),
+html body.r485-controls #tk .sw.sk-toggle:not(#r486-switch-a):not(#r486-switch-b):not(#r486-switch-c){
+  width:46px!important;min-width:46px!important;max-width:46px!important;
+  height:26px!important;min-height:26px!important;max-height:26px!important;
+  flex-basis:46px!important;
 }
 
 /* ---- slider satırı ---- */
@@ -45063,11 +45065,11 @@ body.r485-controls #tab-zkr .duaOnlyRow .sk-toggle{
 </style>
 
 
-<script id="r485-control-component-runtime">
+<script id="r486-control-component-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R485_CONTROLS__)return;
-window.__SUKUN_R485_CONTROLS__=1;
+if(window.__SUKUN_R486_CONTROLS__)return;
+window.__SUKUN_R486_CONTROLS__=1;
 
 const markRange=r=>{
   if(!r||r.nodeType!==1)return;
@@ -45146,7 +45148,7 @@ const start=()=>{
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
 else start();
 
-window.SukunControls={version:'r485',normalize,refresh:()=>normalize(document)};
+window.SukunControls={version:'r486',normalize,refresh:()=>normalize(document)};
 })();
 </script>
 
