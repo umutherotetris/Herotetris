@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r472 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r473 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r472">
+<meta name="sukun-build" content="r473">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r472">
+<link rel="manifest" href="./manifest.webmanifest?v=r473">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5973,7 +5973,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.22 — build 2026-08-23-r472</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.23 — build 2026-08-23-r473</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -5997,6 +5997,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r473","t":"23 Ağustos 2026","b":["Tefekkür giriş kontrolü artık yalnız gerçek Zikir sekmesi açıkken görünür; ana sayfa ve diğer sekmelerde otomatik gizlenir","Esmâ ve Berhetiyye için tekil isim sunum sistemi eklendi: Sabit, Animasyon veya Kapalı; sabit ve animasyon aynı anda gösterilmez","Animasyon modunda Tefekkür üstündeki sabit isim gizlenip sayaç alanı yukarı toparlanır; Sabit modda geçici isim perdesi tamamen kapatılır","Eski İsim bildirimi kontrolü tek Esmâ görünümü ayarına dönüştürüldü ve tercih cihazda saklanır","Politika yalnız Berhetiyye’ye değil bütün Esmâü’l-Hüsnâ ve Berhetiyye isim geçişlerine uygulanır"]},
  {"v":"r472","t":"23 Ağustos 2026","b":["Akıllı Seans zikirlerinde ses kaynağı önceliği görünür ve işlevsel hale getirildi: kendi kayıt varsa ilk tercih, yoksa erkek TTS","Berhetiyye 28 İsim gibi seanslarda kayıt çözümleyici doğrudan IndexedDB anahtarlarını ve güvenli eski anahtar eşleşmelerini deniyor","Her zikir adımının Ayarlar bölümüne Otomatik, Kendi kayıt, Erkek TTS, Kadın TTS ve Varsayılan TTS seçenekleri eklendi","Cihazda gerçek erkek TTS sesi varsa seçiliyor; yoksa sessiz kalmak yerine daha pes TTS tınısına güvenli fallback yapılıyor","Normal ekrandaki ve universal player içindeki anlaşılmaz nokta Tefekkür kontrolleri küçük ✦ Tefekkür pill tasarımına çevrildi; hover/focus açıklaması ve erişilebilir etiket eklendi"]},
  {"v":"r471","t":"23 Ağustos 2026","b":["Tefekkürden Çık kontrolü canonical DOM içinde gerçekten oluşturulup Zikir Sayaç başlığı ile halka arasındaki merkez satıra taşındı","Üst Arapça zikir alanının ölçülen yüksekliği ve satır yüksekliği büyütüldü; yazının üst kenara ezilmesi engellendi","Normal ekrandaki Tefekkür giriş kontrolü 38 px zarif dairesel butona indirildi; eski collision yöneticisinin top+bottom kaynaklı dev dikey pill hatası kapatıldı","Canonical Tefekkür stylesheet dosyanın en sonuna taşındı; eski selector katmanları artık final geometriyi ezemiyor","Hedef/Kalan, halka, CTA, ses kaynağı ve dock-safe r470 altyapısı korunarak yeni çıkış satırı yapısal olarak eklendi"]},
  {"v":"r470","t":"22 Ağustos 2026","b":["Tefekkür CSS borcu temizlendi; r197–r208 ve r403/r407/r408/r413/r426/r442–r450/r456–r468 arasındaki artık kullanılmayan Tefekkür stil katmanları kaldırılıp tek canonical stylesheet’e indirildi","Tefekkür kontrol sahipliği legacy r442/r444 rayından çıkarıldı; tek #tfRefinedLayout içinde üst sayaç paneli ve alt kontrol paneli kalıcı grid/flex iskeletine bağlandı","Smart Tefekkür Layout Engine visualViewport ve gerçek oynatıcı yüksekliğini ölçerek çember çapını, üst alanı ve dock safe-area rezervini event-driven biçimde hesaplıyor; sabit 210/248px tahminleri kaldırıldı","Audio lifecycle recovery visibility/pageshow/focus/AudioContext state/devicechange olaylarında coalesce edilerek güçlendirildi; TTS resume, registry sync ve otomatik zikir uyanışı tek kurtarma kapısından geçiyor","Tefekkür ses kaynağı rozeti eklendi: kendi kayıt / Arapça TTS / TTS kaynağı canlı gösteriliyor ve kayıt her zaman TTS’den önce çözülüyor","Seans hafızası zikir, sayaç, devir, hedef, tempo, form, Tefekkür durumu ve aktif playback metadata’sını saklıyor; autoplay kısıtında otomatik akış ilk kullanıcı dokunuşunda güvenli şekilde devam ediyor","Mevcut Tam/Dengeli/Pil görsel profilleri adaptif etkin profile bağlandı; Tefekkürde Sakin, arka planda Pil ve tekrarlayan long-task baskısında geçici Pil modu uygulanıyor","Haptik ritim yumuşatıldı: her zikir kısa dokunsal vuruş, devir tamamında farklı kısa imza kullanıyor","Tefekkürden çıkışta süre, zikir, devir ve kullanılan ses kaynağını gösteren seans özeti ve son 50 seansı saklayan özet geçmişi eklendi","Diagnostics 2.0 canonical layout sahipliği, gerçek dock overlap, voice resolver, session memory ve adaptif performans kontrolleriyle genişletildi; derin Tefekkür smoke testi yeni iskelete uyarlandı"]},
@@ -20537,7 +20538,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r472',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r473',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -31606,10 +31607,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r472',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r473',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r472-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r473-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -43193,6 +43194,274 @@ try{
     window.SukunFloatingCollision.sync();
   }
 }catch(e){}
+})();
+</script>
+
+
+<style id="r473-name-presentation-and-tef-gate">
+/* ═══════════════════════════════════════════════════════════════
+   r473 — Tefekkür giriş görünürlüğü + tekil Esmâ sunum modu
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Tefekkür girişi yalnız gerçekten Zikir sekmesi açıkken görünür.
+   body.sukun-zikir-tab geçmişten kalmış/stale olsa bile r473 gerçek .tab.act
+   durumunu esas alır. */
+body:not(.r473-zikir-active):not(.sukun-tefekkur-mode) .sukun-focus-btn,
+body:not(.r473-zikir-active):not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.r473-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn,
+body.r473-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+/* Eski İsim bildirimi kontrolü r473 ile tek, anlaşılır seçime dönüşüyor. */
+#nameToastMode{display:none!important}
+.r473NamePresentation{
+  margin:8px 0 10px;
+  padding:10px;
+  border:1px solid color-mix(in srgb,var(--line) 86%,transparent);
+  border-radius:13px;
+  background:color-mix(in srgb,var(--card) 80%,transparent);
+}
+.r473NamePresentation .r473Head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:7px;
+}
+.r473NamePresentation .r473Head b{
+  color:var(--mut);font:700 10px/1.2 "Figtree",system-ui,sans-serif;
+}
+.r473NamePresentation .r473Head small{
+  color:var(--dim);font:500 8px/1.25 "Figtree",system-ui,sans-serif;text-align:right;
+}
+.r473NameSeg{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;
+  padding:3px;
+  border-radius:10px;
+  border:1px solid color-mix(in srgb,var(--line) 72%,transparent);
+  background:rgba(0,0,0,.17);
+}
+.r473NameSeg button{
+  appearance:none;border:0;border-radius:8px;min-height:30px;padding:5px 7px;
+  background:transparent;color:var(--dim);
+  font:650 9px/1.1 "Figtree",system-ui,sans-serif;
+}
+.r473NameSeg button[aria-pressed="true"]{
+  color:var(--goldh);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 15%,transparent),color-mix(in srgb,var(--gold) 6%,transparent));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 28%,transparent);
+}
+.r473NamePresentation .r473Foot{
+  margin-top:6px;color:var(--dim);font:500 8px/1.4 "Figtree",system-ui,sans-serif;
+}
+
+/* TEKİL SUNUM KURALI — Esmâ + Berhetiyye:
+   Sabit = zStage görünür, animasyon kapalı.
+   Animasyon = toast görünür, zStage ismi görünmez.
+   Kapalı = ikisi de görünmez.
+   Böylece iki isim kartı aynı anda asla ekranda olmaz. */
+body.r473-name-cat[data-r473-name-mode="fixed"] #nameToastLayer{
+  display:none!important;
+}
+body.r473-name-cat[data-r473-name-mode="animated"] #zStage>.zAr,
+body.r473-name-cat[data-r473-name-mode="animated"] #zStage>.zTr,
+body.r473-name-cat[data-r473-name-mode="animated"] #zStage>#zModBadge,
+body.r473-name-cat[data-r473-name-mode="off"] #zStage>.zAr,
+body.r473-name-cat[data-r473-name-mode="off"] #zStage>.zTr,
+body.r473-name-cat[data-r473-name-mode="off"] #zStage>#zModBadge{
+  display:none!important;
+}
+body.r473-name-cat[data-r473-name-mode="off"] #nameToastLayer{
+  display:none!important;
+}
+
+/* Tefekkürde animasyon/kapalı modunda yukarıda boş bir sabit kart bırakma. */
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #tab-zkr,
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="off"] #tab-zkr{
+  grid-template-rows:30px minmax(0,1fr)!important;
+}
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #zStage,
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="off"] #zStage{
+  min-height:0!important;height:30px!important;padding:0!important;opacity:.28!important;
+}
+
+/* Animasyon modu Tefekkürde daha zarif, sayaç başlığını kapatmayan perde. */
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #nameToastLayer{
+  top:max(48px,calc(env(safe-area-inset-top,0px) + 40px))!important;
+  width:min(84vw,390px)!important;
+}
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastCard{
+  padding:10px 16px 9px!important;
+  border-radius:16px!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.34),0 0 22px color-mix(in srgb,var(--gold) 8%,transparent)!important;
+}
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastAr{
+  font-size:clamp(23px,6.5vw,32px)!important;
+}
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastTr{
+  font-size:12px!important;
+}
+
+/* Sabit mod: üst yazı r471'in nefes alan yerleşimini kullanır. */
+body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="fixed"] #zStage{
+  opacity:1!important;
+}
+
+/* Durum değişirken titreme/pulse yok. */
+body.r473-name-cat #zStage>.zAr,
+body.r473-name-cat #zStage>.zTr,
+#nameToastLayer{
+  animation:none!important;
+}
+
+@media(max-width:390px){
+  .r473NamePresentation .r473Head{align-items:flex-start;flex-direction:column;gap:3px}
+  .r473NamePresentation .r473Head small{text-align:left}
+  body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #nameToastLayer{
+    width:88vw!important;
+  }
+}
+</style>
+
+
+<script id="r473-name-presentation-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R473_PRESENTATION__)return;
+window.__SUKUN_R473_PRESENTATION__=1;
+
+const KEY='sukun.namePresentation.r473';
+const VALID=new Set(['fixed','animated','off']);
+let mode='animated';
+try{
+  const saved=localStorage.getItem(KEY);
+  if(VALID.has(saved))mode=saved;
+  else{
+    /* Eski isim bildirimi açıksa davranışı koru ama artık sabitle aynı anda gösterme. */
+    const old=window.NameToast?.getMode?.();
+    mode=(old&&old!=='off')?'animated':'fixed';
+  }
+}catch(e){}
+
+function zikirTabActive(){
+  const z=document.querySelector('.tab[data-t="zkr"]');
+  return !!(z&&z.classList.contains('act'));
+}
+function nameCategory(){
+  try{return typeof Z!=='undefined'&&(Z.cat==='esma'||Z.cat==='berhet')}catch(e){return false}
+}
+function syncTefGate(){
+  const on=zikirTabActive()||document.body.classList.contains('sukun-tefekkur-mode');
+  document.body.classList.toggle('r473-zikir-active',on);
+
+  const f=document.querySelector('.sukun-focus-btn');
+  const d=document.getElementById('r442TefekkurBtn');
+  if(!document.body.classList.contains('sukun-tefekkur-mode')){
+    [f,d].forEach(b=>{
+      if(!b)return;
+      b.hidden=!on;
+      b.setAttribute('aria-hidden',on?'false':'true');
+      b.tabIndex=on?0:-1;
+    });
+  }
+}
+function applyMode({announce=false}={}){
+  const cat=nameCategory();
+  document.body.classList.toggle('r473-name-cat',cat);
+  document.body.dataset.r473NameMode=mode;
+
+  /* NameToast artık yalnız animasyon modunda çalışır. */
+  try{
+    if(window.NameToast){
+      NameToast.setMode(mode==='animated'?'simple':'off');
+      if(mode!=='animated')NameToast.hide?.();
+      else if(announce&&cat)NameToast.showCurrent?.();
+    }
+  }catch(e){}
+
+  document.querySelectorAll('[data-r473-name-mode]').forEach(b=>{
+    b.setAttribute('aria-pressed',b.dataset.r473NameMode===mode?'true':'false');
+  });
+}
+function setMode(next){
+  if(!VALID.has(next))return false;
+  mode=next;
+  try{localStorage.setItem(KEY,mode)}catch(e){}
+  applyMode({announce:true});
+  return true;
+}
+function ensureSettings(){
+  let row=document.getElementById('r473NamePresentation');
+  if(row)return row;
+  const opts=document.querySelector('#p-zikir .zOpts')||document.querySelector('.zOpts');
+  if(!opts)return null;
+  row=document.createElement('div');
+  row.id='r473NamePresentation';
+  row.className='r473NamePresentation';
+  row.innerHTML=
+    '<div class="r473Head"><b>✦ Esmâ görünümü</b><small>Esmâ + Berhetiyye · aynı anda yalnız biri</small></div>'+
+    '<div class="r473NameSeg" role="group" aria-label="Esmâ görünüm biçimi">'+
+      '<button type="button" data-r473-name-mode="fixed">Sabit</button>'+
+      '<button type="button" data-r473-name-mode="animated">Animasyon</button>'+
+      '<button type="button" data-r473-name-mode="off">Kapalı</button>'+
+    '</div>'+
+    '<div class="r473Foot">Animasyon seçilirse üstteki sabit isim gizlenir. Sabit seçilirse geçici isim perdesi devre dışı kalır.</div>';
+  const old=document.getElementById('nameToastMode');
+  if(old)old.insertAdjacentElement('afterend',row);
+  else opts.prepend(row);
+  row.addEventListener('click',e=>{
+    const b=e.target.closest('[data-r473-name-mode]');
+    if(b)setMode(b.dataset.r473NameMode);
+  });
+  return row;
+}
+
+/* renderZikir'i bir daha sarmadan kategori değişimini gözle.
+   Esmâ, Berhetiyye ve manuel geçişlerin tümünde aynı politika uygulanır. */
+let lastSig='';
+function syncAll(){
+  ensureSettings();
+  syncTefGate();
+  let sig='';
+  try{sig=(Z?.cat||'')+':'+(Z?.idx??'')}catch(e){}
+  const changed=sig!==lastSig;lastSig=sig;
+  applyMode({announce:changed&&mode==='animated'});
+}
+
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('.tab,[data-i],#esmaPrevBtn,#esmaNextBtn,#autoBtn,#plusBtn,#undoBtn')){
+    setTimeout(syncAll,0);
+    setTimeout(syncAll,120);
+  }
+},{passive:true});
+
+['sukun:playbackchange','sukun:nowplayingchange','pageshow'].forEach(ev=>{
+  window.addEventListener(ev,()=>setTimeout(syncAll,30),{passive:true});
+});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncAll,40)});
+
+const mo=new MutationObserver(()=>{
+  clearTimeout(mo._t);
+  mo._t=setTimeout(syncAll,30);
+});
+mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(syncAll,80),{once:true});
+}else setTimeout(syncAll,50);
+
+window.SukunNamePresentation={
+  version:'r473',
+  getMode:()=>mode,
+  setMode,
+  sync:syncAll,
+  isNameCategory:nameCategory
+};
 })();
 </script>
 

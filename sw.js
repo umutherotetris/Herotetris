@@ -1,8 +1,8 @@
-/* SÜKÛN r472 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r473 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r472';
-const CACHE = 'sukun-r472-20260823a';
+const SURUM = 'r473';
+const CACHE = 'sukun-r473-20260823a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r473 Tefekkür girişi yalnız Zikir sekmesinde; Esmâ/Berhetiyye için Sabit–Animasyon–Kapalı tekil isim görünümü eklendi.',
   'r472 Akıllı Seans: kendi kayıt öncelikli, yoksa erkek TTS; Tefekkür girişleri yazılı ve anlaşılır mini pill tasarımına geçti.',
   'r471 Tefekkür final geometri: üst zikir nefes alanına kavuştu, Çık düğmesi sayaç başlığının altına alındı ve dev yan Tefekkür pill hatası kapatıldı.',
   'r470 Canonical Tefekkür: tek grid/flex iskelet, ölçülen dock-safe layout, güçlendirilmiş audio recovery, source badge, session memory/summary, adaptif performans ve Diagnostics 2.0.',
