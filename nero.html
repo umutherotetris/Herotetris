@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r473 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r474 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r473">
+<meta name="sukun-build" content="r474">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r473">
+<link rel="manifest" href="./manifest.webmanifest?v=r474">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5973,7 +5973,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.23 — build 2026-08-23-r473</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.24 — build 2026-08-23-r474</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -5997,6 +5997,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r474","t":"23 Ağustos 2026","b":["r473 isim sunum style/runtime katmanı tamamen kaldırıldı; r472 içindeki Tefekkür observer ve collision katmanı da Akıllı Seans ses çözümünden ayrıştırıldı","Tefekkür girişi artık yalnız gerçek Zikir sekmesi aktifken görünür; ana sayfa, Ambiyans, Frekans ve diğer sekmelerde CSS+runtime tek kapıdan gizlenir","Esmâ/Berhetiyye animasyonu uygulama açılışında veya yalnız seçim yapılınca başlamaz; yalnız gerçek sayım, okuma veya Akıllı Seans zikir adımı başladıktan sonra çalışır","Sabit, Animasyon ve Kapalı görünüm tek r474 otoritesine bağlandı; iki isim katmanı aynı anda görünemez","Animasyon/Kapalı Tefekkür modunda zStage tamamen kaldırılır ve sayaç paneli gerçek tek satırlı canonical grid alanını kullanır; önceki 30 px sahte satır ve büyük dikey boşluk giderildi","İlk geçişte güvenli varsayılan Sabit görünüm seçilir; eski r473 animasyon varsayılanı taşınmaz ve SÜKÛN logosu başlangıçta isim perdesiyle örtülmez"]},
  {"v":"r473","t":"23 Ağustos 2026","b":["Tefekkür giriş kontrolü artık yalnız gerçek Zikir sekmesi açıkken görünür; ana sayfa ve diğer sekmelerde otomatik gizlenir","Esmâ ve Berhetiyye için tekil isim sunum sistemi eklendi: Sabit, Animasyon veya Kapalı; sabit ve animasyon aynı anda gösterilmez","Animasyon modunda Tefekkür üstündeki sabit isim gizlenip sayaç alanı yukarı toparlanır; Sabit modda geçici isim perdesi tamamen kapatılır","Eski İsim bildirimi kontrolü tek Esmâ görünümü ayarına dönüştürüldü ve tercih cihazda saklanır","Politika yalnız Berhetiyye’ye değil bütün Esmâü’l-Hüsnâ ve Berhetiyye isim geçişlerine uygulanır"]},
  {"v":"r472","t":"23 Ağustos 2026","b":["Akıllı Seans zikirlerinde ses kaynağı önceliği görünür ve işlevsel hale getirildi: kendi kayıt varsa ilk tercih, yoksa erkek TTS","Berhetiyye 28 İsim gibi seanslarda kayıt çözümleyici doğrudan IndexedDB anahtarlarını ve güvenli eski anahtar eşleşmelerini deniyor","Her zikir adımının Ayarlar bölümüne Otomatik, Kendi kayıt, Erkek TTS, Kadın TTS ve Varsayılan TTS seçenekleri eklendi","Cihazda gerçek erkek TTS sesi varsa seçiliyor; yoksa sessiz kalmak yerine daha pes TTS tınısına güvenli fallback yapılıyor","Normal ekrandaki ve universal player içindeki anlaşılmaz nokta Tefekkür kontrolleri küçük ✦ Tefekkür pill tasarımına çevrildi; hover/focus açıklaması ve erişilebilir etiket eklendi"]},
  {"v":"r471","t":"23 Ağustos 2026","b":["Tefekkürden Çık kontrolü canonical DOM içinde gerçekten oluşturulup Zikir Sayaç başlığı ile halka arasındaki merkez satıra taşındı","Üst Arapça zikir alanının ölçülen yüksekliği ve satır yüksekliği büyütüldü; yazının üst kenara ezilmesi engellendi","Normal ekrandaki Tefekkür giriş kontrolü 38 px zarif dairesel butona indirildi; eski collision yöneticisinin top+bottom kaynaklı dev dikey pill hatası kapatıldı","Canonical Tefekkür stylesheet dosyanın en sonuna taşındı; eski selector katmanları artık final geometriyi ezemiyor","Hedef/Kalan, halka, CTA, ses kaynağı ve dock-safe r470 altyapısı korunarak yeni çıkış satırı yapısal olarak eklendi"]},
@@ -20538,7 +20539,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r473',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r474',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -31607,10 +31608,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r473',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r474',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r473-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r474-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -42735,7 +42736,8 @@ body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
 
 </style>
 
-<style id="r472-smart-session-source-and-tefekkur-ui">
+<style id="r472-smart-session-source-ui">
+
 /* ═══════════════════════════════════════════════════════════════
    r472 — Akıllı Seans ses kaynağı + anlaşılır Tefekkür girişleri
    ═══════════════════════════════════════════════════════════════ */
@@ -42790,115 +42792,15 @@ body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
   font:500 8px/1.45 "Figtree",system-ui,sans-serif;
   padding:0 2px;
 }
-
-/* Normal ekrandaki bağımsız Tefekkür girişi: nokta değil, okunur mini pill. */
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:6px!important;
-  position:fixed!important;
-  top:auto!important;
-  right:12px!important;
-  left:auto!important;
-  bottom:calc(env(safe-area-inset-bottom) + 112px)!important;
-  width:104px!important;min-width:104px!important;max-width:104px!important;
-  height:36px!important;min-height:36px!important;max-height:36px!important;
-  padding:0 11px!important;
-  border-radius:999px!important;
-  overflow:visible!important;
-  font:700 9.5px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.045em!important;
-  writing-mode:horizontal-tb!important;
-  color:var(--goldh)!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
-    rgba(var(--sayfa2K),.92)!important;
-  border:1px solid color-mix(in srgb,var(--gold) 25%,rgba(255,255,255,.08))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px rgba(0,0,0,.22)!important;
-  backdrop-filter:blur(12px)!important;
-  opacity:.94!important;
-}
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn::before{
-  content:"✦"!important;
-  position:static!important;
-  display:inline!important;
-  color:var(--gold)!important;
-  font:700 10px/1 system-ui!important;
-}
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn::after,
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::after{
-  content:attr(data-tef-tip);
-  position:absolute;
-  right:0;
-  bottom:calc(100% + 7px);
-  z-index:20;
-  width:max-content;
-  max-width:210px;
-  padding:7px 9px;
-  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line));
-  border-radius:9px;
-  background:rgba(var(--sayfa2K),.97);
-  color:var(--mut);
-  font:600 8.5px/1.35 "Figtree",system-ui,sans-serif;
-  letter-spacing:0;
-  box-shadow:0 10px 26px rgba(0,0,0,.30);
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transform:translateY(3px);
-  transition:opacity .14s ease,transform .14s ease,visibility .14s ease;
-}
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn:hover::after,
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn:focus-visible::after,
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn:hover::after,
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn:focus-visible::after{
-  opacity:1;visibility:visible;transform:none;
-}
-
-/* Universal player içindeki Tefekkür kontrolü de yazılı ve küçük. */
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
-  position:relative!important;
-  flex:0 0 auto!important;
-  width:auto!important;min-width:88px!important;max-width:118px!important;
-  height:30px!important;min-height:30px!important;max-height:30px!important;
-  padding:0 10px!important;
-  border-radius:999px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:5px!important;
-  overflow:visible!important;
-  font:700 9px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.04em!important;
-  writing-mode:horizontal-tb!important;
-  color:color-mix(in srgb,var(--goldh) 90%,var(--mut))!important;
-}
-body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
-  content:"✦"!important;
-  position:static!important;
-  color:var(--gold)!important;
-  font:700 9px/1 system-ui!important;
-}
-
 @media(max-width:390px){
-  body.sukun-zikir-tab:not(.sukun-tefekkur-mode) .sukun-focus-btn{
-    width:94px!important;min-width:94px!important;max-width:94px!important;
-    height:34px!important;min-height:34px!important;max-height:34px!important;
-    font-size:9px!important;
-    right:9px!important;
-  }
-  body.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
-    min-width:82px!important;max-width:104px!important;
-    padding-inline:8px!important;
-    font-size:8.5px!important;
-  }
   #r170Queue .r472SourceCtl{grid-template-columns:1fr;gap:5px}
 }
+
 </style>
 
 
 <script id="r472-smart-session-source-runtime">
+
 (()=>{
 'use strict';
 if(window.__SUKUN_R472_SOURCE__)return;
@@ -43146,321 +43048,508 @@ if(q){
 });
 setTimeout(refreshCards,350);
 window.SukunSmartSessionSource={version:'r472',recordingFor,resolveStep,refresh:refreshCards,maleAvailable,femaleAvailable};
-
-/* Tefekkür girişlerini kullanıcıya anlaşılır kıl.
-   Eski runtime metni tekrar ◉ yapsa MutationObserver geri düzeltir. */
-function polishTefButtons(){
-  const inTef=document.body.classList.contains('sukun-tefekkur-mode');
-  const f=document.querySelector('.sukun-focus-btn');
-  if(f&&!inTef){
-    if(f.textContent.trim()!=='Tefekkür')f.textContent='Tefekkür';
-    f.dataset.tefTip='Zikir sayacını tam ekran Tefekkür görünümünde aç';
-    f.setAttribute('aria-label','Tefekkür moduna geç');
-    f.title='Tefekkür moduna geç';
-  }
-  const b=document.getElementById('r442TefekkurBtn');
-  if(b&&!inTef){
-    if(b.textContent.trim()!=='Tefekkür')b.textContent='Tefekkür';
-    b.dataset.tefTip='Tam ekran Tefekkür moduna geç';
-    b.setAttribute('aria-label','Tefekkür moduna geç');
-    b.title='Tefekkür moduna geç';
-  }
-}
-polishTefButtons();
-const tefObs=new MutationObserver(()=>{clearTimeout(tefObs._t);tefObs._t=setTimeout(polishTefButtons,20)});
-tefObs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-
-/* r471 compact collision 38px'e zorluyordu; r472 pill genişliği sabittir,
-   ama yine top+bottom aynı anda bırakılmaz. */
-try{
-  if(window.SukunFloatingCollision){
-    window.SukunFloatingCollision.__r472Labeled=true;
-    window.SukunFloatingCollision.sync=function(){
-      const b=document.querySelector('.sukun-focus-btn');
-      if(!b||document.body.classList.contains('sukun-tefekkur-mode'))return;
-      b.style.setProperty('top','auto','important');
-      b.style.setProperty('right','12px','important');
-      b.style.setProperty('width',innerWidth<=390?'94px':'104px','important');
-      b.style.setProperty('min-width',innerWidth<=390?'94px':'104px','important');
-      b.style.setProperty('max-width',innerWidth<=390?'94px':'104px','important');
-      b.style.setProperty('height',innerWidth<=390?'34px':'36px','important');
-      b.style.setProperty('min-height',innerWidth<=390?'34px':'36px','important');
-      b.style.setProperty('max-height',innerWidth<=390?'34px':'36px','important');
-      polishTefButtons();
-    };
-    window.SukunFloatingCollision.schedule=function(){
-      clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync(),40);
-    };
-    window.SukunFloatingCollision.sync();
-  }
-}catch(e){}
 })();
 </script>
 
 
-<style id="r473-name-presentation-and-tef-gate">
+
+<style id="r474-single-zikir-presentation-authority">
 /* ═══════════════════════════════════════════════════════════════
-   r473 — Tefekkür giriş görünürlüğü + tekil Esmâ sunum modu
+   r474 — TEK OTORİTE
+   1) Tefekkür girişi yalnız gerçek Zikir sekmesinde
+   2) İsim perdesi yalnız gerçekten zikir başladıysa
+   3) Esmâ/Berhetiyye: Sabit / Animasyon / Kapalı, aynı anda tek katman
+   4) Tefekkür canonical r471 geometrisi bozulmaz
    ═══════════════════════════════════════════════════════════════ */
 
-/* Tefekkür girişi yalnız gerçekten Zikir sekmesi açıkken görünür.
-   body.sukun-zikir-tab geçmişten kalmış/stale olsa bile r473 gerçek .tab.act
-   durumunu esas alır. */
-body:not(.r473-zikir-active):not(.sukun-tefekkur-mode) .sukun-focus-btn,
-body:not(.r473-zikir-active):not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+/* ---------- GLOBAL GATE: Zikir sekmesi değilse hiçbir Tefekkür girişi yok ---------- */
+body:not(.r474-zikir-active):not(.sukun-tefekkur-mode) .sukun-focus-btn,
+body:not(.r474-zikir-active):not(.sukun-tefekkur-mode) #r442TefekkurBtn{
   display:none!important;
   visibility:hidden!important;
   pointer-events:none!important;
 }
-body.r473-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn,
-body.r473-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+
+/* ---------- Zikir sekmesinde anlaşılır, küçük Tefekkür pill ---------- */
+body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn{
+  display:inline-flex!important;
   visibility:visible!important;
   pointer-events:auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  position:fixed!important;
+  top:auto!important;left:auto!important;right:12px!important;
+  bottom:calc(env(safe-area-inset-bottom) + 112px)!important;
+  width:104px!important;min-width:104px!important;max-width:104px!important;
+  height:36px!important;min-height:36px!important;max-height:36px!important;
+  padding:0 11px!important;
+  border-radius:999px!important;
+  overflow:visible!important;
+  writing-mode:horizontal-tb!important;
+  transform:none!important;
+  opacity:.94!important;
+  color:var(--goldh)!important;
+  font:700 9.5px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.045em!important;
+  border:1px solid color-mix(in srgb,var(--gold) 25%,rgba(255,255,255,.08))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),
+    rgba(var(--sayfa2K),.92)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px rgba(0,0,0,.22)!important;
+  backdrop-filter:blur(12px)!important;
+}
+body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn::before{
+  content:"✦"!important;
+  position:static!important;
+  color:var(--gold)!important;
+  font:700 10px/1 system-ui!important;
 }
 
-/* Eski İsim bildirimi kontrolü r473 ile tek, anlaşılır seçime dönüşüyor. */
-#nameToastMode{display:none!important}
-.r473NamePresentation{
-  margin:8px 0 10px;
-  padding:10px;
+body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+  display:inline-flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  position:relative!important;
+  align-items:center!important;justify-content:center!important;gap:5px!important;
+  flex:0 0 auto!important;
+  width:auto!important;min-width:88px!important;max-width:118px!important;
+  height:30px!important;min-height:30px!important;max-height:30px!important;
+  padding:0 10px!important;
+  border-radius:999px!important;
+  overflow:visible!important;
+  writing-mode:horizontal-tb!important;
+  font:700 9px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.04em!important;
+  color:color-mix(in srgb,var(--goldh) 90%,var(--mut))!important;
+}
+body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn::before{
+  content:"✦"!important;
+  position:static!important;
+  color:var(--gold)!important;
+  font:700 9px/1 system-ui!important;
+}
+
+/* Tooltip yalnız desktop/focus; mobilde isim zaten açıkça yazıyor. */
+body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn::after,
+body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn::after{
+  content:attr(data-tef-tip);
+  position:absolute;right:0;bottom:calc(100% + 7px);z-index:30;
+  width:max-content;max-width:210px;padding:7px 9px;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line));
+  border-radius:9px;background:rgba(var(--sayfa2K),.97);color:var(--mut);
+  box-shadow:0 10px 26px rgba(0,0,0,.30);
+  font:600 8.5px/1.35 "Figtree",system-ui,sans-serif;
+  letter-spacing:0;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(3px);
+  transition:opacity .14s ease,transform .14s ease,visibility .14s ease;
+}
+body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn:hover::after,
+body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn:focus-visible::after,
+body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn:hover::after,
+body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn:focus-visible::after{
+  opacity:1;visibility:visible;transform:none;
+}
+
+/* ---------- İSİM PERDESİ: default olarak KAPALI ----------
+   Eski r183 render wrapper ne yaparsa yapsın uygulama açılışında logo örtülmez. */
+#nameToastLayer{
+  display:none!important;
+}
+body.r474-zikir-active.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] #nameToastLayer.show{
+  display:block!important;
+}
+
+/* ---------- Sabit / Animasyon / Kapalı: aynı anda yalnız bir katman ---------- */
+body.r474-name-cat[data-r474-name-mode="fixed"] #nameToastLayer{
+  display:none!important;
+}
+body.r474-name-cat[data-r474-name-mode="animated"] #zStage>.zAr,
+body.r474-name-cat[data-r474-name-mode="animated"] #zStage>.zTr,
+body.r474-name-cat[data-r474-name-mode="animated"] #zStage>#zModBadge,
+body.r474-name-cat[data-r474-name-mode="off"] #zStage>.zAr,
+body.r474-name-cat[data-r474-name-mode="off"] #zStage>.zTr,
+body.r474-name-cat[data-r474-name-mode="off"] #zStage>#zModBadge{
+  display:none!important;
+}
+body.r474-name-cat[data-r474-name-mode="off"] #nameToastLayer{
+  display:none!important;
+}
+
+/* Tefekkürde animasyon/kapalı seçiliyse zStage tamamen kalkar.
+   30px'lik sahte satır ve dev dikey boşluk yok. Canonical sayaç tüm alanı alır. */
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr,
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr{
+  grid-template-rows:minmax(0,1fr)!important;
+  gap:0!important;
+}
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr>#zStage,
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr>#zStage{
+  display:none!important;
+}
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr>.zCtl,
+body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr>.zCtl{
+  grid-row:1!important;
+}
+
+/* Animasyon perdesi yalnız gerçekten seans başladıktan sonra, üstte küçük kalır. */
+body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] #nameToastLayer.show{
+  top:max(42px,calc(env(safe-area-inset-top,0px) + 34px))!important;
+  width:min(82vw,374px)!important;
+}
+body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastCard{
+  padding:9px 15px 8px!important;
+  border-radius:15px!important;
+  box-shadow:0 13px 34px rgba(0,0,0,.32),0 0 18px color-mix(in srgb,var(--gold) 7%,transparent)!important;
+}
+body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastAr{
+  font-size:clamp(22px,6.1vw,30px)!important;
+}
+body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastTr{
+  font-size:11.5px!important;
+}
+
+/* ---------- Tek ayar yüzeyi ---------- */
+#nameToastMode,
+#r473NamePresentation{
+  display:none!important;
+}
+#r474NamePresentation{
+  margin:8px 0 10px;padding:10px;
   border:1px solid color-mix(in srgb,var(--line) 86%,transparent);
-  border-radius:13px;
-  background:color-mix(in srgb,var(--card) 80%,transparent);
+  border-radius:13px;background:color-mix(in srgb,var(--card) 80%,transparent);
 }
-.r473NamePresentation .r473Head{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  margin-bottom:7px;
+#r474NamePresentation .r474Head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;
 }
-.r473NamePresentation .r473Head b{
+#r474NamePresentation .r474Head b{
   color:var(--mut);font:700 10px/1.2 "Figtree",system-ui,sans-serif;
 }
-.r473NamePresentation .r473Head small{
+#r474NamePresentation .r474Head small{
   color:var(--dim);font:500 8px/1.25 "Figtree",system-ui,sans-serif;text-align:right;
 }
-.r473NameSeg{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:4px;
-  padding:3px;
-  border-radius:10px;
-  border:1px solid color-mix(in srgb,var(--line) 72%,transparent);
+#r474NamePresentation .r474Seg{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:3px;
+  border-radius:10px;border:1px solid color-mix(in srgb,var(--line) 72%,transparent);
   background:rgba(0,0,0,.17);
 }
-.r473NameSeg button{
+#r474NamePresentation .r474Seg button{
   appearance:none;border:0;border-radius:8px;min-height:30px;padding:5px 7px;
-  background:transparent;color:var(--dim);
-  font:650 9px/1.1 "Figtree",system-ui,sans-serif;
+  background:transparent;color:var(--dim);font:650 9px/1.1 "Figtree",system-ui,sans-serif;
 }
-.r473NameSeg button[aria-pressed="true"]{
+#r474NamePresentation .r474Seg button[aria-pressed="true"]{
   color:var(--goldh);
   background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 15%,transparent),color-mix(in srgb,var(--gold) 6%,transparent));
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 28%,transparent);
 }
-.r473NamePresentation .r473Foot{
+#r474NamePresentation .r474Foot{
   margin-top:6px;color:var(--dim);font:500 8px/1.4 "Figtree",system-ui,sans-serif;
 }
 
-/* TEKİL SUNUM KURALI — Esmâ + Berhetiyye:
-   Sabit = zStage görünür, animasyon kapalı.
-   Animasyon = toast görünür, zStage ismi görünmez.
-   Kapalı = ikisi de görünmez.
-   Böylece iki isim kartı aynı anda asla ekranda olmaz. */
-body.r473-name-cat[data-r473-name-mode="fixed"] #nameToastLayer{
-  display:none!important;
-}
-body.r473-name-cat[data-r473-name-mode="animated"] #zStage>.zAr,
-body.r473-name-cat[data-r473-name-mode="animated"] #zStage>.zTr,
-body.r473-name-cat[data-r473-name-mode="animated"] #zStage>#zModBadge,
-body.r473-name-cat[data-r473-name-mode="off"] #zStage>.zAr,
-body.r473-name-cat[data-r473-name-mode="off"] #zStage>.zTr,
-body.r473-name-cat[data-r473-name-mode="off"] #zStage>#zModBadge{
-  display:none!important;
-}
-body.r473-name-cat[data-r473-name-mode="off"] #nameToastLayer{
-  display:none!important;
-}
-
-/* Tefekkürde animasyon/kapalı modunda yukarıda boş bir sabit kart bırakma. */
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #tab-zkr,
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="off"] #tab-zkr{
-  grid-template-rows:30px minmax(0,1fr)!important;
-}
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #zStage,
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="off"] #zStage{
-  min-height:0!important;height:30px!important;padding:0!important;opacity:.28!important;
-}
-
-/* Animasyon modu Tefekkürde daha zarif, sayaç başlığını kapatmayan perde. */
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #nameToastLayer{
-  top:max(48px,calc(env(safe-area-inset-top,0px) + 40px))!important;
-  width:min(84vw,390px)!important;
-}
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastCard{
-  padding:10px 16px 9px!important;
-  border-radius:16px!important;
-  box-shadow:0 14px 40px rgba(0,0,0,.34),0 0 22px color-mix(in srgb,var(--gold) 8%,transparent)!important;
-}
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastAr{
-  font-size:clamp(23px,6.5vw,32px)!important;
-}
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] .nameToastTr{
-  font-size:12px!important;
-}
-
-/* Sabit mod: üst yazı r471'in nefes alan yerleşimini kullanır. */
-body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="fixed"] #zStage{
-  opacity:1!important;
-}
-
-/* Durum değişirken titreme/pulse yok. */
-body.r473-name-cat #zStage>.zAr,
-body.r473-name-cat #zStage>.zTr,
-#nameToastLayer{
+/* Hiçbir mod değişimi pulse/flashing üretmez. */
+body.r474-name-cat #zStage>.zAr,
+body.r474-name-cat #zStage>.zTr,
+body.r474-name-cat #nameToastLayer{
   animation:none!important;
 }
 
 @media(max-width:390px){
-  .r473NamePresentation .r473Head{align-items:flex-start;flex-direction:column;gap:3px}
-  .r473NamePresentation .r473Head small{text-align:left}
-  body.sukun-tefekkur-mode.r473-name-cat[data-r473-name-mode="animated"] #nameToastLayer{
-    width:88vw!important;
+  body.r474-zikir-active:not(.sukun-tefekkur-mode) .sukun-focus-btn{
+    right:9px!important;width:94px!important;min-width:94px!important;max-width:94px!important;
+    height:34px!important;min-height:34px!important;max-height:34px!important;font-size:9px!important;
   }
+  body.r474-zikir-active:not(.sukun-tefekkur-mode) #r442TefekkurBtn{
+    min-width:82px!important;max-width:104px!important;padding-inline:8px!important;font-size:8.5px!important;
+  }
+  #r474NamePresentation .r474Head{align-items:flex-start;flex-direction:column;gap:3px}
+  #r474NamePresentation .r474Head small{text-align:left}
 }
 </style>
 
 
-<script id="r473-name-presentation-runtime">
+<script id="r474-single-zikir-presentation-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R473_PRESENTATION__)return;
-window.__SUKUN_R473_PRESENTATION__=1;
+if(window.__SUKUN_R474_PRESENTATION__)return;
+window.__SUKUN_R474_PRESENTATION__=1;
 
-const KEY='sukun.namePresentation.r473';
+const KEY='sukun.namePresentation.r474';
 const VALID=new Set(['fixed','animated','off']);
-let mode='animated';
+let mode='fixed';
+let engaged=false;
+let lastToastState=null;
+let lastSig='';
+
 try{
   const saved=localStorage.getItem(KEY);
   if(VALID.has(saved))mode=saved;
   else{
-    /* Eski isim bildirimi açıksa davranışı koru ama artık sabitle aynı anda gösterme. */
-    const old=window.NameToast?.getMode?.();
-    mode=(old&&old!=='off')?'animated':'fixed';
+    /* r473'ün sorunlu varsayılan animasyonunu taşımıyoruz.
+       Kullanıcı özellikle Kapalı seçmişse onu koru; diğer durumlarda güvenli Sabit başlat. */
+    const old=localStorage.getItem('sukun.namePresentation.r473');
+    mode=old==='off'?'off':'fixed';
   }
 }catch(e){}
 
 function zikirTabActive(){
-  const z=document.querySelector('.tab[data-t="zkr"]');
-  return !!(z&&z.classList.contains('act'));
+  const t=document.querySelector('.tab[data-t="zkr"]');
+  return !!(t&&t.classList.contains('act'));
 }
 function nameCategory(){
   try{return typeof Z!=='undefined'&&(Z.cat==='esma'||Z.cat==='berhet')}catch(e){return false}
 }
-function syncTefGate(){
-  const on=zikirTabActive()||document.body.classList.contains('sukun-tefekkur-mode');
-  document.body.classList.toggle('r473-zikir-active',on);
-
-  const f=document.querySelector('.sukun-focus-btn');
-  const d=document.getElementById('r442TefekkurBtn');
-  if(!document.body.classList.contains('sukun-tefekkur-mode')){
-    [f,d].forEach(b=>{
-      if(!b)return;
-      b.hidden=!on;
-      b.setAttribute('aria-hidden',on?'false':'true');
-      b.tabIndex=on?0:-1;
-    });
-  }
-}
-function applyMode({announce=false}={}){
-  const cat=nameCategory();
-  document.body.classList.toggle('r473-name-cat',cat);
-  document.body.dataset.r473NameMode=mode;
-
-  /* NameToast artık yalnız animasyon modunda çalışır. */
+function smartZikirPlaying(){
   try{
-    if(window.NameToast){
-      NameToast.setMode(mode==='animated'?'simple':'off');
-      if(mode!=='animated')NameToast.hide?.();
-      else if(announce&&cat)NameToast.showCurrent?.();
-    }
-  }catch(e){}
+    const p=window.R170?.Player;
+    const s=p?.queue?.[p.i];
+    return !!(p?.playing&&s?.type==='zikir');
+  }catch(e){return false}
+}
+function manualAutoPlaying(){
+  try{
+    return !!(document.getElementById('autoBtn')?.classList.contains('playing') || (typeof Z!=='undefined'&&Z.auto));
+  }catch(e){return false}
+}
+function sessionIsPlaying(){
+  return smartZikirPlaying()||manualAutoPlaying();
+}
 
-  document.querySelectorAll('[data-r473-name-mode]').forEach(b=>{
-    b.setAttribute('aria-pressed',b.dataset.r473NameMode===mode?'true':'false');
-  });
-}
-function setMode(next){
-  if(!VALID.has(next))return false;
-  mode=next;
-  try{localStorage.setItem(KEY,mode)}catch(e){}
-  applyMode({announce:true});
-  return true;
-}
 function ensureSettings(){
-  let row=document.getElementById('r473NamePresentation');
+  let row=document.getElementById('r474NamePresentation');
   if(row)return row;
   const opts=document.querySelector('#p-zikir .zOpts')||document.querySelector('.zOpts');
   if(!opts)return null;
   row=document.createElement('div');
-  row.id='r473NamePresentation';
-  row.className='r473NamePresentation';
+  row.id='r474NamePresentation';
   row.innerHTML=
-    '<div class="r473Head"><b>✦ Esmâ görünümü</b><small>Esmâ + Berhetiyye · aynı anda yalnız biri</small></div>'+
-    '<div class="r473NameSeg" role="group" aria-label="Esmâ görünüm biçimi">'+
-      '<button type="button" data-r473-name-mode="fixed">Sabit</button>'+
-      '<button type="button" data-r473-name-mode="animated">Animasyon</button>'+
-      '<button type="button" data-r473-name-mode="off">Kapalı</button>'+
+    '<div class="r474Head"><b>✦ Esmâ görünümü</b><small>Esmâ + Berhetiyye · tek katman</small></div>'+
+    '<div class="r474Seg" role="group" aria-label="Esmâ görünüm biçimi">'+
+      '<button type="button" data-r474-name-mode="fixed">Sabit</button>'+
+      '<button type="button" data-r474-name-mode="animated">Animasyon</button>'+
+      '<button type="button" data-r474-name-mode="off">Kapalı</button>'+
     '</div>'+
-    '<div class="r473Foot">Animasyon seçilirse üstteki sabit isim gizlenir. Sabit seçilirse geçici isim perdesi devre dışı kalır.</div>';
-  const old=document.getElementById('nameToastMode');
-  if(old)old.insertAdjacentElement('afterend',row);
-  else opts.prepend(row);
+    '<div class="r474Foot">Animasyon yalnız zikir gerçekten başladıktan sonra görünür. Sabit ve animasyon aynı anda açılmaz.</div>';
+  const legacy=document.getElementById('nameToastMode');
+  if(legacy)legacy.insertAdjacentElement('afterend',row);else opts.prepend(row);
   row.addEventListener('click',e=>{
-    const b=e.target.closest('[data-r473-name-mode]');
-    if(b)setMode(b.dataset.r473NameMode);
+    const b=e.target.closest('[data-r474-name-mode]');
+    if(!b)return;
+    mode=b.dataset.r474NameMode;
+    try{localStorage.setItem(KEY,mode)}catch(_){}
+    sync({announce:mode==='animated'&&engaged});
   });
   return row;
 }
 
-/* renderZikir'i bir daha sarmadan kategori değişimini gözle.
-   Esmâ, Berhetiyye ve manuel geçişlerin tümünde aynı politika uygulanır. */
-let lastSig='';
-function syncAll(){
-  ensureSettings();
-  syncTefGate();
-  let sig='';
-  try{sig=(Z?.cat||'')+':'+(Z?.idx??'')}catch(e){}
-  const changed=sig!==lastSig;lastSig=sig;
-  applyMode({announce:changed&&mode==='animated'});
+function syncTefButtons(active){
+  const body=document.body;
+  body.classList.toggle('r474-zikir-active',active);
+
+  const inTef=body.classList.contains('sukun-tefekkur-mode');
+  const controls=[document.querySelector('.sukun-focus-btn'),document.getElementById('r442TefekkurBtn')];
+  controls.forEach(b=>{
+    if(!b)return;
+    if(!inTef){
+      b.hidden=!active;
+      b.setAttribute('aria-hidden',active?'false':'true');
+      b.tabIndex=active?0:-1;
+      if(active){
+        if(b.textContent.trim()!=='Tefekkür')b.textContent='Tefekkür';
+        b.dataset.tefTip='Tam ekran Tefekkür görünümüne geç';
+        b.setAttribute('aria-label','Tefekkür moduna geç');
+        b.title='Tefekkür moduna geç';
+      }
+    }
+  });
 }
 
+/* Eski collision yöneticisi artık Tefekkür pill'ini ekran içinde dolaştıramaz.
+   Sadece aynı sabit cebe normalize eder; başka katman geometrisine dokunmaz. */
+function ownCollision(){
+  try{
+    const c=window.SukunFloatingCollision;
+    if(!c||c.__r474Owned)return;
+    c.__r474Owned=true;
+    c.sync=function(){
+      const b=document.querySelector('.sukun-focus-btn');
+      if(!b||document.body.classList.contains('sukun-tefekkur-mode')||!zikirTabActive())return;
+      const small=innerWidth<=390;
+      b.style.setProperty('top','auto','important');
+      b.style.setProperty('left','auto','important');
+      b.style.setProperty('right',small?'9px':'12px','important');
+      b.style.setProperty('bottom','calc(env(safe-area-inset-bottom) + 112px)','important');
+      b.style.setProperty('width',small?'94px':'104px','important');
+      b.style.setProperty('min-width',small?'94px':'104px','important');
+      b.style.setProperty('max-width',small?'94px':'104px','important');
+      b.style.setProperty('height',small?'34px':'36px','important');
+      b.style.setProperty('min-height',small?'34px':'36px','important');
+      b.style.setProperty('max-height',small?'34px':'36px','important');
+    };
+    c.schedule=function(){clearTimeout(this.timer);this.timer=setTimeout(()=>this.sync(),40)};
+  }catch(e){}
+}
+
+function syncNameToast(active,cat,announce){
+  const shouldAnimate=!!(active&&engaged&&cat&&mode==='animated');
+  if(shouldAnimate!==lastToastState){
+    lastToastState=shouldAnimate;
+    try{
+      if(window.NameToast){
+        if(shouldAnimate){
+          NameToast.setMode('simple');
+          if(announce)NameToast.showCurrent?.();
+        }else{
+          NameToast.setMode('off');
+          NameToast.hide?.();
+        }
+      }
+    }catch(e){}
+  }else if(shouldAnimate&&announce){
+    try{window.NameToast?.showCurrent?.()}catch(e){}
+  }
+  if(!shouldAnimate){
+    try{window.NameToast?.hide?.()}catch(e){}
+  }
+}
+
+function sync({announce=false}={}){
+  ensureSettings();
+  ownCollision();
+
+  const active=zikirTabActive()||document.body.classList.contains('sukun-tefekkur-mode');
+  const cat=nameCategory();
+
+  /* Smart Session gerçek zikir adımındaysa state kendi kendine açılır.
+     Sayfa yüklenmesi/persisted sayaç ise tek başına engaged SAYILMAZ. */
+  if(smartZikirPlaying())engaged=true;
+
+  document.body.classList.toggle('r474-zikir-engaged',!!engaged);
+  document.body.classList.toggle('r474-name-cat',!!cat);
+  document.body.dataset.r474NameMode=mode;
+
+  syncTefButtons(active);
+  syncNameToast(active,cat,announce);
+
+  document.querySelectorAll('[data-r474-name-mode]').forEach(b=>{
+    b.setAttribute('aria-pressed',b.dataset.r474NameMode===mode?'true':'false');
+  });
+
+  /* Zikir sekmesi kapandıysa isim perdesi mutlaka kapanır ama manuel "session started"
+     hafızası sayfa içinde korunur; kullanıcı geri dönerse sabit görünüm sakin kalır. */
+  if(!active)try{window.NameToast?.hide?.()}catch(e){}
+}
+
+/* Kullanıcı gerçekten saymaya/okumaya başladığı an engagement başlar. */
 document.addEventListener('click',e=>{
-  if(e.target.closest?.('.tab,[data-i],#esmaPrevBtn,#esmaNextBtn,#autoBtn,#plusBtn,#undoBtn')){
-    setTimeout(syncAll,0);
-    setTimeout(syncAll,120);
+  const start=e.target.closest?.('#autoBtn,#plusBtn,#tapBtn,#zCountVisual,#spkOnce,#r170Play');
+  const stop=e.target.closest?.('#r170Stop');
+  const tab=e.target.closest?.('.tab');
+
+  if(start){
+    setTimeout(()=>{
+      if(start.id==='r170Play'){
+        if(smartZikirPlaying())engaged=true;
+      }else if(start.id==='autoBtn'){
+        /* Start/stop aynı buton: gerçek playing state'e göre karar ver. */
+        if(manualAutoPlaying())engaged=true;
+        else if(!smartZikirPlaying())engaged=false;
+      }else{
+        engaged=true;
+      }
+      sync({announce:true});
+    },90);
+  }
+
+  if(stop){
+    setTimeout(()=>{if(!sessionIsPlaying())engaged=false;sync();},100);
+  }
+  if(tab)setTimeout(()=>sync(),0);
+},{capture:true,passive:true});
+
+/* Akıllı seans olayları */
+['sukun:playbackchange','sukun:nowplayingchange'].forEach(ev=>{
+  window.addEventListener(ev,()=>{
+    setTimeout(()=>{
+      if(smartZikirPlaying())engaged=true;
+      else{
+        try{
+          const p=window.R170?.Player;
+          if(p&&!p.playing&&!manualAutoPlaying())engaged=false;
+        }catch(e){}
+      }
+      let sig='';
+      try{sig=(Z?.cat||'')+':'+(Z?.idx??'')}catch(e){}
+      const changed=sig!==lastSig;
+      lastSig=sig;
+      sync({announce:changed&&engaged});
+    },30);
+  },{passive:true});
+});
+
+/* Esmâ değişimini gözle; animation yalnız engaged iken çalışır. */
+function watchNameChange(){
+  let sig='';
+  try{sig=(Z?.cat||'')+':'+(Z?.idx??'')}catch(e){}
+  if(!lastSig){lastSig=sig;return}
+  if(sig!==lastSig){
+    lastSig=sig;
+    sync({announce:engaged});
+  }
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('[data-i],#esmaPrevBtn,#esmaNextBtn')){
+    setTimeout(watchNameChange,40);
   }
 },{passive:true});
 
-['sukun:playbackchange','sukun:nowplayingchange','pageshow'].forEach(ev=>{
-  window.addEventListener(ev,()=>setTimeout(syncAll,30),{passive:true});
+window.addEventListener('pageshow',()=>{
+  /* BFCache dönüşünde yanlış eski perde taşınmasın. */
+  try{window.NameToast?.hide?.()}catch(e){}
+  sync();
+},{passive:true});
+window.addEventListener('resize',()=>{ownCollision();window.SukunFloatingCollision?.sync?.()},{passive:true});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)try{window.NameToast?.hide?.()}catch(e){}
+  else setTimeout(sync,30);
 });
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncAll,40)});
 
+/* Eski runtime'lar class/text oynatabiliyor; yalnız kritik state değişirse toparla,
+   bütün DOM'u sürekli yeniden yazma. */
 const mo=new MutationObserver(()=>{
   clearTimeout(mo._t);
-  mo._t=setTimeout(syncAll,30);
+  mo._t=setTimeout(()=>{
+    const active=zikirTabActive()||document.body.classList.contains('sukun-tefekkur-mode');
+    const bodyHas=document.body.classList.contains('r474-zikir-active');
+    const f=document.querySelector('.sukun-focus-btn');
+    const needsText=active&&f&&!document.body.classList.contains('sukun-tefekkur-mode')&&f.textContent.trim()!=='Tefekkür';
+    if(active!==bodyHas||needsText)sync();
+  },45);
 });
 mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',()=>setTimeout(syncAll,80),{once:true});
-}else setTimeout(syncAll,50);
+  document.addEventListener('DOMContentLoaded',()=>{
+    /* İlk açılış: animasyon kesinlikle kapalı; logo örtülmez. */
+    try{window.NameToast?.setMode?.('off');window.NameToast?.hide?.()}catch(e){}
+    engaged=false;
+    setTimeout(sync,100);
+  },{once:true});
+}else{
+  try{window.NameToast?.setMode?.('off');window.NameToast?.hide?.()}catch(e){}
+  engaged=false;
+  setTimeout(sync,60);
+}
 
-window.SukunNamePresentation={
-  version:'r473',
+window.SukunZikirPresentation={
+  version:'r474',
   getMode:()=>mode,
-  setMode,
-  sync:syncAll,
-  isNameCategory:nameCategory
+  setMode(next){
+    if(!VALID.has(next))return false;
+    mode=next;try{localStorage.setItem(KEY,mode)}catch(e){}
+    sync({announce:mode==='animated'&&engaged});return true;
+  },
+  isEngaged:()=>engaged,
+  setEngaged(v){engaged=!!v;sync({announce:engaged});},
+  sync
 };
 })();
 </script>
