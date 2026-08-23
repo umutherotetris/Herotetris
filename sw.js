@@ -1,8 +1,8 @@
-/* SÜKÛN r474 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r475 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r474';
-const CACHE = 'sukun-r474-20260823a';
+const SURUM = 'r475';
+const CACHE = 'sukun-r475-20260823a';
 
 const KABUK = [
   './nero.html',
@@ -13,6 +13,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r475 Kilit ekranı zikir devamlılığı: kayıt native audio, TTS resume köprüsü; Esmâ görünümü ayarı Genel Ayarlar/Görünüm bölümüne taşındı.',
   'r474 Katman tekilleştirme: Tefekkür yalnız Zikir sekmesinde, isim animasyonu yalnız gerçek zikir başladıktan sonra; Sabit/Animasyon/Kapalı tek otoritede.',
   'r473 Tefekkür girişi yalnız Zikir sekmesinde; Esmâ/Berhetiyye için Sabit–Animasyon–Kapalı tekil isim görünümü eklendi.',
   'r472 Akıllı Seans: kendi kayıt öncelikli, yoksa erkek TTS; Tefekkür girişleri yazılı ve anlaşılır mini pill tasarımına geçti.',

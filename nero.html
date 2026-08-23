@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r474 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r475 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r474">
+<meta name="sukun-build" content="r475">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r474">
+<link rel="manifest" href="./manifest.webmanifest?v=r475">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5973,7 +5973,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.24 — build 2026-08-23-r474</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.25 — build 2026-08-23-r475</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -5997,6 +5997,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r475","t":"23 Ağustos 2026","b":["Kilit ekranında sesli zikir artık visibilitychange ile kasıtlı olarak durdurulmuyor; kendi kayıt/TTS akışı sessiz native media köprüsüne devrediliyor","Kendi zikir kayıtları ekran kilitliyken WebAudio yerine native HTMLAudio üzerinden çalıyor; AudioContext askıya alınsa da kayıt sesi devam edebiliyor","Zikir TTS yolu onend/onerror beklenebilir hale getirildi; sessiz media pulse kilitte paused kalan speechSynthesis için resume denemesi yapıyor ve 1 sayım = 1 okuma sırasını koruyor","Başlat dokunuşu sırasında lock-screen media köprüsü prime ediliyor; Durdur komutu köprüyü ve background zincirini birlikte kapatıyor","Esmâ görünümü Sabit/Animasyon/Kapalı ayarı zikir/NeroSync alanından çıkarılıp Tema ve Genel Ayarlar içindeki Görünüm bölümüne taşındı"]},
  {"v":"r474","t":"23 Ağustos 2026","b":["r473 isim sunum style/runtime katmanı tamamen kaldırıldı; r472 içindeki Tefekkür observer ve collision katmanı da Akıllı Seans ses çözümünden ayrıştırıldı","Tefekkür girişi artık yalnız gerçek Zikir sekmesi aktifken görünür; ana sayfa, Ambiyans, Frekans ve diğer sekmelerde CSS+runtime tek kapıdan gizlenir","Esmâ/Berhetiyye animasyonu uygulama açılışında veya yalnız seçim yapılınca başlamaz; yalnız gerçek sayım, okuma veya Akıllı Seans zikir adımı başladıktan sonra çalışır","Sabit, Animasyon ve Kapalı görünüm tek r474 otoritesine bağlandı; iki isim katmanı aynı anda görünemez","Animasyon/Kapalı Tefekkür modunda zStage tamamen kaldırılır ve sayaç paneli gerçek tek satırlı canonical grid alanını kullanır; önceki 30 px sahte satır ve büyük dikey boşluk giderildi","İlk geçişte güvenli varsayılan Sabit görünüm seçilir; eski r473 animasyon varsayılanı taşınmaz ve SÜKÛN logosu başlangıçta isim perdesiyle örtülmez"]},
  {"v":"r473","t":"23 Ağustos 2026","b":["Tefekkür giriş kontrolü artık yalnız gerçek Zikir sekmesi açıkken görünür; ana sayfa ve diğer sekmelerde otomatik gizlenir","Esmâ ve Berhetiyye için tekil isim sunum sistemi eklendi: Sabit, Animasyon veya Kapalı; sabit ve animasyon aynı anda gösterilmez","Animasyon modunda Tefekkür üstündeki sabit isim gizlenip sayaç alanı yukarı toparlanır; Sabit modda geçici isim perdesi tamamen kapatılır","Eski İsim bildirimi kontrolü tek Esmâ görünümü ayarına dönüştürüldü ve tercih cihazda saklanır","Politika yalnız Berhetiyye’ye değil bütün Esmâü’l-Hüsnâ ve Berhetiyye isim geçişlerine uygulanır"]},
  {"v":"r472","t":"23 Ağustos 2026","b":["Akıllı Seans zikirlerinde ses kaynağı önceliği görünür ve işlevsel hale getirildi: kendi kayıt varsa ilk tercih, yoksa erkek TTS","Berhetiyye 28 İsim gibi seanslarda kayıt çözümleyici doğrudan IndexedDB anahtarlarını ve güvenli eski anahtar eşleşmelerini deniyor","Her zikir adımının Ayarlar bölümüne Otomatik, Kendi kayıt, Erkek TTS, Kadın TTS ve Varsayılan TTS seçenekleri eklendi","Cihazda gerçek erkek TTS sesi varsa seçiliyor; yoksa sessiz kalmak yerine daha pes TTS tınısına güvenli fallback yapılıyor","Normal ekrandaki ve universal player içindeki anlaşılmaz nokta Tefekkür kontrolleri küçük ✦ Tefekkür pill tasarımına çevrildi; hover/focus açıklaması ve erişilebilir etiket eklendi"]},
@@ -11309,6 +11310,118 @@ function lockOff(){try{wl&&wl.release();}catch(e){} wl=null;}
    SESSİZ tamamlanır, ses hiçbir zaman burst şeklinde telafi edilmez. */
 let _zAutoSon=0;
 let _zAutoUyanTO=0,_zAutoUyanSeq=0,_zAutoSessizUntil=0,_zAutoHiddenAt=0;
+
+/* r475 — KİLİT EKRANI SES KÖPRÜSÜ
+   Android/Chrome ekran kilidinde JS timer'larını askıya alabiliyor.
+   Başlat dokunuşunda sessiz bir native media elementi prime edilir.
+   Kilitte kendi kayıt native <audio> ile, TTS ise media pulse + resume ile
+   ilerler. Sayaç da ses bitişiyle sıraya bağlanır. */
+let _r475BgAudio=null,_r475BgUrl='',_r475BgSeq=0,_r475BgRunning=false;
+const _r475BgWaiters=new Set();
+
+function r475SilentWav(){
+  const rate=8000,sec=1.15,n=Math.floor(rate*sec),buf=new ArrayBuffer(44+n),v=new DataView(buf);
+  const wr=(o,x)=>{for(let i=0;i<x.length;i++)v.setUint8(o+i,x.charCodeAt(i))};
+  wr(0,'RIFF');v.setUint32(4,36+n,true);wr(8,'WAVE');wr(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,rate,true);v.setUint32(28,rate,true);v.setUint16(32,1,true);v.setUint16(34,8,true);
+  wr(36,'data');v.setUint32(40,n,true);
+  for(let i=44;i<44+n;i++)v.setUint8(i,128);
+  return new Blob([buf],{type:'audio/wav'});
+}
+function r475BgPulse(){
+  try{window.zikirTtsBackgroundPulse?.()}catch(e){}
+  const q=[..._r475BgWaiters];_r475BgWaiters.clear();
+  q.forEach(fn=>{try{fn()}catch(e){}});
+}
+function r475BgEnsure(){
+  if(_r475BgAudio)return _r475BgAudio;
+  const a=document.createElement('audio');
+  a.id='r475LockAudioBridge';
+  a.setAttribute('aria-hidden','true');
+  a.preload='auto';a.playsInline=true;a.disableRemotePlayback=true;
+  a.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;bottom:-10px';
+  _r475BgUrl=URL.createObjectURL(r475SilentWav());
+  a.src=_r475BgUrl;
+  a.onended=()=>{
+    r475BgPulse();
+    if(Z.auto){
+      try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}
+    }
+  };
+  a.onerror=()=>r475BgPulse();
+  document.body.appendChild(a);
+  _r475BgAudio=a;
+  return a;
+}
+function r475BgPrime(){
+  try{
+    const a=r475BgEnsure();
+    if(a.paused){a.currentTime=0;a.play().catch(()=>{})}
+    return true;
+  }catch(e){return false}
+}
+function r475BgStopMedia(){
+  try{if(_r475BgAudio){_r475BgAudio.pause();_r475BgAudio.currentTime=0}}catch(e){}
+}
+function r475BgWake(){
+  return new Promise(resolve=>{
+    let done=false;
+    const fn=()=>{if(done)return;done=true;_r475BgWaiters.delete(fn);resolve(true)};
+    _r475BgWaiters.add(fn);
+    setTimeout(fn,1450);
+  });
+}
+async function r475BgWaitUntil(deadline,seq){
+  while(seq===_r475BgSeq&&Z.auto&&document.hidden&&Date.now()<deadline)await r475BgWake();
+  return seq===_r475BgSeq&&Z.auto&&document.hidden;
+}
+function r475BgBusy(){
+  try{
+    return zOkumaSuruyor()||!!(window.__tvPlaying||window.__dhPlaying||window.__seyPlaying||
+      window.__akPlaying||window.__fsPlaying||window.__niyetPlaying);
+  }catch(e){return zOkumaSuruyor()}
+}
+async function r475BgVoiceLoop(reason){
+  if(!Z.auto||!document.hidden||!zikirSesliAktifMi()||ZIKIR_BIRLIKTE)return false;
+  const seq=++_r475BgSeq;_r475BgRunning=true;r475BgPrime();
+  try{
+    while(seq===_r475BgSeq&&Z.auto&&document.hidden){
+      if(!zikirSesliAktifMi()||ZIKIR_BIRLIKTE)break;
+
+      while(seq===_r475BgSeq&&Z.auto&&document.hidden&&r475BgBusy()){
+        try{window.zikirTtsBackgroundPulse?.()}catch(e){}
+        await r475BgWake();
+      }
+      if(seq!==_r475BgSeq||!Z.auto||!document.hidden)break;
+
+      const ms=zAutoTempoMs();
+      const due=(_zAutoSon||Date.now())+ms;
+      if(Date.now()<due&&!await r475BgWaitUntil(due,seq))break;
+      if(seq!==_r475BgSeq||!Z.auto||!document.hidden)break;
+
+      _zAutoSon=Date.now();
+      _zBekleyen=false;
+      _repS();
+      try{await spkSayZikir(false)}catch(e){}
+    }
+  }finally{
+    if(seq===_r475BgSeq)_r475BgRunning=false;
+  }
+  return true;
+}
+function r475BgCancel(stopMedia){
+  _r475BgSeq++;_r475BgRunning=false;
+  const q=[..._r475BgWaiters];_r475BgWaiters.clear();q.forEach(fn=>{try{fn()}catch(e){}});
+  if(stopMedia)r475BgStopMedia();
+}
+window.SukunLockScreenZikir={
+  version:'r475',
+  prime:r475BgPrime,
+  pulse:r475BgPulse,
+  running:()=>_r475BgRunning,
+  stop:()=>r475BgCancel(true)
+};
 function zAutoTempoMs(){ return Math.max(180,Math.round((+Z.tempo||1)*1000)); }
 function zSessizTamamla(n){
   n=Math.max(0,Math.min(20000,Math.floor(n||0)));
@@ -11334,6 +11447,11 @@ function zSessizTamamla(n){
 }
 function zAutoKur(yeniden){
   if(!Z.auto)return;
+  if(document.hidden&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
+    if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
+    r475BgVoiceLoop('zAutoKur');
+    return;
+  }
   if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
   const ms=zAutoTempoMs();
   if(yeniden||!_zAutoSon)_zAutoSon=Date.now();
@@ -11381,8 +11499,14 @@ document.addEventListener('visibilitychange',()=>{
     _zAutoHiddenAt=Date.now();
     clearTimeout(_zAutoUyanTO);
     if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
+    try{zBekciDurdur()}catch(e){}
+    if(Z.auto&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
+      r475BgPrime();
+      r475BgVoiceLoop('visibility-hidden');
+    }
     return;
   }
+  r475BgCancel(false);
   if(Z.auto)zAutoUyanPlanla('visibility');
 });
 window.addEventListener('pageshow',()=>{if(Z.auto)zAutoUyanPlanla('pageshow')});
@@ -11390,11 +11514,13 @@ window.addEventListener('pageshow',()=>{if(Z.auto)zAutoUyanPlanla('pageshow')});
 function autoStart(){
   if(Z.auto)return;
   ac();
+  try{r475BgPrime()}catch(e){}
   /* r118: «başla»ya basıldı ama ilk tık tempo kadar sonra geliyordu. */
   const _basla=()=>{
     if(Z.auto)return;
     Z.auto=true;
     _zAutoSon=Date.now();
+    try{r475BgPrime()}catch(e){}
     zAutoKur(true);
     /* r154: eski kodda lockOn() return'ün ALTINDA kaldığı için hiçbir zaman
        çalışmıyordu. Artık gerçekten akış başlarken çağrılır. */
@@ -11410,6 +11536,7 @@ function autoStop(){
   if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
   _zAutoSon=0;
   try{ zBekciDurdur(); }catch(e){}
+  try{ r475BgCancel(true); }catch(e){}
   S.set('sukun.total',Z.total);
   lockOff(); zUI();
 }
@@ -14838,6 +14965,75 @@ function spkSay(txt,interrupt,lang,voice,rate,pitch){
     speechSynthesis.speak(u);
   }catch(e){}
 }
+
+/* r475 — Zikir TTS için tamamlanma sözü.
+   Genel spkSay() davranışını değiştirmiyoruz; yalnız zikir otomatiği,
+   kilit ekranında bir okuma bitmeden sonraki sayımı başlatabilsin diye
+   onend/onerror sonucunu await edebilen ayrı yol kullanır. */
+let _r475ZTtsSeq=0, _r475ZTtsState=null;
+function zikirTtsAwait(txt,interrupt,lang,voice,rate,pitch){
+  if(!('speechSynthesis' in window)||!txt)return Promise.resolve(false);
+  if((window.__tvPlaying||window.__dhPlaying||window.__seyPlaying||window.__fsPlaying)&&!interrupt)
+    return Promise.resolve(false);
+
+  const seq=++_r475ZTtsSeq;
+  return new Promise(resolve=>{
+    let done=false, watchdog=0, u=null;
+    const finish=ok=>{
+      if(done)return;
+      done=true;
+      clearTimeout(watchdog);
+      if(_r475ZTtsState?.seq===seq)_r475ZTtsState=null;
+      try{if(u){u.onend=null;u.onerror=null;u.onstart=null}}catch(e){}
+      resolve(!!ok);
+    };
+    try{
+      if(interrupt)speechSynthesis.cancel();
+      else if(speechSynthesis.speaking)return finish(false);
+
+      u=new SpeechSynthesisUtterance(txt);
+      u.lang=lang||'tr-TR';
+      u.rate=(rate!=null?rate:SPK.rate)*(window.OKUMA_HIZ||1);
+      u.pitch=pitch!=null?pitch:spkPitch(.9);
+      u.volume=Math.min(1,Math.max(0,((typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1)*(window.okumaSeviyesi?window.okumaSeviyesi():1)));
+      const v=voice!==undefined?voice:SPK.voice;if(v)u.voice=v;
+
+      const expected=Math.max(6500,Math.min(90000,Math.round(String(txt).length*190+6500)));
+      _r475ZTtsState={seq,u,startedAt:Date.now(),expected,finish,resumeTries:0};
+      u.onend=()=>finish(true);
+      u.onerror=()=>finish(false);
+      u.onstart=()=>{if(_r475ZTtsState?.seq===seq)_r475ZTtsState.startedAt=Date.now()};
+      speechSynthesis.speak(u);
+
+      watchdog=setTimeout(()=>{
+        if(!document.hidden&&_r475ZTtsState?.seq===seq){
+          try{speechSynthesis.cancel()}catch(e){}
+          finish(false);
+        }
+      },expected+5000);
+    }catch(e){finish(false)}
+  });
+}
+function zikirTtsBackgroundPulse(){
+  const s=_r475ZTtsState;if(!s)return;
+  try{
+    if(speechSynthesis.paused){
+      speechSynthesis.resume();
+      s.resumeTries=(s.resumeTries||0)+1;
+      return;
+    }
+    const age=Date.now()-s.startedAt;
+    if(document.hidden&&age>2600&&!speechSynthesis.speaking&&!speechSynthesis.pending){
+      s.resumeTries=(s.resumeTries||0)+1;
+      if(s.resumeTries<=2){
+        try{speechSynthesis.resume()}catch(e){}
+      }else if(age>s.expected){
+        s.finish(false);
+      }
+    }
+  }catch(e){}
+}
+window.zikirTtsBackgroundPulse=zikirTtsBackgroundPulse;
 /* Zikri konuşurken: Arapça ses bulunduysa ve tercih açıksa Arap harfli metni Arapça sesle
    (kendi perde/hız ayarıyla — daha derin ve ağır ağır, "ince" kaçmasın diye),
    yoksa mevcut Türkçe transkripsiyonu Türkçe sesle okur. */
@@ -14894,7 +15090,7 @@ async function spkSayZikir(interrupt){
     try{
       window.SukunVoiceSource?.set?.('recording','KENDİ KAYIT','IndexedDB · '+keyLabel(key));
       if(interrupt){try{speechSynthesis.cancel()}catch(e){}}
-      await playRecording(blob,'zikir:'+key,{resume:false,reason:'Tefekkür/zikir için kendi kayıt sesin',title:keyLabel(key)});
+      await playRecording(blob,'zikir:'+key,{resume:false,backgroundNative:document.hidden,reason:document.hidden?'Kilit ekranı · kendi kayıt':'Tefekkür/zikir için kendi kayıt sesin',title:keyLabel(key)});
       return;
     }catch(e){
       window.SukunVoiceSource?.set?.('fallback','KAYIT AÇILAMADI','TTS fallback');
@@ -14910,12 +15106,12 @@ async function spkSayZikir(interrupt){
     const ar=$('#zAr').textContent;
     if(ar){
       window.SukunVoiceSource?.set?.('tts-ar','ARAPÇA TTS',SPK.arVoice.name||SPK.arVoice.lang||'Arapça ses');
-      spkSay(ar,interrupt,SPK.arVoice.lang,SPK.arVoice,SPK.arRate,SPK.arPitch);return;
+      return await zikirTtsAwait(ar,interrupt,SPK.arVoice.lang,SPK.arVoice,SPK.arRate,SPK.arPitch);
     }
   }
   const _ok=$('#zOku'), oku=(_ok?_ok.textContent:'').trim();
   window.SukunVoiceSource?.set?.('tts-tr','TTS',SPK.voice?.name||'Türkçe/okunuş');
-  spkSay(oku||$('#zTr').textContent,interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
+  return await zikirTtsAwait(oku||$('#zTr').textContent,interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
 }
 $('#spkOnce').onclick=()=>spkSayZikir(true);
 $('#arVoiceSel').addEventListener('change',e=>{SPK.arVoice=SPK.arList[+e.target.value]||SPK.arVoice;});
@@ -15496,6 +15692,7 @@ function kayitPanDondur(){
 async function playRecording(blob,ad,opt){
   opt=opt||{};
   const ayrinti=!!opt.detail;
+  const arkaPlanNative=!!opt.backgroundNative;
   const sonuc=(ok,reason)=>ayrinti?{ok:!!ok,reason:reason||''}:!!ok;
   if(ad&&SES.ad===ad){ sesDurdur('toggle-stop'); return sonuc(false,'toggle-stop'); }   /* aç/kapa */
   /* r236: oynatma öncesinde kayıt yalnızca analiz edilir; kaynak Blob değiştirilmez.
@@ -15513,7 +15710,7 @@ async function playRecording(blob,ad,opt){
       a._sukunAd=ad||'kayit';
       a._sukunResumeKey=(opt.resume===false||!ad||String(ad).startsWith('dongu:')||String(ad).startsWith('onizle:')||String(ad).startsWith('resolver:'))?'':'sukun.media.pos:'+String(ad);
       SES.ler.add(a);
-      const grafik=kayitZinciriKur(a);
+      const grafik=arkaPlanNative?null:kayitZinciriKur(a);
       /* Grafiğe bağlandıysa ses artık master üzerinden akar; element sesi 1'de
          kalmalı, seviye master'dan gelir. Bağlanamadıysa elementten kısarız. */
       const normGain=(kalite&&Number.isFinite(kalite.gain))?kalite.gain:1;
@@ -15534,7 +15731,7 @@ async function playRecording(blob,ad,opt){
       }
       if(!a._sukunResumeKey&&kalite&&kalite.trimStart>.04){a.addEventListener('loadedmetadata',()=>{try{a.currentTime=Math.min(kalite.trimStart,Math.max(0,a.duration-.2))}catch(e){}},{once:true});}
       try{if(typeof window.sukunSourceSet==='function')window.sukunSourceSet('recording',opt.reason||'Bu öğe için kendi kaydın bulundu',opt.title||ad||'Kendi kaydın')}catch(e){}
-      if(KAYIT.mekan&&!KAYIT_RAF)kayitPanDondur();
+      if(grafik&&KAYIT.mekan&&!KAYIT_RAF)kayitPanDondur();
       /* r114: çağıran taraf çalmanın GERÇEKTEN olup olmadığını bilmeli.
          Android play() reddedince eskiden sessizce «bitti» sayılıyor,
          zincir 11 kısmı milisaniyeler içinde tüketiyordu. */
@@ -20539,7 +20736,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r474',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r475',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -31608,10 +31805,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r474',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r475',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r474-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r475-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -42352,8 +42549,13 @@ function endSummary(){if(!tefStart)return;const s=tefStart;tefStart=null;let tot
 
 /* ── 7. Audio lifecycle hardening ────────────────────────── */
 let recoverTO=0,recoverSeq=0,ctxBound=null,nsBound=null;
-async function recoverAudio(reason='r470'){
-  const seq=++recoverSeq;if(document.hidden)return false;
+async function recoverAudio(reason='r475'){
+  const seq=++recoverSeq;
+  if(document.hidden){
+    try{window.SukunLockScreenZikir?.pulse?.()}catch(e){}
+    try{if(window.speechSynthesis?.paused)speechSynthesis.resume()}catch(e){}
+    return !!(typeof Z!=='undefined'&&Z.auto);
+  }
   try{await window.AudioLife?.recover?.(reason)}catch(e){}
   if(seq!==recoverSeq)return false;
   try{if(window.speechSynthesis?.paused)speechSynthesis.resume()}catch(e){}
@@ -43315,28 +43517,41 @@ function sessionIsPlaying(){
 
 function ensureSettings(){
   let row=document.getElementById('r474NamePresentation');
-  if(row)return row;
-  const opts=document.querySelector('#p-zikir .zOpts')||document.querySelector('.zOpts');
-  if(!opts)return null;
-  row=document.createElement('div');
-  row.id='r474NamePresentation';
-  row.innerHTML=
-    '<div class="r474Head"><b>✦ Esmâ görünümü</b><small>Esmâ + Berhetiyye · tek katman</small></div>'+
-    '<div class="r474Seg" role="group" aria-label="Esmâ görünüm biçimi">'+
-      '<button type="button" data-r474-name-mode="fixed">Sabit</button>'+
-      '<button type="button" data-r474-name-mode="animated">Animasyon</button>'+
-      '<button type="button" data-r474-name-mode="off">Kapalı</button>'+
-    '</div>'+
-    '<div class="r474Foot">Animasyon yalnız zikir gerçekten başladıktan sonra görünür. Sabit ve animasyon aynı anda açılmaz.</div>';
-  const legacy=document.getElementById('nameToastMode');
-  if(legacy)legacy.insertAdjacentElement('afterend',row);else opts.prepend(row);
-  row.addEventListener('click',e=>{
-    const b=e.target.closest('[data-r474-name-mode]');
-    if(!b)return;
-    mode=b.dataset.r474NameMode;
-    try{localStorage.setItem(KEY,mode)}catch(_){}
-    sync({announce:mode==='animated'&&engaged});
-  });
+  const general=document.querySelector('.temaSheet .genAyar')||document.querySelector('.genAyar');
+  if(!general)return row||null;
+
+  if(!row){
+    row=document.createElement('div');
+    row.id='r474NamePresentation';
+    row.innerHTML=
+      '<div class="r474Head"><b>✦ Esmâ görünümü</b><small>Esmâ + Berhetiyye · tek katman</small></div>'+
+      '<div class="r474Seg" role="group" aria-label="Esmâ görünüm biçimi">'+
+        '<button type="button" data-r474-name-mode="fixed">Sabit</button>'+
+        '<button type="button" data-r474-name-mode="animated">Animasyon</button>'+
+        '<button type="button" data-r474-name-mode="off">Kapalı</button>'+
+      '</div>'+
+      '<div class="r474Foot">Animasyon yalnız zikir gerçekten başladıktan sonra görünür. Sabit ve animasyon aynı anda açılmaz.</div>';
+  }
+
+  const heads=[...general.querySelectorAll('.genBas')];
+  const viewHead=heads.find(x=>(x.textContent||'').toLocaleUpperCase('tr-TR').includes('GÖRÜNÜM'));
+  if(row.parentNode!==general){
+    if(viewHead)viewHead.insertAdjacentElement('afterend',row);
+    else general.appendChild(row);
+  }else if(viewHead&&viewHead.nextElementSibling!==row){
+    viewHead.insertAdjacentElement('afterend',row);
+  }
+
+  if(!row.dataset.r475Bound){
+    row.dataset.r475Bound='1';
+    row.addEventListener('click',e=>{
+      const b=e.target.closest('[data-r474-name-mode]');
+      if(!b)return;
+      mode=b.dataset.r474NameMode;
+      try{localStorage.setItem(KEY,mode)}catch(_){}
+      sync({announce:mode==='animated'&&engaged});
+    });
+  }
   return row;
 }
 
