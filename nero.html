@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r482 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r479 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r482">
+<meta name="sukun-build" content="r483">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r482">
+<link rel="manifest" href="./manifest.webmanifest?v=r483">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -73,6 +73,108 @@
 .zCtl>.tapBtn{display:none!important}
 @media(max-width:390px){.zCounterRow{grid-template-columns:68px minmax(158px,1fr) 68px;gap:8px}.zCounterSide{min-height:96px}.zCounterSide b{font-size:24px}.zCountVisual .cntBig{font-size:38px}.zCounterActions{grid-template-columns:68px minmax(130px,1fr) 68px;gap:7px}.zStepBtn{min-height:68px}.zAutoMain{min-height:68px;font-size:12px!important}.zCtl{padding:16px 12px 14px!important}}
 @media(max-width:340px){.zCounterRow{grid-template-columns:1fr}.zCounterSide{min-height:54px;flex-direction:row;gap:8px}.zCounterSide b{margin:0}.zCountVisual{width:185px}.zCounterActions{grid-template-columns:62px 1fr 62px}}
+
+/* r483 — premium toggle alignment + neon on-state */
+.opt{align-items:center!important;gap:14px!important}
+.opt>.sw,.opt button.sw{margin-left:auto!important;align-self:center!important;top:0!important;transform:none!important}
+
+.sw,
+button.sw{
+  position:relative!important;
+  width:50px!important;
+  height:28px!important;
+  min-width:50px!important;
+  min-height:28px!important;
+  padding:0!important;
+  border-radius:999px!important;
+  overflow:visible!important;
+  vertical-align:middle!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+    rgba(26,33,46,.82)!important;
+  border:1px solid rgba(127,164,214,.38)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 3px rgba(0,0,0,.33),
+    0 2px 10px rgba(0,0,0,.18)!important;
+  transition:
+    background .24s ease,
+    border-color .24s ease,
+    box-shadow .24s ease,
+    transform .18s ease!important;
+}
+.sw::before,
+button.sw::before{
+  content:''!important;
+  position:absolute!important;
+  inset:-10px!important;
+  border-radius:inherit!important;
+}
+.sw::after,
+button.sw::after{
+  content:''!important;
+  position:absolute!important;
+  top:50%!important;
+  left:3px!important;
+  width:20px!important;
+  height:20px!important;
+  border-radius:50%!important;
+  transform:translateY(-50%)!important;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255,255,255,.96) 0%, rgba(225,238,255,.92) 38%, rgba(154,194,255,.88) 70%, rgba(114,147,210,.92) 100%)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.04),
+    0 2px 8px rgba(0,0,0,.28),
+    inset 0 1px 2px rgba(255,255,255,.25)!important;
+  transition:
+    left .24s cubic-bezier(.22,.61,.36,1),
+    background .24s ease,
+    box-shadow .24s ease,
+    transform .18s ease!important;
+}
+.sw:hover,
+button.sw:hover{transform:translateY(-1px)!important}
+.sw:active,
+button.sw:active{transform:translateY(0) scale(.98)!important}
+.sw:focus-visible,
+button.sw:focus-visible{
+  outline:none!important;
+  box-shadow:
+    0 0 0 2px rgba(133,204,255,.26),
+    0 0 0 5px rgba(184,127,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 3px rgba(0,0,0,.33)!important;
+}
+
+.sw.on,
+button.sw.on{
+  background:
+    linear-gradient(90deg, rgba(102,67,211,.72) 0%, rgba(70,163,255,.72) 48%, rgba(96,239,214,.72) 100%),
+    rgba(22,28,42,.88)!important;
+  border-color:rgba(153,216,255,.66)!important;
+  box-shadow:
+    0 0 0 1px rgba(167,223,255,.18),
+    0 0 14px rgba(107,184,255,.30),
+    0 0 28px rgba(153,102,255,.16),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 3px rgba(0,0,0,.18)!important;
+}
+.sw.on::after,
+button.sw.on::after{
+  left:27px!important;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,.98) 0%, rgba(255,248,230,.96) 40%, rgba(188,237,255,.94) 72%, rgba(128,176,255,.95) 100%)!important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.14),
+    0 0 10px rgba(165,244,255,.52),
+    0 0 20px rgba(178,120,255,.30),
+    0 2px 8px rgba(0,0,0,.20),
+    inset 0 1px 2px rgba(255,255,255,.28)!important;
+}
+
 </style>
 <style>
 /* ─────────── 0. TEMEL & DEĞİŞKENLER ─────────── */
@@ -5976,7 +6078,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.31 — build 2026-08-23-r482</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.32 — build 2026-08-23-r483</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,9 +6102,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
- {"v":"r482","t":"23 Ağustos 2026","b":["Esmâ/Berhetiyye hedef geçişi transaction haline getirildi: son sayaç önce mevcut zikri gerçekten okur, ancak ses bitince devir ve sonraki isim commit edilir","Önceki sürümde rep() hedefte Z.idx değerini ses başlamadan değiştiriyordu; bu nedenle son sayım yeni isme kayıp bazı geçişlerde sayaç ilerlerken ses atlayabiliyordu","Seri sesli modda hedefe ulaşınca sayaç hedef değerinde bekler; kayıt/TTS promise tamamlandıktan sonra sayaç sıfırlanır ve sonraki Esmâ render edilir","Yeni Esmâ’nın sayaç turu, önceki Esmâ’nın son okuması tamamlanmadan başlayamaz; 0.8 tempo dahil 1 sayı = 1 ses kontratı geçiş sınırında da korunur","Kullanıcı okuma sırasında başka zikre elle geçerse bekleyen eski transition yeni seçimi ezmez; stale geçiş güvenli biçimde iptal edilir","Kilit ekranı sessiz sayaç uzlaştırması synchronous transition kullanmaya devam eder; foreground transaction kilidi background catch-up akışına sızmaz"]},
- {"v":"r481","t":"23 Ağustos 2026","b":["Kilit ekranında kendi kayıt sesinin cüce/inceleşme nedeni giderildi: OfflineAudioContext artık playbackRate ile pitch değiştirmiyor","Kendi kayıt kilit track’i orijinal pitch’te render ediliyor; hız native HTMLAudio playbackRate + preservesPitch ile uygulanıyor","8D pan ve tempo duvar saati ritmine göre yeniden hesaplandı; hız değişse de kilit loop temposu korunuyor","Kilit TTS’sindeki dev tek tekrar metni kaldırıldı; seçili sesle 120 normal utterance önceden kuyruğa veriliyor, böylece Android TTS prosodi/pitch bozulması azaltıldı","TTS kilit sesinde voice adı/lang yeniden doğrulanıyor ve pitch güvenli doğal aralıkta tutuluyor; sistemin yanlış yüksek varsayılan sese düşme ihtimali azaltıldı","Kilit geçişindeki faz dönüşümü yeni native playbackRate’e göre düzeltildi; dönüş crossfade ve sessiz sayaç uzlaştırması korunuyor"]},
- {"v":"r480","t":"23 Ağustos 2026","b":["0.8 sn ve diğer hızlı tempolarda sesli zikir sayaç motoru strict seri akışa geçirildi: önceki kayıt/TTS bitmeden sayı ilerlemez","speechSynthesis.speaking açılmadan önceki pending aralığı ve IndexedDB kayıt araması uygulama seviyesinde voice-busy kilidiyle kapsandı","Sesli otomatik modda timer catch-up tamamen kapatıldı; browser gecikmesi artık sayıyı okunan zikirden ileri taşıyamaz","İlk Saymaya Başla dokunuşu artık ilk sayaç artışı ile ilk kayıt/TTS okumayı aynı turda başlatır; bağımsız ilk ses kaynaklı senkron farkı kaldırıldı","Sesli seri scheduler okuma promise’i tamamlanınca kalan tempo süresini hesaplar; 0.8 sn tempo ses süresinden kısaysa sayaç doğal olarak ses hızına yavaşlar","Kilit ekranından dönüşte foreground okuma da aynı voice-serial kilidinden başlar; iki ses örneğinin üst üste binmesi engellenir"]},
+ {"v":"r483","t":"23 Ağustos 2026","b":["Kaydırmalı anahtarlar tek hizada toplandı; opt satırlarında sağa yaslanma ve dikey merkezleme düzeltildi","Açık durum için neonik cam ışıltı eklendi; arka ray ve knob artık mücevher hissi veren mor-mavi-cyan parıltı taşıyor","Kapalı durumda knob ortalandı; kayık görünen thumb top/left hesabı transform tabanlı hale getirildi"]},
  {"v":"r479","t":"23 Ağustos 2026","b":["Okuyucu modülleri üst üste binebiliyordu: yedi modülün (Tövbe, Âyetü'l-Kürsî, Salavât, Fâtiha, Seyyid, Delâil, Hizb) \u201Cçalıyor mu\u201D yoklaması window üzerinden bakıyordu ama bu modüller window'a hiç atanmıyor \u2014 yoklama kalıcı olarak false dönüyordu. Yeni okuyucu başlarken öncekini durduran yedek yol bu yüzden hiç devreye girmiyordu.","Berhetiyye 28 İsim Seyri oynatma kontratına hiç kaydolmuyordu: kayıt koşulu görünmeyen bir değişkene bakıyordu. Artık seyir de merkezi durdurma, global duraklat ve Şimdi Çalıyor akışına dahil.","Sağlık denetimi çalan modül için yanlışlıkla \u201Cprovider state bayat\u201D uyarısı üretip onarım rutinini sağlıklı bir oturuma müdahale ettiriyordu.","Boşta duran ekranda saniyede binlerce gereksiz DOM yazımı vardı; 11 koşulsuz yazım idempotent yapıldı. Altı saniyelik ölçümde 11.057 mutasyon 3.454'e indi (%69 azalma) \u2014 daha az pil, daha akıcı arayüz.","Ambiyans anahtarları 34x18 idi; dokunma hedefi asgarisinin altındaydı ve görünmez genişletme çalışmıyordu. 44x24'e çıkarıldı, satır yüksekliği aynı kaldı. Anahtar düğmesi de orantılandı.","Oynatıcı tutamağının ekran okuyucu adı yoktu; yalnız \u201Cdüğme\u201D olarak okunuyordu."]},
 {"v":"r478","t":"23 Ağustos 2026","b":["Universal bar içindeki CANLI rozeti küçültülüp sağ üstte ikincil durum damgasına dönüştürüldü; tutamak ve ana başlıkla çakışmaz","Bar mini/midi görünümüne zikir telemetrisi eklendi: anlık sayım/hedef, kalan adet ve mevcut Esmâ/Berhetiyye sıra numarası + isim","Telemetri manuel otomatik zikirde, Tefekkürde ve Akıllı Seans zikir adımlarında aynı tek runtime tarafından güncellenir","Sayaç, kalan, hedef ve zikir adı MutationObserver ile olay bazlı izlenir; sürekli polling eklenmedi","Mini görünümde üç veri tek kompakt satıra sıkışır; expanded/midi görünümde etiketli chipler olarak okunur, Detaylar sayfasını açmak gerekmez"]},
  {"v":"r477","t":"23 Ağustos 2026","b":["Otomatik Saymaya Başla tek dokunuşta state’i anında commit eder; 3 saniyelik açılış töreni motoru bloklamaz ve hızlı ikinci dokunuşun yanlışlıkla Durdur’a dönüşmesi debounce ile engellenir","Kilit ekranı için kendi zikir kaydı ekran açıkken OfflineAudioContext ile hazırlanır; Mekân yankısı ve 8D pan karakteri native loop dosyasına basılır","Kilit loop periyodu kayıt süresi, okuma hızı ve zikir temposundan hesaplanır; tempo kilitte de aynı ritim mantığını korur","Kilit geçişinde çalan kaydın fazı yakalanır ve native background track yaklaşık aynı konumdan devam eder; dönüşte foreground motoruna 220 ms crossfade uygulanır","Ekran dönüşündeki sayaç uzlaştırması tamamen sessizdir; tık, titreşim ve devir sonu sesi üretilmediği için toplu pıt-pıt geri dönüşü engellenir","Web Speech TTS için ses, hız ve uzun ön-kuyruk korunur; browser speechSynthesis çıkışı WebAudio’ya yönlendirilemediği için 8D/reverb yalnız kendi kayıt kaynaklarında gerçek olarak korunabilir","Tempo, yankı, 8D ve okuma hızı değişikliklerinde lock-screen FX paketi görünürken debounce ile yeniden hazırlanır; ses motoruna paralel render bindirilmez"]},
@@ -11061,77 +11161,29 @@ window.SukunHaptics=window.SukunHaptics||{
   devir(){if(!this.enabled())return false;try{return navigator.vibrate([22,34,34])}catch(e){return false}},
   tamam(){if(!this.enabled())return false;try{return navigator.vibrate([28,40,42,48,56])}catch(e){return false}}
 };
-function r482CommitTransition(t){
-  if(!t||t.done)return false;
-  t.done=true;
-
-  /* Kullanıcı ses sürerken başka zikre geçtiyse eski transition yeni seçimi
-     ezmesin. Bu durumda yalnız bekleyen transition bırakılır. */
-  if(Z.cat!==t.cat || Z.idx!==t.idx)return false;
-
-  Z.count=0;
-  Z.devir++;
-
-  if(!t.silent){
-    zikirSonuSes();
-    try{tozSac()}catch(e){}
-    try{zikirTamam('Devir tamam',
-      (t.label||((document.getElementById('zTr')||{}).textContent||'').trim())+
-      ' · '+Z.devir+'. devir')}catch(e){}
-    try{window.SukunHaptics?.devir?.()}catch(e){}
-  }
-
-  if(t.adv){
-    const grup=ZIKIR[Z.cat]&&ZIKIR[Z.cat].items;
-    if(grup&&grup.length){
-      Z.idx=(Z.idx+1)%grup.length;
-      try{if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(false)}catch(e){}
-      try{renderZikir()}catch(e){}
-      try{if(!document.hidden&&typeof r476Prepare==='function')r476Prepare()}catch(e){}
-    }
-  }
-
-  if(!t.silent)try{zUI()}catch(e){}
-  return true;
-}
-
 function rep(){
   const _r476Silent=!!window.__r476SilentCatchup;
-  const _r482Defer=!!window.__SUKUN_DEFER_ZIKIR_TRANSITION__;
-
   if(!_r476Silent)ac();
   if(!_r476Silent&&typeof NIYET!=='undefined'&&NIYET.on&&Z.count===0&&(Z.devir===0||NIYET.devir))niyetShow();
-
-  Z.count++;
-  Z.total++;
+  Z.count++; Z.total++;
   if(Z.total%5===0)S.set('sukun.total',Z.total);
-
   if(!_r476Silent){
     pulseZ();
     if(Z.tick)tickSnd();
     try{window.SukunHaptics?.zikir?.()}catch(e){}
   }
-
   if(Z.target>0&&Z.count>=Z.target){
-    const tr={
-      cat:Z.cat,
-      idx:Z.idx,
-      target:Z.target,
-      adv:!!Z.adv,
-      silent:_r476Silent,
-      label:((document.getElementById('zTr')||{}).textContent||'').trim(),
-      done:false
-    };
-
-    if(_r482Defer){
-      /* r482: son sayım önce mevcut Esmâ'yı gerçekten okur.
-         Sayaç hedefte kalır; ses tamamlanınca transition commit edilir. */
-      window.__SUKUN_PENDING_ZIKIR_TRANSITION__=tr;
-    }else{
-      r482CommitTransition(tr);
+    Z.count=0; Z.devir++;
+    if(!_r476Silent){
+      zikirSonuSes();
+      try{tozSac()}catch(e){}
+      try{zikirTamam('Devir tamam',
+        ((document.getElementById('zTr')||{}).textContent||'').trim()+
+        ' · '+Z.devir+'. devir')}catch(e){}
+      try{window.SukunHaptics?.devir?.()}catch(e){}
     }
+    if(Z.adv){Z.idx=(Z.idx+1)%ZIKIR[Z.cat].items.length;if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(false);renderZikir();}
   }
-
   if(!_r476Silent)zUI();
 }
 /* ── Uzun kayıt altyapısı ───────────────────────────────────────────
@@ -11385,7 +11437,7 @@ let _zAutoUyanTO=0,_zAutoUyanSeq=0,_zAutoSessizUntil=0,_zAutoHiddenAt=0;
 let _r476LockAudio=null,_r476SilentUrl='',_r476RecUrl='';
 let _r476Prepared={
   key:'',blob:null,url:'',durationMs:0,
-  fxUrl:'',fxSig:'',cycleMs:0,fxReady:false,playRate:1,
+  fxUrl:'',fxSig:'',cycleMs:0,fxReady:false,
   text:'',voice:null,lang:'tr-TR',rate:.85,pitch:.9
 };
 let _r476Hidden=null,_r476Batch=null,_r476PrepareSeq=0;
@@ -11481,16 +11533,9 @@ function r477FxSignature(key){
 async function r477RenderLockTrack(blob,key){
   if(!blob||!key||!('OfflineAudioContext'in window))return null;
   const sig=r477FxSignature(key);
-  const readRate=Math.max(.5,Math.min(2,Number(window.OKUMA_HIZ)||1));
   if(sig===_r477FxCacheSig&&_r477FxUrl){
-    return{
-      url:_r477FxUrl,
-      sig,
-      cycleMs:_r476Prepared.cycleMs||zAutoTempoMs(),
-      playRate:readRate
-    };
+    return{url:_r477FxUrl,sig,cycleMs:_r476Prepared.cycleMs||zAutoTempoMs()};
   }
-
   const seq=++_r477FxBuildSeq;
   try{
     const C=window.AudioContext||window.webkitAudioContext;
@@ -11500,32 +11545,21 @@ async function r477RenderLockTrack(blob,key){
     try{await dc.close()}catch(e){}
     if(seq!==_r477FxBuildSeq)return null;
 
-    /* ÖNEMLİ: AudioBufferSource.playbackRate pitch'i de değiştirir.
-       Eski r477 burada readRate kullanıyordu; kilitte sesin "cüce"leşmesinin
-       ana nedeni buydu. Ses dosyasını 1x/orijinal pitch'te render ediyoruz.
-       Hız daha sonra native <audio>.playbackRate + preservesPitch ile uygulanır. */
-    const spokenWallSec=Math.max(.12,decoded.duration/readRate);
-    const cycleWallSec=Math.max(spokenWallSec,Math.max(.18,Number(Z?.tempo)||1));
-
-    /* Native player readRate hızında oynatacağı için medya dosyasının kaynak
-       süresi wall-cycle * readRate olmalı. Böylece tempo duvar saatinde değişmez. */
-    const fileSec=Math.max(decoded.duration,cycleWallSec*readRate);
+    const readRate=Math.max(.5,Math.min(2,Number(window.OKUMA_HIZ)||1));
+    const spokenSec=Math.max(.12,decoded.duration/readRate);
+    const cycleSec=Math.max(spokenSec,Math.max(.18,Number(Z?.tempo)||1));
     const sr=Math.max(22050,Math.min(48000,decoded.sampleRate||44100));
-    const frames=Math.max(1,Math.ceil(fileSec*sr));
+    const frames=Math.max(1,Math.ceil(cycleSec*sr));
     const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
     const off=new OC(2,frames,sr);
-    const src=off.createBufferSource();
-    src.buffer=decoded;
-    src.playbackRate.value=1; /* pitch-safe */
+    const src=off.createBufferSource();src.buffer=decoded;src.playbackRate.value=readRate;
 
     let out=src;
     if(KAYIT?.mekan&&off.createStereoPanner){
       const pan=off.createStereoPanner();
       src.connect(pan);out=pan;
-      for(let t=0;t<fileSec;t+=.12){
-        /* Native playback hızlandırınca 8D dönüş hızı da hızlanmasın. */
-        const wallT=t/readRate;
-        pan.pan.setValueAtTime(Math.sin(wallT*.55)*.85,t);
+      for(let t=0;t<cycleSec;t+=.12){
+        pan.pan.setValueAtTime(Math.sin(t*.55)*.85,t);
       }
     }
 
@@ -11536,7 +11570,7 @@ async function r477RenderLockTrack(blob,key){
     if(rev>0){
       const wet=off.createGain();wet.gain.value=Math.min(.78,rev*.78);
       const conv=off.createConvolver();
-      const irSec=Math.min(2.8,Math.max(.8,fileSec));
+      const irSec=Math.min(2.8,Math.max(.8,cycleSec));
       const ir=off.createBuffer(2,Math.max(1,Math.floor(sr*irSec)),sr);
       for(let c=0;c<2;c++){
         const d=ir.getChannelData(c);let lp=0;
@@ -11553,18 +11587,11 @@ async function r477RenderLockTrack(blob,key){
     src.start(0);
     const rendered=await off.startRendering();
     if(seq!==_r477FxBuildSeq)return null;
-
     const wav=r477WavFromBuffer(rendered);
     const url=URL.createObjectURL(wav);
     if(_r477FxUrl)try{URL.revokeObjectURL(_r477FxUrl)}catch(e){}
     _r477FxUrl=url;_r477FxCacheSig=sig;
-
-    return{
-      url,
-      sig,
-      cycleMs:Math.round(cycleWallSec*1000),
-      playRate:readRate
-    };
+    return{url,sig,cycleMs:Math.round(cycleSec*1000)};
   }catch(e){
     return null;
   }
@@ -11591,7 +11618,7 @@ async function r476Prepare(){
   let cycleMs=Math.max(zAutoTempoMs(),durationMs?Math.round(durationMs/speed):0,650);
   _r476Prepared={
     key,blob,url,durationMs,
-    fxUrl:'',fxSig:'',cycleMs,fxReady:false,playRate:speed,
+    fxUrl:'',fxSig:'',cycleMs,fxReady:false,
     text:t.txt||'',voice:t.voice||null,lang:t.lang||'tr-TR',
     rate:t.rate||.85,pitch:t.pitch==null?.9:t.pitch
   };
@@ -11604,7 +11631,6 @@ async function r476Prepare(){
       _r476Prepared.fxUrl=fx.url;
       _r476Prepared.fxSig=fx.sig;
       _r476Prepared.cycleMs=fx.cycleMs||cycleMs;
-      _r476Prepared.playRate=fx.playRate||speed;
       _r476Prepared.fxReady=true;
     }
   }
@@ -11625,58 +11651,38 @@ function r476MediaSession(mode){
 function r476StopTtsBatch(){
   try{if(_r476Batch){_r476Batch.active=false}_r476Batch=null;speechSynthesis.cancel()}catch(e){}
 }
-function r481StableVoice(preferred,lang){
-  try{
-    const voices=speechSynthesis.getVoices()||[];
-    if(!voices.length)return preferred||null;
-    if(preferred){
-      const exact=voices.find(v=>v.name===preferred.name&&v.lang===preferred.lang);
-      if(exact)return exact;
-      const sameName=voices.find(v=>v.name===preferred.name);
-      if(sameName)return sameName;
-    }
-    const p=String(lang||'tr-TR').slice(0,2).toLowerCase();
-    return voices.find(v=>String(v.lang||'').toLowerCase().startsWith(p))||preferred||voices[0]||null;
-  }catch(e){return preferred||null}
-}
 function r476StartTtsBatch(){
   const p=_r476Prepared;
   if(!p.text||!('speechSynthesis'in window))return false;
   r476StopTtsBatch();
 
-  /* Dev tek metin bazı Android TTS motorlarında kilit ekranında prosodiyi
-     bozup yüksek/ince "cüce" tınısına geçebiliyor. Her tekrar normal bir
-     utterance olarak ÖNCEDEN kuyruğa verilir; kilitte yeni JS timer gerekmez. */
-  const voice=r481StableVoice(p.voice,p.lang);
-  const rate=Math.max(.55,Math.min(1.55,(p.rate||.85)*(window.OKUMA_HIZ||1)));
-  const pitch=Math.max(.72,Math.min(1.02,p.pitch==null?.9:p.pitch));
-  const queueCount=120;
-  const b={active:true,items:[],completed:0,current:0,total:queueCount,voiceName:voice?.name||'',rate,pitch};
+  const unit=p.text.trim()+' . ';
+  const reps=Math.max(10,Math.min(180,Math.floor(3600/Math.max(6,unit.length))));
+  const text=unit.repeat(reps);
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=p.lang||'tr-TR';if(p.voice)u.voice=p.voice;
+  u.rate=(p.rate||.85)*(window.OKUMA_HIZ||1);
+  u.pitch=p.pitch==null?.9:p.pitch;
+  try{u.volume=Math.min(1,Math.max(.05,((typeof ZVOL==='number'?ZVOL:1)*(window.okumaSeviyesi?.()||1))))}catch(e){u.volume=1}
+
+  const b={active:true,u,reps,unitLen:unit.length,completed:0,current:0,boundary:false};
   _r476Batch=b;
-
+  u.onboundary=e=>{
+    if(!b.active)return;
+    b.boundary=true;
+    b.current=Math.max(b.current,Math.min(reps,Math.floor((Number(e.charIndex)||0)/b.unitLen)));
+  };
+  u.onend=()=>{
+    if(!b.active)return;
+    b.completed+=reps;b.current=0;
+    /* onend arka planda teslim ediliyorsa bir sonraki uzun bloğu da sırala. */
+    if(document.hidden&&Z.auto&&_r476Hidden?.mode==='tts')setTimeout(r476StartTtsBatch,0);
+  };
+  u.onerror=()=>{};
   try{
-    for(let i=0;i<queueCount;i++){
-      const u=new SpeechSynthesisUtterance(p.text.trim());
-      u.lang=p.lang||'tr-TR';
-      if(voice)u.voice=voice;
-      u.rate=rate;
-      u.pitch=pitch;
-      try{
-        u.volume=Math.min(1,Math.max(.05,((typeof ZVOL==='number'?ZVOL:1)*(window.okumaSeviyesi?.()||1))));
-      }catch(e){u.volume=1}
-
-      u.onstart=()=>{if(b.active)b.current=i};
-      u.onend=()=>{if(b.active)b.completed=Math.max(b.completed,i+1)};
-      u.onerror=()=>{};
-      b.items.push(u);
-      speechSynthesis.speak(u);
-    }
+    speechSynthesis.speak(u);
     return true;
-  }catch(e){
-    try{speechSynthesis.cancel()}catch(_){}
-    b.active=false;
-    return false;
-  }
+  }catch(e){return false}
 }
 async function r476BeginHidden(){
   if(!Z.auto||!zikirSesliAktifMi()||ZIKIR_BIRLIKTE)return false;
@@ -11714,20 +11720,14 @@ async function r476BeginHidden(){
   if(sourceUrl){
     try{
       a.pause();a.loop=true;a.src=sourceUrl;
-      const lockRate=Math.max(.5,Math.min(2,Number(_r476Prepared.playRate)||1));
-      a.defaultPlaybackRate=lockRate;
-      a.playbackRate=lockRate;
-      try{a.preservesPitch=true}catch(e){}
-      try{a.mozPreservesPitch=true}catch(e){}
-      try{a.webkitPreservesPitch=true}catch(e){}
+      a.playbackRate=1;try{a.preservesPitch=true}catch(e){}
       const zv=(typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1;
       a.volume=Math.max(.05,Math.min(1,zv));
       a.load();
       const go=()=>{
         try{
           if(Number.isFinite(a.duration)&&a.duration>0&&_r476Hidden){
-            const srcPhase=(_r476Hidden.phaseMs/1000)*Math.max(.5,Math.min(2,Number(_r476Prepared.playRate)||1));
-            a.currentTime=Math.min(Math.max(0,srcPhase),Math.max(0,a.duration-.04));
+            a.currentTime=Math.min(Math.max(0,_r476Hidden.phaseMs/1000),Math.max(0,a.duration-.04));
           }
         }catch(e){}
         const pp=a.play();if(pp?.catch)pp.catch(()=>{});
@@ -11751,7 +11751,7 @@ async function r476BeginHidden(){
 function r476TtsSpoken(){
   const b=_r476Batch;
   if(!b)return 0;
-  return Math.max(0,Math.floor(b.completed||0));
+  return Math.max(0,(b.completed||0)+(b.current||0));
 }
 async function r476SilentApply(reps){
   reps=Math.max(0,Math.min(5000,Math.floor(reps||0)));
@@ -11795,7 +11795,7 @@ async function r476EndHidden(){
   /* Önce normal foreground okumasını devreye al; sonra kilit track'ini
      220ms'de söndür. Böylece dönüşte ses kesilmez ama çift ses de uzamaz. */
   if(Z.auto&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
-    try{zikirSesBaslat(false)}catch(e){}
+    try{spkSayZikir(false)}catch(e){}
   }
   const t0=performance.now();
   const fade=()=>{
@@ -11825,7 +11825,7 @@ function r476Stop(all=true){
   }
 }
 window.SukunLockScreenZikir={
-  version:'r481',
+  version:'r477',
   prime:r476Prime,
   prepare:r476Prepare,
   beginHidden:r476BeginHidden,
@@ -11851,8 +11851,6 @@ window.addEventListener('sukun:voicesource',r477PrepareSoon,{passive:true});
 
 function zAutoTempoMs(){ return Math.max(180,Math.round((+Z.tempo||1)*1000)); }
 function zSessizTamamla(n){
-  window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
-  window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
   n=Math.max(0,Math.min(20000,Math.floor(n||0)));
   if(!n)return;
   let secimDegisti=false;
@@ -11874,88 +11872,31 @@ function zSessizTamamla(n){
   try{S.set('sukun.total',Z.total)}catch(e){}
   try{zUI()}catch(e){}
 }
-let _zAutoPlanSeq=0;
 function zAutoKur(yeniden){
   if(!Z.auto)return;
-
-  const planSeq=++_zAutoPlanSeq;
-
   if(document.hidden&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
     if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
     if(!window.SukunLockScreenZikir?.running?.())r476BeginHidden();
     return;
   }
-
   if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
-
-  const seriSes=!!(zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE);
+  const ms=zAutoTempoMs();
   if(yeniden||!_zAutoSon)_zAutoSon=Date.now();
-
-  const planla=(ms)=>{
-    if(planSeq!==_zAutoPlanSeq||!Z.auto)return;
-    Z.autoId=setTimeout(dongu,Math.max(40,ms));
-  };
-
-  const sesBitincePlanla=()=>{
-    const p=window.__SUKUN_ZIKIR_VOICE_PROMISE__;
-    if(p){
-      Promise.resolve(p).finally(()=>{
-        if(planSeq!==_zAutoPlanSeq||!Z.auto||document.hidden)return;
-        const kalan=Math.max(40,zAutoTempoMs()-Math.max(0,Date.now()-_zAutoSon));
-        planla(kalan);
-      });
-    }else{
-      planla(70);
-    }
-  };
-
   const dongu=()=>{
-    if(planSeq!==_zAutoPlanSeq||!Z.auto)return;
-
-    if(document.hidden&&seriSes){
-      if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
-      r476BeginHidden();
-      return;
-    }
-
-    const ms=zAutoTempoMs();
-
-    /* 0.8 gibi hızlı tempoda önceki ses sürüyorsa SAYI ARTMAZ.
-       Sesin promise'i bittiği anda kalan tempo süresi hesaplanır. */
-    if(seriSes&&zikirSesMesgul()){
-      sesBitincePlanla();
-      return;
-    }
-
+    if(!Z.auto)return;
     const now=Date.now();
     const gecen=Math.max(1,Math.floor((now-_zAutoSon)/ms));
-
-    /* Yalnız sessiz otomatikte kaçırılan timer turları sayısal telafi edilir.
-       Sesli zikirde hiçbir koşulda catch-up ile sayı şişirilmez. */
-    if(!seriSes&&gecen>1)zSessizTamamla(gecen-1);
-
+    /* Sesli zikirde sayaç okunan sözle bire bir gider; arka planda konuşma
+       motorunun throttle ettiği turları sayısal olarak telafi etmeyiz. */
+    const sesli=!!(zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE);
+    if(!sesli&&gecen>1)zSessizTamamla(gecen-1);
     _zAutoSon=now;
-    const ilerledi=rep();
+    rep();
     if(!Z.auto)return;
-
-    if(seriSes){
-      if(ilerledi===false){
-        planla(70);
-        return;
-      }
-      sesBitincePlanla();
-      return;
-    }
-
-    planla(zAutoTempoMs());
+    Z.autoId=setTimeout(dongu,zAutoTempoMs());
   };
-
-  if(seriSes&&zikirSesMesgul()){
-    sesBitincePlanla();
-  }else{
-    const bekle=Math.max(40,zAutoTempoMs()-Math.max(0,Date.now()-_zAutoSon));
-    planla(bekle);
-  }
+  const bekle=Math.max(40,ms-Math.max(0,Date.now()-_zAutoSon));
+  Z.autoId=setTimeout(dongu,bekle);
 }
 function zAutoUyan(reason){
   if(!Z.auto||document.hidden)return;
@@ -12008,32 +11949,31 @@ function autoStart(){
   if(Z.auto||_r477AutoStarting)return;
   _r477AutoStarting=true;
 
+  /* İlk dokunuşta state hemen commit edilir. Açılış animasyonu artık motoru
+     3 saniye rehin tutmaz; yalnız kısa, non-blocking bir görsel işarettir. */
   try{ac();if(ctx?.state==='suspended')ctx.resume().catch(()=>{})}catch(e){}
   try{r476Prime();r476Prepare()}catch(e){}
 
   Z.auto=true;
   _zAutoSon=Date.now();
   try{lockOn()}catch(e){}
-
-  /* r480: ilk okuma artık sayaçtan bağımsız başlamaz.
-     İlk dokunuş = 1 sayaç artışı + 1 kayıt/TTS. */
-  const ilk=rep();
   try{zUI()}catch(e){}
+  try{zAutoKur(true)}catch(e){}
 
-  /* Seri ses promise'i ile aynı scheduler zincirine bağlanır. */
-  try{zAutoKur(false)}catch(e){}
+  /* İlk ses de aynı dokunuşta başlar. */
+  try{if(zikirSesliAktifMi())spkSayZikir(false)}catch(e){}
 
+  /* Eski tam 3-2-1 töreni yalnız kısa bir işaret olarak görünür;
+     kullanıcı ikinci kez Saymaya Başla'ya basmak zorunda kalmaz. */
   try{if(!ZA.kapali)zikirAcilisAna('kisa',()=>{})}catch(e){}
+
   setTimeout(()=>{_r477AutoStarting=false},520);
 }
 function autoStop(){
   if(!Z.auto)return;
   Z.auto=false;
-  _zAutoPlanSeq++;
   if(Z.autoId){clearTimeout(Z.autoId);Z.autoId=null;}
   _zAutoSon=0;
-  window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
-  window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
   try{ zBekciDurdur(); }catch(e){}
   try{ r476Stop(true); }catch(e){}
   S.set('sukun.total',Z.total);
@@ -19528,14 +19468,10 @@ function zikirAcilisAna(kip,bitince){
    susuyor (metin okunuyor), sayaç kullanıcının kendi çekişini sayar. */
 function zOkumaSuruyor(){
   try{
-    /* r480: speechSynthesis.speaking tek başına yeterli değildi.
-       Özellikle 0.8 sn tempoda IndexedDB/TTS başlatma aralığında false kalıp
-       sayaç bir sonraki turu erkenden artırabiliyordu. */
-    if(window.__SUKUN_ZIKIR_VOICE_BUSY__)return true;
+    /* kendi kaydı çalıyorsa da bekle — o da bir okumadır */
     if(typeof RECPLAYING!=='undefined' && RECPLAYING)return true;
-    return !!(window.speechSynthesis &&
-      (speechSynthesis.speaking || speechSynthesis.pending || speechSynthesis.paused));
-  }catch(e){ return !!window.__SUKUN_ZIKIR_VOICE_BUSY__; }
+    return !!(window.speechSynthesis && speechSynthesis.speaking);
+  }catch(e){ return false; }
 }
 /* Salt «atla» yetmez: tempo 1 sn, okuma 2,2 sn iken tıklar 1·2·3'te
    gelir, 2 ve 3 atlanır, sıradaki ancak 4. saniyede olur — okuma 2,2
@@ -19544,89 +19480,28 @@ function zOkumaSuruyor(){
    okuma süresi kadar olur, temponun katlarına yuvarlanmaz. */
 let _zBekleyen=false, _zBekci=null;
 function zBekciDurdur(){ if(_zBekci){clearInterval(_zBekci);_zBekci=null;} _zBekleyen=false; }
-/* Eski 120ms bekçi artık otomatik sayımı ilerletmez; r480'de sesli otomatik
-   akış tek promise zincirinden yürür. Fonksiyon geriye dönük çağrılar için kalır. */
 function zBekciKur(){
   if(_zBekci)return;
   _zBekci=setInterval(()=>{
+    /* Kullanıcı akışı durdurduysa ya da duraklattıysa KARIŞMA —
+       r103/r110'daki «bekçi kasıtlı eylemi ezer» hatasına düşmemek için. */
     let duruk=false;
-    try{duruk=(typeof MINI==='object'&&MINI&&MINI.paused)||(typeof ttsDurukMu==='function'&&ttsDurukMu())}catch(e){}
-    if(!Z.auto||!_zBekleyen||duruk||!zOkumaSuruyor())zBekciDurdur();
-  },180);
+    try{ duruk=(typeof MINI==='object'&&MINI&&MINI.paused)||(typeof ttsDurukMu==='function'&&ttsDurukMu()); }catch(e){}
+    if(!Z.auto || !_zBekleyen || duruk){ zBekciDurdur(); return; }
+    if(!zOkumaSuruyor()){ zBekciDurdur(); rep(); }
+  },120);
 }
-
-window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
-window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
-let _zSesSeq=0;
-
-function zikirSesMesgul(){
-  return zOkumaSuruyor();
-}
-function zikirSesBaslat(interrupt=false,afterVoice=null){
-  /* Aynı okuma sürerken ikinci kayıt/TTS örneği açılmaz. */
-  if(window.__SUKUN_ZIKIR_VOICE_PROMISE__ && !interrupt)
-    return window.__SUKUN_ZIKIR_VOICE_PROMISE__;
-
-  const seq=++_zSesSeq;
-  window.__SUKUN_ZIKIR_VOICE_BUSY__=true;
-
-  const p=Promise.resolve()
-    .then(()=>spkSayZikir(!!interrupt))
-    .catch(()=>false)
-    .then(result=>{
-      /* Transition, okuma promise'i çözülmeden commit edilmez.
-         Böylece yeni Esmâ'nın sayacı sesi başlamadan ilerleyemez. */
-      if(typeof afterVoice==='function'){
-        try{afterVoice(result)}catch(e){}
-      }
-      return result;
-    })
-    .finally(()=>{
-      if(seq===_zSesSeq){
-        window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
-        window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
-      }
-    });
-
-  window.__SUKUN_ZIKIR_VOICE_PROMISE__=p;
-  return p;
-}
-
 const _repS=rep;
 rep=()=>{
-  const sesli=!!zikirSesliAktifMi();
-  const seri=!!(sesli&&!ZIKIR_BIRLIKTE);
-
-  /* Seri modda önceki okuma/kayıt sürüyorsa sayı kesinlikle ilerlemez. */
-  if(seri&&zikirSesMesgul()){
-    _zBekleyen=false;
-    return false;
+  if(zikirSesliAktifMi() && !ZIKIR_BIRLIKTE && zOkumaSuruyor()){
+    /* Okuma/kayıt sürüyor: sayaç ARTMAZ, tık çalmaz.
+       Tefekkür modu da normal sesli zikirle aynı 1 sayım = 1 okuma kontratını kullanır. */
+    _zBekleyen=true; zBekciKur();
+    return;
   }
-
   _zBekleyen=false;
-
-  /* Hedef dolumu/Esma geçişi ses bitimine kadar ertelenir. */
-  window.__SUKUN_DEFER_ZIKIR_TRANSITION__=seri;
-  window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
-  try{
-    _repS();
-  }finally{
-    window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
-  }
-
-  const pending=window.__SUKUN_PENDING_ZIKIR_TRANSITION__;
-  window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
-
-  if(sesli){
-    zikirSesBaslat(false,()=>{
-      if(pending)r482CommitTransition(pending);
-    });
-  }else if(pending){
-    /* Teorik güvenlik: sessiz moda durum değişimi olursa transition kaybolmaz. */
-    r482CommitTransition(pending);
-  }
-
-  return true;
+  _repS();
+  if(zikirSesliAktifMi())spkSayZikir(false);
 };
 
 /* ════ 6g) v1.6 — TEMA MOTORU (5 kimlik) ════ */
@@ -21305,7 +21180,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r482',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r483',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32374,7 +32249,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r482',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r483',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
