@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r476 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r478 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r476">
+<meta name="sukun-build" content="r478">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r476">
+<link rel="manifest" href="./manifest.webmanifest?v=r478">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5973,7 +5973,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.26 — build 2026-08-23-r476</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.28 — build 2026-08-23-r478</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -5997,6 +5997,8 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r478","t":"23 Ağustos 2026","b":["Universal bar içindeki CANLI rozeti küçültülüp sağ üstte ikincil durum damgasına dönüştürüldü; tutamak ve ana başlıkla çakışmaz","Bar mini/midi görünümüne zikir telemetrisi eklendi: anlık sayım/hedef, kalan adet ve mevcut Esmâ/Berhetiyye sıra numarası + isim","Telemetri manuel otomatik zikirde, Tefekkürde ve Akıllı Seans zikir adımlarında aynı tek runtime tarafından güncellenir","Sayaç, kalan, hedef ve zikir adı MutationObserver ile olay bazlı izlenir; sürekli polling eklenmedi","Mini görünümde üç veri tek kompakt satıra sıkışır; expanded/midi görünümde etiketli chipler olarak okunur, Detaylar sayfasını açmak gerekmez"]},
+ {"v":"r477","t":"23 Ağustos 2026","b":["Otomatik Saymaya Başla tek dokunuşta state’i anında commit eder; 3 saniyelik açılış töreni motoru bloklamaz ve hızlı ikinci dokunuşun yanlışlıkla Durdur’a dönüşmesi debounce ile engellenir","Kilit ekranı için kendi zikir kaydı ekran açıkken OfflineAudioContext ile hazırlanır; Mekân yankısı ve 8D pan karakteri native loop dosyasına basılır","Kilit loop periyodu kayıt süresi, okuma hızı ve zikir temposundan hesaplanır; tempo kilitte de aynı ritim mantığını korur","Kilit geçişinde çalan kaydın fazı yakalanır ve native background track yaklaşık aynı konumdan devam eder; dönüşte foreground motoruna 220 ms crossfade uygulanır","Ekran dönüşündeki sayaç uzlaştırması tamamen sessizdir; tık, titreşim ve devir sonu sesi üretilmediği için toplu pıt-pıt geri dönüşü engellenir","Web Speech TTS için ses, hız ve uzun ön-kuyruk korunur; browser speechSynthesis çıkışı WebAudio’ya yönlendirilemediği için 8D/reverb yalnız kendi kayıt kaynaklarında gerçek olarak korunabilir","Tempo, yankı, 8D ve okuma hızı değişikliklerinde lock-screen FX paketi görünürken debounce ile yeniden hazırlanır; ses motoruna paralel render bindirilmez"]},
  {"v":"r476","t":"23 Ağustos 2026","b":["Yandaki bağımsız Tefekkür pill’i DOM’dan kaldırıldı; yalnız universal player/bar içindeki Tefekkür düğmesi kaldı","Kilit ekranı zikir motoru JS-per-repeat modelinden çıkarıldı: kendi kayıt tek native HTMLAudio üzerinde kesintisiz loop eder, ekran uyusa da yeni play komutu gerektirmez","Kayıtlı zikir kaynağı ekran açıkken önceden hazırlanıp kilit anında aynı yetkilendirilmiş media elementine geçirilir; Android timer askıya alma zinciri kesmez","TTS kilit modu kısa tekrar timerları yerine tek uzun utterance’ı önceden speech engine’e teslim eder; boundary/onend ile doğrulanan tekrarlar takip edilir","Ekran geri geldiğinde kilitte geçen kayıt tekrarları sessiz catch-up ile sayaca işlenir; tık, haptik ve devir sonu sesi bastırıldığı için pıt-pıt/toplu ses oluşmaz","TTS motoru kilitte gerçekten konuşmadıysa tahmini sayaç artırılmaz; cihazın Web Speech kısıtı sahte zikir sayımı üretmez"]},
  {"v":"r475","t":"23 Ağustos 2026","b":["Kilit ekranında sesli zikir artık visibilitychange ile kasıtlı olarak durdurulmuyor; kendi kayıt/TTS akışı sessiz native media köprüsüne devrediliyor","Kendi zikir kayıtları ekran kilitliyken WebAudio yerine native HTMLAudio üzerinden çalıyor; AudioContext askıya alınsa da kayıt sesi devam edebiliyor","Zikir TTS yolu onend/onerror beklenebilir hale getirildi; sessiz media pulse kilitte paused kalan speechSynthesis için resume denemesi yapıyor ve 1 sayım = 1 okuma sırasını koruyor","Başlat dokunuşu sırasında lock-screen media köprüsü prime ediliyor; Durdur komutu köprüyü ve background zincirini birlikte kapatıyor","Esmâ görünümü Sabit/Animasyon/Kapalı ayarı zikir/NeroSync alanından çıkarılıp Tema ve Genel Ayarlar içindeki Görünüm bölümüne taşındı"]},
  {"v":"r474","t":"23 Ağustos 2026","b":["r473 isim sunum style/runtime katmanı tamamen kaldırıldı; r472 içindeki Tefekkür observer ve collision katmanı da Akıllı Seans ses çözümünden ayrıştırıldı","Tefekkür girişi artık yalnız gerçek Zikir sekmesi aktifken görünür; ana sayfa, Ambiyans, Frekans ve diğer sekmelerde CSS+runtime tek kapıdan gizlenir","Esmâ/Berhetiyye animasyonu uygulama açılışında veya yalnız seçim yapılınca başlamaz; yalnız gerçek sayım, okuma veya Akıllı Seans zikir adımı başladıktan sonra çalışır","Sabit, Animasyon ve Kapalı görünüm tek r474 otoritesine bağlandı; iki isim katmanı aynı anda görünemez","Animasyon/Kapalı Tefekkür modunda zStage tamamen kaldırılır ve sayaç paneli gerçek tek satırlı canonical grid alanını kullanır; önceki 30 px sahte satır ve büyük dikey boşluk giderildi","İlk geçişte güvenli varsayılan Sabit görünüm seçilir; eski r473 animasyon varsayılanı taşınmaz ve SÜKÛN logosu başlangıçta isim perdesiyle örtülmez"]},
@@ -11326,7 +11328,11 @@ let _zAutoUyanTO=0,_zAutoUyanSeq=0,_zAutoSessizUntil=0,_zAutoHiddenAt=0;
    • sayaç ekran geri geldiğinde sessizce uzlaştırılır.
    Böylece kilit dönüşünde toplu tık/pıt sesi üretilmez. */
 let _r476LockAudio=null,_r476SilentUrl='',_r476RecUrl='';
-let _r476Prepared={key:'',blob:null,url:'',durationMs:0,text:'',voice:null,lang:'tr-TR',rate:.85,pitch:.9};
+let _r476Prepared={
+  key:'',blob:null,url:'',durationMs:0,
+  fxUrl:'',fxSig:'',cycleMs:0,fxReady:false,
+  text:'',voice:null,lang:'tr-TR',rate:.85,pitch:.9
+};
 let _r476Hidden=null,_r476Batch=null,_r476PrepareSeq=0;
 
 function r476SilentWav(){
@@ -11382,6 +11388,108 @@ async function r476ProbeDuration(url){
     a.onerror=()=>fin(0);a.src=url;try{a.load()}catch(e){fin(0)}
   });
 }
+
+/* r477 — kilit ekranı için kendi kayıt sesini ÖNCEDEN işler.
+   Native audio kilitte güvenilir; WebAudio grafiği ise bazı Android'lerde
+   askıya alınır. Bu yüzden ekran AÇIKKEN kısa zikir kaydının 8D + reverb
+   karakterini OfflineAudioContext ile WAV'a basıyoruz. Kilitte native
+   <audio> bu işlenmiş dosyayı loop eder. Tempo da loop uzunluğuna gömülür. */
+let _r477FxUrl='',_r477FxBuildSeq=0,_r477FxCacheSig='';
+
+function r477WavFromBuffer(buf){
+  const ch=Math.min(2,Math.max(1,buf.numberOfChannels||1));
+  const frames=buf.length,sr=buf.sampleRate,bytes=44+frames*ch*2;
+  const ab=new ArrayBuffer(bytes),v=new DataView(ab);
+  const wr=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  wr(0,'RIFF');v.setUint32(4,bytes-8,true);wr(8,'WAVE');wr(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);
+  v.setUint16(34,16,true);wr(36,'data');v.setUint32(40,frames*ch*2,true);
+  const data=[];for(let c=0;c<ch;c++)data.push(buf.getChannelData(Math.min(c,buf.numberOfChannels-1)));
+  let o=44;
+  for(let i=0;i<frames;i++){
+    for(let c=0;c<ch;c++){
+      let x=Math.max(-1,Math.min(1,data[c][i]||0));
+      x=x<0?x*0x8000:x*0x7fff;
+      v.setInt16(o,x,true);o+=2;
+    }
+  }
+  return new Blob([ab],{type:'audio/wav'});
+}
+function r477FxSignature(key){
+  const speed=Math.max(.5,Math.min(2,Number(window.OKUMA_HIZ)||1));
+  const rev=Math.max(0,Math.min(1,Number(KAYIT?.yankiMik)||0));
+  const d8=KAYIT?.mekan?1:0;
+  const tempo=Math.max(.18,Number(Z?.tempo)||1);
+  return [key,speed.toFixed(3),rev.toFixed(3),d8,tempo.toFixed(3)].join('|');
+}
+async function r477RenderLockTrack(blob,key){
+  if(!blob||!key||!('OfflineAudioContext'in window))return null;
+  const sig=r477FxSignature(key);
+  if(sig===_r477FxCacheSig&&_r477FxUrl){
+    return{url:_r477FxUrl,sig,cycleMs:_r476Prepared.cycleMs||zAutoTempoMs()};
+  }
+  const seq=++_r477FxBuildSeq;
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    const dc=new C();
+    const raw=await blob.arrayBuffer();
+    const decoded=await dc.decodeAudioData(raw.slice(0));
+    try{await dc.close()}catch(e){}
+    if(seq!==_r477FxBuildSeq)return null;
+
+    const readRate=Math.max(.5,Math.min(2,Number(window.OKUMA_HIZ)||1));
+    const spokenSec=Math.max(.12,decoded.duration/readRate);
+    const cycleSec=Math.max(spokenSec,Math.max(.18,Number(Z?.tempo)||1));
+    const sr=Math.max(22050,Math.min(48000,decoded.sampleRate||44100));
+    const frames=Math.max(1,Math.ceil(cycleSec*sr));
+    const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+    const off=new OC(2,frames,sr);
+    const src=off.createBufferSource();src.buffer=decoded;src.playbackRate.value=readRate;
+
+    let out=src;
+    if(KAYIT?.mekan&&off.createStereoPanner){
+      const pan=off.createStereoPanner();
+      src.connect(pan);out=pan;
+      for(let t=0;t<cycleSec;t+=.12){
+        pan.pan.setValueAtTime(Math.sin(t*.55)*.85,t);
+      }
+    }
+
+    const dry=off.createGain();dry.gain.value=.96;
+    out.connect(dry);dry.connect(off.destination);
+
+    const rev=Math.max(0,Math.min(1,Number(KAYIT?.yankiMik)||0));
+    if(rev>0){
+      const wet=off.createGain();wet.gain.value=Math.min(.78,rev*.78);
+      const conv=off.createConvolver();
+      const irSec=Math.min(2.8,Math.max(.8,cycleSec));
+      const ir=off.createBuffer(2,Math.max(1,Math.floor(sr*irSec)),sr);
+      for(let c=0;c<2;c++){
+        const d=ir.getChannelData(c);let lp=0;
+        for(let n=0;n<d.length;n++){
+          const k=1-n/d.length;
+          const noise=(Math.random()*2-1)*Math.pow(k,2.5);
+          lp+=(noise-lp)*(0.20-(0.14*n/d.length));
+          d[n]=lp;
+        }
+      }
+      conv.buffer=ir;out.connect(wet);wet.connect(conv);conv.connect(off.destination);
+    }
+
+    src.start(0);
+    const rendered=await off.startRendering();
+    if(seq!==_r477FxBuildSeq)return null;
+    const wav=r477WavFromBuffer(rendered);
+    const url=URL.createObjectURL(wav);
+    if(_r477FxUrl)try{URL.revokeObjectURL(_r477FxUrl)}catch(e){}
+    _r477FxUrl=url;_r477FxCacheSig=sig;
+    return{url,sig,cycleMs:Math.round(cycleSec*1000)};
+  }catch(e){
+    return null;
+  }
+}
+
 async function r476Prepare(){
   const seq=++_r476PrepareSeq;
   let key='';try{key=zikirKey()}catch(e){}
@@ -11398,11 +11506,27 @@ async function r476Prepare(){
     }catch(e){url='';durationMs=0}
   }
   if(seq!==_r476PrepareSeq)return false;
+
+  const speed=Math.max(.5,Math.min(2,Number(window.OKUMA_HIZ)||1));
+  let cycleMs=Math.max(zAutoTempoMs(),durationMs?Math.round(durationMs/speed):0,650);
   _r476Prepared={
     key,blob,url,durationMs,
+    fxUrl:'',fxSig:'',cycleMs,fxReady:false,
     text:t.txt||'',voice:t.voice||null,lang:t.lang||'tr-TR',
     rate:t.rate||.85,pitch:t.pitch==null?.9:t.pitch
   };
+
+  /* Ağır iş otomatik başlatmayı bloklamaz; görünürken arka planda hazırlanır. */
+  if(blob&&url){
+    const fx=await r477RenderLockTrack(blob,key);
+    if(seq!==_r476PrepareSeq)return false;
+    if(fx){
+      _r476Prepared.fxUrl=fx.url;
+      _r476Prepared.fxSig=fx.sig;
+      _r476Prepared.cycleMs=fx.cycleMs||cycleMs;
+      _r476Prepared.fxReady=true;
+    }
+  }
   return true;
 }
 function r476MediaSession(mode){
@@ -11455,37 +11579,61 @@ function r476StartTtsBatch(){
 }
 async function r476BeginHidden(){
   if(!Z.auto||!zikirSesliAktifMi()||ZIKIR_BIRLIKTE)return false;
+  if(_r476Hidden)return true;
 
-  /* Son kullanıcı hareketinde hazırlanmış kayıt tercih edilir.
-     Çok hızlı kilitlendiyse kısa probe dene ama akışı ona bağlama. */
   if(!_r476Prepared.key){try{await r476Prepare()}catch(e){}}
+
+  /* Foreground kaydı ortasındaysa fazını yakala; kilit geçişi mümkün olduğunca
+     aynı yerden sürsün. */
+  let phaseMs=0;
+  try{
+    const playing=[...SES.ler].find(x=>x&&!x.paused&&!x.ended);
+    if(playing&&Number.isFinite(playing.currentTime)){
+      phaseMs=Math.max(0,playing.currentTime*1000/Math.max(.1,playing.playbackRate||1));
+    }
+  }catch(e){}
+
   try{if(typeof sesDurdur==='function')sesDurdur()}catch(e){}
   try{speechSynthesis.cancel()}catch(e){}
 
+  const sourceUrl=_r476Prepared.fxUrl||_r476Prepared.url||'';
+  const cycleMs=Math.max(650,_r476Prepared.cycleMs||_r476Prepared.durationMs||zAutoTempoMs());
   const now=Date.now();
   _r476Hidden={
     startedAt:now,
     count:+Z.count||0,devir:+Z.devir||0,total:+Z.total||0,
-    mode:_r476Prepared.url?'recording':'tts',
-    cycleMs:Math.max(650,_r476Prepared.durationMs||zAutoTempoMs()),
-    preparedKey:_r476Prepared.key||''
+    mode:sourceUrl?'recording':'tts',
+    cycleMs,
+    phaseMs:sourceUrl?(phaseMs%cycleMs):0,
+    preparedKey:_r476Prepared.key||'',
+    fx:!!_r476Prepared.fxUrl
   };
 
   const a=r476Audio();
-  if(_r476Prepared.url){
+  if(sourceUrl){
     try{
-      a.pause();a.loop=true;a.src=_r476Prepared.url;a.currentTime=0;
+      a.pause();a.loop=true;a.src=sourceUrl;
+      a.playbackRate=1;try{a.preservesPitch=true}catch(e){}
       const zv=(typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1;
       a.volume=Math.max(.05,Math.min(1,zv));
       a.load();
-      const pp=a.play();if(pp?.catch)pp.catch(()=>{});
+      const go=()=>{
+        try{
+          if(Number.isFinite(a.duration)&&a.duration>0&&_r476Hidden){
+            a.currentTime=Math.min(Math.max(0,_r476Hidden.phaseMs/1000),Math.max(0,a.duration-.04));
+          }
+        }catch(e){}
+        const pp=a.play();if(pp?.catch)pp.catch(()=>{});
+      };
+      if(a.readyState>=1)go();else a.addEventListener('loadedmetadata',go,{once:true});
       r476MediaSession('recording');
       return true;
     }catch(e){}
   }
 
-  /* TTS: JS ile her tekrar başlatmak yerine uzun bir utterance'ı tek seferde
-     sisteme teslim et. Sessiz media elementi de media session'ı canlı tutar. */
+  /* TTS web platformunda WebAudio'ya yönlendirilemez; hız/voice korunur.
+     Uzun utterance, kilitte yeni timer çağrısı gerektirmeden speech engine'e
+     tek seferde teslim edilir. */
   try{
     a.loop=true;a.src=_r476SilentUrl;a.volume=1;a.load();
     const pp=a.play();if(pp?.catch)pp.catch(()=>{});
@@ -11520,22 +11668,43 @@ async function r476EndHidden(){
   let reps=0;
   if(s.mode==='recording'){
     const elapsed=Math.max(0,Date.now()-s.startedAt);
-    reps=Math.floor(elapsed/Math.max(650,s.cycleMs));
+    const cycle=Math.max(650,s.cycleMs);
+    const startPhase=Math.max(0,s.phaseMs||0)%cycle;
+    /* Gizlerken zaten sayılmış olan mevcut okuma tekrar sayılmaz.
+       Yalnız loop sınırından geçen YENİ tekrarlar sayılır. */
+    reps=Math.max(0,Math.floor((startPhase+elapsed)/cycle)-Math.floor(startPhase/cycle));
   }else{
-    /* TTS'de yalnız engine'in boundary/onend ile doğruladığı tekrarlar sayılır.
-       Browser TTS'yi kilitte tamamen askıya aldıysa sahte sayım yapmayız. */
     reps=r476TtsSpoken();
   }
 
   r476StopTtsBatch();
-  try{
-    const a=r476Audio();a.pause();a.src=_r476SilentUrl;a.loop=true;a.volume=1;a.load();
-    if(Z.auto){const pp=a.play();if(pp?.catch)pp.catch(()=>{})}
-  }catch(e){}
-
   try{window.SukunAudioSessionRegistry?.sync?.()}catch(e){}
   await r476SilentApply(reps);
   _zAutoSon=Date.now();
+
+  const a=r476Audio();
+  const oldVol=Number.isFinite(a.volume)?a.volume:1;
+
+  /* Önce normal foreground okumasını devreye al; sonra kilit track'ini
+     220ms'de söndür. Böylece dönüşte ses kesilmez ama çift ses de uzamaz. */
+  if(Z.auto&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
+    try{spkSayZikir(false)}catch(e){}
+  }
+  const t0=performance.now();
+  const fade=()=>{
+    const k=Math.min(1,(performance.now()-t0)/220);
+    try{a.volume=Math.max(0,oldVol*(1-k))}catch(e){}
+    if(k<1)requestAnimationFrame(fade);
+    else{
+      try{
+        a.pause();a.src=_r476SilentUrl;a.loop=true;a.volume=1;a.load();
+        if(Z.auto){const pp=a.play();if(pp?.catch)pp.catch(()=>{})}
+      }catch(e){}
+    }
+  };
+  requestAnimationFrame(fade);
+
+  _zAutoSessizUntil=Date.now()+900;
   return reps;
 }
 function r476Stop(all=true){
@@ -11549,7 +11718,7 @@ function r476Stop(all=true){
   }
 }
 window.SukunLockScreenZikir={
-  version:'r476',
+  version:'r477',
   prime:r476Prime,
   prepare:r476Prepare,
   beginHidden:r476BeginHidden,
@@ -11558,6 +11727,21 @@ window.SukunLockScreenZikir={
   source:()=>_r476Hidden?.mode||(_r476Prepared.url?'recording':'tts'),
   stop:()=>r476Stop(true)
 };
+/* r477 — ayar değişince sonraki kilit için FX track'ini görünürken yenile. */
+let _r477PrepTO=0;
+function r477PrepareSoon(){
+  if(document.hidden)return;
+  clearTimeout(_r477PrepTO);
+  _r477PrepTO=setTimeout(()=>{try{r476Prepare()}catch(e){}},180);
+}
+document.addEventListener('input',e=>{
+  if(e.target?.matches?.('#tempoSld,#recRev,#genRate,#spkRate,[data-r434-tempo],[data-r434-rev]'))r477PrepareSoon();
+},{passive:true});
+document.addEventListener('click',e=>{
+  if(e.target?.closest?.('#rec8dTgl,[data-r434-8d],#recEchoTgl,#recGainTgl'))r477PrepareSoon();
+},{passive:true});
+window.addEventListener('sukun:voicesource',r477PrepareSoon,{passive:true});
+
 function zAutoTempoMs(){ return Math.max(180,Math.round((+Z.tempo||1)*1000)); }
 function zSessizTamamla(n){
   n=Math.max(0,Math.min(20000,Math.floor(n||0)));
@@ -11646,26 +11830,37 @@ document.addEventListener('visibilitychange',()=>{
     if(Z.auto)zAutoUyanPlanla('visibility');
   })();
 });
-window.addEventListener('pageshow',()=>{if(Z.auto)zAutoUyanPlanla('pageshow')});
+window.addEventListener('pageshow',()=>{
+  if(!Z.auto)return;
+  if(window.SukunLockScreenZikir?.running?.()){
+    (async()=>{try{await r476EndHidden()}catch(e){};zAutoUyanPlanla('pageshow')})();
+  }else zAutoUyanPlanla('pageshow');
+});
 
+let _r477AutoStarting=false,_r477AutoTapAt=0;
 function autoStart(){
-  if(Z.auto)return;
-  ac();
+  if(Z.auto||_r477AutoStarting)return;
+  _r477AutoStarting=true;
+
+  /* İlk dokunuşta state hemen commit edilir. Açılış animasyonu artık motoru
+     3 saniye rehin tutmaz; yalnız kısa, non-blocking bir görsel işarettir. */
+  try{ac();if(ctx?.state==='suspended')ctx.resume().catch(()=>{})}catch(e){}
   try{r476Prime();r476Prepare()}catch(e){}
-  /* r118: «başla»ya basıldı ama ilk tık tempo kadar sonra geliyordu. */
-  const _basla=()=>{
-    if(Z.auto)return;
-    Z.auto=true;
-    _zAutoSon=Date.now();
-    try{r476Prime();r476Prepare()}catch(e){}
-    zAutoKur(true);
-    /* r154: eski kodda lockOn() return'ün ALTINDA kaldığı için hiçbir zaman
-       çalışmıyordu. Artık gerçekten akış başlarken çağrılır. */
-    lockOn();
-    try{zUI()}catch(e){}
-    try{ if(zikirSesliAktifMi())spkSayZikir(false); }catch(e){}
-  };
-  try{ zikirAcilisAna('tam',_basla); }catch(e){ _basla(); }
+
+  Z.auto=true;
+  _zAutoSon=Date.now();
+  try{lockOn()}catch(e){}
+  try{zUI()}catch(e){}
+  try{zAutoKur(true)}catch(e){}
+
+  /* İlk ses de aynı dokunuşta başlar. */
+  try{if(zikirSesliAktifMi())spkSayZikir(false)}catch(e){}
+
+  /* Eski tam 3-2-1 töreni yalnız kısa bir işaret olarak görünür;
+     kullanıcı ikinci kez Saymaya Başla'ya basmak zorunda kalmaz. */
+  try{if(!ZA.kapali)zikirAcilisAna('kisa',()=>{})}catch(e){}
+
+  setTimeout(()=>{_r477AutoStarting=false},520);
 }
 function autoStop(){
   if(!Z.auto)return;
@@ -12420,7 +12615,12 @@ $('#favBtn').onclick=()=>{
     toast(eklendi?'★ Favorilere eklendi':'Favorilerden çıkarıldı');
   if(typeof sfx==='function')sfx(eklendi?'page':'tick');   /* sfx paleti: open·tick·page·close·done */
 };
-$('#autoBtn').onclick=()=>Z.auto?autoStop():autoStart();
+$('#autoBtn').onclick=()=>{
+  const now=Date.now();
+  if(now-_r477AutoTapAt<620)return;
+  _r477AutoTapAt=now;
+  Z.auto?autoStop():autoStart();
+};
 $('#plusBtn').onclick=()=>{ if(Z.auto)return; rep(); };
 $('#undoBtn').onclick=()=>{
   if(Z.auto)autoStop();
@@ -20873,7 +21073,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r476',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r478',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -31942,10 +32142,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r476',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r478',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r476-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -43893,6 +44093,307 @@ window.SukunZikirPresentation={
   setEngaged(v){engaged=!!v;sync({announce:engaged});},
   sync
 };
+})();
+</script>
+
+
+<style id="r478-dock-telemetry-style">
+/* ═══════════════════════════════════════════════════════════════
+   r478 — BAR TELEMETRİSİ
+   CANLI rozeti küçültüldü; mini/midi dock içinde zikir ilerlemesi tek
+   kompakt satırda görünür: sayım, kalan ve Esmâ/Berhetiyye sırası.
+   ═══════════════════════════════════════════════════════════════ */
+
+#r170Now #r422NowInfo{position:relative!important}
+
+/* CANLI artık başlığın büyük bir parçası değil; sağ üstte küçük durum damgası. */
+#r170Now #r422NowHead{
+  position:relative!important;
+  padding-right:48px!important;
+}
+#r170Now #r422NowLive{
+  position:absolute!important;
+  right:0!important;
+  top:0!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:48px!important;
+  min-height:15px!important;
+  padding:2px 5px!important;
+  border-radius:999px!important;
+  font:750 6.5px/1 "JetBrains Mono",ui-monospace,monospace!important;
+  letter-spacing:.055em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  opacity:.82!important;
+  box-shadow:none!important;
+}
+#r170Now #r422NowLive::before{
+  content:"";
+  flex:0 0 4px;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:currentColor;
+  opacity:.78;
+}
+
+/* Yeni kompakt bilgi rayı. */
+#r478DockStats{
+  display:none;
+  min-width:0;
+  align-items:center;
+  gap:5px;
+  margin-top:1px;
+}
+#r478DockStats[hidden]{display:none!important}
+.r478Stat{
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:23px;
+  padding:0 7px;
+  border:1px solid color-mix(in srgb,var(--gold) 12%,var(--line));
+  border-radius:999px;
+  background:rgba(255,255,255,.022);
+  color:var(--mut);
+  white-space:nowrap;
+  overflow:hidden;
+}
+.r478Stat>i{
+  flex:none;
+  color:var(--dim);
+  font:700 6.6px/1 "JetBrains Mono",ui-monospace,monospace;
+  font-style:normal;
+  letter-spacing:.07em;
+}
+.r478Stat>b{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:color-mix(in srgb,var(--goldh) 88%,var(--text));
+  font:760 8.8px/1 "JetBrains Mono",ui-monospace,monospace;
+  font-variant-numeric:tabular-nums;
+}
+.r478Stat.r478Name{
+  flex:1 1 132px;
+}
+.r478Stat.r478Name>b{
+  font-family:"Figtree",system-ui,sans-serif;
+  font-size:9px;
+  letter-spacing:.01em;
+}
+#r478DockStats[data-near="1"] .r478Remain{
+  border-color:color-mix(in srgb,var(--gold) 28%,var(--line));
+  background:color-mix(in srgb,var(--gold) 6%,rgba(255,255,255,.02));
+}
+
+/* Dock görünür ve gerçek zikir bağlamı varsa telemetri görünür. */
+body.r431-dock-visible #r478DockStats[data-active="1"]{
+  display:flex;
+}
+
+/* MINI: ana başlık + kaynak + telemetri + progress. Gereksiz satırlar yine kapalı. */
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r478DockStats[data-active="1"]{
+  display:grid!important;
+  grid-template-columns:auto auto minmax(0,1fr)!important;
+  gap:4px!important;
+  margin-top:1px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat{
+  height:20px!important;
+  padding:0 6px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat>i{
+  display:none!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat>b{
+  font-size:8px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat.r478Name>b{
+  font-size:8.5px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowHead{
+  padding-right:44px!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowLive{
+  top:0!important;
+  max-width:43px!important;
+  padding-inline:4px!important;
+  font-size:6px!important;
+}
+
+/* Expanded/midi durumda bilgiyi rahatça oku; detay sheet açmaya gerek yok. */
+body.r447-dock-expanded.r431-dock-visible:not(.r433-dock-hidden) #r478DockStats[data-active="1"]{
+  display:flex!important;
+  margin-top:2px!important;
+}
+
+/* Tam Detaylar açıldığında telemetri yine üst barda kalır; tekrar kart üretmeyiz. */
+body.r434-inline-details-open #r478DockStats{
+  opacity:.92;
+}
+
+@media(max-width:390px){
+  #r478DockStats{gap:3px}
+  .r478Stat{padding-inline:5px}
+  body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat{
+    padding-inline:5px!important;
+  }
+  body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) .r478Stat.r478Name{
+    min-width:0!important;
+  }
+}
+</style>
+
+
+<script id="r478-dock-telemetry-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R478_DOCK_TELEMETRY__)return;
+window.__SUKUN_R478_DOCK_TELEMETRY__=1;
+
+const $=id=>document.getElementById(id);
+let obs=null, observed=[], raf=0, last='';
+
+function ensure(){
+  const info=$('r422NowInfo');
+  if(!info)return null;
+  let row=$('r478DockStats');
+  if(!row){
+    row=document.createElement('div');
+    row.id='r478DockStats';
+    row.setAttribute('aria-label','Zikir ilerleme bilgisi');
+    row.innerHTML=
+      '<span class="r478Stat r478Count"><i>SAYIM</i><b id="r478Count">—</b></span>'+
+      '<span class="r478Stat r478Remain"><i>KALAN</i><b id="r478Remain">—</b></span>'+
+      '<span class="r478Stat r478Name"><i id="r478Kind">ZİKİR</i><b id="r478Name">—</b></span>';
+
+    const current=info.querySelector('.r422NowLine');
+    if(current)current.insertAdjacentElement('afterend',row);
+    else{
+      const progress=$('r422Progress');
+      info.insertBefore(row,progress||null);
+    }
+  }
+  bindObserved();
+  return row;
+}
+
+function currentStep(){
+  try{
+    const P=window.R170?.Player;
+    const s=P?.queue?.[P.i];
+    return (P&&(P.playing||P.paused)&&s?.type==='zikir')?s:null;
+  }catch(e){return null}
+}
+function ctx(){
+  let cat='',idx=0,step=currentStep();
+  try{
+    if(step){cat=String(step.cat||'');idx=Math.max(0,+step.idx||0)}
+    else if(typeof Z!=='undefined'){cat=String(Z.cat||'');idx=Math.max(0,+Z.idx||0)}
+  }catch(e){}
+
+  let items=[],it=null;
+  try{items=(typeof ZIKIR!=='undefined'&&ZIKIR?.[cat]?.items)||[];it=items[idx]||null}catch(e){}
+  const name=String(it?.tr||it?.t||$('zTr')?.textContent||'Zikir').trim();
+
+  let count=0,target=0,remain=null,devir=0;
+  try{
+    count=Math.max(0,+Z.count||0);
+    target=Math.max(0,+Z.target||0);
+    devir=Math.max(0,+Z.devir||0);
+    remain=target>0?Math.max(0,target-count):null;
+  }catch(e){}
+
+  /* DOM sayaçları canlıysa onları tercih et; canonical zUI ile birebir aynı değer. */
+  const domCount=Number(String($('cntBig')?.textContent||'').replace(/[^\d.-]/g,''));
+  const domRemain=Number(String($('cntRemain')?.textContent||'').replace(/[^\d.-]/g,''));
+  const domTarget=Number(String($('cntTargetView')?.textContent||'').replace(/[^\d.-]/g,''));
+  if(Number.isFinite(domCount))count=Math.max(0,domCount);
+  if(Number.isFinite(domTarget)&&domTarget>0)target=domTarget;
+  if(Number.isFinite(domRemain)&&target>0)remain=Math.max(0,domRemain);
+
+  const len=items.length||0,pos=len?Math.min(len,idx+1):0;
+  const kind=cat==='esma'?'ESMÂ':cat==='berhet'?'BERHETİYYE':cat==='tevhid'?'TEVHİD':'ZİKİR';
+
+  /* Yalnız gerçekten zikir bağlamı varken göster.
+     Akıllı seans zikir adımı veya manuel/otomatik zikir yeterli. */
+  let active=!!step;
+  try{
+    active=active||!!Z.auto||
+      document.body.classList.contains('sukun-tefekkur-mode')||
+      (document.body.classList.contains('sukun-zikir-tab')&&!!name&&name!=='Zikir'&&(+count>0||+devir>0));
+  }catch(e){}
+
+  return{active,cat,idx,len,pos,name,count,target,remain,devir,kind};
+}
+
+function text(c){
+  const sayim=c.target>0?`${c.count}/${c.target}`:`${c.count}/∞`;
+  const kalan=c.target>0?String(c.remain??Math.max(0,c.target-c.count)):'∞';
+  const order=c.len?`${c.pos}/${c.len}`:'';
+  const nm=order?`${order} · ${c.name}`:c.name;
+  return{sayim,kalan,nm};
+}
+function render(){
+  raf=0;
+  const row=ensure();if(!row)return;
+  const c=ctx(),t=text(c);
+  const sig=[c.active,c.cat,c.idx,c.count,c.target,c.remain,c.devir,c.name,c.len].join('|');
+  if(sig===last)return;last=sig;
+
+  row.dataset.active=c.active?'1':'0';
+  row.dataset.near=(c.target>0&&Number.isFinite(c.remain)&&c.remain<=Math.max(10,Math.round(c.target*.1)))?'1':'0';
+  $('r478Count').textContent=t.sayim;
+  $('r478Remain').textContent=t.kalan;
+  $('r478Kind').textContent=c.kind;
+  $('r478Name').textContent=t.nm;
+  $('r478Name').title=(c.kind+' '+t.nm+(c.devir?` · Devir ${c.devir}`:'')).trim();
+
+  const live=$('r422NowLive');
+  if(live){
+    const paused=/DURAK/i.test(live.textContent||'');
+    live.title=paused?'Duraklatıldı':'Canlı oynatma';
+    live.setAttribute('aria-label',paused?'Duraklatıldı':'Canlı oynatma');
+  }
+}
+function schedule(){
+  if(raf)return;
+  raf=requestAnimationFrame(render);
+}
+function bindObserved(){
+  const nodes=[$('cntBig'),$('cntRemain'),$('cntTargetView'),$('cntSub'),$('zTr')].filter(Boolean);
+  const changed=nodes.length!==observed.length||nodes.some((n,i)=>n!==observed[i]);
+  if(!changed)return;
+  obs?.disconnect?.();
+  observed=nodes;
+  if(!nodes.length)return;
+  obs=new MutationObserver(schedule);
+  nodes.forEach(n=>obs.observe(n,{childList:true,characterData:true,subtree:true}));
+}
+
+['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:source','sukun:voicesource']
+  .forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#autoBtn,#plusBtn,#undoBtn,#resetBtn,#zList,[data-i],#r170Prev,#r170Next,#r170Play,#r170Stop')){
+    setTimeout(schedule,0);
+    setTimeout(schedule,90);
+  }
+},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(schedule,40)},{passive:true});
+window.addEventListener('pageshow',()=>setTimeout(schedule,50),{passive:true});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(schedule,100),{once:true});
+}else setTimeout(schedule,60);
+
+window.SukunDockTelemetry={version:'r478',sync:schedule,snapshot:ctx};
 })();
 </script>
 
