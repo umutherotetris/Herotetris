@@ -1,8 +1,8 @@
-/* SÜKÛN r479 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r480 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r479';
-const CACHE = 'sukun-r479-20260823a';
+const SURUM = 'r480';
+const CACHE = 'sukun-r480-20260823a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r480 Hızlı tempo sesli zikir: 1 sayaç = 1 tamamlanan kayıt/TTS; 0.8 sn’de ses bitmeden sayı ilerlemez ve catch-up yapılmaz.',
   'r479 Okuyucular üst üste binebiliyordu: yedi modülün "çalıyor mu" yoklaması window üzerinden bakıyordu ama bu modüller window\'a atanmıyor — yoklama kalıcı false dönüyordu, yeni okuyucu başlarken öncekini durduran yedek yol hiç devreye girmiyordu.',
   'r479 Berhetiyye 28 İsim Seyri oynatma kontratına hiç kaydolmuyordu; artık merkezi durdurma, global duraklat ve Şimdi Çalıyor akışına dahil.',
   'r479 Sağlık denetimi çalan modül için yanlış "provider state bayat" uyarısı üretip onarım rutinini sağlıklı oturuma müdahale ettiriyordu.',
