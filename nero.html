@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r493 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r494 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r493">
+<meta name="sukun-build" content="r494">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r493">
+<link rel="manifest" href="./manifest.webmanifest?v=r494">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5578,8 +5578,8 @@ body[data-focus="1"] .zCtl{
 
       <div class="sldRow" style="margin-top:10px">
         <label for="tempoSld">Tempo</label>
-        <input type="range" id="tempoSld" min="0.8" max="6" step="0.1" value="2" data-tip="Otomatik akışta zikirlerin ne hızda sayılacağı. Yavaş olması nefese uymayı kolaylaştırır.">
-        <span class="valB" id="tempoVal">2.0 sn</span>
+        <input type="range" id="tempoSld" min="0.8" max="6" step="0.1" value="1" data-tip="Otomatik akışta zikirlerin ne hızda sayılacağı. Yavaş olması nefese uymayı kolaylaştırır.">
+        <span class="valB" id="tempoVal">1.0 sn</span>
       </div>
       <div class="targetPremium" id="targetPremium">
         <div class="targetModeRow" role="group" aria-label="Zikir hedef modu">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.43 — build 2026-08-24-r493</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.44 — build 2026-08-24-r494</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r494","t":"24 Ağustos 2026","b":["Navigation flashing kökten giderildi: aynı DOM’u sırayla yeniden parent eden r491 restart runtime ve r493 navigation runtime kaldırıldı; tek r494 owner kaldı","Prev/Reset/Next healthy mount sonrası replaceChildren/re-parent yapmaz; playback eventleri yalnız state/label günceller, bu nedenle butonlar zıplamaz ve yanıp sönmez","r493 Akıllı Seans yönlendirmesindeki window.next/window.previous hatası düzeltildi; compact oklar artık exported PlaybackController.next/previous smart-session kontratını çağırır","Universal bar içindeki legacy r170Prev/r170Next r494 nav görünürken gizlenir; aynı Önceki/Sonraki/Reset kontrollerinden iki takım kalmaz","CANLI rozeti küçültüldü, statik hale getirildi ve nav kümesinden ayrı sakin header alanına taşındı; animation/transition/will-change kapatıldı","Navigation butonlarında glint/did-act/opacity geçişleri kaldırıldı; yalnız basma anında küçük scale feedback vardır, flashing üretmez","Yeni kurulumlarda zikir tempo varsayılanı 2.0 sn yerine 1.0 sn oldu; 0.8 sn ve diğer daha hızlı değerler slider üzerinden hâlâ seçilebilir, kayıtlı kullanıcı tercihi ezilmez"]},
  {"v":"r493","t":"24 Ağustos 2026","b":["Prev / Reset / Next tek SukunNavigation component ailesinde birleştirildi; ana sayaç, Tefekkür ve mini/midi bar aynı factory, ikon, tooltip ve mikro-etkileşim sözleşmesini kullanır","r492 navigation CSS/runtime kaldırıldı; r493 tek navigation authority olarak r491 restart slotlarını dekore eder","Reset butonu ayrı görsel dil olmaktan çıkarıldı ve merkez navigation aksiyonu oldu; davranış yine SukunZikirRestart üzerinden tek kaynaktan yürür","Pointer/focus tooltip portalı tekilleştirildi; mobilde aria-label ve title fallback korunur","Tüm navigation aksiyonlarında aynı 180-220 ms press/glint mikro-etkileşimi kullanılır; otonom döngüsel animasyon yoktur","CANLI rozeti daha küçük, düşük kontrastlı ve navigation kümesinden uzak boş header alanına taşındı"]},
  {"v":"r492","t":"24 Ağustos 2026","b":["Ana sayaç, Tefekkür ve mini/midi canlı bar için ortak prev/reset/next kümesi eklendi; r491 restart slotları cluster yapısına çevrildi","Önceki/Sonraki butonları direct zikirde kategori içi zikri değiştirir ve count/deviri sıfırlar; auto açıksa aynı şekilde temiz yeniden başlatır","Canlı bar akıllı seans modunda compact prev/next butonları smart-session previous/next akışına bağlanır","CANLI rozeti küçültüldü ve başlıkta daha sakin boş alana taşındı; header padding nav kümesine göre yeniden ayarlandı"]},
  {"v":"r491","t":"24 Ağustos 2026","b":["Restart sistemi tamamen tekilleştirildi: ana sayaç, canonical Tefekkür ve mini/midi universal bar aynı SukunZikirRestart.restart() davranışını ve aynı sukun-restart-component görsel bileşenini kullanır","r488’deki üç ayrı ensureMain/ensureTef/ensureDock buton yaklaşımı kaldırıldı; r490’daki legacy butona click proxy köprüsü bu sürüme taşınmadı","Ana sayaçtaki mevcut resetBtn gerçek component instance olarak Saymaya Başla kontrol satırının hemen altına fiziksel olarak taşınır; ayarlar bölümünde ikinci kopya kalmaz","Tefekkür sahnesinde aynı component zCounterActions yani Saymaya Başla satırının hemen altına mount edilir; Tefekkürden Çık üstte bağımsız kalır","Universal bar mini/midi görünümde aynı componentin compact varyantını kullanır; Akıllı Seans zikir adımında yalnız o adımı, normal zikrde count/deviri baştan başlatır","Restart otomatik akış açıksa sesi güvenli kesip count/devir 0 yaptıktan sonra aynı zikri yeniden otomatik başlatır; hedef, tempo, seçili zikir ve ömür boyu toplam korunur","Session memory eski ilerlemeyi geri getirmesin diye restart anında temizlenip sıfır konumu yeniden kaydedilir; bounded/event-driven mount kullanılır ve document subtree observer yoktur"]},
@@ -10415,7 +10416,7 @@ koruma:{label:'🛡️ Koruyucu Sûreler',items:[
 ]}
 };
 
-const Z={cat:'esma',idx:0,count:0,devir:0,target:33,targetMode:'fixed',tempo:2,auto:false,autoId:null,
+const Z={cat:'esma',idx:0,count:0,devir:0,target:33,targetMode:'fixed',tempo:1,auto:false,autoId:null,
  tick:true,vib:true,mean:true,adv:false,total:S.get('sukun.total',0)};
 
 function zItem(){const c=ZIKIR[Z.cat]; return c?c.items[Z.idx]:undefined;}
@@ -21372,7 +21373,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r493',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r494',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32468,7 +32469,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r493',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r494',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -45215,235 +45216,306 @@ window.SukunControls={version:'r487',normalize,refresh:()=>normalize(document)};
 </script>
 
 
-<style id="r491-restart-component-style">
+
+<style id="r494-stable-navigation-style">
 /* ═══════════════════════════════════════════════════════════════
-   r491 — SÜKÛN RESTART COMPONENT
-   ONE behavior + ONE visual component + THREE surfaces
-   main counter / Tefekkür / mini-midi universal bar
+   r494 — STABLE ZIKIR NAVIGATION
+   ONE DOM owner. ONE behavior owner. No re-parent ping-pong.
+   Main / Tefekkür / mini-midi dock.
    ═══════════════════════════════════════════════════════════════ */
 
-.sukun-restart-component{
-  --rr-h:34px;
-  --rr-px:14px;
-  appearance:none!important;
-  -webkit-appearance:none!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:7px!important;
-  box-sizing:border-box!important;
-  min-height:var(--rr-h)!important;
-  height:var(--rr-h)!important;
-  padding:0 var(--rr-px)!important;
-  margin:0!important;
-  border-radius:999px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),
-    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.54))!important;
-  color:color-mix(in srgb,var(--goldh) 84%,var(--ivory))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 0 10px color-mix(in srgb,var(--gold) 7%,transparent)!important;
-  font:720 10px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.035em!important;
-  white-space:nowrap!important;
-  text-decoration:none!important;
-  animation:none!important;
-  transform:none!important;
-  cursor:pointer!important;
-  transition:
-    border-color .18s ease,
-    background .18s ease,
-    box-shadow .18s ease,
-    transform .16s ease!important;
-}
-.sukun-restart-component .rrIcon{
-  font-size:13px!important;
-  line-height:1!important;
-  opacity:.92!important;
-}
-.sukun-restart-component .rrLabel{
-  line-height:1!important;
-}
-.sukun-restart-component:hover{
-  border-color:color-mix(in srgb,var(--goldh) 42%,var(--line))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.055),
-    0 0 12px color-mix(in srgb,var(--goldh) 12%,transparent)!important;
-}
-.sukun-restart-component:active{
-  transform:scale(.97)!important;
-}
-.sukun-restart-component:focus-visible{
-  outline:2px solid color-mix(in srgb,var(--goldh) 40%,transparent)!important;
-  outline-offset:2px!important;
-}
-
-/* MAIN + TEFEKKÜR: always immediately under the central Saymaya Başla row. */
-.r491RestartSlot{
+.r494NavSlot{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   width:100%!important;
   min-width:0!important;
-  margin:8px auto 0!important;
+  margin:9px auto 0!important;
   padding:0!important;
 }
-.r491RestartSlot[hidden]{display:none!important}
-.r491RestartSlot .sukun-restart-component{
-  min-width:146px!important;
+.r494NavSlot[hidden]{display:none!important}
+
+.r494NavCluster{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  width:min(100%,510px)!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding:0!important;
 }
 
-/* Existing resetBtn has old zResetMini styles; component authority wins. */
-#resetBtn.sukun-restart-component{
-  position:static!important;
+/* No visual state animation: eliminates the observed flash/jump. */
+.r494NavBtn{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  box-sizing:border-box!important;
+  height:34px!important;
+  min-height:34px!important;
+  max-height:34px!important;
+  min-width:86px!important;
+  padding:0 12px!important;
+  margin:0!important;
+  border-radius:999px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.007)),
+    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.52))!important;
+  color:color-mix(in srgb,var(--goldh) 84%,var(--ivory))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
+  font:720 9.8px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.035em!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  opacity:1!important;
+  will-change:auto!important;
+}
+.r494NavBtn[data-action="reset"]{
+  min-width:144px!important;
+  border-color:color-mix(in srgb,var(--goldh) 34%,var(--line))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.009)),
+    color-mix(in srgb,var(--gold) 7%,rgba(var(--girdiK),.55))!important;
+}
+.r494NavBtn .r494Icon{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:14px!important;
+  height:14px!important;
+  flex:0 0 14px!important;
+  font-size:13px!important;
+  line-height:1!important;
+}
+.r494NavBtn:active{transform:scale(.975)!important}
+.r494NavBtn:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--goldh) 38%,transparent)!important;
+  outline-offset:2px!important;
+}
+
+/* Existing resetBtn becomes the actual main reset component, not a proxy. */
+#resetBtn.r494NavBtn{
+  position:relative!important;
   inset:auto!important;
   width:auto!important;
-  max-width:min(78vw,220px)!important;
+  margin:0!important;
+  text-decoration:none!important;
 }
 
-/* Tefekkür canonical primary controls: row, then restart directly below. */
-body.sukun-tefekkur-mode #tfRefinedLayout .tfPrimaryControls .r491RestartSlot{
+/* Tefekkür — exactly under Saymaya Başla row. */
+body.sukun-tefekkur-mode #r494TefNavSlot{
   margin-top:8px!important;
 }
-body.sukun-tefekkur-mode #tfRefinedLayout .sukun-restart-component[data-surface="tefekkur"]{
-  --rr-h:31px;
-  --rr-px:12px;
-  min-width:126px!important;
-  font-size:8.5px!important;
-  letter-spacing:.055em!important;
+body.sukun-tefekkur-mode #r494TefNavSlot .r494NavBtn{
+  height:31px!important;
+  min-height:31px!important;
+  max-height:31px!important;
+  min-width:72px!important;
+  padding-inline:9px!important;
+  font-size:8.4px!important;
+}
+body.sukun-tefekkur-mode #r494TefNavSlot .r494NavBtn[data-action="reset"]{
+  min-width:124px!important;
 }
 
-/* Universal bar / mini-midi variant: SAME component, only compact sizing. */
-#r491DockRestartSlot{
+/* Dock — compact form of the SAME controls. */
+#r494DockNavSlot{
   position:absolute!important;
-  right:0!important;
   top:-1px!important;
-  z-index:4!important;
-  display:none;
-  align-items:center!important;
-  justify-content:flex-end!important;
-  margin:0!important;
-  padding:0!important;
+  right:0!important;
+  z-index:5!important;
   width:auto!important;
+  margin:0!important;
 }
-#r170Now.r491-restart-visible #r491DockRestartSlot{
-  display:flex!important;
-}
-#r491DockRestartSlot .sukun-restart-component{
-  --rr-h:21px;
-  --rr-px:6px;
-  min-width:56px!important;
-  height:21px!important;
-  font-size:6.8px!important;
+#r494DockNavSlot .r494NavCluster{
+  width:auto!important;
   gap:4px!important;
-  letter-spacing:.028em!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
 }
-#r491DockRestartSlot .rrIcon{
-  font-size:9px!important;
+#r494DockNavSlot .r494NavBtn{
+  height:20px!important;
+  min-height:20px!important;
+  max-height:20px!important;
+  min-width:25px!important;
+  padding:0 6px!important;
+  gap:0!important;
+  font-size:0!important;
+}
+#r494DockNavSlot .r494NavBtn[data-action="reset"]{
+  min-width:52px!important;
+  gap:4px!important;
+  font-size:6.4px!important;
+}
+#r494DockNavSlot .r494NavBtn .r494Icon{
+  width:11px!important;
+  height:11px!important;
+  flex-basis:11px!important;
+  font-size:10.5px!important;
 }
 
-/* Make room beside the compact CANLI badge only while restart is relevant. */
-#r170Now.r491-restart-visible #r422NowHead{
+/* Hide the legacy player's duplicate previous/next when our single nav set is present.
+   Play/Pause + Stop remain in the legacy transport block. */
+#r170Now.r494-nav-visible #r170Prev,
+#r170Now.r494-nav-visible #r170Next{
+  display:none!important;
+}
+#r170Now.r494-nav-visible .r170NowBtns{
+  grid-template-columns:repeat(2,46px)!important;
+  grid-template-rows:1fr!important;
+}
+
+/* CANLI: static, smaller, away from restart/navigation area. */
+#r170Now.r494-nav-visible #r422NowHead{
   position:relative!important;
-  padding-right:112px!important;
+  padding-right:154px!important;
+  min-height:20px!important;
 }
-#r170Now.r491-restart-visible #r422NowLive{
-  right:61px!important;
+#r422NowLive{
+  position:absolute!important;
+  right:108px!important;
+  top:2px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:34px!important;
+  height:15px!important;
+  padding:0 5px!important;
+  border-radius:999px!important;
+  font-size:6.5px!important;
+  line-height:15px!important;
+  letter-spacing:.065em!important;
+  opacity:.72!important;
+  transform:none!important;
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+  box-shadow:none!important;
+}
+#r422NowLive::before,
+#r422NowLive .dot,
+#r422NowLive i{
+  transform:scale(.68)!important;
+  animation:none!important;
+  transition:none!important;
 }
 
-/* Calm Tefekkür: restart follows the same "wake controls first" contract. */
-body.sukun-tefekkur-mode.r447-focus-calm
-  .sukun-restart-component[data-surface="tefekkur"]{
+/* Tooltip also has no fade, so focus/pointer can't look like flashing. */
+#r494NavTip{
+  position:fixed!important;
+  z-index:2147483000!important;
+  pointer-events:none!important;
+  display:none;
+  max-width:min(78vw,230px)!important;
+  padding:7px 9px!important;
+  border-radius:10px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 26%,var(--line))!important;
+  background:rgba(var(--girdiK),.97)!important;
+  color:var(--ivory)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.28)!important;
+  font:650 9px/1.3 "Figtree",system-ui,sans-serif!important;
+  text-align:center!important;
+  animation:none!important;
+  transition:none!important;
+}
+#r494NavTip.show{display:block!important}
+
+body.sukun-tefekkur-mode.r447-focus-calm #r494TefNavSlot .r494NavBtn{
   pointer-events:none!important;
 }
 
-@media(max-width:390px){
-  .r491RestartSlot{margin-top:7px!important}
-  .r491RestartSlot .sukun-restart-component{min-width:138px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout
-    .sukun-restart-component[data-surface="tefekkur"]{
-    min-width:118px!important;
-  }
-  #r170Now.r491-restart-visible #r422NowHead{
-    padding-right:106px!important;
-  }
-  #r170Now.r491-restart-visible #r422NowLive{
-    right:57px!important;
-  }
-  #r491DockRestartSlot .sukun-restart-component{
-    min-width:52px!important;
-    font-size:6.4px!important;
-    padding-inline:5px!important;
-  }
+@media(max-width:430px){
+  #r494MainNavSlot .r494NavBtn{min-width:74px!important;padding-inline:9px!important}
+  #r494MainNavSlot .r494NavBtn[data-action="reset"]{min-width:132px!important}
+  #r170Now.r494-nav-visible #r422NowHead{padding-right:146px!important}
+  #r422NowLive{right:102px!important}
 }
-
-@media(prefers-reduced-motion:reduce){
-  .sukun-restart-component{transition:none!important}
+@media(max-width:360px){
+  .r494NavCluster{gap:5px!important}
+  #r494MainNavSlot .r494NavBtn{
+    min-width:64px!important;
+    padding-inline:7px!important;
+    font-size:8.2px!important;
+  }
+  #r494MainNavSlot .r494NavBtn[data-action="reset"]{min-width:120px!important}
+  #r494TefNavSlot .r494NavBtn{min-width:62px!important;padding-inline:6px!important}
+  #r494TefNavSlot .r494NavBtn[data-action="reset"]{min-width:112px!important}
+  #r170Now.r494-nav-visible #r422NowHead{padding-right:138px!important}
+  #r422NowLive{right:96px!important}
 }
 </style>
 
 
-<script id="r491-restart-component-runtime">
+<script id="r494-stable-navigation-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R491_RESTART__)return;
-window.__SUKUN_R491_RESTART__=1;
+if(window.__SUKUN_R494_NAV__)return;
+window.__SUKUN_R494_NAV__=1;
 
-const $=id=>document.getElementById(id);
-let busy=false;
-const slots=new Map();
-const buttons=new Map();
+const d=document,$=id=>d.getElementById(id);
+let busy=false,tipTimer=0;
 
-function directTitle(){
-  try{
-    return (($('zTr')?.textContent||ZIKIR?.[Z.cat]?.items?.[Z.idx]?.tr||'Zikir')+'').trim();
-  }catch(e){return'Zikir'}
+function setAttrIf(el,name,value){
+  if(!el)return;
+  value=String(value);
+  if(el.getAttribute(name)!==value)el.setAttribute(name,value);
 }
-function smartStep(){
-  try{
-    const P=window.R170?.Player;
-    const s=P?.queue?.[P.i];
-    return P&&s?.type==='zikir'&&(P.playing||P.paused)?{P,s}:null;
-  }catch(e){return null}
+function setTextIf(el,value){
+  if(!el)return;
+  value=String(value);
+  if(el.textContent!==value)el.textContent=value;
 }
 function dockOwner(){
   try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e){return'none'}
 }
-function directContext(){
+function smartActive(){
+  try{
+    const P=window.R170?.Player,s=P?.queue?.[P.i];
+    return !!(P&&s?.type==='zikir'&&(P.playing||P.paused));
+  }catch(e){return false}
+}
+function directActive(){
   try{
     if(document.body.classList.contains('sukun-tefekkur-mode'))return true;
     if(Z?.auto)return true;
-    const snap=window.SukunDockTelemetry?.snapshot?.();
-    if(snap?.active)return true;
-    return document.body.classList.contains('sukun-zikir-tab') &&
+    if(window.SukunDockTelemetry?.snapshot?.()?.active)return true;
+    return document.body.classList.contains('sukun-zikir-tab')&&
       (((+Z?.count||0)>0)||((+Z?.devir||0)>0));
   }catch(e){return false}
 }
-
-/* ── ONE restart behavior ── */
-function stopDirectVoice(){
+function currentItems(){
+  try{
+    const g=ZIKIR?.[Z?.cat];
+    return Array.isArray(g?.items)?g.items:[];
+  }catch(e){return[]}
+}
+function stopZikirVoice(){
   try{if(typeof _zSesSeq!=='undefined')_zSesSeq++}catch(e){}
   try{
     window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
     window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
+    window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
+    window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
   }catch(e){}
   try{window.speechSynthesis?.cancel?.()}catch(e){}
-  try{if(typeof sesDurdur==='function')sesDurdur('zikir-restart')}catch(e){}
+  try{if(typeof sesDurdur==='function')sesDurdur('r494-nav')}catch(e){}
   try{if(typeof r476Stop==='function')r476Stop(true)}catch(e){}
 }
-function clearTransientState(){
-  try{window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null}catch(e){}
-  try{window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false}catch(e){}
-  try{window.__SUKUN_NIYET_GATE_PROMISE__=null}catch(e){}
-  try{window.__SUKUN_NIYET_AUDIO_PROMISE__=null}catch(e){}
-  try{if(typeof _r485NiyetDoneKey!=='undefined')_r485NiyetDoneKey=''}catch(e){}
-  try{if(typeof _r485NiyetGateKey!=='undefined')_r485NiyetGateKey=''}catch(e){}
-  try{if(typeof _zAutoSon!=='undefined')_zAutoSon=0}catch(e){}
+function persistZero(){
+  try{
+    window.SukunSessionMemory?.clear?.();
+    window.SukunSessionMemory?.save?.();
+  }catch(e){}
+  try{if(typeof S!=='undefined')S.set('sukun.total',Z.total)}catch(e){}
 }
-function syncSpecialJourneys(){
+function resetSpecialJourneys(){
   try{
     if(typeof HATIM!=='undefined'&&HATIM?.active&&Z.cat==='esma'&&Z.idx===HATIM.idx){
       HATIM.count=0;hatSave?.();hatUI?.();
@@ -45455,623 +45527,170 @@ function syncSpecialJourneys(){
     }
   }catch(e){}
 }
-function persistFreshZero(){
-  try{
-    window.SukunSessionMemory?.clear?.();
-    window.SukunSessionMemory?.save?.();
-  }catch(e){}
-  try{if(typeof S!=='undefined')S.set('sukun.total',Z.total)}catch(e){}
-}
-async function restartDirect(surface){
+
+async function restartDirect(){
   if(typeof Z==='undefined')return false;
   const wasAuto=!!Z.auto;
-
   if(wasAuto){
     try{autoStop()}catch(e){try{Z.auto=false}catch(_){}}
   }
-
-  stopDirectVoice();
-  clearTransientState();
-
-  /* Current zikr session only. Selection / target / tempo / total stay intact. */
-  Z.count=0;
-  Z.devir=0;
-  syncSpecialJourneys();
-
+  stopZikirVoice();
+  Z.count=0;Z.devir=0;
+  resetSpecialJourneys();
   try{zUI()}catch(e){}
-  persistFreshZero();
-
-  try{
-    window.dispatchEvent(new CustomEvent('sukun:zikirrestart',{
-      detail:{surface:surface||'unknown',title:directTitle(),auto:wasAuto}
-    }));
-  }catch(e){}
-  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
-  try{window.SukunLayoutEngine?.schedule?.()}catch(e){}
+  persistZero();
 
   if(wasAuto){
     try{if(typeof _r477AutoStarting!=='undefined')_r477AutoStarting=false}catch(e){}
-    await new Promise(r=>setTimeout(r,120));
+    await new Promise(r=>setTimeout(r,100));
     try{autoStart()}catch(e){}
-    setTimeout(persistFreshZero,180);
   }
-
-  try{
-    toast?.(wasAuto?'↺ Zikir baştan başladı':'↺ Zikir sıfırlandı');
-  }catch(e){}
   return true;
 }
-async function restartSmart(){
-  const cur=smartStep();
-  if(!cur)return false;
-  const {P}=cur;
-  const wasPlaying=!!P.playing;
-  try{P.pause()}catch(e){return false}
-  try{P.stepStarted=0;P.save?.()}catch(e){}
-  if(wasPlaying){
-    await new Promise(r=>setTimeout(r,90));
-    try{P.play()}catch(e){}
-  }
-  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
-  try{toast?.('↺ Bu zikir adımı baştan başladı')}catch(e){}
-  return true;
-}
-async function restartCurrent({surface='main'}={}){
-  if(busy)return false;
-  busy=true;
-  setBusy(true);
-  try{
-    if(surface==='dock'&&dockOwner()==='smart'&&smartStep()){
-      return await restartSmart();
-    }
-    return await restartDirect(surface);
-  }finally{
-    setTimeout(()=>{
-      busy=false;
-      setBusy(false);
-    },180);
-  }
-}
-
-/* ── ONE visual component factory ── */
-function decorateButton(btn,surface){
-  if(!btn)return null;
-  btn.type='button';
-  btn.classList.add('sukun-restart-component');
-  btn.dataset.surface=surface;
-  btn.setAttribute('aria-label',
-    surface==='dock'?'Çalan zikri sıfırdan başlat':'Bu zikri sıfırdan başlat');
-  btn.title=surface==='dock'
-    ?'Çalan zikri baştan başlat'
-    :'Bu zikri baştan başlat · hedef ve toplam istatistik korunur';
-  btn.innerHTML='<span class="rrIcon" aria-hidden="true">↺</span><span class="rrLabel">'+
-    (surface==='dock'?'Baştan':'Baştan başlat')+'</span>';
-  btn.onclick=e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    restartCurrent({surface});
-  };
-  buttons.set(surface,btn);
-  return btn;
-}
-function makeButton(surface){
-  if(surface==='main'){
-    const existing=$('resetBtn');
-    if(existing)return decorateButton(existing,'main');
-  }
-  let btn=buttons.get(surface);
-  if(btn?.isConnected)return btn;
-  btn=document.createElement('button');
-  btn.id=surface==='tefekkur'?'r491TefRestart':'r491DockRestart';
-  return decorateButton(btn,surface);
-}
-function makeSlot(surface){
-  let slot=slots.get(surface);
-  if(slot?.isConnected)return slot;
-  slot=document.createElement('div');
-  slot.className='r491RestartSlot';
-  slot.dataset.surface=surface;
-  if(surface==='main')slot.id='r491MainRestartSlot';
-  if(surface==='tefekkur')slot.id='r491TefRestartSlot';
-  if(surface==='dock')slot.id='r491DockRestartSlot';
-  slots.set(surface,slot);
-  return slot;
-}
-function mount(surface,host,after=null){
-  if(!host)return false;
-  const slot=makeSlot(surface);
-  const btn=makeButton(surface);
-  if(!btn)return false;
-  if(btn.parentNode!==slot)slot.replaceChildren(btn);
-
-  if(after&&after.parentNode===host){
-    if(after.nextElementSibling!==slot)after.insertAdjacentElement('afterend',slot);
-  }else if(slot.parentNode!==host){
-    host.appendChild(slot);
-  }
-  slot.hidden=false;
-  return true;
-}
-function unmount(surface){
-  const slot=slots.get(surface)||$(surface==='main'?'r491MainRestartSlot':
-    surface==='tefekkur'?'r491TefRestartSlot':'r491DockRestartSlot');
-  if(slot)slot.hidden=true;
-}
-function setBusy(on){
-  buttons.forEach(btn=>{
-    btn.disabled=!!on;
-    btn.setAttribute('aria-busy',on?'true':'false');
-  });
-}
-
-/* ── THREE mounts, same component ── */
-function mountMain(){
-  if(document.body.classList.contains('sukun-tefekkur-mode')){
-    unmount('main');
-    return false;
-  }
-  const actions=document.querySelector('.zCounterActions');
-  const parent=actions?.parentElement;
-  if(!actions||!parent)return false;
-  return mount('main',parent,actions);
-}
-function mountTef(){
-  if(!document.body.classList.contains('sukun-tefekkur-mode')){
-    unmount('tefekkur');
-    return false;
-  }
-  const primary=document.querySelector('#tfRefinedLayout .tfPrimaryControls');
-  const actions=primary?.querySelector('.zCounterActions');
-  if(!primary||!actions)return false;
-  return mount('tefekkur',primary,actions);
-}
-function mountDock(){
-  const head=$('r422NowHead');
-  const now=$('r170Now');
-  if(!head||!now)return false;
-
-  const slot=makeSlot('dock');
-  const btn=makeButton('dock');
-  if(btn.parentNode!==slot)slot.replaceChildren(btn);
-  if(slot.parentNode!==head)head.appendChild(slot);
-
-  let show=false;
-  if(dockOwner()==='smart')show=!!smartStep();
-  else show=directContext();
-
-  slot.hidden=!show;
-  now.classList.toggle('r491-restart-visible',!!show);
-  return true;
-}
-function sync(){
-  mountMain();
-  mountTef();
-  mountDock();
-}
-
-/* Bounded/event-driven only — no document subtree observer. */
-const bodyObs=new MutationObserver(ms=>{
-  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
-    requestAnimationFrame(sync);
-  }
-});
-if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
-
-[
-  'sukun:playbackchange',
-  'sukun:nowplayingchange',
-  'sukun:smartphase',
-  'sukun:zikirrestart'
-].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
-
-document.addEventListener('click',e=>{
-  if(e.target.closest?.(
-    '#autoBtn,#plusBtn,#undoBtn,#r170Prev,#r170Play,#r170Next,#r170Stop,[data-i],#zList'
-  )){
-    setTimeout(sync,40);
-  }
-},{passive:true});
-
-let bootTimers=[];
-function boot(){
-  bootTimers.forEach(clearTimeout);
-  bootTimers=[40,220,800,1800,3600].map(ms=>setTimeout(sync,ms));
-}
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',boot,{once:true});
-}else boot();
-
-window.SukunZikirRestart={
-  version:'r491',
-  restart:restartCurrent,
-  sync,
-  component:{
-    mount,
-    makeButton,
-    makeSlot
-  },
-  state:()=>({
-    busy,
-    owner:dockOwner(),
-    smart:!!smartStep(),
-    direct:directContext()
-  })
-};
-})();
-</script>
-
-
-
-<style id="r493-nav-component-style">
-/* r493 — ONE navigation component: prev / reset / next */
-:root{
-  --r493-nav-h:34px;
-  --r493-nav-radius:999px;
-  --r493-nav-gap:8px;
-}
-.sukun-nav-component{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  flex-wrap:nowrap!important;
-  gap:var(--r493-nav-gap)!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:min(100%,520px)!important;
-  margin:0 auto!important;
-  padding:0!important;
-}
-.sukun-nav-action{
-  --nav-h:var(--r493-nav-h);
-  --nav-px:12px;
-  --nav-min:90px;
-  appearance:none!important;
-  -webkit-appearance:none!important;
-  position:relative!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:7px!important;
-  box-sizing:border-box!important;
-  min-width:var(--nav-min)!important;
-  height:var(--nav-h)!important;
-  min-height:var(--nav-h)!important;
-  max-height:var(--nav-h)!important;
-  padding:0 var(--nav-px)!important;
-  margin:0!important;
-  border-radius:var(--r493-nav-radius)!important;
-  border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),
-    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.52))!important;
-  color:color-mix(in srgb,var(--goldh) 84%,var(--ivory))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 0 10px color-mix(in srgb,var(--gold) 7%,transparent)!important;
-  font:720 9.8px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.035em!important;
-  white-space:nowrap!important;
-  text-decoration:none!important;
-  cursor:pointer!important;
-  overflow:hidden!important;
-  animation:none!important;
-  transform:none!important;
-  transition:
-    transform .18s cubic-bezier(.22,.61,.36,1),
-    border-color .18s ease,
-    background .18s ease,
-    box-shadow .18s ease,
-    color .18s ease!important;
-}
-.sukun-nav-action .navIcon{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:15px!important;
-  height:15px!important;
-  flex:0 0 15px!important;
-  font-size:13px!important;
-  line-height:1!important;
-  opacity:.94!important;
-  transform:translateY(-.2px)!important;
-}
-.sukun-nav-action .navLabel{display:inline-block!important;line-height:1!important}
-.sukun-nav-action[data-action="reset"]{
-  --nav-min:146px;
-  border-color:color-mix(in srgb,var(--goldh) 34%,var(--line))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01)),
-    color-mix(in srgb,var(--gold) 7%,rgba(var(--girdiK),.56))!important;
-}
-.sukun-nav-action:hover{
-  border-color:color-mix(in srgb,var(--goldh) 48%,var(--line))!important;
-  color:color-mix(in srgb,var(--goldh) 92%,white)!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    0 0 12px color-mix(in srgb,var(--goldh) 12%,transparent)!important;
-}
-.sukun-nav-action:active,
-.sukun-nav-action.is-pressing{transform:scale(.965)!important}
-.sukun-nav-action:focus-visible{
-  outline:2px solid color-mix(in srgb,var(--goldh) 42%,transparent)!important;
-  outline-offset:2px!important;
-}
-.sukun-nav-action[disabled],
-.sukun-nav-action[aria-disabled="true"]{
-  opacity:.48!important;
-  cursor:default!important;
-  transform:none!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
-}
-@keyframes r493NavGlint{
-  0%{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 transparent}
-  45%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 14px color-mix(in srgb,var(--goldh) 24%,transparent)}
-  100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 8px color-mix(in srgb,var(--gold) 7%,transparent)}
-}
-.sukun-nav-action.did-act{animation:r493NavGlint .22s ease-out 1!important}
-
-/* main / tefekkür */
-#r491MainRestartSlot.r493-nav-ready,
-#r491TefRestartSlot.r493-nav-ready{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:100%!important;
-  margin:9px auto 0!important;
-  padding:0!important;
-}
-#r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="prev"],
-#r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="next"]{--nav-min:88px}
-#r491TefRestartSlot.r493-nav-ready .sukun-nav-action{
-  --nav-h:31px;
-  --nav-px:10px;
-  font-size:8.6px!important;
-}
-#r491TefRestartSlot.r493-nav-ready .sukun-nav-action[data-action="prev"],
-#r491TefRestartSlot.r493-nav-ready .sukun-nav-action[data-action="next"]{--nav-min:72px}
-#r491TefRestartSlot.r493-nav-ready .sukun-nav-action[data-action="reset"]{--nav-min:126px}
-
-/* mini / midi dock — exact same component, compact variant */
-#r491DockRestartSlot.r493-nav-ready{
-  position:absolute!important;
-  right:0!important;
-  top:-2px!important;
-  z-index:4!important;
-  display:none;
-  width:auto!important;
-  margin:0!important;
-  padding:0!important;
-}
-#r170Now.r491-restart-visible #r491DockRestartSlot.r493-nav-ready{display:flex!important}
-#r491DockRestartSlot.r493-nav-ready .sukun-nav-component{
-  width:auto!important;
-  max-width:none!important;
-  gap:5px!important;
-}
-#r491DockRestartSlot.r493-nav-ready .sukun-nav-action{
-  --nav-h:20px;
-  --nav-px:6px;
-  --nav-min:26px;
-  gap:0!important;
-  height:20px!important;
-  font-size:0!important;
-  letter-spacing:0!important;
-}
-#r491DockRestartSlot.r493-nav-ready .sukun-nav-action[data-action="reset"]{
-  --nav-min:54px;
-  gap:4px!important;
-  font-size:6.5px!important;
-  letter-spacing:.02em!important;
-}
-#r491DockRestartSlot.r493-nav-ready .sukun-nav-action .navIcon{
-  width:11px!important;height:11px!important;flex-basis:11px!important;font-size:10.5px!important;
-}
-
-/* smaller CANLI badge, moved away from navigation cluster */
-#r170Now.r491-restart-visible #r422NowHead{
-  position:relative!important;
-  padding-right:166px!important;
-}
-#r422NowLive{
-  min-width:38px!important;
-  height:16px!important;
-  padding:0 6px!important;
-  border-radius:999px!important;
-  top:2px!important;
-  right:116px!important;
-  font-size:7px!important;
-  line-height:16px!important;
-  letter-spacing:.075em!important;
-  transform:none!important;
-  opacity:.82!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 0 7px rgba(0,0,0,.16)!important;
-}
-#r422NowLive::before,
-#r422NowLive .dot,
-#r422NowLive i{transform:scale(.72)!important}
-
-/* single tooltip portal */
-#r493NavTooltip{
-  position:fixed!important;
-  left:0!important;
-  top:0!important;
-  z-index:2147483000!important;
-  pointer-events:none!important;
-  opacity:0;
-  transform:translate(-50%,-8px) scale(.98);
-  max-width:min(78vw,230px)!important;
-  padding:7px 9px!important;
-  border-radius:10px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 26%,var(--line))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),
-    rgba(var(--girdiK),.96)!important;
-  color:var(--ivory)!important;
-  box-shadow:0 10px 26px rgba(0,0,0,.28)!important;
-  font:650 9px/1.3 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.015em!important;
-  text-align:center!important;
-  transition:opacity .14s ease,transform .14s ease!important;
-}
-#r493NavTooltip.show{
-  opacity:1;
-  transform:translate(-50%,-12px) scale(1);
-}
-body.sukun-tefekkur-mode.r447-focus-calm .sukun-nav-action[data-surface="tefekkur"]{pointer-events:none!important}
-
-@media(max-width:430px){
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="prev"],
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="next"]{
-    --nav-min:76px;--nav-px:10px;
-  }
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="reset"]{--nav-min:136px}
-  #r170Now.r491-restart-visible #r422NowHead{padding-right:154px!important}
-  #r422NowLive{right:108px!important;min-width:36px!important;font-size:6.7px!important}
-}
-@media(max-width:360px){
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action,
-  #r491TefRestartSlot.r493-nav-ready .sukun-nav-action{--nav-px:8px;font-size:8.2px!important}
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="prev"],
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="next"]{--nav-min:66px}
-  #r491MainRestartSlot.r493-nav-ready .sukun-nav-action[data-action="reset"]{--nav-min:124px}
-  #r170Now.r491-restart-visible #r422NowHead{padding-right:146px!important}
-  #r422NowLive{right:102px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .sukun-nav-action,#r493NavTooltip{transition:none!important}
-  .sukun-nav-action.did-act{animation:none!important}
-}
-</style>
-
-
-<script id="r493-nav-component-runtime">
-(()=>{
-'use strict';
-if(window.__SUKUN_R493_NAV__)return;
-window.__SUKUN_R493_NAV__=1;
-
-const d=document;
-const $=id=>d.getElementById(id);
-let busy=false,tipTO=0;
-
-const SURFACES={
-  main:{slot:'r491MainRestartSlot'},
-  tefekkur:{slot:'r491TefRestartSlot'},
-  dock:{slot:'r491DockRestartSlot'}
-};
-
-function dockOwner(){
-  try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e){return'none'}
-}
-function smartStep(){
-  try{
-    const P=window.R170?.Player;
-    const s=P?.queue?.[P.i];
-    return P&&s?.type==='zikir'&&(P.playing||P.paused)?{P,s}:null;
-  }catch(e){return null}
-}
-function currentItems(){
-  try{
-    const g=ZIKIR?.[Z?.cat];
-    return Array.isArray(g?.items)?g.items:[];
-  }catch(e){return[]}
-}
-function stopDirectVoice(){
-  try{window.speechSynthesis?.cancel?.()}catch(e){}
-  try{if(typeof sesDurdur==='function')sesDurdur('zikir-nav')}catch(e){}
-  try{if(typeof r476Stop==='function')r476Stop(true)}catch(e){}
-  try{if(typeof _zSesSeq!=='undefined')_zSesSeq++}catch(e){}
-  try{
-    window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
-    window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
-    window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
-    window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
-  }catch(e){}
-}
-function persistZero(){
-  try{window.SukunSessionMemory?.clear?.()}catch(e){}
-  try{window.SukunSessionMemory?.save?.()}catch(e){}
-  try{if(typeof S!=='undefined')S.set('sukun.total',Z.total)}catch(e){}
-}
-async function directNavigate(delta){
+async function navigateDirect(delta){
   if(typeof Z==='undefined')return false;
   const items=currentItems();
   if(!items.length)return false;
+
   const wasAuto=!!Z.auto;
   if(wasAuto){
     try{autoStop()}catch(e){try{Z.auto=false}catch(_){}}
   }
-  stopDirectVoice();
+  stopZikirVoice();
 
   const len=items.length;
-  let idx=(+Z.idx||0)+delta;
-  if(idx<0)idx=len-1;
-  if(idx>=len)idx=0;
+  let next=(+Z.idx||0)+(delta>0?1:-1);
+  if(next<0)next=len-1;
+  if(next>=len)next=0;
 
-  Z.idx=idx;
+  Z.idx=next;
   Z.count=0;
   Z.devir=0;
 
+  try{if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(false)}catch(e){}
   try{renderZikir(true)}catch(e){}
   try{zUI()}catch(e){}
   persistZero();
 
-  try{window.dispatchEvent(new CustomEvent('sukun:zikirnav',{detail:{delta,idx,mode:'direct'}}))}catch(e){}
+  try{
+    window.dispatchEvent(new CustomEvent('sukun:zikirnav',{
+      detail:{delta:delta>0?1:-1,idx:next,mode:'direct'}
+    }));
+  }catch(e){}
   try{window.SukunDockTelemetry?.sync?.()}catch(e){}
-  try{window.SukunLayoutEngine?.schedule?.()}catch(e){}
 
   if(wasAuto){
-    await new Promise(r=>setTimeout(r,120));
+    await new Promise(r=>setTimeout(r,100));
     try{autoStart()}catch(e){}
   }
   return true;
 }
-function smartNavigate(delta){
+
+/* Smart-session navigation now uses the exported PlaybackController contract.
+   r493 called window.next/window.previous, but those functions are lexical and
+   are NOT window globals; therefore the arrow looked clickable but did nothing. */
+function navigateSmart(delta){
   try{
-    const fn=delta>0?window.next:window.previous;
-    if(typeof fn==='function'){
-      fn('smart-session');
+    const PC=window.PlaybackController;
+    if(PC){
+      const out=delta>0?PC.next?.('smart-session'):PC.previous?.('smart-session');
+      if(out!==false&&out!==undefined)return true;
+      if(out===true)return true;
+    }
+  }catch(e){}
+  try{
+    const P=window.R170?.Player;
+    if(P){
+      if(delta>0)P.next();else P.prev();
       return true;
     }
   }catch(e){}
   return false;
 }
+async function restartSmart(){
+  try{
+    const P=window.R170?.Player;
+    if(!P||!smartActive())return false;
+    const was=P.playing;
+    P.pause();
+    P.stepStarted=0;
+    P.save?.();
+    if(was){
+      await new Promise(r=>setTimeout(r,80));
+      P.play();
+    }
+    return true;
+  }catch(e){return false}
+}
+
 function actionText(action,surface){
-  const smart=surface==='dock'&&dockOwner()==='smart'&&!!smartStep();
-  if(action==='prev')return smart?'Önceki adım':'Önceki zikir';
-  if(action==='next')return smart?'Sonraki adım':'Sonraki zikir';
+  const smart=surface==='dock'&&dockOwner()==='smart'&&smartActive();
+  if(action==='prev')return smart?'Önceki seans adımı':'Önceki zikir';
+  if(action==='next')return smart?'Sonraki seans adımı':'Sonraki zikir';
   return smart?'Bu zikir adımını baştan başlat':'Bu zikri sıfırdan başlat';
 }
-function actionLabel(action,surface){
+function label(action,surface){
   if(surface==='dock'){
-    if(action==='prev'||action==='next')return'';
-    return'Baştan';
+    if(action==='reset')return'Baştan';
+    return'';
   }
-  if(action==='prev')return'Önceki';
-  if(action==='next')return'Sonraki';
-  return'Baştan başlat';
+  return action==='prev'?'Önceki':action==='next'?'Sonraki':'Baştan başlat';
 }
-function actionIcon(action){return action==='prev'?'←':action==='next'?'→':'↺'}
+function icon(action){return action==='prev'?'←':action==='next'?'→':'↺'}
+
+async function run(action,surface){
+  if(busy)return false;
+  busy=true;
+  hideTip();
+  try{
+    let ok=false;
+    const smart=surface==='dock'&&dockOwner()==='smart'&&smartActive();
+
+    if(action==='reset'){
+      ok=smart?await restartSmart():await restartDirect();
+    }else{
+      const delta=action==='next'?1:-1;
+      ok=smart?navigateSmart(delta):await navigateDirect(delta);
+    }
+
+    if(ok){
+      try{
+        const msg=action==='reset'?'↺ Baştan başladı':
+          action==='next'?'→ Sonraki zikre geçildi':'← Önceki zikre geçildi';
+        toast?.(msg);
+      }catch(e){}
+      requestAnimationFrame(sync);
+    }
+    return ok;
+  }finally{
+    setTimeout(()=>{busy=false},120);
+  }
+}
 
 function decorate(btn,action,surface){
+  if(!btn)return null;
   btn.type='button';
-  btn.className='sukun-nav-action';
+  btn.className='r494NavBtn';
   btn.dataset.action=action;
   btn.dataset.surface=surface;
-  btn.title=actionText(action,surface);
-  btn.setAttribute('aria-label',actionText(action,surface));
-  btn.innerHTML=
-    '<span class="navIcon" aria-hidden="true">'+actionIcon(action)+'</span>'+
-    '<span class="navLabel">'+actionLabel(action,surface)+'</span>';
-  btn.onclick=e=>{
-    e.preventDefault();e.stopPropagation();
-    act(action,surface,btn);
-  };
+  setAttrIf(btn,'aria-label',actionText(action,surface));
+  setAttrIf(btn,'title',actionText(action,surface));
+  const wanted='<span class="r494Icon" aria-hidden="true">'+icon(action)+'</span>'+
+    '<span class="r494Label">'+label(action,surface)+'</span>';
+  if(btn.innerHTML!==wanted)btn.innerHTML=wanted;
+  if(!btn.dataset.r494Bound){
+    btn.dataset.r494Bound='1';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();
+      run(btn.dataset.action,btn.dataset.surface);
+    });
+  }
   return btn;
 }
-function getOrMake(action,surface,existing=null){
-  const id='r493Nav_'+surface+'_'+action;
-  let btn=existing||$(id);
+function getButton(surface,action){
+  const id='r494_'+surface+'_'+action;
+  let btn=$(id);
+  if(!btn&&surface==='main'&&action==='reset')btn=$('resetBtn');
   if(!btn){
     btn=d.createElement('button');
     btn.id=id;
@@ -46080,154 +45699,186 @@ function getOrMake(action,surface,existing=null){
   }
   return decorate(btn,action,surface);
 }
-async function act(action,surface,btn){
-  if(busy)return false;
-  busy=true;
-  setBusy(true);
-  hideTip();
-  btn?.classList.add('is-pressing');
-  setTimeout(()=>btn?.classList.remove('is-pressing'),120);
-
-  let ok=false;
-  try{
-    if(action==='reset'){
-      ok=!!(await window.SukunZikirRestart?.restart?.({surface}));
-    }else if(surface==='dock'&&dockOwner()==='smart'&&smartStep()){
-      ok=smartNavigate(action==='next'?1:-1);
-    }else{
-      ok=!!(await directNavigate(action==='next'?1:-1));
-    }
-    if(ok){
-      btn?.classList.remove('did-act');
-      void btn?.offsetWidth;
-      btn?.classList.add('did-act');
-      setTimeout(()=>btn?.classList.remove('did-act'),260);
-    }
-    return ok;
-  }finally{
-    setTimeout(()=>{busy=false;setBusy(false);sync()},160);
-  }
-}
-function setBusy(on){
-  d.querySelectorAll('.sukun-nav-action').forEach(btn=>{
-    btn.disabled=!!on;
-    btn.setAttribute('aria-busy',on?'true':'false');
-  });
+function makeCluster(surface){
+  const cluster=d.createElement('div');
+  cluster.className='r494NavCluster';
+  cluster.dataset.surface=surface;
+  cluster.append(
+    getButton(surface,'prev'),
+    getButton(surface,'reset'),
+    getButton(surface,'next')
+  );
+  return cluster;
 }
 
-/* ONE mount function for main / tefekkür / dock */
-function mountSurface(surface){
-  const slot=$(SURFACES[surface].slot);
-  if(!slot)return false;
+/* Mount once. sync() never replaceChildren on healthy mounted clusters. */
+function ensureMain(){
+  const actions=d.querySelector('.zCounterActions');
+  const parent=actions?.parentElement;
+  if(!actions||!parent)return false;
 
-  const resetExisting=slot.querySelector('.sukun-restart-component,[data-action="reset"]');
-  let cluster=slot.querySelector('.sukun-nav-component');
-  if(!cluster){
-    cluster=d.createElement('div');
-    cluster.className='sukun-nav-component';
+  let slot=$('r494MainNavSlot');
+  if(!slot){
+    slot=d.createElement('div');
+    slot.id='r494MainNavSlot';
+    slot.className='r494NavSlot';
+    slot.appendChild(makeCluster('main'));
+    actions.insertAdjacentElement('afterend',slot);
+  }else if(slot.previousElementSibling!==actions){
+    actions.insertAdjacentElement('afterend',slot);
   }
 
-  const prev=getOrMake('prev',surface);
-  const reset=getOrMake('reset',surface,resetExisting);
-  const next=getOrMake('next',surface);
-  cluster.replaceChildren(prev,reset,next);
+  const reset=$('resetBtn');
+  const center=slot.querySelector('[data-action="reset"]');
+  if(reset&&center!==reset){
+    const old=center;
+    decorate(reset,'reset','main');
+    old.replaceWith(reset);
+  }
 
-  if(slot.firstElementChild!==cluster)slot.replaceChildren(cluster);
-  slot.classList.add('r493-nav-ready');
-  slot.classList.remove('r492-nav-ready');
-  slot.hidden=false;
-  refreshLabels(surface);
+  const tef=document.body.classList.contains('sukun-tefekkur-mode');
+  if(slot.hidden===tef){}else slot.hidden=tef;
   return true;
 }
-function refreshLabels(surface){
-  ['prev','reset','next'].forEach(action=>{
-    const btn=$('r493Nav_'+surface+'_'+action);
+function ensureTef(){
+  const tef=document.body.classList.contains('sukun-tefekkur-mode');
+  let slot=$('r494TefNavSlot');
+  if(!tef){
+    if(slot&&!slot.hidden)slot.hidden=true;
+    return false;
+  }
+
+  const primary=d.querySelector('#tfRefinedLayout .tfPrimaryControls');
+  const actions=primary?.querySelector('.zCounterActions');
+  if(!primary||!actions)return false;
+
+  if(!slot||!slot.isConnected){
+    slot=d.createElement('div');
+    slot.id='r494TefNavSlot';
+    slot.className='r494NavSlot';
+    slot.appendChild(makeCluster('tefekkur'));
+    actions.insertAdjacentElement('afterend',slot);
+  }else if(slot.previousElementSibling!==actions){
+    actions.insertAdjacentElement('afterend',slot);
+  }
+  if(slot.hidden)slot.hidden=false;
+  return true;
+}
+function ensureDock(){
+  const head=$('r422NowHead'),now=$('r170Now');
+  if(!head||!now)return false;
+
+  let slot=$('r494DockNavSlot');
+  if(!slot){
+    slot=d.createElement('div');
+    slot.id='r494DockNavSlot';
+    slot.className='r494NavSlot';
+    slot.appendChild(makeCluster('dock'));
+    head.appendChild(slot);
+  }else if(slot.parentElement!==head){
+    head.appendChild(slot);
+  }
+
+  const show=(dockOwner()==='smart'&&smartActive())||directActive();
+  if(slot.hidden===show)slot.hidden=!show;
+  if(now.classList.contains('r494-nav-visible')!==show)
+    now.classList.toggle('r494-nav-visible',show);
+
+  ['prev','reset','next'].forEach(a=>{
+    const btn=$('r494_dock_'+a);
     if(!btn)return;
-    btn.title=actionText(action,surface);
-    btn.setAttribute('aria-label',actionText(action,surface));
-    const lbl=btn.querySelector('.navLabel');
-    if(lbl)lbl.textContent=actionLabel(action,surface);
+    setAttrIf(btn,'aria-label',actionText(a,'dock'));
+    setAttrIf(btn,'title',actionText(a,'dock'));
   });
+  return true;
 }
 function sync(){
-  mountSurface('main');
-  mountSurface('tefekkur');
-  mountSurface('dock');
-  refreshLabels('dock');
+  ensureMain();
+  ensureTef();
+  ensureDock();
 }
 
-/* ONE tooltip controller */
+/* Tiny static tooltip; no fade/animation. */
 function ensureTip(){
-  let tip=$('r493NavTooltip');
-  if(tip)return tip;
-  tip=d.createElement('div');
-  tip.id='r493NavTooltip';
-  tip.setAttribute('role','tooltip');
-  d.body.appendChild(tip);
+  let tip=$('r494NavTip');
+  if(!tip){
+    tip=d.createElement('div');
+    tip.id='r494NavTip';
+    tip.setAttribute('role','tooltip');
+    d.body.appendChild(tip);
+  }
   return tip;
 }
 function showTip(btn){
-  if(!btn||btn.disabled)return;
-  const tip=ensureTip();
-  const text=btn.getAttribute('aria-label')||btn.title||'';
+  if(!btn)return;
+  const t=ensureTip(),text=btn.getAttribute('aria-label')||btn.title||'';
   if(!text)return;
-  tip.textContent=text;
+  setTextIf(t,text);
   const r=btn.getBoundingClientRect();
-  const x=Math.max(28,Math.min(innerWidth-28,r.left+r.width/2));
-  const y=Math.max(42,r.top-4);
-  tip.style.left=x+'px';
-  tip.style.top=y+'px';
-  tip.classList.add('show');
-  clearTimeout(tipTO);
+  t.style.left=Math.max(28,Math.min(innerWidth-28,r.left+r.width/2))+'px';
+  t.style.top=Math.max(40,r.top-5)+'px';
+  t.style.transform='translate(-50%,-100%)';
+  t.classList.add('show');
+  clearTimeout(tipTimer);
 }
-function hideTip(delay=0){
-  clearTimeout(tipTO);
-  tipTO=setTimeout(()=>{$('r493NavTooltip')?.classList.remove('show')},delay);
+function hideTip(){
+  clearTimeout(tipTimer);
+  tipTimer=setTimeout(()=>{$('r494NavTip')?.classList.remove('show')},30);
 }
 d.addEventListener('pointerover',e=>{
-  const btn=e.target.closest?.('.sukun-nav-action');
-  if(btn&&e.pointerType!=='touch')showTip(btn);
+  const b=e.target.closest?.('.r494NavBtn');
+  if(b&&e.pointerType!=='touch')showTip(b);
 },{passive:true});
 d.addEventListener('pointerout',e=>{
-  if(e.target.closest?.('.sukun-nav-action'))hideTip(40);
+  if(e.target.closest?.('.r494NavBtn'))hideTip();
 },{passive:true});
 d.addEventListener('focusin',e=>{
-  const btn=e.target.closest?.('.sukun-nav-action');
-  if(btn)showTip(btn);
+  const b=e.target.closest?.('.r494NavBtn');if(b)showTip(b);
 });
 d.addEventListener('focusout',e=>{
-  if(e.target.closest?.('.sukun-nav-action'))hideTip(30);
+  if(e.target.closest?.('.r494NavBtn'))hideTip();
 });
 
-/* r491 owns slot creation; r493 decorates right after it */
-const oldRestartSync=window.SukunZikirRestart?.sync;
-if(typeof oldRestartSync==='function'&&!oldRestartSync.__r493Wrapped){
-  const wrapped=function(...args){
-    const out=oldRestartSync.apply(this,args);
+/* Event-driven, with bounded retries for dynamic canonical Tef/dock creation. */
+const bodyObs=new MutationObserver(ms=>{
+  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
     requestAnimationFrame(sync);
-    return out;
-  };
-  wrapped.__r493Wrapped=1;
-  window.SukunZikirRestart.sync=wrapped;
-}
+    setTimeout(sync,80);
+    setTimeout(sync,260);
+  }
+});
+if(d.body)bodyObs.observe(d.body,{attributes:true,attributeFilter:['class']});
 
-['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:zikirrestart','sukun:zikirnav']
-.forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
+[
+  'sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase',
+  'sukun:zikirrestart','sukun:zikirnav','sukun:audiostate'
+].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
 
 d.addEventListener('click',e=>{
-  if(e.target.closest?.('#autoBtn,#plusBtn,#undoBtn,#r170Prev,#r170Play,#r170Next,#r170Stop,[data-i],#zList')){
-    setTimeout(sync,45);
+  if(e.target.closest?.('#autoBtn,#r170Play,#r170Stop,[data-i],#zList')){
+    setTimeout(sync,50);
   }
 },{passive:true});
 
 function boot(){
   sync();
-  [80,240,900,1800,3400].forEach(ms=>setTimeout(sync,ms));
+  [120,420,1000,2200].forEach(ms=>setTimeout(sync,ms));
 }
 if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});
 else boot();
 
-window.SukunNavigation={version:'r493',sync,act,mountSurface};
+/* Compatibility API names now point to this single owner. */
+window.SukunZikirRestart={
+  version:'r494',
+  restart:({surface='main'}={})=>run('reset',surface),
+  sync
+};
+window.SukunNavigation={
+  version:'r494',
+  navigate:(delta,surface='main')=>run(delta>0?'next':'prev',surface),
+  restart:(surface='main')=>run('reset',surface),
+  sync
+};
 })();
 </script>
 

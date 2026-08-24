@@ -1,8 +1,8 @@
-/* SÜKÛN r493 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r494 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r493';
-const CACHE = 'sukun-r493-20260824a';
+const SURUM = 'r494';
+const CACHE = 'sukun-r494-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r494 Stable navigation: flash/re-parent yarışı kaldırıldı; smart-session prev/next düzeltildi; duplicate oklar gizlendi; tempo default 1.0 sn.',
   'r493 Navigation component: prev/reset/next tek factory + tek tooltip + tek mikro-etkileşim; CANLI rozeti küçültülüp sakin header alanına alındı.',
   'r492 Prev/Reset/Next cluster: ana sayaç + Tefekkür + mini/midi canlı bar; CANLI badge küçültülüp sakin alana taşındı.',
   'r491 Restart tek component: ana sayaç + Tefekkür + mini/midi bar aynı davranış ve aynı görsel bileşen; legacy proxy yok.',
