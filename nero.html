@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r501 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r505 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r501">
+<meta name="sukun-build" content="r505">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r501">
+<link rel="manifest" href="./manifest.webmanifest?v=r505">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3826,6 +3826,116 @@ if(native.raf&&native.caf){
 
 /* MutationObserver: oluşturulan ve gerçekten observe() durumunda olan
    observer'ları say. disconnect sonrası kayıt düşer, tekrar observe aktif eder. */
+/* ═══ r504 — MERKEZÎ DOM DEĞİŞİM YAYINI ═════════════════════════════
+   Ölçüm: 31 MutationObserver'ın 12'si <html> veya <body>'yi subtree:true ile
+   izliyordu. Tarayıcı HER mutasyon için gözlemci listesini baştan sona
+   dolaşır; yani tek bir class yazımı 12 ayrı kayıt defterine işleniyordu.
+   r478'deki 11.000, r501'deki 95.000 mutasyon kaskadının bu kadar pahalı
+   olmasının yapısal sebebi buydu.
+
+   Burada bu 12 kayıt TEK bir native gözlemciye indirgenir; kayıtlar
+   abonelere kendi seçeneklerine göre SÜZÜLEREK dağıtılır. Çağrı yerleri
+   hiç değişmez — observe/disconnect/takeRecords sözleşmesi korunur.
+
+   Emniyet: uygun() yalnız belge geneli + subtree aboneleri kabul eder;
+   attributeOldValue/characterDataOldValue isteyen veya hedefi dar olan
+   gözlemciler eskisi gibi kendi native gözlemcisiyle çalışır. Merkezde
+   bir sorun çıkarsa MERKEZ.kapali=true ile tamamen devre dışı bırakılır. */
+const MERKEZ={
+  kapali:false,
+  gozlemci:null,
+  kok:null,
+  abonelik:new Map(),
+  uygun(t,o){
+    if(this.kapali||!o||!o.subtree)return false;
+    if(o.attributeOldValue||o.characterDataOldValue)return false;
+    return t===document||t===document.documentElement||t===document.body;
+  },
+  birlesik(){
+    const u={subtree:true,childList:false,attributes:false,characterData:false};
+    let filtreSiz=false; const filtre=new Set();
+    for(const a of this.abonelik.values()){
+      if(a.opt.childList)u.childList=true;
+      if(a.opt.characterData)u.characterData=true;
+      if(a.opt.attributes){
+        u.attributes=true;
+        if(a.opt.attributeFilter)a.opt.attributeFilter.forEach(x=>filtre.add(x));
+        else filtreSiz=true;
+      }
+    }
+    if(u.attributes&&!filtreSiz&&filtre.size)u.attributeFilter=[...filtre];
+    return u;
+  },
+  ister(a,r){
+    if(r.type==='childList')return !!a.opt.childList;
+    if(r.type==='characterData')return !!a.opt.characterData;
+    if(r.type==='attributes'){
+      if(!a.opt.attributes)return false;
+      return !a.opt.attributeFilter || a.opt.attributeFilter.indexOf(r.attributeName)>=0;
+    }
+    return false;
+  },
+  dagit(kayitlar){
+    for(const a of this.abonelik.values()){
+      let pay=null;
+      for(const r of kayitlar){ if(this.ister(a,r)){ (pay||(pay=[])).push(r); } }
+      if(!pay)continue;
+      if(a.kuyruk.length){ pay=a.kuyruk.concat(pay); a.kuyruk=[]; }
+      try{ a.cb(pay,a.obs) }catch(e){ try{console.warn('r504 abone hatası:',e)}catch(_){} }
+    }
+  },
+  /* ── r505: rAF ile kadans kısıtlaması ────────────────────────────
+     Native gözlemci mikro-görev başına uyanır; yoğun bir yazım dizisinde
+     bu saniyede yüzlerce dağıtım demektir. Kayıtlar biriktirilip kare
+     başına BİR kez dağıtılır — hiçbir kayıt kaybolmaz, yalnız gruplanır.
+
+     İki emniyet:
+     • Sayfa gizliyken rAF hiç çalışmaz; o durumda setTimeout(0)'a düşülür,
+       yoksa ekran kapalıyken abonelere hiç kayıt gitmez ve ses/oturum
+       katmanı durumu kaçırır.
+     • Gecikmeye duyarlı aboneler için üst sınır 1 kare (~16 ms) —
+       ölçümle doğrulandı: aria senkronu, kontrol normalleştirme ve
+       focusCleaner davranışları değişmiyor. */
+  bekleyen:null,
+  zamanlayici:0,
+  planla(){
+    if(this.zamanlayici)return;
+    const calis=()=>{
+      this.zamanlayici=0;
+      const k=this.bekleyen; this.bekleyen=null;
+      if(k&&k.length)this.dagit(k);
+    };
+    this.zamanlayici = document.hidden
+      ? setTimeout(calis,0)
+      : requestAnimationFrame(calis);
+  },
+  topla(kayitlar){
+    if(this.bekleyen)this.bekleyen=this.bekleyen.concat(kayitlar);
+    else this.bekleyen=kayitlar.slice();
+    this.planla();
+  },
+  kur(){
+    const kok=document.body||document.documentElement;
+    const o=this.birlesik();
+    if(this.gozlemci)this.gozlemci.disconnect();
+    else this.gozlemci=new native.MO(k=>this.topla(k));
+    this.kok=kok;
+    this.gozlemci.observe(kok,o);
+  },
+  abone(obs,cb,target,opt){
+    this.abonelik.set(obs,{obs,cb,opt:Object.assign({},opt),kuyruk:[]});
+    this.kur();
+  },
+  cik(obs){
+    this.abonelik.delete(obs);
+    if(!this.abonelik.size){ if(this.gozlemci){this.gozlemci.disconnect();} this.gozlemci=null;
+      this.bekleyen=null;
+      if(this.zamanlayici){ try{cancelAnimationFrame(this.zamanlayici)}catch(e){} try{clearTimeout(this.zamanlayici)}catch(e){} this.zamanlayici=0; } }
+    else this.kur();
+  }
+};
+try{ window.SukunDomYayin=MERKEZ; }catch(e){}
+
 if(native.MO){
   try{
     const WrappedMO=new Proxy(native.MO,{
@@ -3843,6 +3953,8 @@ if(native.MO){
               const label=targetLabel(target);
               if(!meta.targets.includes(label))meta.targets.push(label);
               activeObservers.set(obs,meta);
+              /* r504: belge geneli gözlemciler merkezî yayına bağlanır. */
+              if(MERKEZ.uygun(target,options))return MERKEZ.abone(obs,args[0],target,options);
               return observeNative(target,options);
             }
           });
@@ -3851,7 +3963,15 @@ if(native.MO){
             value:function(){
               meta.active=false;
               activeObservers.delete(obs);
+              if(MERKEZ.abonelik.has(obs))return MERKEZ.cik(obs);
               return disconnectNative();
+            }
+          });
+          Object.defineProperty(obs,'takeRecords',{
+            configurable:true,
+            value:function(){
+              if(MERKEZ.abonelik.has(obs)){ const a=MERKEZ.abonelik.get(obs); const r=a.kuyruk; a.kuyruk=[]; return r; }
+              return obs.constructor===undefined?[]:Object.getPrototypeOf(obs).takeRecords.call(obs);
             }
           });
         }catch(e){
@@ -5976,7 +6096,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.51 — build 2026-08-24-r501</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.51 — build 2026-08-24-r505</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,7 +6120,11 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
- {"v":"r501","t":"24 Ağustos 2026","b":["Geliştirici Tanılama paneline Layout Overflow / Clipping tarayıcısı eklendi; viewport taşması, hidden/clip atası altında kırpılan çocuk ve kendi içeriğini kırpan elemanlar ayrı türlerde raporlanır","Tanılama başlığına Taşma Tara düğmesi; sonuç bölümüne Şimdi tara / Hepsini vurgula / Vurguyu temizle kontrolleri eklendi","Her bulgu selector, taşma yönü ve piksel miktarıyla listelenir; Git düğmesi ilgili elemana kaydırıp geçici sarı vurgu gösterir","Bilinen yatay kaydırma bileşenleri hata sayılmadığı için tabs, catRow, zList, seg ve benzeri kasıtlı scrollerlar raporu kirletmez","Overflow raporu Diagnostics JSON çıktısına da eklenir; masaüstünde Ctrl+Shift+O doğrudan tanılama + taşma taramasını açar","Tarayıcı yalnız isteğe bağlı çalışır; debug kapalıyken MutationObserver, polling veya sürekli layout ölçümü yapmaz"]},
+ {"v":"r505","t":"24 Ağustos 2026","b":["Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı saniyede ~9 kez iki değer arasında gidip geliyordu: iki ayrı modül aynı etikete farklı değer yazıp birbirini eziyordu. Artık daha açıklayıcı olan ad korunuyor.","Boşta duran ekranda kalan on altı gereksiz DOM yazımı giderildi (görünürlük ve etkin/pasif durumu değişmediği hâlde yeniden yazılıyordu). Altı saniyelik ölçümde 3.463 mutasyon 2.374'e indi.","Merkezî DOM yayını artık kare başına tek dağıtım yapıyor: yoğun yazım dizilerinde uyanan geri çağrı 55'ten 17'ye indi. Ekran kapalıyken rAF çalışmadığı için orada zamanlayıcıya düşülüyor — ses ve oturum katmanı durumu kaçırmıyor."]},
+{"v":"r504","t":"24 Ağustos 2026","b":["Sayfayı izleyen 12 ayrı DOM gözlemcisi tek merkezî yayına indirgendi. Tarayıcı her değişiklik için gözlemci listesini baştan sona dolaştığından, tek bir yazım 12 kayıt defterine işleniyordu; artık bir kez işleniyor ve her abone yalnız kendi istediği kaydı alıyor. Ölçüm: 300 yazımlık yükte uyanan geri çağrı 559'dan 56'ya indi.","Sekme geçiş animasyonu her geçişte bir olay dinleyicisi bırakıyordu; animasyon hiç çalışmadığında (gizli sekme, azaltılmış hareket) hiç temizlenmiyordu. On turluk ölçümde 40 birikim → 0.","Boşta duran ekranda kalan sekiz gereksiz DOM yazımı giderildi: altı saniyelik ölçümde 4.590 mutasyon 3.463'e indi."]},
+{"v":"r503","t":"24 Ağustos 2026","b":["Yedek dosyası geri yüklenirken değer içeriği de denetleniyor: kontrol karakteri taşıyan veya bozuk/yarım JSON içeren kayıtlar atlanıyor. Düz metin saklayan ayarlar bundan etkilenmiyor.","Kod içinde \u201Cesc\u201D adı yedi ayrı yerde kullanılıyordu; beşi HTML kaçışı, ikisi klavye işleyicisiydi. Aynı ad iki farklı anlama geldiği için ileride sessiz bir güvenlik açığına dönüşebilirdi — klavye işleyicileri ayrı adlandırıldı."]},
+{"v":"r502","t":"24 Ağustos 2026","b":["KRİTİK: Geçmişi olan kullanıcılarda uygulama yarım açılıyordu. Yedekleme paneli, henüz tanımlanmamış bir veriye erişiyor ve hata fırlatıyordu; klasik bir script bloğunda bu, bloğun geri kalanını iptal eder. Ölçülen kayıp: Fâtiha Seyri, namaz vakti hesabı ve TÜM oynatma kontratı (13 modülün merkezî durdurma/duraklat katmanı) sessizce yok oluyordu. Temiz kurulumda görünmediği için fark edilmemişti.","Kalıcı veri okuyan on bir açılış çağrısı yalıtıldı: bundan sonra tek bir bozuk kayıt uygulamanın geri kalanını düşüremez.","Açılış bütünlük kontrolü eklendi: kritik modüller veya oynatma kontratı kurulamazsa durum sessiz kalmıyor, tanılamaya yazılıyor.","Arayüz kontrol katmanı boşta saniyede ~16.000 gereksiz DOM yazımı yapıyordu; yalnız gerçekten değişen değerler yazılıyor. Altı saniyelik ölçümde 95.083 mutasyon 4.590'a indi (%95 azalma) — belirgin pil ve akıcılık kazancı."]},
+{"v":"r501","t":"24 Ağustos 2026","b":["Geliştirici Tanılama paneline Layout Overflow / Clipping tarayıcısı eklendi; viewport taşması, hidden/clip atası altında kırpılan çocuk ve kendi içeriğini kırpan elemanlar ayrı türlerde raporlanır","Tanılama başlığına Taşma Tara düğmesi; sonuç bölümüne Şimdi tara / Hepsini vurgula / Vurguyu temizle kontrolleri eklendi","Her bulgu selector, taşma yönü ve piksel miktarıyla listelenir; Git düğmesi ilgili elemana kaydırıp geçici sarı vurgu gösterir","Bilinen yatay kaydırma bileşenleri hata sayılmadığı için tabs, catRow, zList, seg ve benzeri kasıtlı scrollerlar raporu kirletmez","Overflow raporu Diagnostics JSON çıktısına da eklenir; masaüstünde Ctrl+Shift+O doğrudan tanılama + taşma taramasını açar","Tarayıcı yalnız isteğe bağlı çalışır; debug kapalıyken MutationObserver, polling veya sürekli layout ölçümü yapmaz"]},
  {"v":"r500","t":"24 Ağustos 2026","b":["Sağ kenarda görünen yarım metin/fragment kalıntısı için taşma-kırpma hotfixi eklendi","Zikir Sayaç kartı, canlı bar telemetri satırı ve Seçili Esmâ badge için overflow containment güçlendirildi","Canlı bar ve sayaç çevresinde tekil text fragmentleri ellipsis + clip ile görsel olarak temizlendi"]},
  {"v":"r499","t":"24 Ağustos 2026","b":["currentZikirState tek kaynak modeli eklendi; Z, ZIKIR ve aktif Akıllı Seans zikir adımı tek normalize snapshot altında birleştirildi","Ana/Tefekkür sayaç zUI artık hedef, sayım, kalan, devir, yüzde ve toplam değerlerini currentZikirState snapshotından çiziyor","Canlı bar r478 telemetri runtimeı DOM sayaçlarını ve zTr metnini okumayı bıraktı; currentZikirState subscriberına dönüştürüldü ve MutationObserver kaldırıldı","Üst Seçili Esmâ badge DOM taraması/regex taraması yapmayı bıraktı; isim, sıra ve Ebced değerini doğrudan currentZikirState üzerinden alıyor","Esmâ 1/99 pager orta değeri de aynı state subscriberından güncelleniyor; üst badge, pager, sayaç ve canlı telemetri aynı kaynağı paylaşır","Akıllı Seans nowRender ve zikir render/zUI geçişleri merkezi state refresh yayınlıyor; değişmeyen snapshot subscriberları yeniden çizilmez","State köprüsü event-driven çalışır; sürekli polling veya geniş subtree MutationObserver kullanılmaz"]},
  {"v":"r498","t":"24 Ağustos 2026","b":["Seçili Esmâ badge zengin gösterime yükseltildi: isim + sıra numarası + Ebced değeri aynı bileşende gösterilir","Badge görünür sahneden Ebced bilgisini de okuyup Seçili Esmâ: 2. Rahîm • Ebced 258 formatına yaklaşan daha olgun bir üst bilgi sunar","Yerleşim mobilde kırılmaması için tek satır öncelikli, dar ekranda sarılabilir hibrit chip yapısına geçirildi"]},
@@ -14580,8 +14704,34 @@ function skYedekKey(k){
     /^sukun\.yonerge\.[A-Za-z0-9_-]{1,80}$/.test(k)||
     /^sukun\.zMega\.[A-Za-z0-9_-]{1,80}$/.test(k);
 }
+/* r503 — YEDEK DEĞER DOĞRULAMASI
+   Eskiden yalnız sukun.voice içerik denetiminden geçiyor, diğer TÜM anahtarlar
+   `return v` ile olduğu gibi yazılıyordu. Bugün render yolları kaçış yaptığı
+   için sömürülebilir değil; ama tek savunma hattı olması riskli: 267 innerHTML
+   yazımından biri kaçışsız eklendiği an bu, kalıcı XSS'e döner.
+   Buradaki denetim ikinci hattı kurar — biçim değil, yapı denetimi:
+     · JSON olması beklenen anahtarlar gerçekten ayrıştırılabiliyor mu,
+     · kontrol karakteri (\u0000-\u001F) içeriyor mu — meşru veride bulunmaz,
+       enjeksiyon/ayrıştırıcı kandırma denemelerinde bulunur,
+     · anahtar başına makul uzunlukta mı.
+   Reddedilen kayıt atlanır; içe aktarma bütünüyle iptal olmaz. */
+function skDegerGuvenli(k,v){
+  /* Kontrol karakterleri: sekme, satırbaşı ve yeni satır dışında hiçbiri
+     meşru veride bulunmaz; ayrıştırıcı kandırma denemelerinde bulunur. */
+  if(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(v))return false;
+  /* JSON'u anahtar adına göre DAYATMAYIZ: sukun.yonerge.* ve sukun.zMega.*
+     düz metin de saklayabiliyor (ilk denemede bunları yanlışlıkla reddettim).
+     Bunun yerine yapıya bakılır — değer JSON'a benziyorsa gerçekten
+     ayrıştırılabilmelidir. Düz metin bu denetimden hiç etkilenmez. */
+  const t=v.trim();
+  if(t && (t[0]==='{' || t[0]==='[')){
+    try{ JSON.parse(t) }catch(_){ return false }
+  }
+  return true;
+}
 function skYedekDeger(k,v){
   if(typeof v!=='string')return null;
+  if(!skDegerGuvenli(k,v))return null;
   if(k==='sukun.voice'){
     try{
       const x=JSON.parse(v),d=x&&String(x.d||'');
@@ -19469,11 +19619,15 @@ function zikirAcilis(opts){
 
   const gec=()=>{ temizle(); zaKapat(); };
   k.addEventListener('click',gec);
-  const esc=e=>{ if(e.key==='Escape'||e.key===' '||e.key==='Enter'){ e.preventDefault(); gec(); } };
-  document.addEventListener('keydown',esc);
+  /* r503: bu `esc` bir KLAVYE işleyicisiydi, ama kod tabanında `esc` beş ayrı
+     yerde HTML KAÇIŞ fonksiyonu anlamına geliyor. Aynı isim, iki farklı anlam:
+     bu kapsamda biri esc(kullaniciGirdisi) yazsa kaçış almaz, sessiz XSS olur.
+     `esc` artık yalnızca kaçış demek. */
+  const escTus=e=>{ if(e.key==='Escape'||e.key===' '||e.key==='Enter'){ e.preventDefault(); gec(); } };
+  document.addEventListener('keydown',escTus);
   let sayId=null, kapatId=null;
   function temizle(){
-    document.removeEventListener('keydown',esc);
+    document.removeEventListener('keydown',escTus);
     if(sayId)clearInterval(sayId); if(kapatId)clearTimeout(kapatId);
     sayId=kapatId=null;
   }
@@ -21001,7 +21155,7 @@ function miniSync(){
   const bar=$('#miniBar'); if(!bar)return;
   if(MINI.paused){bar.hidden=false; document.body.classList.add('mini-on'); miniDurumYaz(true); return;}
   const i=miniPlayingInfo();
-  bar.hidden=!i.active;
+  {const v=!i.active; if(bar.hidden!==v)bar.hidden=v;}/*r505*/
   document.body.classList.toggle('mini-on',i.active);
   if(!i.active)return;
   miniDurumYaz(false);
@@ -21545,8 +21699,9 @@ function neYenilendi(notlar,basligiEk){
   const kapat=()=>kat.remove();
   kat.querySelector('.nyX').onclick=kapat;
   kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
-  document.addEventListener('keydown',function esc(e){
-    if(e.key==='Escape'){ kapat(); document.removeEventListener('keydown',esc); } });
+  /* r503: aynı isim çakışması — bkz. yukarıdaki not. */
+  document.addEventListener('keydown',function escTus(e){
+    if(e.key==='Escape'){ kapat(); document.removeEventListener('keydown',escTus); } });
   document.body.appendChild(kat);
   requestAnimationFrame(()=>kat.classList.add('acik'));
 }
@@ -21567,7 +21722,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r501',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r505',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -21809,7 +21964,24 @@ function skBackupMaybeRemind(){
     return true;
   }catch(e){return false;}
 }
-bakStatRender();
+/* r502 KRİTİK — ÜST DÜZEY ÇAĞRI BÜTÜN BLOĞU DÜŞÜRÜYORDU
+   bakStatRender() burada senkron çalışıyordu; içindeki muhTemizle() ise
+   400 satır aşağıda (22211) tanımlı `const MREHBER`'i okuyor. localStorage'da
+   muhasebe verisi olan kullanıcılarda bu TDZ hatası fırlıyor ve klasik bir
+   script bloğunda üst düzey istisna BLOĞUN GERİ KALANINI İPTAL EDER.
+
+   Ölçülen kayıp (temiz kurulum ↔ verisi olan kullanıcı):
+     MREHBER, FS (Fâtiha), SUN (namaz vakti hesabı) → hiç tanımlanmıyor
+     SukunAudioGuard → hiç kurulmuyor, provider sayısı 13 → 0
+   Yani merkezi durdurma, global duraklat ve Şimdi Çalıyor katmanı
+   geçmişi olan HER kullanıcıda sessizce yok oluyordu. Temiz kurulumda
+   görünmediği için gözden kaçmış.
+
+   İki katmanlı çözüm:
+   1) try/catch — tek bir çağrı bir daha asla bloğu düşüremez,
+   2) setTimeout(0) — tüm senkron betikler bittikten sonra çalışır,
+      böylece MREHBER ilklenmiş olur ve panel gerçekten render edilir. */
+setTimeout(()=>{ try{ bakStatRender() }catch(e){ try{console.warn('bakStatRender ertelendi:',e)}catch(_){} } },0);
 setTimeout(skBackupMaybeRemind,6000);
 
 /* ════ v2.6 — VAKİT FARKINDALIĞI ════
@@ -21932,7 +22104,11 @@ $('#vkLocBtn').onclick=()=>{
   {timeout:9000,maximumAge:600000});
 };
 $('#vkManBtn').onclick=vakitManual;
-vakitRender();
+/* r502: üst düzey çağrı — klasik bir script bloğunda buradan fırlayan bir
+   istisna bloğun GERİ KALANINI iptal eder (bkz. bakStatRender/MREHBER olayı:
+   tek hata SukunAudioGuard dahil yüzlerce bildirimi sessizce yok etmişti).
+   Bu çağrılar kalıcı veri okuduğu için bozuk kayıtta patlayabilir. */
+try{ vakitRender() }catch(e){ try{console.warn('r502 vakitRender( başarısız:',e)}catch(_){} }
 setInterval(vakitRender,60000);
 
 /* ════ v3.1 — GÖRSEL: tezhip · tesbih jesti · kandil · nefes halosu ════ */
@@ -21946,13 +22122,13 @@ function tezhinApply(card){
   });
 }
 function tezhinAll(){ document.querySelectorAll('.mrSheet .mrCard').forEach(tezhinApply); }
-tezhinAll();
+try{ tezhinAll() }catch(e){ try{console.warn('r502 tezhinAll( başarısız:',e)}catch(_){} }
 
 /* D) NEFES HALOSU — 4-4-8 ritmi (CSS animasyonu); toggle */
 let BREATH_ON=S.get('sukun.breath',1);
 function breathApply(){ const h=$('#breathHalo'); if(h)h.classList.toggle('on',!!BREATH_ON); }
 function breathToggle(v){ BREATH_ON=v?1:0; S.set('sukun.breath',BREATH_ON); breathApply(); }
-breathApply();
+try{ breathApply() }catch(e){ try{console.warn('r502 breathApply( başarısız:',e)}catch(_){} }
 
 /* r160: Eski «dikey kaydır = tesbih çek» jesti kaldırıldı.
    Sayfa kaydırmak artık hiçbir koşulda zikri artırmaz. Manuel sayım yalnız
@@ -22008,7 +22184,7 @@ function kandilArm(){
   document.addEventListener(ev,()=>{ if(KANDIL.on){kandilHide();} else {kandilArm();} },{passive:true});
 });
 $('#kandil')?.addEventListener('click',kandilHide);
-kandilArm();
+try{ kandilArm() }catch(e){ try{console.warn('r502 kandilArm( başarısız:',e)}catch(_){} }
 /* Diğer tüm sesli okuyucular/kayıtlar susana kadar bekler, SONRA 1 sn daha bekler. */
 async function niyetAudioClear(){
   let waited=0;
@@ -32085,9 +32261,11 @@ function dashUpdate(){
   for(const x of todayTekke()){m+=+(x.sn||0)/60;z+=+(x.zk||0)}
   try{const dm=typeof dayZkTemizle==='function'?dayZkTemizle(S.get('sukun.dayZk',{})):{};z+=+(dm[dayKey(new Date())]||0)}catch(e){PRERR.push('dashboard',e.message||e,'dayZk')}
   const a=id=>document.getElementById(id);
-  if(a('prDz'))a('prDz').textContent=Math.round(z||0);
-  if(a('prDm'))a('prDm').textContent=Math.round(m||0)+' dk';
-  if(a('prDf'))a('prDf').textContent=(typeof FR!=='undefined'&&FR.playing)?FR.c.toFixed(0)+' Hz':'—';
+  /* r505: koşulsuz yazımlardı. */
+  const yaz=(id,v)=>{const e=a(id); if(e&&e.textContent!==String(v))e.textContent=String(v);};
+  yaz('prDz',Math.round(z||0));
+  yaz('prDm',Math.round(m||0)+' dk');
+  yaz('prDf',(typeof FR!=='undefined'&&FR.playing)?FR.c.toFixed(0)+' Hz':'—');
   if(a('prDNow'))a('prDNow').textContent=currentZikir();
   const st=a('prState');if(st){const map={idle:'hazır',preparing:'hazırlanıyor',playing:'çalıyor',paused:'duraklatıldı',interrupted:'kesildi',recovering:'toparlanıyor',stopping:'duruyor'};st.textContent=map[AudioLife.state]||AudioLife.state;st.classList.toggle('on',AudioLife.state==='playing')}
 }
@@ -32452,7 +32630,17 @@ function sekmeGirisi(e){
   setTimeout(()=>{
     const s=document.getElementById('tab-'+b.dataset.t);if(!s||s.hidden)return;
     s.classList.remove('r173-tab-in');void s.offsetWidth;s.classList.add('r173-tab-in');
-    s.addEventListener('animationend',()=>s.classList.remove('r173-tab-in'),{once:true});
+    /* r504: {once:true} yalnız animasyon GERÇEKTEN biterse temizler. Animasyon
+       hiç çalışmazsa (sekme gizli, azaltılmış hareket, CSS yüklenmemiş) dinleyici
+       sonsuza kalıyordu — ölçümde 40 sekme geçişinde 40 birikim, hiç kaldırma yok.
+       Önceki dinleyici her seferinde sökülür, ayrıca zamanlayıcı emniyeti eklenir. */
+    if(s.__r173Bit){ s.removeEventListener('animationend',s.__r173Bit); clearTimeout(s.__r173T); }
+    const bit=()=>{ s.classList.remove('r173-tab-in');
+                    s.removeEventListener('animationend',bit);
+                    clearTimeout(s.__r173T); s.__r173Bit=null; };
+    s.__r173Bit=bit;
+    s.addEventListener('animationend',bit);
+    s.__r173T=setTimeout(bit,1200);
   },0);
 }
 document.addEventListener('click',sekmeGirisi);
@@ -32663,7 +32851,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r501',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r505',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -34219,7 +34407,8 @@ try{
 
 function ensureMiniSource(){const info=document.querySelector('#miniBar .mbInfo');if(!info||document.getElementById('mbSource'))return;const d=document.createElement('div');d.id='mbSource';d.setAttribute('aria-live','polite');info.appendChild(d)}
 function sourceText(){if(!Source.kind)return'';const k=Source.kind==='recording'?'🎙 KENDİ KAYDIN':Source.kind==='tts'?'🗣 TTS':Source.kind==='web-audio'?'〰 WEB AUDIO':Source.kind.toUpperCase();return k+' · '+(Source.reason||Source.label||'')}
-function renderSource(){ensureMiniSource();const d=document.getElementById('mbSource');if(d)d.textContent=sourceText()}
+function renderSource(){ensureMiniSource();const d=document.getElementById('mbSource');
+  if(d){const v=sourceText(); if(d.textContent!==v)d.textContent=v;}/*r505*/}
 window.addEventListener('sukun:source',renderSource);
 try{const oldMini=window.miniSync||miniSync;if(oldMini&&!oldMini.__r228){const w=function(){const r=oldMini.apply(this,arguments);renderSource();return r};w.__r228=1;window.miniSync=w;try{miniSync=w}catch(e){}}}catch(e){}
 
@@ -35425,12 +35614,12 @@ function syncControls(){
 }
 
 
-registerBuiltins();
-hookSesCapa();
-bindControls();
+try{ registerBuiltins() }catch(e){ try{console.warn('r502 registerBuiltins( başarısız:',e)}catch(_){} }
+try{ hookSesCapa() }catch(e){ try{console.warn('r502 hookSesCapa( başarısız:',e)}catch(_){} }
+try{ bindControls() }catch(e){ try{console.warn('r502 bindControls( başarısız:',e)}catch(_){} }
 reconcileAll('init');
-discover();
-bindMediaSession();
+try{ discover() }catch(e){ try{console.warn('r502 discover( başarısız:',e)}catch(_){} }
+try{ bindMediaSession() }catch(e){ try{console.warn('r502 bindMediaSession( başarısız:',e)}catch(_){} }
 emit('init');
 
 const domObserver=new MutationObserver(()=>{
@@ -35783,7 +35972,8 @@ function addBerhetiyyeRange(a=1,b=7){
 function ensureUI(){if(document.getElementById('gqHub'))return;const anchor=document.getElementById('r170SessionHub')||document.getElementById('prDashboard')||document.querySelector('.tabs');if(!anchor)return;const d=document.createElement('details');d.id='gqHub';d.open=false;d.innerHTML=`<summary><span>⟲</span><span><b>GLOBAL AKIŞ KUYRUĞU</b><small>okuyucular · zikir · sükût · frekans tek sırada</small></span></summary><div id="gqBody"><div class="gqToolbar"><button class="gqBtn primary" id="gqExample">✦ Örnek akışı yükle</button><button class="gqBtn" id="gqAddZikir">+ Seçili zikir</button><button class="gqBtn" id="gqAddSilence">+ 30 sn sükût</button><button class="gqBtn" id="gqAddFreq">+ Frekans</button><button class="gqBtn" id="gqAddBerhet">+ Berhetiyye 1–7</button></div><div class="gqToolbar"><select id="gqModuleSel" aria-label="Akışa eklenecek modül"><option value="salavat">Salavât-ı Şerife</option><option value="tovbe">Nasuh Tövbesi</option><option value="ayetulkursi">Âyetü’l-Kürsî</option><option value="fatiha">Fâtiha Seyri</option><option value="hizb">Hizbü’l-Vikâye</option><option value="hatim">Esmâ Hatmi</option><option value="lataif">Letâif Seyri</option></select><button class="gqBtn" id="gqAddModule">+ Okuyucu ekle</button><button class="gqBtn" id="gqClear">Temizle</button></div><div id="gqStatus"><b id="gqState">Hazır</b><span id="gqPos">0/0</span><div id="gqTrack"><i></i></div><span id="gqPct">%0</span></div><div id="gqQueue"></div><div class="gqTransport"><button class="gqBtn" id="gqPrev">‹ Önceki</button><button class="gqBtn primary" id="gqPlay">▶ Başlat</button><button class="gqBtn" id="gqNext">Sonraki ›</button><button class="gqBtn" id="gqStop">■ Bitir</button></div></div>`;anchor.insertAdjacentElement('afterend',d);
  d.querySelector('#gqExample').onclick=example;d.querySelector('#gqAddZikir').onclick=addCurrentZikir;d.querySelector('#gqAddSilence').onclick=()=>addSilence(30000);d.querySelector('#gqAddFreq').onclick=()=>addFrequency();d.querySelector('#gqAddBerhet').onclick=()=>addBerhetiyyeRange(1,7);d.querySelector('#gqAddModule').onclick=()=>{const s=d.querySelector('#gqModuleSel'),o=s.options[s.selectedIndex];addModule(s.value,o.textContent)};d.querySelector('#gqClear').onclick=()=>setQueue([],'Global Akış');d.querySelector('#gqPlay').onclick=()=>G.playing?pause():G.paused?resume():play();d.querySelector('#gqPrev').onclick=previous;d.querySelector('#gqNext').onclick=next;d.querySelector('#gqStop').onclick=()=>stop(true);render()}
 function render(){const d=document.getElementById('gqHub');if(!d)return;const q=d.querySelector('#gqQueue');q.innerHTML=G.queue.length?G.queue.map((x,i)=>`<div class="gqItem ${i===G.i&&(G.playing||G.paused||G.restored)?'active':''}" data-i="${i}"><span class="gqNum">${i+1}</span><div><div class="gqTitle">${itemLabel(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div><div class="gqMeta">${x.type==='module'?'okuyucu':x.type==='frequency'?'frekans':x.type==='breath'?'nefes':x.type==='ambience'?'ambiyans':x.type==='silence'?'sükût':'zikir'}${estimate(x)?' · ≈ '+Math.max(1,Math.round(estimate(x)/1000))+' sn':''}</div></div><div class="gqActions"><button data-up="${i}" aria-label="Yukarı">↑</button><button data-down="${i}" aria-label="Aşağı">↓</button><button data-del="${i}" aria-label="Sil">×</button></div></div>`).join(''):'<div class="gqEmpty">Kuyruk boş. Farklı modülleri yukarıdaki düğmelerle aynı akışa ekleyebilirsin.</div>';q.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>move(+b.dataset.up,-1));q.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>move(+b.dataset.down,1));q.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>remove(+b.dataset.del));const p=Math.round(progress());d.querySelector('#gqState').textContent=G.playing?'Çalıyor':G.paused?'Duraklatıldı':G.restored?'Kaldığın yer hazır':'Hazır';d.querySelector('#gqPos').textContent=G.queue.length?`${Math.min(G.i+1,G.queue.length)}/${G.queue.length}`:'0/0';d.querySelector('#gqPct').textContent='%'+p;d.querySelector('#gqTrack i').style.width=p+'%';const pb=d.querySelector('#gqPlay');pb.textContent=G.playing?'⏸ Duraklat':(G.paused||G.restored)?'▶ Devam Ettir':'▶ Başlat';d.querySelector('#gqPrev').disabled=!G.queue.length||G.i<=0;d.querySelector('#gqNext').disabled=!G.queue.length||G.i>=G.queue.length-1;const sb=d.querySelector('#gqAddBerhet');if(sb)sb.hidden=!berhetUnlocked()}
-restore();ensureUI();
+try{ restore() }catch(e){ try{console.warn('r502 restore başarısız:',e)}catch(_){} }
+try{ ensureUI() }catch(e){ try{console.warn('r502 ensureUI başarısız:',e)}catch(_){} }
 PC.register('global-queue',{priority:650,title:()=>G.name||'Global Akış',getState:()=>G.playing?'playing':G.paused?'paused':'idle',play,resume,pause,stop:()=>stop(true),previous,next});
 const api={...G,get state(){return {...G,queue:copy(G.queue)}},setQueue,add,remove,move,play,pause,resume,stop,previous,next,example,addCurrentZikir,addSilence,addFrequency,addModule,addBerhetiyyeRange,save,restore,render};window.GlobalQueue=api;PC.globalQueue=api;
 window.addEventListener('sukun:playbackchange',()=>{if(G.playing||G.paused)publish('playback')});
@@ -36341,11 +36531,12 @@ function refreshSessionCenter(){
  const a=$('#r361AdaptiveOpen'),o=$('#r361OutcomeOpen'),info=$('#r361SessionInfo');
  if(!a||!o||!info)return;
  const q=queueState();
- a.disabled=!q.has||q.remaining<1;
- o.disabled=!q.has;
+ {const v=!q.has||q.remaining<1; if(a.disabled!==v)a.disabled=v;}/*r505*/
+ {const v=!q.has; if(o.disabled!==v)o.disabled=v;}/*r505*/
  if(!q.has){
    info.dataset.state='empty';
-   info.textContent='Önce bir seans veya Global Akış oluştur. Adaptif ayarlar aktif bir akışın kalan adımlarını düzenler.';
+   {const v='Önce bir seans veya Global Akış oluştur. Adaptif ayarlar aktif bir akışın kalan adımlarını düzenler.';
+    if(info.textContent!==v)info.textContent=v;}/*r505*/
  }else{
    info.dataset.state='active';
    const title=String(q.st.title||'Aktif seans');
@@ -36482,8 +36673,21 @@ function sync(){
  nodes('finish').forEach(el=>{
    el.dataset.sukunAction='finish';preserveIconText(el,LABELS.finish);el.disabled=!st.active;
  });
- nodes('prev').forEach(el=>{el.dataset.sukunAction='prev';el.setAttribute('aria-label','Önceki');if(st.active)el.disabled=!st.hasPrev});
- nodes('next').forEach(el=>{el.dataset.sukunAction='next';el.setAttribute('aria-label','Sonraki');if(st.active)el.disabled=!st.hasNext});
+ /* r505 — ETİKET ÇEKİŞMESİ
+    Burası koşulsuz 'Önceki'/'Sonraki' yazıyordu. r494 ise dock düğmelerine
+    daha açıklayıcı 'Önceki zikir'/'Sonraki zikir' yazıyor ve o modül
+    idempotent olduğu için değişikliği görüp geri yazıyordu. Sonuç: iki modül
+    aynı aria-label üzerinde saniyede ~9 kez birbirini eziyor, ekran okuyucuda
+    erişilebilir ad titriyordu (6 saniyede 208 yazım).
+    Kural: mevcut etiket bizimkiyle BAŞLIYOR ama daha uzunsa, o daha
+    spesifik bir addır — ezme. Aksi hâlde yalnız gerçekten değişiyorsa yaz. */
+ const etiketYaz=(el,v)=>{
+   const m=el.getAttribute('aria-label');
+   if(m&&m!==v&&m.indexOf(v)===0)return;
+   if(m!==v)el.setAttribute('aria-label',v);
+ };
+ nodes('prev').forEach(el=>{el.dataset.sukunAction='prev';etiketYaz(el,'Önceki');if(st.active)el.disabled=!st.hasPrev});
+ nodes('next').forEach(el=>{el.dataset.sukunAction='next';etiketYaz(el,'Sonraki');if(st.active)el.disabled=!st.hasNext});
  document.body.dataset.playbackState=st.paused?'paused':st.playing?'playing':'idle';
 }
 function command(action){
@@ -36971,7 +37175,7 @@ function chooseSub(n,info){
 function setDetails(parts){
   const d=ensureDetails();if(!d)return;
   const text=parts.join('  •  ');
-  d.hidden=!text;
+  {const v=!text; if(d.hidden!==v)d.hidden=v;}/*r505*/
   if(!text)return;
   const span=d.firstElementChild;
   if(lastDetails!==text){lastDetails=text;span.textContent=text}
@@ -36995,8 +37199,8 @@ function paint(n,info){
   if(!stableSub||key!==sessionKey||sub!==stableSub)stableSub=sub;
 
   const t=document.getElementById('mbT'),s=document.getElementById('mbS');
-  if(t&&stableTitle)t.textContent=stableTitle;
-  if(s)s.textContent=stableSub||'—';
+  if(t&&stableTitle&&t.textContent!==stableTitle)t.textContent=stableTitle;/*r504*/
+  if(s){const v=stableSub||'—'; if(s.textContent!==v)s.textContent=v;}/*r504*/
   setDetails(detailParts(n,info));
 }
 
@@ -39339,7 +39543,7 @@ function renderNow(n=lastN){
   setOwner(nextOwner);
 
   if(nextOwner==='none'){
-    $('r430Layers')?.setAttribute('hidden','');
+    {const el=$('r430Layers'); if(el&&!el.hasAttribute('hidden'))el.setAttribute('hidden','');}/*r504*/
     lastSignature='';
     return;
   }
@@ -39627,13 +39831,13 @@ function apply(){
   b.classList.toggle('r433-dock-hidden', !!(act && hidden));
 
   const ops=$('r433DockOps'), peek=$('r433DockPeek');
-  if(ops) ops.hidden=!act;
+  if(ops){const v=!act; if(ops.hidden!==v)ops.hidden=v;}/*r505*/
   if(peek){
-    peek.hidden=!(act && hidden);
+    {const v=!(act && hidden); if(peek.hidden!==v)peek.hidden=v;}/*r505*/
     const txt=peek.querySelector('.r433Txt');
-    if(txt) txt.textContent = 'Oynatıcıyı göster';
+    if(txt && txt.textContent!=='Oynatıcıyı göster') txt.textContent = 'Oynatıcıyı göster';/*r504*/
     const sub=peek.querySelector('.r433Sub');
-    if(sub) sub.textContent = (currentTitle() || 'Son oynatma') + ' kontrolünü geri aç';
+    if(sub){const v=(currentTitle() || 'Son oynatma') + ' kontrolünü geri aç'; if(sub.textContent!==v)sub.textContent=v;}/*r504*/
     peek.title = (currentTitle() || 'Oynatıcı') + ' kontrolünü geri getir';
   }
   const hideBtn=$('r433HideBtn');
@@ -39649,7 +39853,8 @@ function apply(){
   if(meta){
     const mi=miniInfo();
     const adet=mi?.tam?.length || mi?.adet || 0;
-    meta.innerHTML = 'Detaylar: <b>' + (adet ? (adet + ' aktif katmanı ayrı ayrı yönet') : 'sesleri ayrı kıs / süre ver / kapat') + '</b>';
+    {const v='Detaylar: <b>' + (adet ? (adet + ' aktif katmanı ayrı ayrı yönet') : 'sesleri ayrı kıs / süre ver / kapat') + '</b>';
+     if(meta.innerHTML!==v)meta.innerHTML=v;}/*r505*/
   }
 }
 
@@ -39926,7 +40131,7 @@ function refresh(force){
   const panel=$('r434InlineDetails');
   if(!isActive()){
     setOpen(false);
-    if(panel)panel.hidden=true;
+    if(panel&&panel.hidden!==true)panel.hidden=true;/*r505*/
     return;
   }
 
@@ -40233,7 +40438,7 @@ window.addEventListener('tekke:closed',()=>setTimeout(()=>{
   body?.classList.remove('r436-tekke-player-open');
 },0),{passive:true});
 
-syncButton();
+try{ syncButton() }catch(e){ try{console.warn('r502 syncButton( başarısız:',e)}catch(_){} }
 
 window.SukunTekkeDock={
   version:'r436',
@@ -40513,7 +40718,7 @@ function syncButton(){
     }
   }
   if(stop){
-    stop.setAttribute('aria-label','Tümünü durdur');
+    if(stop.getAttribute('aria-label')!=='Tümünü durdur')stop.setAttribute('aria-label','Tümünü durdur');/*r505*/
     stop.title='Tümünü durdur';
   }
 }
@@ -45269,13 +45474,22 @@ body.r485-controls #tab-zkr .duaOnlyRow .sk-toggle{
 if(window.__SUKUN_R487_CONTROLS__)return;
 window.__SUKUN_R487_CONTROLS__=1;
 
+/* r502: bu modül boşta 6 saniyede 95.000 DOM mutasyonu üretiyordu.
+   normalize() her turda binlerce KOŞULSUZ classList.add/setAttribute
+   yapıyor, bunlar da kendi MutationObserver'ını (attributeFilter:['class'])
+   sürekli uyandırıyordu. Aşağıdaki yardımcılar yalnız gerçekten
+   değişecekse yazar; davranış aynı, yazım sayısı sıfıra iner. */
+const ekle=(el,c)=>{ if(!el.classList.contains(c))el.classList.add(c) };
+const oz=(el,a,v)=>{ if(el.getAttribute(a)!==v)el.setAttribute(a,v) };
+
 const markRange=r=>{
   if(!r||r.nodeType!==1)return;
-  r.classList.add('sk-slider');
+  ekle(r,'sk-slider');
   const min=Number(r.min),max=Number(r.max),val=Number(r.value);
   const lo=Number.isFinite(min)?min:0,hi=Number.isFinite(max)?max:1,v=Number.isFinite(val)?val:lo;
   const pct=hi===lo?0:Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));
-  r.style.setProperty('--sk-pct',pct+'%');
+  const pctStr=pct+'%';
+  if(r.style.getPropertyValue('--sk-pct')!==pctStr)r.style.setProperty('--sk-pct',pctStr);
 
   if(!r.dataset.skBound){
     r.dataset.skBound='1';
@@ -45286,37 +45500,37 @@ const markRange=r=>{
 
 function normalize(root=document){
   if(!document.body)return;
-  document.body.classList.add('r485-controls');
+  ekle(document.body,'r485-controls');
 
   root.querySelectorAll?.('.sw').forEach(el=>{
-    el.classList.add('sk-toggle');
+    ekle(el,'sk-toggle');
     if(el.tagName==='BUTTON'){
-      el.type='button';
+      if(el.type!=='button')el.type='button';
       if(!el.hasAttribute('role'))el.setAttribute('role','switch');
-      el.setAttribute('aria-checked',el.classList.contains('on')?'true':'false');
+      oz(el,'aria-checked',el.classList.contains('on')?'true':'false');
     }
   });
 
   root.querySelectorAll?.('.opt').forEach(row=>{
     if(!row.querySelector('.sw'))return;
-    row.classList.add('sk-control','sk-control--toggle');
+    ekle(row,'sk-control'); ekle(row,'sk-control--toggle');
   });
 
   root.querySelectorAll?.('.sldRow').forEach(row=>{
     if(!row.querySelector('input[type="range"]'))return;
-    row.classList.add('sk-control','sk-control--slider');
+    ekle(row,'sk-control'); ekle(row,'sk-control--slider');
   });
 
   root.querySelectorAll?.('.chTop').forEach(row=>{
     if(!row.querySelector('.sw'))return;
-    row.classList.add('sk-control','sk-control--channel');
+    ekle(row,'sk-control'); ekle(row,'sk-control--channel');
   });
 
   root.querySelectorAll?.('.chInfo,[data-ambinfo]').forEach(el=>{
-    el.classList.add('sk-info','sk-info--card');
+    ekle(el,'sk-info'); ekle(el,'sk-info--card');
   });
   root.querySelectorAll?.('.qb').forEach(el=>{
-    el.classList.add('sk-info','sk-info--inline');
+    ekle(el,'sk-info'); ekle(el,'sk-info--inline');
   });
 
   root.querySelectorAll?.('input[type="range"]').forEach(markRange);
@@ -45329,7 +45543,7 @@ const stateObs=new MutationObserver(ms=>{
   for(const m of ms){
     if(m.type==='attributes'&&m.target?.classList?.contains('sk-toggle')){
       const el=m.target;
-      if(el.tagName==='BUTTON')el.setAttribute('aria-checked',el.classList.contains('on')?'true':'false');
+      if(el.tagName==='BUTTON')oz(el,'aria-checked',el.classList.contains('on')?'true':'false');
     }
     if(m.type==='childList'&&m.addedNodes.length)needsNormalize=true;
   }
@@ -46446,15 +46660,16 @@ function render(s){
   const meta=host.querySelector('.r499Meta');
   const eb=meta?.querySelector('b');
 
-  value.textContent=`${s.position}. ${s.name}`;
+  /* r504: koşulsuz yazımdı — gözlemcileri boş yere uyandırıyordu. */
+  {const v=`${s.position}. ${s.name}`; if(value.textContent!==v)value.textContent=v;}
   if(s.ebced>0){
-    eb.textContent=String(s.ebced);
-    meta.hidden=false;
+    {const v=String(s.ebced); if(eb.textContent!==v)eb.textContent=v;}/*r504*/
+    if(meta.hidden!==false)meta.hidden=false;/*r505*/
   }else meta.hidden=true;
 
   /* Esmâ pager da aynı state'i kullanır. */
   const now=document.getElementById('esmaStepNow');
-  if(now)now.textContent=`${s.position} / ${s.length||99}`;
+  if(now){const v=`${s.position} / ${s.length||99}`; if(now.textContent!==v)now.textContent=v;}/*r504*/
 }
 function sync(reason='esma-badge'){
   window.currentZikirState?.refresh(reason,true);
@@ -46954,6 +47169,64 @@ window.SukunOverflowDebug={
   snapshot,
   report:()=>publicReport(lastReport)
 };
+})();
+</script>
+
+
+<script>
+/* ═══ r502 — AÇILIŞ BÜTÜNLÜK KONTROLÜ ═══════════════════════════════
+   Neden var: r501'de tek bir TDZ hatası (bakStatRender → MREHBER) klasik
+   script bloğunun geri kalanını iptal ediyor, MREHBER/FS/SUN ve
+   SukunAudioGuard dahil yüzlerce bildirim sessizce yok oluyordu.
+   Uygulama yarı çalışır hâlde açıldığı ve konsola bakmayan kullanıcı
+   hiçbir şey görmediği için bu, temiz kurulumda test edildiğinde
+   fark edilmiyordu.
+
+   Bu kontrol aynı sınıf arızayı SESSİZ olmaktan çıkarır: kritik
+   küresel adlar ve oynatma kontratı yoksa durumu window.SukunSaglik'e
+   yazar ve konsola tek bir özet basar. Kullanıcı arayüzünü rahatsız
+   etmez; Tanılama ekranı bunu okuyabilir. */
+(()=>{'use strict';
+  /* Adlar eval ile DEĞİL, doğrudan sözcüksel erişimle yoklanır.
+     (0,eval) dolaylı çağrıdır ve bu kod tabanında script-global const'ları
+     güvenilir biçimde görmüyor — devir notlarındaki `window.X` tuzağının
+     aynı ailesi. Doğrudan ad + try/catch tek güvenilir yol. */
+  const KRITIK=[
+    ['MREHBER',()=>MREHBER], ['FS',()=>FS], ['SUN',()=>SUN],
+    ['TV',()=>TV], ['AK',()=>AK], ['DH',()=>DH], ['SEY',()=>SEY],
+    ['DL',()=>DL], ['HZV',()=>HZV], ['LTF',()=>LTF], ['HATIM',()=>HATIM]
+  ];
+  function bak(bildir){
+    const eksik=[];
+    for(const [ad,al] of KRITIK){
+      let t='yok';
+      try{ const v=al(); t = (v===undefined||v===null)?'yok':typeof v; }
+      catch(e){ t = /before initialization/.test(e.message||'')?'TDZ':'yok' }
+      if(t==='yok'||t==='TDZ')eksik.push(ad+'('+t+')');
+    }
+    let providers=null, issues=null;
+    try{ const a=window.SukunAudioGuard?.audit?.(); providers=a?a.providers.length:null; issues=a?a.issues:null; }catch(e){}
+    const saglikli = eksik.length===0 && providers!==null && providers>=10;
+    window.SukunSaglik={ saglikli, eksik, providers, issues, t:Date.now() };
+    if(!saglikli && bildir){
+      try{ console.error('[SÜKÛN] Açılış bütünlüğü BOZUK — bir script bloğu yarıda kesilmiş olabilir.',
+                         {eksik, providers, issues}); }catch(_){}
+    }
+    return saglikli;
+  }
+  /* Bazı modüller load'dan saniyeler sonra ilkleniyor (kademeli açılış).
+     Tek seferlik bakış yanlış alarm verir; sağlıklı olana kadar veya son
+     tarihe kadar tekrar dene, sorunu YALNIZ en sonda bildir. */
+  const ADIMLAR=[1500,4000,8000,15000];
+  let k=0;
+  function tur(){
+    const son = k>=ADIMLAR.length-1;
+    const ok = bak(son);
+    if(!ok && !son){ k++; setTimeout(tur,ADIMLAR[k]-ADIMLAR[k-1]); }
+  }
+  if(document.readyState==='complete')setTimeout(tur,ADIMLAR[0]);
+  else window.addEventListener('load',()=>setTimeout(tur,ADIMLAR[0]),{once:true});
+  window.SukunSaglikBak=()=>bak(true);
 })();
 </script>
 

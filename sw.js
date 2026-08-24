@@ -1,8 +1,8 @@
-/* SÜKÛN r501 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r505 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r501';
-const CACHE = 'sukun-r501-20260824a';
+const SURUM = 'r505';
+const CACHE = 'sukun-r505-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,18 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r505 Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı iki modül arasında saniyede ~9 kez gidip geliyordu; çekişme giderildi.',
+  'r505 Boştaki gereksiz DOM yazımı 3.463 → 2.374 (on altı koşulsuz görünürlük/etkinlik yazımı).',
+  'r505 Merkezî DOM yayını kare başına tek dağıtıma indirildi (yoğun yükte geri çağrı 55 → 17); ekran kapalıyken zamanlayıcı yedeği devrede.',
+  'r504 Sayfayı izleyen 12 DOM gözlemcisi tek merkezî yayına indirgendi; 300 yazımlık yükte uyanan geri çağrı 559 → 56.',
+  'r504 Sekme geçiş animasyonunun bıraktığı olay dinleyicisi sızıntısı kapatıldı (10 turda 40 birikim → 0).',
+  'r504 Boştaki gereksiz DOM yazımı 4.590 → 3.463.',
+  'r503 Yedek geri yüklemede değer içeriği denetimi: kontrol karakteri veya bozuk JSON taşıyan kayıtlar atlanıyor; düz metin ayarlar etkilenmiyor.',
+  'r503 \u201Cesc\u201D ad çakışması giderildi (beşi HTML kaçışı, ikisi klavye işleyicisiydi) — ileride sessiz XSS\'e dönüşebilecek bir tuzak kapatıldı.',
+  'r502 KRİTİK: Geçmişi olan kullanıcılarda uygulama yarım açılıyordu — bir açılış hatası script bloğunu iptal edip Fâtiha Seyri, namaz vakti hesabı ve tüm oynatma kontratını sessizce yok ediyordu.',
+  'r502 Kalıcı veri okuyan on bir açılış çağrısı yalıtıldı; tek bir bozuk kayıt artık uygulamanın geri kalanını düşüremez.',
+  'r502 Açılış bütünlük kontrolü eklendi; kritik katmanlar kurulamazsa durum sessiz kalmıyor.',
+  'r502 Arayüz kontrol katmanının boştaki gereksiz DOM yazımı %95 azaltıldı (6 sn ölçümde 95.083 → 4.590).',
   'r501 Overflow Debug: Diagnostics içinde viewport/clipping taraması, selector+px raporu, vurgulama ve JSON export entegrasyonu.',
   'r500 hotfix: sağ kenardaki yarım text fragmentleri için overflow containment güçlendirildi.',
   'r499 currentZikirState: sayaç + seçili Esmâ + pager + canlı telemetri tek state kaynağından beslenir; DOM scraping kaldırıldı.',
