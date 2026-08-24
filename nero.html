@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r499 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r501 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r499">
+<meta name="sukun-build" content="r501">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r499">
+<link rel="manifest" href="./manifest.webmanifest?v=r501">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.49 — build 2026-08-24-r499</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.51 — build 2026-08-24-r501</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,8 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r501","t":"24 Ağustos 2026","b":["Geliştirici Tanılama paneline Layout Overflow / Clipping tarayıcısı eklendi; viewport taşması, hidden/clip atası altında kırpılan çocuk ve kendi içeriğini kırpan elemanlar ayrı türlerde raporlanır","Tanılama başlığına Taşma Tara düğmesi; sonuç bölümüne Şimdi tara / Hepsini vurgula / Vurguyu temizle kontrolleri eklendi","Her bulgu selector, taşma yönü ve piksel miktarıyla listelenir; Git düğmesi ilgili elemana kaydırıp geçici sarı vurgu gösterir","Bilinen yatay kaydırma bileşenleri hata sayılmadığı için tabs, catRow, zList, seg ve benzeri kasıtlı scrollerlar raporu kirletmez","Overflow raporu Diagnostics JSON çıktısına da eklenir; masaüstünde Ctrl+Shift+O doğrudan tanılama + taşma taramasını açar","Tarayıcı yalnız isteğe bağlı çalışır; debug kapalıyken MutationObserver, polling veya sürekli layout ölçümü yapmaz"]},
+ {"v":"r500","t":"24 Ağustos 2026","b":["Sağ kenarda görünen yarım metin/fragment kalıntısı için taşma-kırpma hotfixi eklendi","Zikir Sayaç kartı, canlı bar telemetri satırı ve Seçili Esmâ badge için overflow containment güçlendirildi","Canlı bar ve sayaç çevresinde tekil text fragmentleri ellipsis + clip ile görsel olarak temizlendi"]},
  {"v":"r499","t":"24 Ağustos 2026","b":["currentZikirState tek kaynak modeli eklendi; Z, ZIKIR ve aktif Akıllı Seans zikir adımı tek normalize snapshot altında birleştirildi","Ana/Tefekkür sayaç zUI artık hedef, sayım, kalan, devir, yüzde ve toplam değerlerini currentZikirState snapshotından çiziyor","Canlı bar r478 telemetri runtimeı DOM sayaçlarını ve zTr metnini okumayı bıraktı; currentZikirState subscriberına dönüştürüldü ve MutationObserver kaldırıldı","Üst Seçili Esmâ badge DOM taraması/regex taraması yapmayı bıraktı; isim, sıra ve Ebced değerini doğrudan currentZikirState üzerinden alıyor","Esmâ 1/99 pager orta değeri de aynı state subscriberından güncelleniyor; üst badge, pager, sayaç ve canlı telemetri aynı kaynağı paylaşır","Akıllı Seans nowRender ve zikir render/zUI geçişleri merkezi state refresh yayınlıyor; değişmeyen snapshot subscriberları yeniden çizilmez","State köprüsü event-driven çalışır; sürekli polling veya geniş subtree MutationObserver kullanılmaz"]},
  {"v":"r498","t":"24 Ağustos 2026","b":["Seçili Esmâ badge zengin gösterime yükseltildi: isim + sıra numarası + Ebced değeri aynı bileşende gösterilir","Badge görünür sahneden Ebced bilgisini de okuyup Seçili Esmâ: 2. Rahîm • Ebced 258 formatına yaklaşan daha olgun bir üst bilgi sunar","Yerleşim mobilde kırılmaması için tek satır öncelikli, dar ekranda sarılabilir hibrit chip yapısına geçirildi"]},
  {"v":"r497","t":"24 Ağustos 2026","b":["Üst bölümde seçili esmayı görünür kılan r497 badge eklendi; Önceki / Sıradaki Esmâ satırının hemen altında Seçili Esmâ: N. İsim gösterilir","Badge aktif sekmeyi önce aria-selected ve active sınıflarından, bunlar yoksa üst pager indexinden çıkarır; böylece yalnız rakam değil isim de görünür","Yeni badge DOM’u bozmaz; runtime olarak en uygun yere enjekte edilir ve görünüm değiştikçe kendini günceller"]},
@@ -21565,7 +21567,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r499',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r501',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32661,7 +32663,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r499',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r501',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -42474,6 +42476,7 @@ function ensureUI(){
         <div class="dHeadBtns">
           <button class="dPrimary" id="r455SafeBtn">Güvenli Test</button>
           <button id="r455DeepBtn">Derin Test</button>
+          <button id="r501OverflowBtn">Taşma Tara</button>
           <button id="r455ExportBtn">JSON Rapor</button>
           <button class="dDanger" id="r455CloseBtn">Kapat</button>
         </div>
@@ -42485,6 +42488,29 @@ function ensureUI(){
         <div class="dBody">
           <div class="dNote">Güvenli test kullanıcı verisini değiştirmez. Derin test yalnız ses motoru boşta ise mock session state-machine, çoklu pause/resume, Tefekkür giriş/çıkış, Tekke giriş/çıkış ve sentetik lifecycle smoke testi çalıştırır.</div>
           <div class="dTests" id="r455Tests"></div>
+        </div>
+      </details>
+
+      <details id="r501OverflowDetails" open>
+        <summary><span>Layout Overflow / Clipping</span><span id="r501OverflowSum">Henüz taranmadı</span></summary>
+        <div class="dBody">
+          <div class="dNote">
+            Yalnız görünür uygulama elemanlarını tarar. Yatay/dikey viewport taşması,
+            overflow:hidden/clip altında kırpılan çocuklar ve kendi içeriğini kırpan
+            bileşenler raporlanır. Kaydırma amacıyla overflow:auto/scroll kullanan
+            bilinen listeler varsayılan olarak hata sayılmaz.
+          </div>
+          <div class="r501OverflowActions">
+            <button class="dPrimary" id="r501OverflowScanBtn">Şimdi tara</button>
+            <button id="r501OverflowHighlightBtn">Hepsini vurgula</button>
+            <button id="r501OverflowClearBtn">Vurguyu temizle</button>
+          </div>
+          <div class="dTableWrap">
+            <table class="r501OverflowTable">
+              <thead><tr><th>#</th><th>Tür</th><th>Eleman</th><th>Taşma</th><th></th></tr></thead>
+              <tbody id="r501OverflowRows"></tbody>
+            </table>
+          </div>
         </div>
       </details>
 
@@ -42582,6 +42608,7 @@ function snapshot(){
       perfEffective:document.body.dataset.perfEffective||document.body.dataset.perf||'—'
     },
     layout:window.SukunLayoutEngine?.snapshot?.()||null,
+    overflowDebug:window.SukunOverflowDebug?.snapshot?.()||null,
     voiceSource:window.SukunVoiceSource?.snapshot?.()||null,
     sessionMemory:window.SukunSessionMemory?.snapshot?.()||null,
     performance:window.SukunAdaptivePerformance?.snapshot?.()||null,
@@ -43072,6 +43099,7 @@ function open(){
   clearInterval(refreshTimer);
   refreshTimer=setInterval(function diagTick(){render()},1000);
   if(!lastResults.length)setTimeout(()=>runSafe('open'),100);
+  setTimeout(()=>{try{window.SukunOverflowDebug?.scan?.({render:true,highlight:false})}catch(e){}},180);
 }
 function close(){
   const root=ensureUI();
@@ -46481,6 +46509,451 @@ window.addEventListener('pageshow',()=>refresh('pageshow'),{passive:true});
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',()=>refresh('dom-ready'),{once:true});
 }else refresh('boot');
+})();
+</script>
+
+
+<style id="r500-stray-fragment-hotfix">
+/* r500 — sağ kenarda görünen yarım metin kalıntılarını kırp.
+   Amaç: sayaç kartı ve canlı bar çevresindeki taşan tekil fragmentleri
+   görsel olarak temizlemek; düzen ölçülerine dokunmamak. */
+html,body{overflow-x:hidden!important}
+body{overscroll-behavior-x:none}
+.wrap,.card,.zCtl,.zCounterRow,.zCounterActions,.zCounterMeta,
+#zCountVisual,#r496DockCore,#r478DockStats,#r422NowInfo,#r499EsmaBadge{
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.card.zCtl,.zCtl,#zCountVisual,.zCounterRow,.zCounterActions,.zCounterMeta,
+#r496DockCore,#r478DockStats,#r422NowInfo,#r499EsmaBadge{
+  overflow:hidden!important;
+}
+#r496DockCore,#r478DockStats,#r422NowInfo{isolation:isolate}
+#r496DockCore *,
+#r478DockStats *{
+  max-width:100%;
+}
+#r478DockStats .r478Name,
+#r478DockStats .r478Stat,
+#r499EsmaBadge .r499Value{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+</style>
+
+
+<style id="r501-overflow-debug-style">
+/* ═══════════════════════════════════════════════════════════════
+   r501 — OVERFLOW DEBUG
+   Debug kapalıyken uygulama görünümünü değiştirmez.
+   ═══════════════════════════════════════════════════════════════ */
+.r501OverflowActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:0 0 9px;
+}
+.r501OverflowTable td:nth-child(3){
+  max-width:360px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.r501OverflowTable code{
+  font:600 9px/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--goldh,#ecd27e);
+}
+.r501OverflowTable .r501Px{
+  white-space:nowrap;
+  font:700 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.r501OverflowTable .r501Go{
+  min-height:26px;
+  padding:4px 8px;
+  border-radius:8px;
+}
+.r501OverflowKind{
+  display:inline-flex;
+  align-items:center;
+  min-height:19px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.03em;
+  white-space:nowrap;
+}
+.r501OverflowKind[data-sev="high"]{
+  color:#ff9a8a;
+  border-color:rgba(255,105,90,.30);
+  background:rgba(255,80,65,.08);
+}
+.r501OverflowKind[data-sev="med"]{
+  color:#ffd681;
+  border-color:rgba(255,205,90,.28);
+  background:rgba(255,190,70,.07);
+}
+.r501OverflowKind[data-sev="low"]{
+  color:#9bd9be;
+  border-color:rgba(105,226,170,.24);
+  background:rgba(105,226,170,.06);
+}
+
+/* Vurgu yalnız debug komutu verilince eklenir. */
+.r501-overflow-hit{
+  outline:2px solid rgba(255,93,77,.94)!important;
+  outline-offset:2px!important;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.72),
+    0 0 0 4px rgba(255,93,77,.16)!important;
+}
+.r501-overflow-focus{
+  outline:3px solid #ffd76a!important;
+  outline-offset:3px!important;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.72),
+    0 0 24px rgba(255,211,94,.42)!important;
+}
+#r501OverflowBadge{
+  position:fixed;
+  z-index:2147483200;
+  pointer-events:none;
+  min-width:21px;
+  height:21px;
+  padding:0 5px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:#ff604d;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 3px 12px rgba(0,0,0,.35);
+  font:800 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+#r501OverflowBadge.on{display:flex}
+
+/* Debug panelin kendisi hiçbir zaman tarama sonucu olarak işaretlenmez. */
+#r455Diag .r501-overflow-hit,
+#r455Diag .r501-overflow-focus{
+  outline:none!important;
+  box-shadow:none!important;
+}
+
+@media(max-width:520px){
+  .r501OverflowTable th:nth-child(4),
+  .r501OverflowTable td:nth-child(4){display:none}
+  .r501OverflowTable td:nth-child(3){max-width:180px}
+}
+</style>
+
+
+<script id="r501-overflow-debug-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R501_OVERFLOW_DEBUG__)return;
+window.__SUKUN_R501_OVERFLOW_DEBUG__=1;
+
+const $=id=>document.getElementById(id);
+let lastReport=[];
+let lastAt=0;
+let highlighted=[];
+
+const IGNORE_SELECTOR=[
+  '#r455Diag','#r455Diag *',
+  'script','style','template','link','meta',
+  'path','defs','stop','linearGradient','radialGradient',
+  '[hidden]','[aria-hidden="true"]',
+  '.tzh','body::before','body::after'
+].join(',');
+
+const INTENTIONAL_SCROLL=[
+  '.tabs','.catRow','.zList','.seg','.qRow',
+  '[role="tablist"]','.dTableWrap',
+  '.r170Queue','.preFilter','.scrollX',
+  '[data-overflow-debug-ignore="1"]'
+].join(',');
+
+function finite(n,d=0){n=Number(n);return Number.isFinite(n)?n:d}
+function round(n){return Math.round(finite(n)*10)/10}
+function visible(el){
+  if(!el||!(el instanceof Element))return false;
+  if(el.matches?.(IGNORE_SELECTOR))return false;
+  const cs=getComputedStyle(el);
+  if(cs.display==='none'||cs.visibility==='hidden'||parseFloat(cs.opacity||'1')<.02)return false;
+  if(cs.position==='fixed'&&el.closest('#r455Diag'))return false;
+  const r=el.getBoundingClientRect();
+  return r.width>1&&r.height>1&&r.bottom>0&&r.top<innerHeight;
+}
+function escCss(v){
+  try{return CSS.escape(v)}catch(e){return String(v).replace(/[^a-zA-Z0-9_-]/g,'\\$&')}
+}
+function selector(el){
+  if(!el)return'—';
+  if(el.id)return'#'+escCss(el.id);
+  const tag=(el.tagName||'div').toLowerCase();
+  const classes=[...el.classList].filter(x=>!/^r501-overflow-/.test(x)).slice(0,3);
+  let s=tag+(classes.length?'.'+classes.map(escCss).join('.'):'');
+  const p=el.parentElement;
+  if(p){
+    const sib=[...p.children].filter(x=>x.tagName===el.tagName);
+    if(sib.length>1)s+=`:nth-of-type(${sib.indexOf(el)+1})`;
+  }
+  return s;
+}
+function clipAncestor(el){
+  let p=el.parentElement;
+  while(p&&p!==document.body&&p!==document.documentElement){
+    const cs=getComputedStyle(p);
+    const ox=cs.overflowX,oy=cs.overflowY;
+    if(['hidden','clip'].includes(ox)||['hidden','clip'].includes(oy))return p;
+    p=p.parentElement;
+  }
+  return null;
+}
+function intentionalScroller(el){
+  if(el.matches?.(INTENTIONAL_SCROLL)||el.closest?.(INTENTIONAL_SCROLL))return true;
+  const cs=getComputedStyle(el);
+  return ['auto','scroll'].includes(cs.overflowX)&&el.scrollWidth>el.clientWidth+2;
+}
+function amountLabel(hit){
+  const a=hit.amount||{};
+  const parts=[];
+  if(a.left>0)parts.push(`L ${round(a.left)}px`);
+  if(a.right>0)parts.push(`R ${round(a.right)}px`);
+  if(a.top>0)parts.push(`T ${round(a.top)}px`);
+  if(a.bottom>0)parts.push(`B ${round(a.bottom)}px`);
+  if(a.selfX>0)parts.push(`iX ${round(a.selfX)}px`);
+  if(a.selfY>0)parts.push(`iY ${round(a.selfY)}px`);
+  return parts.join(' · ')||'—';
+}
+function addHit(map,el,kind,amount,ancestor=null,sev='med'){
+  if(!el||!visible(el))return;
+  const key=selector(el)+'|'+kind;
+  const r=el.getBoundingClientRect();
+  map.set(key,{
+    index:0,
+    kind,
+    severity:sev,
+    selector:selector(el),
+    text:(el.textContent||'').replace(/\s+/g,' ').trim().slice(0,90),
+    amount,
+    overflow:amountLabel({amount}),
+    rect:{x:round(r.x),y:round(r.y),width:round(r.width),height:round(r.height),right:round(r.right),bottom:round(r.bottom)},
+    ancestor:ancestor?selector(ancestor):null,
+    element:el
+  });
+}
+function scanRaw(){
+  const map=new Map();
+  const vw=document.documentElement.clientWidth||innerWidth;
+  const vh=document.documentElement.clientHeight||innerHeight;
+  const tol=2;
+
+  const els=[...document.body.querySelectorAll('*')];
+  for(const el of els){
+    if(!visible(el))continue;
+    if(el.closest('#r455Diag'))continue;
+    const cs=getComputedStyle(el);
+    const r=el.getBoundingClientRect();
+
+    /* 1) Viewport dışına fiziksel taşma. */
+    const vp={
+      left:Math.max(0,-r.left),
+      right:Math.max(0,r.right-vw),
+      top:Math.max(0,-r.top),
+      bottom:Math.max(0,r.bottom-vh)
+    };
+    const vpX=vp.left>tol||vp.right>tol;
+    const vpY=(vp.top>tol||vp.bottom>tol)&&cs.position==='fixed';
+    if(vpX||vpY){
+      /* bilinçli yatay scroller'ın iç çocukları viewport dışında olabilir;
+         kendisi viewport içindeyse bunları hata sayma. */
+      const parentScroll=el.closest(INTENTIONAL_SCROLL);
+      if(!parentScroll||parentScroll===el){
+        addHit(map,el,'VIEWPORT',vp,null,'high');
+      }
+    }
+
+    /* 2) overflow:hidden/clip atası altında kırpılma. */
+    const clip=clipAncestor(el);
+    if(clip&&visible(clip)){
+      const cr=clip.getBoundingClientRect();
+      const ca={
+        left:Math.max(0,cr.left-r.left),
+        right:Math.max(0,r.right-cr.right),
+        top:Math.max(0,cr.top-r.top),
+        bottom:Math.max(0,r.bottom-cr.bottom)
+      };
+      if(ca.left>tol||ca.right>tol||ca.top>tol||ca.bottom>tol){
+        if(!intentionalScroller(clip)){
+          addHit(map,el,'CLIPPED',ca,clip,'high');
+        }
+      }
+    }
+
+    /* 3) Elemanın kendi içeriğini istemeden kırpması. */
+    const selfX=Math.max(0,el.scrollWidth-el.clientWidth);
+    const selfY=Math.max(0,el.scrollHeight-el.clientHeight);
+    const ox=cs.overflowX,oy=cs.overflowY;
+    if(selfX>tol&&['hidden','clip'].includes(ox)&&!intentionalScroller(el)){
+      addHit(map,el,'SELF-X',{selfX},null,'med');
+    }
+    if(selfY>tol&&['hidden','clip'].includes(oy)){
+      /* Bilerek tek-satır ellipsis kullanan metinleri düşük önemle raporla. */
+      const ellipsis=cs.textOverflow==='ellipsis'||cs.whiteSpace==='nowrap';
+      addHit(map,el,'SELF-Y',{selfY},null,ellipsis?'low':'med');
+    }
+  }
+
+  return [...map.values()]
+    .sort((a,b)=>{
+      const sev={high:0,med:1,low:2};
+      return sev[a.severity]-sev[b.severity] ||
+             (b.amount.right||b.amount.selfX||0)-(a.amount.right||a.amount.selfX||0) ||
+             a.rect.y-b.rect.y;
+    })
+    .map((x,i)=>({...x,index:i+1}));
+}
+function publicReport(list){
+  return list.map(({element,...x})=>x);
+}
+function clearHighlights(){
+  highlighted.forEach(el=>{
+    try{el.classList.remove('r501-overflow-hit','r501-overflow-focus')}catch(e){}
+  });
+  highlighted=[];
+  const badge=$('r501OverflowBadge');
+  if(badge)badge.classList.remove('on');
+}
+function highlightAll(){
+  clearHighlights();
+  lastReport.forEach(x=>{
+    const el=x.element;
+    if(!el?.isConnected)return;
+    el.classList.add('r501-overflow-hit');
+    highlighted.push(el);
+  });
+}
+function focusHit(i){
+  const hit=lastReport.find(x=>x.index===Number(i));
+  if(!hit?.element?.isConnected)return;
+  clearHighlights();
+  const el=hit.element;
+  el.classList.add('r501-overflow-focus');
+  highlighted=[el];
+  try{el.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'})}catch(e){el.scrollIntoView()}
+  const badge=$('r501OverflowBadge')||(()=>{
+    const b=document.createElement('div');
+    b.id='r501OverflowBadge';
+    document.body.appendChild(b);
+    return b;
+  })();
+  badge.textContent=String(hit.index);
+  const place=()=>{
+    if(!el.isConnected)return;
+    const r=el.getBoundingClientRect();
+    badge.style.left=Math.max(4,Math.min(innerWidth-28,r.left+4))+'px';
+    badge.style.top=Math.max(4,Math.min(innerHeight-28,r.top+4))+'px';
+    badge.classList.add('on');
+  };
+  setTimeout(place,260);
+  setTimeout(()=>{el.classList.remove('r501-overflow-focus');badge.classList.remove('on')},2600);
+}
+function render(){
+  const sum=$('r501OverflowSum'),rows=$('r501OverflowRows');
+  if(sum){
+    const high=lastReport.filter(x=>x.severity==='high').length;
+    const med=lastReport.filter(x=>x.severity==='med').length;
+    sum.textContent=`${lastReport.length} bulgu · ${high} kritik · ${med} orta`;
+  }
+  if(!rows)return;
+  if(!lastReport.length){
+    rows.innerHTML='<tr><td colspan="5"><span class="dOk">Taşma/kırpma bulgusu yok.</span></td></tr>';
+    return;
+  }
+  const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  rows.innerHTML=lastReport.map(x=>`
+    <tr>
+      <td>${x.index}</td>
+      <td><span class="r501OverflowKind" data-sev="${x.severity}">${e(x.kind)}</span></td>
+      <td title="${e(x.text)}"><code>${e(x.selector)}</code>${x.ancestor?`<div class="dSub">clip: ${e(x.ancestor)}</div>`:''}</td>
+      <td><span class="r501Px">${e(x.overflow)}</span></td>
+      <td><button class="r501Go" data-r501-go="${x.index}">Git</button></td>
+    </tr>`).join('');
+}
+function scan(opt={}){
+  clearHighlights();
+  lastReport=scanRaw();
+  lastAt=Date.now();
+  if(opt.render!==false)render();
+  if(opt.highlight)highlightAll();
+  return publicReport(lastReport);
+}
+function snapshot(){
+  return{
+    version:'r501',
+    at:lastAt?new Date(lastAt).toISOString():null,
+    viewport:{
+      width:document.documentElement.clientWidth||innerWidth,
+      height:document.documentElement.clientHeight||innerHeight,
+      dpr:window.devicePixelRatio||1
+    },
+    count:lastReport.length,
+    high:lastReport.filter(x=>x.severity==='high').length,
+    medium:lastReport.filter(x=>x.severity==='med').length,
+    low:lastReport.filter(x=>x.severity==='low').length,
+    findings:publicReport(lastReport)
+  };
+}
+
+/* Diagnostics UI: delegation, çünkü panel runtime'da oluşturuluyor. */
+document.addEventListener('click',e=>{
+  const t=e.target.closest?.('#r501OverflowBtn,#r501OverflowScanBtn,#r501OverflowHighlightBtn,#r501OverflowClearBtn,[data-r501-go]');
+  if(!t)return;
+  if(t.id==='r501OverflowBtn'||t.id==='r501OverflowScanBtn'){
+    scan({render:true,highlight:false});
+    $('r501OverflowDetails')?.setAttribute('open','');
+    return;
+  }
+  if(t.id==='r501OverflowHighlightBtn'){
+    if(!lastReport.length)scan({render:true});
+    highlightAll();
+    return;
+  }
+  if(t.id==='r501OverflowClearBtn'){
+    clearHighlights();
+    return;
+  }
+  if(t.dataset.r501Go){
+    focusHit(t.dataset.r501Go);
+  }
+});
+
+/* Masaüstü kısa yolu: Ctrl+Shift+O -> diagnostics + overflow scan. */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.shiftKey&&(e.key==='O'||e.key==='o')){
+    e.preventDefault();
+    try{window.SukunDiagnostics?.open?.()}catch(_){}
+    setTimeout(()=>scan({render:true,highlight:false}),120);
+  }
+});
+
+/* Diagnostics kapandığında vurgu bırakma. */
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#r455CloseBtn'))clearHighlights();
+},{capture:true});
+
+window.SukunOverflowDebug={
+  version:'r501',
+  scan,
+  highlightAll,
+  clear:clearHighlights,
+  focus:focusHit,
+  snapshot,
+  report:()=>publicReport(lastReport)
+};
 })();
 </script>
 

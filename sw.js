@@ -1,8 +1,8 @@
-/* SÜKÛN r499 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r501 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r499';
-const CACHE = 'sukun-r499-20260824a';
+const SURUM = 'r501';
+const CACHE = 'sukun-r501-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,8 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r501 Overflow Debug: Diagnostics içinde viewport/clipping taraması, selector+px raporu, vurgulama ve JSON export entegrasyonu.',
+  'r500 hotfix: sağ kenardaki yarım text fragmentleri için overflow containment güçlendirildi.',
   'r499 currentZikirState: sayaç + seçili Esmâ + pager + canlı telemetri tek state kaynağından beslenir; DOM scraping kaldırıldı.',
   'r498 Seçili Esmâ badge zengin gösterime yükseltildi: isim + Ebced birlikte görünür.',
   'r497 Üst bölümde seçili esma badge eklendi; Önceki / Sıradaki satırının altında aktif isim görünür.',
