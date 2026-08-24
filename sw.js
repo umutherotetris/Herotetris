@@ -1,8 +1,8 @@
-/* SÜKÛN r498 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r499 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r498';
-const CACHE = 'sukun-r498-20260824a';
+const SURUM = 'r499';
+const CACHE = 'sukun-r499-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r499 currentZikirState: sayaç + seçili Esmâ + pager + canlı telemetri tek state kaynağından beslenir; DOM scraping kaldırıldı.',
   'r498 Seçili Esmâ badge zengin gösterime yükseltildi: isim + Ebced birlikte görünür.',
   'r497 Üst bölümde seçili esma badge eklendi; Önceki / Sıradaki satırının altında aktif isim görünür.',
   'r496 Canlı bar 3 satır core: Başlık+CANLI / Önceki-Baştan-Sonraki / Sayım-Kalan-Esmâ; mini ve midi aynı çekirdeği kullanır.',

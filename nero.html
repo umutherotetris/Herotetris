@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r498 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r499 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r498">
+<meta name="sukun-build" content="r499">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r498">
+<link rel="manifest" href="./manifest.webmanifest?v=r499">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.48 — build 2026-08-24-r498</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.49 — build 2026-08-24-r499</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r499","t":"24 Ağustos 2026","b":["currentZikirState tek kaynak modeli eklendi; Z, ZIKIR ve aktif Akıllı Seans zikir adımı tek normalize snapshot altında birleştirildi","Ana/Tefekkür sayaç zUI artık hedef, sayım, kalan, devir, yüzde ve toplam değerlerini currentZikirState snapshotından çiziyor","Canlı bar r478 telemetri runtimeı DOM sayaçlarını ve zTr metnini okumayı bıraktı; currentZikirState subscriberına dönüştürüldü ve MutationObserver kaldırıldı","Üst Seçili Esmâ badge DOM taraması/regex taraması yapmayı bıraktı; isim, sıra ve Ebced değerini doğrudan currentZikirState üzerinden alıyor","Esmâ 1/99 pager orta değeri de aynı state subscriberından güncelleniyor; üst badge, pager, sayaç ve canlı telemetri aynı kaynağı paylaşır","Akıllı Seans nowRender ve zikir render/zUI geçişleri merkezi state refresh yayınlıyor; değişmeyen snapshot subscriberları yeniden çizilmez","State köprüsü event-driven çalışır; sürekli polling veya geniş subtree MutationObserver kullanılmaz"]},
  {"v":"r498","t":"24 Ağustos 2026","b":["Seçili Esmâ badge zengin gösterime yükseltildi: isim + sıra numarası + Ebced değeri aynı bileşende gösterilir","Badge görünür sahneden Ebced bilgisini de okuyup Seçili Esmâ: 2. Rahîm • Ebced 258 formatına yaklaşan daha olgun bir üst bilgi sunar","Yerleşim mobilde kırılmaması için tek satır öncelikli, dar ekranda sarılabilir hibrit chip yapısına geçirildi"]},
  {"v":"r497","t":"24 Ağustos 2026","b":["Üst bölümde seçili esmayı görünür kılan r497 badge eklendi; Önceki / Sıradaki Esmâ satırının hemen altında Seçili Esmâ: N. İsim gösterilir","Badge aktif sekmeyi önce aria-selected ve active sınıflarından, bunlar yoksa üst pager indexinden çıkarır; böylece yalnız rakam değil isim de görünür","Yeni badge DOM’u bozmaz; runtime olarak en uygun yere enjekte edilir ve görünüm değiştikçe kendini günceller"]},
  {"v":"r496","t":"24 Ağustos 2026","b":["Canlı bar çekirdeği kesin üç satırlı sisteme geçirildi: 1 Başlık + CANLI, 2 Önceki / Baştan / Sonraki, 3 Sayım / Kalan / Esmâ","r494 navigation owner doğrudan r496DockCore içine mount edecek şekilde güncellendi; nav artık başlık divinin içine girmez","r478 telemetri satırı r496 core üçüncü satırına bağlandı; eski current-line sonrası yerleşim core mevcutken kullanılmaz","Mini görünümde üst çekirdek yalnız üç temel satırı gösterir; açıklama/meta/layer satırları gizlenerek bar sıkışması azaltılır","Midi/expanded görünümde aynı üç satırlı çekirdek üstte sabit kalır, ayrıntılar altında doğal akışla devam eder","CANLI rozeti ilk satırın sağında küçük ve statik; navigation ikinci satırda, telemetri üçüncü satırda olduğundan artık birbirine binmez"]},
@@ -10423,6 +10424,192 @@ koruma:{label:'🛡️ Koruyucu Sûreler',items:[
 const Z={cat:'esma',idx:0,count:0,devir:0,target:33,targetMode:'fixed',tempo:1,auto:false,autoId:null,
  tick:true,vib:true,mean:true,adv:false,total:S.get('sukun.total',0)};
 
+/* ══════════════════════════════════════════════════════════════════
+   r499 — currentZikirState / TEK KAYNAK MODELİ
+   Görsel bileşenler DOM'dan sayı/isim okumaz.
+   Z + ZIKIR + aktif Akıllı Seans adımı normalize edilip tek snapshot üretir.
+   ══════════════════════════════════════════════════════════════════ */
+const currentZikirState=(()=>{
+  const listeners=new Set();
+  let rev=0,lastSig='',state=null;
+
+  const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+  const clean=s=>String(s??'').replace(/\s+/g,' ').trim();
+
+  function smartContext(){
+    try{
+      const P=window.R170?.Player;
+      const step=P?.queue?.[P.i];
+      if(P&&step?.type==='zikir'&&(P.playing||P.paused)){
+        return{
+          active:true,
+          playing:!!P.playing,
+          paused:!!P.paused,
+          name:clean(P.name||'Zikir seansı'),
+          stepIndex:Math.max(0,finite(P.i,0)),
+          stepTotal:Array.isArray(P.queue)?P.queue.length:0,
+          step
+        };
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function resolveItem(cat,idx){
+    try{
+      const items=ZIKIR?.[cat]?.items;
+      if(!Array.isArray(items)||!items.length)return{items:[],item:null,idx:0};
+      const safe=Math.max(0,Math.min(items.length-1,finite(idx,0)));
+      return{items,item:items[safe]||null,idx:safe};
+    }catch(e){return{items:[],item:null,idx:0}}
+  }
+
+  function ebcedOf(item){
+    try{
+      if(typeof zEbcedDegeri==='function'){
+        const n=finite(zEbcedDegeri(item),0);
+        if(n>0)return n;
+      }
+    }catch(e){}
+    return Math.max(0,finite(item?.eb,0));
+  }
+
+  function derive(reason='refresh'){
+    const smart=smartContext();
+
+    let viewCat=clean(Z.cat||'esma');
+    let viewIdx=Math.max(0,finite(Z.idx,0));
+    let cat=smart?clean(smart.step.cat||viewCat):viewCat;
+    let idx=smart?Math.max(0,finite(smart.step.idx,viewIdx)):viewIdx;
+
+    let {items,item,idx:safeIdx}=resolveItem(cat,idx);
+    idx=safeIdx;
+
+    /* Favori görünümü bir sanal liste: gerçek kaynak kategori/indexini koru. */
+    let canonicalCat=cat,canonicalIdx=idx;
+    if(!smart&&viewCat==='fav'&&item){
+      canonicalCat=clean(item._src||cat);
+      canonicalIdx=Math.max(0,finite(item._i,idx));
+      const real=resolveItem(canonicalCat,canonicalIdx);
+      if(real.item)item=real.item;
+      items=real.items;
+      canonicalIdx=real.idx;
+    }
+
+    const name=clean(item?.tr||item?.t||item?.nm||'Zikir');
+    const arabic=clean(item?.ar||'');
+    const meaning=clean(item?.mean||item?.serh||'');
+
+    const target=Math.max(0,finite(Z.target,0));
+    const countRaw=Math.max(0,finite(Z.count,0));
+    const count=target>0?(countRaw%target):countRaw;
+    const remain=target>0?Math.max(0,target-count):null;
+    const devir=Math.max(0,finite(Z.devir,0));
+    const pct=target>0?Math.max(0,Math.min(1,count/target)):((count%100)/100);
+
+    const canonicalItems=resolveItem(canonicalCat,canonicalIdx).items;
+    const length=canonicalItems.length||items.length||0;
+    const position=length?Math.min(length,canonicalIdx+1):0;
+
+    const kind=canonicalCat==='esma'?'ESMÂ':
+      canonicalCat==='berhet'?'BERHETİYYE':
+      canonicalCat==='tevhid'?'TEVHİD':'ZİKİR';
+
+    let active=!!smart;
+    try{
+      active=active||!!Z.auto||
+        document.body.classList.contains('sukun-tefekkur-mode')||
+        (document.body.classList.contains('sukun-zikir-tab')&&
+          (!!name&&name!=='Zikir')&&(countRaw>0||devir>0));
+    }catch(e){}
+
+    return Object.freeze({
+      version:'r499',
+      revision:rev+1,
+      reason,
+      source:smart?'smart':'direct',
+      active,
+      viewCat,
+      viewIdx,
+      cat:canonicalCat,
+      idx:canonicalIdx,
+      position,
+      length,
+      name,
+      arabic,
+      meaning,
+      ebced:ebcedOf(item),
+      countRaw,
+      count,
+      target,
+      remain,
+      devir,
+      pct,
+      targetMode:clean(Z.targetMode||'fixed'),
+      tempo:Math.max(.1,finite(Z.tempo,1)),
+      auto:!!Z.auto,
+      total:Math.max(0,finite(Z.total,0)),
+      kind,
+      session:Object.freeze({
+        active:!!smart,
+        playing:!!smart?.playing,
+        paused:!!smart?.paused,
+        name:smart?.name||'',
+        stepIndex:smart?.stepIndex??-1,
+        stepTotal:smart?.stepTotal??0
+      })
+    });
+  }
+
+  function signature(s){
+    return[
+      s.source,s.active,s.cat,s.idx,s.position,s.length,s.name,s.ebced,
+      s.countRaw,s.count,s.target,s.remain,s.devir,s.targetMode,s.tempo,
+      s.auto,s.total,s.session.playing,s.session.paused,s.session.stepIndex
+    ].join('|');
+  }
+
+  function publish(reason='refresh',force=false){
+    const next=derive(reason),sig=signature(next);
+    if(!force&&state&&sig===lastSig)return state;
+    rev++;
+    state=Object.freeze({...next,revision:rev});
+    lastSig=sig;
+
+    listeners.forEach(fn=>{try{fn(state)}catch(e){console.debug('[currentZikirState subscriber]',e)}});
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:currentzikirchange',{detail:state}));
+    }catch(e){}
+    return state;
+  }
+
+  function subscribe(fn,opt={}){
+    if(typeof fn!=='function')return()=>{};
+    listeners.add(fn);
+    if(opt.immediate!==false){
+      try{fn(state||publish('subscribe',true))}catch(e){}
+    }
+    return()=>listeners.delete(fn);
+  }
+
+  function snapshot(){
+    return state||publish('snapshot',true);
+  }
+
+  state=derive('init');
+  rev=state.revision||1;
+  lastSig=signature(state);
+
+  return Object.freeze({
+    version:'r499',
+    snapshot,
+    refresh:publish,
+    subscribe
+  });
+})();
+window.currentZikirState=currentZikirState;
+
+
 function zItem(){const c=ZIKIR[Z.cat]; return c?c.items[Z.idx]:undefined;}
 
 /* ══════════════════════════════════════════════════════════════════
@@ -10757,6 +10944,7 @@ function renderZikir(swap=true){
      ayrı yerden çağrılıyor; hepsine tek tek eklemek yerine buraya. */
   if(typeof favUI==='function')favUI();
   try{if(!document.hidden&&typeof r476Prepare==='function')r476Prepare()}catch(e){}
+  try{window.currentZikirState?.refresh('renderZikir')}catch(e){}
 }
 function zUI(){
   /* r139: akış sürerken çerçevede sürekli hafif toz */
@@ -10786,26 +10974,26 @@ function zUI(){
     }):null;
     badge.style.cursor=yaz?'pointer':'default';
   }
-  /* r156: sayaç görünümü tek bir normalize edilmiş state'ten beslenir.
-     Böylece başka modüller Z.count'u geçici olarak hedefin üstünde bıraksa bile
-     KALAN ve yüzde yanlış/donmuş görünmez. */
-  const _hedef=Math.max(0,Number(Z.target)||0);
-  const _hamSay=Math.max(0,Number(Z.count)||0);
-  const _say=_hedef>0?(_hamSay%_hedef):_hamSay;
-  const _kalan=_hedef>0?(_hedef-_say):Infinity;
+  /* r499: sayaç artık currentZikirState tek kaynak modelinden beslenir. */
+  const _zs=window.currentZikirState?.refresh('zUI')||null;
+  const _hedef=_zs?_zs.target:Math.max(0,Number(Z.target)||0);
+  const _hamSay=_zs?_zs.countRaw:Math.max(0,Number(Z.count)||0);
+  const _say=_zs?_zs.count:(_hedef>0?(_hamSay%_hedef):_hamSay);
+  const _kalan=_zs?(_zs.remain??Infinity):(_hedef>0?(_hedef-_say):Infinity);
   $('#cntBig').textContent=_say;
   const _ct=document.getElementById('cntTargetView'); if(_ct)_ct.textContent=_hedef>0?_hedef:'∞';
   const _cr=document.getElementById('cntRemain'); if(_cr)_cr.textContent=_hedef>0?_kalan:'∞';
-  const _cp=document.getElementById('cntPct'); if(_cp)_cp.textContent=_hedef>0?('%'+Math.round(clamp(_say/_hedef,0,1)*100)):'serbest';
+  const _cp=document.getElementById('cntPct'); if(_cp)_cp.textContent=_hedef>0?('%'+Math.round(clamp((_zs?_zs.pct:_say/_hedef),0,1)*100)):'serbest';
   const _cm=document.getElementById('cntTargetMode'); if(_cm){
-    let m='adet'; try{m=(Z.targetMode==='ebced'?'Ebced':Z.targetMode==='manual'?'Serbest':'adet')}catch(e){} _cm.textContent=m;
+    const tm=_zs?_zs.targetMode:Z.targetMode;
+    let m='adet'; try{m=(tm==='ebced'?'Ebced':tm==='manual'?'Serbest':'adet')}catch(e){} _cm.textContent=m;
   }
   if(typeof sayacDuyur==='function')
-    sayacDuyur(Z.count, Z.target, (($('#zTr')&&$('#zTr').textContent)||'').split('—')[0].trim());
-  $('#cntSub').textContent=(_hedef>0?'Hedef '+_hedef:'Serbest sayım')+' • Devir '+Z.devir;
-  const pct=_hedef>0?_say/_hedef:(_say%100)/100;
+    sayacDuyur(_hamSay,_hedef,_zs?.name||((($('#zTr')&&$('#zTr').textContent)||'').split('—')[0].trim()));
+  $('#cntSub').textContent=(_hedef>0?'Hedef '+_hedef:'Serbest sayım')+' • Devir '+(_zs?_zs.devir:Z.devir);
+  const pct=_zs?_zs.pct:(_hedef>0?_say/_hedef:(_say%100)/100);
   const arc=$('#zProgArc'); if(arc)arc.style.strokeDashoffset=(829.38*(1-clamp(pct,0,1))).toFixed(1);
-  $('#totalCnt').textContent=Z.total;
+  $('#totalCnt').textContent=_zs?_zs.total:Z.total;
   const ab=$('#autoBtn');
   ab.innerHTML=Z.auto?'■ <b>DURDUR</b>':'▷ <b>SAYMAYA BAŞLA</b><small>(Tekrar artar)</small>';
   ab.classList.toggle('playing',Z.auto);
@@ -21377,7 +21565,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r498',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r499',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32430,7 +32618,7 @@ function stepTitle(s){if(s.type==='zikir')return labelOf(s.cat,s.idx)+(s.reps>1?
 function nowCreate(){if(document.getElementById('r170Now'))return;const d=document.createElement('div');d.id='r170Now';d.innerHTML='<div><small id="r170NowTop">ŞİMDİ ÇALIYOR</small><b id="r170NowTitle">—</b><div class="r170Progress"><i id="r170NowBar"></i></div></div><div class="r170NowBtns"><button id="r170Prev">‹</button><button id="r170Play">▶</button><button id="r170Next">›</button><button id="r170Stop">■</button></div>';document.body.appendChild(d);d.querySelector('#r170Prev').onclick=()=>P.prev();d.querySelector('#r170Play').onclick=()=>P.playing?P.pause():P.play();d.querySelector('#r170Next').onclick=()=>P.next();d.querySelector('#r170Stop').onclick=()=>P.stop();/* r209: MediaSession burada tekrar bağlanmaz. Eski r170 deneme runtime'ı
    SesCapa'nın gelişmiş kilit-ekran/kulaklık işleyicilerini ezebiliyordu.
    Tek otorite SesCapa + miniAtla'dır. */}
-function nowRender(msg){const d=document.getElementById('r170Now');if(!d)return;const s=P.queue[P.i];if(!window.SukunDockOwner?.active?.())d.classList.toggle('show',!!(P.queue.length&&(P.playing||P.paused)));document.getElementById('r170NowTop').textContent=msg||(P.paused?'DURAKLATILDI':P.name||'ŞİMDİ ÇALIYOR');document.getElementById('r170NowTitle').textContent=s?stepTitle(s):'—';document.getElementById('r170Play').textContent=P.playing?'Ⅱ':'▶';const b=document.getElementById('r170NowBar');if(b)b.style.width=(P.queue.length?Math.min(100,((P.i+(P.playing?.25:0))/P.queue.length)*100):0)+'%';try{if('mediaSession'in navigator&&s){navigator.mediaSession.metadata=new MediaMetadata({title:stepTitle(s),artist:'SÜKÛN',album:P.name||'Seans'})}}catch(e){}}
+function nowRender(msg){const d=document.getElementById('r170Now');if(!d)return;const s=P.queue[P.i];if(!window.SukunDockOwner?.active?.())d.classList.toggle('show',!!(P.queue.length&&(P.playing||P.paused)));document.getElementById('r170NowTop').textContent=msg||(P.paused?'DURAKLATILDI':P.name||'ŞİMDİ ÇALIYOR');document.getElementById('r170NowTitle').textContent=s?stepTitle(s):'—';document.getElementById('r170Play').textContent=P.playing?'Ⅱ':'▶';const b=document.getElementById('r170NowBar');if(b)b.style.width=(P.queue.length?Math.min(100,((P.i+(P.playing?.25:0))/P.queue.length)*100):0)+'%';try{if('mediaSession'in navigator&&s){navigator.mediaSession.metadata=new MediaMetadata({title:stepTitle(s),artist:'SÜKÛN',album:P.name||'Seans'})}}catch(e){};try{window.currentZikirState?.refresh('smart-now')}catch(e){}}
 
 const PRESETS={
  sabah:{name:'Sabah Sükûnu',make:()=>[{type:'zikir',cat:'temel',idx:Math.max(0,ZIKIR.temel.items.findIndex(x=>(x.tr||'').includes('Estağfir'))),reps:3,gap:500},{type:'silence',ms:5000},{type:'zikir',cat:'esma',idx:Math.max(0,ZIKIR.esma.items.findIndex(x=>(x.tr||'').includes('Nûr'))),reps:11,gap:600}]},
@@ -32473,7 +32661,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r498',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r499',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -44632,14 +44820,14 @@ body.r434-inline-details-open #r478DockStats{
 </style>
 
 
-<script id="r478-dock-telemetry-runtime">
+<script id="r499-dock-telemetry-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R478_DOCK_TELEMETRY__)return;
-window.__SUKUN_R478_DOCK_TELEMETRY__=1;
+if(window.__SUKUN_R499_DOCK_TELEMETRY__)return;
+window.__SUKUN_R499_DOCK_TELEMETRY__=1;
 
 const $=id=>document.getElementById(id);
-let obs=null, observed=[], raf=0, last='';
+let last='';
 
 function ensure(){
   const info=$('r422NowInfo');
@@ -44653,137 +44841,64 @@ function ensure(){
       '<span class="r478Stat r478Count"><i>SAYIM</i><b id="r478Count">—</b></span>'+
       '<span class="r478Stat r478Remain"><i>KALAN</i><b id="r478Remain">—</b></span>'+
       '<span class="r478Stat r478Name"><i id="r478Kind">ZİKİR</i><b id="r478Name">—</b></span>';
-
-    const core=$('r496DockCore');
-    if(core)core.appendChild(row);
-    else{
-      const current=info.querySelector('.r422NowLine');
-      if(current)current.insertAdjacentElement('afterend',row);
-      else{
-        const progress=$('r422Progress');
-        info.insertBefore(row,progress||null);
-      }
-    }
   }
 
-  /* r496 mevcutsa telemetri daima üçüncü satırdır. */
   const core=$('r496DockCore'),nav=$('r494DockNavSlot');
   if(core&&row.parentElement!==core)core.appendChild(row);
+  else if(!core&&row.parentElement!==info)info.appendChild(row);
   if(core&&nav&&nav.nextElementSibling!==row)nav.insertAdjacentElement('afterend',row);
 
-  bindObserved();
   return row;
 }
 
-function currentStep(){
-  try{
-    const P=window.R170?.Player;
-    const s=P?.queue?.[P.i];
-    return (P&&(P.playing||P.paused)&&s?.type==='zikir')?s:null;
-  }catch(e){return null}
-}
-function ctx(){
-  let cat='',idx=0,step=currentStep();
-  try{
-    if(step){cat=String(step.cat||'');idx=Math.max(0,+step.idx||0)}
-    else if(typeof Z!=='undefined'){cat=String(Z.cat||'');idx=Math.max(0,+Z.idx||0)}
-  }catch(e){}
-
-  let items=[],it=null;
-  try{items=(typeof ZIKIR!=='undefined'&&ZIKIR?.[cat]?.items)||[];it=items[idx]||null}catch(e){}
-  const name=String(it?.tr||it?.t||$('zTr')?.textContent||'Zikir').trim();
-
-  let count=0,target=0,remain=null,devir=0;
-  try{
-    count=Math.max(0,+Z.count||0);
-    target=Math.max(0,+Z.target||0);
-    devir=Math.max(0,+Z.devir||0);
-    remain=target>0?Math.max(0,target-count):null;
-  }catch(e){}
-
-  /* DOM sayaçları canlıysa onları tercih et; canonical zUI ile birebir aynı değer. */
-  const domCount=Number(String($('cntBig')?.textContent||'').replace(/[^\d.-]/g,''));
-  const domRemain=Number(String($('cntRemain')?.textContent||'').replace(/[^\d.-]/g,''));
-  const domTarget=Number(String($('cntTargetView')?.textContent||'').replace(/[^\d.-]/g,''));
-  if(Number.isFinite(domCount))count=Math.max(0,domCount);
-  if(Number.isFinite(domTarget)&&domTarget>0)target=domTarget;
-  if(Number.isFinite(domRemain)&&target>0)remain=Math.max(0,domRemain);
-
-  const len=items.length||0,pos=len?Math.min(len,idx+1):0;
-  const kind=cat==='esma'?'ESMÂ':cat==='berhet'?'BERHETİYYE':cat==='tevhid'?'TEVHİD':'ZİKİR';
-
-  /* Yalnız gerçekten zikir bağlamı varken göster.
-     Akıllı seans zikir adımı veya manuel/otomatik zikir yeterli. */
-  let active=!!step;
-  try{
-    active=active||!!Z.auto||
-      document.body.classList.contains('sukun-tefekkur-mode')||
-      (document.body.classList.contains('sukun-zikir-tab')&&!!name&&name!=='Zikir'&&(+count>0||+devir>0));
-  }catch(e){}
-
-  return{active,cat,idx,len,pos,name,count,target,remain,devir,kind};
-}
-
-function text(c){
-  const sayim=c.target>0?`${c.count}/${c.target}`:`${c.count}/∞`;
-  const kalan=c.target>0?String(c.remain??Math.max(0,c.target-c.count)):'∞';
-  const order=c.len?`${c.pos}/${c.len}`:'';
-  const nm=order?`${order} · ${c.name}`:c.name;
-  return{sayim,kalan,nm};
-}
-function render(){
-  raf=0;
-  const row=ensure();if(!row)return;
-  const c=ctx(),t=text(c);
-  const sig=[c.active,c.cat,c.idx,c.count,c.target,c.remain,c.devir,c.name,c.len].join('|');
+function render(s){
+  const row=ensure(); if(!row||!s)return;
+  const sig=[
+    s.active,s.cat,s.idx,s.count,s.target,s.remain,s.devir,
+    s.name,s.position,s.length,s.session.paused
+  ].join('|');
   if(sig===last)return;last=sig;
 
-  row.dataset.active=c.active?'1':'0';
-  row.dataset.near=(c.target>0&&Number.isFinite(c.remain)&&c.remain<=Math.max(10,Math.round(c.target*.1)))?'1':'0';
-  $('r478Count').textContent=t.sayim;
-  $('r478Remain').textContent=t.kalan;
-  $('r478Kind').textContent=c.kind;
-  $('r478Name').textContent=t.nm;
-  $('r478Name').title=(c.kind+' '+t.nm+(c.devir?` · Devir ${c.devir}`:'')).trim();
+  const sayim=s.target>0?`${s.count}/${s.target}`:`${s.count}/∞`;
+  const kalan=s.target>0?String(s.remain??Math.max(0,s.target-s.count)):'∞';
+  const order=s.length?`${s.position}/${s.length}`:'';
+  const nm=order?`${order} · ${s.name}`:s.name;
+
+  row.dataset.active=s.active?'1':'0';
+  row.dataset.near=(s.target>0&&Number.isFinite(s.remain)&&s.remain<=Math.max(10,Math.round(s.target*.1)))?'1':'0';
+  $('r478Count').textContent=sayim;
+  $('r478Remain').textContent=kalan;
+  $('r478Kind').textContent=s.kind;
+  $('r478Name').textContent=nm;
+  $('r478Name').title=(s.kind+' '+nm+(s.devir?` · Devir ${s.devir}`:'')).trim();
 
   const live=$('r422NowLive');
   if(live){
-    const paused=/DURAK/i.test(live.textContent||'');
+    const paused=!!s.session.paused;
     live.title=paused?'Duraklatıldı':'Canlı oynatma';
     live.setAttribute('aria-label',paused?'Duraklatıldı':'Canlı oynatma');
   }
 }
-function schedule(){
-  if(raf)return;
-  raf=requestAnimationFrame(render);
-}
-function bindObserved(){
-  const nodes=[$('cntBig'),$('cntRemain'),$('cntTargetView'),$('cntSub'),$('zTr')].filter(Boolean);
-  const changed=nodes.length!==observed.length||nodes.some((n,i)=>n!==observed[i]);
-  if(!changed)return;
-  obs?.disconnect?.();
-  observed=nodes;
-  if(!nodes.length)return;
-  obs=new MutationObserver(schedule);
-  nodes.forEach(n=>obs.observe(n,{childList:true,characterData:true,subtree:true}));
+function sync(reason='dock-sync'){
+  return window.currentZikirState?.refresh(reason,true);
 }
 
+const unsub=window.currentZikirState?.subscribe(render);
 ['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:source','sukun:voicesource']
-  .forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
-document.addEventListener('click',e=>{
-  if(e.target.closest?.('#autoBtn,#plusBtn,#undoBtn,#resetBtn,#zList,[data-i],#r170Prev,#r170Next,#r170Play,#r170Stop')){
-    setTimeout(schedule,0);
-    setTimeout(schedule,90);
-  }
-},{passive:true});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(schedule,40)},{passive:true});
-window.addEventListener('pageshow',()=>setTimeout(schedule,50),{passive:true});
+  .forEach(ev=>window.addEventListener(ev,()=>sync(ev),{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync('visibility')},{passive:true});
+window.addEventListener('pageshow',()=>sync('pageshow'),{passive:true});
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',()=>setTimeout(schedule,100),{once:true});
-}else setTimeout(schedule,60);
+  document.addEventListener('DOMContentLoaded',()=>sync('dom-ready'),{once:true});
+}else sync('boot');
 
-window.SukunDockTelemetry={version:'r478',sync:schedule,snapshot:ctx};
+window.SukunDockTelemetry={
+  version:'r499',
+  sync,
+  snapshot:()=>window.currentZikirState?.snapshot?.()||null,
+  destroy:()=>unsub?.()
+};
 })();
 </script>
 
@@ -46204,9 +46319,9 @@ window.SukunDockCore={version:'r498',normalize};
 })();
 </script>
 
-<style id="r498-current-esma-badge-style">
-/* r498 — seçili esmayı zengin gösterim */
-#r498EsmaBadge{
+<style id="r499-current-esma-badge-style">
+/* r499 — currentZikirState consumer; DOM'dan isim/ebced taramaz */
+#r499EsmaBadge{
   display:flex;
   align-items:center;
   justify-content:center;
@@ -46219,16 +46334,14 @@ window.SukunDockCore={version:'r498',normalize};
   border-radius:20px;
   border:1px solid color-mix(in srgb,var(--gold) 24%,rgba(255,255,255,.12));
   background:
-    radial-gradient(120% 180% at 50% 0%, color-mix(in srgb,var(--violet) 18%,transparent), transparent 60%),
-    linear-gradient(180deg, rgba(6,12,28,.93), rgba(6,12,28,.80));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 8px 28px rgba(0,0,0,.18);
+    radial-gradient(120% 180% at 50% 0%,color-mix(in srgb,var(--violet) 18%,transparent),transparent 60%),
+    linear-gradient(180deg,rgba(6,12,28,.93),rgba(6,12,28,.80));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.18);
   color:var(--text);
   text-align:center;
 }
-#r498EsmaBadge[hidden]{display:none!important}
-#r498EsmaBadge .r498Kicker{
+#r499EsmaBadge[hidden]{display:none!important}
+#r499EsmaBadge .r499Kicker{
   font-size:10px;
   text-transform:uppercase;
   letter-spacing:.11em;
@@ -46236,7 +46349,7 @@ window.SukunDockCore={version:'r498',normalize};
   opacity:.92;
   white-space:nowrap;
 }
-#r498EsmaBadge .r498Value{
+#r499EsmaBadge .r499Value{
   font-weight:800;
   color:var(--gold);
   font-size:14px;
@@ -46245,7 +46358,7 @@ window.SukunDockCore={version:'r498',normalize};
   overflow:hidden;
   text-overflow:ellipsis;
 }
-#r498EsmaBadge .r498Meta{
+#r499EsmaBadge .r499Meta{
   display:inline-flex;
   align-items:center;
   gap:6px;
@@ -46257,170 +46370,117 @@ window.SukunDockCore={version:'r498',normalize};
   font-size:12px;
   white-space:nowrap;
 }
-#r498EsmaBadge .r498Meta b{color:var(--gold); font-weight:800}
-#r498EsmaBadge .r498Dot{
+#r499EsmaBadge .r499Meta b{color:var(--gold);font-weight:800}
+#r499EsmaBadge .r499Dot{
   width:4px;height:4px;border-radius:50%;
   background:color-mix(in srgb,var(--gold) 70%,white);
   box-shadow:0 0 10px color-mix(in srgb,var(--gold) 60%,transparent);
 }
 @media(max-width:480px){
-  #r498EsmaBadge{
-    max-width:calc(100vw - 24px);
-    gap:8px;
-    padding:8px 12px;
-    border-radius:18px;
-  }
-  #r498EsmaBadge .r498Kicker{font-size:9px;letter-spacing:.09em}
-  #r498EsmaBadge .r498Value{font-size:13px;max-width:calc(100vw - 130px)}
-  #r498EsmaBadge .r498Meta{font-size:11px;padding:4px 9px}
+  #r499EsmaBadge{max-width:calc(100vw - 24px);gap:8px;padding:8px 12px;border-radius:18px}
+  #r499EsmaBadge .r499Kicker{font-size:9px;letter-spacing:.09em}
+  #r499EsmaBadge .r499Value{font-size:13px;max-width:calc(100vw - 130px)}
+  #r499EsmaBadge .r499Meta{font-size:11px;padding:4px 9px}
 }
 </style>
 
 
-<script id="r498-current-esma-badge-runtime">
+<script id="r499-current-esma-badge-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R498_ESMA_BADGE__)return;
-window.__SUKUN_R498_ESMA_BADGE__=1;
+if(window.__SUKUN_R499_ESMA_BADGE__)return;
+window.__SUKUN_R499_ESMA_BADGE__=1;
 
-const RX_NAME=/^\s*(\d{1,3})\.\s*([^\n]{2,36})\s*$/;
-const RX_PAGER=/^\s*(\d{1,3})\s*\/\s*(\d{1,3})\s*$/;
-const RX_EBCED=/EBCED\s*[•·:]?\s*(\d{1,6})/i;
-
-function isVisible(el){
-  if(!el||!(el instanceof Element))return false;
-  const cs=getComputedStyle(el);
-  if(cs.display==='none'||cs.visibility==='hidden'||parseFloat(cs.opacity||'1')<.02)return false;
-  const r=el.getBoundingClientRect();
-  return r.width>8&&r.height>8&&r.bottom>0&&r.top<innerHeight;
-}
-function textOf(el){ return (el?.textContent||'').replace(/\s+/g,' ').trim(); }
-function byText(re,root=document.body){
-  const out=[];
-  const w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT,{
-    acceptNode(node){
-      const t=textOf(node);
-      if(!t||t.length>56) return NodeFilter.FILTER_SKIP;
-      return re.test(t)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;
-    }
-  });
-  let n; while((n=w.nextNode())) out.push(n);
-  return out;
-}
-function findPagerRow(){
-  const pager = byText(RX_PAGER).find(isVisible);
-  if(!pager) return null;
-  let row=pager;
-  for(let i=0;i<5&&row;i++,row=row.parentElement){
-    if(!row) break;
-    const t=textOf(row);
-    if(/Önceki\s+Esm|Sıradaki\s+Esm/i.test(t) && row.children.length>=2) return row;
-  }
-  return pager.parentElement || pager;
-}
-function ensureBadgeHost(){
-  const row=findPagerRow();
-  if(!row) return null;
-  let host=document.getElementById('r498EsmaBadge');
+function ensure(){
+  const nav=document.getElementById('esmaStepNav');
+  if(!nav)return null;
+  let host=document.getElementById('r499EsmaBadge');
   if(!host){
     host=document.createElement('div');
-    host.id='r498EsmaBadge';
+    host.id='r499EsmaBadge';
     host.innerHTML=
-      '<span class="r498Kicker">Seçili Esmâ</span>'+
-      '<span class="r498Value">—</span>'+
-      '<span class="r498Meta" hidden><span class="r498Dot"></span><span>Ebced <b>—</b></span></span>';
+      '<span class="r499Kicker">Seçili Esmâ</span>'+
+      '<span class="r499Value">—</span>'+
+      '<span class="r499Meta" hidden><span class="r499Dot"></span><span>Ebced <b>—</b></span></span>';
   }
-  if(host.parentElement!==row.parentElement){
-    row.insertAdjacentElement('afterend',host);
-  }else if(row.nextElementSibling!==host){
-    row.insertAdjacentElement('afterend',host);
-  }
+  if(nav.nextElementSibling!==host)nav.insertAdjacentElement('afterend',host);
   return host;
 }
-function findActiveLabel(){
-  const pagerEl = byText(RX_PAGER).find(isVisible);
-  let pagerIdx = null;
-  if(pagerEl){
-    const m = textOf(pagerEl).match(RX_PAGER);
-    if(m) pagerIdx = +m[1];
-  }
-  const candidates = byText(RX_NAME).filter(el=>{
-    if(!isVisible(el)) return false;
-    const r=el.getBoundingClientRect();
-    return r.top < Math.min(innerHeight*0.45, 380) && r.width > 30;
-  });
+function render(s){
+  const host=ensure();
+  if(!host||!s)return;
 
-  let best=null,bestScore=-1;
-  for(const el of candidates){
-    const txt=textOf(el);
-    const m=txt.match(RX_NAME);
-    if(!m) continue;
-    const idx=+m[1];
-    let score=0;
-    if(pagerIdx!==null && idx===pagerIdx) score+=120;
-    const aSel=(el.getAttribute('aria-selected')||'').toLowerCase();
-    if(aSel==='true') score+=110;
-    const cls=(typeof el.className==='string')?el.className:'';
-    if(/active|selected|current|is-active|on\b/i.test(cls)) score+=70;
-    if(el.matches?.('[data-active="1"],[data-current="1"],[data-selected="1"],.active,.selected,.current,.is-active')) score+=65;
-    const cs=getComputedStyle(el);
-    if(parseFloat(cs.opacity||'1')>.85) score+=8;
-    if(parseInt(cs.fontWeight||'0',10)>=600) score+=12;
-    const r=el.getBoundingClientRect();
-    if(r.top<120) score+=10;
-    if(r.width>70) score+=6;
-    if(txt.length<24) score+=4;
-    if(score>bestScore){bestScore=score;best={idx,name:m[2].trim()};}
-  }
-  if(best) return `${best.idx}. ${best.name}`;
-  if(pagerIdx!==null) return `${pagerIdx}. esma`;
-  return '';
-}
-function findEbced(){
-  const hits = byText(RX_EBCED).filter(el=>{
-    if(!isVisible(el)) return false;
-    const r=el.getBoundingClientRect();
-    return r.top < Math.min(innerHeight*0.72, 720);
-  });
-  for(const el of hits){
-    const t=textOf(el);
-    const m=t.match(RX_EBCED);
-    if(m) return m[1];
-  }
-  return '';
-}
-function updateBadge(){
-  const host=ensureBadgeHost();
-  if(!host) return;
-  const value=host.querySelector('.r498Value');
-  const meta=host.querySelector('.r498Meta');
-  const metaB=meta?.querySelector('b');
-  const label=findActiveLabel();
-  const ebced=findEbced();
-  if(label){
-    value.textContent=label;
-    host.hidden=false;
-  }else{
-    host.hidden=true;
-  }
-  if(ebced){
-    metaB.textContent=ebced;
+  const show=s.cat==='esma'&&s.position>0&&!!s.name;
+  host.hidden=!show;
+  if(!show)return;
+
+  const value=host.querySelector('.r499Value');
+  const meta=host.querySelector('.r499Meta');
+  const eb=meta?.querySelector('b');
+
+  value.textContent=`${s.position}. ${s.name}`;
+  if(s.ebced>0){
+    eb.textContent=String(s.ebced);
     meta.hidden=false;
-  }else{
-    meta.hidden=true;
-  }
+  }else meta.hidden=true;
+
+  /* Esmâ pager da aynı state'i kullanır. */
+  const now=document.getElementById('esmaStepNow');
+  if(now)now.textContent=`${s.position} / ${s.length||99}`;
 }
+function sync(reason='esma-badge'){
+  window.currentZikirState?.refresh(reason,true);
+}
+
+window.currentZikirState?.subscribe(render);
+['sukun:zikirnav','sukun:currentzikirchange']
+  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>render(window.currentZikirState?.snapshot?.())),{passive:true}));
+
 function boot(){
-  updateBadge();
-  [120,400,900,1800].forEach(ms=>setTimeout(updateBadge,ms));
-  const mo=new MutationObserver(()=>requestAnimationFrame(updateBadge));
-  mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-selected','data-active','data-current','data-selected']});
+  render(window.currentZikirState?.snapshot?.());
+  [80,240,700,1400].forEach(ms=>setTimeout(()=>render(window.currentZikirState?.snapshot?.()),ms));
 }
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+else boot();
+
+window.SukunCurrentEsmaBadge={version:'r499',update:()=>sync('badge-update')};
+})();
+</script>
+
+
+<script id="r499-current-zikir-state-bridge">
+(()=>{
+'use strict';
+if(window.__SUKUN_R499_STATE_BRIDGE__)return;
+window.__SUKUN_R499_STATE_BRIDGE__=1;
+
+const refresh=reason=>{try{window.currentZikirState?.refresh(reason)}catch(e){}};
+
+[
+ 'sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase',
+ 'sukun:zikirrestart','sukun:zikirnav','sukun:source','sukun:voicesource',
+ 'sukun:audiostate'
+].forEach(ev=>window.addEventListener(ev,()=>refresh(ev),{passive:true}));
+
+document.addEventListener('click',e=>{
+  if(e.target.closest?.(
+    '#autoBtn,#plusBtn,#undoBtn,#resetBtn,#zList,[data-i],'+
+    '#r170Prev,#r170Next,#r170Play,#r170Stop,'+
+    '.r494NavBtn,#esmaPrevBtn,#esmaNextBtn'
+  )){
+    queueMicrotask(()=>refresh('ui-action'));
+    setTimeout(()=>refresh('ui-action-settled'),80);
+  }
+},{passive:true});
+
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden)refresh('visibility');
+},{passive:true});
+window.addEventListener('pageshow',()=>refresh('pageshow'),{passive:true});
+
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',boot,{once:true});
-}else boot();
-window.addEventListener('resize',()=>requestAnimationFrame(updateBadge),{passive:true});
-window.SukunCurrentEsmaBadge={update:updateBadge};
+  document.addEventListener('DOMContentLoaded',()=>refresh('dom-ready'),{once:true});
+}else refresh('boot');
 })();
 </script>
 
