@@ -1,8 +1,8 @@
-/* SÜKÛN r487 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r488 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r487';
-const CACHE = 'sukun-r487-20260823a';
+const SURUM = 'r488';
+const CACHE = 'sukun-r488-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r488 Zikri baştan başlat: ana sayaç + Tefekkür + universal bar; session memory yeni sıfır konumuyla güncellenir.',
   'r487 Kontrol renkleri tema-native: toggle, slider ve info vurguları aktif tema --gold/--goldh/--teal tokenlarından türetiliyor.',
   'r486 Toggle cascade: legacy yüksek-specificity switch kuralları component authority ile geçersiz; knob ray içinde tam merkezli.',
   'r485 Berhetiyye niyet-gate: niyet sayaç değildir; niyet bitince 1 sayı=1 ses. Toggle/slider/info tek component sistemine alındı.',
