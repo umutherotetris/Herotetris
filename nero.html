@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r488 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r489 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r488">
+<meta name="sukun-build" content="r489">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r488">
+<link rel="manifest" href="./manifest.webmanifest?v=r489">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.37 — build 2026-08-24-r488</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.38 — build 2026-08-24-r489</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r489","t":"24 Ağustos 2026","b":["Açılışı kilitleyebilen r488 restart boot MutationObserver kaldırıldı; document subtree artık sınırsız izlenmiyor","Restart kontrolleri 40/220/800/1800/3600 ms bounded bağlama denemeleri ve mevcut playback/body olaylarıyla kuruluyor; sürekli DOM taraması yok","Service Worker navigasyonu cache-first yerine network-first yapıldı; yeni nero.html varsa ilk açılışta doğrudan yeni sürüm gelir","Eski worker ignoreSearch cache davranışı nedeniyle ?v= query parametresinin kırık HTML cache’ini aşamaması düzeltildi; ağ başarısızsa cache fallback korunur","Yeni cache adı r489 ve activate temizliği ile eski r488 shell cache’i kaldırılır","Açılış error/unhandledrejection bilgisi yalnız sessionStorage’a tanısal olarak yazılır; kullanıcı akışına müdahale etmez"]},
  {"v":"r488","t":"24 Ağustos 2026","b":["Mevcut zikri sıfırdan başlatmak için tek restart motoru eklendi; seçili zikir, hedef, tempo, form ve ömür boyu toplam istatistik korunurken count/devir sıfırlanır","Ana Zikir Sayaç alanındaki eski Sayacı sıfırla kontrolü Baştan başlat olarak yenilendi ve canonical restart motoruna bağlandı","Canonical Tefekkür görünümünde Tefekkürden Çık düğmesinin yanına kompakt ↺ Baştan kontrolü eklendi; eski gizli r442 katmanı kullanılmıyor","Universal bar başlığına yalnız zikir bağlamında görünen ↺ Baştan kontrolü eklendi; mini/midi görünümde CANLI rozetiyle çakışmayacak şekilde yerleştirildi","Otomatik zikir çalışıyorsa restart mevcut zikir sesini güvenli biçimde durdurur, count/devir 0 yapar ve aynı zikri otomatik olarak yeniden başlatır; otomatik kapalıysa 0 konumunda bekler","Kaldığın yer session snapshotı restart anında temizlenip yeni 0 konumuyla tekrar yazılır; sayfa yeniden açıldığında eski 417/3 gibi durum geri yüklenmez","Akıllı Seans barında zikir adımı çalıyorsa bar restartı yalnız mevcut zikir adımını 1. tekrardan yeniden başlatır; tüm seans kuyruğunu sıfırlamaz"]},
  {"v":"r487","t":"23 Ağustos 2026","b":["Toggle açık durumundaki sabit açık mavi/mor/cyan renkler kaldırıldı; ray, knob, border ve glow aktif temanın --gold/--goldh/--teal değişkenlerinden canlı türetiliyor","Tema değiştirildiği anda toggle renkleri ek JS çalışmadan CSS değişkenleri üzerinden otomatik güncellenir","Slider dolgu ve thumb renkleri de aynı tema tokenlarına bağlandı; component sistemi artık sadece geometrik değil renk açısından da tek otorite","Info düğmelerindeki sabit mavi karışımı kaldırıldı ve tema vurgusuna bağlandı","Kapalı toggle nötr kalır ancak knob tonu yine temanın ivory/muted renk ailesinden türetilir; açık durumda neon ışıltı tema karakterini taşır"]},
  {"v":"r486","t":"23 Ağustos 2026","b":["Toggle kayıklığının gerçek cascade nedeni bulundu: eski .sw:not(#ns *):not(#tk *) selectorü :not içindeki iki ID nedeniyle r485 component selectoründen daha yüksek specificity taşıyordu","Component authority gerçek cihazdaki legacy 36x20 ve top 2px değerlerini kesin geçersiz kılacak specificity ile düzeltildi","Toggle rayı 46x26, knob 20x20 ve top/left tam 3px olarak piksel bazlı kilitlendi; yüzde top/translateY kaldırıldı","Açık durumda knob yalnız X ekseninde 20px hareket eder; neon cam ışıltısı korunur","Zikir, Tekke ve dua satırlarındaki eski 34x18/32x17 switch kuralları aynı 46x26 component geometrisine zorlandı"]},
@@ -21368,7 +21369,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r488',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r489',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32464,7 +32465,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r488',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r489',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -45585,20 +45586,33 @@ document.addEventListener('click',e=>{
   }
 },{passive:true});
 
-const bootObs=new MutationObserver(()=>{
-  if(ensureMain()&&ensureDock()){
-    if(document.body.classList.contains('sukun-tefekkur-mode'))ensureTef();
-    bootObs.disconnect();
-    sync();
-  }
-});
-bootObs.observe(document.documentElement,{childList:true,subtree:true});
-
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,80),{once:true});
-else setTimeout(sync,40);
+/* r489 — Açılışta tüm document subtree'sini sonsuza dek gözlemleme.
+   Dock henüz yaratılmadıysa r488 observer'ı uygulamanın yoğun DOM akışını
+   sürekli tarayabiliyor ve bazı telefonlarda ilk açılışı kilitleyebiliyordu.
+   Bunun yerine yalnız birkaç bounded deneme + zaten var olan playback/body
+   olayları kullanılır. */
+let _r489BootTimers=[];
+function r489BootSync(){
+  try{sync()}catch(e){}
+}
+function r489ScheduleBoot(){
+  _r489BootTimers.forEach(clearTimeout);
+  _r489BootTimers=[
+    setTimeout(r489BootSync,40),
+    setTimeout(r489BootSync,220),
+    setTimeout(r489BootSync,800),
+    setTimeout(r489BootSync,1800),
+    setTimeout(r489BootSync,3600)
+  ];
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',r489ScheduleBoot,{once:true});
+}else{
+  r489ScheduleBoot();
+}
 
 window.SukunZikirRestart={
-  version:'r488',
+  version:'r489',
   restart,
   sync,
   state:()=>({
@@ -45608,6 +45622,28 @@ window.SukunZikirRestart={
     owner:dockOwner()
   })
 };
+})();
+</script>
+
+
+<script id="r489-startup-guard">
+(()=>{
+  'use strict';
+  try{
+    document.documentElement.dataset.sukunBoot='r489';
+    window.addEventListener('error',e=>{
+      try{
+        sessionStorage.setItem('sukun.lastBootError',
+          JSON.stringify({v:'r489',m:String(e.message||''),f:String(e.filename||''),l:e.lineno||0,t:Date.now()}));
+      }catch(_){}
+    },{passive:true});
+    window.addEventListener('unhandledrejection',e=>{
+      try{
+        sessionStorage.setItem('sukun.lastBootRejection',
+          JSON.stringify({v:'r489',m:String(e.reason?.message||e.reason||''),t:Date.now()}));
+      }catch(_){}
+    },{passive:true});
+  }catch(e){}
 })();
 </script>
 

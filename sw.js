@@ -1,8 +1,8 @@
-/* SÜKÛN r488 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r489 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r488';
-const CACHE = 'sukun-r488-20260824a';
+const SURUM = 'r489';
+const CACHE = 'sukun-r489-20260824b';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r489 Açılış kurtarma: navigation network-first; eski kırık shell cache artık query parametresini yutmaz. r488 global boot observer kaldırıldı.',
   'r488 Zikri baştan başlat: ana sayaç + Tefekkür + universal bar; session memory yeni sıfır konumuyla güncellenir.',
   'r487 Kontrol renkleri tema-native: toggle, slider ve info vurguları aktif tema --gold/--goldh/--teal tokenlarından türetiliyor.',
   'r486 Toggle cascade: legacy yüksek-specificity switch kuralları component authority ile geçersiz; knob ray içinde tam merkezli.',
@@ -216,25 +217,33 @@ self.addEventListener('activate', event => {
  * «Yeni sürüm hazır · Yenile ✦» olarak bildiriliyor — veri kaybı yok.
  */
 async function kabukOncelikli(request) {
-  const cached = await caches.match(request, { ignoreSearch: true })
-             || await caches.match('./nero.html', { ignoreSearch: true });
+  /* r489 — navigation NETWORK-FIRST.
+     r488'de cached shell önce dönüyordu ve ignoreSearch:true yüzünden
+     nero.html?v=... bile kırık HTML cache'ini aşamıyordu. */
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
 
-  const tazele = fetch(request)
-    .then(async response => {
-      if (response && response.ok && response.type !== 'opaque') {
-        const cache = await caches.open(CACHE);
-        await cache.put(request, response.clone()).catch(() => {});
-      }
+    if (response && response.ok && response.type !== 'opaque') {
+      const cache = await caches.open(CACHE);
+      /* Hem tam request'i hem canonical shell'i güncelle. */
+      await cache.put(request, response.clone()).catch(() => {});
+      try {
+        const shell = new Request(new URL('./nero.html', self.location).href, {
+          method: 'GET',
+          credentials: 'same-origin',
+          cache: 'reload'
+        });
+        await cache.put(shell, response.clone()).catch(() => {});
+      } catch (_) {}
       return response;
-    })
-    .catch(() => null);
+    }
+  } catch (_) {}
 
-  if (cached) {
-    /* Arka plan tazelemesi cevap dönmeyi geciktirmesin. */
-    return cached;
-  }
+  const cached =
+    await caches.match(request, { ignoreSearch: true }) ||
+    await caches.match('./nero.html', { ignoreSearch: true });
 
-  return (await tazele) || Response.error();
+  return cached || Response.error();
 }
 
 
