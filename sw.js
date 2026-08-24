@@ -1,8 +1,8 @@
-/* SÜKÛN r495 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r498 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r495';
-const CACHE = 'sukun-r495-20260824a';
+const SURUM = 'r498';
+const CACHE = 'sukun-r498-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,9 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r498 Seçili Esmâ badge zengin gösterime yükseltildi: isim + Ebced birlikte görünür.',
+  'r497 Üst bölümde seçili esma badge eklendi; Önceki / Sıradaki satırının altında aktif isim görünür.',
+  'r496 Canlı bar 3 satır core: Başlık+CANLI / Önceki-Baştan-Sonraki / Sayım-Kalan-Esmâ; mini ve midi aynı çekirdeği kullanır.',
   'r495 Dock header layout fix: CANLI ve Önceki/Baştan/Sonraki ayrı satırlara ayrıldı; iç içe binme kaldırıldı.',
   'r494 Stable navigation: flash/re-parent yarışı kaldırıldı; smart-session prev/next düzeltildi; duplicate oklar gizlendi; tempo default 1.0 sn.',
   'r493 Navigation component: prev/reset/next tek factory + tek tooltip + tek mikro-etkileşim; CANLI rozeti küçültülüp sakin header alanına alındı.',

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r495 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r498 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r495">
+<meta name="sukun-build" content="r498">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r495">
+<link rel="manifest" href="./manifest.webmanifest?v=r498">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.45 — build 2026-08-24-r495</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.48 — build 2026-08-24-r498</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,9 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r498","t":"24 Ağustos 2026","b":["Seçili Esmâ badge zengin gösterime yükseltildi: isim + sıra numarası + Ebced değeri aynı bileşende gösterilir","Badge görünür sahneden Ebced bilgisini de okuyup Seçili Esmâ: 2. Rahîm • Ebced 258 formatına yaklaşan daha olgun bir üst bilgi sunar","Yerleşim mobilde kırılmaması için tek satır öncelikli, dar ekranda sarılabilir hibrit chip yapısına geçirildi"]},
+ {"v":"r497","t":"24 Ağustos 2026","b":["Üst bölümde seçili esmayı görünür kılan r497 badge eklendi; Önceki / Sıradaki Esmâ satırının hemen altında Seçili Esmâ: N. İsim gösterilir","Badge aktif sekmeyi önce aria-selected ve active sınıflarından, bunlar yoksa üst pager indexinden çıkarır; böylece yalnız rakam değil isim de görünür","Yeni badge DOM’u bozmaz; runtime olarak en uygun yere enjekte edilir ve görünüm değiştikçe kendini günceller"]},
+ {"v":"r496","t":"24 Ağustos 2026","b":["Canlı bar çekirdeği kesin üç satırlı sisteme geçirildi: 1 Başlık + CANLI, 2 Önceki / Baştan / Sonraki, 3 Sayım / Kalan / Esmâ","r494 navigation owner doğrudan r496DockCore içine mount edecek şekilde güncellendi; nav artık başlık divinin içine girmez","r478 telemetri satırı r496 core üçüncü satırına bağlandı; eski current-line sonrası yerleşim core mevcutken kullanılmaz","Mini görünümde üst çekirdek yalnız üç temel satırı gösterir; açıklama/meta/layer satırları gizlenerek bar sıkışması azaltılır","Midi/expanded görünümde aynı üç satırlı çekirdek üstte sabit kalır, ayrıntılar altında doğal akışla devam eder","CANLI rozeti ilk satırın sağında küçük ve statik; navigation ikinci satırda, telemetri üçüncü satırda olduğundan artık birbirine binmez"]},
  {"v":"r495","t":"24 Ağustos 2026","b":["Canlı bar üst satır yerleşimi düzeltildi: CANLI rozeti başlık satırında sağa, Önceki / Baştan / Sonraki kendi ikinci satırına alındı","r494 iç içe görünme sorunu çözüldü; başlık, canlı rozeti ve navigation aynı satırda üst üste binmez","Dock navigation absolute konumdan çıkarılıp grid alanına taşındı; mini/midi barda düzen sabit ve okunur hale geldi"]},
  {"v":"r494","t":"24 Ağustos 2026","b":["Navigation flashing kökten giderildi: aynı DOM’u sırayla yeniden parent eden r491 restart runtime ve r493 navigation runtime kaldırıldı; tek r494 owner kaldı","Prev/Reset/Next healthy mount sonrası replaceChildren/re-parent yapmaz; playback eventleri yalnız state/label günceller, bu nedenle butonlar zıplamaz ve yanıp sönmez","r493 Akıllı Seans yönlendirmesindeki window.next/window.previous hatası düzeltildi; compact oklar artık exported PlaybackController.next/previous smart-session kontratını çağırır","Universal bar içindeki legacy r170Prev/r170Next r494 nav görünürken gizlenir; aynı Önceki/Sonraki/Reset kontrollerinden iki takım kalmaz","CANLI rozeti küçültüldü, statik hale getirildi ve nav kümesinden ayrı sakin header alanına taşındı; animation/transition/will-change kapatıldı","Navigation butonlarında glint/did-act/opacity geçişleri kaldırıldı; yalnız basma anında küçük scale feedback vardır, flashing üretmez","Yeni kurulumlarda zikir tempo varsayılanı 2.0 sn yerine 1.0 sn oldu; 0.8 sn ve diğer daha hızlı değerler slider üzerinden hâlâ seçilebilir, kayıtlı kullanıcı tercihi ezilmez"]},
  {"v":"r493","t":"24 Ağustos 2026","b":["Prev / Reset / Next tek SukunNavigation component ailesinde birleştirildi; ana sayaç, Tefekkür ve mini/midi bar aynı factory, ikon, tooltip ve mikro-etkileşim sözleşmesini kullanır","r492 navigation CSS/runtime kaldırıldı; r493 tek navigation authority olarak r491 restart slotlarını dekore eder","Reset butonu ayrı görsel dil olmaktan çıkarıldı ve merkez navigation aksiyonu oldu; davranış yine SukunZikirRestart üzerinden tek kaynaktan yürür","Pointer/focus tooltip portalı tekilleştirildi; mobilde aria-label ve title fallback korunur","Tüm navigation aksiyonlarında aynı 180-220 ms press/glint mikro-etkileşimi kullanılır; otonom döngüsel animasyon yoktur","CANLI rozeti daha küçük, düşük kontrastlı ve navigation kümesinden uzak boş header alanına taşındı"]},
@@ -21374,7 +21377,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r495',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r498',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32470,7 +32473,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r495',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r498',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -44651,13 +44654,23 @@ function ensure(){
       '<span class="r478Stat r478Remain"><i>KALAN</i><b id="r478Remain">—</b></span>'+
       '<span class="r478Stat r478Name"><i id="r478Kind">ZİKİR</i><b id="r478Name">—</b></span>';
 
-    const current=info.querySelector('.r422NowLine');
-    if(current)current.insertAdjacentElement('afterend',row);
+    const core=$('r496DockCore');
+    if(core)core.appendChild(row);
     else{
-      const progress=$('r422Progress');
-      info.insertBefore(row,progress||null);
+      const current=info.querySelector('.r422NowLine');
+      if(current)current.insertAdjacentElement('afterend',row);
+      else{
+        const progress=$('r422Progress');
+        info.insertBefore(row,progress||null);
+      }
     }
   }
+
+  /* r496 mevcutsa telemetri daima üçüncü satırdır. */
+  const core=$('r496DockCore'),nav=$('r494DockNavSlot');
+  if(core&&row.parentElement!==core)core.appendChild(row);
+  if(core&&nav&&nav.nextElementSibling!==row)nav.insertAdjacentElement('afterend',row);
+
   bindObserved();
   return row;
 }
@@ -45765,9 +45778,28 @@ function ensureTef(){
   if(slot.hidden)slot.hidden=false;
   return true;
 }
+function r496Core(){
+  const info=$('r422NowInfo'),head=$('r422NowHead');
+  if(!info||!head)return null;
+
+  let core=$('r496DockCore');
+  if(!core){
+    core=d.createElement('div');
+    core.id='r496DockCore';
+    core.setAttribute('aria-label','Canlı zikir özeti');
+    info.insertBefore(core,info.firstChild||null);
+  }
+
+  if(head.parentElement!==core)core.appendChild(head);
+
+  const stats=$('r478DockStats');
+  if(stats&&stats.parentElement!==core)core.appendChild(stats);
+
+  return core;
+}
 function ensureDock(){
-  const head=$('r422NowHead'),now=$('r170Now');
-  if(!head||!now)return false;
+  const now=$('r170Now'),core=r496Core();
+  if(!now||!core)return false;
 
   let slot=$('r494DockNavSlot');
   if(!slot){
@@ -45775,10 +45807,16 @@ function ensureDock(){
     slot.id='r494DockNavSlot';
     slot.className='r494NavSlot';
     slot.appendChild(makeCluster('dock'));
-    head.appendChild(slot);
-  }else if(slot.parentElement!==head){
-    head.appendChild(slot);
+    core.appendChild(slot);
+  }else if(slot.parentElement!==core){
+    core.appendChild(slot);
   }
+
+  /* sıra kesin: 1 başlık+canlı, 2 nav, 3 telemetri */
+  const head=$('r422NowHead'),stats=$('r478DockStats');
+  if(head&&core.firstElementChild!==head)core.prepend(head);
+  if(slot&&head?.nextElementSibling!==slot)head.insertAdjacentElement('afterend',slot);
+  if(stats&&slot.nextElementSibling!==stats)slot.insertAdjacentElement('afterend',stats);
 
   const show=(dockOwner()==='smart'&&smartActive())||directActive();
   if(slot.hidden===show)slot.hidden=!show;
@@ -45884,93 +45922,507 @@ window.SukunNavigation={
 </script>
 
 
-<style id="r495-dock-layout-fix">
+
+<style id="r496-livebar-three-row-style">
 /* ═══════════════════════════════════════════════════════════════
-   r495 — CANLI BAR ÜST SATIR YERLEŞİM DÜZELTMESİ
-   Önceki / Baştan / Sonraki kendi satırına alınır.
-   CANLI rozeti başlık satırında sağda kalır.
-   İç içe binme ve aynı satırda sıkışma çözülür.
+   r496 — CANLI BAR CORE / 3 SATIR STANDARDI
+   1. Başlık + CANLI
+   2. Önceki / Baştan / Sonraki
+   3. Sayı / Kalan / Esmâ
+   Expanded detay içeriği bu çekirdeğin ALTINDA kalır.
    ═══════════════════════════════════════════════════════════════ */
-#r170Now.r494-nav-visible #r422NowHead{
+
+#r496DockCore{
+  display:grid!important;
+  grid-template-rows:auto auto auto!important;
+  gap:6px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0 0 5px!important;
+  border-bottom:1px solid color-mix(in srgb,var(--gold) 10%,var(--line))!important;
+}
+
+/* 1 — başlık + CANLI */
+#r496DockCore > #r422NowHead{
   display:grid!important;
   grid-template-columns:minmax(0,1fr) auto!important;
-  grid-template-areas:
-    "session live"
-    "nav nav"!important;
   align-items:center!important;
-  column-gap:8px!important;
-  row-gap:6px!important;
-  padding-right:0!important;
-  min-height:auto!important;
-}
-#r170Now.r494-nav-visible #r422NowSession{
-  grid-area:session!important;
+  gap:8px!important;
+  width:100%!important;
   min-width:0!important;
+  min-height:18px!important;
+  padding:0!important;
+  margin:0!important;
 }
-#r170Now.r494-nav-visible #r422NowLive{
-  grid-area:live!important;
+#r496DockCore #r422NowSession{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#r496DockCore #r422NowLive{
   position:static!important;
-  right:auto!important;
-  top:auto!important;
-  margin-left:auto!important;
+  inset:auto!important;
   justify-self:end!important;
   align-self:center!important;
-  min-width:34px!important;
-  height:15px!important;
+  width:auto!important;
+  min-width:32px!important;
+  max-width:42px!important;
+  height:14px!important;
+  min-height:14px!important;
   padding:0 5px!important;
-  font-size:6.3px!important;
-  line-height:15px!important;
-}
-#r170Now.r494-nav-visible #r494DockNavSlot{
-  grid-area:nav!important;
-  position:static!important;
-  top:auto!important;
-  right:auto!important;
-  width:100%!important;
   margin:0!important;
-  justify-self:stretch!important;
-  align-self:start!important;
+  border-radius:999px!important;
+  font-size:6px!important;
+  line-height:14px!important;
+  letter-spacing:.055em!important;
+  opacity:.68!important;
+  transform:none!important;
+  animation:none!important;
+  transition:none!important;
+  box-shadow:none!important;
+}
+
+/* 2 — navigation: ayrı, temiz orta satır */
+#r496DockCore > #r494DockNavSlot{
+  position:static!important;
+  inset:auto!important;
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
   z-index:auto!important;
 }
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavCluster{
-  width:100%!important;
-  justify-content:flex-start!important;
+#r496DockCore > #r494DockNavSlot[hidden]{display:none!important}
+#r496DockCore #r494DockNavSlot .r494NavCluster{
+  display:grid!important;
+  grid-template-columns:32px minmax(72px,96px) 32px!important;
+  align-items:center!important;
+  justify-content:start!important;
   gap:6px!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:0!important;
 }
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn{
+#r496DockCore #r494DockNavSlot .r494NavBtn{
+  position:static!important;
   height:23px!important;
   min-height:23px!important;
   max-height:23px!important;
-  min-width:30px!important;
-  padding:0 8px!important;
+  min-width:0!important;
+  width:100%!important;
+  padding:0 6px!important;
+  margin:0!important;
+  gap:0!important;
+  font-size:0!important;
+  animation:none!important;
+  transition:none!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
 }
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn[data-action="reset"]{
-  min-width:72px!important;
-  font-size:7px!important;
+#r496DockCore #r494DockNavSlot .r494NavBtn[data-action="reset"]{
+  min-width:0!important;
+  gap:4px!important;
+  font-size:6.7px!important;
 }
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn[data-action="prev"],
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn[data-action="next"]{
-  min-width:32px!important;
+#r496DockCore #r494DockNavSlot .r494NavBtn .r494Icon{
+  width:11px!important;
+  height:11px!important;
+  flex:0 0 11px!important;
+  font-size:10.5px!important;
 }
-#r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn .r494Icon{
-  width:12px!important;
-  height:12px!important;
-  flex-basis:12px!important;
-  font-size:11px!important;
+
+/* 3 — sayı / kalan / Esmâ telemetrisi */
+#r496DockCore > #r478DockStats{
+  order:3!important;
+  display:none;
+  grid-template-columns:auto auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:5px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
 }
+body.r431-dock-visible #r496DockCore > #r478DockStats[data-active="1"]{
+  display:grid!important;
+}
+#r496DockCore .r478Stat{
+  min-width:0!important;
+  height:22px!important;
+  padding:0 7px!important;
+  margin:0!important;
+}
+#r496DockCore .r478Stat>i{
+  font-size:6.2px!important;
+}
+#r496DockCore .r478Stat>b{
+  font-size:8.5px!important;
+}
+#r496DockCore .r478Stat.r478Name{
+  min-width:0!important;
+}
+#r496DockCore .r478Stat.r478Name>b{
+  font-size:8.8px!important;
+}
+
+/* r478 eski mini/midi konum kuralları artık core sırasını bozamaz. */
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r496DockCore > #r478DockStats[data-active="1"],
+body.r447-dock-expanded.r431-dock-visible:not(.r433-dock-hidden) #r496DockCore > #r478DockStats[data-active="1"]{
+  display:grid!important;
+  grid-template-columns:auto auto minmax(0,1fr)!important;
+  gap:4px!important;
+  margin:0!important;
+}
+
+/* Legacy transport: sadece play/pause + stop; nav core'da tekilleşti. */
+#r170Now.r494-nav-visible #r170Prev,
+#r170Now.r494-nav-visible #r170Next{
+  display:none!important;
+}
+#r170Now.r494-nav-visible .r170NowBtns{
+  grid-template-columns:repeat(2,46px)!important;
+  grid-template-rows:1fr!important;
+  gap:7px!important;
+}
+
+/* Core dışındaki ayrıntılar expanded/midi alanıdır; üst 3 satırı sıkıştırmaz. */
+#r170Now.r494-nav-visible #r422NowInfo{
+  display:grid!important;
+  gap:6px!important;
+  min-width:0!important;
+}
+#r170Now.r494-nav-visible #r430Layers,
+#r170Now.r494-nav-visible #r422NowMeta,
+#r170Now.r494-nav-visible #r422Progress,
+#r170Now.r494-nav-visible .r422NowLine{
+  min-width:0!important;
+}
+
+/* Mini'de çekirdek üç satır daima öncelikli; gereksiz açıklama satırları kapalı. */
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowInfo > .r422NowLine,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowInfo > #r422NowMeta,
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowInfo > #r430Layers{
+  display:none!important;
+}
+body.r447-dock-mini.r431-dock-visible:not(.r433-dock-hidden) #r422NowInfo > #r422Progress{
+  margin-top:0!important;
+}
+
+/* Midi/expanded çekirdek üstte sabit; detaylar doğal sırada aşağı akar. */
+body.r447-dock-expanded.r431-dock-visible:not(.r433-dock-hidden) #r496DockCore{
+  padding-bottom:6px!important;
+  margin-bottom:1px!important;
+}
+
 @media(max-width:390px){
-  #r170Now.r494-nav-visible #r422NowHead{
-    column-gap:6px!important;
-    row-gap:5px!important;
-  }
-  #r170Now.r494-nav-visible #r494DockNavSlot .r494NavCluster{
+  #r496DockCore{gap:5px!important}
+  #r496DockCore #r494DockNavSlot .r494NavCluster{
+    grid-template-columns:30px minmax(66px,88px) 30px!important;
     gap:5px!important;
   }
-  #r170Now.r494-nav-visible #r494DockNavSlot .r494NavBtn[data-action="reset"]{
-    min-width:66px!important;
+  #r496DockCore .r478Stat{
+    padding-inline:5px!important;
+  }
+  #r496DockCore .r478Stat>i{
+    display:none!important;
+  }
+  #r496DockCore .r478Stat>b{
+    font-size:8px!important;
+  }
+  #r496DockCore .r478Stat.r478Name>b{
+    font-size:8.3px!important;
   }
 }
 </style>
+
+
+<script id="r496-livebar-three-row-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R496_DOCK_CORE__)return;
+window.__SUKUN_R496_DOCK_CORE__=1;
+
+const $=id=>document.getElementById(id);
+
+function normalize(){
+  const info=$('r422NowInfo'),head=$('r422NowHead');
+  if(!info||!head)return false;
+
+  let core=$('r496DockCore');
+  if(!core){
+    core=document.createElement('div');
+    core.id='r496DockCore';
+    core.setAttribute('aria-label','Canlı zikir özeti');
+    info.insertBefore(core,info.firstChild||null);
+  }
+
+  const nav=$('r494DockNavSlot');
+  const stats=$('r478DockStats');
+
+  if(head.parentElement!==core)core.appendChild(head);
+  if(nav&&nav.parentElement!==core)core.appendChild(nav);
+  if(stats&&stats.parentElement!==core)core.appendChild(stats);
+
+  /* Mutasyona gerek yoksa DOM'a dokunma: flashing üretmez. */
+  if(core.firstElementChild!==head)core.prepend(head);
+  if(nav&&head.nextElementSibling!==nav)head.insertAdjacentElement('afterend',nav);
+  if(stats){
+    const anchor=nav||head;
+    if(anchor.nextElementSibling!==stats)anchor.insertAdjacentElement('afterend',stats);
+  }
+
+  return true;
+}
+
+/* Dynamic r422/r478 creation için yalnız bounded bağlama; polling yok. */
+function boot(){
+  normalize();
+  [80,220,650,1400,2800].forEach(ms=>setTimeout(normalize,ms));
+}
+[
+  'sukun:playbackchange',
+  'sukun:nowplayingchange',
+  'sukun:smartphase',
+  'sukun:zikirrestart',
+  'sukun:zikirnav'
+].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(normalize),{passive:true}));
+
+const bodyObs=new MutationObserver(ms=>{
+  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
+    requestAnimationFrame(normalize);
+  }
+});
+if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',boot,{once:true});
+}else boot();
+
+window.SukunDockCore={version:'r498',normalize};
+})();
+</script>
+
+<style id="r498-current-esma-badge-style">
+/* r498 — seçili esmayı zengin gösterim */
+#r498EsmaBadge{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  width:fit-content;
+  max-width:min(94vw,620px);
+  margin:10px auto 0;
+  padding:10px 14px;
+  border-radius:20px;
+  border:1px solid color-mix(in srgb,var(--gold) 24%,rgba(255,255,255,.12));
+  background:
+    radial-gradient(120% 180% at 50% 0%, color-mix(in srgb,var(--violet) 18%,transparent), transparent 60%),
+    linear-gradient(180deg, rgba(6,12,28,.93), rgba(6,12,28,.80));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 8px 28px rgba(0,0,0,.18);
+  color:var(--text);
+  text-align:center;
+}
+#r498EsmaBadge[hidden]{display:none!important}
+#r498EsmaBadge .r498Kicker{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  color:var(--muted);
+  opacity:.92;
+  white-space:nowrap;
+}
+#r498EsmaBadge .r498Value{
+  font-weight:800;
+  color:var(--gold);
+  font-size:14px;
+  white-space:nowrap;
+  max-width:min(58vw,320px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#r498EsmaBadge .r498Meta{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,rgba(255,255,255,.10));
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+}
+#r498EsmaBadge .r498Meta b{color:var(--gold); font-weight:800}
+#r498EsmaBadge .r498Dot{
+  width:4px;height:4px;border-radius:50%;
+  background:color-mix(in srgb,var(--gold) 70%,white);
+  box-shadow:0 0 10px color-mix(in srgb,var(--gold) 60%,transparent);
+}
+@media(max-width:480px){
+  #r498EsmaBadge{
+    max-width:calc(100vw - 24px);
+    gap:8px;
+    padding:8px 12px;
+    border-radius:18px;
+  }
+  #r498EsmaBadge .r498Kicker{font-size:9px;letter-spacing:.09em}
+  #r498EsmaBadge .r498Value{font-size:13px;max-width:calc(100vw - 130px)}
+  #r498EsmaBadge .r498Meta{font-size:11px;padding:4px 9px}
+}
+</style>
+
+
+<script id="r498-current-esma-badge-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R498_ESMA_BADGE__)return;
+window.__SUKUN_R498_ESMA_BADGE__=1;
+
+const RX_NAME=/^\s*(\d{1,3})\.\s*([^\n]{2,36})\s*$/;
+const RX_PAGER=/^\s*(\d{1,3})\s*\/\s*(\d{1,3})\s*$/;
+const RX_EBCED=/EBCED\s*[•·:]?\s*(\d{1,6})/i;
+
+function isVisible(el){
+  if(!el||!(el instanceof Element))return false;
+  const cs=getComputedStyle(el);
+  if(cs.display==='none'||cs.visibility==='hidden'||parseFloat(cs.opacity||'1')<.02)return false;
+  const r=el.getBoundingClientRect();
+  return r.width>8&&r.height>8&&r.bottom>0&&r.top<innerHeight;
+}
+function textOf(el){ return (el?.textContent||'').replace(/\s+/g,' ').trim(); }
+function byText(re,root=document.body){
+  const out=[];
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT,{
+    acceptNode(node){
+      const t=textOf(node);
+      if(!t||t.length>56) return NodeFilter.FILTER_SKIP;
+      return re.test(t)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;
+    }
+  });
+  let n; while((n=w.nextNode())) out.push(n);
+  return out;
+}
+function findPagerRow(){
+  const pager = byText(RX_PAGER).find(isVisible);
+  if(!pager) return null;
+  let row=pager;
+  for(let i=0;i<5&&row;i++,row=row.parentElement){
+    if(!row) break;
+    const t=textOf(row);
+    if(/Önceki\s+Esm|Sıradaki\s+Esm/i.test(t) && row.children.length>=2) return row;
+  }
+  return pager.parentElement || pager;
+}
+function ensureBadgeHost(){
+  const row=findPagerRow();
+  if(!row) return null;
+  let host=document.getElementById('r498EsmaBadge');
+  if(!host){
+    host=document.createElement('div');
+    host.id='r498EsmaBadge';
+    host.innerHTML=
+      '<span class="r498Kicker">Seçili Esmâ</span>'+
+      '<span class="r498Value">—</span>'+
+      '<span class="r498Meta" hidden><span class="r498Dot"></span><span>Ebced <b>—</b></span></span>';
+  }
+  if(host.parentElement!==row.parentElement){
+    row.insertAdjacentElement('afterend',host);
+  }else if(row.nextElementSibling!==host){
+    row.insertAdjacentElement('afterend',host);
+  }
+  return host;
+}
+function findActiveLabel(){
+  const pagerEl = byText(RX_PAGER).find(isVisible);
+  let pagerIdx = null;
+  if(pagerEl){
+    const m = textOf(pagerEl).match(RX_PAGER);
+    if(m) pagerIdx = +m[1];
+  }
+  const candidates = byText(RX_NAME).filter(el=>{
+    if(!isVisible(el)) return false;
+    const r=el.getBoundingClientRect();
+    return r.top < Math.min(innerHeight*0.45, 380) && r.width > 30;
+  });
+
+  let best=null,bestScore=-1;
+  for(const el of candidates){
+    const txt=textOf(el);
+    const m=txt.match(RX_NAME);
+    if(!m) continue;
+    const idx=+m[1];
+    let score=0;
+    if(pagerIdx!==null && idx===pagerIdx) score+=120;
+    const aSel=(el.getAttribute('aria-selected')||'').toLowerCase();
+    if(aSel==='true') score+=110;
+    const cls=(typeof el.className==='string')?el.className:'';
+    if(/active|selected|current|is-active|on\b/i.test(cls)) score+=70;
+    if(el.matches?.('[data-active="1"],[data-current="1"],[data-selected="1"],.active,.selected,.current,.is-active')) score+=65;
+    const cs=getComputedStyle(el);
+    if(parseFloat(cs.opacity||'1')>.85) score+=8;
+    if(parseInt(cs.fontWeight||'0',10)>=600) score+=12;
+    const r=el.getBoundingClientRect();
+    if(r.top<120) score+=10;
+    if(r.width>70) score+=6;
+    if(txt.length<24) score+=4;
+    if(score>bestScore){bestScore=score;best={idx,name:m[2].trim()};}
+  }
+  if(best) return `${best.idx}. ${best.name}`;
+  if(pagerIdx!==null) return `${pagerIdx}. esma`;
+  return '';
+}
+function findEbced(){
+  const hits = byText(RX_EBCED).filter(el=>{
+    if(!isVisible(el)) return false;
+    const r=el.getBoundingClientRect();
+    return r.top < Math.min(innerHeight*0.72, 720);
+  });
+  for(const el of hits){
+    const t=textOf(el);
+    const m=t.match(RX_EBCED);
+    if(m) return m[1];
+  }
+  return '';
+}
+function updateBadge(){
+  const host=ensureBadgeHost();
+  if(!host) return;
+  const value=host.querySelector('.r498Value');
+  const meta=host.querySelector('.r498Meta');
+  const metaB=meta?.querySelector('b');
+  const label=findActiveLabel();
+  const ebced=findEbced();
+  if(label){
+    value.textContent=label;
+    host.hidden=false;
+  }else{
+    host.hidden=true;
+  }
+  if(ebced){
+    metaB.textContent=ebced;
+    meta.hidden=false;
+  }else{
+    meta.hidden=true;
+  }
+}
+function boot(){
+  updateBadge();
+  [120,400,900,1800].forEach(ms=>setTimeout(updateBadge,ms));
+  const mo=new MutationObserver(()=>requestAnimationFrame(updateBadge));
+  mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-selected','data-active','data-current','data-selected']});
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',boot,{once:true});
+}else boot();
+window.addEventListener('resize',()=>requestAnimationFrame(updateBadge),{passive:true});
+window.SukunCurrentEsmaBadge={update:updateBadge};
+})();
+</script>
 
 </body>
 </html>
