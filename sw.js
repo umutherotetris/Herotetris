@@ -1,8 +1,8 @@
-/* SÜKÛN r507 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r509 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r507';
-const CACHE = 'sukun-r507-20260824a';
+const SURUM = 'r509';
+const CACHE = 'sukun-r509-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,8 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r509 Akış sertleştirme 4-8: transaction + voice resolver + resume policy + Nefs frekans truth + lifecycle cleanup.',
+  'r508 Akış mimarisi 1-2-3: SukunViewportPolicy + currentFlowState + SukunFlowNavigation; viewport, state ve prev/reset/next tekilleştirildi.',
   'r507 Nefs akışı: basamak seçiminde scroll sabit; canlı bar Nefs basamağı + zikir + taşıyıcı/vuruş frekansını gösterir.',
   'r506 Tefekkür canonical owner fix: r487 slider standardının yeniden görünür kıldığı eski Tempo satırı kesin kapatıldı; Tem kalıntısı kökten giderildi.',
   'r505 Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı iki modül arasında saniyede ~9 kez gidip geliyordu; çekişme giderildi.',

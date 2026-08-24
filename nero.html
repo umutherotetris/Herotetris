@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r507 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r509 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r507">
+<meta name="sukun-build" content="r509">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r507">
+<link rel="manifest" href="./manifest.webmanifest?v=r509">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6096,7 +6096,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.53 — build 2026-08-24-r507</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-24-r509</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6120,6 +6120,8 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r509","t":"24 Ağustos 2026","b":["4/8 Zikir bitiş/geçişi SukunZikirTransaction ile transaction yapısına alındı; hedef dolumu prepare → sesin settle olması → tek commit sırasını izler","Pending transaction navigation, hard-stop, kategori veya zikir değişiminde iptal edilir; gecikmiş ses callbacki artık yeni seçimi/deviri commit edemez","5/8 SukunVoiceResolver kuruldu; zikir ses kaynağı sırası tek yerde Kendi kayıt → Seçili okuyucu → TTS → Sessiz fallback olarak çözülür","Normal/Tefekkür spkSayZikir ve Akıllı Seans AudioResolver aynı voice resolverı kullanır; canlı flow state gerçek çözümlenen ses kaynağını okuyabilir","7/8 SukunResumePolicy kuruldu; akışlar new / continue / completed durumuyla kaydedilir. Baştan işlemi restore kararından daha yeni ise eski session snapshotı geri yüklenmez","Akıllı Seans oluşturma/pausa/tamamlama ve normal zikir ilerleme/reset davranışları resume policy ile birleştirildi","6/8 Nefs frekans gösterimi dürüstleştirildi; mertebenin önerilen frekansı ile o an gerçekten çalan manuel frekans ayrı tutulur","Nefs frekansı elle değiştirilirse canlı bar Şu an değerini ÖZEL olarak gösterir ve title bilgisinde Nefs önerisi ayrıca korunur","8/8 Son dönem body-class observerları SukunLifecycleHub altında tek MutationObservera toplandı; r471 sayaç DOM observerı currentzikir eventine çevrildi","Mini bar r406 500 ms polling ve r425 1 sn breathing-state polling kaldırıldı; NowPlaying/playback/audio eventleri tek güncelleme kaynağı oldu","Diagnostics JSON çıktısına zikirTransaction, voiceResolver, resumePolicy ve lifecycleHub snapshotları eklendi"]},
+ {"v":"r508","t":"24 Ağustos 2026","b":["1/3 SukunViewportPolicy kuruldu: projedeki eski scrollIntoView çağrıları tek politikadan geçer; kullanıcı kaynaklı navigasyon serbest, background state/render kaydırmaları engellenir","Nefs basamağı seçimleri viewport policy üzerinde explicit suppress/preserve kullanır; kullanıcı Nefs/Enerji alanında gezinirken sayaç veya zikir sahnesine çekilemez","2/3 currentFlowState eklendi: currentZikirState, Global Now Playing, VoiceSource, frekans ve Akıllı Seans tek normalize akış snapshotında birleşir","currentFlowState bağlam, zikir, Nefs, seans, ses kaynağı, frekans, play/pause ve kalan count/ms alanlarını tek subscriber sözleşmesiyle yayınlar","Ana/Tefekkür sayaç currentFlowState.zikir kullanır; Seçili Esmâ badge ve canlı bar telemetrisi de merkezi flow state subscriberına geçirildi","3/3 SukunFlowNavigation kuruldu: Önceki / Baştan / Sonraki butonlarının anlamını artık bulunduğu yüzey değil aktif akış bağlamı belirler","Akıllı Seans bağlamında prev/next seans adımı; Nefs bağlamında prev/next mertebe; normal zikirde prev/next zikir olarak çalışır. Reset aynı kontrattan bağlama göre uygulanır","Diagnostics JSON çıktısına viewportPolicy, currentFlow ve flowNavigation snapshotları eklendi; yeni akışlar polling kullanmaz"]},
  {"v":"r507","t":"24 Ağustos 2026","b":["Nefs Mertebeleri, Nefs Merdiveni ve Enerji Merkezleri üzerinde basamak seçerken viewport artık korunur; zikir/sayaç sahnesine otomatik kaydırma yapılmaz","Mertebe seçiminde renderZikir swap animasyonu kapatıldı; arka planda zikir state değişir fakat kullanıcının bulunduğu Nefs bölümü yerinde kalır","currentZikirState Nefs akış bağlamıyla genişletildi: basamak, zikir, taşıyıcı Hz, vuruş Hz ve frekansın çalıp çalmadığı tek state içinde taşınır","Canlı akış barının üçüncü telemetri satırı Nefs akışında örneğin 4/7 Mutmainne · Yâ Hakk · 639 Hz · 4 Hz vuruş biçiminde bilgi verir","Nefs seçimi frekansı başlattığında sayaç 0 olsa bile telemetri aktif kabul edilir; frekans/zikir bağı koparsa bar otomatik normal zikir görünümüne döner","Frekans yaşam döngüsü sukun:audiostate/playbackchange/nowplayingchange olaylarıyla state’i günceller; polling eklenmedi"]},
  {"v":"r506","t":"24 Ağustos 2026","b":["Tefekkür sayaç kartının sağında görünen Tem kalıntısının kök nedeni bulundu: r487 ortak slider componenti eski Tempo .sldRow satırını display:grid!important ile yeniden görünür kılıyordu","Canonical ownership final-authority ile düzeltildi; Tefekkür modunda .zCtl doğrudan çocuklarından yalnız #tfRefinedLayout görünür, diğer bütün legacy kontroller zorunlu olarak kapalıdır","Tempo satırı için özel kilit eklendi; control-component selectorı ileride değişse bile eski Tempo satırı Tefekkür sahnesine sızamaz","Sağ Hedef/Kalan sayaç kartlarına paint containment ve metin sınırı eklendi; kendi kutusundan text fragmenti taşıramaz","SukunCanonicalOwner tanı katmanı eklendi; Diagnostics overflow snapshotı canonical owner ihlalini de raporlar"]},
  {"v":"r505","t":"24 Ağustos 2026","b":["Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı saniyede ~9 kez iki değer arasında gidip geliyordu: iki ayrı modül aynı etikete farklı değer yazıp birbirini eziyordu. Artık daha açıklayıcı olan ad korunuyor.","Boşta duran ekranda kalan on altı gereksiz DOM yazımı giderildi (görünürlük ve etkin/pasif durumu değişmediği hâlde yeniden yazılıyordu). Altı saniyelik ölçümde 3.463 mutasyon 2.374'e indi.","Merkezî DOM yayını artık kare başına tek dağıtım yapıyor: yoğun yazım dizilerinde uyanan geri çağrı 55'ten 17'ye indi. Ekran kapalıyken rAF çalışmadığı için orada zamanlayıcıya düşülüyor — ses ve oturum katmanı durumu kaçırmıyor."]},
@@ -10649,8 +10651,13 @@ const currentZikirState=(()=>{
           zikir:clean(nf.zikir||name),
           cat:clean(nf.cat||canonicalCat),
           idx:nfIdx,
-          carrier:Math.max(0,finite(nf.carrier,0)),
-          beat:Math.max(0,finite(nf.beat,0)),
+          carrier:Math.max(0,finite(FR?.c,nf.carrier||0)),
+          beat:Math.max(0,finite(FR?.b,nf.beat||0)),
+          recommendedCarrier:Math.max(0,finite(nf.recommendedCarrier,nf.carrier||0)),
+          recommendedBeat:Math.max(0,finite(nf.recommendedBeat,nf.beat||0)),
+          customized:!!nf.customized||
+            Math.abs(finite(FR?.c,nf.carrier||0)-finite(nf.recommendedCarrier,nf.carrier||0))>.05||
+            Math.abs(finite(FR?.b,nf.beat||0)-finite(nf.recommendedBeat,nf.beat||0))>.05,
           band:clean(nf.band||''),
           frequencyPlaying:frPlaying
         });
@@ -10727,6 +10734,8 @@ const currentZikirState=(()=>{
       s.auto,s.total,s.session.playing,s.session.paused,s.session.stepIndex,
       s.nefs?.linked?'n1':'n0',s.nefs?.position||'',s.nefs?.name||'',
       s.nefs?.zikir||'',s.nefs?.carrier||'',s.nefs?.beat||'',
+      s.nefs?.recommendedCarrier||'',s.nefs?.recommendedBeat||'',
+      s.nefs?.customized?'custom':'preset',
       s.nefs?.frequencyPlaying?'f1':'f0'
     ].join('|');
   }
@@ -11137,7 +11146,8 @@ function zUI(){
     badge.style.cursor=yaz?'pointer':'default';
   }
   /* r499: sayaç artık currentZikirState tek kaynak modelinden beslenir. */
-  const _zs=window.currentZikirState?.refresh('zUI')||null;
+  const _flow=window.currentFlowState?.refresh?.('zUI')||null;
+  const _zs=_flow?.zikir||window.currentZikirState?.refresh('zUI')||null;
   const _hedef=_zs?_zs.target:Math.max(0,Number(Z.target)||0);
   const _hamSay=_zs?_zs.countRaw:Math.max(0,Number(Z.count)||0);
   const _say=_zs?_zs.count:(_hedef>0?(_hamSay%_hedef):_hamSay);
@@ -11424,38 +11434,120 @@ window.SukunHaptics=window.SukunHaptics||{
   devir(){if(!this.enabled())return false;try{return navigator.vibrate([22,34,34])}catch(e){return false}},
   tamam(){if(!this.enabled())return false;try{return navigator.vibrate([28,40,42,48,56])}catch(e){return false}}
 };
-function r482CommitTransition(t){
-  if(!t||t.done)return false;
-  t.done=true;
+const ZikirTransitionTxn=window.SukunZikirTransaction=(()=>{
+  let seq=0,active=null,last=null;
 
-  /* Kullanıcı ses sürerken başka zikre geçtiyse eski transition yeni seçimi
-     ezmesin. Bu durumda yalnız bekleyen transition bırakılır. */
-  if(Z.cat!==t.cat || Z.idx!==t.idx)return false;
-
-  Z.count=0;
-  Z.devir++;
-
-  if(!t.silent){
-    zikirSonuSes();
-    try{tozSac()}catch(e){}
-    try{zikirTamam('Devir tamam',
-      (t.label||((document.getElementById('zTr')||{}).textContent||'').trim())+
-      ' · '+Z.devir+'. devir')}catch(e){}
-    try{window.SukunHaptics?.devir?.()}catch(e){}
+  function prepare(raw){
+    const tx={
+      ...(raw||{}),
+      txid:++seq,
+      createdAt:Date.now(),
+      phase:'prepared',
+      cancelled:false,
+      cancelReason:'',
+      done:false
+    };
+    active=tx;
+    last=tx;
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:zikirtransaction',{
+        detail:{phase:'prepared',txid:tx.txid,cat:tx.cat,idx:tx.idx,target:tx.target}
+      }));
+    }catch(e){}
+    return tx;
   }
 
-  if(t.adv){
-    const grup=ZIKIR[Z.cat]&&ZIKIR[Z.cat].items;
-    if(grup&&grup.length){
-      Z.idx=(Z.idx+1)%grup.length;
-      try{if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(false)}catch(e){}
-      try{renderZikir()}catch(e){}
-      try{if(!document.hidden&&typeof r476Prepare==='function')r476Prepare()}catch(e){}
+  function isCurrent(t){
+    return !!t&&!t.cancelled&&!t.done&&active===t&&
+      Z.cat===t.cat&&Z.idx===t.idx;
+  }
+
+  function cancel(reason='cancelled'){
+    const t=active;
+    if(t&&!t.done){
+      t.cancelled=true;
+      t.cancelReason=String(reason||'cancelled');
+      t.phase='cancelled';
+      last=t;
+      try{
+        window.dispatchEvent(new CustomEvent('sukun:zikirtransaction',{
+          detail:{phase:'cancelled',txid:t.txid,reason:t.cancelReason}
+        }));
+      }catch(e){}
     }
+    active=null;
+    try{window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null}catch(e){}
+    return !!t;
   }
 
-  if(!t.silent)try{zUI()}catch(e){}
-  return true;
+  function commit(t){
+    if(!t||t.done||t.cancelled)return false;
+    if(active&&t.txid&&active.txid!==t.txid)return false;
+
+    /* Kullanıcı ses sürerken başka zikre geçtiyse eski transaction yeni
+       seçimi ezmez. */
+    if(Z.cat!==t.cat||Z.idx!==t.idx){
+      t.cancelled=true;t.cancelReason='stale-selection';t.phase='cancelled';
+      if(active===t)active=null;
+      last=t;
+      return false;
+    }
+
+    t.phase='committing';
+    t.done=true;
+
+    Z.count=0;
+    Z.devir++;
+
+    if(!t.silent){
+      zikirSonuSes();
+      try{tozSac()}catch(e){}
+      try{zikirTamam('Devir tamam',
+        (t.label||((document.getElementById('zTr')||{}).textContent||'').trim())+
+        ' · '+Z.devir+'. devir')}catch(e){}
+      try{window.SukunHaptics?.devir?.()}catch(e){}
+    }
+
+    if(t.adv){
+      const grup=ZIKIR[Z.cat]&&ZIKIR[Z.cat].items;
+      if(grup&&grup.length){
+        Z.idx=(Z.idx+1)%grup.length;
+        try{if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(false)}catch(e){}
+        try{renderZikir(false)}catch(e){}
+        try{if(!document.hidden&&typeof r476Prepare==='function')r476Prepare()}catch(e){}
+      }
+    }
+
+    if(!t.silent)try{zUI()}catch(e){}
+
+    t.phase='committed';
+    t.committedAt=Date.now();
+    last=t;
+    if(active===t)active=null;
+
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:zikirtransaction',{
+        detail:{phase:'committed',txid:t.txid,cat:t.cat,idx:t.idx,devir:Z.devir,advanced:!!t.adv}
+      }));
+    }catch(e){}
+    try{window.currentFlowState?.refresh?.('zikir-transaction',true)}catch(e){}
+    return true;
+  }
+
+  function snapshot(){
+    const pick=t=>t?{
+      txid:t.txid,phase:t.phase,cat:t.cat,idx:t.idx,target:t.target,
+      adv:!!t.adv,cancelled:!!t.cancelled,cancelReason:t.cancelReason||'',
+      createdAt:t.createdAt||0,committedAt:t.committedAt||0
+    }:null;
+    return{version:'r509',active:pick(active),last:pick(last)};
+  }
+
+  return{version:'r509',prepare,commit,cancel,isCurrent,snapshot};
+})();
+
+function r482CommitTransition(t){
+  return ZikirTransitionTxn.commit(t);
 }
 
 function rep(){
@@ -11475,15 +11567,14 @@ function rep(){
   }
 
   if(Z.target>0&&Z.count>=Z.target){
-    const tr={
+    const tr=ZikirTransitionTxn.prepare({
       cat:Z.cat,
       idx:Z.idx,
       target:Z.target,
       adv:!!Z.adv,
       silent:_r476Silent,
-      label:((document.getElementById('zTr')||{}).textContent||'').trim(),
-      done:false
-    };
+      label:((document.getElementById('zTr')||{}).textContent||'').trim()
+    });
 
     if(_r482Defer){
       /* r482: son sayım önce mevcut Esmâ'yı gerçekten okur.
@@ -12982,6 +13073,7 @@ $('#masterVol').addEventListener('input',e=>{
   saveSettings();
 });
 function hardStopAll(){
+  try{window.SukunZikirTransaction?.cancel?.('hard-stop')}catch(e){}
   /* Elle ya da başka bir modülden gelen kesin durdurma, ana uyku sayacının
      gecikmiş fade callback'ini de iptal eder. Aksi hâlde ses sustuktan birkaç
      saniye sonra eski callback yeniden çalışıp ana gain'i değiştirebilirdi. */
@@ -13081,6 +13173,7 @@ function fadeOutAll(){
 /* r139: kategori değişimi de bir geçiştir — aynı işaret */
 $('#zCats').addEventListener('click',e=>{
   const b=e.target.closest('[data-c]'); if(!b)return;
+  try{window.SukunZikirTransaction?.cancel?.('category-change')}catch(err){}
   Z.cat=b.dataset.c; Z.idx=0;
   if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(true);
   renderCats(); renderZikir(); zUI(); saveSettings();
@@ -13088,6 +13181,7 @@ $('#zCats').addEventListener('click',e=>{
 $('#zList').addEventListener('click',e=>{
   const b=e.target.closest('[data-i]'); if(!b)return;
   if(+b.dataset.i===Z.idx)return;            /* aynı zikre yeniden tıklama */
+  try{window.SukunZikirTransaction?.cancel?.('zikir-change')}catch(err){}
   Z.idx=+b.dataset.i;
   if(typeof zHedefSecimeUyarla==='function')zHedefSecimeUyarla(true);
   renderZikir(); zUI(); saveSettings();
@@ -15959,56 +16053,15 @@ window.zikirSesliAktifMi=zikirSesliAktifMi;
 
 let _r469RecMissKey='', _r469RecMissAt=0;
 async function spkSayZikir(interrupt){
-  if((window.__tvPlaying||window.__dhPlaying||window.__seyPlaying||window.__akPlaying||window.__fsPlaying||window.__niyetPlaying||RECPLAYING)&&!interrupt)return;
+  if((window.__tvPlaying||window.__dhPlaying||window.__seyPlaying||window.__akPlaying||
+      window.__fsPlaying||window.__niyetPlaying||RECPLAYING)&&!interrupt)return false;
 
-  const key=zikirKey();
-  const tef=!!document.body.classList.contains('sukun-tefekkur-mode');
+  const R=window.SukunVoiceResolver;
+  if(R?.playCurrentZikir)return await R.playCurrentZikir({interrupt:!!interrupt});
 
-  /* Kayıt, TTS'den her zaman önceliklidir.
-     Tefekkür girişinde recInit() ayrıca yenilenir; yine de IndexedDB hazır olma
-     yarışı olursa burada kısa aralıklı güvenli probe yapıyoruz. Kayıt yoksa
-     15 sn boyunca aynı anahtarı boşuna tekrar sorgulamıyoruz. */
-  let blob=null;
-  const known=RECKEYS.has(key);
-  const missFresh=(_r469RecMissKey===key && (Date.now()-_r469RecMissAt)<15000);
-  if(known || (tef && !missFresh)){
-    try{
-      blob=await REC_DB.get(key);
-      if(blob){
-        RECKEYS.add(key);
-        _r469RecMissKey=''; _r469RecMissAt=0;
-      }else if(tef){
-        _r469RecMissKey=key; _r469RecMissAt=Date.now();
-        if(known)RECKEYS.delete(key);
-      }
-    }catch(e){}
-  }
-  if(blob){
-    try{
-      window.SukunVoiceSource?.set?.('recording','KENDİ KAYIT','IndexedDB · '+keyLabel(key));
-      if(interrupt){try{speechSynthesis.cancel()}catch(e){}}
-      await playRecording(blob,'zikir:'+key,{resume:false,backgroundNative:document.hidden,reason:document.hidden?'Kilit ekranı · kendi kayıt':'Tefekkür/zikir için kendi kayıt sesin',title:keyLabel(key)});
-      return;
-    }catch(e){
-      window.SukunVoiceSource?.set?.('fallback','KAYIT AÇILAMADI','TTS fallback');
-    }
-  }
-
-  /* Android/PWA tam ekran ve kilit dönüşünde synth bazen "paused" kalabiliyor. */
-  try{
-    if(window.speechSynthesis && speechSynthesis.paused)speechSynthesis.resume();
-  }catch(e){}
-
-  if(SPK.arOn&&SPK.arVoice){
-    const ar=$('#zAr').textContent;
-    if(ar){
-      window.SukunVoiceSource?.set?.('tts-ar','ARAPÇA TTS',SPK.arVoice.name||SPK.arVoice.lang||'Arapça ses');
-      return await zikirTtsAwait(ar,interrupt,SPK.arVoice.lang,SPK.arVoice,SPK.arRate,SPK.arPitch);
-    }
-  }
-  const _ok=$('#zOku'), oku=(_ok?_ok.textContent:'').trim();
-  window.SukunVoiceSource?.set?.('tts-tr','TTS',SPK.voice?.name||'Türkçe/okunuş');
-  return await zikirTtsAwait(oku||$('#zTr').textContent,interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
+  /* Çok erken çağrı için emniyet fallback'i. */
+  const _ok=$('#zOku'),oku=(_ok?_ok.textContent:'').trim();
+  return await zikirTtsAwait(oku||$('#zTr').textContent,!!interrupt,'tr-TR',SPK.voice,SPK.rate,.9);
 }
 $('#spkOnce').onclick=()=>spkSayZikir(true);
 $('#arVoiceSel').addEventListener('change',e=>{SPK.arVoice=SPK.arList[+e.target.value]||SPK.arVoice;});
@@ -20070,9 +20123,9 @@ rep=()=>{
 
   if(sesli){
     zikirSesBaslat(false,()=>{
-      if(pending)r482CommitTransition(pending);
+      if(pending&&ZikirTransitionTxn.isCurrent(pending))r482CommitTransition(pending);
     });
-  }else if(pending){
+  }else if(pending&&ZikirTransitionTxn.isCurrent(pending)){
     r482CommitTransition(pending);
   }
 
@@ -20477,6 +20530,7 @@ function mertebeApply(i,opt={}){
      Canlı barın açılması, zikir listesi yeniden çizimi veya frekans başlangıcı
      kullanıcıyı sayaç/zikir sahnesine taşıyamaz. */
   const keep=!!opt.preserveScroll;
+  if(keep)try{window.SukunViewportPolicy?.suppress?.(620,'nefs-selection')}catch(e){}
   const anchor=keep?(opt.anchor||null):null;
   const anchorTop=anchor?.isConnected?anchor.getBoundingClientRect().top:null;
   const scrollTop=window.scrollY||document.documentElement.scrollTop||0;
@@ -20512,6 +20566,9 @@ function mertebeApply(i,opt={}){
     idx:Z.idx,
     carrier:+FR.c||+CAKRA[i].fc||0,
     beat:+FR.b||+x.fb||0,
+    recommendedCarrier:+CAKRA[i].fc||+FR.c||0,
+    recommendedBeat:+x.fb||+FR.b||0,
+    customized:false,
     band:x.band||'',
     at:Date.now()
   });
@@ -21810,7 +21867,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r507',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r509',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32473,26 +32530,152 @@ function ttsPromise(text,lang='tr-TR'){
     }catch(e){finish(false)}
   });
 }
-window.AudioResolver=R168.AudioResolver={
-  async has(cat,idx,item){try{return !!(RECKEYS&&RECKEYS.has(keyFor(cat,idx,item)))}catch(e){return false}},
-  async play(cat,idx,item,opt={}){
-    const key=keyFor(cat,idx,item);
+
+const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
+  const misses=new Map();
+  let last={kind:'idle',label:'HAZIR',detail:'',source:'none',at:Date.now()};
+
+  const set=(kind,label,detail='',source=kind)=>{
+    last={kind:String(kind||'idle'),label:String(label||'HAZIR'),detail:String(detail||''),source:String(source||kind||'none'),at:Date.now()};
+    try{window.SukunVoiceSource?.set?.(last.kind,last.label,last.detail)}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('sukun:voiceresolved',{detail:{...last}}))}catch(e){}
+    return last;
+  };
+  const textFor=item=>(item&&(item.oku||item.translit||item.tr||item.t))||'';
+
+  async function recording(cat,idx,item,key,opt={}){
     try{
-      if(RECKEYS&&RECKEYS.has(key)){
-        const b=await REC_DB.get(key);
-        if(b){
-          const rr=await playRecording(b,'resolver:'+key,{detail:true});
-          if(rr&&rr.ok)return {source:'recording',ok:true,key};
-          /* Kullanıcı durdurduysa TTS ile yeniden başlama; yalnız gerçek
-             oynatma hatasında sessiz kalmamak için TTS'ye düş. */
-          if(rr&&!['play-rejected','error','exception'].includes(rr.reason))return {source:'recording',ok:false,cancelled:true,key};
+      const known=!!RECKEYS?.has?.(key);
+      const missAt=misses.get(key)||0;
+      const probe=known||opt.forceProbe||Date.now()-missAt>15000;
+      if(!probe)return null;
+
+      const blob=await REC_DB.get(key);
+      if(!blob){
+        misses.set(key,Date.now());
+        if(known)RECKEYS.delete(key);
+        return null;
+      }
+
+      misses.delete(key);RECKEYS.add(key);
+      set('recording','KENDİ KAYIT','IndexedDB · '+(opt.title||key),'recording');
+      if(opt.interrupt)try{speechSynthesis.cancel()}catch(e){}
+
+      const rr=await playRecording(blob,opt.reason||('resolver:'+key),{
+        detail:true,
+        resume:false,
+        backgroundNative:document.hidden,
+        reason:document.hidden?'Kilit ekranı · kendi kayıt':(opt.detail||'Kendi kayıt'),
+        title:opt.title||key
+      });
+
+      if(rr===undefined||rr===true||rr?.ok)return{source:'recording',ok:true,key};
+      if(rr&&!['play-rejected','error','exception'].includes(rr.reason))
+        return{source:'recording',ok:false,cancelled:true,key,reason:rr.reason};
+      return null; /* gerçek oynatma hatası → sıradaki kaynak */
+    }catch(e){
+      return null;
+    }
+  }
+
+  async function reader(item,opt={}){
+    try{
+      if(opt.preferArabic!==false&&SPK?.arOn&&SPK?.arVoice){
+        const ar=String(opt.arabic||item?.ar||'').trim();
+        if(ar){
+          const nm=SPK.arVoice.name||SPK.arVoice.lang||'Arapça ses';
+          set('reader-ar','SEÇİLİ OKUYUCU',nm,'reader');
+          const ok=await zikirTtsAwait(ar,!!opt.interrupt,SPK.arVoice.lang||'ar-SA',SPK.arVoice,SPK.arRate,SPK.arPitch);
+          return{source:'reader',kind:'arabic',ok:ok!==false};
         }
       }
     }catch(e){}
-    const text=(item&&(item.oku||item.translit||item.tr||item.t))||'';
-    const ok=await ttsPromise(text,opt.lang||'tr-TR');
-    return {source:'tts',ok,key,text};
-  }, keyFor
+
+    const text=String(opt.text||textFor(item)||'').trim();
+    if(text&&SPK?.voice){
+      const nm=SPK.voice.name||SPK.voice.lang||'Seçili Türkçe ses';
+      set('reader-tr','SEÇİLİ OKUYUCU',nm,'reader');
+      const ok=await zikirTtsAwait(text,!!opt.interrupt,opt.lang||'tr-TR',SPK.voice,SPK.rate,.9);
+      return{source:'reader',kind:'turkish',ok:ok!==false,text};
+    }
+    return null;
+  }
+
+  async function tts(item,opt={}){
+    const text=String(opt.text||textFor(item)||'').trim();
+    if(!text||!('speechSynthesis'in window)){
+      set('silent','SESSİZ','Kullanılabilir kayıt/okuyucu/TTS yok','silent');
+      return{source:'silent',ok:false,text};
+    }
+    set('tts','TTS','Cihaz konuşma sentezi','tts');
+    const ok=typeof ttsPromise==='function'
+      ?await ttsPromise(text,opt.lang||'tr-TR')
+      :await zikirTtsAwait(text,!!opt.interrupt,opt.lang||'tr-TR',null,SPK?.rate||1,.9);
+    return{source:'tts',ok:ok!==false,text};
+  }
+
+  async function playItem(cat,idx,item,opt={}){
+    const key=typeof keyFor==='function'?keyFor(cat,idx,item):`${cat}:${idx}`;
+    const rec=await recording(cat,idx,item,key,{
+      ...opt,
+      forceProbe:!!opt.forceProbe,
+      title:opt.title||(item?.tr||item?.t||key)
+    });
+    if(rec)return rec;
+
+    const chosen=await reader(item,opt);
+    if(chosen?.ok)return chosen;
+
+    return await tts(item,opt);
+  }
+
+  async function playCurrentZikir({interrupt=false}={}){
+    const cat=typeof zKat==='function'?zKat():Z.cat;
+    const idx=typeof zIdx==='function'?zIdx():Z.idx;
+    const item=ZIKIR?.[cat]?.items?.[idx]||zItem?.();
+    const key=zikirKey();
+    const tef=!!document.body.classList.contains('sukun-tefekkur-mode');
+
+    const rec=await recording(cat,idx,item,key,{
+      interrupt,
+      forceProbe:tef,
+      title:typeof keyLabel==='function'?keyLabel(key):(item?.tr||item?.t||key),
+      detail:'Tefekkür/zikir için kendi kayıt sesin',
+      reason:'zikir:'+key
+    });
+    if(rec)return rec;
+
+    /* Seçili okuyucu: Arapça etkinse o; değilse seçili Türkçe ses. */
+    const chosen=await reader(item,{
+      interrupt,
+      arabic:$('#zAr')?.textContent||item?.ar||'',
+      text:($('#zOku')?.textContent||'').trim()||$('#zTr')?.textContent||textFor(item)
+    });
+    if(chosen?.ok)return chosen;
+
+    return await tts(item,{
+      interrupt,
+      text:($('#zOku')?.textContent||'').trim()||$('#zTr')?.textContent||textFor(item)
+    });
+  }
+
+  return{
+    version:'r509',
+    playItem,
+    playCurrentZikir,
+    snapshot:()=>({...last}),
+    order:['recording','reader','tts','silent']
+  };
+})();
+
+window.AudioResolver=R168.AudioResolver={
+  async has(cat,idx,item){
+    try{return !!(RECKEYS&&RECKEYS.has(keyFor(cat,idx,item)))}catch(e){return false}
+  },
+  async play(cat,idx,item,opt={}){
+    return await window.SukunVoiceResolver.playItem(cat,idx,item,opt);
+  },
+  keyFor
 };
 
 /* ═══ BERHETİYYE 28 İSİM ATLASI ═══ */
@@ -32880,18 +33063,18 @@ function reveal(id){const el=document.getElementById(id);if(!el)return;try{windo
 const P=R170.Player={queue:[],i:0,playing:false,paused:false,token:0,name:'',started:0,stepStarted:0,key:'sukun.session.player.v2',lastSource:'',
  save(){ls.set(this.key,{queue:this.queue,i:this.i,name:this.name,playing:this.playing,paused:this.paused,unfinished:!!(this.queue.length&&(this.playing||this.paused||this.i>0&&this.i<this.queue.length-1)),t:Date.now()})},
  restore(){const x=ls.get(this.key,null);if(!x||!Array.isArray(x.queue)||!x.queue.length||!x.unfinished)return false;if(Date.now()-(+x.t||0)>14*24*3600*1000)return false;this.queue=x.queue;this.i=Math.min(x.i||0,x.queue.length-1);this.name=x.name||'Yarım kalan seans';this.playing=false;this.paused=true;return true},
- set(q,name){this.stop(false);this.queue=q||[];this.i=0;this.name=name||'Seans';this.save();nowRender();queueRender()},
+ set(q,name){this.stop(false);this.queue=q||[];this.i=0;this.name=name||'Seans';try{window.SukunResumePolicy?.begin?.('smart',{name:this.name})}catch(e){};this.save();nowRender();queueRender()},
  async play(){if(!this.queue.length)return;this.playing=true;this.paused=false;this.token++;this.started=this.started||Date.now();
    try{if(window.SesCapa)SesCapa.start({title:(this.name||'Akıllı Seans')+' — SÜKÛN',onPause:()=>{if(this.playing)this.pause()},onPlay:()=>{if(this.paused||!this.playing)this.play()},onStop:()=>this.stop()})}catch(e){}
    this.save();nowRender();this.loop(this.token)},
- pause(){this.paused=true;this.playing=false;this.token++;try{sesDurdur();speechSynthesis.cancel()}catch(e){};try{window.SesCapa&&SesCapa.syncPaused()}catch(e){};this.save();nowRender()},
+ pause(){this.paused=true;this.playing=false;this.token++;try{sesDurdur();speechSynthesis.cancel()}catch(e){};try{window.SesCapa&&SesCapa.syncPaused()}catch(e){};try{window.SukunResumePolicy?.progress?.('smart',{stepIndex:this.i})}catch(e){};this.save();nowRender()},
  stop(clear=true){this.playing=false;this.paused=false;this.token++;try{sesDurdur();speechSynthesis.cancel()}catch(e){};try{window.SesCapa&&SesCapa.stop()}catch(e){};if(clear){this.i=0;this.started=0}this.save();nowRender();queueRender()},
  prev(){this.token++;this.i=Math.max(0,this.i-1);this.playing=false;try{sesDurdur();speechSynthesis.cancel()}catch(e){};this.save();nowRender();queueRender()},
  next(){this.token++;this.i=Math.min(Math.max(0,this.queue.length-1),this.i+1);this.playing=false;try{sesDurdur();speechSynthesis.cancel()}catch(e){};this.save();nowRender();queueRender()},
  async one(step,token){if(!step||token!==this.token)return;this.stepStarted=Date.now();if(step.type==='silence'){this.lastSource='sükût';await sleep(Math.max(200,+step.ms||1000));return}
    if(step.type==='zikir'){try{Z.cat=step.cat;Z.idx=step.idx;renderZikir(false);zUI()}catch(e){};const it=ZIKIR[step.cat]?.items?.[step.idx];if(!it)return;const reps=Math.max(1,+step.reps||1);for(let n=0;n<reps&&this.playing&&!this.paused&&token===this.token;n++){const r=await (window.AudioResolver?.play?window.AudioResolver.play(step.cat,step.idx,it):Promise.resolve({source:'tts'}));this.lastSource=r?.source||'ses';nowRender();if(n<reps-1)await sleep(+step.gap||600)}return}
    if(step.type==='frequency'){try{FR.c=+step.c||FR.c;FR.b=+step.b||FR.b;FR.mode=step.mode||FR.mode;if(FR.playing)frRetune(.25);else frStart();this.lastSource='frekans';nowRender();await sleep(Math.max(1000,+step.ms||60000));if(step.stop!==false&&FR.playing)frStop()}catch(e){}return}},
- async loop(token){while(this.playing&&!this.paused&&token===this.token&&this.i<this.queue.length){queueRender();nowRender();await this.one(this.queue[this.i],token);if(!this.playing||this.paused||token!==this.token)return;this.i++;this.save()}if(this.i>=this.queue.length&&this.playing){this.playing=false;this.paused=false;this.i=0;this.save();nowRender('Seans tamamlandı ✦');try{vib&&vib([25,40,45]);sfx&&sfx('done')}catch(e){}}}
+ async loop(token){while(this.playing&&!this.paused&&token===this.token&&this.i<this.queue.length){queueRender();nowRender();await this.one(this.queue[this.i],token);if(!this.playing||this.paused||token!==this.token)return;this.i++;this.save()}if(this.i>=this.queue.length&&this.playing){this.playing=false;this.paused=false;this.i=0;try{window.SukunResumePolicy?.complete?.('smart',{name:this.name})}catch(e){};this.save();nowRender('Seans tamamlandı ✦');try{vib&&vib([25,40,45]);sfx&&sfx('done')}catch(e){}}}
 };
 function stepTitle(s){if(s.type==='zikir')return labelOf(s.cat,s.idx)+(s.reps>1?' ×'+s.reps:'');if(s.type==='silence')return 'Sükût · '+Math.round((s.ms||0)/1000)+' sn';if(s.type==='frequency')return (s.c||'')+' Hz · '+(s.b||'')+' Hz vuruş';return s.type}
 function nowCreate(){if(document.getElementById('r170Now'))return;const d=document.createElement('div');d.id='r170Now';d.innerHTML='<div><small id="r170NowTop">ŞİMDİ ÇALIYOR</small><b id="r170NowTitle">—</b><div class="r170Progress"><i id="r170NowBar"></i></div></div><div class="r170NowBtns"><button id="r170Prev">‹</button><button id="r170Play">▶</button><button id="r170Next">›</button><button id="r170Stop">■</button></div>';document.body.appendChild(d);d.querySelector('#r170Prev').onclick=()=>P.prev();d.querySelector('#r170Play').onclick=()=>P.playing?P.pause():P.play();d.querySelector('#r170Next').onclick=()=>P.next();d.querySelector('#r170Stop').onclick=()=>P.stop();/* r209: MediaSession burada tekrar bağlanmaz. Eski r170 deneme runtime'ı
@@ -32940,7 +33123,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r507',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r509',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -37303,16 +37486,10 @@ function applyNow(n){
 window.addEventListener('sukun:nowplayingchange',e=>requestAnimationFrame(()=>applyNow(e.detail)),{passive:true});
 window.addEventListener('sukun:playbackchange',()=>setTimeout(()=>{try{applyNow(window.SukunNowPlayingStore?.get?.())}catch(e){}},40),{passive:true});
 
-const timer=setInterval(()=>{
-  if(document.hidden)return;
-  const bar=document.getElementById('miniBar');
-  if(!bar||bar.hidden)return;
-  try{applyNow(window.SukunNowPlayingStore?.get?.())}catch(e){
-    try{applyInfo(miniPlayingInfo())}catch(_){}
-  }
-},500);
-
-window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
+/* r509: NowPlayingStore zaten tick/event yayınlıyor; ikinci 500ms polling yok. */
+window.addEventListener('pageshow',()=>{
+  try{applyNow(window.SukunNowPlayingStore?.get?.())}catch(e){}
+},{passive:true});
 window.SukunMiniStable={version:'r406',applyInfo,applyNow};
 })();
 </script>
@@ -38647,7 +38824,7 @@ function sync(){
 document.addEventListener('click',e=>{if(e.target.closest?.('#mbPause,#r170Play'))setTimeout(sync,60)},{passive:true});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(sync,80)});
 window.addEventListener('pageshow',()=>setTimeout(sync,80));
-setInterval(()=>{if(!document.hidden)sync()},1000);
+/* r509: nowplaying/playback/audio events already drive sync; ekstra 1s polling yok. */
 setTimeout(sync,160);
 })();
 </script>
@@ -42902,6 +43079,13 @@ function snapshot(){
       perfEffective:document.body.dataset.perfEffective||document.body.dataset.perf||'—'
     },
     layout:window.SukunLayoutEngine?.snapshot?.()||null,
+    viewportPolicy:window.SukunViewportPolicy?.snapshot?.()||null,
+    currentFlow:window.currentFlowState?.snapshot?.()||null,
+    zikirTransaction:window.SukunZikirTransaction?.snapshot?.()||null,
+    voiceResolver:window.SukunVoiceResolver?.snapshot?.()||null,
+    resumePolicy:window.SukunResumePolicy?.snapshot?.()||null,
+    lifecycleHub:window.SukunLifecycleHub?.snapshot?.()||null,
+    flowNavigation:{version:window.SukunFlowNavigation?.version||null,context:window.SukunFlowNavigation?.context?.()||null},
     overflowDebug:window.SukunOverflowDebug?.snapshot?.()||null,
     voiceSource:window.SukunVoiceSource?.snapshot?.()||null,
     sessionMemory:window.SukunSessionMemory?.snapshot?.()||null,
@@ -43541,6 +43725,42 @@ window.SukunDiagnostics={
 </script>
 
 
+<script id="r509-lifecycle-hub">
+(()=>{
+'use strict';
+if(window.SukunLifecycleHub?.version==='r509')return;
+
+const classSubs=new Set();
+let raf=0,lastClass=document.body?.className||'';
+
+function emitClass(reason='class'){
+  const cls=document.body?.className||'';
+  if(cls===lastClass&&reason==='mutation')return;
+  const prev=lastClass;lastClass=cls;
+  classSubs.forEach(fn=>{try{fn({reason,className:cls,previous:prev})}catch(e){}});
+}
+function schedule(reason='schedule'){
+  if(raf)return;
+  raf=requestAnimationFrame(()=>{raf=0;emitClass(reason)});
+}
+function onBodyClass(fn,{immediate=true}={}){
+  if(typeof fn!=='function')return()=>{};
+  classSubs.add(fn);
+  if(immediate)try{fn({reason:'subscribe',className:lastClass,previous:lastClass})}catch(e){}
+  return()=>classSubs.delete(fn);
+}
+const bodyObserver=new MutationObserver(()=>schedule('mutation'));
+if(document.body)bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+
+window.SukunLifecycleHub={
+  version:'r509',
+  onBodyClass,
+  schedule,
+  snapshot:()=>({version:'r509',subscribers:classSubs.size,className:lastClass})
+};
+})();
+</script>
+
 <script id="r471-canonical-runtime">
 (()=>{
 'use strict';
@@ -43741,11 +43961,21 @@ function currentSnapshot(){
     return{version:'r470',updatedAt:Date.now(),z:{cat:Z.cat,idx:Z.idx,count:Z.count,devir:Z.devir,target:Z.target,targetMode:Z.targetMode,tempo:Z.tempo,form:Z.form,total:Z.total,auto:!!Z.auto},tef:document.body.classList.contains('sukun-tefekkur-mode'),perf:document.body.dataset.perf||'dengeli',dock:window.SukunPremiumDock?.getLevel?.()||null,voice:Voice.snapshot(),audio};
   }catch(e){return null}
 }
-function saveNow(){if(restoring)return null;const s=currentSnapshot();if(!s)return null;try{localStorage.setItem(MEMKEY,JSON.stringify(s))}catch(e){}return s}
+function saveNow(){
+  if(restoring)return null;
+  const s=currentSnapshot();if(!s)return null;
+  try{localStorage.setItem(MEMKEY,JSON.stringify(s))}catch(e){}
+  try{
+    if((s.z?.count||0)>0||(s.z?.devir||0)>0||s.z?.auto)
+      window.SukunResumePolicy?.progress?.('zikir',{cat:s.z.cat,idx:s.z.idx,count:s.z.count,devir:s.z.devir});
+  }catch(e){}
+  return s;
+}
 function saveSoon(){clearTimeout(saveTO);saveTO=setTimeout(saveNow,120)}
 function read(){try{const s=JSON.parse(localStorage.getItem(MEMKEY)||'null');return s&&typeof s==='object'?s:null}catch(e){return null}}
 async function restore(){
   const s=read();if(!s||!s.updatedAt||Date.now()-s.updatedAt>72*3600e3)return false;
+  if(window.SukunResumePolicy?.shouldRestore?.('zikir',s)===false)return false;
   if(typeof Z==='undefined')return false;restoring=true;
   try{
     const katalog=(typeof ZIKIR!=='undefined'?ZIKIR:null);
@@ -43798,14 +44028,16 @@ window.SukunAudioRecovery={version:'r470',recover:recoverAudio,schedule:schedule
 
 /* ── 8. Lifecycle wiring: all event-driven, no polling ───── */
 let wasTef=document.body.classList.contains('sukun-tefekkur-mode');
-const bodyObs=new MutationObserver(()=>{
+window.SukunLifecycleHub?.onBodyClass?.(()=>{
   const now=document.body.classList.contains('sukun-tefekkur-mode');
   if(now!==wasTef){wasTef=now;if(now){mount();beginSummary()}else endSummary();saveSoon();schedule();applyPerf()}
   else{schedule();applyPerf()}
-});
-bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
-let countObs=null;
-function bindCount(){const n=$('cntBig');if(!n||countObs)return;countObs=new MutationObserver(saveSoon);countObs.observe(n,{childList:true,characterData:true,subtree:true})}
+},{immediate:false});
+let countBound=false;
+function bindCount(){
+  if(countBound)return;countBound=true;
+  window.addEventListener('sukun:currentzikirchange',saveSoon,{passive:true});
+}
 window.addEventListener('sukun:voicesource',saveSoon,{passive:true});
 window.addEventListener('sukun:nowplayingchange',saveSoon,{passive:true});
 window.addEventListener('sukun:performance',()=>{applyPerf();saveSoon()},{passive:true});
@@ -45173,8 +45405,10 @@ function ensure(){
   return row;
 }
 
-function render(s){
-  const row=ensure(); if(!row||!s)return;
+function render(flow){
+  const row=ensure(); if(!row||!flow)return;
+  const s=flow.zikir||flow;
+  if(!s)return;
   const sig=[
     s.active,s.cat,s.idx,s.count,s.target,s.remain,s.devir,
     s.name,s.position,s.length,s.session.paused
@@ -45198,15 +45432,19 @@ function render(s){
     const pos=nf.total?`${nf.position}/${nf.total}`:`${nf.position}`;
     const carrier=Number.isInteger(nf.carrier)?nf.carrier:nf.carrier.toFixed(1);
     const beat=Number.isInteger(nf.beat)?nf.beat:nf.beat.toFixed(1);
+    const recC=Number.isInteger(nf.recommendedCarrier)?nf.recommendedCarrier:nf.recommendedCarrier.toFixed(1);
+    const recB=Number.isInteger(nf.recommendedBeat)?nf.recommendedBeat:nf.recommendedBeat.toFixed(1);
     const freq=nf.frequencyPlaying
-      ?`${carrier} Hz · ${beat} Hz vuruş`
+      ?`${carrier} Hz · ${beat} Hz vuruş${nf.customized?' · ÖZEL':''}`
       :'frekans durdu';
     $('r478Kind').textContent='NEFS';
     $('r478Name').textContent=`${pos} ${nf.shortName} · ${nf.zikir} · ${freq}`;
     $('r478Name').title=
       `${nf.name} · Zikir: ${nf.zikir} · `+
       (nf.frequencyPlaying
-        ?`Frekans çalıyor: ${carrier} Hz taşıyıcı · ${beat} Hz vuruş`
+        ?(nf.customized
+          ?`Şu an: ${carrier} Hz taşıyıcı · ${beat} Hz vuruş · Nefs önerisi: ${recC} Hz · ${recB} Hz`
+          :`Frekans çalıyor: ${carrier} Hz taşıyıcı · ${beat} Hz vuruş`)
         :'Frekans durdu');
   }else{
     $('r478Kind').textContent=s.kind;
@@ -45216,16 +45454,21 @@ function render(s){
 
   const live=$('r422NowLive');
   if(live){
-    const paused=!!s.session.paused;
-    live.title=paused?'Duraklatıldı':'Canlı oynatma';
-    live.setAttribute('aria-label',paused?'Duraklatıldı':'Canlı oynatma');
+    const paused=!!flow.paused;
+    const playing=!!flow.playing;
+    const liveText=paused?'BEKLE':playing?'CANLI':'HAZIR';
+    if(live.textContent.trim()!==liveText)live.textContent=liveText;
+    live.title=paused?'Duraklatıldı':playing?'Canlı oynatma':'Hazır';
+    live.setAttribute('aria-label',paused?'Duraklatıldı':playing?'Canlı oynatma':'Hazır');
   }
 }
 function sync(reason='dock-sync'){
-  return window.currentZikirState?.refresh(reason,true);
+  return window.currentFlowState?.refresh?.(reason,true)||
+    window.currentZikirState?.refresh(reason,true);
 }
 
-const unsub=window.currentZikirState?.subscribe(render);
+const unsub=window.currentFlowState?.subscribe?.(render)||
+  window.currentZikirState?.subscribe(render);
 ['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:source','sukun:voicesource','sukun:nefsflowchange']
   .forEach(ev=>window.addEventListener(ev,()=>sync(ev),{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync('visibility')},{passive:true});
@@ -45236,9 +45479,9 @@ if(document.readyState==='loading'){
 }else sync('boot');
 
 window.SukunDockTelemetry={
-  version:'r507',
+  version:'r508',
   sync,
-  snapshot:()=>window.currentZikirState?.snapshot?.()||null,
+  snapshot:()=>window.currentFlowState?.snapshot?.()||window.currentZikirState?.snapshot?.()||null,
   destroy:()=>unsub?.()
 };
 })();
@@ -45963,6 +46206,8 @@ function smartActive(){
 }
 function directActive(){
   try{
+    const f=window.currentFlowState?.snapshot?.();
+    if(f)return['smart','nefs','zikir'].includes(f.context);
     if(document.body.classList.contains('sukun-tefekkur-mode'))return true;
     if(Z?.auto)return true;
     if(window.SukunDockTelemetry?.snapshot?.()?.active)return true;
@@ -45977,6 +46222,7 @@ function currentItems(){
   }catch(e){return[]}
 }
 function stopZikirVoice(){
+  try{window.SukunZikirTransaction?.cancel?.('navigation')}catch(e){}
   try{if(typeof _zSesSeq!=='undefined')_zSesSeq++}catch(e){}
   try{
     window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
@@ -46104,6 +46350,10 @@ async function restartSmart(){
 }
 
 function actionText(action,surface){
+  try{
+    const x=window.SukunFlowNavigation?.describe?.(action);
+    if(x)return x;
+  }catch(e){}
   const smart=surface==='dock'&&dockOwner()==='smart'&&smartActive();
   if(action==='prev')return smart?'Önceki seans adımı':'Önceki zikir';
   if(action==='next')return smart?'Sonraki seans adımı':'Sonraki zikir';
@@ -46124,19 +46374,21 @@ async function run(action,surface){
   hideTip();
   try{
     let ok=false;
-    const smart=surface==='dock'&&dockOwner()==='smart'&&smartActive();
-
-    if(action==='reset'){
-      ok=smart?await restartSmart():await restartDirect();
+    if(window.SukunFlowNavigation?.act){
+      ok=!!(await window.SukunFlowNavigation.act(action,{surface}));
     }else{
-      const delta=action==='next'?1:-1;
-      ok=smart?navigateSmart(delta):await navigateDirect(delta);
+      const smart=surface==='dock'&&dockOwner()==='smart'&&smartActive();
+      if(action==='reset')ok=smart?await restartSmart():await restartDirect();
+      else{
+        const delta=action==='next'?1:-1;
+        ok=smart?navigateSmart(delta):await navigateDirect(delta);
+      }
     }
 
     if(ok){
       try{
         const msg=action==='reset'?'↺ Baştan başladı':
-          action==='next'?'→ Sonraki zikre geçildi':'← Önceki zikre geçildi';
+          action==='next'?'→ Sonraki akışa geçildi':'← Önceki akışa geçildi';
         toast?.(msg);
       }catch(e){}
       requestAnimationFrame(sync);
@@ -46345,14 +46597,10 @@ d.addEventListener('focusout',e=>{
 });
 
 /* Event-driven, with bounded retries for dynamic canonical Tef/dock creation. */
-const bodyObs=new MutationObserver(ms=>{
-  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
-    requestAnimationFrame(sync);
-    setTimeout(sync,80);
-    setTimeout(sync,260);
-  }
-});
-if(d.body)bodyObs.observe(d.body,{attributes:true,attributeFilter:['class']});
+window.SukunLifecycleHub?.onBodyClass?.(()=>{
+  requestAnimationFrame(sync);
+  setTimeout(sync,80);
+},{immediate:false});
 
 [
   'sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase',
@@ -46372,14 +46620,20 @@ function boot(){
 if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});
 else boot();
 
+/* r508: context navigation motoru bu doğrulanmış primitive'leri kullanır. */
+window.__SUKUN_FLOW_NAV_OPS__={
+  restartDirect,navigateDirect,navigateSmart,restartSmart,
+  smartActive,currentItems,stopZikirVoice,persistZero,sync
+};
+
 /* Compatibility API names now point to this single owner. */
 window.SukunZikirRestart={
-  version:'r494',
+  version:'r509',
   restart:({surface='main'}={})=>run('reset',surface),
   sync
 };
 window.SukunNavigation={
-  version:'r494',
+  version:'r509',
   navigate:(delta,surface='main')=>run(delta>0?'next':'prev',surface),
   restart:(surface='main')=>run('reset',surface),
   sync
@@ -46655,12 +46909,9 @@ function boot(){
   'sukun:zikirnav'
 ].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(normalize),{passive:true}));
 
-const bodyObs=new MutationObserver(ms=>{
-  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
-    requestAnimationFrame(normalize);
-  }
-});
-if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
+window.SukunLifecycleHub?.onBodyClass?.(()=>{
+  requestAnimationFrame(normalize);
+},{immediate:false});
 
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',boot,{once:true});
@@ -46781,16 +47032,17 @@ function render(s){
   if(now){const v=`${s.position} / ${s.length||99}`; if(now.textContent!==v)now.textContent=v;}/*r504*/
 }
 function sync(reason='esma-badge'){
-  window.currentZikirState?.refresh(reason,true);
+  window.currentFlowState?.refresh?.(reason,true)||window.currentZikirState?.refresh(reason,true);
 }
 
-window.currentZikirState?.subscribe(render);
+window.currentFlowState?.subscribe?.(s=>render(s?.zikir));
+if(!window.currentFlowState)window.currentZikirState?.subscribe(render);
 ['sukun:zikirnav','sukun:currentzikirchange']
-  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>render(window.currentZikirState?.snapshot?.())),{passive:true}));
+  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>render(window.currentFlowState?.snapshot?.()?.zikir||window.currentZikirState?.snapshot?.())),{passive:true}));
 
 function boot(){
-  render(window.currentZikirState?.snapshot?.());
-  [80,240,700,1400].forEach(ms=>setTimeout(()=>render(window.currentZikirState?.snapshot?.()),ms));
+  render(window.currentFlowState?.snapshot?.()?.zikir||window.currentZikirState?.snapshot?.());
+  [80,240,700,1400].forEach(ms=>setTimeout(()=>render(window.currentFlowState?.snapshot?.()?.zikir||window.currentZikirState?.snapshot?.()),ms));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
 else boot();
@@ -47480,12 +47732,9 @@ function check(){
 ['sukun:zikirnav','sukun:zikirrestart','sukun:playbackchange']
   .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(check),{passive:true}));
 
-const bodyObs=new MutationObserver(ms=>{
-  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
-    requestAnimationFrame(check);
-  }
-});
-if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
+window.SukunLifecycleHub?.onBodyClass?.(()=>{
+  requestAnimationFrame(check);
+},{immediate:false});
 
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',()=>setTimeout(check,80),{once:true});
@@ -47517,14 +47766,15 @@ body.r447-dock-mini #r478DockStats[data-nefs="1"] .r478Name>b{
 </style>
 
 
-<script id="r507-nefs-flow-lifecycle">
+<script id="r509-nefs-frequency-truth">
 (()=>{
 'use strict';
-if(window.__SUKUN_R507_NEFS_FLOW__)return;
-window.__SUKUN_R507_NEFS_FLOW__=1;
+if(window.__SUKUN_R509_NEFS_FREQ__)return;
+window.__SUKUN_R509_NEFS_FREQ__=1;
 
 const refresh=reason=>{
   try{window.currentZikirState?.refresh(reason,true)}catch(e){}
+  try{window.currentFlowState?.refresh?.(reason,true)}catch(e){}
   try{
     window.dispatchEvent(new CustomEvent('sukun:nefsflowchange',{
       detail:window.__SUKUN_NEFS_FLOW_STATE__||null
@@ -47532,23 +47782,587 @@ const refresh=reason=>{
   }catch(e){}
 };
 
-/* Var olan ses zincirini değiştirmeden yalnız sonuca abone ol. */
-['sukun:audiostate','sukun:playbackchange','sukun:nowplayingchange']
-  .forEach(ev=>window.addEventListener(ev,()=>refresh('nefs-'+ev),{passive:true}));
+function markManual(reason='manual-frequency'){
+  const n=window.__SUKUN_NEFS_FLOW_STATE__;
+  if(!n?.active)return false;
+  window.__SUKUN_NEFS_FLOW_STATE__=Object.freeze({
+    ...n,
+    carrier:Number(FR?.c)||n.carrier||0,
+    beat:Number(FR?.b)||n.beat||0,
+    customized:true,
+    customizedAt:Date.now(),
+    customizeReason:reason
+  });
+  refresh('nefs-frequency-customized');
+  return true;
+}
 
+/* Gerçek frekans kontrolleri. frVol kaynak değer değiştirmez. */
 document.addEventListener('input',e=>{
-  if(e.target?.matches?.('#carrier,#beat,#frCar,#frBeat,#frVol,[data-r434-beat]')){
-    /* Kullanıcı Nefs seçiminden sonra frekansı elle değiştirirse seçili mertebe
-       etiketi kalır, fakat canlı state gerçek FR değerini bir sonraki refresh'te okur. */
-    setTimeout(()=>refresh('nefs-frequency-input'),0);
+  if(e.target?.matches?.('#carSld,#beatSld,#carNum,#beatNum')){
+    queueMicrotask(()=>markManual('frequency-input'));
+  }
+},{passive:true});
+document.addEventListener('change',e=>{
+  if(e.target?.matches?.('#carNum,#beatNum')){
+    queueMicrotask(()=>markManual('frequency-number'));
+  }
+},{passive:true});
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#carInc,#carDec,#carKnob,#presets [data-p]')){
+    setTimeout(()=>markManual('frequency-control'),0);
   }
 },{passive:true});
 
+['sukun:audiostate','sukun:playbackchange','sukun:nowplayingchange']
+  .forEach(ev=>window.addEventListener(ev,()=>refresh('nefs-'+ev),{passive:true}));
+
 window.SukunNefsFlow={
-  version:'r507',
+  version:'r509',
   snapshot:()=>window.__SUKUN_NEFS_FLOW_STATE__||null,
-  refresh
+  refresh,
+  markFrequencyManual:markManual
 };
+})();
+</script>
+
+
+<script id="r508-viewport-policy">
+(()=>{
+'use strict';
+if(window.SukunViewportPolicy?.version==='r508')return;
+
+const nativeScrollIntoView=Element.prototype.scrollIntoView;
+let suppressUntil=0,suppressReason='';
+let explicitDepth=0;
+let userIntentUntil=0,userReason='';
+let blocked=0,allowed=0,last=null;
+
+const now=()=>performance.now();
+const markUser=reason=>{
+  userIntentUntil=now()+1250;
+  userReason=reason||'user';
+};
+
+document.addEventListener('pointerdown',()=>markUser('pointer'),{capture:true,passive:true});
+document.addEventListener('touchstart',()=>markUser('touch'),{capture:true,passive:true});
+document.addEventListener('keydown',e=>{
+  if(['Enter',' ','Spacebar','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End'].includes(e.key)){
+    markUser('keyboard');
+  }
+},{capture:true,passive:true});
+
+function suppress(ms=500,reason='background-flow'){
+  const until=now()+Math.max(0,+ms||0);
+  if(until>suppressUntil){
+    suppressUntil=until;
+    suppressReason=String(reason||'background-flow');
+  }
+  return suppressUntil;
+}
+function allow(fn,reason='explicit'){
+  explicitDepth++;
+  try{return typeof fn==='function'?fn():undefined}
+  finally{
+    explicitDepth=Math.max(0,explicitDepth-1);
+    last={type:'allow-scope',reason:String(reason),at:Date.now()};
+  }
+}
+function shouldAllow(el){
+  const t=now();
+  if(t<suppressUntil)return{ok:false,reason:suppressReason||'suppressed'};
+  if(explicitDepth>0)return{ok:true,reason:'explicit'};
+  if(el?.closest?.('[data-sukun-scroll="allow"]'))return{ok:true,reason:'element-allow'};
+  if(t<userIntentUntil)return{ok:true,reason:userReason||'user'};
+  return{ok:false,reason:'background'};
+}
+function describe(el){
+  if(!el)return'—';
+  if(el.id)return'#'+el.id;
+  const cls=[...el.classList||[]].slice(0,2).join('.');
+  return(el.tagName||'EL').toLowerCase()+(cls?'.'+cls:'');
+}
+
+/* Projedeki eski scrollIntoView çağrılarının tamamı artık tek politikadan geçer.
+   Kullanıcı eylemine bağlı kaydırma korunur; background state/render kaydırması engellenir. */
+Element.prototype.scrollIntoView=function(arg){
+  const d=shouldAllow(this);
+  if(!d.ok){
+    blocked++;
+    last={type:'blocked',reason:d.reason,target:describe(this),at:Date.now()};
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:scrollblocked',{detail:{...last}}));
+    }catch(e){}
+    return;
+  }
+  allowed++;
+  last={type:'allowed',reason:d.reason,target:describe(this),at:Date.now()};
+  return nativeScrollIntoView.call(this,arg);
+};
+
+function preserve(fn,opt={}){
+  const anchor=opt.anchor?.isConnected?opt.anchor:null;
+  const anchorTop=anchor?anchor.getBoundingClientRect().top:null;
+  const y=window.scrollY||document.documentElement.scrollTop||0;
+  const ms=Math.max(120,+opt.ms||520);
+  suppress(ms,opt.reason||'preserve-scroll');
+
+  const restore=()=>{
+    if(anchor?.isConnected&&Number.isFinite(anchorTop)){
+      const dy=anchor.getBoundingClientRect().top-anchorTop;
+      if(Math.abs(dy)>.5)window.scrollBy(0,dy);
+    }else{
+      const cy=window.scrollY||document.documentElement.scrollTop||0;
+      if(Math.abs(cy-y)>.5)window.scrollTo(0,y);
+    }
+  };
+
+  let out;
+  try{out=typeof fn==='function'?fn():undefined}
+  finally{
+    restore();
+    requestAnimationFrame(()=>{restore();requestAnimationFrame(restore)});
+    setTimeout(restore,90);
+    setTimeout(restore,220);
+  }
+  return out;
+}
+
+function scrollTo(el,opt,reason='explicit-navigation'){
+  if(!el?.scrollIntoView)return false;
+  return allow(()=>nativeScrollIntoView.call(el,opt),reason),true;
+}
+function snapshot(){
+  return{
+    version:'r508',
+    suppressed:now()<suppressUntil,
+    suppressReason:now()<suppressUntil?suppressReason:'',
+    userIntent:now()<userIntentUntil,
+    userReason:now()<userIntentUntil?userReason:'',
+    blocked,allowed,last
+  };
+}
+
+window.SukunViewportPolicy={
+  version:'r508',
+  suppress,
+  preserve,
+  allow,
+  scrollTo,
+  snapshot,
+  markUserIntent:markUser
+};
+})();
+</script>
+
+
+<script id="r508-current-flow-state">
+(()=>{
+'use strict';
+if(window.currentFlowState?.version==='r509')return;
+
+const listeners=new Set();
+let rev=0,state=null,lastSig='';
+
+const clean=s=>String(s??'').replace(/\s+/g,' ').trim();
+const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+
+function nowPlaying(){
+  try{return window.SukunNowPlayingStore?.get?.()||window.PlaybackController?.nowPlaying?.()||null}catch(e){return null}
+}
+function voice(){
+  try{
+    const v=window.SukunVoiceResolver?.snapshot?.()||
+      window.SukunVoiceSource?.snapshot?.()||{};
+    return Object.freeze({
+      kind:clean(v.kind||'idle'),
+      label:clean(v.label||'HAZIR'),
+      detail:clean(v.detail||''),
+      at:finite(v.at,0)
+    });
+  }catch(e){
+    return Object.freeze({kind:'idle',label:'HAZIR',detail:'',at:0});
+  }
+}
+function frequency(){
+  try{
+    return Object.freeze({
+      playing:!!FR?.playing,
+      carrier:Math.max(0,finite(FR?.c,0)),
+      beat:Math.max(0,finite(FR?.b,0)),
+      mode:clean(FR?.mode||''),
+      volume:Math.max(0,finite(FR?.vol??FR?.v,0))
+    });
+  }catch(e){
+    return Object.freeze({playing:false,carrier:0,beat:0,mode:'',volume:0});
+  }
+}
+function sessionFrom(z,np){
+  const P=window.R170?.Player;
+  const active=!!z?.session?.active||np?.id==='smart-session';
+  return Object.freeze({
+    active,
+    playing:active?(!!z?.session?.playing||np?.state==='playing'):false,
+    paused:active?(!!z?.session?.paused||np?.state==='paused'):false,
+    name:clean(z?.session?.name||np?.moduleTitle||P?.name||''),
+    stepIndex:z?.session?.stepIndex??(Number.isFinite(np?.sectionIndex)?Math.max(0,np.sectionIndex-1):-1),
+    stepPosition:Number.isFinite(np?.sectionIndex)?np.sectionIndex:
+      ((z?.session?.stepIndex??-1)>=0?(z.session.stepIndex+1):0),
+    stepTotal:z?.session?.stepTotal??finite(np?.sectionCount,0)
+  });
+}
+function contextOf(z,np,fr,session){
+  if(session.active)return'smart';
+  if(z?.nefs?.active&&z.nefs.linked)return'nefs';
+  if(z?.active)return'zikir';
+  if(fr.playing)return'frequency';
+  if(np?.id&&np.state&&np.state!=='idle'&&np.state!=='ended')return'audio';
+  return'idle';
+}
+function sourceOf(np,v,fr,context){
+  const kind=clean(np?.sourceKind||(
+    context==='frequency'||fr.playing?'frequency':
+    v.kind&&v.kind!=='idle'?v.kind:'none'
+  ));
+  const label=clean(np?.sourceLabel||(
+    kind==='frequency'?'Frekans':
+    v.label||'—'
+  ));
+  return Object.freeze({
+    kind:kind||'none',
+    label:label||'—',
+    reason:clean(np?.sourceReason||v.detail||''),
+    title:clean(np?.sourceTitle||'')
+  });
+}
+function derive(reason='refresh'){
+  const z=window.currentZikirState?.snapshot?.()||null;
+  const np=nowPlaying();
+  const fr=frequency();
+  const v=voice();
+  const session=sessionFrom(z,np);
+  const context=contextOf(z,np,fr,session);
+  const source=sourceOf(np,v,fr,context);
+
+  const paused=!!session.paused||np?.state==='paused';
+  const playing=!!session.playing||np?.state==='playing'||
+    (context==='nefs'&&fr.playing)||context==='frequency'&&fr.playing||
+    !!z?.auto;
+  const active=context!=='idle';
+
+  const remaining=Object.freeze({
+    count:z?.remain??null,
+    ms:Number.isFinite(Number(np?.remaining))?Math.max(0,Number(np.remaining)):null,
+    estimated:!!np?.estimated
+  });
+
+  return Object.freeze({
+    version:'r509',
+    revision:rev+1,
+    reason,
+    context,
+    active,
+    playing,
+    paused,
+    zikir:z?Object.freeze({...z}):null,
+    nefs:z?.nefs?Object.freeze({...z.nefs}):null,
+    session,
+    voice:v,
+    source,
+    frequency:fr,
+    playback:Object.freeze({
+      id:clean(np?.id||''),
+      state:clean(np?.state||'idle'),
+      moduleTitle:clean(np?.moduleTitle||''),
+      sectionTitle:clean(np?.sectionTitle||''),
+      sectionIndex:np?.sectionIndex??null,
+      sectionCount:np?.sectionCount??null,
+      progress:np?.progress??null,
+      duration:np?.duration??null,
+      elapsed:np?.elapsed??null,
+      remaining:np?.remaining??null,
+      estimated:!!np?.estimated,
+      capabilities:Object.freeze({...np?.capabilities||{}})
+    }),
+    remaining
+  });
+}
+function signature(s){
+  const z=s.zikir,n=s.nefs,p=s.playback;
+  return[
+    s.context,s.active,s.playing,s.paused,
+    z?.cat,z?.idx,z?.count,z?.target,z?.remain,z?.devir,z?.name,
+    n?.index,n?.linked,n?.carrier,n?.beat,n?.frequencyPlaying,
+    s.session.stepIndex,s.session.playing,s.session.paused,
+    s.source.kind,s.source.label,
+    s.frequency.playing,s.frequency.carrier,s.frequency.beat,
+    p.id,p.state,p.sectionIndex,p.progress,p.remaining
+  ].join('|');
+}
+function publish(reason='refresh',force=false){
+  const next=derive(reason),sig=signature(next);
+  if(!force&&state&&sig===lastSig)return state;
+  rev++;
+  state=Object.freeze({...next,revision:rev});
+  lastSig=sig;
+  listeners.forEach(fn=>{try{fn(state)}catch(e){console.debug('[currentFlowState]',e)}});
+  try{window.dispatchEvent(new CustomEvent('sukun:currentflowchange',{detail:state}))}catch(e){}
+  return state;
+}
+function subscribe(fn,opt={}){
+  if(typeof fn!=='function')return()=>{};
+  listeners.add(fn);
+  if(opt.immediate!==false){
+    try{fn(state||publish('subscribe',true))}catch(e){}
+  }
+  return()=>listeners.delete(fn);
+}
+function snapshot(){return state||publish('snapshot',true)}
+
+state=derive('init');
+rev=state.revision||1;
+lastSig=signature(state);
+
+window.currentFlowState={
+  version:'r509',
+  snapshot,
+  refresh:publish,
+  subscribe
+};
+
+/* Alt kaynaklar yalnız state değiştiğinde currentFlowState'i uyandırır. */
+try{window.currentZikirState?.subscribe?.(()=>publish('zikir-state'))}catch(e){}
+try{window.SukunNowPlayingStore?.subscribe?.(()=>publish('now-playing'))}catch(e){}
+[
+  'sukun:voicesource','sukun:audiostate','sukun:source',
+  'sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase',
+  'sukun:nefsflowchange','sukun:zikirnav','sukun:zikirrestart'
+].forEach(ev=>window.addEventListener(ev,()=>publish(ev),{passive:true}));
+
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden)publish('visibility');
+},{passive:true});
+window.addEventListener('pageshow',()=>publish('pageshow'),{passive:true});
+})();
+</script>
+
+
+<script id="r508-flow-navigation">
+(()=>{
+'use strict';
+if(window.SukunFlowNavigation?.version==='r509')return;
+
+function flow(){
+  return window.currentFlowState?.snapshot?.()||null;
+}
+function ops(){
+  return window.__SUKUN_FLOW_NAV_OPS__||{};
+}
+function context(){
+  return flow()?.context||'zikir';
+}
+function describe(action){
+  const c=context();
+  if(c==='smart'){
+    if(action==='prev')return'Önceki seans adımı';
+    if(action==='next')return'Sonraki seans adımı';
+    return'Bu seans zikir adımını baştan başlat';
+  }
+  if(c==='nefs'){
+    if(action==='prev')return'Önceki Nefs mertebesi';
+    if(action==='next')return'Sonraki Nefs mertebesi';
+    return'Bu Nefs mertebesinin zikrini baştan başlat';
+  }
+  if(c==='zikir'){
+    if(action==='prev')return'Önceki zikir';
+    if(action==='next')return'Sonraki zikir';
+    return'Bu zikri sıfırdan başlat';
+  }
+  if(c==='frequency'){
+    if(action==='prev')return'Önceki akış';
+    if(action==='next')return'Sonraki akış';
+    return'Akışı baştan başlat';
+  }
+  if(action==='prev')return'Önceki';
+  if(action==='next')return'Sonraki';
+  return'Baştan başlat';
+}
+
+async function nefsNavigate(delta){
+  const f=flow(),n=f?.nefs;
+  if(!n?.active||typeof mertebeApply!=='function')return false;
+  const total=Math.max(1,n.total||7);
+  const cur=Math.max(0,n.index??Math.max(0,(n.position||1)-1));
+  const next=(cur+(delta>0?1:-1)+total)%total;
+
+  try{window.SukunViewportPolicy?.suppress?.(700,'nefs-navigation')}catch(e){}
+  mertebeApply(next,{preserveScroll:true});
+  try{window.currentFlowState?.refresh?.('nefs-navigation',true)}catch(e){}
+  return true;
+}
+async function nefsRestart(){
+  const o=ops();
+  if(typeof o.restartDirect!=='function')return false;
+  const ok=await o.restartDirect();
+  try{window.currentFlowState?.refresh?.('nefs-restart',true)}catch(e){}
+  return!!ok;
+}
+async function smart(action){
+  const o=ops();
+  if(action==='reset')return!!(await o.restartSmart?.());
+  return!!o.navigateSmart?.(action==='next'?1:-1);
+}
+async function direct(action){
+  const o=ops();
+  if(action==='reset')return!!(await o.restartDirect?.());
+  return!!(await o.navigateDirect?.(action==='next'?1:-1));
+}
+async function genericAudio(action){
+  const f=flow(),id=f?.playback?.id;
+  if(!id||!window.PlaybackController)return false;
+  try{
+    if(action==='prev'){
+      const r=window.PlaybackController.previous?.(id);
+      return r!==false;
+    }
+    if(action==='next'){
+      const r=window.PlaybackController.next?.(id);
+      return r!==false;
+    }
+  }catch(e){}
+  return false;
+}
+
+async function act(action,{surface='main'}={}){
+  action=action==='prev'||action==='next'||action==='reset'?action:'reset';
+  const c=context();
+  let ok=false;
+
+  if(c==='smart')ok=await smart(action);
+  else if(c==='nefs'){
+    ok=action==='reset'?await nefsRestart():await nefsNavigate(action==='next'?1:-1);
+  }
+  else if(c==='zikir'||c==='frequency')ok=await direct(action);
+  else ok=await genericAudio(action);
+
+  if(ok){
+    try{
+      if(action==='reset')window.SukunResumePolicy?.reset?.(c,{surface});
+      else window.SukunResumePolicy?.progress?.(c,{surface,action});
+    }catch(e){}
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:flownavigation',{
+        detail:{action,context:c,surface}
+      }));
+    }catch(e){}
+    try{window.currentFlowState?.refresh?.('flow-navigation',true)}catch(e){}
+  }
+  return!!ok;
+}
+
+window.SukunFlowNavigation={
+  version:'r509',
+  context,
+  describe,
+  act,
+  previousContext:(opt={})=>act('prev',opt),
+  restartContext:(opt={})=>act('reset',opt),
+  nextContext:(opt={})=>act('next',opt)
+};
+
+/* Navigation button labels active context changes as soon as state changes. */
+window.currentFlowState?.subscribe?.(()=>{
+  try{window.SukunNavigation?.sync?.()}catch(e){}
+},{immediate:false});
+})();
+</script>
+
+
+<script id="r509-session-resume-policy">
+(()=>{
+'use strict';
+if(window.SukunResumePolicy?.version==='r509')return;
+
+const KEY='sukun.resume.policy.v1';
+let state={};
+
+function load(){
+  try{
+    const x=JSON.parse(localStorage.getItem(KEY)||'{}');
+    state=x&&typeof x==='object'&&!Array.isArray(x)?x:{};
+  }catch(e){state={}}
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+}
+function rec(context){
+  const c=String(context||'zikir');
+  return state[c]||{status:'new',updatedAt:0,reason:'init',meta:{}};
+}
+function set(context,status,reason='',meta={}){
+  const c=String(context||'zikir');
+  state[c]={
+    status:/^(new|continue|completed)$/.test(status)?status:'new',
+    updatedAt:Date.now(),
+    reason:String(reason||''),
+    meta:{...meta}
+  };
+  save();
+  try{window.dispatchEvent(new CustomEvent('sukun:resumestate',{detail:{context:c,...state[c]}}))}catch(e){}
+  return state[c];
+}
+function begin(context,meta={}){return set(context,'new','begin',meta)}
+function progress(context,meta={}){return set(context,'continue','progress',meta)}
+function complete(context,meta={}){return set(context,'completed','complete',meta)}
+function reset(context,meta={}){return set(context,'new','reset',meta)}
+function status(context){return rec(context).status}
+function shouldRestore(context,snapshot=null){
+  const r=rec(context);
+  if(r.status==='completed')return false;
+  if(r.status==='new'&&r.updatedAt){
+    /* Kullanıcının açık "Baştan" kararı eski session snapshotından daha yeniyse restore etme. */
+    const snapAt=Number(snapshot?.updatedAt||snapshot?.t||0);
+    if(!snapAt||r.updatedAt>=snapAt)return false;
+  }
+  return true;
+}
+function snapshot(){return{version:'r509',contexts:{...state}}}
+
+load();
+
+window.SukunResumePolicy={
+  version:'r509',
+  begin,progress,complete,reset,status,shouldRestore,snapshot
+};
+
+/* currentFlowState üzerinden ana bağlamların devam durumunu tek yerden izle. */
+let prevContext='',prevActive=false;
+window.currentFlowState?.subscribe?.(f=>{
+  if(!f)return;
+  const c=f.context;
+  if(c==='zikir'){
+    const z=f.zikir;
+    if((z?.countRaw||0)>0||(z?.devir||0)>0||z?.auto)
+      progress('zikir',{cat:z?.cat,idx:z?.idx,count:z?.countRaw,devir:z?.devir});
+  }else if(c==='nefs'){
+    const z=f.zikir,n=f.nefs;
+    if((z?.countRaw||0)>0||(z?.devir||0)>0)
+      progress('nefs',{index:n?.index,count:z?.countRaw,devir:z?.devir});
+  }else if(c==='smart'){
+    if(f.session?.playing||f.session?.paused||f.session?.stepIndex>0)
+      progress('smart',{stepIndex:f.session?.stepIndex,stepTotal:f.session?.stepTotal});
+  }
+  prevContext=c;prevActive=!!f.active;
+},{immediate:false});
+
+/* Transaction commit is progress, not session completion: a devir may continue. */
+window.addEventListener('sukun:zikirtransaction',e=>{
+  if(e.detail?.phase==='committed'){
+    const f=window.currentFlowState?.snapshot?.();
+    const c=f?.context==='nefs'?'nefs':'zikir';
+    progress(c,{devir:f?.zikir?.devir||0});
+  }
+},{passive:true});
 })();
 </script>
 
