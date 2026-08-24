@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r506 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r507 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r506">
+<meta name="sukun-build" content="r507">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r506">
+<link rel="manifest" href="./manifest.webmanifest?v=r507">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6096,7 +6096,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.52 — build 2026-08-24-r506</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.53 — build 2026-08-24-r507</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6120,6 +6120,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r507","t":"24 Ağustos 2026","b":["Nefs Mertebeleri, Nefs Merdiveni ve Enerji Merkezleri üzerinde basamak seçerken viewport artık korunur; zikir/sayaç sahnesine otomatik kaydırma yapılmaz","Mertebe seçiminde renderZikir swap animasyonu kapatıldı; arka planda zikir state değişir fakat kullanıcının bulunduğu Nefs bölümü yerinde kalır","currentZikirState Nefs akış bağlamıyla genişletildi: basamak, zikir, taşıyıcı Hz, vuruş Hz ve frekansın çalıp çalmadığı tek state içinde taşınır","Canlı akış barının üçüncü telemetri satırı Nefs akışında örneğin 4/7 Mutmainne · Yâ Hakk · 639 Hz · 4 Hz vuruş biçiminde bilgi verir","Nefs seçimi frekansı başlattığında sayaç 0 olsa bile telemetri aktif kabul edilir; frekans/zikir bağı koparsa bar otomatik normal zikir görünümüne döner","Frekans yaşam döngüsü sukun:audiostate/playbackchange/nowplayingchange olaylarıyla state’i günceller; polling eklenmedi"]},
  {"v":"r506","t":"24 Ağustos 2026","b":["Tefekkür sayaç kartının sağında görünen Tem kalıntısının kök nedeni bulundu: r487 ortak slider componenti eski Tempo .sldRow satırını display:grid!important ile yeniden görünür kılıyordu","Canonical ownership final-authority ile düzeltildi; Tefekkür modunda .zCtl doğrudan çocuklarından yalnız #tfRefinedLayout görünür, diğer bütün legacy kontroller zorunlu olarak kapalıdır","Tempo satırı için özel kilit eklendi; control-component selectorı ileride değişse bile eski Tempo satırı Tefekkür sahnesine sızamaz","Sağ Hedef/Kalan sayaç kartlarına paint containment ve metin sınırı eklendi; kendi kutusundan text fragmenti taşıramaz","SukunCanonicalOwner tanı katmanı eklendi; Diagnostics overflow snapshotı canonical owner ihlalini de raporlar"]},
  {"v":"r505","t":"24 Ağustos 2026","b":["Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı saniyede ~9 kez iki değer arasında gidip geliyordu: iki ayrı modül aynı etikete farklı değer yazıp birbirini eziyordu. Artık daha açıklayıcı olan ad korunuyor.","Boşta duran ekranda kalan on altı gereksiz DOM yazımı giderildi (görünürlük ve etkin/pasif durumu değişmediği hâlde yeniden yazılıyordu). Altı saniyelik ölçümde 3.463 mutasyon 2.374'e indi.","Merkezî DOM yayını artık kare başına tek dağıtım yapıyor: yoğun yazım dizilerinde uyanan geri çağrı 55'ten 17'ye indi. Ekran kapalıyken rAF çalışmadığı için orada zamanlayıcıya düşülüyor — ses ve oturum katmanı durumu kaçırmıyor."]},
 {"v":"r504","t":"24 Ağustos 2026","b":["Sayfayı izleyen 12 ayrı DOM gözlemcisi tek merkezî yayına indirgendi. Tarayıcı her değişiklik için gözlemci listesini baştan sona dolaştığından, tek bir yazım 12 kayıt defterine işleniyordu; artık bir kez işleniyor ve her abone yalnız kendi istediği kaydı alıyor. Ölçüm: 300 yazımlık yükte uyanan geri çağrı 559'dan 56'ya indi.","Sekme geçiş animasyonu her geçişte bir olay dinleyicisi bırakıyordu; animasyon hiç çalışmadığında (gizli sekme, azaltılmış hareket) hiç temizlenmiyordu. On turluk ölçümde 40 birikim → 0.","Boşta duran ekranda kalan sekiz gereksiz DOM yazımı giderildi: altı saniyelik ölçümde 4.590 mutasyon 3.463'e indi."]},
@@ -10627,6 +10628,35 @@ const currentZikirState=(()=>{
     const arabic=clean(item?.ar||'');
     const meaning=clean(item?.mean||item?.serh||'');
 
+    /* r507: Nefs mertebesinden gelen zikir/frekans bağlamı.
+       Kaynak veri daha sonra kurulduğu için burada yalnız window üzerindeki
+       normalize edilmiş akış state'i okunur; NEFS sabitine doğrudan erken erişim yoktur. */
+    let nefs=null;
+    try{
+      const nf=window.__SUKUN_NEFS_FLOW_STATE__;
+      if(nf&&nf.active){
+        const frPlaying=!!FR?.playing;
+        const nfIdx=Math.max(-1,finite(nf.idx,-1));
+        const linked=clean(nf.cat||'')===canonicalCat && nfIdx===canonicalIdx;
+        nefs=Object.freeze({
+          active:true,
+          linked,
+          index:Math.max(-1,finite(nf.index,-1)),
+          position:Math.max(0,finite(nf.position,0)),
+          total:Math.max(0,finite(nf.total,0)),
+          name:clean(nf.name||''),
+          shortName:clean(nf.shortName||nf.name||''),
+          zikir:clean(nf.zikir||name),
+          cat:clean(nf.cat||canonicalCat),
+          idx:nfIdx,
+          carrier:Math.max(0,finite(nf.carrier,0)),
+          beat:Math.max(0,finite(nf.beat,0)),
+          band:clean(nf.band||''),
+          frequencyPlaying:frPlaying
+        });
+      }
+    }catch(e){}
+
     const target=Math.max(0,finite(Z.target,0));
     const countRaw=Math.max(0,finite(Z.count,0));
     const count=target>0?(countRaw%target):countRaw;
@@ -10645,13 +10675,14 @@ const currentZikirState=(()=>{
     let active=!!smart;
     try{
       active=active||!!Z.auto||
+        !!(nefs?.active&&nefs?.linked&&nefs?.frequencyPlaying)||
         document.body.classList.contains('sukun-tefekkur-mode')||
         (document.body.classList.contains('sukun-zikir-tab')&&
           (!!name&&name!=='Zikir')&&(countRaw>0||devir>0));
     }catch(e){}
 
     return Object.freeze({
-      version:'r499',
+      version:'r507',
       revision:rev+1,
       reason,
       source:smart?'smart':'direct',
@@ -10677,6 +10708,7 @@ const currentZikirState=(()=>{
       auto:!!Z.auto,
       total:Math.max(0,finite(Z.total,0)),
       kind,
+      nefs,
       session:Object.freeze({
         active:!!smart,
         playing:!!smart?.playing,
@@ -10692,7 +10724,10 @@ const currentZikirState=(()=>{
     return[
       s.source,s.active,s.cat,s.idx,s.position,s.length,s.name,s.ebced,
       s.countRaw,s.count,s.target,s.remain,s.devir,s.targetMode,s.tempo,
-      s.auto,s.total,s.session.playing,s.session.paused,s.session.stepIndex
+      s.auto,s.total,s.session.playing,s.session.paused,s.session.stepIndex,
+      s.nefs?.linked?'n1':'n0',s.nefs?.position||'',s.nefs?.name||'',
+      s.nefs?.zikir||'',s.nefs?.carrier||'',s.nefs?.beat||'',
+      s.nefs?.frequencyPlaying?'f1':'f0'
     ].join('|');
   }
 
@@ -10728,7 +10763,7 @@ const currentZikirState=(()=>{
   lastSig=signature(state);
 
   return Object.freeze({
-    version:'r499',
+    version:'r507',
     snapshot,
     refresh:publish,
     subscribe
@@ -20428,26 +20463,78 @@ function mertebeZikir(i){
     Z.cat=x.zcat; Z.idx=j;
   }
   Z.target=33; Z.count=0; Z.devir=0;
-  syncFormSeg(); ensureTargetOpt(33,'33'); renderCats(); renderZikir(); zUI();
+  /* Nefs basamağı üzerinde gezinirken zikir sahnesi yalnız state olarak güncellenir.
+     swap animasyonu ve odak hissi üretmez. */
+  syncFormSeg(); ensureTargetOpt(33,'33'); renderCats(); renderZikir(false); zUI();
   return true;
 }
 /* Çift yönlü senkron: mertebe ↔ merkez birlikte seçilir; zikir sahneye gelir,
    taşıyıcı merkezin solfeji, vuruş mertebenin bandı olur ve ses OTOMATİK başlar. */
-function mertebeApply(i){
+function mertebeApply(i,opt={}){
   if(i<0||i>=NEFS.length)return;
+
+  /* r507: Nefs/Enerji basamaklarında seçerek gezinirken viewport sabit kalır.
+     Canlı barın açılması, zikir listesi yeniden çizimi veya frekans başlangıcı
+     kullanıcıyı sayaç/zikir sahnesine taşıyamaz. */
+  const keep=!!opt.preserveScroll;
+  const anchor=keep?(opt.anchor||null):null;
+  const anchorTop=anchor?.isConnected?anchor.getBoundingClientRect().top:null;
+  const scrollTop=window.scrollY||document.documentElement.scrollTop||0;
+  const restore=()=>{
+    if(!keep)return;
+    if(anchor?.isConnected&&Number.isFinite(anchorTop)){
+      const dy=anchor.getBoundingClientRect().top-anchorTop;
+      if(Math.abs(dy)>.5)window.scrollBy(0,dy);
+    }else{
+      const y=window.scrollY||document.documentElement.scrollTop||0;
+      if(Math.abs(y-scrollTop)>.5)window.scrollTo(0,scrollTop);
+    }
+  };
+
   nefsSel=i; cakraSel=i; S.set('sukun.nefs',i);
-  mertebeZikir(i);
+  const zOk=mertebeZikir(i);
+
   stopJourney(); FR.c=CAKRA[i].fc; FR.b=NEFS[i].fb;
   if(FR.playing)frRetune(.4); else frStart();
   syncFreqUI(); saveSettings();
+
+  const x=NEFS[i];
+  window.__SUKUN_NEFS_FLOW_STATE__=Object.freeze({
+    version:'r507',
+    active:!!zOk,
+    index:i,
+    position:i+1,
+    total:NEFS.length,
+    name:x.n,
+    shortName:x.n.replace('Nefs-i ',''),
+    zikir:x.esma,
+    cat:Z.cat,
+    idx:Z.idx,
+    carrier:+FR.c||+CAKRA[i].fc||0,
+    beat:+FR.b||+x.fb||0,
+    band:x.band||'',
+    at:Date.now()
+  });
+
+  try{window.currentZikirState?.refresh('nefs-apply',true)}catch(e){}
+  try{
+    window.dispatchEvent(new CustomEvent('sukun:nefsflowchange',{
+      detail:window.__SUKUN_NEFS_FLOW_STATE__
+    }));
+  }catch(e){}
+
   nefsRender(); cakraRender(); if(typeof nefsLadderRender==='function')nefsLadderRender();
+
+  restore();
+  requestAnimationFrame(()=>{restore();requestAnimationFrame(restore)});
+  setTimeout(restore,110);
 }
 $('#nefsRows').addEventListener('click',e=>{
   const nfo=e.target.closest('[data-nfo]');
   if(nfo){ rehberOpen(+nfo.dataset.nfo); return; }
   const r=e.target.closest('[data-i]'); if(!r)return;
   celebrate(r,false);
-  mertebeApply(+r.dataset.i);
+  mertebeApply(+r.dataset.i,{preserveScroll:true,anchor:$('#nefsRows')});
 });
 
 /* Enerji merkezleri: 7 çakra + letâif frekans karşılıkları (solfej tabanlı) */
@@ -20473,7 +20560,7 @@ function cakraRender(){
 $('#cakraRows').addEventListener('click',e=>{
   const r=e.target.closest('[data-i]'); if(!r)return;
   celebrate(r,false);
-  mertebeApply(+r.dataset.i);
+  mertebeApply(+r.dataset.i,{preserveScroll:true,anchor:$('#cakraRows')});
 });
 /* Çakra dengeleme seansı — 7 merkezi frekans yolculuğu motoruyla gez.
    Görsel adımlar ses motorunun aşamalarıyla (RAMP+75 sn) senkron ilerler;
@@ -21723,7 +21810,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r506',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r507',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -22365,7 +22452,8 @@ const _fsb=$('#fatSeyriBtn'); if(_fsb)_fsb.onclick=()=>fatOpen();
 const _vdb=$('#virdDefBtn'); if(_vdb)_vdb.onclick=()=>virdOpen();
 $('#nefsLadder').addEventListener('click',e=>{
   const s=e.target.closest('[data-nl]'); if(!s)return;
-  celebrate(s,false); mertebeApply(+s.dataset.nl);
+  celebrate(s,false);
+  mertebeApply(+s.dataset.nl,{preserveScroll:true,anchor:$('#nefsLadder')});
 });
 function riyRow(ic,t,d){return '<div class="riyRow"><span class="ic">'+ic+'</span><span style="flex:1"><b>'+t+'</b><small>'+d+'</small></span></div>';}
 let KAPI=S.get('sukun.kapi7',{});
@@ -32852,7 +32940,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r506',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r507',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -45097,14 +45185,34 @@ function render(s){
   const kalan=s.target>0?String(s.remain??Math.max(0,s.target-s.count)):'∞';
   const order=s.length?`${s.position}/${s.length}`:'';
   const nm=order?`${order} · ${s.name}`:s.name;
+  const nf=(s.nefs?.active&&s.nefs?.linked)?s.nefs:null;
 
   row.dataset.active=s.active?'1':'0';
   row.dataset.near=(s.target>0&&Number.isFinite(s.remain)&&s.remain<=Math.max(10,Math.round(s.target*.1)))?'1':'0';
+  row.dataset.nefs=nf?'1':'0';
+
   $('r478Count').textContent=sayim;
   $('r478Remain').textContent=kalan;
-  $('r478Kind').textContent=s.kind;
-  $('r478Name').textContent=nm;
-  $('r478Name').title=(s.kind+' '+nm+(s.devir?` · Devir ${s.devir}`:'')).trim();
+
+  if(nf){
+    const pos=nf.total?`${nf.position}/${nf.total}`:`${nf.position}`;
+    const carrier=Number.isInteger(nf.carrier)?nf.carrier:nf.carrier.toFixed(1);
+    const beat=Number.isInteger(nf.beat)?nf.beat:nf.beat.toFixed(1);
+    const freq=nf.frequencyPlaying
+      ?`${carrier} Hz · ${beat} Hz vuruş`
+      :'frekans durdu';
+    $('r478Kind').textContent='NEFS';
+    $('r478Name').textContent=`${pos} ${nf.shortName} · ${nf.zikir} · ${freq}`;
+    $('r478Name').title=
+      `${nf.name} · Zikir: ${nf.zikir} · `+
+      (nf.frequencyPlaying
+        ?`Frekans çalıyor: ${carrier} Hz taşıyıcı · ${beat} Hz vuruş`
+        :'Frekans durdu');
+  }else{
+    $('r478Kind').textContent=s.kind;
+    $('r478Name').textContent=nm;
+    $('r478Name').title=(s.kind+' '+nm+(s.devir?` · Devir ${s.devir}`:'')).trim();
+  }
 
   const live=$('r422NowLive');
   if(live){
@@ -45118,7 +45226,7 @@ function sync(reason='dock-sync'){
 }
 
 const unsub=window.currentZikirState?.subscribe(render);
-['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:source','sukun:voicesource']
+['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:source','sukun:voicesource','sukun:nefsflowchange']
   .forEach(ev=>window.addEventListener(ev,()=>sync(ev),{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync('visibility')},{passive:true});
 window.addEventListener('pageshow',()=>sync('pageshow'),{passive:true});
@@ -45128,7 +45236,7 @@ if(document.readyState==='loading'){
 }else sync('boot');
 
 window.SukunDockTelemetry={
-  version:'r499',
+  version:'r507',
   sync,
   snapshot:()=>window.currentZikirState?.snapshot?.()||null,
   destroy:()=>unsub?.()
@@ -47384,6 +47492,63 @@ if(document.readyState==='loading'){
 }else setTimeout(check,40);
 
 window.SukunCanonicalOwner={version:'r506',snapshot:check};
+})();
+</script>
+
+
+<style id="r507-nefs-flow-style">
+/* r507 — üç satırlı canlı bar korunur; üçüncü telemetri satırının isim
+   kapsülü Nefs akışında basamak + zikir + frekansı tek kompakt metinde taşır. */
+#r478DockStats[data-nefs="1"] .r478Name{
+  border-color:color-mix(in srgb,var(--gold) 26%,var(--line))!important;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--gold) 7%,rgba(255,255,255,.025)),rgba(255,255,255,.018))!important;
+}
+#r478DockStats[data-nefs="1"] .r478Name>b{
+  color:color-mix(in srgb,var(--goldh) 92%,var(--text))!important;
+}
+#r478DockStats[data-nefs="1"] .r478Name>i{
+  color:color-mix(in srgb,var(--gold) 82%,var(--mut))!important;
+}
+body.r447-dock-mini #r478DockStats[data-nefs="1"] .r478Name>b{
+  font-size:8.2px!important;
+  letter-spacing:0!important;
+}
+</style>
+
+
+<script id="r507-nefs-flow-lifecycle">
+(()=>{
+'use strict';
+if(window.__SUKUN_R507_NEFS_FLOW__)return;
+window.__SUKUN_R507_NEFS_FLOW__=1;
+
+const refresh=reason=>{
+  try{window.currentZikirState?.refresh(reason,true)}catch(e){}
+  try{
+    window.dispatchEvent(new CustomEvent('sukun:nefsflowchange',{
+      detail:window.__SUKUN_NEFS_FLOW_STATE__||null
+    }));
+  }catch(e){}
+};
+
+/* Var olan ses zincirini değiştirmeden yalnız sonuca abone ol. */
+['sukun:audiostate','sukun:playbackchange','sukun:nowplayingchange']
+  .forEach(ev=>window.addEventListener(ev,()=>refresh('nefs-'+ev),{passive:true}));
+
+document.addEventListener('input',e=>{
+  if(e.target?.matches?.('#carrier,#beat,#frCar,#frBeat,#frVol,[data-r434-beat]')){
+    /* Kullanıcı Nefs seçiminden sonra frekansı elle değiştirirse seçili mertebe
+       etiketi kalır, fakat canlı state gerçek FR değerini bir sonraki refresh'te okur. */
+    setTimeout(()=>refresh('nefs-frequency-input'),0);
+  }
+},{passive:true});
+
+window.SukunNefsFlow={
+  version:'r507',
+  snapshot:()=>window.__SUKUN_NEFS_FLOW_STATE__||null,
+  refresh
+};
 })();
 </script>
 
