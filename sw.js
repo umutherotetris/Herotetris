@@ -1,8 +1,8 @@
-/* SÜKÛN r505 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r506 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r505';
-const CACHE = 'sukun-r505-20260824a';
+const SURUM = 'r506';
+const CACHE = 'sukun-r506-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r506 Tefekkür canonical owner fix: r487 slider standardının yeniden görünür kıldığı eski Tempo satırı kesin kapatıldı; Tem kalıntısı kökten giderildi.',
   'r505 Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı iki modül arasında saniyede ~9 kez gidip geliyordu; çekişme giderildi.',
   'r505 Boştaki gereksiz DOM yazımı 3.463 → 2.374 (on altı koşulsuz görünürlük/etkinlik yazımı).',
   'r505 Merkezî DOM yayını kare başına tek dağıtıma indirildi (yoğun yükte geri çağrı 55 → 17); ekran kapalıyken zamanlayıcı yedeği devrede.',

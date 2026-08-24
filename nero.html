@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r505 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r506 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r505">
+<meta name="sukun-build" content="r506">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r505">
+<link rel="manifest" href="./manifest.webmanifest?v=r506">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6096,7 +6096,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.51 — build 2026-08-24-r505</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.52 — build 2026-08-24-r506</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6120,6 +6120,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r506","t":"24 Ağustos 2026","b":["Tefekkür sayaç kartının sağında görünen Tem kalıntısının kök nedeni bulundu: r487 ortak slider componenti eski Tempo .sldRow satırını display:grid!important ile yeniden görünür kılıyordu","Canonical ownership final-authority ile düzeltildi; Tefekkür modunda .zCtl doğrudan çocuklarından yalnız #tfRefinedLayout görünür, diğer bütün legacy kontroller zorunlu olarak kapalıdır","Tempo satırı için özel kilit eklendi; control-component selectorı ileride değişse bile eski Tempo satırı Tefekkür sahnesine sızamaz","Sağ Hedef/Kalan sayaç kartlarına paint containment ve metin sınırı eklendi; kendi kutusundan text fragmenti taşıramaz","SukunCanonicalOwner tanı katmanı eklendi; Diagnostics overflow snapshotı canonical owner ihlalini de raporlar"]},
  {"v":"r505","t":"24 Ağustos 2026","b":["Oynatıcı ileri/geri düğmelerinin ekran okuyucu adı saniyede ~9 kez iki değer arasında gidip geliyordu: iki ayrı modül aynı etikete farklı değer yazıp birbirini eziyordu. Artık daha açıklayıcı olan ad korunuyor.","Boşta duran ekranda kalan on altı gereksiz DOM yazımı giderildi (görünürlük ve etkin/pasif durumu değişmediği hâlde yeniden yazılıyordu). Altı saniyelik ölçümde 3.463 mutasyon 2.374'e indi.","Merkezî DOM yayını artık kare başına tek dağıtım yapıyor: yoğun yazım dizilerinde uyanan geri çağrı 55'ten 17'ye indi. Ekran kapalıyken rAF çalışmadığı için orada zamanlayıcıya düşülüyor — ses ve oturum katmanı durumu kaçırmıyor."]},
 {"v":"r504","t":"24 Ağustos 2026","b":["Sayfayı izleyen 12 ayrı DOM gözlemcisi tek merkezî yayına indirgendi. Tarayıcı her değişiklik için gözlemci listesini baştan sona dolaştığından, tek bir yazım 12 kayıt defterine işleniyordu; artık bir kez işleniyor ve her abone yalnız kendi istediği kaydı alıyor. Ölçüm: 300 yazımlık yükte uyanan geri çağrı 559'dan 56'ya indi.","Sekme geçiş animasyonu her geçişte bir olay dinleyicisi bırakıyordu; animasyon hiç çalışmadığında (gizli sekme, azaltılmış hareket) hiç temizlenmiyordu. On turluk ölçümde 40 birikim → 0.","Boşta duran ekranda kalan sekiz gereksiz DOM yazımı giderildi: altı saniyelik ölçümde 4.590 mutasyon 3.463'e indi."]},
 {"v":"r503","t":"24 Ağustos 2026","b":["Yedek dosyası geri yüklenirken değer içeriği de denetleniyor: kontrol karakteri taşıyan veya bozuk/yarım JSON içeren kayıtlar atlanıyor. Düz metin saklayan ayarlar bundan etkilenmiyor.","Kod içinde \u201Cesc\u201D adı yedi ayrı yerde kullanılıyordu; beşi HTML kaçışı, ikisi klavye işleyicisiydi. Aynı ad iki farklı anlama geldiği için ileride sessiz bir güvenlik açığına dönüşebilirdi — klavye işleyicileri ayrı adlandırıldı."]},
@@ -21722,7 +21723,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r505',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r506',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32851,7 +32852,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r505',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r506',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -47227,6 +47228,162 @@ window.SukunOverflowDebug={
   if(document.readyState==='complete')setTimeout(tur,ADIMLAR[0]);
   else window.addEventListener('load',()=>setTimeout(tur,ADIMLAR[0]),{once:true});
   window.SukunSaglikBak=()=>bak(true);
+})();
+</script>
+
+
+<style id="r506-canonical-owner-overflow-fix">
+/* ═══════════════════════════════════════════════════════════════
+   r506 — TEFEKKÜR CANONICAL OWNER GUARD
+   Kök neden: r487 slider standardı eski .zCtl > .sldRow'u display:grid
+   ile yeniden görünür kılıyordu. Sağdaki “Tem” parçası bu Tempo satırıydı.
+   Tefekkürde .zCtl'nin TEK görünür doğrudan çocuğu #tfRefinedLayout'tur.
+   ═══════════════════════════════════════════════════════════════ */
+
+body.r485-controls.sukun-tefekkur-mode .card.zCtl > :not(#tfRefinedLayout),
+body.r485-controls.sukun-tefekkur-mode .zCtl > :not(#tfRefinedLayout){
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  max-width:0!important;
+  max-height:0!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+
+/* Canonical root daima tek görünür owner. */
+body.r485-controls.sukun-tefekkur-mode .card.zCtl > #tfRefinedLayout,
+body.r485-controls.sukun-tefekkur-mode .zCtl > #tfRefinedLayout{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  min-width:0!important;
+  min-height:0!important;
+}
+
+/* Özellikle kök neden olan Tempo satırını ayrıca kilitle.
+   Gelecekte control-component selectorı değişse bile geri gelemez. */
+body.r485-controls.sukun-tefekkur-mode .card.zCtl > .sldRow,
+body.r485-controls.sukun-tefekkur-mode .card.zCtl > .sk-control--slider,
+body.r485-controls.sukun-tefekkur-mode .card.zCtl > .sldRow.sk-control--slider{
+  display:none!important;
+}
+
+/* Sayaç satırı ve canonical görsel panel kendi sınırında kalır. */
+body.sukun-tefekkur-mode #tfRefinedLayout,
+body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel,
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterRow{
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel{
+  overflow:hidden!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterRow{
+  overflow:visible!important; /* halka/sayaç çizgileri kesilmesin */
+}
+
+/* Sağ sayaç kartındaki metin kendi kutusundan dışarı çıkamaz. */
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{
+  overflow:hidden!important;
+  contain:paint!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide > *{
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* r501 overflow debug raporunda bu invariant ayrıca okunabilir olsun. */
+body.sukun-tefekkur-mode .card.zCtl{
+  --sukun-canonical-owner:"tfRefinedLayout";
+}
+</style>
+
+
+<script id="r506-canonical-owner-guard">
+(()=>{
+'use strict';
+if(window.__SUKUN_R506_CANONICAL_OWNER__)return;
+window.__SUKUN_R506_CANONICAL_OWNER__=1;
+
+function snapshot(){
+  const ctl=document.querySelector('.card.zCtl');
+  const root=document.getElementById('tfRefinedLayout');
+  if(!ctl)return{version:'r506',mode:false,ok:true,legacyVisible:[]};
+
+  const mode=document.body.classList.contains('sukun-tefekkur-mode');
+  const legacy=[...ctl.children].filter(el=>el!==root);
+  const visible=mode?legacy.filter(el=>{
+    const cs=getComputedStyle(el);
+    const r=el.getBoundingClientRect();
+    return cs.display!=='none'&&cs.visibility!=='hidden'&&parseFloat(cs.opacity||'1')>.02&&r.width>1&&r.height>1;
+  }):[];
+
+  return{
+    version:'r506',
+    mode,
+    ok:!mode||visible.length===0,
+    owner:root?'#tfRefinedLayout':null,
+    legacyVisible:visible.map(el=>({
+      id:el.id||'',
+      className:typeof el.className==='string'?el.className:'',
+      text:(el.textContent||'').replace(/\s+/g,' ').trim().slice(0,80)
+    }))
+  };
+}
+
+/* Overflow Diagnostics çıktısına canonical-owner durumu ekle. */
+const patchDiagnostics=()=>{
+  try{
+    const old=window.SukunOverflowDebug;
+    if(!old||old.__r506Patched)return;
+    const oldSnapshot=old.snapshot?.bind(old);
+    if(typeof oldSnapshot==='function'){
+      old.snapshot=()=>{
+        const s=oldSnapshot()||{};
+        return{...s,canonicalOwner:snapshot()};
+      };
+    }
+    old.__r506Patched=true;
+  }catch(e){}
+};
+
+function check(){
+  const s=snapshot();
+  if(s.mode&&!s.ok){
+    console.warn('[SÜKÛN r506] canonical Tefekkür owner ihlali',s.legacyVisible);
+  }
+  patchDiagnostics();
+  return s;
+}
+
+['sukun:zikirnav','sukun:zikirrestart','sukun:playbackchange']
+  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(check),{passive:true}));
+
+const bodyObs=new MutationObserver(ms=>{
+  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
+    requestAnimationFrame(check);
+  }
+});
+if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(check,80),{once:true});
+}else setTimeout(check,40);
+
+window.SukunCanonicalOwner={version:'r506',snapshot:check};
 })();
 </script>
 
