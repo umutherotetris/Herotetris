@@ -1,8 +1,8 @@
-/* SÜKÛN r489 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r491 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r489';
-const CACHE = 'sukun-r489-20260824b';
+const SURUM = 'r491';
+const CACHE = 'sukun-r491-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r491 Restart tek component: ana sayaç + Tefekkür + mini/midi bar aynı davranış ve aynı görsel bileşen; legacy proxy yok.',
   'r489 Açılış kurtarma: navigation network-first; eski kırık shell cache artık query parametresini yutmaz. r488 global boot observer kaldırıldı.',
   'r488 Zikri baştan başlat: ana sayaç + Tefekkür + universal bar; session memory yeni sıfır konumuyla güncellenir.',
   'r487 Kontrol renkleri tema-native: toggle, slider ve info vurguları aktif tema --gold/--goldh/--teal tokenlarından türetiliyor.',

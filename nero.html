@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r489 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r491 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r489">
+<meta name="sukun-build" content="r491">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r489">
+<link rel="manifest" href="./manifest.webmanifest?v=r491">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5666,7 +5666,7 @@ body[data-focus="1"] .zCtl{
         <button class="btn zAutoMain" id="autoBtn" data-tip="Sayacı kendiliğinden ilerletir; tempoyu yukarıdaki kaydırıcı belirler. Elin boşta kalır, nefese odaklanırsın.">▷ <b>SAYMAYA BAŞLA</b><small>(Tekrar artar)</small></button>
         <button class="zStepBtn" id="plusBtn" aria-label="Bir zikir ekle" data-tip="Sayacı bir artırır; manuel tesbih için kullanabilirsin."><b>+1</b><span>EKLE</span></button>
       </div>
-      <button class="zResetMini r488RestartMain" id="resetBtn" data-tip="Bu zikri sıfırdan başlatır. Seçili zikir, hedef, tempo ve toplam istatistik korunur.">↺ Baştan başlat</button>
+      <button class="zResetMini" id="resetBtn" data-tip="Bu zikri sıfırdan başlatır. Seçili zikir, hedef, tempo ve toplam istatistik korunur.">↺ Baştan başlat</button>
       <details class="jEd" id="niyetBox" style="margin-top:10px">
         <summary><span class="ico" data-ico="hands"></span> Niyet Zikri — «İlâhî ente maksûdî ve rıdâke matlûbî»</summary>
         <div class="niyetCard">
@@ -5976,7 +5976,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.38 — build 2026-08-24-r489</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.40 — build 2026-08-24-r491</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6000,6 +6000,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r491","t":"24 Ağustos 2026","b":["Restart sistemi tamamen tekilleştirildi: ana sayaç, canonical Tefekkür ve mini/midi universal bar aynı SukunZikirRestart.restart() davranışını ve aynı sukun-restart-component görsel bileşenini kullanır","r488’deki üç ayrı ensureMain/ensureTef/ensureDock buton yaklaşımı kaldırıldı; r490’daki legacy butona click proxy köprüsü bu sürüme taşınmadı","Ana sayaçtaki mevcut resetBtn gerçek component instance olarak Saymaya Başla kontrol satırının hemen altına fiziksel olarak taşınır; ayarlar bölümünde ikinci kopya kalmaz","Tefekkür sahnesinde aynı component zCounterActions yani Saymaya Başla satırının hemen altına mount edilir; Tefekkürden Çık üstte bağımsız kalır","Universal bar mini/midi görünümde aynı componentin compact varyantını kullanır; Akıllı Seans zikir adımında yalnız o adımı, normal zikrde count/deviri baştan başlatır","Restart otomatik akış açıksa sesi güvenli kesip count/devir 0 yaptıktan sonra aynı zikri yeniden otomatik başlatır; hedef, tempo, seçili zikir ve ömür boyu toplam korunur","Session memory eski ilerlemeyi geri getirmesin diye restart anında temizlenip sıfır konumu yeniden kaydedilir; bounded/event-driven mount kullanılır ve document subtree observer yoktur"]},
  {"v":"r489","t":"24 Ağustos 2026","b":["Açılışı kilitleyebilen r488 restart boot MutationObserver kaldırıldı; document subtree artık sınırsız izlenmiyor","Restart kontrolleri 40/220/800/1800/3600 ms bounded bağlama denemeleri ve mevcut playback/body olaylarıyla kuruluyor; sürekli DOM taraması yok","Service Worker navigasyonu cache-first yerine network-first yapıldı; yeni nero.html varsa ilk açılışta doğrudan yeni sürüm gelir","Eski worker ignoreSearch cache davranışı nedeniyle ?v= query parametresinin kırık HTML cache’ini aşamaması düzeltildi; ağ başarısızsa cache fallback korunur","Yeni cache adı r489 ve activate temizliği ile eski r488 shell cache’i kaldırılır","Açılış error/unhandledrejection bilgisi yalnız sessionStorage’a tanısal olarak yazılır; kullanıcı akışına müdahale etmez"]},
  {"v":"r488","t":"24 Ağustos 2026","b":["Mevcut zikri sıfırdan başlatmak için tek restart motoru eklendi; seçili zikir, hedef, tempo, form ve ömür boyu toplam istatistik korunurken count/devir sıfırlanır","Ana Zikir Sayaç alanındaki eski Sayacı sıfırla kontrolü Baştan başlat olarak yenilendi ve canonical restart motoruna bağlandı","Canonical Tefekkür görünümünde Tefekkürden Çık düğmesinin yanına kompakt ↺ Baştan kontrolü eklendi; eski gizli r442 katmanı kullanılmıyor","Universal bar başlığına yalnız zikir bağlamında görünen ↺ Baştan kontrolü eklendi; mini/midi görünümde CANLI rozetiyle çakışmayacak şekilde yerleştirildi","Otomatik zikir çalışıyorsa restart mevcut zikir sesini güvenli biçimde durdurur, count/devir 0 yapar ve aynı zikri otomatik olarak yeniden başlatır; otomatik kapalıysa 0 konumunda bekler","Kaldığın yer session snapshotı restart anında temizlenip yeni 0 konumuyla tekrar yazılır; sayfa yeniden açıldığında eski 417/3 gibi durum geri yüklenmez","Akıllı Seans barında zikir adımı çalıyorsa bar restartı yalnız mevcut zikir adımını 1. tekrardan yeniden başlatır; tüm seans kuyruğunu sıfırlamaz"]},
  {"v":"r487","t":"23 Ağustos 2026","b":["Toggle açık durumundaki sabit açık mavi/mor/cyan renkler kaldırıldı; ray, knob, border ve glow aktif temanın --gold/--goldh/--teal değişkenlerinden canlı türetiliyor","Tema değiştirildiği anda toggle renkleri ek JS çalışmadan CSS değişkenleri üzerinden otomatik güncellenir","Slider dolgu ve thumb renkleri de aynı tema tokenlarına bağlandı; component sistemi artık sadece geometrik değil renk açısından da tek otorite","Info düğmelerindeki sabit mavi karışımı kaldırıldı ve tema vurgusuna bağlandı","Kapalı toggle nötr kalır ancak knob tonu yine temanın ivory/muted renk ailesinden türetilir; açık durumda neon ışıltı tema karakterini taşır"]},
@@ -21369,7 +21370,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r489',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r491',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -32465,7 +32466,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r489',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r491',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -45190,442 +45191,6 @@ window.SukunControls={version:'r487',normalize,refresh:()=>normalize(document)};
 </script>
 
 
-<style id="r488-zikir-restart-style">
-/* ═══════════════════════════════════════════════════════════════
-   r488 — ZİKRİ BAŞTAN BAŞLAT
-   Tek davranış, üç yüzey:
-   1) ana zikir sayacı
-   2) canonical Tefekkür
-   3) universal bar
-   ═══════════════════════════════════════════════════════════════ */
-
-#resetBtn.r488RestartMain{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:max-content!important;
-  min-width:126px!important;
-  min-height:34px!important;
-  margin:10px auto 2px!important;
-  padding:7px 14px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 23%,var(--line))!important;
-  border-radius:999px!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.009)),
-    color-mix(in srgb,var(--gold) 4%,rgba(var(--girdiK),.50))!important;
-  color:color-mix(in srgb,var(--goldh) 76%,var(--mut))!important;
-  text-decoration:none!important;
-  font:700 10.5px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.035em!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
-}
-
-/* Tefekkür: Çık + Baştan aynı sakin üst eylem satırında. */
-body.sukun-tefekkur-mode #tfRefinedLayout .tfExitWrap{
-  gap:7px!important;
-  padding-inline:4px!important;
-}
-body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
-  width:min(44vw,154px)!important;
-  margin:0!important;
-}
-body.sukun-tefekkur-mode #r488TefRestart{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:min(31vw,96px)!important;
-  height:29px!important;
-  min-height:29px!important;
-  max-height:29px!important;
-  margin:0!important;
-  padding:0 10px!important;
-  border-radius:999px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 28%,rgba(255,255,255,.08))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.024),rgba(255,255,255,.006)),
-    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.38))!important;
-  color:color-mix(in srgb,var(--goldh) 78%,var(--ivory))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 0 10px color-mix(in srgb,var(--gold) 6%,transparent)!important;
-  font:700 7.5px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.065em!important;
-  white-space:nowrap!important;
-  animation:none!important;
-  transform:none!important;
-}
-
-/* Universal bar: CANLI'yı küçük tut, Baştan hemen yanında dursun. */
-#r170Now.r488-restart-visible #r422NowHead{
-  padding-right:108px!important;
-}
-#r170Now.r488-restart-visible #r422NowLive{
-  right:58px!important;
-}
-#r488DockRestart{
-  display:none;
-  position:absolute!important;
-  right:0!important;
-  top:-1px!important;
-  z-index:3!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:54px!important;
-  min-width:54px!important;
-  max-width:54px!important;
-  height:21px!important;
-  min-height:21px!important;
-  max-height:21px!important;
-  padding:0 6px!important;
-  border-radius:999px!important;
-  border:1px solid color-mix(in srgb,var(--gold) 26%,var(--line))!important;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.026),rgba(255,255,255,.008)),
-    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.50))!important;
-  color:color-mix(in srgb,var(--goldh) 82%,var(--ivory))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
-  font:750 6.9px/1 "Figtree",system-ui,sans-serif!important;
-  letter-spacing:.035em!important;
-  white-space:nowrap!important;
-}
-#r170Now.r488-restart-visible #r488DockRestart{
-  display:inline-flex!important;
-}
-
-/* Press feedback only; no autonomous pulse. */
-#resetBtn.r488RestartMain:active,
-#r488TefRestart:active,
-#r488DockRestart:active{
-  transform:scale(.97)!important;
-}
-#resetBtn.r488RestartMain:focus-visible,
-#r488TefRestart:focus-visible,
-#r488DockRestart:focus-visible{
-  outline:2px solid color-mix(in srgb,var(--goldh) 42%,transparent)!important;
-  outline-offset:2px!important;
-}
-
-/* Calm mode: first tap wakes controls as before; no special animation. */
-body.sukun-tefekkur-mode.r447-focus-calm #r488TefRestart{
-  pointer-events:none!important;
-}
-
-@media(max-width:390px){
-  body.sukun-tefekkur-mode #tfRefinedLayout .tfExitWrap{gap:5px!important}
-  body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
-    width:min(48vw,148px)!important;
-  }
-  body.sukun-tefekkur-mode #r488TefRestart{
-    width:min(30vw,88px)!important;
-    padding-inline:7px!important;
-    font-size:7px!important;
-  }
-  #r170Now.r488-restart-visible #r422NowHead{
-    padding-right:102px!important;
-  }
-  #r170Now.r488-restart-visible #r422NowLive{
-    right:55px!important;
-  }
-  #r488DockRestart{
-    width:51px!important;
-    min-width:51px!important;
-    max-width:51px!important;
-    font-size:6.5px!important;
-    padding-inline:5px!important;
-  }
-}
-
-@media(prefers-reduced-motion:reduce){
-  #resetBtn.r488RestartMain,
-  #r488TefRestart,
-  #r488DockRestart{transition:none!important}
-}
-</style>
-
-
-<script id="r488-zikir-restart-runtime">
-(()=>{
-'use strict';
-if(window.__SUKUN_R488_ZIKIR_RESTART__)return;
-window.__SUKUN_R488_ZIKIR_RESTART__=1;
-
-const $=id=>document.getElementById(id);
-let busy=false;
-
-function directTitle(){
-  try{
-    return (($('zTr')?.textContent||ZIKIR?.[Z.cat]?.items?.[Z.idx]?.tr||'Zikir')+'').trim();
-  }catch(e){return'Zikir'}
-}
-
-function smartStep(){
-  try{
-    const P=window.R170?.Player;
-    const s=P?.queue?.[P.i];
-    return P&&s?.type==='zikir'&&(P.playing||P.paused)?{P,s}:null;
-  }catch(e){return null}
-}
-
-function dockOwner(){
-  try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e){return'none'}
-}
-
-function directContext(){
-  try{
-    if(document.body.classList.contains('sukun-tefekkur-mode'))return true;
-    if(Z?.auto)return true;
-    const snap=window.SukunDockTelemetry?.snapshot?.();
-    if(snap?.active)return true;
-    return document.body.classList.contains('sukun-zikir-tab')&&((+Z?.count||0)>0||(+Z?.devir||0)>0);
-  }catch(e){return false}
-}
-
-function stopDirectVoice(){
-  /* Zikrin kendi sesini kapat; ambiyans/frekans katmanlarına dokunma. */
-  try{if(typeof _zSesSeq!=='undefined')_zSesSeq++}catch(e){}
-  try{window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;window.__SUKUN_ZIKIR_VOICE_BUSY__=false}catch(e){}
-  try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}
-  try{if(typeof sesDurdur==='function')sesDurdur('zikir-restart')}catch(e){}
-  try{if(typeof r476Stop==='function')r476Stop(true)}catch(e){}
-}
-
-function clearTransientState(){
-  try{window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null}catch(e){}
-  try{window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false}catch(e){}
-  try{window.__SUKUN_NIYET_GATE_PROMISE__=null}catch(e){}
-  try{window.__SUKUN_NIYET_AUDIO_PROMISE__=null}catch(e){}
-  try{if(typeof _r485NiyetDoneKey!=='undefined')_r485NiyetDoneKey=''}catch(e){}
-  try{if(typeof _r485NiyetGateKey!=='undefined')_r485NiyetGateKey=''}catch(e){}
-  try{if(typeof _zAutoSon!=='undefined')_zAutoSon=0}catch(e){}
-}
-
-function syncSpecialJourneys(){
-  try{
-    if(typeof HATIM!=='undefined'&&HATIM?.active&&Z.cat==='esma'&&Z.idx===HATIM.idx){
-      HATIM.count=0;
-      if(typeof hatSave==='function')hatSave();
-      if(typeof hatUI==='function')hatUI();
-    }
-  }catch(e){}
-  try{
-    if(typeof LTF!=='undefined'&&LTF?.active&&Z.cat==='temel'&&Z.idx===0){
-      LTF.count=0;
-      if(typeof ltfSave==='function')ltfSave();
-      if(typeof ltfUI==='function')ltfUI();
-    }
-  }catch(e){}
-}
-
-function saveFreshState(){
-  try{
-    /* Eski "kaldığın yer" snapshot'ı bir daha 417/3 gibi geri gelmesin. */
-    window.SukunSessionMemory?.clear?.();
-    window.SukunSessionMemory?.save?.();
-  }catch(e){}
-  try{if(typeof S!=='undefined')S.set('sukun.total',Z.total)}catch(e){}
-}
-
-async function restartDirect(source){
-  if(typeof Z==='undefined')return false;
-  const wasAuto=!!Z.auto;
-
-  if(wasAuto){
-    try{autoStop()}catch(e){try{Z.auto=false}catch(_){}}
-  }
-  stopDirectVoice();
-  clearTransientState();
-
-  /* "Baştan" yalnız mevcut zikrin oturum sayacını sıfırlar.
-     Seçili zikir/hedef/tempo/form ve ömür boyu toplam korunur. */
-  Z.count=0;
-  Z.devir=0;
-  syncSpecialJourneys();
-
-  try{zUI()}catch(e){}
-  saveFreshState();
-
-  try{
-    window.dispatchEvent(new CustomEvent('sukun:zikirrestart',{
-      detail:{source:source||'unknown',title:directTitle(),auto:wasAuto}
-    }));
-  }catch(e){}
-
-  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
-  try{window.SukunLayoutEngine?.schedule?.()}catch(e){}
-
-  if(wasAuto){
-    /* autoStart'ın double-tap kilidi restartı yanlışlıkla engellemesin. */
-    try{if(typeof _r477AutoStarting!=='undefined')_r477AutoStarting=false}catch(e){}
-    await new Promise(r=>setTimeout(r,120));
-    try{autoStart()}catch(e){}
-    setTimeout(saveFreshState,180);
-  }
-
-  try{
-    if(typeof toast==='function')toast(wasAuto?'↺ Zikir baştan başladı':'↺ Zikir sıfırlandı');
-  }catch(e){}
-  return true;
-}
-
-async function restartSmart(){
-  const cur=smartStep();
-  if(!cur)return false;
-  const {P}=cur;
-  const wasPlaying=!!P.playing;
-
-  /* Player.pause() token'ı iptal eder ve o adımın kayıt/TTS'sini kapatır.
-     i değişmediği için sonraki play() aynı zikir adımını 1. tekrardan açar. */
-  try{P.pause()}catch(e){return false}
-  try{P.stepStarted=0;P.save?.()}catch(e){}
-
-  if(wasPlaying){
-    await new Promise(r=>setTimeout(r,90));
-    try{P.play()}catch(e){}
-  }
-  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
-  try{if(typeof toast==='function')toast('↺ Bu zikir adımı baştan başladı')}catch(e){}
-  return true;
-}
-
-async function restart(opt={}){
-  if(busy)return false;
-  busy=true;
-  try{
-    if(opt.source==='dock'&&dockOwner()==='smart'&&smartStep()){
-      return await restartSmart();
-    }
-    return await restartDirect(opt.source);
-  }finally{
-    setTimeout(()=>{busy=false},180);
-  }
-}
-
-function ensureMain(){
-  const b=$('resetBtn');
-  if(!b)return false;
-  b.classList.add('r488RestartMain');
-  b.textContent='↺ Baştan başlat';
-  b.setAttribute('aria-label','Bu zikri sıfırdan başlat');
-  b.title='Bu zikri sıfırdan başlat · hedef ve toplam istatistik korunur';
-  return true;
-}
-
-function ensureTef(){
-  const wrap=document.querySelector('#tfRefinedLayout .tfExitWrap');
-  if(!wrap)return false;
-  let b=$('r488TefRestart');
-  if(!b){
-    b=document.createElement('button');
-    b.id='r488TefRestart';
-    b.type='button';
-    b.textContent='↺ Baştan';
-    b.setAttribute('aria-label','Tefekkürdeki zikri sıfırdan başlat');
-    b.title='Bu zikri sıfırdan başlat';
-    b.addEventListener('click',e=>{
-      e.preventDefault();e.stopPropagation();
-      restart({source:'tefekkur'});
-    });
-  }
-  if(b.parentNode!==wrap)wrap.appendChild(b);
-  const exit=$('tefExitBtn');
-  if(exit&&wrap.firstElementChild!==exit)wrap.prepend(exit);
-  return true;
-}
-
-function ensureDock(){
-  const head=$('r422NowHead');
-  if(!head)return false;
-  let b=$('r488DockRestart');
-  if(!b){
-    b=document.createElement('button');
-    b.id='r488DockRestart';
-    b.type='button';
-    b.textContent='↺ Baştan';
-    b.setAttribute('aria-label','Çalan zikri baştan başlat');
-    b.title='Çalan zikri baştan başlat';
-    b.addEventListener('click',e=>{
-      e.preventDefault();e.stopPropagation();
-      restart({source:'dock'});
-    });
-  }
-  if(b.parentNode!==head)head.appendChild(b);
-  return true;
-}
-
-function syncDock(){
-  const now=$('r170Now');
-  if(!now)return;
-  ensureDock();
-  let show=false;
-  if(dockOwner()==='smart')show=!!smartStep();
-  else show=directContext();
-  now.classList.toggle('r488-restart-visible',!!show);
-  const b=$('r488DockRestart');
-  if(b)b.hidden=!show;
-}
-
-function sync(){
-  ensureMain();
-  if(document.body.classList.contains('sukun-tefekkur-mode'))ensureTef();
-  syncDock();
-}
-
-const bodyObs=new MutationObserver(ms=>{
-  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
-    requestAnimationFrame(sync);
-  }
-});
-if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
-
-['sukun:playbackchange','sukun:nowplayingchange','sukun:smartphase','sukun:zikirrestart']
-  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
-
-document.addEventListener('click',e=>{
-  if(e.target.closest?.('#autoBtn,#plusBtn,#undoBtn,#r170Prev,#r170Play,#r170Next,#r170Stop,[data-i],#zList')){
-    setTimeout(sync,40);
-  }
-},{passive:true});
-
-/* r489 — Açılışta tüm document subtree'sini sonsuza dek gözlemleme.
-   Dock henüz yaratılmadıysa r488 observer'ı uygulamanın yoğun DOM akışını
-   sürekli tarayabiliyor ve bazı telefonlarda ilk açılışı kilitleyebiliyordu.
-   Bunun yerine yalnız birkaç bounded deneme + zaten var olan playback/body
-   olayları kullanılır. */
-let _r489BootTimers=[];
-function r489BootSync(){
-  try{sync()}catch(e){}
-}
-function r489ScheduleBoot(){
-  _r489BootTimers.forEach(clearTimeout);
-  _r489BootTimers=[
-    setTimeout(r489BootSync,40),
-    setTimeout(r489BootSync,220),
-    setTimeout(r489BootSync,800),
-    setTimeout(r489BootSync,1800),
-    setTimeout(r489BootSync,3600)
-  ];
-}
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',r489ScheduleBoot,{once:true});
-}else{
-  r489ScheduleBoot();
-}
-
-window.SukunZikirRestart={
-  version:'r489',
-  restart,
-  sync,
-  state:()=>({
-    busy,
-    direct:directContext(),
-    smart:!!smartStep(),
-    owner:dockOwner()
-  })
-};
-})();
-</script>
-
-
 <script id="r489-startup-guard">
 (()=>{
   'use strict';
@@ -45644,6 +45209,492 @@ window.SukunZikirRestart={
       }catch(_){}
     },{passive:true});
   }catch(e){}
+})();
+</script>
+
+
+<style id="r491-restart-component-style">
+/* ═══════════════════════════════════════════════════════════════
+   r491 — SÜKÛN RESTART COMPONENT
+   ONE behavior + ONE visual component + THREE surfaces
+   main counter / Tefekkür / mini-midi universal bar
+   ═══════════════════════════════════════════════════════════════ */
+
+.sukun-restart-component{
+  --rr-h:34px;
+  --rr-px:14px;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  box-sizing:border-box!important;
+  min-height:var(--rr-h)!important;
+  height:var(--rr-h)!important;
+  padding:0 var(--rr-px)!important;
+  margin:0!important;
+  border-radius:999px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 28%,var(--line))!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),
+    color-mix(in srgb,var(--gold) 5%,rgba(var(--girdiK),.54))!important;
+  color:color-mix(in srgb,var(--goldh) 84%,var(--ivory))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 0 10px color-mix(in srgb,var(--gold) 7%,transparent)!important;
+  font:720 10px/1 "Figtree",system-ui,sans-serif!important;
+  letter-spacing:.035em!important;
+  white-space:nowrap!important;
+  text-decoration:none!important;
+  animation:none!important;
+  transform:none!important;
+  cursor:pointer!important;
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease,
+    transform .16s ease!important;
+}
+.sukun-restart-component .rrIcon{
+  font-size:13px!important;
+  line-height:1!important;
+  opacity:.92!important;
+}
+.sukun-restart-component .rrLabel{
+  line-height:1!important;
+}
+.sukun-restart-component:hover{
+  border-color:color-mix(in srgb,var(--goldh) 42%,var(--line))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 0 12px color-mix(in srgb,var(--goldh) 12%,transparent)!important;
+}
+.sukun-restart-component:active{
+  transform:scale(.97)!important;
+}
+.sukun-restart-component:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--goldh) 40%,transparent)!important;
+  outline-offset:2px!important;
+}
+
+/* MAIN + TEFEKKÜR: always immediately under the central Saymaya Başla row. */
+.r491RestartSlot{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:8px auto 0!important;
+  padding:0!important;
+}
+.r491RestartSlot[hidden]{display:none!important}
+.r491RestartSlot .sukun-restart-component{
+  min-width:146px!important;
+}
+
+/* Existing resetBtn has old zResetMini styles; component authority wins. */
+#resetBtn.sukun-restart-component{
+  position:static!important;
+  inset:auto!important;
+  width:auto!important;
+  max-width:min(78vw,220px)!important;
+}
+
+/* Tefekkür canonical primary controls: row, then restart directly below. */
+body.sukun-tefekkur-mode #tfRefinedLayout .tfPrimaryControls .r491RestartSlot{
+  margin-top:8px!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout .sukun-restart-component[data-surface="tefekkur"]{
+  --rr-h:31px;
+  --rr-px:12px;
+  min-width:126px!important;
+  font-size:8.5px!important;
+  letter-spacing:.055em!important;
+}
+
+/* Universal bar / mini-midi variant: SAME component, only compact sizing. */
+#r491DockRestartSlot{
+  position:absolute!important;
+  right:0!important;
+  top:-1px!important;
+  z-index:4!important;
+  display:none;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  margin:0!important;
+  padding:0!important;
+  width:auto!important;
+}
+#r170Now.r491-restart-visible #r491DockRestartSlot{
+  display:flex!important;
+}
+#r491DockRestartSlot .sukun-restart-component{
+  --rr-h:21px;
+  --rr-px:6px;
+  min-width:56px!important;
+  height:21px!important;
+  font-size:6.8px!important;
+  gap:4px!important;
+  letter-spacing:.028em!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+#r491DockRestartSlot .rrIcon{
+  font-size:9px!important;
+}
+
+/* Make room beside the compact CANLI badge only while restart is relevant. */
+#r170Now.r491-restart-visible #r422NowHead{
+  position:relative!important;
+  padding-right:112px!important;
+}
+#r170Now.r491-restart-visible #r422NowLive{
+  right:61px!important;
+}
+
+/* Calm Tefekkür: restart follows the same "wake controls first" contract. */
+body.sukun-tefekkur-mode.r447-focus-calm
+  .sukun-restart-component[data-surface="tefekkur"]{
+  pointer-events:none!important;
+}
+
+@media(max-width:390px){
+  .r491RestartSlot{margin-top:7px!important}
+  .r491RestartSlot .sukun-restart-component{min-width:138px!important}
+  body.sukun-tefekkur-mode #tfRefinedLayout
+    .sukun-restart-component[data-surface="tefekkur"]{
+    min-width:118px!important;
+  }
+  #r170Now.r491-restart-visible #r422NowHead{
+    padding-right:106px!important;
+  }
+  #r170Now.r491-restart-visible #r422NowLive{
+    right:57px!important;
+  }
+  #r491DockRestartSlot .sukun-restart-component{
+    min-width:52px!important;
+    font-size:6.4px!important;
+    padding-inline:5px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sukun-restart-component{transition:none!important}
+}
+</style>
+
+
+<script id="r491-restart-component-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R491_RESTART__)return;
+window.__SUKUN_R491_RESTART__=1;
+
+const $=id=>document.getElementById(id);
+let busy=false;
+const slots=new Map();
+const buttons=new Map();
+
+function directTitle(){
+  try{
+    return (($('zTr')?.textContent||ZIKIR?.[Z.cat]?.items?.[Z.idx]?.tr||'Zikir')+'').trim();
+  }catch(e){return'Zikir'}
+}
+function smartStep(){
+  try{
+    const P=window.R170?.Player;
+    const s=P?.queue?.[P.i];
+    return P&&s?.type==='zikir'&&(P.playing||P.paused)?{P,s}:null;
+  }catch(e){return null}
+}
+function dockOwner(){
+  try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e){return'none'}
+}
+function directContext(){
+  try{
+    if(document.body.classList.contains('sukun-tefekkur-mode'))return true;
+    if(Z?.auto)return true;
+    const snap=window.SukunDockTelemetry?.snapshot?.();
+    if(snap?.active)return true;
+    return document.body.classList.contains('sukun-zikir-tab') &&
+      (((+Z?.count||0)>0)||((+Z?.devir||0)>0));
+  }catch(e){return false}
+}
+
+/* ── ONE restart behavior ── */
+function stopDirectVoice(){
+  try{if(typeof _zSesSeq!=='undefined')_zSesSeq++}catch(e){}
+  try{
+    window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
+    window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
+  }catch(e){}
+  try{window.speechSynthesis?.cancel?.()}catch(e){}
+  try{if(typeof sesDurdur==='function')sesDurdur('zikir-restart')}catch(e){}
+  try{if(typeof r476Stop==='function')r476Stop(true)}catch(e){}
+}
+function clearTransientState(){
+  try{window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null}catch(e){}
+  try{window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false}catch(e){}
+  try{window.__SUKUN_NIYET_GATE_PROMISE__=null}catch(e){}
+  try{window.__SUKUN_NIYET_AUDIO_PROMISE__=null}catch(e){}
+  try{if(typeof _r485NiyetDoneKey!=='undefined')_r485NiyetDoneKey=''}catch(e){}
+  try{if(typeof _r485NiyetGateKey!=='undefined')_r485NiyetGateKey=''}catch(e){}
+  try{if(typeof _zAutoSon!=='undefined')_zAutoSon=0}catch(e){}
+}
+function syncSpecialJourneys(){
+  try{
+    if(typeof HATIM!=='undefined'&&HATIM?.active&&Z.cat==='esma'&&Z.idx===HATIM.idx){
+      HATIM.count=0;hatSave?.();hatUI?.();
+    }
+  }catch(e){}
+  try{
+    if(typeof LTF!=='undefined'&&LTF?.active&&Z.cat==='temel'&&Z.idx===0){
+      LTF.count=0;ltfSave?.();ltfUI?.();
+    }
+  }catch(e){}
+}
+function persistFreshZero(){
+  try{
+    window.SukunSessionMemory?.clear?.();
+    window.SukunSessionMemory?.save?.();
+  }catch(e){}
+  try{if(typeof S!=='undefined')S.set('sukun.total',Z.total)}catch(e){}
+}
+async function restartDirect(surface){
+  if(typeof Z==='undefined')return false;
+  const wasAuto=!!Z.auto;
+
+  if(wasAuto){
+    try{autoStop()}catch(e){try{Z.auto=false}catch(_){}}
+  }
+
+  stopDirectVoice();
+  clearTransientState();
+
+  /* Current zikr session only. Selection / target / tempo / total stay intact. */
+  Z.count=0;
+  Z.devir=0;
+  syncSpecialJourneys();
+
+  try{zUI()}catch(e){}
+  persistFreshZero();
+
+  try{
+    window.dispatchEvent(new CustomEvent('sukun:zikirrestart',{
+      detail:{surface:surface||'unknown',title:directTitle(),auto:wasAuto}
+    }));
+  }catch(e){}
+  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
+  try{window.SukunLayoutEngine?.schedule?.()}catch(e){}
+
+  if(wasAuto){
+    try{if(typeof _r477AutoStarting!=='undefined')_r477AutoStarting=false}catch(e){}
+    await new Promise(r=>setTimeout(r,120));
+    try{autoStart()}catch(e){}
+    setTimeout(persistFreshZero,180);
+  }
+
+  try{
+    toast?.(wasAuto?'↺ Zikir baştan başladı':'↺ Zikir sıfırlandı');
+  }catch(e){}
+  return true;
+}
+async function restartSmart(){
+  const cur=smartStep();
+  if(!cur)return false;
+  const {P}=cur;
+  const wasPlaying=!!P.playing;
+  try{P.pause()}catch(e){return false}
+  try{P.stepStarted=0;P.save?.()}catch(e){}
+  if(wasPlaying){
+    await new Promise(r=>setTimeout(r,90));
+    try{P.play()}catch(e){}
+  }
+  try{window.SukunDockTelemetry?.sync?.()}catch(e){}
+  try{toast?.('↺ Bu zikir adımı baştan başladı')}catch(e){}
+  return true;
+}
+async function restartCurrent({surface='main'}={}){
+  if(busy)return false;
+  busy=true;
+  setBusy(true);
+  try{
+    if(surface==='dock'&&dockOwner()==='smart'&&smartStep()){
+      return await restartSmart();
+    }
+    return await restartDirect(surface);
+  }finally{
+    setTimeout(()=>{
+      busy=false;
+      setBusy(false);
+    },180);
+  }
+}
+
+/* ── ONE visual component factory ── */
+function decorateButton(btn,surface){
+  if(!btn)return null;
+  btn.type='button';
+  btn.classList.add('sukun-restart-component');
+  btn.dataset.surface=surface;
+  btn.setAttribute('aria-label',
+    surface==='dock'?'Çalan zikri sıfırdan başlat':'Bu zikri sıfırdan başlat');
+  btn.title=surface==='dock'
+    ?'Çalan zikri baştan başlat'
+    :'Bu zikri baştan başlat · hedef ve toplam istatistik korunur';
+  btn.innerHTML='<span class="rrIcon" aria-hidden="true">↺</span><span class="rrLabel">'+
+    (surface==='dock'?'Baştan':'Baştan başlat')+'</span>';
+  btn.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    restartCurrent({surface});
+  };
+  buttons.set(surface,btn);
+  return btn;
+}
+function makeButton(surface){
+  if(surface==='main'){
+    const existing=$('resetBtn');
+    if(existing)return decorateButton(existing,'main');
+  }
+  let btn=buttons.get(surface);
+  if(btn?.isConnected)return btn;
+  btn=document.createElement('button');
+  btn.id=surface==='tefekkur'?'r491TefRestart':'r491DockRestart';
+  return decorateButton(btn,surface);
+}
+function makeSlot(surface){
+  let slot=slots.get(surface);
+  if(slot?.isConnected)return slot;
+  slot=document.createElement('div');
+  slot.className='r491RestartSlot';
+  slot.dataset.surface=surface;
+  if(surface==='main')slot.id='r491MainRestartSlot';
+  if(surface==='tefekkur')slot.id='r491TefRestartSlot';
+  if(surface==='dock')slot.id='r491DockRestartSlot';
+  slots.set(surface,slot);
+  return slot;
+}
+function mount(surface,host,after=null){
+  if(!host)return false;
+  const slot=makeSlot(surface);
+  const btn=makeButton(surface);
+  if(!btn)return false;
+  if(btn.parentNode!==slot)slot.replaceChildren(btn);
+
+  if(after&&after.parentNode===host){
+    if(after.nextElementSibling!==slot)after.insertAdjacentElement('afterend',slot);
+  }else if(slot.parentNode!==host){
+    host.appendChild(slot);
+  }
+  slot.hidden=false;
+  return true;
+}
+function unmount(surface){
+  const slot=slots.get(surface)||$(surface==='main'?'r491MainRestartSlot':
+    surface==='tefekkur'?'r491TefRestartSlot':'r491DockRestartSlot');
+  if(slot)slot.hidden=true;
+}
+function setBusy(on){
+  buttons.forEach(btn=>{
+    btn.disabled=!!on;
+    btn.setAttribute('aria-busy',on?'true':'false');
+  });
+}
+
+/* ── THREE mounts, same component ── */
+function mountMain(){
+  if(document.body.classList.contains('sukun-tefekkur-mode')){
+    unmount('main');
+    return false;
+  }
+  const actions=document.querySelector('.zCounterActions');
+  const parent=actions?.parentElement;
+  if(!actions||!parent)return false;
+  return mount('main',parent,actions);
+}
+function mountTef(){
+  if(!document.body.classList.contains('sukun-tefekkur-mode')){
+    unmount('tefekkur');
+    return false;
+  }
+  const primary=document.querySelector('#tfRefinedLayout .tfPrimaryControls');
+  const actions=primary?.querySelector('.zCounterActions');
+  if(!primary||!actions)return false;
+  return mount('tefekkur',primary,actions);
+}
+function mountDock(){
+  const head=$('r422NowHead');
+  const now=$('r170Now');
+  if(!head||!now)return false;
+
+  const slot=makeSlot('dock');
+  const btn=makeButton('dock');
+  if(btn.parentNode!==slot)slot.replaceChildren(btn);
+  if(slot.parentNode!==head)head.appendChild(slot);
+
+  let show=false;
+  if(dockOwner()==='smart')show=!!smartStep();
+  else show=directContext();
+
+  slot.hidden=!show;
+  now.classList.toggle('r491-restart-visible',!!show);
+  return true;
+}
+function sync(){
+  mountMain();
+  mountTef();
+  mountDock();
+}
+
+/* Bounded/event-driven only — no document subtree observer. */
+const bodyObs=new MutationObserver(ms=>{
+  if(ms.some(m=>m.type==='attributes'&&m.attributeName==='class')){
+    requestAnimationFrame(sync);
+  }
+});
+if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
+
+[
+  'sukun:playbackchange',
+  'sukun:nowplayingchange',
+  'sukun:smartphase',
+  'sukun:zikirrestart'
+].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
+
+document.addEventListener('click',e=>{
+  if(e.target.closest?.(
+    '#autoBtn,#plusBtn,#undoBtn,#r170Prev,#r170Play,#r170Next,#r170Stop,[data-i],#zList'
+  )){
+    setTimeout(sync,40);
+  }
+},{passive:true});
+
+let bootTimers=[];
+function boot(){
+  bootTimers.forEach(clearTimeout);
+  bootTimers=[40,220,800,1800,3600].map(ms=>setTimeout(sync,ms));
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',boot,{once:true});
+}else boot();
+
+window.SukunZikirRestart={
+  version:'r491',
+  restart:restartCurrent,
+  sync,
+  component:{
+    mount,
+    makeButton,
+    makeSlot
+  },
+  state:()=>({
+    busy,
+    owner:dockOwner(),
+    smart:!!smartStep(),
+    direct:directContext()
+  })
+};
 })();
 </script>
 
