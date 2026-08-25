@@ -1,8 +1,8 @@
-/* SÜKÛN r514 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r515 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r514';
-const CACHE = 'sukun-r514-20260825a';
+const SURUM = 'r515';
+const CACHE = 'sukun-r515-20260825a';
 
 const KABUK = [
   './nero.html',
@@ -17,6 +17,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r515 Görünüm kademeleri tersine çalışıyordu: Basit mod zikir kütüphanesini kapatıp laboratuvarı açık bırakıyordu. Basit=günlük pratik, Geniş=seyir, Tam=laboratuvar olarak yeniden kuruldu.',
   'r514 Yapı: 18.342 satırlık isimsiz tek blok beş adlandırılmış parçaya ayrıldı (kod değişmedi). Sürüm arşivi ayrı dosyaya taşındı — gömülü JSON 139 KB\u0027tan 19 KB\u0027a indi.',
   'r513 Boşta tüketim: iki 8D rAF döngüsü korumanın önünde rAF çağırdığı için 8D kapalıyken bile 60 fps dönüyordu (raporda 106 sn\'de 19.778 kare). nowPlaying boşta 3,8/sn yayın yapıp her yayında mini bar + 11 okuyucu kökü + yeni timeout üretiyordu. İkisi de kapatıldı.',
   'r512 KRİTİK: r511 uzun basma girişi Android metin seçimine yeniliyordu. Seçim/callout kapatıldı, süre 480 ms\'ye çekildi ve sürüm notları penceresine jeste bağlı olmayan ◉ tanılama düğmesi eklendi.',
