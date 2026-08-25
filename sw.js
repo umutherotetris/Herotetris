@@ -1,8 +1,8 @@
-/* SÜKÛN r510 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r511 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r510';
-const CACHE = 'sukun-r510-20260824a';
+const SURUM = 'r511';
+const CACHE = 'sukun-r511-20260825a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r511 KRİTİK: sistem tanılamasına mobilde ulaşılamıyordu — sürüm etiketindeki iki çakışan işleyici yüzünden 5 dokunuş girişi hiç çalışmıyordu. Uzun basma (650 ms) yolu eklendi.',
   'r510 KRİTİK: SW her açılışta 3,4 MB nero.html indiriyordu ve zaman aşımı yoktu — yavaş ağda uygulama beyaz ekranda asılı kalıyordu. Ağ 2,5 sn beklenir, yetişmezse önbellek anında döner.',
   'r510 SW önbellek yazımları kritik yoldan çıkarıldı; ilk boyama iki adet 3,4 MB yazımı beklemiyor.',
   'r510 Sorgu dizesi artık yutulmuyor: ?v=... ile cache-busting gerçekten çalışıyor.',

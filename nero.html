@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r510 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r511 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r510">
+<meta name="sukun-build" content="r511">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r510">
+<link rel="manifest" href="./manifest.webmanifest?v=r511">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6123,7 +6123,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-24-r510</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-25-r511</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6147,6 +6147,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r511","t":"25 Ağustos 2026","b":["KRİTİK · Sistem tanılaması ekranına mobilde ulaşılamıyordu. Sürüm etiketine iki çakışan işleyici bağlıydı: ilk dokunuş sürüm notları katmanını açıyor, katman etiketi örttüğü için 5 dokunuş sayacına kalan dört dokunuş hiç ulaşmıyordu. Masaüstünde Ctrl+Shift+D olduğu için sorun görünmez kalmış; masaüstü tarayıcısı olmayan cihazda tanılamaya giden yol yoktu.","Sürüm etiketine uzun basma (650 ms) artık sistem tanılamasını açıyor; tek dokunuş eskisi gibi sürüm notlarını açar ve gecikme eklenmedi. Uzun basmanın ardından gelen dokunuş bastırılıyor ki notlar katmanı üstüne açılmasın.","Parmak 10 pikselden fazla kayarsa uzun basma iptal edilir — kaydırma jesti yanlışlıkla tanılama açmaz. Destekleyen cihazlarda kısa dokunsal geri bildirim verilir.","Sürüm etiketinin ekran okuyucu adı ve ipucu her iki jesti de bildiriyor; giriş yolu artık keşfedilebilir."]},
  {"v":"r510","t":"24 Ağustos 2026","b":["KRİTİK · Service Worker her açılışta 3,4 MB nero.html'i yeniden indiriyordu (cache:no-store) ve zaman aşımı yoktu; ağ yavaş ama ölü değilse önbellekteki kabuk hiç dönmüyor, uygulama beyaz ekranda asılı kalıyordu. Artık ağ 2,5 sn beklenir, yetişmezse önbellek anında verilir ve tazeleme arkaya atılır.","Service Worker önbellek yazımları kritik yoldan çıkarıldı; ilk boyama artık iki adet 3,4 MB'lık depolama yazımını beklemiyor.","Ne ağ ne önbellek varsa tarayıcının ham ağ hatası yerine anlaşılır çevrimdışı ekranı gösteriliyor.","Sürüm parametresi artık yutulmuyor: sorgu dizesi taşıyan istekler tam eşleşme ister, böylece ?v=... ile cache-busting gerçekten çalışıyor. Önceden kırık bir varlık önbelleğe girerse oradan bir daha çıkamıyordu.","KRİTİK · İki HTML kaçış fonksiyonu bozuktu: karakter sınıfı ters bölüyü de eşliyor ve eşleşme anahtarı iki karakterlik bir dizeydi. Tırnak veya ters bölü içeren seans adları ile kayıt anahtarları ekranda undefined metnine dönüşüyordu; öznitelik bağlamındaki kaçış ağı da işlevsizdi. Yedi kopya tek otoriteye bağlandı.","KRİTİK · Yedek geri yüklemede Üzerine yazılsın mı sorusuna İptal denince liste ham pakete dönüyordu; bu hem Berhetiyye gizlilik filtresini hem de anahtar biçimi, __proto__ engeli ve base64/MIME doğrulamasını atlıyordu. Artık yalnız doğrulanmış liste daraltılıyor.","KRİTİK · Yedek dosyası sınırı 300 MB'tan 64 MB'a çekildi. Blob.text() dosyayı tek bir JS dizesine açıyor; UTF-16 olduğu için 300 MB'lık yedek ~600 MB heap demekti ve telefonda sekme uyarısız ölüyordu — hem de kullanıcının veri kaybına en yakın olduğu anda. 24 MB üstü için önce onay soruluyor.","Stüdyo kaydında MediaRecorder kurulamazsa mikrofon akışı durdurulmuyordu; Android mikrofon göstergesi açık kalıyordu. Tek temizle() kapısı eklendi, MIME desteği kayıt başlamadan doğrulanıyor.","Stüdyo AudioContext'i yalnız rAF döngüsü içinde kapatılıyordu; ekran kapalıyken rAF durduğu için kayıt orada bitirilirse bağlam hiç kapanmıyordu. Kapatma onstop yoluna alındı.","Ses kütüphanesi gezilirken her kayıt çözümünde yeni AudioContext açılıyordu (ana bağlam ilk dokunuşa kadar null). Chrome 6 bağlam sınırına çarpınca kayıtlar sessizce çözülemez hâle geliyordu; artık ana bağlam yoksa OfflineAudioContext kullanılıyor.","Gemini API anahtarı URL sorgu dizesinde taşınıyordu; performance timeline, Service Worker cache ve tarayıcı geçmişine sızabiliyordu. x-goog-api-key başlığına taşındı.","Tanılama zamanlayıcı takibi artık üretimde kapalı; ?diag=1 veya sukun.diag ile açılıyor. 421 setTimeout ve 44 setInterval çağrı yerinin her biri Map girişi açıp fonksiyon etiketi hesaplamıyor."]},
  {"v":"r509","t":"24 Ağustos 2026","b":["4/8 Zikir bitiş/geçişi SukunZikirTransaction ile transaction yapısına alındı; hedef dolumu prepare → sesin settle olması → tek commit sırasını izler","Pending transaction navigation, hard-stop, kategori veya zikir değişiminde iptal edilir; gecikmiş ses callbacki artık yeni seçimi/deviri commit edemez","5/8 SukunVoiceResolver kuruldu; zikir ses kaynağı sırası tek yerde Kendi kayıt → Seçili okuyucu → TTS → Sessiz fallback olarak çözülür","Normal/Tefekkür spkSayZikir ve Akıllı Seans AudioResolver aynı voice resolverı kullanır; canlı flow state gerçek çözümlenen ses kaynağını okuyabilir","7/8 SukunResumePolicy kuruldu; akışlar new / continue / completed durumuyla kaydedilir. Baştan işlemi restore kararından daha yeni ise eski session snapshotı geri yüklenmez","Akıllı Seans oluşturma/pausa/tamamlama ve normal zikir ilerleme/reset davranışları resume policy ile birleştirildi","6/8 Nefs frekans gösterimi dürüstleştirildi; mertebenin önerilen frekansı ile o an gerçekten çalan manuel frekans ayrı tutulur","Nefs frekansı elle değiştirilirse canlı bar Şu an değerini ÖZEL olarak gösterir ve title bilgisinde Nefs önerisi ayrıca korunur","8/8 Son dönem body-class observerları SukunLifecycleHub altında tek MutationObservera toplandı; r471 sayaç DOM observerı currentzikir eventine çevrildi","Mini bar r406 500 ms polling ve r425 1 sn breathing-state polling kaldırıldı; NowPlaying/playback/audio eventleri tek güncelleme kaynağı oldu","Diagnostics JSON çıktısına zikirTransaction, voiceResolver, resumePolicy ve lifecycleHub snapshotları eklendi"]},
  {"v":"r508","t":"24 Ağustos 2026","b":["1/3 SukunViewportPolicy kuruldu: projedeki eski scrollIntoView çağrıları tek politikadan geçer; kullanıcı kaynaklı navigasyon serbest, background state/render kaydırmaları engellenir","Nefs basamağı seçimleri viewport policy üzerinde explicit suppress/preserve kullanır; kullanıcı Nefs/Enerji alanında gezinirken sayaç veya zikir sahnesine çekilemez","2/3 currentFlowState eklendi: currentZikirState, Global Now Playing, VoiceSource, frekans ve Akıllı Seans tek normalize akış snapshotında birleşir","currentFlowState bağlam, zikir, Nefs, seans, ses kaynağı, frekans, play/pause ve kalan count/ms alanlarını tek subscriber sözleşmesiyle yayınlar","Ana/Tefekkür sayaç currentFlowState.zikir kullanır; Seçili Esmâ badge ve canlı bar telemetrisi de merkezi flow state subscriberına geçirildi","3/3 SukunFlowNavigation kuruldu: Önceki / Baştan / Sonraki butonlarının anlamını artık bulunduğu yüzey değil aktif akış bağlamı belirler","Akıllı Seans bağlamında prev/next seans adımı; Nefs bağlamında prev/next mertebe; normal zikirde prev/next zikir olarak çalışır. Reset aynı kontrattan bağlama göre uygulanır","Diagnostics JSON çıktısına viewportPolicy, currentFlow ve flowNavigation snapshotları eklendi; yeni akışlar polling kullanmaz"]},
@@ -21939,7 +21940,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r510',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r511',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -33305,7 +33306,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r510',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r511',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -43774,17 +43775,75 @@ function close(){
   clearInterval(refreshTimer);refreshTimer=0;
 }
 
-/* Mobil gizli giriş: footer sürümüne 5 dokunuş. Masaüstü: Ctrl+Shift+D. */
+/* ═══ r511 — B-04: TANILAMA GİRİŞİ MOBİLDE ULAŞILAMIYORDU ═══════════
+   #surumEtiket elemanına İKİ çakışan işleyici bağlıydı:
+     • ~21933: e.onclick → neYenilendi() sürüm notları katmanını açıyor
+     • buradaki addEventListener → 5 dokunuşu sayıp Diagnostics'i açıyor
+   İlk dokunuş tam ekran #nyKat katmanını açıyor, katman etiketi örtüyor,
+   kalan dört dokunuş elemana hiç ulaşmıyor. Yani "5 dokunuş" girişi
+   pratikte HİÇ çalışmıyordu — ne mobilde ne masaüstünde. Masaüstünde
+   Ctrl+Shift+D kısayolu olduğu için sorun görünmez kalmış; masaüstü
+   tarayıcısı olmayan bir cihazda tanılama ekranına giden yol yoktu.
+
+   Çözüm: UZUN BASMA. Uygulamada zaten yerleşik bir deyim (r443 ~520 ms).
+   Tek dokunuş eskisi gibi sürüm notlarını açar — gecikme eklenmedi.
+   Uzun basma Diagnostics'i açar ve ardından gelen click bastırılır ki
+   notlar katmanı üstüne açılmasın. */
+const UZUN_BASMA_MS=650;
 function bindEntry(){
   const v=$('surumEtiket');
   if(v&&!v.dataset.r455DiagBound){
     v.dataset.r455DiagBound='1';
+
+    /* 5 dokunuş sayacı korunuyor: notlar katmanı devre dışıysa hâlâ çalışır. */
     v.addEventListener('click',()=>{
       tapCount++;
       clearTimeout(tapReset);
       tapReset=setTimeout(()=>{tapCount=0},2200);
       if(tapCount>=5){tapCount=0;clearTimeout(tapReset);open()}
     },{passive:true});
+
+    /* ── Uzun basma → Diagnostics ── */
+    let basTimer=0, bastirClick=false, baslangic=null;
+    const iptal=()=>{ if(basTimer){clearTimeout(basTimer);basTimer=0} baslangic=null; };
+    const basla=ev=>{
+      iptal();
+      const t=ev.touches?ev.touches[0]:ev;
+      baslangic=t?{x:t.clientX,y:t.clientY}:null;
+      basTimer=setTimeout(()=>{
+        basTimer=0; bastirClick=true;
+        try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}
+        tapCount=0; clearTimeout(tapReset);
+        open();
+      },UZUN_BASMA_MS);
+    };
+    /* Parmak kayarsa bu bir kaydırma jestidir, uzun basma değil. */
+    const kaydi=ev=>{
+      if(!baslangic||!basTimer)return;
+      const t=ev.touches?ev.touches[0]:ev; if(!t)return;
+      if(Math.abs(t.clientX-baslangic.x)>10||Math.abs(t.clientY-baslangic.y)>10) iptal();
+    };
+    v.addEventListener('touchstart',basla,{passive:true});
+    v.addEventListener('touchmove',kaydi,{passive:true});
+    v.addEventListener('touchend',iptal,{passive:true});
+    v.addEventListener('touchcancel',iptal,{passive:true});
+    v.addEventListener('mousedown',basla);
+    v.addEventListener('mousemove',kaydi);
+    v.addEventListener('mouseup',iptal);
+    v.addEventListener('mouseleave',iptal);
+
+    /* Mevcut onclick'i sarmala: uzun basma tetiklendiyse notları AÇMA. */
+    const oncekiClick=v.onclick;
+    v.onclick=function(ev){
+      if(bastirClick){ bastirClick=false; try{ev.preventDefault();ev.stopPropagation()}catch(e){} return false; }
+      return oncekiClick?oncekiClick.call(this,ev):undefined;
+    };
+
+    /* Giriş yolunu keşfedilebilir yap. */
+    try{
+      v.setAttribute('aria-label','Neler yenilendi — sürüm geçmişini aç. Uzun basınca sistem tanılaması açılır.');
+      v.dataset.tip='Dokun: sürüm geçmişi · Uzun bas: sistem tanılaması (Ctrl+Shift+D)';
+    }catch(e){}
   }
 }
 document.addEventListener('keydown',e=>{
