@@ -1,8 +1,8 @@
-/* SÜKÛN r518 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r519 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r518';
-const CACHE = 'sukun-r518-20260825a';
+const SURUM = 'r519';
+const CACHE = 'sukun-r519-20260825a';
 
 const KABUK = [
   './nero.html',
@@ -17,6 +17,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r519 Açılış perdesi: mühür küçükten büyüğe, vuruşta halkalar, gong + Hû. Gövdenin başında satır içi olduğu için boot maliyetine eklenmiyor, onu örtüyor. Ses girişi engellemez; ayardan kapatılabilir.',
   'r518 Gün sonu muhâsebe daveti: vakit kartına ikinci bir davet eklendi. Üç şart birden gerekiyor — gün sonu vakti, bugün muhâsebe tutulmamış, bugün hareket var. Zorlamaz, günde bir kez, kapatılabilir.',
   'r517 Çeviri: sayıyla başlayan etiketler (+10 sn sükût) ve gün adı bileşikleri (Salı · 8 hizb) artık çevriliyor. Kalanlar özel isim.',
   'r516 Çeviri: t() ile look() ayrı çalışıyordu, birleştirildi. Emoji önekleri aramayı bozuyordu, çözüldü. 110 eksik çeviri eklendi. Tanıtım turu 8/8 çevrili.',
