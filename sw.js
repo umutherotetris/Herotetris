@@ -1,8 +1,8 @@
-/* SÜKÛN r512 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r513 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r512';
-const CACHE = 'sukun-r512-20260825a';
+const SURUM = 'r513';
+const CACHE = 'sukun-r513-20260825a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r513 Boşta tüketim: iki 8D rAF döngüsü korumanın önünde rAF çağırdığı için 8D kapalıyken bile 60 fps dönüyordu (raporda 106 sn\'de 19.778 kare). nowPlaying boşta 3,8/sn yayın yapıp her yayında mini bar + 11 okuyucu kökü + yeni timeout üretiyordu. İkisi de kapatıldı.',
   'r512 KRİTİK: r511 uzun basma girişi Android metin seçimine yeniliyordu. Seçim/callout kapatıldı, süre 480 ms\'ye çekildi ve sürüm notları penceresine jeste bağlı olmayan ◉ tanılama düğmesi eklendi.',
   'r511 KRİTİK: sistem tanılamasına mobilde ulaşılamıyordu — sürüm etiketindeki iki çakışan işleyici yüzünden 5 dokunuş girişi hiç çalışmıyordu. Uzun basma (650 ms) yolu eklendi.',
   'r510 KRİTİK: SW her açılışta 3,4 MB nero.html indiriyordu ve zaman aşımı yoktu — yavaş ağda uygulama beyaz ekranda asılı kalıyordu. Ağ 2,5 sn beklenir, yetişmezse önbellek anında döner.',

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r512 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r513 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r512">
+<meta name="sukun-build" content="r513">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r512">
+<link rel="manifest" href="./manifest.webmanifest?v=r513">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6138,7 +6138,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-25-r512</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-25-r513</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6162,6 +6162,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r513","t":"25 Ağustos 2026","b":["Gerçek cihazda alınan r512 tanılama raporu üzerine iki boşta-tüketim kaynağı kapatıldı. Derin süit 26 testin 24'ünü geçmişti; bu ikisini testler yakalamıyordu çünkü çökme değil pil tüketimi yapıyorlar.","8D mekânsal ses ve Tekke 8D rehber döngülerinde requestAnimationFrame korumanın ÖNÜNDE çağrılıyordu; döngü bir kez başlayınca 8D kapatılsa bile sonsuza dek 60 fps dönüyordu. Raporda ölçüldü: uygulama tamamen boştayken 106 saniyede 19.778 kare isteği. Koruma öne alındı, iş kalmayınca döngüler parklanıyor ve 8D kapatılınca gerçekten duruyor.","nowPlaying boştayken saniyede 3,8 kez yayın yapıyordu ama bunun yalnız 1,2'si gerçek değişimdi. İmza tekilleştirmesi yalnız olay yayınını koruyordu; mini bar çizimi, on bir okuyucu kökünün DOM yazımı ve her yayında açılan yeni bir timeout korumanın dışındaydı. Üçü de tekilleştirmenin içine alındı.","DOM'u dışarıdan silen bir yol kalmışsa diye iki saniyede bir onarım turu bırakıldı; eski davranışın kendiliğinden onarım yan etkisi korunuyor, maliyeti sekizde birine iniyor.","seq sayacı artık yalnız gerçek değişimde artıyor; tanılama raporundaki sayaç ile olay günlüğü birbirini tutuyor."]},
  {"v":"r512","t":"25 Ağustos 2026","b":["KRİTİK · r511 uzun basma girişi Android'de çalışmıyordu: tarayıcı yaklaşık 500 ms'de metin seçimini başlatıp Göster/Kopyala/Paylaş menüsünü ve arama çubuğunu açıyor, dokunuş dizisi touchcancel ile kesildiği için sayaç hiç dolmuyordu.","Sürüm etiketinde metin seçimi, bağlam menüsü ve callout kapatıldı; uzun basma süresi 650 ms'den 480 ms'ye çekilerek tarayıcının seçim eşiğinin altında kalındı.","İkinci ve garantili giriş eklendi: sürüm notları penceresinin başlığındaki ◉ düğmesi sistem tanılamasını doğrudan açıyor. Bu yol hiçbir jeste bağlı değil; tek dokunuş notları açar, ◉ tanılamayı açar."]},
  {"v":"r511","t":"25 Ağustos 2026","b":["KRİTİK · Sistem tanılaması ekranına mobilde ulaşılamıyordu. Sürüm etiketine iki çakışan işleyici bağlıydı: ilk dokunuş sürüm notları katmanını açıyor, katman etiketi örttüğü için 5 dokunuş sayacına kalan dört dokunuş hiç ulaşmıyordu. Masaüstünde Ctrl+Shift+D olduğu için sorun görünmez kalmış; masaüstü tarayıcısı olmayan cihazda tanılamaya giden yol yoktu.","Sürüm etiketine uzun basma (650 ms) artık sistem tanılamasını açıyor; tek dokunuş eskisi gibi sürüm notlarını açar ve gecikme eklenmedi. Uzun basmanın ardından gelen dokunuş bastırılıyor ki notlar katmanı üstüne açılmasın.","Parmak 10 pikselden fazla kayarsa uzun basma iptal edilir — kaydırma jesti yanlışlıkla tanılama açmaz. Destekleyen cihazlarda kısa dokunsal geri bildirim verilir.","Sürüm etiketinin ekran okuyucu adı ve ipucu her iki jesti de bildiriyor; giriş yolu artık keşfedilebilir."]},
  {"v":"r510","t":"24 Ağustos 2026","b":["KRİTİK · Service Worker her açılışta 3,4 MB nero.html'i yeniden indiriyordu (cache:no-store) ve zaman aşımı yoktu; ağ yavaş ama ölü değilse önbellekteki kabuk hiç dönmüyor, uygulama beyaz ekranda asılı kalıyordu. Artık ağ 2,5 sn beklenir, yetişmezse önbellek anında verilir ve tazeleme arkaya atılır.","Service Worker önbellek yazımları kritik yoldan çıkarıldı; ilk boyama artık iki adet 3,4 MB'lık depolama yazımını beklemiyor.","Ne ağ ne önbellek varsa tarayıcının ham ağ hatası yerine anlaşılır çevrimdışı ekranı gösteriliyor.","Sürüm parametresi artık yutulmuyor: sorgu dizesi taşıyan istekler tam eşleşme ister, böylece ?v=... ile cache-busting gerçekten çalışıyor. Önceden kırık bir varlık önbelleğe girerse oradan bir daha çıkamıyordu.","KRİTİK · İki HTML kaçış fonksiyonu bozuktu: karakter sınıfı ters bölüyü de eşliyor ve eşleşme anahtarı iki karakterlik bir dizeydi. Tırnak veya ters bölü içeren seans adları ile kayıt anahtarları ekranda undefined metnine dönüşüyordu; öznitelik bağlamındaki kaçış ağı da işlevsizdi. Yedi kopya tek otoriteye bağlandı.","KRİTİK · Yedek geri yüklemede Üzerine yazılsın mı sorusuna İptal denince liste ham pakete dönüyordu; bu hem Berhetiyye gizlilik filtresini hem de anahtar biçimi, __proto__ engeli ve base64/MIME doğrulamasını atlıyordu. Artık yalnız doğrulanmış liste daraltılıyor.","KRİTİK · Yedek dosyası sınırı 300 MB'tan 64 MB'a çekildi. Blob.text() dosyayı tek bir JS dizesine açıyor; UTF-16 olduğu için 300 MB'lık yedek ~600 MB heap demekti ve telefonda sekme uyarısız ölüyordu — hem de kullanıcının veri kaybına en yakın olduğu anda. 24 MB üstü için önce onay soruluyor.","Stüdyo kaydında MediaRecorder kurulamazsa mikrofon akışı durdurulmuyordu; Android mikrofon göstergesi açık kalıyordu. Tek temizle() kapısı eklendi, MIME desteği kayıt başlamadan doğrulanıyor.","Stüdyo AudioContext'i yalnız rAF döngüsü içinde kapatılıyordu; ekran kapalıyken rAF durduğu için kayıt orada bitirilirse bağlam hiç kapanmıyordu. Kapatma onstop yoluna alındı.","Ses kütüphanesi gezilirken her kayıt çözümünde yeni AudioContext açılıyordu (ana bağlam ilk dokunuşa kadar null). Chrome 6 bağlam sınırına çarpınca kayıtlar sessizce çözülemez hâle geliyordu; artık ana bağlam yoksa OfflineAudioContext kullanılıyor.","Gemini API anahtarı URL sorgu dizesinde taşınıyordu; performance timeline, Service Worker cache ve tarayıcı geçmişine sızabiliyordu. x-goog-api-key başlığına taşındı.","Tanılama zamanlayıcı takibi artık üretimde kapalı; ?diag=1 veya sukun.diag ile açılıyor. 421 setTimeout ve 44 setInterval çağrı yerinin her biri Map girişi açıp fonksiyon etiketi hesaplamıyor."]},
@@ -13996,9 +13997,17 @@ function spatialEnsure(id){
   /* her kanalın çıkışına bir StereoPanner ekle (yalnızca 8D açıkken) */
   return spatialNodes[id];
 }
+/* ═══ r513 — P-05: rAF KORUMANIN ÖNÜNDEYDİ ═════════════════════════
+   Eski sıra: önce requestAnimationFrame, SONRA koruma. Yani spatialStart()
+   bir kez çağrıldıktan sonra döngü sonsuza dek 60 fps dönüyordu — 8D
+   KAPATILSA bile. Kapatma dalı yalnız panner'ları ortaya alıyor, rAF'ı hiç
+   iptal etmiyordu. r512 tanılama raporunda ölçüldü: uygulama boştayken
+   106 sn'de 19.778 rAF isteği (~186/sn), dördü de canlı.
+   Doğru sıra: koruma önce; iş yoksa döngü parklanır. */
+function spatialDur(){ if(spatialRAF){try{cancelAnimationFrame(spatialRAF)}catch(e){} spatialRAF=null;} }
 function spatialLoop(){
+  if(!SPATIAL||!ctx||ctx.state==='closed'){ spatialRAF=null; return; }   /* park */
   spatialRAF=requestAnimationFrame(spatialLoop);
-  if(!SPATIAL||!ctx)return;
   const t=ctx.currentTime;
   Object.keys(AMB).forEach((id,i)=>{
     const node=AMB[id]; if(!node||!node.gain)return;
@@ -14021,7 +14030,10 @@ $('#spatialTgl').onclick=()=>{
   SPATIAL=!SPATIAL; $('#spatialTgl').classList.toggle('on',SPATIAL);
   S.set('sukun.spatial',SPATIAL);
   if(SPATIAL){ac();spatialStart();}
-  else if(ctx){ /* panner'ları ortaya al */ Object.values(AMB).forEach(n=>{ if(n&&n._pan&&n._pan!=='none')n._pan.pan.setTargetAtTime(0,ctx.currentTime,.3); }); }
+  else{ /* r513: panner'ları ortaya al VE döngüyü gerçekten durdur */
+    if(ctx)Object.values(AMB).forEach(n=>{ if(n&&n._pan&&n._pan!=='none')n._pan.pan.setTargetAtTime(0,ctx.currentTime,.3); });
+    setTimeout(spatialDur,400);   /* pan'ler ortaya oturana kadar bekle, sonra park et */
+  }
 };
 function spatialInit(){ $('#spatialTgl').classList.toggle('on',SPATIAL); if(SPATIAL)spatialStart(); }
 
@@ -21966,7 +21978,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r512',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r513',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -26915,9 +26927,10 @@ function rehber8dKur(){
     src.start(); REHBER8D.src=src;
   }catch(e){}
 }
+/* r513 — P-05: aynı hata burada da vardı; koruma rAF'ın arkasındaydı. */
 function rehber8dDon(){
+  if(!REHBER8D.on||!ctx||!REHBER8D.pan||ctx.state==='closed'){ REHBER8D.raf=null; return; }   /* park */
   REHBER8D.raf=requestAnimationFrame(rehber8dDon);
-  if(!ctx||!REHBER8D.pan)return;
   const t=ctx.currentTime;
   try{ REHBER8D.pan.pan.setValueAtTime(Math.sin(t*0.42)*0.9,t); }catch(e){}
 }
@@ -33332,7 +33345,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r512',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r513',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -35472,7 +35485,7 @@ const sessions=new Map();
 const listeners=new Set();
 const $=id=>document.getElementById(id);
 
-let activeId=null,lastActiveId=null,seq=0,syncTimer=0;
+let activeId=null,lastActiveId=null,seq=0,syncTimer=0,sonEmitAnahtar='',sonEmitAn=0;
 let aggregate={
   paused:false,
   providerIds:[],
@@ -35943,6 +35956,26 @@ function getState(){
     aggregate:s.aggregate
   };
 }
+/* ═══ r513 — P-06: playbackchange KOŞULSUZ YAYINLANIYORDU ══════════
+   Ölçüm (boşta, gerçek çalıştırma): sukun:playbackchange saniyede ~8,8 kez
+   yayılıyor ve her yayın ~6 aboneyi tetikliyor. Her abone kendi rAF'ını ve
+   timeout'unu planlıyor; toplamda boşta saniyede ~200 rAF + ~180 setTimeout.
+   Kök neden: publish() (nowPlaying) imza tekilleştirmesi yapıyordu ama
+   emit() hiç yapmıyordu — schedule() 24 ms debounce ile çağırdığı için
+   saniyede 41'e kadar koşulsuz yayın mümkündü.
+
+   Çözüm, kod tabanında ZATEN kullanılan desen: imza karşılaştırması.
+   Anlamlı bir değişiklik yoksa yayın atlanır. Nabız bekleyen bir abone
+   kalmışsa diye 2 saniyede bir zorunlu yayın bırakıldı; böylece nabız
+   semantiği korunuyor, sıklığı 8,8/sn'den 0,5/sn'ye iniyor. */
+function emitImza(s){
+  const a=s.aggregate||{};
+  return [s.id,s.state,s.active,s.title,
+          (s.providers||[]).length,
+          a.paused,(a.providerIds||[]).join(','),a.mixCaptured,
+          s.capabilities&&s.capabilities.previous,
+          s.capabilities&&s.capabilities.next].join('|');
+}
 function emit(reason='sync'){
   const snap=snapshot();
   try{
@@ -35950,11 +35983,16 @@ function emit(reason='sync'){
     document.body.dataset.playbackProvider=snap.id||'';
   }catch(e){}
   try{window.SukunPauseContract?.sync?.()}catch(e){}
-  try{
-    window.dispatchEvent(new CustomEvent('sukun:playbackchange',{
-      detail:{...snap,reason,seq:++seq}
-    }))
-  }catch(e){}
+  const anahtar=emitImza(snap);
+  const simdi=Date.now();
+  if(anahtar!==sonEmitAnahtar||simdi-sonEmitAn>2000){
+    sonEmitAnahtar=anahtar; sonEmitAn=simdi;
+    try{
+      window.dispatchEvent(new CustomEvent('sukun:playbackchange',{
+        detail:{...snap,reason,seq:++seq}
+      }))
+    }catch(e){}
+  }
   return snap;
 }
 function schedule(reason='sync'){
@@ -36218,7 +36256,7 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const txt=x=>String(x??'').trim();
 const labelAny=x=>{if(x==null)return'';if(typeof x==='string')return x;return txt(x.title||x.tr||x.ad||x.name||x.label||x.t||x.nm||x.baslik||x.text||x.oku||x.translit||'')};
 const sourceLabels={recording:'Kendi kayıt',tts:'Latin/TTS',frequency:'Frekans',silence:'Sükût',ambient:'Ambiyans',zikir:'Zikir',mix:'Miks',none:'—'};
-let seq=0,lastKey='',timer=0,mediaTimer=0,manualPatch={},manualUntil=0;
+let seq=0,lastKey='',timer=0,mediaTimer=0,manualPatch={},manualUntil=0,sonCizim=0;
 let state={version:'r300',seq:0,updatedAt:0,id:null,moduleTitle:'',state:'idle',sectionTitle:'',sectionIndex:null,sectionCount:null,repeatIndex:null,repeatTotal:null,sourceKind:'none',sourceLabel:'—',sourceReason:'',progress:null,duration:null,elapsed:null,remaining:null,estimated:false,capabilities:{},queue:[]};
 const listeners=new Set();
 function estimateText(t){t=txt(t);if(!t)return 0;return clamp(t.length*95+(t.match(/[,.!?;:]/g)||[]).length*180,2600,120000)}
@@ -36297,9 +36335,35 @@ function fmtMs(ms){if(ms==null||!Number.isFinite(ms))return'';let s=Math.max(0,M
 function signature(x){return [x.id,x.state,x.sectionTitle,x.sectionIndex,x.sectionCount,x.repeatIndex,x.repeatTotal,x.sourceKind,x.progress==null?'':Math.round(x.progress*2)/2,x.remaining==null?'':Math.round(x.remaining/1000)].join('|')}
 function publish(reason='tick'){
   let snap={};try{snap=PC.snapshot()}catch(e){}
-  const base=derive(snap);const patch=(manualUntil>Date.now())?manualPatch:{};let n={version:'r300',seq:++seq,updatedAt:Date.now(),...base,...patch};try{n=window.SukunSecretPolicy?.redactNowPlaying(n)||n}catch(e){}const key=signature(n);state=n;
-  if(key!==lastKey){lastKey=key;try{document.body.dataset.nowPlaying=n.id||'';document.body.dataset.nowPlayingState=n.state||'idle'}catch(e){};try{window.dispatchEvent(new CustomEvent('sukun:nowplayingchange',{detail:{...n,reason}}))}catch(e){};listeners.forEach(fn=>{try{fn({...n},reason)}catch(e){}})}
-  renderMini(n);renderReaders(n);clearTimeout(mediaTimer);mediaTimer=setTimeout(()=>renderMedia(n),0);return n;
+  /* ═══ r513 — P-04: BOŞTA TEKRAR YAYIN ══════════════════════════════
+     r512 tanılama raporu (gerçek cihaz, 106 sn): uygulama TAMAMEN boştayken
+     (context idle · playing false · state idle) nowPlaying saniyede 3,8 kez
+     yayın yapıyordu, ama olay günlüğüne yalnız 1,2/sn düşüyordu — yani her
+     gerçek değişime karşılık ~3,2 yayın, üçte ikisi hiçbir şeyi değiştirmiyor.
+
+     İmza tekilleştirmesi zaten vardı ama YALNIZ olay yayınını koruyordu.
+     Bu üç pahalı iş korumanın DIŞINDA, her tikte çalışıyordu:
+       • renderMini    → 4 textContent + innerHTML yeniden kurulumu + style yazımı
+       • renderReaders → 11 okuyucu kökü için querySelector + innerHTML yazımı
+       • setTimeout(renderMedia,0) → her yayında YENİ bir timeout
+     28 MutationObserver bu DOM yazımlarını izlediği için iş kendini besliyordu.
+
+     Artık üçü de tekilleştirmenin içinde. DOM'u dışarıdan silen bir yol
+     kalmışsa diye 2 saniyede bir onarım turu bırakıldı — eski davranışın
+     kendiliğinden onarım yan etkisi korunuyor, maliyeti 1/8'e iniyor.
+     seq de yalnız gerçek değişimde artıyor; böylece sayaç ile olay günlüğü
+     birbirini tutuyor ve tanılama raporu dürüst oluyor. */
+  const base=derive(snap);const patch=(manualUntil>Date.now())?manualPatch:{};let n={version:'r300',seq:seq,updatedAt:Date.now(),...base,...patch};try{n=window.SukunSecretPolicy?.redactNowPlaying(n)||n}catch(e){}const key=signature(n);
+  const degisti=(key!==lastKey);
+  if(degisti)n.seq=++seq;
+  state=n;
+  if(degisti){lastKey=key;try{document.body.dataset.nowPlaying=n.id||'';document.body.dataset.nowPlayingState=n.state||'idle'}catch(e){};try{window.dispatchEvent(new CustomEvent('sukun:nowplayingchange',{detail:{...n,reason}}))}catch(e){};listeners.forEach(fn=>{try{fn({...n},reason)}catch(e){}})}
+  const _t=Date.now();
+  if(degisti||_t-sonCizim>2000){
+    sonCizim=_t;
+    renderMini(n);renderReaders(n);clearTimeout(mediaTimer);mediaTimer=setTimeout(()=>renderMedia(n),0);
+  }
+  return n;
 }
 function ensureMini(){const info=document.querySelector('#miniBar .mbInfo');if(!info)return;let m=$('mbNowMeta');if(!m){m=document.createElement('div');m.id='mbNowMeta';info.appendChild(m)}let tr=$('mbNowTrack');if(!tr){tr=document.createElement('div');tr.id='mbNowTrack';tr.innerHTML='<i></i>';info.appendChild(tr)}}
 function renderMini(n){ensureMini();const bar=$('miniBar');if(!bar)return;if((n.state==='idle'||n.state==='ended')&&!miniPlayingInfo?.().active)return;const title=$('mbT'),sub=$('mbS'),meta=$('mbNowMeta'),track=$('mbNowTrack');if(title)title.textContent=n.sectionTitle||n.moduleTitle||'SÜKÛN';const bits=[];if(n.moduleTitle&&n.moduleTitle!==n.sectionTitle)bits.push(n.moduleTitle);if(n.sectionIndex&&n.sectionCount)bits.push(n.sectionIndex+'/'+n.sectionCount+'. bölüm');if(n.repeatTotal)bits.push((n.repeatIndex||0)+'/'+n.repeatTotal+' tekrar');if(sub)sub.textContent=bits.join(' · ')||n.sourceReason||'—';if(meta){const mb=[];if(n.sourceLabel)mb.push('<span class="npStrong">'+n.sourceLabel+'</span>');if(n.remaining!=null)mb.push('kalan '+fmtMs(n.remaining)+(n.estimated?' ≈':''));if(n.progress!=null)mb.push('%'+Math.round(n.progress));meta.innerHTML=mb.join('<span>·</span>')}if(track){track.hidden=n.progress==null;const i=track.firstElementChild;if(i)i.style.width=(n.progress==null?0:clamp(n.progress,0,100))+'%'}try{window.SukunMiniStable?.applyNow?.(n)}catch(e){}const p=$('mbPause');if(p){p.textContent=n.state==='paused'?'▶':'⏸';p.setAttribute('aria-label',n.state==='paused'?'Devam Ettir':'Duraklat')}}
