@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r509 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r510 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r509">
+<meta name="sukun-build" content="r510">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r509">
+<link rel="manifest" href="./manifest.webmanifest?v=r510">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3776,52 +3776,75 @@ function targetLabel(t){
   return'node';
 }
 
-/* Timer takibi: API davranışını değiştirmeden yalnız aktif kayıt tutulur. */
-window.setTimeout=function(fn,delay,...args){
-  if(typeof fn!=='function')return native.setTimeout(fn,delay,...args);
-  let id;
-  const createdAt=performance.now();
-  const wrapped=function(...cbArgs){
-    activeTimeouts.delete(id);
-    return fn.apply(this,cbArgs);
-  };
-  id=native.setTimeout(wrapped,delay,...args);
-  totals.timeoutCreated++;
-  activeTimeouts.set(id,{createdAt,delay:+delay||0,label:fnLabel(fn)});
-  return id;
-};
-window.clearTimeout=function(id){
-  activeTimeouts.delete(id);
-  return native.clearTimeout(id);
-};
-window.setInterval=function(fn,delay,...args){
-  if(typeof fn!=='function')return native.setInterval(fn,delay,...args);
-  const id=native.setInterval(fn,delay,...args);
-  totals.intervalCreated++;
-  activeIntervals.set(id,{createdAt:performance.now(),delay:+delay||0,label:fnLabel(fn)});
-  return id;
-};
-window.clearInterval=function(id){
-  activeIntervals.delete(id);
-  return native.clearInterval(id);
-};
-if(native.raf&&native.caf){
-  window.requestAnimationFrame=function(fn){
+/* ═══ r510 — P-03: TIMER TAKİBİ ARTIK BAYRAĞA BAĞLI ═══════════════════
+   Ölçüm: kod tabanında 421 setTimeout + 44 setInterval çağrı yeri var.
+   Sarmalayıcı bunların HEPSİNDE bir Map girişi açıyor ve fnLabel(fn) ile
+   fonksiyon kaynağını okuyup etiket üretiyordu. Tanılama için değerli,
+   üretimde bedava değil: 4x CPU kısıtı altında açılışta ölçülen 630 ms'lik
+   uzun görevin bir dilimi buradan geliyordu.
+
+   Artık yalnız açıkça istendiğinde kurulur:
+     • ?diag=1 sorgu parametresi, veya
+     • localStorage['sukun.diag'] === '1'
+   Kapalıyken yerel setTimeout/setInterval/rAF hiç sarmalanmaz → sıfır ek yük.
+   Diagnostics ekranı bu durumda "timer takibi kapalı" der; sayaçlar 0 kalır
+   ve raporda diagEnabled:false olarak görünür — sessizce yanlış veri vermez. */
+const DIAG_TIMERS=(()=>{
+  try{
+    if(new URLSearchParams(location.search).get('diag')==='1')return true;
+    return localStorage.getItem('sukun.diag')==='1';
+  }catch(e){return false}
+})();
+window.__SUKUN_DIAG_TIMERS__=DIAG_TIMERS;
+
+if(DIAG_TIMERS){
+  /* Timer takibi: API davranışını değiştirmeden yalnız aktif kayıt tutulur. */
+  window.setTimeout=function(fn,delay,...args){
+    if(typeof fn!=='function')return native.setTimeout(fn,delay,...args);
     let id;
     const createdAt=performance.now();
-    const wrapped=t=>{
-      activeRaf.delete(id);
-      return fn(t);
+    const wrapped=function(...cbArgs){
+      activeTimeouts.delete(id);
+      return fn.apply(this,cbArgs);
     };
-    id=native.raf(wrapped);
-    totals.rafCreated++;
-    activeRaf.set(id,{createdAt,label:fnLabel(fn)});
+    id=native.setTimeout(wrapped,delay,...args);
+    totals.timeoutCreated++;
+    activeTimeouts.set(id,{createdAt,delay:+delay||0,label:fnLabel(fn)});
     return id;
   };
-  window.cancelAnimationFrame=function(id){
-    activeRaf.delete(id);
-    return native.caf(id);
+  window.clearTimeout=function(id){
+    activeTimeouts.delete(id);
+    return native.clearTimeout(id);
   };
+  window.setInterval=function(fn,delay,...args){
+    if(typeof fn!=='function')return native.setInterval(fn,delay,...args);
+    const id=native.setInterval(fn,delay,...args);
+    totals.intervalCreated++;
+    activeIntervals.set(id,{createdAt:performance.now(),delay:+delay||0,label:fnLabel(fn)});
+    return id;
+  };
+  window.clearInterval=function(id){
+    activeIntervals.delete(id);
+    return native.clearInterval(id);
+  };
+  if(native.raf&&native.caf){
+    window.requestAnimationFrame=function(fn){
+      let id;
+      const createdAt=performance.now();
+      const wrapped=t=>{
+        activeRaf.delete(id);
+        return fn(t);
+      };
+      id=native.raf(wrapped);
+      totals.rafCreated++;
+      activeRaf.set(id,{createdAt,label:fnLabel(fn)});
+      return id;
+    };
+    window.cancelAnimationFrame=function(id){
+      activeRaf.delete(id);
+      return native.caf(id);
+    };
+  }
 }
 
 /* MutationObserver: oluşturulan ve gerçekten observe() durumunda olan
@@ -4099,6 +4122,10 @@ function snapshot(){
   return{
     version:DIAG_BUILD,
     uptime:Math.round(performance.now()-bootAt),
+    /* r510: timer takibi kapalıysa timeouts/intervals/raf sayaçları
+       0 kalır. Bunu raporda açıkça belirt ki "sıfır timer var" ile
+       "timer sayılmıyor" birbirine karışmasın. */
+    diagTimers:DIAG_TIMERS,
     active:{
       timeouts:activeTimeouts.size,
       intervals:activeIntervals.size,
@@ -6096,7 +6123,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-24-r509</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.55 — build 2026-08-24-r510</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -6120,6 +6147,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+ {"v":"r510","t":"24 Ağustos 2026","b":["KRİTİK · Service Worker her açılışta 3,4 MB nero.html'i yeniden indiriyordu (cache:no-store) ve zaman aşımı yoktu; ağ yavaş ama ölü değilse önbellekteki kabuk hiç dönmüyor, uygulama beyaz ekranda asılı kalıyordu. Artık ağ 2,5 sn beklenir, yetişmezse önbellek anında verilir ve tazeleme arkaya atılır.","Service Worker önbellek yazımları kritik yoldan çıkarıldı; ilk boyama artık iki adet 3,4 MB'lık depolama yazımını beklemiyor.","Ne ağ ne önbellek varsa tarayıcının ham ağ hatası yerine anlaşılır çevrimdışı ekranı gösteriliyor.","Sürüm parametresi artık yutulmuyor: sorgu dizesi taşıyan istekler tam eşleşme ister, böylece ?v=... ile cache-busting gerçekten çalışıyor. Önceden kırık bir varlık önbelleğe girerse oradan bir daha çıkamıyordu.","KRİTİK · İki HTML kaçış fonksiyonu bozuktu: karakter sınıfı ters bölüyü de eşliyor ve eşleşme anahtarı iki karakterlik bir dizeydi. Tırnak veya ters bölü içeren seans adları ile kayıt anahtarları ekranda undefined metnine dönüşüyordu; öznitelik bağlamındaki kaçış ağı da işlevsizdi. Yedi kopya tek otoriteye bağlandı.","KRİTİK · Yedek geri yüklemede Üzerine yazılsın mı sorusuna İptal denince liste ham pakete dönüyordu; bu hem Berhetiyye gizlilik filtresini hem de anahtar biçimi, __proto__ engeli ve base64/MIME doğrulamasını atlıyordu. Artık yalnız doğrulanmış liste daraltılıyor.","KRİTİK · Yedek dosyası sınırı 300 MB'tan 64 MB'a çekildi. Blob.text() dosyayı tek bir JS dizesine açıyor; UTF-16 olduğu için 300 MB'lık yedek ~600 MB heap demekti ve telefonda sekme uyarısız ölüyordu — hem de kullanıcının veri kaybına en yakın olduğu anda. 24 MB üstü için önce onay soruluyor.","Stüdyo kaydında MediaRecorder kurulamazsa mikrofon akışı durdurulmuyordu; Android mikrofon göstergesi açık kalıyordu. Tek temizle() kapısı eklendi, MIME desteği kayıt başlamadan doğrulanıyor.","Stüdyo AudioContext'i yalnız rAF döngüsü içinde kapatılıyordu; ekran kapalıyken rAF durduğu için kayıt orada bitirilirse bağlam hiç kapanmıyordu. Kapatma onstop yoluna alındı.","Ses kütüphanesi gezilirken her kayıt çözümünde yeni AudioContext açılıyordu (ana bağlam ilk dokunuşa kadar null). Chrome 6 bağlam sınırına çarpınca kayıtlar sessizce çözülemez hâle geliyordu; artık ana bağlam yoksa OfflineAudioContext kullanılıyor.","Gemini API anahtarı URL sorgu dizesinde taşınıyordu; performance timeline, Service Worker cache ve tarayıcı geçmişine sızabiliyordu. x-goog-api-key başlığına taşındı.","Tanılama zamanlayıcı takibi artık üretimde kapalı; ?diag=1 veya sukun.diag ile açılıyor. 421 setTimeout ve 44 setInterval çağrı yerinin her biri Map girişi açıp fonksiyon etiketi hesaplamıyor."]},
  {"v":"r509","t":"24 Ağustos 2026","b":["4/8 Zikir bitiş/geçişi SukunZikirTransaction ile transaction yapısına alındı; hedef dolumu prepare → sesin settle olması → tek commit sırasını izler","Pending transaction navigation, hard-stop, kategori veya zikir değişiminde iptal edilir; gecikmiş ses callbacki artık yeni seçimi/deviri commit edemez","5/8 SukunVoiceResolver kuruldu; zikir ses kaynağı sırası tek yerde Kendi kayıt → Seçili okuyucu → TTS → Sessiz fallback olarak çözülür","Normal/Tefekkür spkSayZikir ve Akıllı Seans AudioResolver aynı voice resolverı kullanır; canlı flow state gerçek çözümlenen ses kaynağını okuyabilir","7/8 SukunResumePolicy kuruldu; akışlar new / continue / completed durumuyla kaydedilir. Baştan işlemi restore kararından daha yeni ise eski session snapshotı geri yüklenmez","Akıllı Seans oluşturma/pausa/tamamlama ve normal zikir ilerleme/reset davranışları resume policy ile birleştirildi","6/8 Nefs frekans gösterimi dürüstleştirildi; mertebenin önerilen frekansı ile o an gerçekten çalan manuel frekans ayrı tutulur","Nefs frekansı elle değiştirilirse canlı bar Şu an değerini ÖZEL olarak gösterir ve title bilgisinde Nefs önerisi ayrıca korunur","8/8 Son dönem body-class observerları SukunLifecycleHub altında tek MutationObservera toplandı; r471 sayaç DOM observerı currentzikir eventine çevrildi","Mini bar r406 500 ms polling ve r425 1 sn breathing-state polling kaldırıldı; NowPlaying/playback/audio eventleri tek güncelleme kaynağı oldu","Diagnostics JSON çıktısına zikirTransaction, voiceResolver, resumePolicy ve lifecycleHub snapshotları eklendi"]},
  {"v":"r508","t":"24 Ağustos 2026","b":["1/3 SukunViewportPolicy kuruldu: projedeki eski scrollIntoView çağrıları tek politikadan geçer; kullanıcı kaynaklı navigasyon serbest, background state/render kaydırmaları engellenir","Nefs basamağı seçimleri viewport policy üzerinde explicit suppress/preserve kullanır; kullanıcı Nefs/Enerji alanında gezinirken sayaç veya zikir sahnesine çekilemez","2/3 currentFlowState eklendi: currentZikirState, Global Now Playing, VoiceSource, frekans ve Akıllı Seans tek normalize akış snapshotında birleşir","currentFlowState bağlam, zikir, Nefs, seans, ses kaynağı, frekans, play/pause ve kalan count/ms alanlarını tek subscriber sözleşmesiyle yayınlar","Ana/Tefekkür sayaç currentFlowState.zikir kullanır; Seçili Esmâ badge ve canlı bar telemetrisi de merkezi flow state subscriberına geçirildi","3/3 SukunFlowNavigation kuruldu: Önceki / Baştan / Sonraki butonlarının anlamını artık bulunduğu yüzey değil aktif akış bağlamı belirler","Akıllı Seans bağlamında prev/next seans adımı; Nefs bağlamında prev/next mertebe; normal zikirde prev/next zikir olarak çalışır. Reset aynı kontrattan bağlama göre uygulanır","Diagnostics JSON çıktısına viewportPolicy, currentFlow ve flowNavigation snapshotları eklendi; yeni akışlar polling kullanmaz"]},
  {"v":"r507","t":"24 Ağustos 2026","b":["Nefs Mertebeleri, Nefs Merdiveni ve Enerji Merkezleri üzerinde basamak seçerken viewport artık korunur; zikir/sayaç sahnesine otomatik kaydırma yapılmaz","Mertebe seçiminde renderZikir swap animasyonu kapatıldı; arka planda zikir state değişir fakat kullanıcının bulunduğu Nefs bölümü yerinde kalır","currentZikirState Nefs akış bağlamıyla genişletildi: basamak, zikir, taşıyıcı Hz, vuruş Hz ve frekansın çalıp çalmadığı tek state içinde taşınır","Canlı akış barının üçüncü telemetri satırı Nefs akışında örneğin 4/7 Mutmainne · Yâ Hakk · 639 Hz · 4 Hz vuruş biçiminde bilgi verir","Nefs seçimi frekansı başlattığında sayaç 0 olsa bile telemetri aktif kabul edilir; frekans/zikir bağı koparsa bar otomatik normal zikir görünümüne döner","Frekans yaşam döngüsü sukun:audiostate/playbackchange/nowplayingchange olaylarıyla state’i günceller; polling eklenmedi"]},
@@ -7327,7 +7355,13 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 /* localStorage, prompt ve içe aktarılan yedeklerden gelen metinler HTML
    şablonuna girecekse mutlaka bu kapıdan geçer. */
-const hesc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* r510 - B-01: TEK HTML KACIS OTORITESI.
+   Kod tabaninda 7 ayri esc kopyasi vardi; ikisi (r175 + r434) bozuktu:
+   karakter sinifi ters bolu'yu de esliyordu ve eslesme anahtari iki
+   karakterlik bir dizeydi (tek " degil). Sonuc: " ve ters bolu iceren
+   girdiler 'undefined' metnine donusuyordu. Dogru surum burasi. */
+const hesc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+try{window.hesc=hesc}catch(e){}
 function sukunReport(kind,error,extra){
   try{window.dispatchEvent(new CustomEvent('sukun:diagnostic',{detail:{kind:String(kind||'runtime'),message:String(error&&error.message||error||'Bilinmeyen hata'),extra:String(extra||'')}}))}catch(_e){}
 }
@@ -14964,9 +14998,31 @@ async function ydkDisaAktar(){
 async function ydkIceAktar(dosya){
   const d=document.getElementById('ydkDurum');
   try{
-    if(!dosya||dosya.size>300*1048576)throw new Error('Kayıt yedeği en fazla 300 MB olabilir');
-    const metin=await dosya.text();
-    const paket=JSON.parse(metin);
+    /* ═══ r510 — U-01: 300 MB TEK DİZEYE AÇILAMAZ ══════════════════════
+       Blob.text() dosyanın tamamını tek bir JS dizesine açar. JS dizeleri
+       UTF-16 olduğu için 300 MB'lık bir yedek ≈ 600 MB heap demek; ardından
+       JSON.parse aynı veriyi bir kez daha nesne grafiğine kopyalar. Orta
+       seviye bir Android'de sekme, kullanıcı hiçbir uyarı görmeden ölür —
+       üstelik kullanıcının veri kaybına en yakın olduğu anda.
+       Sınır cihazın gerçekten kaldırabileceği yere çekildi. */
+    const YEDEK_SINIR=64*1048576;   /* sert üst sınır */
+    const YEDEK_UYARI=24*1048576;   /* bu üstünde önce sor */
+    if(!dosya)throw new Error('Dosya seçilmedi');
+    if(dosya.size>YEDEK_SINIR)
+      throw new Error('Bu yedek çok büyük ('+(dosya.size/1048576).toFixed(0)+' MB). '+
+        'Telefon belleği tek seferde bu kadarını açamaz. '+
+        'Kayıtları iki-üç ayrı yedeğe bölüp tek tek geri yükle.');
+    if(dosya.size>YEDEK_UYARI && !confirm(
+        (dosya.size/1048576).toFixed(0)+' MB geri yüklenecek.\n\n'+
+        'Bu sırada uygulama birkaç saniye yanıt vermeyebilir. Devam edilsin mi?'))
+      return;
+
+    if(d)d.textContent='Yedek okunuyor…';
+    await new Promise(r=>setTimeout(r,0));   /* "okunuyor" yazısı boyansın */
+
+    let paket;
+    try{ paket=JSON.parse(await dosya.text()); }
+    catch(e){ throw new Error('Yedek dosyası okunamadı veya bozuk'); }
     if(!paket||typeof paket!=='object'||Array.isArray(paket)||paket.uygulama!=='SUKUN'||
        !paket.kayitlar||typeof paket.kayitlar!=='object'||Array.isArray(paket.kayitlar))
       throw new Error('Bu dosya SÜKÛN yedeği değil');
@@ -14992,9 +15048,25 @@ async function ydkIceAktar(dosya){
     if(cakisan.length && !confirm(
       cakisan.length+' kayıt zaten var. Üzerine yazılsın mı?\n\n'+
       'İptal edersen yalnız yeni kayıtlar eklenir.')){
-      /* iptal: yalnız olmayanları al */
+      /* ═══ r510 — B-02: HAM PAKETE GERİ DÖNME ══════════════════════════
+         Eski kod burada Object.keys(paket.kayitlar) okuyordu. Bu iki
+         korumayı birden atlıyordu:
+           1) Berhetiyye gizlilik filtresi — kilit kapalıyken elenen gizli
+              kayıtlar geri gelip diske yazılıyordu.
+           2) Yukarıdaki doğrulama döngüsü — o döngü yalnız FİLTRELENMİŞ
+              liste üzerinde çalışmıştı; yeniden eklenen anahtarlar için
+              __proto__ engeli, anahtar biçimi ve base64/MIME denetimi hiç
+              çalışmıyordu. REC_DB.set try/catch içinde olduğu için de
+              uygulama çökmüyor, sessizce kirli veri yazıyordu.
+         Artık yalnız zaten doğrulanmış liste daraltılıyor. */
+      const yeniler=anahtarlar.filter(k=>!RECKEYS.has(k));
       anahtarlar.length=0;
-      Object.keys(paket.kayitlar).forEach(k=>{ if(!RECKEYS.has(k))anahtarlar.push(k); });
+      anahtarlar.push(...yeniler);
+      if(!anahtarlar.length){
+        if(d)d.textContent='Eklenecek yeni kayıt yok';
+        if(typeof toast==='function')toast('Yedekteki kayıtların hepsi zaten var');
+        return;
+      }
     }
     let n=0;
     for(const k of anahtarlar){
@@ -21867,7 +21939,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;      /* file:// yerelinde sessizce atla */
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r509',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r510',{updateViaCache:'none'}).then(reg=>{
       /* Aynı dosya adıyla yapılan dağıtımlarda bazı Android WebView/PWA
          kurulumları eski SW betiğini HTTP önbelleğinden okuyabiliyor. */
       try{reg.update().catch(()=>{})}catch(e){}
@@ -23905,9 +23977,18 @@ const SukunAIRouter=(()=>{
     });
   }
   async function callGemini(model,key,system,user,maxTokens){
-    const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent?key='+encodeURIComponent(key);
+    /* ═══ r510 — G-01: ANAHTAR SORGU DİZESİNDEN BAŞLIĞA TAŞINDI ═══════
+       Diğer üç sağlayıcı anahtarı zaten başlıkta taşıyor; yalnız Gemini
+       URL'de taşıyordu. URL'ler başlıkların sızmadığı yerlere sızar:
+         • performance.getEntriesByType('resource') — sayfadaki HERHANGİ bir
+           script tam URL'yi okuyabilir (script-src 'unsafe-inline' ile
+           bu gerçek bir yüzey)
+         • Service Worker fetch olayı ve Cache Storage anahtarları
+         • Tarayıcı geçmişi, DevTools ağ günlüğü, Referer zincirleri
+       x-goog-api-key Google'ın resmî başlık yoludur. */
+    const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
     const r=await timedFetch(url,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
       body:JSON.stringify({
         systemInstruction:{parts:[{text:system}]},
         contents:[{role:'user',parts:[{text:user}]}],
@@ -33044,7 +33125,8 @@ window.dispatchEvent(new CustomEvent('sukun:secretpolicyready',{detail:{version:
 (()=>{
 'use strict';
 const R170=window.R170=window.R170||{};
-const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+/* r510 - B-01: bozuk yerel kopya kaldirildi, tek otoriteye baglandi. */
+const esc=s=>(typeof window.hesc==='function'?window.hesc(s):String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 /* r175: r170 deneme dalından kalan seansları kaybetme; yeni anahtara bir kez taşı. */
@@ -33096,13 +33178,113 @@ function savedRender(){const h=document.getElementById('r170SavedSessions');if(!
 /* ═══ 3: KENDİ SESLERİM STÜDYOSU ═══ */
 const Studio=R170.Studio={key:null,stream:null,mr:null,chunks:[],raf:0,audioCtx:null};
 function wavFromBuffer(buf,scale=1,start=0,end=buf.length){const ch=buf.numberOfChannels,sr=buf.sampleRate,len=Math.max(0,end-start),ab=new ArrayBuffer(44+len*ch*2),v=new DataView(ab);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+len*ch*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,len*ch*2,true);let o=44;for(let i=start;i<end;i++)for(let c=0;c<ch;c++){let x=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]*scale));v.setInt16(o,x<0?x*32768:x*32767,true);o+=2}return new Blob([ab],{type:'audio/wav'})}
-async function decodeBlob(blob){const a=await blob.arrayBuffer();let c=null;try{c=ctx||new AudioContext()}catch(e){c=new AudioContext()}return await c.decodeAudioData(a.slice(0))}
+/* ═══ r510 — B-03: KOD ÇÖZME İÇİN ASLA YENİ CANLI AudioContext AÇMA ═══
+   Eski kod `ctx || new AudioContext()` yazıyordu. Ama ctx, ilk dokunuşla
+   ac() çağrılana kadar null. Kullanıcı hiç ses çalmadan ses kütüphanesini
+   gezerse her decodeBlob çağrısı YENİ bir bağlam açıyor ve hiçbiri
+   kapanmıyordu. Chrome belge başına 6 AudioContext ile sınırlı; 7.'de
+   "maximum bound (6)" hatası atılıyor ve try/catch içinde olduğu için
+   kayıtlar SESSİZCE çözülemez hâle geliyordu.
+   Çözüm: ana bağlam hazırsa onu kullan, değilse OfflineAudioContext ile
+   çöz — donanım bağlamı sınırına takılmaz ve otomatik boşa çıkar. */
+async function decodeBlob(blob){
+  const a=await blob.arrayBuffer();
+  let canli=null;
+  try{
+    canli=(window.SUKUN&&typeof window.SUKUN.ctx==='function')
+      ? window.SUKUN.ctx()
+      : (typeof ctx!=='undefined'?ctx:null);
+  }catch(e){canli=null}
+  if(canli&&canli.state!=='closed'){
+    try{ return await canli.decodeAudioData(a.slice(0)) }catch(e){/* offline'a düş */}
+  }
+  const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  if(!OAC)throw new Error('Bu cihaz ses çözmeyi desteklemiyor');
+  const off=new OAC(1,1,44100);
+  return await off.decodeAudioData(a.slice(0));
+}
 async function analyzeKey(key,draw=true){const blob=await REC_DB.get(key);if(!blob)return null;const b=await decodeBlob(blob);let peak=0,sum=0,n=0;for(let c=0;c<b.numberOfChannels;c++){const d=b.getChannelData(c);for(let i=0;i<d.length;i+=Math.max(1,Math.floor(d.length/200000))){const x=Math.abs(d[i]);peak=Math.max(peak,x);sum+=x*x;n++}}const rms=Math.sqrt(sum/Math.max(1,n)),dur=b.duration;if(draw)drawWave(b);return{b,peak,rms,dur,size:blob.size}}
 function drawWave(b,live){const cv=document.getElementById('r170Wave');if(!cv)return;const dpr=Math.min(2,devicePixelRatio||1),w=cv.clientWidth||300,h=cv.clientHeight||96;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,w,h);x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#c99a42';x.lineWidth=1;const d=b.getChannelData?b.getChannelData(0):b,step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const y=d[Math.min(d.length-1,i*step+j)]||0;mn=Math.min(mn,y);mx=Math.max(mx,y)}x.moveTo(i,(1+mn)*h/2);x.lineTo(i,(1+mx)*h/2)}x.stroke()}
 function studioCreate(){const lib=document.getElementById('sesKutuphane');if(!lib||document.getElementById('r170Studio'))return;const d=document.createElement('details');d.id='r170Studio';d.className='r170Hub';d.innerHTML=`<summary><span>🎙</span><span><b>KAYIT STÜDYOSU</b><small>analiz · normalize · sessizlik kırp · yeniden kayıt</small></span></summary><div class="r170Body"><select class="r170Select" id="r170StudioSel" style="width:100%" aria-label="Stüdyo kaydı seç"><option value="">Bir kayıt seç…</option></select><canvas id="r170Wave"></canvas><div class="r170StudioMeta"><div><b id="r170Dur">—</b><small>SÜRE</small></div><div><b id="r170Peak">—</b><small>TEPE</small></div><div><b id="r170Size">—</b><small>BOYUT</small></div></div><div class="r170Row" style="margin-top:8px"><button class="r170Btn" id="r170Analyze">Analiz et</button><button class="r170Btn" id="r170Norm">Normalize</button><button class="r170Btn" id="r170Trim">Sessizliği kırp</button><button class="r170Btn" id="r170ReRec">Yeniden kaydet</button></div><div class="r168Status" id="r170StudioStat">Bir kayıt seç.</div></div>`;lib.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)studioKeys()});d.querySelector('#r170StudioSel').onchange=e=>{Studio.key=e.target.value;if(Studio.key)studioAnalyze()};d.querySelector('#r170Analyze').onclick=studioAnalyze;d.querySelector('#r170Norm').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key);if(!a)return;const scale=a.peak>.001?Math.min(4,.92/a.peak):1;await REC_DB.set(Studio.key,wavFromBuffer(a.b,scale));document.getElementById('r170StudioStat').textContent='Normalize edildi · tepe ≈ %92';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170Trim').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key),b=a?.b;if(!b)return;const d0=b.getChannelData(0),th=.012;let s=0,e=d0.length-1;while(s<e&&Math.abs(d0[s])<th)s++;while(e>s&&Math.abs(d0[e])<th)e--;const pad=Math.round(b.sampleRate*.08);s=Math.max(0,s-pad);e=Math.min(d0.length,e+pad);await REC_DB.set(Studio.key,wavFromBuffer(b,1,s,e));document.getElementById('r170StudioStat').textContent='Baş/son sessizlik kırpıldı.';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170ReRec').onclick=studioRecord}
 async function studioKeys(){const s=document.getElementById('r170StudioSel');if(!s)return;const cur=s.value;let keys=[];try{keys=await REC_DB.keys()}catch(e){}try{keys=window.SukunSecretPolicy?.visibleRecKeys(keys)||keys}catch(e){}if(!keys.includes(cur)){Studio.key=null;s.value=''}s.innerHTML='<option value="">Bir kayıt seç…</option>'+keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyLabel(k))+'</option>').join('');if(keys.includes(cur))s.value=cur}
 async function studioAnalyze(){if(!Studio.key)return;const st=document.getElementById('r170StudioStat');try{st.textContent='Analiz ediliyor…';const a=await analyzeKey(Studio.key);document.getElementById('r170Dur').textContent=a.dur.toFixed(1)+' sn';document.getElementById('r170Peak').textContent=Math.round(a.peak*100)+'%';document.getElementById('r170Size').textContent=(a.size/1024).toFixed(0)+' KB';st.textContent='Hazır · RMS '+Math.round(a.rms*100)+'%'}catch(e){st.textContent='Analiz yapılamadı: '+e.message}}
-async function studioRecord(){if(!Studio.key){document.getElementById('r170StudioStat').textContent='Önce üzerine yazılacak kaydı seç.';return}const st=document.getElementById('r170StudioStat');try{if(Studio.mr&&Studio.mr.state==='recording'){Studio.mr.stop();return}st.textContent='3…';await sleep(700);st.textContent='2…';await sleep(700);st.textContent='1…';await sleep(700);const stream=await navigator.mediaDevices.getUserMedia({audio:typeof micKisit==='function'?micKisit().audio:true});Studio.stream=stream;const mr=new MediaRecorder(stream);Studio.mr=mr;Studio.chunks=[];mr.ondataavailable=e=>{if(e.data?.size)Studio.chunks.push(e.data)};mr.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(Studio.chunks,{type:mr.mimeType||'audio/webm'});await REC_DB.set(Studio.key,blob);st.textContent='Yeni kayıt kaydedildi ✦';Studio.mr=null;studioAnalyze();try{mediaRender()}catch(e){}};mr.start(250);st.textContent='⏺ Kayıt sürüyor — “Yeniden kaydet” düğmesine tekrar basınca biter.';const AC=window.AudioContext||window.webkitAudioContext;const c=new AC(),src=c.createMediaStreamSource(stream),an=c.createAnalyser();an.fftSize=512;src.connect(an);const arr=new Float32Array(an.fftSize);const live=()=>{if(!Studio.mr||Studio.mr.state!=='recording'){try{c.close()}catch(e){};return}an.getFloatTimeDomainData(arr);drawWave(arr,true);Studio.raf=requestAnimationFrame(live)};live()}catch(e){st.textContent='Mikrofon açılamadı: '+e.message}}
+/* ═══ r510 — U-02: MİKROFON VE BAĞLAM TEK KAPIDAN SERBEST BIRAKILIR ═══
+   İki uç durum vardı:
+   1) new MediaRecorder(stream) patlarsa (cihazın desteklemediği MIME —
+      bazı One UI sürümlerinde görülüyor) catch yalnız metin yazıyordu;
+      stream hiç durdurulmuyor, Android durum çubuğundaki MİKROFON
+      GÖSTERGESİ AÇIK KALIYORDU. Bir zikir uygulamasında bu, kullanıcının
+      haklı olarak paniklediği bir şey.
+   2) c.close() yalnız live() rAF döngüsünün içinde çağrılıyordu. Android'de
+      ekran kapanınca rAF DURUR; kayıt ekran kapalıyken bitirilirse döngü bir
+      daha hiç dönmez ve bağlam kapanmaz → birkaç kayıt sonra B-03'teki
+      6-bağlam duvarı.
+   Artık tek temizle() kapısı hem hata hem onstop hem onerror yolundan çağrılıyor. */
+async function studioRecord(){
+  if(!Studio.key){document.getElementById('r170StudioStat').textContent='Önce üzerine yazılacak kaydı seç.';return}
+  const st=document.getElementById('r170StudioStat');
+  let stream=null,c=null;
+
+  const temizle=()=>{
+    try{ if(Studio.raf)cancelAnimationFrame(Studio.raf) }catch(_){}
+    Studio.raf=null;
+    try{ stream&&stream.getTracks().forEach(t=>t.stop()) }catch(_){}
+    try{ Studio.stream&&Studio.stream!==stream&&Studio.stream.getTracks().forEach(t=>t.stop()) }catch(_){}
+    Studio.stream=null;
+    try{ c&&c.state!=='closed'&&c.close() }catch(_){}
+    stream=null;c=null;
+  };
+
+  try{
+    if(Studio.mr&&Studio.mr.state==='recording'){Studio.mr.stop();return}
+    st.textContent='3…';await sleep(700);
+    st.textContent='2…';await sleep(700);
+    st.textContent='1…';await sleep(700);
+
+    stream=await navigator.mediaDevices.getUserMedia({audio:typeof micKisit==='function'?micKisit().audio:true});
+    Studio.stream=stream;
+
+    /* r510: MIME desteğini kayıt başlamadan doğrula */
+    const tur=['audio/webm;codecs=opus','audio/webm','audio/mp4','']
+      .find(t=>!t||(window.MediaRecorder&&window.MediaRecorder.isTypeSupported&&window.MediaRecorder.isTypeSupported(t)));
+    const mr=new MediaRecorder(stream,tur?{mimeType:tur}:undefined);
+
+    Studio.mr=mr;Studio.chunks=[];
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)Studio.chunks.push(e.data)};
+    mr.onerror=()=>{temizle();Studio.mr=null;st.textContent='Kayıt hatası — mikrofon serbest bırakıldı.'};
+    mr.onstop=async()=>{
+      temizle();                                   /* rAF'a bağımlı değil */
+      try{
+        const blob=new Blob(Studio.chunks,{type:mr.mimeType||'audio/webm'});
+        await REC_DB.set(Studio.key,blob);
+        st.textContent='Yeni kayıt kaydedildi ✦';
+      }catch(e){ st.textContent='Kayıt saklanamadı: '+e.message }
+      Studio.mr=null;
+      try{studioAnalyze()}catch(e){}
+      try{mediaRender()}catch(e){}
+    };
+    mr.start(250);
+    st.textContent='⏺ Kayıt sürüyor — “Yeniden kaydet” düğmesine tekrar basınca biter.';
+
+    const AC=window.AudioContext||window.webkitAudioContext;
+    c=new AC();
+    const src=c.createMediaStreamSource(stream),an=c.createAnalyser();
+    an.fftSize=512;src.connect(an);
+    const arr=new Float32Array(an.fftSize);
+    const live=()=>{
+      if(!Studio.mr||Studio.mr.state!=='recording')return;   /* temizlik onstop'ta */
+      if(!c||c.state==='closed')return;
+      an.getFloatTimeDomainData(arr);drawWave(arr,true);
+      Studio.raf=requestAnimationFrame(live);
+    };
+    live();
+
+  }catch(e){
+    temizle();                                     /* ⬅ eksik olan buydu */
+    Studio.mr=null;
+    st.textContent='Mikrofon açılamadı: '+e.message;
+  }
+}
 
 /* ═══ 4: İSTATİSTİK ═══ */
 function statsCreate(){let a=document.getElementById('r170SessionHub');if(!a)return;let d=document.getElementById('r170Stats');if(d)return;d=document.createElement('details');d.id='r170Stats';d.className='r170Hub';d.innerHTML=`<summary><span>◫</span><span><b>7 GÜNLÜK SEYİR ÖZETİ</b><small>süreklilik görünümü · manevî puanlama yok</small></span></summary><div class="r170Body"><div class="r170Grid"><div class="r170Card"><h4>TOPLAM ZİKİR</h4><b id="r170StatZ">0</b></div><div class="r170Card"><h4>SEANS SÜRESİ</h4><b id="r170StatM">0 dk</b></div><div class="r170Card r170Full"><h4>SON 7 GÜN</h4><div class="r170Bars" id="r170Bars"></div></div><div class="r170Card r170Full"><h4>EN ÇOK ÇALIŞILANLAR</h4><div id="r170Top"></div></div></div></div>`;a.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)statsRender()})}
@@ -33123,7 +33305,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r509',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r510',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r478-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -40234,7 +40416,8 @@ window.__SUKUN_R434_INLINE_DOCK_DETAILS__=1;
 const BUILD='r434', $=id=>document.getElementById(id), clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 let opened=false,lastSig='',openLayers=new Set(),tick=null,seeded=false;
 
-function esc(v){try{return typeof hesc==='function'?hesc(String(v??'')):String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}catch(e){return String(v??'')}}
+/* r510 - B-01: fallback dalindaki bozuk regex duzeltildi. */
+function esc(v){try{return typeof hesc==='function'?hesc(String(v??'')):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}catch(e){return String(v??'')}}
 function miniInfo(){try{return typeof miniPlayingInfo==='function'?miniPlayingInfo():{active:false,tam:[]}}catch(e){return{active:false,tam:[]}}}
 function owner(){try{return window.SukunUniversalDock?.owner?.()||'none'}catch(e){return'none'}}
 function isActive(){return document.body?.classList.contains('r431-dock-visible')&&owner()!=='none'}
@@ -43118,7 +43301,12 @@ function render(){
     ['Audio',agg,`${activeSessions.length} aktif session`,agg==='playing'?'dOk':agg==='paused'?'dWarn':''],
     ['Provider',s.audio.controller?.id||'—',s.audio.controller?.state||'idle',''],
     ['AudioContext',p.active?.audioContexts??0,`${(p.audioContexts||[]).map(x=>x.state).join(', ')||'yok'}`,''],
-    ['Timers',`${p.active?.timeouts??0}/${p.active?.intervals??0}`,`timeout / interval · RAF ${p.active?.raf??0}`,''],
+    ['Timers',
+      p.diagTimers===false?'—':`${p.active?.timeouts??0}/${p.active?.intervals??0}`,
+      p.diagTimers===false
+        ? 'takip kapalı · ?diag=1 ile aç'
+        : `timeout / interval · RAF ${p.active?.raf??0}`,
+      ''],
     ['Observers',p.active?.observers??0,`toplam oluşturulan ${p.totals?.observerCreated??0}`,''],
     ['Long task',p.totals?.longTaskCount??0,`en kötü ${worst.toFixed(1)} ms`,worst>=200?'dFail':worst>=100?'dWarn':''],
     ['Errors',errs,errs?(p.errors.at(-1)?.message||'hata'):'runtime temiz',errs?'dFail':'dOk'],

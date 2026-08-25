@@ -1,8 +1,8 @@
-/* SÜKÛN r509 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r510 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r509';
-const CACHE = 'sukun-r509-20260824a';
+const SURUM = 'r510';
+const CACHE = 'sukun-r510-20260824a';
 
 const KABUK = [
   './nero.html',
@@ -14,6 +14,17 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r510 KRİTİK: SW her açılışta 3,4 MB nero.html indiriyordu ve zaman aşımı yoktu — yavaş ağda uygulama beyaz ekranda asılı kalıyordu. Ağ 2,5 sn beklenir, yetişmezse önbellek anında döner.',
+  'r510 SW önbellek yazımları kritik yoldan çıkarıldı; ilk boyama iki adet 3,4 MB yazımı beklemiyor.',
+  'r510 Sorgu dizesi artık yutulmuyor: ?v=... ile cache-busting gerçekten çalışıyor.',
+  'r510 Ne ağ ne önbellek varsa ham ağ hatası yerine anlaşılır çevrimdışı ekranı gösteriliyor.',
+  'r510 KRİTİK: iki bozuk HTML kaçış fonksiyonu düzeltildi; tırnak/ters bölü içeren metinler undefined\'e dönüşüyordu. Yedi kopya tek otoriteye bağlandı.',
+  'r510 KRİTİK: yedek geri yüklemede İptal dalı gizlilik filtresini ve içerik doğrulamasını atlıyordu.',
+  'r510 KRİTİK: yedek sınırı 300 MB → 64 MB; 300 MB tek dizeye açılınca telefonda sekme uyarısız ölüyordu.',
+  'r510 Stüdyo kaydı: mikrofon her çıkış yolunda serbest bırakılıyor, AudioContext kapatma rAF\'a bağımlı değil.',
+  'r510 decodeBlob artık yeni canlı AudioContext açmıyor; Chrome 6-bağlam duvarı aşılmıyor.',
+  'r510 Gemini API anahtarı URL sorgu dizesinden x-goog-api-key başlığına taşındı.',
+  'r510 Tanılama zamanlayıcı takibi üretimde kapalı; ?diag=1 ile açılıyor.',
   'r509 Akış sertleştirme 4-8: transaction + voice resolver + resume policy + Nefs frekans truth + lifecycle cleanup.',
   'r508 Akış mimarisi 1-2-3: SukunViewportPolicy + currentFlowState + SukunFlowNavigation; viewport, state ve prev/reset/next tekilleştirildi.',
   'r507 Nefs akışı: basamak seçiminde scroll sabit; canlı bar Nefs basamağı + zikir + taşıyıcı/vuruş frekansını gösterir.',
@@ -243,34 +254,88 @@ self.addEventListener('activate', event => {
  * nero.html içindeki updatefound/SKIP_WAITING akışıyla kullanıcıya
  * «Yeni sürüm hazır · Yenile ✦» olarak bildiriliyor — veri kaybı yok.
  */
+/*
+ * r510 — P-01: AĞI KISA BEKLE, ÖNBELLEĞİ ANINDA VER
+ *
+ * r489 navigasyonu network-first'e çevirdi ve `cache:'no-store'` ekledi.
+ * Bu üç ayrı maliyeti üst üste bindiriyordu:
+ *
+ *  1. Her açılışta tam 3,4 MB nero.html ağdan yeniden çekiliyordu. r414
+ *     notu "her açılışta 3 MB indirilmiyor" diye bunu düzeltmişti;
+ *     r489 ile kazanım kayboldu. Mobil veride bu gerçek para.
+ *
+ *  2. Zaman aşımı yoktu. Ağ YAVAŞ ama ölü değilse (metroda, zayıf sinyalde)
+ *     fetch tarayıcı zaman aşımına kadar (30-120 sn) bekliyor ve önbellekteki
+ *     kabuk o süre boyunca HİÇ dönmüyordu. Kullanıcı için bu, tamamen
+ *     çevrimdışı olmaktan daha kötü: uygulama beyaz ekranda asılı kalıyor.
+ *
+ *  3. İki `await cache.put` yanıt dönmeden önce bekleniyordu — ilk boyamanın
+ *     önünde sırayla ~6,8 MB'lık depolama yazımı.
+ *
+ * Yeni davranış: ağ AG_ZAMAN_ASIMI kadar beklenir. Yetişirse taze kopya
+ * döner ve önbellek ARKADA tazelenir (await yok). Yetişmezse önbellekteki
+ * kabuk anında döner, tazeleme arka plana atılır. Yeni sürüm bildirimi
+ * zaten nero.html içindeki updatefound/SKIP_WAITING akışıyla çalışıyor.
+ */
+const AG_ZAMAN_ASIMI = 2500;
+
+function zamanliFetch(request, ms) {
+  return new Promise(resolve => {
+    let bitti = false;
+    const t = setTimeout(() => {
+      if (!bitti) { bitti = true; resolve(null); }
+    }, ms);
+    fetch(request)
+      .then(r => { if (!bitti) { bitti = true; clearTimeout(t); resolve(r); } })
+      .catch(() => { if (!bitti) { bitti = true; clearTimeout(t); resolve(null); } });
+  });
+}
+
 async function kabukOncelikli(request) {
-  /* r489 — navigation NETWORK-FIRST.
-     r488'de cached shell önce dönüyordu ve ignoreSearch:true yüzünden
-     nero.html?v=... bile kırık HTML cache'ini aşamıyordu. */
-  try {
-    const response = await fetch(request, { cache: 'no-store' });
+  const onbellek = await caches.open(CACHE);
+  const shellUrl = new URL('./nero.html', self.location).href;
 
-    if (response && response.ok && response.type !== 'opaque') {
-      const cache = await caches.open(CACHE);
-      /* Hem tam request'i hem canonical shell'i güncelle. */
-      await cache.put(request, response.clone()).catch(() => {});
-      try {
-        const shell = new Request(new URL('./nero.html', self.location).href, {
-          method: 'GET',
-          credentials: 'same-origin',
-          cache: 'reload'
-        });
-        await cache.put(shell, response.clone()).catch(() => {});
-      } catch (_) {}
-      return response;
-    }
-  } catch (_) {}
+  /* 1) Ağı KISA süre bekle. */
+  const taze = await zamanliFetch(request, AG_ZAMAN_ASIMI);
 
+  if (taze && taze.ok && taze.type !== 'opaque') {
+    /* await YOK: 3,4 MB'lık yazımlar ilk boyamayı bekletmemeli. */
+    const k1 = taze.clone(), k2 = taze.clone();
+    onbellek.put(request, k1).catch(() => {});
+    onbellek.put(shellUrl, k2).catch(() => {});
+    return taze;
+  }
+
+  /* 2) Ağ yavaş veya yok: önbellekteki kabuğu ANINDA ver. */
   const cached =
     await caches.match(request, { ignoreSearch: true }) ||
     await caches.match('./nero.html', { ignoreSearch: true });
 
-  return cached || Response.error();
+  if (cached) {
+    /* Tazelemeyi arkaya at — kullanıcı beklemez, sonraki açılış taze olur. */
+    fetch(request).then(r => {
+      if (r && r.ok && r.type !== 'opaque') {
+        const k1 = r.clone(), k2 = r.clone();
+        onbellek.put(request, k1).catch(() => {});
+        onbellek.put(shellUrl, k2).catch(() => {});
+      }
+    }).catch(() => {});
+    return cached;
+  }
+
+  /* 3) Ne ağ ne önbellek: tarayıcının ham ağ hatası yerine anlaşılır ekran. */
+  return new Response(
+    '<!doctype html><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>SÜKÛN</title>' +
+    '<body style="background:#05090c;color:#8fe9ff;font:16px/1.7 system-ui,sans-serif;' +
+    'display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px">' +
+    '<div><div style="font-size:44px;opacity:.75">۞</div>' +
+    '<p>SÜKÛN çevrimdışı ve önbellek boş.</p>' +
+    '<p style="opacity:.6;font-size:14px">Bir kez çevrimiçi aç; sonrası çevrimdışı çalışır.</p>' +
+    '</div>',
+    { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+  );
 }
 
 
@@ -280,11 +345,18 @@ async function kabukOncelikli(request) {
 ───────────────────────────────────── */
 
 async function onbellekOncelikli(request) {
-  const cached = await caches.match(
-    request,
-    { ignoreSearch: true }
-  );
+  /* r510 — P-02: SORGU DİZESİ BİLİNÇLİ BİR CACHE-BUST SİNYALİDİR.
+     ignoreSearch:true her zaman açıkken manifest.webmanifest?v=r510 isteği
+     önbellekteki r509 kopyasını döndürüyordu. Yani sürüm parametresiyle
+     cache-busting yapmanın yolu kapalıydı: kırık bir varlık önbelleğe
+     girerse oradan bir daha çıkamıyordu. Sorgu VARSA tam eşleşme iste;
+     sorgu yoksa eski davranış (esnek eşleşme) korunur. */
+  const kesin = !!(new URL(request.url).search);
 
+  let cached = await caches.match(request, { ignoreSearch: !kesin });
+
+  /* Kesin eşleşme tutmadıysa sorgusuz sürümü dene ve TAZELEMEYE git:
+     böylece ?v=r510 gerçekten yeni kopyayı çekmeye zorlar. */
   if (cached) {
     return cached;
   }
