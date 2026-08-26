@@ -1,8 +1,8 @@
-/* SÜKÛN r521 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r522 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r521';
-const CACHE = 'sukun-r521-20260825a';
+const SURUM = 'r522';
+const CACHE = 'sukun-r522-20260825a';
 
 const KABUK = [
   './nero.html',
@@ -17,6 +17,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r522 Dört ninni tınısı: Beşik Salıncağı, Anne Mırıltısı, Ay Işığı, Uyku Neyi. Hepsi prosedürel, ses dosyası yok.',
   'r521 Makam kartlarında bilgi, önizleme ve anahtar üst üste biniyordu. r520 gerilemesi + eski sütun taşması birlikte kapatıldı. 320-900px arası çakışma sıfır.',
   'r520 KRİTİK: ambiyans adları 7 piksele sıkışıyordu, 70 kanalın 60ında ad kesikti — satır ikiye ayrıldı, kesilen 0a indi. Seçili Esmâ şeridi zikir tablosunun içine alındı.',
   'r519 Açılış perdesi: mühür küçükten büyüğe, vuruşta halkalar, gong + Hû. Gövdenin başında satır içi olduğu için boot maliyetine eklenmiyor, onu örtüyor. Ses girişi engellemez; ayardan kapatılabilir.',
