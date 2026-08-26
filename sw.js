@@ -1,8 +1,8 @@
-/* SÜKÛN r524 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r526 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r524';
-const CACHE = 'sukun-r524-20260826a';
+const SURUM = 'r526';
+const CACHE = 'sukun-r526-20260826a';
 
 const KABUK = [
   './nero.html',
@@ -17,6 +17,8 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r526 Berhetiyye artık isim kartı ve önceki/sıradaki gezinmesi ile geliyor — Esmâül Hüsnâdaki gibi.',
+  'r525 KRİTİK: kendi sesinle zikirde her tekrarda kayıt yeniden çözülüyordu (önbellek Blob kimliğine bağlıydı, hep ıskalıyordu). Cızırtı ve takılmanın sebebi buydu. 8 çözme → 1.',
   'r524 Ses grafiği sızıntısının kalanı kapatıldı: 16 kanal düğümü yardımcılardan geçmeden üretiyordu. Süpürge + yakalayıcı eklendi, birikim durdu.',
   'r523 KRİTİK: ses grafiği sürekli büyüyor, telefonu ısıtıyor ve cızırtıya yol açıyordu. Nota düğümleri artık bitince grafikten düşürülüyor — asılı düğüm 2602den 56ya indi, büyüme durdu.',
   'r522 Dört ninni tınısı: Beşik Salıncağı, Anne Mırıltısı, Ay Işığı, Uyku Neyi. Hepsi prosedürel, ses dosyası yok.',
