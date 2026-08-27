@@ -1,8 +1,8 @@
-/* SÜKÛN r527 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r528 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r527';
-const CACHE = 'sukun-r527-20260827a';
+const SURUM = 'r528';
+const CACHE = 'sukun-r528-20260827a';
 
 const KABUK = [
   './nero.html',
@@ -16,6 +16,7 @@ const KABUK = [
 ];
 
 const NOTLAR = [
+  'r528 Tefekkürden Çık yalnız canonical sayaç akışında geri getirildi: halka ile işlem tuşları arasında, tek düğüm ve doğrudan exit() bağlantısı. Eski üst × slotları kapalı kalır; neon görünüm statik ve kısa ekranlara uyumludur.',
   'r527 Tefekkürdeki iki eski çıkış üretim yolu kaldırıldı; Berhetiyye adı sunum modu kapalı olsa da üstte görünür. Mini oynatıcı Önceki/Sonraki düğmeleri gerçek kimlikleriyle merkezi ses sözleşmesine bağlandı; eksik SVG kabuk başvurusu kaldırıldı.',
   'r526 Berhetiyye artık isim kartı ve önceki/sıradaki gezinmesi ile geliyor — Esmâül Hüsnâdaki gibi.',
   'r525 KRİTİK: kendi sesinle zikirde her tekrarda kayıt yeniden çözülüyordu (önbellek Blob kimliğine bağlıydı, hep ıskalıyordu). Cızırtı ve takılmanın sebebi buydu. 8 çözme → 1.',
