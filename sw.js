@@ -1,8 +1,8 @@
-/* SÜKÛN r526 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r527 — dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r526';
-const CACHE = 'sukun-r526-20260826a';
+const SURUM = 'r527';
+const CACHE = 'sukun-r527-20260827a';
 
 const KABUK = [
   './nero.html',
@@ -10,13 +10,13 @@ const KABUK = [
   /* r514 — C: sürüm arşivi artık ayrı dosya (139 KB gömülüydü → 19 KB).
      Ön belleğe alınıyor ki "tüm geçmişi göster" çevrimdışı da çalışsın. */
   './surumler.json',
-  './sukun-icon.svg',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png'
 ];
 
 const NOTLAR = [
+  'r527 Tefekkürdeki iki eski çıkış üretim yolu kaldırıldı; Berhetiyye adı sunum modu kapalı olsa da üstte görünür. Mini oynatıcı Önceki/Sonraki düğmeleri gerçek kimlikleriyle merkezi ses sözleşmesine bağlandı; eksik SVG kabuk başvurusu kaldırıldı.',
   'r526 Berhetiyye artık isim kartı ve önceki/sıradaki gezinmesi ile geliyor — Esmâül Hüsnâdaki gibi.',
   'r525 KRİTİK: kendi sesinle zikirde her tekrarda kayıt yeniden çözülüyordu (önbellek Blob kimliğine bağlıydı, hep ıskalıyordu). Cızırtı ve takılmanın sebebi buydu. 8 çözme → 1.',
   'r524 Ses grafiği sızıntısının kalanı kapatıldı: 16 kanal düğümü yardımcılardan geçmeden üretiyordu. Süpürge + yakalayıcı eklendi, birikim durdu.',
