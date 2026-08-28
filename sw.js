@@ -1,21 +1,36 @@
-/* SÜKÛN r528 — dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r528';
-const CACHE = 'sukun-r528-20260827a';
+const SURUM = 'r532';
+const CACHE = 'sukun-r532-20260828a';
 
-const KABUK = [
+const CORE = [
   './nero.html',
-  './manifest.webmanifest',
-  /* r514 — C: sürüm arşivi artık ayrı dosya (139 KB gömülüydü → 19 KB).
-     Ön belleğe alınıyor ki "tüm geçmişi göster" çevrimdışı da çalışsın. */
+  './manifest.webmanifest'
+];
+const OPTIONAL = [
   './surumler.json',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png'
 ];
+const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r532 Uygulama içi değişiklik günlüğü üç sürüm geridedeydi; r529, r530 ve r531 notları işlendi. Kod davranışı değişmedi, r531 baştan sona doğrulandı.',
+  'r531 Ses yaşam döngüsü: kullanıcı pause ve sistem kesintisi ayrıldı; tek single-flight recovery kuyruğu.',
+  'r531 Veri geçişleri idempotent ledger + IndexedDB versionchange/blocked güvenliği ile sertleştirildi.',
+  'r531 Service Worker atomik shell doğrulaması, staging/marker ve kullanıcı onaylı aktivasyon kullanır.',
+  'r531 Diagnostics recovery, migration, SW/cache ve Android lifecycle izini raporlar.',
+  'r530 Stabilizasyon II: Tefekkür, isim sunumu, navigation, canlı bar ve canonical owner CSS katmanları dosyanın sonundaki tek kritik stil otoritesinde birleştirildi.',
+  'r530 Dock çekirdeğinin ikinci r496 DOM düzenleyicisi kaldırıldı; SukunDockCore ve gezinme tek runtime sahibinden çalışır.',
+  'r530 Canonical owner denetimi Tefekkür motoruna alındı; ayrı r506 runtime/listener kümesi kaldırıldı.',
+  'r530 Esmâ/Berhetiyye sunumundaki belge-geneli MutationObserver olay tabanlı yaşam döngüsü ve zikir kimliği akışına çevrildi.',
+  'r530 Diagnostics son stil otoritesi, emekli blokların yokluğu ve tek DOM sahibi sözleşmesini denetler.',
+  'r529 Stabilizasyon I: gezinme sahipliği bağlama göre tekilleştirildi; normal zikirde sayaç, Akıllı Seans\'ta dock, Tefekkürde canonical sayaç tek görünür Önceki/Baştan/Sonraki yüzeyidir.',
+  'r529 Tefekkür gerçek sistem tam ekranı artık isteğe bağlıdır. Varsayılan uygulama içi odak görünümü Android sistem bildirimini ve geri hareketi sürtünmesini kaldırır; Ayarlardan sistem tam ekranı seçilebilir.',
+  'r529 Kritik Tefekkür ve canlı bar yazıları okunur ölçeğe, dokunma hedefleri güvenli mobil boyuta yükseltildi. Neon çıkış 44 px ve statik kaldı; kısa ekranlarda halka yer açacak şekilde ölçülür.',
+  'r529 Diagnostics; tek Tefekkür gezinme yüzeyi, dokunma/okunabilirlik eşiği ve tam ekran politikası sözleşmelerini denetler.',
   'r528 Tefekkürden Çık yalnız canonical sayaç akışında geri getirildi: halka ile işlem tuşları arasında, tek düğüm ve doğrudan exit() bağlantısı. Eski üst × slotları kapalı kalır; neon görünüm statik ve kısa ekranlara uyumludur.',
   'r527 Tefekkürdeki iki eski çıkış üretim yolu kaldırıldı; Berhetiyye adı sunum modu kapalı olsa da üstte görünür. Mini oynatıcı Önceki/Sonraki düğmeleri gerçek kimlikleriyle merkezi ses sözleşmesine bağlandı; eksik SVG kabuk başvurusu kaldırıldı.',
   'r526 Berhetiyye artık isim kartı ve önceki/sıradaki gezinmesi ile geliyor — Esmâül Hüsnâdaki gibi.',
@@ -197,284 +212,140 @@ const NOTLAR = [
   'r252 düzenleme, doğrulama, geri al ve hata kurtarma sistemi korunuyor.'
 ];
 
-async function kabuguHazirla() {
-  const cache = await caches.open(CACHE);
-
-  /*
-   * Tek bir eksik opsiyonel ikon
-   * bütün Service Worker kurulumunu düşürmesin.
-   */
-  await Promise.allSettled(
-    KABUK.map(async yol => {
-      const req = new Request(yol, {
-        cache: 'reload'
-      });
-
-      const res = await fetch(req);
-
-      if (res && res.ok) {
-        await cache.put(req, res.clone());
-      }
-    })
-  );
+function buildOfHtml(text){
+  const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
+  return m?m[1]:'';
+}
+async function fetchReload(path){
+  const req=new Request(path,{cache:'reload'});
+  const res=await fetch(req);
+  if(!res||!res.ok||res.type==='opaque')throw new Error('fetch '+path+' '+(res?.status||'failed'));
+  return{req,res};
+}
+async function validateCore(path,res){
+  if(path.includes('nero.html')){
+    const text=await res.clone().text();
+    if(buildOfHtml(text)!==SURUM)throw new Error('HTML build mismatch: '+buildOfHtml(text)+' != '+SURUM);
+  }else if(path.includes('manifest.webmanifest')){
+    const obj=await res.clone().json();
+    if(!obj||obj.short_name!=='SÜKÛN'||!obj.start_url)throw new Error('manifest invalid');
+  }
+  return true;
+}
+async function marker(cache){
+  const r=await cache.match(BUILD_MARKER);
+  if(!r)return null;
+  try{return await r.json()}catch(e){return null}
+}
+async function kabuguHazirla(){
+  const cache=await caches.open(CACHE);
+  /* CORE tam değilse install başarısız olsun: yarım yeni sürüm asla aktive edilmez. */
+  for(const path of CORE){
+    const {req,res}=await fetchReload(path);
+    await validateCore(path,res);
+    await cache.put(req,res.clone());
+  }
+  /* Opsiyoneller güncellemeyi düşürmez. */
+  await Promise.allSettled(OPTIONAL.map(async path=>{
+    const {req,res}=await fetchReload(path);await cache.put(req,res.clone());
+  }));
+  const meta={v:SURUM,cache:CACHE,complete:true,at:Date.now(),core:CORE.slice()};
+  await cache.put(BUILD_MARKER,new Response(JSON.stringify(meta),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}));
+  return meta;
+}
+async function currentComplete(){
+  const cache=await caches.open(CACHE);const m=await marker(cache);
+  if(!m||m.v!==SURUM||m.complete!==true)return false;
+  for(const path of CORE){if(!await cache.match(path,{ignoreSearch:true}))return false}
+  return true;
 }
 
-
-/* ─────────────────────────────────────
-   INSTALL
-───────────────────────────────────── */
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    kabuguHazirla()
-      .then(() => self.skipWaiting())
-  );
+self.addEventListener('install',event=>{
+  /* skipWaiting YOK: güncelleme waiting'de kalır, kullanıcı Yenile derse aktive olur. */
+  event.waitUntil(kabuguHazirla());
 });
 
-
-/* ─────────────────────────────────────
-   ACTIVATE
-───────────────────────────────────── */
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then(keys =>
-        Promise.all(
-          keys
-            .filter(
-              key =>
-                key.startsWith('sukun-') &&
-                key !== CACHE
-            )
-            .map(key => caches.delete(key))
-        )
-      ),
-
-      self.clients.claim()
-    ])
-  );
+self.addEventListener('activate',event=>{
+  event.waitUntil((async()=>{
+    if(!await currentComplete())throw new Error('r531 cache incomplete — old worker preserved');
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
+    await self.clients.claim();
+    const cs=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    cs.forEach(c=>{try{c.postMessage({type:'SUKUN_SW_STATUS',v:SURUM,cache:CACHE,complete:true})}catch(e){}});
+  })());
 });
 
-
-/* ─────────────────────────────────────
-   NETWORK FIRST
-   Sayfa navigasyonları
-───────────────────────────────────── */
-
-/*
- * r414 — ÖNBELLEK ÖNCE, ARKADA TAZELE (stale-while-revalidate)
- *
- * Eskiden burası network-first idi: her açılışta 3 MB'lık nero.html
- * ağdan yeniden çekiliyor, mobil veride hem yavaş hem pahalı oluyordu.
- * Çevrimdışı çalışmak üzere tasarlanmış bir uygulamada bu ters bir tercih.
- *
- * Yeni davranış: önbellekteki kabuk ANINDA döner (açılış ağ turu beklemez),
- * güncel kopya arka planda indirilip önbelleğe yazılır. Yeni sürüm zaten
- * nero.html içindeki updatefound/SKIP_WAITING akışıyla kullanıcıya
- * «Yeni sürüm hazır · Yenile ✦» olarak bildiriliyor — veri kaybı yok.
- */
-/*
- * r510 — P-01: AĞI KISA BEKLE, ÖNBELLEĞİ ANINDA VER
- *
- * r489 navigasyonu network-first'e çevirdi ve `cache:'no-store'` ekledi.
- * Bu üç ayrı maliyeti üst üste bindiriyordu:
- *
- *  1. Her açılışta tam 3,4 MB nero.html ağdan yeniden çekiliyordu. r414
- *     notu "her açılışta 3 MB indirilmiyor" diye bunu düzeltmişti;
- *     r489 ile kazanım kayboldu. Mobil veride bu gerçek para.
- *
- *  2. Zaman aşımı yoktu. Ağ YAVAŞ ama ölü değilse (metroda, zayıf sinyalde)
- *     fetch tarayıcı zaman aşımına kadar (30-120 sn) bekliyor ve önbellekteki
- *     kabuk o süre boyunca HİÇ dönmüyordu. Kullanıcı için bu, tamamen
- *     çevrimdışı olmaktan daha kötü: uygulama beyaz ekranda asılı kalıyor.
- *
- *  3. İki `await cache.put` yanıt dönmeden önce bekleniyordu — ilk boyamanın
- *     önünde sırayla ~6,8 MB'lık depolama yazımı.
- *
- * Yeni davranış: ağ AG_ZAMAN_ASIMI kadar beklenir. Yetişirse taze kopya
- * döner ve önbellek ARKADA tazelenir (await yok). Yetişmezse önbellekteki
- * kabuk anında döner, tazeleme arka plana atılır. Yeni sürüm bildirimi
- * zaten nero.html içindeki updatefound/SKIP_WAITING akışıyla çalışıyor.
- */
-const AG_ZAMAN_ASIMI = 2500;
-
-function zamanliFetch(request, ms) {
-  return new Promise(resolve => {
-    let bitti = false;
-    const t = setTimeout(() => {
-      if (!bitti) { bitti = true; resolve(null); }
-    }, ms);
-    fetch(request)
-      .then(r => { if (!bitti) { bitti = true; clearTimeout(t); resolve(r); } })
-      .catch(() => { if (!bitti) { bitti = true; clearTimeout(t); resolve(null); } });
-  });
+const AG_ZAMAN_ASIMI=2500;
+function zamanliFetch(request,ms){
+  return new Promise(resolve=>{let done=false;const t=setTimeout(()=>{if(!done){done=true;resolve(null)}},ms);fetch(request).then(r=>{if(!done){done=true;clearTimeout(t);resolve(r)}}).catch(()=>{if(!done){done=true;clearTimeout(t);resolve(null)}})});
 }
-
-async function kabukOncelikli(request) {
-  const onbellek = await caches.open(CACHE);
-  const shellUrl = new URL('./nero.html', self.location).href;
-
-  /* 1) Ağı KISA süre bekle. */
-  const taze = await zamanliFetch(request, AG_ZAMAN_ASIMI);
-
-  if (taze && taze.ok && taze.type !== 'opaque') {
-    /* await YOK: 3,4 MB'lık yazımlar ilk boyamayı bekletmemeli. */
-    const k1 = taze.clone(), k2 = taze.clone();
-    onbellek.put(request, k1).catch(() => {});
-    onbellek.put(shellUrl, k2).catch(() => {});
-    return taze;
-  }
-
-  /* 2) Ağ yavaş veya yok: önbellekteki kabuğu ANINDA ver. */
-  const cached =
-    await caches.match(request, { ignoreSearch: true }) ||
-    await caches.match('./nero.html', { ignoreSearch: true });
-
-  if (cached) {
-    /* Tazelemeyi arkaya at — kullanıcı beklemez, sonraki açılış taze olur. */
-    fetch(request).then(r => {
-      if (r && r.ok && r.type !== 'opaque') {
-        const k1 = r.clone(), k2 = r.clone();
-        onbellek.put(request, k1).catch(() => {});
-        onbellek.put(shellUrl, k2).catch(() => {});
-      }
-    }).catch(() => {});
-    return cached;
-  }
-
-  /* 3) Ne ağ ne önbellek: tarayıcının ham ağ hatası yerine anlaşılır ekran. */
-  return new Response(
-    '<!doctype html><meta charset="utf-8">' +
-    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>SÜKÛN</title>' +
-    '<body style="background:#05090c;color:#8fe9ff;font:16px/1.7 system-ui,sans-serif;' +
-    'display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px">' +
-    '<div><div style="font-size:44px;opacity:.75">۞</div>' +
-    '<p>SÜKÛN çevrimdışı ve önbellek boş.</p>' +
-    '<p style="opacity:.6;font-size:14px">Bir kez çevrimiçi aç; sonrası çevrimdışı çalışır.</p>' +
-    '</div>',
-    { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-  );
+async function shellCached(){
+  const cache=await caches.open(CACHE);
+  if(!(await marker(cache))?.complete)return null;
+  return await cache.match('./nero.html',{ignoreSearch:true});
 }
-
-
-/* ─────────────────────────────────────
-   CACHE FIRST
-   Statik uygulama kaynakları
-───────────────────────────────────── */
-
-async function onbellekOncelikli(request) {
-  /* r510 — P-02: SORGU DİZESİ BİLİNÇLİ BİR CACHE-BUST SİNYALİDİR.
-     ignoreSearch:true her zaman açıkken manifest.webmanifest?v=r510 isteği
-     önbellekteki r509 kopyasını döndürüyordu. Yani sürüm parametresiyle
-     cache-busting yapmanın yolu kapalıydı: kırık bir varlık önbelleğe
-     girerse oradan bir daha çıkamıyordu. Sorgu VARSA tam eşleşme iste;
-     sorgu yoksa eski davranış (esnek eşleşme) korunur. */
-  const kesin = !!(new URL(request.url).search);
-
-  let cached = await caches.match(request, { ignoreSearch: !kesin });
-
-  /* Kesin eşleşme tutmadıysa sorgusuz sürümü dene ve TAZELEMEYE git:
-     böylece ?v=r510 gerçekten yeni kopyayı çekmeye zorlar. */
-  if (cached) {
-    return cached;
-  }
-
-  try {
-    const response = await fetch(request);
-
-    if (
-      response &&
-      response.ok &&
-      response.type !== 'opaque'
-    ) {
-      const cache = await caches.open(CACHE);
-
-      cache
-        .put(request, response.clone())
-        .catch(() => {});
+async function responseBuild(res){
+  try{return buildOfHtml(await res.clone().text())}catch(e){return''}
+}
+async function kabukOncelikli(request){
+  const cache=await caches.open(CACHE);
+  const cached=await shellCached();
+  const fresh=await zamanliFetch(new Request(request,{cache:'no-store'}),AG_ZAMAN_ASIMI);
+  if(fresh&&fresh.ok&&fresh.type!=='opaque'){
+    const b=await responseBuild(fresh);
+    if(b===SURUM){
+      /* Yalnız AYNI build mevcut worker cache'ine yazılabilir. */
+      eventlessPut(cache,'./nero.html',fresh.clone());
+      return fresh;
     }
-
-    return response;
-
-  } catch (_) {
-
-    return Response.error();
-  }
-}
-
-
-/* ─────────────────────────────────────
-   FETCH
-───────────────────────────────────── */
-
-self.addEventListener('fetch', event => {
-  const request = event.request;
-
-  if (request.method !== 'GET') {
-    return;
-  }
-
-  const url = new URL(request.url);
-
-  if (url.origin !== self.location.origin) {
-    return;
-  }
-
-  event.respondWith(
-    request.mode === 'navigate'
-      ? kabukOncelikli(request)
-      : onbellekOncelikli(request)
-  );
-});
-
-
-/* ─────────────────────────────────────
-   MESSAGE API
-───────────────────────────────────── */
-
-self.addEventListener('message', event => {
-  const veri = event.data || {};
-
-
-  if (veri.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-    return;
-  }
-
-
-  if (veri.type === 'SURUM_NOTU') {
-    const port =
-      event.ports &&
-      event.ports[0];
-
-    if (port) {
-      port.postMessage({
-        v: SURUM,
-        notlar: NOTLAR
-      });
+    if(b&&b!==SURUM){
+      /* Ağda daha yeni HTML var ama bu worker eski: sürümleri karıştırma. */
+      try{self.registration.update()}catch(e){}
+      if(cached)return cached;
+      /* İlk kurulum gibi cache yoksa ağdaki sayfa son çare; yeni worker hemen kurulacaktır. */
+      return fresh;
     }
   }
+  if(cached){
+    /* Arka plan refresh yalnız aynı buildse cache'e girer. */
+    fetch(new Request(request,{cache:'no-store'})).then(async r=>{
+      if(r?.ok&&(await responseBuild(r))===SURUM)eventlessPut(cache,'./nero.html',r.clone());
+      else if(r?.ok)try{self.registration.update()}catch(e){}
+    }).catch(()=>{});
+    return cached;
+  }
+  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SÜKÛN</title><body style="background:#05090c;color:#8fe9ff;font:16px/1.7 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px"><div><div style="font-size:44px;opacity:.75">۞</div><p>SÜKÛN çevrimdışı ve doğrulanmış önbellek yok.</p><p style="opacity:.6;font-size:14px">Bir kez çevrimiçi aç; sonrası çevrimdışı çalışır.</p></div>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+}
+function eventlessPut(cache,key,res){cache.put(key,res).catch(()=>{})}
 
+async function onbellekOncelikli(request){
+  const exact=!!new URL(request.url).search;
+  const cached=await caches.match(request,{ignoreSearch:!exact});
+  if(cached)return cached;
+  try{
+    const res=await fetch(request);
+    if(res?.ok&&res.type!=='opaque'){
+      const cache=await caches.open(CACHE);eventlessPut(cache,request,res.clone());
+    }
+    return res;
+  }catch(e){return Response.error()}
+}
 
-  if (veri.type === 'CACHE_REFRESH') {
-    const port =
-      event.ports &&
-      event.ports[0];
+self.addEventListener('fetch',event=>{
+  const request=event.request;if(request.method!=='GET')return;
+  const url=new URL(request.url);if(url.origin!==self.location.origin)return;
+  event.respondWith(request.mode==='navigate'?kabukOncelikli(request):onbellekOncelikli(request));
+});
 
-    event.waitUntil(
-      kabuguHazirla()
-        .then(() => {
-          try {
-            if (port) {
-              port.postMessage({
-                ok: true,
-                v: SURUM
-              });
-            }
-          } catch (_) {}
-        })
-    );
+self.addEventListener('message',event=>{
+  const d=event.data||{},port=event.ports?.[0];
+  if(d.type==='SKIP_WAITING'){self.skipWaiting();return}
+  if(d.type==='SURUM_NOTU'){try{port?.postMessage({v:SURUM,notlar:NOTLAR})}catch(e){};return}
+  if(d.type==='STATUS'){
+    event.waitUntil((async()=>{const cache=await caches.open(CACHE),m=await marker(cache);try{port?.postMessage({v:SURUM,cache:CACHE,complete:!!m?.complete,marker:m,error:m?'':'marker missing'})}catch(e){}})());return;
+  }
+  if(d.type==='CACHE_REFRESH'){
+    event.waitUntil(kabuguHazirla().then(m=>{try{port?.postMessage({ok:true,v:SURUM,cache:CACHE,complete:!!m?.complete})}catch(e){}}).catch(e=>{try{port?.postMessage({ok:false,v:SURUM,error:String(e?.message||e)})}catch(_){}}));
   }
 });
