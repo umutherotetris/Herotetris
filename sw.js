@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r538';
-const CACHE = 'sukun-r538-20260828a';
+const SURUM = 'r539';
+const CACHE = 'sukun-r539-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r539 Kilit ekranında isim değişmiyordu: çalan ses elemanının kaynağı yalnız kilit başlarken atanıyor, isim değişince güncellenmiyordu. Anahtara göre kaynak değiştirme eklendi.',
   'r538 Kilit ekranında sıradaki isme geçilmiyordu: hedef dolunca geçiş erteleniyor ve yalnız ses bitiş geri çağrısında işleniyordu; kilitliyken o geri çağrı gelmeyince geçiş sessizce düşüyordu. Emniyet ağı eklendi.',
   'r537 Kulaklık/kilit ekranı başlatma düğmesi ölüydü: paused bayrağı yanlış kaldığı için sürdürme yerine başlatma dalına giriliyordu. Artık gerçek duruma bakılıyor.',
   'r536 Kilit ekranında sonraki isme geçilmiyordu: isim ilerliyor ama sonraki sesin hazırlığı gizliyken atlanıyordu. Koruma bu çağrı için kaldırıldı.',
