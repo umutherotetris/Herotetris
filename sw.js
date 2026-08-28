@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r537';
-const CACHE = 'sukun-r537-20260828a';
+const SURUM = 'r538';
+const CACHE = 'sukun-r538-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r538 Kilit ekranında sıradaki isme geçilmiyordu: hedef dolunca geçiş erteleniyor ve yalnız ses bitiş geri çağrısında işleniyordu; kilitliyken o geri çağrı gelmeyince geçiş sessizce düşüyordu. Emniyet ağı eklendi.',
   'r537 Kulaklık/kilit ekranı başlatma düğmesi ölüydü: paused bayrağı yanlış kaldığı için sürdürme yerine başlatma dalına giriliyordu. Artık gerçek duruma bakılıyor.',
   'r536 Kilit ekranında sonraki isme geçilmiyordu: isim ilerliyor ama sonraki sesin hazırlığı gizliyken atlanıyordu. Koruma bu çağrı için kaldırıldı.',
   'r535 Tefekkürden Çık düğmesi yazı genişliğine daraltıldı (292px→177px). Tekkedeki SÜKÛNa dön düğmesinin yazısı artık kırpılmıyor.',
