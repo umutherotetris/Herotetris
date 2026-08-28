@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r547';
-const CACHE = 'sukun-r547-20260828a';
+const SURUM = 'r548';
+const CACHE = 'sukun-r548-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r548 KRİTİK: r546da getirilen kapsam hatası (BS is not defined) saniyede bir tekrarlıyor ve Başlat düğmesini öldürüyordu. Düğme artık sağlayıcıya devrediyor.',
   'r547 28 İsim Seyri kendi sesiyle kendini durduruyordu: ilk okumanın tetiklediği genel durdurma zinciri seyrin kendi durdurucusunu da çağırıyordu. Kendi-ses koruması eklendi.',
   'r546 28 İsim Seyri hiç başlamıyordu: sağlayıcının play işlevi yalnız sürdürme yapıyordu, başlatma dalı yoktu.',
   'r545 Okumalar, Seyirler ve Araçlar grupları ses ayarlarının üstüne alındı; 1262 piksel yukarı çıktı.',
