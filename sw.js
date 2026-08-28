@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r541';
-const CACHE = 'sukun-r541-20260828a';
+const SURUM = 'r542';
+const CACHE = 'sukun-r542-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r542 Cızırtının kökü: her tekrarda yeni ses elemanı ve yeni medya kaynağı kuruluyordu. Havuza alındı, 6 tekrarda medya kaynağı 6dan 1e indi. Kazanç sıfırlanma riski de giderildi.',
   'r541 Kilit ekranında play sesi geri getirmiyordu: kilit ses elemanı kayıt defterinde olmadığı için işleyiciler ona dokunmuyordu. Köprü eklendi, iki yön de doğrulandı.',
   'r540 Kök neden: kilitliyken sayaç hiç artmıyor, dönüşte uzlaştırılıyordu; hedef kontrolü bu yüzden tetiklenmiyordu. Kilit oturumuna hedef zamanlayıcısı eklendi.',
   'r539 Kilit ekranında isim değişmiyordu: çalan ses elemanının kaynağı yalnız kilit başlarken atanıyor, isim değişince güncellenmiyordu. Anahtara göre kaynak değiştirme eklendi.',
