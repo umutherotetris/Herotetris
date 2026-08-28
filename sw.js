@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r535';
-const CACHE = 'sukun-r535-20260828a';
+const SURUM = 'r536';
+const CACHE = 'sukun-r536-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r536 Kilit ekranında sonraki isme geçilmiyordu: isim ilerliyor ama sonraki sesin hazırlığı gizliyken atlanıyordu. Koruma bu çağrı için kaldırıldı.',
   'r535 Tefekkürden Çık düğmesi yazı genişliğine daraltıldı (292px→177px). Tekkedeki SÜKÛNa dön düğmesinin yazısı artık kırpılmıyor.',
   'r534 Kendi sesinle zikirde kayıt her tekrarda IndexedDBden okunuyordu; anahtara göre önbelleğe alındı. Cihaz raporunda saniyede bir 66-73ms kilitlenme ölçülmüştü.',
   'r533 Sekme çubuğu başlığın hemen altına alındı: 1541px yerine 219px, ilk ekranda görünüyor ve ~240px kaydırmada yapışıyor. Kişisel Merkez çubuğun altına taşındı.',
