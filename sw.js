@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r545';
-const CACHE = 'sukun-r545-20260828a';
+const SURUM = 'r546';
+const CACHE = 'sukun-r546-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r546 28 İsim Seyri hiç başlamıyordu: sağlayıcının play işlevi yalnız sürdürme yapıyordu, başlatma dalı yoktu.',
   'r545 Okumalar, Seyirler ve Araçlar grupları ses ayarlarının üstüne alındı; 1262 piksel yukarı çıktı.',
   'r544 Açılışta bütün akordiyonlar kapalı geliyor; dolaşmak kolaylaştı. Tanılama paneli hariç.',
   'r543 Kayıt okuma önbelleği kaldırıldı: faydası ölçümle çürütülmüştü ve yeniden kayıt yapılınca eski sesi döndürme riski taşıyordu.',
