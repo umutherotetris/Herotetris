@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r532 Sekme çubuğu yeniden yukarı yapışıyor: overflow-x:hidden gövdeye de uygulandığı için gövde kaydırma kabına dönüşüyor ve sticky hiç tetiklenmiyordu.',
   'r532 Uygulama içi değişiklik günlüğü üç sürüm geridedeydi; r529, r530 ve r531 notları işlendi. Kod davranışı değişmedi, r531 baştan sona doğrulandı.',
   'r531 Ses yaşam döngüsü: kullanıcı pause ve sistem kesintisi ayrıldı; tek single-flight recovery kuyruğu.',
   'r531 Veri geçişleri idempotent ledger + IndexedDB versionchange/blocked güvenliği ile sertleştirildi.',
