@@ -1,8 +1,8 @@
 /* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r532';
-const CACHE = 'sukun-r532-20260828a';
+const SURUM = 'r533';
+const CACHE = 'sukun-r533-20260828a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r531__.json';
 
 const NOTLAR = [
+  'r533 Sekme çubuğu başlığın hemen altına alındı: 1541px yerine 219px, ilk ekranda görünüyor ve ~240px kaydırmada yapışıyor. Kişisel Merkez çubuğun altına taşındı.',
   'r532 Sekme çubuğu yeniden yukarı yapışıyor: overflow-x:hidden gövdeye de uygulandığı için gövde kaydırma kabına dönüşüyor ve sticky hiç tetiklenmiyordu.',
   'r532 Uygulama içi değişiklik günlüğü üç sürüm geridedeydi; r529, r530 ve r531 notları işlendi. Kod davranışı değişmedi, r531 baştan sona doğrulandı.',
   'r531 Ses yaşam döngüsü: kullanıcı pause ve sistem kesintisi ayrıldı; tek single-flight recovery kuyruğu.',
