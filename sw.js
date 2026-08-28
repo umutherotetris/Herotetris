@@ -1,8 +1,8 @@
-/* SÜKÛN r531 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r549 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r548';
-const CACHE = 'sukun-r548-20260828a';
+const SURUM = 'r549';
+const CACHE = 'sukun-r549-20260828a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r531__.json';
+const BUILD_MARKER='./__sukun_build_r549__.json';
 
 const NOTLAR = [
+  'r549 Diagnostics kaynaklı gerçek hatalar düzeltildi: Berhetiyye provider scope, state-machine stop yarışı, Nefs state feedback döngüsü, manifest/SW build senkronu ve taşma/long-task tanı doğruluğu.',
   'r548 KRİTİK: r546da getirilen kapsam hatası (BS is not defined) saniyede bir tekrarlıyor ve Başlat düğmesini öldürüyordu. Düğme artık sağlayıcıya devrediyor.',
   'r547 28 İsim Seyri kendi sesiyle kendini durduruyordu: ilk okumanın tetiklediği genel durdurma zinciri seyrin kendi durdurucusunu da çağırıyordu. Kendi-ses koruması eklendi.',
   'r546 28 İsim Seyri hiç başlamıyordu: sağlayıcının play işlevi yalnız sürdürme yapıyordu, başlatma dalı yoktu.',
@@ -284,7 +285,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r531 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r549 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
