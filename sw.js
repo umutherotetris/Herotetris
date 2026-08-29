@@ -1,8 +1,8 @@
 /* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r557';
-const CACHE = 'sukun-r557-20260829a';
+const SURUM = 'r558';
+const CACHE = 'sukun-r558-20260829a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,8 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r558 Uygulama içi değişiklik günlüğü beş sürüm geridedeydi; r553-r557 notları işlendi.',
+  'r558 Terkip Kur: Önce Hizbi oku seçilince terkip sessizce düşüyordu, düzeltildi. Terkipler artık ada göre kaydedilip yüklenebiliyor.',
   'r557 Çoklu günlük ve gezegen saati Esmâ bildirimleri ilk isme gitmek yerine önerinin tamamını Terkibe ekle eylemiyle sırayla kurar.',
   'r557 Eski İlk Esmâya git kartları gövdedeki bütün adlardan tam terkibe yükseltilir; aynı öneri kopyalanmaz ve eylem bildirimi otomatik okundu yapmaz.',
   'r557 Tek isimli önerilerin Esmâya git davranışı korunur.',
