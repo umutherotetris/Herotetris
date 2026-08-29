@@ -1,8 +1,8 @@
 /* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r558';
-const CACHE = 'sukun-r558-20260829a';
+const SURUM = 'r559';
+const CACHE = 'sukun-r559-20260829a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r559 Seyri durduran tümünü-durdur çağrısının kaynağı artık tanılama kaydına yazılıyor. Davranış değişmedi, yalnız iz bırakılıyor.',
   'r558 Uygulama içi değişiklik günlüğü beş sürüm geridedeydi; r553-r557 notları işlendi.',
   'r558 Terkip Kur: Önce Hizbi oku seçilince terkip sessizce düşüyordu, düzeltildi. Terkipler artık ada göre kaydedilip yüklenebiliyor.',
   'r557 Çoklu günlük ve gezegen saati Esmâ bildirimleri ilk isme gitmek yerine önerinin tamamını Terkibe ekle eylemiyle sırayla kurar.',
