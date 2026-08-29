@@ -1,5 +1,14 @@
 [
   {
+    "v": "r555",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Android bildirim kaydırma kilidi giderildi: ana Bildirimler listesi artık belgeyle birlikte doğal olarak aşağı kayar.",
+      "İç kaydırma ve taşma zinciri yalnız akış barındaki açılır bildirim çekmecesine sınırlandı; kart üzerinde başlayan parmak hareketi ana sayfayı engellemez.",
+      "Berhetiyye kilit gizliliği, renkli bildirim sayaçları, açık okuma konumu ve sürüklenebilir akış barı davranışları korunur."
+    ]
+  },
+  {
     "v": "r554",
     "t": "29 Ağustos 2026",
     "b": [

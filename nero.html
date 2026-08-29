@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r554 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r555 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r554">
+<meta name="sukun-build" content="r555">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r554">
+<link rel="manifest" href="./manifest.webmanifest?v=r555">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6391,7 +6391,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.66 — build 2026-08-29-r554</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.67 — build 2026-08-29-r555</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -21968,6 +21968,11 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r555',t:'29 Ağustos 2026',b:[
+          'Android bildirim kaydırma kilidi giderildi: ana Bildirimler listesi artık belgeyle birlikte doğal olarak aşağı kayar.',
+          'İç kaydırma ve taşma zinciri yalnız akış barındaki açılır bildirim çekmecesine sınırlandı; kart üzerinde başlayan parmak hareketi ana sayfayı engellemez.',
+          'Berhetiyye kilit gizliliği, renkli bildirim sayaçları, açık okuma konumu ve sürüklenebilir akış barı davranışları korunur.'
+        ]},
         {v:'r554',t:'29 Ağustos 2026',b:[
           'Ana sekme barına kalıcı Bildirimler bölümü eklendi; Esmâ yeşil, Berhetiyye mor, Neuro ve diğer uyarılar kırmızı ünlemle ayrı izlenir.',
           'Canlı akış başlığındaki tek kırmızı ünlem üç renkli sabit araç yuvasına dönüştürüldü; artık alt satıra düşüp bar yüksekliğini değiştirmez.',
@@ -22122,7 +22127,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r554',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r555',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22148,7 +22153,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r554:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r555:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22169,7 +22174,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r554',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r555',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22182,7 +22187,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r554:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r555:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -33772,10 +33777,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r554',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r555',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r554-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r555-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -49845,7 +49850,10 @@ body.sukun-tefekkur-mode #neuroKart{display:none!important}
 .r554FilterMark{display:grid;place-items:center;width:20px;height:20px;border-radius:8px;border:1px solid color-mix(in srgb,var(--r554-tone) 48%,transparent);color:var(--r554-tone);font:850 10px/1 "Figtree",system-ui;text-shadow:0 0 7px currentColor}.r554Filter>b{min-width:17px;height:17px;padding:0 3px;border-radius:999px;display:grid;place-items:center;background:color-mix(in srgb,var(--r554-tone) 12%,transparent);color:var(--r554-tone);font:760 7.5px/1 "JetBrains Mono",monospace}
 .r554NotifyTools{display:flex;flex-wrap:wrap;gap:7px}.r554NotifyTools button,.r554DrawerActions button{min-height:35px;padding:0 10px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.022);color:var(--mut);font:650 9.5px/1 "Figtree",system-ui}.r554NotifyTools button.act{color:var(--goldh);border-color:var(--line2);background:color-mix(in srgb,var(--gold) 7%,transparent)}
 .r554CenterStatus{min-height:18px;margin:10px 3px 3px;color:var(--dim);font:560 9px/1.4 "Figtree",system-ui;letter-spacing:.03em}
-.r554CenterList{display:grid;gap:9px;min-width:0}
+/* r555: Ana merkez bir iç scroller değildir. Kart üzerinde başlayan Android
+   pan hareketi doğrudan belgeyi kaydırabilsin; alt bildirimler erişilebilir
+   kalsın. İç scroll yalnız sabit yükseklikteki drawer'a aittir. */
+.r554CenterList{display:grid;gap:9px;min-width:0;max-height:none;overflow:visible;overscroll-behavior:auto;touch-action:pan-y;-webkit-overflow-scrolling:auto}
 
 /* Canlı başlığın sağında tek araç yuvası: CANLI + üç ayrı renk ünlemi. */
 #r496DockCore>#r422NowHead{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important}
@@ -49866,7 +49874,8 @@ body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r554-
 #r554AlertDrawer{position:absolute;z-index:60;inset:40px 7px 7px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:8px;min-width:0;min-height:0;padding:10px;border-radius:17px;border:1px solid color-mix(in srgb,var(--gold) 25%,var(--line));background:linear-gradient(180deg,rgba(12,14,20,.992),rgba(7,9,13,.996));box-shadow:0 18px 42px rgba(0,0,0,.44);color:var(--ivory);overflow:hidden;contain:layout paint}
 #r554AlertDrawer[hidden]{display:none!important}
 .r554DrawerHead{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:1px 2px 8px;border-bottom:1px solid var(--line)}.r554DrawerHead>div:first-child{min-width:0}.r554DrawerHead small{display:block;margin-bottom:4px;color:var(--gold);font:760 8px/1.2 "Figtree",system-ui;letter-spacing:.16em}.r554DrawerHead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:680 12px/1.2 "Figtree",system-ui}.r554DrawerActions{display:flex;gap:5px;flex:none}.r554DrawerActions button{min-width:32px;padding-inline:8px}.r554DrawerActions #r554DrawerClose{font-size:17px}.r554DrawerFilters{gap:4px}.r554DrawerFilters .r554Filter{min-height:34px;padding:4px 5px;font-size:8.5px}.r554DrawerFilters .r554FilterMark{width:18px;height:18px;border-radius:7px}.r554DrawerFilters .r554Filter>b{min-width:15px;height:15px;font-size:7px}
-.r554AlertList{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:1px;display:grid;align-content:start;gap:8px}
+.r554AlertList{min-height:0;padding:1px;display:grid;align-content:start;gap:8px}
+#r554DrawerList{overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
 .r554AlertItem{--r554-tone:var(--r554-warning);position:relative;min-width:0;border:1px solid var(--line);border-left:4px solid var(--r554-tone);border-radius:14px;padding:11px 11px 10px;background:linear-gradient(90deg,color-mix(in srgb,var(--r554-tone) 9%,rgba(255,255,255,.02)),rgba(255,255,255,.017) 48%);contain:layout paint}
 .r554AlertItem.kind-esma{--r554-tone:var(--r554-esma)}.r554AlertItem.kind-berhet{--r554-tone:var(--r554-berhet)}.r554AlertItem.kind-warning{--r554-tone:var(--r554-warning)}
 .r554AlertItem.is-read{opacity:.72}.r554AlertItem.unread::after{content:"";position:absolute;right:10px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--r554-tone);box-shadow:0 0 10px color-mix(in srgb,var(--r554-tone) 70%,transparent)}

@@ -1,8 +1,8 @@
-/* SÜKÛN r554 — kararlı renkli Bildirim Merkezi + sürüklenebilir akış barı */
+/* SÜKÛN r555 — Android Bildirim Merkezi kaydırma onarımı */
 'use strict';
 
-const SURUM = 'r554';
-const CACHE = 'sukun-r554-20260829a';
+const SURUM = 'r555';
+const CACHE = 'sukun-r555-20260829a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r554__.json';
+const BUILD_MARKER='./__sukun_build_r555__.json';
 
 const NOTLAR = [
+  'r555 Android bildirim kaydırma kilidi giderildi: ana merkez doğal sayfa akışında kayar; iç kaydırma yalnız akış barı drawerında kalır.',
   'r554 Bildirimler ana sekmesi; Esmâ yeşil, Berhetiyye mor ve uyarı kırmızı sinyalleri; zıplamayan sabit drawer; tefekkürde büyüyen ve güvenli alanda sürüklenen akış barı.',
   'r553 Berhetiyye bildirim ayarı ve 28 İsim Seyri kilit politikasına bütünüyle bağlandı; Esmâü’l-Hüsnâ 99 İsim Seyri ses hatalarına karşı sağlamlaştırıldı.',
   'r552 Berhetiyye kilit gizliliği + Esmâü’l-Hüsnâ 99 İsim Seyri.',
@@ -290,7 +291,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r554 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r555 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
