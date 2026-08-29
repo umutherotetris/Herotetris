@@ -1,8 +1,8 @@
-/* SÜKÛN r556 — Esmâ terkibi isim-bazlı ses zinciri */
+/* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r556';
-const CACHE = 'sukun-r556-20260829a';
+const SURUM = 'r557';
+const CACHE = 'sukun-r557-20260829a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r556__.json';
+const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r557 Çoklu günlük ve gezegen saati Esmâ bildirimleri ilk isme gitmek yerine önerinin tamamını Terkibe ekle eylemiyle sırayla kurar.',
+  'r557 Eski İlk Esmâya git kartları gövdedeki bütün adlardan tam terkibe yükseltilir; aynı öneri kopyalanmaz ve eylem bildirimi otomatik okundu yapmaz.',
+  'r557 Tek isimli önerilerin Esmâya git davranışı korunur.',
   'r556 Çoklu Esmâ tertiplerinde her isim kendi esma:<sıra>:nida kaydıyla ayrı kontrol edilir ve sesler bitiş sırasıyla art arda çalınır.',
   'r556 Kendi kaydı bulunan isimde seçili okuyucu/TTS devreye girmez; yalnız kaydı olmayan isim ses yedeğine düşer.',
   'r556 Ana zikir, Tefekkür, Döngü, Akıllı Seans ve Global Akış aynı terkip ses yürütücüsünü kullanır; yarım kalan zincir durdurma sonrasında devam etmez.',
@@ -294,7 +297,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r556 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r557 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();

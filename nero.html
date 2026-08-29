@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r556 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r556">
+<meta name="sukun-build" content="r557">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r556">
+<link rel="manifest" href="./manifest.webmanifest?v=r557">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6391,7 +6391,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.68 — build 2026-08-29-r556</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.69 — build 2026-08-29-r557</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -21969,6 +21969,13 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r557',t:'29 Ağustos 2026',b:[
+          'Birden fazla isim taşıyan günlük ve gezegen saati bildirimleri artık ilk Esmâya yönelmez; kartta Terkibe ekle eylemi görünür.',
+          'Önerilen isimlerin tamamı bildirimdeki sırayla tek Esmâ terkibi olarak kurulur, Terkipler listesine eklenir ve sayaca yüklenir.',
+          'Güncellemeden önce saklanmış İlk Esmâya git kartları da gövdedeki isimlerden güvenle çözülerek tam terkip eylemine yükseltilir.',
+          'Aynı öneriye yeniden dokunmak ikinci bir kopya oluşturmaz; var olan terkibi yükler. Terkibe ekleme bildirimi otomatik okundu yapmaz veya listeden kaldırmaz.',
+          'Tek isimli Esmâ bildirimlerinin Esmâya git davranışı aynen korunur.'
+        ]},
         {v:'r556',t:'29 Ağustos 2026',b:[
           'Çoklu Esmâ tertipleri artık tek metin olarak okunmaz; her isim bağımsız bir ses adımıdır ve sırayla tamamlanır.',
           'Her isim için kendi nida kaydı ayrı ayrı aranır. Kayıt varsa seçili okuyucu/TTS atlanır; yalnız kaydı olmayan isim ses yedeğine düşer.',
@@ -22134,7 +22141,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r556',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r557',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22160,7 +22167,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r556:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r557:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22181,7 +22188,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r556',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r557',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22194,7 +22201,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r556:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r557:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -33794,10 +33801,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r556',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r557',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r556-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r557-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -47940,7 +47947,7 @@ body.r447-dock-mini #r478DockStats[data-nefs="1"] .r478Name>b{
 <script id="r554-alert-timing-runtime">
 (()=>{
 'use strict';
-if(window.SukunAlertCenter?.version==='r554')return;
+if(window.SukunAlertCenter?.version==='r557')return;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -47974,6 +47981,96 @@ const counts=()=>{
   return out;
 };
 const topTone=c=>c.warningUnread?'warning':c.berhetUnread?'berhet':c.esmaUnread?'esma':'none';
+
+/* ═══ r557 — çoklu Esmâ bildirimi → tam terkip ════════════════════
+   Eski bildirimler yalnız ilk ismi meta.name alanında saklıyordu. Bu
+   çözümleyici hem yeni meta.esmaIndices/names alanlarını hem de depoda
+   kalmış kartların başındaki «Yâ … · Yâ …» dizisini okur. Böylece bir
+   öneri güncellendikten sonra da ilk isme indirgenmez. */
+function r557FoldName(value){
+  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/[’‘'`ʿ]/g,'')
+    .replace(/[^a-z0-9]+/g,'');
+}
+function r557EsmaIndex(value){
+  const key=r557FoldName(String(value||'').replace(/^Y(?:â|a)\s+/i,''));
+  if(!key)return-1;
+  return (ZIKIR?.esma?.items||[]).findIndex(x=>r557FoldName(x?.t)===key);
+}
+function r557UniqueIndices(values){
+  const out=[];
+  (Array.isArray(values)?values:[]).forEach(value=>{
+    const numeric=(typeof value==='number'&&Number.isInteger(value))||(/^\d+$/.test(String(value).trim()));
+    const index=numeric?+value:r557EsmaIndex(value);
+    if(index>=0&&index<(ZIKIR?.esma?.items?.length||0)&&!out.includes(index))out.push(index);
+  });
+  return out.slice(0,8);
+}
+function r557BodyNames(body){
+  const lead=String(body||'').split('—')[0].split(/\.\s/)[0];
+  return lead.split(/\s*[•·;]\s*/).map(x=>x.trim())
+    .filter(x=>/^Y(?:â|a)\s+/i.test(x)).map(x=>x.replace(/^Y(?:â|a)\s+/i,'').trim());
+}
+function r557AlertEsmaIndices(alert){
+  if(!alert||normalKind(alert.kind)!=='esma')return[];
+  const meta=alert.meta&&typeof alert.meta==='object'?alert.meta:{};
+  let indices=r557UniqueIndices(meta.esmaIndices||alert.esmaIndices);
+  if(!indices.length)indices=r557UniqueIndices(meta.names);
+  if(indices.length<2){
+    const fromBody=r557UniqueIndices(r557BodyNames(alert.body));
+    if(fromBody.length>indices.length)indices=fromBody;
+  }
+  if(!indices.length&&meta.name)indices=r557UniqueIndices([meta.name]);
+  return indices;
+}
+function r557AlertAction(alert){
+  const indices=r557AlertEsmaIndices(alert);
+  return{indices,label:indices.length>1?'Terkibe ekle':String(alert?.actionLabel||'')};
+}
+function r557Arabic(index){
+  try{if(typeof trkArapca==='function')return trkArapca(index)}catch(e){}
+  const item=ZIKIR?.esma?.items?.[index];
+  return item?String(item.aya||('يَا '+(item.a||''))).trim():'';
+}
+let r557LastTerkip={version:'r557',ok:false,created:false,index:-1,indices:[],source:'ready'};
+function r557AddTerkip(indices,opt={}){
+  indices=r557UniqueIndices(indices);
+  if(indices.length<2){
+    r557LastTerkip={version:'r557',ok:false,created:false,index:-1,indices,source:String(opt.source||'alert'),reason:'en-az-iki-esma'};
+    return{...r557LastTerkip};
+  }
+  const names=indices.map(i=>ZIKIR.esma.items[i]?.t).filter(Boolean);
+  if(names.length!==indices.length)return{version:'r557',ok:false,created:false,index:-1,indices:[],source:String(opt.source||'alert'),reason:'esma-bulunamadi'};
+  const tr=names.map(x=>'Yâ '+x).join(' • '),ar=indices.map(r557Arabic).filter(Boolean).join(' ');
+  const list=ZIKIR?.terkip?.items;
+  if(!Array.isArray(list))return{version:'r557',ok:false,created:false,index:-1,indices,source:String(opt.source||'alert'),reason:'terkip-listesi-yok'};
+  const same=x=>Array.isArray(x?.esmaIndices)&&r557UniqueIndices(x.esmaIndices).join(',')===indices.join(',');
+  let index=list.findIndex(same);
+  if(index<0)index=list.findIndex(x=>String(x?.oku||x?.tr||'').trim()===tr);
+  let created=false;
+  if(index<0){
+    list.push({tr,oku:tr,ar,n:indices.length,kay:'oneri',grup:'bildirim',c:'#4bd98a',esmaIndices:indices.slice(),mean:`${String(opt.title||'Bildirim önerisi')} · ${indices.length} isimlik terkip`});
+    index=list.length-1;created=true;
+  }else{
+    const item=list[index];
+    item.esmaIndices=indices.slice();
+    if(!item.oku)item.oku=tr;
+  }
+  try{if(typeof TRK==='object'){TRK.sec=indices.slice();typeof trkSecYaz==='function'&&trkSecYaz()}}catch(e){}
+  try{S.set('sukun.terkip',indices.slice())}catch(e){}
+  try{typeof hatPause==='function'&&hatPause()}catch(e){}
+  try{typeof ltfPause==='function'&&ltfPause()}catch(e){}
+  Z.cat='terkip';Z.idx=index;Z.count=0;
+  try{typeof zHedefSecimeUyarla==='function'&&zHedefSecimeUyarla(true)}catch(e){}
+  try{renderCats();renderZikir(false);zUI();saveSettings()}catch(e){}
+  r557LastTerkip={version:'r557',ok:true,created,index,indices:indices.slice(),source:String(opt.source||'alert'),title:String(opt.title||'')};
+  try{window.dispatchEvent(new CustomEvent('sukun:terkipadded',{detail:{...r557LastTerkip,indices:indices.slice()}}))}catch(e){}
+  try{typeof toast==='function'&&toast(created?`${indices.length} isimlik terkip eklendi ve sayaca yüklendi`:'Terkip zaten vardı; sayaca yüklendi')}catch(e){}
+  return{...r557LastTerkip,indices:indices.slice()};
+}
+function r557AddAlertTerkip(alert){
+  return r557AddTerkip(r557AlertEsmaIndices(alert),{source:'bildirim',title:alert?.title||''});
+}
 
 function ensureUI(){
   const now=$('r170Now');if(!now)return false;
@@ -48114,12 +48211,13 @@ const r554AfterPaint=fn=>typeof requestAnimationFrame==='function'
 function r554Card(a){
   const d=new Date(a.at),today=new Date(),same=d.toDateString()===today.toDateString();
   const stamp=d.toLocaleString('tr-TR',same?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  const action=r557AlertAction(a),multi=action.indices.length>1;
   return `<article class="r554AlertItem kind-${esc(normalKind(a.kind))}${a.read?' is-read':' unread'}" data-alert-id="${esc(a.id)}">
     <div class="r554AlertItemTop"><span><i aria-hidden="true">!</i>${kLabel(a.kind)}</span><time datetime="${esc(d.toISOString())}">${esc(stamp)}</time></div>
     <b>${esc(a.title||'Bildirim')}</b><p>${esc(a.body||'')}</p>
     ${a.source?`<small class="r554AlertSource">${esc(a.source)}</small>`:''}
     <div class="r554AlertItemBtns">
-      ${a.actionLabel?`<button type="button" class="r554AlertAction" data-alert-action="${esc(a.id)}">${esc(a.actionLabel)}</button>`:''}
+      ${action.label?`<button type="button" class="r554AlertAction${multi?' r557TerkipAction':''}" data-alert-action="${esc(a.id)}"${multi?` aria-label="${action.indices.length} ismi tek terkip olarak ekle" title="Önerilen ${action.indices.length} ismin tamamını sırayla terkibe ekle"`:''}>${esc(action.label)}</button>`:''}
       ${a.read?'':`<button type="button" data-alert-read="${esc(a.id)}">✓ Okundu yap</button>`}
       <button type="button" data-alert-dismiss="${esc(a.id)}">Listeden kaldır</button>
     </div>
@@ -48213,7 +48311,7 @@ function r554PaintList(surface,force=false){
   const node=$(surface==='drawer'?'r554DrawerList':'r554CenterList');if(!node)return;
   const only=surface==='center'&&centerUnreadOnly,kind=filters[surface];
   const list=visibleAlerts(kind,only).slice(0,surface==='drawer'?20:30);
-  const key=[kind,only?'1':'0',berhetUnlocked()?'1':'0',...list.map(a=>`${a.id}:${a.read?'1':'0'}`)].join('|');
+  const key=[kind,only?'1':'0',berhetUnlocked()?'1':'0',...list.map(a=>{const action=r557AlertAction(a);return`${a.id}:${a.read?'1':'0'}:${action.label}:${action.indices.join(',')}`})].join('|');
   if(!force&&renderKeys[surface]===key)return;
   const oldScroll=surface==='drawer'?(node.scrollTop||0):0;
   node.innerHTML=list.map(r554Card).join('')||`<div class="r554AlertEmpty"><span aria-hidden="true">۞</span><b>${only?'Okunmamış bildirim yok':'Bu renkte bildirim yok'}</b><small>Yeni bir bildirim geldiğinde burada sabit kalır.</small></div>`;
@@ -48297,6 +48395,15 @@ function r554Invoke(id){
   const fn=actions.get(id);if(fn){try{fn();r554Dismiss(id);return true}catch(e){}}
   const meta=a.meta||{};
   try{
+    const recommended=r557AlertEsmaIndices(a);
+    if(recommended.length>1){
+      const result=r557AddAlertTerkip(a);
+      if(result.ok){
+        /* Terkibe ekleme bildirimi kendiliğinden silmez veya okundu yapmaz.
+           Kullanıcı karttaki iki açık eylemden birini ayrıca seçebilir. */
+        r554Close();r554GoZikir();return true;
+      }
+    }
     if(meta.action==='esma'&&meta.name){const idx=ZIKIR.esma.items.findIndex(x=>x.t===meta.name);if(idx>=0){Z.cat='esma';Z.idx=idx;try{zHedefSecimeUyarla(true)}catch(e){}renderCats();renderZikir(false);zUI();saveSettings();r554Dismiss(id);r554Close();r554GoZikir();return true}}
     if(meta.action==='berhet'&&Number.isFinite(+meta.idx)&&berhetUnlocked()){const idx=clamp(+meta.idx,0,ZIKIR.berhet.items.length-1);Z.cat='berhet';Z.idx=idx;try{zHedefSecimeUyarla(true)}catch(e){}renderCats();renderZikir(false);zUI();saveSettings();r554Dismiss(id);r554Close();r554GoZikir();return true}
   }catch(e){}
@@ -48344,9 +48451,13 @@ function r554BindDrag(){
 }
 
 window.SukunAlertCenter={
-  version:'r554',push:r554Push,open:r554Open,close:r554Close,toggle:r554Toggle,openCenter:r554OpenCenter,
+  version:'r557',push:r554Push,open:r554Open,close:r554Close,toggle:r554Toggle,openCenter:r554OpenCenter,
   markAllRead:r554MarkRead,markRead:r554ReadOne,dismiss:r554Dismiss,invoke:r554Invoke,rerender:()=>{renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554EnsureUI();r554Render(true)},resetDock:r554ResetDock,
-  snapshot:()=>({version:'r554',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),counts:counts(),filters:{...filters},drawerOpen:!$('r554AlertDrawer')?.hidden,dockY:r554CurrentO(),items:visibleAlerts().slice(0,30)})
+  snapshot:()=>({version:'r557',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),counts:counts(),filters:{...filters},drawerOpen:!$('r554AlertDrawer')?.hidden,dockY:r554CurrentO(),items:visibleAlerts().slice(0,30)})
+};
+window.SukunTerkipComposer={
+  version:'r557',add:r557AddTerkip,addFromAlert:r557AddAlertTerkip,indicesForAlert:r557AlertEsmaIndices,actionForAlert:r557AlertAction,
+  snapshot:()=>({...r557LastTerkip,indices:r557LastTerkip.indices.slice()})
 };
 
 /* sacred timing */
@@ -48376,7 +48487,8 @@ function phour(now){
 function weekdayAlert(now){
   if(S.get('sukun.notify.esma',true)===false)return;
   const c=pick(WEEKDAY_ESMA[now.getDay()]||[],now,3);if(!c.length)return;
-  SukunAlertCenter.push({id:`esma-day:${dkey(now)}`,kind:'esma',title:`${DAY[now.getDay()]} · geleneksel Esmâ günü`,body:c.map(x=>'Yâ '+x).join(' · ')+' — 99 isim için haftalık gün eşlemesi içinden günlük seçki.',source:'Bülent Kısa · Havâss’ın Derinlikleri — tek ekol; farklı eşlemeler de vardır',actionLabel:'İlk Esmâya git',meta:{action:'esma',name:c[0],layer:'weekday'}});
+  const indices=r557UniqueIndices(c),multi=indices.length>1;
+  SukunAlertCenter.push({id:`esma-day:${dkey(now)}`,kind:'esma',title:`${DAY[now.getDay()]} · geleneksel Esmâ günü`,body:c.map(x=>'Yâ '+x).join(' · ')+' — 99 isim için haftalık gün eşlemesi içinden günlük seçki.',source:'Bülent Kısa · Havâss’ın Derinlikleri — tek ekol; farklı eşlemeler de vardır',actionLabel:multi?'Terkibe ekle':'Esmâya git',meta:{action:multi?'terkip':'esma',name:c[0],names:c.slice(),esmaIndices:indices,layer:'weekday'}});
 }
 function planetAlert(now){
   if(S.get('sukun.notify.esma',true)===false)return;
@@ -48384,7 +48496,8 @@ function planetAlert(now){
   let last=0;try{last=+S.get('sukun.notify.esma.lastHour',0)||0}catch(e){}
   if(Date.now()-last<85*60000)return;
   const span=`${p.start.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}–${p.end.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`;
-  if(SukunAlertCenter.push({id:`esma-hour:${dkey(p.start)}:${p.hourIndex}:${p.ruler}`,kind:'esma',title:`${p.ruler} saati · ${span}`,body:a.n.map(x=>'Yâ '+x).join(' · ')+`. ${p.day} yerel gezegen saati.${a.note?' '+a.note:''}`,source:'İbnü’l-Arabî’ye nispet edilen Saatü’l-Haber geleneği · aidiyet tartışmalı',actionLabel:'Esmâya git',meta:{action:'esma',name:a.n[0],layer:'planetary-hour'}}))try{S.set('sukun.notify.esma.lastHour',Date.now())}catch(e){}
+  const indices=r557UniqueIndices(a.n),multi=indices.length>1;
+  if(SukunAlertCenter.push({id:`esma-hour:${dkey(p.start)}:${p.hourIndex}:${p.ruler}`,kind:'esma',title:`${p.ruler} saati · ${span}`,body:a.n.map(x=>'Yâ '+x).join(' · ')+`. ${p.day} yerel gezegen saati.${a.note?' '+a.note:''}`,source:'İbnü’l-Arabî’ye nispet edilen Saatü’l-Haber geleneği · aidiyet tartışmalı',actionLabel:multi?'Terkibe ekle':'Esmâya git',meta:{action:multi?'terkip':'esma',name:a.n[0],names:a.n.slice(),esmaIndices:indices,layer:'planetary-hour'}}))try{S.set('sukun.notify.esma.lastHour',Date.now())}catch(e){}
 }
 function vakitAlert(now){
   if(S.get('sukun.notify.esma',true)===false)return;
@@ -48421,7 +48534,7 @@ function check(reason='timer'){
   if(reason==='timer'&&m===lastMinute)return;lastMinute=m;
   weekdayAlert(now);planetAlert(now);vakitAlert(now);berhetAlert(now);
 }
-window.SukunSacredTiming={version:'r554',check,planetaryHour:phour,snapshot:()=>({version:'r554',esmaEnabled:S.get('sukun.notify.esma',true)!==false,berhetEnabled:berhetUnlocked()&&S.get('sukun.notify.berhet',true)!==false,currentPlanetaryHour:phour(new Date())})};
+window.SukunSacredTiming={version:'r557',check,planetaryHour:phour,snapshot:()=>({version:'r557',esmaEnabled:S.get('sukun.notify.esma',true)!==false,berhetEnabled:berhetUnlocked()&&S.get('sukun.notify.berhet',true)!==false,currentPlanetaryHour:phour(new Date())})};
 
 function boot(){
   r554EnsureUI();const nk=$('neuroKart');if(nk)nk.hidden=true;check('start');

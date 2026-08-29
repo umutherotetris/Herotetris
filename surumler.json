@@ -1,5 +1,16 @@
 [
   {
+    "v": "r557",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Birden fazla isim taşıyan günlük ve gezegen saati bildirimleri artık ilk Esmâya yönelmez; kartta Terkibe ekle eylemi görünür.",
+      "Önerilen isimlerin tamamı bildirimdeki sırayla tek Esmâ terkibi olarak kurulur, Terkipler listesine eklenir ve sayaca yüklenir.",
+      "Güncellemeden önce saklanmış İlk Esmâya git kartları da gövdedeki isimlerden güvenle çözülerek tam terkip eylemine yükseltilir.",
+      "Aynı öneriye yeniden dokunmak ikinci bir kopya oluşturmaz; var olan terkibi yükler. Terkibe ekleme bildirimi otomatik okundu yapmaz veya listeden kaldırmaz.",
+      "Tek isimli Esmâ bildirimlerinin Esmâya git davranışı aynen korunur."
+    ]
+  },
+  {
     "v": "r556",
     "t": "29 Ağustos 2026",
     "b": [
