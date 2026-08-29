@@ -1,5 +1,20 @@
 [
   {
+    "v": "r551",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Floating Neuro bildirimi universal player içine taşındı; Tefekkür modunda #neuroKart barın üstünü kapatamaz.",
+      "SukunAlertCenter: yeni bildirimde player kırmızı çerçeve, küçük yanıp sönen uyarı düğmesi ve player sınırları içinde açılan drawer.",
+      "Bildirim renkleri: Esmâ yeşil, Berhetiyye mor, Neuro/uzun dinleme ve diğer uyarılar kırmızı.",
+      "Universal player üst tutamaktan dikey sürüklenebilir; konum kaydedilir, çift dokunuşla sıfırlanır.",
+      "Esmâ ve Berhetiyye bildirimleri Genel Ayarlar'da varsayılan açık, istenirse kapatılabilir.",
+      "99 Esmâ'nın tamamı geleneksel haftalık gün eşlemesine işlendi.",
+      "Yerel gezegen saati cihazdaki güneş doğuş/batış verisiyle 12 gündüz + 12 gece saati olarak hesaplanır; konum yoksa kesin saat üretilmez.",
+      "Saatü'l-Haber eşlemesi İbnü'l-Arabî'ye nispet edilen ve aidiyeti tartışmalı gelenek olarak ayrı etiketlenir.",
+      "Berhetiyye 28 isimde mevcut sabit ay/gün aralıklarından aktif veya 3 gün içinde yaklaşan dönem bildirilir; gerçek Ay menzili olmadığı açıkça belirtilir."
+    ]
+  },
+  {
     "v": "r550",
     "t": "29 Ağustos 2026",
     "b": [

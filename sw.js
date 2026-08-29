@@ -1,8 +1,8 @@
-/* SÜKÛN r550 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
+/* SÜKÛN r551 — Stabilizasyon II · dayanıklı aynı-kaynak PWA kabuğu */
 'use strict';
 
-const SURUM = 'r550';
-const CACHE = 'sukun-r550-20260829a';
+const SURUM = 'r551';
+const CACHE = 'sukun-r551-20260829a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r550__.json';
+const BUILD_MARKER='./__sukun_build_r551__.json';
 
 const NOTLAR = [
+  'r551 Bar-içi Bildirim Merkezi: Tefekkür floating Neuro kaldırıldı; Esmâ yeşil, Berhetiyye mor, diğer uyarılar kırmızı; player dikey sürükleme ve kaynak-etkiketli zaman önerileri.',
   'r550 Esmâ geçiş güvenilirliği: transaction dedupe, voice callback zinciri, retryable watchdog ve Android lifecycle rescue.',
   'r549 Diagnostics kaynaklı gerçek hatalar düzeltildi: Berhetiyye provider scope, state-machine stop yarışı, Nefs state feedback döngüsü, manifest/SW build senkronu ve taşma/long-task tanı doğruluğu.',
   'r548 KRİTİK: r546da getirilen kapsam hatası (BS is not defined) saniyede bir tekrarlıyor ve Başlat düğmesini öldürüyordu. Düğme artık sağlayıcıya devrediyor.',
@@ -286,7 +287,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r550 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r551 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
