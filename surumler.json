@@ -1,5 +1,16 @@
 [
   {
+    "v": "r556",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Çoklu Esmâ tertipleri artık tek birleşik metin olarak okunmaz; her isim bağımsız bir ses adımıdır.",
+      "Her isim için esma:<sıra>:nida anahtarındaki kendi kayıt ayrı ayrı kontrol edilir. Kayıt varsa seçili okuyucu ve TTS o isim için atlanır.",
+      "Kendi kaydı olmayan isim seçili Arapça/Türkçe okuyucuya, o da yoksa cihaz TTS sesine düşer.",
+      "Bir isim gerçekten bitmeden sonraki başlamaz; bütün isimler tamamlanınca terkip tek başarılı tekrar sayılır.",
+      "Ana zikir, Tefekkür, Döngü, Akıllı Seans ve Global Akış aynı terkip ses zincirini kullanır; durdurulan eski zincir yeniden devam etmez."
+    ]
+  },
+  {
     "v": "r555",
     "t": "29 Ağustos 2026",
     "b": [

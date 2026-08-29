@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r555 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r556 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r555">
+<meta name="sukun-build" content="r556">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r555">
+<link rel="manifest" href="./manifest.webmanifest?v=r556">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6391,7 +6391,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.67 — build 2026-08-29-r555</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.68 — build 2026-08-29-r556</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -15103,7 +15103,7 @@ function trkYukleAsil(){
   if(TRK.sec.length<TRK.EN_AZ)return;
   const ar=TRK.sec.map(trkArapca).join(' ');
   const tr=TRK.sec.map(trkAd).join(' • ');
-  const oge={tr:tr, ar:ar, n:TRK.sec.length, kay:'kendi',
+  const oge={tr:tr, ar:ar, n:TRK.sec.length, kay:'kendi', esmaIndices:TRK.sec.slice(),
              mean:TRK.sec.length+' ismin terkibi — kendi kurduğun grup'};
   /* Aynı terkip zaten varsa yeniden ekleme, ona geç */
   let i=ZIKIR.terkip.items.findIndex(x=>x.tr===tr);
@@ -15793,7 +15793,8 @@ function genAyarBagla(){
     let kayitAnahtari='';
     try{ kayitAnahtari=(typeof zikirKey==='function')?zikirKey():''; }catch(e){}
     ac();
-    DONGU.basla(metin,{adet, ad:ad.slice(0,34), ara:900, dil:'tr-TR', kayitAnahtari});
+    DONGU.basla(metin,{adet, ad:ad.slice(0,34), ara:900, dil:'tr-TR', kayitAnahtari,
+      terkipItem:(typeof Z!=='undefined'&&Z.cat==='terkip')?it:null});
   };
   const _ap=document.getElementById('arkaPlanTgl');
   if(_ap){ _ap.classList.toggle('on',ARKA_PLAN);
@@ -21968,6 +21969,12 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r556',t:'29 Ağustos 2026',b:[
+          'Çoklu Esmâ tertipleri artık tek metin olarak okunmaz; her isim bağımsız bir ses adımıdır ve sırayla tamamlanır.',
+          'Her isim için kendi nida kaydı ayrı ayrı aranır. Kayıt varsa seçili okuyucu/TTS atlanır; yalnız kaydı olmayan isim ses yedeğine düşer.',
+          'Bir isim gerçekten bitmeden sonraki başlamaz; durdurma, duraklatma veya yeni okuma eski tertip zincirinin devam etmesini engeller.',
+          'Ana zikir, Tefekkür, Döngü, Akıllı Seans ve Global Akış aynı tertip ses sözleşmesini kullanır.'
+        ]},
         {v:'r555',t:'29 Ağustos 2026',b:[
           'Android bildirim kaydırma kilidi giderildi: ana Bildirimler listesi artık belgeyle birlikte doğal olarak aşağı kayar.',
           'İç kaydırma ve taşma zinciri yalnız akış barındaki açılır bildirim çekmecesine sınırlandı; kart üzerinde başlayan parmak hareketi ana sayfayı engellemez.',
@@ -22127,7 +22134,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r555',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r556',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22153,7 +22160,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r555:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r556:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22174,7 +22181,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r555',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r556',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22187,7 +22194,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r555:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r556:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -33092,16 +33099,26 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
   }
 
   async function playItem(cat,idx,item,opt={}){
-    const key=typeof keyFor==='function'?keyFor(cat,idx,item):`${cat}:${idx}`;
-    const rec=await recording(cat,idx,item,key,{
+    /* r556: Terkip yürütücüsü her Esmâ'nın kendi nida kaydını açıkça
+       verebilir. Boş anahtar, 99'lu liste dışında kalan bir hitap için
+       bilerek "kayıt yuvası yok" demektir. */
+    const explicitKey=Object.prototype.hasOwnProperty.call(opt,'key');
+    const key=explicitKey?String(opt.key||''):
+      (typeof keyFor==='function'?keyFor(cat,idx,item):`${cat}:${idx}`);
+    const current=()=>typeof opt.isCurrent!=='function'||opt.isCurrent();
+    if(!current())return{source:'cancelled',ok:false,cancelled:true,key,reason:'stale-sequence'};
+
+    const rec=key?await recording(cat,idx,item,key,{
       ...opt,
       forceProbe:!!opt.forceProbe,
       title:opt.title||(item?.tr||item?.t||key)
-    });
+    }):null;
     if(rec)return rec;
+    if(!current())return{source:'cancelled',ok:false,cancelled:true,key,reason:'stale-sequence'};
 
     const chosen=await reader(item,opt);
     if(chosen?.ok)return chosen;
+    if(!current())return{source:'cancelled',ok:false,cancelled:true,key,reason:'stale-sequence'};
 
     return await tts(item,opt);
   }
@@ -33777,10 +33794,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r555',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r556',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r555-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r556-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -50511,6 +50528,239 @@ window.addEventListener('sukun:audiorecovery',e=>push('audio-recovery',e.detail|
 window.addEventListener('sukun:playbackchange',e=>push('playback-change',{id:e.detail?.id,state:e.detail?.state}),{passive:true});
 push('probe-init',{ua:navigator.userAgent});
 window.SukunAndroidProbe={version:'r531',snapshot:()=>({version:'r531',physicalTestPerformed:false,note:'Fiziksel Android kilit/tam ekran/uzun seans testi kullanıcı cihazında ayrıca yapılmalıdır.',events:log.slice()}),clear:()=>{log.length=0;push('probe-clear')}};
+})();
+</script>
+
+<script id="r556-terkip-voice-runtime">
+(()=>{
+'use strict';
+const VERSION='r556';
+if(window.SukunTerkipVoice?.version===VERSION)return;
+
+const resolver=window.SukunVoiceResolver;
+if(!resolver||typeof resolver.playItem!=='function')return;
+let sequence=0;
+let state={version:VERSION,active:false,sequence:0,index:0,total:0,name:'',reason:'ready',startedAt:0,finishedAt:0,results:[]};
+
+function emit(reason,extra={}){
+  state={...state,...extra,reason:String(reason||''),version:VERSION};
+  try{window.dispatchEvent(new CustomEvent('sukun:terkipvoicechange',{detail:{...state,results:state.results.slice()}}))}catch(e){}
+  return state;
+}
+function fold(value){
+  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/[’‘'`ʿ‘]/g,'')
+    .replace(/[^a-z0-9]+/g,'');
+}
+const aliases=new Map([
+  ['gani','ganiyy'],
+  ['muntakim','muntekim'],
+  ['bedia','bedi']
+]);
+function esmaMap(){
+  const map=new Map();
+  const items=window.ZIKIR?.esma?.items||[];
+  items.forEach((item,index)=>{const key=fold(item?.t);if(key&&!map.has(key))map.set(key,index)});
+  return map;
+}
+function nidaArabic(item){
+  if(!item)return'';
+  return String(item.aya||item.a&&('يَا '+item.a)||'').trim();
+}
+function canonicalPart(index){
+  const source=window.ZIKIR?.esma?.items?.[index];
+  if(!source)return null;
+  const text=String(source.ya||('Yâ '+source.t)).trim();
+  const arabic=nidaArabic(source);
+  return{
+    canonical:true,index,key:'esma:'+index+':nida',name:source.t,text,arabic,
+    item:{...source,tr:text,oku:text,ar:arabic}
+  };
+}
+function cleanLabel(raw){
+  let text=String(raw||'').replace(/\s+/g,' ').trim();
+  const ya=text.search(/Y(?:â|a)\s+/i);
+  if(ya>0)text=text.slice(ya);
+  text=text.replace(/\s*\(\s*\d+\s*\)\s*$/,'').trim();
+  const name=text.replace(/^Y(?:â|a)\s+/i,'').trim();
+  return{text:text||name,name:name||text};
+}
+function resolveParts(item){
+  const explicit=Array.isArray(item?.esmaIndices)?item.esmaIndices:[];
+  if(explicit.length){
+    return explicit.map(Number).filter(Number.isInteger).map(canonicalPart).filter(Boolean);
+  }
+
+  const map=esmaMap();
+  const source=String(item?.oku||item?.tr||'').trim();
+  if(!source)return[];
+  return source.split(/\s*[•·;]\s*/).map(cleanLabel).filter(x=>x.text).map(part=>{
+    const raw=fold(part.name),lookup=aliases.get(raw)||raw,index=map.has(lookup)?map.get(lookup):-1;
+    const canonical=index>=0?canonicalPart(index):null;
+    if(canonical)return canonical;
+    const text=/^Y(?:â|a)\s+/i.test(part.text)?part.text:('Yâ '+part.text);
+    return{canonical:false,index:-1,key:'',name:part.name,text,arabic:'',item:{tr:text,oku:text,ar:''}};
+  });
+}
+function aggregateSource(results){
+  const kinds=[...new Set(results.map(x=>x.source).filter(Boolean))];
+  return kinds.length===1?kinds[0]:(kinds.length?'mixed':'none');
+}
+function cancel(reason='cancelled'){
+  sequence++;
+  if(state.active)emit('cancelled',{active:false,finishedAt:Date.now(),cancelReason:String(reason||'cancelled')});
+  return true;
+}
+async function play(item,opt={}){
+  /* Kullanıcının açık yeniden başlatma eylemi eski sesi de keser. Token,
+     bu kesme çağrılarından sonra alınır ki yeni terkip yanlışlıkla eskimesin. */
+  if(opt.interrupt){
+    cancel('superseded');
+    try{window.sesDurdur?.('terkip-superseded')}catch(e){}
+    try{window.sukunTtsCancel?.('terkip-superseded')}catch(e){}
+  }
+
+  const id=++sequence;
+  const parts=resolveParts(item);
+  const results=[];
+  const startedAt=Date.now();
+  emit('start',{active:true,sequence:id,index:0,total:parts.length,name:String(item?.tr||item?.oku||'Esmâ terkibi'),startedAt,finishedAt:0,cancelReason:'',results:[]});
+  if(!parts.length){
+    emit('empty',{active:false,finishedAt:Date.now()});
+    return{ok:false,source:'none',reason:'terkip-empty',completed:0,total:0,parts:[]};
+  }
+
+  for(let i=0;i<parts.length;i++){
+    if(id!==sequence){
+      return{ok:false,source:aggregateSource(results),cancelled:true,reason:'stale-sequence',completed:results.length,total:parts.length,parts:results};
+    }
+    const part=parts[i];
+    emit('part',{active:true,sequence:id,index:i+1,total:parts.length,name:part.text,results:results.slice()});
+    let result;
+    try{
+      result=await resolver.playItem('esma',part.index>=0?part.index:i,part.item,{
+        ...opt,
+        key:part.key,
+        forceProbe:part.canonical,
+        interrupt:i===0&&!!opt.interrupt,
+        title:'Terkip '+(i+1)+'/'+parts.length+' · '+part.text,
+        text:part.text,
+        arabic:part.arabic,
+        isCurrent:()=>id===sequence
+      });
+    }catch(error){
+      result={ok:false,source:'error',reason:String(error?.message||error)};
+      try{window.sukunReport?.('terkip-voice',error,part.text)}catch(e){}
+    }
+    const one={index:i+1,esmaIndex:part.index,key:part.key,name:part.text,canonical:part.canonical,ok:result?.ok===true,source:result?.source||'none',cancelled:!!result?.cancelled,reason:result?.reason||''};
+    results.push(one);
+
+    if(id!==sequence||one.cancelled){
+      emit('cancelled',{active:false,index:i+1,total:parts.length,finishedAt:Date.now(),results:results.slice(),cancelReason:one.reason||'cancelled'});
+      return{ok:false,source:aggregateSource(results),cancelled:true,reason:one.reason||'cancelled',completed:results.filter(x=>x.ok).length,total:parts.length,parts:results};
+    }
+    if(!one.ok){
+      emit('failed',{active:false,index:i+1,total:parts.length,finishedAt:Date.now(),results:results.slice()});
+      return{ok:false,source:aggregateSource(results),reason:one.reason||'part-failed',completed:results.filter(x=>x.ok).length,total:parts.length,parts:results};
+    }
+  }
+
+  const source=aggregateSource(results),recordingCount=results.filter(x=>x.source==='recording').length;
+  emit('complete',{active:false,index:parts.length,total:parts.length,finishedAt:Date.now(),results:results.slice()});
+  try{window.dispatchEvent(new CustomEvent('sukun:terkipvoicecomplete',{detail:{sequence:id,total:parts.length,source,recordingCount,parts:results.slice()}}))}catch(e){}
+  return{ok:true,source,completed:parts.length,total:parts.length,recordingCount,parts:results};
+}
+
+const api=window.SukunTerkipVoice={
+  version:VERSION,play,cancel,resolve:resolveParts,
+  snapshot:()=>({...state,results:state.results.slice()})
+};
+
+/* Normal/Tefekkür Dinle yolu. */
+if(typeof resolver.playCurrentZikir==='function'&&!resolver.playCurrentZikir.__r556Terkip){
+  const previous=resolver.playCurrentZikir.bind(resolver);
+  const wrapped=async function(opt={}){
+    let cat='',idx=0,item=null;
+    try{cat=typeof zKat==='function'?zKat():Z.cat;idx=typeof zIdx==='function'?zIdx():Z.idx;item=ZIKIR?.[cat]?.items?.[idx]||null}catch(e){}
+    if(cat==='terkip'&&item)return play(item,{...opt,entry:'current',terkipIndex:idx});
+    return previous(opt);
+  };
+  wrapped.__r556Terkip=1;
+  resolver.playCurrentZikir=wrapped;
+}
+
+/* Akıllı Seans ve Global Akış yolu. Bu sarmal dosyanın sonunda kurulur;
+   r228/r244 kaynak politikası override'larından sonra son söz buradadır. */
+const audio=window.AudioResolver;
+if(audio&&typeof audio.play==='function'&&!audio.play.__r556Terkip){
+  const previous=audio.play.bind(audio);
+  const wrapped=async function(cat,idx,item,opt={}){
+    if(cat==='terkip')return play(item,{...opt,entry:'audio-resolver',terkipIndex:idx});
+    return previous(cat,idx,item,opt);
+  };
+  wrapped.__r556Terkip=1;
+  audio.play=wrapped;
+}
+
+/* Zikir kartındaki Döngü düğmesi de tek birleşik metni tekrar etmez.
+   Her döngü turu, bütün isimler sırayla bittikten sonra bir kez tamamlanır. */
+const loop=window.DONGU;
+if(loop&&typeof loop.basla==='function'&&typeof loop._oku==='function'&&!loop.__r556Terkip){
+  loop.__r556Terkip=1;
+  const previousStart=loop.basla.bind(loop);
+  const previousRead=loop._oku.bind(loop);
+  const previousStop=loop.durdur.bind(loop);
+  const previousDone=loop.bitti.bind(loop);
+  const stopTerkipAudio=reason=>{
+    api.cancel(reason);
+    try{window.sesDurdur?.(reason)}catch(e){}
+    try{window.sukunTtsCancel?.(reason)}catch(e){}
+  };
+
+  loop.basla=function(text,opt={}){
+    if(opt.terkipItem)stopTerkipAudio('dongu-terkip-start');
+    else api.cancel('dongu-restart');
+    this.__r556StartingTerkip=opt.terkipItem||null;
+    this.__r556TerkipItem=this.__r556StartingTerkip;
+    try{return previousStart(text,opt)}
+    finally{this.__r556StartingTerkip=null}
+  };
+  loop._oku=async function(){
+    const item=this.__r556TerkipItem;
+    if(!item)return previousRead();
+    if(!this.aktif)return;
+    if(this.toplam>0&&this.kalan<=0){this.bitti();return}
+    const result=await api.play(item,{entry:'dongu',interrupt:false});
+    if(!this.aktif)return;
+    if(result?.ok){this._sonrakiTekrar();return}
+    if(result?.cancelled)return;
+    this.durdur();
+    try{window.toast?.('Terkipteki bir isim okunamadı; döngü durduruldu.')}catch(e){}
+  };
+  loop.durdur=function(...args){
+    if(this.__r556TerkipItem&&!this.__r556StartingTerkip)stopTerkipAudio(args[0]||'dongu-stop');
+    const out=previousStop(...args);
+    if(!this.__r556StartingTerkip)this.__r556TerkipItem=null;
+    return out;
+  };
+  loop.bitti=function(...args){
+    const out=previousDone(...args);
+    this.__r556TerkipItem=null;
+    return out;
+  };
+}
+
+/* Kayıt veya TTS dışarıdan kesilirse await'ten sonra zincir yeniden
+   başlamasın. Duraklatma bu kapılardan geçmez; kaldığı yerden sürdürülür. */
+function wrapCancel(name){
+  const previous=window[name];
+  if(typeof previous!=='function'||previous.__r556TerkipCancel)return;
+  const wrapped=function(...args){api.cancel(args[0]||name);return previous.apply(this,args)};
+  wrapped.__r556TerkipCancel=1;
+  window[name]=wrapped;
+}
+wrapCancel('sukunTtsCancel');
+wrapCancel('sesDurdur');
 })();
 </script>
 

@@ -1,8 +1,8 @@
-/* SÜKÛN r555 — Android Bildirim Merkezi kaydırma onarımı */
+/* SÜKÛN r556 — Esmâ terkibi isim-bazlı ses zinciri */
 'use strict';
 
-const SURUM = 'r555';
-const CACHE = 'sukun-r555-20260829a';
+const SURUM = 'r556';
+const CACHE = 'sukun-r556-20260829a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r555__.json';
+const BUILD_MARKER='./__sukun_build_r556__.json';
 
 const NOTLAR = [
+  'r556 Çoklu Esmâ tertiplerinde her isim kendi esma:<sıra>:nida kaydıyla ayrı kontrol edilir ve sesler bitiş sırasıyla art arda çalınır.',
+  'r556 Kendi kaydı bulunan isimde seçili okuyucu/TTS devreye girmez; yalnız kaydı olmayan isim ses yedeğine düşer.',
+  'r556 Ana zikir, Tefekkür, Döngü, Akıllı Seans ve Global Akış aynı terkip ses yürütücüsünü kullanır; yarım kalan zincir durdurma sonrasında devam etmez.',
   'r555 Android bildirim kaydırma kilidi giderildi: ana merkez doğal sayfa akışında kayar; iç kaydırma yalnız akış barı drawerında kalır.',
   'r554 Bildirimler ana sekmesi; Esmâ yeşil, Berhetiyye mor ve uyarı kırmızı sinyalleri; zıplamayan sabit drawer; tefekkürde büyüyen ve güvenli alanda sürüklenen akış barı.',
   'r553 Berhetiyye bildirim ayarı ve 28 İsim Seyri kilit politikasına bütünüyle bağlandı; Esmâü’l-Hüsnâ 99 İsim Seyri ses hatalarına karşı sağlamlaştırıldı.',
@@ -291,7 +294,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r555 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r556 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
