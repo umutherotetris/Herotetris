@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r553 — Tasavvufî Ses, Zikir & Tefekkür
+     SÜKÛN r554 — Tasavvufî Ses, Zikir & Tefekkür
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r553">
+<meta name="sukun-build" content="r554">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r553">
+<link rel="manifest" href="./manifest.webmanifest?v=r554">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5515,6 +5515,9 @@ body[data-focus="1"] .zCtl{
     <button class="tab" data-t="rx" role="tab">
       <svg class="tbIc" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.1" fill="none" stroke="currentColor" stroke-width=".85" opacity=".3" stroke-dasharray="2.4 2.2"/><circle cx="10" cy="10" r="4.9" fill="none" stroke="currentColor" stroke-width="1.25" opacity=".62"/><circle cx="10" cy="10" r="1.85" fill="currentColor"/></svg>
       <span class="tbL">Düzen</span></button>
+    <button class="tab r554NotifyTab r554-berhet-locked" data-t="ntf" role="tab" aria-label="Bildirimler">
+      <span class="tbIc r554NotifySigil" aria-hidden="true"><span>!</span><i class="kind-esma"></i><i class="kind-berhet"></i><i class="kind-warning"></i><b id="r554NavCount" hidden>0</b></span>
+      <span class="tbL">Bildirimler</span></button>
     <button class="tabTekke" id="tekkeTab" title="Dijital Tekke — rehberli zikir ve nefes seansı (tam ekran)" data-tip="Tam ekran, rehberli zikir ve nefes seansı. Ortadaki halka nefesi gösterir, damla zikri kendisi sayar — dokunman gerekmez.">
       <span class="tbRub">۞</span><span class="tbL">Tekke</span></button>
   </nav>
@@ -6348,6 +6351,34 @@ body[data-focus="1"] .zCtl{
     <p class="hint">💡 Tefekkür düzeni tamamen cihazında, çevrimdışı kurulur. İstersen Ayarlar → «AI sağlayıcıları» bölümüne bir veya birkaç API anahtarı girip 🪄 ile daha derin açıklama alabilirsin. Bir sağlayıcı çalışmazsa sistem sıradakine geçer. Bu bir tıbbî tavsiye değildir; tasavvufî bir tefekkür ve dinginlik aracıdır.</p>
   </section>
 
+  <!-- ═══════════ SEKME 5: BİLDİRİM MERKEZİ — r554 ═══════════ -->
+  <section id="tab-ntf" hidden>
+    <div class="card r554NotifyCenter" aria-labelledby="r554NotifyTitle">
+      <div class="r554NotifyHero">
+        <span class="r554HeroSigil r554NotifySigil r554-berhet-locked" id="r554HeroSigil" aria-hidden="true"><span>!</span><i class="kind-esma"></i><i class="kind-berhet"></i><i class="kind-warning"></i></span>
+        <div class="r554NotifyCopy">
+          <small>SÜKÛN · BİLDİRİM MERKEZİ</small>
+          <h2 id="r554NotifyTitle">Akış bildirimleri</h2>
+          <p>Renkleri ayrı izle; yalnız sen “okundu” dediğinde sönsün.</p>
+        </div>
+        <b class="r554NotifyTotal" id="r554NotifyTotal" aria-label="Toplam bildirim">0</b>
+      </div>
+      <div class="r554NotifyFilters" role="tablist" aria-label="Bildirim türü">
+        <button type="button" class="r554Filter act" data-r554-surface="center" data-r554-filter="all" role="tab" aria-selected="true"><span class="r554FilterMark kind-all">!</span><span>Tümü</span><b id="r554CenterCountAll">0</b></button>
+        <button type="button" class="r554Filter kind-esma" data-r554-surface="center" data-r554-filter="esma" role="tab" aria-selected="false"><span class="r554FilterMark">!</span><span>Esmâ</span><b id="r554CenterCountEsma">0</b></button>
+        <button type="button" class="r554Filter kind-berhet" data-r554-surface="center" data-r554-filter="berhet" role="tab" aria-selected="false" hidden><span class="r554FilterMark">!</span><span>Berhetiyye</span><b id="r554CenterCountBerhet">0</b></button>
+        <button type="button" class="r554Filter kind-warning" data-r554-surface="center" data-r554-filter="warning" role="tab" aria-selected="false"><span class="r554FilterMark">!</span><span>Uyarı</span><b id="r554CenterCountWarning">0</b></button>
+      </div>
+      <div class="r554NotifyTools">
+        <button type="button" id="r554UnreadOnly" aria-pressed="false">Yalnız okunmamış</button>
+        <button type="button" id="r554CenterRead">Görünenleri okundu yap</button>
+        <button type="button" id="r554DockReset">Akış barını yerine al</button>
+      </div>
+    </div>
+    <div class="r554CenterStatus" id="r554CenterStatus" role="status"></div>
+    <div class="r554AlertList r554CenterList" id="r554CenterList" aria-live="polite"></div>
+  </section>
+
   <footer>
     🎧 Binaural mod için kulaklık gerekir • Yanıp sönen ışığa duyarlılık veya epilepsi öyküsü varsa fotik uyarımı kullanmayın • Rahatsızlıkta hemen durun • Araç kullanırken dinlemeyin.<br>
     <details class="box" id="bakBox" style="text-align:left">
@@ -6360,7 +6391,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.65 — build 2026-08-29-r553</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.66 — build 2026-08-29-r554</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -12363,7 +12394,8 @@ $$('.tab').forEach((b,i)=>{
       x.setAttribute('aria-selected',aktif?'true':'false');
       x.setAttribute('tabindex',aktif?'0':'-1');
     });
-    ['amb','frq','zkr','rx'].forEach(t=>$('#tab-'+t).hidden=(t!==b.dataset.t));
+    $$('section[id^="tab-"]').forEach(panel=>panel.hidden=(panel.id!=='tab-'+b.dataset.t));
+    try{window.dispatchEvent(new CustomEvent('sukun:tabchange',{detail:{tab:b.dataset.t}}))}catch(e){}
   };
   b.onkeydown=e=>{
     if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
@@ -21936,6 +21968,15 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r554',t:'29 Ağustos 2026',b:[
+          'Ana sekme barına kalıcı Bildirimler bölümü eklendi; Esmâ yeşil, Berhetiyye mor, Neuro ve diğer uyarılar kırmızı ünlemle ayrı izlenir.',
+          'Canlı akış başlığındaki tek kırmızı ünlem üç renkli sabit araç yuvasına dönüştürüldü; artık alt satıra düşüp bar yüksekliğini değiştirmez.',
+          'Bildirim kartları yalnız veri değiştiğinde çizilir; açık listede kaydırma konumu korunur ve oynatma olayları okuma sırasında listeyi zıplatmaz.',
+          'Bildirim açmak otomatik okundu saymaz; tek kart, görünen renk veya tümü yalnız açık kullanıcı eylemiyle okundu yapılır.',
+          'Tefekkür modunda renkli ünleme dokununca akış barı güvenli görünüm alanında büyür; kapanınca önceki mini/midi ölçüsü ve konumu geri gelir.',
+          'Akış barı belirgin ↕ tutamaktan sürüklenir, ekran dışına taşamaz ve Bildirimler sekmesinden tek dokunuşla yerine alınabilir.',
+          'Berhetiyye bildirim yüzeyleri gizli kilit kapalıyken mor düğme ve filtre dâhil bütünüyle görünmez.'
+        ]},
         {v:'r553',t:'29 Ağustos 2026',b:[
           'Berhetiyye bildirim ayarı da artık kilit politikasına bağlıdır: kilit kapalıyken satır ilk kareden itibaren görünmez ve denetim devre dışıdır; kilit açılınca aynı olay akışıyla görünür.',
           'Kilit kapanınca çalışan veya duraklatılmış 28 İsim Seyri durdurulup panel kaldırılır; saklı Berhetiyye uyarıları bildirim sayacına ve çekmeceye katılmaz.',
@@ -22081,7 +22122,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r553',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r554',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22107,7 +22148,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r553:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r554:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22128,7 +22169,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r553',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r554',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22141,7 +22182,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r553:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r554:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -33731,10 +33772,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r553',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r554',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r553-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r554-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -47874,14 +47915,18 @@ body.r447-dock-mini #r478DockStats[data-nefs="1"] .r478Name>b{
 }
 </style>
 
-<script id="r553-alert-timing-runtime">
+<script id="r554-alert-timing-runtime">
 (()=>{
 'use strict';
-if(window.SukunAlertCenter?.version==='r553')return;
+if(window.SukunAlertCenter?.version==='r554')return;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const ALERT_KEY='sukun.alert.center.v1',DOCK_Y_KEY='sukun.dockY',actions=new Map();
+const KINDS=['esma','berhet','warning'];
+const filters={drawer:'all',center:'all'};
+const renderKeys={drawer:'',center:'',chrome:''};
+let centerUnreadOnly=false,preOpenOffset=null,draggedWhileOpen=false;
 
 function load(){
   let a=[];try{a=S.get(ALERT_KEY,[])||[]}catch(e){}
@@ -47894,10 +47939,19 @@ const persist=()=>{try{S.set(ALERT_KEY,alerts.map(({actionFn,...x})=>x).slice(0,
 const berhetUnlocked=()=>!!window.SukunSecretPolicy?.unlocked?.();
 const enabled=k=>k==='esma'?S.get('sukun.notify.esma',true)!==false:
   k==='berhet'?(berhetUnlocked()&&S.get('sukun.notify.berhet',true)!==false):true;
-const visibleAlerts=()=>alerts.filter(x=>x.kind!=='berhet'||berhetUnlocked());
-const unread=()=>visibleAlerts().filter(x=>!x.read).length;
+const normalKind=k=>KINDS.includes(k)?k:'warning';
+const visibleAlerts=(kind='all',onlyUnread=false)=>alerts.filter(x=>(normalKind(x.kind)!=='berhet'||berhetUnlocked())&&(kind==='all'||normalKind(x.kind)===kind)&&(!onlyUnread||!x.read));
+const unread=kind=>visibleAlerts(kind||'all').filter(x=>!x.read).length;
 const byId=id=>alerts.find(x=>x.id===id)||null;
 const kLabel=k=>k==='esma'?'ESMÂ':k==='berhet'?'BERHETİYYE':'UYARI';
+const kTitle=k=>k==='esma'?'Esmâ bildirimi':k==='berhet'?'Berhetiyye bildirimi':'Uyarı';
+const setText=(el,v)=>{v=String(v??'');if(el&&el.textContent!==v)el.textContent=v};
+const counts=()=>{
+  const list=visibleAlerts(),out={all:list.length,unread:list.filter(x=>!x.read).length};
+  KINDS.forEach(k=>{const a=list.filter(x=>normalKind(x.kind)===k);out[k]=a.length;out[k+'Unread']=a.filter(x=>!x.read).length});
+  return out;
+};
+const topTone=c=>c.warningUnread?'warning':c.berhetUnread?'berhet':c.esmaUnread?'esma':'none';
 
 function ensureUI(){
   const now=$('r170Now');if(!now)return false;
@@ -47967,7 +48021,7 @@ function dismiss(id){
   alerts=alerts.filter(x=>x.id!==id);actions.delete(id);persist();render();
   if(!visibleAlerts().length)close();
 }
-function open(){ensureUI();const n=$('r170Now'),d=$('r551AlertDrawer');if(!n||!d)return;d.hidden=false;n.classList.add('r551-alert-open');markRead()}
+function open(){ensureUI();const n=$('r170Now'),d=$('r551AlertDrawer');if(!n||!d)return;d.hidden=false;n.classList.add('r551-alert-open');render()}
 function close(){const n=$('r170Now'),d=$('r551AlertDrawer');if(d)d.hidden=true;if(n)n.classList.remove('r551-alert-open')}
 function toggle(){const d=$('r551AlertDrawer');if(!d||d.hidden)open();else close()}
 function invoke(id){
@@ -47994,11 +48048,7 @@ function invoke(id){
   }catch(e){}
   return false;
 }
-window.SukunAlertCenter={
-  version:'r553',push,open,close,toggle,markAllRead:markRead,dismiss,invoke,
-  rerender:render,
-  snapshot:()=>({version:'r553',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),items:visibleAlerts().slice(0,20)})
-};
+/* r554 aşağıda aynı veri deposunu kullanan kararlı yüzeyi yayımlar. */
 
 /* player vertical drag */
 let drag=false,moved=false,pid=null,startY=0,startO=0,minO=-260,maxO=48,lastTap=0;
@@ -48030,6 +48080,252 @@ function bindDrag(){
     const t=Date.now();if(t-lastTap<330){e.preventDefault();e.stopImmediatePropagation();setO(0,true)}lastTap=t;
   },true);
 }
+
+/* ═══ r554 — kararlı bildirim yüzeyi + gerçek sürükleme ═════════════
+   r551 listesi her playback olayında innerHTML ile baştan kuruluyordu.
+   Bu katman aynı alert deposunu korur; yalnız veri imzası değiştiğinde
+   kartları çizer, drawer scrollTop'unu saklar ve açık barın yüksekliğini
+   kilitler. Böylece okurken zıplama oluşmaz. */
+const r554AfterPaint=fn=>typeof requestAnimationFrame==='function'
+  ?requestAnimationFrame(()=>requestAnimationFrame(fn)):setTimeout(fn,0);
+
+function r554Card(a){
+  const d=new Date(a.at),today=new Date(),same=d.toDateString()===today.toDateString();
+  const stamp=d.toLocaleString('tr-TR',same?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  return `<article class="r554AlertItem kind-${esc(normalKind(a.kind))}${a.read?' is-read':' unread'}" data-alert-id="${esc(a.id)}">
+    <div class="r554AlertItemTop"><span><i aria-hidden="true">!</i>${kLabel(a.kind)}</span><time datetime="${esc(d.toISOString())}">${esc(stamp)}</time></div>
+    <b>${esc(a.title||'Bildirim')}</b><p>${esc(a.body||'')}</p>
+    ${a.source?`<small class="r554AlertSource">${esc(a.source)}</small>`:''}
+    <div class="r554AlertItemBtns">
+      ${a.actionLabel?`<button type="button" class="r554AlertAction" data-alert-action="${esc(a.id)}">${esc(a.actionLabel)}</button>`:''}
+      ${a.read?'':`<button type="button" data-alert-read="${esc(a.id)}">✓ Okundu yap</button>`}
+      <button type="button" data-alert-dismiss="${esc(a.id)}">Listeden kaldır</button>
+    </div>
+  </article>`;
+}
+
+function r554EnsureMain(){
+  const center=$('tab-ntf');if(!center)return false;
+  if(!center.dataset.r554Bound){
+    center.dataset.r554Bound='1';
+    center.addEventListener('click',e=>{
+      const f=e.target.closest?.('[data-r554-filter]');
+      if(f){r554SetFilter(f.dataset.r554Surface||'center',f.dataset.r554Filter||'all');return}
+      const action=e.target.closest?.('[data-alert-action]');if(action){r554Invoke(action.dataset.alertAction);return}
+      const read=e.target.closest?.('[data-alert-read]');if(read){r554ReadOne(read.dataset.alertRead);return}
+      const dismissBtn=e.target.closest?.('[data-alert-dismiss]');if(dismissBtn){r554Dismiss(dismissBtn.dataset.alertDismiss);return}
+      if(e.target.closest?.('#r554UnreadOnly')){
+        centerUnreadOnly=!centerUnreadOnly;
+        const b=$('r554UnreadOnly');if(b){b.setAttribute('aria-pressed',centerUnreadOnly?'true':'false');b.classList.toggle('act',centerUnreadOnly)}
+        renderKeys.center='';r554Render();return;
+      }
+      if(e.target.closest?.('#r554CenterRead')){r554MarkRead(filters.center);return}
+      if(e.target.closest?.('#r554DockReset')){r554ResetDock(true);return}
+    });
+  }
+  const nav=document.querySelector?.('.tab[data-t="ntf"]');
+  if(nav&&!nav.dataset.r554Bound){nav.dataset.r554Bound='1';nav.addEventListener('click',()=>{renderKeys.center='';r554Render();r554AfterPaint(()=>center.scrollIntoView?.({block:'start',behavior:'smooth'}))})}
+  return true;
+}
+
+function r554EnsureUI(){
+  r554EnsureMain();
+  const now=$('r170Now');if(!now){r554RenderChrome();r554PaintList('center');return false}
+  let mounted=false;
+  now.classList.add('r554-alert-ready','r554-drag-ready');
+  now.classList.remove('r551-alert-open','r551-alert-unread');
+  $('r551AlertBtn')?.remove();$('r551AlertDrawer')?.remove();
+  const head=$('r422NowHead');
+  if(head){
+    let tools=$('r554NowTools');
+    if(!tools){tools=document.createElement('div');tools.id='r554NowTools';mounted=true}
+    const live=$('r422NowLive');if(live&&live.parentElement!==tools){tools.appendChild(live);mounted=true}
+    let cluster=$('r554AlertCluster');
+    if(!cluster){
+      cluster=document.createElement('div');cluster.id='r554AlertCluster';cluster.setAttribute('aria-label','Bildirim türleri');
+      cluster.innerHTML=KINDS.map(k=>`<button type="button" class="r554AlertMark kind-${k}" data-alert-kind="${k}" aria-label="${kTitle(k)}"><span aria-hidden="true">!</span><b hidden>0</b></button>`).join('');
+      cluster.addEventListener('click',e=>{const b=e.target.closest?.('[data-alert-kind]');if(b){e.stopPropagation();r554Toggle(b.dataset.alertKind)}});mounted=true;
+    }
+    if(cluster.parentElement!==tools){tools.appendChild(cluster);mounted=true}
+    if(tools.parentElement!==head){head.appendChild(tools);mounted=true}
+  }
+  let d=$('r554AlertDrawer');
+  if(!d){
+    d=document.createElement('section');d.id='r554AlertDrawer';d.hidden=true;d.setAttribute('aria-label','Akış bildirimleri');
+    d.innerHTML=`<div class="r554DrawerHead"><div><small>SÜKÛN · BİLDİRİMLER</small><b id="r554DrawerTitle">Akış bildirimleri</b></div><div class="r554DrawerActions"><button type="button" id="r554DrawerReset" title="Akış barını yerine al" aria-label="Akış barını yerine al">↕</button><button type="button" id="r554DrawerRead">Okundu yap</button><button type="button" id="r554DrawerClose" aria-label="Bildirimleri kapat">×</button></div></div>
+      <div class="r554NotifyFilters r554DrawerFilters" role="tablist" aria-label="Bildirim türü">
+        <button type="button" class="r554Filter act" data-r554-surface="drawer" data-r554-filter="all" role="tab" aria-selected="true"><span class="r554FilterMark kind-all">!</span><span>Tümü</span><b id="r554DrawerCountAll">0</b></button>
+        <button type="button" class="r554Filter kind-esma" data-r554-surface="drawer" data-r554-filter="esma" role="tab" aria-selected="false"><span class="r554FilterMark">!</span><span>Esmâ</span><b id="r554DrawerCountEsma">0</b></button>
+        <button type="button" class="r554Filter kind-berhet" data-r554-surface="drawer" data-r554-filter="berhet" role="tab" aria-selected="false" hidden><span class="r554FilterMark">!</span><span>Ber.</span><b id="r554DrawerCountBerhet">0</b></button>
+        <button type="button" class="r554Filter kind-warning" data-r554-surface="drawer" data-r554-filter="warning" role="tab" aria-selected="false"><span class="r554FilterMark">!</span><span>Uyarı</span><b id="r554DrawerCountWarning">0</b></button>
+      </div><div class="r554AlertList" id="r554DrawerList"></div>`;
+    d.addEventListener('click',e=>{
+      const f=e.target.closest?.('[data-r554-filter]');if(f){r554SetFilter('drawer',f.dataset.r554Filter||'all');return}
+      const action=e.target.closest?.('[data-alert-action]');if(action){r554Invoke(action.dataset.alertAction);return}
+      const read=e.target.closest?.('[data-alert-read]');if(read){r554ReadOne(read.dataset.alertRead);return}
+      const dismissBtn=e.target.closest?.('[data-alert-dismiss]');if(dismissBtn){r554Dismiss(dismissBtn.dataset.alertDismiss);return}
+      if(e.target.closest?.('#r554DrawerClose')){r554Close();return}
+      if(e.target.closest?.('#r554DrawerRead')){r554MarkRead(filters.drawer);return}
+      if(e.target.closest?.('#r554DrawerReset')){r554ResetDock(true);return}
+    });
+    now.appendChild(d);mounted=true;
+  }
+  if(!d.hidden)now.classList.toggle('r554-alert-max',document.body.classList.contains('sukun-tefekkur-mode'));
+  if(mounted)renderKeys.chrome='';r554BindDrag();r554Render();return true;
+}
+
+function r554SetFilter(surface,kind){
+  if(surface!=='drawer'&&surface!=='center')surface='center';
+  kind=(kind==='all'||KINDS.includes(kind))?kind:'all';
+  if(kind==='berhet'&&!berhetUnlocked())kind='all';
+  filters[surface]=kind;renderKeys[surface]='';r554Render();
+}
+
+function r554FilterState(surface){
+  document.querySelectorAll?.(`[data-r554-surface="${surface}"][data-r554-filter]`).forEach(b=>{
+    const on=b.dataset.r554Filter===filters[surface];b.classList.toggle('act',on);b.setAttribute('aria-selected',on?'true':'false');
+  });
+}
+
+function r554PaintList(surface,force=false){
+  const node=$(surface==='drawer'?'r554DrawerList':'r554CenterList');if(!node)return;
+  const only=surface==='center'&&centerUnreadOnly,kind=filters[surface];
+  const list=visibleAlerts(kind,only).slice(0,surface==='drawer'?20:30);
+  const key=[kind,only?'1':'0',berhetUnlocked()?'1':'0',...list.map(a=>`${a.id}:${a.read?'1':'0'}`)].join('|');
+  if(!force&&renderKeys[surface]===key)return;
+  const oldScroll=surface==='drawer'?(node.scrollTop||0):0;
+  node.innerHTML=list.map(r554Card).join('')||`<div class="r554AlertEmpty"><span aria-hidden="true">۞</span><b>${only?'Okunmamış bildirim yok':'Bu renkte bildirim yok'}</b><small>Yeni bir bildirim geldiğinde burada sabit kalır.</small></div>`;
+  if(surface==='drawer')node.scrollTop=oldScroll;
+  renderKeys[surface]=key;
+  if(surface==='center')setText($('r554CenterStatus'),`${list.length} bildirim gösteriliyor${only?' · yalnız okunmamış':''}`);
+}
+
+function r554RenderChrome(){
+  const c=counts(),tone=topTone(c),unlocked=berhetUnlocked();
+  if(!unlocked){if(filters.drawer==='berhet')filters.drawer='all';if(filters.center==='berhet')filters.center='all'}
+  const key=JSON.stringify([c,tone,unlocked,filters.drawer,filters.center,centerUnreadOnly]);
+  if(renderKeys.chrome===key){r554FilterState('drawer');r554FilterState('center');return}
+  renderKeys.chrome=key;
+  const nav=document.querySelector?.('.tab[data-t="ntf"]'),hero=$('r554HeroSigil'),now=$('r170Now');
+  [nav,hero].forEach(el=>{if(!el)return;el.dataset.r554Tone=tone;el.classList.toggle('has-esma',c.esmaUnread>0);el.classList.toggle('has-berhet',c.berhetUnread>0);el.classList.toggle('has-warning',c.warningUnread>0);el.classList.toggle('r554-berhet-locked',!unlocked)});
+  if(nav)nav.setAttribute('aria-label',c.unread?`Bildirimler · ${c.unread} okunmamış`:'Bildirimler · yeni bildirim yok');
+  const nc=$('r554NavCount');if(nc){setText(nc,c.unread>99?'99+':c.unread);nc.hidden=!c.unread}
+  setText($('r554NotifyTotal'),c.all);
+  const nowCluster=$('r554AlertCluster');
+  if(nowCluster)KINDS.forEach(k=>{
+    const b=nowCluster.querySelector?.(`[data-alert-kind="${k}"]`);if(!b)return;
+    const n=c[k+'Unread'];b.hidden=k==='berhet'&&!unlocked;b.classList.toggle('unread',n>0);b.setAttribute('aria-label',`${kTitle(k)} · ${n} okunmamış · ${c[k]} toplam`);
+    const badge=b.querySelector?.('b');if(badge){setText(badge,n>99?'99+':n);badge.hidden=!n}
+  });
+  if(now){now.dataset.r554Tone=tone;now.classList.toggle('r554-alert-unread',c.unread>0)}
+  const map={All:c.all,Esma:c.esma,Berhet:c.berhet,Warning:c.warning};
+  Object.entries(map).forEach(([suffix,val])=>{setText($('r554CenterCount'+suffix),val);setText($('r554DrawerCount'+suffix),val)});
+  const drawerNames={all:'Akış bildirimleri',esma:'Esmâ bildirimleri',berhet:'Berhetiyye bildirimleri',warning:'Uyarılar'};
+  setText($('r554DrawerTitle'),drawerNames[filters.drawer]||drawerNames.all);
+  document.querySelectorAll?.('.r554Filter.kind-berhet').forEach(b=>{b.hidden=!unlocked});
+  r554FilterState('drawer');r554FilterState('center');
+}
+
+function r554Render(force=false){
+  r554EnsureMain();r554RenderChrome();r554PaintList('center',force);r554PaintList('drawer',force);
+}
+
+function r554Push(a){
+  if(!a?.id||!enabled(a.kind)||alerts.some(x=>x.id===String(a.id)))return false;
+  const x={id:String(a.id),kind:normalKind(a.kind),title:String(a.title||'Bildirim').slice(0,120),body:String(a.body||'').slice(0,600),source:String(a.source||'').slice(0,180),actionLabel:String(a.actionLabel||'').slice(0,40),meta:a.meta&&typeof a.meta==='object'?a.meta:{},at:+a.at||Date.now(),read:false};
+  alerts.unshift(x);alerts=alerts.slice(0,30);if(typeof a.actionFn==='function')actions.set(x.id,a.actionFn);persist();
+  renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554EnsureUI();r554Render(true);
+  try{window.dispatchEvent(new CustomEvent('sukun:alert',{detail:x}))}catch(e){}return true;
+}
+function r554MarkRead(kind='all'){
+  if(kind==='berhet'&&!berhetUnlocked())kind='all';const ids=new Set(visibleAlerts(kind).map(x=>x.id));let changed=false;
+  alerts=alerts.map(x=>ids.has(x.id)&&!x.read?(changed=true,{...x,read:true}):x);if(changed)persist();
+  renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554Render(true);return changed;
+}
+function r554ReadOne(id){
+  let changed=false;alerts=alerts.map(x=>x.id===id&&!x.read?(changed=true,{...x,read:true}):x);if(changed)persist();
+  renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554Render(true);return changed;
+}
+function r554Dismiss(id){
+  const before=alerts.length;alerts=alerts.filter(x=>x.id!==id);actions.delete(id);if(alerts.length!==before)persist();
+  renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554Render(true);return alerts.length!==before;
+}
+function r554Open(kind='all'){
+  r554EnsureUI();const n=$('r170Now'),d=$('r554AlertDrawer');if(!n||!d)return false;
+  if(kind!=='all'&&!KINDS.includes(kind))kind='all';if(kind==='berhet'&&!berhetUnlocked())kind='all';
+  filters.drawer=kind;renderKeys.drawer='';if(d.hidden)preOpenOffset=r554CurrentO();draggedWhileOpen=false;
+  d.hidden=false;n.classList.add('r554-alert-open');n.classList.toggle('r554-alert-max',document.body.classList.contains('sukun-tefekkur-mode'));
+  r554Render(true);r554AfterPaint(()=>r554ClampDock(false));return true;
+}
+function r554Close(){
+  const n=$('r170Now'),d=$('r554AlertDrawer');if(d)d.hidden=true;
+  if(n)n.classList.remove('r554-alert-open','r554-alert-max');
+  if(preOpenOffset!=null&&!draggedWhileOpen)r554AfterPaint(()=>{r554SetO(preOpenOffset,false);r554ClampDock(false)});
+  preOpenOffset=null;draggedWhileOpen=false;return true;
+}
+function r554Toggle(kind='all'){
+  const d=$('r554AlertDrawer');if(d&&!d.hidden&&filters.drawer===kind)return r554Close();return r554Open(kind);
+}
+function r554GoZikir(){
+  if(!document.body.classList.contains('sukun-tefekkur-mode'))document.querySelector?.('.tab[data-t="zkr"]')?.click?.();
+  r554AfterPaint(()=>document.getElementById('zStage')?.scrollIntoView?.({block:'start',behavior:'smooth'}));
+}
+function r554Invoke(id){
+  const a=byId(id);if(!a||a.kind==='berhet'&&!berhetUnlocked())return false;
+  const fn=actions.get(id);if(fn){try{fn();r554Dismiss(id);return true}catch(e){}}
+  const meta=a.meta||{};
+  try{
+    if(meta.action==='esma'&&meta.name){const idx=ZIKIR.esma.items.findIndex(x=>x.t===meta.name);if(idx>=0){Z.cat='esma';Z.idx=idx;try{zHedefSecimeUyarla(true)}catch(e){}renderCats();renderZikir(false);zUI();saveSettings();r554Dismiss(id);r554Close();r554GoZikir();return true}}
+    if(meta.action==='berhet'&&Number.isFinite(+meta.idx)&&berhetUnlocked()){const idx=clamp(+meta.idx,0,ZIKIR.berhet.items.length-1);Z.cat='berhet';Z.idx=idx;try{zHedefSecimeUyarla(true)}catch(e){}renderCats();renderZikir(false);zUI();saveSettings();r554Dismiss(id);r554Close();r554GoZikir();return true}
+  }catch(e){}
+  return false;
+}
+function r554OpenCenter(kind='all'){
+  r554SetFilter('center',kind);document.querySelector?.('.tab[data-t="ntf"]')?.click?.();r554AfterPaint(()=>document.getElementById('tab-ntf')?.scrollIntoView?.({block:'start',behavior:'smooth'}));return true;
+}
+
+/* Akış barı yalnız belirgin üst tutamaktan taşınır; tüm hareket güvenli
+   görünüm alanına sıkıştırılır. Drawer büyürken geçici clamp yapılır,
+   kapanınca kullanıcının önceki konumu geri gelir. */
+let r554Drag=false,r554Moved=false,r554Pid=null,r554StartY=0,r554StartO=0,r554MinO=-600,r554MaxO=120;
+function r554StoredO(){let v=0;try{v=Number(S.get(DOCK_Y_KEY,0))||0}catch(e){}return clamp(v,-600,120)}
+function r554CurrentO(){const n=$('r170Now');if(!n)return r554StoredO();const raw=parseFloat(n.style.getPropertyValue('--r554-dock-y'));return Number.isFinite(raw)?raw:r554StoredO()}
+function r554SetO(v,save=true){
+  const n=$('r170Now');if(!n)return 0;v=clamp(Number(v)||0,-600,120);n.style.setProperty('--r554-dock-y',v+'px');n.style.setProperty('--r551-dock-y',v+'px');
+  if(save)try{S.set(DOCK_Y_KEY,v)}catch(e){}return v;
+}
+function r554Bounds(n,current=r554CurrentO()){
+  const r=n.getBoundingClientRect(),vv=window.visualViewport,h=vv?.height||innerHeight,top=(vv?.offsetTop||0)+8,bottom=(vv?.offsetTop||0)+h-8;
+  let min=current+(top-r.top),max=current+(bottom-r.bottom);min=Math.max(-600,min);max=Math.min(120,max);if(max<min)max=min;return{min,max};
+}
+function r554ClampDock(save=false){const n=$('r170Now');if(!n)return 0;const cur=r554CurrentO(),b=r554Bounds(n,cur);return r554SetO(clamp(cur,b.min,b.max),save)}
+function r554ResetDock(announce=false){preOpenOffset=0;draggedWhileOpen=true;r554SetO(0,true);r554AfterPaint(()=>r554ClampDock(true));if(announce)try{typeof toast==='function'&&toast('Akış barı yerine alındı ↕')}catch(e){}return true}
+function r554BindDrag(){
+  const h=$('r447DockHandle'),n=$('r170Now');if(!h||!n||h.dataset.r554Drag)return;
+  h.dataset.r554Drag='1';h.setAttribute('aria-roledescription','sürüklenebilir oynatıcı tutamağı');r554SetO(r554StoredO(),false);
+  h.addEventListener('pointerdown',e=>{
+    if(e.button!=null&&e.button!==0)return;r554Drag=true;r554Moved=false;r554Pid=e.pointerId;r554StartY=e.clientY;r554StartO=r554CurrentO();
+    const b=r554Bounds(n,r554StartO);r554MinO=b.min;r554MaxO=b.max;try{h.setPointerCapture(r554Pid)}catch(_){}n.classList.add('r554-dragging');
+  });
+  h.addEventListener('pointermove',e=>{
+    if(!r554Drag||e.pointerId!==r554Pid)return;const dy=e.clientY-r554StartY;if(Math.abs(dy)>4)r554Moved=true;if(!r554Moved)return;
+    e.preventDefault();r554SetO(clamp(r554StartO+dy,r554MinO,r554MaxO),false);
+  },{passive:false});
+  const end=e=>{
+    if(!r554Drag||e.pointerId!==r554Pid)return;r554Drag=false;n.classList.remove('r554-dragging');
+    r554SetO(clamp(r554CurrentO(),r554MinO,r554MaxO),true);if(!$('r554AlertDrawer')?.hidden){draggedWhileOpen=true;preOpenOffset=r554CurrentO()}
+    try{h.releasePointerCapture(r554Pid)}catch(_){}
+  };
+  h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
+  h.addEventListener('click',e=>{if(r554Moved){e.preventDefault();e.stopImmediatePropagation();r554Moved=false}},true);
+  const clampLater=()=>r554AfterPaint(()=>r554ClampDock(false));window.addEventListener('resize',clampLater,{passive:true});window.visualViewport?.addEventListener?.('resize',clampLater,{passive:true});
+}
+
+window.SukunAlertCenter={
+  version:'r554',push:r554Push,open:r554Open,close:r554Close,toggle:r554Toggle,openCenter:r554OpenCenter,
+  markAllRead:r554MarkRead,markRead:r554ReadOne,dismiss:r554Dismiss,invoke:r554Invoke,rerender:()=>{renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554EnsureUI();r554Render(true)},resetDock:r554ResetDock,
+  snapshot:()=>({version:'r554',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),counts:counts(),filters:{...filters},drawerOpen:!$('r554AlertDrawer')?.hidden,dockY:r554CurrentO(),items:visibleAlerts().slice(0,30)})
+};
 
 /* sacred timing */
 const WEEKDAY_ESMA={0:['Rahmân','Rahîm','Melik','Selâm','Azîz','Hâlık','Bâri’','Hâfıd','Râfi’','Muizz','Basîr','Hakem','Adl','Habîr','Azîm','Gafûr','Şekûr','Aliyy','Mukît','Celîl','Bâis','Hakk','Muhsî','Hayy','Kâdir','Muktedir','Evvel','Vâlî','Afüvv','Zü’l-Celâli ve’l-İkrâm','Ganiyy','Hâdî','Bâkî','Reşîd','Sabûr'],1:['Mü’min','Musavvir','Vâsi’','Vedûd','Bâtın'],2:['Cebbâr','Kahhâr','Müzill','Kaviyy','Mümît','Vâhid','Ehad','Âhir','Müntekim','Dârr'],3:['Fettâh','Mâlikü’l-Mülk'],4:['Kuddûs','Müheymin','Mütekebbir','Alîm','Kâbıd','Semî’','Kebîr','Mucîb','Şehîd','Hamîd','Mübdi’','Kayyûm','Samed','Tevvâb','Muksit','Câmi’','Nûr','Bedî’'],5:['Gaffâr','Vehhâb','Rezzâk','Bâsıt','Latîf','Hasîb','Kerîm','Rakîb','Hakîm','Mecîd','Vekîl','Metîn','Muhyî','Mâcid','Berr','Muğnî','Vâris'],6:['Halîm','Hafîz','Veliyy','Muîd','Vâcid','Mukaddim','Muahhir','Zâhir','Müteâlî','Raûf','Mâni’','Nâfi’']};
@@ -48103,18 +48399,18 @@ function check(reason='timer'){
   if(reason==='timer'&&m===lastMinute)return;lastMinute=m;
   weekdayAlert(now);planetAlert(now);vakitAlert(now);berhetAlert(now);
 }
-window.SukunSacredTiming={version:'r553',check,planetaryHour:phour,snapshot:()=>({version:'r553',esmaEnabled:S.get('sukun.notify.esma',true)!==false,berhetEnabled:berhetUnlocked()&&S.get('sukun.notify.berhet',true)!==false,currentPlanetaryHour:phour(new Date())})};
+window.SukunSacredTiming={version:'r554',check,planetaryHour:phour,snapshot:()=>({version:'r554',esmaEnabled:S.get('sukun.notify.esma',true)!==false,berhetEnabled:berhetUnlocked()&&S.get('sukun.notify.berhet',true)!==false,currentPlanetaryHour:phour(new Date())})};
 
 function boot(){
-  ensureUI();const nk=$('neuroKart');if(nk)nk.hidden=true;check('start');
+  r554EnsureUI();const nk=$('neuroKart');if(nk)nk.hidden=true;check('start');
   timer=setInterval(()=>{if(!document.hidden)check('timer')},60000);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,120),{once:true});
 else setTimeout(boot,80);
-['sukun:playbackchange','sukun:nowplayingchange','sukun:currentflowchange'].forEach(ev=>window.addEventListener(ev,ensureUI,{passive:true}));
-window.addEventListener('pageshow',()=>{ensureUI();check('pageshow')},{passive:true});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){ensureUI();check('visible')}},{passive:true});
-window.addEventListener('sukun:secretaccesschange',()=>{render();check('secret-access')},{passive:true});
+['sukun:playbackchange','sukun:nowplayingchange','sukun:currentflowchange'].forEach(ev=>window.addEventListener(ev,r554EnsureUI,{passive:true}));
+window.addEventListener('pageshow',()=>{r554EnsureUI();check('pageshow')},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){r554EnsureUI();check('visible')}},{passive:true});
+window.addEventListener('sukun:secretaccesschange',()=>{renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554Render(true);check('secret-access')},{passive:true});
 })();
 </script>
 <script id="r553-esma99-secret-runtime">
@@ -49506,6 +49802,86 @@ body.sukun-tefekkur-mode #neuroKart{display:none!important}
 #esmaSeyir99 .r168Head b{color:var(--goldh)}
 #esmaSeyir99 .r168Progress i{background:linear-gradient(90deg,var(--gold),var(--goldh),var(--teal))}
 #esmaSeyir99 .r168Buttons .btn{min-width:0}
+
+/* ═══ r554 — sabit Bildirimler sekmesi + renkli sinyal mührü ═══════ */
+:root{--r554-esma:#4bd98a;--r554-berhet:#a775ff;--r554-warning:#ff5d6c;--r554-neutral:color-mix(in srgb,var(--goldh) 72%,var(--mut))}
+
+/* Altı ana giriş telefonda da aynı barda görünür; yatay kaydırmanın sonuna
+   saklanan bir Bildirimler sekmesi kullanıcının işini zorlaştırırdı. */
+.tabs>.tab,.tabs>#tekkeTab{flex:1 1 0!important;min-width:0!important;padding-inline:2px!important}
+.r554NotifyTab{position:relative!important}
+.r554NotifySigil{position:relative;display:grid!important;place-items:center;width:22px!important;height:22px!important;min-width:22px;border-radius:50%;border:1px solid color-mix(in srgb,var(--r554-neutral) 34%,transparent);background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.10),rgba(255,255,255,.018) 58%,transparent);color:var(--r554-neutral);overflow:visible!important;isolation:isolate}
+.r554NotifySigil>span{font:850 12px/1 "Figtree",system-ui;transform:translateY(-.2px);text-shadow:0 0 8px currentColor;transition:color .18s,filter .18s}
+.r554NotifySigil>i{position:absolute;width:5px;height:5px;border-radius:50%;border:1px solid rgba(5,8,12,.72);opacity:.30;transform:scale(.78);transition:opacity .18s,transform .18s,box-shadow .18s}
+.r554NotifySigil>i.kind-esma{left:-1px;bottom:1px;background:var(--r554-esma)}
+.r554NotifySigil>i.kind-berhet{left:50%;top:-3px;margin-left:-2.5px;background:var(--r554-berhet)}
+.r554NotifySigil>i.kind-warning{right:-1px;bottom:1px;background:var(--r554-warning)}
+.has-esma .r554NotifySigil>i.kind-esma,.r554NotifySigil.has-esma>i.kind-esma{opacity:1;transform:scale(1);box-shadow:0 0 9px var(--r554-esma);animation:r554DotSignal 1.45s ease-in-out infinite}
+.has-berhet .r554NotifySigil>i.kind-berhet,.r554NotifySigil.has-berhet>i.kind-berhet{opacity:1;transform:scale(1);box-shadow:0 0 9px var(--r554-berhet);animation:r554DotSignal 1.45s .18s ease-in-out infinite}
+.has-warning .r554NotifySigil>i.kind-warning,.r554NotifySigil.has-warning>i.kind-warning{opacity:1;transform:scale(1);box-shadow:0 0 9px var(--r554-warning);animation:r554DotSignal 1.35s .08s ease-in-out infinite}
+[data-r554-tone="esma"] .r554NotifySigil>span,.r554NotifySigil[data-r554-tone="esma"]>span{color:var(--r554-esma)}
+[data-r554-tone="berhet"] .r554NotifySigil>span,.r554NotifySigil[data-r554-tone="berhet"]>span{color:var(--r554-berhet)}
+[data-r554-tone="warning"] .r554NotifySigil>span,.r554NotifySigil[data-r554-tone="warning"]>span{color:var(--r554-warning)}
+[data-r554-tone]:not([data-r554-tone="none"]) .r554NotifySigil>span,.r554NotifySigil[data-r554-tone]:not([data-r554-tone="none"])>span{animation:r554CoreSignal 1.6s ease-in-out infinite}
+.r554-berhet-locked .r554NotifySigil>i.kind-berhet,.r554NotifySigil.r554-berhet-locked>i.kind-berhet{display:none!important}
+#r554NavCount{position:absolute;right:-8px;top:-8px;z-index:3;display:grid;place-items:center;min-width:15px;height:15px;padding:0 3px;border-radius:999px;background:var(--r554-warning);border:2px solid rgba(var(--sayfa2K),.96);color:#fff;font:800 7.5px/1 "Figtree",system-ui}
+.r554NotifyTab[data-r554-tone="esma"] #r554NavCount{background:var(--r554-esma);color:#06120c}.r554NotifyTab[data-r554-tone="berhet"] #r554NavCount{background:var(--r554-berhet);color:#0d0715}.r554NotifyTab[data-r554-tone="warning"] #r554NavCount{background:var(--r554-warning);color:#fff}
+#r554NavCount[hidden]{display:none!important}
+@keyframes r554DotSignal{0%,100%{filter:brightness(.88);transform:scale(.92)}50%{filter:brightness(1.35);transform:scale(1.32)}}
+@keyframes r554CoreSignal{0%,100%{filter:brightness(.9);text-shadow:0 0 5px currentColor}50%{filter:brightness(1.34);text-shadow:0 0 14px currentColor}}
+
+/* Ana bildirim merkezi: canlı player'dan bağımsız, belge akışında ve sakin. */
+#tab-ntf{min-width:0}
+.r554NotifyCenter{display:grid;gap:13px;padding:15px!important;background:radial-gradient(110% 120% at 10% 0%,color-mix(in srgb,var(--gold) 7%,transparent),transparent 52%),rgba(var(--sayfa2K),.58)!important}
+.r554NotifyHero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-width:0}
+.r554HeroSigil{width:48px!important;height:48px!important;min-width:48px;border-color:color-mix(in srgb,var(--gold) 22%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 28px -18px #000}
+.r554HeroSigil>span{font-size:23px}.r554HeroSigil>i{width:7px;height:7px}.r554HeroSigil>i.kind-esma{left:2px;bottom:5px}.r554HeroSigil>i.kind-berhet{top:-2px;margin-left:-3.5px}.r554HeroSigil>i.kind-warning{right:2px;bottom:5px}
+.r554NotifyCopy{min-width:0}.r554NotifyCopy small{display:block;margin-bottom:5px;color:var(--gold);font:760 8px/1 "Figtree",system-ui;letter-spacing:.16em}.r554NotifyCopy h2{margin:0;color:var(--ivory);font:720 clamp(17px,4.8vw,22px)/1.15 "Figtree",system-ui}.r554NotifyCopy p{margin:5px 0 0;color:var(--mut);font:480 10.5px/1.45 "Figtree",system-ui}
+.r554NotifyTotal{display:grid;place-items:center;min-width:38px;height:38px;padding:0 7px;border-radius:13px;border:1px solid color-mix(in srgb,var(--gold) 18%,transparent);background:rgba(255,255,255,.025);color:var(--goldh);font:760 14px/1 "JetBrains Mono",monospace}
+.r554NotifyFilters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;min-width:0}
+.r554Filter{--r554-tone:var(--r554-neutral);appearance:none;min-width:0;min-height:42px;padding:6px 5px;border-radius:12px;border:1px solid color-mix(in srgb,var(--r554-tone) 20%,var(--line));background:rgba(255,255,255,.018);color:var(--mut);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px;font:650 9.5px/1.1 "Figtree",system-ui;cursor:pointer}
+.r554Filter.kind-esma{--r554-tone:var(--r554-esma)}.r554Filter.kind-berhet{--r554-tone:var(--r554-berhet)}.r554Filter.kind-warning{--r554-tone:var(--r554-warning)}
+.r554Filter.act{border-color:color-mix(in srgb,var(--r554-tone) 54%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--r554-tone) 10%,rgba(255,255,255,.02)),rgba(255,255,255,.012));color:color-mix(in srgb,var(--r554-tone) 72%,var(--ivory));box-shadow:0 0 16px color-mix(in srgb,var(--r554-tone) 8%,transparent),inset 0 1px 0 rgba(255,255,255,.035)}
+.r554FilterMark{display:grid;place-items:center;width:20px;height:20px;border-radius:8px;border:1px solid color-mix(in srgb,var(--r554-tone) 48%,transparent);color:var(--r554-tone);font:850 10px/1 "Figtree",system-ui;text-shadow:0 0 7px currentColor}.r554Filter>b{min-width:17px;height:17px;padding:0 3px;border-radius:999px;display:grid;place-items:center;background:color-mix(in srgb,var(--r554-tone) 12%,transparent);color:var(--r554-tone);font:760 7.5px/1 "JetBrains Mono",monospace}
+.r554NotifyTools{display:flex;flex-wrap:wrap;gap:7px}.r554NotifyTools button,.r554DrawerActions button{min-height:35px;padding:0 10px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.022);color:var(--mut);font:650 9.5px/1 "Figtree",system-ui}.r554NotifyTools button.act{color:var(--goldh);border-color:var(--line2);background:color-mix(in srgb,var(--gold) 7%,transparent)}
+.r554CenterStatus{min-height:18px;margin:10px 3px 3px;color:var(--dim);font:560 9px/1.4 "Figtree",system-ui;letter-spacing:.03em}
+.r554CenterList{display:grid;gap:9px;min-width:0}
+
+/* Canlı başlığın sağında tek araç yuvası: CANLI + üç ayrı renk ünlemi. */
+#r496DockCore>#r422NowHead{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important}
+#r554NowTools{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0;flex:none}
+#r554NowTools>#r422NowLive{flex:none!important;position:static!important;inset:auto!important;margin:0!important}
+#r554AlertCluster{display:flex;align-items:center;gap:3px;flex:none}
+.r554AlertMark{--r554-tone:var(--r554-neutral);appearance:none;position:relative;display:grid;place-items:center;width:23px!important;min-width:23px!important;max-width:23px!important;height:23px!important;min-height:23px!important;max-height:23px!important;padding:0!important;border-radius:9px!important;border:1px solid color-mix(in srgb,var(--r554-tone) 38%,var(--line))!important;background:color-mix(in srgb,var(--r554-tone) 5%,rgba(5,8,12,.82))!important;color:color-mix(in srgb,var(--r554-tone) 78%,var(--mut))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.028)!important;font:850 10.5px/1 "Figtree",system-ui!important;cursor:pointer}
+.r554AlertMark.kind-esma{--r554-tone:var(--r554-esma)}.r554AlertMark.kind-berhet{--r554-tone:var(--r554-berhet)}.r554AlertMark.kind-warning{--r554-tone:var(--r554-warning)}
+.r554AlertMark>b{position:absolute;right:-5px;top:-6px;display:grid!important;place-items:center;min-width:14px;height:14px;padding:0 2px;border-radius:999px;background:var(--r554-tone);border:2px solid rgba(5,9,11,.96);color:#07100c;font:850 7px/1 "Figtree",system-ui}.r554AlertMark>b[hidden]{display:none!important}
+.r554AlertMark.unread{color:var(--r554-tone)!important;border-color:color-mix(in srgb,var(--r554-tone) 72%,var(--line))!important;animation:r554MarkSignal 1.35s ease-in-out infinite}
+@keyframes r554MarkSignal{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 0 0 0 color-mix(in srgb,var(--r554-tone) 0%,transparent)!important}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 3px color-mix(in srgb,var(--r554-tone) 9%,transparent),0 0 14px color-mix(in srgb,var(--r554-tone) 30%,transparent)!important}}
+
+/* Drawer açıldığında barın ölçüsü sabitlenir; canlı state yeniden çizimleri
+   içerideki okuma konumunu ve scrollbar'ı artık oynatamaz. */
+#r170Now.r554-alert-open{height:min(62dvh,520px)!important;min-height:min(62dvh,520px)!important;max-height:min(62dvh,520px)!important;overflow:hidden!important;transition:none!important;contain:layout paint}
+body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r554-alert-open.r554-alert-max{height:min(78dvh,660px)!important;min-height:min(78dvh,660px)!important;max-height:min(78dvh,660px)!important;padding:9px!important;display:grid!important;overflow:hidden!important;transition:none!important}
+#r170Now.r554-alert-open>:not(#r554AlertDrawer):not(#r447DockHandle){visibility:hidden!important;pointer-events:none!important}
+#r554AlertDrawer{position:absolute;z-index:60;inset:40px 7px 7px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:8px;min-width:0;min-height:0;padding:10px;border-radius:17px;border:1px solid color-mix(in srgb,var(--gold) 25%,var(--line));background:linear-gradient(180deg,rgba(12,14,20,.992),rgba(7,9,13,.996));box-shadow:0 18px 42px rgba(0,0,0,.44);color:var(--ivory);overflow:hidden;contain:layout paint}
+#r554AlertDrawer[hidden]{display:none!important}
+.r554DrawerHead{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:1px 2px 8px;border-bottom:1px solid var(--line)}.r554DrawerHead>div:first-child{min-width:0}.r554DrawerHead small{display:block;margin-bottom:4px;color:var(--gold);font:760 8px/1.2 "Figtree",system-ui;letter-spacing:.16em}.r554DrawerHead b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:680 12px/1.2 "Figtree",system-ui}.r554DrawerActions{display:flex;gap:5px;flex:none}.r554DrawerActions button{min-width:32px;padding-inline:8px}.r554DrawerActions #r554DrawerClose{font-size:17px}.r554DrawerFilters{gap:4px}.r554DrawerFilters .r554Filter{min-height:34px;padding:4px 5px;font-size:8.5px}.r554DrawerFilters .r554FilterMark{width:18px;height:18px;border-radius:7px}.r554DrawerFilters .r554Filter>b{min-width:15px;height:15px;font-size:7px}
+.r554AlertList{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:1px;display:grid;align-content:start;gap:8px}
+.r554AlertItem{--r554-tone:var(--r554-warning);position:relative;min-width:0;border:1px solid var(--line);border-left:4px solid var(--r554-tone);border-radius:14px;padding:11px 11px 10px;background:linear-gradient(90deg,color-mix(in srgb,var(--r554-tone) 9%,rgba(255,255,255,.02)),rgba(255,255,255,.017) 48%);contain:layout paint}
+.r554AlertItem.kind-esma{--r554-tone:var(--r554-esma)}.r554AlertItem.kind-berhet{--r554-tone:var(--r554-berhet)}.r554AlertItem.kind-warning{--r554-tone:var(--r554-warning)}
+.r554AlertItem.is-read{opacity:.72}.r554AlertItem.unread::after{content:"";position:absolute;right:10px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--r554-tone);box-shadow:0 0 10px color-mix(in srgb,var(--r554-tone) 70%,transparent)}
+.r554AlertItemTop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;padding-right:10px}.r554AlertItemTop span{display:inline-flex;align-items:center;gap:5px;color:var(--r554-tone);font:780 8px/1 "Figtree",system-ui;letter-spacing:.14em}.r554AlertItemTop span i{display:grid;place-items:center;width:17px;height:17px;border-radius:7px;border:1px solid color-mix(in srgb,var(--r554-tone) 44%,transparent);font-style:normal;font-size:9px;text-shadow:0 0 7px currentColor}.r554AlertItemTop time{color:var(--dim);font:600 8.5px/1 "JetBrains Mono",monospace}.r554AlertItem>b{display:block;padding-right:11px;color:var(--ivory);font:690 12.5px/1.35 "Figtree",system-ui}.r554AlertItem>p{margin:5px 0 6px;color:var(--mut);font:470 10px/1.55 "Figtree",system-ui}.r554AlertSource{display:block;color:var(--dim);font:520 8.5px/1.45 "Figtree",system-ui}.r554AlertItemBtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.r554AlertItemBtns button{min-height:31px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.022);color:var(--mut);font:650 9px/1 "Figtree",system-ui}.r554AlertItemBtns .r554AlertAction{color:color-mix(in srgb,var(--r554-tone) 76%,var(--ivory));border-color:color-mix(in srgb,var(--r554-tone) 38%,var(--line));background:color-mix(in srgb,var(--r554-tone) 5%,rgba(255,255,255,.018))}.r554AlertEmpty{min-height:150px;display:grid;place-items:center;align-content:center;gap:7px;padding:25px 12px;text-align:center;color:var(--dim)}.r554AlertEmpty>span{font-size:25px;color:var(--gold);opacity:.45}.r554AlertEmpty>b{color:var(--mut);font:650 11px/1.3 "Figtree",system-ui}.r554AlertEmpty>small{font:480 9.5px/1.45 "Figtree",system-ui}
+
+/* Belirgin sürükleme tutamağı; yalnız hareket sırasında compositor katmanı. */
+#r170Now.r554-drag-ready{translate:0 var(--r554-dock-y,0px)!important}
+#r170Now.r554-dragging{transition:none!important;will-change:translate!important;user-select:none!important}
+#r447DockHandle{width:94px!important;min-width:94px!important;height:34px!important;min-height:34px!important;top:2px!important;z-index:80!important;cursor:grab!important;touch-action:none!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#r447DockHandle:active,#r170Now.r554-dragging #r447DockHandle{cursor:grabbing!important}
+#r447DockHandle::before{width:52px!important;height:5px!important;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--goldh) 38%,var(--line)) 0 8px,transparent 8px 11px)!important;box-shadow:0 0 10px color-mix(in srgb,var(--gold) 8%,transparent)!important}
+#r447DockHandle::after{content:"↕"!important;right:5px!important;top:10px!important;transform:none!important;color:color-mix(in srgb,var(--goldh) 54%,var(--dim))!important;font-size:11px!important;opacity:.88!important}
+
+@media(max-width:390px){.tabs>.tab,.tabs>#tekkeTab{padding-inline:1px!important}.tbL{font-size:8.5px!important}.r554NotifySigil{width:20px!important;height:20px!important;min-width:20px}.r554NotifyFilters{gap:4px}.r554Filter{grid-template-columns:auto minmax(0,1fr);font-size:8.5px}.r554Filter>b{grid-column:2;grid-row:1;justify-self:end}.r554NotifyTools button{flex:1 1 130px}.r554DrawerFilters .r554Filter{grid-template-columns:auto minmax(0,1fr);padding-inline:3px}.r554DrawerFilters .r554Filter>b{display:none}.r554AlertMark{width:22px!important;min-width:22px!important;height:22px!important;min-height:22px!important}.r554AlertItem{padding:10px 9px}}
+@media(prefers-reduced-motion:reduce){.r554NotifySigil>i,.r554NotifySigil>span,.r554AlertMark.unread{animation:none!important}.r554NotifySigil>i{transform:scale(1)!important}.r554AlertMark.unread{box-shadow:0 0 0 2px color-mix(in srgb,var(--r554-tone) 12%,transparent),0 0 12px color-mix(in srgb,var(--r554-tone) 24%,transparent)!important}}
 </style>
 
 

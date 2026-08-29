@@ -1,5 +1,18 @@
 [
   {
+    "v": "r554",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Ana sekme barına kalıcı Bildirimler bölümü eklendi; Esmâ yeşil, Berhetiyye mor, Neuro ve diğer uyarılar kırmızı ünlemle ayrı izlenir.",
+      "Canlı akış başlığındaki tek kırmızı ünlem üç renkli sabit araç yuvasına dönüştürüldü; artık alt satıra düşüp bar yüksekliğini değiştirmez.",
+      "Bildirim kartları yalnız veri değiştiğinde çizilir; açık listede kaydırma konumu korunur ve oynatma olayları okuma sırasında listeyi zıplatmaz.",
+      "Bildirim açmak otomatik okundu saymaz; tek kart, görünen renk veya tümü yalnız açık kullanıcı eylemiyle okundu yapılır.",
+      "Tefekkür modunda renkli ünleme dokununca akış barı güvenli görünüm alanında büyür; kapanınca önceki mini/midi ölçüsü ve konumu geri gelir.",
+      "Akış barı belirgin ↕ tutamaktan sürüklenir, ekran dışına taşamaz ve Bildirimler sekmesinden tek dokunuşla yerine alınabilir.",
+      "Berhetiyye bildirim yüzeyleri gizli kilit kapalıyken mor düğme ve filtre dâhil bütünüyle görünmez."
+    ]
+  },
+  {
     "v": "r553",
     "t": "29 Ağustos 2026",
     "b": [
