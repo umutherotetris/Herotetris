@@ -1,5 +1,17 @@
 [
   {
+    "v": "r550",
+    "t": "29 Ağustos 2026",
+    "b": [
+      "Esmâ hedef geçişi exactly-once hale getirildi; aynı Esmâ/hedef için yinelenen transaction active kaydını ezmiyor.",
+      "Mevcut zikir sesi zaten çalıyorsa afterVoice callback artık kaybolmuyor ve mevcut voice Promise'e bağlanıyor.",
+      "Voice-end commit başarısız olursa geçiş işlendi sayılmıyor; watchdog ses boşalana kadar aynı geçerli transaction'ı yeniden deniyor.",
+      "Android visibility/pageshow/focus dönüşlerinde hedefte kalmış geçerli transaction için event-tabanlı rescue eklendi.",
+      "Zikir transaction snapshot artık son 20 prepared/reused/committed/cancelled olayını saklıyor.",
+      "r530 kritik stil otoritesi yeniden son style bloğu yapıldı."
+    ]
+  },
+  {
     "v": "r549",
     "t": "28 Ağustos 2026",
     "b": [
