@@ -1,8 +1,8 @@
 /* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r560';
-const CACHE = 'sukun-r560-20260829a';
+const SURUM = 'r561';
+const CACHE = 'sukun-r561-20260829a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r561 KRİTİK: BS is not defined hatasının asıl kaynağı şu an çalan bilgisini türeten Berhetiyye dalıydı; bu yüzden sayaç ve şerit güncellenmiyordu.',
   'r560 KRİTİK: BS is not defined hatasının kaynağı geçici ölü bölge erişimiydi; duraklatma sözleşmesi artık seyir durumuna pencere üzerinden erişiyor.',
   'r559 Seyri durduran tümünü-durdur çağrısının kaynağı artık tanılama kaydına yazılıyor. Davranış değişmedi, yalnız iz bırakılıyor.',
   'r558 Uygulama içi değişiklik günlüğü beş sürüm geridedeydi; r553-r557 notları işlendi.',
