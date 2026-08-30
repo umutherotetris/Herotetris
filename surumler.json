@@ -1,5 +1,15 @@
 [
   {
+    "v": "r571",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Çalışan 99 Esmâ Seyri ile 28 İsim Seyri yeniden yazılmadan Zikir içindeki SEYİRLER bölümüne taşındı.",
+      "Her iki seyrin ses çözümlemesi, kaldığın yer, sayaç ve oynatma düğmeleri aynı motorlarla çalışmaya devam eder.",
+      "28 İsim Seyri gizli kilit kapalıyken oluşturulmaz; kilit açılınca SEYİRLER bölümüne gelir, kilit kapanınca panel kaldırılır.",
+      "SEYİRLER rozeti yalnız gerçekten oluşturulmuş kartları sayar; kilitli panelin varlığı sayıya sızmaz."
+    ]
+  },
+  {
     "v": "r557",
     "t": "29 Ağustos 2026",
     "b": [

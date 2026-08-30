@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r570 — Bildirim önerisinden tam Esmâ terkibi
+     SÜKÛN r571 — 99 Esmâ ve 28 İsim panelleri SEYİRLER bölümünde
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r570">
+<meta name="sukun-build" content="r571">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r570">
+<link rel="manifest" href="./manifest.webmanifest?v=r571">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3077,6 +3077,7 @@ input:focus-visible,select:focus-visible{
 .zMegaTxt{min-width:0}.zMegaTxt b{display:block;font:600 13px/1.2 var(--f-display);letter-spacing:.08em;color:var(--ink)}.zMegaTxt small{display:block;margin-top:4px;font-size:9.5px;line-height:1.35;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .zMegaRight{display:flex;align-items:center;gap:8px}.zMegaCount{font:600 9px/1 var(--f-mono);padding:5px 7px;border-radius:999px;color:var(--goldh);background:color-mix(in srgb,var(--gold) 8%,transparent);border:1px solid color-mix(in srgb,var(--gold) 15%,transparent)}
 .zMegaChev{font-size:16px;color:var(--mut);transition:transform .22s ease}.zMegaGroup[open] .zMegaChev{transform:rotate(180deg)}.zMegaBody{padding:0 10px 10px}.zMegaBody>.jEd,.zMegaBody>.nefsLtfHub{margin:8px 0!important}.zMegaBody>#virdBar{margin:8px 0!important}.zMegaBody>#tekkeBtn{margin:9px 0 2px!important}.zMegaGroup[open]>summary{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 6%,transparent),transparent)}
+.zMegaBody>#esmaSeyir99,.zMegaBody>#berhetSeyir{margin:8px 0!important}
 .zMegaGroup.zmg-okuma .zMegaIc{color:#d7b8ff;border-color:rgba(177,113,255,.28);background:rgba(153,91,222,.08)}.zMegaGroup.zmg-seyir .zMegaIc{color:#8ddbc9;border-color:rgba(81,184,158,.28);background:rgba(50,152,129,.08)}.zMegaGroup.zmg-arac .zMegaIc{color:#e7c77a}
 @media(max-width:560px){.zMegaHost{gap:8px}.zMegaGroup>summary{min-height:54px;padding:9px 11px}.zMegaIc{width:34px;height:34px}.zMegaTxt b{font-size:12px}}
 </style>
@@ -6407,7 +6408,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.69 — build 2026-08-30-r570</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.70 — build 2026-08-30-r571</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22193,6 +22194,12 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r571',t:'30 Ağustos 2026',b:[
+          'Çalışan 99 Esmâ Seyri ile 28 İsim Seyri yeniden yazılmadan Zikir içindeki SEYİRLER bölümüne taşındı.',
+          'Her iki seyrin ses çözümlemesi, kaldığın yer, sayaç ve oynatma düğmeleri aynı motorlarla çalışmaya devam eder.',
+          '28 İsim Seyri gizli kilit kapalıyken oluşturulmaz; kilit açılınca SEYİRLER bölümüne gelir, kilit kapanınca panel kaldırılır.',
+          'SEYİRLER rozeti yalnız gerçekten oluşturulmuş kartları sayar; kilitli panelin varlığı sayıya sızmaz.'
+        ]},
         {v:'r557',t:'29 Ağustos 2026',b:[
           'Birden fazla isim taşıyan günlük ve gezegen saati bildirimleri artık ilk Esmâya yönelmez; kartta Terkibe ekle eylemi görünür.',
           'Önerilen isimlerin tamamı bildirimdeki sırayla tek Esmâ terkibi olarak kurulur, Terkipler listesine eklenir ve sayaca yüklenir.',
@@ -22365,7 +22372,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r557',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r571',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22391,7 +22398,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r557:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r571:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22412,7 +22419,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r570',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r571',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22425,7 +22432,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r557:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r571:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -32896,7 +32903,10 @@ const GROUPS=[
 ];
 const key=id=>'sukun.zMega.'+id;
 function make(g){const d=document.createElement('details');d.id=g.id;d.className='zMegaGroup '+g.cls;let saved=null;try{saved=localStorage.getItem(key(g.id))}catch(e){}d.open=saved===null?g.open:saved==='1';const sm=document.createElement('summary');sm.innerHTML='<span class="zMegaIc" aria-hidden="true">'+g.icon+'</span><span class="zMegaTxt"><b>'+g.title+'</b><small>'+g.desc+'</small></span><span class="zMegaRight"><span class="zMegaCount">'+g.items.length+'</span><span class="zMegaChev">⌄</span></span>';const body=document.createElement('div');body.className='zMegaBody';d.append(sm,body);d.addEventListener('toggle',()=>{try{localStorage.setItem(key(g.id),d.open?'1':'0')}catch(e){}});return{d,body}}
-function build(){const tab=document.getElementById('tab-zkr'),anchor=document.getElementById('resetBtn');if(!tab||!anchor||document.getElementById('zMegaHost'))return;const host=document.createElement('div');host.id='zMegaHost';host.className='zMegaHost';anchor.insertAdjacentElement('afterend',host);for(const g of GROUPS){const x=make(g);host.appendChild(x.d);for(const id of g.items){const el=document.getElementById(id);if(el)x.body.appendChild(el)}}tab.querySelectorAll('.zGrup').forEach(x=>x.remove())}
+function syncCount(group=document.getElementById('zmgSeyirler')){if(!group)return;const body=group.querySelector('.zMegaBody'),badge=group.querySelector('.zMegaCount');if(body&&badge)badge.textContent=String(body.children.length)}
+function mountSeyir(target){const el=typeof target==='string'?document.getElementById(target):target,group=document.getElementById('zmgSeyirler');if(!el||!group)return false;const body=group.querySelector('.zMegaBody');if(!body)return false;if(el.parentElement!==body)body.appendChild(el);syncCount(group);return true}
+window.SukunSeyirYerlesim=Object.freeze({version:'r571',mount:mountSeyir,sync:()=>syncCount()});
+function build(){const tab=document.getElementById('tab-zkr'),anchor=document.getElementById('resetBtn');if(!tab||!anchor||document.getElementById('zMegaHost'))return;const host=document.createElement('div');host.id='zMegaHost';host.className='zMegaHost';anchor.insertAdjacentElement('afterend',host);for(const g of GROUPS){const x=make(g);host.appendChild(x.d);for(const id of g.items){const el=document.getElementById(id);if(el)x.body.appendChild(el)}syncCount(x.d)}['esmaSeyir99','berhetSeyir'].forEach(mountSeyir);tab.querySelectorAll('.zGrup').forEach(x=>x.remove())}
 window.zMegaReveal=function(target){const el=typeof target==='string'?document.getElementById(target):target;if(!el)return;const g=el.closest&&el.closest('.zMegaGroup');if(g)g.open=true};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();
 })();
@@ -33437,11 +33447,16 @@ const BS=window.BERHET_SEYIR={run:false,paused:false,i:0,rep:0,totalDone:0,token
 function seyirCreate(){
   if(!window.SukunSecretPolicy?.unlocked?.()){
     const old=document.getElementById('berhetSeyir');if(old)old.remove();
+    try{window.SukunSeyirYerlesim?.sync?.()}catch(e){}
     return;
   }
-  if(document.getElementById('berhetSeyir'))return;const a=document.getElementById('berhetAtlas');if(!a)return;
+  const old=document.getElementById('berhetSeyir');
+  if(old){try{window.SukunSeyirYerlesim?.mount?.(old)}catch(e){}return}
+  const a=document.getElementById('berhetAtlas');if(!a)return;
   const d=document.createElement('details');d.id='berhetSeyir';d.innerHTML=`<summary class="r168Head"><b>✦ 28 İSİM SEYRİ</b><span class="r168Tag">kaldığın yerden sürer</span></summary><div class="r168MiniRow"><label>Her isim <select id="bsMode"><option value="1">1 kez</option><option value="28">28 kez</option><option value="ebced">Ebcedi kadar</option><option value="custom">Özel</option></select></label><input id="bsCustom" type="number" min="1" max="9999" value="33" aria-label="Her isim için özel tekrar sayısı" style="width:78px" hidden><label>Ara <select id="bsGap"><option value="350">0.35 sn</option><option value="900" selected>0.9 sn</option><option value="2000">2 sn</option><option value="5000">5 sn</option></select></label></div><div class="r168Progress"><i id="bsBar"></i></div><div class="r168Status" id="bsStatus">Hazır · kayıt varsa kendi sesin, yoksa transliterasyon/TTS.</div><div class="r168Buttons"><button class="btn" id="bsStart">▶ Başlat / Sürdür</button><button class="btn" id="bsPause" hidden aria-hidden="true"></button><button class="btn" id="bsPrev">⏮ Önceki İsim</button><button class="btn" id="bsNext">⏭ Sonraki İsim</button><button class="btn" id="bsAgain">↻ Bu ismi baştan</button><button class="btn" id="bsStop">■ Bitir</button><button class="btn" id="bsReset">↺ Tüm seyri baştan</button></div>`;
-  a.insertAdjacentElement('afterend',d);bindSeyir();restoreSeyir();
+  let mounted=false;try{mounted=!!window.SukunSeyirYerlesim?.mount?.(d)}catch(e){}
+  if(!mounted)a.insertAdjacentElement('afterend',d);
+  bindSeyir();restoreSeyir();
 }
 function repeatCount(it){const m=document.getElementById('bsMode')?.value||'1';if(m==='ebced')return Math.max(1,+it.eb||1);if(m==='custom')return Math.max(1,+document.getElementById('bsCustom')?.value||1);return +m||1}
 function seyirSave(){LS.set(BS.key,{i:BS.i,rep:BS.rep,totalDone:BS.totalDone,mode:document.getElementById('bsMode')?.value||'1',custom:+document.getElementById('bsCustom')?.value||33,gap:+document.getElementById('bsGap')?.value||900})}
@@ -34132,10 +34147,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r570',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r571',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r557-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r571-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -48938,6 +48953,7 @@ function secretSync(){
       if(st?.run||st?.paused)window.SukunBerhetiyyeSeyir?.stop?.();
     }catch(e){}
     if(bs)bs.remove();
+    try{window.SukunSeyirYerlesim?.sync?.()}catch(e){}
   }else{
     try{typeof seyirCreate==='function'&&seyirCreate()}catch(e){}
   }
@@ -48968,7 +48984,11 @@ function create(){
         <button class="btn" id="es99Stop">■ Bitir</button>
         <button class="btn" id="es99Reset">↺ Tüm seyri baştan</button>
       </div>`;
-    stage.insertAdjacentElement('afterend',d);bind();restore();
+    let mounted=false;try{mounted=!!window.SukunSeyirYerlesim?.mount?.(d)}catch(e){}
+    if(!mounted)stage.insertAdjacentElement('afterend',d);
+    bind();restore();
+  }else{
+    try{window.SukunSeyirYerlesim?.mount?.(d)}catch(e){}
   }
   visibility();return d;
 }
