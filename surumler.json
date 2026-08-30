@@ -1,5 +1,15 @@
 [
   {
+    "v": "r586",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Akış barı gerçek Mini, Midi ve Max boyutlarına ayrıldı.",
+      "HTML build meta, footer, manifest bağlantısı, service-worker kayıt URL’si ve yedek build etiketi r586 olarak eşitlendi.",
+      "Service worker cache anahtarı r586-b olarak yenilendi; eski doğrulanmış sürümden güncellemenin kurulmasını engelleyen build mismatch kaldırıldı.",
+      "Gizli görünüm ayrı eylem olarak premium dönüş kapsülünü korur."
+    ]
+  },
+  {
     "v": "r582",
     "t": "30 Ağustos 2026",
     "b": [

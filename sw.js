@@ -2,7 +2,7 @@
 'use strict';
 
 const SURUM = 'r586';
-const CACHE = 'sukun-r586-20260830a';
+const CACHE = 'sukun-r586-20260830b';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r586__.json';
 
 const NOTLAR = [
+  'r586 Mini/Midi/Max akış barı gerçek üç boyuta ayrıldı; build, manifest ve service worker sürüm zinciri r586 olarak eşitlendi.',
   'r581 Tekke aktif sahnesinde SÜKÛN dönüş pili TEKKE markasının altındaki ayrı güvenli raya taşındı; üst üste binme kaldırıldı.',
   'r578 99 Esmâ Seyri, seçili zikir kategorisinden bağımsız olarak SEYİRLER içinde kalıcı görünür; r577 ses/terkip sahipliği aynen korunur.',
   'r577 Ana ses oturum sahipliği: 28/99 seyir, tekil okuma ve çoklu terkip foreground kanalda çakışmaz; terkip kendi içinde tek session kalır.',
@@ -321,7 +322,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r572 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r586 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
