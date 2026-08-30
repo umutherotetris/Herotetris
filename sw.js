@@ -1,8 +1,8 @@
 /* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r566';
-const CACHE = 'sukun-r566-20260830a';
+const SURUM = 'r568';
+const CACHE = 'sukun-r568-20260830a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,8 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r568 Seyirde iki düğme de Duraklat yazıyordu; tek üç durumlu düğmede birleştirildi: Başlat, Duraklat, Sürdür.',
+  'r567 KRİTİK: seyirde sayaç yanlış ebcedle sayıyordu; hedef isimle birlikte tazelenmiyordu. Önceki isim ve bu ismi baştan düğmeleri eklendi.',
   'r566 ÇÖZÜLDÜ: 28 İsim Seyri zikir sayacına hiç bağlanmamıştı. Her okuma artık uygulamanın kendi sayma yolunu çağırıyor.',
   'r565 28 İsim Seyri düğmeleri tek sahibe alındı; üç ayrı modül birbirini eziyordu ve buton yolu kesin durdurmaya çıkıyordu.',
   'r564 Tempo artık her zikirde 1.0 ile başlıyor; isim değişince önceki isimden devralınmıyor. Kaydırıcı ile gerçek değer arasındaki tutarsızlık da kapandı.',
