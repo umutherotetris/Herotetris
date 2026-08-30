@@ -1,8 +1,8 @@
-/* SÜKÛN r585 — tam akış barı entegrasyonu */
+/* SÜKÛN r586 — gerçek Mini Midi Max akış barı */
 'use strict';
 
-const SURUM = 'r585';
-const CACHE = 'sukun-r585-20260830a';
+const SURUM = 'r586';
+const CACHE = 'sukun-r586-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r585__.json';
+const BUILD_MARKER='./__sukun_build_r586__.json';
 
 const NOTLAR = [
   'r581 Tekke aktif sahnesinde SÜKÛN dönüş pili TEKKE markasının altındaki ayrı güvenli raya taşındı; üst üste binme kaldırıldı.',
