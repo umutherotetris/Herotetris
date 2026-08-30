@@ -1,8 +1,8 @@
-/* SÜKÛN r572 — kırmızı uyarı Uygula eylemi kalıcı ve çalışır */
+/* SÜKÛN r576 — akış barı bildirim yerleşimi sabitlendi */
 'use strict';
 
-const SURUM = 'r575';
-const CACHE = 'sukun-r575-20260830a';
+const SURUM = 'r576';
+const CACHE = 'sukun-r576-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r572__.json';
+const BUILD_MARKER='./__sukun_build_r576__.json';
 
 const NOTLAR = [
+  'r576 Canlı akış barı üst rayı sabitlendi: kimlik/CANLI solda, tutamak merkezde, bildirim rozetleri sağda; taşma ve kırpılma giderildi.',
   'r575 Sessiz başarısızlık deseni topluca tarandı; uyku modu kuralında da aynı kusur bulundu ve düzeltildi.',
   'r574 Reçete kartlarında da sessiz başarısızlık vardı: rozet koşulsuz uygulandı diyordu. Dört uygulayıcı da artık sonuç döndürüyor, rozet gerçeğe bağlı.',
   'r573 Esmâ Hatmi paneli Seyirler bölümünden kaldırıldı. Bildirimdeki Uygula düğmesi başarılı diyor ama frekansı başlatmıyordu; artık gerçekten başlatıyor, olmazsa uygulanamadı diyor.',

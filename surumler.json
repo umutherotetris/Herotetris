@@ -1,5 +1,16 @@
 [
   {
+    "v": "r576",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Canlı akış barındaki bildirim rozetleri durumdan duruma yer değiştiren header grubundan çıkarıldı; barın tamamını kapsayan tek ve sabit bir üst raya taşındı.",
+      "Üst ray üç bölgeye ayrıldı: SÜKÛN/CANLI solda, sürükleme tutamağı gerçek geometrik merkezde, Esmâ/Berhetiyye/Uyarı rozetleri sağda. Mini, geniş ve Tefekkür görünümünde aynı fiziksel yer korunur.",
+      "Okunmamış sayı baloncukları buton dışına taşmıyor; negatif top/right konumları kaldırıldı. Böylece oynatıcı overflow:hidden kullansa bile rozet kırpılmıyor.",
+      "Bildirim rozetlerindeki sürekli pulse kaldırıldı; okunmamış durum statik renk ve yumuşak glow ile belirtiliyor. Görsel gürültü ve flashing azaltıldı.",
+      "Bildirim drawerı açıldığında üst araç rayı görünür ve kullanılabilir kalıyor; drawer bu rayın altında başlıyor."
+    ]
+  },
+  {
     "v": "r572",
     "t": "30 Ağustos 2026",
     "b": [
