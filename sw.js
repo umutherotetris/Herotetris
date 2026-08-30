@@ -1,8 +1,8 @@
 /* SÜKÛN r592 — tek DOM akış barı */
 'use strict';
 
-const SURUM = 'r593';
-const CACHE = 'sukun-r593-20260830a';
+const SURUM = 'r594';
+const CACHE = 'sukun-r594-20260830a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r592__.json';
 
 const NOTLAR = [
+  'r594 Mini ve Midide alt sıradaki oynat/durdur kesiliyordu; yükseklik sınırı yükseltildi. Tefekkür düğmesi gizli şeritte kaldığı için görünmüyordu, görünür yuvaya taşındı.',
   'r593 Tefekkürde grup kartları dar şeritlere sıkışıp düğmelerin üstüne biniyordu; esnek yerleşim yönü sütuna çevrildi ve kartlar bu kipte gizlendi.',
   'r586 Mini/Midi/Max akış barı gerçek üç boyuta ayrıldı; build, manifest ve service worker sürüm zinciri r586 olarak eşitlendi.',
   'r581 Tekke aktif sahnesinde SÜKÛN dönüş pili TEKKE markasının altındaki ayrı güvenli raya taşındı; üst üste binme kaldırıldı.',
