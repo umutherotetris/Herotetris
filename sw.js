@@ -1,8 +1,8 @@
-/* SÜKÛN r576 — akış barı bildirim yerleşimi sabitlendi */
+/* SÜKÛN r578 — 99 Esmâ Seyri görünürlük düzeltmesi */
 'use strict';
 
-const SURUM = 'r576';
-const CACHE = 'sukun-r576-20260830a';
+const SURUM = 'r578';
+const CACHE = 'sukun-r578-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r576__.json';
+const BUILD_MARKER='./__sukun_build_r578__.json';
 
 const NOTLAR = [
+  'r578 99 Esmâ Seyri, seçili zikir kategorisinden bağımsız olarak SEYİRLER içinde kalıcı görünür; r577 ses/terkip sahipliği aynen korunur.',
+  'r577 Ana ses oturum sahipliği: 28/99 seyir, tekil okuma ve çoklu terkip foreground kanalda çakışmaz; terkip kendi içinde tek session kalır.',
   'r576 Canlı akış barı üst rayı sabitlendi: kimlik/CANLI solda, tutamak merkezde, bildirim rozetleri sağda; taşma ve kırpılma giderildi.',
   'r575 Sessiz başarısızlık deseni topluca tarandı; uyku modu kuralında da aynı kusur bulundu ve düzeltildi.',
   'r574 Reçete kartlarında da sessiz başarısızlık vardı: rozet koşulsuz uygulandı diyordu. Dört uygulayıcı da artık sonuç döndürüyor, rozet gerçeğe bağlı.',

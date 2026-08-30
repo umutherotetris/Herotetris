@@ -1,5 +1,25 @@
 [
   {
+    "v": "r578",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "99 Esmâ Seyri görünürlük hatası düzeltildi; seçili zikir kategorisi değişse de Zikir > SEYİRLER içinde kalıcı görünür.",
+      "Kök neden eski Z.cat===esma görünürlük şartıydı. r571 yerleşim değişikliğinden sonra bu koşul artık yanlış seviyede kalmıştı.",
+      "r577 ana ses oturum sahipliği, 28/99 seyir çatışma koruması ve çoklu terkip tek-session davranışı aynen korunur."
+    ]
+  },
+  {
+    "v": "r577",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Ana zikir sesi tek oturum sahipliğine alındı; 28 İsim, 99 Esmâ, tekil okuma ve çoklu terkip aynı foreground kanalda çakışmaz.",
+      "Seyir sürerken başka isim Dinle ile açılırsa bu isme atla veya tekil çal, sonra seyire dön kararı sunulur.",
+      "Çoklu terkip tek session olarak korunur; 2–8 isim kendi içinde sırayla çalışır ve owner kilidi parçaları birbirine karşı engellemez.",
+      "Tekil okuma tamamlanırsa geçici duraklatılan seyir kaldığı yerden otomatik sürer; frekans ve ambiyans etkilenmez.",
+      "28 ve 99 seyirlerine doğrudan jumpTo geçişi eklendi; iki seyir aynı anda sesli akışa giremez."
+    ]
+  },
+  {
     "v": "r576",
     "t": "30 Ağustos 2026",
     "b": [
