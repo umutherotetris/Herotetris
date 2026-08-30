@@ -1,8 +1,8 @@
-/* SÜKÛN r571 — 99 Esmâ ve 28 İsim panelleri SEYİRLER bölümünde */
+/* SÜKÛN r572 — kırmızı uyarı Uygula eylemi kalıcı ve çalışır */
 'use strict';
 
-const SURUM = 'r571';
-const CACHE = 'sukun-r571-20260830a';
+const SURUM = 'r572';
+const CACHE = 'sukun-r572-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r571__.json';
+const BUILD_MARKER='./__sukun_build_r572__.json';
 
 const NOTLAR = [
+  'r572 Kırmızı Neuro uyarılarındaki Uygula eylemi artık yeniden açılmış kartlarda da meta.rule kimliğinden çözülüp çalışır; çok eski kartlar id biçiminden geriye dönük desteklenir.',
+  'r572 Uygula, kartı kendiliğinden okundu yapmaz veya listeden kaldırmaz; bu iki karar kendi düğmelerinde kalır.',
   'r571 Çalışan 99 Esmâ Seyri ile kilit açıldığında görünen 28 İsim Seyri, motorları değiştirilmeden Zikir içindeki SEYİRLER bölümüne taşındı.',
   'r570 Panel ile sayaç ayrı sayıyordu; panel artık doğrudan zikir sayacını gösteriyor. Tesbih mantığı: okuma tamamlanınca sayılır.',
   'r569 İki seyir eşitlendi. Esmâ seyri de hedefi tazelemiyor ve sayacı ilerletmiyordu; ikisi de düzeltildi, düğme takımı aynı oldu.',
@@ -312,7 +314,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r571 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r572 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();

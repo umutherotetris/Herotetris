@@ -1,5 +1,15 @@
 [
   {
+    "v": "r572",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Kırmızı Neuro uyarılarındaki Uygula eylemi sayfa yeniden açıldıktan sonra sessizce boşa düşüyordu; kalıcı kural kimliğiyle yeniden çözülebilir hâle getirildi.",
+      "Seher vakti gibi daha önce kaydedilmiş kartlar meta.rule kimliğinden; çok eski kartlar neuro:<kural>:<zaman> kimliğinden geriye dönük olarak çalışır.",
+      "Taze uyarı ile yerel depodan geri yüklenen uyarı aynı eylem yürütücüsünü kullanır ve başarı Uygulandı bildirimiyle görünür olur.",
+      "Uygula, Okundu yap ve Listeden kaldır ayrı kararlar olarak kalır; uygulamak kartı kendiliğinden okundu yapmaz veya silmez."
+    ]
+  },
+  {
     "v": "r571",
     "t": "30 Ağustos 2026",
     "b": [

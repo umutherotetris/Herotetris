@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r571 — 99 Esmâ ve 28 İsim panelleri SEYİRLER bölümünde
+     SÜKÛN r572 — kırmızı uyarı Uygula eylemi kalıcı ve çalışır
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r571">
+<meta name="sukun-build" content="r572">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r571">
+<link rel="manifest" href="./manifest.webmanifest?v=r572">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6408,7 +6408,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.70 — build 2026-08-30-r571</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.71 — build 2026-08-30-r572</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -13696,7 +13696,14 @@ function neuroGoster(sonuc){
   NEURO.sonOneri=Date.now();try{kural.gosterildi&&kural.gosterildi()}catch(e){}
   if(window.SukunAlertCenter?.push){
     const bucket=Math.floor(Date.now()/(12*60000));
-    window.SukunAlertCenter.push({id:`neuro:${kural.ad}:${bucket}`,kind:'warning',title:kural.baslik||'SÜKÛN uyarısı',body:[gerekce,eylem].filter(Boolean).join(' · '),source:'NEURO ENGINE',actionLabel:kural.uygula?'Uygula':'',actionFn:kural.uygula?()=>{try{kural.uygula()}catch(e){};try{typeof toast==='function'&&toast('Uygulandı ✦')}catch(e){}}:null,meta:{rule:kural.ad||'',type:'neuro'}});
+    window.SukunAlertCenter.push({
+      id:`neuro:${kural.ad}:${bucket}`,kind:'warning',title:kural.baslik||'SÜKÛN uyarısı',
+      body:[gerekce,eylem].filter(Boolean).join(' · '),source:'NEURO ENGINE',
+      actionLabel:kural.uygula?'Uygula':'',actionFn:kural.uygula||null,
+      /* r572: İşlevin kendisi JSON'a yazılamaz. Kalıcı kural kimliği,
+         yeniden açılmış kartın Uygula eylemini tekrar çözebilmesini sağlar. */
+      meta:{rule:kural.ad||'',type:'neuro',action:'neuro',actionKey:`neuro:${kural.ad||''}`}
+    });
     const old=document.getElementById('neuroKart');if(old)old.hidden=true;try{typeof vib==='function'&&vib([10,60,10])}catch(e){};return;
   }
   let el=document.getElementById('neuroKart');if(!el){el=document.createElement('div');el.id='neuroKart';el.hidden=true;document.body.appendChild(el)}
@@ -22194,6 +22201,12 @@ function surumNotlariOku(){
     const liste=el?JSON.parse(el.textContent):[];
     if(Array.isArray(liste)){
       const yeniler=[
+        {v:'r572',t:'30 Ağustos 2026',b:[
+          'Kırmızı Neuro uyarılarındaki Uygula eylemi sayfa yeniden açıldıktan sonra sessizce boşa düşüyordu; kalıcı kural kimliğiyle yeniden çözülebilir hâle getirildi.',
+          'Seher vakti gibi daha önce kaydedilmiş kartlar meta.rule kimliğinden; çok eski kartlar neuro:<kural>:<zaman> kimliğinden geriye dönük olarak çalışır.',
+          'Taze uyarı ile yerel depodan geri yüklenen uyarı aynı eylem yürütücüsünü kullanır ve başarı Uygulandı bildirimiyle görünür olur.',
+          'Uygula, Okundu yap ve Listeden kaldır ayrı kararlar olarak kalır; uygulamak kartı kendiliğinden okundu yapmaz veya silmez.'
+        ]},
         {v:'r571',t:'30 Ağustos 2026',b:[
           'Çalışan 99 Esmâ Seyri ile 28 İsim Seyri yeniden yazılmadan Zikir içindeki SEYİRLER bölümüne taşındı.',
           'Her iki seyrin ses çözümlemesi, kaldığın yer, sayaç ve oynatma düğmeleri aynı motorlarla çalışmaya devam eder.',
@@ -22372,7 +22385,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const state={version:'r571',registration:null,waiting:null,installing:null,active:null,
+  const state={version:'r572',registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
   const snapshot=()=>({version:state.version,phase:state.phase,workerVersion:state.workerVersion,cache:state.cache,complete:state.complete,lastError:state.lastError,lastChange:state.lastChange,hasWaiting:!!state.waiting,hasController:!!navigator.serviceWorker.controller});
@@ -22398,7 +22411,7 @@ function neYenilendi(notlar,basligiEk){
     if(!sw||state.phase==='activating')return false;
     set('activating',{waiting:sw});
     await saveBeforeReload();
-    try{sessionStorage.setItem('sukun.sw.reload','r571:'+Date.now())}catch(e){}
+    try{sessionStorage.setItem('sukun.sw.reload','r572:'+Date.now())}catch(e){}
     state.reloadArmed=true;
     try{sw.postMessage({type:'SKIP_WAITING'});return true}catch(e){set('error',{lastError:String(e)});return false}
   }
@@ -22419,7 +22432,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r571',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r572',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -22432,7 +22445,7 @@ function neYenilendi(notlar,basligiEk){
     if(changed)return;changed=true;
     set('controller-changed');
     /* Sadece kullanıcının Yenile eylemiyle silahlandıysa otomatik reload. */
-    let armed=state.reloadArmed;try{armed=armed||/^r571:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
+    let armed=state.reloadArmed;try{armed=armed||/^r572:/.test(sessionStorage.getItem('sukun.sw.reload')||'')}catch(e){}
     if(armed){try{sessionStorage.removeItem('sukun.sw.reload')}catch(e){};location.reload()}
   });
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -34147,10 +34160,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r571',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r572',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r571-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r572-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -48333,7 +48346,7 @@ body.r447-dock-mini #r478DockStats[data-nefs="1"] .r478Name>b{
 <script id="r554-alert-timing-runtime">
 (()=>{
 'use strict';
-if(window.SukunAlertCenter?.version==='r557')return;
+if(window.SukunAlertCenter?.version==='r572')return;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -48367,6 +48380,40 @@ const counts=()=>{
   return out;
 };
 const topTone=c=>c.warningUnread?'warning':c.berhetUnread?'berhet':c.esmaUnread?'esma':'none';
+
+/* ═══ r572 — kalıcı kırmızı uyarı eylemleri ═══════════════════════
+   actionFn bir JavaScript işlevidir ve yerel depoya yazılamaz. Önceki
+   sürüm yalnız bellekteki Map'e güveniyordu; sayfa yeniden açıldığında
+   kartın id/meta alanı duruyor, Map boşaldığı için Uygula sessizce boşa
+   düşüyordu. Neuro kuralı artık meta.rule (ve eski kartlarda id) ile
+   yeniden çözülür. Uygula, ayrı Okundu/Listeden kaldır eylemlerine
+   dokunmaz; kartın durumu yalnız kullanıcının o düğmeleriyle değişir. */
+function r572NeuroRuleKey(alert){
+  const meta=alert?.meta&&typeof alert.meta==='object'?alert.meta:{};
+  if(meta.type==='neuro'&&meta.rule)return String(meta.rule);
+  const m=/^neuro:([^:]+):/.exec(String(alert?.id||''));
+  return m?m[1]:'';
+}
+function r572ActionFor(alert){
+  const live=actions.get(String(alert?.id||''));
+  if(typeof live==='function')return live;
+  const key=r572NeuroRuleKey(alert);if(!key)return null;
+  const rule=(window.NEURO?.KURALLAR||[]).find(x=>x&&String(x.ad||'')===key);
+  return typeof rule?.uygula==='function'?rule.uygula:null;
+}
+function r572RunAction(alert){
+  const fn=r572ActionFor(alert);if(typeof fn!=='function')return false;
+  try{
+    fn();
+    try{typeof toast==='function'&&toast('Uygulandı ✦')}catch(e){}
+    try{window.dispatchEvent(new CustomEvent('sukun:alertaction',{detail:{id:alert.id,rule:r572NeuroRuleKey(alert),kind:normalKind(alert.kind)}}))}catch(e){}
+    return true;
+  }catch(e){
+    try{typeof sukunReport==='function'&&sukunReport('alert-action','Bildirim eylemi uygulanamadı',`${alert?.id||'kimlik-yok'} · ${e?.message||e}`)}catch(_){}
+    try{typeof toast==='function'&&toast('Uyarı uygulanamadı · Sistem Durumu kaydına bak')}catch(_){}
+    return false;
+  }
+}
 
 /* ═══ r557 — çoklu Esmâ bildirimi → tam terkip ════════════════════
    Eski bildirimler yalnız ilk ismi meta.name alanında saklıyordu. Bu
@@ -48532,8 +48579,7 @@ function toggle(){const d=$('r551AlertDrawer');if(!d||d.hidden)open();else close
 function invoke(id){
   const a=byId(id);if(!a)return false;
   if(a.kind==='berhet'&&!berhetUnlocked())return false;
-  const fn=actions.get(id);
-  if(fn){try{fn();dismiss(id);return true}catch(e){}}
+  if(r572RunAction(a))return true;
   const meta=a.meta||{};
   try{
     if(meta.action==='esma'&&meta.name){
@@ -48778,7 +48824,7 @@ function r554GoZikir(){
 }
 function r554Invoke(id){
   const a=byId(id);if(!a||a.kind==='berhet'&&!berhetUnlocked())return false;
-  const fn=actions.get(id);if(fn){try{fn();r554Dismiss(id);return true}catch(e){}}
+  if(r572RunAction(a))return true;
   const meta=a.meta||{};
   try{
     const recommended=r557AlertEsmaIndices(a);
@@ -48837,9 +48883,9 @@ function r554BindDrag(){
 }
 
 window.SukunAlertCenter={
-  version:'r557',push:r554Push,open:r554Open,close:r554Close,toggle:r554Toggle,openCenter:r554OpenCenter,
+  version:'r572',push:r554Push,open:r554Open,close:r554Close,toggle:r554Toggle,openCenter:r554OpenCenter,
   markAllRead:r554MarkRead,markRead:r554ReadOne,dismiss:r554Dismiss,invoke:r554Invoke,rerender:()=>{renderKeys.chrome=renderKeys.drawer=renderKeys.center='';r554EnsureUI();r554Render(true)},resetDock:r554ResetDock,
-  snapshot:()=>({version:'r557',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),counts:counts(),filters:{...filters},drawerOpen:!$('r554AlertDrawer')?.hidden,dockY:r554CurrentO(),items:visibleAlerts().slice(0,30)})
+  snapshot:()=>({version:'r572',count:visibleAlerts().length,storedCount:alerts.length,unread:unread(),counts:counts(),filters:{...filters},drawerOpen:!$('r554AlertDrawer')?.hidden,dockY:r554CurrentO(),items:visibleAlerts().slice(0,30)})
 };
 window.SukunTerkipComposer={
   version:'r557',add:r557AddTerkip,addFromAlert:r557AddAlertTerkip,indicesForAlert:r557AlertEsmaIndices,actionForAlert:r557AlertAction,
