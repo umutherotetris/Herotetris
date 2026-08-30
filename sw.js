@@ -1,8 +1,8 @@
 /* SÜKÛN r557 — Bildirim önerisinden tam Esmâ terkibi */
 'use strict';
 
-const SURUM = 'r562';
-const CACHE = 'sukun-r562-20260829a';
+const SURUM = 'r563';
+const CACHE = 'sukun-r563-20260829a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r557__.json';
 
 const NOTLAR = [
+  'r563 Kesin durdurma kendini besliyordu: tık dinleyicisi → stopAll → mix sağlayıcısının stopu → hardStopAll → başa dön. Yeniden giriş kapısı kondu.',
   'r562 Durdurma izi derinleştirildi: kesin durdurmayı hangi işlevin başlattığı artık adıyla kaydediliyor.',
   'r561 KRİTİK: BS is not defined hatasının asıl kaynağı şu an çalan bilgisini türeten Berhetiyye dalıydı; bu yüzden sayaç ve şerit güncellenmiyordu.',
   'r560 KRİTİK: BS is not defined hatasının kaynağı geçici ölü bölge erişimiydi; duraklatma sözleşmesi artık seyir durumuna pencere üzerinden erişiyor.',
