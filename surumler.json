@@ -1,5 +1,16 @@
 [
   {
+    "v": "r579",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Kendi kayıt oynatımında havuz artık Blob nesne kimliğini karşılaştırmıyor; IndexedDB her okumada yeni Blob döndürse de aynı kayıt için aynı Audio/MediaElementSource yeniden kullanılıyor.",
+      "Kayıt üzerine yazma ve silme işlemleri ilgili kayıt anahtarının havuzunu açıkça geçersiz kılıyor; eski kayıt takılı kalmıyor.",
+      "Konuşma/zikir geçişi örtüşmeli uzun crossfade'den örtüşmesiz 60–90 ms mikro hand-off'a geçirildi; dry ve wet/reverb birlikte kapanıp birlikte açılıyor.",
+      "Pooled blob URL tekrar sonunda revoke edilmiyor; yalnız havuz invalidasyonu veya eviction sırasında kapatılıyor.",
+      "120 ms üzerinde birden fazla fiziksel kayıt kaynağı kalırsa overlap guard eski kaynağı kesip tanılamaya yazar. 28/99 seyir ve çoklu terkip oturum sahipliği değiştirilmedi."
+    ]
+  },
+  {
     "v": "r578",
     "t": "30 Ağustos 2026",
     "b": [

@@ -1,8 +1,8 @@
-/* SÜKÛN r578 — 99 Esmâ Seyri görünürlük düzeltmesi */
+/* SÜKÛN r579 — kayıt sesi çakışma ve cızırtı koruması */
 'use strict';
 
-const SURUM = 'r578';
-const CACHE = 'sukun-r578-20260830a';
+const SURUM = 'r579';
+const CACHE = 'sukun-r579-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r578__.json';
+const BUILD_MARKER='./__sukun_build_r579__.json';
 
 const NOTLAR = [
+  'r579 Kayıt sesi havuzu kayıt anahtarıyla sahiplenilir; dry+wet örtüşmesiz 60–90 ms hand-off ve 120 ms overlap guard cızırtı/üst üste binme riskini kapatır.',
   'r578 99 Esmâ Seyri, seçili zikir kategorisinden bağımsız olarak SEYİRLER içinde kalıcı görünür; r577 ses/terkip sahipliği aynen korunur.',
   'r577 Ana ses oturum sahipliği: 28/99 seyir, tekil okuma ve çoklu terkip foreground kanalda çakışmaz; terkip kendi içinde tek session kalır.',
   'r576 Canlı akış barı üst rayı sabitlendi: kimlik/CANLI solda, tutamak merkezde, bildirim rozetleri sağda; taşma ve kırpılma giderildi.',
