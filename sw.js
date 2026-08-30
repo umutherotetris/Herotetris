@@ -1,8 +1,8 @@
-/* SÜKÛN r582 — canlı akış barı zengin bilgi görünümü */
+/* SÜKÛN r584 — premium gizli mod kapsülü */
 'use strict';
 
-const SURUM = 'r582';
-const CACHE = 'sukun-r582-20260830a';
+const SURUM = 'r584';
+const CACHE = 'sukun-r584-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r582__.json';
+const BUILD_MARKER='./__sukun_build_r584__.json';
 
 const NOTLAR = [
   'r581 Tekke aktif sahnesinde SÜKÛN dönüş pili TEKKE markasının altındaki ayrı güvenli raya taşındı; üst üste binme kaldırıldı.',
