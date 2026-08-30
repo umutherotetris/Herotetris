@@ -1,8 +1,8 @@
-/* SÜKÛN r588 — tek DOM akış barı */
+/* SÜKÛN r589 — tek DOM akış barı */
 'use strict';
 
-const SURUM = 'r588';
-const CACHE = 'sukun-r588-20260830a';
+const SURUM = 'r589';
+const CACHE = 'sukun-r589-20260830a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r588__.json';
+const BUILD_MARKER='./__sukun_build_r589__.json';
 
 const NOTLAR = [
   'r586 Mini/Midi/Max akış barı gerçek üç boyuta ayrıldı; build, manifest ve service worker sürüm zinciri r586 olarak eşitlendi.',
