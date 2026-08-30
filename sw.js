@@ -1,8 +1,8 @@
 /* SÜKÛN r572 — kırmızı uyarı Uygula eylemi kalıcı ve çalışır */
 'use strict';
 
-const SURUM = 'r574';
-const CACHE = 'sukun-r574-20260830a';
+const SURUM = 'r575';
+const CACHE = 'sukun-r575-20260830a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r572__.json';
 
 const NOTLAR = [
+  'r575 Sessiz başarısızlık deseni topluca tarandı; uyku modu kuralında da aynı kusur bulundu ve düzeltildi.',
   'r574 Reçete kartlarında da sessiz başarısızlık vardı: rozet koşulsuz uygulandı diyordu. Dört uygulayıcı da artık sonuç döndürüyor, rozet gerçeğe bağlı.',
   'r573 Esmâ Hatmi paneli Seyirler bölümünden kaldırıldı. Bildirimdeki Uygula düğmesi başarılı diyor ama frekansı başlatmıyordu; artık gerçekten başlatıyor, olmazsa uygulanamadı diyor.',
   'r572 Kırmızı Neuro uyarılarındaki Uygula eylemi artık yeniden açılmış kartlarda da meta.rule kimliğinden çözülüp çalışır; çok eski kartlar id biçiminden geriye dönük desteklenir.',
