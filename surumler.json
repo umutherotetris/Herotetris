@@ -1,5 +1,14 @@
 [
   {
+    "v": "r580",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Tekke üst barındaki SÜKÛN düğmesi yatay olarak genişletildi; yazının sıkışmasını engelleyen minimum genişlik ve daha dolgun iç boşluk tanımlandı.",
+      "Aktif seans ve giriş kapısı görünümünde aynı premium pill formu korundu; SÜKÛN dönüş düğmesi daha dengeli ve okunaklı hale geldi.",
+      "Dar ekran kademeleri 320–400 px bandında yeniden ayarlandı; diğer üst bar ikonları ezilmeden düzen korunur."
+    ]
+  },
+  {
     "v": "r579",
     "t": "30 Ağustos 2026",
     "b": [
