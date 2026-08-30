@@ -1,5 +1,24 @@
 [
   {
+    "v": "r582",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Canlı akış barının zengin bilgi görünümü geri getirildi.",
+      "Kompakt sayım/kalan/seyir telemetrisi korunur.",
+      "DURUM gerçek playback durumudur; sıra telemetride kalır.",
+      "28/99 seyir ve çoklu terkip ses sahipliği değiştirilmedi."
+    ]
+  },
+  {
+    "v": "r581",
+    "t": "30 Ağustos 2026",
+    "b": [
+      "Tekke aktif sahnesinde geniş SÜKÛN dönüş pili TEKKE markasıyla aynı satırdan ayrıldı.",
+      "Düğme ikinci güvenli raya taşındı; sayaç ve sağ kontrol ikonlarının alanı korunuyor.",
+      "320–430 px mobil genişliklerde çakışma ve viewport taşması önlemleri eklendi."
+    ]
+  },
+  {
     "v": "r580",
     "t": "30 Ağustos 2026",
     "b": [
