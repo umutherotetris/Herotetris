@@ -1,5 +1,16 @@
 [
   {
+    "v": "r616",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Ana gezinme Bugün, Zikir, Seyirler ve Sesler olarak dört anlaşılır bölüme indirildi.",
+      "Bugün ekranına tek dokunuşla zikir başlatma, kaldığın seyri sürdürme ve günlük özet kartları eklendi.",
+      "Zikir ekranında sayaç ve ana eylem öne çıkarıldı; seçim, ses/ritim ve gelişmiş araçlar açılır bölümlerde toplandı.",
+      "99 Esmâ Seyri ve kilit açıldığında 28 İsim Seyri ayrı Seyirler ekranında gerçek motor durumlarıyla gösterilir.",
+      "Sesler ekranı Ambiyans ve Frekanslar arasında açık bir seçim sunar; Bildirimler, Tekke ve Mini/Midi/Max akış barı korunur."
+    ]
+  },
+  {
     "v": "r615",
     "t": "31 Ağustos 2026",
     "b": [

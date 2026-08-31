@@ -1,8 +1,8 @@
-/* SÜKÛN r615 — mini akış barı tema camı */
+/* SÜKÛN r616 — kullanıcı dostu dört bölümlü arayüz kabuğu */
 'use strict';
 
-const SURUM = 'r615';
-const CACHE = 'sukun-r615-20260831a';
+const SURUM = 'r616';
+const CACHE = 'sukun-r616-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r615__.json';
+const BUILD_MARKER='./__sukun_build_r616__.json';
 
 const NOTLAR = [
+  'r616 Ana arayüz Bugün, Zikir, Seyirler ve Sesler olarak sadeleştirildi; çalışan ses ve seyir motorları değiştirilmeden aynı kontrollere bağlandı.',
   'r601 Mini akış barı ana menünün tema camıyla eşleşir; Ayarlar içinden açılıp kapatılır ve yüzey şeffaflığı canlı ayarlanır. Metin/düğme opacitysi değişmez; Midi ve Max etkilenmez.',
   'r600 Zikir sayaç kartı normal görünümde gerçek içeriği kadar uzar; tam ekran Tefekkürde taşan kontroller kart içinde dokunmatik olarak kaydırılabilir.',
   'r599 Ekrandaki açıklanamayan gölge tanıtım perdesiydi; boş alana dokunarak kapanma ve içeriği görünmezse kendiliğinden kapanma eklendi.',
