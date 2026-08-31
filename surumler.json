@@ -1,5 +1,16 @@
 [
   {
+    "v": "r611",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Tefekkür sayaç yüzeyine seçili zikri otomatik gösteren premium başlık eklendi.",
+      "Yâ Selâm gibi seçili esmâ sayaca dokunmadan görünür.",
+      "Animasyonlu isim görünümü aktifken sabit başlık otomatik gizlenir; katmanlar üst üste binmez.",
+      "Animasyon kapanınca sabit isim otomatik geri döner.",
+      "Kapalı isim sunumu tercihi korunur."
+    ]
+  },
+  {
     "v": "r610",
     "t": "31 Ağustos 2026",
     "b": [
