@@ -1,8 +1,8 @@
-/* SÜKÛN r600 — zikir kartı akış ve kırpma onarımı */
+/* SÜKÛN r601 — mini akış barı tema camı */
 'use strict';
 
-const SURUM = 'r600';
-const CACHE = 'sukun-r600-20260831a';
+const SURUM = 'r601';
+const CACHE = 'sukun-r601-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r600__.json';
+const BUILD_MARKER='./__sukun_build_r601__.json';
 
 const NOTLAR = [
+  'r601 Mini akış barı ana menünün tema camıyla eşleşir; Ayarlar içinden açılıp kapatılır ve yüzey şeffaflığı canlı ayarlanır. Metin/düğme opacitysi değişmez; Midi ve Max etkilenmez.',
   'r600 Zikir sayaç kartı normal görünümde gerçek içeriği kadar uzar; tam ekran Tefekkürde taşan kontroller kart içinde dokunmatik olarak kaydırılabilir.',
   'r599 Ekrandaki açıklanamayan gölge tanıtım perdesiydi; boş alana dokunarak kapanma ve içeriği görünmezse kendiliğinden kapanma eklendi.',
   'r598 ÇÖZÜLDÜ: grup kartları gezinme kümesinin içine düşüp 3 piksele sıkışıyordu. Ölçüye dayalı onarım eklendi, kapsayıcı doğru ebeveyne taşınıyor.',

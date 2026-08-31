@@ -1,5 +1,15 @@
 [
   {
+    "v": "r601",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Mini akış barına ana sekme menüsünün tema rengi, cam yüzeyi ve bulanıklığıyla uyumlu isteğe bağlı görünüm eklendi.",
+      "Ayarlar > Görünüm bölümünden tema camı açılıp kapatılabilir; şeffaflık yüzde 10 ile yüzde 70 arasında canlı ayarlanır ve cihazda kalıcı saklanır.",
+      "Şeffaflık yalnız yüzey arka planına uygulanır; metin, sayaç ve düğmelerin okunurluğu için bütün barın opacity değeri değiştirilmez.",
+      "Ayar yalnız Mini kiptedir. Midi, Max, bildirim drawerı, gizli dönüş kapsülü, 28/99 seyir, terkip ve ses oturumu sahipliği değişmedi."
+    ]
+  },
+  {
     "v": "r600",
     "t": "31 Ağustos 2026",
     "b": [

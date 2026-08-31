@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r600 — zikir kartı akış ve kırpma onarımı
+     SÜKÛN r601 — mini akış barı tema camı
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r600">
+<meta name="sukun-build" content="r601">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r600">
+<link rel="manifest" href="./manifest.webmanifest?v=r601">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.85 — build 2026-08-31-r600</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.86 — build 2026-08-31-r601</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -14907,6 +14907,7 @@ const SK_YEDEK_KEYS=new Set(`
   sukun.akManaOnce sukun.akOnly sukun.ambopen sukun.arkaPlan sukun.arkaSeviye
   sukun.breath sukun.dailyseen sukun.dayZk sukun.delail sukun.eq sukun.esmaCount
   sukun.fav sukun.genAcik sukun.geo sukun.glassA sukun.hatim sukun.help
+  sukun.dock.miniGlass.enabled sukun.dock.miniGlass.transparency
   sukun.hizbAtla sukun.huKip sukun.hzvAtla sukun.hzvGorunum sukun.journey
   sukun.kapi7 sukun.karisim sukun.kilitPin sukun.lang sukun.lastBackup
   sukun.lataif sukun.log sukun.maneviGunluk sukun.muhasebe sukun.myfreq
@@ -22585,7 +22586,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r600',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r601',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34356,10 +34357,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r600',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r601',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r600-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r601-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -53419,7 +53420,132 @@ body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(0),{once:true});
   else boot(0);
   [120,500,1500,3500].forEach(ms=>setTimeout(schedule,ms));
-  window.SukunZCtlFlow={version:'r600',refresh:measure,snapshot:()=>last};
+window.SukunZCtlFlow={version:'r600',refresh:measure,snapshot:()=>last};
+})();
+</script>
+<style id="r601-mini-flow-glass-style">
+/* ═══ r601 — MİNİ AKIŞ BARI / TEMA CAMI ════════════════════════════
+   Şeffaflık yalnız yüzeye uygulanır; kabuk opacity'si kullanılmadığı
+   için metin, sayaçlar ve dokunma denetimleri tam okunur kalır.
+   Varsayılan yüzey ana sekme barının gerçek cascade sahibini izler:
+   --sayfa2K, .68 yoğunluk ve 14px blur. Midi, Max, bildirim drawerı
+   ve gizli dönüş kapsülü bu ayarın dışında kalır. */
+:root{--r601-mini-glass-alpha:.68}
+body.r601-mini-glass.r588-dock-ready.r588-mode-mini.r431-dock-visible:not(.r433-dock-hidden)
+  #r170Now.r588-authority:not(.r554-alert-open){
+  background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha))!important;
+  border-color:var(--lux-line,color-mix(in srgb,var(--gold) 15%,transparent))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  backdrop-filter:blur(14px)!important;
+}
+body[data-perf="pil"].r601-mini-glass.r588-mode-mini.r431-dock-visible:not(.r433-dock-hidden)
+  #r170Now.r588-authority:not(.r554-alert-open){
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:var(--e1)!important;
+}
+
+#r601MiniGlassPanel{
+  display:grid;gap:9px;margin:0 0 12px;padding:10px;
+  border:1px solid color-mix(in srgb,var(--gold) 16%,var(--line));
+  border-radius:14px;background:rgba(var(--sayfa2K),.32);
+}
+#r601MiniGlassPanel .r601MiniGlassPreview{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:42px;padding:8px 10px;border-radius:12px;
+  border:1px solid color-mix(in srgb,var(--violet) 20%,var(--line));
+  background:linear-gradient(180deg,rgba(10,13,20,.975),rgba(6,9,14,.988));
+  box-shadow:0 12px 28px -22px #000,inset 0 1px 0 rgba(255,255,255,.025);
+  color:var(--text);
+}
+#r601MiniGlassPanel.is-on .r601MiniGlassPreview{
+  border-color:var(--lux-line,color-mix(in srgb,var(--gold) 15%,transparent));
+  background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+}
+#r601MiniGlassPanel .r601MiniGlassPreview b{font:800 11px/1.15 Inter,system-ui;color:var(--ivory)}
+#r601MiniGlassPanel .r601MiniGlassPreview small{font:650 8px/1.2 Inter,system-ui;color:var(--mut);letter-spacing:.08em}
+#r601MiniGlassLevelRow{margin:0!important;transition:opacity .18s ease}
+#r601MiniGlassLevelRow[aria-disabled="true"]{opacity:.42}
+#r601MiniGlassLevelRow input:disabled{cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){#r601MiniGlassLevelRow{transition:none}}
+</style>
+<script id="r601-mini-flow-glass-runtime">
+(()=>{
+'use strict';
+const VERSION='r601';
+if(window.SukunMiniFlowGlass?.version===VERSION)return;
+const ENABLE_KEY='sukun.dock.miniGlass.enabled';
+const TRANSPARENCY_KEY='sukun.dock.miniGlass.transparency';
+const DEFAULT_TRANSPARENCY=32;
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,Number(n)));
+const read=(key,fallback)=>{try{const v=localStorage.getItem(key);return v==null?fallback:v}catch(e){return fallback}};
+let enabled=!/^(?:0|false|off)$/i.test(String(read(ENABLE_KEY,'1')));
+let transparency=clamp(parseFloat(read(TRANSPARENCY_KEY,DEFAULT_TRANSPARENCY)),10,70);
+if(!Number.isFinite(transparency))transparency=DEFAULT_TRANSPARENCY;
+
+function ensureSettings(){
+  const general=document.querySelector('#temaSheet .genAyar')||document.querySelector('.temaSheet .genAyar')||document.querySelector('.genAyar');
+  if(!general)return null;
+  let panel=document.getElementById('r601MiniGlassPanel');
+  if(!panel){
+    panel=document.createElement('section');
+    panel.id='r601MiniGlassPanel';
+    panel.setAttribute('aria-label','Mini akış barı görünümü');
+    panel.innerHTML=
+      '<div class="opt"><span>🪟 Mini akış barı tema camı<small>Ana menünün tema rengi ve cam yüzeyi; yazılar ile düğmeler solmaz.</small></span><button class="sw" id="r601MiniGlassTgl" type="button" role="switch" aria-label="Mini akış barı tema camı"></button></div>'+ 
+      '<div class="r601MiniGlassPreview" aria-hidden="true"><span><b>SÜKÛN · MİNİ</b><br><small>TEMA CAMI</small></span><small>▶ &nbsp; ■</small></div>'+ 
+      '<div class="sldRow" id="r601MiniGlassLevelRow"><label for="r601MiniGlassLevel">Şeffaflık</label><input type="range" id="r601MiniGlassLevel" min="10" max="70" step="1" value="32" aria-label="Mini akış barı şeffaflığı"><span class="valB" id="r601MiniGlassLevelV">%32</span></div>'+ 
+      '<div class="genNot" style="margin:0">Düşük değer daha dolgun, yüksek değer daha şeffaf. Varsayılan %32 ana menüyle aynıdır.</div>';
+    const heads=[...general.querySelectorAll('.genBas')];
+    const view=heads.find(x=>(x.textContent||'').toLocaleUpperCase('tr-TR').includes('GÖRÜNÜM'));
+    const presentation=document.getElementById('r474NamePresentation');
+    if(presentation?.parentNode===general)presentation.insertAdjacentElement('afterend',panel);
+    else if(view)view.insertAdjacentElement('afterend',panel);
+    else general.appendChild(panel);
+  }
+  if(panel.dataset.bound!=='1'){
+    panel.dataset.bound='1';
+    panel.querySelector('#r601MiniGlassTgl')?.addEventListener('click',()=>setEnabled(!enabled,true));
+    panel.querySelector('#r601MiniGlassLevel')?.addEventListener('input',e=>setTransparency(e.target.value,true));
+  }
+  return panel;
+}
+
+function updateUI(){
+  const panel=ensureSettings();if(!panel)return;
+  panel.classList.toggle('is-on',enabled);
+  const toggle=panel.querySelector('#r601MiniGlassTgl');
+  if(toggle){toggle.classList.toggle('on',enabled);toggle.setAttribute('aria-checked',enabled?'true':'false')}
+  const slider=panel.querySelector('#r601MiniGlassLevel');
+  const row=panel.querySelector('#r601MiniGlassLevelRow');
+  if(slider){slider.value=String(Math.round(transparency));slider.disabled=!enabled;slider.setAttribute('aria-valuetext','%'+Math.round(transparency)+' şeffaf');try{if(typeof setFill==='function')setFill(slider)}catch(e){}}
+  if(row)row.setAttribute('aria-disabled',enabled?'false':'true');
+  const value=panel.querySelector('#r601MiniGlassLevelV');if(value)value.textContent='%'+Math.round(transparency);
+}
+function apply(persist=false,announce=true){
+  const alpha=clamp((100-transparency)/100,.30,.90);
+  document.documentElement.style.setProperty('--r601-mini-glass-alpha',alpha.toFixed(2));
+  document.body.classList.toggle('r601-mini-glass',enabled);
+  if(persist){try{localStorage.setItem(ENABLE_KEY,enabled?'1':'0');localStorage.setItem(TRANSPARENCY_KEY,String(Math.round(transparency)))}catch(e){}}
+  updateUI();
+  const snap=snapshot();
+  if(announce)window.dispatchEvent(new CustomEvent('sukun:miniflowglasschange',{detail:snap}));
+  return snap;
+}
+function setEnabled(value,persist=true){enabled=!!value;return apply(persist)}
+function setTransparency(value,persist=true){
+  const next=clamp(parseFloat(value),10,70);if(!Number.isFinite(next))return snapshot();
+  transparency=next;return apply(persist);
+}
+function snapshot(){return{version:VERSION,enabled,transparency:Math.round(transparency),alpha:Number(((100-transparency)/100).toFixed(2)),scope:'mini'}}
+function boot(){ensureSettings();apply(false,false)}
+document.addEventListener('click',e=>{if(e.target.closest?.('#temaBtn'))setTimeout(()=>{ensureSettings();updateUI()},35)},{passive:true});
+window.addEventListener('pageshow',()=>setTimeout(()=>apply(false,false),40),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.SukunMiniFlowGlass={version:VERSION,get:snapshot,setEnabled,setTransparency,refresh:()=>apply(false,false)};
 })();
 </script>
 </body>
