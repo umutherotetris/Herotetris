@@ -1,5 +1,16 @@
 [
   {
+    "v": "r604",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Mini akış barındaki büyük üst boşluğun kökü bulundu: görünmez sanılan legacy r170NowBtns 77px yer tutuyordu; final owner ile akıştan çıkarıldı.",
+      "Mini bar doğal içerik yüksekliğine geçti; Tefekkür ve Mini/Midi/Max satırı kompaktlaştırıldı, tüm akış tek bakışta görünür.",
+      "28 İsim ve 99 Esmâ Seyri dokunma hedefleri büyütüldü; mobilde iki kolon ve geniş Başlat/Sürdür düğmesi kullanılır.",
+      "Başlat/duraklat/bitir/önceki/sonraki/yeniden başlat/sıfırla/döngü/mod/küçültme gibi işlemlere ayrı mikro ses imzaları ve kısa başlangıç ışığı eklendi; ayarlardan kapatılabilir ve seviyesi ayarlanabilir.",
+      "Mini tema camı varsayılan olarak daha saydam hale getirildi; şeffaflık aralığı %15–85 ve ayar kalıcıdır."
+    ]
+  },
+  {
     "v": "r603",
     "t": "31 Ağustos 2026",
     "b": [
