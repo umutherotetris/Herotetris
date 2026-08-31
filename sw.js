@@ -1,8 +1,8 @@
-/* SÜKÛN r592 — tek DOM akış barı */
+/* SÜKÛN r600 — zikir kartı akış ve kırpma onarımı */
 'use strict';
 
-const SURUM = 'r599';
-const CACHE = 'sukun-r599-20260830a';
+const SURUM = 'r600';
+const CACHE = 'sukun-r600-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r592__.json';
+const BUILD_MARKER='./__sukun_build_r600__.json';
 
 const NOTLAR = [
+  'r600 Zikir sayaç kartı normal görünümde gerçek içeriği kadar uzar; tam ekran Tefekkürde taşan kontroller kart içinde dokunmatik olarak kaydırılabilir.',
   'r599 Ekrandaki açıklanamayan gölge tanıtım perdesiydi; boş alana dokunarak kapanma ve içeriği görünmezse kendiliğinden kapanma eklendi.',
   'r598 ÇÖZÜLDÜ: grup kartları gezinme kümesinin içine düşüp 3 piksele sıkışıyordu. Ölçüye dayalı onarım eklendi, kapsayıcı doğru ebeveyne taşınıyor.',
   'r597 Tefekkür düğmesi Mini kipte alt kenarda kırpılıyordu; kip satırının üstüne alındı.',

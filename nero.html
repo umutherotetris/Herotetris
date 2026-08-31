@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r599 — dock collapse authority + visual curtain
+     SÜKÛN r600 — zikir kartı akış ve kırpma onarımı
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r599">
+<meta name="sukun-build" content="r600">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r599">
+<link rel="manifest" href="./manifest.webmanifest?v=r600">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.84 — build 2026-08-31-r599</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.85 — build 2026-08-31-r600</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22585,7 +22585,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r599',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r600',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34356,10 +34356,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r599',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r600',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r572-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r600-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -53271,6 +53271,155 @@ window.SukunDockCollapse={version:'r592',get:()=>collapsed,set:setCollapsed,togg
   else denetle();
   setTimeout(denetle,1500); setTimeout(denetle,4000);
   setInterval(denetle,5000);
+})();
+</script>
+<style id="r600-zctl-flow-authority">
+/* ═══ r600 — ZİKİR KARTI AKIŞ / KIRPMA OTORİTESİ ════════════════════
+   r500'ün genel overflow:hidden kuralı normal Zikir kartına da
+   uygulanıyordu. Kartın bazı runtime çocukları akış dışında kaldığında
+   gerçek içerik yüksekliği binlerce piksel olsa bile kart kısa kalıyor
+   ve sayaç altındaki bütün kontroller kesiliyordu.
+
+   Normal sayfada kart içerik kadar uzar. Tam ekran Tefekkürde ekran
+   yüksekliği sabit kalmak zorunda olduğundan aynı taşma kartın kendi
+   içinde, dokunmatik dikey kaydırmayla erişilebilir olur. */
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl{
+  height:auto!important;
+  min-height:var(--r600-zctl-flow-height,0px)!important;
+  max-height:none!important;
+  overflow:visible!important;
+  contain:none!important;
+}
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl > #tfRefinedLayout,
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl #tfRefinedLayout > .tfVisualPanel,
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl #tfRefinedLayout > .tfControlPanel,
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl #tfRefinedLayout .tfPrimaryControls,
+body:not(.sukun-tefekkur-mode) #tab-zkr > .card.zCtl #zMegaHost{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+body.sukun-tefekkur-mode #tab-zkr > .card.zCtl{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain!important;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y pinch-zoom!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout{
+  height:auto!important;
+  min-height:100%!important;
+  grid-template-rows:auto auto auto!important;
+}
+body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel{
+  grid-template-rows:auto auto!important;
+}
+</style>
+<script id="r600-zctl-flow-runtime">
+/* Ölçüye dayalı emniyet: normal görünümde akış dışındaki çocuklar da
+   kartın gerçek alt sınırına katılır. CSS tek başına yeterliyse yazılan
+   değer doğal yükseklikle aynı kalır; gereksiz periyodik tarama yoktur. */
+(function(){
+  'use strict';
+  if(window.__SUKUN_R600_ZCTL_FLOW__)return;
+  window.__SUKUN_R600_ZCTL_FLOW__=1;
+
+  const SELECTOR='#tab-zkr > .card.zCtl';
+  let raf=0,card=null,ro=null,mo=null,last=null;
+  const observed=new WeakSet();
+
+  function getCard(){
+    if(!card||!card.isConnected)card=document.querySelector(SELECTOR);
+    return card;
+  }
+  function tefekkur(){return document.body.classList.contains('sukun-tefekkur-mode')}
+  function tabVisible(el){
+    const panel=el&&el.closest('#tab-zkr');
+    return !!(panel&&!panel.hidden);
+  }
+  function watch(el){
+    if(!ro||!el||observed.has(el))return;
+    try{ro.observe(el);observed.add(el)}catch(e){}
+  }
+  function visibleRect(el){
+    const cs=getComputedStyle(el);
+    if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed')return null;
+    const r=el.getBoundingClientRect();
+    return r.width>0&&r.height>0?r:null;
+  }
+  function measure(){
+    raf=0;
+    const el=getCard();
+    if(!el)return null;
+    watch(el);
+    [...el.children].forEach(watch);
+
+    if(tefekkur()){
+      el.style.removeProperty('--r600-zctl-flow-height');
+      const snap={version:'r600',mode:'tefekkur',clientHeight:el.clientHeight,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY};
+      el.dataset.r600Layout=el.scrollHeight>el.clientHeight+2?'scroll':'fit';
+      last=snap;
+      return snap;
+    }
+    if(!tabVisible(el))return last;
+
+    const box=el.getBoundingClientRect();
+    const cs=getComputedStyle(el);
+    const padBottom=parseFloat(cs.paddingBottom)||0;
+    const borderBottom=parseFloat(cs.borderBottomWidth)||0;
+    const hadMeasuredHeight=!!el.style.getPropertyValue('--r600-zctl-flow-height');
+    const rawScrollHeight=el.scrollHeight;
+    let needed=0;
+    const nodes=el.querySelectorAll('*');
+    for(const node of nodes){
+      const r=visibleRect(node);
+      if(!r)continue;
+      needed=Math.max(needed,r.bottom-box.top+el.scrollTop);
+    }
+    needed=Math.ceil(Math.max(needed+padBottom+borderBottom,hadMeasuredHeight?0:rawScrollHeight));
+    const px=Math.max(0,needed)+'px';
+    if(el.style.getPropertyValue('--r600-zctl-flow-height')!==px){
+      el.style.setProperty('--r600-zctl-flow-height',px);
+    }
+    el.dataset.r600Layout=needed>Math.ceil(box.height)+2?'expanded':'flow';
+    last={version:'r600',mode:'normal',height:Math.round(el.getBoundingClientRect().height),needed,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY};
+    return last;
+  }
+  function schedule(){
+    if(raf)return;
+    raf=requestAnimationFrame(measure);
+  }
+  function bind(){
+    const el=getCard();
+    if(!el)return false;
+    if(typeof ResizeObserver==='function'){
+      ro=new ResizeObserver(schedule);
+      watch(el);[...el.children].forEach(watch);
+    }
+    if(typeof MutationObserver==='function'){
+      mo=new MutationObserver(schedule);
+      mo.observe(el,{childList:true,subtree:true});
+      mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+    }
+    el.addEventListener('toggle',schedule,true);
+    return true;
+  }
+  function boot(n){
+    if(bind()){schedule();return}
+    if(n<30)setTimeout(()=>boot(n+1),100);
+  }
+  ['sukun:tabchange','sukun:secretaccesschange','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule,{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()},{passive:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(0),{once:true});
+  else boot(0);
+  [120,500,1500,3500].forEach(ms=>setTimeout(schedule,ms));
+  window.SukunZCtlFlow={version:'r600',refresh:measure,snapshot:()=>last};
 })();
 </script>
 </body>
