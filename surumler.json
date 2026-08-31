@@ -1,5 +1,14 @@
 [
   {
+    "v": "r607",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Bildirim merkezine Yalnız eskileri temizle eylemi eklendi; bugün ve dün korunur.",
+      "Neon sekme efektleri Ayarlar içinden açılıp kapatılabilir.",
+      "Açılış performans modu eklendi; atmosfer korunurken ikinci halka, ağır blur ve parçacık maliyeti azaltılır."
+    ]
+  },
+  {
     "v": "r605",
     "t": "31 Ağustos 2026",
     "b": [

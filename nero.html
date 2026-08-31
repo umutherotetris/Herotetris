@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r605 — mini akış ergonomi + mikro aksiyon sesleri
+     SÜKÛN r607 — bildirim bakım araçları + efekt ayarları + açılış performans modu
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r605">
+<meta name="sukun-build" content="r607">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r605">
+<link rel="manifest" href="./manifest.webmanifest?v=r607">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.90 — build 2026-08-31-r605</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.91 — build 2026-08-31-r607</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22586,7 +22586,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r605',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r607',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34386,7 +34386,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r605',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r607',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r604-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -53504,7 +53504,7 @@ body[data-perf="pil"].r601-mini-glass.r431-dock-visible:not(.r433-dock-hidden)
 <script id="r601-mini-flow-glass-runtime">
 (()=>{
 'use strict';
-const VERSION='r605';
+const VERSION='r607';
 if(window.SukunMiniFlowGlass?.version===VERSION)return;
 const ENABLE_KEY='sukun.dock.miniGlass.enabled';
 const TRANSPARENCY_KEY='sukun.dock.miniGlass.transparency';
@@ -53836,8 +53836,8 @@ window.SukunMicroSFX={version:'r604',play,get:()=>({enabled,volume}),setEnabled:
 })();
 </script>
 
-<style id="r605-all-mode-flow-glass-final">
-/* r605 — Mini / Midi / Max tek tema-camı otoritesi.
+<style id="r607-all-mode-flow-glass-final">
+/* r607 — Mini / Midi / Max tek tema-camı otoritesi.
    Eski r588 koyu opak kabuğu bütün görünüm kiplerinde ezer. */
 body.r601-mini-glass.r588-dock-ready.r591-flow-active.r431-dock-visible:not(.r433-dock-hidden)
 #r170Now.r588-authority:not(.r554-alert-open){
@@ -53863,6 +53863,486 @@ body[data-perf="pil"].r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r43
   backdrop-filter:none!important;
 }
 </style>
+
+
+<style id="r607-neon-ux-style">
+/* r607 — Bildirim merkezi ek temizleme kontrolleri */
+.r607ClearBtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:35px;padding:9px 12px;border-radius:12px;
+  border:1px solid color-mix(in srgb,var(--danger) 32%,var(--line2));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--danger) 10%,transparent),color-mix(in srgb,var(--danger) 5%,transparent));
+  color:color-mix(in srgb,var(--goldh) 40%,#ffd3d3);font:700 11px/1.1 Inter,system-ui,sans-serif;
+  letter-spacing:.03em;cursor:pointer;touch-action:manipulation;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px -20px rgba(0,0,0,.52);
+}
+.r607ClearBtn:active{transform:scale(.98)}
+#r554Center .r554CenterTools .r607ClearBtn,
+#r554AlertDrawer .r554DrawerActions .r607ClearBtn{flex:1 1 148px}
+.r607RetentionNote{
+  display:block;margin-top:6px;color:var(--dim);font-size:10px;line-height:1.45;opacity:.92;
+}
+
+/* Seyirlerde dokunma alanını biraz daha cömert tut. */
+#berhetSeyir .r168Buttons .btn,#esmaSeyir99 .r168Buttons .btn,#esmaPagerBar button{
+  min-height:54px!important;padding:11px 12px!important;border-radius:15px!important;
+}
+#berhetSeyir .r168Buttons,#esmaSeyir99 .r168Buttons{gap:9px!important}
+
+/* Sekme parlama katmanı */
+.tabs .tab,.tabs .tabTekke{position:relative;overflow:hidden;isolation:isolate}
+.tabs .tab::before,.tabs .tab::after,.tabs .tabTekke::before,.tabs .tabTekke::after{
+  content:'';position:absolute;inset:-20%;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s ease,transform .35s ease;
+}
+.tabs .tab>*,.tabs .tabTekke>*{position:relative;z-index:1}
+@keyframes r607AuroraMove{
+  0%{transform:translate3d(-2%,0,0) scale(1);filter:hue-rotate(0deg)}
+  50%{transform:translate3d(2%,-2%,0) scale(1.04);filter:hue-rotate(18deg)}
+  100%{transform:translate3d(-2%,0,0) scale(1);filter:hue-rotate(0deg)}
+}
+@keyframes r607PulseSoft{0%,100%{transform:scale(1);opacity:.72}50%{transform:scale(1.08);opacity:1}}
+@keyframes r607WaveStroke{0%{transform:translateX(-3%) translateY(0)}50%{transform:translateX(3%) translateY(-1px)}100%{transform:translateX(-3%) translateY(0)}}
+@keyframes r607Pearl{0%,100%{transform:translate(-50%,0) scale(.95);opacity:.72}50%{transform:translate(-50%,0) scale(1.18);opacity:1}}
+@keyframes r607Sheen{0%{transform:translateX(-120%) rotate(8deg);opacity:0}18%{opacity:.18}55%{opacity:.44}100%{transform:translateX(130%) rotate(8deg);opacity:0}}
+@keyframes r607TekkeGlow{0%,100%{box-shadow:0 0 0 1px color-mix(in srgb,#5cb9ff 16%,transparent),0 0 0 rgba(92,185,255,0)}50%{box-shadow:0 0 0 1px color-mix(in srgb,#7ecfff 28%,transparent),0 0 22px rgba(80,140,255,.18)}}
+
+.tab.act[data-t="amb"]{
+  border-color:color-mix(in srgb,#7fffd9 34%,var(--line2))!important;
+  color:#e6fff8!important;
+  box-shadow:0 0 18px rgba(47,236,181,.12),inset 0 0 20px rgba(47,236,181,.06)!important;
+}
+.tab.act[data-t="amb"]::before{
+  opacity:1;background:
+  radial-gradient(42px 22px at 22% 28%, rgba(79,255,205,.28), transparent 72%),
+  radial-gradient(58px 30px at 78% 32%, rgba(118,130,255,.22), transparent 74%),
+  radial-gradient(52px 28px at 52% 88%, rgba(210,92,255,.20), transparent 74%);
+  animation:r607AuroraMove 8s ease-in-out infinite;
+}
+.tab.act[data-t="amb"]::after{
+  inset:auto 12% 8px 12%;height:22px;opacity:.75;
+  background:radial-gradient(circle at 16% 40%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+             radial-gradient(circle at 38% 68%, rgba(172,255,226,.9) 0 1.2px, transparent 2.3px),
+             radial-gradient(circle at 61% 28%, rgba(181,211,255,.85) 0 1px, transparent 2px),
+             radial-gradient(circle at 86% 55%, rgba(224,164,255,.9) 0 1.2px, transparent 2.3px);
+  animation:r607PulseSoft 3.2s ease-in-out infinite;
+}
+
+.tab.act[data-t="frq"]{
+  border-color:color-mix(in srgb,#b786ff 28%,var(--line2))!important;
+  color:#f0e8ff!important;
+  box-shadow:0 0 20px rgba(171,100,255,.14),inset 0 0 22px rgba(92,78,220,.08)!important;
+}
+.tab.act[data-t="frq"]::before{
+  opacity:1;background:
+  linear-gradient(135deg, rgba(126,74,255,.16), transparent 38%, rgba(92,172,255,.12) 58%, transparent 76%),
+  radial-gradient(80px 36px at 50% 72%, rgba(173,98,255,.18), transparent 76%);
+  animation:r607AuroraMove 7.6s ease-in-out infinite;
+}
+.tab.act[data-t="frq"] .tbIc{
+  filter:drop-shadow(0 0 8px rgba(185,118,255,.35)) drop-shadow(0 0 12px rgba(98,128,255,.18));
+  animation:r607WaveStroke 1.8s ease-in-out infinite;
+}
+
+.tab.act[data-t="zkr"]{
+  border-color:color-mix(in srgb,#2ee6b8 30%,var(--line2))!important;
+  color:#e6fff6!important;
+  box-shadow:0 0 20px rgba(46,230,184,.13),inset 0 0 24px rgba(46,230,184,.08)!important;
+}
+.tab.act[data-t="zkr"]::before{
+  opacity:1;background:
+  radial-gradient(60px 30px at 50% 24%, rgba(214,255,245,.18), transparent 72%),
+  radial-gradient(86px 38px at 50% 76%, rgba(46,230,184,.14), transparent 78%);
+}
+.tab.act[data-t="zkr"]::after{
+  width:11px;height:11px;left:50%;top:11px;inset:auto auto auto 50%;border-radius:50%;opacity:1;
+  background:radial-gradient(circle at 34% 34%, #ffffff 0%, #caffef 34%, #7cf0d0 62%, rgba(124,240,208,.08) 100%);
+  box-shadow:0 0 12px rgba(162,255,225,.5),0 0 22px rgba(46,230,184,.28);
+  animation:r607Pearl 2.5s ease-in-out infinite;
+}
+.tab.act[data-t="zkr"] .tbIc{
+  filter:drop-shadow(0 0 8px rgba(46,230,184,.42));
+}
+.tab.act[data-t="zkr"] .tbIc g[fill="currentColor"] circle{
+  color:#54f3c8;fill:#54f3c8!important;
+  filter:drop-shadow(0 0 4px rgba(84,243,200,.5));
+}
+.tab.act[data-t="zkr"] .tbIc circle[fill="none"]{
+  stroke:color-mix(in srgb,#dffff4 46%,#54f3c8)!important;opacity:.44!important;
+}
+
+.tab.act[data-t="rx"]{
+  border-color:color-mix(in srgb,#ffd56d 24%,var(--line2))!important;
+  color:#fff7dc!important;
+  box-shadow:0 0 20px rgba(255,190,74,.12),inset 0 0 18px rgba(214,130,255,.06)!important;
+}
+.tab.act[data-t="rx"]::before{
+  opacity:1;background:
+  linear-gradient(125deg, rgba(255,214,109,.12), transparent 40%, rgba(198,112,255,.12) 64%, transparent 86%),
+  radial-gradient(70px 30px at 18% 78%, rgba(255,214,109,.12), transparent 72%);
+  animation:r607AuroraMove 7.8s ease-in-out infinite;
+}
+.tab.act[data-t="rx"]::after{
+  inset:-14% auto -10% -50%;width:50%;opacity:1;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.24), rgba(255,214,109,.26), transparent);
+  transform:rotate(8deg);
+  animation:r607Sheen 3.8s ease-in-out infinite;
+}
+
+#tekkeTab.tabTekke:hover,#tekkeTab.tabTekke:focus-visible,#tekkeTab.tabTekke:active{
+  border-color:color-mix(in srgb,#75c6ff 36%,var(--line2))!important;
+  color:#dff2ff!important;
+  background:linear-gradient(180deg,color-mix(in srgb,#428fff 13%,transparent),color-mix(in srgb,#143d8f 12%,transparent))!important;
+  animation:r607TekkeGlow 2.8s ease-in-out infinite;
+}
+#tekkeTab.tabTekke:hover::before,#tekkeTab.tabTekke:focus-visible::before,#tekkeTab.tabTekke:active::before{
+  opacity:1;background:
+  radial-gradient(56px 28px at 50% 22%, rgba(125,205,255,.24), transparent 72%),
+  radial-gradient(84px 40px at 50% 92%, rgba(61,116,255,.16), transparent 76%);
+}
+#tekkeTab.tabTekke:hover .tbRub,#tekkeTab.tabTekke:focus-visible .tbRub,#tekkeTab.tabTekke:active .tbRub{
+  color:#cce6ff!important;filter:drop-shadow(0 0 8px rgba(116,182,255,.44));
+}
+
+/* Açılış perdesi: daha canlı neon yeşil/mor/mavi atmosfer */
+#acilisPerde{
+  background:
+    radial-gradient(700px 340px at 50% 8%, rgba(42,255,182,.18), transparent 68%),
+    radial-gradient(520px 300px at 16% 82%, rgba(92,118,255,.14), transparent 72%),
+    radial-gradient(540px 300px at 84% 80%, rgba(187,84,255,.13), transparent 72%),
+    linear-gradient(180deg, rgba(4,10,13,.72), rgba(3,8,14,.9) 55%, rgba(2,5,9,.96))!important;
+}
+#acilisPerde::before,#acilisPerde::after{
+  content:'';position:absolute;inset:-14%;pointer-events:none;mix-blend-mode:screen;
+}
+#acilisPerde::before{
+  background:
+    radial-gradient(circle at 24% 30%, rgba(98,255,211,.14) 0 2px, transparent 3px),
+    radial-gradient(circle at 68% 18%, rgba(149,205,255,.12) 0 1.8px, transparent 3px),
+    radial-gradient(circle at 81% 64%, rgba(218,148,255,.12) 0 2px, transparent 3px),
+    radial-gradient(circle at 36% 76%, rgba(255,255,255,.15) 0 1.5px, transparent 3px);
+  animation:r607AuroraMove 10s ease-in-out infinite;
+}
+#acilisPerde::after{
+  background:
+    radial-gradient(340px 180px at 50% 34%, rgba(62,255,196,.12), transparent 72%),
+    radial-gradient(280px 150px at 50% 54%, rgba(91,137,255,.10), transparent 72%),
+    radial-gradient(240px 130px at 50% 66%, rgba(190,92,255,.10), transparent 74%);
+  filter:blur(10px);animation:r607PulseSoft 5.6s ease-in-out infinite;
+}
+#acilisPerde .apMuhur{
+  color:#dcfff7!important;
+  text-shadow:0 0 20px rgba(84,255,209,.26),0 0 42px rgba(103,141,255,.2),0 0 52px rgba(188,84,255,.18)!important;
+  animation:r607PulseSoft 4.8s ease-in-out infinite;
+}
+#acilisPerde .apHalka{
+  border-color:rgba(102,255,214,.3)!important;
+  box-shadow:0 0 28px rgba(102,255,214,.16),0 0 48px rgba(101,121,255,.12),inset 0 0 24px rgba(255,255,255,.04)!important;
+}
+#acilisPerde .apHalka.h2{border-color:rgba(147,201,255,.28)!important}
+#acilisPerde .apAd{
+  color:#f1fff9!important;text-shadow:0 0 12px rgba(84,255,209,.22),0 0 24px rgba(188,84,255,.12)!important;
+}
+#acilisPerde .apAlt{color:#a9bed0!important}
+#acilisPerde .apDokun{
+  color:#d7fff2!important;text-shadow:0 0 12px rgba(84,255,209,.18),0 0 24px rgba(109,126,255,.16)!important;
+}
+
+/* Tema camı bütün kiplerde kararlı görünsün. */
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority,
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority > #r434InlineDetails,
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r554-alert-open #r554AlertDrawer{
+  background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha))!important;
+  border-color:var(--lux-line,color-mix(in srgb,var(--gold) 16%,transparent))!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.08)!important;
+  backdrop-filter:blur(14px) saturate(1.08)!important;
+}
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority > #r588DockShell,
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority > #r434InlineDetails{
+  background:transparent!important;
+}
+body[data-perf="pil"].r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority,
+body[data-perf="pil"].r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority > #r434InlineDetails{
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+</style>
+<script id="r607-neon-ux-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R606__)return;window.__SUKUN_R606__=1;
+const ALERT_KEY='sukun.alert.center.v1';
+const DAY=86400000;
+const readJSON=(k,d)=>{try{const raw=localStorage.getItem(k);return raw==null?d:JSON.parse(raw)}catch(e){return d}};
+const writeJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const startOfDay=(t=Date.now())=>{const d=new Date(t);d.setHours(0,0,0,0);return +d};
+const retentionFloor=()=>startOfDay(Date.now()-DAY);
+const normalizeKind=k=>['esma','berhet','warning'].includes(k)?k:'warning';
+const readAlerts=()=>{const list=readJSON(ALERT_KEY,[]);return Array.isArray(list)?list.filter(x=>x&&x.id):[]};
+function saveAlerts(list){writeJSON(ALERT_KEY,(Array.isArray(list)?list:[]).slice(0,30))}
+function refreshAlerts(){try{window.SukunAlertCenter?.rerender?.()}catch(e){}setTimeout(mountClearButtons,80)}
+function dismissIds(ids){
+  ids=[...new Set((ids||[]).filter(Boolean))];if(!ids.length)return 0;
+  const center=window.SukunAlertCenter;
+  if(center&&typeof center.dismiss==='function')ids.forEach(id=>{try{center.dismiss(id)}catch(e){}});
+  else saveAlerts(readAlerts().filter(x=>!ids.includes(x.id)));
+  refreshAlerts();
+  return ids.length;
+}
+function pruneOldAlerts(){
+  const floor=retentionFloor();
+  const stale=readAlerts().filter(x=>(+x.at||0)<floor).map(x=>x.id);
+  if(stale.length)dismissIds(stale); else refreshAlerts();
+  return stale.length;
+}
+function clearByKind(kind='all'){
+  const ids=readAlerts().filter(x=>kind==='all'||normalizeKind(x.kind)===kind).map(x=>x.id);
+  return dismissIds(ids);
+}
+function selectedFilter(surface){
+  return document.querySelector(`.r554Filter[data-r554-surface="${surface}"].act`)?.dataset.r554Filter||'all';
+}
+function insertButton(host,id,label){
+  if(!host||document.getElementById(id))return null;
+  const b=document.createElement('button');b.type='button';b.id=id;b.className='r607ClearBtn';b.textContent=label;host.appendChild(b);return b;
+}
+function mountClearButtons(){
+  const centerTools=document.querySelector('#r554Center .r554CenterTools');
+  if(centerTools){
+    insertButton(centerTools,'r607CenterClearAll','🗑 Tümünü sil');
+  }
+  const drawerActions=document.querySelector('#r554AlertDrawer .r554DrawerActions');
+  if(drawerActions){
+    insertButton(drawerActions,'r607DrawerClearAll','🗑 Tümünü sil');
+  }
+  const status=document.querySelector('#r554Center .r554CenterStatus');
+  if(status&&!document.getElementById('r607AlertRetentionNote')){
+    const note=document.createElement('small');note.id='r607AlertRetentionNote';note.className='r607RetentionNote';
+    note.textContent='Bildirimler otomatik olarak yalnız bugün ve düne ait kayıtları tutar; daha eskileri gün değişince temizlenir.';
+    status.appendChild(note);
+  }
+}
+function toastify(msg){try{if(typeof toast==='function')toast(msg)}catch(e){}}
+let midnightTimer=0;
+function scheduleMidnightPrune(){
+  clearTimeout(midnightTimer);
+  const now=Date.now(),next=startOfDay(now)+DAY+60000;
+  midnightTimer=setTimeout(()=>{pruneOldAlerts();scheduleMidnightPrune()},Math.max(60000,next-now));
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest?.('#r607CenterClearAll,#r607DrawerClearAll');if(!b)return;
+  const surface=b.id==='r607DrawerClearAll'?'drawer':'center';
+  const kind=selectedFilter(surface);
+  const count=clearByKind(kind);
+  toastify(count?(kind==='all'?'Bildirimler temizlendi ✦':'Seçili bildirimler temizlendi ✦'):'Silinecek bildirim yok');
+},{capture:true});
+window.addEventListener('sukun:alert',()=>setTimeout(()=>{pruneOldAlerts();mountClearButtons()},40),{passive:true});
+window.addEventListener('sukun:alertaction',()=>setTimeout(mountClearButtons,40),{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){pruneOldAlerts();mountClearButtons()}});
+window.addEventListener('pageshow',()=>setTimeout(()=>{pruneOldAlerts();mountClearButtons()},120),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{pruneOldAlerts();mountClearButtons();scheduleMidnightPrune()},{once:true});
+else{pruneOldAlerts();mountClearButtons();scheduleMidnightPrune()}
+window.SukunAlertRetention={version:'r607',prune:pruneOldAlerts,clearAll:clearByKind};
+})();
+</script>
+
+<style id="r607-settings-and-maintenance-style">
+/* ── Bildirim bakım araçları ───────────────────────────── */
+.r607NotifyMaint{
+  display:flex;flex-wrap:wrap;gap:7px;width:100%;margin-top:7px;
+}
+.r607MaintBtn{
+  flex:1 1 138px;min-height:42px;padding:9px 11px;border-radius:12px;
+  border:1px solid color-mix(in srgb,var(--line2) 78%,transparent);
+  background:rgba(var(--sayfa2K),.34);color:var(--mut);
+  font:700 10.5px/1.2 Inter,system-ui,sans-serif;letter-spacing:.02em;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.r607MaintBtn.danger{
+  border-color:color-mix(in srgb,var(--danger) 36%,var(--line2));
+  color:color-mix(in srgb,#ffd7d7 62%,var(--goldh));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--danger) 10%,transparent),rgba(var(--sayfa2K),.28));
+}
+.r607MaintBtn.old{
+  border-color:color-mix(in srgb,var(--gold) 28%,var(--line2));
+  color:var(--goldh);
+}
+.r607MaintBtn:active{transform:scale(.98)}
+#r607RetentionNote{display:block;width:100%;margin-top:7px;color:var(--dim);font-size:9.5px;line-height:1.5}
+#r607FxSettings{
+  display:grid;gap:8px;margin:0 0 12px;padding:10px;
+  border:1px solid color-mix(in srgb,var(--gold) 16%,var(--line));
+  border-radius:14px;background:rgba(var(--sayfa2K),.28);
+}
+#r607FxSettings .genNot{margin:0!important}
+#r607FxSettings .r607ModeState{font-size:9.5px;color:var(--dim);line-height:1.45}
+
+/* ── Neon sekme efektleri kapatılınca tabanı sakinleştir ───── */
+body.r607-navfx-off .tabs .tab::before,
+body.r607-navfx-off .tabs .tab::after,
+body.r607-navfx-off .tabs .tabTekke::before,
+body.r607-navfx-off .tabs .tabTekke::after{opacity:0!important;animation:none!important;display:none!important}
+body.r607-navfx-off .tab.act[data-t="amb"],
+body.r607-navfx-off .tab.act[data-t="frq"],
+body.r607-navfx-off .tab.act[data-t="zkr"],
+body.r607-navfx-off .tab.act[data-t="rx"]{
+  color:var(--goldh)!important;border-color:var(--line2)!important;
+  box-shadow:inset 0 0 0 1px var(--line2)!important;
+}
+body.r607-navfx-off .tab.act[data-t="frq"] .tbIc,
+body.r607-navfx-off .tab.act[data-t="zkr"] .tbIc{animation:none!important;filter:none!important}
+body.r607-navfx-off .tab.act[data-t="zkr"] .tbIc g[fill="currentColor"] circle{fill:currentColor!important;filter:none!important}
+body.r607-navfx-off #tekkeTab.tabTekke:hover,
+body.r607-navfx-off #tekkeTab.tabTekke:focus-visible,
+body.r607-navfx-off #tekkeTab.tabTekke:active{
+  animation:none!important;color:var(--goldh)!important;border-color:var(--line2)!important;
+  background:color-mix(in srgb,var(--gold) 7%,transparent)!important;
+  box-shadow:0 0 14px color-mix(in srgb,var(--gold) 8%,transparent) inset!important;
+}
+body.r607-navfx-off #tekkeTab .tbRub{animation:none!important;filter:none!important}
+
+/* ── Açılış performans modu: gösteri korunur, GPU maliyeti düşer ── */
+@keyframes r607OpenLite{
+  0%{transform:scale(.82);opacity:0}
+  58%{transform:scale(1.035);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes r607RingLite{
+  0%{transform:scale(.65);opacity:.55}
+  100%{transform:scale(1.75);opacity:0}
+}
+body.r607-opening-lite #acilisPerde::before,
+body[data-perf="pil"] #acilisPerde::before{display:none!important}
+body.r607-opening-lite #acilisPerde::after,
+body[data-perf="pil"] #acilisPerde::after{
+  animation:none!important;filter:blur(4px)!important;opacity:.42!important;
+}
+body.r607-opening-lite #acilisPerde .apMuhur,
+body[data-perf="pil"] #acilisPerde .apMuhur{
+  animation:r607OpenLite .72s ease-out both!important;
+  text-shadow:0 0 16px rgba(84,255,209,.18),0 0 26px rgba(103,141,255,.12)!important;
+}
+body.r607-opening-lite #acilisPerde .apHalka,
+body[data-perf="pil"] #acilisPerde .apHalka{
+  animation:r607RingLite .8s ease-out .3s both!important;
+  box-shadow:0 0 16px rgba(102,255,214,.10)!important;
+}
+body.r607-opening-lite #acilisPerde .apHalka.h2,
+body[data-perf="pil"] #acilisPerde .apHalka.h2{display:none!important}
+body.r607-opening-lite #acilisPerde .apAd,
+body[data-perf="pil"] #acilisPerde .apAd{
+  animation:apAlt .42s ease .36s both!important;letter-spacing:.30em!important;
+  text-shadow:0 0 12px rgba(84,255,209,.12)!important;
+}
+body.r607-opening-lite #acilisPerde .apAlt,
+body.r607-opening-lite #acilisPerde .apDokun,
+body[data-perf="pil"] #acilisPerde .apAlt,
+body[data-perf="pil"] #acilisPerde .apDokun{animation:apAlt .34s ease .42s both!important}
+@media(prefers-reduced-motion:reduce){
+  body.r607-opening-lite #acilisPerde .apMuhur,
+  body.r607-opening-lite #acilisPerde .apHalka,
+  body.r607-opening-lite #acilisPerde .apAd,
+  body.r607-opening-lite #acilisPerde .apAlt,
+  body.r607-opening-lite #acilisPerde .apDokun{animation:none!important;opacity:1!important;transform:none!important}
+  body.r607-opening-lite #acilisPerde .apHalka{display:none!important}
+}
+@media(max-width:390px){
+  .r607MaintBtn{flex-basis:120px;min-height:44px}
+}
+</style>
+<script id="r607-settings-and-maintenance-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R607_SETTINGS__)return;window.__SUKUN_R607_SETTINGS__=1;
+const ALERT_KEY='sukun.alert.center.v1',DAY=86400000;
+const NAV_KEY='sukun.ui.navFx.enabled',OPEN_LITE_KEY='sukun.opening.performance';
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,String(v))}catch(e){}};
+const jsonGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const jsonSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const startDay=(t=Date.now())=>{const d=new Date(t);d.setHours(0,0,0,0);return +d};
+const oldFloor=()=>startDay(Date.now()-DAY); /* bugün + dün korunur */
+let navFx=!/^(?:0|false|off)$/i.test(String(lsGet(NAV_KEY,'1')));
+let openingLite=/^(?:1|true|on)$/i.test(String(lsGet(OPEN_LITE_KEY,'0')));
+
+function rawAlerts(){const a=jsonGet(ALERT_KEY,[]);return Array.isArray(a)?a.filter(x=>x&&x.id):[]}
+function rerenderAlerts(){try{window.SukunAlertCenter?.rerender?.()}catch(e){}setTimeout(mountNotifyTools,30)}
+function dismissMany(ids){
+  ids=[...new Set((ids||[]).filter(Boolean))];if(!ids.length)return 0;
+  const api=window.SukunAlertCenter;
+  if(api&&typeof api.dismiss==='function')ids.forEach(id=>{try{api.dismiss(id)}catch(e){}});
+  else jsonSet(ALERT_KEY,rawAlerts().filter(x=>!ids.includes(x.id)).slice(0,30));
+  rerenderAlerts();return ids.length;
+}
+function clearAll(){return dismissMany(rawAlerts().map(x=>x.id))}
+function clearOld(){const floor=oldFloor();return dismissMany(rawAlerts().filter(x=>(+x.at||0)<floor).map(x=>x.id))}
+function say(msg){try{if(typeof toast==='function')toast(msg)}catch(e){}}
+function makeMaint(id,label,cls){
+  let b=document.getElementById(id);if(b)return b;b=document.createElement('button');b.type='button';b.id=id;b.className='r607MaintBtn '+(cls||'');b.textContent=label;return b;
+}
+function mountNotifyTools(){
+  const tools=document.querySelector('#tab-ntf .r554NotifyTools');
+  if(tools){
+    let row=document.getElementById('r607CenterMaint');if(!row){row=document.createElement('div');row.id='r607CenterMaint';row.className='r607NotifyMaint';tools.insertAdjacentElement('afterend',row)}
+    if(!document.getElementById('r607ClearOld'))row.appendChild(makeMaint('r607ClearOld','🧹 Yalnız eskileri temizle','old'));
+    if(!document.getElementById('r607ClearAll'))row.appendChild(makeMaint('r607ClearAll','🗑 Tümünü sil','danger'));
+    if(!document.getElementById('r607RetentionNote')){const n=document.createElement('small');n.id='r607RetentionNote';n.textContent='Otomatik saklama: bugün ve dün korunur; daha eski bildirimler gün değişince silinir.';row.appendChild(n)}
+  }
+  const drawer=document.getElementById('r554AlertDrawer');
+  if(drawer){
+    let row=document.getElementById('r607DrawerMaint');if(!row){row=document.createElement('div');row.id='r607DrawerMaint';row.className='r607NotifyMaint';const list=document.getElementById('r554DrawerList');drawer.insertBefore(row,list||null)}
+    if(!document.getElementById('r607DrawerClearOld'))row.appendChild(makeMaint('r607DrawerClearOld','🧹 Eskileri','old'));
+    if(!document.getElementById('r607DrawerClearAll'))row.appendChild(makeMaint('r607DrawerClearAll','🗑 Tümünü sil','danger'));
+  }
+}
+
+function applyFx(){
+  document.body.classList.toggle('r607-navfx-off',!navFx);
+  document.body.classList.toggle('r607-opening-lite',openingLite);
+  updateSettings();
+  return {navFx,openingPerformance:openingLite};
+}
+function ensureSettings(){
+  const general=document.querySelector('#temaSheet .genAyar')||document.querySelector('.genAyar');if(!general)return null;
+  let p=document.getElementById('r607FxSettings');
+  if(!p){
+    p=document.createElement('section');p.id='r607FxSettings';p.setAttribute('aria-label','Görsel efekt performansı');
+    p.innerHTML='<div class="opt"><span>✨ Neon sekme efektleri<small>Ambiyans, Frekanslar, Zikir, Düzen ve Tekke seçildiğinde özel ışık/animasyon efektlerini kullanır.</small></span><button class="sw" id="r607NavFxTgl" type="button" role="switch" aria-label="Neon sekme efektleri"></button></div>'+ 
+      '<div class="opt"><span>⚡ Açılış performans modu<small>Yeşil-mor-mavi açılış atmosferini korur; ikinci halka, ağır blur ve sürekli parçacık katmanını azaltır.</small></span><button class="sw" id="r607OpeningLiteTgl" type="button" role="switch" aria-label="Açılış performans modu"></button></div>'+ 
+      '<div class="r607ModeState" id="r607FxState"></div>'+ 
+      '<div class="genNot">Pil performans profili açıksa açılış otomatik olarak hafif çizilir. Neon sekme ayarı bundan bağımsızdır.</div>';
+    const sfx=document.getElementById('r604MicroSfxPanel'),glass=document.getElementById('r601MiniGlassPanel');
+    if(sfx?.parentNode===general)sfx.insertAdjacentElement('afterend',p);else if(glass?.parentNode===general)glass.insertAdjacentElement('afterend',p);else general.appendChild(p);
+  }
+  if(p.dataset.bound!=='1'){
+    p.dataset.bound='1';
+    p.querySelector('#r607NavFxTgl')?.addEventListener('click',()=>{navFx=!navFx;lsSet(NAV_KEY,navFx?'1':'0');applyFx();try{window.SukunMicroSFX?.play?.('mode')}catch(e){}});
+    p.querySelector('#r607OpeningLiteTgl')?.addEventListener('click',()=>{openingLite=!openingLite;lsSet(OPEN_LITE_KEY,openingLite?'1':'0');applyFx();try{window.SukunMicroSFX?.play?.('mode')}catch(e){}});
+  }
+  updateSettings();return p;
+}
+function updateSettings(){
+  const p=document.getElementById('r607FxSettings');if(!p)return;
+  const a=p.querySelector('#r607NavFxTgl'),b=p.querySelector('#r607OpeningLiteTgl');
+  if(a){a.classList.toggle('on',navFx);a.setAttribute('aria-checked',navFx?'true':'false')}
+  if(b){b.classList.toggle('on',openingLite);b.setAttribute('aria-checked',openingLite?'true':'false')}
+  const s=p.querySelector('#r607FxState');if(s)s.textContent='Sekme efektleri: '+(navFx?'Açık':'Kapalı')+' · Açılış: '+(openingLite?'Performans':'Tam efekt');
+}
+
+document.addEventListener('click',e=>{
+  const id=e.target.closest?.('button')?.id;
+  if(id==='r607ClearOld'||id==='r607DrawerClearOld'){const n=clearOld();say(n?`${n} eski bildirim temizlendi ✦`:'Bugün/dün dışında eski bildirim yok');return}
+  if(id==='r607ClearAll'||id==='r607DrawerClearAll'){const n=clearAll();say(n?`${n} bildirim silindi ✦`:'Silinecek bildirim yok');return}
+  if(e.target.closest?.('#temaBtn'))setTimeout(()=>{ensureSettings();updateSettings()},45);
+},{capture:true,passive:true});
+['sukun:alert','sukun:alertaction'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(mountNotifyTools,50),{passive:true}));
+window.addEventListener('pageshow',()=>setTimeout(()=>{mountNotifyTools();ensureSettings();applyFx()},100),{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){mountNotifyTools();applyFx()}});
+function boot(){mountNotifyTools();ensureSettings();applyFx()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.SukunVisualEffects={version:'r607',get:()=>({navFx,openingPerformance:openingLite}),setNavFx:v=>{navFx=!!v;lsSet(NAV_KEY,navFx?'1':'0');return applyFx()},setOpeningPerformance:v=>{openingLite=!!v;lsSet(OPEN_LITE_KEY,openingLite?'1':'0');return applyFx()}};
+window.SukunAlertRetentionR607={version:'r607',clearOld,clearAll,floor:oldFloor};
+})();
+</script>
 
 </body>
 </html>
