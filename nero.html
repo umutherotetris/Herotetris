@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r609 — bildirim bakım araçları + efekt ayarları + açılış performans modu
+     SÜKÛN r610 — bildirim bakım araçları + efekt ayarları + açılış performans modu
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r609">
+<meta name="sukun-build" content="r610">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r609">
+<link rel="manifest" href="./manifest.webmanifest?v=r610">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.92 — build 2026-08-31-r609</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.93 — build 2026-08-31-r610</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22588,7 +22588,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r609',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r610',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34390,7 +34390,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r609',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r610',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r604-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -53510,7 +53510,7 @@ body[data-perf="pil"].r601-mini-glass.r431-dock-visible:not(.r433-dock-hidden)
 <script id="r601-mini-flow-glass-runtime">
 (()=>{
 'use strict';
-const VERSION='r609';
+const VERSION='r610';
 if(window.SukunMiniFlowGlass?.version===VERSION)return;
 const ENABLE_KEY='sukun.dock.miniGlass.enabled';
 const TRANSPARENCY_KEY='sukun.dock.miniGlass.transparency';
@@ -54543,6 +54543,368 @@ window.SukunJourneyLockGuard={
   compact:compactZikirCard,
   purgeStopTraces
 };
+})();
+</script>
+
+<style id="r610-premium-motion-authority">
+/* ═══════════════════════════════════════════════════════════════
+   r610 — Premium navigasyon / marka hareket otoritesi
+   Neon efekt ayarı kapalıysa hiçbir dekoratif hareket zorlanmaz.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ---------- Ortak ---------- */
+.tabs .tbIc{
+  transform-box:fill-box;
+  transform-origin:center;
+  overflow:visible;
+}
+@keyframes r610SoftLift{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-1px) scale(1.035)}
+}
+@keyframes r610GemTwinkle{
+  0%,100%{filter:drop-shadow(0 0 2px currentColor);transform:scale(.94)}
+  45%{filter:drop-shadow(0 0 7px currentColor) drop-shadow(0 0 11px currentColor);transform:scale(1.08)}
+}
+@keyframes r610Pearl{
+  0%,100%{filter:drop-shadow(0 0 3px rgba(255,245,196,.45));transform:scale(.96)}
+  48%{filter:drop-shadow(0 0 7px rgba(255,252,226,.90)) drop-shadow(0 0 12px rgba(122,255,210,.32));transform:scale(1.12)}
+}
+@keyframes r610FreqWave{
+  0%,100%{transform:translateY(0) scaleY(.92);stroke:#b47cff;stroke-dashoffset:0;filter:drop-shadow(0 0 3px rgba(184,124,255,.32))}
+  32%{transform:translateY(-.9px) scaleY(1.18);stroke:#d18cff;stroke-dashoffset:-5;filter:drop-shadow(0 0 6px rgba(196,116,255,.48))}
+  66%{transform:translateY(.7px) scaleY(1.08);stroke:#66f1c5;stroke-dashoffset:-10;filter:drop-shadow(0 0 6px rgba(83,238,190,.40))}
+}
+@keyframes r610Orbit{
+  to{transform:rotate(360deg)}
+}
+@keyframes r610CorePulse{
+  0%,100%{transform:scale(.92);filter:drop-shadow(0 0 3px rgba(112,197,255,.28))}
+  50%{transform:scale(1.13);filter:drop-shadow(0 0 8px rgba(112,197,255,.55)) drop-shadow(0 0 12px rgba(196,105,255,.20))}
+}
+@keyframes r610TekkeIdle{
+  0%,100%{
+    border-color:color-mix(in srgb,#5dc4ff 14%,var(--line2));
+    box-shadow:inset 0 0 14px rgba(66,129,255,.04),0 0 0 rgba(0,0,0,0);
+    filter:hue-rotate(0deg)
+  }
+  20%{border-color:color-mix(in srgb,#54e2c0 18%,var(--line2));box-shadow:inset 0 0 17px rgba(84,226,192,.06),0 0 15px rgba(84,226,192,.06)}
+  40%{border-color:color-mix(in srgb,#ffd46e 15%,var(--line2));box-shadow:inset 0 0 17px rgba(255,212,110,.05),0 0 16px rgba(255,212,110,.05)}
+  60%{border-color:color-mix(in srgb,#ff8d67 14%,var(--line2));box-shadow:inset 0 0 17px rgba(255,141,103,.05),0 0 16px rgba(255,141,103,.05)}
+  80%{border-color:color-mix(in srgb,#c684ff 18%,var(--line2));box-shadow:inset 0 0 17px rgba(198,132,255,.06),0 0 16px rgba(198,132,255,.06)}
+}
+@keyframes r610BrandSweep{
+  0%,14%{background-position:0% 50%}
+  48%{background-position:100% 50%}
+  84%,100%{background-position:200% 50%}
+}
+@keyframes r610SealAura{
+  0%,100%{
+    color:#e7fff8;
+    filter:drop-shadow(0 0 6px rgba(79,238,190,.24)) drop-shadow(0 0 14px rgba(103,150,255,.10))
+  }
+  34%{
+    color:#effff7;
+    filter:drop-shadow(0 0 10px rgba(79,238,190,.36)) drop-shadow(0 0 17px rgba(98,145,255,.20))
+  }
+  67%{
+    color:#f6ebff;
+    filter:drop-shadow(0 0 8px rgba(190,114,255,.28)) drop-shadow(0 0 17px rgba(255,207,105,.13))
+  }
+}
+
+/* ---------- Ambiyans: üç ayrı renkli küre ---------- */
+body:not(.r607-navfx-off) .tab[data-t="amb"] .tbIc g[fill="currentColor"] circle:nth-child(1){
+  fill:#65f0c3!important;color:#65f0c3;transform-box:fill-box;transform-origin:center;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"] .tbIc g[fill="currentColor"] circle:nth-child(2){
+  fill:#a982ff!important;color:#a982ff;transform-box:fill-box;transform-origin:center;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"] .tbIc g[fill="currentColor"] circle:nth-child(3){
+  fill:#73c9ff!important;color:#73c9ff;transform-box:fill-box;transform-origin:center;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"]:is(:hover,.act) .tbIc g[fill="currentColor"] circle:nth-child(1){
+  animation:r610GemTwinkle 2.3s ease-in-out infinite;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"]:is(:hover,.act) .tbIc g[fill="currentColor"] circle:nth-child(2){
+  animation:r610GemTwinkle 2.55s .28s ease-in-out infinite;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"]:is(:hover,.act) .tbIc g[fill="currentColor"] circle:nth-child(3){
+  animation:r610GemTwinkle 2.8s .52s ease-in-out infinite;
+}
+body:not(.r607-navfx-off) .tab[data-t="amb"] .tbIc g[stroke="currentColor"]{
+  stroke:color-mix(in srgb,#8cded0 54%,var(--mut))!important;
+}
+
+/* ---------- Frekans: mor / yeşil titreşen dalga ---------- */
+body:not(.r607-navfx-off) .tab[data-t="frq"] .tbIc path{
+  transform-box:fill-box;
+  transform-origin:center;
+  stroke:#b47cff!important;
+  stroke-dasharray:28 4;
+}
+body:not(.r607-navfx-off) .tab[data-t="frq"]:is(:hover,.act) .tbIc path{
+  animation:r610FreqWave 1.65s cubic-bezier(.45,.05,.55,.95) infinite!important;
+}
+body:not(.r607-navfx-off) .tab[data-t="frq"]:is(:hover,.act) .tbIc{
+  animation:r610SoftLift 2.4s ease-in-out infinite;
+}
+
+/* ---------- Zikir: zümrüt taneler + inci baş tane ---------- */
+body:not(.r607-navfx-off) .tab[data-t="zkr"] .tbIc g[fill="currentColor"] circle{
+  fill:#3de6ad!important;
+  color:#3de6ad;
+  transform-box:fill-box;
+  transform-origin:center;
+  filter:drop-shadow(0 0 3px rgba(61,230,173,.30));
+}
+body:not(.r607-navfx-off) .tab[data-t="zkr"] .tbIc g[fill="currentColor"] circle:first-child{
+  fill:#fff5cf!important;
+  color:#fff5cf;
+  filter:drop-shadow(0 0 4px rgba(255,245,207,.60)) drop-shadow(0 0 8px rgba(104,244,197,.20));
+}
+body:not(.r607-navfx-off) .tab[data-t="zkr"]:is(:hover,.act) .tbIc g[fill="currentColor"] circle:not(:first-child){
+  animation:r610GemTwinkle 2.65s ease-in-out infinite;
+}
+body:not(.r607-navfx-off) .tab[data-t="zkr"]:is(:hover,.act) .tbIc g[fill="currentColor"] circle:first-child{
+  animation:r610Pearl 2.15s ease-in-out infinite;
+}
+body:not(.r607-navfx-off) .tab[data-t="zkr"] .tbIc > circle{
+  stroke:#48e2b1!important;
+  opacity:.42!important;
+}
+
+/* ---------- Düzen: dönen kesik halka + mavi/mor merkez ---------- */
+body:not(.r607-navfx-off) .tab[data-t="rx"] .tbIc > circle:first-child{
+  stroke:#9d83ff!important;
+  opacity:.56!important;
+  transform-box:fill-box;
+  transform-origin:center;
+}
+body:not(.r607-navfx-off) .tab[data-t="rx"] .tbIc > circle:nth-child(2){
+  stroke:#5dddc0!important;
+  opacity:.72!important;
+}
+body:not(.r607-navfx-off) .tab[data-t="rx"] .tbIc > circle:last-child{
+  fill:#73c7ff!important;
+  color:#73c7ff;
+  transform-box:fill-box;
+  transform-origin:center;
+}
+body:not(.r607-navfx-off) .tab[data-t="rx"]:is(:hover,.act) .tbIc > circle:first-child{
+  animation:r610Orbit 5.2s linear infinite!important;
+}
+body:not(.r607-navfx-off) .tab[data-t="rx"]:is(:hover,.act) .tbIc > circle:last-child{
+  animation:r610CorePulse 2.25s ease-in-out infinite!important;
+}
+
+/* ---------- Bildirim sayısı: animasyonu boğmasın ---------- */
+#r554NavCount{
+  right:-5px!important;
+  top:-5px!important;
+  min-width:12px!important;
+  width:auto!important;
+  height:12px!important;
+  padding:0 2px!important;
+  border-width:1px!important;
+  font-size:6.4px!important;
+  line-height:12px!important;
+  box-shadow:0 0 6px color-mix(in srgb,var(--r554-warning) 24%,transparent)!important;
+}
+@media(max-width:390px){
+  #r554NavCount{
+    right:-4px!important;top:-4px!important;
+    min-width:11px!important;height:11px!important;
+    padding:0 2px!important;font-size:6px!important;line-height:11px!important;
+  }
+}
+
+/* ---------- Tekke: sürekli değil, yavaş ve sakin renk dolaşımı ---------- */
+body:not(.r607-navfx-off) #tekkeTab.tabTekke{
+  animation:r610TekkeIdle 12s ease-in-out infinite!important;
+}
+body:not(.r607-navfx-off) #tekkeTab.tabTekke .tbRub{
+  color:#d9f4ff!important;
+  text-shadow:0 0 8px rgba(107,181,255,.28);
+}
+body:not(.r607-navfx-off) #tekkeTab.tabTekke:is(:hover,:focus-visible,:active){
+  animation:r610TekkeIdle 5.5s ease-in-out infinite!important;
+  transform:translateY(-1px) scale(1.015);
+}
+
+/* ---------- Marka: yavaş premium aurora ---------- */
+body:not(.r607-navfx-off) header .shimmer-logo{
+  animation:r610SealAura 8s ease-in-out infinite!important;
+  color:#e7fff8!important;
+}
+body:not(.r607-navfx-off) header .shimmer-text{
+  background-image:linear-gradient(
+    100deg,
+    #d7fff3 0%,
+    #62e8bb 19%,
+    #84c7ff 38%,
+    #c38cff 57%,
+    #f2cb72 75%,
+    #d7fff3 100%
+  )!important;
+  background-size:240% 100%!important;
+  animation:r610BrandSweep 9.5s cubic-bezier(.45,0,.25,1) infinite!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;color:transparent!important;
+}
+body:not(.r607-navfx-off) header>.sub{
+  background:linear-gradient(90deg,#7fe7c4,#9fcfff 45%,#d3a7ff 72%,#dfc47a);
+  background-size:190% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:r610BrandSweep 13s linear infinite;
+  opacity:.88;
+}
+
+/* ---------- Açılış: tek koreografi, üst üste binen eski ikinci halka yok ---------- */
+@keyframes r610OpenStage{
+  0%{opacity:0;transform:translateY(10px) scale(.955);filter:blur(10px)}
+  58%{opacity:1;transform:translateY(-2px) scale(1.015);filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes r610OpenSeal{
+  0%{opacity:0;transform:scale(.32) rotate(-10deg);filter:blur(8px)}
+  64%{opacity:1;transform:scale(1.055) rotate(1deg);filter:blur(0)}
+  100%{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}
+}
+@keyframes r610OpenRing{
+  0%{transform:translate(-50%,-50%) scale(.52);opacity:.72}
+  100%{transform:translate(-50%,-50%) scale(2.18);opacity:0}
+}
+@keyframes r610OpenTitle{
+  from{opacity:0;transform:translateY(7px);letter-spacing:.14em}
+  to{opacity:1;transform:translateY(0);letter-spacing:.34em}
+}
+#acilisPerde::before{
+  animation:none!important;
+  background:
+    radial-gradient(520px 230px at 50% 26%,rgba(75,244,187,.12),transparent 72%),
+    radial-gradient(circle at 24% 31%,rgba(109,255,218,.12) 0 1.6px,transparent 2.8px),
+    radial-gradient(circle at 78% 25%,rgba(151,204,255,.10) 0 1.5px,transparent 2.7px),
+    radial-gradient(circle at 70% 72%,rgba(202,137,255,.10) 0 1.5px,transparent 2.7px)!important;
+  opacity:.92!important;
+}
+#acilisPerde::after{
+  animation:none!important;
+  background:radial-gradient(460px 260px at 50% 50%,rgba(88,144,255,.075),rgba(176,94,255,.045) 42%,transparent 72%)!important;
+  filter:blur(11px)!important;
+  opacity:1!important;
+}
+#acilisPerde .apIc{
+  animation:r610OpenStage .9s cubic-bezier(.18,.9,.22,1) both!important;
+}
+#acilisPerde .apIc::after{
+  display:none!important;
+  animation:none!important;
+}
+#acilisPerde .apMuhur{
+  animation:r610OpenSeal .82s cubic-bezier(.18,1,.22,1) .08s both!important;
+  color:#effff9!important;
+  text-shadow:0 0 16px rgba(91,239,191,.27),0 0 30px rgba(100,151,255,.16),0 0 38px rgba(192,105,255,.12)!important;
+}
+#acilisPerde .apHalka{
+  display:block!important;
+  animation:r610OpenRing 1.08s cubic-bezier(.18,.82,.26,1) .38s both!important;
+  border-color:rgba(109,255,211,.38)!important;
+}
+#acilisPerde .apHalka.h2{
+  display:none!important;
+  animation:none!important;
+}
+#acilisPerde .apAd{
+  animation:r610OpenTitle .56s cubic-bezier(.18,1,.22,1) .48s both!important;
+}
+#acilisPerde .apAlt{
+  animation:r610OpenTitle .48s ease .68s both!important;
+  letter-spacing:.22em!important;
+}
+#acilisPerde .apDokun{
+  animation:none!important;
+  opacity:.68!important;
+}
+#acilisPerde.bitti .apIc{
+  transform:translateY(-12px) scale(.982)!important;
+  opacity:0!important;
+  filter:blur(7px)!important;
+  transition:transform .58s cubic-bezier(.22,.88,.24,1),opacity .58s ease,filter .58s ease!important;
+}
+
+/* Açılış sırasında alttaki günlük söz / uygulama hiç paint edilmesin. */
+body.r608-opening-active>.wrap,
+body.r608-opening-active>#dailyCard,
+body.r608-opening-active>#onboardCard,
+body.r610-opening-active>.wrap,
+body.r610-opening-active>#dailyCard,
+body.r610-opening-active>#onboardCard{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Kullanıcının efektleri kapatma tercihi r610'u da sustursun. */
+body.r607-navfx-off header .shimmer-logo,
+body.r607-navfx-off header .shimmer-text,
+body.r607-navfx-off header>.sub,
+body.r607-navfx-off #tekkeTab.tabTekke,
+body.r607-navfx-off .tabs .tbIc,
+body.r607-navfx-off .tabs .tbIc *,
+body.r607-navfx-off .tabs .tab::before,
+body.r607-navfx-off .tabs .tab::after,
+body.r607-navfx-off .tabs .tabTekke::before,
+body.r607-navfx-off .tabs .tabTekke::after{
+  animation:none!important;
+  filter:none!important;
+}
+body.r607-navfx-off header .shimmer-text{
+  background-image:none!important;
+  -webkit-text-fill-color:var(--goldh)!important;
+  color:var(--goldh)!important;
+}
+body.r607-navfx-off header>.sub{
+  background:none!important;
+  -webkit-text-fill-color:var(--mut)!important;
+  color:var(--mut)!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  header .shimmer-logo,header .shimmer-text,header>.sub,
+  #tekkeTab.tabTekke,.tabs .tbIc,.tabs .tbIc *,
+  #acilisPerde .apIc,#acilisPerde .apMuhur,#acilisPerde .apHalka,
+  #acilisPerde .apAd,#acilisPerde .apAlt,#acilisPerde .apDokun{
+    animation:none!important;
+  }
+  #acilisPerde .apHalka{display:none!important}
+}
+</style>
+
+<script id="r610-opening-single-owner">
+(()=>{
+'use strict';
+if(window.__SUKUN_R610_OPENING__)return;
+window.__SUKUN_R610_OPENING__=1;
+
+const body=document.body;
+function sync(){
+  const p=document.getElementById('acilisPerde');
+  const active=!!(p && !p.hidden && !p.classList.contains('bitti'));
+  body?.classList.toggle('r610-opening-active',active);
+  if(!active && !p) body?.classList.remove('r608-opening-active');
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',sync,{once:true});
+}else sync();
+
+const obs=new MutationObserver(sync);
+try{obs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden']})}catch(e){}
+window.addEventListener('pageshow',sync,{passive:true});
+setTimeout(sync,0);
+setTimeout(sync,900);
+setTimeout(sync,3200);
 })();
 </script>
 

@@ -1,8 +1,8 @@
-/* SÜKÛN r609 — mini akış barı tema camı */
+/* SÜKÛN r610 — mini akış barı tema camı */
 'use strict';
 
-const SURUM = 'r609';
-const CACHE = 'sukun-r609-20260831a';
+const SURUM = 'r610';
+const CACHE = 'sukun-r610-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r609__.json';
+const BUILD_MARKER='./__sukun_build_r610__.json';
 
 const NOTLAR = [
   'r601 Mini akış barı ana menünün tema camıyla eşleşir; Ayarlar içinden açılıp kapatılır ve yüzey şeffaflığı canlı ayarlanır. Metin/düğme opacitysi değişmez; Midi ve Max etkilenmez.',
