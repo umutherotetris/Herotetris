@@ -1,5 +1,27 @@
 [
   {
+    "v": "r609",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "99 Esmâ ve 28 Berhetiyye seyirlerinde ekran kilidi/arka plan zinciri lock-safe hale getirildi.",
+      "Yolculuk kayıtları native media ile çalar; ekran gizliyken timer tabanlı ara bekleme uygulanmaz.",
+      "Eski global userPaused bayrağının yeni seyri yanlışlıkla durdurması engellendi.",
+      "Normal Zikir kartındaki r600 ölçülmüş min-height kaldırıldı; büyük boşluk giderildi.",
+      "Durdurma izleri hata sayımından çıkarıldı ve eski sentetik kayıtlar temizlenir.",
+      "r530 diagnostic testinin sonraki meşru final-authority stillerini hata sayması düzeltildi."
+    ]
+  },
+  {
+    "v": "r608",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Açılış animasyonu daha premium bir sahneyle yenilendi.",
+      "Açılışta arkadaki hikmetli söz veya başka içerik görünmez; perde aktifken uygulama gövdesi tamamen gizlenir.",
+      "Yeşil-mor-mavi neon yansımalar daha dengeli, daha derin ve daha rafine hâle getirildi.",
+      "Kapanış geçişi kartın hafifçe yukarı süzülüp blur ile çözülmesi şeklinde yumuşatıldı."
+    ]
+  },
+  {
     "v": "r607",
     "t": "31 Ağustos 2026",
     "b": [
