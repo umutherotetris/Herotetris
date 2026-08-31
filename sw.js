@@ -1,8 +1,8 @@
 /* SÜKÛN r592 — tek DOM akış barı */
 'use strict';
 
-const SURUM = 'r597';
-const CACHE = 'sukun-r597-20260830a';
+const SURUM = 'r598';
+const CACHE = 'sukun-r598-20260830a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r592__.json';
 
 const NOTLAR = [
+  'r598 ÇÖZÜLDÜ: grup kartları gezinme kümesinin içine düşüp 3 piksele sıkışıyordu. Ölçüye dayalı onarım eklendi, kapsayıcı doğru ebeveyne taşınıyor.',
   'r597 Tefekkür düğmesi Mini kipte alt kenarda kırpılıyordu; kip satırının üstüne alındı.',
   'r596 Akış barında iki ayrı durdur/başlat çifti vardı; eski dock çifti gizlendi. Tefekkürde çıkış düğmesi öne alındı.',
   'r595 Max kipinde de alt sıra kırpılıyordu, sınır yükseltildi. Normal kipteki grup kartı yaması gerileme ürettiği için geri alındı.',
