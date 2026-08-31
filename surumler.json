@@ -1,5 +1,15 @@
 [
   {
+    "v": "r603",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Tekke sürekli noise katmanları varsayılan kapalı.",
+      "Mihrap > Hâl Ayarı bölümüne Noise dokusu anahtarı eklendi.",
+      "Noise kapalıyken dört unsurun white/pink/brown tabanları başlamaz; Ney melodisi çalışır ancak pembe nefes gürültüsü sessiz kalır.",
+      "Presetler noise anahtarını otomatik açmaz."
+    ]
+  },
+  {
     "v": "r602",
     "t": "31 Ağustos 2026",
     "b": [

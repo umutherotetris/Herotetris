@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r602 — gereksiz dock perdesi kaldırıldı
+     SÜKÛN r603 — Tekke noise varsayılan kapalı
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r602">
+<meta name="sukun-build" content="r603">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r602">
+<link rel="manifest" href="./manifest.webmanifest?v=r603">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.87 — build 2026-08-31-r602</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.88 — build 2026-08-31-r603</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22586,7 +22586,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r602',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r603',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -27001,6 +27001,7 @@ summary{display:flex;align-items:center;gap:8px}
     </div>
     <div class="row"><label>Ana ses</label><input type="range" id="vMaster" min="0" max="1" step="0.01" value="0.75" aria-label="Tekke ana ses düzeyi"><span class="valB"></span></div>
     <div class="row"><label>Katre sesi</label><input type="range" id="katVol" min="0" max="1" step="0.01" value="0.7" aria-label="Katre sesi düzeyi"><span class="valB" id="katVolV">%70</span></div>
+    <div class="opt"><span>🌫 Noise dokusu <small>su · toprak · hava · ateş ve ney nefes dokusu — varsayılan kapalı</small></span><button class="sw" id="tkNoiseTgl" aria-label="Tekke noise dokusu" data-tip="Tekke içindeki sürekli beyaz, pembe ve kahverengi gürültü katmanlarını açar. Varsayılan kapalıdır; yalnız özellikle istediğinde etkinleştir."></button></div>
     <div class="opt"><span><span class="ico" data-ico="vibrate"></span> Haptik vuruş — damlada hafif titreşim</span><button class="sw on" id="hapTgl" aria-label="Haptik vuruş"></button></div>
   </div>
 
@@ -27091,7 +27092,7 @@ summary{display:flex;align-items:center;gap:8px}
 
   <div class="pSec" data-tlvl="uzman">
     <div class="pT">MAKAM &amp; ANÂSIR-I ERBAA <small>Rast → Segâh</small></div>
-    <div class="pD">Ortamın dokusu: dört unsur ve ney. Hepsini kısarsan yalnız katre ve nefes kalır.</div>
+    <div class="pD">Ortamın dokusu: dört unsur ve ney. <b>Noise dokusu kapalıyken dört unsurun sürekli gürültü tabanı çalmaz;</b> ney melodisi ise çalışmaya devam eder.</div>
     <div class="row"><label>🎼 Ney</label><input type="range" id="vNey" min="0" max="1" step="0.01" value="0.35" aria-label="Ney sesi düzeyi"><span class="valB"></span></div>
     <div class="row"><label>💧 Su</label><input type="range" id="vSu" min="0" max="1" step="0.01" value="0.3" aria-label="Su sesi düzeyi"><span class="valB"></span></div>
     <div class="row"><label>🪨 Toprak</label><input type="range" id="vToprak" min="0" max="1" step="0.01" value="0.2" aria-label="Toprak sesi düzeyi"><span class="valB"></span></div>
@@ -27205,6 +27206,9 @@ function setFill(i){
   i.style.setProperty('--val',(span?((v-mn)/span*100):0)+'%');
 }
 
+/* r603 — sürekli Tekke noise tabanı kullanıcı açıkça istemedikçe kapalı. */
+let TKNOISE=S.get('tekke.noise',false)===true;
+
 /* ════════ 2) SES ÇEKİRDEĞİ — mağara ════════ */
 let ctx=null,master=null,wetIn=null;
 function ac(){
@@ -27307,6 +27311,7 @@ const ELEMS={
 };
 const CH={};   /* aktif element kanalları */
 function elemOn(id){
+  if(!TKNOISE)return;
   if(CH[id])return; ac();
   const def=ELEMS[id],E=makeEnv(),out=E.n(g(0));
   out.connect(master);
@@ -27315,9 +27320,15 @@ function elemOn(id){
   out.gain.setTargetAtTime(vol(id)*def.cal,ctx.currentTime,2.2);
   CH[id]={E,out};
 }
-function elemSet(id){ if(CH[id])CH[id].out.gain.setTargetAtTime(vol(id)*ELEMS[id].cal,ctx.currentTime,.3);
+function elemSet(id){
+  if(!TKNOISE){
+    if(CH[id]){CH[id].E.kill(.45,CH[id].out);delete CH[id];}
+    return;
+  }
+  if(CH[id])CH[id].out.gain.setTargetAtTime(vol(id)*ELEMS[id].cal,ctx.currentTime,.3);
   else if(vol(id)>0&&running)elemOn(id);
-  if(CH[id]&&vol(id)===0){CH[id].E.kill(1.2,CH[id].out);delete CH[id];}}
+  if(CH[id]&&vol(id)===0){CH[id].E.kill(1.2,CH[id].out);delete CH[id];}
+}
 const vol=id=>+({su:$('#vSu'),toprak:$('#vToprak'),hava:$('#vHava'),ates:$('#vAtes')}[id].value);
 
 /* ════════ 4) NEY — Rast kapısı, Segâh gövdesi ════════ */
@@ -27332,7 +27343,7 @@ function neyOn(){
   const wet=E.n(g(.5));out.connect(wet);wet.connect(wetIn);
   const body=E.play(osc(300)),edge=E.play(osc(300,'sawtooth')),eg=E.n(g(.06)),
         bg=E.n(g(.5)),mix=E.n(g(1)),bp=E.n(flt('bandpass',900,1.1)),
-        breath=E.play(src('pink')),bf=E.n(flt('bandpass',1400,2)),bgn=E.n(g(.05));
+        breath=E.play(src('pink')),bf=E.n(flt('bandpass',1400,2)),bgn=E.n(g(TKNOISE?.05:0));
   body.connect(bg);edge.connect(eg);bg.connect(mix);eg.connect(mix);
   breath.connect(bf);bf.connect(bgn);bgn.connect(mix);
   mix.connect(bp);bp.connect(out);
@@ -27362,7 +27373,7 @@ function neyOn(){
   }
   out.gain.setTargetAtTime(+$('#vNey').value*.9,ctx.currentTime,2);
   E.later(phrase,1800);
-  NEY={E,out};
+  NEY={E,out,noiseGain:bgn};
 }
 
 /* ════════ 5) KATRE & UMMAN — mağara yankılı su damlası + haptik ════════ */
@@ -29087,6 +29098,18 @@ bindSw('hapTgl',on=>HAP.on=on);
 bindSw('katTgl',on=>katOn=on);
 bindSw('huTgl',on=>{HU.on=on;S.set('sukun.tkhu',on);if(running){on?huStart():huStop();}});
 bindSw('binTgl',on=>{BINwant=on;if(running)(on?binOn():binOff());});
+bindSw('tkNoiseTgl',on=>{
+  TKNOISE=!!on;
+  S.set('tekke.noise',TKNOISE);
+  if(ctx&&NEY?.noiseGain){
+    NEY.noiseGain.gain.setTargetAtTime(TKNOISE?.05:0,ctx.currentTime,.18);
+  }
+  if(TKNOISE&&running){
+    ['su','toprak','hava','ates'].forEach(id=>{if(vol(id)>0)elemOn(id)});
+  }else{
+    Object.keys(CH).forEach(k=>{CH[k].E.kill(.45,CH[k].out);delete CH[k]});
+  }
+});
 $('#patSel').addEventListener('change',e=>{BR.pat=e.target.value;if(!BR.manual)brReset();save();});
 $('#skipBtn').onclick=()=>{
   if(SEY.done)return;
@@ -29120,7 +29143,8 @@ function save(){
     bpm,um:ummanEvery,kv:+$('#katVol').value,mv:+$('#vMaster').value,
     ney:+$('#vNey').value,su:+$('#vSu').value,top:+$('#vToprak').value,
     hav:+$('#vHava').value,ate:+$('#vAtes').value,
-    pat:BR.pat,man:BR.manual,tel:TGL.tel,voi:TGL.voice,hap:HAP.on,kat:katOn,bin:BINwant
+    pat:BR.pat,man:BR.manual,tel:TGL.tel,voi:TGL.voice,hap:HAP.on,kat:katOn,bin:BINwant,
+    noi:TKNOISE
   });
 }
 function load(){
@@ -29141,6 +29165,9 @@ function load(){
   HAP.on=s.hap!==false;$('#hapTgl').classList.toggle('on',HAP.on);
   katOn=s.kat!==false;$('#katTgl').classList.toggle('on',katOn);
   BINwant=!!s.bin;$('#binTgl').classList.toggle('on',BINwant);
+  if(s.noi===true||s.noi===false)TKNOISE=!!s.noi;
+  else TKNOISE=S.get('tekke.noise',false)===true;
+  const nt=$('#tkNoiseTgl');if(nt)nt.classList.toggle('on',TKNOISE);
 }
 let wl=null;
 async function lockOn(){try{if('wakeLock' in navigator)wl=await navigator.wakeLock.request('screen')}catch(e){}}
@@ -29256,7 +29283,7 @@ $('#gBtn').onclick=()=>{
   bast=0;bastApplied=-1;telI=-1;telHold=0;
   brReset();
   for(let i=0;i<6;i++)ebExhaleDrop();        /* battal açılış */
-  ['su','toprak','hava','ates'].forEach(id=>{if(vol(id)>0)elemOn(id)});
+  if(TKNOISE)['su','toprak','hava','ates'].forEach(id=>{if(vol(id)>0)elemOn(id)});
   neyOn(); katStart(); huStart();
   if(BINwant)binOn();
   lockOn();
@@ -29270,7 +29297,9 @@ $('#gBtn').onclick=()=>{
 
 /* ════════ 16) BAŞLATMA ════════ */
 (function init(){
-  ebInit(); buildMuk(); load(); syncBridgeUI(); zkRender();
+  ebInit(); buildMuk(); load();
+  const nt=$('#tkNoiseTgl');if(nt)nt.classList.toggle('on',TKNOISE===true);
+  syncBridgeUI(); zkRender();
   $$('input[type=range]').forEach(setFill);
   if(window.CIZ)CIZ.ekle('tekke',loop,{el:'tk'}); else requestAnimationFrame(loop);
 })();
@@ -34357,10 +34386,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r602',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r603',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r602-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r603-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
