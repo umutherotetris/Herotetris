@@ -1,5 +1,16 @@
 [
   {
+    "v": "r615",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "99 Esmâ/28 Berhetiyye için kalıcı native yolculuk media elementi eklendi.",
+      "Kilit ekranında kayıt tekrarları aynı HTMLAudioElement üzerinden sürdürülür; AudioContext kesintisi native kaydı susturmaz.",
+      "Background native başarısızlığında TTS fallback ile kalıcı pause yerine sistem hold ve görünür dönüşte otomatik resume uygulanır.",
+      "Sayaç ilerlemesi başarılı her okumada korunur ve görünür dönüşte UI senkronlanır.",
+      "Okumalar/Seyirler/Araçlar alt navigasyonu sürüm bilgisinin hemen üstüne taşındı."
+    ]
+  },
+  {
     "v": "r614",
     "t": "31 Ağustos 2026",
     "b": [

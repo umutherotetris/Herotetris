@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r614 — Tefekkür üst sahne kompakt + esmâ hero + dock boşluk rafinesi
+     SÜKÛN r615 — Tefekkür üst sahne kompakt + esmâ hero + dock boşluk rafinesi
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r614">
+<meta name="sukun-build" content="r615">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r614">
+<link rel="manifest" href="./manifest.webmanifest?v=r615">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6429,7 +6429,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.97 — build 2026-08-31-r614</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.98 — build 2026-08-31-r615</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -16785,7 +16785,7 @@ function sesUnut(a,neden){
   try{a.pause()}catch(e){}
   /* Manuel durdurma, kaydı bekleyen dua/döngü Promise'ini de bitirsin. */
   try{if(typeof a._sukunFinish==='function'){a._sukunFinish(false,neden||'stopped');return;}}catch(e){}
-  try{if(a.src&&a.src.startsWith('blob:'))URL.revokeObjectURL(a.src)}catch(e){}
+  try{if(!a._sukunPersistentNative&&a.src&&a.src.startsWith('blob:'))URL.revokeObjectURL(a.src)}catch(e){}
   SES.ler.delete(a);
 }
 function sesDurdur(neden){ [...SES.ler].forEach(a=>sesUnut(a,neden||'stopped')); SES.ler.clear(); SES.ad=null; RECPLAYING=false; }
@@ -16920,7 +16920,18 @@ window.sukunInvalidateRecordingPool=function(key,reason='recording-invalidated')
   const H=window.__sukSesHavuz;if(!H||typeof H.forEach!=='function')return 0;
   const drop=[];H.forEach((entry,poolKey)=>{if(entry&&entry.recordingKey===key)drop.push([poolKey,entry])});
   drop.forEach(([poolKey,entry])=>sukunPoolDispose(poolKey,entry,reason));
-  return drop.length;
+  let extra=0;
+  try{
+    const J=window.__sukJourneyNative;
+    if(J&&J.recordingKey===key){
+      try{J.a?._sukunFinish?.(false,reason)}catch(e){}
+      try{J.a?.pause?.()}catch(e){}
+      try{if(J.url)URL.revokeObjectURL(J.url)}catch(e){}
+      try{if(J.a){J.a.removeAttribute('src');J.a.load?.()}}catch(e){}
+      J.url='';J.recordingKey='';J.signature='';extra=1;
+    }
+  }catch(e){}
+  return drop.length+extra;
 };
 window.sukunPhysicalVoiceSnapshot=function(){
   const items=[];
@@ -16969,6 +16980,91 @@ function kayitPanDondur(){
     if(a._pan){ try{ a._pan.pan.setValueAtTime(Math.sin(t*0.55)*0.85, t); }catch(e){} }
   });
 }
+async function sukunJourneyNativeRecording(blob,ad,opt,kalite){
+  opt=opt||{};
+  const ayrinti=!!opt.detail;
+  const sonuc=(ok,reason)=>ayrinti?{ok:!!ok,reason:reason||''}:!!ok;
+  const recordingKey=sukunRecordingKeyFrom(ad,opt)||String(ad||'journey');
+  const signature=String(blob?.size||0)+'|'+String(blob?.type||'');
+  try{
+    let J=window.__sukJourneyNative;
+    if(!J||!J.a){
+      const a=document.createElement('audio');
+      a.setAttribute('playsinline','');a.preload='auto';a.autoplay=true;
+      a._sukunPersistentNative=1;
+      a.style.cssText='position:fixed;left:-2px;bottom:-2px;width:1px;height:1px;opacity:.001;pointer-events:none;z-index:-1';
+      a.setAttribute('aria-hidden','true');
+      try{document.body.appendChild(a)}catch(e){}
+      J=window.__sukJourneyNative={a,url:'',recordingKey:'',signature:'',startedAt:0};
+    }
+    const a=J.a;
+    try{[...SES.ler].forEach(x=>{if(x!==a)sesUnut(x,'journey-native-superseded')})}catch(e){}
+    if(SES.ler.has(a)){
+      try{a._sukunFinish?.(false,'journey-native-superseded')}catch(e){}
+      try{a.pause()}catch(e){}
+      SES.ler.delete(a);
+    }
+
+    const sourceChanged=J.recordingKey!==recordingKey||J.signature!==signature||!J.url;
+    if(sourceChanged){
+      try{a.pause()}catch(e){}
+      const oldUrl=J.url;
+      const url=URL.createObjectURL(blob);
+      J.url=url;J.recordingKey=recordingKey;J.signature=signature;
+      a.src=url;
+      try{a.load()}catch(e){}
+      try{if(oldUrl&&oldUrl!==url)URL.revokeObjectURL(oldUrl)}catch(e){}
+    }else{
+      try{a.currentTime=0}catch(e){}
+    }
+
+    a._sukunAd=ad||'journey-native';
+    a._sukunRecordingKey=recordingKey;
+    a._sukunResumeKey='';
+    a._miniDurdu=0;
+    a.loop=false;a.muted=false;
+    const normGain=(kalite&&Number.isFinite(kalite.gain))?kalite.gain:1;
+    const adimVol=Math.max(.05,Math.min(1,Number(opt.volume??window.__SUKUN_STEP_VOL??1)||1));
+    const temelVol=Math.min(1,Math.max(0,((typeof ZVOL==='number'&&isFinite(ZVOL))?ZVOL:1)*(window.okumaSeviyesi?window.okumaSeviyesi():1)))*adimVol;
+    a.volume=Math.max(.02,Math.min(1,temelVol*normGain));
+    try{a.playbackRate=window.OKUMA_HIZ||1;a.preservesPitch=true}catch(e){}
+    try{if(kalite&&kalite.trimStart>.04&&isFinite(a.duration))a.currentTime=Math.min(kalite.trimStart,Math.max(0,a.duration-.2))}catch(e){}
+
+    RECPLAYING=true;SES.ad=ad||'journey-native';SES.ler.add(a);
+    try{window.SesCapa?.ensure?.(opt.title||'SÜKÛN — Zikir Seyri');window.SesCapa?.retitle?.(opt.title||'SÜKÛN — Zikir Seyri')}catch(e){}
+    try{window.sukunSourceSet?.('recording',opt.reason||'Kilit ekranı uyumlu kendi kayıt',opt.title||recordingKey)}catch(e){}
+
+    return await new Promise(resolve=>{
+      let finished=false,played=false,goStarted=false;
+      const done=(ok,reason)=>{
+        if(finished)return;finished=true;
+        if(ok===true)played=true;
+        a.onended=null;a.onerror=null;a._sukunFinish=null;
+        SES.ler.delete(a);RECPLAYING=SES.ler.size>0;if(SES.ad===(ad||'journey-native'))SES.ad=null;
+        resolve(sonuc(ok===true&&played,reason));
+      };
+      a._sukunFinish=done;
+      a.onended=()=>done(true,'ended');
+      a.onerror=()=>done(false,'error');
+      const go=()=>{
+        if(goStarted||finished)return;goStarted=true;
+        try{
+          const p=a.play();
+          Promise.resolve(p).then(()=>{played=true;J.startedAt=Date.now();try{sukunVoiceOverlapGuard(a)}catch(e){};}).catch(()=>done(false,'play-rejected'));
+        }catch(e){done(false,'exception')}
+      };
+      if(sourceChanged&&a.readyState<2){
+        const ready=()=>{a.removeEventListener('canplay',ready);go()};
+        a.addEventListener('canplay',ready,{once:true});
+        if(!document.hidden)setTimeout(go,220);
+      }else go();
+    });
+  }catch(e){
+    try{RECPLAYING=false;if(SES.ad===(ad||'journey-native'))SES.ad=null}catch(_){ }
+    return sonuc(false,'exception');
+  }
+}
+
 async function playRecording(blob,ad,opt){
   opt=opt||{};
   const ayrinti=!!opt.detail;
@@ -16979,7 +17075,12 @@ async function playRecording(blob,ad,opt){
      RMS/peak, güvenli normalizasyon, sessizlik sınırı ve adaptif crossfade sonucu
      bellekte tutulur. Analiz desteklenmiyorsa r228 davranışına geri düşer. */
   let kalite=null;
-  try{if(window.SukunRecordingQuality)kalite=await SukunRecordingQuality.analyse(blob)}catch(e){}
+  /* Kilitte sıradaki kaydı hazırlarken yeni AudioContext/decode işi açma.
+     Native yolculuk sesinin background devamlılığı Web Audio'dan bağımsızdır. */
+  if(!(arkaPlanNative&&document.hidden)){
+    try{if(window.SukunRecordingQuality)kalite=await SukunRecordingQuality.analyse(blob)}catch(e){}
+  }
+  if(arkaPlanNative)return sukunJourneyNativeRecording(blob,ad,opt,kalite);
   /* r579: konuşma/zikir kaynaklarında crossfade yerine mikro hand-off.
      Eski ses 60–90 ms içinde dry+wet birlikte kapanır; TAM kapandıktan sonra
      yeni ses açılır. Böylece iki hece ve iki reverb kuyruğu üst üste binmez. */
@@ -22596,7 +22697,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r614',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r615',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -33234,7 +33335,9 @@ const AudioLife=window.AudioLife={
          window.__seyPlaying||window.__hzvPlaying)return true;
       try{if(typeof DL!=='undefined'&&(DL.playing||DL.kayitCaliyor))return true}catch(e){}
       try{if(typeof DONGU!=='undefined'&&DONGU.aktif)return true}catch(e){}
-      const bs=window.BERHET_SEYIR;if(bs&&bs.run&&!bs.paused)return true;
+      const bs=window.BERHET_SEYIR;if(bs&&((bs.run&&!bs.paused)||bs.systemHold))return true;
+      const es=window.ESMA99_SEYIR;if(es&&((es.run&&!es.paused)||es.systemHold))return true;
+      try{const J=window.__sukJourneyNative;if(J?.a&&!J.a.paused&&!J.a.ended)return true}catch(e){}
       for(const fn of this.providers.values()){try{if(fn())return true}catch(e){}}
       return false;
     }catch(e){return false}
@@ -33679,7 +33782,7 @@ function atlasRender(){
 }
 
 /* ═══ BERHETİYYE 28 İSİM SEYRİ ═══ */
-const BS=window.BERHET_SEYIR={run:false,paused:false,i:0,rep:0,totalDone:0,token:0,shown:-1,key:'sukun.berhet.seyir.state'};
+const BS=window.BERHET_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,key:'sukun.berhet.seyir.state'};
 function seyirCreate(){
   if(!window.SukunSecretPolicy?.unlocked?.()){
     const old=document.getElementById('berhetSeyir');if(old)old.remove();
@@ -33756,12 +33859,12 @@ function seyirSurdur(){
   try{window.AudioLife?.markUserPlay?.('berhetiyye-resume')}catch(e){}
   try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey28')}catch(e){}
   if(BS.i>=28){BS.i=0;BS.rep=0;BS.shown=-1}
-  BS.paused=false;BS.run=true;BS.token++;
+  BS.systemHold=false;BS.paused=false;BS.run=true;BS.token++;
   seyirSave();seyirUI('Devam ediyor');
   seyirLoop(BS.token);
 }
 function seyirKes(msg='Duraklatıldı',duraklat=true){
-  BS.paused=!!duraklat;BS.run=false;BS.token++;
+  BS.systemHold=false;BS.paused=!!duraklat;BS.run=false;BS.token++;
   try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-'+(duraklat?'pause':'stop'))}catch(e){}
   try{sesDurdur('seyir-stop');r168TtsCancel('seyir-stop')}catch(e){}
   seyirSave();seyirUI(msg);
@@ -33823,10 +33926,16 @@ async function seyirLoop(token){
          Hata halinde hızlı ve sessizce binlerce tekrar saymak yerine seyir
          kaldığı yerde duraklar; kullanıcı ses motorunu düzelterek sürdürür. */
       if(!r||!r.ok){
-        BS.run=false;BS.paused=true;BS.token++;seyirSave();
-        try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-audio-failed')}catch(e){}
-        seyirUI('Ses başlatılamadı — sistem durumundan sesi toparlayıp sürdür');
-        try{sukunReport('berhetiyye-audio','Okuma tamamlanmadı',r&&r.source||'bilinmiyor')}catch(e){}
+        const bgHold=!!(r?.backgroundBlocked&&document.hidden&&!window.AudioLife?.userPaused);
+        BS.run=false;BS.paused=true;BS.systemHold=bgHold;BS.token++;seyirSave();
+        if(bgHold){
+          seyirUI('Kilit ekranı medya beklemede · ekran açılınca otomatik sürdürür');
+          try{window.AudioLife?.markInterruption?.('berhetiyye-background-hold')}catch(e){}
+        }else{
+          try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-audio-failed')}catch(e){}
+          seyirUI('Ses başlatılamadı — sistem durumundan sesi toparlayıp sürdür');
+          try{sukunReport('berhetiyye-audio','Okuma tamamlanmadı',r?.source||r?.reason||'bilinmiyor')}catch(e){}
+        }
         break;
       }
       /* ═══ r566 — SEYİR SAYACI HİÇ ARTIRMIYORDU ═══════════════════════
@@ -33845,7 +33954,7 @@ async function seyirLoop(token){
     }
     if(!BS.run||BS.paused||token!==BS.token)break;BS.i++;BS.rep=0;BS.shown=-1;seyirSave();
   }
-  if(BS.i>=28&&BS.run){BS.run=false;BS.paused=false;try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-complete')}catch(e){}seyirSave();seyirUI('Seyir tamamlandı ✦');try{LOG.push({t:Date.now(),dur:0,detail:'✦ Berhetiyye 28 İsim Seyri · '+BS.totalDone+' tekrar'})}catch(e){} }
+  if(BS.i>=28&&BS.run){BS.run=false;BS.paused=false;BS.systemHold=false;try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-complete')}catch(e){}seyirSave();seyirUI('Seyir tamamlandı ✦');try{LOG.push({t:Date.now(),dur:0,detail:'✦ Berhetiyye 28 İsim Seyri · '+BS.totalDone+' tekrar'})}catch(e){} }
 }
 function bindSeyir(){
   const m=document.getElementById('bsMode'),c=document.getElementById('bsCustom');
@@ -33872,7 +33981,7 @@ function bindSeyir(){
     el.dataset.seyirSahip='r565';
     el.onclick=fn;
   };
-  bsSahip(document.getElementById('bsStart'),()=>{if(BS.paused){seyirSurdur();return}try{window.AudioLife?.markUserPlay?.('berhetiyye-start')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey28')}catch(e){}if(BS.i>=28){BS.i=0;BS.rep=0;BS.shown=-1}BS.run=true;BS.paused=false;BS.token++;seyirUI('Başladı');seyirLoop(BS.token)});
+  bsSahip(document.getElementById('bsStart'),()=>{if(BS.paused){seyirSurdur();return}try{window.AudioLife?.markUserPlay?.('berhetiyye-start')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey28')}catch(e){}if(BS.i>=28){BS.i=0;BS.rep=0;BS.shown=-1}BS.systemHold=false;BS.run=true;BS.paused=false;BS.token++;seyirUI('Başladı');seyirLoop(BS.token)});
   bsSahip(document.getElementById('bsPause'),()=>{if(BS.paused){seyirSurdur()}else if(BS.run){seyirKes('Duraklatıldı',true)}else{seyirSurdur()}});
   /* ═══ r567 — SEYİRDE GERİ GİTME VE İSMİ TEKRARLAMA ═══════════════
      Yalnız ileri gidilebiliyordu. Önceki isim ve bu ismi baştan okuma
@@ -33896,7 +34005,7 @@ function bindSeyir(){
   });
   bsSahip(document.getElementById('bsNext'),()=>{BS.i=Math.min(28,BS.i+1);BS.rep=0;BS.shown=-1;BS.token++;try{sesDurdur('seyir-next');r168TtsCancel('seyir-next')}catch(e){}seyirSave();seyirUI('Sonraki isme geçildi');if(BS.run){BS.token++;seyirLoop(BS.token)}});
   bsSahip(document.getElementById('bsStop'),()=>seyirKes('Bitirildi',false));
-  bsSahip(document.getElementById('bsReset'),()=>{BS.run=false;BS.paused=false;BS.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-reset')}catch(e){}try{sesDurdur('seyir-reset');r168TtsCancel('seyir-reset')}catch(e){}BS.i=0;BS.rep=0;BS.totalDone=0;BS.shown=-1;seyirSave();seyirUI('Başa alındı')});
+  bsSahip(document.getElementById('bsReset'),()=>{BS.run=false;BS.paused=false;BS.systemHold=false;BS.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-reset')}catch(e){}try{sesDurdur('seyir-reset');r168TtsCancel('seyir-reset')}catch(e){}BS.i=0;BS.rep=0;BS.totalDone=0;BS.shown=-1;seyirSave();seyirUI('Başa alındı')});
 }
 
 /* ═══ r549 — BERHETİYYE KAMUSAL DENETLEYİCİ ═════════════════════
@@ -33910,6 +34019,7 @@ window.SukunBerhetiyyeSeyir=Object.freeze({
     return{
       run:!!BS.run,
       paused:!!BS.paused,
+      systemHold:!!BS.systemHold,
       i:+BS.i||0,
       rep:+BS.rep||0,
       totalDone:+BS.totalDone||0,
@@ -33923,7 +34033,7 @@ window.SukunBerhetiyyeSeyir=Object.freeze({
     try{window.AudioLife?.markUserPlay?.('berhetiyye-play')}catch(e){}
     try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey28')}catch(e){}
     if(BS.i>=28){BS.i=0;BS.rep=0;BS.shown=-1}
-    BS.run=true;BS.paused=false;BS.token++;
+    BS.systemHold=false;BS.run=true;BS.paused=false;BS.token++;
     seyirSave();seyirUI('Başladı');seyirLoop(BS.token);
     return true;
   },
@@ -33954,6 +34064,15 @@ window.SukunBerhetiyyeSeyir=Object.freeze({
     return true;
   }
 });
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  if(BS.systemHold&&BS.paused&&!window.AudioLife?.userPaused){
+    setTimeout(()=>{if(BS.systemHold&&BS.paused&&!document.hidden&&!window.AudioLife?.userPaused)seyirSurdur()},90);
+  }
+},{passive:true});
+window.addEventListener('pageshow',()=>{
+  if(BS.systemHold&&BS.paused&&!window.AudioLife?.userPaused)setTimeout(()=>seyirSurdur(),120);
+},{passive:true});
 
 
 /* ═══ KENDİ SESLERİM — MEDYA KÜTÜPHANESİ ═══ */
@@ -34398,7 +34517,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r614',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r615',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r604-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -36321,9 +36440,10 @@ try{
     SukunSourcePolicy.play=async function({key='',latin='',fallback='',title='Okuma',lang='tr-TR',recordReason='Bu öğe için kendi kaydın bulundu',resume=true,backgroundNative=false}={}){
       const text=String(latin||fallback||'').trim();
       if(key){
-        try{const b=await REC_DB.get(key);if(b){sukunSourceSet?.('recording',recordReason,title);const r=await playRecording(b,'r244:'+key,{detail:true,reason:recordReason,title,resume:!!resume,backgroundNative:!!backgroundNative,recordingKey:key});if(r?.ok)return{ok:true,source:'recording',key};if(r&&!['play-rejected','error','exception'].includes(r.reason))return{ok:false,source:'recording',cancelled:true,key}}}catch(e){}
+        try{const b=await REC_DB.get(key);if(b){sukunSourceSet?.('recording',recordReason,title);const r=await playRecording(b,'r244:'+key,{detail:true,reason:recordReason,title,resume:!!resume,backgroundNative:!!backgroundNative,recordingKey:key});if(r?.ok)return{ok:true,source:'recording',key};if(backgroundNative&&r&&!r.ok)return{ok:false,source:'recording',backgroundBlocked:true,key,reason:r.reason||'background-native-failed'};if(r&&!['play-rejected','error','exception'].includes(r.reason))return{ok:false,source:'recording',cancelled:true,key}}}catch(e){}
       }
       if(!text)return{ok:false,source:'none',key};
+      if(backgroundNative&&document.hidden)return{ok:false,source:'none',backgroundBlocked:true,key,reason:'no-recording-background'};
       try{sukunSourceSet?.('tts',latin?'Kayıt bulunamadı; Latin okunuş okunuyor':'Metin yedeği TTS ile okunuyor',title)}catch(e){}
       const ok=await sukunStableTts(text,lang,{retries:1});return{ok,source:'tts',key,text};
     };
@@ -49312,7 +49432,7 @@ function secretSync(){
   try{window.SukunAlertCenter?.rerender?.()}catch(e){}
 }
 
-const ES=window.ESMA99_SEYIR={run:false,paused:false,i:0,rep:0,totalDone:0,token:0,shown:-1,_ownVoice:false,key:'sukun.esma99.seyir.state'};
+const ES=window.ESMA99_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,_ownVoice:false,key:'sukun.esma99.seyir.state'};
 const get=(k,d)=>{try{return S.get(k,d)}catch(e){return d}};
 const set=(k,v)=>{try{S.set(k,v)}catch(e){}};
 
@@ -49396,8 +49516,8 @@ function visibility(){
   d.removeAttribute('aria-hidden');
   try{d.style.removeProperty('display')}catch(e){}
 }
-function resume(){try{window.AudioLife?.markUserPlay?.('esma99-resume')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.paused=false;ES.run=true;ES.token++;save();ui('Devam ediyor');loop(ES.token)}
-function stop(msg='Bitirildi',pause=false){ES.paused=!!pause;ES.run=false;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-'+(pause?'pause':'stop'))}catch(e){}try{sesDurdur('esma99-stop');speechSynthesis?.cancel?.()}catch(e){}save();ui(msg)}
+function resume(){try{window.AudioLife?.markUserPlay?.('esma99-resume')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.systemHold=false;ES.paused=false;ES.run=true;ES.token++;save();ui('Devam ediyor');loop(ES.token)}
+function stop(msg='Bitirildi',pause=false){ES.systemHold=false;ES.paused=!!pause;ES.run=false;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-'+(pause?'pause':'stop'))}catch(e){}try{sesDurdur('esma99-stop');speechSynthesis?.cancel?.()}catch(e){}save();ui(msg)}
 ES.stopAll=()=>{if(ES._ownVoice)return;stop('Tüm sesler durduruldu · kaldığın yer saklandı',true)};
 
 async function loop(token){
@@ -49424,8 +49544,16 @@ async function loop(token){
       }catch(e){err=e;r={ok:false,source:'error'}}finally{ES._ownVoice=false}
       if(!ES.run||ES.paused||token!==ES.token)break;
       if(!r||r.ok===false){
-        ES.run=false;ES.paused=true;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-audio-failed')}catch(e){}save();ui('Ses başlatılamadı — ses motorunu toparlayıp sürdür');
-        try{sukunReport('esma99-audio','Okuma tamamlanmadı',err?.message||r?.source||'bilinmiyor')}catch(e){}
+        const bgHold=!!(r?.backgroundBlocked&&document.hidden&&!window.AudioLife?.userPaused);
+        ES.run=false;ES.paused=true;ES.systemHold=bgHold;ES.token++;
+        if(bgHold){
+          save();ui('Kilit ekranı medya beklemede · ekran açılınca otomatik sürdürür');
+          try{window.AudioLife?.markInterruption?.('esma99-background-hold')}catch(e){}
+        }else{
+          try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-audio-failed')}catch(e){}
+          save();ui('Ses başlatılamadı — ses motorunu toparlayıp sürdür');
+          try{sukunReport('esma99-audio','Okuma tamamlanmadı',err?.message||r?.source||r?.reason||'bilinmiyor')}catch(e){}
+        }
         break;
       }
       /* r569: okuma tamamlandı — uygulamanın kendi sayma yolu. */
@@ -49438,7 +49566,7 @@ async function loop(token){
     ES.i++;ES.rep=0;ES.shown=-1;save();
   }
   if(ES.i>=99&&ES.run){
-    ES.run=false;ES.paused=false;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-complete')}catch(e){}save();ui('99 İsim Seyri tamamlandı ✦');
+    ES.run=false;ES.paused=false;ES.systemHold=false;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-complete')}catch(e){}save();ui('99 İsim Seyri tamamlandı ✦');
     try{LOG.push({t:Date.now(),dur:0,detail:'✦ Esmâü’l-Hüsnâ 99 İsim Seyri · '+ES.totalDone+' tekrar'})}catch(e){}
   }
 }
@@ -49447,7 +49575,7 @@ function bind(){
   if(m)m.onchange=()=>{if(c)c.hidden=m.value!=='custom';save();ui()};
   if(c)c.oninput=()=>{save();ui()};
   const g=$('es99Gap');if(g)g.onchange=save;
-  $('es99Start').onclick=()=>{if(ES.paused){resume();return}try{window.AudioLife?.markUserPlay?.('esma99-start')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.run=true;ES.paused=false;ES.token++;save();ui('Başladı');loop(ES.token)};
+  $('es99Start').onclick=()=>{if(ES.paused){resume();return}try{window.AudioLife?.markUserPlay?.('esma99-start')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.systemHold=false;ES.run=true;ES.paused=false;ES.token++;save();ui('Başladı');loop(ES.token)};
   $('es99Pause').onclick=()=>{if(ES.paused)resume();else if(ES.run)stop('Duraklatıldı',true);else resume()};
   /* r569: başlat düğmesi üç durumu da söylüyor — Berhetiyye ile aynı. */
   (function es99BaslatYazi(){
@@ -49476,17 +49604,27 @@ function bind(){
     try{if(window.zHedefSecimeUyarla)window.zHedefSecimeUyarla(true)}catch(e){}
     save();ui('Sonraki Esmâya geçildi');if(ES.run){ES.token++;loop(ES.token)}};
   $('es99Stop').onclick=()=>stop('Bitirildi',false);
-  $('es99Reset').onclick=()=>{ES.run=false;ES.paused=false;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-reset')}catch(e){}try{sesDurdur('esma99-reset');speechSynthesis?.cancel?.()}catch(e){}ES.i=0;ES.rep=0;ES.totalDone=0;ES.shown=-1;save();ui('Başa alındı')};
+  $('es99Reset').onclick=()=>{ES.run=false;ES.paused=false;ES.systemHold=false;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-reset')}catch(e){}try{sesDurdur('esma99-reset');speechSynthesis?.cancel?.()}catch(e){}ES.i=0;ES.rep=0;ES.totalDone=0;ES.shown=-1;save();ui('Başa alındı')};
 }
 const API=window.SukunEsma99Seyir={
   version:'r553',
-  state:()=>({run:!!ES.run,paused:!!ES.paused,i:+ES.i||0,rep:+ES.rep||0,totalDone:+ES.totalDone||0,state:ES.run&&!ES.paused?'playing':ES.paused?'paused':'idle'}),
-  play(){if(ES.paused){resume();return true}if(ES.run)return true;try{window.AudioLife?.markUserPlay?.('esma99-play')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.run=true;ES.paused=false;ES.token++;save();ui('Başladı');loop(ES.token);return true},
+  state:()=>({run:!!ES.run,paused:!!ES.paused,systemHold:!!ES.systemHold,i:+ES.i||0,rep:+ES.rep||0,totalDone:+ES.totalDone||0,state:ES.run&&!ES.paused?'playing':ES.paused?'paused':'idle'}),
+  play(){if(ES.paused){resume();return true}if(ES.run)return true;try{window.AudioLife?.markUserPlay?.('esma99-play')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.systemHold=false;ES.run=true;ES.paused=false;ES.token++;save();ui('Başladı');loop(ES.token);return true},
   resume(){resume();return true},pause(){stop('Duraklatıldı',true);return true},stop(){stop('Bitirildi',false);return true},
   jumpTo(index){const i=Math.max(0,Math.min(98,Number.isFinite(+index)?Math.trunc(+index):0));ES.i=i;ES.rep=0;ES.shown=-1;ES.token++;try{sesDurdur('esma99-jump');speechSynthesis?.cancel?.()}catch(e){}try{if(window.zHedefSecimeUyarla)window.zHedefSecimeUyarla(true)}catch(e){}save();ui('Bu Esmâya geçildi');if(ES.run&&!ES.paused){ES.token++;loop(ES.token)}return true},
   previous(){ES.i=Math.max(0,ES.i-1);ES.rep=0;ES.shown=-1;ES.token++;try{sesDurdur('esma99-prev');speechSynthesis?.cancel?.()}catch(e){}save();ui('Önceki Esmâya geçildi');if(ES.run){ES.token++;loop(ES.token)}return true},
   next(){ES.i=Math.min(99,ES.i+1);ES.rep=0;ES.shown=-1;ES.token++;try{sesDurdur('esma99-next');speechSynthesis?.cancel?.()}catch(e){}save();ui('Sonraki Esmâya geçildi');if(ES.run){ES.token++;loop(ES.token)}return true}
 };
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  if(ES.systemHold&&ES.paused&&!window.AudioLife?.userPaused){
+    setTimeout(()=>{if(ES.systemHold&&ES.paused&&!document.hidden&&!window.AudioLife?.userPaused)resume()},90);
+  }
+},{passive:true});
+window.addEventListener('pageshow',()=>{
+  if(ES.systemHold&&ES.paused&&!window.AudioLife?.userPaused)setTimeout(()=>resume(),120);
+},{passive:true});
+
 function registerAudio(){
   try{
     const R=window.SukunAudioSessionRegistry;
@@ -53521,7 +53659,7 @@ body[data-perf="pil"].r601-mini-glass.r431-dock-visible:not(.r433-dock-hidden)
 <script id="r601-mini-flow-glass-runtime">
 (()=>{
 'use strict';
-const VERSION='r614';
+const VERSION='r615';
 if(window.SukunMiniFlowGlass?.version===VERSION)return;
 const ENABLE_KEY='sukun.dock.miniGlass.enabled';
 const TRANSPARENCY_KEY='sukun.dock.miniGlass.transparency';
@@ -54531,11 +54669,11 @@ function compactZikirCard(){
 function journeyBusy(){
   try{
     const e=window.SukunEsma99Seyir?.state?.();
-    if(e?.run&&!e?.paused)return true;
+    if((e?.run&&!e?.paused)||e?.systemHold)return true;
   }catch(e){}
   try{
     const b=window.SukunBerhetiyyeSeyir?.state?.();
-    if(b?.run&&!b?.paused)return true;
+    if((b?.run&&!b?.paused)||b?.systemHold)return true;
   }catch(e){}
   return false;
 }
@@ -54543,8 +54681,8 @@ function registerBusy(){
   try{
     const L=window.AudioLife;
     if(L?.register){
-      L.register('journey99',()=>{try{const s=window.SukunEsma99Seyir?.state?.();return !!(s?.run&&!s?.paused)}catch(e){return false}});
-      L.register('journey28',()=>{try{const s=window.SukunBerhetiyyeSeyir?.state?.();return !!(s?.run&&!s?.paused)}catch(e){return false}});
+      L.register('journey99',()=>{try{const s=window.SukunEsma99Seyir?.state?.();return !!((s?.run&&!s?.paused)||s?.systemHold)}catch(e){return false}});
+      L.register('journey28',()=>{try{const s=window.SukunBerhetiyyeSeyir?.state?.();return !!((s?.run&&!s?.paused)||s?.systemHold)}catch(e){return false}});
     }
   }catch(e){}
 }
@@ -55377,6 +55515,37 @@ try{mo.observe(document.body,{subtree:true,childList:true,attributes:true,attrib
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place,{once:true});else place();
 setTimeout(place,400);setTimeout(place,1200);
 window.SukunTefekkurHeroOwner={version:'r614',place};
+})();
+</script>
+
+
+<style id="r615-zikir-subnav-footer-style">
+footer .sukun-bottom-nav{
+  position:static!important;left:auto!important;right:auto!important;bottom:auto!important;
+  transform:none!important;width:100%!important;max-width:none!important;margin:12px 0 10px!important;
+  z-index:auto!important;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));box-sizing:border-box;
+}
+body.r591-flow-active:not(.r592-dock-collapsed) footer .sukun-bottom-nav{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+}
+body:not(.sukun-zikir-tab) footer .sukun-bottom-nav{display:none!important}
+@media(max-width:390px){footer .sukun-bottom-nav{width:100%!important;margin:10px 0 8px!important}}
+</style>
+<script id="r615-zikir-subnav-footer-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R615_SUBNAV__)return;window.__SUKUN_R615_SUBNAV__=1;
+function mount(){
+  const nav=document.querySelector('.sukun-bottom-nav'),footer=document.querySelector('footer'),ver=document.getElementById('surumEtiket');
+  if(!nav||!footer||!ver)return false;
+  if(nav.parentElement!==footer||nav.nextElementSibling!==ver)footer.insertBefore(nav,ver);
+  return true;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setTimeout(mount,80);setTimeout(mount,700)},{once:true});
+else{setTimeout(mount,0);setTimeout(mount,600)}
+window.addEventListener('pageshow',()=>setTimeout(mount,60),{passive:true});
+window.addEventListener('sukun:tabchange',()=>setTimeout(mount,20),{passive:true});
+window.SukunZikirSubnavPlacement={version:'r615',mount};
 })();
 </script>
 
