@@ -1,5 +1,27 @@
 [
   {
+    "v": "r614",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Tefekkür üst sahnesindeki yarım zBar düğmeleri kesin olarak gizlendi.",
+      "Üst zikir kimlik alanı doğal yüksekliğe çekildi; gereksiz boşluk azaltıldı.",
+      "Seçili esmâ/zikir başlığı canonical Tefekkür visual panel içine bağlandı ve daha belirgin premium tipografiye geçirildi.",
+      "Sayaç kartı viewportu zorla doldurmaz; alt boşluk içerik kadar kalır.",
+      "Gizli oyuncu kapsülü ve açık Mini/Midi/Max dock için güvenli alt mesafe ayrı ayrı korunur.",
+      "r613 üstten scroll hizalama düzeltmesi korunur."
+    ]
+  },
+  {
+    "v": "r612",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Tefekkür sayacındaki seçili esmâ artık sayaç aktifken de görünür.",
+      "Sabit isim yalnız gerçek animasyon kartı görünürken gizlenir.",
+      "Kapalı isim tercihi sayaç üstü temel bilgi başlığını artık saklamaz.",
+      "Animasyon kartı kapanınca sabit isim otomatik geri gelir."
+    ]
+  },
+  {
     "v": "r611",
     "t": "31 Ağustos 2026",
     "b": [
