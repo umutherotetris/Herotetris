@@ -1,5 +1,14 @@
 [
   {
+    "v": "r605",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "Akış barı tema camı Mini, Midi ve Max görünümünün tamamına genişletildi.",
+      "Tek şeffaflık ayarı üç modda ortak kullanılır.",
+      "İç dock shell opak arka plan üretmez; cam yüzey tek host üzerinde kalır."
+    ]
+  },
+  {
     "v": "r604",
     "t": "31 Ağustos 2026",
     "b": [

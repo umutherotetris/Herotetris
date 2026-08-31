@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r604 — mini akış ergonomi + mikro aksiyon sesleri
+     SÜKÛN r605 — mini akış ergonomi + mikro aksiyon sesleri
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r604">
+<meta name="sukun-build" content="r605">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r604">
+<link rel="manifest" href="./manifest.webmanifest?v=r605">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6421,7 +6421,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v19.89 — build 2026-08-31-r604</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v19.90 — build 2026-08-31-r605</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22586,7 +22586,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r604',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r605',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34386,7 +34386,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r604',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r605',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r604-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -53460,7 +53460,7 @@ window.SukunZCtlFlow={version:'r600',refresh:measure,snapshot:()=>last};
    --sayfa2K, .68 yoğunluk ve 14px blur. Midi, Max, bildirim drawerı
    ve gizli dönüş kapsülü bu ayarın dışında kalır. */
 :root{--r601-mini-glass-alpha:.44}
-body.r601-mini-glass.r588-dock-ready.r588-mode-mini.r431-dock-visible:not(.r433-dock-hidden)
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden)
   #r170Now.r588-authority:not(.r554-alert-open){
   background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha))!important;
   border-color:var(--lux-line,color-mix(in srgb,var(--gold) 15%,transparent))!important;
@@ -53468,7 +53468,7 @@ body.r601-mini-glass.r588-dock-ready.r588-mode-mini.r431-dock-visible:not(.r433-
   -webkit-backdrop-filter:blur(14px)!important;
   backdrop-filter:blur(14px)!important;
 }
-body[data-perf="pil"].r601-mini-glass.r588-mode-mini.r431-dock-visible:not(.r433-dock-hidden)
+body[data-perf="pil"].r601-mini-glass.r431-dock-visible:not(.r433-dock-hidden)
   #r170Now.r588-authority:not(.r554-alert-open){
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
@@ -53504,7 +53504,7 @@ body[data-perf="pil"].r601-mini-glass.r588-mode-mini.r431-dock-visible:not(.r433
 <script id="r601-mini-flow-glass-runtime">
 (()=>{
 'use strict';
-const VERSION='r604';
+const VERSION='r605';
 if(window.SukunMiniFlowGlass?.version===VERSION)return;
 const ENABLE_KEY='sukun.dock.miniGlass.enabled';
 const TRANSPARENCY_KEY='sukun.dock.miniGlass.transparency';
@@ -53522,12 +53522,12 @@ function ensureSettings(){
   if(!panel){
     panel=document.createElement('section');
     panel.id='r601MiniGlassPanel';
-    panel.setAttribute('aria-label','Mini akış barı görünümü');
+    panel.setAttribute('aria-label','Akış barı görünümü');
     panel.innerHTML=
-      '<div class="opt"><span>🪟 Mini akış barı tema camı<small>Ana menünün tema rengi ve cam yüzeyi; yazılar ile düğmeler solmaz.</small></span><button class="sw" id="r601MiniGlassTgl" type="button" role="switch" aria-label="Mini akış barı tema camı"></button></div>'+ 
-      '<div class="r601MiniGlassPreview" aria-hidden="true"><span><b>SÜKÛN · MİNİ</b><br><small>TEMA CAMI</small></span><small>▶ &nbsp; ■</small></div>'+ 
-      '<div class="sldRow" id="r601MiniGlassLevelRow"><label for="r601MiniGlassLevel">Şeffaflık</label><input type="range" id="r601MiniGlassLevel" min="15" max="85" step="1" value="56" aria-label="Mini akış barı şeffaflığı"><span class="valB" id="r601MiniGlassLevelV">%56</span></div>'+ 
-      '<div class="genNot" style="margin:0">Düşük değer daha dolgun, yüksek değer daha şeffaf. Varsayılan %56; istersen ana kontrol barına yakın veya daha saydam ayarlayabilirsin.</div>';
+      '<div class="opt"><span>🪟 Akış barı tema camı<small>Ana menünün tema rengi ve cam yüzeyi; yazılar ile düğmeler solmaz.</small></span><button class="sw" id="r601MiniGlassTgl" type="button" role="switch" aria-label="Akış barı tema camı"></button></div>'+ 
+      '<div class="r601MiniGlassPreview" aria-hidden="true"><span><b>SÜKÛN · AKIŞ</b><br><small>MİNİ · MİDİ · MAX</small></span><small>▶ &nbsp; ■</small></div>'+ 
+      '<div class="sldRow" id="r601MiniGlassLevelRow"><label for="r601MiniGlassLevel">Şeffaflık</label><input type="range" id="r601MiniGlassLevel" min="15" max="85" step="1" value="56" aria-label="Akış barı şeffaflığı"><span class="valB" id="r601MiniGlassLevelV">%56</span></div>'+ 
+      '<div class="genNot" style="margin:0">Düşük değer daha dolgun, yüksek değer daha şeffaf. Aynı değer Mini, Midi ve Max görünümünün üçünde de kullanılır.</div>';
     const heads=[...general.querySelectorAll('.genBas')];
     const view=heads.find(x=>(x.textContent||'').toLocaleUpperCase('tr-TR').includes('GÖRÜNÜM'));
     const presentation=document.getElementById('r474NamePresentation');
@@ -53569,12 +53569,13 @@ function setTransparency(value,persist=true){
   const next=clamp(parseFloat(value),15,85);if(!Number.isFinite(next))return snapshot();
   transparency=next;return apply(persist);
 }
-function snapshot(){return{version:VERSION,enabled,transparency:Math.round(transparency),alpha:Number(((100-transparency)/100).toFixed(2)),scope:'mini'}}
+function snapshot(){return{version:VERSION,enabled,transparency:Math.round(transparency),alpha:Number(((100-transparency)/100).toFixed(2)),scope:'mini-midi-max'}}
 function boot(){ensureSettings();apply(false,false)}
 document.addEventListener('click',e=>{if(e.target.closest?.('#temaBtn'))setTimeout(()=>{ensureSettings();updateUI()},35)},{passive:true});
 window.addEventListener('pageshow',()=>setTimeout(()=>apply(false,false),40),{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.SukunMiniFlowGlass={version:VERSION,get:snapshot,setEnabled,setTransparency,refresh:()=>apply(false,false)};
+window.SukunFlowGlass=window.SukunMiniFlowGlass;
 })();
 </script>
 <style id="r602-no-phantom-curtain">
@@ -53706,7 +53707,7 @@ body.r588-mode-mini #r588DockShell .r588Mode button{min-height:28px!important;he
 
 /* Tema camı: kabuğun kendisini soldurmadan, ana menü gibi tema rengini
    arkadaki içerikle karıştırır. Şeffaflık ayarı --r601-mini-glass-alpha. */
-body.r601-mini-glass.r588-dock-ready.r591-flow-active.r431-dock-visible.r588-mode-mini:not(.r433-dock-hidden)
+body.r601-mini-glass.r588-dock-ready.r591-flow-active.r431-dock-visible:not(.r433-dock-hidden)
   #r170Now.r588-authority:not(.r554-alert-open){
   background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha))!important;
   border-color:var(--lux-line,color-mix(in srgb,var(--gold) 16%,transparent))!important;
@@ -53834,6 +53835,34 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.SukunMicroSFX={version:'r604',play,get:()=>({enabled,volume}),setEnabled:v=>{enabled=!!v;try{localStorage.setItem(ENABLE_KEY,enabled?'1':'0')}catch(e){}updateSettings()},setVolume:v=>{volume=Math.max(10,Math.min(70,+v||34));try{localStorage.setItem(VOL_KEY,String(Math.round(volume)))}catch(e){}updateSettings()}};
 })();
 </script>
+
+<style id="r605-all-mode-flow-glass-final">
+/* r605 — Mini / Midi / Max tek tema-camı otoritesi.
+   Eski r588 koyu opak kabuğu bütün görünüm kiplerinde ezer. */
+body.r601-mini-glass.r588-dock-ready.r591-flow-active.r431-dock-visible:not(.r433-dock-hidden)
+#r170Now.r588-authority:not(.r554-alert-open){
+  background:rgba(var(--sayfa2K),var(--r601-mini-glass-alpha))!important;
+  border-color:var(--lux-line,color-mix(in srgb,var(--gold) 16%,transparent))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 12px 30px -24px rgba(0,0,0,.56)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.08)!important;
+  backdrop-filter:blur(14px) saturate(1.08)!important;
+}
+
+/* İç shell ayrı opak bir yüzey üretmesin; asıl cam dış hosttur. */
+body.r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden)
+#r170Now.r588-authority > #r588DockShell{
+  background:transparent!important;
+}
+
+/* Pil modunda maliyetli blur kapanır; şeffaflık değeri aynen korunur. */
+body[data-perf="pil"].r601-mini-glass.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden)
+#r170Now.r588-authority:not(.r554-alert-open){
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+</style>
 
 </body>
 </html>
