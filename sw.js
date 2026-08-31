@@ -1,8 +1,8 @@
-/* SÜKÛN r601 — mini akış barı tema camı */
+/* SÜKÛN r602 — mini akış barı tema camı */
 'use strict';
 
-const SURUM = 'r601';
-const CACHE = 'sukun-r601-20260831a';
+const SURUM = 'r602';
+const CACHE = 'sukun-r602-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r601__.json';
+const BUILD_MARKER='./__sukun_build_r602__.json';
 
 const NOTLAR = [
   'r601 Mini akış barı ana menünün tema camıyla eşleşir; Ayarlar içinden açılıp kapatılır ve yüzey şeffaflığı canlı ayarlanır. Metin/düğme opacitysi değişmez; Midi ve Max etkilenmez.',
@@ -331,7 +331,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r586 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error('r602 cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();

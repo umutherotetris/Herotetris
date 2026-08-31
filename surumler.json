@@ -1,5 +1,14 @@
 [
   {
+    "v": "r602",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "r592DockCurtain adlı gereksiz alt gradient/perde kaldırıldı; aktif akışta sayfanın altı artık karartılmaz.",
+      "Dock küçültme/açma davranışı korunurken player yalnız kendi cam yüzeyini kullanır.",
+      "sheetScrim hayalet-perde koruması eklendi; görünür bir alt sayfa yoksa scrim tek başına açık kalamaz."
+    ]
+  },
+  {
     "v": "r601",
     "t": "31 Ağustos 2026",
     "b": [
