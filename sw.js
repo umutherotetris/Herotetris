@@ -1,8 +1,8 @@
-/* SÜKÛN r623 — ölçülebilir performans ve tanı doğruluğu */
+/* SÜKÛN r624 — seyir sürekliliği ve erişilebilir tanı */
 'use strict';
 
-const SURUM = 'r623';
-const CACHE = 'sukun-r623-20260901a';
+const SURUM = 'r624';
+const CACHE = 'sukun-r624-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r623__.json';
+const BUILD_MARKER='./__sukun_build_r624__.json';
 
 const NOTLAR = [
+  'r624 28 İsim Seyri, playing sonrasında ended/error üretmeyen Android medya durumunu currentTime ilerlemesiyle algılar; aynı fiziksel kaynak bir kez uyandırılır, ilerlemezse güvenli ses yedeğine düşer.',
+  'r624 Ses çözümleyicisinin tamamı için görünür/gizli ekran emniyet süresi vardır; başarısız veya duyulmayan tekrar sayılmaz, görünür ekranda aynı tekrar yalnız bir kez otomatik yeniden denenir.',
+  'r624 Sürüm etiketine uzun basma Pointer Events ile tek olay dizisine alındı; sentetik mouse iptali giderildi ve Sade/Odak sürüm satırı da aynı girişi açar.',
+  'r624 Ayarlar ve araçlar paneline Sistem tanısı ve rapor düğmesi eklendi; rapor için uzun basma artık tek erişim yolu değildir.',
   'r623 Aynı ses durumu artık periyodik playbackchange nabzıyla yeniden yayımlanmaz; yalnız anlamlı değişiklik arayüz abonelerini uyandırır.',
   'r623 Ses oturumu changedAt alanı yalnız gerçek state geçişinde yenilenir; durum okuması geçmişi bozmaz.',
   'r623 Derin test, taşma taraması ve tanı çizimleri kendi long-task yükü olarak etiketlenir; kullanıcı performans modu bu işlemler yüzünden Pil kipine düşmez.',

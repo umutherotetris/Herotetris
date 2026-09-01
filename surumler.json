@@ -1,5 +1,17 @@
 [
   {
+    "v": "r624",
+    "t": "1 Eylül 2026",
+    "b": [
+      "28 İsim Seyri'nde Android ses elementi playing durumuna ulaştıktan sonra ended/error üretmezse döngünün aynı isimde sonsuza kadar beklemesi engellendi.",
+      "Kalıcı kayıt currentTime ilerlemesiyle gözetilir; takılan fiziksel kaynak bir kez kontrollü uyandırılır, yine ilerlemezse okuyucu/TTS yedeğine geçilir.",
+      "Bütün 28'li ses çözümlemesine görünür ve kilitli ekran emniyet sınırı eklendi; duyulmayan veya tamamlanmayan tekrar sayılmaz.",
+      "Görünür ekrandaki geçici ses hatası aynı tekrar için yalnız bir kez otomatik toparlanıp yeniden denenir; ikinci hatada neden açıkça gösterilir ve Sürdür aynı tekrardan devam eder.",
+      "Sürüm satırına uzun basma Android'de Pointer Events ile tek olay dizisine alındı; touch ve sentetik mouse olaylarının birbirini iptal etmesi giderildi.",
+      "Sade/Odak araç panelindeki sürüm satırı da uzun basmayı destekler; ayrıca Ayarlar ve araçlar içine tek dokunuşlu Sistem tanısı ve rapor düğmesi eklendi."
+    ]
+  },
+  {
     "v": "r623",
     "t": "1 Eylül 2026",
     "b": [

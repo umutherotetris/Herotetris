@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r623 — ölçülebilir performans ve tanı doğruluğu
+     SÜKÛN r624 — seyir sürekliliği ve erişilebilir tanı
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r623">
+<meta name="sukun-build" content="r624">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r623">
+<link rel="manifest" href="./manifest.webmanifest?v=r624">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6470,7 +6470,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.06 — build 2026-09-01-r623</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v20.07 — build 2026-09-01-r624</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -17087,9 +17087,11 @@ async function sukunJourneyNativeRecording(blob,ad,opt,kalite){
 
     return await new Promise(resolve=>{
       let finished=false,played=false,attempts=0;
+      let progressTimer=0,lastProgressAt=0,lastTime=-1,stallKicks=0;
       const timers=[];
       const temizle=()=>{
         while(timers.length){try{clearTimeout(timers.pop())}catch(e){}}
+        if(progressTimer){try{clearInterval(progressTimer)}catch(e){}progressTimer=0}
         try{a.removeEventListener('canplay',go)}catch(e){}
         try{a.removeEventListener('loadeddata',go)}catch(e){}
         try{a.removeEventListener('playing',markPlaying)}catch(e){}
@@ -17102,12 +17104,43 @@ async function sukunJourneyNativeRecording(blob,ad,opt,kalite){
         SES.ler.delete(a);RECPLAYING=SES.ler.size>0;if(SES.ad===(ad||'journey-native'))SES.ad=null;
         resolve(sonuc(ok===true&&played,reason));
       };
+      /* r624 — Bir medya elemanı `playing` dedikten sonra Android'in bazı
+         sürümleri kaynak takılırsa ne `ended` ne de `error` gönderiyor.
+         Önceki watchdog yalnız BAŞLAMAYI gözettiği için Promise sonsuza dek
+         açık kalıyor, 28/99 seyri de aynı tekrarın içinde donuyordu.
+
+         İlerlemeyi gerçek currentTime üzerinden izliyoruz. Bir kez kontrollü
+         pause/play ile aynı fiziksel elementi uyandırıyor; yine ilerlemezse
+         başarısız döndürüp çözümleyicinin okuyucu/TTS yedeğine geçmesine izin
+         veriyoruz. Duyulmayan tekrar hiçbir zaman başarılı sayılmıyor. */
+      const watchProgress=()=>{
+        if(finished||!played)return;
+        const now=Date.now(),cur=Number(a.currentTime)||0,dur=Number(a.duration)||0;
+        if(cur>lastTime+.025){lastTime=cur;lastProgressAt=now;stallKicks=0}
+        if(dur>0&&cur>=Math.max(0,dur-.06)&&(a.ended||a.paused)){
+          done(true,'terminal-position');return;
+        }
+        const limit=document.hidden?24000:6500;
+        if(now-lastProgressAt<limit)return;
+        if(stallKicks<1){
+          stallKicks++;lastProgressAt=now;
+          try{
+            a.pause();
+            if(cur>0)a.currentTime=Math.max(0,cur-.08);
+            Promise.resolve(a.play()).catch(()=>done(false,'playback-stalled'));
+            try{window.dispatchEvent(new CustomEvent('sukun:journey-native-retry',{detail:{key:recordingKey,hidden:document.hidden,currentTime:cur,at:now}}))}catch(e){}
+          }catch(e){done(false,'playback-stalled')}
+          return;
+        }
+        done(false,'playback-stalled');
+      };
       const markPlaying=()=>{
         /* r622 — HTMLMediaElement "playing" olayı ile play() Promise'i aynı
            başarılı başlangıcı iki ayrı yoldan bildirebilir. Telemetriyi ve
            overlap guard zamanlayıcısını yalnız ilk doğrulanmış başlangıçta kur. */
         if(finished||played)return;
-        played=true;J.startedAt=Date.now();
+        played=true;J.startedAt=Date.now();lastProgressAt=J.startedAt;lastTime=Number(a.currentTime)||0;
+        if(!progressTimer)progressTimer=setInterval(watchProgress,1000);
         try{sukunVoiceOverlapGuard(a)}catch(e){}
         try{
           window.dispatchEvent(new CustomEvent('sukun:journey-native-playing',{
@@ -22798,7 +22831,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r623',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r624',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -33715,6 +33748,8 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
          Kayıt yine doğrudan veritabanından okunuyor; okuma eşzamansız ve
          eleman havuzu sayesinde tekrar başına kurulum maliyeti zaten yok. */
       const blob=await REC_DB.get(key);
+      if(typeof opt.isCurrent==='function'&&!opt.isCurrent())
+        return{source:'cancelled',ok:false,cancelled:true,key,reason:'stale-sequence'};
       if(!blob){
       misses.set(key,Date.now());
         if(known)RECKEYS.delete(key);
@@ -33734,8 +33769,11 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
         recordingKey:key
       });
 
-      if(rr===undefined||rr===true||rr?.ok)return{source:'recording',ok:true,key};
-      if(rr&&!['play-rejected','error','exception'].includes(rr.reason))
+      if(rr===undefined||rr===true||rr?.ok)return{source:'recording',ok:true,key,reason:rr?.reason||'ended'};
+      /* r624: Başlamış ama ilerlememiş kayıt da gerçek oynatma hatasıdır.
+         `cancelled` diye yutulursa çözümleyici TTS'ye düşemez ve seyir aynı
+         isimde kalır. Yalnız kasıtlı/sahiplik kaynaklı kesmeler iptaldir. */
+      if(rr&&!['play-rejected','error','exception','play-timeout','playback-stalled'].includes(rr.reason))
         return{source:'recording',ok:false,cancelled:true,key,reason:rr.reason};
       return null; /* gerçek oynatma hatası → sıradaki kaynak */
     }catch(e){
@@ -33751,7 +33789,7 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
           const nm=SPK.arVoice.name||SPK.arVoice.lang||'Arapça ses';
           set('reader-ar','SEÇİLİ OKUYUCU',nm,'reader');
           const ok=await zikirTtsAwait(ar,!!opt.interrupt,SPK.arVoice.lang||'ar-SA',SPK.arVoice,SPK.arRate,SPK.arPitch);
-          return{source:'reader',kind:'arabic',ok:ok!==false};
+          return{source:'reader',kind:'arabic',ok:ok!==false,reason:ok!==false?'ended':'reader-failed'};
         }
       }
     }catch(e){}
@@ -33761,7 +33799,7 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
       const nm=SPK.voice.name||SPK.voice.lang||'Seçili Türkçe ses';
       set('reader-tr','SEÇİLİ OKUYUCU',nm,'reader');
       const ok=await zikirTtsAwait(text,!!opt.interrupt,opt.lang||'tr-TR',SPK.voice,SPK.rate,.9);
-      return{source:'reader',kind:'turkish',ok:ok!==false,text};
+      return{source:'reader',kind:'turkish',ok:ok!==false,text,reason:ok!==false?'ended':'reader-failed'};
     }
     return null;
   }
@@ -33776,7 +33814,7 @@ const SukunVoiceResolver=window.SukunVoiceResolver=(()=>{
     const ok=typeof ttsPromise==='function'
       ?await ttsPromise(text,opt.lang||'tr-TR')
       :await zikirTtsAwait(text,!!opt.interrupt,opt.lang||'tr-TR',null,SPK?.rate||1,.9);
-    return{source:'tts',ok:ok!==false,text};
+    return{source:'tts',ok:ok!==false,text,reason:ok!==false?'ended':'tts-failed'};
   }
 
   async function playItem(cat,idx,item,opt={}){
@@ -33883,7 +33921,7 @@ function atlasRender(){
 }
 
 /* ═══ BERHETİYYE 28 İSİM SEYRİ ═══ */
-const BS=window.BERHET_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,key:'sukun.berhet.seyir.state'};
+const BS=window.BERHET_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,attemptSeq:0,lastFailure:'',lastFailureAt:0,recoveries:0,key:'sukun.berhet.seyir.state'};
 function seyirCreate(){
   if(!window.SukunSecretPolicy?.unlocked?.()){
     const old=document.getElementById('berhetSeyir');if(old)old.remove();
@@ -33990,6 +34028,44 @@ BS.stopAll=()=>{
   if(BS._kendiSesi)return;
   seyirKes('Tüm sesler durduruldu · kaldığın yer saklandı',true);
 };
+/* ═══ r624 — 28 İSİM SEYRİ ÇÖZÜMLEYİCİ BEKÇİSİ ═══════════════════════
+   Bir kayıt/TTS sağlayıcısı callback üretmezse döngünün await'i sonsuza dek
+   açık kalamaz. Jetonla eski denemeyi geçersiz kılıyor, yalnız bu isme ait
+   kalıcı kayıt elementini ve TTS'i kapatıyoruz. Başarısız deneme sayılmaz. */
+function seyirHataNedeni(r){
+  return String(r?.reason||r?.source||'ses-kaynagi-yanit-vermedi');
+}
+function seyirGeciciHata(reason){
+  return ['playback-stalled','play-timeout','play-rejected','reader-failed','tts-failed','resolver-timeout','error','exception','silent','ses-kaynagi-yanit-vermedi'].includes(String(reason||''));
+}
+function seyirAktifKaynakKes(reason,index){
+  try{r168TtsCancel(reason)}catch(e){}
+  try{
+    const J=window.__sukJourneyNative,key='berhet:'+index;
+    if(J?.a&&J.recordingKey===key){
+      try{J.a._sukunFinish?.(false,reason)}catch(e){}
+      try{J.a.pause()}catch(e){}
+    }
+  }catch(e){}
+}
+async function seyirOkuGuvenli(index,it,token){
+  const attempt=++BS.attemptSeq;
+  let timer=0,timedOut=false;
+  const current=()=>!timedOut&&token===BS.token&&attempt===BS.attemptSeq&&BS.run&&!BS.paused;
+  const audio=Promise.resolve().then(()=>R168.AudioResolver.play('berhet',index,it,{
+    session:true,backgroundNative:true,isCurrent:current
+  })).catch(e=>({ok:false,source:'resolver',reason:'exception',detail:String(e?.message||e)}));
+  const timeout=document.hidden?90000:26000;
+  const watchdog=new Promise(resolve=>{
+    timer=setTimeout(()=>{
+      timedOut=true;BS.attemptSeq++;
+      seyirAktifKaynakKes('resolver-timeout',index);
+      resolve({ok:false,source:'watchdog',reason:'resolver-timeout'});
+    },timeout);
+  });
+  try{return await Promise.race([audio,watchdog])}
+  finally{if(timer)clearTimeout(timer)}
+}
 async function seyirLoop(token){
   const list=ZIKIR.berhet.items;
   while(BS.run&&!BS.paused&&token===BS.token&&BS.i<list.length){const it=list[BS.i],limit=repeatCount(it);
@@ -34015,27 +34091,45 @@ async function seyirLoop(token){
       try{if(!document.hidden){renderZikir(false);zUI()}}catch(e){sukunReport('seyir-render',e,BS.i)}
       BS.shown=BS.i;
     }
+    let autoRetries=0;
     while(BS.run&&!BS.paused&&token===BS.token&&BS.rep<limit){
       /* r547: kendi okumamızı başlatıyoruz; bu sırada gelen genel
          durdurma çağrısı bizim tetiklediğimizdir, seyri kesmemeli. */
       BS._kendiSesi=true;
       let r=null;
-      try{ r=await R168.AudioResolver.play('berhet',BS.i,it,{session:true,backgroundNative:true}); }
+      try{ r=await seyirOkuGuvenli(BS.i,it,token); }
       finally{ BS._kendiSesi=false; }
       if(!BS.run||BS.paused||token!==BS.token)break;
       /* Duyulmayan/başlatılamayan okuma sayaçta tamamlanmış görünmesin.
          Hata halinde hızlı ve sessizce binlerce tekrar saymak yerine seyir
          kaldığı yerde duraklar; kullanıcı ses motorunu düzelterek sürdürür. */
       if(!r||!r.ok){
-        const bgHold=!!(r?.backgroundBlocked&&document.hidden&&!window.AudioLife?.userPaused);
+        const reason=seyirHataNedeni(r),transient=seyirGeciciHata(reason);
+        BS.lastFailure=reason;BS.lastFailureAt=Date.now();
+        /* Görünür ekranda tek kontrollü yeniden deneme. Aynı okuma henüz
+           tamamlanmadığı için sayaç ilerlemez; ikinci başarısızlıkta kullanıcıya
+           açık durum bırakılır. */
+        if(transient&&!document.hidden&&!window.AudioLife?.userPaused&&autoRetries<1){
+          autoRetries++;BS.recoveries++;
+          seyirUI('Ses toparlanıyor · aynı tekrar yeniden deneniyor');
+          try{window.SukunVoiceSource?.set?.('recovering','TOPARLANIYOR',reason)}catch(e){}
+          try{
+            const p=window.AudioLife?.recover?.('berhetiyye-auto-retry');
+            if(p&&typeof p.then==='function')await Promise.race([p,new Promise(x=>setTimeout(x,700))]);
+          }catch(e){}
+          await new Promise(x=>setTimeout(x,420));
+          continue;
+        }
+        const bgHold=!!(document.hidden&&!window.AudioLife?.userPaused&&(r?.backgroundBlocked||transient));
         BS.run=false;BS.paused=true;BS.systemHold=bgHold;BS.token++;seyirSave();
         if(bgHold){
           seyirUI('Kilit ekranı medya beklemede · ekran açılınca otomatik sürdürür');
           try{window.AudioLife?.markInterruption?.('berhetiyye-background-hold')}catch(e){}
         }else{
           try{window.SukunVoiceSessionCoordinator?.release?.('journey28','berhetiyye-audio-failed')}catch(e){}
-          seyirUI('Ses başlatılamadı — sistem durumundan sesi toparlayıp sürdür');
-          try{sukunReport('berhetiyye-audio','Okuma tamamlanmadı',r?.source||r?.reason||'bilinmiyor')}catch(e){}
+          seyirUI('Ses tamamlanmadı ('+reason+') · Sürdür ile aynı tekrarı yeniden dene');
+          try{window.SukunVoiceSource?.set?.('error','SES BEKLİYOR',reason)}catch(e){}
+          try{sukunReport('berhetiyye-audio','Okuma tamamlanmadı',reason)}catch(e){}
         }
         break;
       }
@@ -34051,7 +34145,8 @@ async function seyirLoop(token){
          ve hedefe varış kontrolü elle sayarkenki ile birebir aynı işliyor —
          ayrı bir sayaç mantığı kurulmadı. */
       try{ (window.SukunZikirRep||function(){})(); }catch(e){}
-      BS.rep++;BS.totalDone++;seyirUI(r.source==='recording'?'🎙 Kendi sesin':'🔊 TTS');seyirSave();const gap=+document.getElementById('bsGap')?.value||900;if(!document.hidden)await new Promise(r=>setTimeout(r,gap));
+      autoRetries=0;BS.lastFailure='';
+      BS.rep++;BS.totalDone++;seyirUI(r.source==='recording'?'🎙 Kendi sesin':'🔊 '+(r.source==='reader'?'Okuyucu':'TTS'));seyirSave();const gap=+document.getElementById('bsGap')?.value||900;if(!document.hidden)await new Promise(r=>setTimeout(r,gap));
     }
     if(!BS.run||BS.paused||token!==BS.token)break;
     BS.i++;BS.rep=0;BS.shown=-1;seyirSave();
@@ -34127,6 +34222,10 @@ window.SukunBerhetiyyeSeyir=Object.freeze({
       rep:+BS.rep||0,
       totalDone:+BS.totalDone||0,
       token:+BS.token||0,
+      attemptSeq:+BS.attemptSeq||0,
+      lastFailure:String(BS.lastFailure||''),
+      lastFailureAt:+BS.lastFailureAt||0,
+      recoveries:+BS.recoveries||0,
       state:BS.run&&!BS.paused?'playing':BS.paused?'paused':'idle'
     };
   },
@@ -34620,10 +34719,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r623',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r624',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r623-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r624-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -45750,67 +45849,74 @@ function close(){
    notlar katmanı üstüne açılmasın. */
 const UZUN_BASMA_MS=480;
 function bindEntry(){
-  const v=$('surumEtiket');
-  if(v&&!v.dataset.r455DiagBound){
-    v.dataset.r455DiagBound='1';
-
-    /* r512 — B-05: Android'in metin seçimi/bağlam menüsü bu elemanda
-       tamamen kapatılıyor. CSS user-select:none tek başına bazı OEM
-       kabuklarında yetmiyor; contextmenu ve selectstart de bastırılıyor.
-       Süre 650 → 480 ms: Chrome'un seçim eşiği ~500 ms, altında kalıyoruz. */
+  /* r624 — Pointer Events tek bir fiziksel dokunuşu tek olay dizisi olarak
+     işler. Eski touchstart + mousedown çifti Android'in sentetik mouse olayı
+     geldiğinde kendi 480 ms zamanlayıcısını iptal edebiliyordu. Ayrıca Sade/
+     Odak kabuğunda görülen .r616SheetBuild da aynı tanı girişidir. */
+  document.querySelectorAll('#surumEtiket,.r616SheetBuild').forEach(v=>{
+    if(v.dataset.r624DiagBound)return;
+    v.dataset.r624DiagBound='1';
+    v.style.touchAction='manipulation';
+    try{v.style.userSelect='none';v.style.webkitUserSelect='none'}catch(e){}
     v.addEventListener('contextmenu',ev=>{ev.preventDefault();return false});
     v.addEventListener('selectstart',ev=>{ev.preventDefault();return false});
 
-    /* 5 dokunuş sayacı korunuyor: notlar katmanı devre dışıysa hâlâ çalışır. */
-    v.addEventListener('click',()=>{
-      tapCount++;
-      clearTimeout(tapReset);
-      tapReset=setTimeout(()=>{tapCount=0},2200);
-      if(tapCount>=5){tapCount=0;clearTimeout(tapReset);open()}
-    },{passive:true});
-
-    /* ── Uzun basma → Diagnostics ── */
-    let basTimer=0, bastirClick=false, baslangic=null;
-    const iptal=()=>{ if(basTimer){clearTimeout(basTimer);basTimer=0} baslangic=null; };
-    const basla=ev=>{
-      iptal();
-      const t=ev.touches?ev.touches[0]:ev;
-      baslangic=t?{x:t.clientX,y:t.clientY}:null;
-      basTimer=setTimeout(()=>{
-        basTimer=0; bastirClick=true;
-        try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}
-        tapCount=0; clearTimeout(tapReset);
-        open();
-      },UZUN_BASMA_MS);
+    let basTimer=0,bastirClick=false,bastirReset=0,baslangic=null,pointerId=null,lastTouchAt=0;
+    const iptal=()=>{if(basTimer){clearTimeout(basTimer);basTimer=0}baslangic=null;pointerId=null};
+    const tetikle=()=>{
+      basTimer=0;bastirClick=true;
+      clearTimeout(bastirReset);bastirReset=setTimeout(()=>{bastirClick=false},900);
+      try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}
+      tapCount=0;clearTimeout(tapReset);open();
     };
-    /* Parmak kayarsa bu bir kaydırma jestidir, uzun basma değil. */
-    const kaydi=ev=>{
-      if(!baslangic||!basTimer)return;
-      const t=ev.touches?ev.touches[0]:ev; if(!t)return;
-      if(Math.abs(t.clientX-baslangic.x)>10||Math.abs(t.clientY-baslangic.y)>10) iptal();
+    const basla=(x,y,id=null)=>{
+      iptal();pointerId=id;baslangic={x:Number(x)||0,y:Number(y)||0};
+      basTimer=setTimeout(tetikle,UZUN_BASMA_MS);
     };
-    v.addEventListener('touchstart',basla,{passive:true});
-    v.addEventListener('touchmove',kaydi,{passive:true});
-    v.addEventListener('touchend',iptal,{passive:true});
-    v.addEventListener('touchcancel',iptal,{passive:true});
-    v.addEventListener('mousedown',basla);
-    v.addEventListener('mousemove',kaydi);
-    v.addEventListener('mouseup',iptal);
-    v.addEventListener('mouseleave',iptal);
-
-    /* Mevcut onclick'i sarmala: uzun basma tetiklendiyse notları AÇMA. */
-    const oncekiClick=v.onclick;
-    v.onclick=function(ev){
-      if(bastirClick){ bastirClick=false; try{ev.preventDefault();ev.stopPropagation()}catch(e){} return false; }
-      return oncekiClick?oncekiClick.call(this,ev):undefined;
+    const kaydi=(x,y,id=null)=>{
+      if(!baslangic||!basTimer||(pointerId!=null&&id!=null&&pointerId!==id))return;
+      if(Math.abs((Number(x)||0)-baslangic.x)>12||Math.abs((Number(y)||0)-baslangic.y)>12)iptal();
     };
 
-    /* Giriş yolunu keşfedilebilir yap. */
+    if('PointerEvent'in window){
+      v.addEventListener('pointerdown',ev=>{
+        if(ev.button!=null&&ev.button!==0)return;
+        basla(ev.clientX,ev.clientY,ev.pointerId);
+        try{v.setPointerCapture?.(ev.pointerId)}catch(e){}
+      },{passive:true});
+      v.addEventListener('pointermove',ev=>kaydi(ev.clientX,ev.clientY,ev.pointerId),{passive:true});
+      v.addEventListener('pointerup',iptal,{passive:true});
+      v.addEventListener('pointercancel',iptal,{passive:true});
+      v.addEventListener('lostpointercapture',iptal,{passive:true});
+    }else{
+      v.addEventListener('touchstart',ev=>{lastTouchAt=Date.now();const t=ev.touches?.[0];if(t)basla(t.clientX,t.clientY,'touch')},{passive:true});
+      v.addEventListener('touchmove',ev=>{const t=ev.touches?.[0];if(t)kaydi(t.clientX,t.clientY,'touch')},{passive:true});
+      v.addEventListener('touchend',iptal,{passive:true});
+      v.addEventListener('touchcancel',iptal,{passive:true});
+      v.addEventListener('mousedown',ev=>{if(Date.now()-lastTouchAt<900||ev.button!==0)return;basla(ev.clientX,ev.clientY,'mouse')});
+      v.addEventListener('mousemove',ev=>kaydi(ev.clientX,ev.clientY,'mouse'));
+      v.addEventListener('mouseup',iptal);v.addEventListener('mouseleave',iptal);
+    }
+
+    /* Capture aşamasında sentetik click'i durdur: eski onclick sürüm notlarını
+       tanı ekranının üzerine açamasın. Normal tek dokunuş aynen korunur. */
+    v.addEventListener('click',ev=>{
+      if(bastirClick){
+        bastirClick=false;clearTimeout(bastirReset);
+        try{ev.preventDefault();ev.stopImmediatePropagation()}catch(e){}
+        return;
+      }
+      if(v.id==='surumEtiket'){
+        tapCount++;clearTimeout(tapReset);tapReset=setTimeout(()=>{tapCount=0},2200);
+        if(tapCount>=5){tapCount=0;clearTimeout(tapReset);open()}
+      }
+    },true);
+
     try{
-      v.setAttribute('aria-label','Neler yenilendi — sürüm geçmişini aç. Uzun basınca sistem tanılaması açılır.');
-      v.dataset.tip='Dokun: sürüm geçmişi · Uzun bas: sistem tanılaması (Ctrl+Shift+D)';
+      v.setAttribute('aria-label',(v.id==='surumEtiket'?'Neler yenilendi. ':'')+'Uzun basınca sistem tanılaması açılır.');
+      v.dataset.tip='Uzun bas: sistem tanılaması ve rapor';
     }catch(e){}
-  }
+  });
 }
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.shiftKey&&(e.key==='D'||e.key==='d')){
@@ -45820,8 +45926,10 @@ document.addEventListener('keydown',e=>{
   }
 });
 window.addEventListener('pageshow',()=>bindEntry(),{passive:true});
+window.addEventListener('sukun:r616viewchange',()=>bindEntry(),{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindEntry,{once:true});
 else bindEntry();
+[120,500,1500].forEach(ms=>setTimeout(bindEntry,ms));
 
 /* Açılıştan sonra sessiz güvenli suite: sonuçlar yalnız Diagnostics açılırsa gösterilir. */
 setTimeout(()=>runSafe('boot'),1800);
@@ -56306,6 +56414,7 @@ function makeShell(){
       '<button class="r616Tool" type="button" data-r616-tool="journal"><i>▤</i><span>Günlük ve yedekleme</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="record"><i>●</i><span>Seansı kaydet</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="advanced"><i>⌘</i><span>Gelişmiş zikir araçları</span></button>'+
+      '<button class="r616Tool" type="button" data-r616-tool="diagnostics"><i>◎</i><span>Sistem tanısı ve rapor</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="vault"><i>◇</i><span>Mühür ve özel erişim</span></button>'+
       '<button class="r616Tool danger" type="button" data-r616-tool="stop"><i>■</i><span>Tüm sesleri durdur</span></button>'+
     '</div>'+
@@ -56569,6 +56678,7 @@ function bind(){
     else if(k==='layout')go('layout');
     else if(k==='journal')clickId('logBtn');
     else if(k==='record')clickId('recBtn');
+    else if(k==='diagnostics')window.SukunDiagnostics?.open?.();
     else if(k==='vault')clickId('vaultTrigger');
     else if(k==='stop')clickId('stopAll');
     else if(k==='advanced'){go('zikir');setTimeout(()=>{const d=$('r616ZikirTools');if(d)d.open=true},70)}
@@ -57219,7 +57329,7 @@ function syncSkinButtons(){
   const cur=currentSkin();
   document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
   const build=document.querySelector('.r616SheetBuild');
-  if(build)build.textContent='SÜKÛN v20.06 · r623 · '+(skins[cur]||skins.feyz);
+  if(build)build.textContent='SÜKÛN v20.07 · r624 · '+(skins[cur]||skins.feyz);
 }
 function mountSkinPanel(){
   const sheet=$('r616ToolsSheet');if(!sheet)return false;
