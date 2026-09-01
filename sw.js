@@ -1,8 +1,8 @@
 /* SÜKÛN r626 — yan etkisiz tanı ve durum tutarlılığı */
 'use strict';
 
-const SURUM = 'r626';
-const CACHE = 'sukun-r626-20260901a';
+const SURUM = 'r628';
+const CACHE = 'sukun-r628-20260901a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,8 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r626__.json';
 
 const NOTLAR = [
+  'r628 Güncelleme beklemede takılı kalabiliyordu; ses çalmıyorsa sessizce devreye alma emniyeti eklendi.',
+  'r627 KRİTİK: boşta çalışan arayüz fırtınası kesildi. Mutasyon 1360dan 106ya, zamanlayıcı 316/sndan 6/sne, kare isteği 216dan 58e indi. Sürüm notu JSONu onarıldı, 53 eksik sürüm işlendi.',
   'r626 r624 cihaz raporu, Derin Testin canlı __diag_* ses oturumlarını registryye ekleyip pauseAll/resumeAll çalıştırdığını ve Tekke kapısını rapor sırasında açık bıraktığını kanıtladı; tıklama kilidinin bu kaynağı kaldırıldı.',
   'r626 Derin Test artık tamamıyla salt-okunur ve izoledir; canlı ses sağlayıcısı kaydetmez, Tefekkür/Tekke açmaz, sayaç senkronu veya sentetik lifecycle olayı çalıştırmaz.',
   'r626 Test sürerken Güvenli/Derin/Taşma/JSON eylemleri kilitlenir; yarım test anına ait, cleanup öncesi yanıltıcı rapor dışa aktarılamaz.',
