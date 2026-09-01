@@ -1,8 +1,8 @@
-/* SÜKÛN r624 — seyir sürekliliği ve erişilebilir tanı */
+/* SÜKÛN r626 — yan etkisiz tanı ve durum tutarlılığı */
 'use strict';
 
-const SURUM = 'r624';
-const CACHE = 'sukun-r624-20260901a';
+const SURUM = 'r626';
+const CACHE = 'sukun-r626-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,18 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r624__.json';
+const BUILD_MARKER='./__sukun_build_r626__.json';
 
 const NOTLAR = [
+  'r626 r624 cihaz raporu, Derin Testin canlı __diag_* ses oturumlarını registryye ekleyip pauseAll/resumeAll çalıştırdığını ve Tekke kapısını rapor sırasında açık bıraktığını kanıtladı; tıklama kilidinin bu kaynağı kaldırıldı.',
+  'r626 Derin Test artık tamamıyla salt-okunur ve izoledir; canlı ses sağlayıcısı kaydetmez, Tefekkür/Tekke açmaz, sayaç senkronu veya sentetik lifecycle olayı çalıştırmaz.',
+  'r626 Test sürerken Güvenli/Derin/Taşma/JSON eylemleri kilitlenir; yarım test anına ait, cleanup öncesi yanıltıcı rapor dışa aktarılamaz.',
+  'r626 Rapor ve Güvenli Test registry, AudioLife ve AudioHub arasındaki çelişkileri ve sızmış __diag_* sağlayıcılarını ayrı durum tutarlılığı alanında gösterir.',
+  'r625 Sistem Durumu paneline Tam Tanı ve Testler ile JSON Rapor için görünür, tek dokunuşlu girişler eklendi; sürüm satırının altında da doğrudan tanı düğmesi bulunur.',
+  'r625 Android contextmenu ve pointercancel uzun basma dizisi düzeltildi; uzun basma artık yedek giriş olarak tam tanıyı açar.',
+  'r625 Tanı penceresi açılışta yaklaşık 16 bin düğümü otomatik taramaz ve test çalıştırmaz; güvenli/derin testler yalnız kullanıcı isteğiyle başlar, yenileme dört saniyeye düşürülür.',
+  'r625 Tanı katmanları bütün normal perdelerin üstüne alınır; açık Araçlar perdesi tanıdan önce kapatılır ve Kapat/Test/JSON dokunmaları engellenmez.',
+  'r625 99 Esmâ Seyri görünür ekrandaki takılan kayıt ve TTS okumalarını süre sınırıyla algılar, aynı tekrarı bir kez toparlar ve kayıt kaynağı ilerlemezse ses yedeğine düşer.',
   'r624 28 İsim Seyri, playing sonrasında ended/error üretmeyen Android medya durumunu currentTime ilerlemesiyle algılar; aynı fiziksel kaynak bir kez uyandırılır, ilerlemezse güvenli ses yedeğine düşer.',
   'r624 Ses çözümleyicisinin tamamı için görünür/gizli ekran emniyet süresi vardır; başarısız veya duyulmayan tekrar sayılmaz, görünür ekranda aynı tekrar yalnız bir kez otomatik yeniden denenir.',
   'r624 Sürüm etiketine uzun basma Pointer Events ile tek olay dizisine alındı; sentetik mouse iptali giderildi ve Sade/Odak sürüm satırı da aynı girişi açar.',

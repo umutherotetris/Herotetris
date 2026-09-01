@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r624 — seyir sürekliliği ve erişilebilir tanı
+     SÜKÛN r626 — yan etkisiz tanı ve durum tutarlılığı
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r624">
+<meta name="sukun-build" content="r626">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r624">
+<link rel="manifest" href="./manifest.webmanifest?v=r626">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1150,6 +1150,14 @@ button,summary,.sw,.tab,.tabTekke,.rut,.rxChip,.rxHistRow,.mzbzTap,.rxItem,.zP{t
   50%{ filter:brightness(1.14) saturate(1.18); }
 }
 @media (prefers-reduced-motion:reduce){ #surumEtiket{ animation:none; } }
+#r625DiagQuick{
+  display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:9px 4px 4px;
+  padding:9px 15px;border:1px solid color-mix(in srgb,var(--goldh,#ecd27e) 35%,var(--line));
+  border-radius:13px;background:color-mix(in srgb,var(--gold,#d6b36b) 8%,rgba(var(--sayfa2K),.72));
+  color:var(--goldh,#ecd27e);font:750 11px/1.2 "Figtree",system-ui;letter-spacing:.02em;
+  touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent
+}
+#r625DiagQuick:active{transform:scale(.98)}
 
 #vaultTrigger{display:inline-flex;align-items:center;justify-content:center;
   width:28px;height:28px;vertical-align:-.32em;cursor:pointer;
@@ -6470,7 +6478,8 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.07 — build 2026-09-01-r624</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v20.09 — build 2026-09-01-r626</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
 
@@ -22831,7 +22840,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r624',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r626',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -30279,7 +30288,7 @@ body.prModalOpen{overflow:hidden}
 .prSearchHead{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--pr-line)}#prSearchInput{flex:1;border:0;background:transparent;color:var(--text);font-size:16px;padding:10px;outline:0}.prSearchX{width:44px;border:0;background:transparent;color:var(--dim);font-size:20px}.prSearchResults{overflow:auto;padding:8px}.prResult{width:100%;display:flex;align-items:center;gap:11px;text-align:left;padding:11px;border:0;border-radius:13px;background:transparent;color:var(--text)}.prResult:hover,.prResult.sel{background:color-mix(in srgb,var(--gold) 10%,transparent)}.prResult i{font-style:normal;width:28px;text-align:center}.prResult span{min-width:0}.prResult b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.prResult small{display:block;color:var(--dim);font-size:9px;margin-top:2px}
 
 /* Sistem durumu */
-#prDiagOverlay{position:fixed;inset:0;z-index:12010;background:rgba(0,0,0,.68);display:flex;align-items:flex-end;justify-content:center}#prDiagOverlay[hidden]{display:none}.prDiagSheet{width:min(720px,100%);max-height:82vh;overflow:auto;border:1px solid var(--pr-line-strong);border-radius:24px 24px 0 0;background:var(--bg2);padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom));box-shadow:0 -22px 60px rgba(0,0,0,.45)}.prDiagHead{display:flex;justify-content:space-between;align-items:center}.prDiagHead h3{margin:0;color:var(--goldh);font-family:var(--serif)}.prDiagGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:14px 0}.prDiagCell{padding:11px;border:1px solid var(--pr-line);border-radius:14px}.prDiagCell small{display:block;color:var(--dim);font-size:9px}.prDiagCell b{font-size:13px}.prErrList{font:10px/1.5 monospace;white-space:pre-wrap;color:var(--dim);background:rgba(0,0,0,.16);padding:10px;border-radius:12px;max-height:220px;overflow:auto}
+#prDiagOverlay{position:fixed;inset:0;z-index:2147483200;background:rgba(0,0,0,.68);display:flex;align-items:flex-end;justify-content:center;isolation:isolate;pointer-events:auto;touch-action:manipulation}#prDiagOverlay[hidden]{display:none!important}.prDiagSheet{position:relative;z-index:1;width:min(720px,100%);max-height:88dvh;overflow:auto;overscroll-behavior:contain;pointer-events:auto;border:1px solid var(--pr-line-strong);border-radius:24px 24px 0 0;background:var(--bg2);padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom));box-shadow:0 -22px 60px rgba(0,0,0,.45);-webkit-overflow-scrolling:touch}.prDiagSheet button{position:relative;z-index:2;pointer-events:auto;touch-action:manipulation;min-height:44px}.prDiagHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.prDiagHead h3{margin:0;color:var(--goldh);font-family:var(--serif)}.prDiagGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:14px 0}.prDiagCell{padding:11px;border:1px solid var(--pr-line);border-radius:14px}.prDiagCell small{display:block;color:var(--dim);font-size:9px}.prDiagCell b{font-size:13px}.prErrList{font:10px/1.5 monospace;white-space:pre-wrap;color:var(--dim);background:rgba(0,0,0,.16);padding:10px;border-radius:12px;max-height:220px;overflow:auto;overscroll-behavior:contain}.prDiagActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.prDiagActions .btn{white-space:normal;line-height:1.3}.prDiagActions .prDiagWide{grid-column:1/-1}
 @media(max-width:480px){#prDashboard{padding:13px}.prMetrics{gap:6px}.prMetric{padding:9px}.prMetric b{font-size:18px}.prDashTitle{font-size:20px}.prKeyHint{display:none}.r168Grid{grid-template-columns:1fr}.r168Wide{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
@@ -33617,7 +33626,30 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLower
 
 /* ═══ 5) SİSTEM DURUMU / DIAGNOSTICS ═══ */
 let DIAG_RETURN=null;
-function diagCreate(){if(document.getElementById('prDiagOverlay'))return;const o=document.createElement('div');o.id='prDiagOverlay';o.hidden=true;o.innerHTML=`<div class="prDiagSheet" role="dialog" aria-modal="true" aria-labelledby="prDiagTitle"><div class="prDiagHead"><h3 id="prDiagTitle">Sistem Durumu</h3><button class="btn" id="prDiagX">Kapat</button></div><div class="prDiagGrid"><div class="prDiagCell"><small>SES DURUMU</small><b id="prDa">—</b></div><div class="prDiagCell"><small>AUDIO CONTEXT</small><b id="prDc">—</b></div><div class="prDiagCell"><small>KİLİT EKRANI</small><b id="prDms">—</b></div><div class="prDiagCell"><small>GÖRSEL PROFİL</small><b id="prDp">—</b></div><div class="prDiagCell"><small>UZUN İŞLER</small><b id="prDl">0</b></div><div class="prDiagCell"><small>HATA KAYDI</small><b id="prDe">0</b></div></div><div class="prErrList" id="prErrList">Kayıt yok.</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="prRecover">Ses motorunu toparla</button><button class="btn" id="prErrClear">Hataları temizle</button></div></div>`;document.body.appendChild(o);o.onclick=e=>{if(e.target===o)diagClose()};o.querySelector('#prDiagX').onclick=diagClose;o.querySelector('#prRecover').onclick=()=>AudioLife.recover('manual');o.querySelector('#prErrClear').onclick=()=>{PRERR.clear();diagRender()}}
+function diagCreate(){
+  if(document.getElementById('prDiagOverlay'))return;
+  const o=document.createElement('div');o.id='prDiagOverlay';o.hidden=true;
+  o.innerHTML=`<div class="prDiagSheet" role="dialog" aria-modal="true" aria-labelledby="prDiagTitle">
+    <div class="prDiagHead"><h3 id="prDiagTitle">Sistem Durumu</h3><button class="btn" id="prDiagX" type="button">Kapat</button></div>
+    <div class="prDiagGrid"><div class="prDiagCell"><small>SES DURUMU</small><b id="prDa">—</b></div><div class="prDiagCell"><small>AUDIO CONTEXT</small><b id="prDc">—</b></div><div class="prDiagCell"><small>KİLİT EKRANI</small><b id="prDms">—</b></div><div class="prDiagCell"><small>GÖRSEL PROFİL</small><b id="prDp">—</b></div><div class="prDiagCell"><small>UZUN İŞLER</small><b id="prDl">0</b></div><div class="prDiagCell"><small>HATA KAYDI</small><b id="prDe">0</b></div></div>
+    <div class="prErrList" id="prErrList">Kayıt yok.</div>
+    <div class="prDiagActions">
+      <button class="btn prDiagWide" id="prDiagFull" type="button">Tam Tanı ve Testler</button>
+      <button class="btn" id="prDiagJson" type="button">JSON Rapor</button>
+      <button class="btn" id="prRecover" type="button">Ses motorunu toparla</button>
+      <button class="btn" id="prErrClear" type="button">Hataları temizle</button>
+    </div>
+  </div>`;
+  document.body.appendChild(o);
+  o.addEventListener('click',e=>{if(e.target===o)diagClose()});
+  o.querySelector('#prDiagX').addEventListener('click',diagClose);
+  o.querySelector('#prDiagFull').addEventListener('click',()=>{
+    diagClose();setTimeout(()=>window.SukunDiagnostics?.open?.(),0);
+  });
+  o.querySelector('#prDiagJson').addEventListener('click',()=>window.SukunDiagnostics?.exportReport?.());
+  o.querySelector('#prRecover').addEventListener('click',()=>AudioLife.recover('manual'));
+  o.querySelector('#prErrClear').addEventListener('click',()=>{PRERR.clear();diagRender()});
+}
 function diagRender(){diagCreate();const a=id=>document.getElementById(id);const errs=PRERR.get();a('prDa').textContent=AudioLife.state+' · '+AudioLife.reason;a('prDc').textContent=(typeof ctx!=='undefined'&&ctx)?ctx.state:'kurulmadı';a('prDms').textContent=('mediaSession' in navigator)?((window.SesCapa&&SesCapa.isActive&&SesCapa.isActive())?(navigator.mediaSession.playbackState||'etkin'):'kapalı'):'destek yok';a('prDp').textContent=document.body.dataset.perf||'dengeli';a('prDl').textContent=PR_LONG+(PR_LASTLONG?' · son '+PR_LASTLONG+'ms':'');a('prDe').textContent=errs.length;a('prErrList').textContent=errs.length?errs.slice(0,20).map(x=>new Date(x.t).toLocaleTimeString()+' ['+x.kind+'] '+x.msg+(x.extra?' · '+x.extra:'')).join('\n'):'Kayıt yok.'}
 function diagKeys(e){
   if(e.key!=='Tab')return;
@@ -33627,7 +33659,13 @@ function diagKeys(e){
   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 }
-function diagOpen(){DIAG_RETURN=document.activeElement;diagRender();const o=document.getElementById('prDiagOverlay');o.hidden=false;if(!o.dataset.trap){o.addEventListener('keydown',diagKeys);o.dataset.trap='1'}document.body.classList.add('prModalOpen');setTimeout(()=>document.getElementById('prDiagX')?.focus(),20)}
+function diagOpen(){
+  DIAG_RETURN=document.activeElement;
+  try{window.SukunFriendlyUI?.closeTools?.()}catch(e){}
+  diagRender();const o=document.getElementById('prDiagOverlay');o.hidden=false;
+  if(!o.dataset.trap){o.addEventListener('keydown',diagKeys);o.dataset.trap='1'}
+  document.body.classList.add('prModalOpen');setTimeout(()=>document.getElementById('prDiagX')?.focus(),20);
+}
 function diagClose(){const o=document.getElementById('prDiagOverlay');if(o)o.hidden=true;if(document.getElementById('prSearchOverlay')?.hidden!==false)document.body.classList.remove('prModalOpen');if(DIAG_RETURN&&DIAG_RETURN.isConnected)DIAG_RETURN.focus();DIAG_RETURN=null}
 
 function audioLifePoll(){
@@ -34719,10 +34757,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r624',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r626',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r624-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r626-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -36627,8 +36665,16 @@ window.sukunStableTts=async function(text,lang='tr-TR',opt={}){
       u.onend=()=>finish(my===ttsSeq);u.onerror=()=>finish(false);
       timer=setTimeout(()=>finish(false),Math.max(12000,Math.min(120000,text.length*190+7000)));
       speechSynthesis.speak(u);
-      /* Motor isteği yutarsa kısa süre sonra pending/speaking ikisi de false olur. */
-      setTimeout(()=>{try{if(!done&&my===ttsSeq&&!speechSynthesis.speaking&&!speechSynthesis.pending)finish(false)}catch(e){}},900);
+      /* r625 — Samsung TTS soğuk başlangıçta 900 ms'den uzun süre hem
+         speaking hem pending=false kalabiliyor. Tek erken örnek başarısızlık
+         sayılmıyor; iki ayrı kontrolde de motor sessizse retry'ye geçiliyor. */
+      let sessizProbe=0;
+      const probe=()=>{try{
+        if(done||my!==ttsSeq||speechSynthesis.speaking||speechSynthesis.pending)return;
+        sessizProbe++;
+        if(sessizProbe<2)setTimeout(probe,900);else finish(false);
+      }catch(e){}};
+      setTimeout(probe,1300);
     }catch(e){finish(false)}
   });
   for(let a=0;a<=retries;a++){const ok=await once(a);if(ok)return true;if(my!==ttsSeq)return false}
@@ -36642,12 +36688,12 @@ try{
     SukunSourcePolicy.play=async function({key='',latin='',fallback='',title='Okuma',lang='tr-TR',recordReason='Bu öğe için kendi kaydın bulundu',resume=true,backgroundNative=false}={}){
       const text=String(latin||fallback||'').trim();
       if(key){
-        try{const b=await REC_DB.get(key);if(b){sukunSourceSet?.('recording',recordReason,title);const r=await playRecording(b,'r244:'+key,{detail:true,reason:recordReason,title,resume:!!resume,backgroundNative:!!backgroundNative,recordingKey:key});if(r?.ok)return{ok:true,source:'recording',key};if(backgroundNative&&r&&!r.ok)return{ok:false,source:'recording',backgroundBlocked:true,key,reason:r.reason||'background-native-failed'};if(r&&!['play-rejected','error','exception'].includes(r.reason))return{ok:false,source:'recording',cancelled:true,key}}}catch(e){}
+        try{const b=await REC_DB.get(key);if(b){sukunSourceSet?.('recording',recordReason,title);const r=await playRecording(b,'r244:'+key,{detail:true,reason:recordReason,title,resume:!!resume,backgroundNative:!!backgroundNative,recordingKey:key});if(r?.ok)return{ok:true,source:'recording',key,reason:r.reason||'ended'};if(backgroundNative&&document.hidden&&r&&!r.ok)return{ok:false,source:'recording',backgroundBlocked:true,key,reason:r.reason||'background-native-failed'};if(r&&!['play-rejected','error','exception','play-timeout','playback-stalled'].includes(r.reason))return{ok:false,source:'recording',cancelled:true,key,reason:r.reason};/* görünür ekranda gerçek kayıt hatası → TTS yedeği */}}catch(e){}
       }
       if(!text)return{ok:false,source:'none',key};
       if(backgroundNative&&document.hidden)return{ok:false,source:'none',backgroundBlocked:true,key,reason:'no-recording-background'};
       try{sukunSourceSet?.('tts',latin?'Kayıt bulunamadı; Latin okunuş okunuyor':'Metin yedeği TTS ile okunuyor',title)}catch(e){}
-      const ok=await sukunStableTts(text,lang,{retries:1});return{ok,source:'tts',key,text};
+      const ok=await sukunStableTts(text,lang,{retries:1});return{ok,source:'tts',key,text,reason:ok?'ended':'tts-failed'};
     };
   }
 }catch(e){}
@@ -44952,6 +44998,9 @@ window.SukunPeekStyle={
   overflow:auto;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
+  isolation:isolate;
+  pointer-events:auto;
+  touch-action:pan-y;
 }
 #r455Diag *{box-sizing:border-box}
 #r455Diag .dShell{width:min(1120px,100%);margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
@@ -44967,7 +45016,8 @@ window.SukunPeekStyle={
 #r455Diag button{
   appearance:none;border:1px solid color-mix(in srgb,var(--gold,#d6b36b) 20%,rgba(255,255,255,.10));
   background:rgba(255,255,255,.035);color:inherit;border-radius:12px;
-  min-height:38px;padding:8px 12px;font:700 11px/1 "Figtree",system-ui;cursor:pointer
+  min-height:44px;padding:8px 12px;font:700 11px/1 "Figtree",system-ui;cursor:pointer;
+  pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent
 }
 #r455Diag button:active{transform:translateY(1px)}
 #r455Diag .dPrimary{border-color:color-mix(in srgb,var(--gold,#d6b36b) 42%,rgba(255,255,255,.12));color:var(--goldh,#ecd27e)}
@@ -45095,7 +45145,7 @@ function ensureUI(){
       <details open>
         <summary><span>Regression Testleri</span><span id="r455TestScore">—</span></summary>
         <div class="dBody">
-          <div class="dNote">Güvenli test kullanıcı verisini değiştirmez. Derin test yalnız ses motoru boşta ise mock session state-machine, çoklu pause/resume, Tefekkür giriş/çıkış, Tekke giriş/çıkış ve sentetik lifecycle smoke testi çalıştırır.</div>
+          <div class="dNote">Güvenli ve derin testler salt okunurdur. Canlı ses oturumu kaydetmez, pause/resume çağırmaz; Tefekkür veya Tekke’yi açıp kapatmaz ve sentetik lifecycle olayı yayınlamaz.</div>
           <div class="dTests" id="r455Tests"></div>
         </div>
       </details>
@@ -45184,6 +45234,23 @@ function sessionRows(){
     return s||{id,state:'?',observedState:'?',capabilities:{}};
   });
 }
+function audioConsistency(){
+  const A=ar();
+  const registry=A?.aggregateState?.()||'unavailable';
+  const life=window.AudioLife?.snapshot?.()||null;
+  const hub=window.SukunAudioHub?.snapshot?.()||null;
+  const list=A?.list?.()||[];
+  const diagnosticProviders=list.filter(id=>String(id).startsWith('__diag_'));
+  const b=window.BERHET_SEYIR,e=window.ESMA99_SEYIR;
+  const journey=!!((b?.run&&!b?.paused)||(e?.run&&!e?.paused)||b?.systemHold||e?.systemHold);
+  const tangible=journey||(+hub?.media||0)>0||(+hub?.tts||0)>0;
+  const issues=[];
+  if(diagnosticProviders.length)issues.push('tanı sağlayıcısı sızdı: '+diagnosticProviders.join(','));
+  if(registry==='idle'&&hub?.state==='playing'&&!tangible)issues.push('AudioHub playing fakat fiziksel kaynak yok');
+  if(registry==='idle'&&['playing','preparing','recovering'].includes(life?.state)&&!tangible)issues.push('AudioLife '+life.state+' fakat registry idle');
+  if(registry==='idle'&&life?.state==='paused'&&!life?.userPaused&&!tangible)issues.push('AudioLife paused fakat kullanıcı duraklatmadı');
+  return{ok:!issues.length,registry,life:life?.state||'—',hub:hub?.state||'—',tangible,diagnosticProviders,issues};
+}
 function snapshot(){
   const p=probe();
   const A=ar();
@@ -45201,6 +45268,7 @@ function snapshot(){
       aggregateState:A?.aggregateState?.()||'unavailable',
       controller:ctl,
       sessions,
+      consistency:audioConsistency(),
       lifecycle:window.AudioLife?.snapshot?.()||null,
       hub:window.SukunAudioHub?.snapshot?.()||null
     },
@@ -45433,7 +45501,6 @@ async function safeSuite(){
     return status(n===1,`${n} adet #r170Now`);
   }));
   R.push(await check('NAV','Tek görünür gezinme yüzeyi',()=>{
-    window.SukunNavigation?.sync?.();
     const ids=['r494MainNavSlot','r494TefNavSlot','r494DockNavSlot'];
     const visible=ids.filter(id=>{const el=$(id);if(!el)return false;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return r.width>1&&r.height>1&&c.display!=='none'&&c.visibility!=='hidden'});
     const ctx=window.currentFlowState?.snapshot?.()?.context||'idle';
@@ -45451,6 +45518,10 @@ async function safeSuite(){
     const req=['smart-session','berhetiyye','tovbe','ayetulkursi','salavat','fatiha','seyyid','delail','hizb','hatim','lataif','mix'];
     const list=A?.list?.()||[],miss=req.filter(x=>!list.includes(x));
     return status(!miss.length,miss.length?'eksik: '+miss.join(', '):`${list.length} provider kayıtlı`);
+  }));
+  R.push(await check('AUDIO','Canlı durum tutarlılığı',()=>{
+    const c=audioConsistency();
+    return{status:c.ok?'PASS':'WARN',detail:c.ok?`registry ${c.registry} · AudioLife ${c.life} · AudioHub ${c.hub}`:c.issues.join(' · ')};
   }));
   R.push(await check('AUDIO','State machine geçiş günlüğü',()=>{
     const bad=transitionAudit();
@@ -45496,7 +45567,6 @@ async function safeSuite(){
     return{status:s.overlap?'FAIL':'PASS',detail:`${Math.round(s.vw)}×${Math.round(s.vh)} · ring ${Math.round(s.ring)}px · dock ${Math.round(s.dockReserve)}px · overlap ${s.overlap?'EVET':'hayır'}`};
   }));
   R.push(await check('TEFEKKÜR','İsteğe bağlı sistem tam ekranı',()=>{
-    window.SUKUN_TEFEKKUR?.syncSettings?.();
     const api=window.SUKUN_TEFEKKUR;
     const row=$('r530TefFullscreen');
     const choices=[...(row?.querySelectorAll('[data-r530-tef-fs]')||[])];
@@ -45576,173 +45646,80 @@ async function safeSuite(){
   return R;
 }
 
-async function mockStateMachineTest(){
-  const A=ar();
-  if(!A?.register)return{status:'SKIP',detail:'registry yok'};
-  if(A.aggregateState?.()!=='idle')return{status:'SKIP',detail:'gerçek audio aktif; kullanıcı seansı bozulmadı'};
-  const id='__diag_state__';
-  let st='idle',vol=.42;
-  try{
-    A.register(id,{
-      priority:-9999,title:'Diagnostics State Mock',
-      getState:()=>st,
-      play:()=>{st='playing'},
-      pause:()=>{st='paused'},
-      resume:()=>{st='playing'},
-      stop:()=>{st='idle'},
-      getVolume:()=>vol,
-      setVolume:v=>{vol=+v;return vol}
-    });
-    const s=A.session(id);
-    s.play();await sleep(45);if(s.state()!=='playing')throw new Error('play→'+s.state());
-    s.pause();await sleep(45);if(s.state()!=='paused')throw new Error('pause→'+s.state());
-    s.resume();await sleep(45);if(s.state()!=='playing')throw new Error('resume→'+s.state());
-    const v=s.volume(.73);if(Math.abs(v-.73)>.001)throw new Error('volume→'+v);
-    s.stop();await sleep(70);
-    const end=s.state();if(!['ended','idle'].includes(end))throw new Error('stop→'+end);
-    await sleep(280);
-    return{status:'PASS',detail:'play → pause → resume → stopping/ended → idle + volume'};
-  }finally{
-    try{A.unregister(id)}catch(e){}
-  }
-}
-async function mockMultiAudioTest(){
-  const A=ar();
-  if(!A?.register)return{status:'SKIP',detail:'registry yok'};
-  if(A.aggregateState?.()!=='idle')return{status:'SKIP',detail:'gerçek audio aktif; aggregate test atlandı'};
-  const ids=['__diag_multi_a__','__diag_multi_b__'];
-  const state={};
-  try{
-    ids.forEach((id,i)=>{
-      state[id]='idle';
-      A.register(id,{
-        priority:-9900+i,title:'Diagnostics Multi '+(i+1),
-        getState:()=>state[id],
-        play:()=>{state[id]='playing'},
-        pause:()=>{state[id]='paused'},
-        resume:()=>{state[id]='playing'},
-        stop:()=>{state[id]='idle'}
-      });
-    });
-    ids.forEach(id=>A.play(id));await sleep(60);
-    if(ids.some(id=>A.state(id)!=='playing'))throw new Error('iki mock playing olmadı');
-    A.pauseAll();await sleep(70);
-    if(!A.aggregateSnapshot?.().paused||ids.some(id=>A.state(id)!=='paused'))throw new Error('pauseAll yakalama başarısız');
-    A.resumeAll();await sleep(70);
-    if(A.aggregateSnapshot?.().paused||ids.some(id=>A.state(id)!=='playing'))throw new Error('resumeAll başarısız');
-    ids.forEach(id=>A.stop(id));await sleep(80);
-    return{status:'PASS',detail:'2 session · play → pauseAll → resumeAll → stop'};
-  }finally{
-    ids.forEach(id=>{try{A.unregister(id)}catch(e){}});
-    try{
-      const ag=A.aggregateSnapshot?.();
-      if(ag?.paused)A.resumeAll?.();
-    }catch(e){}
-  }
-}
-async function tefekkurSmoke(){
-  const A=ar();
-  if(A?.aggregateState?.()!=='idle')return{status:'SKIP',detail:'audio aktif; Tefekkür toggle yapılmadı'};
-  if(document.body.classList.contains('r436-tekke-open'))return{status:'SKIP',detail:'Tekke açık; Tefekkür toggle yapılmadı'};
-  const already=document.body.classList.contains('sukun-tefekkur-mode');
-  const toggle=window.SUKUN_TEFEKKUR?.toggle;
-  if(typeof toggle!=='function')return{status:'SKIP',detail:'SUKUN_TEFEKKUR.toggle API yok'};
-  const y=scrollY;
-  const geometry=()=>{
-    window.SukunCanonicalTefekkur?.mount?.();
-    window.SukunLayoutEngine?.measure?.();
-    const root=$('tfRefinedLayout'),actions=root?.querySelector('.zCounterActions');
-    const u=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn'),visual=root?.querySelector('.tfVisualPanel'),slab=root?.querySelector('.tfControlPanel'),dock=$('r170Now');
-    const exitRow=[...(root?.children||[])].find(el=>el.classList?.contains('tfExitRow')),exit=$('tefExitBtn');
-    const overlap=(a,b)=>!!(a&&b&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top);
-    const rr=root?.getBoundingClientRect(),cr=root?.querySelector('.zCounterRow')?.getBoundingClientRect(),ur=u?.getBoundingClientRect(),ar0=auto?.getBoundingClientRect(),pr=plus?.getBoundingClientRect(),vr=visual?.getBoundingClientRect(),xr=exitRow?.getBoundingClientRect(),br=exit?.getBoundingClientRect(),sr=slab?.getBoundingClientRect(),dr=dock?.getBoundingClientRect();
-    const centered=!!(rr&&ar0&&Math.abs((ar0.left+ar0.width/2)-(rr.left+rr.width/2))<=8);
-    const noInternal=!!(ur&&ar0&&pr&&!overlap(ur,ar0)&&!overlap(ar0,pr));
-    const dockOverlap=!!(dr&&dr.width>0&&dr.height>0&&((sr&&overlap(dr,sr))||(xr&&overlap(dr,xr))||(br&&overlap(dr,br))));
-    const canonicalExit=!!exit&&exit.parentNode===exitRow&&exitRow?.parentNode===root&&exit.dataset.tfCanonicalExit==='r530'&&document.querySelectorAll('#tefExitBtn').length===1;
-    const ordered=!!(visual&&exitRow&&slab&&visual.nextElementSibling===exitRow&&exitRow.nextElementSibling===slab);
-    const exitClear=!!(vr&&xr&&br&&sr&&!overlap(vr,xr)&&!overlap(xr,sr)&&!overlap(br,sr)&&xr.top>=vr.bottom-1&&xr.bottom<=sr.top+1);
-    const noLegacy=!$('r444TefExit')&&!root?.querySelector('.tfExitWrap');
-    const visible=el=>{if(!el)return false;const r=el.getBoundingClientRect(),c=getComputedStyle(el);return r.width>1&&r.height>1&&c.display!=='none'&&c.visibility!=='hidden'};
-    const tefNav=$('r494TefNavSlot'),dockNav=$('r494DockNavSlot');
-    const singleNav=visible(tefNav)&&!visible(dockNav)&&!visible($('r170Prev'))&&!visible($('r170Next'));
-    const touchNodes=[exit,u,auto,plus,...(tefNav?.querySelectorAll('button')||[])];
-    const touch=touchNodes.length>=7&&touchNodes.every(el=>{const r=el?.getBoundingClientRect();return !!r&&r.width>=44&&r.height>=44});
-    const readableNodes=[exit,root?.querySelector('.zCounterSide small'),root?.querySelector('.zCounterSide em'),$('cntSub'),$('r470VoiceSource'),tefNav?.querySelector('button')];
-    const readable=readableNodes.every(el=>el&&parseFloat(getComputedStyle(el).fontSize)>=9);
-    const horizontalClear=!!cr&&cr.left>=-1&&cr.right<=innerWidth+1;
-    const owned=!!actions&&u?.parentNode===actions&&auto?.parentNode===actions&&plus?.parentNode===actions&&canonicalExit&&noLegacy;
-    return{ok:!!root&&owned&&centered&&noInternal&&!dockOverlap&&ordered&&exitClear&&singleNav&&touch&&readable&&horizontalClear,owned,centered,noInternal,dockOverlap,canonicalExit,ordered,exitClear,singleNav,touch,readable,horizontalClear};
+function isolatedSession(initial='idle'){
+  const allowed={
+    idle:new Set(['playing']),playing:new Set(['paused','stopping']),
+    paused:new Set(['playing','stopping']),stopping:new Set(['ended']),ended:new Set(['idle','playing'])
   };
-  try{
-    if(!already){toggle();await sleep(220)}
-    const entered=document.body.classList.contains('sukun-tefekkur-mode');
-    const g=geometry();
-    if(!entered||!g.ok)throw new Error(`enter ${entered} · owned ${g.owned} · centered ${g.centered} · internal ${g.noInternal} · dockOverlap ${g.dockOverlap} · exit ${g.canonicalExit} · ordered ${g.ordered} · clear ${g.exitClear} · singleNav ${g.singleNav} · touch44 ${g.touch} · readable ${g.readable} · horizontal ${g.horizontalClear}`);
-    if(!already){$('tefExitBtn')?.click();await sleep(180)}
-    const exited=already||!document.body.classList.contains('sukun-tefekkur-mode');
-    const actions=document.querySelector('#tfRefinedLayout .zCounterActions');
-    const stable=actions&&['undoBtn','autoBtn','plusBtn'].every(id=>$(id)?.parentNode===actions);
-    if(!exited||!stable)throw new Error(`exit ${exited} · canonical stable ${!!stable}`);
-    return{status:'PASS',detail:'enter → tek navigation yüzeyi → 44 px dokunma → okunur durum metni → neon çıkış → dock-safe exit'};
-  }finally{
-    try{scrollTo({top:y,behavior:'instant'})}catch(e){try{scrollTo(0,y)}catch(_){}}
-    if(!already&&document.body.classList.contains('sukun-tefekkur-mode'))try{window.SUKUN_TEFEKKUR?.exit?.()}catch(e){}
-  }
+  let state=initial,volume=.42;const history=[];
+  const move=next=>{if(!allowed[state]?.has(next))throw new Error(state+'→'+next);history.push(state+'→'+next);state=next;return state};
+  return{
+    play(){return move('playing')},pause(){return move('paused')},resume(){return move('playing')},
+    stop(){move('stopping');move('ended');return move('idle')},state:()=>state,
+    volume(v){if(v===undefined)return volume;volume=Math.max(0,Math.min(1,+v||0));return volume},history
+  };
+}
+async function isolatedStateMachineTest(){
+  const s=isolatedSession();
+  s.play();s.pause();s.resume();const v=s.volume(.73);s.stop();
+  if(s.state()!=='idle'||Math.abs(v-.73)>.001)throw new Error('izole state/volume sözleşmesi bozuk');
+  return{status:'PASS',detail:s.history.join(' · ')+' · volume '+v+' · canlı registry değişmedi'};
+}
+async function isolatedMultiAudioTest(){
+  const sessions=[isolatedSession(),isolatedSession()];
+  const aggregate=()=>({playing:sessions.filter(s=>s.state()==='playing').length,paused:sessions.filter(s=>s.state()==='paused').length});
+  sessions.forEach(s=>s.play());if(aggregate().playing!==2)throw new Error('iki izole session playing olmadı');
+  sessions.forEach(s=>s.pause());if(aggregate().paused!==2)throw new Error('izole pauseAll modeli başarısız');
+  sessions.forEach(s=>s.resume());if(aggregate().playing!==2)throw new Error('izole resumeAll modeli başarısız');
+  sessions.forEach(s=>s.stop());if(sessions.some(s=>s.state()!=='idle'))throw new Error('izole stop modeli başarısız');
+  return{status:'PASS',detail:'2 izole session · play → pause → resume → stop · canlı AudioLife etkilenmedi'};
+}
+async function tefekkurReadonlyAudit(){
+  const root=$('tfRefinedLayout'),actions=root?.querySelector('.zCounterActions');
+  const u=$('undoBtn'),auto=$('autoBtn'),plus=$('plusBtn'),exit=$('tefExitBtn');
+  const exitRow=[...(root?.children||[])].find(el=>el.classList?.contains('tfExitRow'));
+  const api=window.SUKUN_TEFEKKUR;
+  const mode=document.body.classList.contains('sukun-tefekkur-mode');
+  const canonicalExit=!!exit&&exit.parentNode===exitRow&&exitRow?.parentNode===root&&exit.dataset.tfCanonicalExit==='r530'&&document.querySelectorAll('#tefExitBtn').length===1;
+  const owned=!!actions&&u?.parentNode===actions&&auto?.parentNode===actions&&plus?.parentNode===actions;
+  const noLegacy=!$('r444TefExit')&&!root?.querySelector('.tfExitWrap');
+  const layout=window.SukunLayoutEngine?.snapshot?.();
+  const ok=!!root&&owned&&canonicalExit&&noLegacy&&typeof api?.toggle==='function'&&typeof api?.exit==='function'&&!layout?.overlap;
+  return{status:ok?'PASS':'FAIL',detail:`salt-okunur · mod ${mode?'açık':'kapalı'} · canonical ${owned&&canonicalExit} · legacy ${!noLegacy} · overlap ${!!layout?.overlap}`};
+}
+async function zikirReadonlyAudit(){
+  const numeric=[$('cntBig')?.textContent,$('cntRemain')?.textContent].every(v=>v!=null&&!Number.isNaN(Number(String(v).replace(/[^\d.-]/g,''))));
+  const ids=['undoBtn','autoBtn','plusBtn'],nodes=ids.map($),actions=document.querySelector('#tfRefinedLayout .zCounterActions');
+  const stable=nodes.every(Boolean)&&nodes.every(x=>x.parentNode===actions)&&ids.every(id=>document.querySelectorAll('#'+id).length===1);
+  return{status:numeric&&stable?'PASS':'FAIL',detail:`salt-okunur · counter numeric ${numeric} · canonical controls ${stable}`};
+}
+async function tekkeReadonlyAudit(){
+  const api=window.Tekke,b=document.body.classList;
+  const open=b.contains('r436-tekke-open'),gate=b.contains('r436-tekke-gate'),active=b.contains('r436-tekke-active'),player=b.contains('r436-tekke-player-open');
+  const contract=typeof api?.open==='function'&&typeof api?.close==='function'&&typeof api?.isActive==='function';
+  const state=(!gate||open)&&(!player||active);
+  return{status:contract&&state?'PASS':'FAIL',detail:`salt-okunur · API ${contract} · open ${open} · gate ${gate} · active ${active} · player ${player}`};
+}
+async function lifecycleReadonlyAudit(){
+  const P=window.SukunRuntimeProbe,l=P?.lifecycle?.()||[],hub=window.SukunLifecycleHub?.snapshot?.();
+  if(!P)return{status:'SKIP',detail:'runtime probe yok'};
+  const page=l.some(x=>x.type==='pageshow'),visibility=l.some(x=>x.type==='visibilitychange');
+  const ok=page&&(+hub?.subscribers||0)>=1;
+  return{status:ok?'PASS':'WARN',detail:`salt-okunur · lifecycle ${l.length} · pageshow ${page} · visibility ${visibility} · subscribers ${hub?.subscribers??'—'}`};
 }
 
-async function zikirSmoke(){
-  const before=['undoBtn','autoBtn','plusBtn'].map(id=>$(id)?.parentNode);
-  window.SukunUIRuntime?.sync?.();
-  await sleep(80);
-  const numeric=[$('cntBig')?.textContent,$('cntRemain')?.textContent].every(v=>v!=null&&!Number.isNaN(Number(String(v).replace(/[^\d.-]/g,''))));
-  const buttons=['undoBtn','autoBtn','plusBtn'].every(id=>!!$(id));
-  const parents=['undoBtn','autoBtn','plusBtn'].map(id=>$(id)?.parentNode);
-  const stable=buttons&&parents.every(Boolean);
-  return{status:numeric&&stable?'PASS':'FAIL',detail:`counter numeric ${numeric} · controls stable ${stable} · kullanıcı sayacı değiştirilmedi`};
-}
-async function tekkeSmoke(){
-  const A=ar();
-  if(A?.aggregateState?.()!=='idle')return{status:'SKIP',detail:'audio aktif; Tekke smoke atlandı'};
-  if(typeof window.Tekke?.open!=='function'||typeof window.Tekke?.close!=='function')
-    return{status:'SKIP',detail:'Tekke API yok'};
-  const already=document.body.classList.contains('r436-tekke-open');
-  if(already){
-    const gate=document.body.classList.contains('r436-tekke-gate');
-    const active=document.body.classList.contains('r436-tekke-active');
-    return{status:'PASS',detail:`mevcut Tekke doğrulandı · gate ${gate} · active ${active}`};
-  }
-  const y=scrollY;
-  try{
-    window.Tekke.open();await sleep(180);
-    const opened=document.body.classList.contains('r436-tekke-open');
-    const gate=document.body.classList.contains('r436-tekke-gate');
-    const back=!!document.querySelector('#tk #backSukun');
-    if(!opened||!gate||!back)throw new Error(`open ${opened} · gate ${gate} · back ${back}`);
-    window.Tekke.close();await sleep(180);
-    const closed=!document.body.classList.contains('r436-tekke-open');
-    if(!closed)throw new Error('close body-state temizlenmedi');
-    return{status:'PASS',detail:'lazy open → gate/back contract → close'};
-  }finally{
-    if(!already&&document.body.classList.contains('r436-tekke-open')){
-      try{window.Tekke.close()}catch(e){}
-    }
-    try{scrollTo({top:y,behavior:'instant'})}catch(e){try{scrollTo(0,y)}catch(_){}}
-  }
-}
-async function lifecycleSmoke(){
-  const P=window.SukunRuntimeProbe;
-  if(!P)return{status:'SKIP',detail:'runtime probe yok'};
-  const e0=P.errors?.().length||0,l0=P.lifecycle?.().length||0;
-  window.dispatchEvent(new Event('pageshow'));
-  await sleep(120);
-  const e1=P.errors?.().length||0,l1=P.lifecycle?.().length||0;
-  return{status:e1===e0&&l1>l0?'PASS':'WARN',detail:`sentetik pageshow · lifecycle ${l0}→${l1} · errors ${e0}→${e1}`};
+function setTestControls(active,kind=''){
+  ['r455SafeBtn','r455DeepBtn','r501OverflowBtn','r501OverflowScanBtn','r455ExportBtn'].forEach(id=>{const b=$(id);if(b)b.disabled=!!active});
+  const safe=$('r455SafeBtn'),deep=$('r455DeepBtn');
+  if(safe)safe.textContent=active&&kind==='safe'?'Test çalışıyor…':'Güvenli Test';
+  if(deep)deep.textContent=active&&kind==='deep'?'Test çalışıyor…':'Derin Test';
+  const root=$('r455Diag');if(root)root.dataset.testRunning=active?'1':'0';
 }
 
 async function runSafe(reason='auto'){
   if(running)return lastResults;
   running=true;
+  setTestControls(true,'safe');
   const diagnosticToken=window.SukunDiagnosticWork?.begin?.('safe-suite:'+reason);
   try{
     lastResults=await safeSuite();
@@ -45753,22 +45730,23 @@ async function runSafe(reason='auto'){
   }finally{
     window.SukunDiagnosticWork?.end?.(diagnosticToken,1000);
     running=false;
+    setTestControls(false);
   }
 }
 async function runDeep(){
   if(running)return lastResults;
   running=true;
+  setTestControls(true,'deep');
   const diagnosticToken=window.SukunDiagnosticWork?.begin?.('deep-suite');
-  const btn=$('r455DeepBtn');if(btn){btn.disabled=true;btn.textContent='Test çalışıyor…'}
   try{
     const base=await safeSuite();
     const extra=[];
-    extra.push(await check('AUDIO-DEEP','State-machine mock',mockStateMachineTest));
-    extra.push(await check('AUDIO-DEEP','Çoklu session aggregate',mockMultiAudioTest));
-    extra.push(await check('ZİKİR-DEEP','Zikir stabilizasyon smoke',zikirSmoke));
-    extra.push(await check('TEFEKKÜR-DEEP','Tefekkür enter/exit smoke',tefekkurSmoke));
-    extra.push(await check('TEKKE-DEEP','Tekke open/gate/close smoke',tekkeSmoke));
-    extra.push(await check('LIFECYCLE-DEEP','pageshow smoke',lifecycleSmoke));
+    extra.push(await check('AUDIO-DEEP','İzole state-machine modeli',isolatedStateMachineTest));
+    extra.push(await check('AUDIO-DEEP','İzole çoklu session modeli',isolatedMultiAudioTest));
+    extra.push(await check('ZİKİR-DEEP','Zikir salt-okunur sözleşmesi',zikirReadonlyAudit));
+    extra.push(await check('TEFEKKÜR-DEEP','Tefekkür salt-okunur sözleşmesi',tefekkurReadonlyAudit));
+    extra.push(await check('TEKKE-DEEP','Tekke salt-okunur sözleşmesi',tekkeReadonlyAudit));
+    extra.push(await check('LIFECYCLE-DEEP','Lifecycle salt-okunur sözleşmesi',lifecycleReadonlyAudit));
     lastResults=[...base,...extra];
     testHistory.push({kind:'deep',at:Date.now(),results:lastResults});
     if(testHistory.length>12)testHistory.shift();
@@ -45777,7 +45755,7 @@ async function runDeep(){
   }finally{
     window.SukunDiagnosticWork?.end?.(diagnosticToken,1200);
     running=false;
-    if(btn){btn.disabled=false;btn.textContent='Derin Test'}
+    setTestControls(false);
   }
 }
 function renderTests(){
@@ -45801,6 +45779,10 @@ function renderTests(){
   </div>`).join('');
 }
 function exportReport(){
+  if(running){
+    const sub=$('r455DiagSub');if(sub)sub.textContent='Test tamamlanıyor · rapor düğmesi test bitince açılacak';
+    return false;
+  }
   const data=snapshot();
   data.testHistory=testHistory.slice();
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -45809,9 +45791,14 @@ function exportReport(){
   a.download=`sukun-diagnostics-${BUILD}-${new Date().toISOString().replace(/[:.]/g,'-')}.json`;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  return true;
 }
 function open(){
   const diagnosticToken=window.SukunDiagnosticWork?.begin?.('diagnostics-open');
+  /* Hangi girişten gelirse gelsin alttaki araç perdesi dokunma yakalayamaz. */
+  try{window.SukunFriendlyUI?.closeTools?.()}catch(e){}
+  const simple=$('prDiagOverlay');if(simple)simple.hidden=true;
+  document.body.classList.remove('prModalOpen');
   const root=ensureUI();
   root.hidden=false;
   prevHtmlOverflow=document.documentElement.style.overflow;
@@ -45819,11 +45806,14 @@ function open(){
   render();
   clearInterval(refreshTimer);
   refreshTimer=setInterval(function diagTick(){
+    if(root.hidden||document.hidden)return;
     const token=window.SukunDiagnosticWork?.begin?.('diagnostics-render');
     try{render()}finally{window.SukunDiagnosticWork?.end?.(token,500)}
-  },1000);
-  if(!lastResults.length)setTimeout(()=>runSafe('open'),100);
-  setTimeout(()=>{try{window.SukunOverflowDebug?.scan?.({render:true,highlight:false})}catch(e){}},180);
+  },4000);
+  /* r625: Tam tanı açılır açılmaz güvenli suite + 16 bin düğümlük taşma
+     taraması aynı anda çalışıyordu. Kullanıcı daha Kapat'a dokunamadan ana
+     iş parçacığı saniyelerce bloke olabiliyordu. Testler artık yalnız kendi
+     görünür düğmelerine dokunulduğunda başlar. */
   window.SukunDiagnosticWork?.end?.(diagnosticToken,1000);
 }
 function close(){
@@ -45858,7 +45848,6 @@ function bindEntry(){
     v.dataset.r624DiagBound='1';
     v.style.touchAction='manipulation';
     try{v.style.userSelect='none';v.style.webkitUserSelect='none'}catch(e){}
-    v.addEventListener('contextmenu',ev=>{ev.preventDefault();return false});
     v.addEventListener('selectstart',ev=>{ev.preventDefault();return false});
 
     let basTimer=0,bastirClick=false,bastirReset=0,baslangic=null,pointerId=null,lastTouchAt=0;
@@ -45869,6 +45858,14 @@ function bindEntry(){
       try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}
       tapCount=0;clearTimeout(tapReset);open();
     };
+    /* r625: Android uzun basmayı pointerup yerine contextmenu/pointercancel
+       dizisiyle bitirebilir. Önceki kod contextmenu'yu yalnız engelliyor,
+       dolayısıyla tam tetik anında kendi zamanlayıcısını da kaybediyordu. */
+    v.addEventListener('contextmenu',ev=>{
+      ev.preventDefault();
+      if(!bastirClick)tetikle();
+      return false;
+    });
     const basla=(x,y,id=null)=>{
       iptal();pointerId=id;baslangic={x:Number(x)||0,y:Number(y)||0};
       basTimer=setTimeout(tetikle,UZUN_BASMA_MS);
@@ -45917,6 +45914,11 @@ function bindEntry(){
       v.dataset.tip='Uzun bas: sistem tanılaması ve rapor';
     }catch(e){}
   });
+  const quick=$('r625DiagQuick');
+  if(quick&&!quick.dataset.diagBound){
+    quick.dataset.diagBound='1';
+    quick.addEventListener('click',()=>open());
+  }
 }
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.shiftKey&&(e.key==='D'||e.key==='d')){
@@ -45931,8 +45933,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else bindEntry();
 [120,500,1500].forEach(ms=>setTimeout(bindEntry,ms));
 
-/* Açılıştan sonra sessiz güvenli suite: sonuçlar yalnız Diagnostics açılırsa gösterilir. */
-setTimeout(()=>runSafe('boot'),1800);
+/* r625: Açılışta sessiz test çalıştırma kaldırıldı. Tanılama, uygulamanın
+   dokunma gecikmesine sebep olamaz; Güvenli/Derin Test kullanıcı isteğiyle
+   tam tanı ekranından başlatılır. */
 
 window.SukunDiagnostics={
   version:BUILD,
@@ -49716,7 +49719,7 @@ function secretSync(){
   try{window.SukunAlertCenter?.rerender?.()}catch(e){}
 }
 
-const ES=window.ESMA99_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,_ownVoice:false,key:'sukun.esma99.seyir.state'};
+const ES=window.ESMA99_SEYIR={run:false,paused:false,systemHold:false,i:0,rep:0,totalDone:0,token:0,shown:-1,_ownVoice:false,attemptSeq:0,lastFailure:'',lastFailureAt:0,recoveries:0,key:'sukun.esma99.seyir.state'};
 const get=(k,d)=>{try{return S.get(k,d)}catch(e){return d}};
 const set=(k,v)=>{try{S.set(k,v)}catch(e){}};
 
@@ -49804,6 +49807,26 @@ function resume(){try{window.AudioLife?.markUserPlay?.('esma99-resume')}catch(e)
 function stop(msg='Bitirildi',pause=false){ES.systemHold=false;ES.paused=!!pause;ES.run=false;ES.token++;try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-'+(pause?'pause':'stop'))}catch(e){}try{sesDurdur('esma99-stop');speechSynthesis?.cancel?.()}catch(e){}save();ui(msg)}
 ES.stopAll=()=>{if(ES._ownVoice)return;stop('Tüm sesler durduruldu · kaldığın yer saklandı',true)};
 
+/* r625 — 28 İsim'de doğrulanan aynı süreklilik sözleşmesi 99 Esmâya da
+   uygulanır. Sağlayıcı sonsuza dek bekleyemez; duyulmayan tekrar sayılmaz. */
+function es99Reason(r,err){return String(err?.message||r?.reason||r?.source||'ses-kaynagi-yanit-vermedi')}
+function es99Transient(reason){return ['playback-stalled','play-timeout','play-rejected','reader-failed','tts-failed','resolver-timeout','error','exception','none','ses-kaynagi-yanit-vermedi'].includes(String(reason||''))}
+function es99CutSource(reason,index){
+  try{speechSynthesis?.cancel?.()}catch(e){}
+  try{
+    const J=window.__sukJourneyNative,key='esma:'+index+':nida';
+    if(J?.a&&J.recordingKey===key){try{J.a._sukunFinish?.(false,reason)}catch(e){}try{J.a.pause()}catch(e){}}
+  }catch(e){}
+}
+async function es99PlaySafe(index,it,token){
+  const attempt=++ES.attemptSeq;let timer=0,timedOut=false;
+  const current=()=>!timedOut&&token===ES.token&&attempt===ES.attemptSeq&&ES.run&&!ES.paused;
+  const A=window.R168?.AudioResolver||window.AudioResolver;
+  const audio=Promise.resolve().then(()=>A?.play?.('esma',index,it,{arabic:it.a||'',text:'Yâ '+it.t,preferArabic:true,title:'Yâ '+it.t,session:true,backgroundNative:true,isCurrent:current})).catch(e=>({ok:false,source:'error',reason:'exception',detail:String(e?.message||e)}));
+  const watchdog=new Promise(resolve=>{timer=setTimeout(()=>{timedOut=true;ES.attemptSeq++;es99CutSource('resolver-timeout',index);resolve({ok:false,source:'watchdog',reason:'resolver-timeout'})},document.hidden?95000:35000)});
+  try{return await Promise.race([audio,watchdog])}finally{if(timer)clearTimeout(timer)}
+}
+
 async function loop(token){
   const list=ZIKIR.esma.items;
   while(ES.run&&!ES.paused&&token===ES.token&&ES.i<list.length){
@@ -49820,29 +49843,38 @@ async function loop(token){
       try{renderCats();renderZikir(false);zUI();saveSettings()}catch(e){try{sukunReport('esma99-render',e,ES.i)}catch(_){}}
       ES.shown=ES.i;
     }
+    let autoRetries=0;
     while(ES.run&&!ES.paused&&token===ES.token&&ES.rep<limit){
       ES._ownVoice=true;let r=null,err=null;
       try{
-        const A=window.R168?.AudioResolver||window.AudioResolver;
-        r=await A?.play?.('esma',ES.i,it,{arabic:it.a||'',text:'Yâ '+it.t,preferArabic:true,title:'Yâ '+it.t,session:true,backgroundNative:true});
+        r=await es99PlaySafe(ES.i,it,token);
       }catch(e){err=e;r={ok:false,source:'error'}}finally{ES._ownVoice=false}
       if(!ES.run||ES.paused||token!==ES.token)break;
       if(!r||r.ok===false){
-        const bgHold=!!(r?.backgroundBlocked&&document.hidden&&!window.AudioLife?.userPaused);
+        const reason=es99Reason(r,err),transient=es99Transient(reason);
+        ES.lastFailure=reason;ES.lastFailureAt=Date.now();
+        if(transient&&!document.hidden&&!window.AudioLife?.userPaused&&autoRetries<1){
+          autoRetries++;ES.recoveries++;ui('Ses toparlanıyor · aynı tekrar yeniden deneniyor');
+          try{window.SukunVoiceSource?.set?.('recovering','TOPARLANIYOR',reason)}catch(e){}
+          try{const p=window.AudioLife?.recover?.('esma99-auto-retry');if(p&&typeof p.then==='function')await Promise.race([p,sleep(700)])}catch(e){}
+          await sleep(420);continue;
+        }
+        const bgHold=!!(document.hidden&&!window.AudioLife?.userPaused&&(r?.backgroundBlocked||transient));
         ES.run=false;ES.paused=true;ES.systemHold=bgHold;ES.token++;
         if(bgHold){
           save();ui('Kilit ekranı medya beklemede · ekran açılınca otomatik sürdürür');
           try{window.AudioLife?.markInterruption?.('esma99-background-hold')}catch(e){}
         }else{
           try{window.SukunVoiceSessionCoordinator?.release?.('journey99','esma99-audio-failed')}catch(e){}
-          save();ui('Ses başlatılamadı — ses motorunu toparlayıp sürdür');
-          try{sukunReport('esma99-audio','Okuma tamamlanmadı',err?.message||r?.source||r?.reason||'bilinmiyor')}catch(e){}
+          save();ui('Ses tamamlanmadı ('+reason+') · Sürdür ile aynı tekrarı yeniden dene');
+          try{window.SukunVoiceSource?.set?.('error','SES BEKLİYOR',reason)}catch(e){}
+          try{sukunReport('esma99-audio','Okuma tamamlanmadı',reason)}catch(e){}
         }
         break;
       }
       /* r569: okuma tamamlandı — uygulamanın kendi sayma yolu. */
       try{ (window.SukunZikirRep||function(){})(); }catch(e){}
-      ES.rep++;ES.totalDone++;
+      autoRetries=0;ES.lastFailure='';ES.rep++;ES.totalDone++;
       ui(r.source==='recording'?'🎙 Kendi sesin':r.source==='reader'?'🔊 Seçili okuyucu':'🔊 TTS');
       save();if(!document.hidden)await sleep(+$('es99Gap')?.value||900);
     }
@@ -49893,7 +49925,7 @@ function bind(){
 }
 const API=window.SukunEsma99Seyir={
   version:'r553',
-  state:()=>({run:!!ES.run,paused:!!ES.paused,systemHold:!!ES.systemHold,i:+ES.i||0,rep:+ES.rep||0,totalDone:+ES.totalDone||0,state:ES.run&&!ES.paused?'playing':ES.paused?'paused':'idle'}),
+  state:()=>({run:!!ES.run,paused:!!ES.paused,systemHold:!!ES.systemHold,i:+ES.i||0,rep:+ES.rep||0,totalDone:+ES.totalDone||0,attemptSeq:+ES.attemptSeq||0,lastFailure:String(ES.lastFailure||''),lastFailureAt:+ES.lastFailureAt||0,recoveries:+ES.recoveries||0,state:ES.run&&!ES.paused?'playing':ES.paused?'paused':'idle'}),
   play(){if(ES.paused){resume();return true}if(ES.run)return true;try{window.AudioLife?.markUserPlay?.('esma99-play')}catch(e){}try{window.SukunVoiceSessionCoordinator?.prepareJourney?.('journey99')}catch(e){}if(ES.i>=99){ES.i=0;ES.rep=0;ES.shown=-1}ES.systemHold=false;ES.run=true;ES.paused=false;ES.token++;save();ui('Başladı');loop(ES.token);return true},
   resume(){resume();return true},pause(){stop('Duraklatıldı',true);return true},stop(){stop('Bitirildi',false);return true},
   jumpTo(index){const i=Math.max(0,Math.min(98,Number.isFinite(+index)?Math.trunc(+index):0));ES.i=i;ES.rep=0;ES.shown=-1;ES.token++;try{sesDurdur('esma99-jump');speechSynthesis?.cancel?.()}catch(e){}try{if(window.zHedefSecimeUyarla)window.zHedefSecimeUyarla(true)}catch(e){}save();ui('Bu Esmâya geçildi');if(ES.run&&!ES.paused){ES.token++;loop(ES.token)}return true},
@@ -57329,7 +57361,7 @@ function syncSkinButtons(){
   const cur=currentSkin();
   document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
   const build=document.querySelector('.r616SheetBuild');
-  if(build)build.textContent='SÜKÛN v20.07 · r624 · '+(skins[cur]||skins.feyz);
+  if(build)build.textContent='SÜKÛN v20.09 · r626 · '+(skins[cur]||skins.feyz);
 }
 function mountSkinPanel(){
   const sheet=$('r616ToolsSheet');if(!sheet)return false;

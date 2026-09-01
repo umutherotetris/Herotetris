@@ -1,5 +1,28 @@
 [
   {
+    "v": "r626",
+    "t": "1 Eylül 2026",
+    "b": [
+      "r624 cihaz raporu tıklama kilidinin 28 İsim Seyri'nden değil, Derin Testin canlı __diag_* ses oturumları oluşturup pauseAll/resumeAll çalıştırması ve Tekke kapısını açmasından kaynaklandığını kanıtladı.",
+      "Derin Test bütünüyle salt-okunur ve izole hale getirildi; canlı ses registry'sine dokunmaz, Tefekkür veya Tekke'yi açıp kapatmaz, sayaç senkronu ve sentetik lifecycle olayı çalıştırmaz.",
+      "Test çalışırken test, taşma ve JSON düğmeleri geçici olarak kapanır; test tamamlanmadan cleanup öncesi bir rapor alınamaz.",
+      "Tanı raporuna registry, AudioLife ve AudioHub arasındaki çelişkileri ve sızmış __diag_* sağlayıcılarını gösteren audio.consistency alanı eklendi.",
+      "r625'in görünür tek dokunuşlu tanı/JSON girişleri, Android contextmenu uzun basma yedeği, 99 Esmâ ses toparlaması ve r624 28 İsim süreklilik düzeltmesi korunur."
+    ]
+  },
+  {
+    "v": "r625",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Sistem Durumu paneline Tam Tanı ve Testler ile JSON Rapor için görünür tek dokunuş düğmeleri eklendi; sürüm satırının altında da doğrudan tanı girişi bulunur.",
+      "Android'in uzun basmayı contextmenu ve pointercancel dizisine çevirmesi artık paneli iptal etmez; uzun basma yedek yol olarak tam tanıyı açar.",
+      "Tanı penceresi açılırken otomatik güvenli test ve yaklaşık 16 bin düğümlük taşma taraması kaldırıldı; bu ağır işlemler yalnız Güvenli Test veya Derin Test seçilince çalışır.",
+      "Basit ve tam tanı katmanları normal perdelerin üstüne alınır; Araçlar perdesi önce kapatılır ve Kapat/Test/JSON düğmeleri dokunmayı doğrudan alır.",
+      "99 Esmâ Seyri görünür ekrandaki takılan kayıt/TTS okumalarını süre sınırıyla algılar, aynı tekrarı bir kez toparlar ve kayıt takılırsa güvenli ses yedeğine geçer.",
+      "r624 ile tamamlanan 28 İsim Seyri süreklilik düzeltmesi aynen korunur."
+    ]
+  },
+  {
     "v": "r624",
     "t": "1 Eylül 2026",
     "b": [
