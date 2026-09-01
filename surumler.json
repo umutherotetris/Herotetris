@@ -1,5 +1,14 @@
 [
   {
+    "v": "r620",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Görsel dil seçimi Ayarlar ve araçlar paneline doğrudan eklendi.",
+      "Ambiyans akordiyon açık gövdelerinin 2px yüksekliğe kilitlenmesi giderildi.",
+      "Sesler/Ambiyans görünümüne her girişte akordiyon görünümü yeniden senkronlanır."
+    ]
+  },
+  {
     "v": "r619",
     "t": "1 Eylül 2026",
     "b": [

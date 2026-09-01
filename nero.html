@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r619 — Feyz premium kabuk + üç görsel dil
+     SÜKÛN r620 — Feyz premium kabuk + üç görsel dil
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r619">
+<meta name="sukun-build" content="r620">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r619">
+<link rel="manifest" href="./manifest.webmanifest?v=r620">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6429,7 +6429,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.02 — build 2026-09-01-r619</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v20.03 — build 2026-09-01-r620</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22697,7 +22697,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r619',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r620',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34517,7 +34517,7 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r619',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r620',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
 async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r619-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
@@ -56630,7 +56630,7 @@ function mount(){makeSheet();makeClassicButton();makeFocusTekke()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('r617ModeSheet')?.hidden)close()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 [150,700].forEach(ms=>setTimeout(mount,ms));
-window.SukunLayoutModes=Object.freeze({version:'r619',open,close,current:()=>current,playback:playbackTruth,set:(m)=>{if(MODES[m]){selected=m;open();render()}},modes:()=>Object.keys(MODES)});
+window.SukunLayoutModes=Object.freeze({version:'r620',open,close,current:()=>current,playback:playbackTruth,set:(m)=>{if(MODES[m]){selected=m;open();render()}},modes:()=>Object.keys(MODES)});
 })();
 </script>
 
@@ -56945,6 +56945,114 @@ document.addEventListener('click',e=>{
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 [80,220,760,1500].forEach(ms=>setTimeout(mount,ms));
 window.SukunShellSkin=Object.freeze({version:'r619',get:()=>skin,set:s=>applySkin(s,true),skins:()=>Object.keys(skins)});
+})();
+</script>
+
+
+<style id="r620-skin-ambience-fix-style">
+/* r620 — Görsel dil görünürlüğü + Ambiyans akordiyon final authority */
+#r620SkinPanel{
+  margin:14px 0 2px;padding:14px;border:1px solid var(--r616-line);border-radius:18px;
+  background:color-mix(in srgb,var(--r619-surface,rgba(var(--sayfa2K),.72)) 91%,transparent);
+}
+#r620SkinPanel .r620SkinHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+#r620SkinPanel .r620SkinHead b{display:block;color:var(--text);font:750 12px/1.2 Inter,system-ui,sans-serif;letter-spacing:.02em}
+#r620SkinPanel .r620SkinHead small{display:block;margin-top:4px;color:var(--dim);font:500 9px/1.35 Inter,system-ui,sans-serif}
+#r620SkinPanel .r619SkinRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#r620SkinPanel .r619SkinBtn{min-height:54px;padding:8px 6px}
+#r620SkinPanel .r619SkinBtn span{display:block;white-space:normal}
+#r620SkinPanel .r619SkinBtn[aria-pressed="true"]{
+  color:var(--text);border-color:color-mix(in srgb,var(--r619-emerald) 36%,var(--line2));
+  background:color-mix(in srgb,var(--r619-emerald) 8%,rgba(var(--sayfa2K),.60));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--r619-emerald) 8%,transparent),0 0 18px color-mix(in srgb,var(--r619-emerald) 5%,transparent);
+}
+/* Ambiyans akordiyonu renderMixer gizliyken ölçüldüğünde max-height:2px kalabiliyordu.
+   Açık panelde ölçüme bağımlılığı kaldırıyoruz; kapalı panel yine 0 yüksekliğinde. */
+body.r616-ui #tab-amb #mixer .preAcc.open > .preAccBody{
+  max-height:none!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+body.r616-ui #tab-amb #mixer .preAcc:not(.open) > .preAccBody{
+  max-height:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+}
+body.r616-ui #tab-amb #mixer .preAcc.open > .preAccBody > .preAccInner{
+  visibility:visible!important;pointer-events:auto!important;
+}
+body.r616-ui #tab-amb #mixer .preAccHead{
+  width:100%;min-height:50px;touch-action:manipulation;
+}
+@media(max-width:390px){
+  #r620SkinPanel .r619SkinRow{grid-template-columns:1fr 1fr}
+  #r620SkinPanel .r619SkinBtn:last-child{grid-column:1/-1}
+}
+</style>
+<script id="r620-skin-ambience-fix-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R620_SKIN_AMB_FIX__)return;window.__SUKUN_R620_SKIN_AMB_FIX__=1;
+const $=id=>document.getElementById(id);
+const skins={feyz:'Feyz 619',ottoman:'Osmanlı Nebula',halvet:'Tekno Halvet'};
+function currentSkin(){
+  try{return window.SukunShellSkin?.get?.()||document.body.dataset.r619Skin||localStorage.getItem('sukun.ui.shellSkin')||'feyz'}catch(e){return document.body.dataset.r619Skin||'feyz'}
+}
+function setSkin(k){
+  if(!skins[k])return;
+  try{window.SukunShellSkin?.set?.(k)}catch(e){
+    document.body.dataset.r619Skin=k;try{localStorage.setItem('sukun.ui.shellSkin',k)}catch(_){ }
+  }
+  syncSkinButtons();
+}
+function syncSkinButtons(){
+  const cur=currentSkin();
+  document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
+  const build=document.querySelector('.r616SheetBuild');
+  if(build)build.textContent='SÜKÛN v20.03 · r620 · '+(skins[cur]||skins.feyz);
+}
+function mountSkinPanel(){
+  const sheet=$('r616ToolsSheet');if(!sheet)return false;
+  let panel=$('r620SkinPanel');
+  if(!panel){
+    panel=document.createElement('section');panel.id='r620SkinPanel';panel.setAttribute('aria-label','Görsel dil');
+    panel.innerHTML='<div class="r620SkinHead"><span><b>✦ Görsel dil</b><small>Renk temasından bağımsız premium kabuk karakterini seç.</small></span></div><div class="r619SkinRow" role="radiogroup" aria-label="Görsel dil">'+Object.entries(skins).map(([k,n])=>'<button type="button" class="r619SkinBtn" data-r619-skin="'+k+'" aria-pressed="false"><i aria-hidden="true"></i><span>'+n+'</span></button>').join('')+'</div>';
+    const build=sheet.querySelector('.r616SheetBuild');
+    if(build)sheet.insertBefore(panel,build);else sheet.appendChild(panel);
+  }
+  syncSkinButtons();return true;
+}
+function repairAmbience(){
+  const mixer=$('mixer');if(!mixer)return false;
+  /* Eski runtime'ın inline max-height değerini açık panellerde temizle. */
+  mixer.querySelectorAll('.preAcc').forEach(acc=>{
+    const body=acc.querySelector('.preAccBody');if(!body)return;
+    if(acc.classList.contains('open'))body.style.removeProperty('max-height');
+    else body.style.maxHeight='0px';
+  });
+  try{window.syncAmbAccHeights?.()}catch(e){}
+  /* syncAmbAccHeights tekrar 2px yazarsa final CSS açık panelde yine auto'dur. */
+  return true;
+}
+function mount(){mountSkinPanel();repairAmbience();syncSkinButtons()}
+document.addEventListener('click',e=>{
+  const skin=e.target.closest?.('#r620SkinPanel .r619SkinBtn[data-r619-skin]');
+  if(skin){setSkin(skin.dataset.r619Skin);return}
+  const head=e.target.closest?.('#mixer [data-ambacctgl]');
+  if(head)setTimeout(repairAmbience,0);
+},{passive:true});
+window.addEventListener('sukun:r616viewchange',e=>{
+  if(e?.detail?.view==='sounds' && (e?.detail?.sub==='amb'||!e?.detail?.sub)){
+    [0,60,180].forEach(ms=>setTimeout(repairAmbience,ms));
+  }
+  setTimeout(mountSkinPanel,0);
+},{passive:true});
+window.addEventListener('sukun:r619skinchange',syncSkinButtons,{passive:true});
+window.addEventListener('resize',()=>setTimeout(repairAmbience,40),{passive:true});
+window.addEventListener('orientationchange',()=>setTimeout(repairAmbience,120),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+[80,250,800,1600].forEach(ms=>setTimeout(mount,ms));
+window.SukunR620Fix=Object.freeze({version:'r620',mount,repairAmbience,setSkin,currentSkin});
 })();
 </script>
 
