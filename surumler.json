@@ -1,5 +1,17 @@
 [
   {
+    "v": "r623",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Tam hata taraması r622 cihaz tanısı ve kaynak sözleşmeleri birlikte incelenerek tekrarlandı; ses, yaşam döngüsü, DOM, taşma, performans ve build zinciri ayrı ayrı doğrulandı.",
+      "Aynı mix=playing durumu altı dakikada 97 kez yeniden yayımlanıyordu; playbackchange artık yalnız sağlayıcı, durum, başlık, sahip, yetenek veya aggregate gerçekten değiştiğinde gönderilir.",
+      "Ses oturumundaki changedAt alanı snapshot ve DOM senkronlarında ilerlemez; yalnız gerçek state geçişinin zamanını tutar.",
+      "Tanı panelinin derin testleri, taşma ölçümü ve yeniden çizimleri uygulama long-task yükünden ayrıldı; bunlar kullanıcı tarafından seçilen Tam performans modunu Pil kipine düşürmez.",
+      "Gizli oynatıcı kapsülündeki bilinçli tek-satır üç-nokta kısaltması taşma hatası sayılmaz; Araçlar açıklaması dar ekranda kesilmek yerine doğal olarak satıra akar.",
+      "İki modül sınırındaki görünür ters-eğik-çizgi satır-sonu fragmentleri temizlendi; 99 Esmâ, kilit politikasıyla 28 İsim, kayıt→okuyucu→TTS, Klasik/Sade/Odak ve tek foreground ses sahipliği korunur."
+    ]
+  },
+  {
     "v": "r622",
     "t": "1 Eylül 2026",
     "b": [

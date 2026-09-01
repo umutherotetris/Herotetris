@@ -1,8 +1,8 @@
-/* SÜKÛN r622 — tam hata taraması ve kararlılık düzeltmeleri */
+/* SÜKÛN r623 — ölçülebilir performans ve tanı doğruluğu */
 'use strict';
 
-const SURUM = 'r622';
-const CACHE = 'sukun-r622-20260901a';
+const SURUM = 'r623';
+const CACHE = 'sukun-r623-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,14 +14,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r622__.json';
+const BUILD_MARKER='./__sukun_build_r623__.json';
 
 const NOTLAR = [
-  'r622 Tam hata taraması: 132 betik, manifest, Service Worker, build zinciri, ses sağlayıcıları, 99/28 seyirleri ve görünür DOM sözleşmeleri yeniden doğrulandı.',
-  'r622 Seyir ayrıntıları, geç yerleşim ve yeniden ebeveynlemeden sonra sabit üst/alt çubukların altında kalmayacak biçimde ölçülerek hizalanır.',
-  'r622 Kendi kayıt oynatımı tek gerçek başlangıç için yalnız bir playing bildirimi ve overlap guard kurar.',
-  'r622 Dekoratif sekme parıltıları taşma tanısında içerik kırpılması sayılmaz; gerçek çocuk taşmaları raporlanmaya devam eder.',
-  'r622 Tam yedek iç build kimliği ve indirilen dosya adı güncel sürümle eşitlendi.',
+  'r623 Aynı ses durumu artık periyodik playbackchange nabzıyla yeniden yayımlanmaz; yalnız anlamlı değişiklik arayüz abonelerini uyandırır.',
+  'r623 Ses oturumu changedAt alanı yalnız gerçek state geçişinde yenilenir; durum okuması geçmişi bozmaz.',
+  'r623 Derin test, taşma taraması ve tanı çizimleri kendi long-task yükü olarak etiketlenir; kullanıcı performans modu bu işlemler yüzünden Pil kipine düşmez.',
+  'r623 Gizli oynatıcıdaki bilinçli üç-nokta kısaltması taşma hatası sayılmaz; Araçlar açıklaması mobilde doğal satıra akar.',
+  'r623 Modül sınırlarında görünür kalabilen iki literal satır-sonu fragmenti temizlendi; 99/28 seyir, kayıt→okuyucu→TTS ve tek ses sahipliği korunur.',
   'r618 Arayüz geçişi görünür mini bar veya bayat aktif durumuna göre kilitlenmez; yalnız gerçek playing/stopping sağlayıcıları ve çalışan seyirler ses kabul edilir.',
   'r618 Gerçek ses varsa geçiş düğmesi pasif kalmaz; tek dokunuşla bütün sesleri güvenle durdurur ve seçilen Klasik, Sade veya Odak düzenini açar.',
   'r617 r615 Klasik görünümü varsayılan ve ana düzen olarak korur; r616 Sade ile yeni zikir merkezli Odak görünümü Ayarlar içinden seçilebilir.',
