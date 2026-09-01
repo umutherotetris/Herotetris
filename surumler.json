@@ -1,5 +1,17 @@
 [
   {
+    "v": "r621",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Kilit ekranında 99 Esmâ ve 28 Berhetiyye seyri aynı isim içinde çalmaya devam edip sıradaki isme geçerken takılıyordu.",
+      "Kök neden persistent native audio elementinin yeni kayıt kaynağına geçince hidden durumda canplay olayını beklemesiydi; Android kilit ekranı bu olayı erteleyebiliyor.",
+      "Yeni kaynakta play() artık canplay beklenmeden aynı persistent media elementine doğrudan verilir; canplay ve loadeddata yalnız emniyet kickidir.",
+      "Hidden source değişiminde explicit load() kaldırıldı; medya oturumu aynı element üzerinde devam eder.",
+      "Sıradaki isim geçişi ve native source/playing olayları tanılama için izlenebilir hale getirildi.",
+      "Başlatma gerçekten başarısız olursa sayaç yanlış ilerlemez; mevcut systemHold ve görünür ekrana dönüş recovery zinciri devralır."
+    ]
+  },
+  {
     "v": "r620",
     "t": "1 Eylül 2026",
     "b": [
