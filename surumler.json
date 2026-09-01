@@ -1,5 +1,16 @@
 [
   {
+    "v": "r617",
+    "t": "31 Ağustos 2026",
+    "b": [
+      "r615 Klasik arayüzü ana ve varsayılan düzen olarak korundu.",
+      "Önceki mockup Sade, son zikir merkezli mockup Odak adıyla seçilebilir arayüz düzenine dönüştürüldü.",
+      "Arayüz düzeni ayarı Klasik ekranda ana araç barından; Sade ve Odak ekranlarında Ayarlar ve araçlar sayfasından açılır.",
+      "Düzenler ayrı uygulamalar değildir: aynı ses, sayaç, terkip, bildirim, 99 Esmâ Seyri ve kilit güvenli 28 İsim Seyri motorlarını kullanır.",
+      "Çalışan ses varken yeniden yüklemeli görünüm geçişi engellenir; sayaç, kayıtlar, seyir ilerlemesi ve yerel ayarlar korunur."
+    ]
+  },
+  {
     "v": "r616",
     "t": "31 Ağustos 2026",
     "b": [

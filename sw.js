@@ -1,8 +1,8 @@
-/* SÜKÛN r616 — kullanıcı dostu dört bölümlü arayüz kabuğu */
+/* SÜKÛN r617 — Klasik / Sade / Odak seçilebilir arayüz düzenleri */
 'use strict';
 
-const SURUM = 'r616';
-const CACHE = 'sukun-r616-20260831a';
+const SURUM = 'r617';
+const CACHE = 'sukun-r617-20260831a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r616__.json';
+const BUILD_MARKER='./__sukun_build_r617__.json';
 
 const NOTLAR = [
+  'r617 r615 Klasik görünümü varsayılan ve ana düzen olarak korur; r616 Sade ile yeni zikir merkezli Odak görünümü Ayarlar içinden seçilebilir.',
+  'r617 Üç düzen aynı DOM davranışlarına, sayaçlara, ses sahipliğine, 99 Esmâ ve kilit güvenli 28 İsim seyir motorlarına bağlanır; çalışan ses varken görünüm değiştirme engellenir.',
   'r616 Ana arayüz Bugün, Zikir, Seyirler ve Sesler olarak sadeleştirildi; çalışan ses ve seyir motorları değiştirilmeden aynı kontrollere bağlandı.',
   'r601 Mini akış barı ana menünün tema camıyla eşleşir; Ayarlar içinden açılıp kapatılır ve yüzey şeffaflığı canlı ayarlanır. Metin/düğme opacitysi değişmez; Midi ve Max etkilenmez.',
   'r600 Zikir sayaç kartı normal görünümde gerçek içeriği kadar uzar; tam ekran Tefekkürde taşan kontroller kart içinde dokunmatik olarak kaydırılabilir.',
