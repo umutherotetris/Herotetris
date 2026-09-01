@@ -1,8 +1,8 @@
-/* SÜKÛN r618 — gerçek ses durumuyla güvenli arayüz geçişi */
+/* SÜKÛN r619 — gerçek ses durumuyla güvenli arayüz geçişi */
 'use strict';
 
-const SURUM = 'r618';
-const CACHE = 'sukun-r618-20260901a';
+const SURUM = 'r619';
+const CACHE = 'sukun-r619-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,7 +14,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r618__.json';
+const BUILD_MARKER='./__sukun_build_r619__.json';
 
 const NOTLAR = [
   'r618 Arayüz geçişi görünür mini bar veya bayat aktif durumuna göre kilitlenmez; yalnız gerçek playing/stopping sağlayıcıları ve çalışan seyirler ses kabul edilir.',
