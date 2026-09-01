@@ -1,8 +1,8 @@
-/* SÜKÛN r617 — Klasik / Sade / Odak seçilebilir arayüz düzenleri */
+/* SÜKÛN r618 — gerçek ses durumuyla güvenli arayüz geçişi */
 'use strict';
 
-const SURUM = 'r617';
-const CACHE = 'sukun-r617-20260831a';
+const SURUM = 'r618';
+const CACHE = 'sukun-r618-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r617__.json';
+const BUILD_MARKER='./__sukun_build_r618__.json';
 
 const NOTLAR = [
+  'r618 Arayüz geçişi görünür mini bar veya bayat aktif durumuna göre kilitlenmez; yalnız gerçek playing/stopping sağlayıcıları ve çalışan seyirler ses kabul edilir.',
+  'r618 Gerçek ses varsa geçiş düğmesi pasif kalmaz; tek dokunuşla bütün sesleri güvenle durdurur ve seçilen Klasik, Sade veya Odak düzenini açar.',
   'r617 r615 Klasik görünümü varsayılan ve ana düzen olarak korur; r616 Sade ile yeni zikir merkezli Odak görünümü Ayarlar içinden seçilebilir.',
   'r617 Üç düzen aynı DOM davranışlarına, sayaçlara, ses sahipliğine, 99 Esmâ ve kilit güvenli 28 İsim seyir motorlarına bağlanır; çalışan ses varken görünüm değiştirme engellenir.',
   'r616 Ana arayüz Bugün, Zikir, Seyirler ve Sesler olarak sadeleştirildi; çalışan ses ve seyir motorları değiştirilmeden aynı kontrollere bağlandı.',

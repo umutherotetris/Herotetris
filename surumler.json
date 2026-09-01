@@ -1,5 +1,15 @@
 [
   {
+    "v": "r618",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Arayüz düzeni geçişi artık görünür mini oynatıcı sınıfını veya bayat aktif/Now Playing izini gerçek ses sanmıyor.",
+      "Geçiş kararı doğrudan ses sağlayıcılarının playing/stopping durumuna ve gerçekten çalışan 99/28 isim seyirlerine bağlandı; duraklatılmış oturum geçişi engellemez.",
+      "Gerçek ses çalıyorsa düğme pasif kalmak yerine Durdur ve seçilen düzene geç eylemine dönüşür; sesler tek dokunuşla kapatılıp görünüm açılır.",
+      "Klasik r615 ana düzeni, Sade ve Odak alternatifleri ile sayaç, kayıt ve seyir ilerlemeleri aynen korunur."
+    ]
+  },
+  {
     "v": "r617",
     "t": "31 Ağustos 2026",
     "b": [

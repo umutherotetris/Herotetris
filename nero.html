@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r617 — seçilebilir Klasik / Sade / Odak arayüz düzenleri
+     SÜKÛN r618 — gerçek ses durumuyla güvenli arayüz geçişi
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r617">
+<meta name="sukun-build" content="r618">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r617">
+<link rel="manifest" href="./manifest.webmanifest?v=r618">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6429,7 +6429,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.00 — build 2026-08-31-r617</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
+    <span id="surumEtiket">SÜKÛN v20.01 — build 2026-09-01-r618</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span>
   </footer>
 </div>
 
@@ -22697,7 +22697,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r617',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r618',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -34517,10 +34517,10 @@ function diagRender(extra){const b=document.getElementById('r170DiagText');if(!b
 
 /* ═══ 9: TAM YEDEK 2.0 ═══ */
 function backup2(){const y=document.getElementById('ydkBox');if(!y||document.getElementById('r170Backup2'))return;const d=document.createElement('details');d.id='r170Backup2';d.className='r170Hub';d.innerHTML=`<summary><span>⇅</span><span><b>TAM YEDEK 2.0</b><small>ayarlar · sayaç · günlük · seans · kendi sesleri · önizleme</small></span></summary><div class="r170Body"><div class="r170Row"><button class="r170Btn" id="r170BackupScan">Yedeği önizle</button><button class="r170Btn" id="r170BackupExport">Tek arşiv indir</button><button class="r170Btn" id="r170BackupImport">Arşiv geri yükle</button><input id="r170BackupFile" type="file" accept="application/json,.json" hidden></div><div class="r170BackupPreview" id="r170BackupPrev">Önizleme yapılmadı.</div></div>`;y.appendChild(d);d.querySelector('#r170BackupScan').onclick=backupScan;d.querySelector('#r170BackupExport').onclick=backupExport;d.querySelector('#r170BackupImport').onclick=()=>d.querySelector('#r170BackupFile').click();d.querySelector('#r170BackupFile').onchange=backupChoose}
-async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r617',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
+async function backupPayload(){const data={app:'SUKUN',fmt:2,build:'r618',t:Date.now(),ls:{},idb:{}};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{data.ls[k]=localStorage.getItem(k)}catch(e){}}data.idb.sukunRec=await idbDumpAll('sukunRec','clips');data.idb.sukunCustomAmb=await idbDumpAll('sukunCustomAmb','sounds');return data}
 async function backupSummary(data){const lsN=Object.keys(data.ls||{}).length,recN=Object.keys(data.idb?.sukunRec||{}).length,ambN=Object.keys(data.idb?.sukunCustomAmb||{}).length;let sessions=0,journal=0;try{sessions=JSON.parse(data.ls['sukun.sessions.v2']||'[]').length}catch(e){}try{journal=JSON.parse(data.ls['sukun.maneviGunluk']||'[]').length}catch(e){}return{lsN,recN,ambN,sessions,journal}}
 async function backupScan(){const data=await backupPayload(),s=await backupSummary(data),b=document.getElementById('r170BackupPrev');b.innerHTML=`<b>${s.recN} ses kaydı</b> · ${s.ambN} özel ambiyans · ${s.sessions} kişisel seans · ${s.journal} seyir günlüğü · ${s.lsN} ayar/veri anahtarı<br><span style="color:var(--dim)">API anahtarı yedeğe dahil edilmez.</span>`}
-async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r617-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+async function backupExport(){const data=await backupPayload();await backupScan();const blob=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sukun-tam-yedek-r618-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
 async function backupChoose(e){const f=e.target.files?.[0];e.target.value='';if(!f)return;try{const data=JSON.parse(await f.text());if(data.app!=='SUKUN')throw new Error('SÜKÛN arşivi değil');const s=await backupSummary(data);const ok=confirm(`${s.recN} ses kaydı, ${s.ambN} ambiyans, ${s.sessions} seans, ${s.journal} günlük kaydı geri yüklenecek. Mevcut aynı anahtarların üzerine yazılır. Devam?`);if(!ok)return;for(const [k,v] of Object.entries(data.ls||{})){if(k==='sukun.aikey'||/^sukun\.ai\.key\./.test(k))continue;try{localStorage.setItem(k,v)}catch(_){}}if(data.idb){await idbRestoreAll('sukunRec','clips',data.idb.sukunRec);await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)}alert('Geri yükleme tamamlandı. Uygulama yeniden açılacak.');location.reload()}catch(err){alert('Arşiv okunamadı: '+err.message)}}
 
 /* ═══ 10: MOTION LANGUAGE KANCALARI ═══ */
@@ -56132,7 +56132,7 @@ function makeShell(){
       '<button class="r616Tool" type="button" data-r616-tool="vault"><i>◇</i><span>Mühür ve özel erişim</span></button>'+
       '<button class="r616Tool danger" type="button" data-r616-tool="stop"><i>■</i><span>Tüm sesleri durdur</span></button>'+
     '</div>'+
-    '<div class="r616SheetBuild">SÜKÛN v20.00 · r617</div>';
+    '<div class="r616SheetBuild">SÜKÛN v20.01 · r618</div>';
   document.body.append(scrim,sheet);
   return true;
 }
@@ -56508,22 +56508,67 @@ body.r617-mode-focus .r616Journey{border-radius:24px;background:rgba(var(--sayfa
 @media(prefers-reduced-motion:reduce){.r617ModeOption,#r617ModeApply{transition:none}}
 </style>
 
-<script id="r617-layout-modes-runtime">
+<script id="r618-layout-modes-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R617_LAYOUT_MODES__)return;window.__SUKUN_R617_LAYOUT_MODES__=1;
+if(window.__SUKUN_R618_LAYOUT_MODES__)return;window.__SUKUN_R618_LAYOUT_MODES__=1;
 const KEY='sukun.ui.shellMode';
 const MODES={classic:{name:'Klasik',sub:'r615 ana düzeni · bütün bölümler ve araçlar yerli yerinde'},simple:{name:'Sade',sub:'Önceki mockup · Bugün, Zikir, Seyirler ve Sesler'},focus:{name:'Odak',sub:'Son mockup · zikir merkezli, sakin ve beş kapılı mobil düzen'}};
 const $=id=>document.getElementById(id);
-let current=read(),selected=current;
+let current=read(),selected=current,switching=false;
 function read(){try{const x=localStorage.getItem(KEY);return x==='simple'||x==='focus'?x:'classic'}catch(e){return'classic'}}
-function audible(){
-  if(document.body.classList.contains('r431-dock-visible'))return true;
-  try{const s=window.currentFlowState?.snapshot?.();if(s&&(s.active||s.playing||s.state==='playing'||s.state==='running'))return true}catch(e){}
-  try{const s=window.SukunEsma99Seyir?.state?.();if(s?.run&&!s?.paused)return true}catch(e){}
-  try{const s=window.SukunBerhetiyyeSeyir?.state?.();if(s?.run&&!s?.paused)return true}catch(e){}
-  try{const s=window.SukunVoiceSessionCoordinator?.snapshot?.();if(s&&(s.active||s.playing||s.state==='playing'))return true}catch(e){}
-  return false;
+/* Görünür dock, Now Playing etiketi veya yalnız `active` olmak ses kanıtı
+   değildir. Sağlayıcı kayıt defteri gerçek getState() değerlerini yeniden
+   yoklar; o yoksa merkezi akışa düşülür. Duraklatılmış oturum geçişi
+   engellemez, gerçekten çalışan seyir/terkip ayrıca doğrulanır. */
+function playbackTruth(){
+  const reasons=[];let registryReady=false;
+  try{
+    const ar=window.SukunAudioSessionRegistry;
+    if(typeof ar?.aggregateState==='function'){
+      registryReady=true;
+      const state=String(ar.aggregateState()||'idle').toLowerCase();
+      if(['playing','running','preparing','stopping'].includes(state))reasons.push('registry:'+state);
+    }
+  }catch(e){}
+  try{const s=window.SukunEsma99Seyir?.state?.();if(s?.run&&!s?.paused)reasons.push('journey99')}catch(e){}
+  try{const s=window.SukunBerhetiyyeSeyir?.state?.();if(s?.run&&!s?.paused)reasons.push('journey28')}catch(e){}
+  try{const s=window.SukunTerkipVoice?.snapshot?.();if(s?.active)reasons.push('terkip')}catch(e){}
+  try{if(window.speechSynthesis?.speaking&&!window.speechSynthesis?.paused)reasons.push('speech')}catch(e){}
+  if(!registryReady){
+    try{
+      const s=window.currentFlowState?.refresh?.('layout-mode-check',true)||window.currentFlowState?.snapshot?.();
+      const state=String(s?.playback?.state||'').toLowerCase();
+      if(s?.playing||s?.session?.playing||s?.frequency?.playing||['playing','running','preparing','stopping'].includes(state))reasons.push('flow');
+    }catch(e){}
+  }
+  return Object.freeze({playing:reasons.length>0,reasons:Object.freeze(reasons)});
+}
+function audible(){return playbackTruth().playing}
+const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function stopForSwitch(){
+  let handled=false;
+  try{
+    const ar=window.SukunAudioSessionRegistry;
+    if(typeof ar?.stopAll==='function'){
+      const result=await Promise.resolve(ar.stopAll());
+      handled=result!==false;
+    }
+  }catch(e){}
+  if(!handled){
+    try{handled=window.SukunAudioGuard?.stopCurrent?.()!==false}catch(e){}
+  }
+  await delay(90);
+  if(audible()){
+    try{window.SukunEsma99Seyir?.stop?.()}catch(e){}
+    try{window.SukunBerhetiyyeSeyir?.stop?.()}catch(e){}
+    try{window.SukunTerkipVoice?.cancel?.('layout-switch')}catch(e){}
+    try{window.speechSynthesis?.cancel?.()}catch(e){}
+    try{window.hardStopAll?.()}catch(e){}
+    await delay(70);
+  }
+  try{window.SukunAudioGuard?.repair?.()}catch(e){}
+  try{window.currentFlowState?.refresh?.('layout-mode-stop',true)}catch(e){}
 }
 function makeClassicButton(){
   if($('r617ModeBtn'))return;
@@ -56558,26 +56603,34 @@ function makeSheet(){
 function render(){
   document.querySelectorAll('.r617ModeOption').forEach(b=>b.setAttribute('aria-checked',b.dataset.mode===selected?'true':'false'));
   const busy=audible(),same=selected===current,apply=$('r617ModeApply'),status=$('r617ModeStatus');
-  if(apply){apply.disabled=same||busy;apply.textContent=same?'Bu düzen kullanılıyor':busy?'Önce çalışan sesi durdur':'Bu düzeni kullan'}
-  if(status)status.textContent=busy?'Görünüm geçişi sayfayı yeniden açar; çalışan sesi yarıda kesmemek için önce durdur.':same?'Seçili düzen: '+MODES[current].name:'Sayaç, kayıtlar ve seyir ilerlemesi korunur; yalnız arayüz yeniden açılır.';
+  if(apply){apply.disabled=same||switching;apply.textContent=switching?'Ses güvenle durduruluyor…':same?'Bu düzen kullanılıyor':busy?'Durdur ve '+MODES[selected].name+'’e geç':'Bu düzeni kullan'}
+  if(status)status.textContent=switching?'Ses kanalları kapatılıyor; görünüm birazdan açılacak.':busy?'Tek dokunuşla çalışan ses durdurulur ve '+MODES[selected].name+' düzeni açılır.':same?'Seçili düzen: '+MODES[current].name:'Sayaç, kayıtlar ve seyir ilerlemesi korunur; yalnız arayüz yeniden açılır.';
 }
 function open(){
   makeSheet();selected=current;
   try{window.SukunFriendlyUI?.closeTools?.()}catch(e){}
+  /* Bayat oynatıcı/Now Playing izi geçişi kilitlemesin. */
+  try{window.SukunAudioGuard?.repair?.()}catch(e){}
+  try{window.SukunAudioSessionRegistry?.sync?.()}catch(e){}
   $('r617ModeScrim').hidden=false;$('r617ModeSheet').hidden=false;document.body.classList.add('r617-mode-sheet-open');render();
+  setTimeout(render,120);
   setTimeout(()=>$('r617ModeSheet')?.querySelector('[aria-checked="true"]')?.focus?.(),20);
 }
 function close(){if($('r617ModeScrim'))$('r617ModeScrim').hidden=true;if($('r617ModeSheet'))$('r617ModeSheet').hidden=true;document.body.classList.remove('r617-mode-sheet-open')}
-function apply(){
-  if(selected===current||audible()){render();return}
+async function apply(){
+  if(selected===current||switching){render();return}
   try{localStorage.setItem(KEY,selected)}catch(e){const s=$('r617ModeStatus');if(s)s.textContent='Bu cihazda görünüm tercihi kaydedilemedi.';return}
+  if(audible()){
+    switching=true;render();
+    await stopForSwitch();
+  }
   location.reload();
 }
 function mount(){makeSheet();makeClassicButton();makeFocusTekke()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('r617ModeSheet')?.hidden)close()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 [150,700].forEach(ms=>setTimeout(mount,ms));
-window.SukunLayoutModes=Object.freeze({version:'r617',open,close,current:()=>current,set:(m)=>{if(MODES[m]){selected=m;open();render()}},modes:()=>Object.keys(MODES)});
+window.SukunLayoutModes=Object.freeze({version:'r618',open,close,current:()=>current,playback:playbackTruth,set:(m)=>{if(MODES[m]){selected=m;open();render()}},modes:()=>Object.keys(MODES)});
 })();
 </script>
 
