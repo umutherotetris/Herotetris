@@ -1,8 +1,8 @@
-/* SÜKÛN r621 — gerçek ses durumuyla güvenli arayüz geçişi */
+/* SÜKÛN r622 — tam hata taraması ve kararlılık düzeltmeleri */
 'use strict';
 
-const SURUM = 'r621';
-const CACHE = 'sukun-r621-20260901a';
+const SURUM = 'r622';
+const CACHE = 'sukun-r622-20260901a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r621__.json';
+const BUILD_MARKER='./__sukun_build_r622__.json';
 
 const NOTLAR = [
+  'r622 Tam hata taraması: 132 betik, manifest, Service Worker, build zinciri, ses sağlayıcıları, 99/28 seyirleri ve görünür DOM sözleşmeleri yeniden doğrulandı.',
+  'r622 Seyir ayrıntıları, geç yerleşim ve yeniden ebeveynlemeden sonra sabit üst/alt çubukların altında kalmayacak biçimde ölçülerek hizalanır.',
+  'r622 Kendi kayıt oynatımı tek gerçek başlangıç için yalnız bir playing bildirimi ve overlap guard kurar.',
+  'r622 Dekoratif sekme parıltıları taşma tanısında içerik kırpılması sayılmaz; gerçek çocuk taşmaları raporlanmaya devam eder.',
+  'r622 Tam yedek iç build kimliği ve indirilen dosya adı güncel sürümle eşitlendi.',
   'r618 Arayüz geçişi görünür mini bar veya bayat aktif durumuna göre kilitlenmez; yalnız gerçek playing/stopping sağlayıcıları ve çalışan seyirler ses kabul edilir.',
   'r618 Gerçek ses varsa geçiş düğmesi pasif kalmaz; tek dokunuşla bütün sesleri güvenle durdurur ve seçilen Klasik, Sade veya Odak düzenini açar.',
   'r617 r615 Klasik görünümü varsayılan ve ana düzen olarak korur; r616 Sade ile yeni zikir merkezli Odak görünümü Ayarlar içinden seçilebilir.',
@@ -336,7 +341,7 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error('r602 cache incomplete — old worker preserved');
+    if(!await currentComplete())throw new Error(SURUM+' cache incomplete — old worker preserved');
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();

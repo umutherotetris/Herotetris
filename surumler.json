@@ -1,5 +1,17 @@
 [
   {
+    "v": "r622",
+    "t": "1 Eylül 2026",
+    "b": [
+      "Tam hata taramasında 132 gömülü betik, Service Worker, manifest, build zinciri, ses sağlayıcıları, 99 Esmâ ve 28 İsim seyirleri ile görünür DOM sözleşmeleri yeniden denetlendi.",
+      "Seyir ayrıntıları açıldığında geç yerleşim nedeniyle sabit çubukların altında kalabilen panel, son DOM konumuna göre birkaç kontrollü ölçümle güvenli üst çizgiye hizalanır.",
+      "Kendi kayıt oynatımında aynı başarılı başlangıcın hem playing olayı hem play Promise'i üzerinden iki kez bildirilmesi engellendi; overlap guard yalnız bir kez kurulur.",
+      "Sekme düğmelerinin bilinçli ::before/::after parıltıları artık taşma tanısında içerik kırpılması diye raporlanmaz; gerçek DOM içeriği taşmaları izlenmeye devam eder.",
+      "Tam yedek içindeki build kimliği ve indirilen yedek dosyasının sürüm adı r622 ile eşitlendi.",
+      "r621 kilit ekranı kaynak aktarımı, tek oynatıcı sahipliği, 99/28 seyir motorları, Klasik/Sade/Odak düzenleri ve kırmızı Uygula eylemi korunur."
+    ]
+  },
+  {
     "v": "r621",
     "t": "1 Eylül 2026",
     "b": [
