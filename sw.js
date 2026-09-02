@@ -1,8 +1,8 @@
-/* SÜKÛN r631 — Osmanlı Mührü ve Semerkant Neon skinleri */
+/* SÜKÛN r632 — State Authority & Regression Shield */
 'use strict';
 
-const SURUM = 'r631';
-const CACHE = 'sukun-r631-20260902a';
+const SURUM = 'r632';
+const CACHE = 'sukun-r632-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r631__.json';
+const BUILD_MARKER='./__sukun_build_r632__.json';
 
 const NOTLAR = [
+  'r632 State Authority; zikir, audio registry, currentFlow, foreground voice ve 28/99 seyir durumlarını tek canonical snapshot altında birleştirir.',
+  'r632 Regression Shield çift seyir, seyir+terkip, zikir/flow ayrışması, tanı provider sızıntısı, kritik DOM çoğalması, layout overlap ve build/skin sözleşmesini event tabanlı denetler.',
+  'r632 Yeni polling veya MutationObserver eklemez; kalıcı tek-sahip ihlalinde mevcut foreground sahibini koruyan muhafazakâr containment uygular.',
+  'r632 Tam Tanı raporu State Authority ve Regression Shield snapshotlarını içerir; Araçlar panelinde PASS/WARN/FAIL sağlık kartı gösterilir.',
   'r631 Görsel dil iki güçlü seçenekte toplandı: varsayılan premium kabuk Osmanlı Mührü, modern alternatif Semerkant Neon.',
   'r631 Eski Feyz 619 ve Tekno Halvet tercihlerinin tamamı yeni skin haritasına taşınır; kullanıcı seçimi boşa düşmez.',
   'r631 Skin değişimi yalnız CSS değişkenleri ve veri öznitelikleri üzerinden çalışır; ses motoru, sayaç, seyir ve kilit ekranı sahipliği r630 zinciriyle aynıdır.',

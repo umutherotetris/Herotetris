@@ -1,5 +1,16 @@
 [
   {
+    "v": "r632",
+    "t": "2 Eylül 2026",
+    "b": [
+      "State Authority katmanı currentZikirState, Audio Session Registry, currentFlowState, Voice Session Coordinator ve 28/99 seyir durumlarını tek canonical snapshot altında birleştirir.",
+      "Regression Shield; çift seyir, seyir+terkip foreground çakışması, zikir/flow ayrışması, tanı sağlayıcısı sızıntısı, kritik DOM sahibi çoğalması, layout overlap ve build/skin sözleşmesini denetler.",
+      "Kalkan sürekli polling veya yeni MutationObserver kullanmaz; anlamlı state olaylarını debounce ederek çalışır. Kalıcı tek-sahip ihlalinde yalnız mevcut foreground sahibine göre karşı seyri duraklatan muhafazakâr containment uygulanır.",
+      "Tam Tanı raporuna State Authority ve Shield snapshotları eklendi; Araçlar panelinde PASS/WARN/FAIL sağlık kartı görünür.",
+      "r631 Osmanlı Mührü / Semerkant Neon skinleri ile r630 ses, seyir, kilit ekranı ve aktif zikir davranışları korunur."
+    ]
+  },
+  {
     "v": "r631",
     "t": "2 Eylül 2026",
     "b": [
