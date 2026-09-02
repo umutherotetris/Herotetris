@@ -1,8 +1,8 @@
-/* SÜKÛN r626 — yan etkisiz tanı ve durum tutarlılığı */
+/* SÜKÛN r629 — animasyonlu seyir tamamlanma mührü */
 'use strict';
 
-const SURUM = 'r628';
-const CACHE = 'sukun-r628-20260901a';
+const SURUM = 'r629';
+const CACHE = 'sukun-r629-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r626__.json';
+const BUILD_MARKER='./__sukun_build_r629__.json';
 
 const NOTLAR = [
+  'r629 28 İsim ve 99 Esmâ seyirleri gerçek son okumadan sonra animasyonlu SVG tamamlanma mührü, tekrar et ve Seyirlere dön seçenekleriyle kapanır.',
+  'r629 Son isimde kapanış tınısı zaten duyulduysa ikinci kez çalınmaz; gerekirse seçili zikir-sonu sesi bir kez kullanılır ve sessiz tercih korunur.',
+  'r629 r628 paketindeki Service Worker yapı işaretçisi, manifest adresi ve görünen sürüm satırları aynı build zincirine getirildi.',
   'r628 Güncelleme beklemede takılı kalabiliyordu; ses çalmıyorsa sessizce devreye alma emniyeti eklendi.',
   'r627 KRİTİK: boşta çalışan arayüz fırtınası kesildi. Mutasyon 1360dan 106ya, zamanlayıcı 316/sndan 6/sne, kare isteği 216dan 58e indi. Sürüm notu JSONu onarıldı, 53 eksik sürüm işlendi.',
   'r626 r624 cihaz raporu, Derin Testin canlı __diag_* ses oturumlarını registryye ekleyip pauseAll/resumeAll çalıştırdığını ve Tekke kapısını rapor sırasında açık bıraktığını kanıtladı; tıklama kilidinin bu kaynağı kaldırıldı.',

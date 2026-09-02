@@ -1,5 +1,32 @@
 [
   {
+    "v": "r629",
+    "t": "2 Eylül 2026",
+    "b": [
+      "28 İsim ve 99 Esmâ seyirleri gerçek son okuma tamamlandığında ortak bir tamamlanma mührüyle kapanır.",
+      "Tema renkleriyle çalışan animasyonlu SVG görsel, toplam isim ve tekrar özetini; Seyri tekrar et ve Seyirlere dön seçeneklerini gösterir.",
+      "Son ismin normal kapanış tınısı zaten duyulduysa ikinci ses üst üste bindirilmez; duyulmadıysa seçili zikir-sonu sesi bir kez çalar. Sessiz tercihi korunur.",
+      "Son okumadan sonraki gereksiz ara beklemesi kaldırıldı; duraklatma, elle bitirme ve başarısız ses tamamlanma ekranını açmaz.",
+      "r628 paketindeki Service Worker yapı işaretçisi, manifest başlangıç adresi ve görünen sürüm satırları r629 zincirinde eşitlendi."
+    ]
+  },
+  {
+    "v": "r628",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Güncelleme beklemede kalırsa ve açılışta hiçbir ses çalmıyorsa yeni Service Worker güvenle devreye alınır.",
+      "Ses çalarken otomatik güncelleme yapılmaz; aktif zikir veya seyir yarıda kesilmez."
+    ]
+  },
+  {
+    "v": "r627",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Boşta kendi kendini besleyen arayüz yazım fırtınası kesildi; gereksiz altyazı ve gövde sınıfı yazımları yalnız gerçek değişimde yapılır.",
+      "Uygulama içi sürüm notları onarıldı ve eksik sürüm kayıtları tamamlandı."
+    ]
+  },
+  {
     "v": "r626",
     "t": "1 Eylül 2026",
     "b": [
