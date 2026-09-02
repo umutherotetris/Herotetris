@@ -1,5 +1,15 @@
 [
   {
+    "v": "r636",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Kendi kayıt varken TTS’e düşen yol kapatıldı: Esmâ için IndexedDB kaydı Akıllı Seans/Düzen, 28/99 seyir, terkip, Foreground Queue ve tekil okuma yollarının tamamında TTS’ten önce zorunlu olarak aranır.",
+      "Akıllı Seansın eski kaynak modu artık kayıt önceliğini iptal edemez; TTS ses seçimleri yalnız kayıt bulunamazsa fallback tercihidir.",
+      "Esmâ kayıt anahtarı global Z.form’a kör bağlı kalmaz; düzen ve seyir çağrıları esma:<indeks>:nida anahtarını da doğrudan yoklar.",
+      "TTS başlamadan önce Recording Priority Lock son bir IndexedDB kontrolü yapar; kayıt bulunursa SpeechSynthesis iptal edilip kendi kayıt devralır. TTS yalnız kayıt yoksa veya gerçek kayıt oynatma hatasında ikinci seçenektir."
+    ]
+  },
+  {
     "v": "r635",
     "t": "2 Eylül 2026",
     "b": [
