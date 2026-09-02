@@ -1,5 +1,28 @@
 [
   {
+    "v": "r635",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Unified Foreground Queue / Session Arbitration eklendi: 28 İsim, 99 Esmâ, tekil/ek Esmâ, terkip ve sesli otomatik zikir tek foreground hakeminden geçer.",
+      "Aynı Esmâ ikinci kez istenirse yeni player açılmaz; farklı sözlü içerik FIFO kuyruğa alınır.",
+      "Seyir sırasında karar levhasına Foreground kuyruğuna ekle seçeneği eklendi; mevcut seyir kesilmeden ek Esmâ sonrasında okunabilir.",
+      "Akıllı Seans/Düzen içindeki Esmâlar hakemden geçer; 28/99 seyir okumaları journey:true ile ayrıştırıldı.",
+      "Kendi ses kaydı varsa daima birinci önceliktir; kayıt yoksa ikinci aşama TTS'tir. Seçili SpeechSynthesis sesi TTS aşamasında cihaz varsayılanından önce kullanılır.",
+      "State Authority ve Regression Shield Foreground Queue ile kayıt→TTS kaynak sözleşmesini de denetler."
+    ]
+  },
+  {
+    "v": "r634",
+    "t": "2 Eylül 2026",
+    "b": [
+      "28 İsim/Zikir akışında kilit ekranında hedef dolunca mantıksal isim ilerleyip native sesin eski isimde kalmasına yol açan hidden hazırlık kapısı düzeltildi.",
+      "Zikir geçişi gizli ekranda da yeni kayıt kaynağını hazırlar; görünür DOM render edilmez, yalnız lock-audio kaynağı canonical Z + ZIKIR durumundan yenilenir.",
+      "MediaSession başlığı ve sonraki ses hazırlığında kullanılan metin artık görünür DOM yerine canonical isim durumunu esas alır; kilitte DOM eski isimde kalsa bile yeni kaynak Tetlîhin gibi doğru isimden hazırlanır.",
+      "Arka planda yeni isme geçerken ağır OfflineAudio render beklenmez; native kayıt ham kaynaktan hemen devralır ve sonraki hedef zamanlayıcısı yeni ismin gerçek cycle süresi hazırlandıktan sonra kurulur.",
+      "Regression Shield’a lock-source-identity kontrolü eklendi; kilitte çalan native kayıt anahtarı canonical zikir anahtarından ayrılırsa PASS yerine FAIL üretilir."
+    ]
+  },
+  {
     "v": "r633",
     "t": "2 Eylül 2026",
     "b": [

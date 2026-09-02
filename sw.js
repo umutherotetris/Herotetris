@@ -1,8 +1,8 @@
-/* SÜKÛN r633 — Akış Barı Otomatik Yerleşim ve Sürükleme */
+/* SÜKÛN r635 — Unified Foreground Queue / Session Arbitration */
 'use strict';
 
-const SURUM = 'r633';
-const CACHE = 'sukun-r633-20260902a';
+const SURUM = 'r635';
+const CACHE = 'sukun-r635-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,18 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r633__.json';
+const BUILD_MARKER='./__sukun_build_r635__.json';
 
 const NOTLAR = [
+  'r635 Unified Foreground Queue / Session Arbitration: 28/99 seyir, tekil ve ek Esmâ, terkip ile sesli otomatik zikir tek sözlü foreground hakeminden geçer.',
+  'r635 Aynı Esmâ ikinci player açmadan merge edilir; farklı sözlü görev FIFO kuyruğa alınır ve seyir karar levhasından da Kuyruğa ekle seçilebilir.',
+  'r635 Akıllı Seans/Düzen Esmâları da arbitration altındadır; 28/99 iç okumaları journey kimliğiyle ayrıştırılır.',
+  'r635 Kaynak önceliği kayıt → TTS olarak sabitlendi; kendi kayıt varsa TTS çalışmaz, kayıt yoksa seçili TTS sesi ve cihaz TTS fallback kullanılır.',
+  'r634 28 İsim/Zikir akışında kilit ekranında hedef dolunca mantıksal isim ilerleyip native sesin eski isimde kalmasına yol açan hidden hazırlık kapısı düzeltildi.',
+  'r634 Zikir geçişi gizli ekranda da yeni kayıt kaynağını hazırlar; görünür DOM render edilmez, yalnız lock-audio kaynağı canonical Z + ZIKIR durumundan yenilenir.',
+  'r634 MediaSession başlığı ve sonraki ses hazırlığında kullanılan metin artık görünür DOM yerine canonical isim durumunu esas alır; kilitte DOM eski isimde kalsa bile yeni kaynak Tetlîhin gibi doğru isimden hazırlanır.',
+  'r634 Arka planda yeni isme geçerken ağır OfflineAudio render beklenmez; native kayıt ham kaynaktan hemen devralır ve sonraki hedef zamanlayıcısı yeni ismin gerçek cycle süresi hazırlandıktan sonra kurulur.',
+  'r634 Regression Shield’a lock-source-identity kontrolü eklendi; kilitte çalan native kayıt anahtarı canonical zikir anahtarından ayrılırsa PASS yerine FAIL üretilir.',
   'r633 Akış barı görünür r588 kabuğu üzerinden doğrudan sürüklenebilir; eski gizli drag handle etkileşim sahibi değildir.',
   'r633 Bar viewport, safe-area ve görünür alt navigasyonu ölçerek otomatik güvenli konuma yerleşir; ekranın altına veya üstüne taşamaz.',
   'r633 Eski dockY translate etkisi görsel otoriteden çıkarıldı; kullanıcı konumu yeni tek r633 değişkeninde saklanır ve her geometride yeniden clamp edilir.',
