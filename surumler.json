@@ -1,5 +1,17 @@
 [
   {
+    "v": "r633",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Akış barının görünür r588 kabuğu doğrudan sürüklenebilir hâle getirildi; eski gizli drag handle artık kullanıcı etkileşiminin sahibi değildir.",
+      "Bar her açılışta, görünüm/mod değişiminde, ekran döndürmede ve VisualViewport değişiminde güvenli alana otomatik yeniden yerleşir; ekranın altına veya üstüne taşamaz.",
+      "Eski dockY konumunun barı aşağı itebilmesi engellendi. r633 kendi tek konum değişkenini kullanır ve eski r551/r554 translate katmanını görsel otoriteden çıkarır.",
+      "Alt navigasyon görünürse yüksekliği otomatik ölçülerek bar onun üstüne alınır; Tefekkürde navigasyon gizliyse bar ekran alt güvenli alanına yerleşir.",
+      "Kullanıcının bıraktığı dikey konum cihazda saklanır ancak her ekran geometrisinde yeniden clamp edilir; geçersiz eski konum güvenli sınıra çekilir.",
+      "Ses, seyir, State Authority ve Regression Shield davranışlarına dokunulmadı."
+    ]
+  },
+  {
     "v": "r632",
     "t": "2 Eylül 2026",
     "b": [

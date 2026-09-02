@@ -1,8 +1,8 @@
-/* SÜKÛN r632 — State Authority & Regression Shield */
+/* SÜKÛN r633 — Akış Barı Otomatik Yerleşim ve Sürükleme */
 'use strict';
 
-const SURUM = 'r632';
-const CACHE = 'sukun-r632-20260902a';
+const SURUM = 'r633';
+const CACHE = 'sukun-r633-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r632__.json';
+const BUILD_MARKER='./__sukun_build_r633__.json';
 
 const NOTLAR = [
+  'r633 Akış barı görünür r588 kabuğu üzerinden doğrudan sürüklenebilir; eski gizli drag handle etkileşim sahibi değildir.',
+  'r633 Bar viewport, safe-area ve görünür alt navigasyonu ölçerek otomatik güvenli konuma yerleşir; ekranın altına veya üstüne taşamaz.',
+  'r633 Eski dockY translate etkisi görsel otoriteden çıkarıldı; kullanıcı konumu yeni tek r633 değişkeninde saklanır ve her geometride yeniden clamp edilir.',
+  'r633 Ses, seyir, State Authority ve Regression Shield davranışları değiştirilmedi.',
   'r632 State Authority; zikir, audio registry, currentFlow, foreground voice ve 28/99 seyir durumlarını tek canonical snapshot altında birleştirir.',
   'r632 Regression Shield çift seyir, seyir+terkip, zikir/flow ayrışması, tanı provider sızıntısı, kritik DOM çoğalması, layout overlap ve build/skin sözleşmesini event tabanlı denetler.',
   'r632 Yeni polling veya MutationObserver eklemez; kalıcı tek-sahip ihlalinde mevcut foreground sahibini koruyan muhafazakâr containment uygular.',
