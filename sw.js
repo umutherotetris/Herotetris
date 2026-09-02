@@ -1,8 +1,8 @@
-/* SÜKÛN r629 — animasyonlu seyir tamamlanma mührü */
+/* SÜKÛN r630 — aktif zikirden Tekke'ye açık bağlam */
 'use strict';
 
-const SURUM = 'r629';
-const CACHE = 'sukun-r629-20260902a';
+const SURUM = 'r630';
+const CACHE = 'sukun-r630-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r629__.json';
+const BUILD_MARKER='./__sukun_build_r630__.json';
 
 const NOTLAR = [
+  'r630 Tekke eylemi seçili zikrin adı, Arapçası, hedefi ve manasını gösteren Aktif Zikir kartına bağlandı; belirsiz Bu zikir ifadesi kaldırıldı.',
+  'r630 Tekke kapısı gerçek seçimi ve tekrar sayısını gösterir; aktif zikir ile 11 nefes tevhid kapanışı aynı seyirde hazırlanır.',
+  'r630 Yarım kalan Tekke ilerlemesi zikir dizisi kimliğiyle doğrulanır ve başka seçime yanlışlıkla uygulanmaz.',
   'r629 28 İsim ve 99 Esmâ seyirleri gerçek son okumadan sonra animasyonlu SVG tamamlanma mührü, tekrar et ve Seyirlere dön seçenekleriyle kapanır.',
   'r629 Son isimde kapanış tınısı zaten duyulduysa ikinci kez çalınmaz; gerekirse seçili zikir-sonu sesi bir kez kullanılır ve sessiz tercih korunur.',
   'r629 r628 paketindeki Service Worker yapı işaretçisi, manifest adresi ve görünen sürüm satırları aynı build zincirine getirildi.',

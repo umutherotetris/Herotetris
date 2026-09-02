@@ -1,5 +1,16 @@
 [
   {
+    "v": "r630",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Belirsiz ‘Bu zikri Tekke'de çek’ düğmesi, Seyirler başında seçili zikrin adını, Arapçasını, hedefini ve manasını gösteren Aktif Zikir kartına dönüştürüldü.",
+      "Kart, üst Tekke girişi ve kaydırmada görünen kompakt kısayol aynı currentZikirState kaynağını kullanır; kullanıcı bağlamı yeniden kurmak zorunda kalmaz.",
+      "Tekke giriş kapısı artık seçili zikri ve tekrar sayısını açıkça gösterir; eski sabit Yâ Selâm → Yâ Latîf anlatısı aktif seçim varken gösterilmez.",
+      "Seçili zikir ile 11 nefes tevhid kapanışı tek seyir olarak hazırlanır; isim, Arapça metin, hedef ve mana içeride korunur.",
+      "Yarım kalmış Tekke ilerlemesi yalnız aynı zikir dizisiyle eşleşirse sunulur; başka bir zikre yanlışlıkla giydirilmez."
+    ]
+  },
+  {
     "v": "r629",
     "t": "2 Eylül 2026",
     "b": [
