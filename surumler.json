@@ -1,5 +1,15 @@
 [
   {
+    "v": "r631",
+    "t": "2 Eylül 2026",
+    "b": [
+      "Dört geçişli skin seçimi iki güçlü yöne indirildi: varsayılan premium kabuk Osmanlı Mührü, modern alternatif Semerkant Neon oldu.",
+      "Eski Feyz 619 ve Tekno Halvet kayıtları yeni iki skin haritasına taşınır; mevcut kullanıcı tercihi boşa düşmez.",
+      "Görsel dil seçicileri iki seçenekli düzene sadeleştirildi; skin değişimi yalnız CSS değişkenleri ve data katmanında kalır.",
+      "Ses motoru, aktif seyir, sayaç, kilit ekranı ve akış barı sahipliği bu sürümde değiştirilmedi; r630 davranış zinciri korunur."
+    ]
+  },
+  {
     "v": "r630",
     "t": "2 Eylül 2026",
     "b": [

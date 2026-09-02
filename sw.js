@@ -1,8 +1,8 @@
-/* SÜKÛN r630 — aktif zikirden Tekke'ye açık bağlam */
+/* SÜKÛN r631 — Osmanlı Mührü ve Semerkant Neon skinleri */
 'use strict';
 
-const SURUM = 'r630';
-const CACHE = 'sukun-r630-20260902a';
+const SURUM = 'r631';
+const CACHE = 'sukun-r631-20260902a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r630__.json';
+const BUILD_MARKER='./__sukun_build_r631__.json';
 
 const NOTLAR = [
+  'r631 Görsel dil iki güçlü seçenekte toplandı: varsayılan premium kabuk Osmanlı Mührü, modern alternatif Semerkant Neon.',
+  'r631 Eski Feyz 619 ve Tekno Halvet tercihlerinin tamamı yeni skin haritasına taşınır; kullanıcı seçimi boşa düşmez.',
+  'r631 Skin değişimi yalnız CSS değişkenleri ve veri öznitelikleri üzerinden çalışır; ses motoru, sayaç, seyir ve kilit ekranı sahipliği r630 zinciriyle aynıdır.',
   'r630 Tekke eylemi seçili zikrin adı, Arapçası, hedefi ve manasını gösteren Aktif Zikir kartına bağlandı; belirsiz Bu zikir ifadesi kaldırıldı.',
   'r630 Tekke kapısı gerçek seçimi ve tekrar sayısını gösterir; aktif zikir ile 11 nefes tevhid kapanışı aynı seyirde hazırlanır.',
   'r630 Yarım kalan Tekke ilerlemesi zikir dizisi kimliğiyle doğrulanır ve başka seçime yanlışlıkla uygulanmaz.',
