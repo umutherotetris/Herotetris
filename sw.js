@@ -1,8 +1,8 @@
-/* SÜKÛN r636 — Recording Priority Lock */
+/* SÜKÛN r637 — Audio Truth Reconciliation */
 'use strict';
 
-const SURUM = 'r636';
-const CACHE = 'sukun-r636-20260903a';
+const SURUM = 'r637';
+const CACHE = 'sukun-r637-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r636__.json';
+const BUILD_MARKER='./__sukun_build_r637__.json';
 
 const NOTLAR = [
+  'r637 · Audio Truth Reconciliation: Registry + AudioLife + AudioHub + Foreground Arbiter canonical ses gerçeğinde uzlaştırılır.',
+  'r637 · Mix provider kısa kayıt döngüsü boşluklarında 520 ms idle-grace kullanır; ended/playing state churn bastırılır.',
+  'r637 · Recording Priority Lock olay günlüğü kayıt probe/found/missing/play-failure/fallback/TTS çağrılarını tanıya taşır.',
   'r636 Kendi kayıt varken TTS seçilmesine yol açan Akıllı Seans/Düzen ve Esmâ anahtar ayrışması kapatıldı.',
   'r636 TTS artık yalnız IndexedDB kaydı bulunamazsa veya gerçek kayıt oynatma hatasında ikinci seçenek olarak devreye girer.',
   'r636 Esmâ düzen/seyir çağrıları esma:<indeks>:nida kaydını global Z.form değerinden bağımsız olarak yoklar.',

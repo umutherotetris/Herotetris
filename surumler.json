@@ -1,5 +1,16 @@
 [
   {
+    "v": "r637",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Audio Truth Reconciliation: Registry, AudioLife, AudioHub ve Foreground Arbiter tek canonical ses gerçeğinde uzlaştırılır.",
+      "State Authority foreground sahibi Arbiter owner/observed sözlü sahip bilgisini esas alır; paused controller adı eski sahibi taşımaz.",
+      "Genel mix provider kısa kendi-kayıt parçaları arasındaki boşlukta 520 ms idle-grace kullanır; ended → playing state churn bastırılır.",
+      "Recording Priority Lock olay günlüğü kayıt anahtarlarını, kayıt sonucunu, fallback kararını ve gerçek TTS çağrısını raporlar.",
+      "Regression Shield Audio Truth ayrışmasını WARN/FAIL olarak görünür kılar; sessiz PASS engellenir."
+    ]
+  },
+  {
     "v": "r636",
     "t": "3 Eylül 2026",
     "b": [
