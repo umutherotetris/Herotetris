@@ -1,8 +1,8 @@
-/* SÜKÛN r638 — Native Lock Echo Bridge */
+/* SÜKÛN r639 — Echo Attachment Authority + Journey Identity */
 'use strict';
 
-const SURUM = 'r638';
-const CACHE = 'sukun-r638-20260903a';
+const SURUM = 'r639';
+const CACHE = 'sukun-r639-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r638__.json';
+const BUILD_MARKER='./__sukun_build_r639__.json';
 
 const NOTLAR = [
+  'r639 · Echo Attachment Authority: 28/99 kilit yankısı tek persistent native medya dosyasına baked FX olarak bağlanır; ikincil autoplay tap bağımlılığı kaldırıldı.',
+  'r639 · Journey Echo Prewarm sıradaki kendi kayıtları görünürken hazırlar; hidden source switch hiçbir zaman OfflineAudio render beklemez.',
+  'r639 · Journey Navigation Isolation global önceki/sonraki/baştan komutlarının aktif 28/99 seyri r494-nav ile kesmesini engeller.',
+  'r639 · Seyir tekrarında global ZikirTransaction indeks ilerletemez; bölüm ilerleme otoritesi yalnız journey state’tedir.',
+  'r639 · Section Identity Commit ve Regression Shield, seyir indeksi + Now Playing + native key + gerçek echo attachment kimliğini doğrular.',
   'r638 · Native Lock Echo Bridge: 28/99 seyir kilit ekranı native kayıt yolunda yankı WebAudio askıya alınsa bile korunur.',
   'r638 · Üç düşük seviyeli native gecikme tap’i ana sesle pause/resume/source-change/stop halinde birlikte hareket eder.',
   'r638 · r477 önceden işlenmiş FX WAV varsa native echo açılmaz; çift yankı engellenir.',

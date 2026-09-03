@@ -1,5 +1,16 @@
 [
   {
+    "v": "r639",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Echo Attachment Authority: 28/99 seyir kilit sesinde yankı artık ikincil autoplay tap’lerine bağımlı değil; görünürken tek persistent native medya dosyasına önceden işlenmiş echo WAV hazırlanır ve kilitte aynı medya elementi bunu çalar.",
+      "Journey Echo Prewarm sıradaki kayıtları görünürken düşük öncelikle hazırlar; kilitte kaynak değişiminde hazır FX varsa anında kullanılır, yoksa ham kayıt akışı bekletilmez ve sonraki tekrarda hazır FX’e terfi eder.",
+      "Journey Navigation Isolation: 28/99 seyir sahipken global önceki/sonraki/baştan komutları doğrudan zikir navigasyonuna ve r494-nav ses kesimine düşmez; seyirin kendi public API’sine yönlendirilir.",
+      "Seyir sayımı sırasında global ZikirTransaction artık indeks ilerletmez; indeks otoritesi yalnız BS.i / ES.i seyir motorunda kalır. Böylece aynı hedefte çift ilerleme ve eski isim metadata yarışı önlenir.",
+      "Section Identity Commit Z.idx, seyir indeksi, Now Playing, MediaSession ve native recording key kimliğini aynı geçişte uzlaştırır; Regression Shield gerçek native echo attachment ve section identity’yi çalışma anında doğrular."
+    ]
+  },
+  {
     "v": "r638",
     "t": "3 Eylül 2026",
     "b": [
