@@ -1,5 +1,17 @@
 [
   {
+    "v": "r647",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Unified Journey / Audio State Machine eklendi: 28 İsim ve 99 Esmâ seyri için IDLE → PREPARING → PLAYING_VISIBLE → PLAYING_HIDDEN → SWITCHING → RECOVERING → USER_PAUSED → COMPLETE/ERROR durum sözleşmesi tek otoritede izlenir.",
+      "Kullanıcı pause niyeti ile provider/MediaSession durum yansıması ayrıldı. SesCapa.syncPaused artık userPaused üretmez; gerçek UI veya MediaSession pause aksiyonu ayrı intent olarak işaretlenir.",
+      "AudioSessionRegistry pauseAll kaynak bilgisi taşır; kullanıcı niyeti olmayan aggregate pause userPaused latch’ine dönüşmez. Dock ve gerçek MediaSession pause yolları açık kaynak etiketiyle korunur.",
+      "State machine event-driven çalışır; yeni sürekli interval eklemez. visibility, journey, playback, audio-truth, foreground, section identity ve kullanıcı aksiyonlarından deterministik state üretir.",
+      "RECOVERING yalnız aktif seyir, kullanıcı pause’u yok ve foreground çakışması yoksa kontrollü revive/recover yapar; başka sözlü sahip varsa otomatik resume etmez.",
+      "Diagnostics ve Regression Shield r647 state machine snapshotını raporlar; USER_PAUSED dışındaki beklenmedik journey pause durumları artık ayrı invariant olarak görülebilir."
+    ]
+  },
+  {
     "v": "r646",
     "t": "3 Eylül 2026",
     "b": [

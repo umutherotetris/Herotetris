@@ -1,8 +1,8 @@
-/* SÜKÛN r646 — Core Performance & Release Hardening */
+/* SÜKÛN r647 — Unified Journey / Audio State Machine */
 'use strict';
 
-const SURUM = 'r646';
-const CACHE = 'sukun-r646-20260903a';
+const SURUM = 'r647';
+const CACHE = 'sukun-r647-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r646__.json';
+const BUILD_MARKER='./__sukun_build_r647__.json';
 
 const NOTLAR = [
+  "r647 · Unified Journey/Audio State Machine: 28/99 seyir durumları tek sözleşmede; syncPaused artık kullanıcı niyeti üretmez ve recovery yalnız güvenli foreground koşulunda çalışır.",
   "r646 · Core Performance I: düşük riskli UI polling event-driven hale getirildi; Release Factory paket bütünlüğünü build öncesi zorunlu doğrular.",
   "r645 · Aktif isim satırının dikey ritmi rafine edildi; Journey Pause Repair kilit/kendi kayıt akışında geçici pause ile gerçek kullanıcı pause niyetini ayırır.",
   "r644 · Aktif Berhetiyye/Esmâ başlığı iki yandaki süslemeler arasında optik olarak merkezlendi; bilgi ikonu başlık eksenini kaydırmaz.",
