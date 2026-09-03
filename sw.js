@@ -1,8 +1,8 @@
-/* SÜKÛN r651 — Lock Stability / No-Recovery-Storm */
+/* SÜKÛN r652 — Wake-Edge Media Pause Guard */
 'use strict';
 
-const SURUM = 'r651';
-const CACHE = 'sukun-r651-20260904a';
+const SURUM = 'r652';
+const CACHE = 'sukun-r652-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r651__.json';
+const BUILD_MARKER='./__sukun_build_r652__.json';
 
 const NOTLAR = [
+  "r652 · Wake-Edge Media Pause Guard: hidden 28/99 seyirde kilit açılışına çok yakın MediaSession pause kısa doğrulama penceresine alınır; görünür dönüş ghost pause’u iptal eder, hidden kalırsa gerçek kullanıcı pause’u uygulanır.",
   "r651 · Lock Stability: hidden native lease tek playback otoritesi; pause-event revive fırtınası, AbortError tekrarları ve görünür hard handoff kaldırıldı.",
   "r649 · Regression & Soak Laboratory: 48 senaryoluk matrix, seeded virtual soak ve 10/30/60 dk pasif gerçek-cihaz gözlemi; normal kullanımda interval/observer eklemez.",
   "r648 · Lock Screen Transport 2.0: kendi kayıtlı 28/99 seyir hidden durumda native loop lease kullanır; gap lock anında çözülür ve tamamlanan çevrimler timestamp ledger ile uzlaştırılır.",

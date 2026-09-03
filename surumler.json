@@ -1,5 +1,17 @@
 [
   {
+    "v": "r652",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Wake-Edge Media Pause Guard eklendi: aktif 28/99 seyri kilitteyken gelen MediaSession pause komutu kısa doğrulama penceresine alınır; kilit açılışı sırasında oluşan platform kaynaklı ghost pause kalıcı userPaused latch’ine dönüşmez.",
+      "Hidden MediaSession pause ile görünür dönüş 1.25 saniye içinde çakışırsa pause iptal edilir ve native seyir kesilmeden devam eder. Sayfa kilitli kalırsa pause gerçek kullanıcı niyeti olarak onaylanır ve normal pauseAll zinciri uygulanır.",
+      "Gerçek kilit ekranı/kulaklık Pause davranışı korunur: doğrulama penceresi sonunda hâlâ hidden ise 28/99 seyri USER_PAUSED olur; stop komutu geciktirilmez, play komutu bekleyen pause’u iptal eder.",
+      "r651 No-Recovery-Storm transportu korunur: r650’deki binlerce revive/stall geri getirilmez; r652 yeni interval veya MutationObserver eklemez, yalnız bekleyen pause için tek kısa timeout kullanır.",
+      "Diagnostics’e mediaSessionWakeGuard snapshotı eklendi; quarantined, cancelledWake, confirmed, duplicates ve pending alanları kilit açılışı pause ayrımını görünür kılar.",
+      "Regression Shield media-session-wake-guard invariantını izler. SW/manifest/build marker/sürüm notları r652 ile senkronlandı."
+    ]
+  },
+  {
     "v": "r651",
     "t": "4 Eylül 2026",
     "b": [
