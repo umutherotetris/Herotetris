@@ -1,8 +1,8 @@
-/* SÜKÛN r652 — Wake-Edge Media Pause Guard */
+/* SÜKÛN r653 — Lock Intent & AudioContext Reconciliation */
 'use strict';
 
-const SURUM = 'r652';
-const CACHE = 'sukun-r652-20260904a';
+const SURUM = 'r653';
+const CACHE = 'sukun-r653-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r652__.json';
+const BUILD_MARKER='./__sukun_build_r653__.json';
 
 const NOTLAR = [
+  "r653 · Lock Intent + Context Reconciliation: hidden journey tek MediaSession pause ghost adayıdır; çift pause doğrulaması, terminal latch temizliği ve canlı AudioContext churn engeli eklendi.",
   "r652 · Wake-Edge Media Pause Guard: hidden 28/99 seyirde kilit açılışına çok yakın MediaSession pause kısa doğrulama penceresine alınır; görünür dönüş ghost pause’u iptal eder, hidden kalırsa gerçek kullanıcı pause’u uygulanır.",
   "r651 · Lock Stability: hidden native lease tek playback otoritesi; pause-event revive fırtınası, AbortError tekrarları ve görünür hard handoff kaldırıldı.",
   "r649 · Regression & Soak Laboratory: 48 senaryoluk matrix, seeded virtual soak ve 10/30/60 dk pasif gerçek-cihaz gözlemi; normal kullanımda interval/observer eklemez.",

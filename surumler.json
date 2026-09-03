@@ -1,5 +1,17 @@
 [
   {
+    "v": "r653",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Hidden MediaSession Pause Intent Guard v2: aktif 28/99 seyri kilitteyken gelen ilk pause artık süre dolunca otomatik kullanıcı Pause’una çevrilmez; tek hidden pause platform ghost adayı olarak bastırılır.",
+      "Gerçek kilit ekranı/kulaklık Pause için 420–2600 ms aralığında ikinci pause doğrulaması kullanılır; 420 ms altı callback tekrarları duplicate sayılır. Play bekleyen adayı iptal eder, Stop gecikmesiz kalır.",
+      "AudioLife reconcileUserPaused ve terminal pause-gate reconciliation eklendi. r645 recovery artık sistem düzeltmesini sahte user-play olarak günlüğe yazmaz; journey tamamlanınca stale userPaused/aggregate pause kapısı temizlenir.",
+      "Kilit track ve native echo hazırlığında her isim için yeni canlı AudioContext açan iki eski decode yolu kaldırıldı; mevcut ana context veya OfflineAudioContext kullanılır. Echo prewarm 6 isimden 3 isme indirildi.",
+      "r645 heartbeat yalnız gerçekten stale/interrupted/systemHold durumunda recovery çalıştırır; sağlıklı visible journey üzerinde periyodik requestRecover üretmez.",
+      "Diagnostics ve Regression Shield hidden pause guard, terminal reconciliation ve AudioContext churn guard telemetrisini raporlar. r651 no-recovery-storm, r650 single-start ve kayıt>TTS önceliği korunur."
+    ]
+  },
+  {
     "v": "r652",
     "t": "4 Eylül 2026",
     "b": [
