@@ -1,5 +1,16 @@
 [
   {
+    "v": "r642",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Tefekkür ekranındaki aktif Berhetiyye/Esmâ adı doğrudan tıklanabilir bilgi tetikleyicisine dönüştürüldü; sayaç veya ses davranışı değişmeden açıklama kartı açılır.",
+      "Bilgi kartı canonical currentZikirState kimliğinden beslenir. Berhetiyye için uygulamadaki anlam/yorum, şerh karşılığı, tefekkür işareti, ebced, unsur, tabiat, menzil ve varsa varyant notu gösterilir; 99 Esmâ için mevcut anlam ve ebced gösterilir.",
+      "Kart açıkken seyirde sıradaki isim değişirse içerik aynı state olayıyla canlı güncellenir; ek polling veya MutationObserver eklenmedi.",
+      "Kart dışına dokunma, kapat düğmesi ve Escape ile kapanır; erişilebilir dialog semantiği ve klavye odağı eklendi.",
+      "r641 Journey Continuity, r640 Transport-Gated Counter, r639 kilit yankısı/Section Identity, kayıt>TTS önceliği ve Foreground Arbiter korunur."
+    ]
+  },
+  {
     "v": "r641",
     "t": "3 Eylül 2026",
     "b": [

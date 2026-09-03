@@ -1,8 +1,8 @@
-/* SÜKÛN r641 — Journey Continuity + User Intent Guard */
+/* SÜKÛN r642 — Aktif İsim Bilgi Kartı */
 'use strict';
 
-const SURUM = 'r641';
-const CACHE = 'sukun-r641-20260903a';
+const SURUM = 'r642';
+const CACHE = 'sukun-r642-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r641__.json';
+const BUILD_MARKER='./__sukun_build_r642__.json';
 
 const NOTLAR = [
+  "r642 · Tefekkür aktif Berhetiyye/Esmâ adı tıklanabilir bilgi kartı açar; canonical zikir state ve mevcut ZIKIR verisini kullanır.",
+  "r642 · Berhetiyye kartı anlam/yorum, şerh, işaret, ebced, unsur/tabiat/menzil ve varyant notunu; Esmâ kartı mevcut anlam ve ebcedi gösterir.",
+  "r642 · Kart state olaylarıyla canlı güncellenir; yeni polling/observer eklenmedi ve ses/sayaç/seyir transportuna dokunulmadı.",
   "r641 · Journey Continuity Guard: stale/superseded callback aktif 28/99 seyri artık kullanıcı pause gibi kapatmaz; aynı tekrar sayılmadan yeniden denenir.",
   "r641 · Seyir içi hedef/devir kapanışında genel Hu/end-tone bastırılır; gecikmeli kendi Hu kaydı sonraki native ismi kesemez. Gerçek seyir tamamlanma sesi korunur.",
   "r641 · Audio Truth observed provider pause durumunu userPaused latch'ine çevirmiyor; kullanıcı niyeti yalnız gerçek pause/aggregate latch'inden gelir.",
