@@ -1,5 +1,16 @@
 [
   {
+    "v": "r638",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Kilit ekranında 28/99 seyir için kullanılan persistent native kayıt yoluna Native Lock Echo Bridge eklendi; WebAudio askıya alınsa bile kendi kayıttaki yankı korunur.",
+      "Yankı ana native kaynağa bağlı üç düşük seviyeli gecikme tap’iyle uygulanır; pause/resume/source change ve stop ana sesle birlikte yürür.",
+      "r477 tarafından önceden işlenmiş FX WAV zaten kullanılıyorsa native echo açılmaz; çift yankı oluşmaz.",
+      "Otomatik zikir kilit köprüsü ham kayıt kaynağına düştüğünde aynı native echo fallback’ini kullanır; görünür WebAudio davranışı değişmez.",
+      "Tanı JSON’una Native Lock Echo snapshotı eklendi; aktif tap sayısı, wet seviyesi ve kullanılan kilit yolu raporlanır."
+    ]
+  },
+  {
     "v": "r637",
     "t": "3 Eylül 2026",
     "b": [

@@ -1,8 +1,8 @@
-/* SÜKÛN r637 — Audio Truth Reconciliation */
+/* SÜKÛN r638 — Native Lock Echo Bridge */
 'use strict';
 
-const SURUM = 'r637';
-const CACHE = 'sukun-r637-20260903a';
+const SURUM = 'r638';
+const CACHE = 'sukun-r638-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r637__.json';
+const BUILD_MARKER='./__sukun_build_r638__.json';
 
 const NOTLAR = [
+  'r638 · Native Lock Echo Bridge: 28/99 seyir kilit ekranı native kayıt yolunda yankı WebAudio askıya alınsa bile korunur.',
+  'r638 · Üç düşük seviyeli native gecikme tap’i ana sesle pause/resume/source-change/stop halinde birlikte hareket eder.',
+  'r638 · r477 önceden işlenmiş FX WAV varsa native echo açılmaz; çift yankı engellenir.',
+  'r638 · Otomatik zikir kilit köprüsü ham kayıt fallback’inde aynı native yankı katmanını kullanır.',
   'r637 · Audio Truth Reconciliation: Registry + AudioLife + AudioHub + Foreground Arbiter canonical ses gerçeğinde uzlaştırılır.',
   'r637 · Mix provider kısa kayıt döngüsü boşluklarında 520 ms idle-grace kullanır; ended/playing state churn bastırılır.',
   'r637 · Recording Priority Lock olay günlüğü kayıt probe/found/missing/play-failure/fallback/TTS çağrılarını tanıya taşır.',
