@@ -1,5 +1,17 @@
 [
   {
+    "v": "r648",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Lock Screen Transport 2.0 eklendi: 28 İsim ve 99 Esmâ seyri kendi kayıt kullanırken ekran gizlenince aynı persistent native audio kaynağı gerçek loop transportuna devredilir; her tekrar için yeni JS play çağrısı gerekmez.",
+      "Hidden Journey Ledger tamamlanan native çevrimleri zaman damgası + gerçek media fazı ile uzlaştırır. Ekrana dönünce yalnız tamamlanmış tekrarlar toplu işlenir; yarım kalan okuma tekrar baştan yürür ve çift sayılmaz.",
+      "Her isim için tek hedef zamanlayıcısı kullanılır. Çalışabildiği anda hedefi uzlaştırıp sonraki ismin canonical journey API geçişini başlatır; timer gecikse bile native ses aynı isimde kesintisiz dönmeye devam eder.",
+      "Ekran kilidi görünür isim-arası 0.35–5 sn bekleme sırasında gelirse gap beklemesi hemen çözülür; Android'in eski timeout'u dakikalarca ertelemesi yüzünden sessizlik oluşması engellenir.",
+      "r648 transport polling eklemez: visibility, native-playing/source, journey state ve tek hedef timeout ile çalışır. r647 state machine, r643 fallback transport, r639 echo/section identity ve kayıt>TTS önceliği korunur.",
+      "Tanı raporuna lockJourneyTransportV2 snapshotı ve Regression Shield'a lock-transport-v2 invariantı eklendi; lease, uzlaştırılan çevrim, switch, revive, stall ve tahmini overshoot görülebilir."
+    ]
+  },
+  {
     "v": "r647",
     "t": "3 Eylül 2026",
     "b": [
