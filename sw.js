@@ -1,8 +1,8 @@
-/* SÜKÛN r645 — Journey Pause Repair + UI Rhythm */
+/* SÜKÛN r646 — Core Performance & Release Hardening */
 'use strict';
 
-const SURUM = 'r645';
-const CACHE = 'sukun-r645-20260903a';
+const SURUM = 'r646';
+const CACHE = 'sukun-r646-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r645__.json';
+const BUILD_MARKER='./__sukun_build_r646__.json';
 
 const NOTLAR = [
+  "r646 · Core Performance I: düşük riskli UI polling event-driven hale getirildi; Release Factory paket bütünlüğünü build öncesi zorunlu doğrular.",
   "r645 · Aktif isim satırının dikey ritmi rafine edildi; Journey Pause Repair kilit/kendi kayıt akışında geçici pause ile gerçek kullanıcı pause niyetini ayırır.",
   "r644 · Aktif Berhetiyye/Esmâ başlığı iki yandaki süslemeler arasında optik olarak merkezlendi; bilgi ikonu başlık eksenini kaydırmaz.",
   "r643 · 28/99 seyir kilitte aynı persistent native audio elementi Continuous Lock Transport ile canlı tutulur; tekrarlar arası Android scheduler boşluğu artık otomatik pause üretmez.",

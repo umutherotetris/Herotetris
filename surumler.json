@@ -1,5 +1,17 @@
 [
   {
+    "v": "r646",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Core Performance I: düşük riskli UI polling döngüleri sürekli interval yerine playback/state/input olaylarına bağlandı; ses/sayaç çekirdeği değiştirilmedi.",
+      "Mini player, Çalanlar paneli, bölüm özetleri, kaynak rozeti, pause-contract senkronu ve 99 Esmâ başlat etiketi event-driven güncellenir; gereksiz 700–8000 ms polling kaldırıldı.",
+      "r594/r598/r599 layout emniyetleri sürekli 2–5 saniyelik tarama yerine DOMContentLoaded/pageshow/resize/currentFlow/playback ve kullanıcı etkileşimi olaylarında çalışır.",
+      "r645 Journey Pause Repair watchdog sürekli interval olmaktan çıkarıldı; yalnız aktif 28/99 seyir varken kendini yeniden kuran koşullu heartbeat kullanır.",
+      "Geniş DOM observer yükü azaltıldı: açılış sahibi yalnız açılış perdesini izler; r612/r614 whole-body observerları event tabanlı sahipliğe taşındı.",
+      "Release Factory eklendi: zorunlu 8 uygulama dosyası, HTML/meta/footer, manifest URL, SW SURUM/CACHE/build marker, JSON parse ve ZIP CRC uyuşmadan paket üretilemez."
+    ]
+  },
+  {
     "v": "r645",
     "t": "3 Eylül 2026",
     "b": [
