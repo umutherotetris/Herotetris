@@ -1,5 +1,17 @@
 [
   {
+    "v": "r640",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Transport-Gated Counter: görünür Tefekkür ekranında sesli otomatik zikir gerçek ses transportu duraklatılmışsa sayaç, tık, titreşim ve halka animasyonu ilerlemez.",
+      "Yeni sesli otomatik zikir başlangıcında eski global pauseAll latch'i sağlayıcıları yeniden başlatmadan serbest bırakılır; görünür ses transportu yeni niyetle temiz başlar.",
+      "Görünür kendi kayıt/TTS oynatma denemesi başarısız olursa o turdaki sayaç artışı geri alınır, prepared hedef geçişi iptal edilir ve scheduler transportu bekler.",
+      "Hidden/lock r476 native akışı gate dışında kalır; kilit sesi ve r639 native yankı/section identity davranışı korunur.",
+      "currentFlow playing+paused çelişkisi kaldırıldı; Regression Shield zikir-transport-clock invariantını doğrular.",
+      "r639 yankı/kimlik, r637 Audio Truth, kayıt>TTS önceliği, r635 Foreground Arbiter ve r633 dock korunur."
+    ]
+  },
+  {
     "v": "r639",
     "t": "3 Eylül 2026",
     "b": [

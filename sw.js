@@ -1,8 +1,8 @@
-/* SÜKÛN r639 — Echo Attachment Authority + Journey Identity */
+/* SÜKÛN r640 — Transport-Gated Counter + Visible Voice Continuity */
 'use strict';
 
-const SURUM = 'r639';
-const CACHE = 'sukun-r639-20260903a';
+const SURUM = 'r640';
+const CACHE = 'sukun-r640-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,15 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r639__.json';
+const BUILD_MARKER='./__sukun_build_r640__.json';
 
 const NOTLAR = [
+  "r640 · Transport-Gated Counter: görünür Tefekkür ekranında sesli otomatik zikir gerçek ses transportu duraklatılmışsa sayaç, tık, titreşim ve halka animasyonu ilerlemez.",
+  "r640 · Yeni sesli otomatik zikir başlangıcında eski global pauseAll latch'i sağlayıcıları yeniden başlatmadan serbest bırakılır; görünür ses transportu yeni niyetle temiz başlar.",
+  "r640 · Görünür kendi kayıt/TTS oynatma denemesi başarısız olursa o turdaki sayaç artışı geri alınır, prepared hedef geçişi iptal edilir ve scheduler transportu bekler.",
+  "r640 · Hidden/lock r476 native akışı gate dışında kalır; kilit sesi ve r639 native yankı/section identity davranışı korunur.",
+  "r640 · currentFlow playing+paused çelişkisi kaldırıldı; Regression Shield zikir-transport-clock invariantını doğrular.",
+  "r640 · r639 yankı/kimlik, r637 Audio Truth, kayıt>TTS önceliği, r635 Foreground Arbiter ve r633 dock korunur.",
   'r639 · Echo Attachment Authority: 28/99 kilit yankısı tek persistent native medya dosyasına baked FX olarak bağlanır; ikincil autoplay tap bağımlılığı kaldırıldı.',
   'r639 · Journey Echo Prewarm sıradaki kendi kayıtları görünürken hazırlar; hidden source switch hiçbir zaman OfflineAudio render beklemez.',
   'r639 · Journey Navigation Isolation global önceki/sonraki/baştan komutlarının aktif 28/99 seyri r494-nav ile kesmesini engeller.',
