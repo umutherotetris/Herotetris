@@ -1,5 +1,17 @@
 [
   {
+    "v": "r650",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Pronunciation Integrity eklendi: native kendi kayıt okuması sırasında hiçbir stall/recovery yolu currentTime'ı 80 ms geri saramaz; hece ortası tekrarları engellenir.",
+      "Single-Start Authority aynı recordingKey fiziksel olarak çalarken gelen ikinci native start isteğini stale duplicate olarak bastırır; 'Ya Ya Berhetîhin' tipi çift başlangıç sayılmaz ve ikinci player açılmaz.",
+      "r648 revive idempotent hale getirildi: native loop zaten akıyorsa yeniden play() çağrısı yapılmaz. play event ile gerçek revive telemetrisi ayrıldı.",
+      "r645 recovery sağlıklı r648 lease'i gördüğünde revive uygulamaz; yalnız gerçek ilerleme kaybında müdahale eder.",
+      "r643 fallback r648 aktif lease sahibiyken keepalive/adopt otoritesini devreder. Tanıya nativeSingleStart, suppressedRevives ve lastProgressAgeMs eklendi.",
+      "Service Worker registration query r650 ile senkronlandı. r649 soak lab, r648 lock transport, r647 state machine ve kayıt>TTS önceliği korunur."
+    ]
+  },
+  {
     "v": "r649",
     "t": "3 Eylül 2026",
     "b": [
