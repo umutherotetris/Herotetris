@@ -1,5 +1,16 @@
 [
   {
+    "v": "r641",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Journey Continuity Guard: 28 İsim ve 99 Esmâ seyirlerinde eski/stale bir kayıt callback’i superseded sonucu döndürse bile kullanıcı pause yapmadıysa aktif seyir artık hata diye kapanmaz; aynı tekrar kontrollü biçimde yeniden denenir.",
+      "Seyir içinde bir ismin ebced/hedef devri tamamlandığında genel zikir kapanış sesi bastırılır. Özellikle gecikmeli kendi Hu kaydı, sonraki ismin native kaydını superseded ederek seyri durduramaz; seyir sonu sesi yalnız gerçek seyir tamamlanmasında korunur.",
+      "Audio Truth kullanıcı niyeti ayrıldı: provider geçici olarak paused gözlendi diye userPaused=true yazılmaz. Kullanıcı pause latch’i yalnız gerçek kullanıcı/aggregate pause niyetinden doğar.",
+      "28/99 seyir state telemetrisine staleSkips, lastStale ve lastStaleAt eklendi; Regression Shield journey-stale-cancel kontrolü stale iptal yüzünden durmuş seyri FAIL olarak raporlar.",
+      "r640 Transport-Gated Counter, r639 native yankı/Section Identity, r637 kayıt>TTS hard guard, r635 Foreground Arbiter ve r633 dock davranışları korunur."
+    ]
+  },
+  {
     "v": "r640",
     "t": "3 Eylül 2026",
     "b": [

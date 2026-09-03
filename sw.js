@@ -1,8 +1,8 @@
-/* SÜKÛN r640 — Transport-Gated Counter + Visible Voice Continuity */
+/* SÜKÛN r641 — Journey Continuity + User Intent Guard */
 'use strict';
 
-const SURUM = 'r640';
-const CACHE = 'sukun-r640-20260903a';
+const SURUM = 'r641';
+const CACHE = 'sukun-r641-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r640__.json';
+const BUILD_MARKER='./__sukun_build_r641__.json';
 
 const NOTLAR = [
+  "r641 · Journey Continuity Guard: stale/superseded callback aktif 28/99 seyri artık kullanıcı pause gibi kapatmaz; aynı tekrar sayılmadan yeniden denenir.",
+  "r641 · Seyir içi hedef/devir kapanışında genel Hu/end-tone bastırılır; gecikmeli kendi Hu kaydı sonraki native ismi kesemez. Gerçek seyir tamamlanma sesi korunur.",
+  "r641 · Audio Truth observed provider pause durumunu userPaused latch'ine çevirmiyor; kullanıcı niyeti yalnız gerçek pause/aggregate latch'inden gelir.",
+  "r641 · Regression Shield journey-stale-cancel invariantını doğrular; r640/r639/r637/r635/r633 davranışları korunur.",
   "r640 · Transport-Gated Counter: görünür Tefekkür ekranında sesli otomatik zikir gerçek ses transportu duraklatılmışsa sayaç, tık, titreşim ve halka animasyonu ilerlemez.",
   "r640 · Yeni sesli otomatik zikir başlangıcında eski global pauseAll latch'i sağlayıcıları yeniden başlatmadan serbest bırakılır; görünür ses transportu yeni niyetle temiz başlar.",
   "r640 · Görünür kendi kayıt/TTS oynatma denemesi başarısız olursa o turdaki sayaç artışı geri alınır, prepared hedef geçişi iptal edilir ve scheduler transportu bekler.",
