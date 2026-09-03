@@ -1,5 +1,17 @@
 [
   {
+    "v": "r651",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Lock Stability / No-Recovery-Storm: r648 native lease kilitte pause olayı aldığında artık otomatik play/revive fırtınası başlatmaz; pause yalnız dormant transport durumu olarak kaydedilir.",
+      "r645 heartbeat ve r643 delegate, aktif Lock Transport V2 sahibine play() çağrısı göndermez. Kilit native audio için tek playback otoritesi lease katmanıdır.",
+      "AbortError circuit breaker eklendi: ilk reddedilen hidden play denemesinden sonra aynı lease görünür dönüş veya yeni source gelene kadar yeniden oynatılmaya zorlanmaz.",
+      "Native journey progress watchdog loop lease'i tanır; loop sırasında currentTime sarımlarını playback-stalled olarak yorumlamaz ve aktif kilit lease'ini yanlışlıkla sonlandırmaz.",
+      "Kilitten görünür dönüşte ses hâlâ çalıyorsa hard handoff/stale restart yerine graceful drain uygulanır: loop kapanır, mevcut kelime doğal biter ve normal journey akışı aynı Promise üzerinden devam eder. Ses durmuşsa tek stale retry normal görünür akışa bırakılır.",
+      "AudioContext kesinti bekçisi hidden native lease'e dokunmaz. Tanıya dormant, pauseEvents, abortLockouts, visibleDrains ve hiddenPlayAttempts sayaçları eklendi; recovery-storm artık Regression Shield tarafından uyarı üretir."
+    ]
+  },
+  {
     "v": "r650",
     "t": "3 Eylül 2026",
     "b": [

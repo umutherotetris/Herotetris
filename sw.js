@@ -1,8 +1,8 @@
-/* SÜKÛN r650 — Pronunciation Integrity / Single-Start Authority */
+/* SÜKÛN r651 — Lock Stability / No-Recovery-Storm */
 'use strict';
 
-const SURUM = 'r650';
-const CACHE = 'sukun-r650-20260903a';
+const SURUM = 'r651';
+const CACHE = 'sukun-r651-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r650__.json';
+const BUILD_MARKER='./__sukun_build_r651__.json';
 
 const NOTLAR = [
-  "r650 · Pronunciation Integrity: mid-word rewind kaldırıldı, aynı native kayıt için çift start bastırıldı, r648 revive idempotent hale getirildi.",
+  "r651 · Lock Stability: hidden native lease tek playback otoritesi; pause-event revive fırtınası, AbortError tekrarları ve görünür hard handoff kaldırıldı.",
   "r649 · Regression & Soak Laboratory: 48 senaryoluk matrix, seeded virtual soak ve 10/30/60 dk pasif gerçek-cihaz gözlemi; normal kullanımda interval/observer eklemez.",
   "r648 · Lock Screen Transport 2.0: kendi kayıtlı 28/99 seyir hidden durumda native loop lease kullanır; gap lock anında çözülür ve tamamlanan çevrimler timestamp ledger ile uzlaştırılır.",
   "r647 · Unified Journey/Audio State Machine: 28/99 seyir durumları tek sözleşmede; syncPaused artık kullanıcı niyeti üretmez ve recovery yalnız güvenli foreground koşulunda çalışır.",
