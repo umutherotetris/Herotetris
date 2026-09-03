@@ -1,5 +1,17 @@
 [
   {
+    "v": "r649",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Regression & Soak Laboratory eklendi: 28/99 × kendi kayıt/TTS × görünür/kilit × normal/isim geçişi × continue/user pause-resume/system interruption-resume kombinasyonlarından oluşan 48 senaryoluk deterministik matris tek dokunuşla çalışır.",
+      "Hızlandırılmış sanal soak motoru seeded ve yeniden üretilebilir biçimde binlerce state geçişini yürütür; state machine sonucu, kullanıcı pause niyeti, source priority, native lease beklentisi, section delta ve foreground conflict invariantlarını kontrol eder.",
+      "10/30/60 dakikalık pasif canlı soak modu gerçek cihaz seyrini yönetmeden yalnız olayları dinler. Kilit/geri dönüş, 28/99 sahipliği, pause intent, recording/TTS çakışması, fiziksel çift ses, lock key, currentFlow ve foreground tutarlılığını kaydeder.",
+      "Canlı soak üretim sesini pause/resume etmez, sentetik visibility olayı yayınlamaz, MutationObserver veya sürekli interval eklemez; yalnız event listenerlar ve tek deadline timeout kullanır.",
+      "Diagnostics içine laboratuvar paneli, ilerleme/sonuç özeti ve JSON dışa aktarımı eklendi. Tanı raporu regressionSoakLab snapshotını, son matris/soak/canlı gözlem sonuçlarını ve runtime delta ölçümlerini içerir.",
+      "Regression Shield soak-lab-ready invariantını doğrular. r648 Lock Transport 2.0, r647 Journey/Audio State Machine, kayıt>TTS önceliği, ses oturumu tek-sahipliği ve release factory korunur."
+    ]
+  },
+  {
     "v": "r648",
     "t": "3 Eylül 2026",
     "b": [
