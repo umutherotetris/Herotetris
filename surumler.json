@@ -1,5 +1,16 @@
 [
   {
+    "v": "r643",
+    "t": "3 Eylül 2026",
+    "b": [
+      "Continuous Lock Journey Transport eklendi: 28 İsim ve 99 Esmâ seyirlerinde aynı kayıt kilit/arka planda her tekrar sonunda medya oturumunu boşta bırakıp yeniden açmak yerine aynı persistent native audio elementi sessiz keepalive ile canlı tutulur.",
+      "Bir tekrar bittiği anda native element çok düşük seviyeli sessiz keepalive çevrimine girer; sıradaki tekrar geldiğinde yeni play oturumu açılmadan mevcut element sıfıra sarılıp aynı kayıt tam sesle devralınır. Android arka plan scheduler gecikmeleri böylece seyri kendiliğinden duraklatamaz.",
+      "Kilit ekranında geçici playback-stalled/play-rejected/play-timeout sonucu kullanıcı pause sayılmaz; 28/99 seyir aynı tekrarı iki kontrollü arka plan recovery denemesiyle korur, sayaç başarısız okumayı ilerletmez.",
+      "İsim değişiminde keepalive eski kaynağı sessizce bırakır ve canonical yeni kayıt anahtarına geçer; r639 Section Identity ve native yankı otoritesi korunur.",
+      "Tanı JSON'una lockContinuousTransport snapshotı eklendi; keepalive/adopt/revive/failure sayıları ve gerçek native element durumu görülebilir. r642 bilgi kartı, r641 stale guard, r640 Transport-Gated Counter, kayıt>TTS ve Foreground Arbiter korunur."
+    ]
+  },
+  {
     "v": "r642",
     "t": "3 Eylül 2026",
     "b": [

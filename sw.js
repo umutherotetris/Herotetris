@@ -1,8 +1,8 @@
-/* SÜKÛN r642 — Aktif İsim Bilgi Kartı */
+/* SÜKÛN r643 — Continuous Lock Journey Transport */
 'use strict';
 
-const SURUM = 'r642';
-const CACHE = 'sukun-r642-20260903a';
+const SURUM = 'r643';
+const CACHE = 'sukun-r643-20260903a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r642__.json';
+const BUILD_MARKER='./__sukun_build_r643__.json';
 
 const NOTLAR = [
+  "r643 · 28/99 seyir kilitte aynı persistent native audio elementi Continuous Lock Transport ile canlı tutulur; tekrarlar arası Android scheduler boşluğu artık otomatik pause üretmez.",
   "r642 · Tefekkür aktif Berhetiyye/Esmâ adı tıklanabilir bilgi kartı açar; canonical zikir state ve mevcut ZIKIR verisini kullanır.",
   "r642 · Berhetiyye kartı anlam/yorum, şerh, işaret, ebced, unsur/tabiat/menzil ve varyant notunu; Esmâ kartı mevcut anlam ve ebcedi gösterir.",
   "r642 · Kart state olaylarıyla canlı güncellenir; yeni polling/observer eklenmedi ve ses/sayaç/seyir transportuna dokunulmadı.",
