@@ -1,5 +1,17 @@
 [
   {
+    "v": "r660",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Adaptive Dock r660 gerçek alt kenarı mevcut host yüksekliğinden değil visualViewport + computed bottom otoritesinden hesaplar; mod değişiminden sonra eski host yüksekliği yeni fit hesabını sınırlayamaz.",
+      "Mini/Midi/Max için roomy/compact/tight yoğunluk profilleri eklendi. Kalan dikey alan küçüldüğünde grip, boşluklar, stat kartları ve mode footer event-driven olarak sıkışır; alan büyüdüğünde normal ritme geri döner.",
+      "r659DockBody dinamik shell çocuklarını her ölçümde tek canonical scroll gövdesine rehome eder; sonradan eklenen kontroller grid dışında implicit satır oluşturamaz. Mod değişiminde player ve bildirim scroll oranı korunur.",
+      "Bildirim drawer açıkken minimum kullanılabilir yüzey viewporta göre yükseltilir; başlık/filtre/bakım satırı sabit kalır, listeye gerçek scroll alanı ayrılır. Drawer kapanınca normal zikir-fit geometrisine dönülür.",
+      "Gizli/peek durumda wrap rezervi sabit legacy piksel yerine gerçek peek yüksekliği + alt boşluktan türetilir. Eski r431/r441/r616 gizli rezervlerinin gereksiz sayfa boşluğu üretmesi engellenir.",
+      "Yeni r660 telemetrisi density, targetBottom, rawAvailableHeight, rehomeCount, scrollRestores ve peekReserve alanlarını raporlar; adaptive-dock-density Regression Shield kontrolü eklendi. Yeni polling/MutationObserver yok; r658 ses ve r653/r651 kilit sözleşmeleri korunur."
+    ]
+  },
+  {
     "v": "r659",
     "t": "4 Eylül 2026",
     "b": [
