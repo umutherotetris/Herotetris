@@ -1,8 +1,8 @@
-/* SÜKÛN r657 — Audio Continuity + Notification Drawer Authority */
+/* SÜKÛN r658 — Clickless Audio + Terminal/Drawer Authority */
 'use strict';
 
-const SURUM = 'r657';
-const CACHE = 'sukun-r657-20260904a';
+const SURUM = 'r658';
+const CACHE = 'sukun-r658-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r657__.json';
+const BUILD_MARKER='./__sukun_build_r658__.json';
 
 const NOTLAR = [
+  "r658 · Clickless Audio + Terminal/Drawer Authority: kısa kayıt sınırları AudioParam ses saatiyle yumuşatılır; auto-start owner grace, gerçek Stop→idle uzlaştırması ve Mini/Midi/Max full-safe bildirim scroll/overlap ölçümü eklenir.",
   "r657 · Audio Continuity + Notification Drawer Authority: özel Hû completion sesi foreground transporttan ayrılır, kayıt havuzu anti-click pause-before-seek kullanır, auto owner kimliği transaction ile yenilenir ve Mini/Midi/Max bildirim drawerı tek 4-row scroll/maintenance otoritesine alınır.",
   "r656 · State/Identity Reconciliation + Diagnostics Throttle: stale USER_PAUSED intenti fiziksel PLAYING gerçeğiyle uzlaştırılır; section identity false FAIL kaldırılır, diagnostics full-render intervali throttle edilir ve hydration bus filtre/dedupe kullanır.",
   "r655 · Echo Authority + Runtime Churn Cleanup: native journey yankısı tek attach sahibine alınır; fallback tap çoğaltması ve iki 450 ms poller kaldırılır, DOM hydration tek RAF-batched bus üzerinden yürür.",

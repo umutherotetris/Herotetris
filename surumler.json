@@ -1,5 +1,17 @@
 [
   {
+    "v": "r658",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Clickless Recording Boundaries: kısa kendi kayıt tekrarlarında yeni ses 18 ms mikro attack ile açılır; doğal/trim sonundaki son ~28 ms dry+wet gain AudioParam ses saatiyle sıfıra iner. Main-thread gecikmesi transient fade zamanını kaydıramaz.",
+      "Auto-zikir Foreground başlangıcına 900 ms event-driven owner grace eklendi. currentzikirchange-idle gibi erken state eventleri Z.auto kurulurken persistent owner'ı sökemez; journey/terkip sahipliği değişmez.",
+      "Normal Stop artık Pause sayılmaz. AutoStop terminalinde userPaused üretilmez; gerçek başka ses yoksa AudioLife ve AudioHub idle'a iner. AudioTruth canonical idle, stale paused/stopping/ended lifecycle gölgelerini de kullanıcı pause yokken idle'a uzlaştırır.",
+      "Bildirim drawerı açılırken r607 bakım satırı kesin mount edilir. Mini/Midi/Max açık durumda safe host yüksekliğini kullanır; başlık/filtre/bakım/list grid sıralaması sabit, Eskileri/Tümünü sil tek satır ve kartlardan ayrı kalır.",
+      "Bildirim authority r658 açılış/resize olayından çift RAF ile gerçek host/drawer/list yüksekliği, maxScroll, maintenance/cards overlap ve bottom reachability ölçer; yeni MutationObserver/interval eklenmez.",
+      "r657 Hû izolasyonu ve echo/anti-click temeli, r656 state/identity, r655 echo authority, r654 journey terminal, r653 doğrulanmış çift-Pause, r651 lock stability ve r650 single-start aynen korunur."
+    ]
+  },
+  {
     "v": "r657",
     "t": "4 Eylül 2026",
     "b": [
