@@ -1,5 +1,17 @@
 [
   {
+    "v": "r664",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Hard Viewport Partition: Mini/Midi/Max yüksekliği artık önceki modun scrollHeight/height:100% durumundan miras alınmaz. Görünür dock çocuklarının tek tek doğal yüksekliği ölçülür; Mini eski Max yüksekliğini devralamaz.",
+      "Tefekkür/zikir kartının alt sınırı doğrudan gerçek dock veya minimize peek üst kenarına bağlanır. Eski wrap/tab padding reserve tahmini Tefekkürde kaldırıldı; kart boş alanı gerçek piksel sınırına kadar sahiplenir.",
+      "Max dock açıldığında noOverlap artık yalnız telemetri değildir: zikir kartı yüksekliği dock topuna göre fiziksel olarak kısalır, halka ve kontrol adası mevcut kart bütçesine göre compact/tight profile geçer.",
+      "Minimize durumunda #r170Now 0 px kalır; yalnız peek kapsülü ölçülür. Tefekkürde görünmez host/wrap rezervi sıfırdır ve zikir kartı peek üstüne kadar uzar.",
+      "Mini 112–158 px, Midi 156–214 px, Max 188–258 px güvenli içerik bütçesinde çalışır; gerçek içerik fazlaysa yalnız dock body scroll eder. Mode footer sabit görünür kalır.",
+      "Yeni r664 telemetry dockNatural, zCardHeight, boundaryTop, gapPx ve noOverlap değerlerini raporlar. r658 clickless audio, r653 çift-Pause ve r651 lock transport değiştirilmedi."
+    ]
+  },
+  {
     "v": "r663",
     "t": "4 Eylül 2026",
     "b": [

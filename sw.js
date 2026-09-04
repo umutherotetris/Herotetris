@@ -1,8 +1,8 @@
-/* SÜKÛN r663 — Viewport Partition / Content-Fit Dock */
+/* SÜKÛN r664 — Hard Viewport Partition / Zero-Gap Dock */
 'use strict';
 
-const SURUM = 'r663';
-const CACHE = 'sukun-r663-20260904a';
+const SURUM = 'r664';
+const CACHE = 'sukun-r664-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r663__.json';
+const BUILD_MARKER='./__sukun_build_r664__.json';
 
 const NOTLAR = [
+  "r664 · Hard Viewport Partition / Zero-Gap Dock: Mini doğal çocuk yüksekliğinden ölçülür; zikir kartı gerçek dock/peek üst sınırına bağlanır, Max fiziksel olarak overlap yapamaz ve minimize Tefekkürde görünmez reserve bırakmaz.",
   "r663 · Viewport Partition / Content-Fit Dock: Mini/Midi/Max artık ham boşluğu doldurmaz; içerik kadar shrink-wrap olur. Serbest viewport sayaç kartına verilir, Max açıldıkça halka/kontrol yüzeyi küçülür ve dock sayaç üstüne binmez; minimize yalnız gerçek peek rezervi bırakır.",
   "r662 · Coupled Zikir–Dock Fit: dock yüksekliği gerçek içerik ve boşlukla uzlaştırılır; Mini/Midi/Max profilleri ayrılır, player scrollTop mod geçişinde sıfırlanır ve LayoutEngine dock rezerviyle beslenir.",
   "r661 · Context-Aware Dock Profiles: Mini/Midi/Max artık kalan boşluğa çökmez; intrinsic profil yüksekliği + kontrollü overlay, gerçek ince peek ve drawer çalışma yüzeyi kullanır; ses/kilit motoru değişmedi.",
