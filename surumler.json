@@ -1,5 +1,17 @@
 [
   {
+    "v": "r663",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Viewport Partition Authority: akış barı artık zikirmatik altındaki ham boşluğu zorla doldurmaz. Mini/Midi/Max kendi gerçek içerik yüksekliğine shrink-wrap olur; serbest kalan alan Tefekkür/zikir kartına verilir.",
+      "Tefekkür yüzeyi dock ile aynı viewport bütçesini paylaşır. Dock açıldıkça sayaç kartı ve halka kontrollü küçülür; dock küçüldükçe/minimize oldukça sayaç kartı aşağı doğru büyüyüp boş alanı sahiplenir. Max artık sayacın üstüne binmez.",
+      "Mini içeriği başlık + canlı durum + ana transport + kısa ilerleme kadar kalır ve boş orta satır üretmez. Midi temel üç istatistik/gezinme; Max tam içerik + iç scroll profili olarak korunur.",
+      "Minimize/peek yalnız kendi gerçek kapsül yüksekliği kadar rezerv bırakır. Peek ile zikirmatik arasında önceki büyük siyah boşluk yerine canonical sayaç kartı uzar; görünmez host yüksekliği yer ayırmaz.",
+      "r663 ring profili viewport ve dock kipine göre hidden/mini/midi/max için ayrı hesaplanır; yan kart genişliği ve Tefekkür kontrolleri Max gibi dar bütçelerde kompaktlaşır, ancak işlevler gizlenmez.",
+      "Yeni telemetry dockHeight, dockIntrinsic, topReserve, zikirAvailable, ringTarget, partitionGap, bodyOverflow ve noOverlap değerlerini raporlar. Yeni interval/MutationObserver eklenmez; r658 clickless audio, r653 çift-Pause ve r651 lock transport korunur."
+    ]
+  },
+  {
     "v": "r662",
     "t": "4 Eylül 2026",
     "b": [
