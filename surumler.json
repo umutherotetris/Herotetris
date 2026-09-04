@@ -1,5 +1,17 @@
 [
   {
+    "v": "r659",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Adaptive Bottom Sheet: Mini/Midi/Max bottom-docked iken sabit piksel yükseklikleri yerine visualViewport ile canonical zikir/Tefekkür yüzeyinin gerçek alt sınırı arasındaki kalan alanı tek r659 layout authority hesaplar.",
+      "#r588DockShell grip + tek scroll-body + mode footer olarak üç satırlı hale getirildi. İçerik sığmazsa yalnız orta gövde scroll eder; Mini/Midi/Max seçim satırı ve gizle kontrolü görünür kalır.",
+      "r431/r447/r588/r616'dan kalan sabit wrap rezervleri r659 bottom-fit altında emekli edildi; padding-bottom gerçek uygulanan dock yüksekliğinden türetilir, böylece büyük ölü alt boşluk ve Max'ın zikirmatik üstüne binmesi engellenir.",
+      "Drawer açıkken r658 başlık/filtre/bakım/list sözleşmesi korunur ve yeni adaptif host yüksekliğini kullanır; yalnız bildirim listesi scroll eder, bakım satırı kartların üstüne binmez.",
+      "Yeni SukunAdaptiveDockLayout telemetrisi mode, viewportHeight, contentBottom, available/applied height, bottom gap, overflow, drawer reachability, measure/coalesce/resize sayılarını raporlar; Regression Shield adaptive-dock-fit kontrolünü ekler.",
+      "Yeni polling veya MutationObserver eklenmedi; tek ResizeObserver mevcut canonical zikir/dock geometrisini izler ve bütün ölçümler tek RAF batch'e coalesce edilir. r658 ses/terminal, r653 çift-Pause ve r651 lock transport aynen korunur."
+    ]
+  },
+  {
     "v": "r658",
     "t": "4 Eylül 2026",
     "b": [
