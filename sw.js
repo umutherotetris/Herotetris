@@ -1,8 +1,8 @@
-/* SÜKÛN r664 — Hard Viewport Partition / Zero-Gap Dock */
+/* SÜKÛN r665 — Zikir Transport Truth / Dock Reset */
 'use strict';
 
-const SURUM = 'r664';
-const CACHE = 'sukun-r664-20260904a';
+const SURUM = 'r665';
+const CACHE = 'sukun-r665-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r664__.json';
+const BUILD_MARKER='./__sukun_build_r665__.json';
 
 const NOTLAR = [
+  "r665 · Zikir Transport Truth / Dock Reset: kendi kayıt auto-zikirde sessiz ritme düşmez; internal resolver fiziksel çalışır, sayaç ses transportuna bağlı kalır, −1/reset canonical bağlanır ve r659–r664 dock deneyleri final otoriteden çıkarılır.",
   "r664 · Hard Viewport Partition / Zero-Gap Dock: Mini doğal çocuk yüksekliğinden ölçülür; zikir kartı gerçek dock/peek üst sınırına bağlanır, Max fiziksel olarak overlap yapamaz ve minimize Tefekkürde görünmez reserve bırakmaz.",
   "r663 · Viewport Partition / Content-Fit Dock: Mini/Midi/Max artık ham boşluğu doldurmaz; içerik kadar shrink-wrap olur. Serbest viewport sayaç kartına verilir, Max açıldıkça halka/kontrol yüzeyi küçülür ve dock sayaç üstüne binmez; minimize yalnız gerçek peek rezervi bırakır.",
   "r662 · Coupled Zikir–Dock Fit: dock yüksekliği gerçek içerik ve boşlukla uzlaştırılır; Mini/Midi/Max profilleri ayrılır, player scrollTop mod geçişinde sıfırlanır ve LayoutEngine dock rezerviyle beslenir.",

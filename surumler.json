@@ -1,5 +1,17 @@
 [
   {
+    "v": "r665",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Zikir Transport Truth: aktif Esmâ/Berhetiyye için kendi kayıt anahtarı varsa otomatik zikir SPK/TTS anahtarı kapalı olsa bile sesli akış kabul edilir; ritim-only sessiz sayım moduna düşmez.",
+      "Auto-zikir iç ses çağrısı r635 aynı-identity merge katmanını grant ile aşar; kendi kayıt/TTS resolver fiziksel olarak çalışmadan başarılı sayılmaz. r640 transport gate gerçek ses başarısızsa sayacı geri alır ve akışı hold eder.",
+      "Sesli auto scheduler okuma bitiminden sonra en az 150 ms nefes payı kullanır; voice Promise yokken hızlı 40/70 ms tekrar zinciri oluşmaz ve sayaç gerçek ses bitimine bağlı kalır.",
+      "−1/Geri al ve Baştan başlat final authority ile yeniden bağlandı: auto önce durur, pending zikir transaction iptal edilir, count/devir/total canonical state üzerinden güncellenir.",
+      "Dock Reset: r659–r664 deneysel yükseklik sınıfları final otorite olmaktan çıkarıldı. Mini/Midi doğal içerik yüksekliğine döner; Max yalnız kendi gövdesinde scroll eder; minimize host 0 px ve yalnız peek rezervi bırakır.",
+      "r658 clickless recording, r653 çift-Pause, r651 Lock Transport V2, 28/99 seyirleri, terkip ve kayıt→TTS önceliği korunur."
+    ]
+  },
+  {
     "v": "r664",
     "t": "4 Eylül 2026",
     "b": [
