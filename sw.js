@@ -1,8 +1,8 @@
-/* SÜKÛN r655 — Echo Authority & Runtime Churn Cleanup */
+/* SÜKÛN r656 — State/Identity Reconciliation + Diagnostics Throttle */
 'use strict';
 
-const SURUM = 'r655';
-const CACHE = 'sukun-r655-20260904a';
+const SURUM = 'r656';
+const CACHE = 'sukun-r656-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r655__.json';
+const BUILD_MARKER='./__sukun_build_r656__.json';
 
 const NOTLAR = [
+  "r656 · State/Identity Reconciliation + Diagnostics Throttle: stale USER_PAUSED intenti fiziksel PLAYING gerçeğiyle uzlaştırılır; section identity false FAIL kaldırılır, diagnostics full-render intervali throttle edilir ve hydration bus filtre/dedupe kullanır.",
   "r655 · Echo Authority + Runtime Churn Cleanup: native journey yankısı tek attach sahibine alınır; fallback tap çoğaltması ve iki 450 ms poller kaldırılır, DOM hydration tek RAF-batched bus üzerinden yürür.",
   "r654 · Terminal State + Legacy Fallback Retirement: Stop/Complete sonrası stale journey paused state temizlenir; r643 V2 varken fiziksel play/keepalive otoritesinden emekli edilir ve error circuit breaker uygulanır.",
   "r653 · Lock Intent + Context Reconciliation: hidden journey tek MediaSession pause ghost adayıdır; çift pause doğrulaması, terminal latch temizliği ve canlı AudioContext churn engeli eklendi.",

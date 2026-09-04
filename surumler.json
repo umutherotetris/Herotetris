@@ -1,5 +1,17 @@
 [
   {
+    "v": "r656",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Journey/Audio State Machine r656 uzlaştırması eklendi: aktif seyir fiziksel olarak PLAYING, provider run=true/paused=false ve AudioTruth userPaused=false iken 1.4 saniyeyi aşmış stale pause intenti otomatik temizlenir; USER_PAUSED → PLAYING_VISIBLE/PLAYING_HIDDEN gerçeğe döner.",
+      "Pause intent temizliği kullanıcı eylemini taklit etmez ve AudioLife user-play günlüğü yazmaz; yalnız r647’den kalan state intent latch’i uzlaştırılır. Yeni intentReconcile telemetrisi pauseClears, kaynak, yaş ve nedeni raporlar.",
+      "Section Identity doğrulaması visible/native olarak ayrıldı. Native audio aktif değilken native key zorunlu değildir; Now Playing sectionIndex genel playback güncellemesinde boşalsa bile r639 SectionIdentityCommit + canonical currentZikirState aynı key/indexi doğruluyorsa false FAIL üretilmez.",
+      "Diagnostics 4 saniyelik sürekli full-render intervalinden çıkarıldı. Değişiklik sinyalleri 8 saniyelik minimum aralıkta coalesce edilir, boşta yalnız 15 saniyelik tek fallback timeout kullanılır; diagnostics-render long-task yükü azaltılır.",
+      "DOM Hydration Bus r656 relevance filter + ancestor/descendant containment dedupe kullanır. Diagnostics gibi salt div/metin churn’i hydrate tüketicilerini uyandırmaz; rawAdded, filtered, deduped ve maxBatch telemetrisi eklendi.",
+      "r655 Echo Attachment Authority, r654 terminal reconciliation, r653 çift-Pause doğrulaması, r651 no-recovery-storm, r650 single-start, kayıt>TTS önceliği ve AudioContext decode authority korunur."
+    ]
+  },
+  {
     "v": "r655",
     "t": "4 Eylül 2026",
     "b": [
