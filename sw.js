@@ -1,8 +1,8 @@
-/* SÜKÛN r668 — Atomic SW Build Sync + Max Fix */
+/* SÜKÛN r669 — Visible Build Truth + Safe SW Handoff */
 'use strict';
 
-const SURUM = 'r668';
-const CACHE = 'sukun-r668-20260905a';
+const SURUM = 'r669';
+const CACHE = 'sukun-r669-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r668__.json';
+const BUILD_MARKER='./__sukun_build_r669__.json';
 
 const NOTLAR = [
-  "r668 · Atomic SW Build Sync + Max Fix: HTML meta, SW, manifest, cache ve build marker tek r668 sürümünde doğrulanır; doğrulanmış install skipWaiting ile bekleyen-worker kilidine takılmaz. r667 Max görünürlük/compact düzeltmesi korunur.",
+  "r669 · Visible Build Truth + Safe SW Handoff: görünen build etiketi meta ile eşlenir; yeni worker doğrulanıp waiting durumunda kullanıcı Yenile eylemini bekler, aktif ses oturumunu zorla kesmez. r667 Max compact ve r666 transport düzeltmeleri korunur.",
+  "r668 · Atomic SW Build Sync + Max Fix: HTML meta, SW, manifest, cache ve build marker tek r668 sürümünde doğrulanır; r667 Max görünürlük/compact düzeltmesi korunur.",
   "r665 · Zikir Transport Truth / Dock Reset: kendi kayıt auto-zikirde sessiz ritme düşmez; internal resolver fiziksel çalışır, sayaç ses transportuna bağlı kalır, −1/reset canonical bağlanır ve r659–r664 dock deneyleri final otoriteden çıkarılır.",
   "r664 · Hard Viewport Partition / Zero-Gap Dock: Mini doğal çocuk yüksekliğinden ölçülür; zikir kartı gerçek dock/peek üst sınırına bağlanır, Max fiziksel olarak overlap yapamaz ve minimize Tefekkürde görünmez reserve bırakmaz.",
   "r663 · Viewport Partition / Content-Fit Dock: Mini/Midi/Max artık ham boşluğu doldurmaz; içerik kadar shrink-wrap olur. Serbest viewport sayaç kartına verilir, Max açıldıkça halka/kontrol yüzeyi küçülür ve dock sayaç üstüne binmez; minimize yalnız gerçek peek rezervi bırakır.",
@@ -399,7 +400,7 @@ async function validateCore(path,res){
     if(buildOfHtml(text)!==SURUM)throw new Error('HTML build mismatch: '+buildOfHtml(text)+' != '+SURUM);
   }else if(path.includes('manifest.webmanifest')){
     const obj=await res.clone().json();
-    if(!obj||obj.short_name!=='SÜKÛN'||!obj.start_url)throw new Error('manifest invalid');
+    if(!obj||obj.short_name!=='SÜKÛN'||!obj.start_url||!String(obj.start_url).includes('v='+SURUM))throw new Error('manifest build mismatch');
   }
   return true;
 }
@@ -432,12 +433,10 @@ async function currentComplete(){
 }
 
 self.addEventListener('install',event=>{
-  /* r668: CORE tamamen doğrulandıktan sonra waiting kilidini kaldır.
-     Mevcut sayfa zorla reload edilmez; yeni worker aktive olur ve sonraki yenilemede yeni shell kesin gelir. */
-  event.waitUntil((async()=>{
-    await kabuguHazirla();
-    await self.skipWaiting();
-  })());
+  /* r669: CORE atomik olarak doğrulanır fakat worker otomatik skipWaiting yapmaz.
+     Böylece eski açık sayfanın UpdateManager'ı waiting worker'ı görür, kullanıcıya
+     Yenile eylemini sunar, session state'i kaydeder ve ancak sonra SKIP_WAITING yollar. */
+  event.waitUntil(kabuguHazirla());
 });
 
 self.addEventListener('activate',event=>{
