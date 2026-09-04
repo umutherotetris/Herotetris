@@ -1,8 +1,8 @@
-/* SÜKÛN r660 — Adaptive Dock Density / Reconciliation */
+/* SÜKÛN r661 — Context-Aware Dock Profiles / Overlay Fit */
 'use strict';
 
-const SURUM = 'r660';
-const CACHE = 'sukun-r660-20260904a';
+const SURUM = 'r661';
+const CACHE = 'sukun-r661-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r660__.json';
+const BUILD_MARKER='./__sukun_build_r661__.json';
 
 const NOTLAR = [
+  "r661 · Context-Aware Dock Profiles: Mini/Midi/Max artık kalan boşluğa çökmez; intrinsic profil yüksekliği + kontrollü overlay, gerçek ince peek ve drawer çalışma yüzeyi kullanır; ses/kilit motoru değişmedi.",
   "r660 · Adaptive Dock Density / Reconciliation: gerçek safe alt kenar hesabı, roomy/compact/tight iç yoğunluk, dinamik shell rehome, scroll koruma, drawer minimum yüzeyi ve gerçek peek rezervi eklendi; ses ve kilit transportu değişmedi.",
   "r659 · Adaptive Bottom Sheet / Compact Fit Layout: bottom-docked Mini/Midi/Max canonical zikir alt sınırı ile safe viewport arasındaki alanı event-driven tek layout authority ile doldurur; orta gövde scroll, footer sabit, drawer r658 sözleşmesi korunur.",
   "r658 · Clickless Audio + Terminal/Drawer Authority: kısa kayıt sınırları AudioParam ses saatiyle yumuşatılır; auto-start owner grace, gerçek Stop→idle uzlaştırması ve Mini/Midi/Max full-safe bildirim scroll/overlap ölçümü eklenir.",
