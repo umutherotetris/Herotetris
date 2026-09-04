@@ -1,5 +1,17 @@
 [
   {
+    "v": "r654",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Terminal Journey Reconciliation güçlendirildi: 28/99 seyri Stop/Complete ile kapandıktan sonra run=false fakat paused=true kalan provider state artık gerçek terminal idle durumuna temizlenir; kullanıcı tarafından gerçekten Pause edilmiş seyir korunur.",
+      "r653 terminal zamanlayıcısındaki pending telemetri hatası ve yeniden-schedule starvation kapatıldı; timer çalışınca sıfırlanır ve terminal olayları mevcut temizliği sürekli ertelemez.",
+      "Legacy r643 Continuous Lock fallback, Lock Transport V2 mevcutken fiziksel play/keepalive otoritesinden emekli edildi. r643 artık V2'ye yalnız arm/delegate eder; aynı native elemente ikinci play() basmaz.",
+      "r643 silent-error yolu circuit breaker ile sınırlandı; AbortError/error callback zinciri bir keepalive başına en fazla tek kontrollü retry yapar, ardından kapanır. legacyRetiredByV2 ve legacyErrorsSuppressed telemetrisi eklendi.",
+      "Regression Shield terminal-journey-state ve legacy-lock-fallback kontrollerini raporlar. r653 MediaSession çift-doğrulama davranışı değiştirilmedi; iki confirmedDouble olayı cihaz testinin kullanıcı girdisine göre ayrıca yorumlanır.",
+      "r653 AudioContext decode authority korunur: lock/echo hazırlığında yeni canlı AudioContext oluşturulmaz; r651 no-recovery-storm ve r650 single-start sözleşmeleri korunur."
+    ]
+  },
+  {
     "v": "r653",
     "t": "4 Eylül 2026",
     "b": [
