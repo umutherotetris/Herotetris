@@ -1,8 +1,8 @@
-/* SÜKÛN r666 — Exact Transport / Viewport Partition */
+/* SÜKÛN r667 — Max Mode Authority Compact Fix */
 'use strict';
 
-const SURUM = 'r666';
-const CACHE = 'sukun-r666-20260905a';
+const SURUM = 'r667';
+const CACHE = 'sukun-r667-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r666__.json';
+const BUILD_MARKER='./__sukun_build_r667__.json';
 
 const NOTLAR = [
-  "r666 · Exact Transport / Viewport Partition: auto-zikir IndexedDB kayıt ön-yoklaması, −1/reset capture tek otoritesi ve gerçek dock/peek üst sınırına bağlı Tefekkür kartı; Mini grip boşluğu kaldırıldı, Max yalnız iç gövdede scroll eder.",
+  "r667 · Max Mode Authority Compact Fix: Mini ve Midi korunur; Max modda stray legacy katmanlar gizlenir, gövde yüksekliği erken clamp edilir ve yalnız r588 shell görünür owner olarak kalır.",
   "r665 · Zikir Transport Truth / Dock Reset: kendi kayıt auto-zikirde sessiz ritme düşmez; internal resolver fiziksel çalışır, sayaç ses transportuna bağlı kalır, −1/reset canonical bağlanır ve r659–r664 dock deneyleri final otoriteden çıkarılır.",
   "r664 · Hard Viewport Partition / Zero-Gap Dock: Mini doğal çocuk yüksekliğinden ölçülür; zikir kartı gerçek dock/peek üst sınırına bağlanır, Max fiziksel olarak overlap yapamaz ve minimize Tefekkürde görünmez reserve bırakmaz.",
   "r663 · Viewport Partition / Content-Fit Dock: Mini/Midi/Max artık ham boşluğu doldurmaz; içerik kadar shrink-wrap olur. Serbest viewport sayaç kartına verilir, Max açıldıkça halka/kontrol yüzeyi küçülür ve dock sayaç üstüne binmez; minimize yalnız gerçek peek rezervi bırakır.",

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r666 — Exact Transport / Viewport Partition
+     SÜKÛN r667 — Max Mode Authority Compact Fix
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -23234,7 +23234,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r666',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r667',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58865,7 +58865,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r666';
+const BUILD='r667';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59138,7 +59138,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r666__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r667__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61703,6 +61703,142 @@ const dockApi=Object.freeze({version:VERSION,schedule,measure:()=>measure('api')
 window.SukunAdaptiveDockLayout=dockApi;window.SukunDockExactR666=dockApi;
 window.SukunZikirControlAuthorityR666=Object.freeze({version:VERSION,undo:canonicalUndo,reset:canonicalReset,preflight:preflightOwnRecording,snapshot:()=>Object.freeze({...T,pending:!!preflightPromise})});
 window.SukunR666=Object.freeze({version:VERSION,snapshot:()=>Object.freeze({version:VERSION,transport:window.SukunZikirControlAuthorityR666?.snapshot?.()||null,dock:lastLayout||null,recording:window.SukunRecordingPriorityLock?.snapshot?.()||null,audio:window.SukunAudioTruth?.snapshot?.()||null})});
+})();
+</script>
+
+
+<style id="r667-max-authority-compact-style">
+/* ═══ r667 — MAX MODE AUTHORITY / COMPACT CLEAN FIX ════════════════
+   Kullanıcı geri bildirimi: Mini ve Midi dengede; sorun yalnız Max modda.
+   Ölçülen hata iki parçalıydı:
+   1) r588 yeni Max gövdesinin altına eski/yardımcı katmanlar sarkabiliyor.
+   2) Max gereğinden fazla dikey ritim tüketip aşağı doğru uzuyor.
+
+   Bu yama Mini/Midi'ye dokunmaz. Max için:
+   - yalnız r588 shell görünür otorite olur,
+   - stray legacy çocuklar görünmez,
+   - Max gövdesi daha erken scroll'a geçer,
+   - meta/nav/layer ritmi sıkışır ama touch hedefleri korunur. */
+body.r666-exact-authority #r170Now.r588-authority > :not(#r588DockShell):not(#r554AlertDrawer):not(#r434InlineDetails){
+  display:none!important;
+}
+body.r666-exact-authority:not(.r434-inline-details-open) #r170Now.r588-authority > #r434InlineDetails{
+  display:none!important;
+}
+body.r666-exact-authority.r434-inline-details-open #r170Now.r588-authority > #r434InlineDetails{
+  display:block!important;
+}
+body.r666-exact-authority.r588-mode-max.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority:not(.r554-alert-open){
+  height:min(var(--r666-dock-h), 430px)!important;
+  min-height:0!important;
+  max-height:min(64vh, 430px)!important;
+}
+body.r666-exact-authority.r588-mode-max #r170Now.r588-authority > #r588DockShell{
+  padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important;
+}
+body.r666-exact-authority.r588-mode-max #r588DockShell > #r659DockBody{
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:0!important;
+  scrollbar-width:none!important;
+}
+body.r666-exact-authority.r588-mode-max #r588DockShell > #r659DockBody::-webkit-scrollbar{width:0!important;height:0!important}
+body.r666-exact-authority.r588-mode-max #r588DockShell > .r588Mode{
+  margin-top:4px!important;
+  padding-top:5px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Stats{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Stat{
+  min-height:34px!important;
+  padding:5px 6px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Nav{
+  display:grid!important;
+  gap:6px!important;
+  margin-top:6px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Nav button{
+  min-height:38px!important;
+  padding-block:8px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Meta{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin-top:6px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Meta span{
+  min-height:35px!important;
+  padding:6px 7px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Layers{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:5px!important;
+  margin-top:6px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Actions{
+  display:flex!important;
+  margin-top:6px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Actions .r588Action{
+  min-height:38px!important;
+}
+body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Progress{
+  margin-top:5px!important;
+}
+@media(max-width:390px){
+  body.r666-exact-authority.r588-mode-max.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority:not(.r554-alert-open){
+    height:min(var(--r666-dock-h), 408px)!important;
+    max-height:min(62vh, 408px)!important;
+  }
+  body.r666-exact-authority.r588-mode-max #r659DockBody > .r588Meta{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+</style>
+<script id="r667-max-authority-compact-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R667_MAX_FIX__)return;
+window.__SUKUN_R667_MAX_FIX__=1;
+const $=id=>document.getElementById(id);
+function normalize(){
+  const now=$('r170Now');
+  if(!now || !now.classList.contains('r588-authority'))return;
+  const body=document.body;
+  const maxMode=body.classList.contains('r588-mode-max');
+  const inline=$('r434InlineDetails');
+  // stray legacy katmanları görünür owner olmaktan çıkar
+  Array.from(now.children).forEach(el=>{
+    if(!el || !el.id)return;
+    const keep = el.id==='r588DockShell' || el.id==='r554AlertDrawer' || (el.id==='r434InlineDetails' && body.classList.contains('r434-inline-details-open'));
+    if(keep){
+      el.removeAttribute('data-r667-hidden');
+      if(el.id!=='r434InlineDetails' || body.classList.contains('r434-inline-details-open')) el.hidden=false;
+      return;
+    }
+    el.setAttribute('data-r667-hidden','1');
+    el.hidden=true;
+  });
+  // Max açılınca gövde scroll başa dönsün; eski mod scroll oranı taşınmasın.
+  if(maxMode){
+    const bodyHost=$('r659DockBody');
+    if(bodyHost && bodyHost.scrollTop<0)bodyHost.scrollTop=0;
+  }
+  if(inline && !body.classList.contains('r434-inline-details-open')) inline.hidden=true;
+}
+['sukun:playbackchange','sukun:nowplayingchange','sukun:currentflowchange','sukun:currentzikirchange','sukun:tabchange','pageshow'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(normalize,40),{passive:true}));
+document.addEventListener('click',()=>setTimeout(normalize,40),{passive:true});
+window.addEventListener('resize',()=>setTimeout(normalize,40),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(normalize,80),{once:true});
+else setTimeout(normalize,80);
+window.SukunR667MaxFix={version:'r667',refresh:normalize};
 })();
 </script>
 
