@@ -1,8 +1,8 @@
-/* SÜKÛN r656 — State/Identity Reconciliation + Diagnostics Throttle */
+/* SÜKÛN r657 — Audio Continuity + Notification Drawer Authority */
 'use strict';
 
-const SURUM = 'r656';
-const CACHE = 'sukun-r656-20260904a';
+const SURUM = 'r657';
+const CACHE = 'sukun-r657-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r656__.json';
+const BUILD_MARKER='./__sukun_build_r657__.json';
 
 const NOTLAR = [
+  "r657 · Audio Continuity + Notification Drawer Authority: özel Hû completion sesi foreground transporttan ayrılır, kayıt havuzu anti-click pause-before-seek kullanır, auto owner kimliği transaction ile yenilenir ve Mini/Midi/Max bildirim drawerı tek 4-row scroll/maintenance otoritesine alınır.",
   "r656 · State/Identity Reconciliation + Diagnostics Throttle: stale USER_PAUSED intenti fiziksel PLAYING gerçeğiyle uzlaştırılır; section identity false FAIL kaldırılır, diagnostics full-render intervali throttle edilir ve hydration bus filtre/dedupe kullanır.",
   "r655 · Echo Authority + Runtime Churn Cleanup: native journey yankısı tek attach sahibine alınır; fallback tap çoğaltması ve iki 450 ms poller kaldırılır, DOM hydration tek RAF-batched bus üzerinden yürür.",
   "r654 · Terminal State + Legacy Fallback Retirement: Stop/Complete sonrası stale journey paused state temizlenir; r643 V2 varken fiziksel play/keepalive otoritesinden emekli edilir ve error circuit breaker uygulanır.",

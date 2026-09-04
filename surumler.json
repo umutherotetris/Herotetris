@@ -1,5 +1,17 @@
 [
   {
+    "v": "r657",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Audio Continuity: özel Hû kapanış kaydı foreground playRecording/soft-stop zincirinden ayrıldı; kendi kısa WebAudio bus’ında çalar ve aktif zikir kaydını, SES/Arbiter/Now Playing/source state’ini artık superseded ile kesmez.",
+      "Kendi kayıt havuzu anti-click sırasına alındı: tekrar kullanımında önce dry/wet gain sıfırlanır, element sessize alınır ve pause edilir, ancak sonra currentTime=0 yapılır. Trim-tail fade bittiğinde Promise çözülmeden fiziksel pause uygulanır.",
+      "Auto-zikir exactly-once transaction commitinde Foreground Arbiter identity/title aynı Esmâya güncellenir; Azîz aktifken owner/source metadata’sının Müheymin gibi önceki isimde kalması engellenir, ses yeniden başlatılmaz.",
+      "Bildirim drawerı tek 4-row otoriteye alındı: başlık, filtreler, bakım satırı ve minmax(0,1fr) gerçek scroll listesi. Mini/Midi’de drawer açıkken host yeterli viewport yüksekliğine genişler ve touch pan alt karta kadar iner.",
+      "Eski r607 header Tümünü sil enjeksiyonu emekli edildi. Eskileri ve Tümünü sil yalnız tek canonical bakım satırında iki kompakt sütun olarak kalır; Max görünümde kart/yazı üstüne binmez.",
+      "Yeni telemetry/Regression Shield: recordingContinuity, autoOwnerReconcile ve notificationDrawerAuthority. r656 state/identity, r655 echo, r654 terminal, r653 çift-Pause, r651 lock stability ve r650 single-start korunur; yeni polling/MutationObserver eklenmez."
+    ]
+  },
+  {
     "v": "r656",
     "t": "4 Eylül 2026",
     "b": [
