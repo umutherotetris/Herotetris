@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r667 — Max Mode Authority Compact Fix
+     SÜKÛN r668 — Atomic SW Build Sync + Max Fix
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r666">
+<meta name="sukun-build" content="r668">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r666">
+<link rel="manifest" href="./manifest.webmanifest?v=r668">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23234,7 +23234,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r667',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r668',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58865,7 +58865,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r667';
+const BUILD='r668';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59138,7 +59138,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r667__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r668__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61838,7 +61838,7 @@ document.addEventListener('click',()=>setTimeout(normalize,40),{passive:true});
 window.addEventListener('resize',()=>setTimeout(normalize,40),{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(normalize,80),{once:true});
 else setTimeout(normalize,80);
-window.SukunR667MaxFix={version:'r667',refresh:normalize};
+window.SukunR667MaxFix={version:'r668',refresh:normalize};
 })();
 </script>
 
