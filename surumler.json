@@ -1,5 +1,17 @@
 [
   {
+    "v": "r655",
+    "t": "4 Eylül 2026",
+    "b": [
+      "Echo Attachment Authority tekilleştirildi: journey-native ve journey-native-r648 aynı persistent native ses için tek canonical echo lease kabul edilir; aynı key/src/baked kombinasyonundaki ikinci attach fiziksel yeniden bağlama yapmaz.",
+      "Kilit seyri sırasında baked yankı hazır değilse üç ayrı fallback <audio> tap'i başlatılmaz. Ana kayıt kuru native olarak kesintisiz devam eder; OfflineAudio baked FX hazır olduğunda tek kaynak üzerinden devreye girer. tap-rejected üçlemeleri böylece kaldırılır.",
+      "Echo telemetrisine authority r655, dedupedStarts, fallbackSuppressed, tapRejects ve tapRejectsDeduped alanları eklendi; Regression Shield echo-attachment-authority sözleşmesini doğrular.",
+      "Runtime DOM Hydration Bus eklendi: icoHydrate, PlaybackController bindControls, Unified Playback classify/sync, Selection classify ve Kendi Sesin mic düzeltmesi beş ayrı geniş DOM observer/timer zinciri yerine tek RAF-batched MutationObserver üzerinden beslenir.",
+      "Global Queue ve gizli içerik erişimindeki iki sürekli 450 ms poller kaldırıldı. Gizli bölüm doğrudan sukun:secretaccesschange olayıyla, Global Queue ilerlemesi ise yalnız gerçekten çalarken 1 sn koşullu timeout ile güncellenir; boşta timer çalışmaz.",
+      "r654 terminal reconciliation, r653 çift-Pause doğrulaması, r651 no-recovery-storm, r650 single-start, recording>TTS ve AudioContext decode authority korunur."
+    ]
+  },
+  {
     "v": "r654",
     "t": "4 Eylül 2026",
     "b": [

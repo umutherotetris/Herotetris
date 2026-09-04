@@ -1,8 +1,8 @@
-/* SÜKÛN r654 — Terminal State & Legacy Fallback Retirement */
+/* SÜKÛN r655 — Echo Authority & Runtime Churn Cleanup */
 'use strict';
 
-const SURUM = 'r654';
-const CACHE = 'sukun-r654-20260904a';
+const SURUM = 'r655';
+const CACHE = 'sukun-r655-20260904a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r654__.json';
+const BUILD_MARKER='./__sukun_build_r655__.json';
 
 const NOTLAR = [
+  "r655 · Echo Authority + Runtime Churn Cleanup: native journey yankısı tek attach sahibine alınır; fallback tap çoğaltması ve iki 450 ms poller kaldırılır, DOM hydration tek RAF-batched bus üzerinden yürür.",
   "r654 · Terminal State + Legacy Fallback Retirement: Stop/Complete sonrası stale journey paused state temizlenir; r643 V2 varken fiziksel play/keepalive otoritesinden emekli edilir ve error circuit breaker uygulanır.",
   "r653 · Lock Intent + Context Reconciliation: hidden journey tek MediaSession pause ghost adayıdır; çift pause doğrulaması, terminal latch temizliği ve canlı AudioContext churn engeli eklendi.",
   "r652 · Wake-Edge Media Pause Guard: hidden 28/99 seyirde kilit açılışına çok yakın MediaSession pause kısa doğrulama penceresine alınır; görünür dönüş ghost pause’u iptal eder, hidden kalırsa gerçek kullanıcı pause’u uygulanır.",
