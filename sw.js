@@ -1,8 +1,8 @@
 /* SÜKÛN r662 — Coupled Zikir–Dock Fit / True Mode Profiles */
 'use strict';
 
-const SURUM = 'r665';
-const CACHE = 'sukun-r665-20260904a';
+const SURUM = 'r666';
+const CACHE = 'sukun-r666-20260904a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r662__.json';
 
 const NOTLAR = [
+  'r666 ÇÖZÜLDÜ: Tefekkür kipinde kapatma düğmesinin altındaki boşluk. Gövde satırı artık her kipte içeriğinin yüksekliğinde.',
   'r665 ÇÖZÜLDÜ: Mini kipteki büyük boşluk. Kabuğun gövde satırı büyük kipten inince eski yüksekliğini koruyordu; artık içeriğe göre ölçülüyor.',
   'r664 Akış barının süs satırları inceltildi: süs 50pxden 43e, Mini bar 180den 174e indi. Kazanılan yer sayaç kartına gidiyor.',
   'r663 KRİTİK: Sistem Durumu ekranı tanımsız bir değişken yüzünden hiç açılmıyordu; düzeltildi.',
