@@ -1,5 +1,16 @@
 [
   {
+    "v": "r670",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Adaptive dock rawGap'i yükseklik olarak kullanmayı bıraktı; dock intrinsic içerik ihtiyacı kadar büyür.",
+      "Host-local --r659-dock-fit-h override kaldırıldı ve gizli/free-drag/mount yollarında stale değer temizlenir.",
+      "Mini/Midi/Max viewport cap eklendi; Max taşarsa yalnız iç gövde scroll eder.",
+      "Height transition kaldırıldı; Max→Midi→Mini küçülmesi deterministik.",
+      "Build/SW/manifest/build-marker zinciri r670 olarak senkronlandı."
+    ]
+  },
+  {
     "v": "r662",
     "t": "4 Eylül 2026",
     "b": [

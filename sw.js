@@ -1,8 +1,8 @@
-/* SÜKÛN r662 — Coupled Zikir–Dock Fit / True Mode Profiles */
+/* SÜKÛN r670 — Intrinsic Dock Height / No Gap Inheritance */
 'use strict';
 
-const SURUM = 'r666';
-const CACHE = 'sukun-r666-20260904a';
+const SURUM = 'r670';
+const CACHE = 'sukun-r670-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r662__.json';
+const BUILD_MARKER='./__sukun_build_r670__.json';
 
 const NOTLAR = [
+  'r670 KÖK DÜZELTME: rawGap artık dock yüksekliği değildir; Mini/Midi/Max intrinsic içerik yüksekliği + güvenli cap kullanır, stale host override temizlenir.',
   'r666 ÇÖZÜLDÜ: Tefekkür kipinde kapatma düğmesinin altındaki boşluk. Gövde satırı artık her kipte içeriğinin yüksekliğinde.',
   'r665 ÇÖZÜLDÜ: Mini kipteki büyük boşluk. Kabuğun gövde satırı büyük kipten inince eski yüksekliğini koruyordu; artık içeriğe göre ölçülüyor.',
   'r664 Akış barının süs satırları inceltildi: süs 50pxden 43e, Mini bar 180den 174e indi. Kazanılan yer sayaç kartına gidiyor.',
