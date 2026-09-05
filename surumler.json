@@ -1,5 +1,16 @@
 [
   {
+    "v": "r683",
+    "t": "5 Eylül 2026",
+    "b": [
+      "İlk dokunuşu yutan legacy focus-calm wake-click listener emekli edildi.",
+      "Bütün-dock swipe kaldırıldı; yalnız ↕ grip drag sahibi.",
+      "Touch-action/pointer-events tek otoriteye bağlandı; doğal kaydırma yüzeyleri pan-y kullanıyor.",
+      "Interaction Authority tanı snapshot'ı eklendi.",
+      "r682 transport ve r681 Max düzeltmeleri korundu."
+    ]
+  },
+  {
     "v": "r682",
     "t": "5 Eylül 2026",
     "b": [
