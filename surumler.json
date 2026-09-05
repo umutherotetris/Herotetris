@@ -1,5 +1,15 @@
 [
   {
+    "v": "r680",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Max gerçek height otoritesine geçirildi; eski --r659-dock-fit-h artık Max'i küçük intrinsic yüksekliğe geri çekemez.",
+      "Max yüksekliği doğal içerik + visualViewport bütçesinden hesaplanır; tüm ana player kontrolleri scrollsuz aynı yüzeyde görünür.",
+      "Max açıkken doküman scroll izolasyonu uygulanır; aşağı kaydırmada sticky/fixed katmanların player üstüne binmesi engellenir.",
+      "↕ drag, Mini/Midi/Minimize ve önceki ses/seyir/terkip sözleşmeleri korunur."
+    ]
+  },
+  {
     "v": "r679",
     "t": "5 Eylül 2026",
     "b": [
