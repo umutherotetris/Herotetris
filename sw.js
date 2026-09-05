@@ -1,8 +1,8 @@
-/* SÜKÛN r686 — Native Interaction Authority + Integrity Sweep */
+/* SÜKÛN r687 — State-Machine Cleanup + Gesture-Safe Layout */
 'use strict';
 
-const SURUM = 'r686';
-const CACHE = 'sukun-r686-20260905a';
+const SURUM = 'r687';
+const CACHE = 'sukun-r687-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r686__.json';
+const BUILD_MARKER='./__sukun_build_r687__.json';
 
 const NOTLAR = [
+  'r687 · State-Machine Cleanup + Gesture-Safe Layout: idle cleanup stop artık sahte STOPPING üretmez; visualViewport scroll ölçüm fırtınası kaldırıldı, resize/RO debounce ve gesture-safe geometri birleştirmesi eklendi.',
   'r686 · Native Interaction Authority + Integrity Sweep: manuel document touchmove/preventDefault emekli; native pan-y tek scroll otoritesi, legacy pointer guard/handle hit-test kaldırıldı, HTML kapanış ve SW build client zinciri düzeltildi.',
   'r685 · Regression Shield yanlış FAIL düzeltmesi: adaptive-dock-fit sürüm kapısı sayısal alt sınıra çevrildi (r662+); drawer authority snapshotı 1200 ms bayatlama eşiğiyle tazeleniyor ve liste eksikliği yalnız drawer açıkken ihlal sayılıyor.',
   'r684 · Natural Scroll Handoff: dock contain kaldırıldı; buton/kart üstünden başlayan pan kayabilen iç yüzeye veya sayfaya devredilir.',

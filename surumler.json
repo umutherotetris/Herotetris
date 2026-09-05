@@ -1,5 +1,17 @@
 [
   {
+    "v": "r687",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Tanı raporundaki gerçek AUDIO FAIL düzeltildi: zaten idle/ended olan sağlayıcıya cleanup stop gönderildiğinde registry artık sahte idle→stopping geçişi üretmiyor; fiziksel stop callback yine çalışıyor.",
+      "Mobil kaydırma jank kökü azaltıldı: visualViewport.scroll artık her kare ağır dock/sınır geometri ölçümü tetiklemiyor.",
+      "ResizeObserver ve viewport resize fırtınaları debounce edildi; dikey parmak kaydırması sırasında düşük öncelikli geometri hesapları ertelenip jest sonrasında tek ölçümde birleştiriliyor.",
+      "Mini/Midi/Max, Detaylar, Tefekkür touch-action sözleşmeleri ve r681/r682 journey Pause/Resume/Stop davranışları korunuyor; Max geometri formülleri değiştirilmedi.",
+      "Diagnostics'e r687 dock/boundary gesture telemetrisi eklendi.",
+      "HTML, Service Worker, manifest, marker ve görünen build r687 olarak senkronlandı."
+    ]
+  },
+  {
     "v": "r686",
     "t": "5 Eylül 2026",
     "b": [
