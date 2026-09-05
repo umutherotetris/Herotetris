@@ -1,8 +1,8 @@
-/* SÜKÛN r670 — Intrinsic Dock Height / No Gap Inheritance */
+/* SÜKÛN r671 — Unified Card–Dock Boundary */
 'use strict';
 
-const SURUM = 'r670';
-const CACHE = 'sukun-r670-20260905a';
+const SURUM = 'r671';
+const CACHE = 'sukun-r671-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r670__.json';
+const BUILD_MARKER='./__sukun_build_r671__.json';
 
 const NOTLAR = [
-  'r670 KÖK DÜZELTME: rawGap artık dock yüksekliği değildir; Mini/Midi/Max intrinsic içerik yüksekliği + güvenli cap kullanır, stale host override temizlenir.',
+  'r671 TEK SINIR: Tefekkür sayaç kartının alt kenarı görünür dock veya minimize peek üst kenarına doğrudan bağlandı; Mini/Midi ölü boşluk, Max bindirme ve hidden büyük ara alan aynı denklemle kapatıldı.',
+  'r671 MAX bütçesi: dock yüksekliği Tefekkür kartına minimum çalışma alanı bırakacak şekilde ayrıca sınırlandı; taşan Max bilgisi yalnız orta gövdede scroll eder.',
+  'r671 TEMİZLİK: Tefekkür sırasında dock içinde kalan legacy ×/Tefekkür yuvası kaldırıldı; çıkışın tek sahibi ana karttaki Tefekkürden Çık düğmesidir.',
   'r666 ÇÖZÜLDÜ: Tefekkür kipinde kapatma düğmesinin altındaki boşluk. Gövde satırı artık her kipte içeriğinin yüksekliğinde.',
   'r665 ÇÖZÜLDÜ: Mini kipteki büyük boşluk. Kabuğun gövde satırı büyük kipten inince eski yüksekliğini koruyordu; artık içeriğe göre ölçülüyor.',
   'r664 Akış barının süs satırları inceltildi: süs 50pxden 43e, Mini bar 180den 174e indi. Kazanılan yer sayaç kartına gidiyor.',

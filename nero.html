@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r670 — Intrinsic Dock Height / No Gap Inheritance
+     SÜKÛN r671 — Unified Card–Dock Boundary
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r670">
+<meta name="sukun-build" content="r671">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r670">
+<link rel="manifest" href="./manifest.webmanifest?v=r671">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6490,7 +6490,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.11 — build 2026-09-05-r670</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.11 — build 2026-09-05-r671</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -23202,7 +23202,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r670',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r671',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58831,7 +58831,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r670';
+const BUILD='r671';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59115,7 +59115,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r670__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r671__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61306,8 +61306,8 @@ body.r670-intrinsic-dock.r662-body-scroll #r170Now.r588-authority #r659DockBody{
 <script id="r659-adaptive-bottom-sheet-runtime">
 (()=>{
 'use strict';
-if(window.SukunAdaptiveDockLayout?.version==='r670')return;
-const VERSION='r670',GAP=8,FLOOR={mini:126,midi:190,max:270},CEIL={mini:220,midi:340,max:480},RATIO={mini:.28,midi:.40,max:.55};
+if(window.SukunAdaptiveDockLayout?.version==='r671')return;
+const VERSION='r671',GAP=8,FLOOR={mini:126,midi:190,max:240},CEIL={mini:220,midi:340,max:460},RATIO={mini:.28,midi:.40,max:.52};
 let raf=0,measureCount=0,rafCoalesced=0,resizeEvents=0,lastReason='init',last=null,ro=null,mounted=false,lastApplied=-1,lastAnchor='',rehomeCount=0,scrollResets=0,layoutSyncs=0,convergence=0,lastDensity='compact';
 const $=id=>document.getElementById(id),num=(v,d=0)=>Number.isFinite(+v)?+v:d,clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const visible=el=>{if(!el)return false;const cs=getComputedStyle(el),r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&num(cs.opacity,1)>.02&&r.width>2&&r.height>2};
@@ -61324,6 +61324,7 @@ function drawerMetrics(){const d=$('r554AlertDrawer'),l=$('r554DrawerList'),open
 function setDensity(d){const b=document.body;b.classList.remove('r660-dock-tight','r660-dock-compact','r660-dock-roomy');b.classList.add('r660-dock-'+d);lastDensity=d}
 function intrinsicNeed(m){const shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell?.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');if(!shell||!body)return FLOOR[m]||150;const cs=getComputedStyle(shell),pad=num(parseFloat(cs.paddingTop))+num(parseFloat(cs.paddingBottom));const need=Math.ceil(pad+num(grip?.getBoundingClientRect?.().height)+num(footer?.getBoundingClientRect?.().height)+num(body.scrollHeight)+6);return Math.max(FLOOR[m]||120,need)}
 function modeCap(m,v,viewportCap){const floor=Math.min(FLOOR[m]||120,viewportCap),ratio=Math.round(v.height*(RATIO[m]||.55)),hard=CEIL[m]||480;return clamp(Math.min(viewportCap,hard,ratio),floor,viewportCap)}
+function tefCardFloor(v,target,m){if(!document.body.classList.contains('sukun-tefekkur-mode'))return Infinity;const card=document.querySelector('#tab-zkr>.card.zCtl')||document.querySelector('.card.zCtl');if(!visible(card))return Infinity;const r=card.getBoundingClientRect(),minCard=clamp(Math.round(v.height*.47),310,470),budget=Math.floor(target-r.top-GAP-minCard);return Math.max(m==='max'?210:(FLOOR[m]||120),budget)}
 function resetPlayerScroll(){const b=$('r659DockBody');if(b&&b.scrollTop!==0){b.scrollTop=0;scrollResets++}}
 function peekReserve(v){const p=$('r433DockPeek');if(!visible(p))return 62;const r=p.getBoundingClientRect();return Math.max(54,Math.ceil(r.height+Math.max(0,v.bottom-r.bottom)+7))}
 function clearFit(reason='free-drag'){document.body.classList.remove('r659-bottom-fit','r662-converging','r662-body-scroll');setDensity('compact');const root=document.documentElement;['--r659-dock-fit-h','--r659-dock-min-h','--r659-dock-max-h','--r659-wrap-reserve','--r662-intrinsic','--r662-exact-fill'].forEach(k=>root.style.removeProperty(k));$('r170Now')?.style.removeProperty('--r659-dock-fit-h');lastApplied=-1;last=Object.freeze({version:VERSION,active:true,bottomFit:false,hidden:document.body.classList.contains('r433-dock-hidden'),mode:mode(),density:lastDensity,reason,at:Date.now(),measureCount,rafCoalesced,resizeEvents,rehomeCount,scrollResets,layoutSyncs,convergence});return last}
@@ -61338,7 +61339,7 @@ function measure(reason='api'){
   /* r670: rawGap kullanılabilir ALANDIR, dock yüksekliği değildir. Önceki
      ifade rawGap büyükse oyuncuyu boşluğun tamamına şişiriyordu. Dock artık
      intrinsic içerik ihtiyacını kullanır; fazla alan yukarıdaki zikir kartına kalır. */
-  const profileCap=modeCap(m,v,viewportCap);
+  const naturalCap=modeCap(m,v,viewportCap),cardBudgetCap=tefCardFloor(v,target,m),profileCap=Math.max(140,Math.min(naturalCap,cardBudgetCap));
   let desired=Math.min(need,profileCap),activeCap=profileCap;
   if(dm0.open){const drawerNeed=Math.min(viewportCap,Math.max(360,v.height*.70));activeCap=viewportCap;desired=Math.max(desired,drawerNeed);need=Math.max(need,Math.min(drawerNeed,viewportCap))}
   const applied=clamp(desired,Math.min(FLOOR[m]||120,activeCap),activeCap),overlayPx=Math.max(0,applied-rawGap),unusedGapPx=Math.max(0,rawGap-applied),exactFillPx=Math.max(0,rawGap-need),converging=overlayPx>8;
@@ -61350,7 +61351,7 @@ function measure(reason='api'){
   if(Math.abs(lastApplied-applied)>1.5){lastApplied=applied;if(B.classList.contains('sukun-tefekkur-mode')){layoutSyncs++;try{window.SukunLayoutEngine?.schedule?.()}catch(e){}}}
   const body=$('r659DockBody'),bodyOverflow=Math.max(0,num(body?.scrollHeight)-num(body?.clientHeight)),bodyScroll=(need-applied)>2||bodyOverflow>2;B.classList.toggle('r662-body-scroll',bodyScroll);if(m!=='max'&&!dm0.open&&bodyOverflow<8)resetPlayerScroll();
   if(converging)convergence++;const dm=drawerMetrics();lastAnchor=a?.name||'';
-  last=Object.freeze({version:VERSION,active:true,bottomFit:true,hidden:false,mode:m,density,reason:String(reason||''),at:Date.now(),viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,targetBottom:target,contentAnchor:lastAnchor,contentBottom:num(a?.rawBottom,anchorBottom),rawAvailableHeight:rawGap,rawGap,intrinsicNeed:need,profileCap,appliedHeight:applied,minHeight:Math.min(FLOOR[m]||120,applied),maxHeight:activeCap,safeBottom:cssBottom,gap:GAP,wrapReserve,overlayPx,unusedGapPx,exactFillPx,converging,bodyOverflowPx:bodyOverflow,bodyScrollTop:num(body?.scrollTop),drawerOpen:dm.open,drawerClientHeight:dm.clientHeight,drawerScrollHeight:dm.scrollHeight,drawerMaxScroll:dm.maxScroll,drawerScrollable:dm.scrollable,bottomReachable:dm.bottomReachable,measureCount,rafCoalesced,resizeEvents,lastY:dockY(),rehomeCount,scrollResets,layoutSyncs,convergence});
+  last=Object.freeze({version:VERSION,active:true,bottomFit:true,hidden:false,mode:m,density,reason:String(reason||''),at:Date.now(),viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,targetBottom:target,contentAnchor:lastAnchor,contentBottom:num(a?.rawBottom,anchorBottom),rawAvailableHeight:rawGap,rawGap,intrinsicNeed:need,naturalCap,cardBudgetCap,profileCap,appliedHeight:applied,minHeight:Math.min(FLOOR[m]||120,applied),maxHeight:activeCap,safeBottom:cssBottom,gap:GAP,wrapReserve,overlayPx,unusedGapPx,exactFillPx,converging,bodyOverflowPx:bodyOverflow,bodyScrollTop:num(body?.scrollTop),drawerOpen:dm.open,drawerClientHeight:dm.clientHeight,drawerScrollHeight:dm.scrollHeight,drawerMaxScroll:dm.maxScroll,drawerScrollable:dm.scrollable,bottomReachable:dm.bottomReachable,measureCount,rafCoalesced,resizeEvents,lastY:dockY(),rehomeCount,scrollResets,layoutSyncs,convergence});
   try{window.SukunNotificationDrawerAuthority?.measure?.()}catch(e){}return last;
 }
 function schedule(reason='event'){lastReason=reason;if(raf){rafCoalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(lastReason)})}
@@ -61395,7 +61396,91 @@ window.SukunR656=Object.freeze({version:'r656',snapshot:()=>({version:'r656',mac
 
 <script id="r670-release-trace">
 window.SukunR670=Object.freeze({version:'r670',snapshot:()=>({version:'r670',dock:window.SukunAdaptiveDockLayout?.snapshot?.()||null,layout:window.SukunLayoutEngine?.snapshot?.()||null})});
+window.SukunR671=Object.freeze({version:'r671',snapshot:()=>({version:'r671',dock:window.SukunAdaptiveDockLayout?.snapshot?.()||null,boundary:window.SukunBoundaryR671?.snapshot?.()||null,layout:window.SukunLayoutEngine?.snapshot?.()||null})});
 </script>
+
+<style id="r671-unified-boundary-style">
+/* ═══ r671 — TEFEKKÜR CARD ↔ DOCK/PEEK TEK SINIR OTORİTESİ ═══════════
+   Dock yüksekliği ne olursa olsun sayaç kartının alt kenarı gerçek dock/peek
+   üst kenarından türetilir. Böylece Mini/Midi'de ölü boşluk, Max'ta bindirme
+   ve gizli görünümde büyük siyah ara alan aynı denklemle kapanır. */
+:root{--r671-zcard-h:auto;--r671-boundary-gap:8px}
+body.r671-boundary-authority.sukun-tefekkur-mode #tab-zkr>.card.zCtl{
+  height:var(--r671-zcard-h)!important;
+  min-height:0!important;
+  max-height:var(--r671-zcard-h)!important;
+  box-sizing:border-box!important;
+  margin-bottom:0!important;
+  overflow:hidden!important;
+}
+body.r671-boundary-authority.sukun-tefekkur-mode #tfRefinedLayout{
+  height:100%!important;min-height:0!important;max-height:100%!important;
+  grid-template-rows:minmax(0,1fr) auto auto!important;
+  align-content:stretch!important;overflow:hidden!important;
+}
+body.r671-boundary-authority.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel{
+  min-height:0!important;height:100%!important;
+  align-content:center!important;justify-content:center!important;
+}
+/* Tefekkür kipinde dock içindeki eski giriş/× satırı artık gereksizdir.
+   Çıkışın tek sahibi ana sayaç kartındaki Tefekkürden Çık düğmesidir. */
+body.sukun-tefekkur-mode #r594TefSlot,
+body.sukun-tefekkur-mode #r588DockShell #r442TefekkurBtn{
+  display:none!important;height:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+}
+/* Max alt panel kartın alanını yemesin; taşan bilgi yalnız orta gövdede scroll. */
+body.r671-boundary-authority.r588-mode-max #r588DockShell>#r659DockBody{
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;
+}
+body.r671-boundary-authority.r588-mode-max #r588DockShell>#r659DockBody::-webkit-scrollbar{width:0!important;height:0!important}
+</style>
+<script id="r671-unified-boundary-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R671_BOUNDARY__)return;
+window.__SUKUN_R671_BOUNDARY__=1;
+const VERSION='r671',GAP=8,$=id=>document.getElementById(id);
+let raf=0,lastH=-1,lastBoundary=0,lastKind='',measures=0,ro=null;
+const visible=el=>{if(!el)return false;const cs=getComputedStyle(el),r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&parseFloat(cs.opacity||'1')>.01&&r.width>1&&r.height>1};
+function viewport(){const v=visualViewport;return{top:v?.offsetTop||0,height:v?.height||innerHeight,bottom:(v?.offsetTop||0)+(v?.height||innerHeight)}}
+function clear(){document.body.classList.remove('r671-boundary-authority');document.documentElement.style.removeProperty('--r671-zcard-h');lastH=-1;lastBoundary=0;lastKind=''}
+function boundary(){
+  const b=document.body,hidden=b.classList.contains('r433-dock-hidden')||b.classList.contains('r592-dock-collapsed');
+  if(hidden){const p=$('r433DockPeek');if(visible(p))return{el:p,kind:'peek',top:p.getBoundingClientRect().top}}
+  const d=$('r170Now');if(!hidden&&b.classList.contains('r431-dock-visible')&&visible(d))return{el:d,kind:'dock',top:d.getBoundingClientRect().top};
+  return null;
+}
+function measure(reason='api'){
+  measures++;const b=document.body;
+  if(!b.classList.contains('sukun-tefekkur-mode')){clear();return null}
+  const card=document.querySelector('#tab-zkr>.card.zCtl')||document.querySelector('.card.zCtl'),bd=boundary();
+  if(!visible(card)||!bd){clear();return null}
+  const v=viewport(),r=card.getBoundingClientRect();
+  const boundaryTop=Math.min(v.bottom-2,Math.max(v.top+120,bd.top));
+  const h=Math.max(260,Math.floor(boundaryTop-r.top-GAP));
+  b.classList.add('r671-boundary-authority');
+  if(Math.abs(h-lastH)>1){document.documentElement.style.setProperty('--r671-zcard-h',h+'px');lastH=h;try{window.SukunLayoutEngine?.schedule?.('r671-boundary')}catch(e){}}
+  lastBoundary=boundaryTop;lastKind=bd.kind;
+  return{version:VERSION,reason,kind:bd.kind,cardTop:Math.round(r.top),boundaryTop:Math.round(boundaryTop),cardHeight:h,gap:GAP,measures,at:Date.now()}
+}
+function schedule(reason='event'){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;measure(reason)})}
+function bind(){
+  if(!('ResizeObserver'in window))return;
+  ro ||= new ResizeObserver(()=>schedule('resize-observer'));
+  ro.disconnect();
+  for(const el of [document.querySelector('#tab-zkr>.card.zCtl'),$('r170Now'),$('r433DockPeek'),$('r588DockShell')])if(el)try{ro.observe(el)}catch(e){}
+}
+['sukun:r616viewchange','sukun:playbackchange','sukun:currentflowchange','sukun:currentzikirchange','sukun:zikirtransaction','sukun:zikirnav','sukun:zikirrestart','sukun:alertdrawerchange'].forEach(ev=>window.addEventListener(ev,()=>schedule(ev),{passive:true}));
+document.addEventListener('click',e=>{if(e.target.closest?.('#r588DockShell [data-r588-mode],#r588Hide,#r433DockPeek,#tefExitBtn,#r442TefekkurBtn')){setTimeout(()=>{bind();schedule('control-click')},35);setTimeout(()=>schedule('control-settled'),240)}},{passive:true});
+window.addEventListener('resize',()=>schedule('window-resize'),{passive:true});visualViewport?.addEventListener?.('resize',()=>schedule('vv-resize'),{passive:true});visualViewport?.addEventListener?.('scroll',()=>schedule('vv-scroll'),{passive:true});
+window.addEventListener('pageshow',()=>setTimeout(()=>{bind();schedule('pageshow')},90),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{bind();schedule('visible')},60)},{passive:true});
+(function boot(n=0){const c=document.querySelector('#tab-zkr>.card.zCtl'),d=$('r170Now');if(c&&d){bind();schedule('boot');setTimeout(()=>schedule('boot-settled'),300);return}if(n<80)setTimeout(()=>boot(n+1),75)})();
+window.SukunBoundaryR671=Object.freeze({version:VERSION,measure:()=>measure('api'),schedule,snapshot:()=>({version:VERSION,cardHeight:lastH,boundaryTop:lastBoundary,kind:lastKind,gap:GAP,measures})});
+})();
+</script>
+
 </body>
 </html>
 
