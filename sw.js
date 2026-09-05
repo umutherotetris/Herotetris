@@ -1,8 +1,8 @@
-/* SÜKÛN r689 — Instant Unlock Resume + Native Handoff */
+/* SÜKÛN r690 — Integrity Sweep + Hidden Churn Cleanup */
 'use strict';
 
-const SURUM = 'r689';
-const CACHE = 'sukun-r689-20260905a';
+const SURUM = 'r690';
+const CACHE = 'sukun-r690-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r689__.json';
+const BUILD_MARKER='./__sukun_build_r690__.json';
 
 const NOTLAR = [
+  'r690 · Integrity Sweep: touch cascade specificity düzeltildi; hidden mutation 0ms timer fırtınası coalesce edildi; dock renderları hidden-deferred tek RAF oldu; visible-sync user-play sahteliği kaldırıldı; mikro SFX ana AudioContexti paylaşır; yedek build etiketi dinamik.',
   'r689 · Instant Unlock Resume: kilit dönüşünde stale native journey drain kaldırıldı; 850/950 ms bounded handoff, hafif ilk-paint ve 900 ms context kick ile görünür dönüş hızlandırıldı.',
   'r688 · Tap Delivery Authority: Android kısa tap native click üretmezse güvenli tek fallback click ile kurtarılır; gerçek pan/drag korunur, geç native kopya bastırılır ve tap telemetrisi eklenir.',
   'r687 · State-Machine Cleanup + Gesture-Safe Layout: idle cleanup stop artık sahte STOPPING üretmez; visualViewport scroll ölçüm fırtınası kaldırıldı, resize/RO debounce ve gesture-safe geometri birleştirmesi eklendi.',

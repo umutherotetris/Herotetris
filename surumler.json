@@ -1,5 +1,18 @@
 [
   {
+    "v": "r690",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Tam paket statik + fiziksel tanı taraması: r688 raporunda transport düğmelerinin touch-action değeri hâlâ pan-y çıkıyordu; r688 :where() kuralı eski ID !important specificity'sini yenemiyordu. r690 doğrudan son cascade otoritesi kullanır.",
+      "Kilitli/hidden durumda merkezî DOM MutationObserver artık her batch için setTimeout(0) üretmez; 120 ms coalescing ile arka plan timer fırtınası kesilir. r688 raporundaki 84 binden fazla timeout üretiminin ana yapısal kaynağı kapatıldı.",
+      "r588 dock render olayları tek RAF altında birleştirildi ve ekran gizliyken UI renderları erteleniyor; görünür dönüşte tek dirty-sync yapılır. Gereksiz RAF/DOM churn azalır.",
+      "Journey visible-sync artık kilit dönüşünü sahte kullanıcı Play eylemi olarak AudioLife'a yazmaz; gerçek userPaused niyeti korunur.",
+      "Mikro UI ses efektleri ikinci canlı AudioContext açmak yerine ana SÜKÛN AudioContext'ini paylaşır; lock/resume sırasında tek context uzlaştırılır.",
+      "Tam Yedek 2.0 içindeki hard-coded r630 build etiketi dinamik gerçek build'e bağlandı; geç r649/r688 bloklarının önündeki iki literal \\n metin artığı temizlendi.",
+      "r689 hızlı kilit dönüşü, r688 Tap Delivery, r682 journey transport ve r681 Max geometri korunur."
+    ]
+  },
+  {
     "v": "r689",
     "t": "5 Eylül 2026",
     "b": [
