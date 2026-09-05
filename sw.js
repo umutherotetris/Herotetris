@@ -1,8 +1,8 @@
-/* SÜKÛN r681 — Journey Transport Atomicity + Max Drag Fit */
+/* SÜKÛN r682 — Canonical Journey Transport + Foreground Hold */
 'use strict';
 
-const SURUM = 'r681';
-const CACHE = 'sukun-r681-20260905a';
+const SURUM = 'r682';
+const CACHE = 'sukun-r682-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r681__.json';
+const BUILD_MARKER='./__sukun_build_r682__.json';
 
 const NOTLAR = [
+  "r682 · Görünen Mini/Midi/Max transport 28/99 Seyir’e doğrudan bağlandı; Pause journey foreground rezervasyonunu korur, Stop pending foreground kuyruğunu temizleyip tek basışta bütün oturumu kapatır. Max r681 davranışı korunur.",
   "r681 · 28/99 Seyir Pause/Stop atomik transport: Pause foreground kuyruğuna düşmez; Stop ilk basışta zikir + ritim katmanlarını kapatır. Max görünür içerik yüksekliğine shrink-wrap edilerek aşağı drag kilidi kaldırıldı.",
   "r679 · Max tam çalışma görünümü: iç scroll kaldırıldı, drag tutamağı geri geldi; Durdur fallback düzeltildi; Zikir Ayarları katlanır oldu ve kayıt yönetimi yedekleme merkezine taşındı.",
   "r678 · Tefekkür kimlik stabilitesi: rakamlar focus-calm ile kaybolmaz; üst Arapça satır küçüldü; animasyon metinsiz aura oldu; Berhetiyye TTS nida biçiminde Yâ ile okunur.",

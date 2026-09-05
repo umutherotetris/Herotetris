@@ -1,5 +1,16 @@
 [
   {
+    "v": "r682",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Kök neden düzeltildi: görünen Mini/Midi/Max #r588Play/#r588Stop transportu 28/99 Seyir aktifken artık autoStart/autoStop yoluna düşmez; doğrudan journey aggregate transportuna gider.",
+      "Journey Pause foreground owner'ı bırakmaz; duraklatılmış seyir persistent foreground rezervasyonunu korur, bu yüzden bekleyen sözlü kuyruk Pause anında çalışmaz.",
+      "Tümünü Durdur pending foreground kuyruğunu gerçek stop'tan önce temizler; owner release sonrası auto-zikir/single işinin microtask ile yeniden başlaması engellendi.",
+      "Resume yalnız aynı journey oturumunu sürdürür; auto-zikir 680 ms retry yolu journey aktifken bloke edildi.",
+      "r681 Max shrink-wrap/drag düzeltmesi aynen korunur; bu sürümde geometriye dokunulmadı."
+    ]
+  },
+  {
     "v": "r681",
     "t": "5 Eylül 2026",
     "b": [
