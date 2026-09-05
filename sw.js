@@ -1,8 +1,8 @@
-/* SÜKÛN r682 — Canonical Journey Transport + Foreground Hold */
+/* SÜKÛN r685 — Canonical Journey Transport + Foreground Hold */
 'use strict';
 
-const SURUM = 'r684';
-const CACHE = 'sukun-r684-20260905a';
+const SURUM = 'r685';
+const CACHE = 'sukun-r685-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r684__.json';
+const BUILD_MARKER='./__sukun_build_r685__.json';
 
 const NOTLAR = [
+  'r685 · Regression Shield yanlış FAIL düzeltmesi: adaptive-dock-fit sürüm kapısı sayısal alt sınıra çevrildi (r662+); drawer authority snapshotı 1200 ms bayatlama eşiğiyle tazeleniyor ve liste eksikliği yalnız drawer açıkken ihlal sayılıyor.',
   'r684 · Natural Scroll Handoff: dock contain kaldırıldı; buton/kart üstünden başlayan pan kayabilen iç yüzeye veya sayfaya devredilir.',
   'r683 · Single Touch/Click Authority: ilk tap swallow ve whole-dock swipe emekli; doğal pan-y tek otorite.',
   "r682 · Görünen Mini/Midi/Max transport 28/99 Seyir’e doğrudan bağlandı; Pause journey foreground rezervasyonunu korur, Stop pending foreground kuyruğunu temizleyip tek basışta bütün oturumu kapatır. Max r681 davranışı korunur.",
