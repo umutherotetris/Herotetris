@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r671 — Unified Card–Dock Boundary
+     SÜKÛN r672 — Tefekkür Priority / Solid Dock
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r671">
+<meta name="sukun-build" content="r672">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r671">
+<link rel="manifest" href="./manifest.webmanifest?v=r672">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23202,7 +23202,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r671',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r672',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58831,7 +58831,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r671';
+const BUILD='r672';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59115,7 +59115,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r671__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r672__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61306,12 +61306,14 @@ body.r670-intrinsic-dock.r662-body-scroll #r170Now.r588-authority #r659DockBody{
 <script id="r659-adaptive-bottom-sheet-runtime">
 (()=>{
 'use strict';
-if(window.SukunAdaptiveDockLayout?.version==='r671')return;
-const VERSION='r671',GAP=8,FLOOR={mini:126,midi:190,max:240},CEIL={mini:220,midi:340,max:460},RATIO={mini:.28,midi:.40,max:.52};
+if(window.SukunAdaptiveDockLayout?.version==='r672')return;
+const VERSION='r672',GAP=8,FLOOR={mini:126,midi:190,max:240},CEIL={mini:220,midi:340,max:460},RATIO={mini:.28,midi:.40,max:.52},TEF_FLOOR={mini:112,midi:138,max:154},TEF_CEIL={mini:154,midi:202,max:258},TEF_RATIO={mini:.18,midi:.24,max:.31};
 let raf=0,measureCount=0,rafCoalesced=0,resizeEvents=0,lastReason='init',last=null,ro=null,mounted=false,lastApplied=-1,lastAnchor='',rehomeCount=0,scrollResets=0,layoutSyncs=0,convergence=0,lastDensity='compact';
 const $=id=>document.getElementById(id),num=(v,d=0)=>Number.isFinite(+v)?+v:d,clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const visible=el=>{if(!el)return false;const cs=getComputedStyle(el),r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&num(cs.opacity,1)>.02&&r.width>2&&r.height>2};
 function mode(){const b=document.body;return b.classList.contains('r588-mode-max')?'max':b.classList.contains('r588-mode-midi')?'midi':'mini'}
+function tefActive(){return document.body.classList.contains('sukun-tefekkur-mode')}
+function modeFloor(m){return tefActive()?(TEF_FLOOR[m]||FLOOR[m]||120):(FLOOR[m]||120)}
 function viewport(){const vv=window.visualViewport;return{top:num(vv?.offsetTop,0),height:num(vv?.height,innerHeight),bottom:num(vv?.offsetTop,0)+num(vv?.height,innerHeight),width:num(vv?.width,innerWidth)}}
 function dockY(){try{return num(window.SukunFlowDockPlacement?.snapshot?.()?.y,0)}catch(e){return 0}}
 function bottomFit(host){return !!host&&visible(host)&&dockY()>=-5}
@@ -61323,8 +61325,8 @@ function bindResizeTargets(){if(!('ResizeObserver'in window))return;ro?.disconne
 function drawerMetrics(){const d=$('r554AlertDrawer'),l=$('r554DrawerList'),open=!!(d&&!d.hidden),sh=num(l?.scrollHeight),ch=num(l?.clientHeight),max=Math.max(0,sh-ch);return{open,clientHeight:ch,scrollHeight:sh,maxScroll:max,scrollable:open&&max>2,bottomReachable:!open||!!l&&ch>0}}
 function setDensity(d){const b=document.body;b.classList.remove('r660-dock-tight','r660-dock-compact','r660-dock-roomy');b.classList.add('r660-dock-'+d);lastDensity=d}
 function intrinsicNeed(m){const shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell?.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');if(!shell||!body)return FLOOR[m]||150;const cs=getComputedStyle(shell),pad=num(parseFloat(cs.paddingTop))+num(parseFloat(cs.paddingBottom));const need=Math.ceil(pad+num(grip?.getBoundingClientRect?.().height)+num(footer?.getBoundingClientRect?.().height)+num(body.scrollHeight)+6);return Math.max(FLOOR[m]||120,need)}
-function modeCap(m,v,viewportCap){const floor=Math.min(FLOOR[m]||120,viewportCap),ratio=Math.round(v.height*(RATIO[m]||.55)),hard=CEIL[m]||480;return clamp(Math.min(viewportCap,hard,ratio),floor,viewportCap)}
-function tefCardFloor(v,target,m){if(!document.body.classList.contains('sukun-tefekkur-mode'))return Infinity;const card=document.querySelector('#tab-zkr>.card.zCtl')||document.querySelector('.card.zCtl');if(!visible(card))return Infinity;const r=card.getBoundingClientRect(),minCard=clamp(Math.round(v.height*.47),310,470),budget=Math.floor(target-r.top-GAP-minCard);return Math.max(m==='max'?210:(FLOOR[m]||120),budget)}
+function modeCap(m,v,viewportCap){const tef=tefActive(),floor=Math.min(modeFloor(m),viewportCap),ratios=tef?TEF_RATIO:RATIO,ceils=tef?TEF_CEIL:CEIL,ratio=Math.round(v.height*(ratios[m]||.55)),hard=ceils[m]||480;return clamp(Math.min(viewportCap,hard,ratio),floor,viewportCap)}
+function tefCardFloor(v,target,m){if(!tefActive())return Infinity;const card=document.querySelector('#tab-zkr>.card.zCtl')||document.querySelector('.card.zCtl');if(!visible(card))return Infinity;const r=card.getBoundingClientRect(),minCard=clamp(Math.round(v.height*.60),410,555),budget=Math.floor(target-r.top-GAP-minCard);return Math.max(modeFloor(m),budget)}
 function resetPlayerScroll(){const b=$('r659DockBody');if(b&&b.scrollTop!==0){b.scrollTop=0;scrollResets++}}
 function peekReserve(v){const p=$('r433DockPeek');if(!visible(p))return 62;const r=p.getBoundingClientRect();return Math.max(54,Math.ceil(r.height+Math.max(0,v.bottom-r.bottom)+7))}
 function clearFit(reason='free-drag'){document.body.classList.remove('r659-bottom-fit','r662-converging','r662-body-scroll');setDensity('compact');const root=document.documentElement;['--r659-dock-fit-h','--r659-dock-min-h','--r659-dock-max-h','--r659-wrap-reserve','--r662-intrinsic','--r662-exact-fill'].forEach(k=>root.style.removeProperty(k));$('r170Now')?.style.removeProperty('--r659-dock-fit-h');lastApplied=-1;last=Object.freeze({version:VERSION,active:true,bottomFit:false,hidden:document.body.classList.contains('r433-dock-hidden'),mode:mode(),density:lastDensity,reason,at:Date.now(),measureCount,rafCoalesced,resizeEvents,rehomeCount,scrollResets,layoutSyncs,convergence});return last}
@@ -61333,25 +61335,25 @@ function measure(reason='api'){
   const host=$('r170Now');if(!host)return clearFit('host-missing');const v=viewport(),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible');
   if(hidden){B.classList.remove('r659-bottom-fit','r662-converging','r662-body-scroll');host.style.removeProperty('--r659-dock-fit-h');setDensity('compact');const pr=peekReserve(v);document.documentElement.style.setProperty('--r660-peek-reserve',pr+'px');last=Object.freeze({version:VERSION,active:true,bottomFit:false,hidden:true,mode:mode(),density:lastDensity,reason,at:Date.now(),viewportHeight:v.height,peekReserve:pr,measureCount,rafCoalesced,resizeEvents,rehomeCount,scrollResets,layoutSyncs,convergence});return last}
   if(!bottomFit(host))return clearFit('free-drag');B.classList.add('r659-bottom-fit');
-  const target=targetBottom(host,v),a=anchor(v,target),m=mode(),dm0=drawerMetrics(),anchorBottom=a?Math.min(target-GAP,a.rawBottom):target-(FLOOR[m]||150)-GAP,rawGap=Math.max(0,target-anchorBottom-GAP),viewportCap=Math.max(150,target-(v.top+48));
+  const target=targetBottom(host,v),a=anchor(v,target),m=mode(),dm0=drawerMetrics(),anchorBottom=a?Math.min(target-GAP,a.rawBottom):target-modeFloor(m)-GAP,rawGap=Math.max(0,target-anchorBottom-GAP),viewportCap=Math.max(150,target-(v.top+48));
   /* iki geçişli intrinsic ölçüm: density gerçek içerik ihtiyacına göre seçilir. */
   setDensity('compact');let need=intrinsicNeed(m);let density=rawGap<need-26?'tight':rawGap>need+70?'roomy':'compact';setDensity(density);need=intrinsicNeed(m);
   /* r670: rawGap kullanılabilir ALANDIR, dock yüksekliği değildir. Önceki
      ifade rawGap büyükse oyuncuyu boşluğun tamamına şişiriyordu. Dock artık
      intrinsic içerik ihtiyacını kullanır; fazla alan yukarıdaki zikir kartına kalır. */
-  const naturalCap=modeCap(m,v,viewportCap),cardBudgetCap=tefCardFloor(v,target,m),profileCap=Math.max(140,Math.min(naturalCap,cardBudgetCap));
+  const naturalCap=modeCap(m,v,viewportCap),cardBudgetCap=tefCardFloor(v,target,m),profileCap=Math.max(modeFloor(m),Math.min(naturalCap,cardBudgetCap));
   let desired=Math.min(need,profileCap),activeCap=profileCap;
   if(dm0.open){const drawerNeed=Math.min(viewportCap,Math.max(360,v.height*.70));activeCap=viewportCap;desired=Math.max(desired,drawerNeed);need=Math.max(need,Math.min(drawerNeed,viewportCap))}
-  const applied=clamp(desired,Math.min(FLOOR[m]||120,activeCap),activeCap),overlayPx=Math.max(0,applied-rawGap),unusedGapPx=Math.max(0,rawGap-applied),exactFillPx=Math.max(0,rawGap-need),converging=overlayPx>8;
+  const applied=clamp(desired,Math.min(modeFloor(m),activeCap),activeCap),overlayPx=Math.max(0,applied-rawGap),unusedGapPx=Math.max(0,rawGap-applied),exactFillPx=Math.max(0,rawGap-need),converging=overlayPx>8;
   B.classList.toggle('r662-converging',converging);
   const cssBottom=Math.max(0,v.bottom-target),wrapReserve=Math.max(72,applied+cssBottom+8),root=document.documentElement;
-  root.style.setProperty('--r659-dock-fit-h',applied.toFixed(1)+'px');root.style.setProperty('--r659-dock-min-h',Math.min(FLOOR[m]||120,applied).toFixed(1)+'px');root.style.setProperty('--r659-dock-max-h',viewportCap.toFixed(1)+'px');root.style.setProperty('--r659-wrap-reserve',wrapReserve.toFixed(1)+'px');root.style.setProperty('--r659-dock-gap',GAP+'px');root.style.setProperty('--r662-intrinsic',need.toFixed(1)+'px');root.style.setProperty('--r662-exact-fill',exactFillPx.toFixed(1)+'px');
+  root.style.setProperty('--r659-dock-fit-h',applied.toFixed(1)+'px');root.style.setProperty('--r659-dock-min-h',Math.min(modeFloor(m),applied).toFixed(1)+'px');root.style.setProperty('--r659-dock-max-h',viewportCap.toFixed(1)+'px');root.style.setProperty('--r659-wrap-reserve',wrapReserve.toFixed(1)+'px');root.style.setProperty('--r659-dock-gap',GAP+'px');root.style.setProperty('--r662-intrinsic',need.toFixed(1)+'px');root.style.setProperty('--r662-exact-fill',exactFillPx.toFixed(1)+'px');
   /* r670: root tek CSS değişkeni sahibidir. Host üzerinde stale override bırakma. */
   host.style.removeProperty('--r659-dock-fit-h');
   if(Math.abs(lastApplied-applied)>1.5){lastApplied=applied;if(B.classList.contains('sukun-tefekkur-mode')){layoutSyncs++;try{window.SukunLayoutEngine?.schedule?.()}catch(e){}}}
   const body=$('r659DockBody'),bodyOverflow=Math.max(0,num(body?.scrollHeight)-num(body?.clientHeight)),bodyScroll=(need-applied)>2||bodyOverflow>2;B.classList.toggle('r662-body-scroll',bodyScroll);if(m!=='max'&&!dm0.open&&bodyOverflow<8)resetPlayerScroll();
   if(converging)convergence++;const dm=drawerMetrics();lastAnchor=a?.name||'';
-  last=Object.freeze({version:VERSION,active:true,bottomFit:true,hidden:false,mode:m,density,reason:String(reason||''),at:Date.now(),viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,targetBottom:target,contentAnchor:lastAnchor,contentBottom:num(a?.rawBottom,anchorBottom),rawAvailableHeight:rawGap,rawGap,intrinsicNeed:need,naturalCap,cardBudgetCap,profileCap,appliedHeight:applied,minHeight:Math.min(FLOOR[m]||120,applied),maxHeight:activeCap,safeBottom:cssBottom,gap:GAP,wrapReserve,overlayPx,unusedGapPx,exactFillPx,converging,bodyOverflowPx:bodyOverflow,bodyScrollTop:num(body?.scrollTop),drawerOpen:dm.open,drawerClientHeight:dm.clientHeight,drawerScrollHeight:dm.scrollHeight,drawerMaxScroll:dm.maxScroll,drawerScrollable:dm.scrollable,bottomReachable:dm.bottomReachable,measureCount,rafCoalesced,resizeEvents,lastY:dockY(),rehomeCount,scrollResets,layoutSyncs,convergence});
+  last=Object.freeze({version:VERSION,active:true,bottomFit:true,hidden:false,mode:m,density,reason:String(reason||''),at:Date.now(),viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,targetBottom:target,contentAnchor:lastAnchor,contentBottom:num(a?.rawBottom,anchorBottom),rawAvailableHeight:rawGap,rawGap,intrinsicNeed:need,naturalCap,cardBudgetCap,profileCap,appliedHeight:applied,minHeight:Math.min(modeFloor(m),applied),maxHeight:activeCap,safeBottom:cssBottom,gap:GAP,wrapReserve,overlayPx,unusedGapPx,exactFillPx,converging,bodyOverflowPx:bodyOverflow,bodyScrollTop:num(body?.scrollTop),drawerOpen:dm.open,drawerClientHeight:dm.clientHeight,drawerScrollHeight:dm.scrollHeight,drawerMaxScroll:dm.maxScroll,drawerScrollable:dm.scrollable,bottomReachable:dm.bottomReachable,measureCount,rafCoalesced,resizeEvents,lastY:dockY(),rehomeCount,scrollResets,layoutSyncs,convergence});
   try{window.SukunNotificationDrawerAuthority?.measure?.()}catch(e){}return last;
 }
 function schedule(reason='event'){lastReason=reason;if(raf){rafCoalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(lastReason)})}
@@ -61397,6 +61399,7 @@ window.SukunR656=Object.freeze({version:'r656',snapshot:()=>({version:'r656',mac
 <script id="r670-release-trace">
 window.SukunR670=Object.freeze({version:'r670',snapshot:()=>({version:'r670',dock:window.SukunAdaptiveDockLayout?.snapshot?.()||null,layout:window.SukunLayoutEngine?.snapshot?.()||null})});
 window.SukunR671=Object.freeze({version:'r671',snapshot:()=>({version:'r671',dock:window.SukunAdaptiveDockLayout?.snapshot?.()||null,boundary:window.SukunBoundaryR671?.snapshot?.()||null,layout:window.SukunLayoutEngine?.snapshot?.()||null})});
+window.SukunR672=Object.freeze({version:'r672',snapshot:()=>({version:'r672',dock:window.SukunAdaptiveDockLayout?.snapshot?.()||null,boundary:window.SukunBoundaryR672?.snapshot?.()||null,layout:window.SukunLayoutEngine?.snapshot?.()||null,glass:window.SukunMiniFlowGlass?.get?.()||null})});
 </script>
 
 <style id="r671-unified-boundary-style">
@@ -61439,9 +61442,9 @@ body.r671-boundary-authority.r588-mode-max #r588DockShell>#r659DockBody::-webkit
 <script id="r671-unified-boundary-runtime">
 (()=>{
 'use strict';
-if(window.__SUKUN_R671_BOUNDARY__)return;
-window.__SUKUN_R671_BOUNDARY__=1;
-const VERSION='r671',GAP=8,$=id=>document.getElementById(id);
+if(window.__SUKUN_R672_BOUNDARY__)return;
+window.__SUKUN_R672_BOUNDARY__=1;
+const VERSION='r672',GAP=8,$=id=>document.getElementById(id);
 let raf=0,lastH=-1,lastBoundary=0,lastKind='',measures=0,ro=null;
 const visible=el=>{if(!el)return false;const cs=getComputedStyle(el),r=el.getBoundingClientRect();return cs.display!=='none'&&cs.visibility!=='hidden'&&parseFloat(cs.opacity||'1')>.01&&r.width>1&&r.height>1};
 function viewport(){const v=visualViewport;return{top:v?.offsetTop||0,height:v?.height||innerHeight,bottom:(v?.offsetTop||0)+(v?.height||innerHeight)}}
@@ -61477,7 +61480,74 @@ document.addEventListener('click',e=>{if(e.target.closest?.('#r588DockShell [dat
 window.addEventListener('resize',()=>schedule('window-resize'),{passive:true});visualViewport?.addEventListener?.('resize',()=>schedule('vv-resize'),{passive:true});visualViewport?.addEventListener?.('scroll',()=>schedule('vv-scroll'),{passive:true});
 window.addEventListener('pageshow',()=>setTimeout(()=>{bind();schedule('pageshow')},90),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>{bind();schedule('visible')},60)},{passive:true});
 (function boot(n=0){const c=document.querySelector('#tab-zkr>.card.zCtl'),d=$('r170Now');if(c&&d){bind();schedule('boot');setTimeout(()=>schedule('boot-settled'),300);return}if(n<80)setTimeout(()=>boot(n+1),75)})();
-window.SukunBoundaryR671=Object.freeze({version:VERSION,measure:()=>measure('api'),schedule,snapshot:()=>({version:VERSION,cardHeight:lastH,boundaryTop:lastBoundary,kind:lastKind,gap:GAP,measures})});
+window.SukunBoundaryR672=Object.freeze({version:VERSION,measure:()=>measure('api'),schedule,snapshot:()=>({version:VERSION,cardHeight:lastH,boundaryTop:lastBoundary,kind:lastKind,gap:GAP,measures})});
+window.SukunBoundaryR671=window.SukunBoundaryR672;
+})();
+</script>
+
+
+<style id="r672-tefekkur-priority-solid-dock-style">
+/* ═══ r672 — TEFEKKÜR ÖNCELİĞİ + SOLID PLAYER ════════════════════════
+   Zikir/Tefekkür ekranı ana çalışma yüzeyidir. Dock kendi içeriği büyüdüğü
+   için zikir çemberini sıkıştıramaz; gerektiğinde yalnız #r659DockBody kayar.
+   Tema-camı eski varsayılanı da bir kerelik kapatılır. */
+body.r672-solid-dock.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r588-authority:not(.r554-alert-open){
+  background:linear-gradient(180deg,rgba(10,13,20,.985),rgba(5,8,13,.997))!important;
+  border-color:color-mix(in srgb,var(--gold) 22%,var(--line))!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.035)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+body.r672-solid-dock.r433-dock-hidden #r433DockPeek{
+  background:linear-gradient(180deg,rgba(12,15,21,.99),rgba(5,8,12,.998))!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+/* Tefekkür sırasında süs/boşluk player'dan çıkar; dokunma hedefleri korunur. */
+body.sukun-tefekkur-mode #r588DockShell>#r633DockGrip{display:none!important;height:0!important;min-height:0!important;margin:0!important}
+body.sukun-tefekkur-mode #r588DockShell{padding:5px 8px 6px!important}
+body.sukun-tefekkur-mode #r588DockShell .r588Top{min-height:25px!important;padding:0 1px 4px!important}
+body.sukun-tefekkur-mode #r588DockShell .r588Main{min-height:38px!important;padding:3px 0!important}
+body.sukun-tefekkur-mode #r588DockShell .r588Progress{margin-top:3px!important;height:2px!important}
+body.sukun-tefekkur-mode #r588DockShell>.r588Mode{margin-top:3px!important;padding-top:4px!important}
+body.sukun-tefekkur-mode #r588DockShell>.r588Mode button{min-height:29px!important;height:29px!important}
+body.sukun-tefekkur-mode #r588DockShell>#r659DockBody{min-height:0!important;overflow-x:hidden!important;overscroll-behavior:contain!important}
+body.sukun-tefekkur-mode.r659-bottom-fit.r662-body-scroll #r588DockShell>#r659DockBody{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important}
+body.sukun-tefekkur-mode #r588DockShell>#r659DockBody::-webkit-scrollbar{width:0!important;height:0!important}
+/* Midi/Max bilgi hücreleri daha sıkı ritimde; zikir kartına daha çok dikey bütçe. */
+body.sukun-tefekkur-mode.r588-mode-midi #r588DockShell .r588Stat,
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Stat{min-height:31px!important;padding:4px 6px!important}
+body.sukun-tefekkur-mode.r588-mode-midi #r588DockShell .r588Nav,
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Nav{margin-top:4px!important;gap:4px!important}
+body.sukun-tefekkur-mode.r588-mode-midi #r588DockShell .r588Nav button,
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Nav button{min-height:29px!important}
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Meta{margin-top:4px!important;gap:4px!important}
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Meta span{min-height:29px!important;padding:4px 6px!important}
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Layers,
+body.sukun-tefekkur-mode.r588-mode-max #r588DockShell .r588Actions{margin-top:4px!important}
+/* Kart içi eski tight/compact kademeleri dock yüzünden gereğinden fazla küçülmesin. */
+body.r671-boundary-authority.sukun-tefekkur-mode #tfRefinedLayout,
+body.r672-boundary-authority.sukun-tefekkur-mode #tfRefinedLayout{gap:6px!important}
+</style>
+<script id="r672-solid-glass-migration-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R672_SOLID_DOCK__)return;window.__SUKUN_R672_SOLID_DOCK__=1;
+const MIG='sukun.r672.solidDockMigrated',ENABLE='sukun.dock.miniGlass.enabled';
+function setSolid(on){document.body.classList.toggle('r672-solid-dock',!!on)}
+function migrate(){
+  try{
+    if(localStorage.getItem(MIG)!=='1'){
+      localStorage.setItem(MIG,'1');localStorage.setItem(ENABLE,'0');
+      try{window.SukunMiniFlowGlass?.setEnabled?.(false,true)}catch(e){}
+    }
+  }catch(e){}
+  let enabled=false;try{enabled=!!window.SukunMiniFlowGlass?.get?.()?.enabled}catch(e){}
+  setSolid(!enabled);
+}
+window.addEventListener('sukun:miniflowglasschange',e=>setSolid(!e?.detail?.enabled),{passive:true});
+window.addEventListener('pageshow',()=>setTimeout(migrate,50),{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{migrate();setTimeout(migrate,180)},{once:true});
+else{migrate();setTimeout(migrate,180)}
+window.SukunR672SolidDock={version:'r672',refresh:migrate};
 })();
 </script>
 
