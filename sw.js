@@ -1,8 +1,8 @@
-/* SÜKÛN r672 — Tefekkür Priority / Solid Dock */
+/* SÜKÛN r673 — Tefekkür Fit / Full Touch Scroll */
 'use strict';
 
-const SURUM = 'r672';
-const CACHE = 'sukun-r672-20260905a';
+const SURUM = 'r673';
+const CACHE = 'sukun-r673-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r672__.json';
+const BUILD_MARKER='./__sukun_build_r673__.json';
 
 const NOTLAR = [
+  'r673 TEFEKKÜR FIT: Hedef/Kalan/meta/çıkış kompakt; Midi/Max sabit footer + tam yüzey scroll; Max/Detay zikir kartını ezmez.',
+  'r673 TOUCH SCROLL: player ve detay kart/butonlarının üstünden başlayan dikey sürükleme pan-y olarak kaydırır; range/drag kontrolleri hariç.',
+  'r673 ZİKİR TRANSPORT: akış barı Play, Tefekkür/Zikir bağlamında doğrudan auto-zikir motoruna yönlenir; Hazır kalıp ilk dokunuşu yutma için tek doğrulamalı retry vardır.',
   'r672 TEFEKKÜR ÖNCELİĞİ: Tefekkür/Zikir kartı dikey bütçenin birinci sahibi; Mini/Midi/Max daha kompakt profile iner ve taşan player içeriği kendi gövdesinde scroll eder.',
   'r672 SOLID DOCK: eski varsayılan tema-camı bir kerelik kapatılır; Mini/Midi/Max tekrar dolgun yüzeyle açılır, kullanıcı isterse ayarlardan camı yeniden açabilir.',
   'r672 KOMPAKT RİTİM: Tefekkür sırasında grip ve gereksiz dikey boşluklar kaldırıldı; mod seçici ve dokunma hedefleri korunur.',
