@@ -1,5 +1,18 @@
 [
   {
+    "v": "r688",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Fiziksel Android tanısı tıklama teslimindeki kaybı görünür kıldı: 68 pointerdown olayına karşı yalnız 20 click oluşmuştu; özellikle dock transport düğmeleri pan-y gesture sözleşmesindeydi.",
+      "Yeni Tap Delivery Authority eklendi: kısa ve sabit bir dokunuşta native click gelmezse aynı kontrol tek seferlik güvenli synthetic click ile kurtarılır; gerçek kaydırma, drag ve pointercancel asla tıklamaya çevrilmez.",
+      "Native click sonradan gelirse aynı pointer dizisine ait gecikmiş kopya bastırılır; hızlı ikinci gerçek kullanıcı dokunuşu yeni pointer sequence olduğu için engellenmez.",
+      "Buton/role=button/tab/summary yüzeyleri manipulation touch-action kullanır; scroll containerlar pan-y kalır. Böylece kontrol üstünden dikey kaydırma korunurken tap teslimi daha kararlı olur.",
+      "Detaylar portalında r674'ten kalmış pointer stopPropagation listenerı kaldırıldı; whole-dock swipe zaten emekli olduğu için bu kesme artık gereksizdi.",
+      "Diagnostics'e tapAuthority telemetrisi eklendi: nativeClicks, recoveredClicks, duplicateSuppressed, cancelled, moved, misses ve son pointer hedefi sonraki raporda görülebilir.",
+      "r687 performans/gesture-safe layout, r682 28/99 Seyir transportu ve r681 Max geometri aynen korunur; HTML/SW/manifest/marker r688 senkronlandı."
+    ]
+  },
+  {
     "v": "r687",
     "t": "5 Eylül 2026",
     "b": [
