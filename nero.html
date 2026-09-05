@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r676 — Details Shrink-Wrap Authority
+     SÜKÛN r677 — Details Shrink-Wrap Authority
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r676">
+<meta name="sukun-build" content="r677">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r676">
+<link rel="manifest" href="./manifest.webmanifest?v=r677">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23202,7 +23202,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r676',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r677',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58859,7 +58859,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r676';
+const BUILD='r677';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59143,7 +59143,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r676__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r677__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -62066,6 +62066,160 @@ window.addEventListener('pageshow',()=>{
 },{passive:true});
 setTimeout(()=>{if(document.body.classList.contains('r434-inline-details-open'))afterOpen('boot')},120);
 window.SukunR676Details=Object.freeze({version:'r676',resetTop,snapshot:()=>{const p=$('r434InlineDetails'),s=$('r674DetailsScroll');return{open:document.body.classList.contains('r434-inline-details-open'),resets,panelH:Math.round(p?.getBoundingClientRect?.().height||0),clientH:s?.clientHeight||0,scrollH:s?.scrollHeight||0,scrollTop:s?.scrollTop||0}}});
+})();
+</script>
+
+
+<style id="r677-details-portal-style">
+/* ═══ r677 — DETAILS PORTAL / SINGLE TOUCH OWNER ════════════════════
+   Detaylar artık #r170Now içinde scroll etmez. Açıkken body-level portal
+   olur; böylece dock swipe / parent overflow / pointer-events zinciri ile
+   aynı gesture yolunu paylaşmaz. */
+#r677DetailsBackdrop{
+  position:fixed!important;inset:0!important;z-index:18770!important;
+  display:none!important;background:rgba(0,0,0,.12)!important;
+  pointer-events:none!important;touch-action:none!important;
+}
+body.r434-inline-details-open #r677DetailsBackdrop{
+  display:block!important;pointer-events:auto!important;
+}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal{
+  position:fixed!important;
+  left:max(8px,env(safe-area-inset-left))!important;
+  right:max(8px,env(safe-area-inset-right))!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  top:auto!important;
+  z-index:18780!important;
+  display:flex!important;flex-direction:column!important;
+  width:auto!important;height:auto!important;min-height:0!important;
+  max-height:min(68dvh,560px)!important;
+  margin:0!important;padding:9px!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+  contain:none!important;isolation:isolate!important;
+  border:1px solid color-mix(in srgb,var(--gold) 20%,var(--line))!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,rgba(10,13,20,.997),rgba(5,8,13,.998))!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  box-shadow:0 24px 72px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.025) inset!important;
+  touch-action:pan-y!important;
+}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal > .r434Head{
+  position:sticky!important;top:0!important;z-index:5!important;
+  flex:0 0 auto!important;display:flex!important;align-items:center!important;
+  min-height:38px!important;margin:0 0 7px!important;padding:0 0 7px!important;
+  background:linear-gradient(180deg,rgba(10,13,20,1),rgba(10,13,20,.985))!important;
+}
+#r677DetailsClose{
+  appearance:none!important;display:grid!important;place-items:center!important;
+  width:32px!important;height:32px!important;min-width:32px!important;
+  margin-left:3px!important;padding:0!important;border-radius:10px!important;
+  border:1px solid var(--line)!important;background:rgba(255,255,255,.025)!important;
+  color:var(--mut)!important;font:700 16px/1 system-ui!important;cursor:pointer!important;
+  pointer-events:auto!important;touch-action:manipulation!important;
+}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal > #r674DetailsScroll{
+  flex:1 1 auto!important;align-self:stretch!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  max-height:calc(min(68dvh,560px) - 54px)!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:contain!important;scroll-behavior:auto!important;
+  overflow-anchor:none!important;scrollbar-width:none!important;
+  touch-action:pan-y!important;pointer-events:auto!important;
+  padding:0 1px 12px!important;
+}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal > #r674DetailsScroll::-webkit-scrollbar{width:0!important;height:0!important}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal #r674DetailsScroll :is(button,[role="button"],a,.r434Layer,.r434LayerHead,.r434LayerBody,.r434LayerInner,.r434Master,.r434Tools,.r434CtlRow,.r434ToolLine){
+  pointer-events:auto!important;touch-action:pan-y!important;
+}
+body.r434-inline-details-open > #r434InlineDetails.r677-details-portal #r674DetailsScroll input[type="range"]{
+  pointer-events:auto!important;touch-action:pan-y!important;
+}
+/* Portal açıkken arkadaki player hiçbir gesture'ın sahibi değildir. */
+body.r434-inline-details-open #r170Now.r588-authority,
+body.r434-inline-details-open #r170Now.r588-authority > #r588DockShell{
+  overscroll-behavior:none!important;
+}
+@media(max-width:390px){
+  body.r434-inline-details-open > #r434InlineDetails.r677-details-portal{
+    left:6px!important;right:6px!important;bottom:calc(6px + env(safe-area-inset-bottom))!important;
+    max-height:min(72dvh,540px)!important;padding:8px!important;
+  }
+  body.r434-inline-details-open > #r434InlineDetails.r677-details-portal > #r674DetailsScroll{
+    max-height:calc(min(72dvh,540px) - 52px)!important;
+  }
+}
+</style>
+<script id="r677-details-portal-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R677_DETAILS_PORTAL__)return;
+window.__SUKUN_R677_DETAILS_PORTAL__=1;
+const $=id=>document.getElementById(id);
+let home=null,portalCount=0,returnCount=0,dragCancels=0;
+function ensureBackdrop(){
+  let b=$('r677DetailsBackdrop');
+  if(!b){b=document.createElement('div');b.id='r677DetailsBackdrop';b.setAttribute('aria-hidden','true');document.body.appendChild(b);
+    b.addEventListener('click',()=>{try{window.SukunDockDetails?.close?.()}catch(_){document.body.classList.remove('r434-inline-details-open')}},{passive:true});
+  }
+  return b;
+}
+function ensureClose(p){
+  if(!p)return;
+  const h=p.querySelector(':scope > .r434Head');if(!h)return;
+  let x=$('r677DetailsClose');
+  if(!x){x=document.createElement('button');x.id='r677DetailsClose';x.type='button';x.setAttribute('aria-label','Detayları kapat');x.textContent='×';h.appendChild(x);
+    x.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{window.SukunDockDetails?.close?.()}catch(_){document.body.classList.remove('r434-inline-details-open')}},false);
+  }
+}
+function resetTop(){
+  const p=$('r434InlineDetails'),sc=$('r674DetailsScroll');
+  try{p&&(p.scrollTop=0)}catch(_){}
+  try{if(sc){sc.scrollTop=0;sc.scrollLeft=0;sc.scrollTo?.({top:0,left:0,behavior:'auto'})}}catch(_){}
+}
+function portal(){
+  const p=$('r434InlineDetails');if(!p)return false;
+  ensureBackdrop();ensureClose(p);
+  if(!home)home={parent:p.parentNode,next:p.nextSibling};
+  if(p.parentNode!==document.body){document.body.appendChild(p);portalCount++}
+  p.classList.add('r677-details-portal');
+  p.hidden=false;p.removeAttribute('hidden');
+  resetTop();requestAnimationFrame(()=>{resetTop();requestAnimationFrame(resetTop)});setTimeout(resetTop,80);
+  return true;
+}
+function restore(){
+  const p=$('r434InlineDetails');if(!p)return false;
+  p.classList.remove('r677-details-portal');
+  if(home?.parent&&p.parentNode===document.body){
+    try{home.parent.insertBefore(p,home.next&&home.next.parentNode===home.parent?home.next:null);returnCount++}catch(_){home.parent.appendChild(p);returnCount++}
+  }
+  return true;
+}
+function sync(reason='sync'){
+  const open=document.body.classList.contains('r434-inline-details-open');
+  if(open)portal();else restore();
+  return open;
+}
+/* Portal content'teki pointer zinciri #r170Now'a artık ulaşmaz. Drag sonrası
+   yanlış click oluşmasını da küçük hareket eşiğiyle bastır. */
+function installIntentGuard(){
+  const p=$('r434InlineDetails');if(!p||p.dataset.r677Intent)return;
+  p.dataset.r677Intent='1';let st=null;
+  p.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;st={id:e.pointerId,x:e.clientX,y:e.clientY,m:false};},{capture:true,passive:true});
+  p.addEventListener('pointermove',e=>{if(!st||st.id!==e.pointerId)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;if(Math.hypot(dx,dy)>8)st.m=true;},{capture:true,passive:true});
+  p.addEventListener('click',e=>{if(st?.m){e.preventDefault();e.stopImmediatePropagation();dragCancels++}st=null;},{capture:true});
+  p.addEventListener('pointercancel',()=>{st=null},{capture:true,passive:true});
+}
+function boot(){ensureBackdrop();installIntentGuard();sync('boot')}
+/* body class tek canonical open/close sinyali. Sadece class attribute izlenir. */
+const mo=new MutationObserver(()=>sync('class-change'));
+if(document.body)mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+document.addEventListener('click',e=>{if(e.target.closest?.('#r588Details,#r433DetailBtn'))setTimeout(()=>{installIntentGuard();sync('details-click')},0)},{capture:true,passive:true});
+['sukun:playbackchange','sukun:currentflowchange','pageshow'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(()=>sync(ev),20),{passive:true}));
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,40),{once:true});else setTimeout(boot,40);
+window.SukunR677DetailsPortal=Object.freeze({version:'r677',refresh:sync,resetTop,snapshot:()=>{const p=$('r434InlineDetails'),sc=$('r674DetailsScroll');return{open:document.body.classList.contains('r434-inline-details-open'),portal:p?.parentNode===document.body,portalCount,returnCount,dragCancels,clientH:sc?.clientHeight||0,scrollH:sc?.scrollHeight||0,scrollTop:sc?.scrollTop||0}}});
 })();
 </script>
 
