@@ -1,8 +1,8 @@
-/* SÜKÛN r678 — Tefekkür Identity / Numeric Stability */
+/* SÜKÛN r679 — Max Full View / Zikir Settings / Transport */
 'use strict';
 
-const SURUM = 'r678';
-const CACHE = 'sukun-r678-20260905a';
+const SURUM = 'r679';
+const CACHE = 'sukun-r679-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r678__.json';
+const BUILD_MARKER='./__sukun_build_r679__.json';
 
 const NOTLAR = [
+  "r679 · Max tam çalışma görünümü: iç scroll kaldırıldı, drag tutamağı geri geldi; Durdur fallback düzeltildi; Zikir Ayarları katlanır oldu ve kayıt yönetimi yedekleme merkezine taşındı.",
   "r678 · Tefekkür kimlik stabilitesi: rakamlar focus-calm ile kaybolmaz; üst Arapça satır küçüldü; animasyon metinsiz aura oldu; Berhetiyye TTS nida biçiminde Yâ ile okunur.",
   "r677 · Detaylar body-level portal: dock gesture zincirinden tamamen ayrıldı; tek scroll sahibi detay gövdesi, açılış scrollTop=0 ve dış dokunuşla kapatma eklendi.",
   "r676 DETAILS SHRINK-WRAP: Detaylar kısa içerikte içerik kadar büyür; açılış scrollTop=0 ve yalnız uzun içerikte iç scroll vardır.",
