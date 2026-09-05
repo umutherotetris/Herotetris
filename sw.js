@@ -1,8 +1,8 @@
-/* SÜKÛN r677 — Details Portal / Single Touch Owner */
+/* SÜKÛN r678 — Tefekkür Identity / Numeric Stability */
 'use strict';
 
-const SURUM = 'r677';
-const CACHE = 'sukun-r677-20260905a';
+const SURUM = 'r678';
+const CACHE = 'sukun-r678-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r677__.json';
+const BUILD_MARKER='./__sukun_build_r678__.json';
 
 const NOTLAR = [
+  "r678 · Tefekkür kimlik stabilitesi: rakamlar focus-calm ile kaybolmaz; üst Arapça satır küçüldü; animasyon metinsiz aura oldu; Berhetiyye TTS nida biçiminde Yâ ile okunur.",
   "r677 · Detaylar body-level portal: dock gesture zincirinden tamamen ayrıldı; tek scroll sahibi detay gövdesi, açılış scrollTop=0 ve dış dokunuşla kapatma eklendi.",
   "r676 DETAILS SHRINK-WRAP: Detaylar kısa içerikte içerik kadar büyür; açılış scrollTop=0 ve yalnız uzun içerikte iç scroll vardır.",
   "r675 INTERACTION AUTHORITY: focus-calm input kilidi kaldırıldı; player/detay scroll yüzeyleri legacy dock swipe'ından ayrıldı ve ilk tap doğrudan çalışır.",
