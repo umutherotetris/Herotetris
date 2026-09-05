@@ -1,5 +1,14 @@
 [
   {
+    "v": "r684",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Kaydırma handoff: dock contain kaldırıldı; iç yüzey kaymıyorsa hareket sayfaya geçer.",
+      "Buton/kart/yazı üstünden başlayan dikey swipe kaydırmayı başlatabilir.",
+      "Detaylar modal scroll izolasyonu, r681 Max ve r682 transport korunur."
+    ]
+  },
+  {
     "v": "r683",
     "t": "5 Eylül 2026",
     "b": [
