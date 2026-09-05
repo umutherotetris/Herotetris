@@ -1,5 +1,18 @@
 [
   {
+    "v": "r689",
+    "t": "5 Eylül 2026",
+    "b": [
+      "Kilit ekranından dönüşteki 20–30+ saniyelik bekleme fiziksel logdan izole edildi: hidden native kayıt görünürde hâlâ playing sayılıp r651 graceful-drain yolunda stale currentTime/ended olayını bekliyordu.",
+      "Lock Journey V2 görünür hand-off değiştirildi: hidden lease çevrimleri önce settle edilir; kelime bitimine 850 ms'den fazla varsa stale native Promise anında kapatılır ve görünür journey aynı konumdan temiz retry ile devam eder.",
+      "Kelime bitimine 850 ms veya daha az kaldıysa telaffuzu kesmemek için en fazla 950 ms doğal drain tanınır; böylece 26 saniyelik resolver watchdog artık normal kilit dönüş yolu değildir.",
+      "Unlock Fast Resume katmanı eklendi: görünür dönüşte ilk iki compositor karesi hafif modda çizilir, ağır dekoratif animasyon/geçişler kısa süreli durdurulur; içerik ve kontroller gizlenmez.",
+      "Suspended WebAudio context için 900 ms best-effort resume kick eklendi; UI hiçbir AudioContext Promise'ini beklemez. Ek 1100 ms safety handoff eski event sırası kalıntılarına karşı üst sınırdır.",
+      "Diagnostics'e resumeFastPath eklendi: hidden süresi, resume sayısı, ilk-paint süresi, context timeout ve safety handoff sayıları sonraki raporda görülebilir.",
+      "r688 Tap Delivery, r687 gesture-safe layout, r682 28/99 transport ve r681 Max geometri korunur; HTML/SW/manifest/marker r689 senkronlandı."
+    ]
+  },
+  {
     "v": "r688",
     "t": "5 Eylül 2026",
     "b": [

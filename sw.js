@@ -1,8 +1,8 @@
-/* SÜKÛN r688 — Tap Delivery Authority + Interaction Recovery */
+/* SÜKÛN r689 — Instant Unlock Resume + Native Handoff */
 'use strict';
 
-const SURUM = 'r688';
-const CACHE = 'sukun-r688-20260905a';
+const SURUM = 'r689';
+const CACHE = 'sukun-r689-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r688__.json';
+const BUILD_MARKER='./__sukun_build_r689__.json';
 
 const NOTLAR = [
+  'r689 · Instant Unlock Resume: kilit dönüşünde stale native journey drain kaldırıldı; 850/950 ms bounded handoff, hafif ilk-paint ve 900 ms context kick ile görünür dönüş hızlandırıldı.',
   'r688 · Tap Delivery Authority: Android kısa tap native click üretmezse güvenli tek fallback click ile kurtarılır; gerçek pan/drag korunur, geç native kopya bastırılır ve tap telemetrisi eklenir.',
   'r687 · State-Machine Cleanup + Gesture-Safe Layout: idle cleanup stop artık sahte STOPPING üretmez; visualViewport scroll ölçüm fırtınası kaldırıldı, resize/RO debounce ve gesture-safe geometri birleştirmesi eklendi.',
   'r686 · Native Interaction Authority + Integrity Sweep: manuel document touchmove/preventDefault emekli; native pan-y tek scroll otoritesi, legacy pointer guard/handle hit-test kaldırıldı, HTML kapanış ve SW build client zinciri düzeltildi.',
