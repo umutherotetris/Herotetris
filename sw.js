@@ -1,8 +1,8 @@
 /* SÜKÛN r662 — Coupled Zikir–Dock Fit / True Mode Profiles */
 'use strict';
 
-const SURUM = 'r663';
-const CACHE = 'sukun-r663-20260904a';
+const SURUM = 'r664';
+const CACHE = 'sukun-r664-20260904a';
 
 const CORE = [
   './nero.html',
@@ -17,6 +17,7 @@ const OPTIONAL = [
 const BUILD_MARKER='./__sukun_build_r662__.json';
 
 const NOTLAR = [
+  'r664 Akış barının süs satırları inceltildi: süs 50pxden 43e, Mini bar 180den 174e indi. Kazanılan yer sayaç kartına gidiyor.',
   'r663 KRİTİK: Sistem Durumu ekranı tanımsız bir değişken yüzünden hiç açılmıyordu; düzeltildi.',
   "r662 · Coupled Zikir–Dock Fit: Mini/Midi/Max gerçek içerik ihtiyacından ölçülür; fazla boşluk tam doldurulur, dar bütçede mevcut LayoutEngine zikir halkasını dock rezervine göre birlikte küçültür. Mod geçişinde player scrollTop sıfırlanır; drawer scroll ve r658/r653/r651 ses-kilit sözleşmeleri korunur.",
   "r661 · Context-Aware Dock Profiles: Mini/Midi/Max artık kalan boşluğa çökmez; intrinsic profil yüksekliği + kontrollü overlay, gerçek ince peek ve drawer çalışma yüzeyi kullanır; ses/kilit motoru değişmedi.",
