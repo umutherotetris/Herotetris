@@ -1,5 +1,16 @@
 [
   {
+    "v": "r681",
+    "t": "5 Eylül 2026",
+    "b": [
+      "28/99 Seyir dock Pause atomik hale getirildi: seyir aktifken okuyucu/mix sınıflandırmasına bakılmadan fiziksel mix ve auto-zikir ritmi önce donar, ardından journey state pause olur; foreground kuyruğuna düşmez.",
+      "Pause sonrası resume auto-zikir wasAuto latch'ini taşımaz; yalnız seyir kendi foreground sahipliğini geri alır.",
+      "Dock Stop tek basışta journey.stop ve hardStopAll sırasını tamamlar; zikir sesi kapanıp ritmin ikinci Stop'a kalması giderildi.",
+      "Max panel r680'in yüzde 74 viewport tabanından çıkarıldı; görünür içerik yüksekliğine shrink-wrap olur, görünmez boş host drag sınırını kilitlemez.",
+      "r680 Max scroll isolation, r679 Zikir Ayarları, r678 görünürlük ve r677 Detaylar portalı korunur."
+    ]
+  },
+  {
     "v": "r680",
     "t": "5 Eylül 2026",
     "b": [

@@ -1,8 +1,8 @@
-/* SÜKÛN r680 — Max Viewport Authority / Scroll Isolation */
+/* SÜKÛN r681 — Journey Transport Atomicity + Max Drag Fit */
 'use strict';
 
-const SURUM = 'r680';
-const CACHE = 'sukun-r680-20260905a';
+const SURUM = 'r681';
+const CACHE = 'sukun-r681-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r680__.json';
+const BUILD_MARKER='./__sukun_build_r681__.json';
 
 const NOTLAR = [
-  "r680 · Max gerçek viewport height otoritesi: eski fit yüksekliği Max’i küçültemez; Max scrollsuz tam yüzeydir ve doküman scroll izolasyonu CSS katman bindirmesini önler.",
+  "r681 · 28/99 Seyir Pause/Stop atomik transport: Pause foreground kuyruğuna düşmez; Stop ilk basışta zikir + ritim katmanlarını kapatır. Max görünür içerik yüksekliğine shrink-wrap edilerek aşağı drag kilidi kaldırıldı.",
   "r679 · Max tam çalışma görünümü: iç scroll kaldırıldı, drag tutamağı geri geldi; Durdur fallback düzeltildi; Zikir Ayarları katlanır oldu ve kayıt yönetimi yedekleme merkezine taşındı.",
   "r678 · Tefekkür kimlik stabilitesi: rakamlar focus-calm ile kaybolmaz; üst Arapça satır küçüldü; animasyon metinsiz aura oldu; Berhetiyye TTS nida biçiminde Yâ ile okunur.",
   "r677 · Detaylar body-level portal: dock gesture zincirinden tamamen ayrıldı; tek scroll sahibi detay gövdesi, açılış scrollTop=0 ve dış dokunuşla kapatma eklendi.",
