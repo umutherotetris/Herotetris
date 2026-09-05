@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r674 — Details Scroll Authority
+     SÜKÛN r675 — Interaction Authority
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r674">
+<meta name="sukun-build" content="r675">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r674">
+<link rel="manifest" href="./manifest.webmanifest?v=r675">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6490,7 +6490,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.12 — build 2026-09-05-r674</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.12 — build 2026-09-05-r675</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -23202,7 +23202,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r674',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r675',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58859,7 +58859,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r674';
+const BUILD='r675';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59143,7 +59143,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r674__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r675__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61869,6 +61869,114 @@ document.addEventListener('input',e=>{if(e.target.closest?.('#r434InlineDetails'
 window.addEventListener('resize',()=>requestAnimationFrame(()=>fit('window-resize')),{passive:true});
 setTimeout(mount,120);setTimeout(()=>fit('settled'),700);
 window.SukunR674Details=Object.freeze({version:'r674',refresh:fit,snapshot:()=>{const p=$('r434InlineDetails'),s=$('r674DetailsScroll');return{open:document.body.classList.contains('r434-inline-details-open'),panelH:Math.round(p?.getBoundingClientRect?.().height||0),clientH:s?.clientHeight||0,scrollH:s?.scrollHeight||0,scrollTop:s?.scrollTop||0,scrollable:!!s&&s.scrollHeight>s.clientHeight+2}}});
+})();
+</script>
+
+
+<style id="r675-interaction-authority-style">
+/* ═══ r675 — INTERACTION AUTHORITY / TAP + SCROLL ═══════════════════
+   Eski focus-calm ve dock swipe katmanları ilk dokunuşu sadece "uyandırma"
+   olarak tüketebiliyor; bazı kart yüzeylerinden başlayan dikey pan da parent
+   dock swipe'ına gidiyordu. Görsel sakinlik korunur, input kilidi kaldırılır. */
+
+/* Focus-calm artık görsel durumdur; kontrolleri KİLİTLEMEZ. */
+body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout>.tfControlPanel{
+  pointer-events:auto!important;
+  opacity:.78!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout>.tfControlPanel :is(button,input,[role="button"]){
+  pointer-events:auto!important;
+}
+body.sukun-tefekkur-mode.r447-focus-calm #tfRefinedLayout .zCounterSide{pointer-events:auto!important}
+
+/* Ana zikir ve player yüzeylerinde dokunma zinciri açık. */
+body.sukun-tefekkur-mode #tfRefinedLayout,
+body.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel,
+body:not(.r434-inline-details-open) #r588DockShell,
+#r659DockBody,
+#r674DetailsScroll,
+#calanSayfa:not([hidden]){
+  pointer-events:auto!important;
+}
+
+/* Dikey kaydırma bütün içerik yüzeyinden başlayabilir. */
+#r659DockBody,
+#r674DetailsScroll,
+#calanSayfa:not([hidden]){
+  touch-action:pan-y pinch-zoom!important;
+  overscroll-behavior-y:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+/* Tap hedefleri: tıklama + doğal pan. */
+body.sukun-tefekkur-mode #tfRefinedLayout :is(button,[role="button"],a),
+#r659DockBody :is(button,[role="button"],a,.r588Stat,.r588Meta span,.r588Layer),
+#r674DetailsScroll :is(button,[role="button"],a,.r434Layer,.r434LayerHead,.r434LayerBody,.r434CtlRow,.r434ToolLine),
+#calanSayfa :is(button,[role="button"],a,#csListe,#csListe *){
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+
+/* Slider yatay ayarı korurken dikey jesti scroll konteynerine bırakır. */
+#r659DockBody input[type="range"],
+#r674DetailsScroll input[type="range"],
+#calanSayfa input[type="range"]{
+  pointer-events:auto!important;
+  touch-action:pan-y!important;
+}
+
+/* Gerçek drag handle'lar özel kalır. */
+#r633DockGrip,#r447DockHandle,.r252Handle{touch-action:none!important}
+
+/* Stale calm/legacy katmanı kontrol adasını tekrar pasifleştiremez. */
+body.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions,
+body.sukun-tefekkur-mode #tfRefinedLayout .r494Nav,
+body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow{
+  pointer-events:auto!important;
+}
+</style>
+<script id="r675-interaction-authority-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R675_INTERACTION__)return;
+window.__SUKUN_R675_INTERACTION__=1;
+const $=id=>document.getElementById(id);
+let binds=0;
+
+/* r447'in bütün dock yüzeyine bağlı eski swipe listener'ı, r588 scroll-body
+   içinde artık owner değildir. Event child'a ulaşır; bubble parent dock'a
+   çıkmadan burada kesilir. Click eventine dokunmuyoruz. */
+function guardScrollSurface(el){
+  if(!el||el.dataset.r675GestureGuard)return false;
+  el.dataset.r675GestureGuard='1';
+  ['pointerdown','pointerup','pointercancel'].forEach(type=>{
+    el.addEventListener(type,e=>{
+      /* gerçek drag handle başka owner'a aittir */
+      if(e.target.closest?.('#r633DockGrip,#r447DockHandle,.r252Handle'))return;
+      e.stopPropagation();
+    },{passive:true});
+  });
+  binds++;
+  return true;
+}
+function normalize(reason='sync'){
+  guardScrollSurface($('r659DockBody'));
+  guardScrollSurface($('r674DetailsScroll'));
+  guardScrollSurface($('calanSayfa'));
+  /* focus-calm input kilidi runtime style ile de sökülür; ilk tap doğrudan işler. */
+  const cp=document.querySelector('#tfRefinedLayout>.tfControlPanel');
+  if(cp){cp.style.setProperty('pointer-events','auto','important')}
+  return true;
+}
+['sukun:playbackchange','sukun:currentflowchange','sukun:currentzikirchange','sukun:tabchange','pageshow']
+  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>normalize(ev)),{passive:true}));
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#r588Details,[data-r588-mode],#r433DockPeek,#tefExitBtn,#autoBtn,#undoBtn,#plusBtn'))
+    setTimeout(()=>normalize('click'),30);
+},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>normalize('visible'),40)},{passive:true});
+setTimeout(()=>normalize('boot'),80);setTimeout(()=>normalize('settled'),500);
+window.SukunR675Interaction=Object.freeze({version:'r675',refresh:normalize,snapshot:()=>({binds,calm:document.body.classList.contains('r447-focus-calm'),dock:!!$('r659DockBody')?.dataset.r675GestureGuard,details:!!$('r674DetailsScroll')?.dataset.r675GestureGuard})});
 })();
 </script>
 

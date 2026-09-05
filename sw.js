@@ -1,8 +1,8 @@
-/* SÜKÛN r674 — Details Scroll Authority */
+/* SÜKÛN r675 — Interaction Authority */
 'use strict';
 
-const SURUM = 'r674';
-const CACHE = 'sukun-r674-20260905a';
+const SURUM = 'r675';
+const CACHE = 'sukun-r675-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r674__.json';
+const BUILD_MARKER='./__sukun_build_r675__.json';
 
 const NOTLAR = [
-  'r674 DETAY SCROLL: Max > Detaylar tek scroll owner kullanır; header sabit, içerik gövdesi tüm yüzeyden pan-y ile kayar ve dev boş sheet oluşmaz.',
+  "r675 INTERACTION AUTHORITY: focus-calm input kilidi kaldırıldı; player/detay scroll yüzeyleri legacy dock swipe'ından ayrıldı ve ilk tap doğrudan çalışır.",
   'r673 TEFEKKÜR FIT: Hedef/Kalan/meta/çıkış kompakt; Midi/Max sabit footer + tam yüzey scroll; Max/Detay zikir kartını ezmez.',
   'r673 TOUCH SCROLL: player ve detay kart/butonlarının üstünden başlayan dikey sürükleme pan-y olarak kaydırır; range/drag kontrolleri hariç.',
   'r673 ZİKİR TRANSPORT: akış barı Play, Tefekkür/Zikir bağlamında doğrudan auto-zikir motoruna yönlenir; Hazır kalıp ilk dokunuşu yutma için tek doğrulamalı retry vardır.',
