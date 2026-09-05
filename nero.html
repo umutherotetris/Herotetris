@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r675 — Interaction Authority
+     SÜKÛN r676 — Details Shrink-Wrap Authority
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r675">
+<meta name="sukun-build" content="r676">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r675">
+<link rel="manifest" href="./manifest.webmanifest?v=r676">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23202,7 +23202,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r675',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r676',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -58859,7 +58859,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD='r675';
+const BUILD='r676';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -59143,7 +59143,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r675__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r676__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -61977,6 +61977,95 @@ document.addEventListener('click',e=>{
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>normalize('visible'),40)},{passive:true});
 setTimeout(()=>normalize('boot'),80);setTimeout(()=>normalize('settled'),500);
 window.SukunR675Interaction=Object.freeze({version:'r675',refresh:normalize,snapshot:()=>({binds,calm:document.body.classList.contains('r447-focus-calm'),dock:!!$('r659DockBody')?.dataset.r675GestureGuard,details:!!$('r674DetailsScroll')?.dataset.r675GestureGuard})});
+})();
+</script>
+
+
+<style id="r676-details-shrinkwrap-style">
+/* ═══ r676 — DETAILS SHRINK-WRAP / OPEN-AT-TOP AUTHORITY ════════════
+   Detay sheet kısa içerikte max yüksekliğe zorlanmaz. Başlık sabit,
+   içerik doğal boyunda; yalnız viewport tavanını aşarsa scroll olur. */
+body.r434-inline-details-open #r170Now.r588-authority>#r434InlineDetails{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:min(58dvh,520px)!important;
+  overflow:hidden!important;
+}
+body.r434-inline-details-open #r434InlineDetails>.r434Head{
+  flex:0 0 auto!important;
+}
+body.r434-inline-details-open #r674DetailsScroll{
+  flex:0 1 auto!important;
+  align-self:stretch!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:calc(min(58dvh,520px) - 58px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#r674DetailsScroll>.r434Master,
+#r674DetailsScroll>#r434LayerList,
+#r674DetailsScroll>#r434Tools{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  transform:none!important;
+}
+/* Önceki scroll restore/anchor davranışı sheet'i alttan açamaz. */
+body.r434-inline-details-open #r434InlineDetails,
+body.r434-inline-details-open #r674DetailsScroll{
+  scroll-behavior:auto!important;
+  overflow-anchor:none!important;
+}
+@media(max-width:390px){
+  body.r434-inline-details-open #r170Now.r588-authority>#r434InlineDetails{max-height:min(60dvh,500px)!important}
+  body.r434-inline-details-open #r674DetailsScroll{max-height:calc(min(60dvh,500px) - 56px)!important}
+}
+</style>
+<script id="r676-details-open-top-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R676_DETAILS_TOP__)return;
+window.__SUKUN_R676_DETAILS_TOP__=1;
+const $=id=>document.getElementById(id);
+let resets=0;
+function resetTop(reason='open'){
+  const p=$('r434InlineDetails'),sc=$('r674DetailsScroll');
+  if(!p||!sc||!document.body.classList.contains('r434-inline-details-open'))return false;
+  try{p.scrollTop=0}catch(_){ }
+  try{sc.scrollTop=0;sc.scrollLeft=0;sc.scrollTo?.({top:0,left:0,behavior:'auto'})}catch(_){ }
+  try{window.SukunR674Details?.refresh?.('r676-'+reason)}catch(_){ }
+  resets++;
+  return true;
+}
+function afterOpen(reason){
+  requestAnimationFrame(()=>{
+    resetTop(reason+'-raf1');
+    requestAnimationFrame(()=>resetTop(reason+'-raf2'));
+  });
+  setTimeout(()=>resetTop(reason+'-80'),80);
+  setTimeout(()=>resetTop(reason+'-180'),180);
+}
+/* Hem r588 düğmesi hem onun çağırdığı legacy r433 click yolu kapsanır. */
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#r588Details,#r433DetailBtn'))afterOpen('details-click');
+},true);
+/* Sheet içindeki normal tıklamalar scroll pozisyonunu değiştirmez. */
+window.addEventListener('pageshow',()=>{
+  if(document.body.classList.contains('r434-inline-details-open'))afterOpen('pageshow');
+},{passive:true});
+setTimeout(()=>{if(document.body.classList.contains('r434-inline-details-open'))afterOpen('boot')},120);
+window.SukunR676Details=Object.freeze({version:'r676',resetTop,snapshot:()=>{const p=$('r434InlineDetails'),s=$('r674DetailsScroll');return{open:document.body.classList.contains('r434-inline-details-open'),resets,panelH:Math.round(p?.getBoundingClientRect?.().height||0),clientH:s?.clientHeight||0,scrollH:s?.scrollHeight||0,scrollTop:s?.scrollTop||0}}});
 })();
 </script>
 

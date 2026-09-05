@@ -1,8 +1,8 @@
-/* SÜKÛN r675 — Interaction Authority */
+/* SÜKÛN r676 — Details Shrink-Wrap Authority */
 'use strict';
 
-const SURUM = 'r675';
-const CACHE = 'sukun-r675-20260905a';
+const SURUM = 'r676';
+const CACHE = 'sukun-r676-20260905a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r675__.json';
+const BUILD_MARKER='./__sukun_build_r676__.json';
 
 const NOTLAR = [
+  "r676 DETAILS SHRINK-WRAP: Detaylar kısa içerikte içerik kadar büyür; açılış scrollTop=0 ve yalnız uzun içerikte iç scroll vardır.",
   "r675 INTERACTION AUTHORITY: focus-calm input kilidi kaldırıldı; player/detay scroll yüzeyleri legacy dock swipe'ından ayrıldı ve ilk tap doğrudan çalışır.",
   'r673 TEFEKKÜR FIT: Hedef/Kalan/meta/çıkış kompakt; Midi/Max sabit footer + tam yüzey scroll; Max/Detay zikir kartını ezmez.',
   'r673 TOUCH SCROLL: player ve detay kart/butonlarının üstünden başlayan dikey sürükleme pan-y olarak kaydırır; range/drag kontrolleri hariç.',
