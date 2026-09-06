@@ -1,8 +1,8 @@
-/* SÜKÛN r695 — Counter Ledger & Undo Integrity */
+/* SÜKÛN r697 — Approved Neon UI Integration */
 'use strict';
 
-const SURUM = 'r695';
-const CACHE = 'sukun-r695-20260906a';
+const SURUM = 'r697';
+const CACHE = 'sukun-r697-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r695__.json';
+const BUILD_MARKER='./__sukun_build_r697__.json';
 
 const NOTLAR = [
+  'r697 · Approved Neon UI: çıkış tek durum satırında, kaynak Detaylar yanında sabit ölçülü, açık sürükleme tutamacı, renkli transport/mod çerçeveleri ve kompakt sayaç kontrolleri. Ses/sayaç motoru korunur.',
+  'r696 · Phone Call Interruption & Atomic Voice Recovery: call/audio-focus dönüşünde 28/99 Seyir stop/resume atomik; stale recording/TTS Promise temizlenir; RECPLAYING fiziksel kaynaktan doğrulanır; hidden resume çekişmesi ve orphan interaction overlayleri giderildi.',
   'r695 · Counter Ledger & Undo Integrity: blocked/failed tekrar istatistiğe yazılmaz; voice rollback kullanım sayaçlarını da geri alır; sınır tekrarı doğru Esmâya bağlanır; auto-advance Undo kaynak Esmâya döner; hidden vird ve lifecycle rescue kimliği tekilleştirildi.',
   'r694 · Canonical Runtime Cleanup: direct auto-zikir/journey kimliği ayrıldı; hidden Ebced kullanım istatistikleri tamamlandı; lifecycle recovery coalesce edildi; TTS ghost-state, release-note listener ve spectrum layout churn temizlendi.',
   'r693 · Full Integrity Sweep: lock target armed-ledger; silent keepalive playback truth dışı; Hub/Life ghost-playing uzlaştırması; live-only recording busy/panner RAF; bulk unlock catch-up.',

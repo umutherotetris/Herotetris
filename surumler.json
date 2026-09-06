@@ -1,5 +1,32 @@
 [
   {
+    "v": "r697",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Onaylanan neon Tefekkür düzeni gerçek DOM’a entegre edildi: Tefekkürden Çık, Hedef/Devir ve Ses rozetiyle aynı durum satırında; ayrı çıkış grid satırı kaldırıldı.",
+      "Saymaya Başla, −1/+1 ve Önceki/Baştan/Sonraki kontrolleri orantılı küçültüldü; küçük ekranlarda çıkış kısa Çık etiketiyle erişilebilir kalır.",
+      "Max’te kendi kayıt/TTS bilgisi sabit ölçülü rozet olarak Detaylar yanına taşındı. Eski değişken yükseklikli kaynak/katman görseli emekli edildi; veri yayınları korunuyor.",
+      "Akış barının tek gerçek r633 tutamacı Tut ve sürükle etiketi ve görünür neon çizgiyle belirginleştirildi; sürükleme yüzeyi 32 px, klavye okları destekli.",
+      "Mini/Midi/Max modları ve Play/Stop farklı renkli ince neon çerçevelere kavuştu. Mini dış çerçevesi yeşil; eski transport ID/handler ve Max viewport geometrisi korunuyor.",
+      "Ses kaynağı değişimi yalnız sabit satırın metnini günceller; ek audio context, observer, sayaç veya playback handler oluşturulmadı. r696 telefon kesintisi ve r695 sayaç ledger zinciri aynen korundu."
+    ]
+  },
+  {
+    "v": "r696",
+    "t": "6 Eylül 2026",
+    "b": [
+      "Telefon araması/alarm gibi OS audio-focus kesintilerinde hidden sekmede AudioContext.resume() döngüsü artık işletim sistemiyle çekişmez; recovery yalnız görünür dönüşte tek akıştan yapılır.",
+      "28 İsim ve 99 Esmâ Seyri Stop/Pause atomikleştirildi: aktif native lease settle edilir, attemptSeq/token geçersizlenir, foreground bırakılır ve kayıt/TTS kaynağı aynı işlemde kesilir. Eski async callback seyri yeniden diriltemez.",
+      "Berhetiyye/99 Seyir stopAll artık kendi-kayıt okuması sırasında gerçek kesin Stop'u yutmaz; telefon dönüşünden sonra Stop'un state ile fiziksel sesi ayırması engellendi.",
+      "Doğrudan otomatik zikirde RECPLAYING cache'i ses otoritesi olmaktan çıkarıldı. Yalnız gerçekten playing media kaynakları busy sayılır; stale bayrak yeni Saymaya Başla işleminde sadece ritim kalmasına yol açamaz.",
+      "Zikir voice transaction için abort + watchdog eklendi. Stop/hard-stop çözümsüz recording/TTS Promise'ini, pending transitionı ve voice-busy latch'ini temizler; sonraki Start temiz kaynaktan başlar.",
+      "Telefon aramasının beklenmedik HTMLMedia pause'u uygulama Pause'undan ayrılır. Aynı kelimenin Promise'i kesinti olarak işaretlenir ve görünür dönüşte kontrollü şekilde devam ettirilir.",
+      "Call-return failsafe eklendi: aktif 28/99 Seyir görünür dönüşten sonra canlı state taşıdığı halde 1.25 sn içinde fiziksel sözlü ses yoksa aynı tekrar sayaç artırmadan system pause→resume ile yeniden kurulur.",
+      "Görünür dönüşte orphan Detaylar backdrop'u, sahipsiz foreground çatışma perdesi ve görünmez açılış pointer katmanı güvenli koşullarda temizlenir; tüm ekranın tıklanamaz kalmasına karşı interaction repair eklendi.",
+      "r695 sayaç/Undo ledger, r693 lock-target exactly-once, r690 native touch, r688 Tap Delivery, r682 journey transport ve r681 Max geometrisi korunur."
+    ]
+  },
+  {
     "v": "r695",
     "t": "6 Eylül 2026",
     "b": [
