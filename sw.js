@@ -1,8 +1,8 @@
-/* SÜKÛN r690 — Integrity Sweep + Hidden Churn Cleanup */
+/* SÜKÛN r691 — Handoff Semantics + Diagnostic Integrity */
 'use strict';
 
-const SURUM = 'r690';
-const CACHE = 'sukun-r690-20260905a';
+const SURUM = 'r691';
+const CACHE = 'sukun-r691-20260906a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r690__.json';
+const BUILD_MARKER='./__sukun_build_r691__.json';
 
 const NOTLAR = [
+  'r691 · Handoff Semantics + Diagnostic Integrity: paused journey canonical state düzeltildi; visible-fast-handoff benign retry oldu; diagnostics flag/event storage ayrıldı; system resume kullanıcı niyeti yazmaz; hidden hydration görünürde tek RAF ile flush olur.',
   'r690 · Integrity Sweep: touch cascade specificity düzeltildi; hidden mutation 0ms timer fırtınası coalesce edildi; dock renderları hidden-deferred tek RAF oldu; visible-sync user-play sahteliği kaldırıldı; mikro SFX ana AudioContexti paylaşır; yedek build etiketi dinamik.',
   'r689 · Instant Unlock Resume: kilit dönüşünde stale native journey drain kaldırıldı; 850/950 ms bounded handoff, hafif ilk-paint ve 900 ms context kick ile görünür dönüş hızlandırıldı.',
   'r688 · Tap Delivery Authority: Android kısa tap native click üretmezse güvenli tek fallback click ile kurtarılır; gerçek pan/drag korunur, geç native kopya bastırılır ve tap telemetrisi eklenir.',

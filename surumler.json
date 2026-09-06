@@ -1,5 +1,19 @@
 [
   {
+    "v": "r691",
+    "t": "6 Eylül 2026",
+    "b": [
+      "r690 fiziksel tanısındaki foreground-stale-28 kökü düzeltildi: pause sözleşmesinde run=false + paused=true artık canonical paused journey olarak tanınır; duraklatılmış seyir yanlış stale-owner uyarısı üretmez.",
+      "Kilit dönüşündeki visible-fast-handoff / visible-drain-deadline artık ses arızası değildir; 28/99 seyir bunu benign source handoff sayar, aynı tekrarı sayaç ilerletmeden yeniden bağlar ve foreground owner'ı audio-failed diye bırakmaz.",
+      "Diagnostics localStorage çakışması giderildi: timer-takip bayrağı sukun.diag ile olay deposu artık aynı anahtarı kullanmaz; olaylar sukun.diag.events altında ayrı tutulur.",
+      "Sistem Durumu'ndaki yanıltıcı HATA KAYDI 50 kaldırıldı. Tanı ekranı yalnız mevcut build/oturum olaylarını gösterir ve gerçek hata sayısını olay sayısından ayırır; eski long-task geçmişi yeni oturumu hata gibi doldurmaz.",
+      "SystemHold/otomatik journey resume artık markUserPlay üretmez; yalnız gerçek kullanıcı Resume/Play eylemi userPaused niyetini değiştirir.",
+      "Merkezî DOM Hydration Bus hidden durumda RAF/DOM hydrate çalıştırmaz; ilgili kökleri biriktirip görünür dönüşte tek RAF ile işler. r690 notundaki hidden-coalescing davranışı bu sürümde gerçek kod otoritesine taşındı.",
+      "r504 merkezî MutationObserver broker hidden durumda 120 ms yerine 1 sn pacing kullanır; r690 fiziksel raporundaki yaklaşık 20 bin timeout üretiminin ana kalan kaynağı azaltıldı.",
+      "r690 tek AudioContext, r688 Tap Delivery, r682 Pause/Stop ve r681 Max geometri korunur."
+    ]
+  },
+  {
     "v": "r690",
     "t": "5 Eylül 2026",
     "b": [
