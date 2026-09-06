@@ -1,8 +1,8 @@
-/* SÜKÛN r692 — Lock Target Boundary Authority */
+/* SÜKÛN r695 — Counter Ledger & Undo Integrity */
 'use strict';
 
-const SURUM = 'r692';
-const CACHE = 'sukun-r692-20260906a';
+const SURUM = 'r695';
+const CACHE = 'sukun-r695-20260906a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r692__.json';
+const BUILD_MARKER='./__sukun_build_r695__.json';
 
 const NOTLAR = [
+  'r695 · Counter Ledger & Undo Integrity: blocked/failed tekrar istatistiğe yazılmaz; voice rollback kullanım sayaçlarını da geri alır; sınır tekrarı doğru Esmâya bağlanır; auto-advance Undo kaynak Esmâya döner; hidden vird ve lifecycle rescue kimliği tekilleştirildi.',
+  'r694 · Canonical Runtime Cleanup: direct auto-zikir/journey kimliği ayrıldı; hidden Ebced kullanım istatistikleri tamamlandı; lifecycle recovery coalesce edildi; TTS ghost-state, release-note listener ve spectrum layout churn temizlendi.',
+  'r693 · Full Integrity Sweep: lock target armed-ledger; silent keepalive playback truth dışı; Hub/Life ghost-playing uzlaştırması; live-only recording busy/panner RAF; bulk unlock catch-up.',
   'r692 · Lock Target Boundary Authority: normal otomatik Esmâ zikirinde kilit hedefi gerçek native source ile eşleşerek yeniden arm edilir; unlock catch-up tek mevcut Esmâ sınırına kapatılır ve çoklu isim sıçraması engellenir.',
   'r691 · Handoff Semantics + Diagnostic Integrity: paused journey canonical state düzeltildi; visible-fast-handoff benign retry oldu; diagnostics flag/event storage ayrıldı; system resume kullanıcı niyeti yazmaz; hidden hydration görünürde tek RAF ile flush olur.',
   'r690 · Integrity Sweep: touch cascade specificity düzeltildi; hidden mutation 0ms timer fırtınası coalesce edildi; dock renderları hidden-deferred tek RAF oldu; visible-sync user-play sahteliği kaldırıldı; mikro SFX ana AudioContexti paylaşır; yedek build etiketi dinamik.',

@@ -1,5 +1,51 @@
 [
   {
+    "v": "r695",
+    "t": "6 Eylül 2026",
+    "b": [
+      "Sayaç muhasebesi tek delta-ledger altında birleştirildi: niyet/transport/voice kapısı tarafından reddedilen tekrar artık günlük zikir veya Esmâ kullanım sayacını artırmaz; bendir de gerçek sayaç ilerlemeden vurmaz.",
+      "Sesli otomatikte kayıt/TTS başarısız olup r640 sayaç rollback yaptığında günlük ve Esmâ kullanım istatistikleri de aynı miktarda geri alınır; hayalet istatistik kalmaz.",
+      "Hedefin son tekrarı auto-advance ile Z.idx değişse bile kullanım sayısı gerçekten zikredilen eski Esmâ'ya yazılır; sonraki Esmâ'nın istatistiğine yanlış +1 eklenmez.",
+      "Undo hedef sınırından hemen sonra kullanılırsa sonraki Esmâ'yı target−1 yapmak yerine transaction kaynak Esmâ'sına geri döner, son tekrarı geri alır ve günlük/Esmâ istatistiğini de eksiltir.",
+      "Hidden/kilit catch-up ve r693 lock-target boundary vird tamamlanmasını eski Esmâ kimliğiyle bildirir; geçişten sonra current Z.idx değiştiği için günlük virdin tamamlanmasının kaçması engellendi.",
+      "Yükseliş Virdi wrapperı reddedilen/ilerlemeyen rep'i adım tamamlanması saymaz; yalnız Z.total gerçekten arttığında sıra ilerler.",
+      "Android unlock'ta r550 transaction rescue visibility/pageshow/focus üç ayrı timer yerine tek debounce ile çalışır; terminal truth visible/pageshow uzlaştırması da tek dönüşte birleştirilir.",
+      "r693 lock exactly-once, r694 canonical runtime cleanup, r690 touch cascade, r688 Tap Delivery, r682 Pause/Stop ve r681 Max geometrisi korunur."
+    ]
+  },
+  {
+    "v": "r694",
+    "t": "6 Eylül 2026",
+    "b": [
+      "Section Identity düzeltildi: doğrudan/otomatik Esmâ ve Berhetiyye artık kategori adına bakılarak 99/28 Seyri diye yanlış kimliklenmez; gerçek journey state yoksa owner=mix ve başlık Zikir seansı kalır.",
+      "Persistent native recording kaynağının sahibi canlı journey state üzerinden belirlenir; direct auto-zikir MediaSession/Now Playing'i yanlış esma99/berhetiyye sağlayıcısına yönlendiremez. AudioHub başlığı da canonical isim değişiminde tazelenir; eski Nûr başlığı Vâris oynarken kalmaz.",
+      "Hidden Ebced hedef timerı ve görünür dönüş catch-up yolu aynı r694 kullanım-istatistik helperına bağlandı. Kilitte duyulan tekrarlar Z.count/Z.total yanında günlük zikir, Esmâ kullanım sayacı ve vird kontrolüne de eksiksiz yazılır.",
+      "AudioHub görünür dönüşte visibility/pageshow/focus/resume olaylarını tek 120 ms lifecycle darbesinde birleştirir; aynı dönüş için birden çok recovery isteği ve gereksiz state churn azaltıldı.",
+      "speechSynthesis.cancel() end/error üretmese bile TTS aktivitesi terminal truth ile hemen uzlaştırılır; 8 saniyelik heartbeat'e kadar hayalet TTS/playing başlığı kalmaz.",
+      "Sürüm notları penceresi yeniden açılırken eski instance kendi cleanup yolundan kapatılır; Escape listenerı sızmaz. Tüm sürüm geçmişi açıldığında gömülü son sürümler arşivden ikinci kez eklenmez.",
+      "Spectrum canvas RAF döngüsündeki aynı karede iki kez offsetWidth/offsetHeight okuyan fit() çağrısı tekilleştirildi; gereksiz layout flush kaldırıldı.",
+      "Diagnostics canonicalTefekkur ve tangible-audio hesapları gerçek runtime state'e bağlandı; shell build etiketi ve Regression Shield beklenen build değeri dinamik r694 meta ile senkronlandı.",
+      "r693 kilit hedef exactly-once, r690 touch cascade, r688 Tap Delivery, r682 Pause/Stop ve r681 Max geometrisi korunur."
+    ]
+  },
+  {
+    "v": "r693",
+    "t": "6 Eylül 2026",
+    "b": [
+      "r692 hedef zamanlayıcısındaki yeni bir mantık hatası kapatıldı: hidden sayaç tasarım gereği artmadığı için timer fire anında room>1 kontrolü her normal Ebced hedefini stale sanıp yeniden kuruyordu. r693 armed-ledger, source/key/target snapshotıyla sınırı exactly-once işler.",
+      "Kilit hedefinde fiziksel olarak duyulmuş tekrarlar count ve total içine toplu kredi edilir; son tekrar tek transaction çağrısıyla sonraki Esmâya geçirir. Yeni kaynak gerçekten playing olmadan eski cycle ile timer kurulmaz.",
+      "Sessiz r476 keepalive audio artık gerçek playback sayılmaz. Silent carrier açıkça işaretlenir; AudioHub media seti ve AudioTruth bu elementi playing/tangible olarak görmez.",
+      "AudioLife SES.ler Set boyutuna değil yalnız gerçekten çalan kayıtlara bakar. Havuzda paused/ended kayıt kalması sahte busy/playing ve gereksiz recovery üretmez.",
+      "AudioHub kendi playing stateini busy kanıtı olarak kullanıp sonsuza kadar kilitlenemez; fiziksel kaynaklar prune edilir, terminal durumda Hub/Life idle ile uzlaştırılır ve stale Nûr/TTS başlığı temizlenir.",
+      "8D kayıt panner RAF döngüsü ses kalmadığında veya ekran hidden olduğunda kendi kendini bitirir; paused havuz öğesi yüzünden 60fps arka plan döngüsü yaşayamaz.",
+      "Unlock silent catch-up Esmâ hedefi içinde yüzlerce rep çağrısı yerine aritmetik bulk + tek sınır transaction kullanır; sayaç doğruluğu korunurken ana-thread kilitlenmesi azaltılır.",
+      "Diagnostics’e SukunR693Integrity ve LockTargetAuthorityR693 eklendi; ghost audio, silent media, pan RAF ve armed target sonraki fiziksel raporda doğrudan izlenebilir.",
+      "Android kilit dönüşünde mevcut kendi kayıt ilk foreground play() çağrısında geçici play-rejected alırsa TTS'e hemen düşmek yerine AudioLife recovery sonrası tek kontrollü kayıt retry yapılır; ikinci hata olursa ancak o zaman TTS fallback açılır.",
+      "AudioHub media prune gerçek fakat DOM'a eklenmemiş new Audio() kayıtlarını artık yanlışlıkla stale saymaz; yalnız silent/paused/ended elementler temizlenir. Terminal truth eski okuyucu sağlayıcılarını da AudioLife.busy üzerinden tanır.",
+      "HTMLMedia play/pause/ended aktivitesi olay-tabanlı uzlaştırılır; son gerçek media bittiğinde Hub/Life kendi kendine idle'a iner, yeni bir kullanıcı eylemi veya watchdog beklenmez."
+    ]
+  },
+  {
     "v": "r692",
     "t": "6 Eylül 2026",
     "b": [
