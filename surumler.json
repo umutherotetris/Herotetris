@@ -1,5 +1,17 @@
 [
   {
+    "v": "r692",
+    "t": "6 Eylül 2026",
+    "b": [
+      "r691 fiziksel raporunda normal otomatik Esmâ zikirinin kilitte hedef/ebced sınırını doğru zamanda geçmesine rağmen sonraki hedef zamanlayıcısının bazı isimlerde yeniden kurulmadığı görüldü; kilit kaynağı bir isimde kalırken dönüşte geçmiş süre sonraki Esmâlara dağıtılıp birkaç isim birden atlanabiliyordu.",
+      "Yeni Lock Target Boundary Authority, hedef zamanlayıcısını yalnız gerçekten çalan native lock kaynağının anahtarı canonical Esmâ ile eşleştiğinde kurar; yeni kaynak 'playing' olduğunda epoch ve hedef yeniden kurulur.",
+      "Kilit hedefi dolunca ayrı foreground kayıt açmak yerine tamamlanan native loop tek sayaç çevrimi olarak exactly-once işlenir; transaction yeni Esmâya geçer ve r476Prepare yeni kaynağı lock audioya bağlar.",
+      "Kilit dönüşü catch-up artık en fazla gerçekten duyulan mevcut Esmâ'nın kalan hedefi kadar uygulanır. Eski kayıtta geçirilen fazla süre Bedî’, Bâkî, Vâris gibi sonraki isimlere yazılamaz; çoklu sıçrama engellendi.",
+      "Diagnostics'e SukunLockTargetAuthorityR692 telemetrisi eklendi: arm/fire/sourceEpoch/catchupCaps/discardedCycles ve audioKey/canonical key sonraki fiziksel testte doğrudan görülebilir.",
+      "r691 handoff/diagnostic integrity, r690 touch cascade, r688 Tap Delivery, r682 Pause/Stop ve r681 Max geometri korunur."
+    ]
+  },
+  {
     "v": "r691",
     "t": "6 Eylül 2026",
     "b": [
