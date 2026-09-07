@@ -1,8 +1,8 @@
-/* SÜKÛN r701 — UI Geometry Integrity */
+/* SÜKÛN r698 — Single Interaction Authority + Voice Intent */
 'use strict';
 
-const SURUM = 'r701';
-const CACHE = 'sukun-r701-20260907a';
+const SURUM = 'r698';
+const CACHE = 'sukun-r698-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,13 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r701__.json';
+const BUILD_MARKER='./__sukun_build_r698__.json';
 
 const NOTLAR = [
-  'r701 · UI/UX Geometry Integrity: intrinsic Mini/Midi/Max, safe drag bounds, native short-screen card/body scrolling, current-frame boundaries and preserved hide state; audio and counter engines unchanged.',
-  'r700 ÇÖZÜLDÜ: Tefekkürde Mini kipte bar içeriği kesiyordu. Kısıt tavan değil ekran oranıydı; Mini 160den 226 piksele çıktı, taşma sıfırlandı.',
-  'r699 · Voice Transaction Integrity: sesli sayım ve hedef geçişi başarı sertifikasıyla eşleşir; stop/abort eski sayımı sonlandırır; stale callback yeni oturumu değiştiremez; çakışmalı sayaç geri alması yeni veriyi ezmez.',
-  'r698 · Native Interaction & Voice Start Integrity: legacy hit-test sütunu kaldırıldı, Mini/Midi gezinmesi sadeleştirildi, transport tek footerda toplandı, native click tek otorite oldu; kayıt grafiği fallback, iptal edilebilir ses başlangıcı ve başarısız ses sonrası sessiz scheduler durdurma düzeltildi.',
+  'r698 · Single Interaction Authority: görünmez legacy kontrol satırı kaldırıldı; native tap/scroll, kompakt mod/transport, sabit kaynak rozeti ve sesli zikir niyeti korundu.',
   'r697 · Approved Neon UI: çıkış tek durum satırında, kaynak Detaylar yanında sabit ölçülü, açık sürükleme tutamacı, renkli transport/mod çerçeveleri ve kompakt sayaç kontrolleri. Ses/sayaç motoru korunur.',
   'r696 · Phone Call Interruption & Atomic Voice Recovery: call/audio-focus dönüşünde 28/99 Seyir stop/resume atomik; stale recording/TTS Promise temizlenir; RECPLAYING fiziksel kaynaktan doğrulanır; hidden resume çekişmesi ve orphan interaction overlayleri giderildi.',
   'r695 · Counter Ledger & Undo Integrity: blocked/failed tekrar istatistiğe yazılmaz; voice rollback kullanım sayaçlarını da geri alır; sınır tekrarı doğru Esmâya bağlanır; auto-advance Undo kaynak Esmâya döner; hidden vird ve lifecycle rescue kimliği tekilleştirildi.',

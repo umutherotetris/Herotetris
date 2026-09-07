@@ -1,35 +1,16 @@
 [
   {
-    "v": "r701",
-    "t": "7 Eylül 2026",
-    "b": [
-      "Akış barının Mini/Midi/Max yüksekliği gerçek içerikten hesaplanır; eski ekran-oranı kesmeleri kaldırıldı. Dar ekranda yalnız gövde kayar, oynatma ve kip kontrolleri görünür kalır.",
-      "Akış barı gezinme çubuğunun ve güvenli alt alanın içine sürüklenemez. Eski geçersiz sürükleme konumları güvenli sınıra alınır.",
-      "Mini/Midi/Max görsel hiyerarşisi, okunabilir istatistikler, tek transport satırı, bildirim rozetleri, tefekkür kontrolleri ve dar ekran dokunma alanları düzenlendi. Ses, sayaç, kayıt ve seyir motorları değiştirilmedi.",
-      "Mobil genişlik/yükseklik, mod geçişi, gizli/geri açılan bar, detaylar ve bildirim kaydırması için tarayıcı regresyon kontrolleri eklendi.",
-      "Kısa ekranlarda Max üst kartı örtmez; sayaç kartı ve player gövdesi ayrı doğal kaydırmayla son kontrole kadar erişilebilir. Dar genişlikte ±/gezinme satırı taşmaz; Mini↔Midi ölçümü aynı karede gerçek player sınırına bağlanır. Gizle/geri getir tercihi render sırasında korunur."
-    ]
-  },
-  {
-    "v": "r699",
-    "t": "7 Eylül 2026",
-    "b": [
-      "Sesli doğrudan zikirde her sayım ve hedef geçişi ayrı bir ses sertifikasıyla ilişkilendirildi; okuma başarıyla bitmeden geçiş commit edilemez.",
-      "Eski veya iptal edilmiş kayıt/TTS callbackleri yeni oturumun sayacını, hedefini ya da ses durumunu değiştiremez. Tekrar başarısızlığı yalnız kendi bekleyen sayımını geri alır; kullanıcı arada sayacı değiştirmişse yeni veriyi ezmek yerine çakışmayı tanıya kaydeder.",
-      "Stop/abort bekleyen sayımı ve hedef işlemini aynı oturumda sonlandırır. Manuel tekil okuma, 28/99 Seyir, hidden sayaç, kayıt önceliği ve r698 neon arayüzü korunur.",
-      "r699 için izole asenkron yarış testleri ve build/DOM/JavaScript bütünlük kontrolleri eklendi. Gerçek Android kilit ve arama dönüşü doğrulaması ayrıca gereklidir."
-    ]
-  },
-  {
     "v": "r698",
     "t": "7 Eylül 2026",
     "b": [
-      "Gerçek player'ın eski 77 px transport grid sütunu tamamen devre dışı bırakıldı; görünmeyen kontrol alanı ve kart daralması giderildi. Tek gerçek Play/Pause/Stop düğmeleri korunarak mod seçiminin yanına taşındı.",
-      "Mini/Midi'de Önceki/Baştan/Sonraki satırı kaldırıldı; Max gezinmesi korundu. Bildirimler yatay üçlüye alındı, ikinci Çalıyor metaverisi gizlendi ve sabit ölçülü kendi kayıt rozeti korundu.",
-      "r688'in 56 ms sentetik tap kurtarması emekli edildi. Native click tek kullanıcı etkileşim otoritesi oldu; tanı kayıp tap ve programatik click olaylarını ayrı kaydeder, kendi kendine click üretmez.",
-      "Doğrudan otomatik zikir AudioContext running olmadan ilk sayımı başlatmaz. Bekleyen başlangıç iptal edilebilir; başarısız kayıt/TTS turu sayaç rollback ile birlikte ritim scheduler'ını da durdurur ve açık ses hatası gösterir.",
-      "Web Audio grafik kurulumu kısmen başarısız olursa bağlı MediaElementAudioSource korumalı master'a geri bağlanır; eski AudioContext'e bağlı havuz öğesi yeniden kullanılmaz. Native fallback sıfır seste kalmaz.",
-      "Telefon dönüşü recovery epoch'u tekilleştirildi; başka seyir/Stop sonrasında eski recovery'nin ses başlatması engellendi. r696 kesinti izi, r695 muhasebe, r693 kilit hedefi ve r681 Max yerleşim matematiği korunur."
+      "Tek görünür player: eski r170NowBtns satırının yeniden görünmesi ve görünmez tıklama alanı kaldırıldı; Mini/Midi/Max tek DOM ve gerçek kontrol sahipliği kullanır.",
+      "Mini ve Midi’de gereksiz Önceki/Baştan/Sonraki kaldırıldı. Play/Pause, Stop, Mini/Midi/Max ve gizleme aynı sabit kontrol satırında; Max detayları korunur.",
+      "Bildirimler yatay, tutamaç 28 px ve açık Tut ve sürükle etiketli. Mini yeşil neon çerçeve, farklı renkli transport çerçeveleri; kaynak Detaylar yanında sabit yüksekliğe sahiptir.",
+      "Tefekkür çıkışı Hedef/Devir ve Ses bilgisiyle aynı satırda; sayaç ve gezinme kontrolleri kompakt. Mühür ve halka dekorları hit-test dışıdır; tek gerçek sayaç ve animasyon motoru korunur.",
+      "r588 durum renderı artık modu her kare yeniden açmaz. Max gerçek görünür içeriğe göre ölçülür; içerik sığmazsa doğal iç kaydırma kullanılır, eski büyük boş host ve görünmez kontrol satırı hesaba katılmaz.",
+      "r688 sentetik click üretimi kaldırıldı; doğal Android click ve pan korunur. Eski açıklama balonunun gerçek düğme clicklerini yutması kaldırıldı. Yeni etkileşim katmanı veya genel touchmove motoru eklenmedi.",
+      "Doğrudan otomatik zikrin sesli niyeti Tefekkür çıkışında kaybolmaz. Kaynak kimliği ile fiziksel ses kanıtı ayrılır; kayıt bekleniyorsa doğru bilgi gösterilir. 28/99 Seyir ve doğrudan zikir ayrı sahiplikte kalır, Stop sonrası eski recovery kullanıcı komutunu geçersiz kılamaz.",
+      "r695 sayaç/istatistik ledger ve r696 telefon kesintisi, kendi kayıt önceliği ve native lock transport korunur. R698 izole transport testleri, statik JS/CSS/DOM kontrolleri ve yerel geometri testleri eklendi."
     ]
   },
   {
