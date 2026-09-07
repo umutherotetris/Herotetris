@@ -1,8 +1,8 @@
-/* SÜKÛN r700 — Contextual Tefekkür Entry */
+/* SÜKÛN r701 — Context-aware Tefekkür Diagnostics */
 'use strict';
 
-const SURUM = 'r700';
-const CACHE = 'sukun-r700-20260907a';
+const SURUM = 'r701';
+const CACHE = 'sukun-r701-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r700__.json';
+const BUILD_MARKER='./__sukun_build_r701__.json';
 
 const NOTLAR = [
+  'r701 · Context-aware diagnostics: hidden home tabs no longer trigger a false Tefekkür entry failure; real zikir entry and canonical exit are checked without changing playback or counter engines.',
   'r700 · Contextual Tefekkür Entry: approved neon button in active zikir context, single existing handler, canonical exit and unchanged audio/counter engines.',
   'r699 · Unified Layout & Interaction: tek dock geometri otoritesi, doğal Tefekkür/Detaylar/bildirim kaydırması, native tap ve sürükleme ayrımı, kısa yatay ekran uyumu; audio ve sayaç motorları korunur.',
   'r698 · Single Interaction Authority: görünmez legacy kontrol satırı kaldırıldı; native tap/scroll, kompakt mod/transport, sabit kaynak rozeti ve sesli zikir niyeti korundu.',

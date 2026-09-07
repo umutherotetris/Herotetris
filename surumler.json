@@ -1,5 +1,15 @@
 [
   {
+    "v": "r701",
+    "t": "7 Eylül 2026",
+    "b": [
+      "r700 tanısındaki yanlış görünürlük FAIL düzeltildi: gizli sekmenin çocuğunda display:flex bulunması, ekranda görünür olduğu anlamına gelmez.",
+      "Tanı artık ana sayfa, gerçek zikir bağlamı ve tefekkür modunu ayrı değerlendirir; görünür girişte 44 px alan, tek DOM sahibi ve etkileşim, tefekkürde gerçek canonical çıkış doğrulanır.",
+      "Tam uygulama Chromium testinde ana sayfa → zikir → tefekkür → çıkış → ana sayfa geçişi ve eski yanlış FAIL yeniden üretildi; r701 gerçek bağlam testleriyle doğrulanır.",
+      "Onaylanan r700 buton tasarımı, mevcut giriş/çıkış handlerı, ses oturumu, sayaç, seyir ve kayıt/TTS iş mantığı değiştirilmedi. Android fiziksel ses/kilit testi ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r700",
     "t": "7 Eylül 2026",
     "b": [
