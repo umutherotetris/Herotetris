@@ -1,0 +1,80 @@
+{
+  "kind": "r710-source-integrity",
+  "total": 7,
+  "passed": 7,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Only declared executable owners changed",
+      "status": "PASS",
+      "detail": {
+        "originalScripts": 190,
+        "releaseScripts": 191,
+        "changed": [
+          "premiumR160",
+          "r220-unified-audio",
+          "r455-diagnostics-regression-runtime",
+          "r514-core-akis-nefs",
+          "r514-core-zikir-sentez",
+          "r637-audio-truth-reconciliation",
+          "r693-terminal-truth-integrity",
+          "surumNotlari"
+        ],
+        "added": [
+          "r710-release-identity-runtime",
+          "r710-stability-runtime"
+        ]
+      }
+    },
+    {
+      "name": "All earlier CSS owners preserved",
+      "status": "PASS",
+      "detail": {
+        "old": 150,
+        "new": 151,
+        "preserved": 150
+      }
+    },
+    {
+      "name": "HTML, footer, history, manifest, SW and build marker agree",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "cache": "sukun-r710-20260908a",
+        "history": 235
+      }
+    },
+    {
+      "name": "Offline artwork and original icons present",
+      "status": "PASS",
+      "detail": {
+        "sceneBytes": 176538,
+        "iconsPreserved": 3
+      }
+    },
+    {
+      "name": "All JavaScript parses",
+      "status": "PASS",
+      "detail": {
+        "parsedScripts": 188,
+        "serviceWorker": true
+      }
+    },
+    {
+      "name": "New visual and diagnostic layer has no destructive side effects",
+      "status": "PASS",
+      "detail": {
+        "newRuntimeStorageWrites": 0,
+        "newAudioEngines": 0,
+        "globalTouchBlockers": 0
+      }
+    },
+    {
+      "name": "Previous release history retained",
+      "status": "PASS",
+      "detail": {
+        "history": "r709 and earlier retained"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+variant base
+loaded
+entered
+starting direct-plus
+ok direct-plus
+count 1
+starting direct-undo
+ok direct-undo
+count 0
+starting scroll-plus
+ok scroll-plus
+count 0
+starting native-plus
+ok native-plus
+count 1
+starting native-exit
+ok native-exit
+count 1
+errors []

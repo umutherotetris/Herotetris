@@ -1,0 +1,140 @@
+{
+  "kind": "r710-runtime",
+  "environment": "Fresh isolated Chromium, actual HTML and native touch; synthetic physical audio state only, not Android audio hardware",
+  "total": 9,
+  "passed": 9,
+  "failed": 0,
+  "results": [
+    {
+      "name": "r710 identity and live canonical controls",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "class": true,
+        "count": 0
+      }
+    },
+    {
+      "name": "native touch +1/-1 immediate counter coherence",
+      "status": "PASS",
+      "detail": [
+        {
+          "raw": 1,
+          "shown": 1
+        },
+        {
+          "raw": 0,
+          "shown": 0
+        },
+        {
+          "raw": 1,
+          "shown": 1
+        }
+      ]
+    },
+    {
+      "name": "target transition and undo ledger",
+      "status": "PASS",
+      "detail": {
+        "completed": {
+          "raw": 0,
+          "shown": 0,
+          "devir": 1,
+          "target": 3
+        },
+        "undone": {
+          "raw": 2,
+          "shown": 2,
+          "devir": 0
+        }
+      }
+    },
+    {
+      "name": "silent lock-screen catchup preserves deferred DOM contract",
+      "status": "PASS",
+      "detail": {
+        "silent": {
+          "raw": 1,
+          "shown": "0"
+        },
+        "visible": {
+          "raw": 1,
+          "shown": 1
+        }
+      }
+    },
+    {
+      "name": "twenty native taps, no lost or duplicate counts",
+      "status": "PASS",
+      "detail": {
+        "nativeTaps": 20,
+        "finalCount": 0,
+        "duplicates": 0
+      }
+    },
+    {
+      "name": "audio truth, physical play, pause latch, terminal and pending grace",
+      "status": "PASS",
+      "detail": {
+        "ghost": {
+          "hub": "idle",
+          "life": "idle",
+          "truth": "idle"
+        },
+        "after": 2,
+        "pause": {
+          "hub": "paused",
+          "life": "paused",
+          "userPaused": true,
+          "truth": "idle"
+        },
+        "physical": {
+          "hub": "playing",
+          "life": "playing",
+          "truth": "playing"
+        },
+        "ended": {
+          "hub": "idle",
+          "life": "idle",
+          "truth": "idle"
+        },
+        "pending": {
+          "life": "preparing",
+          "truth": "idle"
+        },
+        "expired": {
+          "life": "idle",
+          "truth": "idle"
+        },
+        "events": 8
+      }
+    },
+    {
+      "name": "fifteen-second idle event-storm soak",
+      "status": "PASS",
+      "detail": {
+        "before": {
+          "terminal": 31,
+          "truth": 6
+        },
+        "after": {
+          "terminal": 31,
+          "truth": 6
+        }
+      }
+    },
+    {
+      "name": "canonical exit native hit-test",
+      "status": "PASS",
+      "detail": {
+        "hit": "tefExitBtn",
+        "exited": true
+      }
+    },
+    {
+      "name": "no uncaught browser errors",
+      "status": "PASS",
+      "detail": true
+    }
+  ]
+}

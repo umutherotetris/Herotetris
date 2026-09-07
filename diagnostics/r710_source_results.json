@@ -1,0 +1,178 @@
+{
+  "kind": "isolated-source-regression",
+  "date": "2026-09-07T22:35:34.908Z",
+  "limitations": [
+    "DOM fixtures are not a browser layout engine.",
+    "No physical audio, Android lock screen, microphone or headset validation."
+  ],
+  "target": {
+    "package": "sukun_r710_work",
+    "total": 31,
+    "passed": 31,
+    "failed": 0,
+    "results": [
+      {
+        "name": "JavaScript syntax: every executable inline module and Service Worker",
+        "status": "PASS",
+        "detail": {
+          "executableModules": 188,
+          "serviceWorkers": 1
+        }
+      },
+      {
+        "name": "Release metadata, manifest link, start URL and build marker agree",
+        "status": "PASS",
+        "detail": {
+          "build": "r710"
+        }
+      },
+      {
+        "name": "Unchanged 28-name state produces zero repeated text mutations",
+        "status": "PASS",
+        "detail": {
+          "syncCalls": 100,
+          "textMutations": 0
+        }
+      },
+      {
+        "name": "Tefekkür opens and exits while recording database never resolves",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür view change preserves paused speech and audio context",
+        "status": "PASS"
+      },
+      {
+        "name": "Escape exits with no retired focus button in the DOM",
+        "status": "PASS"
+      },
+      {
+        "name": "Exit cancels delayed focus instead of focusing hidden counter",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür does not claim or close another component fullscreen",
+        "status": "PASS"
+      },
+      {
+        "name": "Dock Pause captures all layers; Resume uses the captured session",
+        "status": "PASS"
+      },
+      {
+        "name": "28-name journey Pause/Resume never starts independent auto",
+        "status": "PASS"
+      },
+      {
+        "name": "99-name journey Pause/Resume never starts independent auto",
+        "status": "PASS"
+      },
+      {
+        "name": "Main counter resumes aggregate pause before starting another session",
+        "status": "PASS"
+      },
+      {
+        "name": "Main Stop is immediate even within the 620 ms start filter",
+        "status": "PASS"
+      },
+      {
+        "name": "Failed direct start reports false through the shared transport",
+        "status": "PASS"
+      },
+      {
+        "name": "Global Stop clears queued work and stops the aggregate once",
+        "status": "PASS"
+      },
+      {
+        "name": "Initial reading exception releases auto latch and permits retry",
+        "status": "PASS"
+      },
+      {
+        "name": "StopAll clears logical paused state of non-journey readers",
+        "status": "PASS"
+      },
+      {
+        "name": "StopAll reports an asynchronous provider failure",
+        "status": "PASS"
+      },
+      {
+        "name": "Delayed StopAll completion preserves the owner of a newer Play",
+        "status": "PASS"
+      },
+      {
+        "name": "First hidden MediaSession Pause is honored; repeated Pause is idempotent",
+        "status": "PASS"
+      },
+      {
+        "name": "MediaSession Play clears aggregate pause after native lock resume",
+        "status": "PASS"
+      },
+      {
+        "name": "Queued single/terkip stays silent during pause and resumes in FIFO order",
+        "status": "PASS"
+      },
+      {
+        "name": "Queued duplicate identity is merged; Stop cancels queued work",
+        "status": "PASS"
+      },
+      {
+        "name": "Restored session never starts audio on Exit or navigation gesture",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür dock drag bounds reserve a readable surface at five screen sizes",
+        "status": "PASS",
+        "detail": [
+          {
+            "width": 320,
+            "height": 640,
+            "minimumDockTop": 328
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "minimumDockTop": 428
+          },
+          {
+            "width": 360,
+            "height": 740,
+            "minimumDockTop": 378
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "minimumDockTop": 188
+          },
+          {
+            "width": 1280,
+            "height": 900,
+            "minimumDockTop": 428
+          }
+        ]
+      },
+      {
+        "name": "Missing alert drawer does not consume Escape",
+        "status": "PASS"
+      },
+      {
+        "name": "Reading surface follows live dock drag before pointer release",
+        "status": "PASS"
+      },
+      {
+        "name": "Offline versioned manifest resolves from the current package cache",
+        "status": "PASS"
+      },
+      {
+        "name": "Installer rejects a manifest from a different release",
+        "status": "PASS"
+      },
+      {
+        "name": "Installer rejects mismatched HTML and does not mark cache complete",
+        "status": "PASS"
+      },
+      {
+        "name": "Old cache entry cannot replace an asset from the current cache",
+        "status": "PASS"
+      }
+    ]
+  }
+}

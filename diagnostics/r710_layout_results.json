@@ -1,0 +1,1199 @@
+{
+  "kind": "r710-full-HTML-controlled-Chromium",
+  "environment": "Actual application HTML via set_content; artwork supplied as local data URI; network blocked; visual playback fixture; no physical Android or audible audio",
+  "total": 40,
+  "passed": 40,
+  "failed": 0,
+  "results": [
+    {
+      "name": "320x640 source and release identity",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "footer": "SÜKÛN v20.21 — build 2026-09-08-r710"
+      }
+    },
+    {
+      "name": "320x640 mini compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 62.953125,
+          "bottom": 677.453125,
+          "width": 258,
+          "height": 614.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 228.453125,
+          "bottom": 426.453125,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 440.453125,
+            "bottom": 486.453125,
+            "width": 115,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 440.453125,
+            "bottom": 486.453125,
+            "width": 115,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 492.453125,
+          "bottom": 538.453125,
+          "width": 136,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 620.453125,
+          "bottom": 664.453125,
+          "width": 115.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 486,
+          "bottom": 632,
+          "width": 304,
+          "height": 146,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 166
+      }
+    },
+    {
+      "name": "320x640 mini bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 207,
+        "gap": 11.546875,
+        "reserve": 166
+      }
+    },
+    {
+      "name": "320x640 midi compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -144.046875,
+          "bottom": 470.453125,
+          "width": 258,
+          "height": 614.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 21.453125,
+          "bottom": 219.453125,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 233.453125,
+            "bottom": 279.453125,
+            "width": 115,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 233.453125,
+            "bottom": 279.453125,
+            "width": 115,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 285.453125,
+          "bottom": 331.453125,
+          "width": 136,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 413.453125,
+          "bottom": 457.453125,
+          "width": 115.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 365,
+          "bottom": 632,
+          "width": 304,
+          "height": 267,
+          "display": "block",
+          "overflow": "auto"
+        },
+        "reserve": 287
+      }
+    },
+    {
+      "name": "320x640 midi bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 328,
+        "gap": 11.546875,
+        "reserve": 287
+      }
+    },
+    {
+      "name": "320x640 max compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -265.046875,
+          "bottom": 351.453125,
+          "width": 258,
+          "height": 616.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": -99.546875,
+          "bottom": 98.453125,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 112.453125,
+            "bottom": 158.453125,
+            "width": 112,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 112.453125,
+            "bottom": 158.453125,
+            "width": 112,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 164.453125,
+          "bottom": 210.453125,
+          "width": 130,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 292.453125,
+          "bottom": 336.453125,
+          "width": 112.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 336,
+          "bottom": 632,
+          "width": 304,
+          "height": 296,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 316
+      }
+    },
+    {
+      "name": "320x640 max bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 359,
+        "gap": 11.546875,
+        "reserve": 316
+      }
+    },
+    {
+      "name": "320x640 native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "exited": true
+      }
+    },
+    {
+      "name": "390x844 source and release identity",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "footer": "SÜKÛN v20.21 — build 2026-09-08-r710"
+      }
+    },
+    {
+      "name": "390x844 mini compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 64.59375,
+          "bottom": 681.09375,
+          "width": 325.28125,
+          "height": 616.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 230.09375,
+          "bottom": 428.09375,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 442.09375,
+            "bottom": 488.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 442.09375,
+            "bottom": 488.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 494.09375,
+          "bottom": 540.09375,
+          "width": 197.28125,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 622.09375,
+          "bottom": 666.09375,
+          "width": 146.140625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 690,
+          "bottom": 836,
+          "width": 374,
+          "height": 146,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 166
+      }
+    },
+    {
+      "name": "390x844 mini bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 7,
+        "gap": 11.90625,
+        "reserve": 166
+      }
+    },
+    {
+      "name": "390x844 midi compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 57.59375,
+          "bottom": 674.09375,
+          "width": 325.28125,
+          "height": 616.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 223.09375,
+          "bottom": 421.09375,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 435.09375,
+            "bottom": 481.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 435.09375,
+            "bottom": 481.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 487.09375,
+          "bottom": 533.09375,
+          "width": 197.28125,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 615.09375,
+          "bottom": 659.09375,
+          "width": 146.140625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 563,
+          "bottom": 836,
+          "width": 374,
+          "height": 273,
+          "display": "block",
+          "overflow": "auto"
+        },
+        "reserve": 293
+      }
+    },
+    {
+      "name": "390x844 midi bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 134,
+        "gap": 11.90625,
+        "reserve": 293
+      }
+    },
+    {
+      "name": "390x844 max compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -69.40625,
+          "bottom": 547.09375,
+          "width": 325.28125,
+          "height": 616.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 96.09375,
+          "bottom": 294.09375,
+          "width": 198,
+          "height": 198,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 308.09375,
+            "bottom": 354.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 308.09375,
+            "bottom": 354.09375,
+            "width": 145.640625,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 360.09375,
+          "bottom": 406.09375,
+          "width": 197.28125,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 488.09375,
+          "bottom": 532.09375,
+          "width": 146.140625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 460,
+          "bottom": 836,
+          "width": 374,
+          "height": 376,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 396
+      }
+    },
+    {
+      "name": "390x844 max bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 237,
+        "gap": 11.90625,
+        "reserve": 396
+      }
+    },
+    {
+      "name": "390x844 native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "exited": true
+      }
+    },
+    {
+      "name": "412x915 source and release identity",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "footer": "SÜKÛN v20.21 — build 2026-09-08-r710"
+      }
+    },
+    {
+      "name": "412x915 mini compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 65.65625,
+          "bottom": 731.15625,
+          "width": 346.25,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 249.15625,
+          "bottom": 473.15625,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 490.15625,
+            "bottom": 536.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 490.15625,
+            "bottom": 536.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 544.15625,
+          "bottom": 590.15625,
+          "width": 218.25,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 672.15625,
+          "bottom": 716.15625,
+          "width": 156.625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 761,
+          "bottom": 907,
+          "width": 396,
+          "height": 146,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 166
+      }
+    },
+    {
+      "name": "412x915 mini bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 0,
+        "gap": 25.84375,
+        "reserve": 166
+      }
+    },
+    {
+      "name": "412x915 midi compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 65.65625,
+          "bottom": 731.15625,
+          "width": 346.25,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 249.15625,
+          "bottom": 473.15625,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 490.15625,
+            "bottom": 536.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 490.15625,
+            "bottom": 536.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 544.15625,
+          "bottom": 590.15625,
+          "width": 218.25,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 672.15625,
+          "bottom": 716.15625,
+          "width": 156.625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 633,
+          "bottom": 907,
+          "width": 396,
+          "height": 274,
+          "display": "block",
+          "overflow": "auto"
+        },
+        "reserve": 294
+      }
+    },
+    {
+      "name": "412x915 midi bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 114,
+        "gap": 11.84375,
+        "reserve": 294
+      }
+    },
+    {
+      "name": "412x915 max compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -48.34375,
+          "bottom": 617.15625,
+          "width": 346.25,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 135.15625,
+          "bottom": 359.15625,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 376.15625,
+            "bottom": 422.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 376.15625,
+            "bottom": 422.15625,
+            "width": 156.125,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 430.15625,
+          "bottom": 476.15625,
+          "width": 218.25,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 558.15625,
+          "bottom": 602.15625,
+          "width": 156.625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 522,
+          "bottom": 907,
+          "width": 396,
+          "height": 385,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 405
+      }
+    },
+    {
+      "name": "412x915 max bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 225,
+        "gap": 11.84375,
+        "reserve": 405
+      }
+    },
+    {
+      "name": "412x915 native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "exited": true
+      }
+    },
+    {
+      "name": "640x360 source and release identity",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "footer": "SÜKÛN v20.21 — build 2026-09-08-r710"
+      }
+    },
+    {
+      "name": "640x360 mini compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 62.3125,
+          "bottom": 674.8125,
+          "width": 604,
+          "height": 612.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 232.8125,
+          "bottom": 422.8125,
+          "width": 190,
+          "height": 190,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 439.8125,
+            "bottom": 483.8125,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 439.8125,
+            "bottom": 483.8125,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 489.8125,
+          "bottom": 535.8125,
+          "width": 242,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 604.8125,
+          "bottom": 648.8125,
+          "width": 122.515625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 210,
+          "bottom": 352,
+          "width": 420,
+          "height": 142,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 162
+      }
+    },
+    {
+      "name": "640x360 mini bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 481,
+        "gap": 12.1875,
+        "reserve": 162
+      }
+    },
+    {
+      "name": "640x360 midi compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -418.6875,
+          "bottom": 193.8125,
+          "width": 604,
+          "height": 612.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": -248.1875,
+          "bottom": -58.1875,
+          "width": 190,
+          "height": 190,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": -41.1875,
+            "bottom": 2.8125,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": -41.1875,
+            "bottom": 2.8125,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 8.8125,
+          "bottom": 54.8125,
+          "width": 242,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 123.8125,
+          "bottom": 167.8125,
+          "width": 122.515625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 196,
+          "bottom": 352,
+          "width": 420,
+          "height": 156,
+          "display": "block",
+          "overflow": "auto"
+        },
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360 midi bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 495,
+        "gap": 12.1875,
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360 max compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -432.6875,
+          "bottom": 185.8125,
+          "width": 604,
+          "height": 618.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": -258.1875,
+          "bottom": -68.1875,
+          "width": 190,
+          "height": 190,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": -51.1875,
+            "bottom": -7.1875,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": -51.1875,
+            "bottom": -7.1875,
+            "width": 166,
+            "height": 44,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 0.8125,
+          "bottom": 46.8125,
+          "width": 242,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 115.8125,
+          "bottom": 159.8125,
+          "width": 122.515625,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 196,
+          "bottom": 352,
+          "width": 420,
+          "height": 156,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360 max bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 501,
+        "gap": 12.1875,
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360 native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "exited": true
+      }
+    },
+    {
+      "name": "1280x900 source and release identity",
+      "status": "PASS",
+      "detail": {
+        "build": "r710",
+        "footer": "SÜKÛN v20.21 — build 2026-09-08-r710"
+      }
+    },
+    {
+      "name": "1280x900 mini compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 69.3125,
+          "bottom": 734.8125,
+          "width": 644,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 252.8125,
+          "bottom": 476.8125,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 493.8125,
+            "bottom": 539.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 493.8125,
+            "bottom": 539.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 547.8125,
+          "bottom": 593.8125,
+          "width": 238,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 675.8125,
+          "bottom": 719.8125,
+          "width": 166.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 746,
+          "bottom": 892,
+          "width": 420,
+          "height": 146,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 166
+      }
+    },
+    {
+      "name": "1280x900 mini bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 5,
+        "gap": 12.1875,
+        "reserve": 166
+      }
+    },
+    {
+      "name": "1280x900 midi compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": 64.3125,
+          "bottom": 729.8125,
+          "width": 644,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 247.8125,
+          "bottom": 471.8125,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 488.8125,
+            "bottom": 534.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 488.8125,
+            "bottom": 534.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 542.8125,
+          "bottom": 588.8125,
+          "width": 238,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 670.8125,
+          "bottom": 714.8125,
+          "width": 166.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 618,
+          "bottom": 892,
+          "width": 420,
+          "height": 274,
+          "display": "block",
+          "overflow": "auto"
+        },
+        "reserve": 294
+      }
+    },
+    {
+      "name": "1280x900 midi bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 133,
+        "gap": 12.1875,
+        "reserve": 294
+      }
+    },
+    {
+      "name": "1280x900 max compact geometry",
+      "status": "PASS",
+      "detail": {
+        "root": {
+          "top": -63.6875,
+          "bottom": 601.8125,
+          "width": 644,
+          "height": 665.5,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "ring": {
+          "top": 119.8125,
+          "bottom": 343.8125,
+          "width": 224,
+          "height": 224,
+          "display": "flex",
+          "overflow": "visible"
+        },
+        "stats": [
+          {
+            "top": 360.8125,
+            "bottom": 406.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          },
+          {
+            "top": 360.8125,
+            "bottom": 406.8125,
+            "width": 166,
+            "height": 46,
+            "display": "flex",
+            "overflow": "visible"
+          }
+        ],
+        "auto": {
+          "top": 414.8125,
+          "bottom": 460.8125,
+          "width": 238,
+          "height": 46,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "exit": {
+          "top": 542.8125,
+          "bottom": 586.8125,
+          "width": 166.5,
+          "height": 44,
+          "display": "flex",
+          "overflow": "hidden"
+        },
+        "dock": {
+          "top": 507,
+          "bottom": 892,
+          "width": 420,
+          "height": 385,
+          "display": "block",
+          "overflow": "hidden"
+        },
+        "reserve": 405
+      }
+    },
+    {
+      "name": "1280x900 max bottom boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 244,
+        "gap": 12.1875,
+        "reserve": 405
+      }
+    },
+    {
+      "name": "1280x900 native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "exited": true
+      }
+    }
+  ]
+}

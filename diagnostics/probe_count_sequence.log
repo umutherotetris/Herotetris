@@ -1,0 +1,165 @@
+AFTER PLUS [
+  {
+    "what": "baseline",
+    "raw": 0,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:voicesource",
+    "raw": 1,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:zikir-state",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "zikir-publish:sukun:voicesource",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:nowplayingchange",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:source",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  }
+]
+SETTLED {"raw": 1, "shown": "0", "z": {"version": "r507", "revision": 4, "reason": "sukun:voicesource", "source": "direct", "active": true, "viewCat": "esma", "viewIdx": 0, "cat": "esma", "idx": 0, "position": 1, "length": 99, "name": "Rahmân", "arabic": "", "meaning": "", "ebced": 298, "countRaw": 1, "count": 1, "target": 33, "remain": 32, "devir": 0, "pct": 0.030303030303030304, "targetMode": "fixed", "tempo": 1, "auto": false, "total": 1, "kind": "ESMÂ", "nefs": null, "session": {"active": false, "playing": false, "paused": false, "name": "", "stepIndex": -1, "stepTotal": 0}}, "flow": {"version": "r507", "revision": 4, "reason": "sukun:voicesource", "source": "direct", "active": true, "viewCat": "esma", "viewIdx": 0, "cat": "esma", "idx": 0, "position": 1, "length": 99, "name": "Rahmân", "arabic": "", "meaning": "", "ebced": 298, "countRaw": 1, "count": 1, "target": 33, "remain": 32, "devir": 0, "pct": 0.030303030303030304, "targetMode": "fixed", "tempo": 1, "auto": false, "total": 1, "kind": "ESMÂ", "nefs": null, "session": {"active": false, "playing": false, "paused": false, "name": "", "stepIndex": -1, "stepTotal": 0}}}
+AFTER UNDO [
+  {
+    "what": "baseline",
+    "raw": 0,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:voicesource",
+    "raw": 1,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:zikir-state",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "zikir-publish:sukun:voicesource",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:nowplayingchange",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:sukun:source",
+    "raw": 1,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "zUI-before",
+    "raw": 0,
+    "shown": "0",
+    "model": 1,
+    "flow": 1,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "flow-publish:zikir-state",
+    "raw": 0,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "zikir-publish:zUI",
+    "raw": 0,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  },
+  {
+    "what": "zUI-after",
+    "raw": 0,
+    "shown": "0",
+    "model": 0,
+    "flow": 0,
+    "source": "direct",
+    "smart": false,
+    "smartPaused": false
+  }
+]

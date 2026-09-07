@@ -1,0 +1,1 @@
+r710, orijinal r709 tam paketinin kaynakları üzerine sınırlı değişikliklerle oluşturuldu. r710_changes.diff ve r710_source_inventory.json kaynak provenansını taşır. Testlerin kapsamı RAPOR_r710.md içinde açıklanmıştır. Kaynak bütünlüğü testinin yeniden çalışması için orijinal r709 arşivi gerekir. Gerçek Android ve yayınlanmış PWA doğrulaması yapılmamıştır.
