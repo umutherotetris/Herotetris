@@ -1,8 +1,8 @@
-/* SÜKÛN r699 — Voice Transaction Integrity */
+/* SÜKÛN r701 — UI Geometry Integrity */
 'use strict';
 
-const SURUM = 'r700';
-const CACHE = 'sukun-r700-20260907a';
+const SURUM = 'r701';
+const CACHE = 'sukun-r701-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r699__.json';
+const BUILD_MARKER='./__sukun_build_r701__.json';
 
 const NOTLAR = [
+  'r701 · UI/UX Geometry Integrity: intrinsic Mini/Midi/Max, safe drag bounds, native short-screen card/body scrolling, current-frame boundaries and preserved hide state; audio and counter engines unchanged.',
   'r700 ÇÖZÜLDÜ: Tefekkürde Mini kipte bar içeriği kesiyordu. Kısıt tavan değil ekran oranıydı; Mini 160den 226 piksele çıktı, taşma sıfırlandı.',
   'r699 · Voice Transaction Integrity: sesli sayım ve hedef geçişi başarı sertifikasıyla eşleşir; stop/abort eski sayımı sonlandırır; stale callback yeni oturumu değiştiremez; çakışmalı sayaç geri alması yeni veriyi ezmez.',
   'r698 · Native Interaction & Voice Start Integrity: legacy hit-test sütunu kaldırıldı, Mini/Midi gezinmesi sadeleştirildi, transport tek footerda toplandı, native click tek otorite oldu; kayıt grafiği fallback, iptal edilebilir ses başlangıcı ve başarısız ses sonrası sessiz scheduler durdurma düzeltildi.',

@@ -1,0 +1,802 @@
+{
+  "build": "r701",
+  "base": "r700",
+  "date": "2026-09-07",
+  "scope": "UI geometry, responsive layout, native scrolling and visibility; no audio/counter business logic changes",
+  "staticChecks": {
+    "js-syntax": true,
+    "dom-ids-unique": true,
+    "core-script-preservation": true,
+    "build-marker": true,
+    "manifest": true,
+    "service-worker": true,
+    "release-history": true,
+    "html-build": true,
+    "canonical-ui-style": true,
+    "integration-runtime": true,
+    "old-marker-removed-from-live-probe": true
+  },
+  "syntax": {
+    "count": 183,
+    "errors": []
+  },
+  "scriptChanges": [
+    {
+      "id": "surumNotlari",
+      "change": "modified",
+      "scope": "release-history"
+    },
+    {
+      "id": "r514-core-akis-nefs",
+      "change": "modified",
+      "scope": "service-worker-registration-only"
+    },
+    {
+      "id": "r588-single-owner-dock-runtime",
+      "change": "modified"
+    },
+    {
+      "id": "r632-state-authority-regression-shield",
+      "change": "modified",
+      "scope": "build-probe-only"
+    },
+    {
+      "id": "r633-flow-dock-placement-runtime",
+      "change": "modified"
+    },
+    {
+      "id": "r659-adaptive-bottom-sheet-runtime",
+      "change": "modified"
+    },
+    {
+      "id": "r671-unified-boundary-runtime",
+      "change": "modified"
+    }
+  ],
+  "newScriptIds": [
+    "r701-ui-integration-runtime"
+  ],
+  "duplicateIds": [],
+  "browser": {
+    "cases": [
+      {
+        "viewport": "320x568",
+        "surface": "zikir",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 211.578125,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "320x568",
+        "surface": "zikir",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 225.96875,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "320x568",
+        "surface": "zikir",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 435,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "320x568",
+        "surface": "tefekkur",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true
+        },
+        "height": 300,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 206
+      },
+      {
+        "viewport": "320x568",
+        "surface": "tefekkur",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true
+        },
+        "height": 222.515625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 129
+      },
+      {
+        "viewport": "320x568",
+        "surface": "tefekkur",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true,
+          "details-reachable": true
+        },
+        "height": 244,
+        "bodyScrollPx": 122,
+        "cardScrollPx": 150
+      },
+      {
+        "viewport": "360x640",
+        "surface": "zikir",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 212.578125,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "360x640",
+        "surface": "zikir",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 225.625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "360x640",
+        "surface": "zikir",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 435,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "360x640",
+        "surface": "tefekkur",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true
+        },
+        "height": 300,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 134
+      },
+      {
+        "viewport": "360x640",
+        "surface": "tefekkur",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true
+        },
+        "height": 221.140625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 57
+      },
+      {
+        "viewport": "360x640",
+        "surface": "tefekkur",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true,
+          "card-scroll-reaches-end": true,
+          "body-scroll-reaches-end": true,
+          "exit-reachable": true,
+          "details-reachable": true
+        },
+        "height": 275,
+        "bodyScrollPx": 91,
+        "cardScrollPx": 109
+      },
+      {
+        "viewport": "393x852",
+        "surface": "zikir",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 210.625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "393x852",
+        "surface": "zikir",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 225.921875,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "393x852",
+        "surface": "zikir",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 435,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "393x852",
+        "surface": "tefekkur",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 215.203125,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "393x852",
+        "surface": "tefekkur",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 225.765625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "393x852",
+        "surface": "tefekkur",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 385,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "zikir",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 216,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "zikir",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 221.765625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "zikir",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true
+        },
+        "height": 435,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "tefekkur",
+        "mode": "mini",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 215.203125,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "tefekkur",
+        "mode": "midi",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 225.765625,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      },
+      {
+        "viewport": "768x1024",
+        "surface": "tefekkur",
+        "mode": "max",
+        "checks": {
+          "safe-host": true,
+          "footer-contained": true,
+          "mode": true,
+          "horizontal-document": true,
+          "body-overflow-scrollable": true,
+          "fixed-controls": true,
+          "card-contained": true,
+          "controls-horizontal": true
+        },
+        "height": 374.703125,
+        "bodyScrollPx": 0,
+        "cardScrollPx": 0
+      }
+    ],
+    "failures": [],
+    "pageErrors": [],
+    "regressionShield": [
+      {
+        "code": "authority-api",
+        "severity": "PASS",
+        "detail": "canonical state authority r641",
+        "repairable": false
+      },
+      {
+        "code": "zikir-sync",
+        "severity": "PASS",
+        "detail": "zikir kimliği tek kaynakla uyumlu",
+        "repairable": true
+      },
+      {
+        "code": "journey-exclusive",
+        "severity": "PASS",
+        "detail": "seyir tek-sahip kuralı temiz",
+        "repairable": true
+      },
+      {
+        "code": "journey-stale-cancel",
+        "severity": "PASS",
+        "detail": "stale callback kullanıcı pause olarak yorumlanmıyor",
+        "repairable": false
+      },
+      {
+        "code": "voice-exclusive",
+        "severity": "PASS",
+        "detail": "foreground ses tek oturum",
+        "repairable": true
+      },
+      {
+        "code": "foreground-arbiter",
+        "severity": "PASS",
+        "detail": "tek sahip + 0 bekleyen sözlü görev",
+        "repairable": false
+      },
+      {
+        "code": "journey-audio-machine",
+        "severity": "PASS",
+        "detail": "IDLE · journey yok · reconcile 0",
+        "repairable": false
+      },
+      {
+        "code": "audio-truth",
+        "severity": "PASS",
+        "detail": "Registry/Life/Hub/Arbiter uzlaşık · idle",
+        "repairable": false
+      },
+      {
+        "code": "terminal-audio-truth-r658",
+        "severity": "PASS",
+        "detail": "canonical idle · Life idle · Hub idle",
+        "repairable": false
+      },
+      {
+        "code": "zikir-transport-clock",
+        "severity": "PASS",
+        "detail": "sayaç/animasyon gerçek ses transportuna bağlı",
+        "repairable": false
+      },
+      {
+        "code": "voice-source-priority",
+        "severity": "PASS",
+        "detail": "kendi kayıt → TTS sözleşmesi etkin",
+        "repairable": false
+      },
+      {
+        "code": "foreground-owner",
+        "severity": "PASS",
+        "detail": "coordinator sahibi canlı state ile uyumlu",
+        "repairable": false
+      },
+      {
+        "code": "lock-source-identity",
+        "severity": "PASS",
+        "detail": "kilit native ses anahtarı canonical zikirle uyumlu",
+        "repairable": false
+      },
+      {
+        "code": "lock-transport-v2",
+        "severity": "PASS",
+        "detail": "r651 native lease hazır",
+        "repairable": false
+      },
+      {
+        "code": "media-session-wake-guard",
+        "severity": "PASS",
+        "detail": "bastırılan tek pause 0 · wake iptal 0 · çift doğrulama 0",
+        "repairable": false
+      },
+      {
+        "code": "audio-context-churn-guard",
+        "severity": "PASS",
+        "detail": "lock/echo decode yeni canlı AudioContext açmıyor",
+        "repairable": false
+      },
+      {
+        "code": "terminal-journey-state",
+        "severity": "PASS",
+        "detail": "terminal temiz · 0 provider temizlendi",
+        "repairable": false
+      },
+      {
+        "code": "legacy-lock-fallback",
+        "severity": "PASS",
+        "detail": "V2 emeklilik 0 · bastırılan hata 0",
+        "repairable": false
+      },
+      {
+        "code": "soak-lab-ready",
+        "severity": "PASS",
+        "detail": "r649 lab hazır · test bekliyor · geçmiş 0",
+        "repairable": false
+      },
+      {
+        "code": "native-lock-echo",
+        "severity": "PASS",
+        "detail": "Echo Attachment Authority hazır · aktif native ses yok",
+        "repairable": false
+      },
+      {
+        "code": "echo-attachment-authority",
+        "severity": "PASS",
+        "detail": "r655 tek-attach · dedupe 0 · fallback bastırma 0 · tap reject 0",
+        "repairable": false
+      },
+      {
+        "code": "dom-hydration-bus",
+        "severity": "PASS",
+        "detail": "tek bus · 8 batch · 92 kabul / 364 ham · filtre 211 · dedupe 61",
+        "repairable": false
+      },
+      {
+        "code": "diagnostics-throttle",
+        "severity": "PASS",
+        "detail": "değişiklik-temelli · 0 render · 0 coalesced · son 0 ms",
+        "repairable": false
+      },
+      {
+        "code": "recording-continuity-r657",
+        "severity": "PASS",
+        "detail": "izole Hû 0 · pool reset 0 · trim stop 0 · hata 0",
+        "repairable": false
+      },
+      {
+        "code": "recording-boundary-r658",
+        "severity": "PASS",
+        "detail": "audio-clock attack 0 · tail 0 · fallback 0",
+        "repairable": false
+      },
+      {
+        "code": "auto-owner-identity-r657",
+        "severity": "PASS",
+        "detail": "transaction refresh 0 · owner uyumlu",
+        "repairable": false
+      },
+      {
+        "code": "auto-start-authority-r658",
+        "severity": "PASS",
+        "detail": "claim 0 · grace suppression 0 · kalan 0 ms",
+        "repairable": false
+      },
+      {
+        "code": "notification-drawer-authority",
+        "severity": "PASS",
+        "detail": "hazır · bakım 2 · scroll 0/0 · max 0",
+        "repairable": false
+      },
+      {
+        "code": "adaptive-dock-fit",
+        "severity": "PASS",
+        "detail": "r701 mini · 216px · gap 126 · intrinsic 216 · fill 0 · overlay 90",
+        "repairable": false
+      },
+      {
+        "code": "adaptive-dock-density",
+        "severity": "PASS",
+        "detail": "yoğunluk tight · rehome 8 · scroll reset 0",
+        "repairable": false
+      },
+      {
+        "code": "adaptive-dock-profile",
+        "severity": "PASS",
+        "detail": "profil mini · intrinsic 216 · body scroll 0 · layout sync 0",
+        "repairable": false
+      },
+      {
+        "code": "coupled-zikir-dock-fit",
+        "severity": "PASS",
+        "detail": "overlay 90 · convergence 1 · exact fill 0",
+        "repairable": false
+      },
+      {
+        "code": "section-identity",
+        "severity": "PASS",
+        "detail": "aktif bölüm kimliği gerekmiyor",
+        "repairable": false
+      },
+      {
+        "code": "diagnostic-provider-leak",
+        "severity": "PASS",
+        "detail": "tanı sağlayıcısı sızıntısı yok",
+        "repairable": false
+      },
+      {
+        "code": "critical-dom-owner",
+        "severity": "PASS",
+        "detail": "kritik DOM sahipleri tekil",
+        "repairable": false
+      },
+      {
+        "code": "skin-contract",
+        "severity": "PASS",
+        "detail": "ottoman geçerli",
+        "repairable": true
+      },
+      {
+        "code": "layout-overlap",
+        "severity": "PASS",
+        "detail": "dock/layout güvenli",
+        "repairable": false
+      },
+      {
+        "code": "build-meta",
+        "severity": "PASS",
+        "detail": "meta r701 / beklenen r701",
+        "repairable": false
+      },
+      {
+        "code": "journey-provider-contract",
+        "severity": "PASS",
+        "detail": "28/99 registry providerları hazır",
+        "repairable": false
+      }
+    ]
+  },
+  "limitations": [
+    "In-memory Chromium tests; no real Android lock-screen, phone call, Bluetooth/headset or PWA installation validation.",
+    "Browser fixtures use simulated playback state, not live recording/TTS.",
+    "Service worker cache lifecycle and real-device visual keyboard behavior are not exercised."
+  ],
+  "finalSourceVerification": {
+    "baseZip": "SUKUN_r700_TAM_PAKET.zip",
+    "unchangedBusinessLogicScripts": 178,
+    "approvedChangedScripts": [
+      "surumNotlari",
+      "r514-core-akis-nefs",
+      "r588-single-owner-dock-runtime",
+      "r632-state-authority-regression-shield",
+      "r633-flow-dock-placement-runtime",
+      "r659-adaptive-bottom-sheet-runtime",
+      "r671-unified-boundary-runtime"
+    ],
+    "newScripts": [
+      "r701-ui-integration-runtime"
+    ],
+    "executableScriptsCompiled": 183,
+    "uniqueDomIds": 957,
+    "allBrowserCasesPassed": true,
+    "regressionShieldPass": 39,
+    "regressionShieldTotal": 39
+  },
+  "summary": {
+    "browserCases": 24,
+    "browserPassed": 24,
+    "browserFailures": 0,
+    "pageErrors": 0,
+    "staticPass": 11,
+    "staticTotal": 11
+  },
+  "packageFiles": {
+    "nero.html": {
+      "sha256": "ddf2eee1ab1dc8c4e60459dacdad15d16c7cd0c8d3dd0137f2597b57decb6119",
+      "bytes": 4767384
+    },
+    "sw.js": {
+      "sha256": "3cb6afb217349195e68296171085b0d512962fc275a60707f2152892508f1d01",
+      "bytes": 70864
+    },
+    "manifest.webmanifest": {
+      "sha256": "55679687286f479e5b2839dcc798e838506683ec982a04bb8f3f7336f964ca8e",
+      "bytes": 1179
+    },
+    "surumler.json": {
+      "sha256": "c7fbb77d3cf8afb4c946246b5a51ee6514dcaaaeee8cf9a34f1d4bbf615105b3",
+      "bytes": 215591
+    },
+    "icon-192.png": {
+      "sha256": "126e514b6bcfb243e2c5dae025a74b5474719e9d743a2fa13625791de76714c9",
+      "bytes": 65172
+    },
+    "icon-512.png": {
+      "sha256": "2d9c10bcac1d6fe9dde4f9b01d89188320eaa361a1fdc6dd71023fb73a7118c3",
+      "bytes": 379461
+    },
+    "icon-512-maskable.png": {
+      "sha256": "5537a3293632c5d07227f484b07bbe75d47c979c2e8c71da5ba142aa73f37ce0",
+      "bytes": 263778
+    },
+    "__sukun_build_r701__.json": {
+      "sha256": "12588a2ec6601aa6f75d05107f1e3068f930f1c9d758af976ba29245b33a5c68",
+      "bytes": 17
+    },
+    "README_r701.txt": {
+      "sha256": "1b58d4b7c271bc21894f9a6960b5ea4553797859f7c94627c259f53b0baa6393",
+      "bytes": 1356
+    }
+  }
+}

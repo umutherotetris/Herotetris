@@ -1,5 +1,16 @@
 [
   {
+    "v": "r701",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Akış barının Mini/Midi/Max yüksekliği gerçek içerikten hesaplanır; eski ekran-oranı kesmeleri kaldırıldı. Dar ekranda yalnız gövde kayar, oynatma ve kip kontrolleri görünür kalır.",
+      "Akış barı gezinme çubuğunun ve güvenli alt alanın içine sürüklenemez. Eski geçersiz sürükleme konumları güvenli sınıra alınır.",
+      "Mini/Midi/Max görsel hiyerarşisi, okunabilir istatistikler, tek transport satırı, bildirim rozetleri, tefekkür kontrolleri ve dar ekran dokunma alanları düzenlendi. Ses, sayaç, kayıt ve seyir motorları değiştirilmedi.",
+      "Mobil genişlik/yükseklik, mod geçişi, gizli/geri açılan bar, detaylar ve bildirim kaydırması için tarayıcı regresyon kontrolleri eklendi.",
+      "Kısa ekranlarda Max üst kartı örtmez; sayaç kartı ve player gövdesi ayrı doğal kaydırmayla son kontrole kadar erişilebilir. Dar genişlikte ±/gezinme satırı taşmaz; Mini↔Midi ölçümü aynı karede gerçek player sınırına bağlanır. Gizle/geri getir tercihi render sırasında korunur."
+    ]
+  },
+  {
     "v": "r699",
     "t": "7 Eylül 2026",
     "b": [
