@@ -1,0 +1,6 @@
+{
+  "build": "r702",
+  "date": "2026-09-07",
+  "feature": "transport-pause-layout-and-offline-repair",
+  "base": "r701"
+}

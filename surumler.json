@@ -1,5 +1,20 @@
 [
   {
+    "v": "r702",
+    "t": "7 Eylül 2026",
+    "b": [
+      "28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi.",
+      "Tefekkür girişi kayıt veritabanını beklemeden açılır; görünüm geçişi duraklatılmış sesi başlatmaz. Eski giriş düğmesi kaldırılmış olsa da Escape ve tam ekran çıkışı çalışır.",
+      "Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur.",
+      "MediaSession duraklatma komutu ilk basışta uygulanır. Tümünü Durdur her etkin okuyucunun kendi temizliğini çağırır; geciken eski durdurma yeni oturum sahibini silemez.",
+      "Otomatik zikrin ilk okuma veya zamanlayıcı hatası başlatma kilidini açık bırakmaz; hızlı Durdur komutu başlangıç gecikme filtresine takılmaz.",
+      "Kaydedilmiş seansın sayacı geri yüklenir; çıkış veya gezinme dokunuşu sesi kendiliğinden başlatmaz.",
+      "Tefekkürde Mini/Midi/Max ve sürükleme sınırları okuma alanını korur; sanal klavye açıkken alt sınır görsel ekranla eşleşir.",
+      "Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r702 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
+      "Doğrulama kapsamı ve gerçek cihazda kalan ses/kilit ekranı kontrolleri RAPOR_r702.md içinde belirtilmiştir."
+    ]
+  },
+  {
     "v": "r701",
     "t": "7 Eylül 2026",
     "b": [

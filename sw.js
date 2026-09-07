@@ -1,8 +1,8 @@
 /* SÜKÛN r701 — Context-aware Tefekkür Diagnostics */
 'use strict';
 
-const SURUM = 'r701';
-const CACHE = 'sukun-r701-20260907a';
+const SURUM = 'r702';
+const CACHE = 'sukun-r702-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r701__.json';
+const BUILD_MARKER='./__sukun_build_r702__.json';
 
 const NOTLAR = [
+  "r702 · 28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi. Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur. Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r702 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
   'r701 · Context-aware diagnostics: hidden home tabs no longer trigger a false Tefekkür entry failure; real zikir entry and canonical exit are checked without changing playback or counter engines.',
   'r700 · Contextual Tefekkür Entry: approved neon button in active zikir context, single existing handler, canonical exit and unchanged audio/counter engines.',
   'r699 · Unified Layout & Interaction: tek dock geometri otoritesi, doğal Tefekkür/Detaylar/bildirim kaydırması, native tap ve sürükleme ayrımı, kısa yatay ekran uyumu; audio ve sayaç motorları korunur.',
@@ -428,6 +429,8 @@ async function validateCore(path,res){
   }else if(path.includes('manifest.webmanifest')){
     const obj=await res.clone().json();
     if(!obj||obj.short_name!=='SÜKÛN'||!obj.start_url)throw new Error('manifest invalid');
+    const start=new URL(obj.start_url,self.location.href);
+    if(start.searchParams.get('v')!==SURUM)throw new Error('manifest build mismatch');
   }
   return true;
 }
@@ -519,13 +522,16 @@ async function kabukOncelikli(request){
 function eventlessPut(cache,key,res){cache.put(key,res).catch(()=>{})}
 
 async function onbellekOncelikli(request){
-  const exact=!!new URL(request.url).search;
-  const cached=await caches.match(request,{ignoreSearch:!exact});
+  const url=new URL(request.url);
+  const packaged=[...CORE,...OPTIONAL].some(path=>new URL(path,self.location.href).pathname===url.pathname);
+  const cache=await caches.open(CACHE);
+  const cached=await cache.match(request,{ignoreSearch:packaged||!url.search});
   if(cached)return cached;
   try{
     const res=await fetch(request);
     if(res?.ok&&res.type!=='opaque'){
-      const cache=await caches.open(CACHE);eventlessPut(cache,request,res.clone());
+      if(url.pathname===new URL('./manifest.webmanifest',self.location.href).pathname)await validateCore('./manifest.webmanifest',res);
+      eventlessPut(cache,request,res.clone());
     }
     return res;
   }catch(e){return Response.error()}

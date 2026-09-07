@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r700 — Contextual Tefekkür Entry
+     SÜKÛN r702 — Transport, Layout and Offline Repair
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r701">
+<meta name="sukun-build" content="r702">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r700">
+<link rel="manifest" href="./manifest.webmanifest?v=r702">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6504,7 +6504,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-07-r701</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-07-r702</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6527,8 +6527,22 @@ body[data-focus="1"] .zCtl{
 <!-- ══ SÜRÜM NOTLARI ══  Makine okunur; service worker YENİ sürümün
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
-<script type="application/json" id="surumNotlari">
-[
+<script type="application/json" id="surumNotlari">[
+  {
+    "v": "r702",
+    "t": "7 Eylül 2026",
+    "b": [
+      "28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi.",
+      "Tefekkür girişi kayıt veritabanını beklemeden açılır; görünüm geçişi duraklatılmış sesi başlatmaz. Eski giriş düğmesi kaldırılmış olsa da Escape ve tam ekran çıkışı çalışır.",
+      "Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur.",
+      "MediaSession duraklatma komutu ilk basışta uygulanır. Tümünü Durdur her etkin okuyucunun kendi temizliğini çağırır; geciken eski durdurma yeni oturum sahibini silemez.",
+      "Otomatik zikrin ilk okuma veya zamanlayıcı hatası başlatma kilidini açık bırakmaz; hızlı Durdur komutu başlangıç gecikme filtresine takılmaz.",
+      "Kaydedilmiş seansın sayacı geri yüklenir; çıkış veya gezinme dokunuşu sesi kendiliğinden başlatmaz.",
+      "Tefekkürde Mini/Midi/Max ve sürükleme sınırları okuma alanını korur; sanal klavye açıkken alt sınır görsel ekranla eşleşir.",
+      "Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r702 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
+      "Doğrulama kapsamı ve gerçek cihazda kalan ses/kilit ekranı kontrolleri RAPOR_r702.md içinde belirtilmiştir."
+    ]
+  },
   {
     "v": "r701",
     "t": "7 Eylül 2026",
@@ -8862,8 +8876,7 @@ body[data-focus="1"] .zCtl{
       "r670 intrinsic dock hesabı, kayıt önceliği, sayaç/ses transportu ve seyir motorları korunur."
     ]
   }
-]
-</script>
+]</script>
 <!-- ══ MİNİ OYNATICI — bir şey çalarken altta sabit ══ -->
 <div id="calanSayfa" hidden>
   <div class="csBaslik">
@@ -15052,6 +15065,7 @@ function autoStart(){
   if(window.SukunR698Transport?.hasJourney?.())return false;
   window.SukunR698VoiceIntent?.captureStart?.();
   _r477AutoStarting=true;
+  try{
 
   /* r640: geçmiş global pause latch'i yeni zikir niyetini boğmasın. */
   try{window.SukunAudioSessionRegistry?.releasePauseGate?.('auto-zikir-start')}catch(e){}
@@ -15070,13 +15084,18 @@ function autoStart(){
   try{zUI()}catch(e){}
 
   /* Seri ses promise'i ile aynı scheduler zincirine bağlanır. */
-  try{zAutoKur(false)}catch(e){}
+  zAutoKur(false);
 
   try{if(!ZA.kapali)zikirAcilisAna('kisa',()=>{})}catch(e){}
-  setTimeout(()=>{_r477AutoStarting=false},520);
   return true;
+  }catch(error){
+    try{autoStop()}catch(_){}
+    try{window.sukunReport?.('r702-auto-start',error)}catch(_){}
+    return false;
+  }finally{_r477AutoStarting=false;}
 }
 function autoStop(){
+  _r477AutoStarting=false;
   if(!Z.auto){
     // Never abort a journey's speech from the independent auto-zikir path.
     if(!window.SukunR698Transport?.hasJourney?.()&&(window.__SUKUN_ZIKIR_VOICE_BUSY__||window.__SUKUN_ZIKIR_VOICE_PROMISE__))
@@ -15930,7 +15949,9 @@ $('#favBtn').onclick=()=>{
 };
 $('#autoBtn').onclick=()=>{
   const now=Date.now();
-  if(now-_r477AutoTapAt<620)return;
+  // A rapid Stop/Pause must never be discarded by the start debounce.
+  const live=Z.auto||window.SukunR698Transport?.hasJourney?.()||window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused;
+  if(!live&&now-_r477AutoTapAt<620)return;
   _r477AutoTapAt=now;
   const t=window.SukunR698Transport;
   if(t)t.playPause('main');else Z.auto?autoStop():autoStart();
@@ -25774,7 +25795,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r701';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -25822,7 +25843,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r701',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r702',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -38808,7 +38829,7 @@ else init();
 'use strict';
 const $=(s,r=document)=>r.querySelector(s);
 const FS_KEY='sukun.tefekkur.systemFullscreen.v1';
-let idleTimer=null;
+let idleTimer=null,focusTimer=null,recordingRefresh=null;
 let fullscreenOwned=false;
 let systemFullscreen=false;
 
@@ -38881,7 +38902,7 @@ function wake(){
 }
 async function requestFs(){
   const current=document.fullscreenElement||document.webkitFullscreenElement;
-  if(current){fullscreenOwned=current===document.documentElement;return}
+  if(current)return;
   const el=document.documentElement;
   const fn=el.requestFullscreen||el.webkitRequestFullscreen;
   if(!fn)return;
@@ -38922,11 +38943,11 @@ async function enter(){
   const z=document.querySelector('.tab[data-t="zkr"]');
   if(z&&!z.classList.contains('act'))z.click();
 
-  /* r469: kayıt anahtarlarını Tefekkür'e girerken kesin tazele.
-     Böylece kayıt varsa resolver ilk turdan itibaren TTS yerine kayda geçer. */
-  try{ if(typeof recInit==='function')await recInit(); }catch(e){}
-  try{ if(typeof ac==='function')ac(); }catch(e){}
-  try{ if(window.speechSynthesis && speechSynthesis.paused)speechSynthesis.resume(); }catch(e){}
+  /* r702: görünüm geçişi ses başlatmaz ve IndexedDB'yi beklemez.
+     Kayıt önceliği mevcut resolver'da kalır; anahtar yenileme tek arka plan işi. */
+  if(!recordingRefresh&&typeof recInit==='function'){
+    recordingRefresh=Promise.resolve().then(()=>recInit()).catch(()=>{}).finally(()=>{recordingRefresh=null});
+  }
 
   document.body.classList.add('sukun-focus-mode','sukun-tefekkur-mode');
   document.body.classList.remove('tefekkur-idle');
@@ -38937,13 +38958,16 @@ async function enter(){
      yalnız kullanıcı Ayarlar'dan özellikle seçtiyse istenir. */
   if(systemFullscreen)requestFs();
 
-  setTimeout(()=>{
+  clearTimeout(focusTimer);
+  focusTimer=setTimeout(()=>{
+    if(!document.body.classList.contains('sukun-tefekkur-mode'))return;
     try{
       $('#zCountVisual')?.focus({preventScroll:true});
     }catch(e){}
   },90);
 }
 async function leave(alsoFullscreen=true){
+  clearTimeout(focusTimer);focusTimer=null;
   if(idleTimer){clearTimeout(idleTimer);idleTimer=null;}
   document.body.classList.remove('sukun-tefekkur-mode','sukun-focus-mode','tefekkur-idle');
   syncButton();
@@ -38958,9 +38982,8 @@ function install(){
   ensureFullscreenSetting();
   [240,760,1600].forEach(ms=>setTimeout(ensureFullscreenSetting,ms));
   const b=btn();
-  if(!b)return;
-  b.onclick=toggle;
-  if(!document.body.classList.contains('sukun-tefekkur-mode')){
+  if(b)b.onclick=toggle;
+  if(b&&!document.body.classList.contains('sukun-tefekkur-mode')){
     b.textContent='◉ Tefekkür';
     b.setAttribute('aria-pressed','false');
     b.setAttribute('aria-label','Tefekkür moduna gir');
@@ -38972,7 +38995,7 @@ function install(){
   },{passive:true});
 
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&document.body.classList.contains('sukun-tefekkur-mode')){
+    if(e.key==='Escape'&&!e.defaultPrevented&&document.body.classList.contains('sukun-tefekkur-mode')){
       e.preventDefault();
       leave(true);
     }
@@ -39012,7 +39035,7 @@ window.SUKUN_TEFEKKUR={
   setFullscreen:setSystemFullscreen,
   fullscreenOwned:()=>fullscreenOwned,
   syncSettings:ensureFullscreenSetting,
-  version:'r530'
+  version:'r702'
 };
 })();
 </script>
@@ -40247,7 +40270,7 @@ function sync(){
     const BSD=(typeof window!=='undefined')?window.BERHET_SEYIR:null;
     if(BSD&&typeof BSD==='object'){
       set('bsPause',BSD.paused?resume:pause,BSD.paused?'28 İsim Seyri’ne devam et':'28 İsim Seyri’ni duraklat');
-      const start=$('bsStart');if(start){start.textContent=BSD.paused?'▶ Sürdür':(BSD.run?'⏸ Duraklat':'▶ Başlat');start.setAttribute('aria-label',BSD.paused?'28 İsim Seyri’ne devam et':BSD.run?'28 İsim Seyri’ni duraklat':'28 İsim Seyri’ni başlat veya sürdür');}
+      set('bsStart',BSD.paused?'▶ Sürdür':(BSD.run?'⏸ Duraklat':'▶ Başlat'),BSD.paused?'28 İsim Seyri’ne devam et':BSD.run?'28 İsim Seyri’ni duraklat':'28 İsim Seyri’ni başlat veya sürdür');
     }
 
     /* Alt mini oynatıcı: yer darlığı nedeniyle ikon kalır, erişilebilir adı değişir. */
@@ -40325,10 +40348,10 @@ function bind(){
 document.addEventListener('click',()=>setTimeout(sync,0),true);
 window.addEventListener('sukun:audiostate',sync);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(sync,40)});
-const mo=new MutationObserver(()=>{clearTimeout(mo._t);mo._t=setTimeout(()=>{bind();sync()},40)});
+const mo=new MutationObserver(()=>{clearTimeout(mo._t);mo._t=setTimeout(()=>{bind()},40)});
 if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true});
 /* r646: pause sözleşmesi DOM observer + state olaylarıyla yeterince besleniyor; 900 ms polling kaldırıldı. */
-['sukun:playbackchange','sukun:currentflowchange','sukun:nowplayingchange','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{if(!document.hidden){bind();sync()}},{passive:true}));
+['sukun:playbackchange','sukun:currentflowchange','sukun:nowplayingchange','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{if(!document.hidden){bind()}},{passive:true}));
 window.SukunPauseContract={version:'r262',sync,bind};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(bind,120),{once:true});else setTimeout(bind,120);
 })();
@@ -40858,37 +40881,38 @@ function stopAll(){
   }
   setAggregate({paused:false,providerIds:[],mixCaptured:false},'stopAll');
 
-  /* r681 — JOURNEY STOP IS ATOMIC
-     stopAll yalnız session state'lerini STOPPING yapıp doğrudan hardStopAll'a
-     geçiyordu. 28/99 journey'nin kendi stop callback'i çalışmayınca ilk basış
-     zikir katmanını kapatıp ritmi/owner durumunu bir sonraki basışa bırakabiliyordu.
-     Önce gerçek journey state'ini bitir, sonra bütün fiziksel katmanları kes. */
-  for(const jid of ['berhetiyye','esma99']){
-    if(!touched.some(x=>x.id===jid))continue;
-    try{providers.get(jid)?.stop?.()}catch(e){try{window.sukunReport?.('r681-journey-stop',e,jid)}catch(_){}}
-  }
+  /* r702: every active provider owns its logical cleanup; the mix owns
+     physical cleanup. Calling only journey stops leaves paused reader latches. */
+  const results=[];
+  const stopProvider=(id,fn)=>{
+    if(typeof fn!=='function')return;
+    try{results.push(Promise.resolve(fn()).catch(error=>{
+      try{window.sukunReport?.('audio-session-stopAll',error,id)}catch(_){}
+      return false;
+    }))}catch(error){
+      try{window.sukunReport?.('audio-session-stopAll',error,id)}catch(_){}
+      results.push(Promise.resolve(false));
+    }
+  };
+  const ids=touched.map(x=>x.id).filter(id=>id!=='mix');
+  ids.sort((a,b)=>Number(['berhetiyye','esma99'].includes(b))-Number(['berhetiyye','esma99'].includes(a)));
+  for(const id of ids){const p=providers.get(id);stopProvider(id,p?.stop?.bind(p));}
   const mix=providers.get('mix');
-  let out=true;
-  try{
-    if(typeof mix?.stop==='function')out=mix.stop();
-    else if(typeof hardStopAll==='function')out=hardStopAll();
-  }catch(e){
-    try{window.sukunReport?.('audio-session-stopAll',e)}catch(_){}
-    out=false;
-  }
-
-  Promise.resolve(out).catch(()=>{}).finally(()=>{
+  stopProvider('mix',typeof mix?.stop==='function'?mix.stop.bind(mix):typeof hardStopAll==='function'?hardStopAll:null);
+  activeId=null;
+  schedule('stopAll');
+  return Promise.all(results).then(values=>{
     touched.forEach(({id,epoch})=>{
       const s=sessions.get(id);
       if(s&&s.commandEpoch===epoch)transition(s,STATES.ENDED,'stopAll-complete',true);
     });
-    activeId=null;
+    // A delayed Stop completion must not clear the owner of a later Play.
+    discover();
     schedule('stopAll-complete');
+    return values.every(value=>value!==false);
   });
-  activeId=null;
-  schedule('stopAll');
-  return out===undefined?true:out;
 }
+
 function aggregateState(){
   if(aggregate.paused)return STATES.PAUSED;
   reconcileAll('aggregate-state');
@@ -41101,24 +41125,10 @@ function providerFromTitle(t=''){
 function hookSesCapa(){const sc=window.SesCapa;if(!sc||sc.__playback270)return;sc.__playback270=1;const oldStart=sc.start?.bind(sc),oldStop=sc.stop?.bind(sc);if(oldStart)sc.start=function(o={}){const r=oldStart(o),id=providerFromTitle(o?.title);if(id)activate(id,'sescapa-start');setTimeout(bindMediaSession,0);return r};if(oldStop)sc.stop=function(){const r=oldStop();setTimeout(()=>{discover();bindMediaSession();emit('sescapa-stop')},0);return r}}
 
 
-/* ═══ r653 — HIDDEN MEDIA PAUSE INTENT GUARD ═══════════════════════
-   Cihaz testleri iki farklı Android davranışı gösterdi: hidden journey
-   sırasında Chrome tek başına MediaSession pause callback'i üretebiliyor;
-   callback bazen unlock'tan <1 sn, bazen birkaç saniye önce geliyor.
-   Bu nedenle süreye bakarak "hidden kaldı = gerçek kullanıcı pause'u"
-   demek güvenilir değil.
-
-   Yeni sözleşme:
-   - aktif 28/99 journey hidden iken İLK pause her zaman şüpheli platform
-     olayıdır ve sese/state'e uygulanmaz;
-   - 420–2600 ms içinde gelen İKİNCİ pause gerçek lock/headset niyeti olarak
-     onaylanır;
-   - <420 ms tekrar aynı callback'in duplicate'i sayılır;
-   - görünür dönüş, play veya timeout bekleyen adayı temizler;
-   - stop her zaman tek basışta ve gecikmesizdir.
-   Böylece ghost pause journey'yi USER_PAUSED yapamaz. */
-const R653_MEDIA_PAUSE_DOUBLE_MIN_MS=420;
-const R653_MEDIA_PAUSE_DOUBLE_MAX_MS=2600;
+/* r702: media pause is immediate. Legacy diagnostic field names remain
+   available; no first-pause suppression or double-press timer is used. */
+const R653_MEDIA_PAUSE_DOUBLE_MIN_MS=0;
+const R653_MEDIA_PAUSE_DOUBLE_MAX_MS=0;
 const r653MediaPauseState={
   version:'r653',token:0,timer:0,pending:null,suspected:0,suppressedSingles:0,
   confirmedDouble:0,cancelledWake:0,duplicates:0,immediate:0,lastHiddenAt:0,
@@ -41179,30 +41189,9 @@ function r653CommitMediaPause(reason='media-session-pause-confirmed',confirmed=f
   return true;
 }
 function r653HandleMediaPause(){
-  const owner=r653MediaPauseProtected();
-  if(!owner)return r653CommitMediaPause('media-session-pause',false);
-  const now=Date.now(),p=r653MediaPauseState.pending;
-  if(p){
-    const age=now-p.at;
-    if(age<R653_MEDIA_PAUSE_DOUBLE_MIN_MS){
-      r653MediaPauseState.duplicates++;r653KeepJourneyPlaying('duplicate-suspect');return true;
-    }
-    if(age<=R653_MEDIA_PAUSE_DOUBLE_MAX_MS&&p.owner===owner){
-      return r653CommitMediaPause('media-session-pause-double',true);
-    }
-    r653CancelPendingMediaPause('stale-suspect');
-  }
-  const token=++r653MediaPauseState.token;
-  let key='';try{key=String(window.SukunJourneyAudioMachine?.snapshot?.()?.key||window.SukunLockJourneyTransportV2?.snapshot?.()?.key||'')}catch(e){}
-  r653MediaPauseState.pending={token,owner,key,at:now,hidden:true};
-  r653MediaPauseState.suspected++;r653KeepJourneyPlaying('suspect-first-pause');
-  r653MediaPauseState.timer=setTimeout(()=>{
-    r653MediaPauseState.timer=0;
-    const q=r653MediaPauseState.pending;if(!q||q.token!==token)return;
-    r653MediaPauseState.pending=null;r653MediaPauseState.suppressedSingles++;
-    r653KeepJourneyPlaying(document.hidden?'single-hidden-pause-suppressed':'single-wake-pause-suppressed');
-  },R653_MEDIA_PAUSE_DOUBLE_MAX_MS);
-  return true;
+  // A MediaSession pause action is explicit user intent, even while hidden.
+  // Repeated callbacks are harmless because pauseAll is idempotent.
+  return r653CommitMediaPause('media-session-pause',false);
 }
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){r653MediaPauseState.lastHiddenAt=Date.now();r653MediaPauseEmit('hidden')}
@@ -41241,7 +41230,7 @@ function bindMediaSession(){
        sürdür. Duraklatılmış bir kilit elemanı varsa iş bitmiştir. */
     try{
       const L=window.SukunLockAudio;
-      if(L&&L.duraklatildi()&&L.surdur())return;
+      if(L&&L.duraklatildi())L.surdur();
     }catch(e){}
     let s=null; try{s=snapshot()}catch(e){}
     const calanYok = !s || !s.active || s.state!==STATES.PLAYING;
@@ -41257,7 +41246,7 @@ function bindMediaSession(){
     play();
   });
   bind('pause',()=>{
-    /* r653: hidden active journey pause iki-aşamalı intent guard kapısından geçer. */
+    /* r702: ilk medya pause komutu tek merkezden ve gecikmesiz uygulanır. */
     try{if(window.SukunMediaSessionWakeGuard?.handlePause?.())return}catch(e){}
     r653CommitMediaPause('media-session-pause',false);
   });
@@ -49664,7 +49653,7 @@ function mount(){
   if(actions&&p&&p.parentNode!==actions)actions.appendChild(p);
   if(actions&&u&&a&&p&&(actions.children.length!==3||actions.children[0]!==u||actions.children[1]!==a||actions.children[2]!==p))actions.replaceChildren(u,a,p);
   if(meta&&meta.parentNode!==metaWrap)metaWrap.appendChild(meta);
-  $('r442StepRail')?.replaceChildren();
+  const oldRail=$('r442StepRail');if(oldRail?.childNodes.length)oldRail.replaceChildren();
   $('r444CenterStack')?.remove();$('r444TefExit')?.remove();$('r450FocusMetaSlot')?.remove();
   const exit=ensureExit(root);
   ctl.dataset.tfCanonical='r530';
@@ -49845,13 +49834,18 @@ async function restore(){
     return true;
   }finally{restoring=false;mount();schedule();applyPerf()}
 }
-function resumePending(){
-  const p=pendingResume;if(!p)return;pendingResume=null;document.body.classList.remove('r470-resume-pending');
-  try{if(p.auto&&typeof autoStart==='function'&&!Z.auto)autoStart()}catch(e){}
-  try{const id=p.audio?.id;if(id&&id!=='mix'&&p.audio?.state==='playing')window.SukunAudioSessionRegistry?.play?.(id)}catch(e){}
-  saveSoon();
+function cancelPending(){
+  if(!pendingResume)return false;
+  pendingResume=null;document.body.classList.remove('r470-resume-pending');
+  saveSoon();return true;
 }
-window.SukunSessionMemory={version:'r470',save:saveNow,restore,clear(){try{localStorage.removeItem(MEMKEY)}catch(e){}},snapshot:()=>read(),pending:()=>!!pendingResume};
+function resumePending(e){
+  // Restore progress in a paused state. Only an explicit transport click may
+  // start playback through its normal owner; Exit/navigation never starts audio.
+  if(!e?.target?.closest?.('#autoBtn,#r588Play,#r170Play,#mbPause,#r588Stop,#r170Stop,#mbStop,#tefExitBtn'))return;
+  cancelPending();
+}
+window.SukunSessionMemory={version:'r702',save:saveNow,restore,cancelPending,clear(){cancelPending();clearTimeout(saveTO);try{localStorage.removeItem(MEMKEY)}catch(e){}},snapshot:()=>read(),pending:()=>!!pendingResume};
 
 /* ── 6. Session summary ──────────────────────────────────── */
 let tefStart=null;
@@ -49913,7 +49907,7 @@ window.visualViewport?.addEventListener('resize',scheduleResize,{passive:true});
 window.visualViewport?.addEventListener('scroll',()=>{vvScrollIgnored++},{passive:true});
 try{navigator.mediaDevices?.addEventListener?.('devicechange',()=>scheduleRecover('devicechange'))}catch(e){}
 window.addEventListener('pagehide',saveNow,{passive:true});
-['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,resumePending,{capture:true,once:false,passive:true}));
+document.addEventListener('click',resumePending,{capture:true,passive:true});
 
 function boot(){mount();bindResize();bindCount();bindContexts();measure();applyPerf();patchOwnerDiagnostics();scheduleOwnerCheck();setTimeout(restore,260)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -56490,8 +56484,8 @@ function render(state){
   const warning=health?.warning&&playing&&!paused?health.warning:'';
   const se=$('r588State');if(se){setText('r588State',warning);se.hidden=true;se.classList.toggle('paused',paused);}
   setText('r588Current',current&&current!==title?current:'');
-  const live=$('r588Live');if(live){live.textContent=paused?'BEKLE':playing?'CANLI':'HAZIR';live.classList.toggle('paused',paused);live.classList.toggle('ready',!paused&&!playing)}
-  const play=$('r588Play');if(play){play.textContent=paused||!playing?'▶':'Ⅱ';play.setAttribute('aria-label',paused?'Devam Ettir':playing?'Duraklat':'Başlat')}
+  const live=$('r588Live');if(live){setText('r588Live',paused?'BEKLE':playing?'CANLI':'HAZIR');live.classList.toggle('paused',paused);live.classList.toggle('ready',!paused&&!playing)}
+  const play=$('r588Play');if(play){setText('r588Play',paused||!playing?'▶':'Ⅱ');const label=paused?'Devam Ettir':playing?'Duraklat':'Başlat';if(play.getAttribute('aria-label')!==label)play.setAttribute('aria-label',label)}
 
   let progressText='—',remain='—',journey='—',pct=finite(p.progress,0);
   if(z){progressText=z.target>0?`${z.count}/${z.target}`:`${z.count}/∞`;remain=z.target>0?String(z.remain??Math.max(0,z.target-z.count)):'∞';journey=z.length?`${z.position}/${z.length}`:'—';pct=z.target>0?Math.max(0,Math.min(100,(z.count/z.target)*100)):pct}
@@ -60822,7 +60816,7 @@ function syncSound(){
 function kicker(view){
   const el=$('r616ViewName');if(!el)return;
   const names={home:'Bugün',zikir:'Zikir',journeys:'Seyirler',sounds:'Sesler',notifications:'Bildirimler',layout:'Tefekkür Düzeni'};
-  const v=view||document.body.dataset.r616View||'home';el.textContent=(names[v]||'SÜKÛN')+' · r632';
+  const v=view||document.body.dataset.r616View||'home';const build=document.querySelector('meta[name="sukun-build"]')?.content||'r702';const title=(names[v]||'SÜKÛN')+' · '+build;if(el.textContent!==title)el.textContent=title;
 }
 function extraTools(){
   const grid=document.querySelector('#r616ToolsSheet .r616ToolGrid');if(!grid)return false;
@@ -60841,7 +60835,7 @@ function extraTools(){
   }
   return true;
 }
-function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r701';if(x)x.textContent='SÜKÛN v20.21 · '+b+' · '+skins[skin]}
+function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r702';if(x)x.textContent='SÜKÛN v20.21 · '+b+' · '+skins[skin]}
 function mount(){applySkin(skin,false);skinPicker();toolsNav();soundPreview();extraTools();kicker();sheetBuild()}
 window.addEventListener('sukun:r616viewchange',e=>{document.body.classList.remove('r619-legacy-tool-open');kicker(e?.detail?.view);setTimeout(()=>{toolsNav();soundPreview();extraTools();syncSound()},0)},{passive:true});
 window.addEventListener('sukun:r619skinchange',()=>sheetBuild(),{passive:true});
@@ -60918,7 +60912,7 @@ function syncSkinButtons(){
   const cur=currentSkin();
   document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
   const build=document.querySelector('.r616SheetBuild');
-  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r701';build.textContent='SÜKÛN v20.21 · '+b+' · '+(skins[cur]||skins.ottoman);}
+  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r702';build.textContent='SÜKÛN v20.21 · '+b+' · '+(skins[cur]||skins.ottoman);}
 }
 function mountSkinPanel(){
   const sheet=$('r616ToolsSheet');if(!sheet)return false;
@@ -61597,7 +61591,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r701';
+const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -61971,7 +61965,7 @@ body.r588-mode-mini.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r1
 (()=>{
 'use strict';
 if(window.SukunR699Layout)return;
-const VERSION='r699', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const VERSION='r702', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const root=document.documentElement, B=document.body;
 const KEY='sukun.dockY.r633';
 let stateSig='',y=0,raf=0,last=null,reason='boot',measures=0,coalesced=0,ro=null,drag=null,quietUntil=0,deferred=false,resizeTimer=0,modeLast='',drawerLast=false,detailsLast=false,anchorLast='',scrollResets=0,rehomeCount=0,violations=0;
@@ -61990,8 +61984,13 @@ function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!h
  if(!host.dataset.r699Ready){host.dataset.r699Ready='1';}
  return true}
 function save(){safe(()=>localStorage.setItem(KEY,String(Math.round(y*10)/10)),null)}
-function setY(n,persist=false){y=Number.isFinite(+n)?+n:0;root.style.setProperty('--r699-y',px(y));root.style.setProperty('--r633-dock-y',px(y));$('r170Now')?.style.setProperty('--r633-dock-y',px(y));if(persist)save();return y}
-function setBounds(v,bottom,hostH){const capBottom=v.bottom-bottom,top=v.top+8;return{min:Math.min(0,top-(capBottom-hostH)),max:0,top,bottom:capBottom,cap:Math.max(1,capBottom-top)}}
+function setY(n,persist=false){y=Number.isFinite(+n)?+n:0;root.style.setProperty('--r699-y',px(y));root.style.setProperty('--r633-dock-y',px(y));$('r170Now')?.style.setProperty('--r633-dock-y',px(y));if(B.classList.contains('r699-dock-active')){const h=parseFloat(root.style.getPropertyValue('--r699-host-h'))||0,b=parseFloat(root.style.getPropertyValue('--r699-bottom'))||0;if(h){const v=viewport(),surface=h+b-y+12,content=surface-(v.layoutH-v.bottom);root.style.setProperty('--r699-surface-bottom',px(surface));root.style.setProperty('--r699-content-reserve',px(content));root.style.setProperty('--r659-wrap-reserve',px(content));}}if(persist)save();return y}
+function readingReserve(v,bottom){
+ if(!B.classList.contains('sukun-tefekkur-mode')||B.classList.contains('r699-drawer-open'))return 0;
+ const cap=Math.max(1,v.height-bottom-16);
+ return Math.max(0,Math.min(420,Math.floor(v.height*.5),cap-120));
+}
+function setBounds(v,bottom,hostH){const capBottom=v.bottom-bottom,top=v.top+8+readingReserve(v,bottom);return{min:Math.min(0,top-(capBottom-hostH)),max:0,top,bottom:capBottom,cap:Math.max(1,capBottom-top)}}
 function applyPosition(v,bottom,hostH,desiredY=y){const bounds=setBounds(v,bottom,hostH);const n=clamp(desiredY,bounds.min,bounds.max);setY(n,false);return bounds}
 function bindGrip(grip){
  const finish=e=>{if(!drag||e.pointerId!==drag.id)return;const moved=drag.moved;drag=null;B.classList.remove('r633-dock-dragging');$('r170Now')?.classList.remove('r633-dragging');safe(()=>grip.releasePointerCapture(e.pointerId),null);quietUntil=performance.now()+120;save();schedule('drag-end');if(moved)grip.dataset.r699SuppressClick='1';setTimeout(()=>{delete grip.dataset.r699SuppressClick},350)};
@@ -62014,7 +62013,7 @@ function modalSync(){
  else if(modalKind==='drawer'){modalKind='';try{modalTrigger?.focus?.({preventScroll:true})}catch(_){ }modalTrigger=null}
 }
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape'&&!e.defaultPrevented){if(!$('r554AlertDrawer')?.hidden){e.preventDefault();window.SukunAlertCenter?.close?.();return}if(B.classList.contains('r434-inline-details-open')){e.preventDefault();window.SukunDockDetails?.close?.();return}}
+ if(e.key==='Escape'&&!e.defaultPrevented){if($('r554AlertDrawer')&&!$('r554AlertDrawer').hidden){e.preventDefault();window.SukunAlertCenter?.close?.();return}if(B.classList.contains('r434-inline-details-open')){e.preventDefault();window.SukunDockDetails?.close?.();return}}
  if(e.key!=='Tab'||!B.classList.contains('r699-drawer-open'))return;
  const d=$('r554AlertDrawer'),items=[...d.querySelectorAll('button:not(:disabled):not([hidden]),a[href],input:not(:disabled),[tabindex]:not([tabindex="-1"])')].filter(visible);if(!items.length)return;
  const first=items[0],lastItem=items[items.length-1];if(e.shiftKey&&(document.activeElement===first||!d.contains(document.activeElement))){e.preventDefault();lastItem.focus()}else if(!e.shiftKey&&(document.activeElement===lastItem||!d.contains(document.activeElement))){e.preventDefault();first.focus()}
@@ -62025,7 +62024,7 @@ function measure(why='api'){
  const host=$('r170Now'),shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');const v=viewport(),bottom=reserve(v),m=mode(),tef=B.classList.contains('sukun-tefekkur-mode'),drawer=host.classList.contains('r554-alert-open')&&!($('r554AlertDrawer')?.hidden),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible')||!B.classList.contains('r591-flow-active');
  root.style.setProperty('--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));root.style.setProperty('--r699-bottom',px(v.layoutH-v.bottom+bottom));root.style.setProperty('--r633-max-h',px(Math.max(1,v.height-bottom-16)));root.style.setProperty('--r633-vvh',px(v.height));root.style.setProperty('--r633-safe-top',px(v.top+8));root.style.setProperty('--r699-top',px(v.top+8));root.style.setProperty('--r699-viewport-h',px(v.height));root.style.setProperty('--r699-available',px(Math.max(1,v.height-bottom-16)));
  clearLegacy();modalSync();B.classList.toggle('r699-drawer-open',drawer);B.classList.toggle('r699-details-open',B.classList.contains('r434-inline-details-open'));
- if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active');root.style.setProperty('--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));root.style.setProperty('--r699-surface-bottom',root.style.getPropertyValue('--r699-content-reserve'));root.style.setProperty('--r659-wrap-reserve',px(0));root.style.setProperty('--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
+ if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active');root.style.setProperty('--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));root.style.setProperty('--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));root.style.setProperty('--r659-wrap-reserve',px(0));root.style.setProperty('--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
  B.classList.add('r699-dock-active');
  const changedMode=modeLast!==m;if(changedMode){if(body.scrollTop){body.scrollTop=0;scrollResets++}modeLast=m}
  const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
@@ -62040,12 +62039,12 @@ function measure(why='api'){
   desired=Math.min(need,profile,cap);
   const fixed=Math.ceil((grip?.getBoundingClientRect().height||0)+(footer?.getBoundingClientRect().height||0)+18);
   desired=Math.max(Math.min(cap,fixed+40),desired);
-  // Short Tefekkür screens must retain a usable independent reading/counter surface.
-  if(tef&&v.height<560){const reading=Math.max(112,Math.min(180,v.height*.34));desired=Math.min(desired,Math.max(Math.min(cap,fixed+40),cap-reading));}
+  // Reserve the reading surface in every Tefekkür size, including dragged Max.
+  if(tef)desired=Math.min(desired,Math.max(1,cap-readingReserve(v,bottom)));
  }
  desired=Math.min(cap,Math.max(1,Math.ceil(desired)));root.style.setProperty('--r699-host-h',px(desired));root.style.setProperty('--r659-dock-fit-h',px(desired));root.style.setProperty('--r659-dock-max-h',px(cap));root.style.setProperty('--r659-dock-min-h',px(0));root.style.setProperty('--r662-intrinsic',px(need));host.style.setProperty('height',px(desired),'important');host.style.setProperty('min-height','0px','important');host.style.setProperty('max-height',px(cap),'important');
  const bounds=applyPosition(v,bottom,desired,y);const free=y<-5;
- const reservePx=desired+bottom-y+12;root.style.setProperty('--r699-content-reserve',px(reservePx));root.style.setProperty('--r699-surface-bottom',px(reservePx));root.style.setProperty('--r659-wrap-reserve',px(reservePx));root.style.setProperty('--r660-peek-reserve',px(62+bottom));
+ const reservePx=desired+bottom-y+12;root.style.setProperty('--r699-content-reserve',px(reservePx));root.style.setProperty('--r699-surface-bottom',px(v.layoutH-v.bottom+reservePx));root.style.setProperty('--r659-wrap-reserve',px(reservePx));root.style.setProperty('--r660-peek-reserve',px(62+bottom));
  B.classList.toggle('r699-body-scroll',!drawer&&need>desired+2);B.classList.toggle('r699-overflow',!drawer&&need>desired+2);
  // Max is not a document lock. The zikir surface may scroll naturally behind the fixed player.
  const card=document.querySelector('#tab-zkr>.card.zCtl');let boundaryTop=null,cardH=0;
@@ -62220,10 +62219,13 @@ async function execute(entry){
   }else clearOwner(token.id,'task-complete');
   return result;
 }
+function pauseHeld(){
+  return !!(window.AudioLife?.userPaused||window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused);
+}
 async function drain(reason='drain'){
-  if(draining)return;if(owner||realBusy()||!queue.length)return;
+  if(draining||pauseHeld())return;if(owner||realBusy()||!queue.length)return;
   draining=true;emit(reason+'-start');
-  try{const entry=queue.shift();emit('dequeue');if(entry)await execute(entry)}finally{draining=false;emit(reason+'-end');if(!owner&&!realBusy()&&queue.length)queueMicrotask(()=>drain('continue'))}
+  try{const entry=queue.shift();emit('dequeue');if(entry)await execute(entry)}finally{draining=false;emit(reason+'-end');if(!pauseHeld()&&!owner&&!realBusy()&&queue.length)queueMicrotask(()=>drain('continue'))}
 }
 function runOrQueue(spec,runner,opt={}){
   sync('request');const busy=owner||realBusy();
@@ -62381,7 +62383,7 @@ try{
 }catch(e){try{window.sukunReport?.('foreground-arbiter-terkip',e)}catch(_) {}}
 
 /* State olayları polling olmadan boşalan sahip sonrası kuyruğu yürütür. */
-['sukun:terkipvoicechange','sukun:playbackchange','sukun:journey-complete','sukun:journey-advance','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,()=>{sync(ev);queueMicrotask(()=>drain(ev))},{passive:true}));
+['sukun:audioaggregatechange','sukun:terkipvoicechange','sukun:playbackchange','sukun:journey-complete','sukun:journey-advance','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,()=>{sync(ev);queueMicrotask(()=>drain(ev))},{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){sync('visible');queueMicrotask(()=>drain('visible'))}},{passive:true});
 window.addEventListener('pageshow',()=>{sync('pageshow');queueMicrotask(()=>drain('pageshow'))},{passive:true});
 window.addEventListener('sukun:r616viewchange',()=>setTimeout(ensurePanel,0),{passive:true});
@@ -65228,7 +65230,7 @@ body.r588-dock-ready #r447DockHandle{display:none!important;pointer-events:none!
 <script id="r686-integrity-interaction-runtime">
 (()=>{
 'use strict';if(window.__SUKUN_R686_INTEGRITY__)return;window.__SUKUN_R686_INTEGRITY__=1;
-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r701';
+const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
 function sample(id){const el=document.getElementById(id);if(!el)return null;const c=getComputedStyle(el);return{id,display:c.display,visibility:c.visibility,pointerEvents:c.pointerEvents,touchAction:c.touchAction,overflowY:c.overflowY,scrollable:el.scrollHeight>el.clientHeight+1}}
 function snapshot(){
   const keys=['autoBtn','undoBtn','plusBtn','r588Play','r588Stop','r659DockBody','r674DetailsScroll','r633DockGrip','r447DockHandle'];
@@ -65741,28 +65743,31 @@ function playPause(source='ui'){
   if(stopping)return false;
   mark('play-pause',source);
   const j=journey(),AR=window.SukunAudioSessionRegistry;
+  const aggregate=safe(()=>AR?.aggregateSnapshot?.(),null);
+  // Resume exactly the providers captured by Pause, including the physical mix.
+  if(aggregate?.paused&&AR?.resumeAll){
+    safe(()=>window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source));
+    return AR.resumeAll()!==false;
+  }
   if(j){
     try{
       if(j.state.paused||j.state.systemHold){
-        window.SukunJourneyAudioMachine?.intent?.('play','r698-'+source);
-        const aggregate=safe(()=>AR?.aggregateSnapshot?.(),null);
-        const providerId=j.kind==='28'?'berhetiyye':'esma99';
-        if(aggregate?.paused&&aggregate.providerIds?.includes(providerId))AR.resumeAll();
-        else j.api?.resume?.({system:false,reason:'r698-user-resume'});
-      }else{
-        window.SukunJourneyAudioMachine?.intent?.('pause','r698-'+source);
-        if(AR?.pauseAll)AR.pauseAll('r698-'+source);else j.api?.pause?.();
+        window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source);
+        return j.api?.resume?.({system:false,reason:'r702-user-resume'})!==false;
       }
-      return true;
-    }catch(e){safe(()=>window.sukunReport?.('r698-journey-transport',e,j.kind));return false}
+      window.SukunJourneyAudioMachine?.intent?.('pause','ui:'+source);
+      return (AR?.pauseAll?AR.pauseAll('ui:'+source):j.api?.pause?.())!==false;
+    }catch(e){safe(()=>window.sukunReport?.('r702-journey-transport',e,j.kind));return false}
+  }
+  const d=direct(),state=safe(()=>d?.state?.(),{})||{};
+  // The dock's Pause is aggregate pause. The main counter's Stop remains Stop.
+  if(source!=='main'&&AR?.pauseAll&&(state.auto||safe(()=>AR.aggregateState?.())==='playing')){
+    return AR.pauseAll('ui:'+source)!==false;
   }
   if(isDirectContext()){
-    const d=direct();if(!d)return false;
-    const state=d.state?.()||{};
-    if(state.auto)d.stop();else{
-      d.clearStale?.();d.start();
-    }
-    return true;
+    if(!d)return false;
+    if(state.auto)return d.stop()!==false;
+    d.clearStale?.();return d.start()!==false;
   }
   return legacy('r170Play');
 }
@@ -65772,6 +65777,7 @@ function stop(source='ui'){
   stopping=true;
   try{
     safe(()=>window.SukunJourneyAudioMachine?.intent?.('stop','r698-'+source));
+    safe(()=>window.SukunSessionMemory?.cancelPending?.());
     safe(()=>window.SukunForegroundArbiter?.clearQueue?.('r698-stop'));
     const AR=window.SukunAudioSessionRegistry;
     if(AR?.stopAll)AR.stopAll();else legacy('r170Stop');
@@ -65781,8 +65787,8 @@ function stop(source='ui'){
   finally{stopping=false}
   return true;
 }
-const snapshot=()=>Object.freeze({version:'r698',commandSeq,lastCommand,lastAt,stopping,journey:journey()?.kind||'',direct:direct()?.state?.()||null});
-window.SukunR698Transport=Object.freeze({version:'r698',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot});
+const snapshot=()=>Object.freeze({version:'r702',commandSeq,lastCommand,lastAt,stopping,journey:journey()?.kind||'',direct:direct()?.state?.()||null});
+window.SukunR698Transport=Object.freeze({version:'r702',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot});
 })();
 
 </script>
@@ -66311,9 +66317,9 @@ html body.r699-layout.sukun-tefekkur-mode #tab-zkr{scrollbar-gutter:stable!impor
 if(window.SukunR698Diagnostics)return;
 const ids=['r170Now','r588DockShell','r633DockGrip','r659DockBody','r588Play','r588Stop','r588Hide','r588Details','r697VoiceBadge','r433DockPeek','tfRefinedLayout','zCountVisual','zMuhr','tefExitBtn'];
 function element(id){const e=document.getElementById(id);if(!e)return null;const r=e.getBoundingClientRect(),c=getComputedStyle(e);return{id,rect:{x:r.x,y:r.y,width:r.width,height:r.height},display:c.display,visibility:c.visibility,pointerEvents:c.pointerEvents,touchAction:c.touchAction,overflowY:c.overflowY,scrollHeight:e.scrollHeight,clientHeight:e.clientHeight,hidden:!!e.hidden};}
-function snapshot(){return{version:'r701',build:document.querySelector('meta[name="sukun-build"]')?.content,mode:window.SukunDockSize?.get?.(),viewport:{width:innerWidth,height:innerHeight},elements:ids.map(element),transport:window.SukunR698Transport?.snapshot?.(),voice:window.SukunR698VoiceHealth?.snapshot?.(),tap:window.SukunR688TapAuthority?.snapshot?.(),max:window.SukunR680?.snapshot?.(),placement:window.SukunFlowDockPlacement?.snapshot?.(),ui:window.SukunR698UI?.snapshot?.()};}
+function snapshot(){return{version:'r702',build:document.querySelector('meta[name="sukun-build"]')?.content,mode:window.SukunDockSize?.get?.(),viewport:{width:innerWidth,height:innerHeight},elements:ids.map(element),transport:window.SukunR698Transport?.snapshot?.(),voice:window.SukunR698VoiceHealth?.snapshot?.(),tap:window.SukunR688TapAuthority?.snapshot?.(),max:window.SukunR680?.snapshot?.(),placement:window.SukunFlowDockPlacement?.snapshot?.(),ui:window.SukunR698UI?.snapshot?.()};}
 function hit(x,y){const chain=document.elementsFromPoint(x,y).slice(0,12);return chain.map(e=>({id:e.id,tag:e.tagName,className:typeof e.className==='string'?e.className.slice(0,120):'',pointer:getComputedStyle(e).pointerEvents,rect:(()=>{const r=e.getBoundingClientRect();return[r.x,r.y,r.width,r.height]})()}));}
-window.SukunR698Diagnostics=Object.freeze({version:'r701',snapshot,hit});
+window.SukunR698Diagnostics=Object.freeze({version:'r702',snapshot,hit});
 })();
 </script>
 
