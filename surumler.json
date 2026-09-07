@@ -1,5 +1,19 @@
 [
   {
+    "v": "r699",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Akış barının Mini/Midi/Max, sürükleme, güvenli alan ve kaydırma geometrisi tek r699 otoritesinde birleştirildi; yarışan eski layout runtime’ları uyumluluk katmanına alındı.",
+      "İçerik yüksekliği ile host yüksekliği aynı hesapta uzlaştırıldı. Max gereksiz boşluk bırakmaz; uzun içerik kendi panelinde kayar ve alt transport satırı görünür kalır.",
+      "Tefekkür, sayaç ve gezinme kontrolleri küçük ekranlarda doğal dikey akışa taşındı. Eski sabit min-width çakışmaları, çember/çıkış örtüşmeleri ve aşağı kaydırılamayan alt kontroller düzeltildi.",
+      "Bildirim çekmecesi tek modal ve tek liste kaydırma sahibine bağlandı. Zemin tıklama perdesi, Escape ile kapatma, odak geri dönüşü ve gerçek liste kaydırması doğrulandı.",
+      "Detaylar canonical API üzerinden açılır; eski ikinci açılma yolu ve her durumda tepeye sıfırlayan davranış kaldırıldı. Uzun içerik native scroll ile erişilebilir.",
+      "Dokunma ile sürükleme ayrıldı; gerçek transport native tap testinde her komut bir kez çalıştı. Sürükleme sırasında kaydırma sıfırlanmaz, klavye ile konumlandırma korunur.",
+      "Kısa yatay ekranlarda Max yüksekliği sınırlandırıldı; okuyucu alanı tamamen örtülmez. Responsive grid ve dokunma hedefleri iyileştirildi.",
+      "r695 sayaç ledger, r696 telefon kesintisi/voice recovery ve r698 canonical transport motorları korunur. Bu sürüm fiziksel Android audio-focus ve mikrofon testlerinin yerine geçmez."
+    ]
+  },
+  {
     "v": "r698",
     "t": "7 Eylül 2026",
     "b": [
