@@ -1,0 +1,886 @@
+--- r703/nero.html
++++ r704/nero.html
+@@ -1,6 +1,6 @@
+ <!DOCTYPE html>
+ <!-- ════════════════════════════════════════════════════════════════
+-     SÜKÛN r703 — Idempotent DOM Guard (base r702)
++     SÜKÛN r704 — Native DOM, Startup & Pause Repair (base r703)
+      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
+      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
+      ════════════════════════════════════════════════════════════════ -->
+@@ -8,10 +8,10 @@
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+-<meta name="sukun-build" content="r703">
++<meta name="sukun-build" content="r704">
+ <meta name="referrer" content="no-referrer">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
+-<link rel="manifest" href="./manifest.webmanifest?v=r703">
++<link rel="manifest" href="./manifest.webmanifest?v=r704">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+@@ -3781,76 +3781,7 @@
+ 
+ 
+ 
+-<script id="r703-idempotent-dom-guard">
+-/* ═══ r703 — Aynı değeri tekrar yazan DOM çağrılarını sessizce yut ═══
+-   Ölçüm (r702, 10 sn boşta, gerçek Chromium/Android UA):
+-     ~300 no-op attribute yazımı → ~3.7k mutation kaydı → merkezî yayın
+-     9 aboneye dağıtıyor → aboneler setTimeout(40ms)/rAF ile yeniden
+-     normalize ediyor → tekrar yazıyor. Kendi kendini besleyen döngü.
+-   Aynı değeri yeniden yazmanın mutation kaydı üretmek dışında hiçbir
+-   gözlemlenebilir etkisi yoktur; o kaydı üretmemek davranışı bozmaz,
+-   yalnız döngüyü keser. Bu yüzden çağrı yerlerini tek tek değiştirmek
+-   yerine tek noktadan kapatıldı — yeni kod da aynı hataya düşemez. */
+-(function(){
+-  if(window.__r703Guard) return; window.__r703Guard=true;
+-  var E=Element.prototype, n=0;
+-  window.__r703Skipped=function(){return n;};
+-
+-  var SA=E.setAttribute;
+-  E.setAttribute=function(name,value){
+-    var v=String(value);
+-    try{ if(this.getAttribute(name)===v){ n++; return; } }catch(e){}
+-    return SA.call(this,name,v);
+-  };
+-
+-  var RA=E.removeAttribute;
+-  E.removeAttribute=function(name){
+-    try{ if(!this.hasAttribute(name)){ n++; return; } }catch(e){}
+-    return RA.call(this,name);
+-  };
+-
+-  /* hidden / className IDL setter'ları setAttribute'a uğramaz, ayrı korunur */
+-  function guardProp(proto,prop,same){
+-    var d=Object.getOwnPropertyDescriptor(proto,prop);
+-    if(!d||!d.set||!d.get) return;
+-    Object.defineProperty(proto,prop,{configurable:true,enumerable:d.enumerable,
+-      get:d.get,
+-      set:function(v){ try{ if(same(d.get.call(this),v)){ n++; return; } }catch(e){} return d.set.call(this,v); }});
+-  }
+-  guardProp(HTMLElement.prototype,'hidden',function(cur,v){ return cur===!!v; });
+-  guardProp(E,'className',function(cur,v){ return cur===String(v); });
+-  guardProp(E,'id',function(cur,v){ return cur===String(v); });
+-
+-  /* classList.add/remove: zaten var olanı eklemek de kayıt üretebiliyor */
+-  var CL=DOMTokenList.prototype, add=CL.add, rem=CL.remove;
+-  CL.add=function(){
+-    var i=0,need=false;
+-    for(;i<arguments.length;i++){ if(!this.contains(arguments[i])){ need=true; break; } }
+-    if(!need){ n++; return; }
+-    return add.apply(this,arguments);
+-  };
+-  CL.remove=function(){
+-    var i=0,need=false;
+-    for(;i<arguments.length;i++){ if(this.contains(arguments[i])){ need=true; break; } }
+-    if(!need){ n++; return; }
+-    return rem.apply(this,arguments);
+-  };
+-
+-  /* textContent: yalnız "tek metin düğümü ve metin aynı" dar durumunda atla */
+-  var td=Object.getOwnPropertyDescriptor(Node.prototype,'textContent');
+-  if(td&&td.set&&td.get){
+-    Object.defineProperty(Node.prototype,'textContent',{configurable:true,enumerable:td.enumerable,
+-      get:td.get,
+-      set:function(v){
+-        try{
+-          if(this.nodeType===1&&this.childNodes.length===1&&this.firstChild.nodeType===3
+-             &&this.firstChild.nodeValue===String(v)){ n++; return; }
+-        }catch(e){}
+-        return td.set.call(this,v);
+-      }});
+-  }
+-})();
+-</script>
++<!-- r704: Native DOM prototypes preserved; redundant writes are guarded in their owning modules. -->
+ <script id="r455-boot-runtime-probe">
+ (()=>{
+ 'use strict';
+@@ -5510,7 +5441,7 @@
+   </div>
+   <div class="apDokun" id="apDokun">dokun</div>
+ </div>
+-<script>
++<script id="sukun-startup-curtain-runtime">
+ (function(){
+   var perde=document.getElementById('acilisPerde');
+   if(!perde)return;
+@@ -5518,18 +5449,21 @@
+      doğrudan localStorage'a bakıyoruz; burada S henüz tanımlı değil. */
+   try{ if(localStorage.getItem('sukun.acilis')==='0'){ perde.remove(); return } }catch(e){}
+ 
+-  var bitti=false;
++  var bitti=false,gongPlayed=false;
+   function kapat(){
+     if(bitti)return; bitti=true;
+     perde.classList.add('bitti');
+     setTimeout(function(){ try{perde.remove()}catch(e){} },700);
+   }
+   /* Gong: yalnız ses zaten açıksa kendiliğinden. Değilse dokunuşu bekler. */
+-  function gong(){
++  function gong(fromGesture=false){
++    if(bitti||gongPlayed)return false;
+     try{
+-      if(typeof ac==='function') ac();
++      if(!fromGesture&&(typeof ctx==='undefined'||!ctx||ctx.state!=='running'))return false;
++      if(fromGesture&&typeof ac==='function')ac();
+       if(typeof ctx!=='undefined' && ctx && ctx.state!=='closed'){
+-        if(ctx.state==='suspended' && ctx.resume) ctx.resume();
++        if(ctx.state==='suspended' && ctx.resume)Promise.resolve(ctx.resume()).catch(()=>{});
++        gongPlayed=true;
+         if(typeof gongSentez==='function') gongSentez();
+         if(typeof huSentez==='function') setTimeout(function(){ huSentez(2.2) },210);
+         return true;
+@@ -5543,7 +5477,7 @@
+   },620);
+   /* Dokunuş hem kilidi açar hem gongu vurur; sonra perde çekilir. */
+   perde.addEventListener('pointerdown',function(){
+-    gong();
++    gong(true);
+     setTimeout(kapat,420);
+   },{passive:true,once:true});
+   setTimeout(kapat,2600);
+@@ -6598,6 +6532,20 @@
+      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
+      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
+ <script type="application/json" id="surumNotlari">[
++{
++ "v": "r704",
++ "t": "7 Eylül 2026",
++ "b": [
++  "Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir.",
++  "Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez.",
++  "Açılış perdesinin zamanlayıcısı boşta ses motorunu kurmaz veya askıya alınmış sesi başlatmaz. Açılış sesi kullanıcı dokunuşuyla bir kez çalabilir.",
++  "Seyir kaynak gözlemcisi aynı karedeki yenilemeleri tek çağrıda toplar; değişmeyen tema tercihi yeniden tema olayı yayımlamaz.",
++  "Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",
++  "Çalışma anı sürüm denetiminde okunamayan yapı işaretçisi ve eski Service Worker artık başarılı sonuç olarak gösterilmez.",
++  "Duraklat sırasında otomatik sayacı kapatan iç Stop bildirimi ve eski ses onarım modülü kullanıcı duraklatmasını silemez. Duraklatılmış sayaç için saklanan devam bilgisi korunur.",
++  "r702 ses/seyir, duraklat/devam/durdur, kuyruk ve yerleşim regresyonları yeniden denetlendi. Ölçümler ve kalan gerçek cihaz kontrolleri RAPOR_r704.md içindedir."
++ ]
++},
+  {
+   "v": "r703",
+   "t": "7 Eylül 2026",
+@@ -9958,15 +9906,19 @@
+ }
+ 
+ function dailyShow(force){
++  // The current home may omit the retired splash. Its delayed callback
++  // must check the complete surface before writing or marking it seen.
++  const dc=document.getElementById('dailyCard');
++  const text=document.getElementById('dcText'),source=document.getElementById('dcSrc');
++  if(!dc||!text||!source)return false;
+   const today=new Date().toDateString();
+   if(!force&&S.get('sukun.dailyseen','')===today)return;
+   const idx=Math.abs([...today].reduce((a,c)=>a*31+c.charCodeAt(0),7))%DAILY_WORDS.length;
+   const w=DAILY_WORDS[idx];
+-  $('#dcText').textContent='«'+w.t+'»';
+-  $('#dcSrc').textContent='— '+w.s;
+-
+-  const dc = document.getElementById('dailyCard');
+-  if(!dc) return;
++  text.textContent='«'+w.t+'»';
++  source.textContent='— '+w.s;
++
++
+   dc.classList.remove('fade-out-splash');
+   dc.classList.add('daily-active');
+ 
+@@ -25884,7 +25836,7 @@
+   if(!('serviceWorker' in navigator))return;
+   if(!/^https?:$/.test(location.protocol))return;
+ 
+-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
++  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r704';
+   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
+     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
+   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
+@@ -25932,7 +25884,7 @@
+     });
+   }
+   addEventListener('load',()=>{
+-    navigator.serviceWorker.register('./sw.js?v=r703',{updateViaCache:'none'}).then(reg=>{
++    navigator.serviceWorker.register('./sw.js?v=r704',{updateViaCache:'none'}).then(reg=>{
+       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
+       if(reg.active)status(reg.active);
+       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
+@@ -28494,18 +28446,9 @@
+   if(typeof icoHydrate==='function')icoHydrate();
+   if(typeof dockTipInit==='function')dockTipInit();
+ 
+-  /* ── r99: PANELLERİ ARKA PLANDA KUR ────────────────────────────
+-     Tekke ve NeuroSync artık açılışta DOM'a kurulmuyor (ölçüm: bu
+-     ikisi DOMContentLoaded'a 827 ms ekliyordu). Kullanıcı sekmeye
+-     dokunduğunda hazırla() zaten kendiliğinden çalışır — ama o an
+-     ~400 ms beklemesin diye burada önceden, kademeli olarak kurulur.
+-     requestIdleCallback KULLANILMAZ: bu uygulama sürekli 60 fps
+-     döngü çalıştırdığı için boşta zaman yok (bkz. devir notu).
+-     Kademeli: ikisi aynı anda kurulursa tek bir uzun takılma olur. */
+-  addEventListener('load',()=>{
+-    setTimeout(()=>{ try{ Tekke.hazirla(); }catch(e){} },1500);
+-    setTimeout(()=>{ try{ Neuro.hazirla(); }catch(e){} },3000);
+-  },{once:true});
++  /* r704: COLD_START_PANELS — Tekke.open(), Neuro.open() and
++     Neuro.startBreathById() already initialize their factory once on demand.
++     Do not build unused panels on load timers. */
+   if(typeof scrimInit==='function')scrimInit();
+   if(typeof geriBildirimBagla==='function')geriBildirimBagla();
+   if(typeof dlBagla==='function')dlBagla();
+@@ -36740,9 +36683,18 @@
+ document.addEventListener('visibilitychange',()=>document.hidden?lifeHidden('visibility-hidden'):lifeVisible('visibility-visible'));
+ window.addEventListener('pagehide',()=>lifeHidden('pagehide'));window.addEventListener('pageshow',()=>lifeVisible('pageshow'));window.addEventListener('blur',()=>{if(document.hidden)lifeHidden('blur')});window.addEventListener('focus',()=>lifeVisible('focus'));
+ document.addEventListener('freeze',()=>lifeHidden('freeze'));document.addEventListener('resume',()=>lifeVisible('resume'));
+-try{if(typeof autoStart==='function'){const f=autoStart;autoStart=function(...a){AudioLife.markUserPlay('zikir-start');AudioLife.set('preparing','zikir');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','zikir'),20);return r}}}catch(e){}
++try{if(typeof autoStart==='function'){const f=autoStart;autoStart=function(...a){AudioLife.markUserPlay('zikir-start');AudioLife.set('preparing','zikir');const r=f.apply(this,a);setTimeout(()=>{if(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused))return;AudioLife.set(AudioLife.busy()?'playing':'idle','zikir')},20);return r}}}catch(e){}
+ try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){const r=f.apply(this,a);setTimeout(()=>{
+   const busy=AudioLife.busy();
++  // miniPause deliberately stops the auto scheduler. Its delayed Stop echo
++  // must preserve the user's aggregate pause instead of publishing idle.
++  const held=!!(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused));
++  if(held){
++    try{AudioLife.reconcileUserPaused(true,'r704-aggregate-pause')}catch(e){AudioLife.userPaused=true}
++    AudioLife.set('paused','r704-aggregate-pause');
++    try{if(window.SukunAudioHub){SukunAudioHub.userPaused=true;SukunAudioHub.set('paused','r704-aggregate-pause')}}catch(e){}
++    return;
++  }
+   /* r658 — Stop terminaldir, Pause değildir. Eski kod busy=false iken
+      userPaused=true + paused yazarak AudioTruth idle olsa bile Life/Hub'ı
+      sahte paused durumda bırakıyordu. Başka gerçek ses varsa playing,
+@@ -38291,12 +38243,8 @@
+   document.addEventListener('pointerup',clear,{passive:true});
+   document.addEventListener('pointercancel',clear,{passive:true});
+   /* Tema değişince tarayıcı chrome rengini de mümkün olduğunca eşle. */
+-  /* r703: metaTheme açılışta 3.6 sn CPU yiyordu. Sebep: body'nin HER class
+-     değişiminde (mode-midi, r700-tef-entry... saniyede onlarca) getComputedStyle
+-     çağrılıp senkron tam stil hesabı zorlanıyordu. Artık (a) kare başına bir kez
+-     toplanır, (b) temayı belirleyen imza (data-tema + class) değişmediyse pahalı
+-     hesap hiç yapılmaz. Gözlemci zaten yalnız bu iki şeyi izlediği için imza
+-     aynıyken --bg'nin değişmiş olması mümkün değil; davranış birebir korunur. */
++  /* r704: --bg for body is selected only by data-tema in this stylesheet.
++     Dock, playback and focus classes must not trigger a full style calculation. */
+   let __mtMeta=null, __mtSig=null, __mtBekliyor=false;
+   function metaThemeSimdi(){
+     try{
+@@ -38313,14 +38261,14 @@
+     const calis=()=>{
+       __mtBekliyor=false;
+       const b=document.body; if(!b)return;
+-      const imza=(b.getAttribute('data-tema')||'')+'|'+(b.className||'');
++      const imza=b.getAttribute('data-tema')||'';
+       if(imza===__mtSig)return;
+       __mtSig=imza;
+       metaThemeSimdi();
+     };
+     if(document.hidden)setTimeout(calis,300); else requestAnimationFrame(calis);
+   }
+-  new MutationObserver(metaTheme).observe(document.body,{attributes:true,attributeFilter:['data-tema','class']});
++  new MutationObserver(metaTheme).observe(document.body,{attributes:true,attributeFilter:['data-tema']});
+   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',metaTheme,{once:true});else metaTheme();
+ })();
+ </script>
+@@ -46456,7 +46404,11 @@
+      Now Playing override barı ekranda tutmasın. */
+   let any=false;
+   try{any=!!miniPlayingInfo?.().active}catch(e){}
+-  if(!any){
++  // A paused auto counter has no physical playing source. Its saved
++  // resume state is live until the user resumes or explicitly stops it.
++  const held=!!(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||
++    (typeof MINI==='object'&&MINI?.paused&&MINI?.wasAuto));
++  if(!any&&!held){
+     try{if(typeof MINI==='object'&&MINI){MINI.paused=false;MINI.wasAuto=false}}catch(e){}
+     refresh();
+   }
+@@ -47679,6 +47631,9 @@
+ <script id="r453-core-ui-runtime">
+ (()=>{
+ 'use strict';
++const r704Attr=(el,key,value)=>{if(el&&el.getAttribute(key)!==String(value))el.setAttribute(key,value)};
++const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent=value};
++
+ if(window.__SUKUN_R453_CORE_UI__) return;
+ window.__SUKUN_R453_CORE_UI__ = 1;
+ 
+@@ -47758,7 +47713,7 @@
+     slot=document.createElement('div');
+     slot.id='r700TefEntry';
+     slot.className='r700TefEntry';
+-    slot.setAttribute('aria-label','Aktif zikirden tefekküre geçiş');
++    r704Attr(slot,'aria-label','Aktif zikirden tefekküre geçiş');
+     const anchor=$('zMean');
+     if(anchor?.parentNode===stage)anchor.insertAdjacentElement('afterend',slot);
+     else stage.insertBefore(slot,stage.querySelector('.zBar'));
+@@ -47769,7 +47724,7 @@
+     b.id='r442TefekkurBtn';b.type='button';
+     b.className='r433DockAct r700TefButton';
+   }
+-  b.classList.add('r700TefButton');
++  if(!b.classList.contains('r700TefButton'))b.classList.add('r700TefButton');
+   if(b.parentNode!==slot)slot.appendChild(b);
+   document.querySelectorAll('#r594TefSlot').forEach(el=>{
+     if(!el.contains(b))el.remove();
+@@ -47792,14 +47747,14 @@
+     b.innerHTML='<span class="r700TefIcon">'+R700_LOTUS+'</span><span class="r700TefLabel">'+(on?'Tefekkürden Çık':'Tefekküre Geç')+'</span><span class="r700TefArrow" aria-hidden="true">'+(on?'↩':'›')+'</span>';
+     b.dataset.r700State=state;
+   }
+-  b.setAttribute('aria-pressed',String(on));
+-  b.setAttribute('aria-label',on?'Tefekkürden çık, zikre dön':'Aktif zikir üzerine tefekküre geç');
+-  b.setAttribute('aria-describedby','r443TefHelp');
+-  b.title=on?'Tefekkürden çık':'Aktif zikir üzerine tefekküre geç';
+-  b.dataset.tefTip=on?'Zikir ekranına dön':'Zikrin anlamı üzerine tefekküre geç';
+-  b.hidden=on;
+-  b.setAttribute('aria-hidden',String(on));
+-  b.tabIndex=on?-1:0;
++  r704Attr(b,'aria-pressed',String(on));
++  r704Attr(b,'aria-label',on?'Tefekkürden çık, zikre dön':'Aktif zikir üzerine tefekküre geç');
++  r704Attr(b,'aria-describedby','r443TefHelp');
++  const title=on?'Tefekkürden çık':'Aktif zikir üzerine tefekküre geç';if(b.title!==title)b.title=title;
++  const tip=on?'Zikir ekranına dön':'Zikrin anlamı üzerine tefekküre geç';if(b.dataset.tefTip!==tip)b.dataset.tefTip=tip;
++  if(b.hidden!==on)b.hidden=on;
++  r704Attr(b,'aria-hidden',String(on));
++  if(b.tabIndex!==(on?-1:0))b.tabIndex=on?-1:0;
+ }
+ let r700EntryBusy=false;
+ function toggleTef(){
+@@ -47829,8 +47784,8 @@
+   if(!h){
+     h=document.createElement('div');
+     h.id='r443TefHelp';
+-    h.setAttribute('role','status');
+-    h.setAttribute('aria-live','polite');
++    r704Attr(h,'role','status');
++    r704Attr(h,'aria-live','polite');
+     body.appendChild(h);
+   }
+   return h;
+@@ -47880,7 +47835,7 @@
+   if(!ctl||!title) return null;
+   r=document.createElement('div');
+   r.id='r442StepRail';
+-  r.setAttribute('aria-label','Hızlı sayaç düzeltme');
++  r704Attr(r,'aria-label','Hızlı sayaç düzeltme');
+   title.insertAdjacentElement('afterend',r);
+   return r;
+ }
+@@ -47892,7 +47847,7 @@
+   if(!s){
+     s=document.createElement('div');
+     s.id='r444CenterStack';
+-    s.setAttribute('aria-label','Tefekkür sayaç ana eylemi');
++    r704Attr(s,'aria-label','Tefekkür sayaç ana eylemi');
+   }
+   /* r527: legacy koordinatör de artık çıkış düğmesi üretmez. */
+   $('r444TefExit')?.remove();
+@@ -47906,7 +47861,7 @@
+   if(!slot){
+     slot=document.createElement('div');
+     slot.id='r450FocusMetaSlot';
+-    slot.setAttribute('aria-hidden','true');
++    r704Attr(slot,'aria-hidden','true');
+   }
+   if(slot.parentNode!==r) r.appendChild(slot);
+   return slot;
+@@ -47936,13 +47891,13 @@
+   meta?.classList.add('r450-focus-meta');
+ 
+   const playing=auto.classList.contains('playing');
+-  auto.setAttribute('aria-pressed',playing?'true':'false');
+-  auto.setAttribute('aria-label',playing?'Otomatik sayımı durdur':'Otomatik saymaya başla');
++  r704Attr(auto,'aria-pressed',playing?'true':'false');
++  r704Attr(auto,'aria-label',playing?'Otomatik sayımı durdur':'Otomatik saymaya başla');
+   auto.title=playing?'Otomatik sayımı durdur':'Otomatik saymaya başla';
+   undo.title='Bir sayım geri al';
+-  undo.setAttribute('aria-label','Bir sayım geri al');
++  r704Attr(undo,'aria-label','Bir sayım geri al');
+   plus.title='Bir zikir ekle';
+-  plus.setAttribute('aria-label','Bir zikir ekle');
++  r704Attr(plus,'aria-label','Bir zikir ekle');
+ 
+   return true;
+ }
+@@ -47975,7 +47930,7 @@
+   const h=$('breathHalo');
+   if(h){
+     h.classList.remove('on');
+-    h.setAttribute('aria-hidden','true');
++    r704Attr(h,'aria-hidden','true');
+   }
+ }
+ 
+@@ -47984,7 +47939,7 @@
+   /* r479: tutamak zaten varsa yukarıdaki oluşturma dalı çalışmıyor;
+      erişilebilir ad her çağrıda güvence altına alınsın (idempotent). */
+   {const v=$('r447DockHandle');
+-   if(v&&!v.getAttribute('aria-label'))v.setAttribute('aria-label','Oynatıcıyı genişlet');}
++   if(v&&!v.getAttribute('aria-label'))r704Attr(v,'aria-label','Oynatıcıyı genişlet');}
+   const dock=$('r170Now');
+   if(!dock) return null;
+   let h=$('r447DockHandle');
+@@ -47994,8 +47949,8 @@
+     h.type='button';
+     /* r479: erişilebilir adı hiç yoktu (aria-label, metin, title üçü de boş);
+        ekran okuyucu yalnız "düğme" diyordu. Durum setDockLevel'de güncellenir. */
+-    h.setAttribute('aria-label','Oynatıcıyı genişlet');
+-    h.setAttribute('aria-expanded','false');
++    r704Attr(h,'aria-label','Oynatıcıyı genişlet');
++    r704Attr(h,'aria-expanded','false');
+     dock.appendChild(h);
+     h.addEventListener('click',e=>{
+       e.preventDefault(); e.stopPropagation();
+@@ -48014,8 +47969,8 @@
+   const h=ensureDockHandle();
+   if(!h) return;
+   const expanded=dockLevel==='expanded';
+-  h.setAttribute('aria-expanded',expanded?'true':'false');
+-  h.setAttribute('aria-label',expanded?'Oynatıcıyı küçült':'Oynatıcıyı genişlet');
++  r704Attr(h,'aria-expanded',expanded?'true':'false');
++  r704Attr(h,'aria-label',expanded?'Oynatıcıyı küçült':'Oynatıcıyı genişlet');
+   h.title=expanded?'Mini oynatıcıya dön':'Oynatıcıyı genişlet';
+ }
+ function saveLevel(){
+@@ -48099,13 +48054,13 @@
+   body.classList.toggle('r441-peek-tab',peekMode==='tab');
+   const peek=$('r433DockPeek');
+   if(peek){
+-    peek.setAttribute('data-peek-style',peekMode);
+-    peek.setAttribute('aria-label',peekMode==='tab'?'Oynatıcıyı yan sekmeden geri getir':'Oynatıcıyı geri getir');
++    r704Attr(peek,'data-peek-style',peekMode);
++    r704Attr(peek,'aria-label',peekMode==='tab'?'Oynatıcıyı yan sekmeden geri getir':'Oynatıcıyı geri getir');
+   }
+   document.querySelectorAll('[data-r441-peek]').forEach(btn=>{
+     const on=btn.dataset.r441Peek===peekMode;
+     btn.classList.toggle('on',on);
+-    btn.setAttribute('aria-pressed',on?'true':'false');
++    r704Attr(btn,'aria-pressed',on?'true':'false');
+   });
+ }
+ function peekPrefHtml(){
+@@ -49662,6 +49617,9 @@
+ <script id="r530-tefekkur-canonical-runtime">
+ (()=>{
+ 'use strict';
++const r704Attr=(el,key,value)=>{if(el&&el.getAttribute(key)!==String(value))el.setAttribute(key,value)};
++const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent=value};
++
+ window.__SUKUN_CANONICAL_TEF__='r530';
+ const $=id=>document.getElementById(id);
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+@@ -49680,7 +49638,7 @@
+   if(!row){
+     row=document.createElement('div');
+     row.className='tfExitRow';
+-    row.setAttribute('aria-label','Tefekkür çıkışı');
++    r704Attr(row,'aria-label','Tefekkür çıkışı');
+   }
+ 
+   const copies=[...document.querySelectorAll('#tefExitBtn')];
+@@ -49694,9 +49652,9 @@
+     button.innerHTML='<span class="tfExitGlyph" aria-hidden="true">✦</span><span>Tefekkürden Çık</span><span class="tfExitGlyph" aria-hidden="true">✦</span>';
+     row.appendChild(button);
+   }
+-  button.dataset.tfCanonicalExit='r530';
+-  button.setAttribute('aria-label','Tefekkürden Çık');
+-  button.title='Tefekkürden Çık';
++  if(button.dataset.tfCanonicalExit!=='r530')button.dataset.tfCanonicalExit='r530';
++  r704Attr(button,'aria-label','Tefekkürden Çık');
++  if(button.title!=='Tefekkürden Çık')button.title='Tefekkürden Çık';
+   if(button.dataset.tfExitBound!=='1'){
+     button.dataset.tfExitBound='1';
+     button.addEventListener('click',event=>{
+@@ -52602,6 +52560,9 @@
+ <script id="r554-alert-timing-runtime">
+ (()=>{
+ 'use strict';
++const r704Attr=(el,key,value)=>{if(el&&el.getAttribute(key)!==String(value))el.setAttribute(key,value)};
++const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent=value};
++
+ if(window.SukunAlertCenter?.version==='r572')return;
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+@@ -52787,7 +52748,7 @@
+   const list=visibleAlerts(),n=list.filter(x=>!x.read).length;
+   now.classList.toggle('r551-alert-unread',n>0);btn.classList.toggle('r551-alert-pulse',n>0);
+   const c=$('r551AlertCount');if(c){c.textContent=n>99?'99+':String(n);c.hidden=!n}
+-  btn.setAttribute('aria-label',n?`${n} okunmamış bildirim — aç`:'Bildirimleri aç');
++  r704Attr(btn,'aria-label',n?`${n} okunmamış bildirim — aç`:'Bildirimleri aç');
+ 
+   const rows=list.slice(0,16).map(a=>`<article class="r551AlertItem kind-${esc(a.kind||'warning')}${a.read?'':' unread'}" data-alert-id="${esc(a.id)}">
+     <div class="r551AlertItemTop"><span>${kLabel(a.kind)}</span><time>${new Date(a.at).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</time></div>
+@@ -52924,7 +52885,7 @@
+       const dismissBtn=e.target.closest?.('[data-alert-dismiss]');if(dismissBtn){r554Dismiss(dismissBtn.dataset.alertDismiss);return}
+       if(e.target.closest?.('#r554UnreadOnly')){
+         centerUnreadOnly=!centerUnreadOnly;
+-        const b=$('r554UnreadOnly');if(b){b.setAttribute('aria-pressed',centerUnreadOnly?'true':'false');b.classList.toggle('act',centerUnreadOnly)}
++        const b=$('r554UnreadOnly');if(b){r704Attr(b,'aria-pressed',centerUnreadOnly?'true':'false');b.classList.toggle('act',centerUnreadOnly)}
+         renderKeys.center='';r554Render();return;
+       }
+       if(e.target.closest?.('#r554CenterRead')){r554MarkRead(filters.center);return}
+@@ -52951,7 +52912,7 @@
+        sürükleme tutamağı fiziksel merkezde, bildirimler sağda. */
+     let rail=$('r576DockRail');
+     if(!rail){
+-      rail=document.createElement('div');rail.id='r576DockRail';rail.setAttribute('aria-label','Canlı akış araçları');
++      rail=document.createElement('div');rail.id='r576DockRail';r704Attr(rail,'aria-label','Canlı akış araçları');
+       now.insertBefore(rail,now.firstChild||null);mounted=true;
+     }
+     let identity=$('r576DockIdentity');
+@@ -52963,7 +52924,7 @@
+     if(handle&&handle.parentElement!==rail){rail.appendChild(handle);mounted=true}
+     let cluster=$('r554AlertCluster');
+     if(!cluster){
+-      cluster=document.createElement('div');cluster.id='r554AlertCluster';cluster.setAttribute('aria-label','Bildirim türleri');
++      cluster=document.createElement('div');cluster.id='r554AlertCluster';r704Attr(cluster,'aria-label','Bildirim türleri');
+       cluster.innerHTML=KINDS.map(k=>`<button type="button" class="r554AlertMark kind-${k}" data-alert-kind="${k}" aria-label="${kTitle(k)}"><span aria-hidden="true">!</span><b hidden>0</b></button>`).join('');
+       cluster.addEventListener('click',e=>{const b=e.target.closest?.('[data-alert-kind]');if(b){e.stopPropagation();r554Toggle(b.dataset.alertKind)}});mounted=true;
+     }
+@@ -52974,7 +52935,7 @@
+   }
+   let d=$('r554AlertDrawer');
+   if(!d){
+-    d=document.createElement('section');d.id='r554AlertDrawer';d.hidden=true;d.setAttribute('aria-label','Akış bildirimleri');
++    d=document.createElement('section');d.id='r554AlertDrawer';d.hidden=true;r704Attr(d,'aria-label','Akış bildirimleri');
+     d.innerHTML=`<div class="r554DrawerHead"><div><small>SÜKÛN · BİLDİRİMLER</small><b id="r554DrawerTitle">Akış bildirimleri</b></div><div class="r554DrawerActions"><button type="button" id="r554DrawerReset" title="Akış barını yerine al" aria-label="Akış barını yerine al">↕</button><button type="button" id="r554DrawerRead">Okundu yap</button><button type="button" id="r554DrawerClose" aria-label="Bildirimleri kapat">×</button></div></div>
+       <div class="r554NotifyFilters r554DrawerFilters" role="tablist" aria-label="Bildirim türü">
+         <button type="button" class="r554Filter act" data-r554-surface="drawer" data-r554-filter="all" role="tab" aria-selected="true"><span class="r554FilterMark kind-all">!</span><span>Tümü</span><b id="r554DrawerCountAll">0</b></button>
+@@ -53006,7 +52967,7 @@
+ 
+ function r554FilterState(surface){
+   document.querySelectorAll?.(`[data-r554-surface="${surface}"][data-r554-filter]`).forEach(b=>{
+-    const on=b.dataset.r554Filter===filters[surface];b.classList.toggle('act',on);b.setAttribute('aria-selected',on?'true':'false');
++    const on=b.dataset.r554Filter===filters[surface];b.classList.toggle('act',on);r704Attr(b,'aria-selected',on?'true':'false');
+   });
+ }
+ 
+@@ -53031,13 +52992,13 @@
+   renderKeys.chrome=key;
+   const nav=document.querySelector?.('.tab[data-t="ntf"]'),hero=$('r554HeroSigil'),now=$('r170Now');
+   [nav,hero].forEach(el=>{if(!el)return;el.dataset.r554Tone=tone;el.classList.toggle('has-esma',c.esmaUnread>0);el.classList.toggle('has-berhet',c.berhetUnread>0);el.classList.toggle('has-warning',c.warningUnread>0);el.classList.toggle('r554-berhet-locked',!unlocked)});
+-  if(nav)nav.setAttribute('aria-label',c.unread?`Bildirimler · ${c.unread} okunmamış`:'Bildirimler · yeni bildirim yok');
++  if(nav)r704Attr(nav,'aria-label',c.unread?`Bildirimler · ${c.unread} okunmamış`:'Bildirimler · yeni bildirim yok');
+   const nc=$('r554NavCount');if(nc){setText(nc,c.unread>99?'99+':c.unread);nc.hidden=!c.unread}
+   setText($('r554NotifyTotal'),c.all);
+   const nowCluster=$('r554AlertCluster');
+   if(nowCluster)KINDS.forEach(k=>{
+     const b=nowCluster.querySelector?.(`[data-alert-kind="${k}"]`);if(!b)return;
+-    const n=c[k+'Unread'];b.hidden=k==='berhet'&&!unlocked;b.classList.toggle('unread',n>0);b.setAttribute('aria-label',`${kTitle(k)} · ${n} okunmamış · ${c[k]} toplam`);
++    const n=c[k+'Unread'];b.hidden=k==='berhet'&&!unlocked;b.classList.toggle('unread',n>0);r704Attr(b,'aria-label',`${kTitle(k)} · ${n} okunmamış · ${c[k]} toplam`);
+     const badge=b.querySelector?.('b');if(badge){setText(badge,n>99?'99+':n);badge.hidden=!n}
+   });
+   if(now){now.dataset.r554Tone=tone;now.classList.toggle('r554-alert-unread',c.unread>0)}
+@@ -59935,6 +59896,9 @@
+ <script id="r616-friendly-ui-runtime">
+ (()=>{
+ 'use strict';
++const r704Attr=(el,key,value)=>{if(el&&el.getAttribute(key)!==String(value))el.setAttribute(key,value)};
++const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent=value};
++
+ if(window.__SUKUN_R616_FRIENDLY_UI__)return;
+ window.__SUKUN_R616_FRIENDLY_UI__=1;
+ 
+@@ -59942,7 +59906,7 @@
+ const q=(s,r=document)=>r.querySelector(s);
+ const qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
+ const legacySections=['amb','frq','zkr','rx','ntf'];
+-let internalRoute=false,lastSound='amb',currentView='home',sourceObserver=null;
++let internalRoute=false,lastSound='amb',currentView='home',sourceObserver=null,sourceFrame=0;
+ const observed=new WeakSet();
+ 
+ function safeText(v,fallback='—'){
+@@ -59970,13 +59934,13 @@
+   qa('#r616BottomNav [data-r616-view]').forEach(b=>{
+     const on=b.dataset.r616View===view;
+     b.classList.toggle('active',on);
+-    b.setAttribute('aria-current',on?'page':'false');
++    r704Attr(b,'aria-current',on?'page':'false');
+   });
+ }
+ function setSoundButtons(t){
+   qa('#r616SoundHeader [data-r616-sound]').forEach(b=>{
+     const on=b.dataset.r616Sound===t;b.classList.toggle('active',on);
+-    b.setAttribute('aria-selected',on?'true':'false');
++    r704Attr(b,'aria-selected',on?'true':'false');
+   });
+ }
+ function go(view,sub,skipLegacy,keepScroll){
+@@ -60024,7 +59988,7 @@
+   if($('r616Topbar'))return true;
+ 
+   const top=document.createElement('div');
+-  top.id='r616Topbar';top.setAttribute('role','banner');
++  top.id='r616Topbar';r704Attr(top,'role','banner');
+   top.innerHTML=
+     '<div class="r616Brand"><span class="r616BrandMark" aria-hidden="true">۞</span>'+
+       '<span class="r616BrandText"><b>SÜKÛN</b><small id="r616ViewName">Bugün</small></span></div>'+
+@@ -60036,7 +60000,7 @@
+   wrap.prepend(top);
+ 
+   const home=document.createElement('section');
+-  home.id='r616Home';home.className='r616View';home.setAttribute('aria-label','Bugün');
++  home.id='r616Home';home.className='r616View';r704Attr(home,'aria-label','Bugün');
+   home.innerHTML=
+     '<div id="r616HomeHead"><div class="r616Eyebrow">Bugün</div><h2 class="r616Title" id="r616Greeting">Selâm</h2><p class="r616Lead" id="r616GreetingSub">Kalbini yormadan, tek bir niyetle başla.</p></div>'+
+     '<article class="r616Card" id="r616HomeHero">'+
+@@ -60063,7 +60027,7 @@
+   wrap.insertBefore(home,anchor);
+ 
+   const journeys=document.createElement('section');
+-  journeys.id='r616Journeys';journeys.className='r616View';journeys.hidden=true;journeys.setAttribute('aria-label','Seyirler');
++  journeys.id='r616Journeys';journeys.className='r616View';journeys.hidden=true;r704Attr(journeys,'aria-label','Seyirler');
+   journeys.innerHTML=
+     '<div id="r616JourneysHead"><div class="r616Eyebrow">Seyirler</div><h2 class="r616Title">Bir isimden diğerine</h2><p class="r616Lead">İlerlemen cihazında saklanır; bıraktığın yerden güvenle sürdürürsün.</p></div>'+
+     '<div id="r616JourneyList"></div>'+
+@@ -60071,7 +60035,7 @@
+   wrap.insertBefore(journeys,anchor);
+ 
+   const sounds=document.createElement('section');
+-  sounds.id='r616SoundHeader';sounds.className='r616Card';sounds.hidden=true; sounds.setAttribute('aria-label','Ses seçimi');
++  sounds.id='r616SoundHeader';sounds.className='r616Card';sounds.hidden=true; r704Attr(sounds,'aria-label','Ses seçimi');
+   sounds.innerHTML=
+     '<div class="r616SoundTop"><div><div class="r616Eyebrow">Sesler</div><b>Sana iyi gelen zemini kur</b></div><span aria-hidden="true">♫</span></div>'+
+     '<div class="r616Segment" role="tablist" aria-label="Ses bölümü">'+
+@@ -60081,7 +60045,7 @@
+   wrap.insertBefore(sounds,anchor);
+ 
+   const nav=document.createElement('nav');
+-  nav.id='r616BottomNav';nav.setAttribute('aria-label','Ana gezinme');
++  nav.id='r616BottomNav';r704Attr(nav,'aria-label','Ana gezinme');
+   nav.innerHTML=
+     '<button type="button" data-r616-view="home"><i>⌂</i><span>Bugün</span></button>'+
+     '<button type="button" data-r616-view="zikir"><i>◌</i><span>Zikir</span></button>'+
+@@ -60090,7 +60054,7 @@
+   document.body.appendChild(nav);
+ 
+   const scrim=document.createElement('div');scrim.id='r616ToolsScrim';scrim.hidden=true;
+-  const sheet=document.createElement('aside');sheet.id='r616ToolsSheet';sheet.hidden=true;sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label','Ayarlar ve araçlar');
++  const sheet=document.createElement('aside');sheet.id='r616ToolsSheet';sheet.hidden=true;r704Attr(sheet,'role','dialog');r704Attr(sheet,'aria-modal','true');r704Attr(sheet,'aria-label','Ayarlar ve araçlar');
+   sheet.innerHTML=
+     '<div class="r616SheetGrab" aria-hidden="true"></div>'+
+     '<div class="r616SheetHead"><b>Ayarlar ve araçlar</b><button type="button" id="r616ToolsClose" aria-label="Kapat">×</button></div>'+
+@@ -60140,7 +60104,7 @@
+ 
+   let nav=$('r616ZikirNavRow');
+   if(!nav){
+-    nav=document.createElement('div');nav.id='r616ZikirNavRow';nav.setAttribute('aria-label','Zikir gezinmesi');
++    nav=document.createElement('div');nav.id='r616ZikirNavRow';r704Attr(nav,'aria-label','Zikir gezinmesi');
+     nav.innerHTML='<button type="button" data-r616-znav="prev">‹ Önceki</button><button type="button" data-r616-znav="reset">↺ Baştan</button><button type="button" data-r616-znav="next">Sonraki ›</button>';
+     card.insertBefore(nav,sound);
+   }else if(nav.parentElement!==card)card.insertBefore(nav,sound);
+@@ -60192,10 +60156,10 @@
+   const state=st.run&&!st.paused?'Devam ediyor':st.systemHold?'Sistem beklemede':st.paused?'Duraklatıldı':i>=total?'Tamamlandı':i>0?'Kaldığın yer hazır':'Hazır';
+   const action=st.run&&!st.paused?'Ⅱ Duraklat':st.paused||i>0&&i<total?'▶ Sürdür':i>=total?'↺ Yeniden başlat':'▶ Başla';
+   const stateEl=q('.r616JourneyState',card),bar=q('.r616JourneyProgress i',card),count=q('.r616JourneyCount',card),rep=q('.r616JourneyRepeat',card),btn=q('[data-r616-journey-action]',card);
+-  if(stateEl)stateEl.textContent=state;if(bar)bar.style.width=pct.toFixed(2)+'%';
+-  if(count)count.textContent=i+' / '+total+' isim';
+-  if(rep)rep.textContent=(+st.totalDone||0).toLocaleString('tr-TR')+' okuma';
+-  if(btn){btn.textContent=action;btn.setAttribute('aria-label',(kind==='28'?'28 İsim':'99 Esmâ')+' Seyri · '+action.replace(/[▶Ⅱ↺]/g,'').trim())}
++  r704Text(stateEl,state);if(bar&&bar.style.width!==pct.toFixed(2)+'%')bar.style.width=pct.toFixed(2)+'%';
++  r704Text(count,i+' / '+total+' isim');
++  r704Text(rep,(+st.totalDone||0).toLocaleString('tr-TR')+' okuma');
++  if(btn){r704Text(btn,action);r704Attr(btn,'aria-label',(kind==='28'?'28 İsim':'99 Esmâ')+' Seyri · '+action.replace(/[▶Ⅱ↺]/g,'').trim())}
+ }
+ function renderJourneys(){
+   const list=$('r616JourneyList');if(!list)return;
+@@ -60285,14 +60249,14 @@
+ function syncNotifications(){
+   const src=$('r554NavCount'),dst=$('r616BellCount');if(!dst)return;
+   const n=Math.max(0,parseInt(src?.textContent||'0',10)||0);
+-  dst.textContent=n>99?'99+':String(n);dst.hidden=!n;
++  r704Text(dst,n>99?'99+':String(n));if(dst.hidden!==!n)dst.hidden=!n;
+   const b=$('r616NotifyBtn');if(b){
+     let c={};try{c=window.SukunAlertCenter?.snapshot?.()?.counts||{}}catch(e){}
+     b.classList.toggle('has-esma',(+c.esmaUnread||0)>0);
+     b.classList.toggle('has-berhet',unlocked()&&(+c.berhetUnread||0)>0);
+     b.classList.toggle('has-warning',(+c.warningUnread||0)>0);
+     b.classList.toggle('has-unread',n>0);
+-    b.setAttribute('aria-label',n?'Bildirimler · '+n+' okunmamış':'Bildirimler');
++    r704Attr(b,'aria-label',n?'Bildirimler · '+n+' okunmamış':'Bildirimler');
+   }
+ }
+ function observe(el,opts){
+@@ -60300,7 +60264,7 @@
+   observed.add(el);try{sourceObserver.observe(el,opts||{subtree:true,childList:true,characterData:true,attributes:true})}catch(e){}
+ }
+ function observeSources(){
+-  if(!sourceObserver)sourceObserver=new MutationObserver(()=>requestAnimationFrame(()=>{syncGreeting();syncNotifications();renderJourneys()}));
++  if(!sourceObserver)sourceObserver=new MutationObserver(()=>{if(sourceFrame)return;sourceFrame=requestAnimationFrame(()=>{sourceFrame=0;syncGreeting();syncNotifications();renderJourneys()})});
+   ['tcHi','tcSub','tcZk','tcStreak','tcMin','r554NavCount','es99Status','es99Bar','bsStatus','bsBar'].forEach(id=>observe($(id)));
+ }
+ function openTools(){
+@@ -60874,6 +60838,9 @@
+ <script id="r619-feyz-shell-runtime">
+ (()=>{
+ 'use strict';
++const r704Attr=(el,key,value)=>{if(el&&el.getAttribute(key)!==String(value))el.setAttribute(key,value)};
++const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent=value};
++
+ if(window.__SUKUN_R619_FEYZ_SHELL__)return;window.__SUKUN_R619_FEYZ_SHELL__=1;
+ const KEY='sukun.ui.shellSkin';
+ const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon'};
+@@ -60887,10 +60854,11 @@
+ let skin=readSkin();
+ function applySkin(next,persist=true){
+   skin=normalizeSkin(next);
+-  document.body.dataset.r619Skin=skin;
++  const changed=document.body.dataset.r619Skin!==skin;
++  if(changed)document.body.dataset.r619Skin=skin;
+   if(persist)try{localStorage.setItem(KEY,skin)}catch(e){}
+-  document.querySelectorAll('.r619SkinBtn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===skin)));
+-  try{window.dispatchEvent(new CustomEvent('sukun:r619skinchange',{detail:{skin}}))}catch(e){}
++  document.querySelectorAll('.r619SkinBtn').forEach(b=>r704Attr(b,'aria-pressed',String(b.dataset.r619Skin===skin)));
++  if(changed)try{window.dispatchEvent(new CustomEvent('sukun:r619skinchange',{detail:{skin}}))}catch(e){}
+ }
+ function skinPicker(){
+   const sheet=$('r617ModeSheet');if(!sheet||$('r619SkinPicker'))return false;
+@@ -60904,7 +60872,7 @@
+ function toolsNav(){
+   const nav=$('r616BottomNav');if(!nav)return false;
+   if(!nav.querySelector('[data-r619-tools]')){
+-    const b=document.createElement('button');b.type='button';b.setAttribute('data-r619-tools','');b.innerHTML='<i>⌘</i><span>Araçlar</span>';
++    const b=document.createElement('button');b.type='button';r704Attr(b,'data-r619-tools','');b.innerHTML='<i>⌘</i><span>Araçlar</span>';
+     b.addEventListener('click',()=>window.SukunFriendlyUI?.openTools?.());nav.appendChild(b);
+   }
+   return true;
+@@ -60927,7 +60895,7 @@
+ function kicker(view){
+   const el=$('r616ViewName');if(!el)return;
+   const names={home:'Bugün',zikir:'Zikir',journeys:'Seyirler',sounds:'Sesler',notifications:'Bildirimler',layout:'Tefekkür Düzeni'};
+-  const v=view||document.body.dataset.r616View||'home';const build=document.querySelector('meta[name="sukun-build"]')?.content||'r702';const title=(names[v]||'SÜKÛN')+' · '+build;if(el.textContent!==title)el.textContent=title;
++  const v=view||document.body.dataset.r616View||'home';const build=document.querySelector('meta[name="sukun-build"]')?.content||'r704';const title=(names[v]||'SÜKÛN')+' · '+build;if(el.textContent!==title)el.textContent=title;
+ }
+ function extraTools(){
+   const grid=document.querySelector('#r616ToolsSheet .r616ToolGrid');if(!grid)return false;
+@@ -60946,7 +60914,7 @@
+   }
+   return true;
+ }
+-function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r702';if(x)x.textContent='SÜKÛN v20.21 · '+b+' · '+skins[skin]}
++function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';r704Text(x,'SÜKÛN v20.21 · '+b+' · '+skins[skin])}
+ function mount(){applySkin(skin,false);skinPicker();toolsNav();soundPreview();extraTools();kicker();sheetBuild()}
+ window.addEventListener('sukun:r616viewchange',e=>{document.body.classList.remove('r619-legacy-tool-open');kicker(e?.detail?.view);setTimeout(()=>{toolsNav();soundPreview();extraTools();syncSound()},0)},{passive:true});
+ window.addEventListener('sukun:r619skinchange',()=>sheetBuild(),{passive:true});
+@@ -61023,7 +60991,7 @@
+   const cur=currentSkin();
+   document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
+   const build=document.querySelector('.r616SheetBuild');
+-  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r702';build.textContent='SÜKÛN v20.21 · '+b+' · '+(skins[cur]||skins.ottoman);}
++  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';build.textContent='SÜKÛN v20.21 · '+b+' · '+(skins[cur]||skins.ottoman);}
+ }
+ function mountSkinPanel(){
+   const sheet=$('r616ToolsSheet');if(!sheet)return false;
+@@ -61702,7 +61670,7 @@
+ (()=>{
+ 'use strict';
+ const VERSION='r641';
+-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
++const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r704';
+ const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+ const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+ const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
+@@ -61987,8 +61955,8 @@
+   function runSuite(){return audit('suite',false).checks}
+   async function probeBuild(){
+     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
+-    try{const r=await fetch('./__sukun_build_'+BUILD+'__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+-    const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
++    try{const r=await fetch('./__sukun_build_'+BUILD+'__.json',{cache:'no-store'});if(!r.ok)throw new Error('marker HTTP '+r.status);const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.ok=false;result.issues.push('marker okunamadı')}
++    const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.ok=false;result.issues.push('SW '+result.sw)}
+     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
+     lastBuildProbe=freeze(result);return lastBuildProbe;
+   }
+@@ -63128,7 +63096,7 @@
+ }
+ function reconcile(reason='terminal'){
+   timer=0;runs++;lastReason=clean(reason);lastAt=Date.now();
+-  if(!noRunningJourney()||pauseIntent())return false;
++  if(!noRunningJourney()||pauseIntent()||window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused))return false;
+   let tangible=false;try{tangible=!!window.SukunAudioTruth?.snapshot?.()?.tangible}catch(e){}
+   if(tangible)return false;
+   cleanTerminalProviders(reason);
+@@ -65341,7 +65309,7 @@
+ <script id="r686-integrity-interaction-runtime">
+ (()=>{
+ 'use strict';if(window.__SUKUN_R686_INTEGRITY__)return;window.__SUKUN_R686_INTEGRITY__=1;
+-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r702';
++const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r704';
+ function sample(id){const el=document.getElementById(id);if(!el)return null;const c=getComputedStyle(el);return{id,display:c.display,visibility:c.visibility,pointerEvents:c.pointerEvents,touchAction:c.touchAction,overflowY:c.overflowY,scrollable:el.scrollHeight>el.clientHeight+1}}
+ function snapshot(){
+   const keys=['autoBtn','undoBtn','plusBtn','r588Play','r588Stop','r659DockBody','r674DetailsScroll','r633DockGrip','r447DockHandle'];
+--- r703/sw.js
++++ r704/sw.js
+@@ -1,8 +1,8 @@
+-/* SÜKÛN r701 — Context-aware Tefekkür Diagnostics */
++/* SÜKÛN r704 — Native DOM, Startup & Pause Repair */
+ 'use strict';
+ 
+-const SURUM = 'r703';
+-const CACHE = 'sukun-r703-20260907a';
++const SURUM = 'r704';
++const CACHE = 'sukun-r704-20260907a';
+ 
+ const CORE = [
+   './nero.html',
+@@ -14,9 +14,10 @@
+   './icon-512.png',
+   './icon-512-maskable.png'
+ ];
+-const BUILD_MARKER='./__sukun_build_r703__.json';
++const BUILD_MARKER='./__sukun_build_r704__.json';
+ 
+ const NOTLAR = [
++  "r704 · Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir. Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez. Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",
+   "r703 · 28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi. Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur. Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r703 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
+   'r701 · Context-aware diagnostics: hidden home tabs no longer trigger a false Tefekkür entry failure; real zikir entry and canonical exit are checked without changing playback or counter engines.',
+   'r700 · Contextual Tefekkür Entry: approved neon button in active zikir context, single existing handler, canonical exit and unchanged audio/counter engines.',
+--- r703/manifest.webmanifest
++++ r704/manifest.webmanifest
+@@ -3,7 +3,7 @@
+   "short_name": "SÜKÛN",
+   "description": "Tasavvufî ses, zikir, sükûn, frekans ve tefekkür uygulaması.",
+   "id": "./nero.html",
+-  "start_url": "./nero.html?v=r703",
++  "start_url": "./nero.html?v=r704",
+   "scope": "./",
+   "display": "standalone",
+   "display_override": [
+@@ -43,7 +43,7 @@
+     {
+       "name": "SÜKÛN'u Aç",
+       "short_name": "SÜKÛN",
+-      "url": "./nero.html?v=r703",
++      "url": "./nero.html?v=r704",
+       "icons": [
+         {
+           "src": "./icon-192.png",
+--- r703/surumler.json
++++ r704/surumler.json
+@@ -1,4 +1,18 @@
+ [
++{
++ "v": "r704",
++ "t": "7 Eylül 2026",
++ "b": [
++  "Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir.",
++  "Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez.",
++  "Açılış perdesinin zamanlayıcısı boşta ses motorunu kurmaz veya askıya alınmış sesi başlatmaz. Açılış sesi kullanıcı dokunuşuyla bir kez çalabilir.",
++  "Seyir kaynak gözlemcisi aynı karedeki yenilemeleri tek çağrıda toplar; değişmeyen tema tercihi yeniden tema olayı yayımlamaz.",
++  "Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",
++  "Çalışma anı sürüm denetiminde okunamayan yapı işaretçisi ve eski Service Worker artık başarılı sonuç olarak gösterilmez.",
++  "Duraklat sırasında otomatik sayacı kapatan iç Stop bildirimi ve eski ses onarım modülü kullanıcı duraklatmasını silemez. Duraklatılmış sayaç için saklanan devam bilgisi korunur.",
++  "r702 ses/seyir, duraklat/devam/durdur, kuyruk ve yerleşim regresyonları yeniden denetlendi. Ölçümler ve kalan gerçek cihaz kontrolleri RAPOR_r704.md içindedir."
++ ]
++},
+  {
+   "v": "r703",
+   "t": "7 Eylül 2026",
+--- /dev/null
++++ r704/__sukun_build_r704__.json
+@@ -0,0 +1,6 @@
++{
++  "build": "r704",
++  "date": "2026-09-07",
++  "feature": "startup-work-and-native-dom-repair",
++  "base": "r703"
++}

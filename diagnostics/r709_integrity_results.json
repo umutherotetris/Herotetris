@@ -1,0 +1,88 @@
+{
+  "kind": "r709-source-integrity",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "Executable owners unchanged except release client and new visual runtime",
+      "status": "PASS",
+      "detail": {
+        "old": 178,
+        "new": 179,
+        "changed": [
+          "r514-core-akis-nefs"
+        ],
+        "added": [
+          "r709-release-identity-runtime",
+          "r709-sanctuary-runtime"
+        ]
+      }
+    },
+    {
+      "name": "All old styles including scroll and atmosphere authorities preserved",
+      "status": "PASS",
+      "detail": {
+        "previousStyleOwners": 148,
+        "added": [
+          "r709-sanctuary-style"
+        ]
+      }
+    },
+    {
+      "name": "Audio, counter, recording, journey and placement owners byte-identical",
+      "status": "PASS",
+      "detail": {
+        "unchanged": [
+          "audio",
+          "counter",
+          "recording",
+          "journey",
+          "canonical tefekkür",
+          "dock placement",
+          "atmosphere"
+        ]
+      }
+    },
+    {
+      "name": "Footer, metadata, manifest, SW, cache and history synchronized",
+      "status": "PASS",
+      "detail": {
+        "build": "r709",
+        "cache": "sukun-r709-20260908a"
+      }
+    },
+    {
+      "name": "Local art included in atomic offline shell; original icons preserved",
+      "status": "PASS",
+      "detail": {
+        "artBytes": 44990,
+        "iconsPreserved": 3
+      }
+    },
+    {
+      "name": "Decorative hit-test isolation, no new data or audio mutations",
+      "status": "PASS",
+      "detail": {
+        "scope": "Tefekkür only",
+        "dataWrites": 0,
+        "audioChanges": 0
+      }
+    },
+    {
+      "name": "All executable JavaScript and Service Worker parse",
+      "status": "PASS",
+      "detail": {
+        "parsedScripts": 177,
+        "serviceWorker": true
+      }
+    },
+    {
+      "name": "Previous release retained in diagnostic history",
+      "status": "PASS",
+      "detail": {
+        "previousReleasePreserved": "r708"
+      }
+    }
+  ]
+}

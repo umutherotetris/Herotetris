@@ -1,0 +1,48 @@
+{
+  "release": "r704",
+  "base": "r703",
+  "result": "PASS",
+  "javascript": {
+    "executableInlineScripts": 183,
+    "serviceWorker": 1
+  },
+  "html": {
+    "staticIds": 960,
+    "duplicateIds": {},
+    "missingLocalReferences": []
+  },
+  "css": {
+    "styleBlocks": 148,
+    "byteIdenticalToR703": true
+  },
+  "history": {
+    "entries": 229,
+    "r703HistoryPreserved": true,
+    "inlineMatchesExternal": true
+  },
+  "iconsUnchanged": true,
+  "changedModules": [
+    "removed r703-idempotent-dom-guard",
+    "r176-visual-state",
+    "sukun-startup-curtain-runtime",
+    "r616-friendly-ui-runtime",
+    "r453-core-ui-runtime",
+    "r530-tefekkur-canonical-runtime",
+    "r619-feyz-shell-runtime",
+    "r554-alert-timing-runtime",
+    "r632-state-authority-regression-shield",
+    "premiumR160",
+    "r654-terminal-audio-reconcile",
+    "r438-audio-contract-guard",
+    "r514-core-icons-ambience",
+    "r514-core-yedek-vird",
+    "surumNotlari"
+  ],
+  "sourceSha256": {
+    "nero.html": "41c293998dc5763d1972841e9edccff7b75429c7641373af0eddf277d401340c",
+    "sw.js": "689299dd39e8198a58620c6f47f45b5eb3e494c2e3aa29f958325aa1416e3c04",
+    "manifest.webmanifest": "44c43da68bafdad3a5a3e76f9fc6d2d6b0ad33edd854a2a52c1a517073ceda88",
+    "surumler.json": "a9a0fa0e7dbce19a8c04fc0e8ee3151ea6e1a235b31ae2affaede97ea6f5e120",
+    "__sukun_build_r704__.json": "346a339134b33f13813d006e56fcff1ae09b52a5ba5360f1fa6f161e9073a356"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "kind": "r709-controlled-hit-tests",
+  "total": 10,
+  "passed": 9,
+  "failed": 1,
+  "results": [
+    {
+      "name": "autoBtn",
+      "status": "PASS",
+      "detail": {
+        "id": "autoBtn",
+        "width": 197.28125,
+        "height": 46,
+        "hit": "autoBtn"
+      }
+    },
+    {
+      "name": "undoBtn",
+      "status": "PASS",
+      "detail": {
+        "id": "undoBtn",
+        "width": 44,
+        "height": 44,
+        "hit": "undoBtn"
+      }
+    },
+    {
+      "name": "plusBtn",
+      "status": "PASS",
+      "detail": {
+        "id": "plusBtn",
+        "width": 44,
+        "height": 44,
+        "hit": "plusBtn"
+      }
+    },
+    {
+      "name": "tefExitBtn",
+      "status": "PASS",
+      "detail": {
+        "id": "tefExitBtn",
+        "width": 146.140625,
+        "height": 44,
+        "hit": "tefExitBtn"
+      }
+    },
+    {
+      "name": "r706Motion",
+      "status": "PASS",
+      "detail": {
+        "id": "r706Motion",
+        "width": 120.890625,
+        "height": 44,
+        "hit": "r706Motion"
+      }
+    },
+    {
+      "name": "r588Play",
+      "status": "PASS",
+      "detail": {
+        "id": "r588Play",
+        "width": 44,
+        "height": 44,
+        "hit": "r588Play"
+      }
+    },
+    {
+      "name": "r588Stop",
+      "status": "PASS",
+      "detail": {
+        "id": "r588Stop",
+        "width": 44,
+        "height": 44,
+        "hit": "r588Stop"
+      }
+    },
+    {
+      "name": "r588Hide",
+      "status": "PASS",
+      "detail": {
+        "id": "r588Hide",
+        "width": 44,
+        "height": 44,
+        "hit": "r588Hide"
+      }
+    },
+    {
+      "name": "three navigation controls",
+      "status": "PASS",
+      "detail": [
+        {
+          "action": "prev",
+          "hit": "prev",
+          "width": 84.984375,
+          "height": 44
+        },
+        {
+          "action": "reset",
+          "hit": "reset",
+          "width": 117.296875,
+          "height": 44
+        },
+        {
+          "action": "next",
+          "hit": "next",
+          "width": 85,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "manual count and undo",
+      "status": "FAIL",
+      "error": "(0, 0)"
+    }
+  ]
+}

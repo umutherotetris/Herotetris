@@ -1,0 +1,83 @@
+{
+  "kind": "r706-isolated-behavior-tests",
+  "environment": "Node VM; not browser rendering or Android hardware",
+  "total": 15,
+  "passed": 1,
+  "failed": 14,
+  "results": [
+    {
+      "name": "Unrelated body class events do not remeasure or rewrite Tefekkür",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n100 !== 0\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:11:185\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:11:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Entering and leaving still mounts, saves and measures once each",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    begin: 1,\n    end: 1,\n+   measure: 3,\n-   measure: 2,\n    mount: 1,\n+   owner: 3,\n+   perf: 3,\n-   owner: 2,\n-   perf: 2,\n    save: 2\n  }\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:12:244\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:12:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Legacy cleanup preserves current dock dimensions across repeated measurements",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'' !== '244px'\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:19:49\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:13:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Repeated geometry writes are suppressed locally and priority changes still apply",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(start>=0)\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:22:118\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:21:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Hidden layout events do not enqueue animation frames",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 0\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:26:221\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:26:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Temporary performance fallback expires without an unrelated UI event",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'pil' !== 'sakin'\n\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:28:458\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:27:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    {
+      "name": "Performance fallback expiry preserves the user-selected battery profile",
+      "status": "PASS"
+    },
+    {
+      "name": "Atmosphere is lazy and leaves audio / counters untouched before entry",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:45:91\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:45:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Hidden page cancels pending frames and preserves counter",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:46:78\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:46:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Repeated exit and reentry keep one canvas / counter observer",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:47:82\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:47:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Reduced motion produces a static atmosphere with no loop",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:48:78\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:48:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Offscreen and battery profile stop rendering; visible return resumes",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:49:90\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:49:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Missing canvas context still leaves the canonical counter usable",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:50:86\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:50:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Canvas backing resolution is capped even on a high-DPR phone",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:51:82\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:51:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    },
+    {
+      "name": "Disposal cancels frames, disconnects observers and does not restart",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Module exists: r706-atmosphere-runtime\n    at script (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r702.cjs:10:182)\n    at atmosphere (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:42:68)\n    at /workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:52:89\n    at test (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:5:41)\n    at Object.<anonymous> (/workspace/scratch/651cb970a0e1/r706/diagnostics/test_r706.cjs:52:1)\n    at Module._compile (node:internal/modules/cjs/loader:1872:14)\n    at Object..js (node:internal/modules/cjs/loader:2003:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)"
+    }
+  ]
+}

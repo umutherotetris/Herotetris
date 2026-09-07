@@ -1,0 +1,441 @@
+--- r705/nero.html
++++ r706/nero.html
+@@ -1,6 +1,6 @@
+ <!DOCTYPE html>
+ <!-- ════════════════════════════════════════════════════════════════
+-     SÜKÛN r705 — Short-Landscape Tefekkür Layout (base r704)
++     SÜKÛN r706 — Living Neon Atmosphere (base r705)
+      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
+      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
+      ════════════════════════════════════════════════════════════════ -->
+@@ -8,10 +8,10 @@
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+-<meta name="sukun-build" content="r705">
++<meta name="sukun-build" content="r706">
+ <meta name="referrer" content="no-referrer">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
+-<link rel="manifest" href="./manifest.webmanifest?v=r705">
++<link rel="manifest" href="./manifest.webmanifest?v=r706">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+@@ -6531,7 +6531,15 @@
+ <!-- ══ SÜRÜM NOTLARI ══  Makine okunur; service worker YENİ sürümün
+      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
+      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
+-<script type="application/json" id="surumNotlari">[
++<script type="application/json" id="surumNotlari">
++[
++  {
++    "v": "r706",
++    "t": "Canlı Neon Atmosfer ve Yerleşim Kararlılığı",
++    "b": [
++      "r706 · Onaylanan canlı neon atmosfer: mor–mavi–zümrüt dumanlar, ışıklı yörüngeler ve gerçek sayaç değişimine bağlı ışık dalgası. Görsel hareket/pil/görünürlük bütçesi; Tefekkürün ilgisiz sınıf değişikliklerinde gereksiz ölçümü ve dock boyutlarını silip yeniden yazma düzeltildi. Transport dokunma hedefleri 44 px. Android/kilit ekranı ve gerçek ses doğrulaması ayrıca gereklidir."
++    ]
++  },
+   {
+     "v": "r705",
+     "t": "7 Eylül 2026",
+@@ -8913,7 +8921,8 @@
+       "r670 intrinsic dock hesabı, kayıt önceliği, sayaç/ses transportu ve seyir motorları korunur."
+     ]
+   }
+-]</script>
++]
++</script>
+ <!-- ══ MİNİ OYNATICI — bir şey çalarken altta sabit ══ -->
+ <div id="calanSayfa" hidden>
+   <div class="csBaslik">
+@@ -25845,7 +25854,7 @@
+   if(!('serviceWorker' in navigator))return;
+   if(!/^https?:$/.test(location.protocol))return;
+ 
+-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r705';
++  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r706';
+   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
+     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
+   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
+@@ -49734,7 +49743,7 @@
+   const oldRail=$('r442StepRail');if(oldRail?.childNodes.length)oldRail.replaceChildren();
+   $('r444CenterStack')?.remove();$('r444TefExit')?.remove();$('r450FocusMetaSlot')?.remove();
+   const exit=ensureExit(root);
+-  ctl.dataset.tfCanonical='r530';
++  if(ctl.dataset.tfCanonical!=='r530')ctl.dataset.tfCanonical='r530';
+   return !!(visual&&primary&&metaWrap&&exit?.row&&exit?.button);
+ }
+ 
+@@ -49815,7 +49824,8 @@
+   set('--tf-ring',ring+'px');
+   set('--tf-side-w',(vw<340?42:vw<400?56:64)+'px');
+   set('--tf-gap',(vw<340?3:vw<400?5:8)+'px');
+-  document.body.dataset.tfViewport=vh<650?'very-short':vh<730?'short':vh>900?'tall':'normal';
++  const viewportProfile=vh<650?'very-short':vh<730?'short':vh>900?'tall':'normal';
++  if(document.body.dataset.tfViewport!==viewportProfile)document.body.dataset.tfViewport=viewportProfile;
+   layout={vw,vh,ring,dockReserve:0,topH:0,exitH:44,overlap:false,at:Date.now()};
+   return layout;
+ }
+@@ -49862,7 +49872,7 @@
+ /* ── 4. Adaptive performance: requested profile stays user-owned;
+           effective profile may calm itself under pressure. ───── */
+ let perf={requested:document.body.dataset.perf||'dengeli',effective:'dengeli',pressure:0,until:0,at:Date.now()};
+-let ignoredDiagnosticLongTasks=0;
++let ignoredDiagnosticLongTasks=0,perfReleaseTimer=0;
+ function applyPerf(){
+   perf.requested=document.body.dataset.perf||window.SukunPerformance?.mode||'dengeli';
+   const hidden=document.hidden,tef=document.body.classList.contains('sukun-tefekkur-mode');
+@@ -49870,7 +49880,9 @@
+   if(hidden)eff='pil';
+   else if(Date.now()<perf.until)eff='pil';
+   else if(tef&&eff!=='pil')eff='sakin';
+-  perf.effective=eff;perf.at=Date.now();document.body.dataset.perfEffective=eff;
++  clearTimeout(perfReleaseTimer);perfReleaseTimer=0;
++  if(!hidden&&perf.until>Date.now())perfReleaseTimer=setTimeout(()=>{perfReleaseTimer=0;applyPerf()},perf.until-Date.now()+10);
++  perf.effective=eff;perf.at=Date.now();if(document.body.dataset.perfEffective!==eff)document.body.dataset.perfEffective=eff;
+   return eff;
+ }
+ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){if(window.SukunDiagnosticWork?.owns?.(x)){ignoredDiagnosticLongTasks++;continue}if(x.duration>=180){perf.pressure++;if(perf.pressure>=3){perf.until=Date.now()+30000;perf.pressure=0;applyPerf()}}}}).observe({type:'longtask',buffered:false})}catch(e){}
+@@ -49964,7 +49976,7 @@
+ window.SukunLifecycleHub?.onBodyClass?.(()=>{
+   const now=document.body.classList.contains('sukun-tefekkur-mode');
+   if(now!==wasTef){wasTef=now;if(now){mount();beginSummary()}else endSummary();saveSoon();schedule();applyPerf()}
+-  else{schedule();applyPerf()}
++  else return; // r706: unrelated body classes do not invalidate Tefekkür geometry.
+   scheduleOwnerCheck();
+ },{immediate:false});
+ let countBound=false;
+@@ -62053,7 +62065,7 @@
+ (()=>{
+ 'use strict';
+ if(window.SukunR699Layout)return;
+-const VERSION='r702', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
++const VERSION='r706', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+ const root=document.documentElement, B=document.body;
+ const KEY='sukun.dockY.r633';
+ let stateSig='',y=0,raf=0,last=null,reason='boot',measures=0,coalesced=0,ro=null,drag=null,quietUntil=0,deferred=false,resizeTimer=0,modeLast='',drawerLast=false,detailsLast=false,anchorLast='',scrollResets=0,rehomeCount=0,violations=0;
+@@ -62062,17 +62074,19 @@
+ const visible=e=>{if(!e||e.hidden)return false;const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&+s.opacity>.01&&r.width>1&&r.height>1};
+ const rect=e=>{const r=e?.getBoundingClientRect();return r?{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,bottom:r.bottom,left:r.left,right:r.right}:null};
+ const px=n=>Math.round(n*10)/10+'px';
++// r706: local style guard, no browser prototype patching.
++function r706Style(style,key,value,priority=''){if(!style)return;value=String(value);if(style.getPropertyValue(key)!==value||(style.getPropertyPriority?.(key)||'')!==priority)style.setProperty(key,value,priority)}
+ function mode(){return B.classList.contains('r588-mode-max')?'max':B.classList.contains('r588-mode-midi')?'midi':'mini'}
+ function viewport(){const v=window.visualViewport;const layoutH=root.clientHeight||innerHeight;const top=v?.offsetTop||0,height=v?.height||innerHeight;return{top,height,bottom:top+height,width:v?.width||innerWidth,layoutH};}
+ function safeBottom(){let p=$('r633SafeProbe');if(!p){p=document.createElement('i');p.id='r633SafeProbe';p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9999px;bottom:0;width:1px;height:0;padding-bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none';B.appendChild(p)}return parseFloat(getComputedStyle(p).paddingBottom)||0}
+ function reserve(v){let n=Math.max(8,safeBottom()+8);for(const e of document.querySelectorAll('#r616BottomNav,.sukun-bottom-nav')){if(!visible(e))continue;const r=e.getBoundingClientRect(),s=getComputedStyle(e);if(['fixed','sticky'].includes(s.position)&&r.bottom>=v.bottom-24&&r.top<v.bottom)n=Math.max(n,v.bottom-r.top+8)}return n}
+-function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;B.classList.add('r699-layout');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
++function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;if(!B.classList.contains('r699-layout'))B.classList.add('r699-layout');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}if(grip.getAttribute('aria-label')!=='Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.')grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
+  let body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode');if(!body){body=document.createElement('div');body.id='r659DockBody';body.dataset.r659Scroll='1';shell.insertBefore(body,footer||null)}
+  const stray=[...shell.children].filter(e=>e!==grip&&e!==body&&e!==footer);if(stray.length){stray.forEach(e=>body.appendChild(e));rehomeCount+=stray.length}if(shell.firstElementChild!==grip)shell.insertBefore(grip,shell.firstChild);if(footer&&shell.lastElementChild!==footer)shell.appendChild(footer);
+  if(!host.dataset.r699Ready){host.dataset.r699Ready='1';}
+  return true}
+ function save(){safe(()=>localStorage.setItem(KEY,String(Math.round(y*10)/10)),null)}
+-function setY(n,persist=false){y=Number.isFinite(+n)?+n:0;root.style.setProperty('--r699-y',px(y));root.style.setProperty('--r633-dock-y',px(y));$('r170Now')?.style.setProperty('--r633-dock-y',px(y));if(B.classList.contains('r699-dock-active')){const h=parseFloat(root.style.getPropertyValue('--r699-host-h'))||0,b=parseFloat(root.style.getPropertyValue('--r699-bottom'))||0;if(h){const v=viewport(),surface=h+b-y+12,content=surface-(v.layoutH-v.bottom);root.style.setProperty('--r699-surface-bottom',px(surface));root.style.setProperty('--r699-content-reserve',px(content));root.style.setProperty('--r659-wrap-reserve',px(content));}}if(persist)save();return y}
++function setY(n,persist=false){y=Number.isFinite(+n)?+n:0;r706Style(root.style,'--r699-y',px(y));r706Style(root.style,'--r633-dock-y',px(y));r706Style($('r170Now')?.style,'--r633-dock-y',px(y));if(B.classList.contains('r699-dock-active')){const h=parseFloat(root.style.getPropertyValue('--r699-host-h'))||0,b=parseFloat(root.style.getPropertyValue('--r699-bottom'))||0;if(h){const v=viewport(),surface=h+b-y+12,content=surface-(v.layoutH-v.bottom);r706Style(root.style,'--r699-surface-bottom',px(surface));r706Style(root.style,'--r699-content-reserve',px(content));r706Style(root.style,'--r659-wrap-reserve',px(content));}}if(persist)save();return y}
+ function readingReserve(v,bottom){
+  if(!B.classList.contains('sukun-tefekkur-mode')||B.classList.contains('r699-drawer-open'))return 0;
+  const cap=Math.max(1,v.height-bottom-16);
+@@ -62089,7 +62103,14 @@
+  grip.addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();const h=$('r170Now');if(!visible(h))return;const v=viewport(),b=setBounds(v,reserve(v),h.getBoundingClientRect().height);let n=e.key==='Home'?b.min:e.key==='End'?b.max:y+(e.key==='ArrowUp'?-1:1)*(e.shiftKey?80:28);setY(clamp(n,b.min,b.max),true);schedule('keyboard-grip')});
+ }
+ function naturalHeight(shell,body,footer,grip){const cs=getComputedStyle(shell);const pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),gap=parseFloat(cs.rowGap)||0;const gh=grip?.getBoundingClientRect().height||0,fh=footer?.getBoundingClientRect().height||0;const bh=body?.scrollHeight||0;return Math.ceil(pad+gh+fh+bh+gap*2)}
+-function clearLegacy(){for(const k of ['--r659-dock-fit-h','--r659-dock-min-h','--r659-dock-max-h','--r662-intrinsic','--r662-exact-fill','--r671-zcard-h','--r680-max-host-h'])root.style.removeProperty(k);const h=$('r170Now');if(h){for(const k of ['height','min-height','max-height','--r659-dock-fit-h'])h.style.removeProperty(k)}root.classList.remove('r680-max-doc-lock');B.classList.remove('r680-max-surface','r698-max-overflow','r659-bottom-fit','r662-converging','r662-body-scroll','r671-boundary-authority','r660-dock-tight','r660-dock-roomy');B.classList.add('r660-dock-compact')}
++function clearLegacy(){
++ // Current r699 dimensions stay installed while intrinsic content is measured.
++ for(const k of ['--r662-exact-fill','--r671-zcard-h','--r680-max-host-h'])if(root.style.getPropertyValue(k))root.style.removeProperty(k);
++ const h=$('r170Now');if(h?.style.getPropertyValue('--r659-dock-fit-h'))h.style.removeProperty('--r659-dock-fit-h');
++ if(root.classList.contains('r680-max-doc-lock'))root.classList.remove('r680-max-doc-lock');
++ for(const k of ['r680-max-surface','r698-max-overflow','r659-bottom-fit','r662-converging','r662-body-scroll','r671-boundary-authority','r660-dock-tight','r660-dock-roomy'])if(B.classList.contains(k))B.classList.remove(k);
++ if(!B.classList.contains('r660-dock-compact'))B.classList.add('r660-dock-compact');
++}
+ 
+ let modalTrigger=null,modalKind='',focusGuard=false;
+ function modalBackdrop(){let e=$('r699ModalBackdrop');if(!e){e=document.createElement('div');e.id='r699ModalBackdrop';e.hidden=true;e.setAttribute('aria-hidden','true');B.appendChild(e);e.addEventListener('click',()=>window.SukunAlertCenter?.close?.())}return e}
+@@ -62110,9 +62131,9 @@
+ function measure(why='api'){
+  measures++;reason=why;if(!ensure())return null;
+  const host=$('r170Now'),shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');const v=viewport(),bottom=reserve(v),m=mode(),tef=B.classList.contains('sukun-tefekkur-mode'),drawer=host.classList.contains('r554-alert-open')&&!($('r554AlertDrawer')?.hidden),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible')||!B.classList.contains('r591-flow-active');
+- root.style.setProperty('--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));root.style.setProperty('--r699-bottom',px(v.layoutH-v.bottom+bottom));root.style.setProperty('--r633-max-h',px(Math.max(1,v.height-bottom-16)));root.style.setProperty('--r633-vvh',px(v.height));root.style.setProperty('--r633-safe-top',px(v.top+8));root.style.setProperty('--r699-top',px(v.top+8));root.style.setProperty('--r699-viewport-h',px(v.height));root.style.setProperty('--r699-available',px(Math.max(1,v.height-bottom-16)));
++ r706Style(root.style,'--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r699-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r633-max-h',px(Math.max(1,v.height-bottom-16)));r706Style(root.style,'--r633-vvh',px(v.height));r706Style(root.style,'--r633-safe-top',px(v.top+8));r706Style(root.style,'--r699-top',px(v.top+8));r706Style(root.style,'--r699-viewport-h',px(v.height));r706Style(root.style,'--r699-available',px(Math.max(1,v.height-bottom-16)));
+  clearLegacy();modalSync();B.classList.toggle('r699-drawer-open',drawer);B.classList.toggle('r699-details-open',B.classList.contains('r434-inline-details-open'));
+- if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active');root.style.setProperty('--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));root.style.setProperty('--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));root.style.setProperty('--r659-wrap-reserve',px(0));root.style.setProperty('--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
++ if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
+  B.classList.add('r699-dock-active');
+  const changedMode=modeLast!==m;if(changedMode){if(body.scrollTop){body.scrollTop=0;scrollResets++}modeLast=m}
+  const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
+@@ -62130,21 +62151,21 @@
+   // Reserve the reading surface in every Tefekkür size, including dragged Max.
+   if(tef)desired=Math.min(desired,Math.max(1,cap-readingReserve(v,bottom)));
+  }
+- desired=Math.min(cap,Math.max(1,Math.ceil(desired)));root.style.setProperty('--r699-host-h',px(desired));root.style.setProperty('--r659-dock-fit-h',px(desired));root.style.setProperty('--r659-dock-max-h',px(cap));root.style.setProperty('--r659-dock-min-h',px(0));root.style.setProperty('--r662-intrinsic',px(need));host.style.setProperty('height',px(desired),'important');host.style.setProperty('min-height','0px','important');host.style.setProperty('max-height',px(cap),'important');
++ desired=Math.min(cap,Math.max(1,Math.ceil(desired)));r706Style(root.style,'--r699-host-h',px(desired));r706Style(root.style,'--r659-dock-fit-h',px(desired));r706Style(root.style,'--r659-dock-max-h',px(cap));r706Style(root.style,'--r659-dock-min-h',px(0));r706Style(root.style,'--r662-intrinsic',px(need));r706Style(host.style,'height',px(desired),'important');r706Style(host.style,'min-height','0px','important');r706Style(host.style,'max-height',px(cap),'important');
+  const bounds=applyPosition(v,bottom,desired,y);const free=y<-5;
+- const reservePx=desired+bottom-y+12;root.style.setProperty('--r699-content-reserve',px(reservePx));root.style.setProperty('--r699-surface-bottom',px(v.layoutH-v.bottom+reservePx));root.style.setProperty('--r659-wrap-reserve',px(reservePx));root.style.setProperty('--r660-peek-reserve',px(62+bottom));
++ const reservePx=desired+bottom-y+12;r706Style(root.style,'--r699-content-reserve',px(reservePx));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+reservePx));r706Style(root.style,'--r659-wrap-reserve',px(reservePx));r706Style(root.style,'--r660-peek-reserve',px(62+bottom));
+  B.classList.toggle('r699-body-scroll',!drawer&&need>desired+2);B.classList.toggle('r699-overflow',!drawer&&need>desired+2);
+  // Max is not a document lock. The zikir surface may scroll naturally behind the fixed player.
+  const card=document.querySelector('#tab-zkr>.card.zCtl');let boundaryTop=null,cardH=0;
+  if(tef&&visible(card)){
+   const r=card.getBoundingClientRect();boundaryTop=Math.min(v.bottom-2,host.getBoundingClientRect().top-8);cardH=Math.max(0,Math.floor(boundaryTop-v.top));
+-  root.style.setProperty('--r699-card-budget',px(cardH));
++  r706Style(root.style,'--r699-card-budget',px(cardH));
+  }else root.style.removeProperty('--r699-card-budget');
+  const dm=$('r554DrawerList'),scrollable=!!dm&&dm.scrollHeight>dm.clientHeight+2;
+  last={version:VERSION,reason,active:true,bottomFit:!free,hidden:false,mode:m,density:'compact',viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,appliedHeight:desired,intrinsicNeed:need,naturalCap:cap,profileCap:cap,maxHeight:cap,minHeight:0,rawGap:Math.max(0,cap-desired),rawAvailableHeight:cap,overlayPx:0,unusedGapPx:Math.max(0,cap-desired),exactFillPx:Math.max(0,cap-need),wrapReserve:reservePx,bodyOverflowPx:Math.max(0,body.scrollHeight-body.clientHeight),bodyScrollTop:body.scrollTop,drawerOpen:drawer,drawerClientHeight:dm?.clientHeight||0,drawerScrollHeight:dm?.scrollHeight||0,drawerMaxScroll:Math.max(0,(dm?.scrollHeight||0)-(dm?.clientHeight||0)),drawerScrollable:scrollable,bottomReachable:!drawer||!!dm&&dm.clientHeight>0,lastY:y,cardHeight:cardH,boundaryTop,measureCount:measures,rehomeCount,scrollResets,rafCoalesced:coalesced,resizeEvents:0,layoutSyncs:measures,convergence:0,panActive:!!drag,gestureDeferrals:0,viewportScrollIgnored:0,geometryDebounces:0,viewportDebounces:0,at:Date.now()};
+  return last;
+ }
+-function schedule(why='event'){reason=why;if(drag){deferred=true;return}if(raf){coalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(reason)})}
++function schedule(why='event'){reason=why;if(document.hidden)return;if(drag){deferred=true;return}if(raf){coalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(reason)})}
+ function reset(announce=false){setY(0,true);schedule('reset');if(announce)safe(()=>window.toast?.('Akış barı güvenli konuma alındı ↕'),null);return true}
+ function reflow(why='reflow'){return measure(why)}
+ function boundary(){const c=document.querySelector('#tab-zkr>.card.zCtl');return{version:VERSION,cardHeight:last?.cardHeight||0,boundaryTop:last?.boundaryTop||0,kind:last?.active?'dock':'none',gap:8,measures};}
+@@ -66575,5 +66596,188 @@
+   html body.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout .r611CurrentZikirHero.r611-vlong #r611CurrentZikirName{font-size:clamp(17px,2.7vw,21px)!important;overflow-wrap:anywhere!important}
+   html body.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirHero .r611HeroSub{grid-column:1!important;grid-row:2!important}
+ </style>
++
++<style id="r706-atmosphere-style">
++/* r706: approved living atmosphere on the canonical Tefekkür surface. */
++html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout{
++ position:relative!important;isolation:isolate!important;padding:58px 12px 14px!important;
++ border:1px solid #78998c80!important;border-radius:22px!important;
++ background:#080f1c!important;box-shadow:0 0 26px #8469db24,inset 0 1px 0 #c3e1c729!important;
++ overflow:visible!important;gap:12px!important;
++}
++html body.r706-neon.sukun-tefekkur-mode #r706Atmosphere{
++ display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;
++ border-radius:inherit!important;overflow:hidden!important;pointer-events:none!important;
++ background:radial-gradient(ellipse at 50% 40%,#266b5766,transparent 49%),radial-gradient(ellipse at 4% 49%,#62408a77,transparent 47%),radial-gradient(ellipse at 100% 66%,#12597577,transparent 47%),#080f1c!important;
++}
++html body.r706-neon #r706Atmosphere *,html body.r706-neon #r706Orbit,html body.r706-neon #r706Orbit *{pointer-events:none!important;user-select:none!important}
++html body.r706-neon #r706Smoke{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:.95!important}
++html body.r706-neon .r706Arch{position:absolute;width:86%;height:85%;left:7%;top:30px;border:1px solid #b7d6c73b;border-radius:49% 49% 0 0;box-shadow:0 0 0 9px #8c9dc40b,0 0 0 10px #92a4d318,inset 0 0 28px #b6b5ff08}
++html body.r706-neon .r706ArchInner{width:72%;left:14%;height:72%;top:55px;border-color:#e5dbaa2b;box-shadow:0 0 0 6px #97ebd109}
++html body.r706-neon .r706Lightfall{position:absolute;inset:-80px -10px 0;opacity:.65;background:conic-gradient(from 155deg at 50% 0%,transparent,#bdffe426 3deg,transparent 5deg,transparent 13deg,#d6c3ff22 16deg,transparent 19deg,transparent 25deg,#b0fff530 27deg,transparent 30deg,transparent 39deg,#aec9ff28 42deg,transparent 46deg)}
++html body.r706-neon.sukun-tefekkur-mode #r706AtmosphereControls{display:grid!important;position:absolute!important;top:8px!important;left:12px!important;right:12px!important;grid-template-columns:1fr auto!important;gap:0 10px!important;align-items:center!important;z-index:2!important;min-width:0!important;color:#d1f9e2!important}
++html body.r706-neon #r706AtmosphereControls>span{font:500 11px/1.4 system-ui;letter-spacing:.18em;text-shadow:0 0 14px #9effc86b}
++html body.r706-neon #r706Motion{position:static!important;transform:none!important;display:block!important;min-width:70px!important;min-height:44px!important;height:auto!important;padding:8px 10px!important;border:1px solid #87c7a869!important;border-radius:22px!important;background:#16382ee6!important;color:#d9ffed!important;font:500 12px/1.4 system-ui!important;pointer-events:auto!important;touch-action:manipulation!important}
++html body.r706-neon #r706AtmosphereControls>label,html body.r706-neon #r706Intensity{display:none!important}
++html body.r706-neon.r588-mode-max.sukun-tefekkur-mode #r706AtmosphereControls>label{display:flex!important;grid-column:1!important;grid-row:2!important;align-items:center!important;gap:6px!important;font:400 11px/1.4 system-ui!important;color:#d0dddf!important}
++html body.r706-neon.r588-mode-max.sukun-tefekkur-mode #r706Intensity{display:block!important;grid-column:2!important;grid-row:2!important;width:100px!important;max-width:100%!important;height:32px!important;accent-color:#b3ffd9;pointer-events:auto!important;touch-action:pan-y!important}
++html body.r706-neon.r588-mode-max.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout{padding-top:90px!important}
++html body.r706-neon:not(.sukun-tefekkur-mode) :is(#r706Atmosphere,#r706AtmosphereControls,#r706Orbit){display:none!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{position:relative!important;z-index:1!important;background:transparent!important;border:0!important;box-shadow:none!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCountTitle{display:none!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirHero{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:4px 0 12px!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirHero[hidden]{display:none!important}
++html body.r706-neon.sukun-tefekkur-mode #r611CurrentZikirHero :is(.r611HeroLine,.r611HeroOrn){display:none!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirName{grid-column:1!important;grid-row:1!important;width:100%!important;max-width:100%!important;font:500 clamp(24px,6.8vw,34px)/1.25 Georgia,serif!important;color:#e5ffe9!important;text-shadow:0 0 24px #91ffd659,0 2px 12px #000!important;overflow-wrap:anywhere!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirSub{grid-column:1!important;grid-row:2!important;color:#c8d9d7!important;font-size:11px!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{border:1px solid #baf9cfb3!important;background:radial-gradient(circle at 32% 8%,#314f44,#132631 45%,#0a1324 85%)!important;box-shadow:0 0 10px #a6f5c340,0 0 27px #6affba3b,inset 0 0 0 7px #90d7c50a,inset 0 0 0 8px #b3c8a526!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual #cntBig{color:#fff1cb!important;font-family:Georgia,serif!important;text-shadow:0 0 24px #fff0a844!important}
++html body.r706-neon.sukun-tefekkur-mode #r706Orbit{display:block!important;position:absolute!important;inset:-22px!important;border-radius:50%!important;z-index:0!important}
++html body.r706-neon #r706Orbit .r706Ticks{position:absolute;inset:-7px;border-radius:50%;background:repeating-conic-gradient(from -1deg,#bad7bb99 0deg 1deg,transparent 1deg 10deg);mask-image:radial-gradient(circle,transparent 67%,#000 68% 69%,transparent 70%);opacity:.7}
++html body.r706-neon #r706Orbit .r706Arc{position:absolute;inset:0;border-radius:50%;border:1px solid #8adfd53b;border-left:2px solid #c7ffe2;border-bottom-color:#7efbc69c;box-shadow:-5px 0 15px #7affc733;transform:rotate(-36deg)}
++html body.r706-neon #r706Orbit :is(.r706Pearl,.r706Satellite){position:absolute;inset:0;border-radius:50%;animation:r706-orbit 28s linear infinite!important;animation-play-state:paused!important}
++html body.r706-neon #r706Orbit .r706Pearl i{position:absolute;top:-5px;left:calc(50% - 6px);height:12px;width:12px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff,#f0fff5 30%,#84efc2 65%,#518c80);box-shadow:0 0 9px 3px #b0ffdc99,0 0 28px 8px #76ffbd66}
++html body.r706-neon #r706Orbit .r706Satellite{inset:10px;animation-duration:40s!important;animation-direction:reverse!important;border:1px solid #acbcff40}
++html body.r706-neon #r706Orbit .r706Satellite i{position:absolute;width:6px;height:6px;bottom:-2px;left:50%;border-radius:50%;background:#e2ceff;box-shadow:0 0 15px 3px #b089ff88}
++html body.r706-neon #tfRefinedLayout[data-r706-running="1"] #r706Orbit :is(.r706Pearl,.r706Satellite){animation-play-state:running!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{background:#12283be6!important;border-color:#8a9aac40!important;color:#c2cedd!important;border-radius:12px!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide b{color:#eff9db!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions button{background:linear-gradient(145deg,#1f3446,#111b30)!important;border-color:#8597b55e!important;box-shadow:inset 0 1px 0 #c7eaff17!important;color:#effff2!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions #autoBtn{background:linear-gradient(120deg,#245447,#183438 60%,#343151)!important;border-color:#a8edc9aa!important;box-shadow:0 0 20px #61ffa82e,inset 0 1px 0 #d5ffe752!important;min-height:50px!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions #autoBtn.playing{border-color:#dca3d1!important}
++html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .r494Nav button{min-height:44px!important;color:#e3dbcf!important;background:#142232!important;border-color:#69828b66!important}
++html body.r706-neon.r699-layout.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow>#tefExitBtn{border-color:#d4a8ff99!important;background:linear-gradient(110deg,#512d4d,#362756 55%,#1e3f5a)!important;color:#f9eaff!important;box-shadow:0 0 15px #df69f537,inset 0 1px 0 #f0c4ff29!important;min-height:44px!important}
++html body.r706-neon #r170Now.r588-authority>#r588DockShell{background:radial-gradient(ellipse at 0% 0%,#23505277,transparent 60%),radial-gradient(ellipse at 100% 100%,#70429944,transparent 65%),#0c1827!important;border-color:#8fa5bc70!important;box-shadow:inset 0 1px 0 #d2eaff29,0 0 25px #789cf012!important}
++html body.r706-neon #r588DockShell>.r588Mode{background:#0c1827!important}
++html body.r706-neon #r588DockShell .r588ModeSeg button{min-height:44px!important;height:44px!important;color:#cbd8e8!important}
++html body.r706-neon #r588DockShell .r588ModeSeg button.active,html body.r706-neon #r588DockShell .r588ModeSeg button[aria-pressed="true"]{background:#324452!important;border-color:#d5e6ec44!important;color:#eeffe9!important}
++html body.r706-neon.r699-layout #r588DockShell .r588Transport{grid-template-columns:repeat(2,44px)!important}
++html body.r706-neon.r699-layout #r588DockShell .r588Transport button,html body.r706-neon.r699-layout #r588Hide{width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important}
++html body.r706-neon.r699-layout #r588DockShell>.r588Mode{grid-template-columns:minmax(0,1fr) auto 44px!important;gap:4px!important}
++html body.r706-neon #r588DockShell #r588Play{background:#193e36!important;border-color:#99f4c676!important;color:#daffe8!important}
++html body.r706-neon #r588DockShell #r588Stop{background:#34273d!important;border-color:#e495cb6e!important;color:#f8c6df!important}
++@media (orientation:portrait),(min-height:481px){
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout .zCounterRow{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;max-width:330px!important;margin:0 auto!important;padding:24px 0 0!important}
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{grid-column:1/-1!important;grid-row:1!important;width:min(190px,70vw)!important;max-width:190px!important;margin:4px auto 30px!important}
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{grid-row:2!important;min-height:44px!important;display:flex!important;flex-direction:row!important;gap:7px!important;align-items:center!important;justify-content:center!important}
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide:first-child{grid-column:1!important}
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide:last-child{grid-column:2!important}
++ html body.r706-neon.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide em{display:none!important}
++}
++@media(max-height:480px) and (orientation:landscape){
++ html body.r706-neon.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout{padding:50px 10px 10px!important}
++ html body.r706-neon #r706AtmosphereControls>label,html body.r706-neon.r588-mode-max #r706AtmosphereControls>label,html body.r706-neon.r588-mode-max #r706Intensity{display:none!important}
++ html body.r706-neon.sukun-tefekkur-mode #r706Orbit{inset:-8px!important}
++}
++@media(prefers-reduced-motion:reduce){html body.r706-neon #r706Orbit *{animation:none!important}}
++@keyframes r706-orbit{from{transform:rotate(-32deg)}to{transform:rotate(328deg)}}
++
++</style>
++<script id="r706-atmosphere-runtime">
++(()=>{
++'use strict';
++if(window.SukunAtmosphereR706)return;
++const $=id=>document.getElementById(id),B=document.body,KEY='sukun.atmosphere.r706';
++const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
++let preference='live',intensity=.85,root=null,layer=null,canvas=null,ctx=null,toolbar=null;
++let raf=0,resizeRaf=0,io=null,ro=null,countObserver=null,visible=true,active=false,disposed=false;
++let w=1,h=1,cx=.5,cy=.5,radius=100,time=0,last=0,flare=0,frames=0,totalDrawMs=0,drawMs=0,frameMs=50;
++let recoverAt=0,expensiveFrames=0,previousCount='',bodySig='',unsub=null;
++const cleanups=[],sprites=[],colors=['101,255,192','152,113,255','71,181,255','221,102,207'];
++try{const p=JSON.parse(localStorage.getItem(KEY)||'null');if(p){if(['live','still'].includes(p.mode))preference=p.mode;const v=Number(p.intensity);if(Number.isFinite(v))intensity=Math.max(.2,Math.min(1,v))}}catch(_){}
++const listen=(target,name,fn,options)=>{target?.addEventListener?.(name,fn,options);cleanups.push(()=>target?.removeEventListener?.(name,fn,options))};
++function save(){try{localStorage.setItem(KEY,JSON.stringify({mode:preference,intensity}))}catch(_){}}
++function stationary(){return preference==='still'||!!reduced?.matches||B.dataset.perf==='pil'||B.dataset.perfEffective==='pil'}
++function allowed(){return active&&visible&&!document.hidden&&!disposed&&!!ctx&&root?.isConnected}
++function moving(){return allowed()&&!stationary()}
++function stopFrame(){if(raf)cancelAnimationFrame(raf);raf=0;last=0}
++function schedule(){if(!raf&&moving())raf=requestAnimationFrame(tick)}
++function draw(){
++ if(!ctx||!allowed())return;
++ const start=performance.now(),t=time;ctx.clearRect(0,0,w,h);ctx.globalCompositeOperation='screen';
++ for(let band=0;band<4;band++){
++  for(let k=0;k<12;k++){
++   const a=k*.31+t*.15+band*1.65,r=radius*(1.12+band*.05)+Math.sin(k*.42+t*.2)*14;
++   const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.83+Math.sin(k*.8+t*.3)*12,size=65+Math.sin(k*.72+band)*20;
++   ctx.globalAlpha=intensity*(.7+Math.sin(k*.4+t*.12)*.2);ctx.drawImage(sprites[band],x-size/2,y-size/2,size,size);
++  }
++  for(let strand=0;strand<4;strand++){
++   ctx.beginPath();for(let p=0;p<=48;p++){
++    const a=p/48*4.5+band*1.58+t*.11,r=radius*1.17+strand*3+Math.sin(a*3+t*.24+band)*10+Math.sin(a*7-t*.18)*4;
++    const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.85+Math.sin(a*2+t*.12)*11;
++    if(p===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
++   }
++   ctx.globalAlpha=intensity*(.13+strand*.04);ctx.strokeStyle='rgb('+colors[band]+')';ctx.lineWidth=1+strand*.45;ctx.stroke();
++  }
++ }
++ for(let p=0;p<28;p++){
++  const x=((p*83.17+Math.sin(t*.15+p)*8)%w+w)%w,y=((p*137.43-t*(2+p%3))%h+h)%h;
++  ctx.globalAlpha=(.2+(Math.sin(t*.5+p*1.9)+1)*.2)*intensity;ctx.fillStyle=p%3?'#b2ffe0':'#e0bcff';ctx.beginPath();ctx.arc(x,y,p%7===0?1.4:.6,0,Math.PI*2);ctx.fill();
++ }
++ if(flare>0){ctx.globalAlpha=flare*.4;ctx.strokeStyle='#adffdf';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(cx,cy,radius+(1-flare)*45,0,Math.PI*2);ctx.stroke();}
++ ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';frames++;drawMs=performance.now()-start;totalDrawMs+=drawMs;
++ // Rendering alone can lower its budget; it never touches the audio clock.
++ if(drawMs>18){if(++expensiveFrames>=5){frameMs=100;recoverAt=performance.now()+30000;expensiveFrames=0}}else expensiveFrames=Math.max(0,expensiveFrames-1);
++}
++function tick(now){
++ raf=0;if(!moving())return;
++ if(!last||now-last>=frameMs){const dt=last?Math.min((now-last)/1000,.15):.05;last=now;time+=dt;flare=Math.max(0,flare-dt*1.3);draw();if(recoverAt&&now>=recoverAt){frameMs=50;recoverAt=0}}
++ schedule();
++}
++function resize(){
++ resizeRaf=0;if(!root||!ctx||!active||document.hidden)return;
++ const r=root.getBoundingClientRect(),counter=$('zCountVisual')?.getBoundingClientRect();if(r.width<1||r.height<1)return;
++ w=Math.min(1200,r.width);h=Math.min(1200,r.height);const d=Math.min(window.devicePixelRatio||1,1.25);
++ const nw=Math.round(w*d),nh=Math.round(h*d);if(canvas.width!==nw||canvas.height!==nh){canvas.width=nw;canvas.height=nh;ctx.setTransform(d,0,0,d,0,0)}
++ cx=counter?counter.left+counter.width/2-r.left:w/2;cy=counter?counter.top+counter.height/2-r.top:h*.5;radius=counter?counter.width/2:90;
++ draw();schedule();
++}
++function scheduleResize(){if(!resizeRaf&&active&&!document.hidden)resizeRaf=requestAnimationFrame(resize)}
++function updateControls(){
++ if(!toolbar)return;const on=!stationary(),button=$('r706Motion'),label=on?'Canlı':'Sabit';
++ if(button.textContent!==label)button.textContent=label;
++ if(button.getAttribute('aria-pressed')!==String(on))button.setAttribute('aria-pressed',String(on));
++ root.dataset.r706Motion=on?'live':'still';
++}
++function reconcile(){
++ if(disposed)return;active=B.classList.contains('sukun-tefekkur-mode')&&!B.classList.contains('r699-drawer-open')&&!B.classList.contains('r434-inline-details-open');
++ if(!root&&B.classList.contains('sukun-tefekkur-mode'))mount();
++ updateControls();if(root)root.dataset.r706Running=moving()?'1':'0';
++ if(!moving())stopFrame();if(active){scheduleResize();schedule();}
++}
++function pulse(){if(!moving())return;flare=1;schedule()}
++function mount(){
++ if(root)return true;root=$('tfRefinedLayout');if(!root)return false;
++ layer=document.createElement('div');layer.id='r706Atmosphere';layer.setAttribute('aria-hidden','true');
++ layer.innerHTML='<canvas id="r706Smoke"></canvas><div class="r706Arch"></div><div class="r706Arch r706ArchInner"></div><div class="r706Lightfall"></div>';
++ root.appendChild(layer);canvas=$('r706Smoke');try{ctx=canvas.getContext('2d')}catch(_){ctx=null}
++ if(ctx){try{for(const rgb of colors){const c=document.createElement('canvas');c.width=128;c.height=128;const g=c.getContext('2d');if(!g)throw Error('canvas unavailable');const grad=g.createRadialGradient(64,64,0,64,64,64);grad.addColorStop(0,'rgba('+rgb+',.17)');grad.addColorStop(.4,'rgba('+rgb+',.085)');grad.addColorStop(1,'rgba('+rgb+',0)');g.fillStyle=grad;g.fillRect(0,0,128,128);sprites.push(c)}}catch(_){ctx=null;sprites.length=0}}
++ toolbar=document.createElement('div');toolbar.id='r706AtmosphereControls';
++ toolbar.innerHTML='<span>TEFEKKÜR</span><button type="button" id="r706Motion" aria-label="Görsel hareket" aria-pressed="true">Canlı</button><label for="r706Intensity">Ambiyans <output id="r706IntensityValue"></output></label><input id="r706Intensity" type="range" min="20" max="100" step="5" aria-label="Görsel ambiyans yoğunluğu">';
++ root.appendChild(toolbar);$('r706Intensity').value=String(Math.round(intensity*100));$('r706IntensityValue').textContent=Math.round(intensity*100)+'%';
++ listen($('r706Motion'),'click',()=>{preference=stationary()?'live':'still';if(reduced?.matches||B.dataset.perf==='pil'||B.dataset.perfEffective==='pil'){preference='still';window.toast?.('Azaltılmış hareket veya pil profili etkin.')}save();reconcile()});
++ listen($('r706Intensity'),'input',e=>{intensity=Number(e.target.value)/100;$('r706IntensityValue').textContent=e.target.value+'%';draw()});listen($('r706Intensity'),'change',save);
++ const counter=$('zCountVisual');if(counter&&!$('r706Orbit')){const ring=document.createElement('div');ring.id='r706Orbit';ring.setAttribute('aria-hidden','true');ring.innerHTML='<span class="r706Ticks"></span><span class="r706Arc"></span><span class="r706Pearl"><i></i></span><span class="r706Satellite"><i></i></span>';counter.appendChild(ring)}
++ const count=$('cntBig');if(count&&window.MutationObserver){previousCount=count.textContent;countObserver=new MutationObserver(()=>{const next=count.textContent;if(next!==previousCount){previousCount=next;pulse()}});countObserver.observe(count,{childList:true,characterData:true,subtree:true})}
++ if(window.ResizeObserver){ro=new ResizeObserver(scheduleResize);ro.observe(root);if(counter)ro.observe(counter)}
++ if(window.IntersectionObserver){io=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;reconcile()});io.observe(root)}
++ root.classList.add('r706-atmosphere');return true;
++}
++function dispose(){disposed=true;stopFrame();if(resizeRaf)cancelAnimationFrame(resizeRaf);resizeRaf=0;ro?.disconnect();io?.disconnect();countObserver?.disconnect();perfObserver?.disconnect();unsub?.();cleanups.forEach(fn=>fn());if(root)root.dataset.r706Running='0'}
++function boot(){
++ if(disposed)return;B.classList.add('r706-neon');
++ unsub=window.SukunLifecycleHub?.onBodyClass?.(()=>{const sig=[B.classList.contains('sukun-tefekkur-mode'),B.classList.contains('r699-drawer-open'),B.classList.contains('r434-inline-details-open')].join('|');if(sig!==bodySig){bodySig=sig;reconcile()}},{immediate:true});
++ if(!unsub)reconcile();
++}
++const perfObserver=window.MutationObserver?new MutationObserver(reconcile):null;
++perfObserver?.observe(B,{attributes:true,attributeFilter:['data-perf','data-perf-effective']});
++listen(document,'visibilitychange',()=>{if(document.hidden&&resizeRaf){cancelAnimationFrame(resizeRaf);resizeRaf=0}reconcile()});
++listen(window,'pagehide',()=>{active=false;stopFrame();if(resizeRaf)cancelAnimationFrame(resizeRaf);resizeRaf=0;if(root)root.dataset.r706Running='0'});
++listen(window,'pageshow',reconcile);listen(window,'resize',scheduleResize,{passive:true});listen(reduced,'change',reconcile);listen(window,'sukun:performance',reconcile);
++if(document.readyState==='loading')listen(document,'DOMContentLoaded',boot,{once:true});else boot();
++window.SukunAtmosphereR706=Object.freeze({version:'r706',refresh:reconcile,dispose,snapshot:()=>({active,visible,moving:moving(),preference,intensity,frames,averageDrawMs:frames?totalDrawMs/frames:0,lastDrawMs:drawMs,frameMs,canvas:!!ctx,rafPending:!!raf,resizePending:!!resizeRaf})});
++})();
++
++</script>
+ </body>
+ </html>
+--- r705/sw.js
++++ r706/sw.js
+@@ -1,8 +1,8 @@
+-/* SÜKÛN r705 — Short-Landscape Tefekkür Layout */
++/* SÜKÛN r706 — Living Neon Atmosphere */
+ 'use strict';
+ 
+-const SURUM = 'r705';
+-const CACHE = 'sukun-r705-20260907a';
++const SURUM = 'r706';
++const CACHE = 'sukun-r706-20260907a';
+ 
+ const CORE = [
+   './nero.html',
+@@ -14,9 +14,10 @@
+   './icon-512.png',
+   './icon-512-maskable.png'
+ ];
+-const BUILD_MARKER='./__sukun_build_r705__.json';
++const BUILD_MARKER='./__sukun_build_r706__.json';
+ 
+ const NOTLAR = [
++  "r706 · Onaylanan canlı neon atmosfer: mor–mavi–zümrüt dumanlar, ışıklı yörüngeler ve gerçek sayaç değişimine bağlı ışık dalgası. Görsel hareket/pil/görünürlük bütçesi; Tefekkürün ilgisiz sınıf değişikliklerinde gereksiz ölçümü ve dock boyutlarını silip yeniden yazma düzeltildi. Transport dokunma hedefleri 44 px. Android/kilit ekranı ve gerçek ses doğrulaması ayrıca gereklidir.",
+   "r705 · Kısa yatay ekranlarda Tefekkürün mevcut sayaç ve kontrol panelleri iki sütunda düzenlenir; çıkış ve sayma kontrolleri görünür çalışma alanına yaklaşır. 320–390 piksel portre düzeni ve Mini/Midi/Max akış barı kodu korunur. Ses oturumu, kayıt önceliği, seyir, sayaç ve duraklatma motorları değiştirilmedi. Önceki 51 kaynak regresyonuna ilave yerleşim, dokunma ve sürüm bütünlüğü kontrolleri eklendi. Gerçek Android, kilit ekranı ve duyulan ses kalitesi ayrıca doğrulanmalıdır.",
+   "r704 · Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir. Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez. Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",
+   "r703 · 28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi. Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur. Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r703 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
+--- r705/manifest.webmanifest
++++ r706/manifest.webmanifest
+@@ -3,7 +3,7 @@
+   "short_name": "SÜKÛN",
+   "description": "Tasavvufî ses, zikir, sükûn, frekans ve tefekkür uygulaması.",
+   "id": "./nero.html",
+-  "start_url": "./nero.html?v=r705",
++  "start_url": "./nero.html?v=r706",
+   "scope": "./",
+   "display": "standalone",
+   "display_override": [
+@@ -43,7 +43,7 @@
+     {
+       "name": "SÜKÛN'u Aç",
+       "short_name": "SÜKÛN",
+-      "url": "./nero.html?v=r705",
++      "url": "./nero.html?v=r706",
+       "icons": [
+         {
+           "src": "./icon-192.png",
+--- r705/surumler.json
++++ r706/surumler.json
+@@ -1,4 +1,11 @@
+ [
++  {
++    "v": "r706",
++    "t": "Canlı Neon Atmosfer ve Yerleşim Kararlılığı",
++    "b": [
++      "r706 · Onaylanan canlı neon atmosfer: mor–mavi–zümrüt dumanlar, ışıklı yörüngeler ve gerçek sayaç değişimine bağlı ışık dalgası. Görsel hareket/pil/görünürlük bütçesi; Tefekkürün ilgisiz sınıf değişikliklerinde gereksiz ölçümü ve dock boyutlarını silip yeniden yazma düzeltildi. Transport dokunma hedefleri 44 px. Android/kilit ekranı ve gerçek ses doğrulaması ayrıca gereklidir."
++    ]
++  },
+   {
+     "v": "r705",
+     "t": "7 Eylül 2026",

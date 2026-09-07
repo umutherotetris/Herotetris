@@ -1,0 +1,46 @@
+/* r707 — native scroll / hit-test boundary. No new visual or audio owner. */
+html:has(body.r707-scroll.sukun-tefekkur-mode){height:auto!important;overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode{position:relative!important;inset:auto!important;height:auto!important;min-height:100dvh!important;max-height:none!important;overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;touch-action:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode :is(main,.wrap){position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr{position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:auto!important;min-height:100dvh!important;max-height:none!important;margin:0!important;padding:8px clamp(8px,2.4vw,14px) var(--r699-content-reserve)!important;overflow:visible!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important;scrollbar-gutter:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr>.card.zCtl{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important;padding-bottom:8px!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr>#zStage{height:auto!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout,html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+/* The body scrolls naturally, while the player remains a bounded fixed surface. */
+html body.r707-scroll #r588DockShell>#r659DockBody,html body.r707-scroll.r588-mode-max #r588DockShell>#r659DockBody,html body.r707-scroll.r588-mode-midi #r588DockShell>#r659DockBody,html body.r707-scroll.r699-measuring #r588DockShell>#r659DockBody{min-height:0!important;max-height:none!important;touch-action:pan-y pinch-zoom!important;-webkit-overflow-scrolling:touch!important}
+html body.r707-scroll:not(.r699-measuring) #r588DockShell>#r659DockBody{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+html body.r707-scroll.r699-measuring #r170Now.r588-authority{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.r699-measuring #r588DockShell{height:auto!important;grid-template-rows:auto auto auto!important;overflow:visible!important}
+html body.r707-scroll.r699-measuring #r588DockShell>#r659DockBody{height:auto!important;max-height:none!important;overflow:visible!important;align-self:start!important}
+/* One bounded grid track owns the player scrollport. Retired Max rules may not expand it to intrinsic content height. */
+html body.r707-scroll.r699-layout #r170Now.r588-authority #r588DockShell{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important}
+html body.r707-scroll.r699-layout:not(.r699-measuring) #r170Now.r588-authority #r588DockShell>#r659DockBody{display:block!important;height:100%!important;overflow-anchor:none!important;min-height:0!important;max-height:100%!important;align-self:stretch!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll.r699-layout.r699-measuring #r170Now.r588-authority #r588DockShell{height:auto!important;min-height:0!important;max-height:none!important;grid-template-rows:auto auto auto!important;overflow:visible!important}
+html body.r707-scroll.r699-layout.r699-measuring #r170Now.r588-authority #r588DockShell>#r659DockBody{height:auto!important;min-height:0!important;max-height:none!important;align-self:start!important;overflow:visible!important}
+/* Decorations cannot become invisible shields. All modal surfaces retain their own explicit hit tests. */
+html body.r707-scroll :is(#r706Atmosphere,#r706Smoke,#r706Orbit,.r706Arch,.r706Lightfall,.r706Ticks,.r706Arc,.r706Pearl,.r706Satellite,#breathHalo,#nameToastLayer,.r501OverflowMark){pointer-events:none!important}
+html body.r707-scroll #r588DockShell :is(#r588Play,#r588Stop,#r588Hide,[data-r588-mode]),html body.r707-scroll #r433DockPeek,html body.r707-scroll #tefExitBtn{pointer-events:auto!important;touch-action:manipulation!important}
+html body.r707-scroll #r588DockShell>#r633DockGrip{touch-action:none!important;pointer-events:auto!important}
+html body.r707-scroll #r588DockShell .r588Actions{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-content:start!important}
+html body.r707-scroll #r588DockShell .r588Actions .r588Action{height:auto!important;min-height:44px!important;max-height:none!important;flex-shrink:0!important}
+/* r698's fixed 36px Max action row was defeating the later intrinsic layout. */
+html body.r707-scroll.r698-ui.r588-mode-max #r588DockShell .r588Actions{display:flex!important;flex-wrap:wrap!important;align-items:center!important;height:auto!important;min-height:44px!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.r698-ui.r588-mode-max #r588DockShell .r588Actions .r588Action{height:auto!important;min-height:44px!important;max-height:none!important;flex-shrink:0!important}
+/* The canonical exit must not depend on the optional r697 visual-theme class. */
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow{display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:44px!important;height:auto!important;max-height:none!important;overflow:visible!important;pointer-events:auto!important}
+html body.r707-scroll #r588DockShell>.r588Mode{min-width:0!important;max-width:100%!important;grid-template-columns:minmax(0,1fr) auto 44px!important;gap:4px!important}
+html body.r707-scroll #r588DockShell .r588Transport{grid-template-columns:repeat(2,44px)!important}
+html body.r707-scroll #r588DockShell .r588ModeSeg button,html body.r707-scroll #r588DockShell .r588Transport button,html body.r707-scroll #r588Hide{min-height:44px!important;height:44px!important;touch-action:manipulation!important}
+html body.r707-scroll #r588DockShell .r588Transport button,html body.r707-scroll #r588Hide{width:44px!important;min-width:44px!important;max-width:44px!important}
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout :is(#autoBtn,#undoBtn,#plusBtn,#tefExitBtn,.r494NavBtn){min-height:44px!important;touch-action:manipulation!important}
+html body.r707-scroll #r677DetailsBackdrop{display:none!important;pointer-events:none!important}
+html body.r707-scroll.r434-inline-details-open #r677DetailsBackdrop{display:block!important;pointer-events:auto!important}
+html body.r707-scroll #r699ModalBackdrop[hidden],html body.r707-scroll #r434InlineDetails[hidden],html body.r707-scroll #r554AlertDrawer[hidden]{display:none!important;pointer-events:none!important}
+html body.r707-scroll #r699ModalBackdrop:not([hidden]){pointer-events:auto!important}
+html body.r707-scroll.r434-inline-details-open>#r434InlineDetails.r677-details-portal{max-height:min(72dvh,560px)!important;overflow:hidden!important}
+html body.r707-scroll.r434-inline-details-open>#r434InlineDetails.r677-details-portal>#r674DetailsScroll{min-height:0!important;overflow-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll #r554DrawerList,html body.r707-scroll #calanSayfa:not([hidden]){overflow-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll #r674DetailsScroll input[type=range],html body.r707-scroll #r659DockBody input[type=range]{touch-action:pan-y!important}
+/* Explicit short-screen fallback: preserve the approved two-column layout. */
+@media(max-height:480px) and (orientation:landscape){html body.r707-scroll.sukun-tefekkur-mode #tab-zkr{min-height:100dvh!important;padding-bottom:var(--r699-content-reserve)!important}html body.r707-scroll #r588DockShell>.r588Mode{gap:3px!important}html body.r707-scroll #r588DockShell>#r633DockGrip{height:40px!important;min-height:40px!important;max-height:40px!important}}
+@media(prefers-reduced-motion:reduce){html body.r707-scroll #r588DockShell *,html body.r707-scroll #tfRefinedLayout *{scroll-behavior:auto!important}}

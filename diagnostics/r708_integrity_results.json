@@ -1,0 +1,31 @@
+{
+  "kind": "r708-source-integrity",
+  "passed": 8,
+  "total": 8,
+  "failed": 0,
+  "checks": [
+    "All previous executable owners preserved except scoped layout/entry/update-client edits and release history",
+    "r633 geometry logic unchanged except release identity and scope class",
+    "Canonical entry has exactly one additional focus call",
+    "r706 atmosphere and r707 interaction CSS byte-identical",
+    "All three icons preserved",
+    "HTML, footer, history, manifest, SW, cache and marker agree",
+    "No added user-data deletion; original cache activation policy retained",
+    "All modified executable modules and Service Worker pass JavaScript syntax"
+  ],
+  "previousScriptCount": 187,
+  "currentScriptCount": 189,
+  "modifiedOwners": [
+    "surumNotlari",
+    "r514-core-akis-nefs",
+    "sukun-r530-tefekkur-mode-runtime",
+    "r633-flow-dock-placement-runtime"
+  ],
+  "newOwners": [
+    "r708-focus-entry-runtime",
+    "r708-release-identity-runtime"
+  ],
+  "unchangedOwners": 183,
+  "baselineSha256": "7c28d7df4fd8ac8c4c0cec75c21dc3283ebdb8a22afeaf6ba02e56d78ebb4ac5",
+  "currentSha256": "523f4c9287993faf60842b9ae092a87020809ad32a3755d39ab0445bbb664b5a"
+}

@@ -1,0 +1,360 @@
+{
+  "kind": "r708-full-HTML-Chromium-layout",
+  "environment": "Actual application HTML and scripts loaded with set_content; offline resources; simulated active-flow visibility, no physical Android or real audio playback",
+  "total": 32,
+  "passed": 27,
+  "failed": 5,
+  "results": [
+    {
+      "name": "320x640: full HTML startup",
+      "status": "FAIL",
+      "error": "[]"
+    },
+    {
+      "name": "320x640: mini single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 207,
+        "docHeight": 847,
+        "viewport": 640,
+        "gap": 11.546875,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 166
+      }
+    },
+    {
+      "name": "320x640: midi single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 328,
+        "docHeight": 968,
+        "viewport": 640,
+        "gap": 11.546875,
+        "mode": "midi",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 287
+      }
+    },
+    {
+      "name": "320x640: max single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 359,
+        "docHeight": 999,
+        "viewport": 640,
+        "gap": 11.546875,
+        "mode": "max",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 316
+      }
+    },
+    {
+      "name": "320x640: entry reset and later scroll",
+      "status": "PASS",
+      "detail": {
+        "entryScroll": 0,
+        "userScrollPreserved": true,
+        "cardTop": 58.953125
+      }
+    },
+    {
+      "name": "320x640: native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "height": 44,
+        "exited": true
+      }
+    },
+    {
+      "name": "390x844: full HTML startup",
+      "status": "FAIL",
+      "error": "[]"
+    },
+    {
+      "name": "390x844: mini single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 7,
+        "docHeight": 851,
+        "viewport": 844,
+        "gap": 11.90625,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 166
+      }
+    },
+    {
+      "name": "390x844: midi single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 134,
+        "docHeight": 978,
+        "viewport": 844,
+        "gap": 11.90625,
+        "mode": "midi",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 293
+      }
+    },
+    {
+      "name": "390x844: max single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 237,
+        "docHeight": 1081,
+        "viewport": 844,
+        "gap": 11.90625,
+        "mode": "max",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 396
+      }
+    },
+    {
+      "name": "390x844: entry reset and later scroll",
+      "status": "PASS",
+      "detail": {
+        "entryScroll": 0,
+        "userScrollPreserved": true,
+        "cardTop": 60.59375
+      }
+    },
+    {
+      "name": "390x844: native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "height": 44,
+        "exited": true
+      }
+    },
+    {
+      "name": "390x844: hidden peek single boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 0,
+        "docHeight": 844,
+        "viewport": 844,
+        "mode": "mini",
+        "dockKind": "peek",
+        "wrapPadding": "0px",
+        "reserve": 74
+      }
+    },
+    {
+      "name": "390x844: restore Mini without stale reserve",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 7,
+        "docHeight": 851,
+        "viewport": 844,
+        "gap": 11.90625,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 166
+      }
+    },
+    {
+      "name": "412x915: full HTML startup",
+      "status": "FAIL",
+      "error": "[]"
+    },
+    {
+      "name": "412x915: mini single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 0,
+        "docHeight": 915,
+        "viewport": 915,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 166
+      }
+    },
+    {
+      "name": "412x915: midi single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 114,
+        "docHeight": 1029,
+        "viewport": 915,
+        "gap": 11.84375,
+        "mode": "midi",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 294
+      }
+    },
+    {
+      "name": "412x915: max single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 225,
+        "docHeight": 1140,
+        "viewport": 915,
+        "gap": 11.84375,
+        "mode": "max",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 405
+      }
+    },
+    {
+      "name": "412x915: entry reset and later scroll",
+      "status": "PASS",
+      "detail": {
+        "entryScroll": 0,
+        "userScrollPreserved": true,
+        "cardTop": 61.65625
+      }
+    },
+    {
+      "name": "412x915: native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "height": 44,
+        "exited": true
+      }
+    },
+    {
+      "name": "640x360: full HTML startup",
+      "status": "FAIL",
+      "error": "[]"
+    },
+    {
+      "name": "640x360: mini single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 481,
+        "docHeight": 841,
+        "viewport": 360,
+        "gap": 12.1875,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 162
+      }
+    },
+    {
+      "name": "640x360: midi single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 495,
+        "docHeight": 855,
+        "viewport": 360,
+        "gap": 12.1875,
+        "mode": "midi",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360: max single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 501,
+        "docHeight": 861,
+        "viewport": 360,
+        "gap": 12.1875,
+        "mode": "max",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 176
+      }
+    },
+    {
+      "name": "640x360: entry reset and later scroll",
+      "status": "PASS",
+      "detail": {
+        "entryScroll": 0,
+        "userScrollPreserved": true,
+        "cardTop": 381.375
+      }
+    },
+    {
+      "name": "640x360: native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "height": 44,
+        "exited": true
+      }
+    },
+    {
+      "name": "1280x900: full HTML startup",
+      "status": "FAIL",
+      "error": "[]"
+    },
+    {
+      "name": "1280x900: mini single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 5,
+        "docHeight": 905,
+        "viewport": 900,
+        "gap": 12.1875,
+        "mode": "mini",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 166
+      }
+    },
+    {
+      "name": "1280x900: midi single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 133,
+        "docHeight": 1033,
+        "viewport": 900,
+        "gap": 12.1875,
+        "mode": "midi",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 294
+      }
+    },
+    {
+      "name": "1280x900: max single reading boundary",
+      "status": "PASS",
+      "detail": {
+        "scrollY": 244,
+        "docHeight": 1144,
+        "viewport": 900,
+        "gap": 12.1875,
+        "mode": "max",
+        "dockKind": "host",
+        "wrapPadding": "0px",
+        "reserve": 405
+      }
+    },
+    {
+      "name": "1280x900: entry reset and later scroll",
+      "status": "PASS",
+      "detail": {
+        "entryScroll": 0,
+        "userScrollPreserved": true,
+        "cardTop": 65.3125
+      }
+    },
+    {
+      "name": "1280x900: native exit hit-test",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "height": 44,
+        "exited": true
+      }
+    }
+  ]
+}

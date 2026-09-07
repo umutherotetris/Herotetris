@@ -1,0 +1,243 @@
+{
+  "environment": "Managed desktop Chromium; 390x844 CSS-pixel iframe; static HTTP QA preview; not Android hardware",
+  "nativeDOM": {
+    "r703": [
+      {
+        "actual": {
+          "value": true
+        },
+        "expected": {
+          "value": true
+        },
+        "name": "same text retains native node behavior",
+        "pass": true
+      },
+      {
+        "actual": {
+          "value": ""
+        },
+        "expected": {
+          "value": "until-found"
+        },
+        "name": "hidden until-found remains a distinct state",
+        "pass": false
+      },
+      {
+        "actual": {
+          "value": "ok"
+        },
+        "expected": {
+          "error": "SyntaxError"
+        },
+        "name": "empty token removal is validated",
+        "pass": false
+      },
+      {
+        "actual": {
+          "value": "ok"
+        },
+        "expected": {
+          "error": "InvalidCharacterError"
+        },
+        "name": "whitespace token removal is validated",
+        "pass": false
+      },
+      {
+        "actual": {
+          "value": "Symbol(x)"
+        },
+        "expected": {
+          "error": "TypeError"
+        },
+        "name": "Symbol attribute value is validated",
+        "pass": false
+      },
+      {
+        "actual": {
+          "value": 2
+        },
+        "expected": {
+          "value": 1
+        },
+        "name": "attribute name is converted once",
+        "pass": false
+      }
+    ],
+    "r704": [
+      {
+        "actual": {
+          "value": true
+        },
+        "expected": {
+          "value": true
+        },
+        "name": "same text retains native node behavior",
+        "pass": true
+      },
+      {
+        "actual": {
+          "value": "until-found"
+        },
+        "expected": {
+          "value": "until-found"
+        },
+        "name": "hidden until-found remains a distinct state",
+        "pass": true
+      },
+      {
+        "actual": {
+          "error": "SyntaxError"
+        },
+        "expected": {
+          "error": "SyntaxError"
+        },
+        "name": "empty token removal is validated",
+        "pass": true
+      },
+      {
+        "actual": {
+          "error": "InvalidCharacterError"
+        },
+        "expected": {
+          "error": "InvalidCharacterError"
+        },
+        "name": "whitespace token removal is validated",
+        "pass": true
+      },
+      {
+        "actual": {
+          "error": "TypeError"
+        },
+        "expected": {
+          "error": "TypeError"
+        },
+        "name": "Symbol attribute value is validated",
+        "pass": true
+      },
+      {
+        "actual": {
+          "value": 1
+        },
+        "expected": {
+          "value": 1
+        },
+        "name": "attribute name is converted once",
+        "pass": true
+      }
+    ]
+  },
+  "audio": {
+    "pause": {
+      "observedAt": 104637,
+      "pauseEventAt": 62501,
+      "mini": {
+        "paused": true,
+        "wasAuto": true,
+        "auto": false
+      },
+      "aggregate": {
+        "paused": true,
+        "providerIds": [],
+        "mixCaptured": true,
+        "reason": "ui:dock",
+        "changedAt": 1788790467781
+      },
+      "flowPaused": true,
+      "flowPlaying": false,
+      "lifeState": "paused",
+      "lifePaused": true,
+      "count": 13
+    },
+    "stop": {
+      "observedAt": 167084,
+      "mini": {
+        "paused": false,
+        "wasAuto": false,
+        "auto": false
+      },
+      "aggregate": {
+        "paused": false,
+        "providerIds": [],
+        "mixCaptured": false,
+        "reason": "stopAll",
+        "changedAt": 1788790560918
+      },
+      "flowPaused": false,
+      "flowPlaying": false,
+      "lifeState": "idle",
+      "lifePaused": false,
+      "count": 28
+    }
+  },
+  "manualFlow": {
+    "started": true,
+    "pausedCounter": 13,
+    "resumeButtonAfterWait": true,
+    "modesExercised": [
+      "Mini",
+      "Midi",
+      "Max"
+    ],
+    "resumeAdvancedTo": 24,
+    "stopCounter": 28,
+    "exitTefekkurSucceeded": true,
+    "tekkeFirstOpenAndCloseSucceeded": true
+  },
+  "limitations": [
+    "Some browser automation actions reached their internal 3-second deadline; successful retries were used and no full freeze-free claim is made.",
+    "Real Android, Samsung Internet, audio quality, microphone, headphones, lock screen and long-duration playback were not tested.",
+    "Service Worker offline/update behavior was source-tested; the HTTP iframe preview does not establish an installed PWA test."
+  ],
+  "performanceBeforeFinalStartupFix": {
+    "at": 40160,
+    "domReady": 3800.5999999996275,
+    "errors": [],
+    "lastLongTask": {
+      "duration": 56,
+      "start": 5398.5999999996275
+    },
+    "loaded": 4751.5999999996275,
+    "longTaskCount": 21,
+    "longTaskTotalMs": 2946,
+    "maxLongTaskMs": 535,
+    "version": "r704"
+  },
+  "performance": {
+    "r703": {
+      "at": 40728,
+      "domReady": 8706.699999999255,
+      "errors": [
+        "Uncaught TypeError: Cannot set properties of null (setting 'textContent')"
+      ],
+      "lastLongTask": {
+        "duration": 75,
+        "start": 11885.5
+      },
+      "loaded": 10385.199999999255,
+      "longTaskCount": 32,
+      "longTaskTotalMs": 8023,
+      "maxLongTaskMs": 1466,
+      "version": "r703"
+    },
+    "r704": {
+      "at": 40200,
+      "domReady": 2408.5999999996275,
+      "errors": [],
+      "lastLongTask": {
+        "duration": 198,
+        "start": 3969.5999999996275
+      },
+      "loaded": 3307.899999999441,
+      "longTaskCount": 11,
+      "longTaskTotalMs": 2228,
+      "maxLongTaskMs": 485,
+      "version": "r704"
+    }
+  },
+  "performanceMethod": "One 40-second idle load per version, same managed Chromium and 390x844 iframe. Warm caches and shared preferences may differ; no controlled benchmark or CPU-total claim.",
+  "baselineErrorAttribution": {
+    "function": "dailyShow",
+    "message": "Cannot set properties of null (setting 'textContent')",
+    "qaSourceLine": 9965
+  }
+}

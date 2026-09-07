@@ -1,0 +1,254 @@
+{
+  "kind": "r705-isolated-source-regression",
+  "date": "2026-09-07T19:49:24.977Z",
+  "target": {
+    "package": "sukun_r707_release",
+    "total": 51,
+    "passed": 51,
+    "failed": 0,
+    "results": [
+      {
+        "name": "JavaScript syntax: every executable inline module and Service Worker",
+        "status": "PASS",
+        "detail": {
+          "executableModules": 184,
+          "serviceWorkers": 1
+        }
+      },
+      {
+        "name": "Release metadata, manifest link, start URL and build marker agree",
+        "status": "PASS",
+        "detail": {
+          "build": "r707"
+        }
+      },
+      {
+        "name": "Unchanged 28-name state produces zero repeated text mutations",
+        "status": "PASS",
+        "detail": {
+          "syncCalls": 100,
+          "textMutations": 0
+        }
+      },
+      {
+        "name": "Tefekkür opens and exits while recording database never resolves",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür view change preserves paused speech and audio context",
+        "status": "PASS"
+      },
+      {
+        "name": "Escape exits with no retired focus button in the DOM",
+        "status": "PASS"
+      },
+      {
+        "name": "Exit cancels delayed focus instead of focusing hidden counter",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür does not claim or close another component fullscreen",
+        "status": "PASS"
+      },
+      {
+        "name": "Dock Pause captures all layers; Resume uses the captured session",
+        "status": "PASS"
+      },
+      {
+        "name": "28-name journey Pause/Resume never starts independent auto",
+        "status": "PASS"
+      },
+      {
+        "name": "99-name journey Pause/Resume never starts independent auto",
+        "status": "PASS"
+      },
+      {
+        "name": "Main counter resumes aggregate pause before starting another session",
+        "status": "PASS"
+      },
+      {
+        "name": "Main Stop is immediate even within the 620 ms start filter",
+        "status": "PASS"
+      },
+      {
+        "name": "Failed direct start reports false through the shared transport",
+        "status": "PASS"
+      },
+      {
+        "name": "Global Stop clears queued work and stops the aggregate once",
+        "status": "PASS"
+      },
+      {
+        "name": "Initial reading exception releases auto latch and permits retry",
+        "status": "PASS"
+      },
+      {
+        "name": "StopAll clears logical paused state of non-journey readers",
+        "status": "PASS"
+      },
+      {
+        "name": "StopAll reports an asynchronous provider failure",
+        "status": "PASS"
+      },
+      {
+        "name": "Delayed StopAll completion preserves the owner of a newer Play",
+        "status": "PASS"
+      },
+      {
+        "name": "First hidden MediaSession Pause is honored; repeated Pause is idempotent",
+        "status": "PASS"
+      },
+      {
+        "name": "MediaSession Play clears aggregate pause after native lock resume",
+        "status": "PASS"
+      },
+      {
+        "name": "Queued single/terkip stays silent during pause and resumes in FIFO order",
+        "status": "PASS"
+      },
+      {
+        "name": "Queued duplicate identity is merged; Stop cancels queued work",
+        "status": "PASS"
+      },
+      {
+        "name": "Restored session never starts audio on Exit or navigation gesture",
+        "status": "PASS"
+      },
+      {
+        "name": "Tefekkür dock drag bounds reserve a readable surface at five screen sizes",
+        "status": "PASS",
+        "detail": [
+          {
+            "width": 320,
+            "height": 640,
+            "minimumDockTop": 328
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "minimumDockTop": 428
+          },
+          {
+            "width": 360,
+            "height": 740,
+            "minimumDockTop": 378
+          },
+          {
+            "width": 640,
+            "height": 360,
+            "minimumDockTop": 188
+          },
+          {
+            "width": 1280,
+            "height": 900,
+            "minimumDockTop": 428
+          }
+        ]
+      },
+      {
+        "name": "Missing alert drawer does not consume Escape",
+        "status": "PASS"
+      },
+      {
+        "name": "Reading surface follows live dock drag before pointer release",
+        "status": "PASS"
+      },
+      {
+        "name": "Offline versioned manifest resolves from the current package cache",
+        "status": "PASS"
+      },
+      {
+        "name": "Installer rejects a manifest from a different release",
+        "status": "PASS"
+      },
+      {
+        "name": "Installer rejects mismatched HTML and does not mark cache complete",
+        "status": "PASS"
+      },
+      {
+        "name": "Old cache entry cannot replace an asset from the current cache",
+        "status": "PASS"
+      },
+      {
+        "name": "Cold opening timer does not allocate the audio engine",
+        "status": "PASS"
+      },
+      {
+        "name": "Opening timer preserves an already suspended audio context",
+        "status": "PASS"
+      },
+      {
+        "name": "Opening gesture and later timer produce a single gong",
+        "status": "PASS"
+      },
+      {
+        "name": "Unrelated body classes cause no repeated theme style calculations",
+        "status": "PASS"
+      },
+      {
+        "name": "Unchanged journey cards generate no repeated text mutations",
+        "status": "PASS"
+      },
+      {
+        "name": "Delayed auto Stop preserves aggregate pause after the scheduler stops",
+        "status": "PASS"
+      },
+      {
+        "name": "Explicit Stop still resolves to idle when there is no pause",
+        "status": "PASS"
+      },
+      {
+        "name": "Terminal reconciliation cannot clear a newer aggregate pause",
+        "status": "PASS"
+      },
+      {
+        "name": "Delayed audio repair preserves the captured auto counter and resume state",
+        "status": "PASS"
+      },
+      {
+        "name": "Standalone mini pause preserves a saved auto counter without an aggregate gate",
+        "status": "PASS"
+      },
+      {
+        "name": "Audio repair still removes an orphan pause with no captured source",
+        "status": "PASS"
+      },
+      {
+        "name": "Retired daily splash callback safely skips a missing or partial card",
+        "status": "PASS"
+      },
+      {
+        "name": "Existing daily splash still renders and records its shown state",
+        "status": "PASS"
+      },
+      {
+        "name": "Load timers do not initialize unused Tekke or NeuroSync panels",
+        "status": "PASS"
+      },
+      {
+        "name": "Tekke first open initializes once; closing an unopened panel stays cold",
+        "status": "PASS"
+      },
+      {
+        "name": "Neuro first open initializes once; closing an unopened panel stays cold",
+        "status": "PASS"
+      },
+      {
+        "name": "Missing build marker cannot be reported as a successful self-check",
+        "status": "PASS"
+      },
+      {
+        "name": "HTTP error build marker cannot pass with a plausible JSON body",
+        "status": "PASS"
+      },
+      {
+        "name": "Old Service Worker makes the runtime build check fail",
+        "status": "PASS"
+      },
+      {
+        "name": "Matching marker and Service Worker pass the runtime build check",
+        "status": "PASS"
+      }
+    ]
+  }
+}

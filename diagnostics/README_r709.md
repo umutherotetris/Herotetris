@@ -1,0 +1,1 @@
+r709 kaynakları r708 tam paketinden üretilmiştir. build_r709.py tek seferlik kaynak dönüştürücüdür; yeniden çalıştırmadan önce temiz r708 dosyalarını geri yükleyin. r709_extended_controls_results.json içindeki manuel sayım denemesi geçmemiştir ve üretim doğrulaması sayılmaz.

@@ -1,0 +1,189 @@
+{
+  "kind": "r707-isolated-Chromium-layout",
+  "environment": "Local set_content fixture using actual CSS and layout runtime; not the full app, network navigation or Android hardware",
+  "total": 16,
+  "passed": 16,
+  "failed": 0,
+  "results": [
+    {
+      "name": "320x640: document, dock and viewport",
+      "status": "PASS",
+      "detail": {
+        "docScroll": 795,
+        "bodyPosition": "relative",
+        "tabPosition": "relative",
+        "bodyOverflow": "auto",
+        "dockOverflow": "auto",
+        "dockScroll": 1244,
+        "hostHeight": 296,
+        "viewport": 640,
+        "mode": "max",
+        "errors": []
+      }
+    },
+    {
+      "name": "320x640: Mini/Midi/Max preserve scroll",
+      "status": "PASS",
+      "detail": {
+        "scrollTop": 100,
+        "mode": "max"
+      }
+    },
+    {
+      "name": "320x640: exit button receives native click",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "rect": {
+          "x": 173.875,
+          "y": 70,
+          "width": 104.125,
+          "height": 44
+        }
+      }
+    },
+    {
+      "name": "320x640: modal open/close hit-test ownership",
+      "status": "PASS",
+      "detail": {
+        "drawerReleased": true,
+        "detailsBackdropReleased": true
+      }
+    },
+    {
+      "name": "390x844: document, dock and viewport",
+      "status": "PASS",
+      "detail": {
+        "docScroll": 695,
+        "bodyPosition": "relative",
+        "tabPosition": "relative",
+        "bodyOverflow": "auto",
+        "dockOverflow": "auto",
+        "dockScroll": 1093,
+        "hostHeight": 400,
+        "viewport": 844,
+        "mode": "max",
+        "errors": []
+      }
+    },
+    {
+      "name": "390x844: Mini/Midi/Max preserve scroll",
+      "status": "PASS",
+      "detail": {
+        "scrollTop": 100,
+        "mode": "max"
+      }
+    },
+    {
+      "name": "390x844: exit button receives native click",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "rect": {
+          "x": 242.515625,
+          "y": 70,
+          "width": 104.125,
+          "height": 44
+        }
+      }
+    },
+    {
+      "name": "390x844: modal open/close hit-test ownership",
+      "status": "PASS",
+      "detail": {
+        "drawerReleased": true,
+        "detailsBackdropReleased": true
+      }
+    },
+    {
+      "name": "640x360: document, dock and viewport",
+      "status": "PASS",
+      "detail": {
+        "docScroll": 608,
+        "bodyPosition": "relative",
+        "tabPosition": "relative",
+        "bodyOverflow": "auto",
+        "dockOverflow": "auto",
+        "dockScroll": 1328,
+        "hostHeight": 156,
+        "viewport": 360,
+        "mode": "max",
+        "errors": []
+      }
+    },
+    {
+      "name": "640x360: Mini/Midi/Max preserve scroll",
+      "status": "PASS",
+      "detail": {
+        "scrollTop": 100,
+        "mode": "max"
+      }
+    },
+    {
+      "name": "640x360: exit button receives native click",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "rect": {
+          "x": 495.859375,
+          "y": 69.59375,
+          "width": 102.125,
+          "height": 44
+        }
+      }
+    },
+    {
+      "name": "640x360: modal open/close hit-test ownership",
+      "status": "PASS",
+      "detail": {
+        "drawerReleased": true,
+        "detailsBackdropReleased": true
+      }
+    },
+    {
+      "name": "1280x900: document, dock and viewport",
+      "status": "PASS",
+      "detail": {
+        "docScroll": 695,
+        "bodyPosition": "relative",
+        "tabPosition": "relative",
+        "bodyOverflow": "auto",
+        "dockOverflow": "auto",
+        "dockScroll": 1039,
+        "hostHeight": 456,
+        "viewport": 900,
+        "mode": "max",
+        "errors": []
+      }
+    },
+    {
+      "name": "1280x900: Mini/Midi/Max preserve scroll",
+      "status": "PASS",
+      "detail": {
+        "scrollTop": 100,
+        "mode": "max"
+      }
+    },
+    {
+      "name": "1280x900: exit button receives native click",
+      "status": "PASS",
+      "detail": {
+        "target": "tefExitBtn",
+        "rect": {
+          "x": 1129.875,
+          "y": 70,
+          "width": 104.125,
+          "height": 44
+        }
+      }
+    },
+    {
+      "name": "1280x900: modal open/close hit-test ownership",
+      "status": "PASS",
+      "detail": {
+        "drawerReleased": true,
+        "detailsBackdropReleased": true
+      }
+    }
+  ]
+}

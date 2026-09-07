@@ -1,0 +1,55 @@
+{
+  "kind": "r707-focused-source-tests",
+  "environment": "Node VM and source comparison; not physical Android",
+  "total": 8,
+  "passed": 6,
+  "failed": 2,
+  "results": [
+    {
+      "name": "Intrinsic measurement includes overflowing child content",
+      "status": "PASS",
+      "detail": {
+        "intrinsic": 588,
+        "oldScrollHeight": 100
+      }
+    },
+    {
+      "name": "Mode transitions never explicitly reset the dock scroll",
+      "status": "PASS"
+    },
+    {
+      "name": "Hidden dock clears stale overflow classes",
+      "status": "PASS"
+    },
+    {
+      "name": "Drawer releases only the inert and aria state it owns",
+      "status": "PASS"
+    },
+    {
+      "name": "Viewport preserve cannot roll back a newer user gesture",
+      "status": "PASS",
+      "detail": {
+        "nativeCalls": 2,
+        "scrollY": 150
+      }
+    },
+    {
+      "name": "Carrier drag is pointer-owned and never binds window touchmove",
+      "status": "PASS",
+      "detail": {
+        "pointerCapture": true,
+        "windowTouchmoveListeners": 0
+      }
+    },
+    {
+      "name": "All unrelated executable script owners remain byte-identical to r706",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n190 !== 187\n\n    at /mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:69:9\n    at test (/mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:6:41)\n    at Object.<anonymous> (/mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:63:1)\n    at Module._compile (node:internal/modules/cjs/loader:1730:14)\n    at Object..js (node:internal/modules/cjs/loader:1895:10)\n    at Module.load (node:internal/modules/cjs/loader:1465:32)\n    at Function._load (node:internal/modules/cjs/loader:1282:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)"
+    },
+    {
+      "name": "Release metadata and required files agree",
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(h.includes('name=\"sukun-build\" content=\"r707\"'))\n\n    at /mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:83:2\n    at test (/mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:6:41)\n    at Object.<anonymous> (/mnt/data/sukun_r709_work/diagnostics/test_r707.cjs:81:1)\n    at Module._compile (node:internal/modules/cjs/loader:1730:14)\n    at Object..js (node:internal/modules/cjs/loader:1895:10)\n    at Module.load (node:internal/modules/cjs/loader:1465:32)\n    at Function._load (node:internal/modules/cjs/loader:1282:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)"
+    }
+  ]
+}

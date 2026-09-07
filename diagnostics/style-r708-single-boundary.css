@@ -1,0 +1,13 @@
+/* r708 — one focused reading boundary. Retains r706 atmosphere and r707 native scrolling. */
+html:has(body.r708-boundary.sukun-tefekkur-mode){height:auto!important;overflow-x:clip!important;overflow-y:auto!important}
+html body.r708-boundary.sukun-tefekkur-mode{position:relative!important;inset:auto!important;height:auto!important;min-height:100dvh!important;max-height:none!important;overflow-x:clip!important;overflow-y:auto!important;touch-action:auto!important}
+/* The old wrapper and the zikir section must not each reserve the same dock. */
+html body.r708-boundary.sukun-tefekkur-mode:has(#tab-zkr) > .wrap{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;max-height:none!important;padding-top:0!important;padding-bottom:0!important;overflow:visible!important;contain:none!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr{position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding-top:max(12px,env(safe-area-inset-top))!important;padding-bottom:var(--r699-content-reserve,20px)!important;overflow:visible!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important;scrollbar-gutter:auto!important;scroll-padding-top:12px!important;scroll-padding-bottom:var(--r699-content-reserve,20px)!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>.card.zCtl{height:auto!important;min-height:0!important;max-height:none!important;margin-bottom:0!important;overflow:visible!important;contain:none!important}
+html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout,html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+/* The content has a single bottom reserve; fixed player and peek are not in document flow. */
+html body.r708-boundary.sukun-tefekkur-mode:has(#tab-zkr) > .wrap{scroll-padding-bottom:0!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>#zStage{flex-shrink:0!important;margin-bottom:8px!important}
+html body.r708-boundary.sukun-tefekkur-mode #r588DockShell :is(#r588Play,#r588Stop,#r588Hide,[data-r588-mode]),html body.r708-boundary.sukun-tefekkur-mode #r433DockPeek,html body.r708-boundary.sukun-tefekkur-mode #tefExitBtn{pointer-events:auto!important}
+@media(max-height:480px) and (orientation:landscape){html body.r708-boundary.sukun-tefekkur-mode #tab-zkr{padding-top:max(8px,env(safe-area-inset-top))!important}html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>#zStage{margin-bottom:5px!important}}
