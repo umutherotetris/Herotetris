@@ -1,8 +1,8 @@
-/* SÜKÛN r699 — Unified Layout & Interaction Integrity */
+/* SÜKÛN r700 — Contextual Tefekkür Entry */
 'use strict';
 
-const SURUM = 'r699';
-const CACHE = 'sukun-r699-20260907a';
+const SURUM = 'r700';
+const CACHE = 'sukun-r700-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r699__.json';
+const BUILD_MARKER='./__sukun_build_r700__.json';
 
 const NOTLAR = [
+  'r700 · Contextual Tefekkür Entry: approved neon button in active zikir context, single existing handler, canonical exit and unchanged audio/counter engines.',
   'r699 · Unified Layout & Interaction: tek dock geometri otoritesi, doğal Tefekkür/Detaylar/bildirim kaydırması, native tap ve sürükleme ayrımı, kısa yatay ekran uyumu; audio ve sayaç motorları korunur.',
   'r698 · Single Interaction Authority: görünmez legacy kontrol satırı kaldırıldı; native tap/scroll, kompakt mod/transport, sabit kaynak rozeti ve sesli zikir niyeti korundu.',
   'r697 · Approved Neon UI: çıkış tek durum satırında, kaynak Detaylar yanında sabit ölçülü, açık sürükleme tutamacı, renkli transport/mod çerçeveleri ve kompakt sayaç kontrolleri. Ses/sayaç motoru korunur.',

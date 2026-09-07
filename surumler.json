@@ -1,5 +1,17 @@
 [
   {
+    "v": "r700",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Onaylanan yeşil–mavi–mor neon Tefekküre Geç tasarımı aktif zikir adı ve anlamının altındaki doğal akışa entegre edildi.",
+      "Gizli r594 akış barı yuvasına bağlı kayıp giriş kaldırıldı; mevcut r442 düğmesi ve tek tıklama sahibi korundu.",
+      "r530 sunum katmanı artık giriş düğmesinin metnini ve ikonunu ezmez; r453 tek DOM, etiket ve handler sahibidir.",
+      "Tefekkürde giriş gizlenir ve mevcut canonical Tefekkürden Çık görünür; ses, sayaç, kayıt/TTS ve seyir iş mantığı değiştirilmedi.",
+      "Dar ekran, yatay görünüm, klavye odağı, native scroll ve düşük hareket tercihi için kapsamlı buton stili eklendi.",
+      "r699 dock yerleşimi ve r698 transport, r696 ses kurtarma, r695 sayaç ledger motorları korunur."
+    ]
+  },
+  {
     "v": "r699",
     "t": "7 Eylül 2026",
     "b": [
