@@ -1,5 +1,15 @@
 [
   {
+    "v": "r699",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Sesli doğrudan zikirde her sayım ve hedef geçişi ayrı bir ses sertifikasıyla ilişkilendirildi; okuma başarıyla bitmeden geçiş commit edilemez.",
+      "Eski veya iptal edilmiş kayıt/TTS callbackleri yeni oturumun sayacını, hedefini ya da ses durumunu değiştiremez. Tekrar başarısızlığı yalnız kendi bekleyen sayımını geri alır; kullanıcı arada sayacı değiştirmişse yeni veriyi ezmek yerine çakışmayı tanıya kaydeder.",
+      "Stop/abort bekleyen sayımı ve hedef işlemini aynı oturumda sonlandırır. Manuel tekil okuma, 28/99 Seyir, hidden sayaç, kayıt önceliği ve r698 neon arayüzü korunur.",
+      "r699 için izole asenkron yarış testleri ve build/DOM/JavaScript bütünlük kontrolleri eklendi. Gerçek Android kilit ve arama dönüşü doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r698",
     "t": "7 Eylül 2026",
     "b": [

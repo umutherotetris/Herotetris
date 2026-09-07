@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r698">
+<meta name="sukun-build" content="r699">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r698">
+<link rel="manifest" href="./manifest.webmanifest?v=r699">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6625,7 +6625,7 @@ body.r697-neon-ui.r588-dock-ready.r588-mode-mini #r170Now.r588-authority #r588Do
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.20 — build 2026-09-07-r698</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-07-r699</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6650,6 +6650,16 @@ body.r697-neon-ui.r588-dock-ready.r588-mode-mini #r170Now.r588-authority #r588Do
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
   {
+    "v": "r699",
+    "t": "7 Eylül 2026",
+    "b": [
+        "Sesli doğrudan zikirde her sayım ve hedef geçişi ayrı bir ses sertifikasıyla ilişkilendirildi; okuma başarıyla bitmeden geçiş commit edilemez.",
+        "Eski veya iptal edilmiş kayıt/TTS callbackleri yeni oturumun sayacını, hedefini ya da ses durumunu değiştiremez. Tekrar başarısızlığı yalnız kendi bekleyen sayımını geri alır; kullanıcı arada sayacı değiştirmişse yeni veriyi ezmek yerine çakışmayı tanıya kaydeder.",
+        "Stop/abort bekleyen sayımı ve hedef işlemini aynı oturumda sonlandırır. Manuel tekil okuma, 28/99 Seyir, hidden sayaç, kayıt önceliği ve r698 neon arayüzü korunur.",
+        "r699 için izole asenkron yarış testleri ve build/DOM/JavaScript bütünlük kontrolleri eklendi. Gerçek Android kilit ve arama dönüşü doğrulaması ayrıca gereklidir."
+    ]
+},
+    {
     "v": "r698",
     "t": "7 Eylül 2026",
     "b": [
@@ -13745,11 +13755,12 @@ const ZikirTransitionTxn=window.SukunZikirTransaction=(()=>{
   };
   const sameActive=raw=>!!active&&!active.done&&!active.cancelled&&
     Z.cat===active.cat&&Z.idx===active.idx&&
-    active.cat===raw?.cat&&active.idx===raw?.idx&&(+active.target||0)===(+raw?.target||0);
+    active.cat===raw?.cat&&active.idx===raw?.idx&&(+active.target||0)===(+raw?.target||0)&&
+    (!active.voiceRequired&&!raw?.voiceCert||active.voiceCert===raw?.voiceCert);
 
   function prepare(raw){
     if(sameActive(raw)){log('reused',active,{reason:'same-target'});return active}
-    const tx={...(raw||{}),txid:++seq,createdAt:Date.now(),phase:'prepared',cancelled:false,cancelReason:'',done:false,attempts:0,lastAttemptAt:0};
+    const tx={...(raw||{}),txid:++seq,createdAt:Date.now(),phase:'prepared',cancelled:false,cancelReason:'',done:false,attempts:0,lastAttemptAt:0,voiceRequired:!!raw?.voiceCert,voiceConfirmed:false};
     active=tx;last=tx;log('prepared',tx);
     try{window.dispatchEvent(new CustomEvent('sukun:zikirtransaction',{detail:{phase:'prepared',txid:tx.txid,cat:tx.cat,idx:tx.idx,target:tx.target}}))}catch(e){}
     return tx;
@@ -13759,7 +13770,8 @@ const ZikirTransitionTxn=window.SukunZikirTransaction=(()=>{
     return !!t&&!t.cancelled&&!t.done&&active===t&&Z.cat===t.cat&&Z.idx===t.idx;
   }
 
-  function cancel(reason='cancelled'){
+  function cancel(reason='cancelled',expected=null){
+    if(expected&&active!==expected)return false;
     const t=active;
     if(t&&!t.done){
       t.cancelled=true;t.cancelReason=String(reason||'cancelled');t.phase='cancelled';last=t;log('cancelled',t,{reason:t.cancelReason});
@@ -13770,8 +13782,16 @@ const ZikirTransitionTxn=window.SukunZikirTransaction=(()=>{
     return !!t;
   }
 
+  function confirmVoice(t,cert){
+    if(!isCurrent(t)||!t.voiceRequired||t.voiceCert!==cert||cert?.status!=='success')return false;
+    t.voiceConfirmed=true;log('voice-confirmed',t);return true;
+  }
+  function cancelUnconfirmed(reason='voice-abort'){
+    return active?.voiceRequired&&!active.voiceConfirmed?cancel(reason,active):false;
+  }
   function commit(t,reason='commit'){
     if(!t||t.done||t.cancelled)return false;
+    if(t.voiceRequired&&!t.voiceConfirmed){log('commit-rejected',t,{reason:'voice-unconfirmed'});return false;}
     if(active&&t.txid&&active.txid!==t.txid){log('commit-rejected',t,{reason:'active-mismatch',activeTxid:active.txid||0});return false}
     t.attempts=(t.attempts||0)+1;t.lastAttemptAt=Date.now();
 
@@ -13831,10 +13851,10 @@ const ZikirTransitionTxn=window.SukunZikirTransaction=(()=>{
   function commitCurrent(reason='rescue'){return active?commit(active,reason):false}
 
   function snapshot(){
-    const pick=t=>t?{txid:t.txid,phase:t.phase,cat:t.cat,idx:t.idx,target:t.target,adv:!!t.adv,journeyOwner:String(t.journeyOwner||''),cancelled:!!t.cancelled,cancelReason:t.cancelReason||'',attempts:t.attempts||0,lastAttemptAt:t.lastAttemptAt||0,createdAt:t.createdAt||0,committedAt:t.committedAt||0}:null;
-    return{version:'r550',active:pick(active),last:pick(last),history:history.slice(-20)};
+    const pick=t=>t?{txid:t.txid,phase:t.phase,cat:t.cat,idx:t.idx,target:t.target,adv:!!t.adv,journeyOwner:String(t.journeyOwner||''),cancelled:!!t.cancelled,cancelReason:t.cancelReason||'',attempts:t.attempts||0,lastAttemptAt:t.lastAttemptAt||0,createdAt:t.createdAt||0,committedAt:t.committedAt||0,voiceRequired:!!t.voiceRequired,voiceConfirmed:!!t.voiceConfirmed}:null;
+    return{version:'r699',active:pick(active),last:pick(last),history:history.slice(-20)};
   }
-  return{version:'r550',prepare,commit,commitCurrent,cancel,isCurrent,snapshot};
+  return{version:'r699',prepare,commit,commitCurrent,cancel,cancelUnconfirmed,confirmVoice,isCurrent,snapshot};
 })();
 function r482CommitTransition(t,reason='voice-or-direct'){
   return ZikirTransitionTxn.commit(t,reason);
@@ -13870,7 +13890,8 @@ function rep(){
       adv:_r639JourneyRep?false:!!Z.adv,
       silent:_r476Silent,
       journeyOwner:_r639JourneyRep?String(window.__SUKUN_JOURNEY_REP__||''):'',
-      label:((document.getElementById('zTr')||{}).textContent||'').trim()
+      label:((document.getElementById('zTr')||{}).textContent||'').trim(),
+      voiceCert:window.__SUKUN_ACTIVE_VOICE_CERT__||null
     });
 
     if(_r482Defer){
@@ -15113,6 +15134,7 @@ window.SukunR698PendingStart=Object.freeze({cancel:r698CancelPendingStart});
 function autoStop(){
   const wasActive=!!Z.auto,wasStarting=_r477AutoStarting;
   r698CancelPendingStart('auto-stop');
+  try{window.SukunZikirTransportGate?.abortPending?.('auto-stop')}catch(e){}
   _r698StartSeq++;_r477AutoStarting=false;
   if(!wasActive&&!window.__SUKUN_ZIKIR_VOICE_PROMISE__){
     if(wasStarting)try{zUI()}catch(_){}
@@ -23647,6 +23669,8 @@ const R696_VOICE_METRIC=window.__SUKUN_R696_VOICE_METRIC__=window.__SUKUN_R696_V
 function zikirSesAbortR696(reason='voice-abort',opt={}){
   const had=!!(window.__SUKUN_ZIKIR_VOICE_PROMISE__||window.__SUKUN_ZIKIR_VOICE_BUSY__);
   _zSesSeq++;
+  try{window.SukunZikirTransportGate?.abortPending?.(reason)}catch(e){}
+  try{window.SukunZikirTransaction?.cancelUnconfirmed?.(reason)}catch(e){}
   const resolveAbort=_zSesAbortResolve;_zSesAbortResolve=null;
   window.__SUKUN_ZIKIR_VOICE_PROMISE__=null;
   window.__SUKUN_ZIKIR_VOICE_BUSY__=false;
@@ -23728,6 +23752,7 @@ function zikirSesBaslat(interrupt=false,afterVoice=null){
   return p;
 }
 
+let _r699VoiceCertSeq=0;
 const _repS=rep;
 
 /* r485 — Niyet bir SAYAÇ TURU değildir.
@@ -23778,8 +23803,10 @@ rep=()=>{
   /* r640: görünür sesli otomatikte sayaç gerçek transporttan önce koşamaz.
      Hidden/native r476 yolu bu kapıdan özellikle muaf tutulur. */
   const _r640Gate=window.SukunZikirTransportGate;
-  const _r640Token=(seri&&Z.auto&&!document.hidden)?_r640Gate?.beforeCount?.():null;
+  const _r699Direct=seri&&!window.__SUKUN_JOURNEY_REP__&&!window.__r476SilentCatchup;
+  const _r640Token=(_r699Direct&&Z.auto&&!document.hidden)?_r640Gate?.beforeCount?.():null;
   if(_r640Token===false){_zBekleyen=false;return false}
+  const _r699Cert=_r699Direct?{id:++_r699VoiceCertSeq,status:'pending'}:null;
 
   /* Niyet okunurken veya başlamayı beklerken sayaç 1 bile ilerlemez. */
   if(r485NiyetDue()){
@@ -23799,20 +23826,29 @@ rep=()=>{
   /* Hedef dolumu/Esma geçişi ses bitimine kadar ertelenir. */
   window.__SUKUN_DEFER_ZIKIR_TRANSITION__=seri;
   window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
+  const _r699PreviousCert=window.__SUKUN_ACTIVE_VOICE_CERT__||null;
   try{
+    window.__SUKUN_ACTIVE_VOICE_CERT__=_r699Cert;
     _repS();
   }finally{
+    window.__SUKUN_ACTIVE_VOICE_CERT__=_r699PreviousCert;
     window.__SUKUN_DEFER_ZIKIR_TRANSITION__=false;
   }
 
   const pending=window.__SUKUN_PENDING_ZIKIR_TRANSITION__;
   window.__SUKUN_PENDING_ZIKIR_TRANSITION__=null;
+  if(_r640Token&&!_r640Gate?.afterCount?.(_r640Token,pending,_r699Cert)){
+    if(_r699Cert)_r699Cert.status='cancelled';
+    try{window.SukunZikirTransaction?.cancel?.('r699-count-not-accepted',pending)}catch(e){}
+    _zBekleyen=false;return false;
+  }
 
-  /* ═══ r550 — ESMÂ GEÇİŞİ EXACTLY-ONCE KOORDİNATÖRÜ ═══════════════ */
+  /* ═══ r699 — ESMÂ GEÇİŞİ: SES ONAYLI EXACTLY-ONCE ═══════════════ */
   if(sesli){
     let islendi=false,emniyet=0,baslangic=Date.now();
 
     const gecisiIsle=(reason)=>{
+      if(_r699Cert&&_r699Cert.status!=='success')return false;
       if(islendi)return true;
       if(!pending)return false;
       let ok=false;
@@ -23827,6 +23863,7 @@ rep=()=>{
       try{
         if(!ZikirTransitionTxn.isCurrent(pending))return;
         const busy=!!zikirSesMesgul(),yas=Date.now()-baslangic;
+        if(_r699Cert&&_r699Cert.status!=='success')return;
         if(!busy||yas>=45000){
           if(gecisiIsle(yas>=45000?'watchdog-hard':'watchdog-idle'))return;
         }
@@ -23834,8 +23871,9 @@ rep=()=>{
       }catch(e){}
     };
 
-    if(pending)emniyet=setTimeout(watchdog,Math.min(1800,Math.max(700,zAutoTempoMs())));
+    if(pending&&!_r699Cert)emniyet=setTimeout(watchdog,Math.min(1800,Math.max(700,zAutoTempoMs())));
     zikirSesBaslat(false,(result)=>{
+      if(_r699Cert&&_r699Cert.status==='cancelled'){islendi=true;return;}
       /* r640: okuma başlayamadı/bitemedi ise bu tur gerçekte zikredilmiş
          sayılmaz. Sayaç geri alınır ve prepared transition commit edilmez. */
       try{
@@ -23845,10 +23883,20 @@ rep=()=>{
           return;
         }
       }catch(e){}
+      if(_r699Cert&&!_r640Token){
+        if(result===true||result?.ok===true){
+          _r699Cert.status='success';
+          if(pending&&!ZikirTransitionTxn.confirmVoice(pending,_r699Cert)){islendi=true;return;}
+        }else{
+          _r699Cert.status='failed';
+          try{ZikirTransitionTxn.cancel('r699-manual-voice-failed',pending)}catch(e){}
+          islendi=true;if(emniyet){clearTimeout(emniyet);emniyet=0}return;
+        }
+      }
       if(result===true||result?.ok===true){
         try{if(Z.auto&&!document.hidden)window.SukunR698Voice?.ready?.('voice-completed')}catch(_){}
       }
-      if(!gecisiIsle('voice-end')&&!islendi&&!emniyet)emniyet=setTimeout(watchdog,250);
+      if(!gecisiIsle('voice-end')&&!islendi&&!emniyet&&!_r699Cert)emniyet=setTimeout(watchdog,250);
     });
   }else if(pending&&ZikirTransitionTxn.isCurrent(pending)){
     r482CommitTransition(pending,'direct');
@@ -25804,7 +25852,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r697';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r699';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -25852,7 +25900,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r698',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v=r699',{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -60995,7 +61043,7 @@ function extraTools(){
   }
   return true;
 }
-function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r697';if(x)x.textContent='SÜKÛN v20.20 · '+b+' · '+skins[skin]}
+function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r699';if(x)x.textContent='SÜKÛN v20.21 · '+b+' · '+skins[skin]}
 function mount(){applySkin(skin,false);skinPicker();toolsNav();soundPreview();extraTools();kicker();sheetBuild()}
 window.addEventListener('sukun:r616viewchange',e=>{document.body.classList.remove('r619-legacy-tool-open');kicker(e?.detail?.view);setTimeout(()=>{toolsNav();soundPreview();extraTools();syncSound()},0)},{passive:true});
 window.addEventListener('sukun:r619skinchange',()=>sheetBuild(),{passive:true});
@@ -61072,7 +61120,7 @@ function syncSkinButtons(){
   const cur=currentSkin();
   document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
   const build=document.querySelector('.r616SheetBuild');
-  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r697';build.textContent='SÜKÛN v20.20 · '+b+' · '+(skins[cur]||skins.ottoman);}
+  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r699';build.textContent='SÜKÛN v20.21 · '+b+' · '+(skins[cur]||skins.ottoman);}
 }
 function mountSkinPanel(){
   const sheet=$('r616ToolsSheet');if(!sheet)return false;
@@ -61627,118 +61675,87 @@ body.r640-zikir-transport-held #zStage.toz::after{
 <script id="r640-zikir-transport-gate">
 (()=>{
 'use strict';
-if(window.SukunZikirTransportGate?.version==='r640')return;
-const VERSION='r640';
+if(window.SukunZikirTransportGate?.version==='r699')return;
+const VERSION='r699';
 let held=false,reason='',since=0,failure=false,seq=0,prevented=0,rollbacks=0,lastFailure=null,lastSuccess=null,lastToken=0,resumeTimer=0;
+let generation=0,activeToken=null,staleResults=0,conflicts=0,aborts=0;
 const listeners=new Set();
 const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 function spokenVisibleAuto(){return !!safe(()=>Z.auto&&!document.hidden&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE,false)}
-function rawPause(){
-  const agg=safe(()=>window.SukunAudioSessionRegistry?.aggregateSnapshot?.(),{})||{};
-  const life=safe(()=>window.AudioLife?.snapshot?.(),{})||{};
-  return{paused:!!(agg.paused||life.userPaused),aggregate:!!agg.paused,life:!!life.userPaused};
+function rawPause(){const agg=safe(()=>window.SukunAudioSessionRegistry?.aggregateSnapshot?.(),{})||{},life=safe(()=>window.AudioLife?.snapshot?.(),{})||{};return{paused:!!(agg.paused||life.userPaused),aggregate:!!agg.paused,life:!!life.userPaused}}
+function snapshot(){const p=rawPause();return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,generation,staleResults,conflicts,aborts,activeToken:activeToken?{id:activeToken.id,status:activeToken.status,cat:activeToken.cat,idx:activeToken.idx,at:activeToken.at}:null})}
+function emit(type='state'){seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});try{window.dispatchEvent(new CustomEvent('sukun:zikirtransportgate',{detail:{...s,type}}))}catch(e){};try{window.currentFlowState?.refresh?.('r699-transport:'+type,true)}catch(e){};return s}
+function setHeld(why,isFailure=false){held=true;reason=clean(why||'transport-held');since=Date.now();failure=!!isFailure;try{document.body?.classList.add('r640-zikir-transport-held')}catch(e){};try{if(typeof _zAutoPlanSeq!=='undefined')_zAutoPlanSeq++}catch(e){};try{if(Z?.autoId){clearTimeout(Z.autoId);Z.autoId=null}}catch(e){};emit('hold');return false}
+function sameIdentity(t){return !!t&&clean(Z.cat)===t.cat&&(+Z.idx||0)===t.idx&&(+Z.devir||0)===t.devir}
+function cancelTransaction(t,why){try{if(t?.pending)window.SukunZikirTransaction?.cancel?.(why,t.pending)}catch(e){}}
+function restoreOwnDelta(t,why){
+  if(!t?.post)return false;
+  const exact=sameIdentity(t)&&(+Z.count||0)===t.post.count&&(+Z.total||0)===t.post.total;
+  if(!exact){conflicts++;lastFailure=Object.freeze({at:Date.now(),reason:why,cat:t.cat,idx:t.idx,count:t.count,restored:false,conflict:true});return false}
+  Z.count=t.count;Z.devir=t.devir;Z.total=t.total;
+  try{window.SukunUsageStatsRollbackR695?.(1,t.cat,t.idx,'voice-rollback:'+why)}catch(e){}
+  try{S.set('sukun.total',Z.total)}catch(e){}
+  try{zUI()}catch(e){};try{window.currentZikirState?.refresh?.('r699-voice-rollback',true)}catch(e){}
+  rollbacks++;return true;
 }
-function snapshot(){
-  const p=rawPause();
-  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq});
-}
-function emit(type='state'){
-  seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});
-  try{window.dispatchEvent(new CustomEvent('sukun:zikirtransportgate',{detail:{...s,type}}))}catch(e){}
-  try{window.currentFlowState?.refresh?.('r640-transport:'+type,true)}catch(e){}
-  return s;
-}
-function setHeld(why,isFailure=false){
-  held=true;reason=clean(why||'transport-held');since=Date.now();failure=!!isFailure;
-  try{document.body?.classList.add('r640-zikir-transport-held')}catch(e){}
-  try{if(typeof _zAutoPlanSeq!=='undefined')_zAutoPlanSeq++}catch(e){}
-  try{if(Z?.autoId){clearTimeout(Z.autoId);Z.autoId=null}}catch(e){}
-  emit('hold');return false;
+function abortPending(why='voice-abort'){
+  const t=activeToken;if(!t)return false;
+  activeToken=null;t.status='cancelled';generation++;aborts++;
+  if(t.cert)t.cert.status='cancelled';
+  cancelTransaction(t,'r699-'+why);restoreOwnDelta(t,why);
+  emit('abort');return true;
 }
 function reset(why='reset'){
+  /* Pause/resume is not a new session: retain its in-flight voice lease. */
+  if(/^(auto-start|auto-stop|auto-off|hard-stop|all-stop|session-reset)/.test(String(why))){abortPending('reset:'+why);generation++;}
   const changed=held||reason||failure;held=false;reason='';since=0;failure=false;
   clearTimeout(resumeTimer);resumeTimer=0;
   try{document.body?.classList.remove('r640-zikir-transport-held')}catch(e){}
   if(changed)emit(clean(why)||'reset');return true;
 }
-function blocked(){
-  if(!spokenVisibleAuto())return false;
-  if(held)return true;
-  return rawPause().paused;
-}
+function blocked(){if(!spokenVisibleAuto())return false;return held||!!activeToken||rawPause().paused}
 function beforeCount(){
   if(!spokenVisibleAuto())return null;
-  const p=rawPause();
-  if(held||p.paused){prevented++;setHeld(held?reason:(p.aggregate?'aggregate-paused':'life-user-paused'),failure);return false}
-  const t={id:++lastToken,at:Date.now(),cat:clean(Z.cat),idx:+Z.idx||0,count:+Z.count||0,devir:+Z.devir||0,total:+Z.total||0,target:+Z.target||0};
-  return t;
+  if(activeToken){prevented++;return false}
+  const p=rawPause();if(held||p.paused){prevented++;setHeld(held?reason:(p.aggregate?'aggregate-paused':'life-user-paused'),failure);return false}
+  return{id:++lastToken,generation,at:Date.now(),cat:clean(Z.cat),idx:+Z.idx||0,count:+Z.count||0,devir:+Z.devir||0,total:+Z.total||0,target:+Z.target||0,status:'pending',post:null,pending:null,cert:null};
+}
+function afterCount(t,pending=null,cert=null){
+  if(!t)return true;
+  if(t.generation!==generation||activeToken||!sameIdentity(t)||(+Z.count||0)!==t.count+1||(+Z.total||0)!==t.total+1)return false;
+  t.post={count:+Z.count||0,total:+Z.total||0};t.pending=pending;t.cert=cert;t.status='pending';activeToken=t;emit('count');return true;
 }
 function okResult(r){return r===true||r?.ok===true}
-function rollback(t,r,pending){
-  if(!t)return false;
+function voiceResult(t,r,pending){
+  if(!t)return true;
+  if(t!==activeToken||t.generation!==generation||t.status!=='pending'){staleResults++;return false}
+  activeToken=null;
   const why=clean(r?.reason||(r===false?'voice-false':'voice-failed'))||'voice-failed';
-  try{if(pending)window.SukunZikirTransaction?.cancel?.('r640-'+why)}catch(e){}
-  let restored=false,lost=0;
-  try{
-    if(clean(Z.cat)===t.cat&&(+Z.idx||0)===t.idx){
-      lost=Math.max(0,(+Z.total||0)-(+t.total||0));
-      Z.count=t.count;Z.devir=t.devir;Z.total=t.total;restored=true;
-      if(lost)try{window.SukunUsageStatsRollbackR695?.(lost,t.cat,t.idx,'voice-rollback:'+why)}catch(e){}
-      try{S.set('sukun.total',Z.total)}catch(e){}
-      try{zUI()}catch(e){}
-      try{window.currentZikirState?.refresh?.('r640-voice-rollback',true)}catch(e){}
-    }
-  }catch(e){}
-  rollbacks++;
-  lastFailure=Object.freeze({at:Date.now(),reason:why,source:clean(r?.source||''),cat:t.cat,idx:t.idx,count:t.count,restored});
+  if(okResult(r)){
+    t.status='success';if(t.cert)t.cert.status='success';
+    if(pending&&!window.SukunZikirTransaction?.confirmVoice?.(pending,t.cert)){staleResults++;return false}
+    lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||'voice-ok'),source:clean(r?.source||''),cat:t.cat,idx:t.idx});
+    try{window.SukunR698Voice?.ready?.('voice-confirmed')}catch(e){}
+    if(held)reset('voice-ok');scheduleResume('voice-ok');emit('success');return true;
+  }
+  t.status='failed';if(t.cert)t.cert.status='failed';
+  cancelTransaction(t,'r699-'+why);
+  const restored=restoreOwnDelta(t,why);
+  lastFailure=Object.freeze({at:Date.now(),reason:why,source:clean(r?.source||''),cat:t.cat,idx:t.idx,count:t.count,restored,conflict:!restored});
   setHeld('voice-failed:'+why,true);
-  /* r698: a failed spoken repetition is not a silent-auto session. */
   try{if(Z.auto&&!document.hidden)autoStop()}catch(e){}
   setHeld('voice-failed:'+why,true);
   try{window.SukunR698Voice?.fail?.(why)}catch(e){}
   return false;
 }
-function voiceResult(t,r,pending){
-  /* Yalnız beforeCount tokenı olan görünür SESLİ AUTO turu gate'e tabidir.
-     Manuel sayaç ve hidden/native seyir davranışı aynen korunur. */
-  if(!t)return true;
-  if(okResult(r)){
-    lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||'voice-ok'),source:clean(r?.source||''),cat:t.cat,idx:t.idx});
-    try{window.SukunR698Voice?.ready?.('voice-confirmed')}catch(_){}
-    if(held)reset('voice-ok');
-    return true;
-  }
-  return rollback(t,r,pending);
-}
-function scheduleResume(why){
-  if(resumeTimer||!safe(()=>Z.auto,false)||document.hidden)return;
-  resumeTimer=setTimeout(()=>{resumeTimer=0;if(!safe(()=>Z.auto,false)||document.hidden||blocked())return;try{_zAutoSon=Date.now();zAutoKur(true)}catch(e){}},80);
-}
-function observeVoice(r,why='voice-observed'){
-  if(okResult(r)){
-    lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||why),source:clean(r?.source||''),observed:true});
-    if(held){reset(why);scheduleResume(why)}
-    return true;
-  }
-  return false;
-}
-function reconcile(why='event'){
-  if(document.hidden)return false;
-  if(!safe(()=>Z.auto,false)){if(held)reset('auto-off');return false}
-  if(held&&failure)return false; /* gerçek voice failure otomatik retry fırtınası üretmez */
-  const p=rawPause();
-  if(held&&!p.paused){reset(why);scheduleResume(why);return true}
-  if(!held&&spokenVisibleAuto()&&p.paused){setHeld(p.aggregate?'aggregate-paused':'life-user-paused',false);return false}
-  return false;
-}
+function scheduleResume(why){if(resumeTimer||!safe(()=>Z.auto,false)||document.hidden)return;resumeTimer=setTimeout(()=>{resumeTimer=0;if(!safe(()=>Z.auto,false)||document.hidden||blocked())return;try{_zAutoSon=Date.now();zAutoKur(true)}catch(e){}},80)}
+function observeVoice(r,why='voice-observed'){if(okResult(r)){lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||why),source:clean(r?.source||''),observed:true});if(held&&!failure){reset(why);scheduleResume(why)}return true}return false}
+function reconcile(why='event'){if(document.hidden)return false;if(!safe(()=>Z.auto,false)){if(held&&!failure)reset('auto-off');return false}if(held&&failure)return false;const p=rawPause();if(held&&!p.paused){reset(why);scheduleResume(why);return true}if(!held&&spokenVisibleAuto()&&p.paused){setHeld(p.aggregate?'aggregate-paused':'life-user-paused',false);return false}return false}
 ['sukun:audioaggregatechange','sukun:audiostate','sukun:audiotruthchange'].forEach(ev=>window.addEventListener(ev,()=>reconcile(ev),{passive:true}));
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden)return; /* hidden/native r476 tek otorite; sayaç kapısı karışmaz */
-  setTimeout(()=>reconcile('visible'),0);
-},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;setTimeout(()=>reconcile('visible'),0)},{passive:true});
 window.addEventListener('pageshow',()=>setTimeout(()=>reconcile('pageshow'),0),{passive:true});
-window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,voiceResult,observeVoice,reconcile,reset,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
+window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,afterCount,voiceResult,abortPending,observeVoice,reconcile,reset,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
 })();
 </script>
 
@@ -61756,7 +61773,7 @@ window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,b
 (()=>{
 'use strict';
 const VERSION='r641';
-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r698';
+const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r699';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const safe=(fn,fallback=null)=>{try{return fn()}catch(e){return fallback}};
@@ -62041,7 +62058,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
   function runSuite(){return audit('suite',false).checks}
   async function probeBuild(){
     const result={at:Date.now(),meta:clean(document.querySelector('meta[name="sukun-build"]')?.content||''),marker:null,sw:null,ok:true,issues:[]};
-    try{const r=await fetch('./__sukun_build_r698__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
+    try{const r=await fetch('./__sukun_build_r699__.json',{cache:'no-store'});const j=await r.json();result.marker=clean(j?.build||'');if(result.marker!==BUILD){result.ok=false;result.issues.push('marker '+result.marker)}}catch(e){result.issues.push('marker okunamadı')}
     const sw=safe(()=>window.SukunUpdateManager?.snapshot?.(),null);result.sw=clean(sw?.workerVersion||sw?.version||'');if(result.sw&&result.sw!==BUILD&&!result.sw.includes(BUILD)){result.issues.push('SW '+result.sw)}
     if(result.meta!==BUILD){result.ok=false;result.issues.push('meta '+result.meta)}
     lastBuildProbe=freeze(result);return lastBuildProbe;
@@ -65739,7 +65756,7 @@ body.r588-dock-ready #r447DockHandle{display:none!important;pointer-events:none!
 <script id="r686-integrity-interaction-runtime">
 (()=>{
 'use strict';if(window.__SUKUN_R686_INTEGRITY__)return;window.__SUKUN_R686_INTEGRITY__=1;
-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r698';
+const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r699';
 function sample(id){const el=document.getElementById(id);if(!el)return null;const c=getComputedStyle(el);return{id,display:c.display,visibility:c.visibility,pointerEvents:c.pointerEvents,touchAction:c.touchAction,overflowY:c.overflowY,scrollable:el.scrollHeight>el.clientHeight+1}}
 function snapshot(){
   const keys=['autoBtn','undoBtn','plusBtn','r588Play','r588Stop','r659DockBody','r674DetailsScroll','r633DockGrip','r447DockHandle'];
