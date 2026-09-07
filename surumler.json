@@ -1,5 +1,17 @@
 [
   {
+    "v": "r698",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Gerçek player'ın eski 77 px transport grid sütunu tamamen devre dışı bırakıldı; görünmeyen kontrol alanı ve kart daralması giderildi. Tek gerçek Play/Pause/Stop düğmeleri korunarak mod seçiminin yanına taşındı.",
+      "Mini/Midi'de Önceki/Baştan/Sonraki satırı kaldırıldı; Max gezinmesi korundu. Bildirimler yatay üçlüye alındı, ikinci Çalıyor metaverisi gizlendi ve sabit ölçülü kendi kayıt rozeti korundu.",
+      "r688'in 56 ms sentetik tap kurtarması emekli edildi. Native click tek kullanıcı etkileşim otoritesi oldu; tanı kayıp tap ve programatik click olaylarını ayrı kaydeder, kendi kendine click üretmez.",
+      "Doğrudan otomatik zikir AudioContext running olmadan ilk sayımı başlatmaz. Bekleyen başlangıç iptal edilebilir; başarısız kayıt/TTS turu sayaç rollback ile birlikte ritim scheduler'ını da durdurur ve açık ses hatası gösterir.",
+      "Web Audio grafik kurulumu kısmen başarısız olursa bağlı MediaElementAudioSource korumalı master'a geri bağlanır; eski AudioContext'e bağlı havuz öğesi yeniden kullanılmaz. Native fallback sıfır seste kalmaz.",
+      "Telefon dönüşü recovery epoch'u tekilleştirildi; başka seyir/Stop sonrasında eski recovery'nin ses başlatması engellendi. r696 kesinti izi, r695 muhasebe, r693 kilit hedefi ve r681 Max yerleşim matematiği korunur."
+    ]
+  },
+  {
     "v": "r697",
     "t": "7 Eylül 2026",
     "b": [

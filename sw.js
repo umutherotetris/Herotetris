@@ -1,8 +1,8 @@
-/* SÜKÛN r697 — Approved Neon UI Integration */
+/* SÜKÛN r698 — Native Interaction & Voice Start Integrity */
 'use strict';
 
-const SURUM = 'r697';
-const CACHE = 'sukun-r697-20260907a';
+const SURUM = 'r698';
+const CACHE = 'sukun-r698-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r697__.json';
+const BUILD_MARKER='./__sukun_build_r698__.json';
 
 const NOTLAR = [
+  'r698 · Native Interaction & Voice Start Integrity: legacy hit-test sütunu kaldırıldı, Mini/Midi gezinmesi sadeleştirildi, transport tek footerda toplandı, native click tek otorite oldu; kayıt grafiği fallback, iptal edilebilir ses başlangıcı ve başarısız ses sonrası sessiz scheduler durdurma düzeltildi.',
   'r697 · Approved Neon UI: çıkış tek durum satırında, kaynak Detaylar yanında sabit ölçülü, açık sürükleme tutamacı, renkli transport/mod çerçeveleri ve kompakt sayaç kontrolleri. Ses/sayaç motoru korunur.',
   'r696 · Phone Call Interruption & Atomic Voice Recovery: call/audio-focus dönüşünde 28/99 Seyir stop/resume atomik; stale recording/TTS Promise temizlenir; RECPLAYING fiziksel kaynaktan doğrulanır; hidden resume çekişmesi ve orphan interaction overlayleri giderildi.',
   'r695 · Counter Ledger & Undo Integrity: blocked/failed tekrar istatistiğe yazılmaz; voice rollback kullanım sayaçlarını da geri alır; sınır tekrarı doğru Esmâya bağlanır; auto-advance Undo kaynak Esmâya döner; hidden vird ve lifecycle rescue kimliği tekilleştirildi.',
