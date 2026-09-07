@@ -1,8 +1,8 @@
-/* SÜKÛN r701 — Context-aware Tefekkür Diagnostics */
+/* SÜKÛN r704 — Native DOM, Startup & Pause Repair */
 'use strict';
 
-const SURUM = 'r702';
-const CACHE = 'sukun-r702-20260907a';
+const SURUM = 'r704';
+const CACHE = 'sukun-r704-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,10 +14,11 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r702__.json';
+const BUILD_MARKER='./__sukun_build_r704__.json';
 
 const NOTLAR = [
-  "r702 · 28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi. Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur. Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r702 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
+  "r704 · Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir. Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez. Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",
+  "r703 · 28 İsim düğmesindeki değişmeyen metin yazımı ve kendini yeniden tetikleyen MutationObserver döngüsü giderildi. Akış barında Duraklat/Devam aynı yakalanmış ses oturumlarını yönetir; duraklatma sırasında bekleyen sözlü kuyruk kendiliğinden başlamaz. 28/99 seyir sahipliği korunur. Görünen başlık, HTML, manifest, Service Worker ve yapı işaretçisi r703 ile eşitlendi; sürümlü manifest çevrimdışı önbellekten açılır ve karışık sürüm kurulumu reddedilir.",
   'r701 · Context-aware diagnostics: hidden home tabs no longer trigger a false Tefekkür entry failure; real zikir entry and canonical exit are checked without changing playback or counter engines.',
   'r700 · Contextual Tefekkür Entry: approved neon button in active zikir context, single existing handler, canonical exit and unchanged audio/counter engines.',
   'r699 · Unified Layout & Interaction: tek dock geometri otoritesi, doğal Tefekkür/Detaylar/bildirim kaydırması, native tap ve sürükleme ayrımı, kısa yatay ekran uyumu; audio ve sayaç motorları korunur.',
