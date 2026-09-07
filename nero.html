@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r706 — Living Neon Atmosphere (base r705)
+     SÜKÛN r710 — Audio Truth & Cinematic Stability (base r709)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r709">
+<meta name="sukun-build" content="r710">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r709">
+<link rel="manifest" href="./manifest.webmanifest?v=r710">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6508,7 +6508,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r709</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r710</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6532,6 +6532,13 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r710",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r710 · Ses uzlaştırma döngüsü: r693/r637 fiziksel ses kanıtını ortak kullanır; değişmeyen Hub/Life durumları tekrar olay yayınlamaz. Hazırlık/kurtarma için sınırlı bekleme korunur. Sayaç görünür çiziminde güncel zikir durumu önce yayınlanır; sessiz kilit ekranı uzlaştırması DOM'u gereksiz çizmez. Cami, Mevlevî silueti ve su yansımalarıyla sinematik Tefekkür sahnesi; kompakt gerçek HTML kontrolleri. Android gerçek ses ve uzun kullanım doğrulaması ayrıca gereklidir."
+    ]
+  },
   {
     "v": "r709",
     "t": "8 Eylül 2026",
@@ -13472,8 +13479,12 @@ function zUI(){
     badge.style.cursor=yaz?'pointer':'default';
   }
   /* r499: sayaç artık currentZikirState tek kaynak modelinden beslenir. */
+  // r710: commit the counter snapshot before deriving the aggregate view.
+  // Otherwise currentFlowState reads the previous cached count and every
+  // manual +1/-1 can display one action late.
+  const _rawZs=window.currentZikirState?.refresh?.('zUI')||null;
   const _flow=window.currentFlowState?.refresh?.('zUI')||null;
-  const _zs=_flow?.zikir||window.currentZikirState?.refresh('zUI')||null;
+  const _zs=_flow?.zikir||_rawZs;
   const _hedef=_zs?_zs.target:Math.max(0,Number(Z.target)||0);
   const _hamSay=_zs?_zs.countRaw:Math.max(0,Number(Z.count)||0);
   const _say=_zs?_zs.count:(_hedef>0?(_hamSay%_hedef):_hamSay);
@@ -25879,7 +25890,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r709';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r710';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -36584,7 +36595,7 @@ const AudioLife=window.AudioLife={
     return this.owner;
   },
   set(n,r){
-    if(this.state===n&&this.reason===r)return;
+    if(this.state===n){this.reason=r||this.reason;return;}
     this.state=n;this.reason=r||'';this.lastChange=Date.now();
     window.dispatchEvent(new CustomEvent('sukun:audiostate',{detail:{state:n,reason:r,owner:this.ownerSnapshot(),userPaused:this.userPaused}}));
     if(!document.hidden)try{dashUpdate()}catch(e){}
@@ -39511,6 +39522,11 @@ const Hub=window.SukunAudioHub={
   allowed:new Set(['idle','preparing','playing','paused','interrupted','recovering','stopping','stopped','error']),
   set(state,reason='',meta){
     if(!this.allowed.has(state))state='error';
+    if(this.state===state){
+      this.reason=reason||this.reason;this.lastPulse=now();
+      if(meta&&typeof meta==='object'){if(meta.provider!=null)this.provider=String(meta.provider);if(meta.title)this.title=String(meta.title)}
+      return state;
+    }
     this.state=state;this.reason=reason;this.lastPulse=now();
     if(meta&&typeof meta==='object'){if(meta.provider!=null)this.provider=String(meta.provider);if(meta.title)this.title=String(meta.title)}
     emit('sukun:sessionstate',this.snapshot());
@@ -48753,6 +48769,7 @@ function snapshot(){
     build:BUILD,
     at:new Date().toISOString(),
     runtime:p,
+    stabilityR710:window.SukunR710Stability?.snapshot?.()||null,
     audio:{
       aggregate:A?.aggregateSnapshot?.()||null,
       aggregateState:A?.aggregateState?.()||'unavailable',
@@ -61511,15 +61528,24 @@ function derive(reason='snapshot'){
   const life=safe(()=>window.AudioLife?.snapshot?.(),null)||{},hub=safe(()=>window.SukunAudioHub?.snapshot?.(),null)||{};
   const arb=safe(()=>window.SukunForegroundArbiter?.snapshot?.(),null);
   const phy=physical();
-  const sessions=safe(()=>R?.list?.().map(id=>R?.sessionSnapshot?.(id)).filter(Boolean),[])||[];
+  const sessions=safe(()=>R?.list?.().map(id=>R?.snapshot?.(id)?.machine).filter(Boolean),[])||[];
   const nonMixPlaying=sessions.some(x=>x.id!=='mix'&&norm(x.state)==='playing');
   const nonMixPaused=sessions.some(x=>x.id!=='mix'&&norm(x.state)==='paused');
-  const tangible=nonMixPlaying||phy.journey28||phy.journey99||phy.terkip||phy.lock||phy.speech||phy.autoVoice||phy.background||phy.media>0||phy.tts>0;
+  // r710: a logical registry 'playing' is not proof of audible activity.
+  // r693 and this owner must agree on the same physical evidence; otherwise
+  // they can endlessly alternate AudioLife playing/idle on the main thread.
   const userPaused=!!(life.userPaused||agg.paused);
+  const terminalPhysical=safe(()=>window.SukunR693Integrity?.physical?.(),null);
+  const tangible=terminalPhysical?!!terminalPhysical.tangible:
+    (phy.journey28||phy.journey99||phy.terkip||phy.lock||phy.speech||phy.autoVoice||phy.background||phy.media>0||phy.tts>0);
+  const pendingPhysical=!tangible&&!userPaused&&
+    ['preparing','recovering','interrupted'].includes(clean(life.state))&&
+    Date.now()-(life.lastChange||0)<2500;
+
   let canonical='idle';
   if(userPaused){canonical=(nonMixPaused||nonMixPlaying||norm(ctl?.state)==='paused'||norm(ctl?.state)==='playing'||phy.journey28||phy.journey99)?'paused':'idle'}
   else if(tangible)canonical='playing';
-  else if(nonMixPaused||norm(ctl?.state)==='paused')canonical='paused';
+  else if(!pendingPhysical&&(nonMixPaused||norm(ctl?.state)==='paused'))canonical='paused';
   else if(regState==='stopping')canonical='stopping';
   const observed=[...(arb?.observed?.spokenOwners||[])];
   const owner=arb?.owner||((observed[0])?{type:observed[0],id:observed[0],identity:observed[0],title:observed[0]}:null);
@@ -61531,14 +61557,17 @@ function derive(reason='snapshot'){
   if(canonical==='idle'&&lifeN==='playing')issues.push('life-playing-without-tangible');
   if(regState==='playing'&&!tangible&&!userPaused)issues.push('registry-playing-without-tangible');
   if(arb?.owner&&observed.length&&!observed.includes(arb.owner.type)&&!arb.owner.persistent)issues.push('arbiter-owner-not-observed');
-  return Object.freeze({version:VERSION,seq:seq+1,at:Date.now(),reason,state:canonical,playing:canonical==='playing',paused:canonical==='paused',userPaused,tangible,source:owner?.type||(nonMixPlaying?clean(ctl?.id):phy.lock?'lock-audio':phy.speech?'tts':phy.background?'mix':'idle'),owner,registry:Object.freeze({state:regState,provider:clean(ctl?.id||''),controllerState:norm(ctl?.state),aggregate:agg}),life:Object.freeze({...life,state:clean(life.state||'idle')}),hub:Object.freeze({...hub,state:clean(hub.state||'idle')}),arbiter:arb,physical:phy,issues:Object.freeze(issues)});
+  return Object.freeze({version:VERSION,seq:seq+1,at:Date.now(),reason,pendingPhysical,state:canonical,playing:canonical==='playing',paused:canonical==='paused',userPaused,tangible,source:owner?.type||(nonMixPlaying?clean(ctl?.id):phy.lock?'lock-audio':phy.speech?'tts':phy.background?'mix':'idle'),owner,registry:Object.freeze({state:regState,provider:clean(ctl?.id||''),controllerState:norm(ctl?.state),aggregate:agg}),life:Object.freeze({...life,state:clean(life.state||'idle')}),hub:Object.freeze({...hub,state:clean(hub.state||'idle')}),arbiter:arb,physical:phy,issues:Object.freeze(issues)});
 }
 function signature(s){return[s.state,s.userPaused,s.tangible,s.source,s.owner?.type,s.registry.state,s.registry.provider,s.registry.controllerState,s.life.state,s.hub.state,...s.issues].join('|')}
 function reconcile(reason='event'){
   if(reconciling)return state||derive(reason);reconciling=true;
   try{
     const s=derive(reason),H=window.SukunAudioHub,L=window.AudioLife;
-    if(s.state==='paused'){
+    if(s.pendingPhysical){
+      // No physical playback yet: retain the legitimate pending state.
+      // Only the original owner can complete or cancel this preparation.
+    }else if(s.state==='paused'){
       /* r641 — observed/provider pause kullanıcı niyeti değildir. r640 raporu
          kullanıcı pause yapmadığı halde Berhetiyye kaynak yarışında paused
          görülünce bu blok H/L.userPaused=true yazarak geçici kesintiyi kalıcı
@@ -65691,7 +65720,7 @@ window.SukunLockTargetAuthorityR692=api;
 (()=>{
 'use strict';
 if(window.__SUKUN_R693_TERMINAL_TRUTH__)return;window.__SUKUN_R693_TERMINAL_TRUTH__=1;
-const VERSION='r693';let reconciles=0,prunedMedia=0,prunedSes=0,ghostFixes=0,lastReason='ready',lastAt=Date.now(),pending=false;
+const VERSION='r693';let reconciles=0,prunedMedia=0,prunedSes=0,ghostFixes=0,lastReason='ready',lastAt=Date.now(),pending=false,reconciling=false,timer=0,deferred=false;
 const silent=el=>!!(el&&el.dataset?.sukSilentCarrier==='1');
 function physical(){
   let ses=0;try{for(const a of [...SES.ler])if(a&&!a.paused&&!a.ended&&!silent(a))ses++}catch(e){}
@@ -65706,7 +65735,9 @@ function physical(){
   return{ses,tts,freq,amb,vh,auto,journey,lock,lifeBusy,tangible:!!(lifeBusy||ses||tts||freq||amb||vh||auto||journey||lock)};
 }
 function reconcile(reason='event'){
-  pending=false;lastReason=reason;lastAt=Date.now();reconciles++;
+  if(reconciling)return physical();
+  reconciling=true;pending=false;
+  try{lastReason=reason;lastAt=Date.now();reconciles++;
   try{
     const H=window.SukunAudioHub;
     if(H?.mediaActive){for(const el of [...H.mediaActive]){if(!el||silent(el)||el.paused||el.ended){H.mediaActive.delete(el);prunedMedia++}}}
@@ -65718,21 +65749,37 @@ function reconcile(reason='event'){
   /* auto=true fiziksel ritim/scheduler niyetidir; sessiz carrier tek başına
      tangible değildir. Tam terminal durumda stale Hub/Life 'playing' temizlenir. */
   if(!p.tangible){
+    // A newly requested stream may not yet own a physical media element.
+    // A genuine preparation/recovery gets a bounded grace period, not an
+    // indefinite synthetic playing latch. User Stop/Pause still wins.
+    const L=window.AudioLife,H=window.SukunAudioHub;
+    const fresh=L&&!L.userPaused&&['preparing','recovering','interrupted'].includes(L.state)&&Date.now()-(L.lastChange||0)<2500;
+    if(fresh){
+      try{window.SukunAudioTruth?.refresh?.('r710-pending-physical')}catch(e){}
+      return p;
+    }
     try{const H=window.SukunAudioHub;if(H&&!H.userPaused&&['playing','preparing','recovering','interrupted'].includes(H.state)){H.provider='';H.title='SÜKÛN';H.startedAt=0;H.set('idle','r693-terminal-truth');ghostFixes++}}catch(e){}
     try{const L=window.AudioLife;if(L&&!L.userPaused&&['playing','preparing','recovering','interrupted'].includes(L.state)){L.wasBusy=false;L.set('idle','r693-terminal-truth');ghostFixes++}}catch(e){}
   }
   try{window.SukunAudioSessionRegistry?.sync?.()}catch(e){}
   try{window.SukunAudioTruth?.refresh?.('r693-terminal-truth')}catch(e){}
   return p;
+  }finally{reconciling=false;deferred=false}
 }
-function schedule(reason){lastReason=reason;if(pending)return;pending=true;queueMicrotask(()=>reconcile(reason))}
+function schedule(reason){
+  lastReason=reason;
+  if(reconciling)return;
+  if(pending)return;
+  pending=true;
+  timer=setTimeout(()=>{timer=0;reconcile(reason)},80);
+}
 ['sukun:audiostate','sukun:audiosessionchange','sukun:playbackchange','sukun:foregroundvoicechange','sukun:zikirtransportgate','sukun:journeyaudiostate','sukun:zikirtransaction','sukun:mediaactivitychange'].forEach(ev=>window.addEventListener(ev,()=>schedule(ev),{passive:true}));
 /* r695 — terminal truth unlock olaylarını da tek fiziksel dönüşte birleştir. */
 let returnTimer=0,returnReason='';
 function scheduleReturn(reason){returnReason=reason;clearTimeout(returnTimer);returnTimer=setTimeout(()=>{returnTimer=0;reconcile(returnReason||reason)},90)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(returnTimer);returnTimer=0}else scheduleReturn('visible')},{passive:true});
 window.addEventListener('pageshow',()=>{if(!document.hidden)scheduleReturn('pageshow')},{passive:true});
-window.SukunR693Integrity=Object.freeze({version:VERSION,reconcile,snapshot:()=>Object.freeze({version:VERSION,reconciles,prunedMedia,prunedSes,ghostFixes,lastReason,lastAt,pending,returnPending:!!returnTimer,physical:physical(),hub:window.SukunAudioHub?.snapshot?.()||null,life:window.AudioLife?.snapshot?.()||null,lockTarget:window.SukunLockTargetAuthorityR693?.snapshot?.()||null,panRaf:!!KAYIT_RAF})});
+window.SukunR693Integrity=Object.freeze({version:VERSION,reconcile,physical,snapshot:()=>Object.freeze({version:VERSION,reconciles,prunedMedia,prunedSes,ghostFixes,lastReason,lastAt,pending,returnPending:!!returnTimer,physical:physical(),hub:window.SukunAudioHub?.snapshot?.()||null,life:window.AudioLife?.snapshot?.()||null,lockTarget:window.SukunLockTargetAuthorityR693?.snapshot?.()||null,panRaf:!!KAYIT_RAF})});
 setTimeout(()=>reconcile('boot'),0);
 })();
 </script>
@@ -66907,13 +66954,13 @@ function enter(){
 window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 })();
 </script>
-<script id="r709-release-identity-runtime">(()=>{
+<script id="r710-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r709',date='2026-09-08';
+const build=meta?.content||'r710',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.21 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r709',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r710',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67106,6 +67153,120 @@ function boot(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.SukunSanctuaryR709=Object.freeze({version:'r709',mount,reconcile,snapshot:()=>({mounted,scene:!!$('r709SceneArt'),mandala:!!$('r709Mandala'),canonical:!!$('tfRefinedLayout'),audioUntouched:true})});
+})();
+
+</script>
+
+<style id="style-r710-cinematic">
+/* r710 — artwork-led Tefekkür. Existing canonical controls and touch owners remain. */
+html body.r710-sanctuary.sukun-tefekkur-mode #r709SceneArt{
+ background-image:url('./assets/tefekkur-sanctuary-r710.webp')!important;
+ background-size:cover!important;background-position:center top!important;opacity:1!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #r709SceneVeil{
+ background:linear-gradient(180deg,rgba(2,10,20,.16),rgba(2,15,26,.39) 24%,rgba(2,13,23,.18) 46%,rgba(2,11,23,.28) 72%,rgba(2,10,20,.52)),radial-gradient(ellipse at 50% 48%,transparent 8%,rgba(1,10,20,.25) 100%)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #r706Smoke{opacity:.62!important}
+html body.r710-sanctuary.sukun-tefekkur-mode #r706Atmosphere .r706Lightfall{opacity:.5!important}
+html body.r710-sanctuary.r699-layout.sukun-tefekkur-mode #tab-zkr>.card.zCtl{
+ background:linear-gradient(135deg,rgba(11,44,46,.96),rgba(5,18,34,.98))!important;
+ border-color:rgba(155,222,187,.48)!important;
+ box-shadow:0 0 28px rgba(10,220,164,.12),inset 0 1px rgba(244,228,174,.17)!important;
+}
+html body.r710-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout{
+ background:rgba(2,15,27,.22)!important;border-color:rgba(128,232,215,.44)!important;
+ box-shadow:inset 0 1px rgba(226,255,232,.15),inset 0 0 40px rgba(0,0,0,.16)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #r706AtmosphereControls{
+ border-radius:19px!important;padding:5px 10px!important;
+ background:linear-gradient(135deg,rgba(6,33,44,.78),rgba(5,22,40,.78))!important;
+ border:1px solid rgba(112,212,211,.34)!important;
+ box-shadow:inset 0 1px rgba(226,255,246,.12),0 7px 25px rgba(0,0,0,.14)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #r706Motion{
+ background:linear-gradient(125deg,rgba(20,105,79,.94),rgba(8,51,60,.96))!important;
+ box-shadow:inset 0 1px rgba(218,255,231,.26),0 0 18px rgba(42,245,171,.17)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirName{
+ color:#fff2d4!important;text-shadow:0 0 25px rgba(111,255,187,.43),0 2px 12px #00101a!important;
+}
+html body.r710-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout #zCountVisual{
+ background:radial-gradient(circle at 50% 32%,rgba(19,85,68,.96),rgba(4,30,39,.98) 55%,#041320 100%)!important;
+ border-color:rgba(179,255,213,.76)!important;
+ box-shadow:0 0 0 5px rgba(3,47,57,.52),0 0 0 6px rgba(95,248,202,.42),0 0 24px rgba(40,255,189,.28),0 0 55px rgba(34,157,249,.16),inset 0 0 45px rgba(0,0,0,.5)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #zCountVisual::before{
+ content:"";position:absolute;inset:-10px;border-radius:50%;pointer-events:none;z-index:0;
+ border:1px solid rgba(88,241,237,.35);
+ background:conic-gradient(from 30deg,transparent 0 9%,rgba(62,255,192,.16) 13%,transparent 25%,rgba(50,156,255,.16) 45%,transparent 66%,rgba(111,255,204,.18) 83%,transparent 100%);
+ box-shadow:0 0 16px rgba(34,241,196,.16),inset 0 0 15px rgba(39,140,235,.1);
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #zCountVisual::after{
+ content:"";position:absolute;inset:12%;border:1px solid rgba(200,166,96,.30);border-radius:50%;pointer-events:none;z-index:0;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #zCountVisual #r709Mandala{opacity:.95!important;filter:drop-shadow(0 0 3px rgba(240,196,109,.28))}
+html body.r710-sanctuary.sukun-tefekkur-mode #zCountVisual #cntBig{text-shadow:0 0 25px rgba(255,216,139,.19),0 2px 12px rgba(0,0,0,.5)!important}
+html body.r710-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout .zCounterSide{
+ background:linear-gradient(130deg,rgba(4,40,51,.78),rgba(5,25,39,.88))!important;
+ border-color:rgba(89,225,214,.52)!important;
+ box-shadow:inset 0 1px rgba(221,255,248,.16),0 0 16px rgba(12,179,181,.08)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions button{
+ background:linear-gradient(145deg,rgba(16,46,61,.94),rgba(6,23,39,.97))!important;
+ border:1px solid rgba(117,200,230,.62)!important;border-radius:15px!important;
+ box-shadow:inset 0 1px rgba(222,247,255,.18),0 0 15px rgba(22,168,220,.10)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout #autoBtn{
+ background:linear-gradient(110deg,rgba(16,119,84,.96),rgba(5,79,77,.97) 51%,rgba(12,61,103,.97))!important;
+ border-color:rgba(120,255,210,.92)!important;
+ box-shadow:inset 0 1px rgba(240,255,245,.3),inset 0 -9px 22px rgba(0,18,28,.24),0 0 20px rgba(39,255,177,.24),0 0 35px rgba(22,155,237,.10)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #r494TefNavSlot .r494NavBtn{
+ background:linear-gradient(145deg,rgba(21,42,47,.85),rgba(7,22,35,.92))!important;
+ border-color:rgba(194,160,101,.64)!important;
+ box-shadow:inset 0 1px rgba(255,235,193,.15),0 0 12px rgba(187,134,65,.07)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout #r470VoiceSource{
+ background:linear-gradient(115deg,rgba(5,40,49,.83),rgba(5,24,40,.91))!important;
+ border-color:rgba(120,207,225,.5)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
+ background:linear-gradient(110deg,rgba(70,34,98,.94),rgba(29,49,92,.95))!important;
+ border-color:rgba(205,153,255,.85)!important;
+ box-shadow:inset 0 1px rgba(255,220,255,.21),0 0 20px rgba(161,76,253,.19)!important;
+}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout button:active{filter:brightness(1.16)}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout :is(button,[role="button"]){-webkit-tap-highlight-color:transparent}
+html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout :is(button,[role="button"]):focus-visible{outline:2px solid #baffdf!important;outline-offset:3px!important}
+@media(max-width:359px){html body.r710-sanctuary.sukun-tefekkur-mode #r709SceneArt{background-image:url('./assets/tefekkur-sanctuary-r710-small.webp')!important}}
+@media(prefers-reduced-motion:reduce){html body.r710-sanctuary.sukun-tefekkur-mode #r709Mandala{filter:none!important}}
+
+</style>
+<script id="r710-stability-runtime">
+(()=>{
+'use strict';
+if(window.SukunR710Stability)return;
+const B=document.body;
+let errors=0,lastError='',lastAt=0;
+const clean=s=>String(s??'').slice(0,400);
+const onError=e=>{errors++;lastError=clean(e.reason?.message||e.message||e.reason||'runtime');lastAt=Date.now()};
+window.addEventListener('error',onError,{passive:true});
+window.addEventListener('unhandledrejection',onError,{passive:true});
+function mount(){B.classList.add('r710-sanctuary');}
+function safe(fn){try{return fn()}catch(e){return null}}
+function snapshot(){return Object.freeze({
+ version:'r710',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ errors,lastError,lastAt,
+ physical:safe(()=>window.SukunR693Integrity?.physical?.()),
+ terminal:safe(()=>window.SukunR693Integrity?.snapshot?.()),
+ truth:safe(()=>window.SukunAudioTruth?.snapshot?.()),
+ transport:safe(()=>window.SukunR698Transport?.snapshot?.()),
+ taps:safe(()=>window.SukunR688TapAuthority?.snapshot?.()),
+ layout:safe(()=>window.SukunR699Layout?.snapshot?.()),
+ atmosphere:safe(()=>window.SukunAtmosphereR706?.snapshot?.())
+});}
+window.SukunR710Stability=Object.freeze({version:'r710',snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r710-refresh');return true}});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
 
 </script>

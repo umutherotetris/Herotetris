@@ -1,5 +1,12 @@
 [
   {
+    "v": "r710",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r710 · Ses uzlaştırma döngüsü: r693/r637 fiziksel ses kanıtını ortak kullanır; değişmeyen Hub/Life durumları tekrar olay yayınlamaz. Hazırlık/kurtarma için sınırlı bekleme korunur. Sayaç görünür çiziminde güncel zikir durumu önce yayınlanır; sessiz kilit ekranı uzlaştırması DOM'u gereksiz çizmez. Cami, Mevlevî silueti ve su yansımalarıyla sinematik Tefekkür sahnesi; kompakt gerçek HTML kontrolleri. Android gerçek ses ve uzun kullanım doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r709",
     "t": "8 Eylül 2026",
     "b": [

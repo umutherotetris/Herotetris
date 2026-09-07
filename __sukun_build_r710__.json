@@ -1,0 +1,7 @@
+{
+  "build": "r710",
+  "date": "2026-09-08",
+  "feature": "audio-truth-stability-cinematic",
+  "base": "r709",
+  "cache": "sukun-r710-20260908a"
+}
