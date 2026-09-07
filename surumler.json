@@ -1,5 +1,14 @@
 [
   {
+    "v": "r708",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Tefekkür üst ve alt sınırları tek kaydırma rezervine bağlandı; dış kapsayıcının ikinci alt boşluğu kaldırıldı.",
+      "Tefekküre açık girişte eski sayfa kaydırması sıfırlanır; sonraki kullanıcı hareketi hiçbir şekilde geri alınmaz.",
+      "Görünen build, manifest, Service Worker kayıt adresi ve önbellek r708 ile eşitlendi. Ses, sayaç ve seyir motorları değiştirilmedi."
+    ]
+  },
+  {
     "v": "r707",
     "t": "Kaydırma ve Dokunma Kararlılığı",
     "b": [

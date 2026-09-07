@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r707">
+<meta name="sukun-build" content="r708">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r707">
+<link rel="manifest" href="./manifest.webmanifest?v=r708">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6508,7 +6508,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-07-r702</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-07-r708</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6531,8 +6531,16 @@ body[data-focus="1"] .zCtl{
 <!-- ══ SÜRÜM NOTLARI ══  Makine okunur; service worker YENİ sürümün
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
-<script type="application/json" id="surumNotlari">
-[
+<script type="application/json" id="surumNotlari">[
+  {
+    "v": "r708",
+    "t": "7 Eylül 2026",
+    "b": [
+      "Tefekkür üst ve alt sınırları tek kaydırma rezervine bağlandı; dış kapsayıcının ikinci alt boşluğu kaldırıldı.",
+      "Tefekküre açık girişte eski sayfa kaydırması sıfırlanır; sonraki kullanıcı hareketi hiçbir şekilde geri alınmaz.",
+      "Görünen build, manifest, Service Worker kayıt adresi ve önbellek r708 ile eşitlendi. Ses, sayaç ve seyir motorları değiştirilmedi."
+    ]
+  },
   {
     "v": "r707",
     "t": "Kaydırma ve Dokunma Kararlılığı",
@@ -8933,8 +8941,7 @@ body[data-focus="1"] .zCtl{
       "r670 intrinsic dock hesabı, kayıt önceliği, sayaç/ses transportu ve seyir motorları korunur."
     ]
   }
-]
-</script>
+]</script>
 <!-- ══ MİNİ OYNATICI — bir şey çalarken altta sabit ══ -->
 <div id="calanSayfa" hidden>
   <div class="csBaslik">
@@ -25865,7 +25872,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r706';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r708';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -25913,7 +25920,7 @@ function neYenilendi(notlar,basligiEk){
     });
   }
   addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js?v=r704',{updateViaCache:'none'}).then(reg=>{
+    navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(SW_CLIENT_BUILD),{updateViaCache:'none'}).then(reg=>{
       state.registration=reg;state.active=reg.active;state.waiting=reg.waiting;set('registered',{registration:reg,active:reg.active,waiting:reg.waiting});
       if(reg.active)status(reg.active);
       if(reg.waiting&&navigator.serviceWorker.controller){status(reg.waiting);notes(reg.waiting)}
@@ -39041,6 +39048,7 @@ async function enter(){
   document.body.classList.remove('tefekkur-idle');
   syncButton();
   wake();
+  window.SukunR708Focus?.enter?.();
 
   /* r530: odak görünümü tek başına yeterlidir. Gerçek sistem tam ekranı
      yalnız kullanıcı Ayarlar'dan özellikle seçtiyse istenir. */
@@ -62078,7 +62086,7 @@ body.r588-mode-mini.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r1
 (()=>{
 'use strict';
 if(window.SukunR699Layout)return;
-const VERSION='r707', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const VERSION='r708', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const root=document.documentElement, B=document.body;
 const KEY='sukun.dockY.r633';
 let stateSig='',y=0,raf=0,last=null,reason='boot',measures=0,coalesced=0,ro=null,drag=null,quietUntil=0,deferred=false,resizeTimer=0,modeLast='',drawerLast=false,detailsLast=false,anchorLast='',scrollResets=0,rehomeCount=0,violations=0;
@@ -62093,7 +62101,7 @@ function mode(){return B.classList.contains('r588-mode-max')?'max':B.classList.c
 function viewport(){const v=window.visualViewport;const layoutH=root.clientHeight||innerHeight;const top=v?.offsetTop||0,height=v?.height||innerHeight;return{top,height,bottom:top+height,width:v?.width||innerWidth,layoutH};}
 function safeBottom(){let p=$('r633SafeProbe');if(!p){p=document.createElement('i');p.id='r633SafeProbe';p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9999px;bottom:0;width:1px;height:0;padding-bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none';B.appendChild(p)}return parseFloat(getComputedStyle(p).paddingBottom)||0}
 function reserve(v){let n=Math.max(8,safeBottom()+8);for(const e of document.querySelectorAll('#r616BottomNav,.sukun-bottom-nav')){if(!visible(e))continue;const r=e.getBoundingClientRect(),s=getComputedStyle(e);if(['fixed','sticky'].includes(s.position)&&r.bottom>=v.bottom-24&&r.top<v.bottom)n=Math.max(n,v.bottom-r.top+8)}return n}
-function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;if(!B.classList.contains('r699-layout'))B.classList.add('r699-layout');if(!B.classList.contains('r707-scroll'))B.classList.add('r707-scroll');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}if(grip.getAttribute('aria-label')!=='Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.')grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
+function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;if(!B.classList.contains('r699-layout'))B.classList.add('r699-layout');if(!B.classList.contains('r707-scroll'))B.classList.add('r707-scroll');if(!B.classList.contains('r708-boundary'))B.classList.add('r708-boundary');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}if(grip.getAttribute('aria-label')!=='Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.')grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
  let body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode');if(!body){body=document.createElement('div');body.id='r659DockBody';body.dataset.r659Scroll='1';shell.insertBefore(body,footer||null)}
  const stray=[...shell.children].filter(e=>e!==grip&&e!==body&&e!==footer);if(stray.length){stray.forEach(e=>body.appendChild(e));rehomeCount+=stray.length}if(shell.firstElementChild!==grip)shell.insertBefore(grip,shell.firstChild);if(footer&&shell.lastElementChild!==footer)shell.appendChild(footer);
  if(!host.dataset.r699Ready){host.dataset.r699Ready='1';}
@@ -66853,5 +66861,57 @@ html body.r707-scroll #r674DetailsScroll input[type=range],html body.r707-scroll
 @media(max-height:480px) and (orientation:landscape){html body.r707-scroll.sukun-tefekkur-mode #tab-zkr{min-height:100dvh!important;padding-bottom:var(--r699-content-reserve)!important}html body.r707-scroll #r588DockShell>.r588Mode{gap:3px!important}html body.r707-scroll #r588DockShell>#r633DockGrip{height:40px!important;min-height:40px!important;max-height:40px!important}}
 @media(prefers-reduced-motion:reduce){html body.r707-scroll #r588DockShell *,html body.r707-scroll #tfRefinedLayout *{scroll-behavior:auto!important}}
 </style>
+<style id="r708-single-boundary">
+/* r708 — one focused reading boundary. Retains r706 atmosphere and r707 native scrolling. */
+html:has(body.r708-boundary.sukun-tefekkur-mode){height:auto!important;overflow-x:clip!important;overflow-y:auto!important}
+html body.r708-boundary.sukun-tefekkur-mode{position:relative!important;inset:auto!important;height:auto!important;min-height:100dvh!important;max-height:none!important;overflow-x:clip!important;overflow-y:auto!important;touch-action:auto!important}
+/* The old wrapper and the zikir section must not each reserve the same dock. */
+html body.r708-boundary.sukun-tefekkur-mode:has(#tab-zkr) > .wrap{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;max-height:none!important;padding-top:0!important;padding-bottom:0!important;overflow:visible!important;contain:none!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr{position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding-top:max(12px,env(safe-area-inset-top))!important;padding-bottom:var(--r699-content-reserve,20px)!important;overflow:visible!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important;scrollbar-gutter:auto!important;scroll-padding-top:12px!important;scroll-padding-bottom:var(--r699-content-reserve,20px)!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>.card.zCtl{height:auto!important;min-height:0!important;max-height:none!important;margin-bottom:0!important;overflow:visible!important;contain:none!important}
+html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout,html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,html body.r708-boundary.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+/* The content has a single bottom reserve; fixed player and peek are not in document flow. */
+html body.r708-boundary.sukun-tefekkur-mode:has(#tab-zkr) > .wrap{scroll-padding-bottom:0!important}
+html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>#zStage{flex-shrink:0!important;margin-bottom:8px!important}
+html body.r708-boundary.sukun-tefekkur-mode #r588DockShell :is(#r588Play,#r588Stop,#r588Hide,[data-r588-mode]),html body.r708-boundary.sukun-tefekkur-mode #r433DockPeek,html body.r708-boundary.sukun-tefekkur-mode #tefExitBtn{pointer-events:auto!important}
+@media(max-height:480px) and (orientation:landscape){html body.r708-boundary.sukun-tefekkur-mode #tab-zkr{padding-top:max(8px,env(safe-area-inset-top))!important}html body.r708-boundary.sukun-tefekkur-mode #tab-zkr>#zStage{margin-bottom:5px!important}}
+</style>
+<script id="r708-focus-entry-runtime">
+(()=>{
+'use strict';
+if(window.SukunR708Focus)return;
+let userSeq=0,entrySeq=0,last=null;
+const mark=()=>{userSeq++};
+for(const type of ['pointerdown','touchstart','wheel','keydown'])document.addEventListener(type,mark,{capture:true,passive:true});
+function enter(){
+ const seq=++entrySeq,gesture=userSeq;
+ function top(){
+  if(seq!==entrySeq||gesture!==userSeq||!document.body.classList.contains('sukun-tefekkur-mode'))return;
+  const tab=document.getElementById('tab-zkr');
+  if(tab&&tab.scrollTop)tab.scrollTop=0;
+  const root=document.scrollingElement||document.documentElement;
+  if(root.scrollTop)root.scrollTop=0;
+  if(window.scrollY)window.scrollTo({top:0,left:0,behavior:'instant'});
+ }
+ top();requestAnimationFrame(()=>{top();requestAnimationFrame(top)});
+ last={reason:'explicit-entry',at:Date.now(),sequence:seq};
+ return true;
+}
+window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
+})();
+</script>
+<script id="r708-release-identity-runtime">
+(()=>{
+'use strict';
+const build=document.querySelector('meta[name="sukun-build"]')?.content||'r708';
+const label=document.getElementById('surumEtiket');
+if(label){
+ const text='SÜKÛN v20.21 — build 2026-09-07-'+build;
+ if(label.textContent!==text)label.textContent=text;
+ label.dataset.sukunBuild=build;
+}
+window.SukunReleaseIdentity=Object.freeze({build,version:'r708',snapshot:()=>({build,footer:label?.textContent||'',meta:document.querySelector('meta[name="sukun-build"]')?.content||''})});
+})();
+</script>
 </body>
 </html>

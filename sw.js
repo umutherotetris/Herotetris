@@ -1,8 +1,8 @@
-/* SÜKÛN r707 — Native Scroll and Hit-Test Stability */
+/* SÜKÛN r708 — Focus Boundary and Release Identity */
 'use strict';
 
-const SURUM = 'r707';
-const CACHE = 'sukun-r707-20260907a';
+const SURUM = 'r708';
+const CACHE = 'sukun-r708-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r707__.json';
+const BUILD_MARKER='./__sukun_build_r708__.json';
 
 const NOTLAR = [
+  "r708 · Tefekkür tek alt rezervi ve açık girişte üst hizalama; dış wrap ile iç sekmenin çift paddingi kaldırıldı. Görünen sürüm, SW kaydı, manifest ve cache eşitlendi. Ses/sayaç motorları korunur.",
   "r707 · Belge kaydırması, gerçek dock taşması, kullanıcı kaydırma önceliği ve tek frekans gesture sahibi düzeltildi. Ses/seyir motorları korunur.",
   "r706 · Onaylanan canlı neon atmosfer: mor–mavi–zümrüt dumanlar, ışıklı yörüngeler ve gerçek sayaç değişimine bağlı ışık dalgası. Görsel hareket/pil/görünürlük bütçesi; Tefekkürün ilgisiz sınıf değişikliklerinde gereksiz ölçümü ve dock boyutlarını silip yeniden yazma düzeltildi. Transport dokunma hedefleri 44 px. Android/kilit ekranı ve gerçek ses doğrulaması ayrıca gereklidir.",
   "r705 · Kısa yatay ekranlarda Tefekkürün mevcut sayaç ve kontrol panelleri iki sütunda düzenlenir; çıkış ve sayma kontrolleri görünür çalışma alanına yaklaşır. 320–390 piksel portre düzeni ve Mini/Midi/Max akış barı kodu korunur. Ses oturumu, kayıt önceliği, seyir, sayaç ve duraklatma motorları değiştirilmedi. Önceki 51 kaynak regresyonuna ilave yerleşim, dokunma ve sürüm bütünlüğü kontrolleri eklendi. Gerçek Android, kilit ekranı ve duyulan ses kalitesi ayrıca doğrulanmalıdır.",
