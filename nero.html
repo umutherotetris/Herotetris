@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r706">
+<meta name="sukun-build" content="r707">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r706">
+<link rel="manifest" href="./manifest.webmanifest?v=r707">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6533,6 +6533,18 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">
 [
+  {
+    "v": "r707",
+    "t": "Kaydırma ve Dokunma Kararlılığı",
+    "b": [
+      "Tefekkürün belge kaydırması serbest bırakıldı; sabit ekran ve kart yüksekliği kilitleri kaldırıldı. Neon atmosfer ve mevcut gerçek kontrol sahipleri korundu.",
+      "Mini/Midi/Max geçişlerinde dock kaydırması zorla sıfırlanmaz. İçerik taşması gerçek scrollHeight/clientHeight ile değerlendirilir; scroll yüzeyi tahmini yüksekliğe göre kapatılmaz.",
+      "Eski frekans düğmesinin pencere düzeyindeki touchmove yakalaması pointer capture ile sınırlandı. Görünmez dekor ve kapalı modal hit-test kuralları güçlendirildi.",
+      "Bildirim modalı kapanınca önceden mevcut olan inert/aria-hidden durumu geri yüklenir. Açık detay ve bildirimlerin kaydırma sahipliği korunur.",
+      "Kaydırma korumasında gerçek kullanıcı hareketi ve açıkça istenen navigasyon önceliklidir; gecikmiş konum geri yüklemesi yeni kullanıcı kaydırmasını geri alamaz.",
+      "Ses, kayıt, sayaç ve seyir motorları değiştirilmedi. Kaynak/izole testler tamamlandı; gerçek Android dokunma, kilit ekranı ve duyulan ses doğrulaması ayrıca gereklidir."
+    ]
+  },
   {
     "v": "r706",
     "t": "Canlı Neon Atmosfer ve Yerleşim Kararlılığı",
@@ -15670,34 +15682,33 @@ function knobKur(){
   const k=document.getElementById('carKnob'); if(!k)return;
   knobTirtilCiz();
   knobCiz(FR.c||180);
-  let suruklu=false, baslangicY=0, baslangicX=0, baslangicOran=0;
+  let suruklu=false, aktifPointer=null, baslangicY=0, baslangicX=0, baslangicOran=0;
   const bas=(e)=>{
-    suruklu=true;
-    baslangicY=(e.touches?e.touches[0].clientY:e.clientY);
-    baslangicX=(e.touches?e.touches[0].clientX:e.clientX);
+    if(e.isPrimary===false||e.pointerType==='mouse'&&e.button!==0)return;
+    suruklu=true;aktifPointer=e.pointerId;
+    baslangicY=e.clientY;baslangicX=e.clientX;
+    try{k.setPointerCapture(e.pointerId)}catch(_){}
     baslangicOran=knobHzOran(FR.c||180);
     e.preventDefault();
   };
   const hareket=(e)=>{
-    if(!suruklu)return;
-    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    if(!suruklu||e.pointerId!==aktifPointer)return;
+    const y=e.clientY;
     /* yukarı sürükle = artır; 220 px tam yolu kat eder */
     /* 220 px tam yolu kat ediyordu — küçük bir kaydırma bile frekansı
        uçuruyordu. 520 px'e çıkarıldı: parmak hareketi daha hassas.
        Yatay hareket de dikkate alınır (sağa = artır), böylece hangi yöne
        çevrileceği belirsizliği kalkar. */
-    const dx=(e.touches?e.touches[0].clientX:e.clientX)-baslangicX;
+    const dx=e.clientX-baslangicX;
     const oran=baslangicOran+(((baslangicY-y)+dx)/520);
     knobUygula(knobOranHz(oran));
     e.preventDefault();
   };
-  const bitir=()=>{ if(suruklu){suruklu=false; if(typeof saveSettings==='function')saveSettings();} };
-  k.addEventListener('mousedown',bas);
-  k.addEventListener('touchstart',bas,{passive:false});
-  window.addEventListener('mousemove',hareket);
-  window.addEventListener('touchmove',hareket,{passive:false});
-  window.addEventListener('mouseup',bitir);
-  window.addEventListener('touchend',bitir);
+  const bitir=e=>{if(!suruklu||e.pointerId!==aktifPointer)return;suruklu=false;aktifPointer=null;try{k.releasePointerCapture(e.pointerId)}catch(_){}if(typeof saveSettings==='function')saveSettings()};
+  k.style.touchAction='none';
+  k.addEventListener('pointerdown',bas);
+  k.addEventListener('pointermove',hareket,{passive:false});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>k.addEventListener(ev,bitir));
   /* tekerlek */
   k.addEventListener('wheel',e=>{
     e.preventDefault();
@@ -54953,10 +54964,10 @@ function allow(fn,reason='explicit'){
 }
 function shouldAllow(el){
   const t=now();
-  if(t<suppressUntil)return{ok:false,reason:suppressReason||'suppressed'};
   if(explicitDepth>0)return{ok:true,reason:'explicit'};
-  if(el?.closest?.('[data-sukun-scroll="allow"]'))return{ok:true,reason:'element-allow'};
   if(t<userIntentUntil)return{ok:true,reason:userReason||'user'};
+  if(t<suppressUntil)return{ok:false,reason:suppressReason||'suppressed'};
+  if(el?.closest?.('[data-sukun-scroll="allow"]'))return{ok:true,reason:'element-allow'};
   return{ok:false,reason:'background'};
 }
 function describe(el){
@@ -54989,8 +55000,10 @@ function preserve(fn,opt={}){
   const y=window.scrollY||document.documentElement.scrollTop||0;
   const ms=Math.max(120,+opt.ms||520);
   suppress(ms,opt.reason||'preserve-scroll');
+  const intentAtStart=userIntentUntil;
 
   const restore=()=>{
+    if(userIntentUntil>intentAtStart)return;
     if(anchor?.isConnected&&Number.isFinite(anchorTop)){
       const dy=anchor.getBoundingClientRect().top-anchorTop;
       if(Math.abs(dy)>.5)window.scrollBy(0,dy);
@@ -62065,7 +62078,7 @@ body.r588-mode-mini.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r1
 (()=>{
 'use strict';
 if(window.SukunR699Layout)return;
-const VERSION='r706', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const VERSION='r707', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const root=document.documentElement, B=document.body;
 const KEY='sukun.dockY.r633';
 let stateSig='',y=0,raf=0,last=null,reason='boot',measures=0,coalesced=0,ro=null,drag=null,quietUntil=0,deferred=false,resizeTimer=0,modeLast='',drawerLast=false,detailsLast=false,anchorLast='',scrollResets=0,rehomeCount=0,violations=0;
@@ -62080,7 +62093,7 @@ function mode(){return B.classList.contains('r588-mode-max')?'max':B.classList.c
 function viewport(){const v=window.visualViewport;const layoutH=root.clientHeight||innerHeight;const top=v?.offsetTop||0,height=v?.height||innerHeight;return{top,height,bottom:top+height,width:v?.width||innerWidth,layoutH};}
 function safeBottom(){let p=$('r633SafeProbe');if(!p){p=document.createElement('i');p.id='r633SafeProbe';p.setAttribute('aria-hidden','true');p.style.cssText='position:fixed;left:-9999px;bottom:0;width:1px;height:0;padding-bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none';B.appendChild(p)}return parseFloat(getComputedStyle(p).paddingBottom)||0}
 function reserve(v){let n=Math.max(8,safeBottom()+8);for(const e of document.querySelectorAll('#r616BottomNav,.sukun-bottom-nav')){if(!visible(e))continue;const r=e.getBoundingClientRect(),s=getComputedStyle(e);if(['fixed','sticky'].includes(s.position)&&r.bottom>=v.bottom-24&&r.top<v.bottom)n=Math.max(n,v.bottom-r.top+8)}return n}
-function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;if(!B.classList.contains('r699-layout'))B.classList.add('r699-layout');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}if(grip.getAttribute('aria-label')!=='Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.')grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
+function ensure(){const shell=$('r588DockShell'),host=$('r170Now');if(!shell||!host)return false;if(!B.classList.contains('r699-layout'))B.classList.add('r699-layout');if(!B.classList.contains('r707-scroll'))B.classList.add('r707-scroll');let grip=$('r633DockGrip');if(!grip){grip=document.createElement('button');grip.id='r633DockGrip';grip.type='button';grip.innerHTML='<span aria-hidden="true"></span><small aria-hidden="true">↕</small><span class="r697GripLabel" aria-hidden="true">Tut ve sürükle</span>';shell.insertBefore(grip,shell.firstChild)}if(grip.getAttribute('aria-label')!=='Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.')grip.setAttribute('aria-label','Akış barını sürükle. Yön tuşlarıyla da taşıyabilirsin.');grip.title='Tut ve sürükle · Yön tuşlarıyla taşı';if(!grip.dataset.r699Bound){grip.dataset.r699Bound='1';bindGrip(grip)}
  let body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode');if(!body){body=document.createElement('div');body.id='r659DockBody';body.dataset.r659Scroll='1';shell.insertBefore(body,footer||null)}
  const stray=[...shell.children].filter(e=>e!==grip&&e!==body&&e!==footer);if(stray.length){stray.forEach(e=>body.appendChild(e));rehomeCount+=stray.length}if(shell.firstElementChild!==grip)shell.insertBefore(grip,shell.firstChild);if(footer&&shell.lastElementChild!==footer)shell.appendChild(footer);
  if(!host.dataset.r699Ready){host.dataset.r699Ready='1';}
@@ -62102,7 +62115,14 @@ function bindGrip(grip){
  grip.addEventListener('click',e=>{if(grip.dataset.r699SuppressClick){e.preventDefault();e.stopImmediatePropagation()}},true);
  grip.addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();const h=$('r170Now');if(!visible(h))return;const v=viewport(),b=setBounds(v,reserve(v),h.getBoundingClientRect().height);let n=e.key==='Home'?b.min:e.key==='End'?b.max:y+(e.key==='ArrowUp'?-1:1)*(e.shiftKey?80:28);setY(clamp(n,b.min,b.max),true);schedule('keyboard-grip')});
 }
-function naturalHeight(shell,body,footer,grip){const cs=getComputedStyle(shell);const pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),gap=parseFloat(cs.rowGap)||0;const gh=grip?.getBoundingClientRect().height||0,fh=footer?.getBoundingClientRect().height||0;const bh=body?.scrollHeight||0;return Math.ceil(pad+gh+fh+bh+gap*2)}
+function naturalHeight(shell,body,footer,grip){
+ const cs=getComputedStyle(shell),pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),gap=parseFloat(cs.rowGap)||0;
+ const gh=grip?.getBoundingClientRect().height||0,fh=footer?.getBoundingClientRect().height||0;
+ // Measure intrinsic content, not the height left over by an old fixed grid.
+ let bh=body?.scrollHeight||0;
+ if(body){const r=body.getBoundingClientRect();for(const child of body.children){const c=getComputedStyle(child);if(c.display==='none'||c.position==='absolute'||c.position==='fixed')continue;const cr=child.getBoundingClientRect();bh=Math.max(bh,cr.bottom-r.top+body.scrollTop+(parseFloat(c.marginBottom)||0));}}
+ return Math.ceil(pad+gh+fh+Math.max(0,bh)+gap*2);
+}
 function clearLegacy(){
  // Current r699 dimensions stay installed while intrinsic content is measured.
  for(const k of ['--r662-exact-fill','--r671-zcard-h','--r680-max-host-h'])if(root.style.getPropertyValue(k))root.style.removeProperty(k);
@@ -62112,14 +62132,17 @@ function clearLegacy(){
  if(!B.classList.contains('r660-dock-compact'))B.classList.add('r660-dock-compact');
 }
 
-let modalTrigger=null,modalKind='',focusGuard=false;
+let modalTrigger=null,modalKind='',focusGuard=false,modalShellState=null;
 function modalBackdrop(){let e=$('r699ModalBackdrop');if(!e){e=document.createElement('div');e.id='r699ModalBackdrop';e.hidden=true;e.setAttribute('aria-hidden','true');B.appendChild(e);e.addEventListener('click',()=>window.SukunAlertCenter?.close?.())}return e}
 function modalSync(){
  const drawer=$('r554AlertDrawer'),open=!!drawer&&!drawer.hidden&&$('r170Now')?.classList.contains('r554-alert-open');
  const back=modalBackdrop();back.hidden=!open;B.classList.toggle('r699-drawer-open',open);
- const shell=$('r588DockShell');if(shell){shell.inert=open;if(open)shell.setAttribute('aria-hidden','true');else shell.removeAttribute('aria-hidden')}
+ const shell=$('r588DockShell');if(shell){
+  if(open&&!modalShellState){modalShellState={inert:shell.inert,aria:shell.getAttribute('aria-hidden')};shell.inert=true;shell.setAttribute('aria-hidden','true')}
+  else if(!open&&modalShellState){shell.inert=modalShellState.inert;if(modalShellState.aria===null)shell.removeAttribute('aria-hidden');else shell.setAttribute('aria-hidden',modalShellState.aria);modalShellState=null}
+ }
  if(open){if(modalKind!=='drawer'){modalTrigger=document.activeElement;modalKind='drawer';try{window.SukunDockDetails?.close?.()}catch(_){ }setTimeout(()=>drawer.querySelector('#r554DrawerClose')?.focus({preventScroll:true}),0)}drawer.setAttribute('role','dialog');drawer.setAttribute('aria-modal','true');drawer.setAttribute('aria-label','Akış bildirimleri')}
- else if(modalKind==='drawer'){modalKind='';try{modalTrigger?.focus?.({preventScroll:true})}catch(_){ }modalTrigger=null}
+ else if(modalKind==='drawer'){modalKind='';try{modalTrigger?.isConnected&&modalTrigger.focus?.({preventScroll:true})}catch(_){ }modalTrigger=null}
 }
 document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&!e.defaultPrevented){if($('r554AlertDrawer')&&!$('r554AlertDrawer').hidden){e.preventDefault();window.SukunAlertCenter?.close?.();return}if(B.classList.contains('r434-inline-details-open')){e.preventDefault();window.SukunDockDetails?.close?.();return}}
@@ -62133,10 +62156,10 @@ function measure(why='api'){
  const host=$('r170Now'),shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');const v=viewport(),bottom=reserve(v),m=mode(),tef=B.classList.contains('sukun-tefekkur-mode'),drawer=host.classList.contains('r554-alert-open')&&!($('r554AlertDrawer')?.hidden),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible')||!B.classList.contains('r591-flow-active');
  r706Style(root.style,'--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r699-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r633-max-h',px(Math.max(1,v.height-bottom-16)));r706Style(root.style,'--r633-vvh',px(v.height));r706Style(root.style,'--r633-safe-top',px(v.top+8));r706Style(root.style,'--r699-top',px(v.top+8));r706Style(root.style,'--r699-viewport-h',px(v.height));r706Style(root.style,'--r699-available',px(Math.max(1,v.height-bottom-16)));
  clearLegacy();modalSync();B.classList.toggle('r699-drawer-open',drawer);B.classList.toggle('r699-details-open',B.classList.contains('r434-inline-details-open'));
- if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
+ if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active','r699-body-scroll','r699-overflow');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
  B.classList.add('r699-dock-active');
- const changedMode=modeLast!==m;if(changedMode){if(body.scrollTop){body.scrollTop=0;scrollResets++}modeLast=m}
- const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
+ const changedMode=modeLast!==m;if(changedMode)modeLast=m; // Native scroll clamps only if the new content is shorter.
+ const priorScrollTop=body.scrollTop;const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
  if(keyboardCompact&&!drawer){need=58;desired=Math.min(cap,58)}else if(drawer){need=Math.max(350,Math.ceil(v.height*.75));desired=Math.min(cap,Math.max(350,Math.min(650,need)));}
  else{
   B.classList.add('r699-measuring');
@@ -62154,7 +62177,10 @@ function measure(why='api'){
  desired=Math.min(cap,Math.max(1,Math.ceil(desired)));r706Style(root.style,'--r699-host-h',px(desired));r706Style(root.style,'--r659-dock-fit-h',px(desired));r706Style(root.style,'--r659-dock-max-h',px(cap));r706Style(root.style,'--r659-dock-min-h',px(0));r706Style(root.style,'--r662-intrinsic',px(need));r706Style(host.style,'height',px(desired),'important');r706Style(host.style,'min-height','0px','important');r706Style(host.style,'max-height',px(cap),'important');
  const bounds=applyPosition(v,bottom,desired,y);const free=y<-5;
  const reservePx=desired+bottom-y+12;r706Style(root.style,'--r699-content-reserve',px(reservePx));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+reservePx));r706Style(root.style,'--r659-wrap-reserve',px(reservePx));r706Style(root.style,'--r660-peek-reserve',px(62+bottom));
- B.classList.toggle('r699-body-scroll',!drawer&&need>desired+2);B.classList.toggle('r699-overflow',!drawer&&need>desired+2);
+ const actualOverflow=!drawer&&body.scrollHeight>body.clientHeight+2;
+ B.classList.toggle('r699-body-scroll',actualOverflow);B.classList.toggle('r699-overflow',actualOverflow);
+ // Preserve the user's reading position across a mode switch; let native bounds clamp it.
+ if(changedMode&&!drag&&Math.abs(body.scrollTop-priorScrollTop)>.5)body.scrollTop=Math.min(priorScrollTop,Math.max(0,body.scrollHeight-body.clientHeight));
  // Max is not a document lock. The zikir surface may scroll naturally behind the fixed player.
  const card=document.querySelector('#tab-zkr>.card.zCtl');let boundaryTop=null,cardH=0;
  if(tef&&visible(card)){
@@ -66779,5 +66805,53 @@ window.SukunAtmosphereR706=Object.freeze({version:'r706',refresh:reconcile,dispo
 })();
 
 </script>
+<style id="r707-scroll-hit-test-authority">
+/* r707 — native scroll / hit-test boundary. No new visual or audio owner. */
+html:has(body.r707-scroll.sukun-tefekkur-mode){height:auto!important;overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode{position:relative!important;inset:auto!important;height:auto!important;min-height:100dvh!important;max-height:none!important;overflow-x:clip!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;touch-action:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode :is(main,.wrap){position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr{position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:auto!important;min-height:100dvh!important;max-height:none!important;margin:0!important;padding:8px clamp(8px,2.4vw,14px) var(--r699-content-reserve)!important;overflow:visible!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important;scrollbar-gutter:auto!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr>.card.zCtl{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important;padding-bottom:8px!important}
+html body.r707-scroll.sukun-tefekkur-mode #tab-zkr>#zStage{height:auto!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout,html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+/* The body scrolls naturally, while the player remains a bounded fixed surface. */
+html body.r707-scroll #r588DockShell>#r659DockBody,html body.r707-scroll.r588-mode-max #r588DockShell>#r659DockBody,html body.r707-scroll.r588-mode-midi #r588DockShell>#r659DockBody,html body.r707-scroll.r699-measuring #r588DockShell>#r659DockBody{min-height:0!important;max-height:none!important;touch-action:pan-y pinch-zoom!important;-webkit-overflow-scrolling:touch!important}
+html body.r707-scroll:not(.r699-measuring) #r588DockShell>#r659DockBody{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+html body.r707-scroll.r699-measuring #r170Now.r588-authority{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.r699-measuring #r588DockShell{height:auto!important;grid-template-rows:auto auto auto!important;overflow:visible!important}
+html body.r707-scroll.r699-measuring #r588DockShell>#r659DockBody{height:auto!important;max-height:none!important;overflow:visible!important;align-self:start!important}
+/* One bounded grid track owns the player scrollport. Retired Max rules may not expand it to intrinsic content height. */
+html body.r707-scroll.r699-layout #r170Now.r588-authority #r588DockShell{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important}
+html body.r707-scroll.r699-layout:not(.r699-measuring) #r170Now.r588-authority #r588DockShell>#r659DockBody{display:block!important;height:100%!important;overflow-anchor:none!important;min-height:0!important;max-height:100%!important;align-self:stretch!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll.r699-layout.r699-measuring #r170Now.r588-authority #r588DockShell{height:auto!important;min-height:0!important;max-height:none!important;grid-template-rows:auto auto auto!important;overflow:visible!important}
+html body.r707-scroll.r699-layout.r699-measuring #r170Now.r588-authority #r588DockShell>#r659DockBody{height:auto!important;min-height:0!important;max-height:none!important;align-self:start!important;overflow:visible!important}
+/* Decorations cannot become invisible shields. All modal surfaces retain their own explicit hit tests. */
+html body.r707-scroll :is(#r706Atmosphere,#r706Smoke,#r706Orbit,.r706Arch,.r706Lightfall,.r706Ticks,.r706Arc,.r706Pearl,.r706Satellite,#breathHalo,#nameToastLayer,.r501OverflowMark){pointer-events:none!important}
+html body.r707-scroll #r588DockShell :is(#r588Play,#r588Stop,#r588Hide,[data-r588-mode]),html body.r707-scroll #r433DockPeek,html body.r707-scroll #tefExitBtn{pointer-events:auto!important;touch-action:manipulation!important}
+html body.r707-scroll #r588DockShell>#r633DockGrip{touch-action:none!important;pointer-events:auto!important}
+html body.r707-scroll #r588DockShell .r588Actions{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-content:start!important}
+html body.r707-scroll #r588DockShell .r588Actions .r588Action{height:auto!important;min-height:44px!important;max-height:none!important;flex-shrink:0!important}
+/* r698's fixed 36px Max action row was defeating the later intrinsic layout. */
+html body.r707-scroll.r698-ui.r588-mode-max #r588DockShell .r588Actions{display:flex!important;flex-wrap:wrap!important;align-items:center!important;height:auto!important;min-height:44px!important;max-height:none!important;overflow:visible!important}
+html body.r707-scroll.r698-ui.r588-mode-max #r588DockShell .r588Actions .r588Action{height:auto!important;min-height:44px!important;max-height:none!important;flex-shrink:0!important}
+/* The canonical exit must not depend on the optional r697 visual-theme class. */
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow{display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:44px!important;height:auto!important;max-height:none!important;overflow:visible!important;pointer-events:auto!important}
+html body.r707-scroll #r588DockShell>.r588Mode{min-width:0!important;max-width:100%!important;grid-template-columns:minmax(0,1fr) auto 44px!important;gap:4px!important}
+html body.r707-scroll #r588DockShell .r588Transport{grid-template-columns:repeat(2,44px)!important}
+html body.r707-scroll #r588DockShell .r588ModeSeg button,html body.r707-scroll #r588DockShell .r588Transport button,html body.r707-scroll #r588Hide{min-height:44px!important;height:44px!important;touch-action:manipulation!important}
+html body.r707-scroll #r588DockShell .r588Transport button,html body.r707-scroll #r588Hide{width:44px!important;min-width:44px!important;max-width:44px!important}
+html body.r707-scroll.sukun-tefekkur-mode #tfRefinedLayout :is(#autoBtn,#undoBtn,#plusBtn,#tefExitBtn,.r494NavBtn){min-height:44px!important;touch-action:manipulation!important}
+html body.r707-scroll #r677DetailsBackdrop{display:none!important;pointer-events:none!important}
+html body.r707-scroll.r434-inline-details-open #r677DetailsBackdrop{display:block!important;pointer-events:auto!important}
+html body.r707-scroll #r699ModalBackdrop[hidden],html body.r707-scroll #r434InlineDetails[hidden],html body.r707-scroll #r554AlertDrawer[hidden]{display:none!important;pointer-events:none!important}
+html body.r707-scroll #r699ModalBackdrop:not([hidden]){pointer-events:auto!important}
+html body.r707-scroll.r434-inline-details-open>#r434InlineDetails.r677-details-portal{max-height:min(72dvh,560px)!important;overflow:hidden!important}
+html body.r707-scroll.r434-inline-details-open>#r434InlineDetails.r677-details-portal>#r674DetailsScroll{min-height:0!important;overflow-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll #r554DrawerList,html body.r707-scroll #calanSayfa:not([hidden]){overflow-y:auto!important;touch-action:pan-y pinch-zoom!important}
+html body.r707-scroll #r674DetailsScroll input[type=range],html body.r707-scroll #r659DockBody input[type=range]{touch-action:pan-y!important}
+/* Explicit short-screen fallback: preserve the approved two-column layout. */
+@media(max-height:480px) and (orientation:landscape){html body.r707-scroll.sukun-tefekkur-mode #tab-zkr{min-height:100dvh!important;padding-bottom:var(--r699-content-reserve)!important}html body.r707-scroll #r588DockShell>.r588Mode{gap:3px!important}html body.r707-scroll #r588DockShell>#r633DockGrip{height:40px!important;min-height:40px!important;max-height:40px!important}}
+@media(prefers-reduced-motion:reduce){html body.r707-scroll #r588DockShell *,html body.r707-scroll #tfRefinedLayout *{scroll-behavior:auto!important}}
+</style>
 </body>
 </html>

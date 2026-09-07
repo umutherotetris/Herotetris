@@ -1,5 +1,17 @@
 [
   {
+    "v": "r707",
+    "t": "Kaydırma ve Dokunma Kararlılığı",
+    "b": [
+      "Tefekkürün belge kaydırması serbest bırakıldı; sabit ekran ve kart yüksekliği kilitleri kaldırıldı. Neon atmosfer ve mevcut gerçek kontrol sahipleri korundu.",
+      "Mini/Midi/Max geçişlerinde dock kaydırması zorla sıfırlanmaz. İçerik taşması gerçek scrollHeight/clientHeight ile değerlendirilir; scroll yüzeyi tahmini yüksekliğe göre kapatılmaz.",
+      "Eski frekans düğmesinin pencere düzeyindeki touchmove yakalaması pointer capture ile sınırlandı. Görünmez dekor ve kapalı modal hit-test kuralları güçlendirildi.",
+      "Bildirim modalı kapanınca önceden mevcut olan inert/aria-hidden durumu geri yüklenir. Açık detay ve bildirimlerin kaydırma sahipliği korunur.",
+      "Kaydırma korumasında gerçek kullanıcı hareketi ve açıkça istenen navigasyon önceliklidir; gecikmiş konum geri yüklemesi yeni kullanıcı kaydırmasını geri alamaz.",
+      "Ses, kayıt, sayaç ve seyir motorları değiştirilmedi. Kaynak/izole testler tamamlandı; gerçek Android dokunma, kilit ekranı ve duyulan ses doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r706",
     "t": "Canlı Neon Atmosfer ve Yerleşim Kararlılığı",
     "b": [

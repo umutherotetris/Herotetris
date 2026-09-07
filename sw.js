@@ -1,8 +1,8 @@
-/* SÜKÛN r706 — Living Neon Atmosphere */
+/* SÜKÛN r707 — Native Scroll and Hit-Test Stability */
 'use strict';
 
-const SURUM = 'r706';
-const CACHE = 'sukun-r706-20260907a';
+const SURUM = 'r707';
+const CACHE = 'sukun-r707-20260907a';
 
 const CORE = [
   './nero.html',
@@ -14,9 +14,10 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r706__.json';
+const BUILD_MARKER='./__sukun_build_r707__.json';
 
 const NOTLAR = [
+  "r707 · Belge kaydırması, gerçek dock taşması, kullanıcı kaydırma önceliği ve tek frekans gesture sahibi düzeltildi. Ses/seyir motorları korunur.",
   "r706 · Onaylanan canlı neon atmosfer: mor–mavi–zümrüt dumanlar, ışıklı yörüngeler ve gerçek sayaç değişimine bağlı ışık dalgası. Görsel hareket/pil/görünürlük bütçesi; Tefekkürün ilgisiz sınıf değişikliklerinde gereksiz ölçümü ve dock boyutlarını silip yeniden yazma düzeltildi. Transport dokunma hedefleri 44 px. Android/kilit ekranı ve gerçek ses doğrulaması ayrıca gereklidir.",
   "r705 · Kısa yatay ekranlarda Tefekkürün mevcut sayaç ve kontrol panelleri iki sütunda düzenlenir; çıkış ve sayma kontrolleri görünür çalışma alanına yaklaşır. 320–390 piksel portre düzeni ve Mini/Midi/Max akış barı kodu korunur. Ses oturumu, kayıt önceliği, seyir, sayaç ve duraklatma motorları değiştirilmedi. Önceki 51 kaynak regresyonuna ilave yerleşim, dokunma ve sürüm bütünlüğü kontrolleri eklendi. Gerçek Android, kilit ekranı ve duyulan ses kalitesi ayrıca doğrulanmalıdır.",
   "r704 · Tarayıcının Element, Node, HTMLElement ve DOMTokenList prototiplerine yapılan r703 müdahalesi kaldırıldı. Gereksiz yazımlar Tefekkür, sekmeler, seyir kartları, bildirimler ve tema modüllerinde yerel olarak engellenir. Tarayıcı tema rengi yalnız gerçek tema değişiminde hesaplanır; akış barı, ses durumu ve Tefekkür sınıfları açılışta tam stil hesabını tekrar tetiklemez. Tekke ve NeuroSync panellerinin zorunlu açılış kurulumu kaldırıldı; mevcut fabrikaları ilk kullanımda bir kez kurulur. Kaldırılmış günlük kartının gecikmeli çağrısı artık boş DOM öğesine yazmaz.",

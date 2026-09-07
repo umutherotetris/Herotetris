@@ -1,0 +1,6 @@
+{
+  "build": "r707",
+  "date": "2026-09-07",
+  "feature": "native-scroll-hit-test-stability",
+  "base": "r706"
+}
