@@ -1,0 +1,42 @@
+{
+  "build": "r699",
+  "base": "r698",
+  "date": "2026-09-07",
+  "status": "source regression candidate; Android device verification required",
+  "changes": [
+    "Direct spoken repetitions use a session-specific completion certificate.",
+    "A target transition cannot commit before its matching voice succeeds.",
+    "Abort/Stop invalidates pending repetition and transaction without affecting newer sessions.",
+    "Failed voice rolls back only its own exact counter delta and usage statistics; conflicting user edits are preserved.",
+    "Pause/resume retains in-flight ownership and a late result cannot resurrect an obsolete start."
+  ],
+  "validation": {
+    "isolatedTransportTests": 10,
+    "isolatedTransportFailed": 0,
+    "browserShieldPassed": 39,
+    "browserShieldWarned": 0,
+    "browserShieldFailed": 0,
+    "javascriptErrors": 0,
+    "inlineJavascriptSyntaxChecked": 182,
+    "serviceWorkerSyntax": "PASS",
+    "buildManifestMarker": "PASS",
+    "cssAndDomIdentifiersPreserved": true,
+    "releaseHistoriesPreserved": true,
+    "iconsPreserved": true
+  },
+  "limitations": [
+    "Headless Chromium smoke is not a physical Android playback test.",
+    "Real lock-screen playback, incoming call interruption, Bluetooth/headset controls, and long-running 28/99 journeys require device verification.",
+    "In a conflicting manual counter edit, the system preserves the newer value rather than blindly subtracting; diagnostics records the conflict for review."
+  ],
+  "files": {
+    "__sukun_build_r699__.json": "32eed789c57956a0cff3a40cfa82aaed547c30553be8ce70c5e464bd9addaeaa",
+    "icon-192.png": "126e514b6bcfb243e2c5dae025a74b5474719e9d743a2fa13625791de76714c9",
+    "icon-512-maskable.png": "5537a3293632c5d07227f484b07bbe75d47c979c2e8c71da5ba142aa73f37ce0",
+    "icon-512.png": "2d9c10bcac1d6fe9dde4f9b01d89188320eaa361a1fdc6dd71023fb73a7118c3",
+    "manifest.webmanifest": "b6e24305a80494fa11ded2597053f7e9a7f89ccbf1c57fc9ebc269cf2eba5146",
+    "nero.html": "1fb2c088ac7d7f363962f1cdab4e559c972f227f10c4b5ac87a2b811251dd1d2",
+    "surumler.json": "aeb938d3f0c4f3fe34773085a2b854aff16282d60fe4f7852fd1aa7bcdd915c6",
+    "sw.js": "30570f46be4fa5fdb4b1534b006098ba398fcf7d6b2a8e5af9b7217540a5906c"
+  }
+}
