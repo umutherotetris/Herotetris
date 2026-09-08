@@ -1,8 +1,8 @@
-/* SÜKÛN r710 — Audio Truth & Cinematic Stability */
+/* SÜKÛN r712 — User Intent & Bounded Recovery */
 'use strict';
 
-const SURUM = 'r710';
-const CACHE = 'sukun-r710-20260908a';
+const SURUM = 'r712';
+const CACHE = 'sukun-r712-20260908a';
 
 const CORE = [
   './nero.html',
@@ -17,9 +17,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r710__.json';
+const BUILD_MARKER='./__sukun_build_r712__.json';
 
 const NOTLAR = [
+  "r712 · Kullanıcının Pause/Stop niyeti fiziksel ses yankısıyla veya 12 saniyelik eski kilit taşıyıcısı süresiyle silinmez. Yalnız yeni kullanıcı Play/Resume/Start komutu niyeti açar.",
+  "28/99 Seyir kurtarması artık eski Pause/Stop komutunu geçersiz kılamaz; eşzamanlı kurtarma engellenir ve sonuçsuz otomatik denemeler üçle sınırlanır. Açık kullanıcı duraklatması olmadan yalnız tanınan sistem kesintisi kapısı uzlaştırılır.",
+  "r711 ses hazırlığı zaman aşımı ve tanısı, r710 sinematik Tefekkür, kompakt kontroller, sayaç/ledger, kayıt/TTS, seyir içeriği ve doğal kaydırma korunur. Fiziksel Android ve gerçek ses doğrulaması ayrıca gereklidir.",
+  "r711 · Hazırlık/kurtarma fiziksel sese ulaşmazsa 2,5 saniyelik zaman aşımı kendiliğinden uzlaştırılır. Gerçek oynatma, Pause ve Stop eski zaman aşımını geçersiz kılar. Tanıya sınırlı olay yoğunluğu ve ana iş parçacığı gecikmesi ölçümleri eklendi; ses, sayaç ve sinematik Tefekkür sahipleri korunur.",
   "r710 · Ses uzlaştırma döngüsü: r693/r637 fiziksel ses kanıtını ortak kullanır; değişmeyen Hub/Life durumları tekrar olay yayınlamaz. Hazırlık/kurtarma için sınırlı bekleme korunur. Sayaç görünür çiziminde güncel zikir durumu önce yayınlanır; sessiz kilit ekranı uzlaştırması DOM'u gereksiz çizmez. Cami, Mevlevî silueti ve su yansımalarıyla sinematik Tefekkür sahnesi; kompakt gerçek HTML kontrolleri. Android gerçek ses ve uzun kullanım doğrulaması ayrıca gereklidir.",
   "r709 · Sinematik Tefekkür sahnesi: gerçek kaynak görsellerden yazısız cami/Mevlevî arka planı, zümrüt-mavi ışıklar ve altın geometrik sayaç süsü; dar Hedef/Kalan kartları, kompakt ulaşılabilir kontroller. Ses, sayaç, seyir, kayıt ve r708 kaydırma otoriteleri korunur.",
   "Tefekkür üst ve alt sınırları tek kaydırma rezervine bağlandı; dış kapsayıcının ikinci alt boşluğu kaldırıldı.",

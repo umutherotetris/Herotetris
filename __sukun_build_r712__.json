@@ -1,0 +1,7 @@
+{
+  "build": "r712",
+  "date": "2026-09-08",
+  "feature": "user-intent-bounded-recovery",
+  "base": "r711",
+  "cache": "sukun-r712-20260908a"
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r710 — Audio Truth & Cinematic Stability (base r709)
+     SÜKÛN r712 — User Intent & Bounded Recovery (base r711)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r710">
+<meta name="sukun-build" content="r712">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r710">
+<link rel="manifest" href="./manifest.webmanifest?v=r712">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6508,7 +6508,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r710</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r712</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6532,6 +6532,24 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r712",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r712 · Kullanıcının Pause/Stop niyeti fiziksel ses yankısıyla veya 12 saniyelik eski kilit taşıyıcısı süresiyle silinmez. Yalnız yeni kullanıcı Play/Resume/Start komutu niyeti açar.",
+      "28/99 Seyir kurtarması artık eski Pause/Stop komutunu geçersiz kılamaz; eşzamanlı kurtarma engellenir ve sonuçsuz otomatik denemeler üçle sınırlanır. Açık kullanıcı duraklatması olmadan yalnız tanınan sistem kesintisi kapısı uzlaştırılır.",
+      "r711 ses hazırlığı zaman aşımı ve tanısı, r710 sinematik Tefekkür, kompakt kontroller, sayaç/ledger, kayıt/TTS, seyir içeriği ve doğal kaydırma korunur. Fiziksel Android ve gerçek ses doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
+    "v": "r711",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r711 · Fiziksel ses başlamazsa hazırlık/kurtarma 2,5 saniye sonunda kendiliğinden uzlaştırılır; yeni ses, Pause ve Stop eski zaman aşımını geçersiz kılar.",
+      "Kilitlenme tanısına sınırlı olay yoğunluğu ve görünür ekran ana iş parçacığı gecikmesi ölçümleri eklendi.",
+      "r710 sinematik Tefekkür, kompakt kontroller, ses/sayaç/seyir sahipleri ve doğal kaydırma korunur. Gerçek Android doğrulaması ayrıca gereklidir."
+    ]
+  },
   {
     "v": "r710",
     "t": "8 Eylül 2026",
@@ -8955,7 +8973,8 @@ body[data-focus="1"] .zCtl{
       "r670 intrinsic dock hesabı, kayıt önceliği, sayaç/ses transportu ve seyir motorları korunur."
     ]
   }
-]</script>
+]
+</script>
 <!-- ══ MİNİ OYNATICI — bir şey çalarken altta sabit ══ -->
 <div id="calanSayfa" hidden>
   <div class="csBaslik">
@@ -25890,7 +25909,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r710';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r712';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -39600,7 +39619,7 @@ function hookSesCapa(){
   if(st)sc.start=(o={})=>{const r=st(o);Hub.activate('MediaSession',{title:o.title||'SÜKÛN'}, {onPlay:o.onPlay,onPause:o.onPause,onStop:o.onStop,onPrev:o.onPrev,onNext:o.onNext});return r};
   if(sp)sc.stop=(...a)=>{const r=sp(...a);if(!Hub.userPaused){Hub.startedAt=0;Hub.set('idle','media-stop')}return r};
   if(pa)sc.syncPaused=(...a)=>{const r=pa(...a);const explicit=!!window.SukunJourneyAudioMachine?.pauseIntentActive?.();if(explicit){Hub.userPaused=true;try{window.AudioLife?.markUserPause?.('media-session-pause-reflect')}catch(e){}}else if(Hub.userPaused){Hub.userPaused=false}Hub.set('paused',explicit?'media-pause':'media-reflect-pause');return r};
-  if(pl)sc.syncPlaying=(...a)=>{const r=pl(...a);Hub.userPaused=false;try{window.AudioLife?.markUserPlay?.('media-session-play')}catch(e){};Hub.set('playing','media-play');return r};
+  if(pl)sc.syncPlaying=(...a)=>{const r=pl(...a);/* A media-state echo is not a user Play command. */if(!window.AudioLife?.userPaused&&!window.SukunJourneyAudioMachine?.intentBlocked?.()){Hub.userPaused=false;Hub.set('playing','media-play')}return r};
   if(rt)sc.retitle=(t,...a)=>{Hub.title=String(t||Hub.title);return rt(t,...a)};
 }
 
@@ -48770,6 +48789,7 @@ function snapshot(){
     at:new Date().toISOString(),
     runtime:p,
     stabilityR710:window.SukunR710Stability?.snapshot?.()||null,
+    stabilityR711:window.SukunR711Stability?.snapshot?.()||null,
     audio:{
       aggregate:A?.aggregateSnapshot?.()||null,
       aggregateState:A?.aggregateState?.()||'unavailable',
@@ -62868,12 +62888,11 @@ function keyOf(ad,opt){
 function J(){return window.__sukJourneyNative||null}
 function audio(){return J()?.a||null}
 function alive(a){return !!(a&&!a.paused&&!a.ended)}
-function explicitUserPause(ms=12000){
+function explicitUserPause(){
   try{
+    if(window.SukunJourneyAudioMachine?.intentBlocked?.())return true;
     const life=window.AudioLife?.snapshot?.()||{};
-    const action=clean(life?.lastUserAction?.action||'');
-    const age=Date.now()-(+life?.lastUserAction?.t||0);
-    return !!window.AudioLife?.userPaused&&['pause','stop'].includes(action)&&age>=0&&age<ms;
+    return !!window.AudioLife?.userPaused&&['pause','stop'].includes(clean(life?.lastUserAction?.action||''));
   }catch(e){return false}
 }
 function journeyProtected(){
@@ -62885,15 +62904,10 @@ function journeyProtected(){
 }
 function userPaused(){
   try{
-    if(!window.AudioLife?.userPaused)return false;
-    if(explicitUserPause())return true;
-    if(journeyProtected()){
-      try{window.AudioLife?.markUserPlay?.('r643-latch-repair')}catch(e){}
-      try{if(window.SukunAudioHub)window.SukunAudioHub.userPaused=false}catch(e){}
-      touch('latch-repair');
-      return false;
-    }
-    return true;
+    // An old physical journey is not evidence that the user resumed it.
+    // In particular, a Pause/Stop does not expire after twelve seconds.
+    if(window.SukunJourneyAudioMachine?.intentBlocked?.())return true;
+    return !!window.AudioLife?.userPaused;
   }catch(e){return false}
 }
 function touch(reason){S.lastReason=clean(reason);S.lastAt=Date.now();S.seq++}
@@ -63521,42 +63535,68 @@ window.SukunLockJourneyTransportV2=Object.freeze({version:VERSION,arm,revive,set
 (()=>{
 'use strict';
 if(window.SukunJourneyAudioMachine?.version==='r656')return;
-const VERSION='r656';
+const VERSION='r656',REVISION='r712';
 const STATES=Object.freeze({IDLE:'IDLE',PREPARING:'PREPARING',PLAYING_VISIBLE:'PLAYING_VISIBLE',PLAYING_HIDDEN:'PLAYING_HIDDEN',SWITCHING:'SWITCHING',RECOVERING:'RECOVERING',USER_PAUSED:'USER_PAUSED',COMPLETE:'COMPLETE',ERROR:'ERROR'});
 const listeners=new Set(),history=[];
 let state=null,seq=0,timer=0,recoveryTimer=0,recoverySeq=0,switchUntil=0,completeUntil=0,errorUntil=0,lastError='';
-const intentState={type:'',source:'',at:0,pauseActive:false,seq:0};
+let recoveryInFlight=false,recoveryAttempts=0,recoveryNextAt=0,recoveryBudgetOwner='',recoveryExhaustions=0;
+const MAX_RECOVERY_ATTEMPTS=3;
+function resetRecoveryBudget(){recoveryAttempts=0;recoveryNextAt=0;recoveryBudgetOwner='';}
+const intentState={type:'',source:'',at:0,pauseActive:false,stopActive:false,seq:0};
 const INTENT_RECONCILE_GRACE=1400;
-const reconcileMetric={pauseClears:0,lastReason:'ready',lastAt:0,lastAgeMs:0,lastSource:''};
+const reconcileMetric={pauseClears:0,pauseConflicts:0,lastReason:'ready',lastAt:0,lastAgeMs:0,lastSource:''};
+let reportedIntentSeq=-1;
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const now=()=>Date.now();
 function remember(type,source=''){
   intentState.type=clean(type);intentState.source=clean(source);intentState.at=now();intentState.seq++;
-  if(type==='pause')intentState.pauseActive=true;
-  else if(['play','resume','start','stop','complete','reset'].includes(type))intentState.pauseActive=false;
+  if(type==='pause'){intentState.pauseActive=true;intentState.stopActive=false;}
+  else if(['stop','complete','reset'].includes(type)){intentState.pauseActive=false;intentState.stopActive=true;}
+  else if(['play','resume','start'].includes(type)){intentState.pauseActive=false;intentState.stopActive=false;}
   return intentSnapshot();
 }
 function intentSnapshot(){return Object.freeze({...intentState})}
 function intent(type,source='ui'){
   type=clean(type).toLowerCase();if(type==='resume')type='play';
-  const x=remember(type,source);schedule('intent:'+type,0);return x;
+  const x=remember(type,source);
+  // A previous asynchronous recovery is never allowed to cross a new user command.
+  cancelRecovery();
+  if(['play','resume','start'].includes(type))resetRecoveryBudget();
+  schedule('intent:'+type,0);return x;
 }
 function pauseIntentActive(){return !!intentState.pauseActive}
+function stopIntentActive(){return !!intentState.stopActive}
+function intentBlocked(){return pauseIntentActive()||stopIntentActive()}
 function reconcilePauseIntent(ji,tr,reason='derive'){
   if(!intentState.pauseActive||!ji?.owner||!ji?.j)return false;
   const age=now()-(+intentState.at||0);if(age<INTENT_RECONCILE_GRACE)return false;
   const running=!!(ji.j.run&&!ji.j.paused&&!ji.j.systemHold);
   const physicalPlaying=!!(tr?.playing&&!tr?.paused);
-  const truthUserPaused=!!tr?.truth?.userPaused;
-  const registryPaused=!!(tr?.truth?.registry?.state==='paused'||tr?.truth?.registry?.aggregate?.paused);
-  if(!running||!physicalPlaying||truthUserPaused||registryPaused)return false;
-  const prevSource=intentState.source;
-  remember('play','r656-physical-playing-reconcile');
-  reconcileMetric.pauseClears++;reconcileMetric.lastReason=clean(reason)||'derive';reconcileMetric.lastAt=now();reconcileMetric.lastAgeMs=age;reconcileMetric.lastSource=prevSource;
-  try{window.dispatchEvent(new CustomEvent('sukun:journey-intent-reconciled',{detail:{version:VERSION,type:'pause-cleared',owner:ji.owner,key:ji.key,ageMs:age,source:prevSource,reason:reconcileMetric.lastReason,at:reconcileMetric.lastAt}}))}catch(e){}
-  return true;
+  if(!running||!physicalPlaying)return false;
+  // Physical playback is evidence of a failed pause, never consent to resume.
+  // Keep the explicit intent until a real user Play/Resume or terminal Stop.
+  if(reportedIntentSeq===intentState.seq)return false;
+  reportedIntentSeq=intentState.seq;
+  reconcileMetric.pauseConflicts++;reconcileMetric.lastReason=clean(reason)||'derive';
+  reconcileMetric.lastAt=now();reconcileMetric.lastAgeMs=age;reconcileMetric.lastSource=intentState.source;
+  try{window.dispatchEvent(new CustomEvent('sukun:journey-intent-conflict',{detail:{version:VERSION,revision:REVISION,type:'pause-still-playing',owner:ji.owner,ageMs:age,at:reconcileMetric.lastAt}}))}catch(e){}
+  return false;
 }
+function recoverableAggregate(){
+  const a=safe(()=>window.SukunAudioSessionRegistry?.aggregateSnapshot?.(),null);
+  if(!a?.paused)return true;
+  // Only a known system interruption may be released automatically.
+  // Unknown or user/dock/media pause gates require explicit Resume.
+  return /^(?:system|visibility|pagehide|freeze|audio-focus|interruption|r653-system)[:\-]/i.test(clean(a.reason));
+}
+function canRecover(token,owner){
+  if(token!==recoverySeq||intentBlocked()||!owner)return false;
+  if(window.AudioLife?.userPaused||window.SukunAudioHub?.userPaused||!recoverableAggregate())return false;
+  const ji=journeyInfo();
+  return ji.owner===owner&&!foregroundConflict(owner)&&!!ji.j;
+}
+
 function journeyInfo(){
   const b=safe(()=>window.SukunBerhetiyyeSeyir?.state?.(),null),e=safe(()=>window.SukunEsma99Seyir?.state?.(),null);
   const active99=!!(e&&((e.run&&!e.paused)||e.systemHold)),active28=!!(b&&((b.run&&!b.paused)||b.systemHold));
@@ -63589,6 +63629,7 @@ function decide(v){
   if(v.fatal)return STATES.ERROR;
   if(v.complete)return STATES.COMPLETE;
   if(!v.owner)return STATES.IDLE;
+  if(v.intent.stopActive)return STATES.IDLE;
   if(v.intent.pauseActive)return STATES.USER_PAUSED;
   if(v.conflict)return STATES.IDLE;
   if(v.switching)return STATES.SWITCHING;
@@ -63606,9 +63647,9 @@ function derive(reason='refresh'){
   const complete=now()<completeUntil,err=now()<errorUntil&&!!lastError,conflict=foregroundConflict(ji.owner);
   const v={owner:ji.owner,j:ji.j,transport:tr,hidden:document.hidden,intent:intentSnapshot(),switching:now()<switchUntil,complete,fatal:err?lastError:'',conflict};
   const next=decide(v);
-  return Object.freeze({version:VERSION,state:next,seq:seq+1,at:now(),reason,activeJourney:ji.owner,hidden:document.hidden,key:ji.key,intent:intentSnapshot(),intentReconcile:Object.freeze({graceMs:INTENT_RECONCILE_GRACE,...reconcileMetric}),foregroundConflict:conflict,journey:ji.j?Object.freeze({...ji.j}):null,transport:Object.freeze({playing:tr.playing,paused:tr.paused,lock:tr.lock,truthState:clean(tr.truth?.state||'idle'),userPaused:!!tr.truth?.userPaused}),switching:v.switching,lastError:err?lastError:'',states:STATES});
+  return Object.freeze({version:VERSION,revision:REVISION,state:next,seq:seq+1,at:now(),reason,activeJourney:ji.owner,hidden:document.hidden,key:ji.key,intent:intentSnapshot(),intentReconcile:Object.freeze({graceMs:INTENT_RECONCILE_GRACE,...reconcileMetric}),recoveryBudget:Object.freeze({attempts:recoveryAttempts,max:MAX_RECOVERY_ATTEMPTS,nextAt:recoveryNextAt,inFlight:recoveryInFlight,exhaustions:recoveryExhaustions}),foregroundConflict:conflict,journey:ji.j?Object.freeze({...ji.j}):null,transport:Object.freeze({playing:tr.playing,paused:tr.paused,lock:tr.lock,truthState:clean(tr.truth?.state||'idle'),userPaused:!!tr.truth?.userPaused}),switching:v.switching,lastError:err?lastError:'',states:STATES});
 }
-function signature(s){return[s.state,s.activeJourney,s.hidden,s.key,s.intent.type,s.intent.pauseActive,s.foregroundConflict,s.journey?.run,s.journey?.paused,s.journey?.systemHold,s.journey?.i,s.journey?.rep,s.transport.playing,s.transport.paused,s.transport.lock,s.transport.truthState,s.lastError].join('|')}
+function signature(s){return[s.state,s.activeJourney,s.hidden,s.key,s.intent.type,s.intent.pauseActive,s.intent.stopActive,s.foregroundConflict,s.journey?.run,s.journey?.paused,s.journey?.systemHold,s.journey?.i,s.journey?.rep,s.transport.playing,s.transport.paused,s.transport.lock,s.transport.truthState,s.lastError].join('|')}
 function pushHistory(s){history.push({at:s.at,state:s.state,owner:s.activeJourney,reason:s.reason,key:s.key,intent:s.intent.type,hidden:s.hidden,conflict:s.foregroundConflict});if(history.length>60)history.splice(0,history.length-60)}
 function publish(reason='refresh',force=false){
   const next=derive(reason),sig=signature(next),old=state;if(!force&&old&&signature(old)===sig)return old;
@@ -63622,34 +63663,55 @@ function publish(reason='refresh',force=false){
 function schedule(reason='event',delay=45){if(timer)clearTimeout(timer);timer=setTimeout(()=>{timer=0;publish(reason)},Math.max(0,delay))}
 function cancelRecovery(){if(recoveryTimer){clearTimeout(recoveryTimer);recoveryTimer=0}recoverySeq++}
 function scheduleRecovery(s){
-  if(recoveryTimer||!s?.activeJourney||s.intent.pauseActive||s.foregroundConflict)return;
-  const token=++recoverySeq;recoveryTimer=setTimeout(async()=>{
-    recoveryTimer=0;if(token!==recoverySeq)return;
-    const cur=derive('recovery-check');if(cur.state!==STATES.RECOVERING||cur.intent.pauseActive||cur.foregroundConflict)return;
-    const ji=journeyInfo();if(!ji.owner||ji.owner!==cur.activeJourney)return;
-    try{window.SukunVoiceSessionCoordinator?.prepareJourney?.(ji.owner)}catch(e){}
-    try{window.SukunAudioSessionRegistry?.releasePauseGate?.('r647-recovery')}catch(e){}
-    try{if(window.AudioLife?.userPaused){window.AudioLife?.markUserPlay?.('r647-recovery')}}catch(e){}
-    try{if(window.SukunAudioHub?.userPaused)window.SukunAudioHub.userPaused=false}catch(e){}
+  if(recoveryTimer||recoveryInFlight||!s?.activeJourney||intentBlocked()||s.foregroundConflict||!recoverableAggregate())return;
+  if(recoveryBudgetOwner!==s.activeJourney){resetRecoveryBudget();recoveryBudgetOwner=s.activeJourney;}
+  if(recoveryAttempts>=MAX_RECOVERY_ATTEMPTS)return;
+  const owner=s.activeJourney,token=++recoverySeq;
+  recoveryTimer=setTimeout(async()=>{
+    recoveryTimer=0;
+    if(recoveryInFlight)return;
+    if(!canRecover(token,owner))return;
+    const cur=derive('recovery-check');if(cur.state!==STATES.RECOVERING||!canRecover(token,owner))return;
+    const ji=journeyInfo();if(!ji.owner||ji.owner!==owner)return;
+    recoveryInFlight=true;recoveryAttempts++;
+    recoveryNextAt=now()+Math.min(4000,400*Math.pow(2,recoveryAttempts-1));
+    if(recoveryAttempts===MAX_RECOVERY_ATTEMPTS)recoveryExhaustions++;
+    try{
+    try{window.SukunVoiceSessionCoordinator?.prepareJourney?.(owner)}catch(e){}
+    if(!canRecover(token,owner))return;
+    // Never call releasePauseGate here: it fabricates a user Play action.
+    // A known system gate may be reconciled without changing user intent.
+    const aggregate=safe(()=>window.SukunAudioSessionRegistry?.aggregateSnapshot?.(),null);
+    if(aggregate?.paused){
+      try{window.SukunAudioSessionRegistry?.reconcilePauseGate?.('r712-system-recovery')}catch(e){}
+    }
+    if(!canRecover(token,owner))return;
     if(document.hidden){
       try{
         const v2=safe(()=>window.SukunLockJourneyTransportV2?.snapshot?.(),null);
-        if(v2?.active)await Promise.race([Promise.resolve(window.SukunLockJourneyTransportV2?.revive?.('r647-machine')),new Promise(r=>setTimeout(r,900))]);
-        else await Promise.race([Promise.resolve(window.SukunLockContinuousTransport?.revive?.(ji.key)),new Promise(r=>setTimeout(r,900))]);
+        const work=v2?.active?window.SukunLockJourneyTransportV2?.revive?.('r712-machine'):window.SukunLockContinuousTransport?.revive?.(ji.key);
+        await Promise.race([Promise.resolve(work),new Promise(r=>setTimeout(r,900))]);
       }catch(e){}
-      const st=safe(()=>ji.api?.state?.(),ji.j);if(st?.systemHold&&st?.paused)try{ji.api?.resume?.({system:true})}catch(e){}
+      if(!canRecover(token,owner))return;
+      const st=safe(()=>ji.api?.state?.(),ji.j);
+      if(st?.systemHold&&st?.paused)try{ji.api?.resume?.({system:true})}catch(e){}
     }else{
-      try{await Promise.race([Promise.resolve(window.AudioLife?.requestRecover?.('r647-machine')),new Promise(r=>setTimeout(r,800))])}catch(e){}
-      const st=safe(()=>ji.api?.state?.(),ji.j);if(st?.paused&&!intentState.pauseActive&&!foregroundConflict(ji.owner))try{ji.api?.resume?.({system:true})}catch(e){}
+      try{await Promise.race([Promise.resolve(window.AudioLife?.requestRecover?.('r712-machine')),new Promise(r=>setTimeout(r,800))])}catch(e){}
+      if(!canRecover(token,owner))return;
+      const st=safe(()=>ji.api?.state?.(),ji.j);
+      if(st?.paused&&!intentBlocked()&&!foregroundConflict(owner))try{ji.api?.resume?.({system:true})}catch(e){}
     }
-    schedule('recovery-result',80);
-  },document.hidden?180:120);
+    }finally{
+      recoveryInFlight=false;
+      if(!intentBlocked()){const latest=derive('recovery-settled');if(latest.state===STATES.RECOVERING)scheduleRecovery(latest);schedule('recovery-settled',80);}
+    }
+  },Math.max(document.hidden?180:120,recoveryNextAt-now()));
 }
-function snapshot(){return state||publish('snapshot',true)}
+function snapshot(){const s=state||publish('snapshot',true);return Object.freeze({...s,recoveryBudget:Object.freeze({attempts:recoveryAttempts,max:MAX_RECOVERY_ATTEMPTS,nextAt:recoveryNextAt,inFlight:recoveryInFlight,exhaustions:recoveryExhaustions})});}
 function subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot(),null)}catch(e){};return()=>listeners.delete(fn)}
-function markSwitch(reason='section'){switchUntil=now()+750;schedule('switch:'+reason,0);setTimeout(()=>schedule('switch-settled',0),780)}
-function markComplete(reason='complete'){completeUntil=now()+2600;lastError='';errorUntil=0;remember('complete',reason);schedule('complete:'+reason,0);setTimeout(()=>schedule('complete-settled',0),2650)}
-function markError(reason='error'){lastError=clean(reason)||'journey-error';errorUntil=now()+4500;schedule('error:'+lastError,0)}
+function markSwitch(reason='section'){resetRecoveryBudget();switchUntil=now()+750;schedule('switch:'+reason,0);setTimeout(()=>schedule('switch-settled',0),780)}
+function markComplete(reason='complete'){resetRecoveryBudget();cancelRecovery();completeUntil=now()+2600;lastError='';errorUntil=0;remember('complete',reason);schedule('complete:'+reason,0);setTimeout(()=>schedule('complete-settled',0),2650)}
+function markError(reason='error'){cancelRecovery();lastError=clean(reason)||'journey-error';errorUntil=now()+4500;schedule('error:'+lastError,0)}
 
 /* UI niyeti pointer/click anında kaydedilir. Programatik provider pause bu kapıdan geçmez. */
 const PAUSE_SEL='#bsStart,#bsPause,#es99Start,#es99Pause,#mbPause,#r588Play,#r170Play,#bsStop,#es99Stop,#r588Stop,#mbStop';
@@ -63673,7 +63735,7 @@ window.addEventListener('sukun:diagnostic',e=>{const d=e?.detail||{},k=clean(d.k
 document.addEventListener('visibilitychange',()=>schedule(document.hidden?'hidden':'visible',20),{passive:true});
 window.addEventListener('pageshow',()=>schedule('pageshow',40),{passive:true});
 setTimeout(()=>publish('boot',true),280);
-window.SukunJourneyAudioMachine=Object.freeze({version:VERSION,STATES,snapshot,refresh:publish,subscribe,intent,pauseIntentActive,reconcilePauseIntent:()=>{const ji=journeyInfo(),tr=transport();const changed=reconcilePauseIntent(ji,tr,'api');if(changed)schedule('intent-reconciled',0);return changed},history:()=>history.map(x=>({...x})),decideForTest:v=>decide({...v,intent:v.intent||{pauseActive:false},transport:v.transport||{playing:false,truth:{}},j:v.j||null})});
+window.SukunJourneyAudioMachine=Object.freeze({version:VERSION,revision:REVISION,STATES,snapshot,refresh:publish,subscribe,intent,pauseIntentActive,stopIntentActive,intentBlocked,reconcilePauseIntent:()=>{const ji=journeyInfo(),tr=transport();const changed=reconcilePauseIntent(ji,tr,'api');if(changed)schedule('intent-reconciled',0);return changed},history:()=>history.map(x=>({...x})),decideForTest:v=>decide({...v,intent:v.intent||{pauseActive:false},transport:v.transport||{playing:false,truth:{}},j:v.j||null})});
 })();
 </script>
 
@@ -65721,6 +65783,22 @@ window.SukunLockTargetAuthorityR692=api;
 'use strict';
 if(window.__SUKUN_R693_TERMINAL_TRUTH__)return;window.__SUKUN_R693_TERMINAL_TRUTH__=1;
 const VERSION='r693';let reconciles=0,prunedMedia=0,prunedSes=0,ghostFixes=0,lastReason='ready',lastAt=Date.now(),pending=false,reconciling=false,timer=0,deferred=false;
+const GRACE_MS=2500;
+let graceTimer=0,graceDeadline=0,graceStamp=0,graceExpiries=0;
+const pendingState=v=>['preparing','recovering','interrupted'].includes(String(v||''));
+function clearGrace(){if(graceTimer)clearTimeout(graceTimer);graceTimer=0;graceDeadline=0;graceStamp=0;}
+function armGrace(L){
+  const stamp=Number(L.lastChange)||Date.now(),deadline=stamp+GRACE_MS;
+  if(graceTimer&&graceDeadline===deadline&&graceStamp===stamp)return;
+  clearGrace();graceDeadline=deadline;graceStamp=stamp;
+  graceTimer=setTimeout(()=>{
+    graceTimer=0;
+    // A newer transition or an explicit Pause/Stop invalidates this deadline.
+    if(L.userPaused||!pendingState(L.state)||Number(L.lastChange)!==stamp){clearGrace();return;}
+    graceExpiries++;
+    reconcile('r711-grace-expired');
+  },Math.max(1,deadline-Date.now()+1));
+}
 const silent=el=>!!(el&&el.dataset?.sukSilentCarrier==='1');
 function physical(){
   let ses=0;try{for(const a of [...SES.ler])if(a&&!a.paused&&!a.ended&&!silent(a))ses++}catch(e){}
@@ -65746,6 +65824,7 @@ function reconcile(reason='event'){
     for(const el of [...SES.ler]){if(!el||el.ended){SES.ler.delete(el);prunedSes++}}
   }catch(e){}
   const p=physical();
+  if(p.tangible)clearGrace();
   /* auto=true fiziksel ritim/scheduler niyetidir; sessiz carrier tek başına
      tangible değildir. Tam terminal durumda stale Hub/Life 'playing' temizlenir. */
   if(!p.tangible){
@@ -65753,14 +65832,17 @@ function reconcile(reason='event'){
     // A genuine preparation/recovery gets a bounded grace period, not an
     // indefinite synthetic playing latch. User Stop/Pause still wins.
     const L=window.AudioLife,H=window.SukunAudioHub;
-    const fresh=L&&!L.userPaused&&['preparing','recovering','interrupted'].includes(L.state)&&Date.now()-(L.lastChange||0)<2500;
+    const fresh=L&&!L.userPaused&&['preparing','recovering','interrupted'].includes(L.state)&&Date.now()-(L.lastChange||0)<GRACE_MS;
     if(fresh){
+      armGrace(L);
       try{window.SukunAudioTruth?.refresh?.('r710-pending-physical')}catch(e){}
       return p;
     }
+    clearGrace();
     try{const H=window.SukunAudioHub;if(H&&!H.userPaused&&['playing','preparing','recovering','interrupted'].includes(H.state)){H.provider='';H.title='SÜKÛN';H.startedAt=0;H.set('idle','r693-terminal-truth');ghostFixes++}}catch(e){}
     try{const L=window.AudioLife;if(L&&!L.userPaused&&['playing','preparing','recovering','interrupted'].includes(L.state)){L.wasBusy=false;L.set('idle','r693-terminal-truth');ghostFixes++}}catch(e){}
   }
+  if(window.AudioLife?.userPaused)clearGrace();
   try{window.SukunAudioSessionRegistry?.sync?.()}catch(e){}
   try{window.SukunAudioTruth?.refresh?.('r693-terminal-truth')}catch(e){}
   return p;
@@ -65779,7 +65861,7 @@ let returnTimer=0,returnReason='';
 function scheduleReturn(reason){returnReason=reason;clearTimeout(returnTimer);returnTimer=setTimeout(()=>{returnTimer=0;reconcile(returnReason||reason)},90)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(returnTimer);returnTimer=0}else scheduleReturn('visible')},{passive:true});
 window.addEventListener('pageshow',()=>{if(!document.hidden)scheduleReturn('pageshow')},{passive:true});
-window.SukunR693Integrity=Object.freeze({version:VERSION,reconcile,physical,snapshot:()=>Object.freeze({version:VERSION,reconciles,prunedMedia,prunedSes,ghostFixes,lastReason,lastAt,pending,returnPending:!!returnTimer,physical:physical(),hub:window.SukunAudioHub?.snapshot?.()||null,life:window.AudioLife?.snapshot?.()||null,lockTarget:window.SukunLockTargetAuthorityR693?.snapshot?.()||null,panRaf:!!KAYIT_RAF})});
+window.SukunR693Integrity=Object.freeze({version:VERSION,reconcile,physical,snapshot:()=>Object.freeze({version:VERSION,reconciles,prunedMedia,prunedSes,ghostFixes,lastReason,lastAt,pending,gracePending:!!graceTimer,graceDeadline,graceExpiries,returnPending:!!returnTimer,physical:physical(),hub:window.SukunAudioHub?.snapshot?.()||null,life:window.AudioLife?.snapshot?.()||null,lockTarget:window.SukunLockTargetAuthorityR693?.snapshot?.()||null,panRaf:!!KAYIT_RAF})});
 setTimeout(()=>reconcile('boot'),0);
 })();
 </script>
@@ -66954,13 +67036,13 @@ function enter(){
 window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 })();
 </script>
-<script id="r710-release-identity-runtime">(()=>{
+<script id="r712-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r710',date='2026-09-08';
+const build=meta?.content||'r712',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.21 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r710',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r712',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67242,21 +67324,53 @@ html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout :is(button,[role="
 @media(prefers-reduced-motion:reduce){html body.r710-sanctuary.sukun-tefekkur-mode #r709Mandala{filter:none!important}}
 
 </style>
-<script id="r710-stability-runtime">
-(()=>{
+<script id="r711-stability-runtime">(()=>{
 'use strict';
-if(window.SukunR710Stability)return;
-const B=document.body;
+if(window.SukunR711Stability)return;
+const VERSION='r711',B=document.body;
 let errors=0,lastError='',lastAt=0;
+let eventWindow=Date.now(),eventCount=0,eventPeak=0,eventTotal=0,eventStorms=0,lastStormAt=0;
+let lagMax=0,lagLast=0,lagSamples=0,lastLagAt=0;
 const clean=s=>String(s??'').slice(0,400);
+const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const onError=e=>{errors++;lastError=clean(e.reason?.message||e.message||e.reason||'runtime');lastAt=Date.now()};
 window.addEventListener('error',onError,{passive:true});
 window.addEventListener('unhandledrejection',onError,{passive:true});
 function mount(){B.classList.add('r710-sanctuary');}
-function safe(fn){try{return fn()}catch(e){return null}}
+const watched=['sukun:audiostate','sukun:audiosessionchange','sukun:playbackchange','sukun:audioaggregatechange','sukun:sessionstate','sukun:currentflowchange','sukun:zikirtransaction','sukun:mediaactivitychange'];
+function observeEvent(){
+ const now=Date.now();
+ if(now-eventWindow>=1000){eventPeak=Math.max(eventPeak,eventCount);eventCount=0;eventWindow=now;}
+ eventCount++;eventTotal++;
+ if(eventCount>=400&&now-lastStormAt>10000){
+   eventStorms++;lastStormAt=now;
+   // One diagnostic event, never one per state update.
+   try{window.dispatchEvent(new CustomEvent('sukun:diagnostic',{detail:{kind:'event-storm',message:'Ses/durum olayı yoğunluğu',extra:String(eventCount)+' olay/sn'}}))}catch(e){}
+ }
+}
+watched.forEach(name=>window.addEventListener(name,observeEvent,{passive:true}));
+let lagTimer=0,expected=0;
+function armLag(){
+ expected=performance.now()+1500;
+ lagTimer=setTimeout(()=>{
+   lagTimer=0;const lag=Math.max(0,performance.now()-expected);
+   if(!document.hidden){
+     lagSamples++;lagLast=Math.round(lag);lagMax=Math.max(lagMax,lagLast);
+     if(lag>750&&Date.now()-lastLagAt>10000){
+       lastLagAt=Date.now();
+       try{window.dispatchEvent(new CustomEvent('sukun:diagnostic',{detail:{kind:'event-loop-lag',message:'Ana iş parçacığı gecikmesi',extra:Math.round(lag)+' ms'}}))}catch(e){}
+     }
+   }
+   armLag();
+ },1500);
+}
+// Background timer throttling is not treated as an application freeze.
+armLag();
 function snapshot(){return Object.freeze({
- version:'r710',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  errors,lastError,lastAt,
+ eventHealth:{total:eventTotal,peakPerSecond:Math.max(eventPeak,eventCount),currentSecond:eventCount,storms:eventStorms,lastStormAt,watched:watched.length},
+ eventLoop:{lastLagMs:lagLast,maxLagMs:lagMax,samples:lagSamples,lastLagAt},
  physical:safe(()=>window.SukunR693Integrity?.physical?.()),
  terminal:safe(()=>window.SukunR693Integrity?.snapshot?.()),
  truth:safe(()=>window.SukunAudioTruth?.snapshot?.()),
@@ -67265,10 +67379,11 @@ function snapshot(){return Object.freeze({
  layout:safe(()=>window.SukunR699Layout?.snapshot?.()),
  atmosphere:safe(()=>window.SukunAtmosphereR706?.snapshot?.())
 });}
-window.SukunR710Stability=Object.freeze({version:'r710',snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r710-refresh');return true}});
+const api=Object.freeze({version:VERSION,snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r711-refresh');return true}});
+window.SukunR711Stability=api;
+window.SukunR710Stability=api; // compatibility with existing diagnostics
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
-
 </script>
 </body>
 </html>

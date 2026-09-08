@@ -1,5 +1,23 @@
 [
   {
+    "v": "r712",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r712 · Kullanıcının Pause/Stop niyeti fiziksel ses yankısıyla veya 12 saniyelik eski kilit taşıyıcısı süresiyle silinmez. Yalnız yeni kullanıcı Play/Resume/Start komutu niyeti açar.",
+      "28/99 Seyir kurtarması artık eski Pause/Stop komutunu geçersiz kılamaz; eşzamanlı kurtarma engellenir ve sonuçsuz otomatik denemeler üçle sınırlanır. Açık kullanıcı duraklatması olmadan yalnız tanınan sistem kesintisi kapısı uzlaştırılır.",
+      "r711 ses hazırlığı zaman aşımı ve tanısı, r710 sinematik Tefekkür, kompakt kontroller, sayaç/ledger, kayıt/TTS, seyir içeriği ve doğal kaydırma korunur. Fiziksel Android ve gerçek ses doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
+    "v": "r711",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r711 · Fiziksel ses başlamazsa hazırlık/kurtarma 2,5 saniye sonunda kendiliğinden uzlaştırılır; yeni ses, Pause ve Stop eski zaman aşımını geçersiz kılar.",
+      "Kilitlenme tanısına sınırlı olay yoğunluğu ve görünür ekran ana iş parçacığı gecikmesi ölçümleri eklendi.",
+      "r710 sinematik Tefekkür, kompakt kontroller, ses/sayaç/seyir sahipleri ve doğal kaydırma korunur. Gerçek Android doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r710",
     "t": "8 Eylül 2026",
     "b": [
