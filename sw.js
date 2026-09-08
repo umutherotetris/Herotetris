@@ -1,15 +1,19 @@
-/* SÜKÛN r715 — Feyz Shell Theme Integration */
+/* SÜKÛN r716 — Feyz Shell Assets & Safe Flame Ring */
 'use strict';
 
-const SURUM = 'r715';
-const CACHE = 'sukun-r715-20260908b';
+const SURUM = 'r716';
+const CACHE = 'sukun-r716-20260908a';
 
 const CORE = [
   './nero.html',
   './manifest.webmanifest',
   './assets/tefekkur-sanctuary.webp',
   './assets/tefekkur-sanctuary-r710.webp',
-  './assets/tefekkur-sanctuary-r710-small.webp'
+  './assets/tefekkur-sanctuary-r710-small.webp',
+  './assets/feyz-mark.svg',
+  './assets/feyz-ornament.svg',
+  './assets/feyz-flame-ring.svg',
+  './assets/feyz-flame-ring.webp'
 ];
 const OPTIONAL = [
   './surumler.json',
@@ -17,12 +21,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r715__.json';
+const BUILD_MARKER='./__sukun_build_r716__.json';
 
 const NOTLAR = [
-  "r715 · Feyz shell entegrasyonu: tüm uygulamaya zümrüt-mavi-mor cam kabuk, premium kartlar ve kapsül butonlar giydirildi.",
-  "Tefekkür/Zikir sahnesinde sayaç çemberi hafif yukarı alındı; mor neon alev halkası yalnız çember çevresinde dolaşır, Hedef/Kalan kutularının üstüne taşmaz.",
-  "Varsayılan tema yoksa kuzey teması seçilir; r714 performans ve giriş otoriteleri korunur. Gerçek Android ve uzun kullanım doğrulaması ayrıca gereklidir."
+  "r716 · Feyz kabuğu gerçek asset sistemiyle tamamlandı: dumansız mor alev halkası, altın süsler, yeni uygulama ikonları ve ortak cam panel dili.",
+  "Tefekkür çemberi hafif yukarıda; alevin görünür dış sınırı Hedef/Kalan ve kontrol satırlarından ayrı tutulur. Normal zikirde alev çemberin kendi sınırına sığar.",
+  "Eski atmosferin canvas çizimi Feyz kabuğunda durur; mevcut Sabit/Canlı ve yoğunluk tercihleri korunur. Yeni alev gizli ekran, pil modu ve azaltılmış harekette animasyon yapmaz.",
+  "Var olan butonlar, nav veri kimlikleri, sayaç ve ses motorları korunur. Kabuğu ayarlardan kapatma seçeneği eklenir; kayıtlı renk teması silinmez.",
+  "r714 performans düzeltmeleri ve r713 Pause/Stop/Kandil onarımları korunur. Fiziksel Android uzun kullanım, kilit ekranı ve gerçek kayıt akışı ayrıca doğrulanmalıdır."
 ];
 
 function buildOfHtml(text){
