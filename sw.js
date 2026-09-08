@@ -1,8 +1,8 @@
-/* SÜKÛN r724 — Unified Appearance & Current Zikir Continuity */
+/* SÜKÛN r728 — Containment Conflict Resolution & Package Hygiene */
 'use strict';
 
-const SURUM = 'r724';
-const CACHE = 'sukun-r724-20260908a';
+const SURUM = 'r728';
+const CACHE = 'sukun-r728-20260909a';
 
 const CORE = [
   './nero.html',
@@ -10,10 +10,7 @@ const CORE = [
   './assets/tefekkur-sanctuary.webp',
   './assets/tefekkur-sanctuary-r710.webp',
   './assets/tefekkur-sanctuary-r710-small.webp',
-  './assets/feyz-mark.svg',
   './assets/feyz-ornament.svg',
-  './assets/feyz-flame-ring.svg',
-  './assets/feyz-flame-ring.webp',
   './assets/sukun-sanctuary-r717.webp',
   './assets/sukun-sanctuary-r717-small.webp',
   './assets/feyz-mark-r718.svg',
@@ -24,15 +21,21 @@ const CORE = [
   './assets/ui-exit-r722.svg',
   './assets/ui-speaker-r722.svg'
 ];
+/* r728: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
+   listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
+   önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
 const OPTIONAL = [
+  './assets/feyz-mark.svg',
+  './assets/feyz-flame-ring.svg',
+  './assets/feyz-flame-ring.webp',
   './surumler.json',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r724__.json';
+const BUILD_MARKER='./__sukun_build_r728__.json';
 
-const NOTLAR = ["r724 · Dar ekran ses ikonu gizleme kuralının CSS önceliği düzeltildi.", "360 px altında çıkış etiketi de Tefekkürden Çık olarak tam gösterilir; gerektiğinde iki satıra bölünür. Kompakt boyutlar korunur.", "Ses, sayaç, seyir ve pause/resume davranışları değişmedi. Gerçek tarayıcı ve fiziksel Android doğrulaması yapılmadı."];
+const NOTLAR = ["r728 · Zikir kartı content-visibility:auto kapsamından çıkarıldı. Bu özellik sürekli paint containment uyguluyor; kartın akış dışı içeriği hiç boyanmıyor ve kart atlandığında gerçek yükseklik yerine yer tutucu boyut bildiriliyordu.", "Kalan kartlarda intrinsic boyut 'auto'ya alındı: bir kez görüntülenmiş kart tekrar atlandığında gerçek boyutunu hatırlar, kaydırırken belge yüksekliği sıçramaz.", "Uygulamanın hiç kullanmadığı üç eski görsel dosyası servis işçisinin kurulumu bloklayan CORE listesinden opsiyonele alındı; biri eksik olduğunda artık tüm güncelleme başarısız olmuyor.", "Hiçbir yerde referansı olmayan üç artık asset paketten çıkarıldı. Ses, sayaç, kayıt, seyir ve görsel kabuk sahipleri r727 ile aynı.", "Doğrulama: kart içindeki 2679 elemanın konum/boyutunda sıfır fark; beş sekmede tam sayfa piksel karşılaştırması yalnız metin antialias farkı gösterdi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

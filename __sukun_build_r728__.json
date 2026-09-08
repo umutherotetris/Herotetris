@@ -1,0 +1,8 @@
+{
+  "build": "r728",
+  "date": "2026-09-09",
+  "feature": "containment-conflict-and-package-hygiene",
+  "base": "r727",
+  "cache": "sukun-r728-20260909a",
+  "htmlSha256": "6b284fecf2309ac7da9a557d8d657ac5da12ab3e1284d5f9c1b7372ebef04e64"
+}

@@ -1,0 +1,19 @@
+{
+  "build": "r728",
+  "date": "2026-09-09",
+  "base": "r727",
+  "cache": "sukun-r728-20260909a",
+  "htmlSha256": "6b284fecf2309ac7da9a557d8d657ac5da12ab3e1284d5f9c1b7372ebef04e64",
+  "fixes": [
+    "zikir-card-excluded-from-content-visibility",
+    "auto-contain-intrinsic-size-for-remaining-cards",
+    "unused-assets-demoted-from-install-blocking-core",
+    "three-orphan-assets-removed"
+  ],
+  "verification": {
+    "realBrowserBattery": "11/11",
+    "isolatedFlowBrowser": "8/8",
+    "cardGeometryDeltaWithWithoutContainment": 0,
+    "executableJsBlocks": 190
+  }
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r716 — Feyz Shell Assets & Safe Flame Ring (base r715)
+     SÜKÛN r728 — Containment Conflict Resolution & Package Hygiene (base r727)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r724">
+<meta name="sukun-build" content="r728">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r724">
+<link rel="manifest" href="./manifest.webmanifest?v=r728">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.23 — build 2026-09-08-r724</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r728</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,48 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r728",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r728 · Zikir kartı content-visibility:auto kapsamından çıkarıldı. Bu özellik sürekli paint containment uyguluyor; kartın akış dışı içeriği hiç boyanmıyor ve kart atlandığında gerçek yükseklik yerine yer tutucu boyut bildiriliyordu.",
+      "Kalan kartlarda intrinsic boyut 'auto'ya alındı: bir kez görüntülenmiş kart tekrar atlandığında gerçek boyutunu hatırlar, kaydırırken belge yüksekliği sıçramaz.",
+      "Uygulamanın hiç kullanmadığı üç eski görsel dosyası servis işçisinin kurulumu bloklayan CORE listesinden opsiyonele alındı; biri eksik olduğunda artık tüm güncelleme başarısız olmuyor.",
+      "Hiçbir yerde referansı olmayan üç artık asset paketten çıkarıldı. Ses, sayaç, kayıt, seyir ve görsel kabuk sahipleri r727 ile aynı.",
+      "Doğrulama: kart içindeki 2679 elemanın konum/boyutunda sıfır fark; beş sekmede tam sayfa piksel karşılaştırması yalnız metin antialias farkı gösterdi."
+    ]
+  },
+  {
+    "v": "r727",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r727 · NeuroSync taşıyıcı knob'u sayfa genelinde kalıcı bloklayıcı touchmove tutmuyor; global sürükleme dinleyicileri yalnız knob sürüklenirken bağlanıp bırakılıyor.",
+      "Zikir kartı ölçücüsünde doğrudan çağrı bekleyen kareyi iptal ediyor: aynı anda iki rAF kuyruğa girip çift ölçüm yapması engellendi.",
+      "Ayrılan minimum yükseklik border kutusuna normalize edildi ve kartın alt padding + border payı ayrıldı; akış dışı içerik taşarken alt boşluk artık yenmiyor.",
+      "ResizeObserver ile ölçüm aynı dönüşümsüz border-box ölçüsünü kullanıyor; kart değişince toggle dinleyicisi ve host gözlemcisi de yeni yapıya taşınıyor.",
+      "Ses, sayaç, kayıt, seyir ve görsel kabuk sahipleri r726 ile aynı. Fiziksel Android, kilit ekranı ve mikrofon doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
+    "v": "r726",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r726 · Zikir kartının doğal akış ölçücüsü, değişmeyen ses/sayaç olaylarında tekrar layout yapmaz; yalnız gerçek boyut, yapı veya görünüm değişiminde yeniden ölçer.",
+      "Eski minimum yükseklik yalnız gerekli olduğunda kaldırılıp hesaplanır. İçerik büyüdüğünde/küçüldüğünde, Tefekkür kaydırmasında ve görünür dönüşte erişilebilirlik korunur.",
+      "24 olaylık izole Chromium ölçümünde layout ve stil yeniden hesaplamaları 50’den 2’ye indi; gerçek kart yüksekliği aynı kaldı. Bu bütün uygulamanın performans sonucu değildir.",
+      "r725 modal/dock düzeltmeleri, Feyz kabuğu, ses, kayıt, sayaç ve seyir sahipleri korunur. Fiziksel Android ve kilit ekranı doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
+    "v": "r725",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r725 · Eski ayar pencereleri için tek katman sahibi: en üstteki pencere etkileşim alır, alttaki pencerenin form ve erişilebilirlik durumu korunur.",
+      "Ayar perdesi yalnız üst pencereyi kapatır; Araçlar geçişindeki eski perde temizlenir. Global dokunma yakalaması veya sentetik tıklama eklenmedi.",
+      "Dock başlığı ve bildirim rozetlerinin üst kesilmesine karşı doğal yükseklik, iç boşluk ve kaydırma sınırı dar kapsamda düzeltildi. Kip değişimi/geri getirme dışında kullanıcı kaydırması sıfırlanmaz.",
+      "r724 Feyz kabuğu, ses/kayıt/seyir/sayaç sahipleri korunur. Kaynak ve izole regresyonlar doğrulandı; canlı tarayıcı yerleşimi ile fiziksel Android ve kilit ekranı ayrıca doğrulanmalıdır."
+    ]
+  },
   {
     "v": "r724",
     "t": "8 Eylül 2026",
@@ -14263,35 +14305,8 @@ function dockLblGuncelle(){
 }
 /* ── Alt sayfa perdesi: hangi sayfa açılırsa açılsın perde otomatik gelir ── */
 const BTM_SHEETS=['temaSheet','helpSheet','recSheet','customSoundSheet','micHelpSheet','logSheet'];
-function scrimSync(){
-  const perde=document.getElementById('sheetScrim'); if(!perde)return;
-  const acikVar=BTM_SHEETS.some(id=>{const el=document.getElementById(id);return el&&!el.hidden;});
-  perde.hidden=!acikVar;
-}
-function scrimInit(){
-  const perde=document.getElementById('sheetScrim'); if(!perde)return;
-  perde.addEventListener('click',()=>{
-    BTM_SHEETS.forEach(id=>{const el=document.getElementById(id); if(el)el.hidden=true;});
-    scrimSync();
-  });
-  /* r154: bazı sheet'ler (sozSheet / dlEditSheet / kurSheet) sonradan DOM'a
-     ekleniyor. Eski gözlemci yalnız init anında var olanları izliyordu; bu
-     yüzden dinamik sheet açılınca perde görünmeyebiliyordu. Body üzerinden
-     yalnız `hidden` değişimlerini izleyerek sonradan eklenenleri de kapsa. */
-  const gozcu=new MutationObserver(kayitlar=>{
-    if(kayitlar.some(k=>k.target&&BTM_SHEETS.includes(k.target.id)))scrimSync();
-  });
-  gozcu.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden']});
-  /* Escape ile de kapansın (masaüstü) */
-  addEventListener('keydown',e=>{
-    if(e.key!=='Escape')return;
-    if(BTM_SHEETS.some(id=>{const el=document.getElementById(id);return el&&!el.hidden;})){
-      BTM_SHEETS.forEach(id=>{const el=document.getElementById(id); if(el)el.hidden=true;});
-      scrimSync();
-    }
-  });
-  scrimSync();
-}
+function scrimSync(){return window.SukunSheetAuthority?.sync?.('legacy-call')||false}
+function scrimInit(){window.SukunSheetAuthority?.init?.()}
 /* ── Dokunsal + işitsel geri bildirim ──
    Seçim değişimleri sessizdi. Artık her seçim kısa bir tık + hafif titreşim
    verir; sekme geçişi biraz daha dolu bir «sayfa» sesi alır. Ses zaten kapalıysa
@@ -26023,7 +26038,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r724';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r728';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -35537,13 +35552,26 @@ function nsKnobKur(){
   const hrk=e=>{ if(!sur)return;
     const y=(e.touches?e.touches[0].clientY:e.clientY);
     nsKnobUygula(nsOranHz(o0+((y0-y)/220))); e.preventDefault(); };
-  const bit=()=>{ sur=false; };
-  k.addEventListener('mousedown',bas);
-  k.addEventListener('touchstart',bas,{passive:false});
-  window.addEventListener('mousemove',hrk);
-  window.addEventListener('touchmove',hrk,{passive:false});
-  window.addEventListener('mouseup',bit);
-  window.addEventListener('touchend',bit);
+  /* r727: sayfa genelinde kalıcı bloklayıcı touchmove tutulmaz. Global taşıma
+     dinleyicileri yalnız knob sürüklenirken bağlanır, bırakınca sökülür. */
+  const cek=()=>{
+    window.removeEventListener('mousemove',hrk);
+    window.removeEventListener('touchmove',hrk);
+    window.removeEventListener('mouseup',bit);
+    window.removeEventListener('touchend',bit);
+    window.removeEventListener('touchcancel',bit);
+  };
+  const bit=()=>{ sur=false; cek(); };
+  const tak=()=>{
+    cek();
+    window.addEventListener('mousemove',hrk);
+    window.addEventListener('touchmove',hrk,{passive:false});
+    window.addEventListener('mouseup',bit);
+    window.addEventListener('touchend',bit);
+    window.addEventListener('touchcancel',bit);
+  };
+  k.addEventListener('mousedown',e=>{ bas(e); tak(); });
+  k.addEventListener('touchstart',e=>{ bas(e); tak(); },{passive:false});
   k.addEventListener('wheel',e=>{ e.preventDefault();
     nsKnobUygula(nsOranHz(nsHzOran(oku())+(e.deltaY>0?-.012:.012))); },{passive:false});
   k.addEventListener('keydown',e=>{
@@ -39580,9 +39608,18 @@ else repair();
 
 <style id="r214-system-polish">
 /* SÜKÛN r214 — düşük maliyetli yüzey optimizasyonu */
-.zMegaGroup,.r170Hub,#prDashboard,#todayCard,#berhetAtlasBody,.card,.sess{
+/* r728 — iki düzeltme:
+   1) .zCtl bu optimizasyondan çıkarıldı. content-visibility:auto sürekli paint
+      containment uygular (ölçüldü: taşan çocuk hiç boyanmıyor) ve kart atlandığında
+      clientHeight/scrollHeight gerçek yüksekliği değil contain-intrinsic-size'ı
+      bildirir. Zikir kartının doğal akış sahibi (r600) tam da bu iki davranışla
+      çelişiyordu: ayırdığı minimum yüksekliğin genişlettiği içerik zaten kırpılıyordu.
+      Kart, sekmesinin ana içeriği olduğu için atlanmasından kazanç da yoktu.
+   2) Intrinsic boyut 'auto'ya alındı: bir kez render olmuş kart tekrar atlandığında
+      gerçek boyutunu hatırlar, belge yüksekliği ve kaydırma konumu sıçramaz. */
+.zMegaGroup,.r170Hub,#prDashboard,#todayCard,#berhetAtlasBody,.card:not(.zCtl),.sess{
   content-visibility:auto;
-  contain-intrinsic-size:1px 260px;
+  contain-intrinsic-size:auto 1px auto 260px;
 }
 body[data-perf="pil"] .motionPulse,
 body[data-perf="pil"] .r208Aura,
@@ -57663,71 +57700,158 @@ body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel{
 }
 </style>
 <script id="r600-zctl-flow-runtime">
-/* r714 — Natural-flow measurement. The previous owner walked every descendant
-   and synchronously requested style + geometry for each one. That forced
-   repeated layouts while a 500+ node zikir card was opening/closing. */
+/* r728 — bounded intrinsic-flow authority. No audio, counter or storage ownership. */
 (()=>{
 'use strict';
 if(window.__SUKUN_R600_ZCTL_FLOW__)return;
 window.__SUKUN_R600_ZCTL_FLOW__=1;
-const VERSION='r714',SELECTOR='#tab-zkr > .card.zCtl',KEY='--r600-zctl-flow-height';
-let raf=0,card=null,ro=null,mo=null,last=null,measures=0,skipped=0;
-const observed=new WeakSet();
-const getCard=()=>card?.isConnected?card:(card=document.querySelector(SELECTOR));
+const VERSION='r728',SELECTOR='#tab-zkr > .card.zCtl',KEY='--r600-zctl-flow-height';
+let raf=0,card=null,ro=null,mo=null,hostObserver=null,last=null;
+let measures=0,skipped=0,unchanged=0,coalesced=0,writes=0,removals=0,structural=0,resizeSignals=0;
+let dirty=true,topologyDirty=true,modeWas=null,lastReason='boot',children=[],observed=new WeakSet(),sizes=new WeakMap();
+const boxOf=el=>({w:el.offsetWidth,h:el.offsetHeight});
+const sameSize=(a,b)=>!!a&&!!b&&Math.abs(a.w-b.w)<.5&&Math.abs(a.h-b.h)<.5;
+const onToggle=()=>schedule('toggle',true);
+const getCard=()=>{
+ const current=document.querySelector(SELECTOR);
+ if(current!==card){
+  const prev=card;
+  card=current;dirty=true;topologyDirty=true;last=null;modeWas=null;children=[];sizes=new WeakMap();observed=new WeakSet();
+  if(ro)ro.disconnect();if(mo)mo.disconnect();
+  // r727: kart değişince yalnız ro/mo değil, toggle dinleyicisi ve host gözlemcisi
+  // de yeni yapıya taşınır; eskisi üzerinde abonelik bırakılmaz.
+  if(prev)prev.removeEventListener('toggle',onToggle,true);
+  if(card){
+   if(mo)mo.observe(card,{childList:true,subtree:true});
+   card.addEventListener('toggle',onToggle,true);
+   if(hostObserver&&card.parentElement){hostObserver.disconnect();hostObserver.observe(card.parentElement,{childList:true});}
+  }
+ }
+ return card;
+};
 const mode=()=>document.body.classList.contains('sukun-tefekkur-mode');
 const visible=el=>!!el?.closest('#tab-zkr')&&!el.closest('#tab-zkr').hidden;
-function watch(el){if(!ro||!el||observed.has(el))return;try{ro.observe(el);observed.add(el)}catch(_){}}
 function setMode(el,value){if(el.dataset.r600Layout!==value)el.dataset.r600Layout=value}
-function measure(){
- raf=0;const el=getCard();if(!el)return null;
- watch(el);for(const child of el.children)watch(child);
- if(!visible(el)){skipped++;return last}
- measures++;
- const tef=mode();
- // Measure natural height rather than measuring the previous min-height.
- if(el.style.getPropertyValue(KEY))el.style.removeProperty(KEY);
+function setMin(el,value){
+ const old=el.style.getPropertyValue(KEY);
+ if(old===value)return false;
+ if(value){el.style.setProperty(KEY,value);writes++}
+ else if(old){el.style.removeProperty(KEY);removals++}
+ return true;
+}
+function observe(el){if(!ro||!el||observed.has(el))return;try{ro.observe(el,{box:'border-box'});observed.add(el)}catch(_){}}
+function syncChildren(el){
+ const next=[...el.children];
+ if(!topologyDirty&&next.length===children.length&&next.every((n,i)=>n===children[i]))return;
+ // One observer, only the card and its direct layout children. Removed nodes
+ // must not retain a subscription or keep obsolete geometry alive.
+ if(ro)ro.disconnect();observed=new WeakSet();children=next;
+ observe(el);for(const child of children)observe(child);
+ topologyDirty=false;
+}
+function snapshot(){return last?{...last,version:VERSION,measureCount:measures,skipped,unchanged,coalesced,writes,removals,structural,resizeSignals,observedChildren:children.length,pending:!!raf,lastReason}:null}
+function measure(reason='api',force=false){
+ /* r727: doğrudan çağrıda bekleyen kare iptal edilmezse coalescing bozulur. */
+ if(raf){cancelAnimationFrame(raf);raf=0}
+ const el=getCard();if(!el)return null;
+ if(!visible(el)){skipped++;dirty=true;return snapshot()}
+ const tef=mode();if(tef!==modeWas){dirty=true;modeWas=tef}
+ if(force)dirty=true;
+ syncChildren(el);
+ if(!dirty&&last){unchanged++;return snapshot()}
+ dirty=false;measures++;lastReason=reason;
+ // The previous minimum must be cleared only for an actual intrinsic change.
+ // Clearing it on every playback event creates a layout/ResizeObserver loop.
+ if(el.style.getPropertyValue(KEY))setMin(el,'');
  if(tef){
   const client=el.clientHeight,scroll=el.scrollHeight;
+  sizes.set(el,boxOf(el));
   setMode(el,scroll>client+2?'scroll':'fit');
-  return last={version:VERSION,mode:'tefekkur',clientHeight:client,scrollHeight:scroll,overflow:getComputedStyle(el).overflowY,measureCount:measures,skipped};
+  return last={mode:'tefekkur',clientHeight:client,scrollHeight:scroll,overflow:getComputedStyle(el).overflowY,checked:0};
  }
  const box=el.getBoundingClientRect(),client=el.clientHeight,scroll=el.scrollHeight;
- let needed=Math.max(client,scroll),checked=0;
- // Only the direct layout children can extend the card's natural flow.
- // scrollHeight already includes ordinary nested and positioned overflow.
- for(const child of el.children){
+ // r727: clientHeight/scrollHeight padding kutusundan, çocuk dikdörtgenleri ise
+ // border kutusunun tepesinden ölçülür. Hepsi border kutusuna normalize edilir ve
+ // kartın kendi alt padding + border payı ayrılır; yoksa ayrılan minimum eksik kalır.
+ const own=getComputedStyle(el);
+ const bT=parseFloat(own.borderTopWidth)||0,bB=parseFloat(own.borderBottomWidth)||0;
+ const pT=parseFloat(own.paddingTop)||0,pB=parseFloat(own.paddingBottom)||0;
+ const frame=bT+bB,reserve=pB+bB;
+ let needed=Math.max(client,scroll)+frame,checked=0;
+ for(const child of children){
   if(child.hidden)continue;
   const cs=getComputedStyle(child);
   if(cs.display==='none'||cs.position==='fixed')continue;
-  const r=child.getBoundingClientRect();checked++;
-  if(r.width>0&&r.height>0)needed=Math.max(needed,r.bottom-box.top+el.scrollTop);
+  const r=child.getBoundingClientRect();checked++;sizes.set(child,boxOf(child));
+  if(r.width>0&&r.height>0)needed=Math.max(needed,r.bottom-box.top+el.scrollTop+reserve);
  }
  needed=Math.ceil(Math.max(0,needed));
- if(needed>client+2)el.style.setProperty(KEY,needed+'px');
- setMode(el,needed>client+2?'expanded':'flow');
- const height=el.getBoundingClientRect().height;
- return last={version:VERSION,mode:'normal',height:Math.round(height),needed,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY,measureCount:measures,skipped,checked};
+ const borderBox=el.offsetHeight,expand=needed>borderBox+2;
+ // min-height content-box kutulamada içerik kutusuna uygulanır.
+ const write=own.boxSizing==='border-box'?needed:Math.max(0,needed-frame-pT-pB);
+ setMin(el,expand?write+'px':'');
+ setMode(el,expand?'expanded':'flow');
+ sizes.set(el,boxOf(el));
+ const final=el.getBoundingClientRect();
+ return last={mode:'normal',height:Math.round(final.height),needed,scrollHeight:el.scrollHeight,overflow:own.overflowY,checked};
 }
-function schedule(){if(raf)return;raf=requestAnimationFrame(measure)}
+function schedule(reason='event',force=false){
+ lastReason=reason;if(force)dirty=true;
+ if(document.hidden){dirty=true;return}
+ if(raf){coalesced++;return}
+ raf=requestAnimationFrame(()=>measure(reason));
+}
 function bind(){
  const el=getCard();if(!el)return false;
  if(typeof ResizeObserver==='function'){
-  ro=new ResizeObserver(schedule);watch(el);for(const c of el.children)watch(c);
+  ro=new ResizeObserver(entries=>{
+   let changed=false;
+   for(const entry of entries){
+    // r727: gözlemci ve ölçüm aynı dönüşümsüz border-box ölçüsünü kullanmalı.
+    // borderBoxSize ile getBoundingClientRect karışınca transformlu bir kart
+    // her karede kalıcı fark bildirip gereksiz yeniden ölçüm tetikliyordu.
+    const actual=boxOf(entry.target);
+    if(!sameSize(sizes.get(entry.target),actual)){sizes.set(entry.target,actual);changed=true}
+   }
+   if(changed){resizeSignals++;schedule('geometry-resize',true)}
+  });syncChildren(el);
  }
  if(typeof MutationObserver==='function'){
-  mo=new MutationObserver(schedule);mo.observe(el,{childList:true,subtree:true});
-  mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+  mo=new MutationObserver(records=>{
+   let changed=false;
+   for(const record of records){
+    // Text replacement in a live counter, name or badge is handled by the
+    // direct-child ResizeObserver if it changes geometry. Ignore text-only
+    // childList churn and decorative SVG/particle subtree reconstruction.
+    const elements=[...record.addedNodes,...record.removedNodes].filter(n=>n.nodeType===1);
+    if(!elements.length)continue;
+    if(record.target===card){topologyDirty=true;changed=true;continue}
+    if(record.target.closest?.('#zCountVisual,#r706Orbit,#r709Mandala,#r716FlameRing,#r716FlameLayer'))continue;
+    changed=true;
+   }
+   if(changed){structural++;schedule('structure',true)}
+  });mo.observe(el,{childList:true,subtree:true});
+  hostObserver=new MutationObserver(records=>{
+   if(records.some(r=>r.type==='childList')){getCard();schedule('card-host',true)}
+  });hostObserver.observe(el.parentElement,{childList:true});
  }
- el.addEventListener('toggle',schedule,true);return true;
+ /* toggle dinleyicisi getCard() içinde kartla birlikte taşınır. */
+ return true;
 }
-function boot(n){if(bind()){schedule();return}if(n<30)setTimeout(()=>boot(n+1),100)}
-['sukun:tabchange','sukun:secretaccesschange','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
-window.addEventListener('resize',schedule,{passive:true});window.addEventListener('pageshow',schedule,{passive:true});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()},{passive:true});
+function boot(n){if(bind()){schedule('boot',true);return}if(n<30)setTimeout(()=>boot(n+1),100)}
+['sukun:tabchange','sukun:secretaccesschange','sukun:currentzikirchange','sukun:r616viewchange'].forEach(ev=>window.addEventListener(ev,()=>schedule(ev),{passive:true}));
+window.addEventListener('resize',()=>schedule('resize',true),{passive:true});
+window.addEventListener('pageshow',()=>schedule('pageshow',true),{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule('visible',true)},{passive:true});
+if(typeof MutationObserver==='function'){
+ const bodyObserver=new MutationObserver(()=>{const next=mode();if(next!==modeWas)schedule('mode-change',true)});
+ bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(0),{once:true});else boot(0);
-[120,500,1500,3500].forEach(ms=>setTimeout(schedule,ms));
-window.SukunZCtlFlow={version:VERSION,refresh:measure,snapshot:()=>last};
+[120,500,1500,3500].forEach(ms=>setTimeout(()=>schedule('settled',true),ms));
+window.SukunZCtlFlow={version:VERSION,refresh:()=>measure('api',true),schedule,snapshot};
 })();
+
 </script>
 <style id="r601-mini-flow-glass-style">
 /* ═══ r601 — MİNİ AKIŞ BARI / TEMA CAMI ════════════════════════════
@@ -57874,67 +57998,112 @@ window.SukunFlowGlass=window.SukunMiniFlowGlass;
 }
 </style>
 
-<script id="r602-phantom-scrim-guard">
-(()=>{
+<script id="r602-phantom-scrim-guard">(()=>{
 'use strict';
-if(window.__SUKUN_R602_SCRIM_GUARD__)return;
+if(window.SukunSheetAuthority?.version==='r725')return;
 window.__SUKUN_R602_SCRIM_GUARD__=1;
-
-const SHEETS=[
-  'temaSheet','helpSheet','recSheet','customSoundSheet','micHelpSheet','logSheet',
-  'sozSheet','dlEditSheet','kurSheet'
-];
-
-function visuallyOpen(el){
-  if(!el || el.hidden)return false;
-  const cs=getComputedStyle(el);
-  if(cs.display==='none'||cs.visibility==='hidden'||Number(cs.opacity||1)<=0.01)return false;
-  const r=el.getBoundingClientRect();
-  return r.width>20 && r.height>20 && r.bottom>0 && r.top<innerHeight;
+const VERSION='r725',B=document.body;
+const IDS=['temaSheet','helpSheet','recSheet','customSoundSheet','micHelpSheet','logSheet','sozSheet','dlEditSheet','kurSheet'];
+const $=id=>document.getElementById(id);
+const saved=new WeakMap(),seen=new Map(),stack=[];
+let owner='',initialized=false,observer=null,rootObserver=null,scheduled=false,mutations=0,syncs=0,closures=0,focusRestores=0;
+const safe=(fn,f=null)=>{try{return fn()}catch(_){return f}};
+const active=e=>{if(!e||e.hidden||!e.isConnected)return false;if(e.hasAttribute('data-r725-suspended'))return true;const c=getComputedStyle(e);return c.display!=='none'&&c.visibility!=='hidden';};
+function saveState(e,refresh=false){if(refresh||!saved.has(e))saved.set(e,{inert:e.inert,aria:e.getAttribute('aria-hidden'),opener:saved.get(e)?.opener||null});}
+function setAttr(e,k,v){if(v===null){if(e.hasAttribute(k))e.removeAttribute(k)}else if(e.getAttribute(k)!==v)e.setAttribute(k,v)}
+function suspend(e,on){
+ if(on&&!e.hasAttribute('data-r725-suspended'))saveState(e,true);
+ else saveState(e);const old=saved.get(e);
+ if(on){if(!e.hasAttribute('data-r725-suspended'))e.setAttribute('data-r725-suspended','');if(!e.inert)e.inert=true;setAttr(e,'aria-hidden','true');}
+ else if(e.hasAttribute('data-r725-suspended')){
+  e.removeAttribute('data-r725-suspended');e.inert=old.inert;setAttr(e,'aria-hidden',old.aria);
+ }
 }
-function heal(){
-  const scrim=document.getElementById('sheetScrim');
-  if(!scrim)return false;
-  const open=SHEETS.some(id=>visuallyOpen(document.getElementById(id)));
-  scrim.classList.toggle('r602-phantom',!open);
-  if(!open && !scrim.hidden)scrim.hidden=true;
-  return open;
+function sync(reason='sync'){
+ scheduled=false;syncs++;
+ const open=[];
+ for(const id of IDS){
+  const e=$(id);if(!e){seen.set(id,false);const i=stack.indexOf(id);if(i>=0)stack.splice(i,1);continue;}
+  const on=active(e),was=seen.get(id)===true;
+  if(on){open.push(id);if(!was||!stack.includes(id)){const i=stack.indexOf(id);if(i>=0)stack.splice(i,1);stack.push(id);}}
+  seen.set(id,on);
+  if(!on){suspend(e,false);const i=stack.indexOf(id);if(i>=0)stack.splice(i,1);}
+ }
+ // A change to one sheet never closes another sheet or discards its form state.
+ const next=[...stack].reverse().find(id=>open.includes(id))||'';
+ owner=next;
+ for(const id of open){const e=$(id);suspend(e,id!==owner);}
+ const scrim=$('sheetScrim');if(scrim){
+  scrim.classList.toggle('r602-phantom',!owner);
+  if(scrim.hidden===!!owner)scrim.hidden=!owner;
+ }
+ if(B.classList.contains('r725-sheet-active')!==!!owner)B.classList.toggle('r725-sheet-active',!!owner);
+ return owner;
 }
-
-/* Eski r592 elementi başka bir handler tarafından yeniden yaratılırsa anında sök. */
-function killDockCurtain(){
-  const c=document.getElementById('r592DockCurtain');
-  if(c)c.remove();
-  document.body.style.removeProperty('--r592-curtain-top');
+function schedule(reason='mutation'){
+ if(scheduled)return;scheduled=true;
+ queueMicrotask(()=>sync(reason));
 }
-
-const observer=new MutationObserver(records=>{
+function restoreFocus(e){
+ const s=saved.get(e),opener=s?.opener;
+ if(owner){const top=$(owner);const target=top?.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex="0"]');safe(()=>target?.focus({preventScroll:true}));return;}
+ if(opener?.isConnected&&!opener.closest?.('[hidden],[inert],[data-r725-suspended]')){
+  safe(()=>opener.focus({preventScroll:true}));focusRestores++;
+ }
+}
+function closeTop(reason='close'){
+ sync('before-close');const id=owner,e=$(id);if(!e)return false;
+ e.hidden=true;closures++;sync(reason);restoreFocus(e);return true;
+}
+function closeAll(reason='close-all'){
+ let n=0;for(const id of IDS){const e=$(id);if(active(e)){e.hidden=true;n++;}}
+ closures+=n;sync(reason);return n;
+}
+function bindSheet(e){
+ if(!e||!IDS.includes(e.id)||e.dataset.r725SheetBound)return;
+ e.dataset.r725SheetBound='1';saveState(e);
+ if(!observer)observer=new MutationObserver(records=>{
+  mutations+=records.length;
+  for(const r of records){if(IDS.includes(r.target.id)&&r.attributeName==='hidden'&&!r.target.hidden){
+   const id=r.target.id;const prev=stack.indexOf(id);if(prev>=0)stack.splice(prev,1);stack.push(id);
+   const s=saved.get(r.target);if(s&&!r.target.contains(document.activeElement))s.opener=document.activeElement;
+  }}schedule('sheet-change');
+ });
+ observer.observe(e,{attributes:true,attributeFilter:['hidden','class','style']});
+}
+function init(){
+ if(initialized)return;initialized=true;
+ for(const id of IDS)bindSheet($(id));
+ // Dynamic legacy sheets are direct body children; do not scan the whole app on every mutation.
+ rootObserver=new MutationObserver(records=>{
   let relevant=false;
-  for(const m of records){
-    const id=m.target?.id;
-    if(id==='sheetScrim'||id==='r592DockCurtain'||SHEETS.includes(id)){relevant=true;break}
-    if(m.addedNodes?.length){
-      for(const n of m.addedNodes){
-        if(n?.id==='r592DockCurtain'||n?.id==='sheetScrim'||SHEETS.includes(n?.id)){relevant=true;break}
-      }
-    }
-    if(relevant)break;
+  for(const r of records){
+   for(const n of r.addedNodes){if(n.nodeType!==1)continue;if(IDS.includes(n.id)){bindSheet(n);relevant=true;}else if(n.id==='r592DockCurtain'){n.remove();relevant=true;}}
+   for(const n of r.removedNodes){if(n.nodeType===1&&IDS.includes(n.id))relevant=true;}
   }
-  if(relevant)queueMicrotask(()=>{killDockCurtain();heal()});
-});
-observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','style']});
-
-['pageshow','resize'].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>{killDockCurtain();heal()}),{passive:true}));
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestAnimationFrame(()=>{killDockCurtain();heal()})},{passive:true});
-document.addEventListener('click',()=>setTimeout(()=>{killDockCurtain();heal()},0),{passive:true});
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',()=>{killDockCurtain();heal()},{once:true});
-}else{
-  killDockCurtain();heal();
+  if(relevant)schedule('new-sheet');
+ });
+ rootObserver.observe(B,{childList:true});
+ const scrim=$('sheetScrim');if(scrim){
+  if(!observer)observer=new MutationObserver(()=>schedule('scrim-change'));
+  observer.observe(scrim,{attributes:true,attributeFilter:['hidden','class']});
+ }
+ window.SukunScrimGuard?.killDockCurtain?.();
+ $('sheetScrim')?.addEventListener('click',e=>{if(e.target===$('sheetScrim')){e.stopPropagation();closeTop('scrim-click');}});
+ document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||!owner)return;
+  // Other independent dialogs retain their own Escape authority when they are uppermost.
+  const top=$(owner);const activeEl=document.activeElement;
+  if(activeEl?.closest?.('#r616ToolsSheet,#r554AlertDrawer,#r434InlineDetails,#r455Diag'))return;
+  e.preventDefault();e.stopPropagation();closeTop('escape');
+ },true);
+ window.addEventListener('pageshow',()=>schedule('pageshow'),{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule('visible')},{passive:true});
+ sync('init');
 }
-
-window.SukunScrimGuard={version:'r602',heal,killDockCurtain};
+const api=Object.freeze({version:VERSION,init,sync,closeTop,closeAll,isOpen:()=>!!owner,top:()=>owner,snapshot:()=>({version:VERSION,owner,open:stack.filter(id=>active($(id))),syncs,mutations,closures,focusRestores,scheduled,observers:initialized?2:0})});
+window.SukunSheetAuthority=api;window.SukunScrimGuard=Object.freeze({version:VERSION,heal:sync,killDockCurtain:()=>{const c=$('r592DockCurtain');if(c)c.remove();B.style.removeProperty('--r592-curtain-top');}});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
@@ -60456,6 +60625,7 @@ function observeSources(){
   ['tcHi','tcSub','tcZk','tcStreak','tcMin','r554NavCount','es99Status','es99Bar','bsStatus','bsBar'].forEach(id=>observe($(id)));
 }
 function openTools(){
+  window.SukunSheetAuthority?.closeAll?.('open-tools');
   const s=$('r616ToolsScrim'),p=$('r616ToolsSheet');if(!s||!p)return;
   s.hidden=false;p.hidden=false;document.body.classList.add('r616-sheet-open');
   setTimeout(()=>$('r616ToolsClose')?.focus?.(),20);
@@ -67265,10 +67435,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r724',date='2026-09-08';
+const build=meta?.content||'r728',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
-if(label){const text='SÜKÛN v20.23 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r724',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
+window.SukunReleaseIdentity=Object.freeze({build,version:'r728',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68208,6 +68378,81 @@ window.SukunR716Shell=Object.freeze({version:VERSION,apply:()=>update('api'),set
 window.SukunFeyzShell=window.SukunR716Shell;
 })();
 </script>
+<style id="r725-boundary-style">
+/* r725: final bounded dock and legacy-sheet paint ownership. No audio owner is touched. */
+html body.r725-sheet-active #sheetScrim:not([hidden]){
+ z-index:19300!important;display:block!important;pointer-events:auto!important;
+}
+html body.r725-sheet-active :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet):not([hidden]):not([data-r725-suspended]){
+ position:fixed!important;z-index:19310!important;pointer-events:auto!important;
+ max-height:calc(100dvh - env(safe-area-inset-top) - 12px)!important;
+ overscroll-behavior:contain!important;touch-action:pan-y pinch-zoom!important;
+}
+html body :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet)[data-r725-suspended]{display:none!important;pointer-events:none!important}
+html body #sheetScrim[hidden],html body #sheetScrim.r602-phantom{display:none!important;pointer-events:none!important}
+html body.r725-sheet-active :is(#r433DockPeek,#r170Now.r588-authority){pointer-events:none!important}
+html body.r725-sheet-active :is(#r433DockPeek,#r170Now.r588-authority) :is(button,[role="button"]){pointer-events:none!important}
+/* The sheet is modal, not a page-wide touchmove catcher. Native controls keep their gesture semantics. */
+html body.r725-sheet-active :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet) :is(input[type="range"]){touch-action:pan-y!important}
+/* The mini header must begin inside the body's scrollport, with its badges inside the header. */
+html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open) #r588DockShell>#r659DockBody{
+ box-sizing:border-box!important;min-height:0!important;max-height:100%!important;
+ padding:4px 1px 6px!important;overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior-y:contain!important;touch-action:pan-y pinch-zoom!important;
+ scroll-padding-block:4px 6px!important;scroll-behavior:auto!important;
+}
+html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open) #r588DockShell #r659DockBody>.r588Top{
+ position:relative!important;inset:auto!important;transform:none!important;translate:none!important;
+ box-sizing:border-box!important;height:auto!important;min-height:36px!important;max-height:none!important;
+ padding:2px 0 5px!important;margin:0!important;overflow:visible!important;
+}
+html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open) #r588DockShell #r659DockBody .r588Alerts{
+ position:relative!important;inset:auto!important;transform:none!important;translate:none!important;
+ height:auto!important;min-height:32px!important;max-height:none!important;
+ align-items:center!important;overflow:visible!important;
+}
+html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open) #r588DockShell #r659DockBody .r588Alert{
+ position:relative!important;transform:none!important;translate:none!important;flex-shrink:0!important;
+}
+/* Preserve intrinsic mini height; MIDI/MAX reserve an actual scroll track and a fixed footer. */
+html body.r725-boundary.r699-layout.r588-dock-ready.r588-mode-mini #r170Now.r588-authority:not(.r554-alert-open)>#r588DockShell{grid-template-rows:auto min-content auto!important}
+html body.r725-boundary.r699-layout.r588-dock-ready:is(.r588-mode-midi,.r588-mode-max) #r170Now.r588-authority:not(.r554-alert-open)>#r588DockShell{
+ display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;min-height:0!important;overflow:hidden!important;
+}
+html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open)>#r588DockShell>.r588Mode{flex-shrink:0!important;min-height:44px!important}
+@media(max-width:360px){
+ html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(.r554-alert-open) #r588DockShell #r659DockBody>.r588Top{min-height:36px!important}
+}
+
+html body :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet)[hidden]{display:none!important;pointer-events:none!important}
+
+</style>
+<script id="r725-dock-boundary-runtime">(()=>{
+'use strict';
+if(window.SukunDockTopBoundary)return;
+const $=id=>document.getElementById(id),B=document.body;
+let mode='',pending=0,changes=0,reveals=0,skips=0;
+const active=new Set();
+function reveal(reason='mode'){
+ if(pending)cancelAnimationFrame(pending);
+ const expected=B.className.match(/r588-mode-(mini|midi|max)/)?.[1]||'';
+ pending=requestAnimationFrame(()=>{
+  pending=0;const body=$('r659DockBody'),top=body?.querySelector('.r588Top');
+  if(!body||!top||!expected||!B.classList.contains('r588-mode-'+expected)||active.size||document.hidden){skips++;return;}
+  if(!B.classList.contains('r431-dock-visible')||B.classList.contains('r433-dock-hidden')||$('r170Now')?.classList.contains('r554-alert-open')){skips++;return;}
+  // A user mode change is navigation to the top of that mode, not a continuous scroll correction.
+  if(body.scrollTop>0){body.scrollTop=0;reveals++;}
+ });
+}
+document.addEventListener('pointerdown',e=>{if($('r659DockBody')?.contains(e.target))active.add(e.pointerId)},{capture:true,passive:true});
+for(const ev of ['pointerup','pointercancel'])document.addEventListener(ev,e=>active.delete(e.pointerId),{capture:true,passive:true});
+document.addEventListener('click',e=>{if(e.target.closest?.('#r433DockPeek'))reveal('user-restore')},{passive:true});
+window.addEventListener('sukun:r698modechange',e=>{const next=e.detail?.mode||'';if(next!==mode){mode=next;changes++;reveal('mode')}},{passive:true});
+function init(){mode=B.className.match(/r588-mode-(mini|midi|max)/)?.[1]||'';}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+window.SukunDockTopBoundary=Object.freeze({version:'r725',reveal,snapshot:()=>({version:'r725',mode,changes,reveals,skips,pointers:active.size,pending:!!pending})});
+})();
+</script>
 <script id="r711-stability-runtime">(()=>{
 'use strict';
 if(window.SukunR711Stability)return;
@@ -68271,7 +68516,11 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r724',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r728',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ r728:{version:'r728',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),cardContentVisibility:safe(()=>{const c=document.querySelector('#tab-zkr > .card.zCtl');return c?getComputedStyle(c).contentVisibility:''})},
+ r727:{version:'r727',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
+ r726:{version:'r726',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
+ r725:{version:'r725',sheets:safe(()=>window.SukunSheetAuthority?.snapshot?.()),dock:safe(()=>window.SukunDockTopBoundary?.snapshot?.())},
  r716:safe(()=>window.SukunR716Shell?.snapshot?.()),
  r714:{version:'r714',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),input:safe(()=>window.SukunR688TapAuthority?.snapshot?.()),counterGate:safe(()=>window.SukunZikirTransportGate?.snapshot?.()),voiceHealth:safe(()=>{const v=window.SukunR698VoiceHealth?.snapshot?.();return v?{required:v.required,paused:v.paused,pending:v.pending,age:v.age,warning:v.warning,physical:v.physical,metrics:v.metrics}:null})},
  errors,lastError,lastAt,
@@ -68287,6 +68536,10 @@ function snapshot(){return Object.freeze({
  atmosphere:safe(()=>window.SukunAtmosphereR706?.snapshot?.())
 });}
 const api=Object.freeze({version:VERSION,snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r711-refresh');return true}});
+window.SukunR728Stability=api;
+window.SukunR727Stability=api;
+window.SukunR726Stability=api;
+window.SukunR725Stability=api;
 window.SukunR711Stability=api;
 window.SukunR714Stability=api;
 window.SukunR716Stability=api;
