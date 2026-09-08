@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><defs><radialGradient id="tile"><stop stop-color="#132622"/><stop offset=".68" stop-color="#0a1514"/><stop offset="1" stop-color="#040b0e"/></radialGradient><radialGradient id="beam" cx=".5" cy="0" r=".74"><stop stop-color="#edbd57" stop-opacity=".31"/><stop offset=".55" stop-color="#c59435" stop-opacity=".04"/><stop offset="1" stop-color="#040b0e" stop-opacity="0"/></radialGradient><linearGradient id="rim" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#936d31"/><stop offset=".28" stop-color="#f4d999"/><stop offset=".55" stop-color="#8a612a"/><stop offset="1" stop-color="#d6b479"/></linearGradient><pattern id="tilePattern" width="160" height="160" patternUnits="userSpaceOnUse" fill="none">
+  <g stroke="#b08a4b" stroke-width=".8" opacity=".22">
+    <path d="M80 20L94 46L122 38L114 66L140 80L114 94L122 122L94 114L80 140L66 114L38 122L46 94L20 80L46 66L38 38L66 46Z"/>
+    <path d="M80 0L94 20L122 10L140 38L150 66L160 80L140 94L150 122L122 140L94 150L80 160L66 140L38 150L20 122L10 94L0 80L20 66L10 38L38 20L66 10Z"/>
+    <path d="M0 0L38 38M160 0L122 38M160 160L122 122M0 160L38 122M80 0V20M160 80H140M80 160V140M0 80H20M46 66L66 46H94L114 66V94L94 114H66L46 94Z"/>
+  </g>
+</pattern></defs><rect width="1024" height="1024" fill="url(#tile)"/><rect width="1024" height="1024" fill="url(#tilePattern)"/><rect width="1024" height="1024" fill="url(#beam)"/><g transform="translate(277 175) scale(.895)">
+  <defs>
+    <linearGradient id="gold" x1="108" y1="530" x2="330" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8f642f"/><stop offset=".24" stop-color="#d9ac57"/><stop offset=".51" stop-color="#ffeab1"/><stop offset=".75" stop-color="#d9ab51"/><stop offset="1" stop-color="#fff2b9"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="120" y1="100" x2="400" y2="590" gradientUnits="userSpaceOnUse"><stop stop-color="#fff7d5"/><stop offset=".5" stop-color="#b88338"/><stop offset="1" stop-color="#f8d281"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#fffef1"/><stop offset=".25" stop-color="#fff1ac"/><stop offset="1" stop-color="#d6a448"/></radialGradient>
+  </defs>
+  <g fill="url(#gold)" stroke="url(#edge)" stroke-width="1.2">
+    <path d="M260 84C250 176 209 218 144 288C94 342 65 396 80 448C94 500 136 514 183 528C218 538 244 554 256 589C227 549 172 548 128 532C72 512 36 476 43 417C52 343 111 289 174 224C218 178 246 143 260 84Z"/>
+    <path d="M266 111C270 179 307 222 365 279C422 335 469 391 469 444C469 503 428 530 376 544C322 558 287 561 267 589C287 548 321 539 363 523C415 503 433 466 422 423C410 376 369 332 328 288C281 238 258 189 266 111Z"/>
+    <path d="M270 239C280 284 320 308 326 349C333 396 294 434 265 460C290 425 305 397 289 369C275 346 257 335 244 316C217 340 194 368 201 400C206 420 216 430 222 436C181 417 164 386 178 350C193 312 234 284 270 239Z"/>
+  </g>
+  <path d="M260 9C271 47 279 59 307 73C280 78 269 91 260 128C250 93 239 81 211 73C239 59 250 47 260 9Z" fill="url(#light)" stroke="#ffe5a0" stroke-width="1.3"/>
+  <path d="M259 430C266 452 277 464 298 476C277 485 267 499 259 525C251 499 241 485 220 476C241 464 252 452 259 430Z" fill="url(#light)" stroke="#f1cc7c" stroke-width="1"/>
+  <path d="M260 45V97M239 73H281M259 456V499M241 476H277" stroke="#fff8d3" stroke-width="1" opacity=".72"/>
+</g><text x="512" y="838" text-anchor="middle" font-family="Georgia,serif" font-weight="400" font-size="89" letter-spacing="15" fill="#e2c17f">SÜKÛN</text></svg>
