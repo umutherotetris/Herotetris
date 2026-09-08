@@ -1,8 +1,8 @@
-/* SÜKÛN r719 — Unified Appearance & Current Zikir Continuity */
+/* SÜKÛN r724 — Unified Appearance & Current Zikir Continuity */
 'use strict';
 
-const SURUM = 'r719';
-const CACHE = 'sukun-r719-20260908a';
+const SURUM = 'r724';
+const CACHE = 'sukun-r724-20260908a';
 
 const CORE = [
   './nero.html',
@@ -18,7 +18,11 @@ const CORE = [
   './assets/sukun-sanctuary-r717-small.webp',
   './assets/feyz-mark-r718.svg',
   './assets/feyz-pattern-r718.svg',
-  './assets/feyz-flame-ring-r718.webp'
+  './assets/feyz-flame-ring-r718.webp',
+  './assets/ui-target-r722.svg',
+  './assets/ui-hourglass-r722.svg',
+  './assets/ui-exit-r722.svg',
+  './assets/ui-speaker-r722.svg'
 ];
 const OPTIONAL = [
   './surumler.json',
@@ -26,16 +30,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r719__.json';
+const BUILD_MARKER='./__sukun_build_r724__.json';
 
-const NOTLAR = [
-  "r719 · Görünüm seçimi Feyz, Osmanlı ve Semerkant olarak birleştirildi. Araçlar ve arayüz düzeni aynı seçimi gösterir; çakışan ayrı Feyz anahtarı kaldırıldı.",
-  "Mevcut görünüm ve renk tercihleri korunur. AMOLED veya Sabah Nuru etkinse, saklanan Feyz tercihi ile ekranda uygulanan renk teması ayarlarda açıklanır.",
-  "Tefekkür başlığı canlı DOM ile eşitlenir. Yeniden oluşturulan başlık düğümü, aynı zikir adı ve geri dönüşteki görünürlük güvenle yenilenir; yinelenen olaylar tek karede birleştirilir.",
-  "Genel tıklama başına çalışan başlık zamanlayıcısı kaldırıldı. Gizli sayfada ve pagehide sonrasında bekleyen görsel güncelleme iptal edilir; pageshow ile kaynak gözlemi tekrar bağlanır.",
-  "Dar ekran gezinme ve Tefekkür kontrol etiketleri en az 11 piksel olur. Çıkış metni gerektiğinde satıra bölünür; mevcut sayaç, kaydırma, ses ve transport sahipleri korunur.",
-  "Build, manifest, sürüm notları ve Service Worker r719 olarak eşitlendi. Canlı tarayıcı ve fiziksel Android ses davranışı bu ortamda doğrulanmadı."
-];
+const NOTLAR = ["r724 · Dar ekran ses ikonu gizleme kuralının CSS önceliği düzeltildi.", "360 px altında çıkış etiketi de Tefekkürden Çık olarak tam gösterilir; gerektiğinde iki satıra bölünür. Kompakt boyutlar korunur.", "Ses, sayaç, seyir ve pause/resume davranışları değişmedi. Gerçek tarayıcı ve fiziksel Android doğrulaması yapılmadı."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

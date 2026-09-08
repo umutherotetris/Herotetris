@@ -1,5 +1,53 @@
 [
   {
+    "v": "r724",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r724 · Dar ekran ses ikonu gizleme kuralının CSS önceliği düzeltildi.",
+      "360 px altında çıkış etiketi de Tefekkürden Çık olarak tam gösterilir; gerektiğinde iki satıra bölünür. Kompakt boyutlar korunur.",
+      "Ses, sayaç, seyir ve pause/resume davranışları değişmedi. Gerçek tarayıcı ve fiziksel Android doğrulaması yapılmadı."
+    ]
+  },
+  {
+    "v": "r723",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r723 · Kompakt Tefekkür ölçüleri korundu. Ses durumu iki satıra sığabilir; eski kırpma kuralı kaldırıldı.",
+      "Klavye odağı görünür; Feyz düğmelerinin basılı ve devre dışı durumları ayrıştırıldı. Dar ekranda dekoratif ses ikonu gizlenir.",
+      "Ses, sayaç, seyir ve pause/resume davranışları değiştirilmedi. Tarayıcı ve fiziksel Android testi yapılmadı."
+    ]
+  },
+  {
+    "v": "r722",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r722 · Referans panodaki turkuaz/altın çizgi ikonları ayar ve gezinme kontrollerine yayıldı. Karakter simgeleri mevcut SVG sistemiyle değiştirildi.",
+      "Ana düğmeler yeşil-mavi, ikincil düğmeler ince altın kenarlı koyu cam, Tefekkür çıkışı mor-mavi geçişli olarak eşitlendi. Kompakt yükseklikler korunur.",
+      "Başlat/duraklat ve önceki/sonraki/baştan ikonları vektör oldu. Hedef, kalan, ses ve çıkış ikonları aynı takımdan; dar ekranda bilgi kutularının dekoratif ikonları gizlenir.",
+      "Yeni ses sahibi, olay dinleyicisi veya animasyon döngüsü eklenmedi. Build/manifest/SW r722. Canlı tarayıcı ve fiziksel Android doğrulaması yapılmadı."
+    ]
+  },
+  {
+    "v": "r721",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r721 · Tefekkür çerçeveleri ve ikincil parıltılar sadeleştirildi; zikir adı, açıklaması ve sayaç birlikte okunur. Uzun isimler satıra bölünür.",
+      "Tekrarlanan Hedef satırı Tefekkürde kaldırıldı; devir yalnız sıfırdan büyük olduğunda, serbest sayım gerektiğinde görünür.",
+      "Ana düğme mevcut aggregate ses oturumu üzerinden Duraklat/Devam et işlevini kullanır. Hazırlanıyor durumu ve ses kaynağı etiketleri mevcut sahiplerden okunur.",
+      "İlerleme varken Baştan başlat öncesi bu adımın ilerlemesinin sıfırlanacağı kısa bir onayla açıklanır. İptal işlemi sayaç veya ses durumuna dokunmaz.",
+      "r720 kompakt ölçüleri korunur. Canlı tarayıcı ve fiziksel Android doğrulaması bu ortamda yapılamadı."
+    ]
+  },
+  {
+    "v": "r720",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r720 · Tefekkür üst barı 44 piksel yüksekliğinde tek satıra dönüştürüldü: başlık, yoğunluk yüzdesi, sürgü ve Canlı/Sabit aynı şeritte.",
+      "Üst boşluk 62 piksele indirildi. Hedef/Kalan 34 px; başlatma ve −/+ 40 px; gezinme 36 px; ses ve çıkış 38 px. Kontrol etiketleri 11 px olarak korundu.",
+      "Sadece Tefekkür düzeni ve sürüm kimlikleri değiştirildi. Ses, sayaç, hareket tercihi ve gezinme olay sahipleri korunur. Canlı tarayıcı ve fiziksel Android testi yapılmadı."
+    ]
+  },
+  {
     "v": "r719",
     "t": "8 Eylül 2026",
     "b": [
