@@ -1,5 +1,14 @@
 [
   {
+    "v": "r713",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r713 · Kandil bağımsız DOM sahibiyle çalışır; eksik öğe hata üretmez. Gizli ekran, aktif ses, Tefekkür ve açık diyalog sırasında hareketsizlik perdesi açılmaz. Kandil boşta ekran kilidi istemez.",
+      "Gecikmiş autoStop/genel Stop durum yankıları yeni kullanıcı komutunu geçersiz kılamaz. AudioLife terminal Stop niyeti ve görünür dönüşteki Pause önceliği korunur; mevcut seyir ve kayıt motorları değiştirilmez.",
+      "Görünür ana iş parçacığı gecikmesi arka plan/uyku süresinden ayrılır. Son 24 uzun görev için sınırlı tanı kaydı eklenir; yeni sürekli render, ses veya kayıt zamanlayıcısı yoktur. Gerçek Android ses ve uzun kullanım doğrulaması ayrıca gereklidir."
+    ]
+  },
+  {
     "v": "r712",
     "t": "8 Eylül 2026",
     "b": [

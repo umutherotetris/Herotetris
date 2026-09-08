@@ -1,8 +1,8 @@
-/* SÜKÛN r712 — User Intent & Bounded Recovery */
+/* SÜKÛN r713 — Kandil Lifecycle & Intent Stability */
 'use strict';
 
-const SURUM = 'r712';
-const CACHE = 'sukun-r712-20260908a';
+const SURUM = 'r713';
+const CACHE = 'sukun-r713-20260908a';
 
 const CORE = [
   './nero.html',
@@ -17,9 +17,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r712__.json';
+const BUILD_MARKER='./__sukun_build_r713__.json';
 
 const NOTLAR = [
+  "r713 · Kandil bağımsız DOM sahibiyle çalışır; eksik öğe hata üretmez. Gizli ekran, aktif ses, Tefekkür ve açık diyalog sırasında hareketsizlik perdesi açılmaz. Kandil boşta ekran kilidi istemez.",
+  "Gecikmiş autoStop/genel Stop durum yankıları yeni kullanıcı komutunu geçersiz kılamaz. AudioLife terminal Stop niyeti ve görünür dönüşteki Pause önceliği korunur; mevcut seyir ve kayıt motorları değiştirilmez.",
+  "Görünür ana iş parçacığı gecikmesi arka plan/uyku süresinden ayrılır. Son 24 uzun görev için sınırlı tanı kaydı eklenir; yeni sürekli render, ses veya kayıt zamanlayıcısı yoktur. Gerçek Android ses ve uzun kullanım doğrulaması ayrıca gereklidir.",
   "r712 · Kullanıcının Pause/Stop niyeti fiziksel ses yankısıyla veya 12 saniyelik eski kilit taşıyıcısı süresiyle silinmez. Yalnız yeni kullanıcı Play/Resume/Start komutu niyeti açar.",
   "28/99 Seyir kurtarması artık eski Pause/Stop komutunu geçersiz kılamaz; eşzamanlı kurtarma engellenir ve sonuçsuz otomatik denemeler üçle sınırlanır. Açık kullanıcı duraklatması olmadan yalnız tanınan sistem kesintisi kapısı uzlaştırılır.",
   "r711 ses hazırlığı zaman aşımı ve tanısı, r710 sinematik Tefekkür, kompakt kontroller, sayaç/ledger, kayıt/TTS, seyir içeriği ve doğal kaydırma korunur. Fiziksel Android ve gerçek ses doğrulaması ayrıca gereklidir.",

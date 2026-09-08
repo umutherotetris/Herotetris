@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r712 — User Intent & Bounded Recovery (base r711)
+     SÜKÛN r713 — Kandil Lifecycle & Intent Stability (base r712)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r712">
+<meta name="sukun-build" content="r713">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r712">
+<link rel="manifest" href="./manifest.webmanifest?v=r713">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -314,7 +314,8 @@ body::after{
 /* ── C) Kandil modu ── */
 #kandil{position:fixed;inset:0;z-index:2000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
   opacity:0;visibility:hidden;transition:opacity 1.1s cubic-bezier(.32,.9,.35,1);cursor:pointer;-webkit-tap-highlight-color:transparent}
-#kandil.on{opacity:1;visibility:visible}
+#kandil.on{opacity:1;visibility:visible;pointer-events:auto}
+#kandil:not(.on){pointer-events:none!important}
 #kandil .kSaat{font:300 60px/1 "Space Grotesk",sans-serif;color:color-mix(in srgb,var(--goldh) 90%,transparent);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 #kandil .kTarih{font-size:12.5px;color:rgba(255,255,255,.3);letter-spacing:.2em;text-transform:uppercase}
 #kandil .kFlame{position:relative;width:44px;height:64px;margin:6px 0}
@@ -6508,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r712</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r713</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6532,6 +6533,15 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r713",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r713 · Kandil bağımsız DOM sahibiyle çalışır; eksik öğe hata üretmez. Gizli ekran, aktif ses, Tefekkür ve açık diyalog sırasında hareketsizlik perdesi açılmaz. Kandil boşta ekran kilidi istemez.",
+      "Gecikmiş autoStop/genel Stop durum yankıları yeni kullanıcı komutunu geçersiz kılamaz. AudioLife terminal Stop niyeti ve görünür dönüşteki Pause önceliği korunur; mevcut seyir ve kayıt motorları değiştirilmez.",
+      "Görünür ana iş parçacığı gecikmesi arka plan/uyku süresinden ayrılır. Son 24 uzun görev için sınırlı tanı kaydı eklenir; yeni sürekli render, ses veya kayıt zamanlayıcısı yoktur. Gerçek Android ses ve uzun kullanım doğrulaması ayrıca gereklidir."
+    ]
+  },
   {
     "v": "r712",
     "t": "8 Eylül 2026",
@@ -25909,7 +25919,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r712';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r713';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -26367,10 +26377,12 @@ try{ breathApply() }catch(e){ try{console.warn('r502 breathApply( başarısız:'
    Sayfa kaydırmak artık hiçbir koşulda zikri artırmaz. Manuel sayım yalnız
    sayaç çemberine gerçek tap, +1 veya açık Say düğmesinden ilerler. */
 
-/* C) KANDİL MODU — 60 sn hareketsizlik → dinginlik ekranı */
-const KANDIL={idleMs:60000,timer:null,clockId:null,on:false};
+/* r713 — Kandil has an independent DOM owner and one idle deadline.
+   It never acquires an audio/screen wake lock, and never intercepts an active
+   session, an open dialog, or a hidden document. */
+const KANDIL={idleMs:60000,timer:null,clockId:null,on:false,enabled:true,revision:'r713',shows:0,hides:0,deferrals:0};
+function kandilNode(){return document.getElementById('kandil')}
 function kandilEsma(){
-  /* günün esmâsını basit bir döngüyle seç (deterministik, güne göre) */
   try{
     if(typeof ZIKIR!=='undefined'&&ZIKIR.esma&&ZIKIR.esma.items.length){
       const day=Math.floor(Date.now()/86400000);
@@ -26382,42 +26394,70 @@ function kandilEsma(){
 }
 function kandilTick(){
   const d=new Date();
-  const hh=String(d.getHours()).padStart(2,'0'), mm=String(d.getMinutes()).padStart(2,'0');
-  const el=$('#kSaat'); if(el)el.textContent=hh+':'+mm;
-  const t=$('#kTarih'); if(t)t.textContent=d.toLocaleDateString(I18N&&I18N.lang==='en'?'en-GB':'tr-TR',{weekday:'long',day:'numeric',month:'long'});
+  const hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+  const el=$('#kSaat');if(el)el.textContent=hh+':'+mm;
+  const t=$('#kTarih');if(t)t.textContent=d.toLocaleDateString(I18N&&I18N.lang==='en'?'en-GB':'tr-TR',{weekday:'long',day:'numeric',month:'long'});
+}
+function kandilBusy(){
+  if(document.hidden||!KANDIL.enabled)return true;
+  if(document.body.classList.contains('sukun-tefekkur-mode'))return true;
+  if([...document.querySelectorAll('.mrSheet,dialog[open],.prDiagSheet,#r434InlineDetails')].some(el=>{
+    if(el.closest('[hidden]'))return false;
+    const cs=getComputedStyle(el);
+    return cs.display!=='none'&&cs.visibility!=='hidden'&&el.getClientRects().length>0;
+  }))return true;
+  if(window.SukunAudioTruth?.snapshot?.()?.tangible)return true;
+  if(window.AudioLife?.busy?.())return true;
+  if(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.providerIds?.length)return true;
+  return !!((typeof Z!=='undefined'&&Z.auto)||window.__tvPlaying||window.__dhPlaying||window.__akPlaying||window.__fsPlaying||window.__seyPlaying||(typeof FR!=='undefined'&&FR.playing));
 }
 function kandilShow(){
-  if(KANDIL.on)return;
-  KANDIL.on=true;
-  const e=kandilEsma();
-  const ar=$('#kEsmaAr'), tr=$('#kEsmaTr');
-  if(ar)ar.textContent=e.ar; if(tr)tr.textContent=e.tr;
-  kandilTick(); KANDIL.clockId=setInterval(kandilTick,10000);
-  $('#kandil').classList.add('on');
-  try{lockOn&&lockOn()}catch(_){}
+  if(KANDIL.on||kandilBusy())return false;
+  const el=kandilNode();if(!el)return false;
+  const e=kandilEsma(),ar=$('#kEsmaAr'),tr=$('#kEsmaTr');
+  if(ar)ar.textContent=e.ar;if(tr)tr.textContent=e.tr;
+  kandilTick();
+  KANDIL.on=true;KANDIL.shows++;
+  el.classList.add('on');el.setAttribute('aria-hidden','false');
+  clearInterval(KANDIL.clockId);KANDIL.clockId=setInterval(kandilTick,10000);
+  return true;
 }
-function kandilHide(){
-  if(!KANDIL.on)return;
+function kandilHide(rearm=true){
+  const el=kandilNode();
   KANDIL.on=false;
-  clearInterval(KANDIL.clockId); KANDIL.clockId=null;
-  $('#kandil').classList.remove('on');
-  kandilArm();
+  clearInterval(KANDIL.clockId);KANDIL.clockId=null;
+  if(el){el.classList.remove('on');el.setAttribute('aria-hidden','true')}
+  KANDIL.hides++;
+  if(rearm)kandilArm();
+  return !!el;
 }
 function kandilArm(){
-  clearTimeout(KANDIL.timer);
+  clearTimeout(KANDIL.timer);KANDIL.timer=null;
+  if(document.hidden||!KANDIL.enabled||KANDIL.on)return;
   KANDIL.timer=setTimeout(()=>{
-    /* zikir otomatik akışı, sesli okuma, frekans çalıyorsa kandili erteleme */
-    const busy=(typeof Z!=='undefined'&&Z.auto)||window.__tvPlaying||window.__dhPlaying||window.__akPlaying||window.__fsPlaying||window.__seyPlaying||(typeof FR!=='undefined'&&FR.playing);
-    if(busy){ kandilArm(); return; }
-    if(document.querySelector('.mrSheet:not([hidden])')){ kandilArm(); return; }  /* açık dialog varken bekle */
-    kandilShow();
+    KANDIL.timer=null;
+    if(kandilBusy()){KANDIL.deferrals++;kandilArm();return;}
+    if(!kandilShow())KANDIL.deferrals++;
   },KANDIL.idleMs);
 }
-['click','touchstart','keydown','mousemove'].forEach(ev=>{
-  document.addEventListener(ev,()=>{ if(KANDIL.on){kandilHide();} else {kandilArm();} },{passive:true});
+function kandilEnabled(value){
+  KANDIL.enabled=!!value;
+  if(!KANDIL.enabled)kandilHide(false);
+  else kandilArm();
+  return KANDIL.enabled;
+}
+['click','touchstart','keydown'].forEach(ev=>{
+  document.addEventListener(ev,()=>{if(KANDIL.on)kandilHide();else kandilArm()},{passive:true});
 });
-$('#kandil')?.addEventListener('click',kandilHide);
-try{ kandilArm() }catch(e){ try{console.warn('r502 kandilArm( başarısız:',e)}catch(_){} }
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){clearTimeout(KANDIL.timer);KANDIL.timer=null;kandilHide(false)}
+  else kandilArm();
+},{passive:true});
+window.addEventListener('pagehide',()=>{clearTimeout(KANDIL.timer);KANDIL.timer=null;kandilHide(false)},{passive:true});
+window.addEventListener('pageshow',()=>{if(!document.hidden)kandilArm()},{passive:true});
+kandilNode()?.addEventListener('click',()=>kandilHide());
+window.SukunKandil=Object.freeze({version:'r713',show:kandilShow,hide:kandilHide,arm:kandilArm,enable:kandilEnabled,snapshot:()=>({version:'r713',enabled:KANDIL.enabled,on:KANDIL.on,timerPending:KANDIL.timer!==null,clockPending:KANDIL.clockId!==null,shows:KANDIL.shows,hides:KANDIL.hides,deferrals:KANDIL.deferrals,dom:!!kandilNode()})});
+try{kandilArm()}catch(e){try{console.warn('r713 kandilArm başarısız:',e)}catch(_){}}
 /* Diğer tüm sesli okuyucular/kayıtlar susana kadar bekler, SONRA 1 sn daha bekler. */
 async function niyetAudioClear(){
   let waited=0;
@@ -33566,6 +33606,13 @@ body[data-perf="pil"] *{scroll-behavior:auto}
   .r173-tab-in,.prState.on::before,#prDashboard::before{animation:none!important}
 }
 </style>
+<div id="kandil" aria-hidden="true">
+  <div class="kSaat" id="kSaat">00:00</div>
+  <div class="kTarih" id="kTarih"></div>
+  <div class="kFlame"><span class="glow"></span><span class="fl"></span><span class="wick"></span><span class="base"></span></div>
+  <div class="kEsma"><div class="ar" id="kEsmaAr"></div><div class="tr" id="kEsmaTr"></div></div>
+  <div class="kHint">dokun — uyan</div>
+</div>
 <div id="ns" hidden></div>
 <!-- r99: bu panelin isaretlemesi acilista DOM'a kurulmaz.
      Ham metin olarak durur, panel ilk gerekince insa edilir. -->
@@ -33997,14 +34044,6 @@ body[data-perf="pil"] *{scroll-behavior:auto}
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="kandil" aria-hidden="true">
-  <div class="kSaat" id="kSaat">00:00</div>
-  <div class="kTarih" id="kTarih"></div>
-  <div class="kFlame"><span class="glow"></span><span class="fl"></span><span class="wick"></span><span class="base"></span></div>
-  <div class="kEsma"><div class="ar" id="kEsmaAr"></div><div class="tr" id="kEsmaTr"></div></div>
-  <div class="kHint">dokun — uyan</div>
-</div>
-
 </script>
 <script>
 window.__neuroFabrika=function(){
@@ -36580,7 +36619,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){if(window.S
 /* ═══ 2) AUDIO/LIFECYCLE STATE MACHINE ═══ */
 const AudioLife=window.AudioLife={
   state:'idle',reason:'init',wasBusy:false,userPaused:false,lastChange:Date.now(),providers:new Map(),
-  _recoverPromise:null,_recoverSeq:0,_recoverReasons:new Set(),_visibleTO:0,
+  _recoverPromise:null,_recoverSeq:0,_recoverReasons:new Set(),_visibleTO:0,_userIntentSeq:0,_terminalIntent:false,
   lastRecovery:null,lastInterruption:null,lastUserAction:null,owner:null,history:[],
   register(name,fn){if(name&&typeof fn==='function')this.providers.set(name,fn);},
   _log(type,detail=''){
@@ -36594,7 +36633,7 @@ const AudioLife=window.AudioLife={
       version:'r531',state:this.state,reason:this.reason,wasBusy:!!this.wasBusy,
       userPaused:!!this.userPaused,lastChange:this.lastChange,
       owner:this.ownerSnapshot(),lastRecovery:this.lastRecovery,lastInterruption:this.lastInterruption,
-      lastUserAction:this.lastUserAction,recoveryPending:!!this._recoverPromise,
+      lastUserAction:this.lastUserAction,userIntentSeq:this._userIntentSeq,terminalIntent:!!this._terminalIntent,recoveryPending:!!this._recoverPromise,
       history:this.history.slice(-30)
     };
   },
@@ -36614,6 +36653,7 @@ const AudioLife=window.AudioLife={
     return this.owner;
   },
   set(n,r){
+    if(n==='playing'&&this.userPaused){n=this._terminalIntent?'idle':'paused';r='r713-user-intent:'+String(r||'echo');}
     if(this.state===n){this.reason=r||this.reason;return;}
     this.state=n;this.reason=r||'';this.lastChange=Date.now();
     window.dispatchEvent(new CustomEvent('sukun:audiostate',{detail:{state:n,reason:r,owner:this.ownerSnapshot(),userPaused:this.userPaused}}));
@@ -36622,6 +36662,7 @@ const AudioLife=window.AudioLife={
   setUserPaused(v,reason='user'){
     const next=!!v;
     this.userPaused=next;
+    this._userIntentSeq++;if(!next)this._terminalIntent=false;
     this.lastUserAction={t:Date.now(),action:next?'pause':'play',reason:String(reason||'user')};
     this._log(next?'user-pause':'user-play',reason);
     if(next){
@@ -36635,14 +36676,16 @@ const AudioLife=window.AudioLife={
   },
   reconcileUserPaused(v,reason='reconcile'){
     const next=!!v,changed=this.userPaused!==next;
+    // A physical-state echo is not a new user Play command.
+    if(!next&&this.userPaused&&this._terminalIntent)return true;
     this.userPaused=next;
     if(changed)this._log('pause-reconcile',reason);
     try{if(window.SukunAudioHub)window.SukunAudioHub.userPaused=next}catch(e){}
     return next;
   },
-  markUserPause(reason='user-pause'){this.setUserPaused(true,reason);this.set('paused',reason);return true;},
+  markUserPause(reason='user-pause'){this.setUserPaused(true,reason);if(!this._terminalIntent)this.set('paused',reason);return true;},
   markUserPlay(reason='user-play'){this.setUserPaused(false,reason);return true;},
-  markUserStop(reason='user-stop'){this.setUserPaused(true,reason);this.set('stopping',reason);return true;},
+  markUserStop(reason='user-stop'){this.setUserPaused(true,reason);this._terminalIntent=true;this.set('stopping',reason);return true;},
   markInterruption(reason='system-interruption'){
     this.wasBusy=this.busy();
     this.lastInterruption={t:Date.now(),reason:String(reason),owner:this.ownerSnapshot(),wasBusy:this.wasBusy};
@@ -36750,18 +36793,20 @@ function lifeVisible(src){
   AudioLife._visibleTO=setTimeout(()=>{
     if(document.hidden)return;
     if(AudioLife.wasBusy&&!AudioLife.userPaused)AudioLife.requestRecover(src);
-    else AudioLife.set(AudioLife.busy()?'playing':'idle',src);
+    else AudioLife.set(AudioLife.userPaused?(AudioLife._terminalIntent?'idle':'paused'):(AudioLife.busy()?'playing':'idle'),src);
   },180);
 }
 document.addEventListener('visibilitychange',()=>document.hidden?lifeHidden('visibility-hidden'):lifeVisible('visibility-visible'));
 window.addEventListener('pagehide',()=>lifeHidden('pagehide'));window.addEventListener('pageshow',()=>lifeVisible('pageshow'));window.addEventListener('blur',()=>{if(document.hidden)lifeHidden('blur')});window.addEventListener('focus',()=>lifeVisible('focus'));
 document.addEventListener('freeze',()=>lifeHidden('freeze'));document.addEventListener('resume',()=>lifeVisible('resume'));
 try{if(typeof autoStart==='function'){const f=autoStart;autoStart=function(...a){AudioLife.markUserPlay('zikir-start');AudioLife.set('preparing','zikir');const r=f.apply(this,a);setTimeout(()=>{if(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused))return;AudioLife.set(AudioLife.busy()?'playing':'idle','zikir')},20);return r}}}catch(e){}
-try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){const r=f.apply(this,a);setTimeout(()=>{
+try{if(typeof autoStop==='function'){const f=autoStop;autoStop=function(...a){const epoch=AudioLife._userIntentSeq;const r=f.apply(this,a);setTimeout(()=>{
+  if(epoch!==AudioLife._userIntentSeq)return;
+  if(AudioLife._terminalIntent){AudioLife.set('idle','r713-terminal-stop');return;}
   const busy=AudioLife.busy();
   // miniPause deliberately stops the auto scheduler. Its delayed Stop echo
   // must preserve the user's aggregate pause instead of publishing idle.
-  const held=!!(window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused));
+  const held=!!(AudioLife.userPaused||window.SukunAudioSessionRegistry?.aggregateSnapshot?.()?.paused||(typeof MINI==='object'&&MINI?.paused));
   if(held){
     try{AudioLife.reconcileUserPaused(true,'r704-aggregate-pause')}catch(e){AudioLife.userPaused=true}
     AudioLife.set('paused','r704-aggregate-pause');
@@ -36780,7 +36825,7 @@ try{if(typeof frStart==='function'){const f=frStart;frStart=function(...a){Audio
 try{if(typeof frStop==='function'){const f=frStop;frStop=function(...a){const r=f.apply(this,a);setTimeout(()=>AudioLife.set(AudioLife.busy()?'playing':'idle','frequency-stop'),20);return r}}}catch(e){}
 try{if(typeof chOn==='function'){const f=chOn;chOn=function(...a){AudioLife.markUserPlay('ambience-start');AudioLife.set('preparing','ambience');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('playing','ambience'),20);return r}}}catch(e){}
 try{if(window.Tekke&&typeof Tekke.open==='function'){const f=Tekke.open;Tekke.open=function(...a){AudioLife.markUserPlay('tekke-open');return f.apply(this,a)}}}catch(e){}
-try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function(...a){AudioLife.markUserStop('all-stop');const r=f.apply(this,a);setTimeout(()=>AudioLife.set('idle','stopped'),80);return r};const b=document.getElementById('stopAll');if(b)b.onclick=hardStopAll}}catch(e){}
+try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function(...a){AudioLife.markUserStop('all-stop');const epoch=AudioLife._userIntentSeq;const r=f.apply(this,a);setTimeout(()=>{if(epoch===AudioLife._userIntentSeq)AudioLife.set('idle','stopped')},80);return r};const b=document.getElementById('stopAll');if(b)b.onclick=hardStopAll}}catch(e){}
 
 /* ═══ 3) KİŞİSEL DASHBOARD ═══ */
 function todayLog(){try{const a=typeof logTemizle==='function'?logTemizle(typeof S!=='undefined'?S.get('sukun.log',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
@@ -67036,13 +67081,13 @@ function enter(){
 window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 })();
 </script>
-<script id="r712-release-identity-runtime">(()=>{
+<script id="r713-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r712',date='2026-09-08';
+const build=meta?.content||'r713',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.21 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r712',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r713',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67330,7 +67375,9 @@ if(window.SukunR711Stability)return;
 const VERSION='r711',B=document.body;
 let errors=0,lastError='',lastAt=0;
 let eventWindow=Date.now(),eventCount=0,eventPeak=0,eventTotal=0,eventStorms=0,lastStormAt=0;
-let lagMax=0,lagLast=0,lagSamples=0,lastLagAt=0;
+let lagMax=0,lagLast=0,lagSamples=0,lastLagAt=0,lagResets=0,hiddenWakeups=0;
+let visibilityEpoch=0,lagTimer=0,expected=0,suspended=false;
+let lastInput=null;const recentLongTasks=[];let visibleLongTaskCount=0;
 const clean=s=>String(s??'').slice(0,400);
 const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const onError=e=>{errors++;lastError=clean(e.reason?.message||e.message||e.reason||'runtime');lastAt=Date.now()};
@@ -67349,28 +67396,47 @@ function observeEvent(){
  }
 }
 watched.forEach(name=>window.addEventListener(name,observeEvent,{passive:true}));
-let lagTimer=0,expected=0;
+function resetLag(hold=false){
+ suspended=hold===true;visibilityEpoch++;lagResets++;
+ clearTimeout(lagTimer);lagTimer=0;
+ if(!document.hidden&&!suspended)armLag();
+}
 function armLag(){
+ if(document.hidden||suspended||lagTimer)return;
+ const epoch=visibilityEpoch;
  expected=performance.now()+1500;
  lagTimer=setTimeout(()=>{
-   lagTimer=0;const lag=Math.max(0,performance.now()-expected);
-   if(!document.hidden){
-     lagSamples++;lagLast=Math.round(lag);lagMax=Math.max(lagMax,lagLast);
-     if(lag>750&&Date.now()-lastLagAt>10000){
-       lastLagAt=Date.now();
-       try{window.dispatchEvent(new CustomEvent('sukun:diagnostic',{detail:{kind:'event-loop-lag',message:'Ana iş parçacığı gecikmesi',extra:Math.round(lag)+' ms'}}))}catch(e){}
-     }
-   }
-   armLag();
+  lagTimer=0;
+  if(document.hidden||suspended||epoch!==visibilityEpoch){hiddenWakeups++;return;}
+  const lag=Math.max(0,performance.now()-expected);
+  lagSamples++;lagLast=Math.round(lag);lagMax=Math.max(lagMax,lagLast);
+  if(lag>750&&Date.now()-lastLagAt>10000){
+   lastLagAt=Date.now();
+   try{window.dispatchEvent(new CustomEvent('sukun:diagnostic',{detail:{kind:'event-loop-lag',message:'Görünür ana iş parçacığı gecikmesi',extra:Math.round(lag)+' ms'}}))}catch(e){}
+  }
+  armLag();
  },1500);
 }
-// Background timer throttling is not treated as an application freeze.
+document.addEventListener('visibilitychange',()=>resetLag(document.hidden),{passive:true});
+document.addEventListener('freeze',()=>resetLag(true),{passive:true});
+document.addEventListener('resume',()=>resetLag(false),{passive:true});
+window.addEventListener('pagehide',()=>resetLag(true),{passive:true});
+window.addEventListener('pageshow',()=>resetLag(false),{passive:true});
+// Temporal hints are diagnostic correlation, not a JavaScript stack trace.
+document.addEventListener('pointerdown',e=>{lastInput={at:performance.now(),target:clean(e.target?.id||e.target?.tagName||''),kind:'pointer'}},{capture:true,passive:true});
+try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
+ if(document.hidden||window.SukunDiagnosticWork?.owns?.(x))continue;
+ visibleLongTaskCount++;
+ recentLongTasks.push({at:Date.now(),durationMs:Math.round(x.duration),lastInput:lastInput&&x.startTime-lastInput.at<2000?lastInput:null});
+ if(recentLongTasks.length>24)recentLongTasks.shift();
+}}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r713',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  errors,lastError,lastAt,
  eventHealth:{total:eventTotal,peakPerSecond:Math.max(eventPeak,eventCount),currentSecond:eventCount,storms:eventStorms,lastStormAt,watched:watched.length},
- eventLoop:{lastLagMs:lagLast,maxLagMs:lagMax,samples:lagSamples,lastLagAt},
+ eventLoop:{lastLagMs:lagLast,maxLagMs:lagMax,samples:lagSamples,lastLagAt,visibilityResets:lagResets,hiddenWakeups},
+  r713:{version:'r713',visibleLongTaskCount,recentLongTasks:recentLongTasks.slice(),kandil:safe(()=>window.SukunKandil?.snapshot?.())},
  physical:safe(()=>window.SukunR693Integrity?.physical?.()),
  terminal:safe(()=>window.SukunR693Integrity?.snapshot?.()),
  truth:safe(()=>window.SukunAudioTruth?.snapshot?.()),
@@ -67382,6 +67448,7 @@ function snapshot(){return Object.freeze({
 const api=Object.freeze({version:VERSION,snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r711-refresh');return true}});
 window.SukunR711Stability=api;
 window.SukunR710Stability=api; // compatibility with existing diagnostics
+window.SukunR713Stability=api;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
 </script>
