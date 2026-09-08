@@ -1,8 +1,8 @@
-/* SÜKÛN r714 — Interaction Performance & Native Input Evidence */
+/* SÜKÛN r715 — Feyz Shell Theme Integration */
 'use strict';
 
-const SURUM = 'r714';
-const CACHE = 'sukun-r714-20260908a';
+const SURUM = 'r715';
+const CACHE = 'sukun-r715-20260908b';
 
 const CORE = [
   './nero.html',
@@ -17,14 +17,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r714__.json';
+const BUILD_MARKER='./__sukun_build_r715__.json';
 
 const NOTLAR = [
-  "r714 · Zikir kartı ölçücüsünün alt ağaç taraması kaldırıldı; doğal akış ve sınırlı doğrudan çocuk ölçümü kullanılır.",
-  "Erişilebilirlik taraması yalnız yeni DOM alt ağaçlarını bir kez işler ve işi kısa parçalara böler. Mevcut aria-label, switch ve Arapça lang kuralları korunur.",
-  "Genel arama, innerText yerine textContent temelli bir dizin oluşturur; gizli denetimler, kilitli içerikler ve diğer sekmelere erişim korunur.",
-  "Dokunma tanısı iptalleri sınıflandırır, hiçbir iptali otomatik tıklamaya dönüştürmez. Sesli sayımın voice-false geri alma güvenliği korunur.",
-  "r713 Kandil ve Pause/Stop düzeltmeleri ile sinematik tasarım korunur. Fiziksel Android, kilit ekranı ve uzun kullanım ayrıca doğrulanmalıdır."
+  "r715 · Feyz shell entegrasyonu: tüm uygulamaya zümrüt-mavi-mor cam kabuk, premium kartlar ve kapsül butonlar giydirildi.",
+  "Tefekkür/Zikir sahnesinde sayaç çemberi hafif yukarı alındı; mor neon alev halkası yalnız çember çevresinde dolaşır, Hedef/Kalan kutularının üstüne taşmaz.",
+  "Varsayılan tema yoksa kuzey teması seçilir; r714 performans ve giriş otoriteleri korunur. Gerçek Android ve uzun kullanım doğrulaması ayrıca gereklidir."
 ];
 
 function buildOfHtml(text){

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r714 — Interaction Performance & Native Input Evidence (base r713)
+     SÜKÛN r715 — Feyz Shell Theme Integration (base r714)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r714">
+<meta name="sukun-build" content="r715">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r714">
+<link rel="manifest" href="./manifest.webmanifest?v=r715">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r714</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.22 — build 2026-09-08-r715</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6534,10 +6534,12 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
   {
-    "v": "r714",
+    "v": "r715",
     "t": "8 Eylül 2026",
     "b": [
-      "r714 · Zikir kartı ölçücüsünün alt ağaç taraması kaldırıldı; doğal akış ve sınırlı doğrudan çocuk ölçümü kullanılır.",
+      "r715 · Feyz shell entegrasyonu: tüm uygulamaya zümrüt-mavi-mor cam kabuk, premium kartlar ve kapsül butonlar giydirildi.",
+      "Tefekkür/Zikir sahnesinde sayaç çemberi hafif yukarı alındı; mor neon alev halkası yalnız çember çevresinde dolaşır, Hedef/Kalan kutularının üstüne taşmaz.",
+      "Varsayılan tema yoksa kuzey teması seçilir; r714 performans ve giriş otoriteleri korunur. Gerçek Android ve uzun kullanım doğrulaması ayrıca gereklidir.",
       "Erişilebilirlik taraması yalnız yeni DOM alt ağaçlarını bir kez işler ve işi kısa parçalara böler. Mevcut aria-label, switch ve Arapça lang kuralları korunur.",
       "Genel arama, innerText yerine textContent temelli bir dizin oluşturur; gizli denetimler, kilitli içerikler ve diğer sekmelere erişim korunur.",
       "Dokunma tanısı iptalleri sınıflandırır, hiçbir iptali otomatik tıklamaya dönüştürmez. Sesli sayımın voice-false geri alma güvenliği korunur.",
@@ -25920,7 +25922,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r714';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r715';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -67099,13 +67101,13 @@ function enter(){
 window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 })();
 </script>
-<script id="r714-release-identity-runtime">(()=>{
+<script id="r715-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r714',date='2026-09-08';
+const build=meta?.content||'r715',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.21 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r714',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r715',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67387,6 +67389,207 @@ html body.r710-sanctuary.sukun-tefekkur-mode #tfRefinedLayout :is(button,[role="
 @media(prefers-reduced-motion:reduce){html body.r710-sanctuary.sukun-tefekkur-mode #r709Mandala{filter:none!important}}
 
 </style>
+
+<style id="r715-shell-theme">
+html body.r715-shell{
+  --shell-edge:rgba(118,243,218,.22);
+  --shell-edge-strong:rgba(183,255,233,.58);
+  --shell-violet:rgba(176,110,255,.22);
+  --shell-cyan:rgba(88,210,255,.18);
+  --shell-green:rgba(54,224,171,.18);
+  --shell-gold:rgba(236,210,126,.22);
+  --shell-panel:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01)),linear-gradient(140deg,rgba(4,32,40,.84),rgba(7,22,34,.9) 52%,rgba(8,18,31,.96));
+  --shell-card-shadow:0 14px 42px -28px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.018),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -18px 40px rgba(0,0,0,.22);
+  --shell-pill-shadow:0 10px 28px -22px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.09),0 0 18px rgba(53,213,164,.08);
+}
+html body.r715-shell::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-4;
+  background:
+    radial-gradient(65% 45% at 50% -6%,rgba(76,235,198,.14),transparent 62%),
+    radial-gradient(45% 30% at 84% 16%,rgba(165,97,255,.14),transparent 68%),
+    radial-gradient(52% 34% at 10% 90%,rgba(64,154,255,.12),transparent 72%),
+    linear-gradient(180deg,rgba(2,8,12,.12),rgba(2,7,11,.2)),
+    url('./assets/tefekkur-sanctuary-r710.webp') center top / cover no-repeat;
+  opacity:.28;filter:saturate(1.12) contrast(1.06);
+}
+html body.r715-shell::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-3;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 1px,transparent 1px 48px),
+    linear-gradient(180deg,rgba(2,8,14,.12),rgba(2,8,14,.28) 45%,rgba(1,5,8,.6));
+  mix-blend-mode:screen;opacity:.25;
+}
+html body.r715-shell .wrap{position:relative;isolation:isolate}
+html body.r715-shell .wrap::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+  background:
+    radial-gradient(1200px 680px at 50% 0%,rgba(42,244,198,.07),transparent 62%),
+    radial-gradient(900px 620px at 50% 100%,rgba(153,88,255,.06),transparent 60%);
+}
+html body.r715-shell header{
+  position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--gold) 18%,rgba(112,255,219,.22));
+  border-radius:26px;padding:18px 14px 19px;margin:8px 0 14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0)),linear-gradient(140deg,rgba(6,25,32,.88),rgba(6,18,28,.93) 58%,rgba(4,13,22,.97));
+  box-shadow:0 20px 42px -30px rgba(0,0,0,.92),0 0 0 1px rgba(16,120,110,.08),inset 0 1px 0 rgba(238,255,249,.08);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+html body.r715-shell header::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 120% at 50% -24%,rgba(90,255,210,.12),transparent 62%),radial-gradient(44% 60% at 80% 110%,rgba(169,104,255,.12),transparent 55%);
+}
+html body.r715-shell .logo:not(#ns *){filter:drop-shadow(0 0 14px rgba(90,255,212,.22))}
+html body.r715-shell .shimmer-text{color:#eef7f4;text-shadow:0 0 24px rgba(127,255,210,.12)}
+html body.r715-shell .sub{color:#a6c2c0;letter-spacing:.24em}
+html body.r715-shell .tabs{
+  position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px);
+  padding:9px;border-radius:22px;border:1px solid rgba(115,241,226,.18);
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0)),rgba(6,20,30,.78);
+  box-shadow:0 18px 38px -30px rgba(0,0,0,.94),inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+html body.r715-shell .tab,html body.r715-shell .tabTekke{
+  border-radius:16px;border:1px solid transparent;
+  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,0));
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease,color .18s ease;
+}
+html body.r715-shell .tab.act,html body.r715-shell .tab[aria-selected="true"],html body.r715-shell .tabTekke.act{
+  color:#f5f8ef;border-color:rgba(143,244,220,.52);
+  background:linear-gradient(135deg,rgba(38,148,118,.38),rgba(24,94,108,.34) 56%,rgba(83,54,136,.25));
+  box-shadow:0 0 0 1px rgba(255,255,255,.03),0 8px 22px -18px rgba(59,255,193,.45),inset 0 1px 0 rgba(240,255,249,.12);
+}
+html body.r715-shell .tab:active,html body.r715-shell .tabTekke:active{transform:translateY(1px)}
+html body.r715-shell .card:not(#ns *),html body.r715-shell .todayCard,html body.r715-shell .wkCard,
+html body.r715-shell .zItem,html body.r715-shell .sess,html body.r715-shell .cat,html body.r715-shell .pre,
+html body.r715-shell .rut,html body.r715-shell .jEd,html body.r715-shell .virdWrap,
+html body.r715-shell #logSheet,html body.r715-shell #rateToast,html body.r715-shell #temaSheet,
+html body.r715-shell .mrCard,html body.r715-shell .vaultCard,html body.r715-shell .dlRow{
+  background:var(--shell-panel)!important;
+  border:1px solid color-mix(in srgb,var(--gold) 20%,rgba(113,251,227,.23))!important;
+  box-shadow:var(--shell-card-shadow)!important;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+html body.r715-shell .secT,html body.r715-shell .tcHi{color:#f2ebcf;text-shadow:0 0 18px rgba(221,187,101,.16)}
+html body.r715-shell .hint,html body.r715-shell .tcSub{color:#8ca6a3}
+html body.r715-shell .btn,html body.r715-shell .dockItem,html body.r715-shell .tcGo,
+html body.r715-shell .mrGo,html body.r715-shell .r494NavBtn,html body.r715-shell .seg button,
+html body.r715-shell .toggle-btn,html body.r715-shell .sw,
+html body.r715-shell .r588-authority button:not(select),html body.r715-shell .spkBtn,
+html body.r715-shell .r679PresetBtn,html body.r715-shell .r679VoiceCard,
+html body.r715-shell .r679Segment button,html body.r715-shell .r679ActBtn,
+html body.r715-shell .r611HeroName,html body.r715-shell .zStepBtn{
+  border-radius:18px!important;
+  border:1px solid color-mix(in srgb,var(--gold) 18%,rgba(127,234,225,.28))!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01)),linear-gradient(140deg,rgba(8,38,48,.92),rgba(7,22,34,.96) 58%,rgba(8,18,31,.98))!important;
+  box-shadow:var(--shell-pill-shadow)!important;
+}
+html body.r715-shell .btn.pri,html body.r715-shell .tcGo,html body.r715-shell #autoBtn,html body.r715-shell .mrGo,
+html body.r715-shell .r588Play,html body.r715-shell .r170Act.play{
+  background:linear-gradient(115deg,rgba(20,125,91,.96),rgba(11,88,83,.97) 48%,rgba(22,67,116,.97))!important;
+  border-color:rgba(151,255,219,.88)!important;color:#effbf8!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.035),0 12px 30px -20px rgba(34,255,182,.42),inset 0 1px 0 rgba(255,255,255,.16)!important;
+}
+html body.r715-shell #tefExitBtn,html body.r715-shell .btn.danger,html body.r715-shell .r588Stop{
+  background:linear-gradient(115deg,rgba(88,44,128,.94),rgba(55,54,121,.95) 48%,rgba(104,55,161,.92))!important;
+  border-color:rgba(220,170,255,.82)!important;color:#f6ebff!important;
+  box-shadow:0 12px 30px -22px rgba(168,92,255,.34),inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+html body.r715-shell :is(select,input:not([type="range"]),textarea,#zSearch,.libSearch,.numIn){
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),rgba(8,23,34,.82)!important;
+  border:1px solid color-mix(in srgb,var(--gold) 14%,rgba(101,225,209,.24))!important;
+  color:var(--ivory)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+html body.r715-shell .dock{border-top-color:rgba(119,244,226,.12)}
+html body.r715-shell .di,html body.r715-shell .ico{filter:drop-shadow(0 0 8px rgba(103,255,214,.12))}
+html body.r715-shell .r611CurrentZikirHero,
+html body.r715-shell #tekkeContextCard,
+html body.r715-shell .r630TekkeContext,
+html body.r715-shell #r170Now.r588-authority>#r588DockShell{
+  background:linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.008)),linear-gradient(145deg,rgba(8,24,34,.88),rgba(7,18,28,.94) 55%,rgba(5,14,24,.98))!important;
+  border-color:rgba(114,241,225,.22)!important;
+  box-shadow:0 18px 40px -30px rgba(0,0,0,.92),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+html body.r715-shell #r611CurrentZikirName,html body.r715-shell #tekkeContextName{color:#f6efcf!important;text-shadow:0 0 22px rgba(255,224,147,.13)}
+html body.r715-shell #r611CurrentZikirSub{color:#b5d1cd!important}
+html body.r715-shell.sukun-tefekkur-mode #tab-zkr>.card.zCtl,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout{
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0)),linear-gradient(145deg,rgba(5,26,33,.82),rgba(3,18,27,.92) 56%,rgba(4,14,25,.98))!important;
+  border-color:rgba(136,250,229,.28)!important;box-shadow:0 20px 54px -34px rgba(0,0,0,.92),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{
+  position:relative!important;z-index:1!important;
+  width:min(100%,232px)!important;max-width:min(100%,232px)!important;aspect-ratio:1/1!important;
+  margin:-10px auto 10px!important;transform:translateY(-10px)!important;
+  background:radial-gradient(circle at 50% 34%,rgba(17,97,74,.94),rgba(4,31,40,.985) 56%,#04131f 100%)!important;
+  border:1px solid rgba(176,255,225,.72)!important;
+  box-shadow:0 0 0 5px rgba(8,44,55,.58),0 0 0 6px rgba(100,255,220,.30),0 0 26px rgba(31,255,191,.16),0 0 50px rgba(121,82,255,.14),inset 0 0 46px rgba(0,0,0,.54)!important;
+  overflow:visible!important; isolation:isolate!important;
+}
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual::before{
+  content:"";position:absolute;inset:-7px;border-radius:50%;pointer-events:none;z-index:0;
+  background:conic-gradient(from 0deg,transparent 0 6%,rgba(196,120,255,.34) 10%,rgba(196,120,255,.08) 16%,transparent 23%,transparent 28%,rgba(171,95,255,.26) 33%,rgba(193,120,255,.08) 39%,transparent 46%,transparent 52%,rgba(160,88,255,.28) 58%,rgba(188,115,255,.08) 65%,transparent 72%,transparent 78%,rgba(205,126,255,.28) 84%,rgba(205,126,255,.08) 90%,transparent 96%);
+  filter:blur(3px) saturate(1.15);opacity:.92;animation:r715FlameOrbit 8s linear infinite;
+  -webkit-mask:radial-gradient(circle,transparent 62%,#000 72%,#000 77%,transparent 91%);
+          mask:radial-gradient(circle,transparent 62%,#000 72%,#000 77%,transparent 91%);
+}
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual::after{
+  content:"";position:absolute;inset:-14px;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle at 50% 50%,rgba(187,108,255,.12),transparent 58%),radial-gradient(circle at 18% 26%,rgba(219,157,255,.28),transparent 20%),radial-gradient(circle at 80% 68%,rgba(181,88,255,.22),transparent 20%);
+  filter:blur(9px);opacity:.78;animation:r715FlamePulse 5.6s ease-in-out infinite;
+}
+@keyframes r715FlameOrbit{to{transform:rotate(360deg)}}
+@keyframes r715FlamePulse{0%,100%{transform:scale(.98);opacity:.62}50%{transform:scale(1.05);opacity:.96}}
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout .zCounterRow,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout .zCounterActions,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout .zCounterMeta,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #r470VoiceSource,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #r494TefNavSlot,
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{
+  position:relative;z-index:2;
+}
+html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout .zCounterSide{
+  background:linear-gradient(140deg,rgba(4,34,45,.82),rgba(4,18,30,.92))!important;
+  border-color:rgba(116,234,224,.42)!important;
+}
+html body.r715-shell #r616Topbar,html body.r715-shell #r616BottomNav{
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.008)),rgba(6,18,28,.84)!important;
+  border-color:rgba(113,241,225,.18)!important;
+  box-shadow:0 16px 36px -28px rgba(0,0,0,.92),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+html body.r715-shell #r616BottomNav .r616NavBtn,html body.r715-shell #r616Topbar button{
+  border-radius:18px!important;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.008)),rgba(9,24,35,.88)!important;
+  border:1px solid rgba(116,234,224,.18)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+@media(max-width:390px){
+ html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{width:min(100%,214px)!important;max-width:214px!important;margin:-6px auto 8px!important;transform:translateY(-8px)!important}
+}
+@media(max-width:350px){
+ html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{width:min(100%,198px)!important;max-width:198px!important;margin:-4px auto 8px!important;transform:translateY(-6px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html body.r715-shell::before,html body.r715-shell::after,html body.r715-shell .wrap::before{animation:none}
+ html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual::before,
+ html body.r715-shell.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual::after{animation:none!important}
+}
+</style>
+<script id="r715-shell-runtime">(()=>{
+'use strict';
+if(window.SukunR715Shell)return;
+const VERSION='r715';
+function applyShell(){
+  const b=document.body;if(!b)return;
+  b.classList.add('r715-shell');
+  try{
+    const key='sukun.tema';
+    const legacy=localStorage.getItem(key)||localStorage.getItem('tema');
+    if(!legacy && !b.dataset.tema) b.dataset.tema='kuzey';
+  }catch(e){}
+}
+const api=Object.freeze({version:VERSION,apply:applyShell,snapshot:()=>({version:VERSION,active:document.body?.classList.contains('r715-shell')||false,tema:document.body?.dataset?.tema||''})});
+window.SukunR715Shell=api;
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyShell,{once:true});else applyShell();
+})();</script>
+
 <script id="r711-stability-runtime">(()=>{
 'use strict';
 if(window.SukunR711Stability)return;

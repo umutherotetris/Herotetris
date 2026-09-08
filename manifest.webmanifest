@@ -3,7 +3,7 @@
   "short_name": "SÜKÛN",
   "description": "Tasavvufî ses, zikir, sükûn, frekans ve tefekkür uygulaması.",
   "id": "./nero.html",
-  "start_url": "./nero.html?v=r714",
+  "start_url": "./nero.html?v=r715",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -11,8 +11,8 @@
     "minimal-ui"
   ],
   "orientation": "portrait",
-  "background_color": "#05090c",
-  "theme_color": "#05090c",
+  "background_color": "#07141b",
+  "theme_color": "#07141b",
   "lang": "tr",
   "dir": "ltr",
   "categories": [
@@ -43,7 +43,7 @@
     {
       "name": "SÜKÛN'u Aç",
       "short_name": "SÜKÛN",
-      "url": "./nero.html?v=r714",
+      "url": "./nero.html?v=r715",
       "icons": [
         {
           "src": "./icon-192.png",
