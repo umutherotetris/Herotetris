@@ -1,5 +1,27 @@
 [
   {
+    "v": "r718",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r718 · Yeni paylaşılan altın amblem ve çok ekranlı tasarım panosundan ilham: altın mühür, ince geometrik desen, turkuaz cam ve mor ışık aynı görsel dilde birleşti.",
+      "Canlı uygulama başlığı ve PWA ikonları aynı yeni amblemi kullanır. Işık halkası akışkan mor-turkuaz çizgiler ve altın/inci noktalarla yenilendi.",
+      "r717 ortak arka planı Bugün, Zikir, Seyirler, Sesler, Tefekkür, Tekke ve NeuroSync boyunca korunur; mevcut gezinme yapısı ve kontrol yerleşimi değiştirilmez.",
+      "Ambiyans, Canlı/Sabit, pil ve azaltılmış hareket tercihleri mevcut görsel yaşam döngüsünü kullanır. Yeni canvas, animasyon zamanlayıcısı veya ses sahibi eklenmez.",
+      "Ayarların iki eski v20.21 etiketi v20.23 ile eşitlendi. Build/manifest/SW r718; fiziksel Android ve canlı tarayıcı doğrulaması bu ortamda yapılmadı."
+    ]
+  },
+  {
+    "v": "r717",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r717 · r716 Feyz tasarımı temel alındı. Yazı ve telefon simgesi kalıntısı içermeyen ortak zemin; Bugün, Zikir, Seyirler, Sesler, Tefekkür, Tekke ve NeuroSync boyunca aynı sahne.",
+      "Mor alev halkası ve r716 kontrol geometrisi korundu. Ambiyans kaydırıcısı alev yoğunluğunu değiştirir; detay paneli, gizli sayfa, pil profili ve azaltılmış harekette dekorasyon durur.",
+      "Tema seçenekleri gerçek klavye düğmeleridir. AMOLED ve Sabah Nuru seçimi kendi görünümünü kullanır; kaydedilmiş Feyz tercihi silinmez.",
+      "Geri/ileri dönüşünde sayaç basamak izleyicisi yeniden bağlanır. Değişmeyen atmosfer durumu tekrar DOM mutasyonu üretmez.",
+      "Ses, kayıt, Pause/Stop ve seyir otoriteleri r716 ile aynıdır. Kaynak ve VM regresyonları çalıştırıldı; bu sürüm için canlı tarayıcı ve fiziksel Android testi yapılamadı."
+    ]
+  },
+  {
     "v": "r716",
     "t": "8 Eylül 2026",
     "b": [

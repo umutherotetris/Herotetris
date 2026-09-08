@@ -1,8 +1,8 @@
-/* SÜKÛN r716 — Feyz Shell Assets & Safe Flame Ring */
+/* SÜKÛN r718 — Gold Emblem, Turquoise Glass & Flowing Light */
 'use strict';
 
-const SURUM = 'r716';
-const CACHE = 'sukun-r716-20260908a';
+const SURUM = 'r718';
+const CACHE = 'sukun-r718-20260908a';
 
 const CORE = [
   './nero.html',
@@ -13,7 +13,12 @@ const CORE = [
   './assets/feyz-mark.svg',
   './assets/feyz-ornament.svg',
   './assets/feyz-flame-ring.svg',
-  './assets/feyz-flame-ring.webp'
+  './assets/feyz-flame-ring.webp',
+  './assets/sukun-sanctuary-r717.webp',
+  './assets/sukun-sanctuary-r717-small.webp',
+  './assets/feyz-mark-r718.svg',
+  './assets/feyz-pattern-r718.svg',
+  './assets/feyz-flame-ring-r718.webp'
 ];
 const OPTIONAL = [
   './surumler.json',
@@ -21,14 +26,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r716__.json';
+const BUILD_MARKER='./__sukun_build_r718__.json';
 
 const NOTLAR = [
-  "r716 · Feyz kabuğu gerçek asset sistemiyle tamamlandı: dumansız mor alev halkası, altın süsler, yeni uygulama ikonları ve ortak cam panel dili.",
-  "Tefekkür çemberi hafif yukarıda; alevin görünür dış sınırı Hedef/Kalan ve kontrol satırlarından ayrı tutulur. Normal zikirde alev çemberin kendi sınırına sığar.",
-  "Eski atmosferin canvas çizimi Feyz kabuğunda durur; mevcut Sabit/Canlı ve yoğunluk tercihleri korunur. Yeni alev gizli ekran, pil modu ve azaltılmış harekette animasyon yapmaz.",
-  "Var olan butonlar, nav veri kimlikleri, sayaç ve ses motorları korunur. Kabuğu ayarlardan kapatma seçeneği eklenir; kayıtlı renk teması silinmez.",
-  "r714 performans düzeltmeleri ve r713 Pause/Stop/Kandil onarımları korunur. Fiziksel Android uzun kullanım, kilit ekranı ve gerçek kayıt akışı ayrıca doğrulanmalıdır."
+  "r718 · Yeni paylaşılan altın amblem ve çok ekranlı tasarım panosundan ilham: altın mühür, ince geometrik desen, turkuaz cam ve mor ışık aynı görsel dilde birleşti.",
+  "Canlı uygulama başlığı ve PWA ikonları aynı yeni amblemi kullanır. Işık halkası akışkan mor-turkuaz çizgiler ve altın/inci noktalarla yenilendi.",
+  "r717 ortak arka planı Bugün, Zikir, Seyirler, Sesler, Tefekkür, Tekke ve NeuroSync boyunca korunur; mevcut gezinme yapısı ve kontrol yerleşimi değiştirilmez.",
+  "Ambiyans, Canlı/Sabit, pil ve azaltılmış hareket tercihleri mevcut görsel yaşam döngüsünü kullanır. Yeni canvas, animasyon zamanlayıcısı veya ses sahibi eklenmez.",
+  "Ayarların iki eski v20.21 etiketi v20.23 ile eşitlendi. Build/manifest/SW r718; fiziksel Android ve canlı tarayıcı doğrulaması bu ortamda yapılmadı."
 ];
 
 function buildOfHtml(text){
