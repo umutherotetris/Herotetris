@@ -1,5 +1,17 @@
 [
   {
+    "v": "r719",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r719 · Görünüm seçimi Feyz, Osmanlı ve Semerkant olarak birleştirildi. Araçlar ve arayüz düzeni aynı seçimi gösterir; çakışan ayrı Feyz anahtarı kaldırıldı.",
+      "Mevcut görünüm ve renk tercihleri korunur. AMOLED veya Sabah Nuru etkinse, saklanan Feyz tercihi ile ekranda uygulanan renk teması ayarlarda açıklanır.",
+      "Tefekkür başlığı canlı DOM ile eşitlenir. Yeniden oluşturulan başlık düğümü, aynı zikir adı ve geri dönüşteki görünürlük güvenle yenilenir; yinelenen olaylar tek karede birleştirilir.",
+      "Genel tıklama başına çalışan başlık zamanlayıcısı kaldırıldı. Gizli sayfada ve pagehide sonrasında bekleyen görsel güncelleme iptal edilir; pageshow ile kaynak gözlemi tekrar bağlanır.",
+      "Dar ekran gezinme ve Tefekkür kontrol etiketleri en az 11 piksel olur. Çıkış metni gerektiğinde satıra bölünür; mevcut sayaç, kaydırma, ses ve transport sahipleri korunur.",
+      "Build, manifest, sürüm notları ve Service Worker r719 olarak eşitlendi. Canlı tarayıcı ve fiziksel Android ses davranışı bu ortamda doğrulanmadı."
+    ]
+  },
+  {
     "v": "r718",
     "t": "8 Eylül 2026",
     "b": [

@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r718">
+<meta name="sukun-build" content="r719">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r718">
+<link rel="manifest" href="./manifest.webmanifest?v=r719">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.23 — build 2026-09-08-r718</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.23 — build 2026-09-08-r719</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,18 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r719",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r719 · Görünüm seçimi Feyz, Osmanlı ve Semerkant olarak birleştirildi. Araçlar ve arayüz düzeni aynı seçimi gösterir; çakışan ayrı Feyz anahtarı kaldırıldı.",
+      "Mevcut görünüm ve renk tercihleri korunur. AMOLED veya Sabah Nuru etkinse, saklanan Feyz tercihi ile ekranda uygulanan renk teması ayarlarda açıklanır.",
+      "Tefekkür başlığı canlı DOM ile eşitlenir. Yeniden oluşturulan başlık düğümü, aynı zikir adı ve geri dönüşteki görünürlük güvenle yenilenir; yinelenen olaylar tek karede birleştirilir.",
+      "Genel tıklama başına çalışan başlık zamanlayıcısı kaldırıldı. Gizli sayfada ve pagehide sonrasında bekleyen görsel güncelleme iptal edilir; pageshow ile kaynak gözlemi tekrar bağlanır.",
+      "Dar ekran gezinme ve Tefekkür kontrol etiketleri en az 11 piksel olur. Çıkış metni gerektiğinde satıra bölünür; mevcut sayaç, kaydırma, ses ve transport sahipleri korunur.",
+      "Build, manifest, sürüm notları ve Service Worker r719 olarak eşitlendi. Canlı tarayıcı ve fiziksel Android ses davranışı bu ortamda doğrulanmadı."
+    ]
+  },
   {
     "v": "r718",
     "t": "8 Eylül 2026",
@@ -25962,7 +25974,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r718';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r719';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -59280,21 +59292,15 @@ if(window.__SUKUN_R611_CURRENT_HERO__)return;
 window.__SUKUN_R611_CURRENT_HERO__=1;
 
 const $=id=>document.getElementById(id);
-let lastText='', lastHidden=null;
+let pending=0,departed=false,bound=false,watchedTr=null,watchedToast=null;
+const observer=window.MutationObserver?new MutationObserver(schedule):null;
 
-function bodyMode(){
-  return document.body?.dataset?.r474NameMode||'fixed';
-}
-function nameCategory(){
-  const k=document.body?.dataset?.r474NameCategory||'';
-  return k==='esma'||k==='berhet';
-}
 function animationActuallyVisible(){
   try{
     const layer=$('nameToastLayer');
-    if(!layer || !layer.classList.contains('show'))return false;
+    if(!layer||!layer.classList.contains('show'))return false;
     const cs=getComputedStyle(layer);
-    return cs.display!=='none' && cs.visibility!=='hidden' && Number(cs.opacity||1)>0.01;
+    return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)>0.01;
   }catch(e){return false}
 }
 function currentText(){
@@ -59315,82 +59321,51 @@ function subtitle(){
   if(cat==='berhet')return 'şu an zikredilen Berhetiyye ismi';
   return 'şu an zikredilen zikir';
 }
-function shouldShow(){
-  const hero=$('r611CurrentZikirHero');
-  if(!hero)return false;
-
-  /* Sayaç üstü isim temel bilgidir: Tefekkürde her zaman görünür.
-     Yalnız gerçek animasyon kartı ekranda olduğu an onunla çakışmamak için teslim olur. */
-  if(!document.body?.classList.contains('sukun-tefekkur-mode'))return false;
-
-  const text=currentText();
-  if(!text)return false;
-
-  if(animationActuallyVisible())return false;
-  return true;
+function cancel(){if(pending)cancelAnimationFrame(pending);pending=0}
+function observeSources(){
+  if(!observer)return;
+  const tr=$('zTr'),toast=$('nameToastLayer');
+  if(bound&&tr===watchedTr&&toast===watchedToast)return;
+  observer.disconnect();watchedTr=tr;watchedToast=toast;bound=true;
+  if(document.body)observer.observe(document.body,{attributes:true,attributeFilter:['class','data-r474-name-mode','data-r474-name-category']});
+  if(tr)observer.observe(tr,{subtree:true,childList:true,characterData:true});
+  if(toast)observer.observe(toast,{attributes:true,attributeFilter:['class','style','hidden']});
 }
 function sync(){
-  const hero=$('r611CurrentZikirHero'), name=$('r611CurrentZikirName'), sub=$('r611CurrentZikirSub');
+  cancel();
+  if(document.hidden||departed)return;
+  observeSources();
+  const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub');
   if(!hero||!name||!sub)return;
-
-  const text=currentText();
-  if(text && text!==lastText){
-    lastText=text;
-    name.textContent=text;
-    hero.classList.toggle('r611-long',text.length>18&&text.length<=38);
-    hero.classList.toggle('r611-vlong',text.length>38);
-  }
-  /* ═══ r627 — ALTYAZI HER ÇAĞRIDA YAZILIP DOM FIRTINASI ÜRETİYORDU ══
-     Hemen yukarıdaki isim yazımı «değiştiyse yaz» korumasıyla çevriliydi
-     ama altyazı korumasızdı: sync her çalıştığında textContent yeniden
-     atanıyor, metin düğümü değiştiği için her seferinde bir childList
-     mutasyonu üretiyordu.
-
-     Bu modülün kendisi body sınıfını izleyen bir gözlemci üzerinden
-     sync'i çağırıyor ve dosyada toplam otuz sekiz gözlemci var. Sonuç
-     kendi kendini besleyen bir fırtına: boşta on saniyede dört bin iki
-     yüz yetmiş beş gözlemci tetiklenmesi, saniyede üç yüz otuz
-     zamanlayıcı ve iki yüz yirmi altı kare isteği ölçüldü. Referans
-     değerler saniyede on dört ve altmış beşti.
-
-     Altyazı artık yalnız gerçekten değiştiyse yazılıyor — isim yazımıyla
-     aynı desen. Görünen metin değişmiyor, yalnız gereksiz yazım kalkıyor. */
-  const yeniAlt=subtitle();
-  if(sub.textContent!==yeniAlt)sub.textContent=yeniAlt;
-
-  const show=shouldShow();
-  if(lastHidden!==!show){
-    lastHidden=!show;
-    hero.hidden=!show;
-    hero.setAttribute('aria-hidden',show?'false':'true');
-  }
+  const text=currentText(),alt=subtitle();
+  // Compare the live nodes: the same name may belong to a newly restored DOM.
+  if(name.textContent!==text)name.textContent=text;
+  if(sub.textContent!==alt)sub.textContent=alt;
+  const long=text.length>18&&text.length<=38,vlong=text.length>38;
+  if(hero.classList.contains('r611-long')!==long)hero.classList.toggle('r611-long',long);
+  if(hero.classList.contains('r611-vlong')!==vlong)hero.classList.toggle('r611-vlong',vlong);
+  const show=!!text&&document.body.classList.contains('sukun-tefekkur-mode')&&!animationActuallyVisible();
+  if(hero.hidden!==!show)hero.hidden=!show;
+  if(hero.getAttribute('aria-hidden')!==String(!show))hero.setAttribute('aria-hidden',String(!show));
 }
-
-/* zTr renderZikir tarafından güncellenir; doğrudan izlemek bütün zikir yollarını kapsar. */
-const tr=$('zTr');
-if(tr){
-  new MutationObserver(sync).observe(tr,{subtree:true,childList:true,characterData:true});
+function schedule(){
+  if(document.hidden||departed){cancel();return}
+  if(!pending)pending=requestAnimationFrame(sync);
 }
-const toast=$('nameToastLayer');
-if(toast){
-  new MutationObserver(sync).observe(toast,{attributes:true,attributeFilter:['class','style','hidden']});
-}
-const body=document.body;
-if(body){
-  new MutationObserver(sync).observe(body,{attributes:true,attributeFilter:['class','data-r474-name-mode','data-r474-name-category']});
-}
-
 [
   'sukun:currentzikirchange','sukun:currentflowchange','sukun:zikirnav',
-  'sukun:playbackchange','sukun:tabchange','pageshow'
-].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
-
-document.addEventListener('click',()=>setTimeout(sync,100),{passive:true});
+  'sukun:playbackchange','sukun:tabchange'
+].forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
+// Recheck opacity at the end of the existing name transition, without a timer.
+['transitionend','animationend'].forEach(ev=>document.addEventListener(ev,e=>{
+  if(e.target===watchedToast)schedule();
+},{passive:true}));
+document.addEventListener('visibilitychange',schedule,{passive:true});
+window.addEventListener('pagehide',()=>{departed=true;cancel();observer?.disconnect();bound=false},{passive:true});
+window.addEventListener('pageshow',()=>{departed=false;schedule()},{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});
 sync();
-setTimeout(sync,250);
-setTimeout(sync,900);
-
-window.SukunCurrentZikirHero={version:'r612',sync,visible:()=>!$('r611CurrentZikirHero')?.hidden};
+window.SukunCurrentZikirHero={version:'r719',sync,visible:()=>!!$('r611CurrentZikirHero')&&!$('r611CurrentZikirHero').hidden};
 })();
 </script>
 
@@ -60223,7 +60198,6 @@ function makeShell(){
       '<button class="r616Tool" type="button" data-r616-tool="vault"><i>◇</i><span>Mühür ve özel erişim</span></button>'+
       '<button class="r616Tool danger" type="button" data-r616-tool="stop"><i>■</i><span>Tüm sesleri durdur</span></button>'+
     '</div>'+
-    '<button class="r716ShellToggle" id="r716ShellToggle" type="button" aria-pressed="true"><span data-ico="palette" aria-hidden="true"></span><span>Feyz görsel kabuğu</span><small>Açık</small></button>'+
     '<div class="r616SheetBuild">SÜKÛN · güncel</div>';
   document.body.append(scrim,sheet);
   return true;
@@ -61006,21 +60980,51 @@ function readSkin(){
   try{return normalizeSkin(localStorage.getItem(KEY)||document.body.dataset.r619Skin||'ottoman')}catch(e){return normalizeSkin(document.body.dataset.r619Skin||'ottoman')}
 }
 let skin=readSkin();
+// Legacy get/set still own only the remembered Osmanlı/Semerkant skin.
+// UI appearance selection also controls the existing Feyz preference owner.
+const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant'};
+function appearanceState(){
+  let enabled=true;
+  try{enabled=window.SukunR716Shell?.snapshot?.()?.enabled??(localStorage.getItem('sukun.shell.r716')!=='0')}catch(e){}
+  const choice=enabled?'feyz':skin,palette=document.body.dataset.tema||'';
+  const deferred=enabled&&['amoled','sabah'].includes(palette);
+  const paletteLabel=palette==='amoled'?'AMOLED':'Sabah Nuru';
+  return {choice,effective:deferred?palette:choice,
+    label:appearances[choice]+(deferred?' · '+paletteLabel:''),
+    note:deferred?paletteLabel+' renk teması etkin. Feyz seçimin saklanır.':'Arka plan, paneller ve ışık vurguları için görünümünü seç.'};
+}
+function getAppearance(){return appearanceState().choice}
+function syncAppearance(){
+  const state=appearanceState();
+  document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>r704Attr(b,'aria-pressed',String(b.dataset.r619Skin===state.choice)));
+  ['r619AppearanceNote','r620AppearanceNote'].forEach(id=>r704Text($(id),state.note));
+  sheetBuild();
+}
+function setAppearance(next){
+  if(!Object.prototype.hasOwnProperty.call(appearances,next))return false;
+  const shell=window.SukunR716Shell;
+  if(typeof shell?.setEnabled!=='function')return false;
+  if(next!=='feyz')applySkin(next,true);
+  shell.setEnabled(next==='feyz');
+  syncAppearance();
+  return true;
+}
+
 function applySkin(next,persist=true){
   skin=normalizeSkin(next);
   const changed=document.body.dataset.r619Skin!==skin;
   if(changed)document.body.dataset.r619Skin=skin;
   if(persist)try{localStorage.setItem(KEY,skin)}catch(e){}
-  document.querySelectorAll('.r619SkinBtn').forEach(b=>r704Attr(b,'aria-pressed',String(b.dataset.r619Skin===skin)));
+  syncAppearance();
   if(changed)try{window.dispatchEvent(new CustomEvent('sukun:r619skinchange',{detail:{skin}}))}catch(e){}
 }
 function skinPicker(){
   const sheet=$('r617ModeSheet');if(!sheet||$('r619SkinPicker'))return false;
   const apply=$('r617ModeApply');
   const box=document.createElement('div');box.id='r619SkinPicker';
-  box.innerHTML='<small>Görsel dil</small><div class="r619SkinRow">'+Object.entries(skins).map(([k,n])=>'<button type="button" class="r619SkinBtn" data-r619-skin="'+k+'" aria-pressed="false"><i aria-hidden="true"></i>'+n+'</button>').join('')+'</div>';
+  box.innerHTML='<small>Görünüm</small><div class="r619SkinRow" role="group" aria-label="Görünüm" aria-describedby="r619AppearanceNote">'+Object.entries(appearances).map(([k,n])=>'<button type="button" class="r619SkinBtn" data-r619-skin="'+k+'" aria-pressed="false"><i aria-hidden="true"></i><span>'+n+'</span></button>').join('')+'</div><p class="r719AppearanceNote" id="r619AppearanceNote" role="status"></p>';
   if(apply)sheet.insertBefore(box,apply);else sheet.appendChild(box);
-  box.addEventListener('click',e=>{const b=e.target.closest('.r619SkinBtn');if(b)applySkin(b.dataset.r619Skin,true)});
+  box.addEventListener('click',e=>{const b=e.target.closest('.r619SkinBtn');if(b)setAppearance(b.dataset.r619Skin)});
   applySkin(skin,false);return true;
 }
 function toolsNav(){
@@ -61068,16 +61072,17 @@ function extraTools(){
   }
   return true;
 }
-function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';r704Text(x,'SÜKÛN v20.23 · '+b+' · '+skins[skin])}
+function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';r704Text(x,'SÜKÛN v20.23 · '+b+' · '+appearanceState().label)}
 function mount(){applySkin(skin,false);skinPicker();toolsNav();soundPreview();extraTools();kicker();sheetBuild()}
 window.addEventListener('sukun:r616viewchange',e=>{document.body.classList.remove('r619-legacy-tool-open');kicker(e?.detail?.view);setTimeout(()=>{toolsNav();soundPreview();extraTools();syncSound()},0)},{passive:true});
-window.addEventListener('sukun:r619skinchange',()=>sheetBuild(),{passive:true});
+window.addEventListener('sukun:r619skinchange',syncAppearance,{passive:true});
+window.addEventListener('sukun:appearancechange',syncAppearance,{passive:true});
 document.addEventListener('click',e=>{
   if(e.target.closest?.('#r616SoundHeader [data-r616-sound]'))setTimeout(syncSound,0);
 },{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 [80,220,760,1500].forEach(ms=>setTimeout(mount,ms));
-window.SukunShellSkin=Object.freeze({version:'r631',get:()=>skin,set:s=>applySkin(s,true),skins:()=>Object.keys(skins)});
+window.SukunShellSkin=Object.freeze({version:'r719',get:()=>skin,set:s=>applySkin(s,true),skins:()=>Object.keys(skins),getAppearance,setAppearance,appearanceState,syncAppearance});
 })();
 </script>
 
@@ -61127,6 +61132,7 @@ body.r616-ui #tab-amb #mixer .preAccHead{
 if(window.__SUKUN_R620_SKIN_AMB_FIX__)return;window.__SUKUN_R620_SKIN_AMB_FIX__=1;
 const $=id=>document.getElementById(id);
 const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon'};
+const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant'};
 function normalizeSkin(x){
   return x==='samarkand'||x==='halvet' ? 'samarkand' : x==='ottoman' ? 'ottoman' : 'ottoman';
 }
@@ -61141,18 +61147,13 @@ function setSkin(k){
   }
   syncSkinButtons();
 }
-function syncSkinButtons(){
-  const cur=currentSkin();
-  document.querySelectorAll('.r619SkinBtn[data-r619-skin]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r619Skin===cur)));
-  const build=document.querySelector('.r616SheetBuild');
-  if(build){const b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';build.textContent='SÜKÛN v20.23 · '+b+' · '+(skins[cur]||skins.ottoman);}
-}
+function syncSkinButtons(){window.SukunShellSkin?.syncAppearance?.()}
 function mountSkinPanel(){
   const sheet=$('r616ToolsSheet');if(!sheet)return false;
   let panel=$('r620SkinPanel');
   if(!panel){
-    panel=document.createElement('section');panel.id='r620SkinPanel';panel.setAttribute('aria-label','Görsel dil');
-    panel.innerHTML='<div class="r620SkinHead"><span><b>✦ Görsel dil</b><small>Renk temasından bağımsız premium kabuk karakterini seç.</small></span></div><div class="r619SkinRow" role="radiogroup" aria-label="Görsel dil">'+Object.entries(skins).map(([k,n])=>'<button type="button" class="r619SkinBtn" data-r619-skin="'+k+'" aria-pressed="false"><i aria-hidden="true"></i><span>'+n+'</span></button>').join('')+'</div>';
+    panel=document.createElement('section');panel.id='r620SkinPanel';panel.setAttribute('aria-label','Görünüm');
+    panel.innerHTML='<div class="r620SkinHead"><span><b>Görünüm</b><small>Sükûn’u sana yakın hissettiren dokuyu seç.</small></span></div><div class="r619SkinRow" role="group" aria-label="Görünüm" aria-describedby="r620AppearanceNote">'+Object.entries(appearances).map(([k,n])=>'<button type="button" class="r619SkinBtn" data-r619-skin="'+k+'" aria-pressed="false"><i aria-hidden="true"></i><span>'+n+'</span></button>').join('')+'</div><p class="r719AppearanceNote" id="r620AppearanceNote" role="status"></p>';
     const build=sheet.querySelector('.r616SheetBuild');
     if(build)sheet.insertBefore(panel,build);else sheet.appendChild(panel);
   }
@@ -61173,7 +61174,7 @@ function repairAmbience(){
 function mount(){mountSkinPanel();repairAmbience();syncSkinButtons()}
 document.addEventListener('click',e=>{
   const skin=e.target.closest?.('#r620SkinPanel .r619SkinBtn[data-r619-skin]');
-  if(skin){setSkin(skin.dataset.r619Skin);return}
+  if(skin){window.SukunShellSkin?.setAppearance?.(skin.dataset.r619Skin);return}
   const head=e.target.closest?.('#mixer [data-ambacctgl]');
   if(head)setTimeout(repairAmbience,0);
 },{passive:true});
@@ -61183,7 +61184,6 @@ window.addEventListener('sukun:r616viewchange',e=>{
   }
   setTimeout(mountSkinPanel,0);
 },{passive:true});
-window.addEventListener('sukun:r619skinchange',syncSkinButtons,{passive:true});
 window.addEventListener('resize',()=>setTimeout(repairAmbience,40),{passive:true});
 window.addEventListener('orientationchange',()=>setTimeout(repairAmbience,120),{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
@@ -67151,10 +67151,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r718',date='2026-09-08';
+const build=meta?.content||'r719',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.23 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r718',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r719',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67761,13 +67761,59 @@ html body.r716-shell :is(button,[role="button"]):is(:disabled,[aria-disabled="tr
  html body.r716-shell #r616Topbar::before{opacity:.1!important}
 }
 </style>
+<style id="r719-ux-continuity">
+/* r719: one appearance choice and readable labels, with the accepted r718 art. */
+html body.r616-ui #r619SkinPicker .r619SkinRow,
+html body.r616-ui #r620SkinPanel .r619SkinRow{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+html body.r616-ui #r619SkinPicker .r619SkinBtn,
+html body.r616-ui #r620SkinPanel .r619SkinBtn{
+  min-width:0;min-height:54px;padding:8px 4px;
+  font-size:12px;line-height:1.3;letter-spacing:0;
+  white-space:normal;overflow-wrap:normal;
+}
+html body.r616-ui .r619SkinBtn[data-r619-skin="feyz"] i{
+  background:linear-gradient(90deg,#65ecd2,#b178f4,#e5c57a);
+}
+html body.r616-ui .r619SkinBtn[data-r619-skin="ottoman"] i{
+  background:linear-gradient(90deg,#2e7e6a,#b99a50,#f0d698);
+}
+html body.r616-ui .r619SkinBtn[data-r619-skin="samarkand"] i{
+  background:linear-gradient(90deg,#57dbea,#688eff,#b48af2);
+}
+html body.r616-ui #r619SkinPicker>small,
+html body.r616-ui #r620SkinPanel .r620SkinHead small,
+html body.r616-ui .r719AppearanceNote{
+  font-size:11px;line-height:1.45;letter-spacing:0;text-transform:none;
+}
+html body.r616-ui .r719AppearanceNote{margin:9px 0 0;color:var(--mut)}
+html body.r616-ui .r619SkinBtn:focus-visible{
+  outline:2px solid var(--text);outline-offset:3px;
+}
+html body.r616-ui #r616BottomNav button span{
+  font-size:11px!important;line-height:1.2!important;letter-spacing:0!important;
+}
+html body.r709-sanctuary.r699-layout.sukun-tefekkur-mode #r494TefNavSlot .r494NavBtn,
+html body.r709-sanctuary.r699-layout.sukun-tefekkur-mode #r494TefNavSlot .r494NavBtn[data-action="reset"]{
+  font-size:11px!important;line-height:1.2!important;letter-spacing:0!important;
+}
+html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow>#tefExitBtn{
+  font-size:11px!important;line-height:1.2!important;white-space:normal!important;text-align:center!important;letter-spacing:0!important;
+}
+html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tfRefinedLayout #r470VoiceSource,
+html body.r709-sanctuary #tfRefinedLayout #autoBtn b,
+html body.r709-sanctuary #tfRefinedLayout .zCounterSide small{
+  font-size:11px!important;letter-spacing:0!important;
+}
+</style>
 
 <script id="r716-shell-runtime">(()=>{
 'use strict';
 if(window.SukunR716Shell)return;
 // Keep the r716 API and preference key so an upgrade preserves the user's choice.
-const VERSION='r718',KEY='sukun.shell.r716',B=document.body;
-let enabled=true,applied=false,flames=null,pulseAnimation=null,pending=0,updates=0,lastReason='',lastPulse=0,departed=false;
+const VERSION='r719',KEY='sukun.shell.r716',B=document.body;
+let enabled=true,applied=false,flames=null,pulseAnimation=null,pending=0,updates=0,lastReason='',lastPulse=0,departed=false,appearanceSig='';
 const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
 try{enabled=localStorage.getItem(KEY)!=='0'}catch(_){}
 const safe=(fn,f=null)=>{try{return fn()}catch(_){return f}};
@@ -67797,11 +67843,10 @@ function update(reason='refresh'){
  if(!motion){pulseAnimation?.cancel();pulseAnimation=null}
  if(applied){ensureScene();ensureFlames()}
  if(flames&&flames.hidden===applied)flames.hidden=!applied;
- const toggle=document.getElementById('r716ShellToggle');
- if(toggle){
-  if(toggle.getAttribute('aria-pressed')!==String(enabled))toggle.setAttribute('aria-pressed',String(enabled));
-  const small=toggle.querySelector('small');const label=!enabled?'Kapalı':applied?'Açık':B.dataset.tema==='amoled'?'AMOLED seçili':'Sabah Nuru seçili';
-  if(small&&small.textContent!==label)small.textContent=label;
+ const nextAppearance=[enabled,applied,B.dataset.tema||''].join('|');
+ if(nextAppearance!==appearanceSig){
+  appearanceSig=nextAppearance;
+  safe(()=>window.dispatchEvent(new CustomEvent('sukun:appearancechange',{detail:{enabled,applied,theme:B.dataset.tema||''}})));
  }
  return true;
 }
@@ -67812,16 +67857,15 @@ function schedule(reason){
 }
 function setEnabled(value){enabled=!!value;try{localStorage.setItem(KEY,enabled?'1':'0')}catch(_){}update('user-setting');window.SukunAtmosphereR706?.refresh?.();return enabled}
 function pulse(){if(!B.classList.contains('r716-motion')||!flames)return;try{pulseAnimation?.cancel();pulseAnimation=flames.animate([{opacity:.85},{opacity:1},{opacity:.85}],{duration:650,easing:'ease-out'});lastPulse=Date.now()}catch(_){}}
-function mountToggle(){const sheet=document.getElementById('r616ToolsSheet');if(!sheet)return;if(sheet.querySelector('#r716ShellToggle'))return;const button=document.createElement('button');button.type='button';button.id='r716ShellToggle';button.className='r716ShellToggle';button.setAttribute('aria-pressed',String(enabled));button.innerHTML='<span data-ico="palette" aria-hidden="true"></span><span>Feyz görünümü</span><small>'+(enabled?'Açık':'Kapalı')+'</small>';sheet.querySelector('.r616ToolGrid')?.after(button);window.icoHydrate?.(button)}
+
 const bodySig=()=>[B.classList.contains('sukun-tefekkur-mode'),B.classList.contains('r699-drawer-open'),B.classList.contains('r434-inline-details-open'),B.dataset.perf||'',B.dataset.perfEffective||'',B.dataset.tema||''].join('|');
 let sig='';
 const lifecycle=()=>{const next=bodySig();if(next!==sig){sig=next;schedule('lifecycle')}};
-function boot(){mountToggle();update('boot')}
+function boot(){update('boot')}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 const unsub=safe(()=>window.SukunLifecycleHub?.onBodyClass?.(lifecycle,{immediate:true}),null);
 if(window.MutationObserver){const mo=new MutationObserver(lifecycle);mo.observe(B,{attributes:true,attributeFilter:unsub?['data-tema','data-perf','data-perf-effective']:['class','data-tema','data-perf','data-perf-effective']})}
-document.addEventListener('click',e=>{if(e.target.closest?.('#r716ShellToggle'))setEnabled(!enabled)},{passive:true});
-window.addEventListener('sukun:r616viewchange',()=>{mountToggle();schedule('view')},{passive:true});
+window.addEventListener('sukun:r616viewchange',()=>schedule('view'),{passive:true});
 window.addEventListener('sukun:zikirtransaction',e=>{if(e.detail?.phase==='committed')pulse()},{passive:true});
 window.addEventListener('sukun:atmospherechange',()=>schedule('atmosphere'),{passive:true});
 document.addEventListener('visibilitychange',()=>schedule('visibility'),{passive:true});
@@ -67897,7 +67941,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r718',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r719',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  r716:safe(()=>window.SukunR716Shell?.snapshot?.()),
  r714:{version:'r714',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),input:safe(()=>window.SukunR688TapAuthority?.snapshot?.()),counterGate:safe(()=>window.SukunZikirTransportGate?.snapshot?.()),voiceHealth:safe(()=>{const v=window.SukunR698VoiceHealth?.snapshot?.();return v?{required:v.required,paused:v.paused,pending:v.pending,age:v.age,warning:v.warning,physical:v.physical,metrics:v.metrics}:null})},
  errors,lastError,lastAt,

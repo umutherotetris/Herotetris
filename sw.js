@@ -1,8 +1,8 @@
-/* SÜKÛN r718 — Gold Emblem, Turquoise Glass & Flowing Light */
+/* SÜKÛN r719 — Unified Appearance & Current Zikir Continuity */
 'use strict';
 
-const SURUM = 'r718';
-const CACHE = 'sukun-r718-20260908a';
+const SURUM = 'r719';
+const CACHE = 'sukun-r719-20260908a';
 
 const CORE = [
   './nero.html',
@@ -26,14 +26,15 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r718__.json';
+const BUILD_MARKER='./__sukun_build_r719__.json';
 
 const NOTLAR = [
-  "r718 · Yeni paylaşılan altın amblem ve çok ekranlı tasarım panosundan ilham: altın mühür, ince geometrik desen, turkuaz cam ve mor ışık aynı görsel dilde birleşti.",
-  "Canlı uygulama başlığı ve PWA ikonları aynı yeni amblemi kullanır. Işık halkası akışkan mor-turkuaz çizgiler ve altın/inci noktalarla yenilendi.",
-  "r717 ortak arka planı Bugün, Zikir, Seyirler, Sesler, Tefekkür, Tekke ve NeuroSync boyunca korunur; mevcut gezinme yapısı ve kontrol yerleşimi değiştirilmez.",
-  "Ambiyans, Canlı/Sabit, pil ve azaltılmış hareket tercihleri mevcut görsel yaşam döngüsünü kullanır. Yeni canvas, animasyon zamanlayıcısı veya ses sahibi eklenmez.",
-  "Ayarların iki eski v20.21 etiketi v20.23 ile eşitlendi. Build/manifest/SW r718; fiziksel Android ve canlı tarayıcı doğrulaması bu ortamda yapılmadı."
+  "r719 · Görünüm seçimi Feyz, Osmanlı ve Semerkant olarak birleştirildi. Araçlar ve arayüz düzeni aynı seçimi gösterir; çakışan ayrı Feyz anahtarı kaldırıldı.",
+  "Mevcut görünüm ve renk tercihleri korunur. AMOLED veya Sabah Nuru etkinse, saklanan Feyz tercihi ile ekranda uygulanan renk teması ayarlarda açıklanır.",
+  "Tefekkür başlığı canlı DOM ile eşitlenir. Yeniden oluşturulan başlık düğümü, aynı zikir adı ve geri dönüşteki görünürlük güvenle yenilenir; yinelenen olaylar tek karede birleştirilir.",
+  "Genel tıklama başına çalışan başlık zamanlayıcısı kaldırıldı. Gizli sayfada ve pagehide sonrasında bekleyen görsel güncelleme iptal edilir; pageshow ile kaynak gözlemi tekrar bağlanır.",
+  "Dar ekran gezinme ve Tefekkür kontrol etiketleri en az 11 piksel olur. Çıkış metni gerektiğinde satıra bölünür; mevcut sayaç, kaydırma, ses ve transport sahipleri korunur.",
+  "Build, manifest, sürüm notları ve Service Worker r719 olarak eşitlendi. Canlı tarayıcı ve fiziksel Android ses davranışı bu ortamda doğrulanmadı."
 ];
 
 function buildOfHtml(text){
