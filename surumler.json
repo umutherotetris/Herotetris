@@ -1,5 +1,16 @@
 [
   {
+    "v": "r714",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r714 · Zikir kartı ölçücüsünün alt ağaç taraması kaldırıldı; doğal akış ve sınırlı doğrudan çocuk ölçümü kullanılır.",
+      "Erişilebilirlik taraması yalnız yeni DOM alt ağaçlarını bir kez işler ve işi kısa parçalara böler. Mevcut aria-label, switch ve Arapça lang kuralları korunur.",
+      "Genel arama, innerText yerine textContent temelli bir dizin oluşturur; gizli denetimler, kilitli içerikler ve diğer sekmelere erişim korunur.",
+      "Dokunma tanısı iptalleri sınıflandırır, hiçbir iptali otomatik tıklamaya dönüştürmez. Sesli sayımın voice-false geri alma güvenliği korunur.",
+      "r713 Kandil ve Pause/Stop düzeltmeleri ile sinematik tasarım korunur. Fiziksel Android, kilit ekranı ve uzun kullanım ayrıca doğrulanmalıdır."
+    ]
+  },
+  {
     "v": "r713",
     "t": "8 Eylül 2026",
     "b": [

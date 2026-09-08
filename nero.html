@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- ════════════════════════════════════════════════════════════════
-     SÜKÛN r713 — Kandil Lifecycle & Intent Stability (base r712)
+     SÜKÛN r714 — Interaction Performance & Native Input Evidence (base r713)
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r713">
+<meta name="sukun-build" content="r714">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r713">
+<link rel="manifest" href="./manifest.webmanifest?v=r714">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r713</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.21 — build 2026-09-08-r714</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r714",
+    "t": "8 Eylül 2026",
+    "b": [
+      "r714 · Zikir kartı ölçücüsünün alt ağaç taraması kaldırıldı; doğal akış ve sınırlı doğrudan çocuk ölçümü kullanılır.",
+      "Erişilebilirlik taraması yalnız yeni DOM alt ağaçlarını bir kez işler ve işi kısa parçalara böler. Mevcut aria-label, switch ve Arapça lang kuralları korunur.",
+      "Genel arama, innerText yerine textContent temelli bir dizin oluşturur; gizli denetimler, kilitli içerikler ve diğer sekmelere erişim korunur.",
+      "Dokunma tanısı iptalleri sınıflandırır, hiçbir iptali otomatik tıklamaya dönüştürmez. Sesli sayımın voice-false geri alma güvenliği korunur.",
+      "r713 Kandil ve Pause/Stop düzeltmeleri ile sinematik tasarım korunur. Fiziksel Android, kilit ekranı ve uzun kullanım ayrıca doğrulanmalıdır."
+    ]
+  },
   {
     "v": "r713",
     "t": "8 Eylül 2026",
@@ -9583,8 +9594,9 @@ function sukunReport(kind,error,extra){
   }
 
   const SEC='.sw,button,[role="button"],input[type="range"],input[type="file"],select';
-  const gorulen=new WeakSet();
-  let kuyruk=[], planli=false;
+  const gorulen=new WeakSet(),queued=new WeakSet();
+  const kuyruk=[];
+  let planli=false,job=null,visited=0,rootsDone=0,slices=0,skipped=0;
 
   function isle(el){
     if(gorulen.has(el))return;
@@ -9593,72 +9605,61 @@ function sukunReport(kind,error,extra){
       if(el.matches('.sw'))sync(el);
       if(el.matches(SEC))adVer(el);
       arDil(el);
-      /* r98: sonradan üretilen düğmelerin açıklaması da çalışsın */
       if(window.dockTipBagla)window.dockTipBagla(el);
     }catch(e){}
   }
 
-  /* ZAMANLAMA — iki tuzak birden var, ikisi de ölçümle yakalandı:
-     1) requestIdleCallback zaman aşımıyla tetiklendiğinde timeRemaining()
-        SIFIR döner; yalnız ona bakan döngü hiç iş yapmadan çıkar, kendini
-        yeniden planlar, sonsuza dek boşa döner.
-     2) Daha önemlisi: bu uygulama sürekli 60 fps animasyon döngüsü
-        çalıştırıyor, dolayısıyla tarayıcının BOŞTA ZAMANI neredeyse hiç
-        yok. Ölçüm: rIC 700 ms'de bir tetikleniyordu, 1619 elemanlık kuyruk
-        ~38 saniyede ancak bitiyordu — pratikte hiç bitmiyor.
-     Çözüm: boşta zamanı beklemeyip 6 ms'lik bütçeli parçalar hâlinde
-     çalışmak ve her parçadan sonra ana iş parçacığını serbest bırakmak.
-     Yapılan iş yalnız öznitelik yazımı (aria-label/lang) — yerleşimi
-     tetiklemez, bu yüzden 6 ms güvenli. */
-  const ASGARI=60;
-  function bosaltKuyruk(){
-    const bitis=performance.now()+6;
-    let yapilan=0;
-    while(kuyruk.length){
-      if(yapilan>=ASGARI&&performance.now()>bitis)break;
-      yapilan++;
-      const n=kuyruk.pop();
-      if(!n||n.nodeType!==1)continue;
-      isle(n);
-      if(n.querySelectorAll){
-        n.querySelectorAll(SEC+',[data-tip]').forEach(x=>{if(!gorulen.has(x))kuyruk.push(x);});
-        /* Arapça metin her yerde olabilir (esmâ, âyet, salavât, kasa…).
-           Sınıf listesi yerine metin düğümlerini gez: Arapça taşıyan metnin
-           EBEVEYNİ işaretlenir. TreeWalker eleman gezmekten ucuzdur. */
-        try{
-          const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,{
-            acceptNode:t=>AR.test(t.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT});
-          let t;
-          while((t=w.nextNode())){
-            const p=t.parentElement;
-            if(p&&!p.lang&&!gorulen.has(p)){gorulen.add(p);p.setAttribute('lang','ar');}
-          }
-        }catch(e){}
-      }
-    }
-    planli=false;
-    if(kuyruk.length)planla();
-  }
+  /* r714: One traversal per newly inserted subtree, not a recursive
+     querySelectorAll + TreeWalker for every element in that subtree.
+     Previously processed nodes are skipped. Dynamic additions are observed at
+     their insertion point; existing accessible names are never rewritten.
+     Work is sliced before the main thread is monopolised. */
+  const FILTER={acceptNode(n){
+    if(n.nodeType===1)return gorulen.has(n)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;
+    return AR.test(n.nodeValue||'')?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+  }};
   function planla(){
-    if(planli)return; planli=true;
+    if(planli)return;
+    planli=true;
     setTimeout(bosaltKuyruk,0);
   }
   function ekle(node){
-    if(!node||node.nodeType!==1)return;
-    kuyruk.push(node); planla();
+    if(!node||node.nodeType!==1||gorulen.has(node)||queued.has(node))return;
+    queued.add(node);kuyruk.push(node);planla();
   }
-
+  function bosaltKuyruk(){
+    planli=false;slices++;
+    const bitis=performance.now()+4;
+    let yapilan=0;
+    while(job||kuyruk.length){
+      if(yapilan>=32&&performance.now()>=bitis)break;
+      if(!job){
+        const root=kuyruk.shift();queued.delete(root);
+        if(!root||gorulen.has(root)){skipped++;continue;}
+        job={walker:document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,FILTER),root};
+        isle(root);visited++;yapilan++;
+      }
+      const n=job.walker.nextNode();
+      if(!n){job=null;rootsDone++;continue;}
+      yapilan++;visited++;
+      if(n.nodeType===1)isle(n);
+      else{
+        const p=n.parentElement;
+        if(p&&!p.lang)try{p.setAttribute('lang','ar')}catch(e){}
+      }
+    }
+    if(job||kuyruk.length)planla();
+  }
   ekle(document.body);
   new MutationObserver(muts=>{
-    muts.forEach(m=>{
+    for(const m of muts){
       if(m.type==='attributes'){
-        /* aria-checked ANINDA güncellenmeli — kuyruğa alınmaz */
-        if(m.target.classList && m.target.classList.contains('sw'))sync(m.target);
-      }else if(m.type==='childList'){
-        m.addedNodes.forEach(ekle);
-      }
-    });
+        if(m.target.classList?.contains('sw'))sync(m.target);
+      }else if(m.type==='childList')for(const n of m.addedNodes)ekle(n);
+    }
   }).observe(document.documentElement,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+  window.SukunA11yHydration=Object.freeze({version:'r714',snapshot:()=>({version:'r714',visited,rootsDone,slices,skipped,pending:kuyruk.length+(job?1:0),scheduled:planli})});
+
 })();
 
 /* localStorage erişilemezse (kısıtlı iframe vb.) bellekte tutar — asla hata fırlatmaz */
@@ -25919,7 +25920,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r713';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r714';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -36854,7 +36855,22 @@ function dashUpdate(){
 
 /* ═══ 4) GLOBAL ARAMA / COMMAND PALETTE ═══ */
 let SEARCH_ITEMS=[],SEARCH_INDEX=-1,SEARCH_RETURN=null;
-function searchBuild(){const seen=new Set();SEARCH_ITEMS=[];document.querySelectorAll('#tab-amb button,#tab-frq button,#tab-zkr button,#tab-rx button,#tab-amb summary,#tab-frq summary,#tab-zkr summary,#tab-rx summary,.cat,.pre,.sess').forEach(el=>{const text=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();if(text.length<2||text.length>130)return;if(!window.SukunSecretPolicy?.unlocked?.()){if(el.closest('[data-c="berhet"],#berhetAtlas,#berhetSeyir,#r170AtlasTools,[data-provider="berhetiyye"]'))return;if(window.SukunSecretPolicy?.containsSecretText?.(text))return}const key=text.toLocaleLowerCase('tr');if(seen.has(key))return;seen.add(key);const sec=el.closest('section[id^="tab-"]');SEARCH_ITEMS.push({text,el,tab:sec?sec.id.replace('tab-',''):''})});}
+/* r714: search all tabs, including inactive ones, without forcing rendered
+   innerText layout. Preserve the existing secret-access policy. */
+const R714_SEARCH_SELECTOR='#tab-amb button,#tab-frq button,#tab-zkr button,#tab-rx button,#tab-amb summary,#tab-frq summary,#tab-zkr summary,#tab-rx summary,.cat,.pre,.sess';
+function searchBuild(){
+ const seen=new Set();SEARCH_ITEMS=[];
+ const unlocked=!!window.SukunSecretPolicy?.unlocked?.();
+ document.querySelectorAll(R714_SEARCH_SELECTOR).forEach(el=>{
+  if(!unlocked&&el.closest('[data-c="berhet"],#berhetAtlas,#berhetSeyir,#r170AtlasTools,[data-provider="berhetiyye"]'))return;
+  const text=(el.textContent||'').replace(/\s+/g,' ').trim();
+  if(text.length<2||text.length>130)return;
+  if(!unlocked&&window.SukunSecretPolicy?.containsSecretText?.(text))return;
+  const key=text.toLocaleLowerCase('tr');if(seen.has(key))return;seen.add(key);
+  const sec=el.closest('section[id^="tab-"]');SEARCH_ITEMS.push({text,el,tab:sec?sec.id.replace('tab-',''):''});
+ });
+}
+
 function searchCreate(){
   if(document.getElementById('prSearchOverlay'))return;
   const o=document.createElement('div');o.id='prSearchOverlay';o.hidden=true;
@@ -57533,106 +57549,70 @@ body.sukun-tefekkur-mode #tfRefinedLayout > .tfVisualPanel{
 }
 </style>
 <script id="r600-zctl-flow-runtime">
-/* Ölçüye dayalı emniyet: normal görünümde akış dışındaki çocuklar da
-   kartın gerçek alt sınırına katılır. CSS tek başına yeterliyse yazılan
-   değer doğal yükseklikle aynı kalır; gereksiz periyodik tarama yoktur. */
-(function(){
-  'use strict';
-  if(window.__SUKUN_R600_ZCTL_FLOW__)return;
-  window.__SUKUN_R600_ZCTL_FLOW__=1;
-
-  const SELECTOR='#tab-zkr > .card.zCtl';
-  let raf=0,card=null,ro=null,mo=null,last=null;
-  const observed=new WeakSet();
-
-  function getCard(){
-    if(!card||!card.isConnected)card=document.querySelector(SELECTOR);
-    return card;
-  }
-  function tefekkur(){return document.body.classList.contains('sukun-tefekkur-mode')}
-  function tabVisible(el){
-    const panel=el&&el.closest('#tab-zkr');
-    return !!(panel&&!panel.hidden);
-  }
-  function watch(el){
-    if(!ro||!el||observed.has(el))return;
-    try{ro.observe(el);observed.add(el)}catch(e){}
-  }
-  function visibleRect(el){
-    const cs=getComputedStyle(el);
-    if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed')return null;
-    const r=el.getBoundingClientRect();
-    return r.width>0&&r.height>0?r:null;
-  }
-  function measure(){
-    raf=0;
-    const el=getCard();
-    if(!el)return null;
-    watch(el);
-    [...el.children].forEach(watch);
-
-    if(tefekkur()){
-      el.style.removeProperty('--r600-zctl-flow-height');
-      const snap={version:'r600',mode:'tefekkur',clientHeight:el.clientHeight,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY};
-      el.dataset.r600Layout=el.scrollHeight>el.clientHeight+2?'scroll':'fit';
-      last=snap;
-      return snap;
-    }
-    if(!tabVisible(el))return last;
-
-    const box=el.getBoundingClientRect();
-    const cs=getComputedStyle(el);
-    const padBottom=parseFloat(cs.paddingBottom)||0;
-    const borderBottom=parseFloat(cs.borderBottomWidth)||0;
-    const hadMeasuredHeight=!!el.style.getPropertyValue('--r600-zctl-flow-height');
-    const rawScrollHeight=el.scrollHeight;
-    let needed=0;
-    const nodes=el.querySelectorAll('*');
-    for(const node of nodes){
-      const r=visibleRect(node);
-      if(!r)continue;
-      needed=Math.max(needed,r.bottom-box.top+el.scrollTop);
-    }
-    needed=Math.ceil(Math.max(needed+padBottom+borderBottom,hadMeasuredHeight?0:rawScrollHeight));
-    const px=Math.max(0,needed)+'px';
-    if(el.style.getPropertyValue('--r600-zctl-flow-height')!==px){
-      el.style.setProperty('--r600-zctl-flow-height',px);
-    }
-    el.dataset.r600Layout=needed>Math.ceil(box.height)+2?'expanded':'flow';
-    last={version:'r600',mode:'normal',height:Math.round(el.getBoundingClientRect().height),needed,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY};
-    return last;
-  }
-  function schedule(){
-    if(raf)return;
-    raf=requestAnimationFrame(measure);
-  }
-  function bind(){
-    const el=getCard();
-    if(!el)return false;
-    if(typeof ResizeObserver==='function'){
-      ro=new ResizeObserver(schedule);
-      watch(el);[...el.children].forEach(watch);
-    }
-    if(typeof MutationObserver==='function'){
-      mo=new MutationObserver(schedule);
-      mo.observe(el,{childList:true,subtree:true});
-      mo.observe(document.body,{attributes:true,attributeFilter:['class']});
-    }
-    el.addEventListener('toggle',schedule,true);
-    return true;
-  }
-  function boot(n){
-    if(bind()){schedule();return}
-    if(n<30)setTimeout(()=>boot(n+1),100);
-  }
-  ['sukun:tabchange','sukun:secretaccesschange','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
-  window.addEventListener('resize',schedule,{passive:true});
-  window.addEventListener('pageshow',schedule,{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()},{passive:true});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(0),{once:true});
-  else boot(0);
-  [120,500,1500,3500].forEach(ms=>setTimeout(schedule,ms));
-window.SukunZCtlFlow={version:'r600',refresh:measure,snapshot:()=>last};
+/* r714 — Natural-flow measurement. The previous owner walked every descendant
+   and synchronously requested style + geometry for each one. That forced
+   repeated layouts while a 500+ node zikir card was opening/closing. */
+(()=>{
+'use strict';
+if(window.__SUKUN_R600_ZCTL_FLOW__)return;
+window.__SUKUN_R600_ZCTL_FLOW__=1;
+const VERSION='r714',SELECTOR='#tab-zkr > .card.zCtl',KEY='--r600-zctl-flow-height';
+let raf=0,card=null,ro=null,mo=null,last=null,measures=0,skipped=0;
+const observed=new WeakSet();
+const getCard=()=>card?.isConnected?card:(card=document.querySelector(SELECTOR));
+const mode=()=>document.body.classList.contains('sukun-tefekkur-mode');
+const visible=el=>!!el?.closest('#tab-zkr')&&!el.closest('#tab-zkr').hidden;
+function watch(el){if(!ro||!el||observed.has(el))return;try{ro.observe(el);observed.add(el)}catch(_){}}
+function setMode(el,value){if(el.dataset.r600Layout!==value)el.dataset.r600Layout=value}
+function measure(){
+ raf=0;const el=getCard();if(!el)return null;
+ watch(el);for(const child of el.children)watch(child);
+ if(!visible(el)){skipped++;return last}
+ measures++;
+ const tef=mode();
+ // Measure natural height rather than measuring the previous min-height.
+ if(el.style.getPropertyValue(KEY))el.style.removeProperty(KEY);
+ if(tef){
+  const client=el.clientHeight,scroll=el.scrollHeight;
+  setMode(el,scroll>client+2?'scroll':'fit');
+  return last={version:VERSION,mode:'tefekkur',clientHeight:client,scrollHeight:scroll,overflow:getComputedStyle(el).overflowY,measureCount:measures,skipped};
+ }
+ const box=el.getBoundingClientRect(),client=el.clientHeight,scroll=el.scrollHeight;
+ let needed=Math.max(client,scroll),checked=0;
+ // Only the direct layout children can extend the card's natural flow.
+ // scrollHeight already includes ordinary nested and positioned overflow.
+ for(const child of el.children){
+  if(child.hidden)continue;
+  const cs=getComputedStyle(child);
+  if(cs.display==='none'||cs.position==='fixed')continue;
+  const r=child.getBoundingClientRect();checked++;
+  if(r.width>0&&r.height>0)needed=Math.max(needed,r.bottom-box.top+el.scrollTop);
+ }
+ needed=Math.ceil(Math.max(0,needed));
+ if(needed>client+2)el.style.setProperty(KEY,needed+'px');
+ setMode(el,needed>client+2?'expanded':'flow');
+ const height=el.getBoundingClientRect().height;
+ return last={version:VERSION,mode:'normal',height:Math.round(height),needed,scrollHeight:el.scrollHeight,overflow:getComputedStyle(el).overflowY,measureCount:measures,skipped,checked};
+}
+function schedule(){if(raf)return;raf=requestAnimationFrame(measure)}
+function bind(){
+ const el=getCard();if(!el)return false;
+ if(typeof ResizeObserver==='function'){
+  ro=new ResizeObserver(schedule);watch(el);for(const c of el.children)watch(c);
+ }
+ if(typeof MutationObserver==='function'){
+  mo=new MutationObserver(schedule);mo.observe(el,{childList:true,subtree:true});
+  mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+ }
+ el.addEventListener('toggle',schedule,true);return true;
+}
+function boot(n){if(bind()){schedule();return}if(n<30)setTimeout(()=>boot(n+1),100)}
+['sukun:tabchange','sukun:secretaccesschange','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
+window.addEventListener('resize',schedule,{passive:true});window.addEventListener('pageshow',schedule,{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()},{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>boot(0),{once:true});else boot(0);
+[120,500,1500,3500].forEach(ms=>setTimeout(schedule,ms));
+window.SukunZCtlFlow={version:VERSION,refresh:measure,snapshot:()=>last};
 })();
 </script>
 <style id="r601-mini-flow-glass-style">
@@ -65545,21 +65525,59 @@ window.SukunR686=Object.freeze({version:'r686',snapshot});
 input[type="range"]{touch-action:pan-y!important}
 </style>
 <script id="r688-tap-delivery-authority-runtime">
+/* r714 — Passive native input evidence. No synthetic clicks, no layout reads on pointerdown. */
 (()=>{
 'use strict';
 if(window.SukunR688TapAuthority)return;
-const VERSION='r698-native';
-let seq=0,active=null,downs=0,ups=0,nativeClicks=0,cancelled=0,moved=0;
-const history=[];
-const describe=e=>e?.id?'#'+e.id:e?.tagName?.toLowerCase()||'—';
-function push(type,s,extra={}){history.push({at:Date.now(),type,seq:s?.seq||seq,target:describe(s?.el),...extra});if(history.length>24)history.shift()}
-document.addEventListener('pointerdown',e=>{if(e.isPrimary===false||e.pointerType==='mouse'&&e.button!==0)return;seq++;downs++;active={seq,id:e.pointerId,el:e.target,x:e.clientX,y:e.clientY,max:0,t:performance.now()};push('down',active)},{capture:true,passive:true});
-document.addEventListener('pointermove',e=>{const s=active;if(s?.id!==e.pointerId)return;s.max=Math.max(s.max,Math.hypot(e.clientX-s.x,e.clientY-s.y))},{capture:true,passive:true});
-document.addEventListener('pointercancel',e=>{if(active?.id!==e.pointerId)return;cancelled++;push('cancel',active);active=null},{capture:true,passive:true});
-document.addEventListener('pointerup',e=>{if(active?.id!==e.pointerId)return;ups++;if(active.max>9)moved++;push('up',active,{max:active.max});active=null},{capture:true,passive:true});
-document.addEventListener('click',e=>{if(e.isTrusted)nativeClicks++;push(e.isTrusted?'native-click':'programmatic-click',{seq,el:e.target})},{capture:true,passive:true});
-const snapshot=()=>Object.freeze({version:VERSION,downs,ups,nativeClicks,syntheticClicks:0,recoveredClicks:0,duplicateSuppressed:0,cancelled,moved,misses:0,targetChanges:0,active:active?{seq:active.seq,target:describe(active.el),max:active.max}:null,lastRecovered:null,history:history.slice()});
-window.SukunR688TapAuthority=Object.freeze({version:VERSION,snapshot});
+const VERSION='r698-native',REVISION='r714';
+let seq=0,downs=0,ups=0,nativeClicks=0,cancelled=0,moved=0,unmatchedUps=0,pendingTimer=0,scrollEvents=0,styleSamples=0;
+const active=new Map(),pending=new Map(),history=[],outcomes=[],reasons={};
+const now=()=>performance.now();
+const name=el=>{if(!el||el.nodeType!==1)return '—';return el.id?'#'+el.id:el.tagName.toLowerCase()+(typeof el.className==='string'&&el.className.trim()?'.'+el.className.trim().split(/\s+/).slice(0,2).join('.'):'')};
+function push(type,s,extra={}){history.push({at:Date.now(),type,seq:s?.seq||seq,target:name(s?.el),...extra});if(history.length>32)history.shift()}
+function outcome(s,status,extra={}){const o={at:Date.now(),seq:s.seq,target:name(s.el),status,kind:s.kind,durationMs:Math.round(now()-s.t),maxDistancePx:Math.round(s.max*10)/10,touchAction:s.touchAction,...extra};outcomes.push(o);if(outcomes.length>48)outcomes.shift();reasons[status]=(reasons[status]||0)+1;return o}
+function control(el){return el?.closest?.('button,a,input,select,textarea,summary,[role="button"],[role="switch"],[data-r588-mode],#r633DockGrip')||null}
+function armPending(){if(pendingTimer||!pending.size)return;const next=Math.min(...[...pending.values()].map(s=>s.upAt+850));pendingTimer=setTimeout(()=>{pendingTimer=0;const t=now();for(const s of [...pending.values()])if(t-s.upAt>=849)finishPending(s,'no-click-observed');armPending()},Math.max(1,next-now()))}
+function finishPending(s,status){if(!s||!pending.has(s.seq))return;pending.delete(s.seq);if(status==='no-click-observed')unmatchedUps++;outcome(s,status)}
+document.addEventListener('pointerdown',e=>{
+ if(e.isPrimary===false||e.pointerType==='mouse'&&e.button!==0)return;
+ const el=control(e.target)||e.target;
+ // Do not call getComputedStyle, scrollHeight, or getBoundingClientRect in the hot path.
+ const s={seq:++seq,id:e.pointerId,el,x:e.clientX,y:e.clientY,max:0,t:now(),kind:e.pointerType||'unknown',touchAction:el?.style?.touchAction||'',scrolled:false,scrollTarget:''};
+ downs++;active.set(e.pointerId,s);push('down',s);
+},{capture:true,passive:true});
+document.addEventListener('pointermove',e=>{const s=active.get(e.pointerId);if(s)s.max=Math.max(s.max,Math.hypot(e.clientX-s.x,e.clientY-s.y))},{capture:true,passive:true});
+document.addEventListener('scroll',e=>{
+ if(!active.size)return;scrollEvents++;const target=e.target;
+ for(const s of active.values())if(target===document||target===document.scrollingElement||target?.contains?.(s.el)){s.scrolled=true;s.scrollTarget=name(target)}
+},{capture:true,passive:true});
+document.addEventListener('pointercancel',e=>{
+ const s=active.get(e.pointerId);if(!s)return;active.delete(e.pointerId);cancelled++;
+ const detached=!s.el.isConnected,scrolled=s.scrolled;
+ let hit=null,hitChanged=false;
+ if(!scrolled&&s.max<=9&&!detached){
+  // A single ambiguous cancellation may justify a hit-test; ordinary taps and scrolls never do.
+  hit=document.elementFromPoint(e.clientX,e.clientY);
+  hitChanged=!!hit&&!s.el.contains(hit)&&!hit.contains(s.el);
+  if(!s.touchAction){styleSamples++;s.touchAction=getComputedStyle(s.el).touchAction||''}
+ }
+ const status=scrolled||s.max>9?'scroll-or-gesture':detached?'target-detached':hitChanged?'hit-target-changed':'unresolved-cancel';
+ const detail={scrolled,detached,hitChanged,hit:name(control(hit)||hit),scrollTarget:s.scrollTarget};
+ push('cancel',s,{max:s.max,...detail});outcome(s,status,detail);
+},{capture:true,passive:true});
+document.addEventListener('pointerup',e=>{
+ const s=active.get(e.pointerId);if(!s)return;active.delete(e.pointerId);ups++;
+ s.max=Math.max(s.max,Math.hypot(e.clientX-s.x,e.clientY-s.y));if(s.max>9)moved++;
+ push('up',s,{max:s.max});s.upAt=now();pending.set(s.seq,s);armPending();
+},{capture:true,passive:true});
+document.addEventListener('click',e=>{
+ if(e.isTrusted)nativeClicks++;
+ let match=null;for(const s of pending.values())if(s.el===e.target||s.el.contains?.(e.target)||e.target.contains?.(s.el)){match=s;break}
+ if(match)finishPending(match,e.isTrusted?'native-click':'programmatic-click');
+ push(e.isTrusted?'native-click':'programmatic-click',match||{seq,el:e.target});
+},{capture:true,passive:true});
+const snapshot=()=>Object.freeze({version:VERSION,revision:REVISION,downs,ups,nativeClicks,syntheticClicks:0,recoveredClicks:0,duplicateSuppressed:0,cancelled,moved,misses:0,targetChanges:0,active:active.size?{seq:[...active.values()][0].seq,target:name([...active.values()][0].el),max:[...active.values()][0].max}:null,activePointers:active.size,lastRecovered:null,history:history.slice(),outcomes:outcomes.slice(),cancelReasons:{...reasons},unmatchedUps,pending:pending.size,scrollEvents,styleSamples});
+window.SukunR688TapAuthority=Object.freeze({version:VERSION,revision:REVISION,snapshot});
 })();
 </script>
 
@@ -67081,13 +67099,13 @@ function enter(){
 window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 })();
 </script>
-<script id="r713-release-identity-runtime">(()=>{
+<script id="r714-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r713',date='2026-09-08';
+const build=meta?.content||'r714',date='2026-09-08';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.21 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r713',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r714',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -67432,7 +67450,8 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r713',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r714',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ r714:{version:'r714',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),input:safe(()=>window.SukunR688TapAuthority?.snapshot?.()),counterGate:safe(()=>window.SukunZikirTransportGate?.snapshot?.()),voiceHealth:safe(()=>{const v=window.SukunR698VoiceHealth?.snapshot?.();return v?{required:v.required,paused:v.paused,pending:v.pending,age:v.age,warning:v.warning,physical:v.physical,metrics:v.metrics}:null})},
  errors,lastError,lastAt,
  eventHealth:{total:eventTotal,peakPerSecond:Math.max(eventPeak,eventCount),currentSecond:eventCount,storms:eventStorms,lastStormAt,watched:watched.length},
  eventLoop:{lastLagMs:lagLast,maxLagMs:lagMax,samples:lagSamples,lastLagAt,visibilityResets:lagResets,hiddenWakeups},
@@ -67447,6 +67466,7 @@ function snapshot(){return Object.freeze({
 });}
 const api=Object.freeze({version:VERSION,snapshot,refresh:()=>{mount();window.SukunR699Layout?.schedule?.('r711-refresh');return true}});
 window.SukunR711Stability=api;
+window.SukunR714Stability=api;
 window.SukunR710Stability=api; // compatibility with existing diagnostics
 window.SukunR713Stability=api;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
