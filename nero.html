@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r735">
+<meta name="sukun-build" content="r738">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r735">
+<link rel="manifest" href="./manifest.webmanifest?v=r738">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,8 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r735</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
-    <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r738</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6534,7 +6533,57 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
   {
+    "v": "r738",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r738 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.",
+      "Asenkron durdurma temizliği tamamlanmadan yeni oturum açılmaz. Başarısız temizlik açıkça kaydedilir ve yeni bir Durdur bariyeriyle yeniden denenir.",
+      "Yüzüğün tek jest sahibi vardır: 7 dokunuş özel kasa, 9 dokunuş tanı. Alt tanı düğmesi ve eski sürüm/araç/kısayol girişleri kaldırıldı; günlük kurtarma araçları korundu.",
+      "Mevcut sayaç, hedef, kayıt seçimi ve 28/99 seyir sahipliği korunur. Ses motorunun fiziksel cihazda doğrulanamayan davranışları ayrıca raporlanır.",
+      "Manifest kimliği ve kapsamı değiştirilmeden HTML, Service Worker, sürüm geçmişi, build marker ve gerçek SHA-256 değerleri eşitlendi."
+    ]
+  },
+  {
+    "v": "r737",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barının üst satırı daha premium ve dengeli hale getirildi.",
+      "SÜKÛN markası, CANLI rozeti ve bildirim düğmeleri arasındaki boşluklar sıkılaştırıldı.",
+      "Görünür Sistem Durumu / tanı düğmesi kullanıcı arayüzünden kaldırıldı.",
+      "SES TANILAMA bölümü varsayılan olarak gizlendi.",
+      "Mühür yüzüğüne gizli jest eklendi:",
+      "7. dokunuştaki kasa açılışı kısa gecikmeyle planlandı; kullanıcı 9’a tamamlarsa kasa yerine tanı erişimi açılır."
+    ]
+  },
+  {
+    "v": "r736",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barındaki bildirim sayaçları bir kademe daha küçültüldü.",
+      "İkonlar ana okunur öğe olarak korunurken rozetler ikincil bilgiye çekildi.",
+      "Normal ve dar ekran kırılımlarında rozet yüksekliği, yazı boyutu ve yatay dolgular yeniden dengelendi.",
+      "Normal durumda bildirim düğmesi: 36x36 px",
+      "Normal durumda rozet: 13 px yükseklik, 7 px yazı boyutu",
+      "Dar ekranda bildirim düğmesi: 33x33 px",
+      "Dar ekranda rozet: 12 px yükseklik, 6.5 px yazı boyutu"
+    ]
+  },
+  {
     "v": "r735",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barındaki bildirim düğmeleri yeniden dengelendi.",
+      "Bildirim rozetleri küçültüldü; ikonlar görece biraz büyütüldü.",
+      "Rozetler düğme içine daha kontrollü alındı; kenar boşlukları eşitlendi.",
+      "Dar ekran davranışı ayrıca sıkılaştırıldı; 359 px ve altında düğme ile rozet birlikte küçülüyor.",
+      "Normal durumda bildirim düğmesi: 36x36 px",
+      "Normal durumda rozet: 15 px yükseklik, 8 px yazı boyutu",
+      "Dar ekranda bildirim düğmesi: 33x33 px",
+      "Dar ekranda rozet: 14 px yükseklik, 7.5 px yazı boyutu"
+    ]
+  },
+  {
+    "v": "r734",
     "t": "9 Eylül 2026",
     "b": [
       "r734 · Rahmân gibi sesli zikirlerde başarısız okuma açık bir Yeniden dene durumuna geçer; Başla eski başarısız oturumu duraklatmak yerine temiz bir başlangıç yapar.",
@@ -15422,7 +15471,7 @@ function autoStop(){
   lockOff(); zUI();
 }
 window.SukunDirectZikirTransportR698=Object.freeze({
-  version:'r733',revision:'r735',start:()=>autoStart(),stop:()=>autoStop(),
+  version:'r733',revision:'r738',start:()=>autoStart(),stop:()=>autoStop(),
   primeGesture:()=>{try{ac();if(ctx?.state==='suspended')ctx.resume().catch(()=>{});return true}catch(e){return false}},
   state:()=>({auto:!!Z.auto,cat:Z.cat,idx:Z.idx,count:Z.count,target:Z.target,voiceRequired:zikirSesliAktifMi(),starting:!!_r477AutoStarting}),
   clearStale(){
@@ -26012,7 +26061,7 @@ function neYenilendi(notlar,basligiEk){
   kat.id='nyKat'; kat.className='nyKat';
   kat.innerHTML=
     '<div class="nyKutu" role="dialog" aria-modal="true" aria-label="Neler yenilendi">'+
-      '<div class="nyBas"><span></span><button class="nyDiag" aria-label="Sistem tanılamasını aç" title="Sistem tanılaması">◉</button><button class="nyX" aria-label="Kapat">✕</button></div>'+
+      '<div class="nyBas"><span></span><button class="nyX" aria-label="Kapat">✕</button></div>'+
       '<div class="nyIc"></div>'+
     '</div>';
   kat.querySelector('.nyBas span').textContent='Neler yenilendi'+(basligiEk?' — '+basligiEk:'');
@@ -26074,17 +26123,7 @@ function neYenilendi(notlar,basligiEk){
   const kapat=()=>{document.removeEventListener('keydown',escTus);if(window.__sukunNyClose===kapat)window.__sukunNyClose=null;kat.remove()};
   window.__sukunNyClose=kapat;
   kat.querySelector('.nyX').onclick=kapat;
-  /* r512 — B-05 ikinci cephe: jeste hiç bağlı olmayan garantili giriş.
-     Uzun basma bazı Android kabuklarında metin seçimine yenilebiliyor;
-     bu düğme her koşulda çalışır. Notlar penceresi zaten ilk dokunuşta
-     açıldığı için tanılama artık iki dokunuş uzakta. */
-  const dg=kat.querySelector('.nyDiag');
-  if(dg)dg.onclick=()=>{
-    kapat();
-    try{ window.SukunDiagnostics && window.SukunDiagnostics.open(); }
-    catch(e){ if(typeof toast==='function')toast('Tanılama açılamadı'); }
-  };
-  kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
+kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   /* r694: X/backdrop ile kapanışta da listener temizlenir; her açılışta
      belgeye yeni bir Escape işleyicisi sızmaz. */
   document.addEventListener('keydown',escTus);
@@ -26108,7 +26147,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r735';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r738';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -27980,38 +28019,40 @@ function vaultInit(){
   const pw=$('#vaultPw'); if(pw)pw.addEventListener('keydown',e=>{ if(e.key==='Enter')vaultTryOpen(); });
   const lk=$('#vaultLock'); if(lk)lk.onclick=vaultLock;
   const ch=$('#vaultChBtn'); if(ch)ch.onclick=vaultChangePw;
-  /* Gizli tetik: alt bilgideki mühr-ü Süleyman yüzüğüne YEDİ kez dokununca
-     Ayarlar açılır ve kasa görünür olur. Her dokunuşta yüzük parlar ve kısa
-     bir tık verir; yedincide mühür döner. */
+  /* r738 — One physical/keyboard activation = one count. The legacy
+     seven-click and r737 capture listeners are retired, not layered. */
   const trig=$('#vaultTrigger');
   if(trig){
-    let c=0, tmr=null;
-    const bas=(e)=>{
-      if(e)e.preventDefault();
-      c++;
-      clearTimeout(tmr);
-      tmr=setTimeout(()=>{ c=0; trig.classList.remove('dokun'); },1600);
-      trig.classList.add('dokun');
-      if(typeof vib==='function')vib(c>=7?[30,40,60]:8);
-      if(typeof sfx==='function')sfx(c>=7?'done':'tick');
-      if(c>=7){
-        c=0;
-        clearTimeout(tmr);
-        trig.classList.remove('dokun');
-        trig.classList.add('acildi');
-        setTimeout(()=>trig.classList.remove('acildi'),950);
-        const card=$('#vaultCard'); if(card)card.hidden=false;
-        const sheet=$('#logSheet');
-        if(sheet && sheet.hidden){ try{lsRender();lsHeatRender();lsEsmaRender();weekRender();}catch(e){} sheet.hidden=false; }
-        setTimeout(()=>{
-          if(card)card.scrollIntoView({behavior:'smooth',block:'center'});
-          const pw=$('#vaultPw'); if(pw)setTimeout(()=>pw.focus(),420);
-        },120);
-      }
+    let count=0,resetTimer=0,vaultTimer=0,armed=false;
+    const clearTimers=()=>{clearTimeout(resetTimer);clearTimeout(vaultTimer);resetTimer=vaultTimer=0};
+    const reset=()=>{clearTimers();count=0;trig.classList.remove('dokun')};
+    const disarm=()=>{armed=false;document.body.classList.remove('sukun-diag-armed')};
+    const openVault=()=>{
+      reset();trig.classList.add('acildi');
+      setTimeout(()=>trig.classList.remove('acildi'),950);
+      const card=$('#vaultCard');if(card)card.hidden=false;
+      const sheet=$('#logSheet');
+      if(sheet&&sheet.hidden){try{lsRender();lsHeatRender();lsEsmaRender();weekRender()}catch(e){}sheet.hidden=false}
+      setTimeout(()=>{try{card?.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){};const pw=$('#vaultPw');if(pw)setTimeout(()=>pw.focus(),420)},120);
     };
-    trig.addEventListener('click',bas);
-    /* klavyeyle de açılabilsin */
-    trig.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ')bas(e); });
+    const openDiag=()=>{
+      reset();armed=true;document.body.classList.add('sukun-diag-armed');
+      trig.classList.add('acildi');setTimeout(()=>trig.classList.remove('acildi'),950);
+      try{window.SukunDiagnostics?.open?.()}catch(e){try{window.sukunReport?.('r738-ring-diagnostics',e)}catch(_){}}
+    };
+    const tap=e=>{
+      if(e){e.preventDefault();if(e.repeat)return}
+      count++;clearTimers();trig.classList.add('dokun');
+      resetTimer=setTimeout(reset,1900);
+      if(typeof vib==='function')vib(count>=9?[24,34,48]:8);
+      if(typeof sfx==='function')sfx(count>=9?'done':'tick');
+      if(count===7)vaultTimer=setTimeout(()=>{if(count===7)openVault()},1100);
+      if(count>=9)openDiag();
+    };
+    trig.addEventListener('click',tap);
+    trig.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();tap(e)}});
+    window.addEventListener('pagehide',disarm,{passive:true});
+    window.SukunRingAccess=Object.freeze({version:'r738',authorized:()=>armed,disarm,snapshot:()=>({count,armed})});
   }
 }
 
@@ -37033,11 +37074,11 @@ try{if(typeof hardStopAll==='function'){const f=hardStopAll;hardStopAll=function
 function todayLog(){try{const a=typeof logTemizle==='function'?logTemizle(typeof S!=='undefined'?S.get('sukun.log',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
 function todayTekke(){try{const a=typeof tekkeDefterTemizle==='function'?tekkeDefterTemizle(typeof S!=='undefined'?S.get('tekke.defter',[]):[]):[];const d=new Date();d.setHours(0,0,0,0);return a.filter(x=>x.t>=d.getTime())}catch(e){return[]}}
 function currentZikir(){try{if(!window.SukunSecretPolicy?.unlocked?.()&&Z.cat==='berhet')return'Zikir seçilmedi';const it=ZIKIR[Z.cat].items[Z.idx],ad=(it&&(it.t||it.tr||it.nm))||'';if(window.SukunSecretPolicy?.containsSecretText?.(ad))return'Zikir seçilmedi';return ad||'Zikir seçilmedi'}catch(e){return'Zikir seçilmedi'}}
-function dashCreate(){if(document.getElementById('prDashboard'))return;const tabs=document.querySelector('.tabs');if(!tabs)return;const d=document.createElement('section');d.id='prDashboard';d.innerHTML=`<div class="prDashTop"><div><div class="prEyebrow">KİŞİSEL MERKEZ</div><div class="prDashTitle">Bugünkü Sükûn</div></div><div class="prDashStatus"><button class="prPerfBtn" id="prPerfBtn" data-noi18n aria-label="Görsel performans profili">◐ Dengeli</button><button class="prState" id="prState">hazır</button></div></div><div class="prMetrics"><div class="prMetric"><b id="prDz">0</b><small>BUGÜN ZİKİR</small></div><div class="prMetric"><b id="prDm">0 dk</b><small>SEANS</small></div><div class="prMetric"><b id="prDf">—</b><small>FREKANS</small></div></div><div class="prNow"><div class="prNowText"><small>ŞU AN / SON SEÇİM</small><b id="prDNow">—</b></div><button class="btn" id="prDGo">Devam et</button></div><div class="prDashActions"><button class="prSearchBtn" id="prSearchOpen">⌕ &nbsp; Esmâ, frekans, ambiyans, dua ara… <small class="prKeyHint">Ctrl K</small></button><button class="prDiagBtn" id="prDiagOpen" aria-label="Sistem durumu">◉</button></div>`;/* r533: Kişisel Merkez eskiden sekmelerin ÜSTÜNE giriyordu. Sekme
+function dashCreate(){if(document.getElementById('prDashboard'))return;const tabs=document.querySelector('.tabs');if(!tabs)return;const d=document.createElement('section');d.id='prDashboard';d.innerHTML=`<div class="prDashTop"><div><div class="prEyebrow">KİŞİSEL MERKEZ</div><div class="prDashTitle">Bugünkü Sükûn</div></div><div class="prDashStatus"><button class="prPerfBtn" id="prPerfBtn" data-noi18n aria-label="Görsel performans profili">◐ Dengeli</button><span class="prState" id="prState">hazır</span></div></div><div class="prMetrics"><div class="prMetric"><b id="prDz">0</b><small>BUGÜN ZİKİR</small></div><div class="prMetric"><b id="prDm">0 dk</b><small>SEANS</small></div><div class="prMetric"><b id="prDf">—</b><small>FREKANS</small></div></div><div class="prNow"><div class="prNowText"><small>ŞU AN / SON SEÇİM</small><b id="prDNow">—</b></div><button class="btn" id="prDGo">Devam et</button></div><div class="prDashActions"><button class="prSearchBtn" id="prSearchOpen">⌕ &nbsp; Esmâ, frekans, ambiyans, dua ara… <small class="prKeyHint">Ctrl K</small></button></div>`;/* r533: Kişisel Merkez eskiden sekmelerin ÜSTÜNE giriyordu. Sekme
    çubuğu başlığın hemen altına alınınca bu, çubuğu yeniden aşağı
    itiyordu — gezinme yine ilk ekranın dışına düşüyordu. Artık
    çubuğun ALTINA giriyor; sıralama başlık, sekmeler, Kişisel Merkez. */
-tabs.insertAdjacentElement('afterend',d);const tc=document.getElementById('todayCard');if(tc)tc.classList.add('prCompanion');d.querySelector('#prSearchOpen').onclick=searchOpen;d.querySelector('#prDiagOpen').onclick=diagOpen;d.querySelector('#prState').onclick=diagOpen;d.querySelector('#prDGo').onclick=()=>{const t=document.querySelector('.tab[data-t="zkr"]');if(t)t.click();setTimeout(()=>{const z=document.getElementById('zCounterCard')||document.getElementById('zStage');z&&z.scrollIntoView({behavior:'smooth',block:'start'})},80)};dashUpdate()}
+tabs.insertAdjacentElement('afterend',d);const tc=document.getElementById('todayCard');if(tc)tc.classList.add('prCompanion');d.querySelector('#prSearchOpen').onclick=searchOpen;d.querySelector('#prDGo').onclick=()=>{const t=document.querySelector('.tab[data-t="zkr"]');if(t)t.click();setTimeout(()=>{const z=document.getElementById('zCounterCard')||document.getElementById('zStage');z&&z.scrollIntoView({behavior:'smooth',block:'start'})},80)};dashUpdate()}
 function dashUpdate(){
   const d=document.getElementById('prDashboard');if(!d)return;
   let z=0,m=0;
@@ -37104,9 +37145,9 @@ function diagCreate(){
   </div>`;
   document.body.appendChild(o);
   o.addEventListener('click',e=>{if(e.target===o)diagClose()});
-  o.querySelector('#prDiagX').addEventListener('click',diagClose);
+  o.querySelector('#prDiagX').addEventListener('click',()=>diagClose());
   o.querySelector('#prDiagFull').addEventListener('click',()=>{
-    diagClose();setTimeout(()=>window.SukunDiagnostics?.open?.(),0);
+    diagClose(true);setTimeout(()=>window.SukunDiagnostics?.open?.(),0);
   });
   o.querySelector('#prDiagJson').addEventListener('click',()=>window.SukunDiagnostics?.exportReport?.());
   o.querySelector('#prRecover').addEventListener('click',()=>AudioLife.recover('manual'));
@@ -37122,13 +37163,14 @@ function diagKeys(e){
   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 }
 function diagOpen(){
+  if(!window.SukunRingAccess?.authorized?.())return false;
   DIAG_RETURN=document.activeElement;
   try{window.SukunFriendlyUI?.closeTools?.()}catch(e){}
   diagRender();const o=document.getElementById('prDiagOverlay');o.hidden=false;
   if(!o.dataset.trap){o.addEventListener('keydown',diagKeys);o.dataset.trap='1'}
   document.body.classList.add('prModalOpen');setTimeout(()=>document.getElementById('prDiagX')?.focus(),20);
 }
-function diagClose(){const o=document.getElementById('prDiagOverlay');if(o)o.hidden=true;if(document.getElementById('prSearchOverlay')?.hidden!==false)document.body.classList.remove('prModalOpen');if(DIAG_RETURN&&DIAG_RETURN.isConnected)DIAG_RETURN.focus();DIAG_RETURN=null}
+function diagClose(keepAccess=false){if(keepAccess!==true)window.SukunRingAccess?.disarm?.();const o=document.getElementById('prDiagOverlay');if(o)o.hidden=true;if(document.getElementById('prSearchOverlay')?.hidden!==false)document.body.classList.remove('prModalOpen');if(DIAG_RETURN&&DIAG_RETURN.isConnected)DIAG_RETURN.focus();DIAG_RETURN=null}
 
 function audioLifePoll(){
   const busy=AudioLife.busy();
@@ -49693,6 +49735,7 @@ window.SukunDiagnosticsThrottle=Object.freeze({version:'r656',schedule:scheduleD
 ['sukun:audiotruthchange','sukun:journeyaudiostate','sukun:authoritychange','sukun:regressionshieldchange','sukun:sectionidentitycommit','sukun:lockjourneytransport','sukun:journey-intent-reconciled'].forEach(ev=>window.addEventListener(ev,()=>scheduleDiagnosticsRefresh(ev),{passive:true}));
 
 function open(){
+  if(!window.SukunRingAccess?.authorized?.())return false;
   const diagnosticToken=window.SukunDiagnosticWork?.begin?.('diagnostics-open');
   /* Hangi girişten gelirse gelsin alttaki araç perdesi dokunma yakalayamaz. */
   try{window.SukunFriendlyUI?.closeTools?.()}catch(e){}
@@ -49711,6 +49754,7 @@ function open(){
   window.SukunDiagnosticWork?.end?.(diagnosticToken,1000);
 }
 function close(){
+  window.SukunRingAccess?.disarm?.();
   const root=ensureUI();
   root.hidden=true;
   document.documentElement.style.overflow=prevHtmlOverflow;
@@ -49731,101 +49775,8 @@ function close(){
    Tek dokunuş eskisi gibi sürüm notlarını açar — gecikme eklenmedi.
    Uzun basma Diagnostics'i açar ve ardından gelen click bastırılır ki
    notlar katmanı üstüne açılmasın. */
-const UZUN_BASMA_MS=480;
-function bindEntry(){
-  /* r624 — Pointer Events tek bir fiziksel dokunuşu tek olay dizisi olarak
-     işler. Eski touchstart + mousedown çifti Android'in sentetik mouse olayı
-     geldiğinde kendi 480 ms zamanlayıcısını iptal edebiliyordu. Ayrıca Sade/
-     Odak kabuğunda görülen .r616SheetBuild da aynı tanı girişidir. */
-  document.querySelectorAll('#surumEtiket,.r616SheetBuild').forEach(v=>{
-    if(v.dataset.r624DiagBound)return;
-    v.dataset.r624DiagBound='1';
-    v.style.touchAction='manipulation';
-    try{v.style.userSelect='none';v.style.webkitUserSelect='none'}catch(e){}
-    v.addEventListener('selectstart',ev=>{ev.preventDefault();return false});
-
-    let basTimer=0,bastirClick=false,bastirReset=0,baslangic=null,pointerId=null,lastTouchAt=0;
-    const iptal=()=>{if(basTimer){clearTimeout(basTimer);basTimer=0}baslangic=null;pointerId=null};
-    const tetikle=()=>{
-      basTimer=0;bastirClick=true;
-      clearTimeout(bastirReset);bastirReset=setTimeout(()=>{bastirClick=false},900);
-      try{navigator.vibrate&&navigator.vibrate(18)}catch(e){}
-      tapCount=0;clearTimeout(tapReset);open();
-    };
-    /* r625: Android uzun basmayı pointerup yerine contextmenu/pointercancel
-       dizisiyle bitirebilir. Önceki kod contextmenu'yu yalnız engelliyor,
-       dolayısıyla tam tetik anında kendi zamanlayıcısını da kaybediyordu. */
-    v.addEventListener('contextmenu',ev=>{
-      ev.preventDefault();
-      if(!bastirClick)tetikle();
-      return false;
-    });
-    const basla=(x,y,id=null)=>{
-      iptal();pointerId=id;baslangic={x:Number(x)||0,y:Number(y)||0};
-      basTimer=setTimeout(tetikle,UZUN_BASMA_MS);
-    };
-    const kaydi=(x,y,id=null)=>{
-      if(!baslangic||!basTimer||(pointerId!=null&&id!=null&&pointerId!==id))return;
-      if(Math.abs((Number(x)||0)-baslangic.x)>12||Math.abs((Number(y)||0)-baslangic.y)>12)iptal();
-    };
-
-    if('PointerEvent'in window){
-      v.addEventListener('pointerdown',ev=>{
-        if(ev.button!=null&&ev.button!==0)return;
-        basla(ev.clientX,ev.clientY,ev.pointerId);
-        try{v.setPointerCapture?.(ev.pointerId)}catch(e){}
-      },{passive:true});
-      v.addEventListener('pointermove',ev=>kaydi(ev.clientX,ev.clientY,ev.pointerId),{passive:true});
-      v.addEventListener('pointerup',iptal,{passive:true});
-      v.addEventListener('pointercancel',iptal,{passive:true});
-      v.addEventListener('lostpointercapture',iptal,{passive:true});
-    }else{
-      v.addEventListener('touchstart',ev=>{lastTouchAt=Date.now();const t=ev.touches?.[0];if(t)basla(t.clientX,t.clientY,'touch')},{passive:true});
-      v.addEventListener('touchmove',ev=>{const t=ev.touches?.[0];if(t)kaydi(t.clientX,t.clientY,'touch')},{passive:true});
-      v.addEventListener('touchend',iptal,{passive:true});
-      v.addEventListener('touchcancel',iptal,{passive:true});
-      v.addEventListener('mousedown',ev=>{if(Date.now()-lastTouchAt<900||ev.button!==0)return;basla(ev.clientX,ev.clientY,'mouse')});
-      v.addEventListener('mousemove',ev=>kaydi(ev.clientX,ev.clientY,'mouse'));
-      v.addEventListener('mouseup',iptal);v.addEventListener('mouseleave',iptal);
-    }
-
-    /* Capture aşamasında sentetik click'i durdur: eski onclick sürüm notlarını
-       tanı ekranının üzerine açamasın. Normal tek dokunuş aynen korunur. */
-    v.addEventListener('click',ev=>{
-      if(bastirClick){
-        bastirClick=false;clearTimeout(bastirReset);
-        try{ev.preventDefault();ev.stopImmediatePropagation()}catch(e){}
-        return;
-      }
-      if(v.id==='surumEtiket'){
-        tapCount++;clearTimeout(tapReset);tapReset=setTimeout(()=>{tapCount=0},2200);
-        if(tapCount>=5){tapCount=0;clearTimeout(tapReset);open()}
-      }
-    },true);
-
-    try{
-      v.setAttribute('aria-label',(v.id==='surumEtiket'?'Neler yenilendi. ':'')+'Uzun basınca sistem tanılaması açılır.');
-      v.dataset.tip='Uzun bas: sistem tanılaması ve rapor';
-    }catch(e){}
-  });
-  const quick=$('r625DiagQuick');
-  if(quick&&!quick.dataset.diagBound){
-    quick.dataset.diagBound='1';
-    quick.addEventListener('click',()=>open());
-  }
-}
-document.addEventListener('keydown',e=>{
-  if(e.ctrlKey&&e.shiftKey&&(e.key==='D'||e.key==='d')){
-    e.preventDefault();
-    const root=ensureUI();
-    root.hidden?open():close();
-  }
-});
-window.addEventListener('pageshow',()=>bindEntry(),{passive:true});
-window.addEventListener('sukun:r616viewchange',()=>bindEntry(),{passive:true});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindEntry,{once:true});
-else bindEntry();
-[120,500,1500].forEach(ms=>setTimeout(bindEntry,ms));
+/* r738: retired version-label, contextmenu and keyboard diagnostic entry owners.
+   Diagnostic presentation is now owned by the footer ring only. */
 
 /* r625: Açılışta sessiz test çalıştırma kaldırıldı. Tanılama, uygulamanın
    dokunma gecikmesine sebep olamaz; Güvenli/Derin Test kullanıcı isteğiyle
@@ -52810,13 +52761,7 @@ document.addEventListener('click',e=>{
 });
 
 /* Masaüstü kısa yolu: Ctrl+Shift+O -> diagnostics + overflow scan. */
-document.addEventListener('keydown',e=>{
-  if(e.ctrlKey&&e.shiftKey&&(e.key==='O'||e.key==='o')){
-    e.preventDefault();
-    try{window.SukunDiagnostics?.open?.()}catch(_){}
-    setTimeout(()=>scan({render:true,highlight:false}),120);
-  }
-});
+/* r738: legacy Ctrl+Shift+O diagnostic entry retired. */
 
 /* Diagnostics kapandığında vurgu bırakma. */
 document.addEventListener('click',e=>{
@@ -60512,7 +60457,6 @@ function makeShell(){
       '<button class="r616Tool" type="button" data-r616-tool="journal"><i aria-hidden="true" data-ico="journal"></i><span>Günlük ve yedekleme</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="record"><i aria-hidden="true" data-ico="mic"></i><span>Seansı kaydet</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="advanced"><i aria-hidden="true" data-ico="settings"></i><span>Gelişmiş zikir araçları</span></button>'+
-      '<button class="r616Tool" type="button" data-r616-tool="diagnostics"><i aria-hidden="true" data-ico="info"></i><span>Sistem tanısı ve rapor</span></button>'+
       '<button class="r616Tool" type="button" data-r616-tool="vault"><i aria-hidden="true" data-ico="lock"></i><span>Mühür ve özel erişim</span></button>'+
       '<button class="r616Tool danger" type="button" data-r616-tool="stop"><i aria-hidden="true" data-ico="stop"></i><span>Tüm sesleri durdur</span></button>'+
     '</div>'+
@@ -60777,8 +60721,7 @@ function bind(){
     else if(k==='layout')go('layout');
     else if(k==='journal')clickId('logBtn');
     else if(k==='record')clickId('recBtn');
-    else if(k==='diagnostics')window.SukunDiagnostics?.open?.();
-    else if(k==='vault')clickId('vaultTrigger');
+    else if(k==='vault'){const ring=$('vaultTrigger');ring?.scrollIntoView?.({behavior:'smooth',block:'center'});ring?.focus?.({preventScroll:true})}
     else if(k==='stop')clickId('stopAll');
     else if(k==='advanced'){go('zikir');setTimeout(()=>{const d=$('r616ZikirTools');if(d)d.open=true},70)}
   });
@@ -62046,7 +61989,7 @@ function restoreUnconfirmed(t,why){
   try{S.set('sukun.total',Z.total)}catch(e){}
   try{window.SukunUsageStatsRollbackR695?.(1,t.cat,t.idx,'unconfirmed:'+why)}catch(e){}
   try{zUI()}catch(e){}
-  try{window.currentZikirState?.refresh?.('r735-unconfirmed',true)}catch(e){}
+  try{window.currentZikirState?.refresh?.('r738-unconfirmed',true)}catch(e){}
   unconfirmedCredits++;return true;
 }
 function invalidate(why='intent'){
@@ -62064,7 +62007,7 @@ function rawPause(){
 }
 function snapshot(){
   const p=rawPause();
-  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r735',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
+  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r738',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
 }
 function emit(type='state'){
   seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});
@@ -66488,7 +66431,7 @@ window.SukunR696Interruption=Object.freeze({
 if(window.SukunR698Transport)return;
 const safe=(fn,otherwise=null)=>{try{return fn()}catch(_){return otherwise}};
 let commandSeq=0,lastCommand='',lastAt=0,stopping=false;
-let pendingStop=null,pendingStart=null,intentEpoch=0;
+let pendingStop=null,pendingStart=null,intentEpoch=0,cleanupFailure=false;
 const restartTrace=[];let restartSeq=0;
 function record(type,detail={}){
  const entry={seq:++restartSeq,at:Date.now(),type,...detail};
@@ -66509,19 +66452,32 @@ function freshDirectStart(source){
  return result!==false;
 }
 function startAfterStop(source){
- if(pendingStart)return true;
  const epoch=intentEpoch;
+ if(pendingStart?.epoch===epoch)return true;
  primeGesture();
  record('start-after-stop-request',{source,epoch});
- const finish=()=>{
+ const barrier=pendingStop;
+ const work=Promise.resolve(barrier).then(ok=>{
    if(epoch!==intentEpoch||journey()){
      record('start-after-stop-cancelled',{source,epoch});return false;
    }
-   try{return freshDirectStart(source)}catch(e){safe(()=>window.sukunReport?.('r733-restart',e,source));record('start-after-stop-error',{source,message:String(e?.message||e)});return false}
- };
- const work=Promise.resolve(pendingStop).catch(e=>{safe(()=>window.sukunReport?.('r733-stop-settle',e,source));return false}).then(finish);
- pendingStart=work;
- work.finally(()=>{if(pendingStart===work){pendingStart=null;scheduleUI()}});
+   if(ok===false){
+     cleanupFailure=true;
+     record('start-after-stop-cleanup-failed',{source,epoch});return false;
+   }
+   try{
+     const started=freshDirectStart(source);
+     if(started)cleanupFailure=false;
+     return started;
+   }catch(e){
+     safe(()=>window.sukunReport?.('r738-restart',e,source));
+     record('start-after-stop-error',{source,message:String(e?.message||e)});return false;
+   }
+ });
+ const request={epoch,work};pendingStart=request;
+ work.then(()=>{},()=>{}).finally(()=>{
+   if(pendingStart===request){pendingStart=null;scheduleUI()}
+ });
  scheduleUI();return true;
 }
 
@@ -66544,68 +66500,90 @@ function isDirectContext(){
   return !!(document.body.classList.contains('sukun-tefekkur-mode')||document.body.classList.contains('sukun-zikir-tab')||z.active||z.auto||!f.active);
 }
 function performPlayPause(source='ui'){
-  if(stopping)return false;
-  mark('play-pause',source);
-  record('play-pause',{source,epoch:intentEpoch,pendingStop:!!pendingStop,pendingStart:!!pendingStart});
-  if(pendingStart)return true;
-  if(!journey()&&directFailed()){
-    record('explicit-voice-retry',{source,epoch:intentEpoch});
-    stop('voice-retry:'+source);
-    return startAfterStop(source);
-  }
-  const j=journey(),AR=window.SukunAudioSessionRegistry;
-  const aggregate=safe(()=>AR?.aggregateSnapshot?.(),null);
-  // Resume exactly the providers captured by Pause, including the physical mix.
-  if(aggregate?.paused&&AR?.resumeAll){
-    safe(()=>window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source));
-    return AR.resumeAll()!==false;
-  }
-  if(j){
-    try{
-      if(j.state.paused||j.state.systemHold){
-        window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source);
-        return j.api?.resume?.({system:false,reason:'r702-user-resume'})!==false;
-      }
-      window.SukunJourneyAudioMachine?.intent?.('pause','ui:'+source);
-      return (AR?.pauseAll?AR.pauseAll('ui:'+source):j.api?.pause?.())!==false;
-    }catch(e){safe(()=>window.sukunReport?.('r702-journey-transport',e,j.kind));return false}
-  }
-  const d=direct(),state=safe(()=>d?.state?.(),{})||{};
-  // Both the main counter and dock pause the same captured session.
-  if(AR?.pauseAll&&(state.auto||(source!=='main'&&safe(()=>AR.aggregateState?.())==='playing'))){
-    return AR.pauseAll('ui:'+source)!==false;
-  }
-  if(isDirectContext()){
-    if(!d)return false;
-    if(state.auto)return d.stop()!==false;
-    if(pendingStop)return startAfterStop(source);
-    return freshDirectStart(source);
-  }
-  return legacy('r170Play');
+ if(stopping)return false;
+ mark('play-pause',source);
+ record('play-pause',{source,epoch:intentEpoch,pendingStop:!!pendingStop,pendingStart:!!pendingStart});
+ // An obsolete queued Play must never consume a newer user intention.
+ if(pendingStart?.epoch===intentEpoch)return true;
+ if(pendingStop)return startAfterStop(source);
+ if(cleanupFailure){
+   record('cleanup-retry',{source});
+   stop('cleanup-retry:'+source);
+   return startAfterStop(source);
+ }
+ if(!journey()&&directFailed()){
+   record('explicit-voice-retry',{source,epoch:intentEpoch});
+   stop('voice-retry:'+source);
+   return startAfterStop(source);
+ }
+ const j=journey(),AR=window.SukunAudioSessionRegistry;
+ const aggregate=safe(()=>AR?.aggregateSnapshot?.(),null);
+ if(aggregate?.paused&&AR?.resumeAll){
+   safe(()=>window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source));
+   return AR.resumeAll()!==false;
+ }
+ if(j){
+   try{
+     if(j.state.paused||j.state.systemHold){
+       window.SukunJourneyAudioMachine?.intent?.('play','ui:'+source);
+       return j.api?.resume?.({system:false,reason:'r702-user-resume'})!==false;
+     }
+     window.SukunJourneyAudioMachine?.intent?.('pause','ui:'+source);
+     return (AR?.pauseAll?AR.pauseAll('ui:'+source):j.api?.pause?.())!==false;
+   }catch(e){safe(()=>window.sukunReport?.('r702-journey-transport',e,j.kind));return false}
+ }
+ const d=direct(),state=safe(()=>d?.state?.(),{})||{};
+ if(AR?.pauseAll&&(state.auto||(source!=='main'&&safe(()=>AR.aggregateState?.())==='playing'))){
+   return AR.pauseAll('ui:'+source)!==false;
+ }
+ if(isDirectContext()){
+   if(!d)return false;
+   if(state.auto)return d.stop()!==false;
+   return freshDirectStart(source);
+ }
+ return legacy('r170Play');
 }
 function playPause(source='ui'){try{return performPlayPause(source)}finally{renderUI()}}
 function stop(source='ui'){
-  mark('stop',source);
-  ++intentEpoch;
-  record('stop',{source,epoch:intentEpoch});
-  if(stopping)return true;
-  stopping=true;
-  try{
-    safe(()=>window.SukunJourneyAudioMachine?.intent?.('stop','r698-'+source));
-    safe(()=>window.SukunSessionMemory?.cancelPending?.());
-    safe(()=>window.SukunForegroundArbiter?.clearQueue?.('r698-stop'));
-    const AR=window.SukunAudioSessionRegistry;
-    const work=AR?.stopAll?AR.stopAll():(legacy('r170Stop'),true);
-    // Even an already idle mix must release a stale independent auto source.
-    safe(()=>direct()?.stop?.());
-    const settled=Promise.resolve(work).catch(e=>{safe(()=>window.sukunReport?.('r733-stop',e,source));return false});
-    const previousStop=pendingStop;
-    const barrier=previousStop?Promise.allSettled([previousStop,settled]).then(()=>true):settled;
-    pendingStop=barrier;
-    barrier.finally(()=>{if(pendingStop===barrier){pendingStop=null;scheduleUI()}});
-  }catch(e){safe(()=>window.sukunReport?.('r698-stop',e,source))}
-  finally{stopping=false}
-  return true;
+ mark('stop',source);
+ ++intentEpoch;
+ pendingStart=null;
+ record('stop',{source,epoch:intentEpoch});
+ if(stopping)return true;
+ stopping=true;
+ try{
+   safe(()=>window.SukunJourneyAudioMachine?.intent?.('stop','r698-'+source));
+   safe(()=>window.SukunSessionMemory?.cancelPending?.());
+   safe(()=>window.SukunForegroundArbiter?.clearQueue?.('r698-stop'));
+   // A terminal Stop during cleanup invalidates queued Play, not the ongoing
+   // cleanup. Starting another destructive stop here can race the next owner.
+   if(pendingStop)return true;
+   const AR=window.SukunAudioSessionRegistry;
+   const tasks=[];
+   try{tasks.push(Promise.resolve(AR?.stopAll?AR.stopAll():legacy('r170Stop')))}
+   catch(error){tasks.push(Promise.reject(error))}
+   // Direct auto owns the scheduler and provisional credit. Release it now,
+   // but also await any asynchronous cleanup it returns before a new Play.
+   const directResult=safe(()=>direct()?.stop?.(),true);
+   tasks.push(Promise.resolve(directResult));
+   const barrier=Promise.allSettled(tasks).then(results=>{
+     const ok=results.every(r=>r.status==='fulfilled'&&r.value!==false);
+     cleanupFailure=!ok;
+     if(!ok){
+       record('stop-cleanup-failed',{source});
+       safe(()=>window.sukunReport?.('r738-stop-cleanup',new Error('A playback provider did not finish cleanup'),source));
+     }
+     return ok;
+   });
+   pendingStop=barrier;
+   barrier.then(()=>{},()=>{}).finally(()=>{
+     if(pendingStop===barrier){pendingStop=null;scheduleUI()}
+   });
+ }catch(e){
+   cleanupFailure=true;
+   safe(()=>window.sukunReport?.('r738-stop',e,source));
+ }finally{stopping=false;scheduleUI()}
+ return true;
 }
 // Presentation reads the existing transport/voice owners; it never starts audio.
 function presentation(){
@@ -66615,8 +66593,8 @@ function presentation(){
  const v=safe(()=>window.SukunVoiceSource?.snapshot?.(),{})||{};
  const paused=!!(a.paused||j?.state?.paused||j?.state?.systemHold||f.paused);
  const running=!!(j?.state?.run||d.auto||(!isDirectContext()&&f.playing));
- const failed=directFailed()&&!j;
- const preparing=!paused&&!failed&&!!(pendingStart||d.starting||(running&&['recovering','loading','preparing'].includes(v.kind))||(d.auto&&d.voiceRequired&&!!window.__SUKUN_ZIKIR_VOICE_PROMISE__&&!safe(()=>window.SukunPhysicalRecordingBusyR696?.(),false)&&!safe(()=>speechSynthesis.speaking||speechSynthesis.pending,false)));
+ const failed=(directFailed()&&!j)||cleanupFailure;
+ const preparing=!failed&&!!(pendingStart||d.starting||(running&&['recovering','loading','preparing'].includes(v.kind))||(d.auto&&d.voiceRequired&&!!window.__SUKUN_ZIKIR_VOICE_PROMISE__&&!safe(()=>window.SukunPhysicalRecordingBusyR696?.(),false)&&!safe(()=>speechSynthesis.speaking||speechSynthesis.pending,false)));
  const canPause=!!window.SukunAudioSessionRegistry?.pauseAll||!!j;
  const label=failed?'Yeniden dene':preparing?'Hazırlanıyor':paused?'Devam et':running?(canPause?'Duraklat':'Durdur'):'Başla';
  let voice='Kaynak bekleniyor';
@@ -66637,11 +66615,11 @@ function renderUI(){
  if(ab){
   const icon=p.paused?'▷':p.preparing?'◌':p.running?(p.label==='Durdur'?'■':'Ⅱ'):'▷';
   const symbol=window.ico?.(p.paused?'play':p.preparing?'refresh':p.running?(p.label==='Durdur'?'stop':'pause'):'play')||icon;
-   let glyph=ab.querySelector(':scope > .r735TransportGlyph'),label=ab.querySelector(':scope > .r735TransportLabel');
+   let glyph=ab.querySelector(':scope > .r738TransportGlyph'),label=ab.querySelector(':scope > .r738TransportLabel');
    if(!glyph||!label){
      // One-time hydration. No subsequent render removes the touched element.
-     ab.replaceChildren();glyph=document.createElement('span');glyph.className='r735TransportGlyph';glyph.setAttribute('aria-hidden','true');
-     label=document.createElement('b');label.className='r735TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
+     ab.replaceChildren();glyph=document.createElement('span');glyph.className='r738TransportGlyph';glyph.setAttribute('aria-hidden','true');
+     label=document.createElement('b');label.className='r738TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
    }
    const mark=p.failed?'↻':icon;
    if(glyph.textContent!==mark)glyph.textContent=mark;
@@ -66667,8 +66645,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 window.SukunLifecycleHub?.onBodyClass?.(scheduleUI,{immediate:true});
 
-const snapshot=()=>Object.freeze({version:'r733',revision:'r735',commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
-window.SukunR698Transport=Object.freeze({version:'r733',revision:'r735',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
+const snapshot=()=>Object.freeze({version:'r733',revision:'r738',cleanupFailure,commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
+window.SukunR698Transport=Object.freeze({version:'r733',revision:'r738',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
 // Passive transport evidence: a raw native click is distinct from an accepted
 // command. Never synthesize clicks on pointerdown/cancel; native scrolling owns them.
 const TRACE_CONTROLS='#autoBtn,#r588Play,#r588Stop,#r170Play,#r170Stop';
@@ -66676,7 +66654,7 @@ for(const type of ['pointerdown','pointercancel','click'])document.addEventListe
  const el=e.target?.closest?.(TRACE_CONTROLS);if(!el)return;
  record('input-'+type,{target:el.id,pointerType:e.pointerType||'',trusted:!!e.isTrusted,disabled:!!el.disabled,auto:!!directState().auto});
 },{capture:true,passive:true});
-window.SukunR733Restart=Object.freeze({version:'r733',revision:'r735',snapshot,record});
+window.SukunR733Restart=Object.freeze({version:'r733',revision:'r738',snapshot,record});
 renderUI();
 })();
 
@@ -67667,10 +67645,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r735',date='2026-09-09';
+const build=meta?.content||'r738',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r735',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r738',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68904,7 +68882,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<style id="r735-stability-and-badges">
+<style id="r738-stability-and-badges">
 /* r734: the native hidden attribute wins against every legacy theme. */
 #rateToast[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #rateToast{position:fixed!important;left:12px!important;right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:480px!important;margin-inline:auto!important;padding:10px 12px!important;z-index:900!important;pointer-events:none!important;font-size:12px!important;line-height:1.35!important}
@@ -68912,26 +68890,60 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #rateToast .rateRow button{pointer-events:auto;flex:1 1 0;min-width:0;min-height:40px;height:40px;padding:0 2px;font-size:clamp(9px,2.4vw,12px);white-space:nowrap;touch-action:manipulation}
 body.sukun-tefekkur-mode #rateToast{display:none!important;pointer-events:none!important}
 body.r588-mode-mini #rateToast,body.r588-mode-midi #rateToast,body.r588-mode-max #rateToast{bottom:calc(var(--r734-dock-bottom,178px) + 10px)!important}
-/* r735: balance badges and icons so the symbol stays primary and the unread count remains secondary. */
+/* r736: unread badges shrink one more step so the icon clearly leads and the count stays secondary. */
 /* Compact numbers live inside their buttons, never outside the clipped dock. */
 html body.r698-ui #r588DockShell .r588Top{overflow:visible!important;min-height:42px!important;height:auto!important;max-height:none!important;padding:5px 1px 6px!important;gap:7px!important}
 html body.r698-ui #r588DockShell .r588Identity{min-width:0!important;flex:1 1 auto!important;gap:6px!important}
 html body.r698-ui #r588DockShell .r588Alerts{display:flex!important;flex:0 0 auto!important;gap:6px!important;width:auto!important;min-width:0!important;height:auto!important;min-height:40px!important;max-height:none!important;align-items:center!important;padding:2px 1px!important;overflow:visible!important}
-html body.r698-ui #r588DockShell .r588Alert{position:relative!important;flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;padding:0!important;border-radius:12px!important;overflow:visible!important;display:grid!important;place-items:center!important;font-size:17px!important;line-height:1!important}
-html body.r698-ui #r588DockShell .r588Alert b{position:absolute!important;right:3px!important;top:3px!important;display:grid!important;place-items:center!important;box-sizing:border-box!important;width:auto!important;min-width:15px!important;max-width:calc(100% - 6px)!important;height:15px!important;min-height:15px!important;padding:0 4px!important;border-radius:999px!important;font:900 8px/15px Inter,system-ui!important;white-space:nowrap!important;overflow:visible!important;transform:none!important;box-shadow:0 0 0 1.5px #071b22!important}
+html body.r698-ui #r588DockShell .r588Alert{position:relative!important;flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;padding:0!important;border-radius:12px!important;overflow:visible!important;display:grid!important;place-items:center!important;font-size:17.5px!important;line-height:1!important}
+html body.r698-ui #r588DockShell .r588Alert b{position:absolute!important;right:3px!important;top:3px!important;display:grid!important;place-items:center!important;box-sizing:border-box!important;width:auto!important;min-width:13px!important;max-width:calc(100% - 6px)!important;height:13px!important;min-height:13px!important;padding:0 3px!important;border-radius:999px!important;font:900 7px/13px Inter,system-ui!important;white-space:nowrap!important;overflow:visible!important;transform:none!important;box-shadow:0 0 0 1.25px #071b22!important}
 html body.r698-ui #r588DockShell .r588Alert b[hidden]{display:none!important}
 html body.r698-ui #r588DockShell .r588Alert :is(svg,.ico){pointer-events:none!important}
 html body.r698-ui #r588DockShell .r588Top :is(.r588Brand,#r588Live){white-space:nowrap!important}
-html body.r698-ui #r588DockShell .r735TransportGlyph{display:inline-grid;place-items:center;min-width:1.2em;font:800 19px/1 system-ui;vertical-align:middle}
+html body.r698-ui #r588DockShell .r738TransportGlyph{display:inline-grid;place-items:center;min-width:1.2em;font:800 19px/1 system-ui;vertical-align:middle}
 @media(max-width:359px){
  html body.r698-ui #r588DockShell .r588Top{gap:4px!important}
  html body.r698-ui #r588DockShell .r588Alerts{gap:4px!important;min-height:36px!important}
  html body.r698-ui #r588DockShell .r588Alert{flex-basis:33px!important;width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;max-width:33px!important;max-height:33px!important;border-radius:11px!important}
- html body.r698-ui #r588DockShell .r588Alert b{right:2px!important;top:2px!important;min-width:14px!important;height:14px!important;min-height:14px!important;padding:0 3px!important;font:900 7.5px/14px Inter,system-ui!important}
+ html body.r698-ui #r588DockShell .r588Alert b{right:2px!important;top:2px!important;min-width:12px!important;height:12px!important;min-height:12px!important;padding:0 3px!important;font:900 6.5px/12px Inter,system-ui!important}
  html body.r698-ui #r588DockShell .r588Brand{font-size:10px!important;letter-spacing:.11em!important}
  html body.r698-ui #r588DockShell #r588Live{font-size:8px!important;padding-inline:5px!important}
 }
 </style>
 
+<style id="r738-premium-access-style">
+/* r738: premium top rail + hidden diagnostics access */
+html body.r698-ui #r588DockShell .r588Top{
+  min-height:40px!important;
+  padding:4px 2px 6px!important;
+  gap:6px!important;
+  border-bottom:1px solid rgba(214,185,108,.14)!important;
+}
+html body.r698-ui #r588DockShell .r588Identity{gap:8px!important;align-items:center!important}
+html body.r698-ui #r588DockShell .r588Brand{
+  font-size:13px!important;
+  letter-spacing:.18em!important;
+  color:#e8d39b!important;
+  text-shadow:0 0 10px rgba(232,211,155,.08)!important;
+}
+html body.r698-ui #r588DockShell #r588Live{
+  min-height:28px!important;
+  padding:0 10px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  letter-spacing:.08em!important;
+  box-shadow:inset 0 0 0 1px rgba(120,255,196,.18), 0 6px 18px rgba(0,0,0,.16)!important;
+}
+html body.r698-ui #r588DockShell .r588Alerts{gap:7px!important;padding:1px 1px 2px!important}
+html body.r698-ui #r588DockShell .r588Alert{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04), 0 8px 18px rgba(0,0,0,.16)!important;
+  backdrop-filter:blur(8px) saturate(120%)!important;
+}
+html body.r698-ui #r588DockShell .r588Alert:hover{transform:translateY(-1px)}
+.prDashActions{grid-template-columns:minmax(0,1fr)!important}
+#prDiagOpen{display:none!important}
+#r170Diag,#r632ShieldPanel{display:none!important}
+body.sukun-diag-armed #r170Diag,body.sukun-diag-armed #r632ShieldPanel{display:block!important}
+</style>
 </body>
 </html>

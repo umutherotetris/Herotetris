@@ -1,8 +1,8 @@
-/* SÜKÛN r735 — Verified Voice, Nonblocking Journal & Badge Layout */
+/* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
 'use strict';
 
-const SURUM = 'r735';
-const CACHE = 'sukun-r735-20260909a';
+const SURUM = 'r738';
+const CACHE = 'sukun-r738-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r735__.json';
+const BUILD_MARKER='./__sukun_build_r738__.json';
 
-const NOTLAR = ["r735 · Rahmân gibi sesli zikirlerde başarısız okuma açık bir Yeniden dene durumuna geçer; Başla eski başarısız oturumu duraklatmak yerine temiz bir başlangıç yapar.", "Tamamlanmamış sesin geçici sayacı Durdur/başarısızlıkta güvenle geri alınır; tamamlanmış okumalar ve sonraki elle yapılan değişiklikler korunur. Eski ses sonuçları yeni oturuma müdahale edemez.", "Ses bitmeden ikinci sayaç hakkı açılmaz; hedef ve sonraki Esmâ geçişi yalnız doğrulanmış okuma sonucuyla işlenir. 28/99 seyir sahipliği ve kayıt önceliği korunur.", "Günlük değerlendirmesi Tefekkürde ve canlı/duraklatılmış seansta görünmez; normal ekranda isteğe bağlı, küçük ve kapatılabilir bir bildirimdir. Kayıtlar doğru günlük girdisine bağlanır.", "Mini/Midi/Max bildirim rozetleri düğmelerin içine alındı; 320–428 px ekranlarda tek, çift ve 999+ sayılarının kırpılmaması kontrol edildi.", "Başlatma tanısı artık kabul edilen komut ile fiziksel ses sonucunu ayırır. Gerçek Android kayıt, kilit ekranı ve kulaklık doğrulaması hâlâ gereklidir."];
+const NOTLAR = ["r738 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.", "Asenkron durdurma temizliği tamamlanmadan yeni oturum açılmaz. Başarısız temizlik açıkça kaydedilir ve yeni bir Durdur bariyeriyle yeniden denenir.", "Yüzüğün tek jest sahibi vardır: 7 dokunuş özel kasa, 9 dokunuş tanı. Alt tanı düğmesi ve eski sürüm/araç/kısayol girişleri kaldırıldı; günlük kurtarma araçları korundu.", "Mevcut sayaç, hedef, kayıt seçimi ve 28/99 seyir sahipliği korunur. Ses motorunun fiziksel cihazda doğrulanamayan davranışları ayrıca raporlanır.", "Manifest kimliği ve kapsamı değiştirilmeden HTML, Service Worker, sürüm geçmişi, build marker ve gerçek SHA-256 değerleri eşitlendi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

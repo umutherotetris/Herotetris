@@ -1,5 +1,55 @@
 [
   {
+    "v": "r738",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r738 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.",
+      "Asenkron durdurma temizliği tamamlanmadan yeni oturum açılmaz. Başarısız temizlik açıkça kaydedilir ve yeni bir Durdur bariyeriyle yeniden denenir.",
+      "Yüzüğün tek jest sahibi vardır: 7 dokunuş özel kasa, 9 dokunuş tanı. Alt tanı düğmesi ve eski sürüm/araç/kısayol girişleri kaldırıldı; günlük kurtarma araçları korundu.",
+      "Mevcut sayaç, hedef, kayıt seçimi ve 28/99 seyir sahipliği korunur. Ses motorunun fiziksel cihazda doğrulanamayan davranışları ayrıca raporlanır.",
+      "Manifest kimliği ve kapsamı değiştirilmeden HTML, Service Worker, sürüm geçmişi, build marker ve gerçek SHA-256 değerleri eşitlendi."
+    ]
+  },
+  {
+    "v": "r737",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barının üst satırı daha premium ve dengeli hale getirildi.",
+      "SÜKÛN markası, CANLI rozeti ve bildirim düğmeleri arasındaki boşluklar sıkılaştırıldı.",
+      "Görünür Sistem Durumu / tanı düğmesi kullanıcı arayüzünden kaldırıldı.",
+      "SES TANILAMA bölümü varsayılan olarak gizlendi.",
+      "Mühür yüzüğüne gizli jest eklendi:",
+      "7. dokunuştaki kasa açılışı kısa gecikmeyle planlandı; kullanıcı 9’a tamamlarsa kasa yerine tanı erişimi açılır."
+    ]
+  },
+  {
+    "v": "r736",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barındaki bildirim sayaçları bir kademe daha küçültüldü.",
+      "İkonlar ana okunur öğe olarak korunurken rozetler ikincil bilgiye çekildi.",
+      "Normal ve dar ekran kırılımlarında rozet yüksekliği, yazı boyutu ve yatay dolgular yeniden dengelendi.",
+      "Normal durumda bildirim düğmesi: 36x36 px",
+      "Normal durumda rozet: 13 px yükseklik, 7 px yazı boyutu",
+      "Dar ekranda bildirim düğmesi: 33x33 px",
+      "Dar ekranda rozet: 12 px yükseklik, 6.5 px yazı boyutu"
+    ]
+  },
+  {
+    "v": "r735",
+    "t": "9 Eylül 2026",
+    "b": [
+      "Akış barındaki bildirim düğmeleri yeniden dengelendi.",
+      "Bildirim rozetleri küçültüldü; ikonlar görece biraz büyütüldü.",
+      "Rozetler düğme içine daha kontrollü alındı; kenar boşlukları eşitlendi.",
+      "Dar ekran davranışı ayrıca sıkılaştırıldı; 359 px ve altında düğme ile rozet birlikte küçülüyor.",
+      "Normal durumda bildirim düğmesi: 36x36 px",
+      "Normal durumda rozet: 15 px yükseklik, 8 px yazı boyutu",
+      "Dar ekranda bildirim düğmesi: 33x33 px",
+      "Dar ekranda rozet: 14 px yükseklik, 7.5 px yazı boyutu"
+    ]
+  },
+  {
     "v": "r734",
     "t": "9 Eylül 2026",
     "b": [
