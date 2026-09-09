@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r740">
+<meta name="sukun-build" content="r741">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r740">
+<link rel="manifest" href="./manifest.webmanifest?v=r741">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r740</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r741</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r741",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r741 · Tefekkürdeki isim başlığı yalnız seçili Z kaydından ve kanonik isim matrisinden okunur; akıllı seansın geçici oynatma adı başlığı değiştirmez.",
+      "r740’tan kalan görünüm çakışmaları giderildi. Sabit, Animasyon ve Kapalı tercihleri Tefekkürde ikinci bir isim perdesi üretmez; normal ekran tercihleri korunur.",
+      "Başlık yalnız gerçek seçim değişikliğinde güncellenir. Tekrarlanan sayaç, oynatma ve akıllı seans olayları yazıyı yeniden oluşturmaz veya giriş animasyonunu başlatmaz.",
+      "Hûtîrin ve diğer uzun isimler, eşit yan süsleme alanları arasında ölçülerek ortalanır; metin kesilmez, kayan yazı ve kelime içi kırılma kullanılmaz.",
+      "Ses, kayıt, hedef ve sayaç verileri değiştirilmedi. 28/99 seyir, durdurma bariyeri ve 7/9 yüzük erişimi korunur."
+    ]
+  },
   {
     "v": "r740",
     "t": "9 Eylül 2026",
@@ -13577,6 +13588,7 @@ function renderList(){
    kapsamda paylaşıldığı ve çalıştırma sırası korunduğu için
    parçalar birbirinin değişkenlerini eskisi gibi görür.
    ═══════════════════════════════════════════════════════════════ */
+let zLastRenderedSelection='';
 function renderZikir(swap=true){
   /* ⚠ r128: öğe yoksa BÜTÜN çizim çöküyordu (`it.ar` → TypeError) ve
      çökme bir sonraki adımı değil, tüm arayüz güncellemesini durduruyordu.
@@ -13737,7 +13749,9 @@ function renderZikir(swap=true){
   const _ebVar=(_kat==='esma'||_kat==='berhet')&&_eb>0;
   $('#zEb').textContent=_ebVar?'ebced • '+_eb:'';
   const _ebB=$('#ebBtn'); if(_ebB){_ebB.disabled=!_ebVar; _ebB.classList.toggle('disabled',!_ebVar);}
-  if(swap){const st=$('#zStage');st.classList.remove('swap');void st.offsetWidth;st.classList.add('swap');}
+  const _renderSelection=zKat()+':'+zIdx(),_previousRenderSelection=zLastRenderedSelection;
+  if(swap&&_renderSelection!==zLastRenderedSelection){const st=$('#zStage');st.classList.remove('swap');void st.offsetWidth;st.classList.add('swap');}
+  zLastRenderedSelection=_renderSelection;
   $$('#zList .zItem').forEach(el=>el.classList.toggle('act',+el.dataset.i===Z.idx));
   if(typeof itemRecSyncUI==='function')itemRecSyncUI();
   /* Yıldızın durumu her sahne değişiminde tazelenmeli. renderZikir sekiz
@@ -13745,6 +13759,7 @@ function renderZikir(swap=true){
   if(typeof favUI==='function')favUI();
   try{if(!document.hidden&&typeof r476Prepare==='function')r476Prepare()}catch(e){}
   try{window.currentZikirState?.refresh('renderZikir')}catch(e){}
+  try{if(_renderSelection!==_previousRenderSelection)window.dispatchEvent(new CustomEvent('sukun:zikirselectionchange',{detail:{cat:zKat(),idx:zIdx()}}))}catch(e){}
 }
 function zUI(){
   /* r139: akış sürerken çerçevede sürekli hafif toz */
@@ -26158,7 +26173,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r740';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r741';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -50739,7 +50754,9 @@ function ownCollision(){
 }
 
 function syncNameToast(active,cat,announce){
-  const shouldAnimate=!!(active&&engaged&&cat&&mode==='animated'&&!document.body.classList.contains('sukun-tefekkur-mode'));
+  const contemplating=document.body.classList.contains('sukun-tefekkur-mode');
+  const shouldAnimate=!!(active&&engaged&&cat&&mode==='animated'&&!contemplating);
+  if(contemplating){try{window.NameToast?.hide?.()}catch(e){};lastToastState=null;return;}
   if(shouldAnimate!==lastToastState){
     lastToastState=shouldAnimate;
     try{
@@ -54332,74 +54349,21 @@ body.r474-zikir-active.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="ani
 body.r474-name-cat[data-r474-name-mode="fixed"] #nameToastLayer{
   display:none!important;
 }
-body.r474-name-cat[data-r474-name-mode="animated"] #zStage>.zAr,
-body.r474-name-cat[data-r474-name-mode="animated"] #zStage>.zTr,
-body.r474-name-cat[data-r474-name-mode="animated"] #zStage>#zModBadge,
-body.r474-name-cat[data-r474-name-mode="off"] #zStage>.zAr,
-body.r474-name-cat[data-r474-name-mode="off"] #zStage>.zTr,
-body.r474-name-cat[data-r474-name-mode="off"] #zStage>#zModBadge{
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="animated"] #zStage>.zAr,
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="animated"] #zStage>.zTr,
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="animated"] #zStage>#zModBadge,
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="off"] #zStage>.zAr,
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="off"] #zStage>.zTr,
+body.r474-name-cat:not(.sukun-tefekkur-mode)[data-r474-name-mode="off"] #zStage>#zModBadge{
   display:none!important;
 }
 body.r474-name-cat[data-r474-name-mode="off"] #nameToastLayer{
   display:none!important;
 }
 
-/* Tefekkürde animasyon/kapalı seçiliyse zStage tamamen kalkar.
-   30px'lik sahte satır ve dev dikey boşluk yok. Canonical sayaç tüm alanı alır. */
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr,
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr{
-  grid-template-rows:minmax(0,1fr)!important;
-  gap:0!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr>#zStage,
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr>#zStage{
-  display:none!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="animated"] #tab-zkr>.zCtl,
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-mode="off"] #tab-zkr>.zCtl{
-  grid-row:1!important;
-}
-
-/* Animasyon perdesi yalnız gerçekten seans başladıktan sonra, üstte küçük kalır. */
-body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] #nameToastLayer.show{
-  top:max(42px,calc(env(safe-area-inset-top,0px) + 34px))!important;
-  width:min(82vw,374px)!important;
-}
-body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastCard{
-  padding:9px 15px 8px!important;
-  border-radius:15px!important;
-  box-shadow:0 13px 34px rgba(0,0,0,.32),0 0 18px color-mix(in srgb,var(--gold) 7%,transparent)!important;
-}
-body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastAr{
-  font-size:clamp(22px,6.1vw,30px)!important;
-}
-body.sukun-tefekkur-mode.r474-zikir-engaged.r474-name-cat[data-r474-name-mode="animated"] .nameToastTr{
-  font-size:11.5px!important;
-}
-
-/* r527 — Berhetiyye tefekkürde Tevhid gibi daima üstte görünür.
-   Global Esmâ görünümü Animasyon/Kapalı olsa bile 28 isimden seçili olanın
-   Arapçası ve okunuşu sayaçtan kopamaz; animasyon perdesi ikinci bir kopya
-   üretmesin diye bu bağlamda kapalı tutulur. */
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #tab-zkr{
-  grid-template-rows:var(--tf-top-h) minmax(0,1fr)!important;
-  gap:clamp(5px,.8dvh,8px)!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #tab-zkr>#zStage{
-  display:flex!important;
-  grid-row:1!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #tab-zkr>.zCtl{
-  grid-row:2!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #zStage>.zAr,
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #zStage>.zTr{
-  display:block!important;
-}
-body.sukun-tefekkur-mode.r474-name-cat[data-r474-name-category="berhet"] #nameToastLayer{
-  display:none!important;
-}
-
+/* r741: Tefekkür owns a single stable heading independently of the
+   normal-screen name presentation preference. The old mode-dependent
+   Tefekkür hiding and Berhetiyye-only layout exception are retired. */
 /* ---------- Tek ayar yüzeyi ---------- */
 #nameToastMode,
 #r473NamePresentation{
@@ -59519,11 +59483,6 @@ body.sukun-tefekkur-mode .zCtl:has(#r611CurrentZikirHero:not([hidden])) > .zCoun
   display:none!important;
 }
 
-/* r612: sabit isim yalnız gerçek animasyon kartı görünürken teslim olur.
-   Sayaç çalışıyor olması veya 'animated' modunun seçili olması tek başına gizleme sebebi değildir. */
-body:not(.sukun-tefekkur-mode):has(#nameToastLayer.show) #r611CurrentZikirHero{
-  display:none!important;
-}
 
 /* Tefekkürde sayaç üstü nefes payı; telefon ekranında gereksiz büyümez. */
 body.sukun-tefekkur-mode #r611CurrentZikirHero{
@@ -59569,21 +59528,33 @@ const invocation=v=>{const t=clean(v);return t&&!/^Y(?:â|a)\s+/i.test(t)?'Yâ '
 let pending=0,departed=false,lastIdentity='',lastText='',lastWidth=0;
 let sizePending=0,measurer=null,resizeObserver=null;
 function selected(){
-  const s=window.currentZikirState?.snapshot?.()||null;
-  const cat=String(s?.cat||'');
-  const idx=Number(s?.idx);
-  let item=null;
-  if(Number.isInteger(idx)&&idx>=0){
-    try{const db=window.ZIKIR||(typeof ZIKIR!=='undefined'?ZIKIR:null);item=db?.[cat]?.items?.[idx]||null}catch(e){}
-  }
-  let text=clean(s?.name||'');
-  // The canonical item wins over display strings, which may contain a
-  // previous invocation, a ticker suffix or a transient playback label.
-  if(item)text=clean(item.tr||item.t||item.nm||text);
-  if(cat==='berhet')text=invocation(text);
-  else if(cat==='esma')text=invocation(text);
-  else if(!text)text=clean($('zTr')?.textContent||'');
-  return {cat,idx,item,text,identity:cat+':'+idx,source:s?.source||''};
+  // Z is the user's selected editor state. currentZikirState may legitimately
+  // describe another smart-session step, so it is not a title authority.
+  let cat='',idx=-1,item=null;
+  try{
+    const view=typeof Z!=='undefined'?Z:null;
+    const db=typeof ZIKIR!=='undefined'?ZIKIR:null;
+    cat=String(view?.cat||'');
+    idx=Number(view?.idx);
+    if(!Number.isInteger(idx)||idx<0)idx=-1;
+    const entry=idx>=0?db?.[cat]?.items?.[idx]:null;
+    if(cat==='fav'&&entry){
+      cat=String(entry._src||cat);
+      idx=Number(entry._i);
+      if(!Number.isInteger(idx)||idx<0)idx=-1;
+    }
+    item=idx>=0?db?.[cat]?.items?.[idx]||null:null;
+    // A stale favorite mapping must not discard the selected entry.
+    if(!item&&view?.cat==='fav')item=ZIKIR?.fav?.items?.[Z.idx]||null;
+  }catch(e){}
+  const text=item?clean(item.tr||item.t||item.nm||''):'';
+  // Preserve the existing private-name policy. A stale selection must not
+  // reveal a locked Berhetiyye record merely because the title is independent.
+  let allowed=true;
+  try{if(item&&window.SukunSecretPolicy?.secretStep?.({cat,name:text}))allowed=false}catch(e){}
+  return {cat,idx,item:allowed?item:null,
+    text:allowed?((cat==='esma'||cat==='berhet')?invocation(text):text):'',
+    identity:cat+':'+idx,source:'selected'};
 }
 function subtitle(cat){
   return cat==='esma'?'şu an zikredilen esmâ':
@@ -59630,7 +59601,7 @@ function sync(){
   const long=text.length>18&&text.length<=38,vlong=text.length>38;
   hero.classList.toggle('r611-long',long);
   hero.classList.toggle('r611-vlong',vlong);
-  if(hero.hidden===show)hero.hidden=!show;
+  if(hero.hidden===show){hero.hidden=!show;if(show)scheduleFit();}
   const aria=String(!show);
   if(hero.getAttribute('aria-hidden')!==aria)hero.setAttribute('aria-hidden',aria);
   const idChanged=v.identity!==lastIdentity||text!==lastText;
@@ -59643,8 +59614,9 @@ function mount(){
   if(row&&window.ResizeObserver){
     resizeObserver=new ResizeObserver(scheduleFit);resizeObserver.observe(row);
   }
-  try{window.currentZikirState?.subscribe?.(schedule,{immediate:false})}catch(e){}
-  ['sukun:currentflowchange','sukun:zikirnav','sukun:tabchange','sukun:playbackchange','sukun:journey-advance']
+  // A selected-record update may be emitted by renderZikir or the user nav.
+  // Playback, smart-flow and journey events are not display-name changes.
+  ['sukun:zikirselectionchange','sukun:zikirnav','sukun:tabchange','sukun:secretaccesschange']
     .forEach(ev=>window.addEventListener(ev,schedule,{passive:true}));
   document.addEventListener('visibilitychange',schedule,{passive:true});
   window.addEventListener('resize',scheduleFit,{passive:true});
@@ -59654,7 +59626,7 @@ function mount(){
   sync();scheduleFit();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
-window.SukunCurrentZikirHero=Object.freeze({version:'r740',sync:schedule,visible:()=>!!$('r611CurrentZikirHero')&&!$('r611CurrentZikirHero').hidden,snapshot:()=>({identity:lastIdentity,text:lastText,width:lastWidth})});
+window.SukunCurrentZikirHero=Object.freeze({version:'r741',sync:schedule,visible:()=>!!$('r611CurrentZikirHero')&&!$('r611CurrentZikirHero').hidden,snapshot:()=>({identity:lastIdentity,text:lastText,width:lastWidth,source:'selected'})});
 })();
 </script>
 
@@ -59839,12 +59811,11 @@ function place(){
   }
   try{window.SukunCurrentZikirHero?.sync?.()}catch(e){}
 }
-['sukun:currentzikirchange','sukun:currentflowchange','sukun:playbackchange','sukun:tabchange','pageshow']
+['sukun:zikirselectionchange','sukun:tabchange','pageshow']
  .forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(place),{passive:true}));
-document.addEventListener('click',()=>setTimeout(place,40),{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place,{once:true});else place();
-setTimeout(place,400);setTimeout(place,1200);
-window.SukunTefekkurHeroOwner={version:'r614',place};
+setTimeout(place,400);
+window.SukunTefekkurHeroOwner={version:'r741',place};
 })();
 </script>
 
@@ -67639,10 +67610,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r740',date='2026-09-09';
+const build=meta?.content||'r741',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r740',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r741',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */

@@ -1,8 +1,8 @@
 /* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
 'use strict';
 
-const SURUM = 'r740';
-const CACHE = 'sukun-r740-20260909a';
+const SURUM = 'r741';
+const CACHE = 'sukun-r741-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r740__.json';
+const BUILD_MARKER='./__sukun_build_r741__.json';
 
-const NOTLAR = ["r740 · Berhetiyye başlığı kanonik isim kaydından tek kez üretilir; Hûtîrin dâhil isimlere oynatma/scroll metni eklenmez.", "r611 ve r678 görsel yazıcıları tek sunum sahibinde birleştirildi. r739’daki hatalı metin ayıklama ve ikinci başlık yazıcısı kaldırıldı.", "Tefekkürde ikinci isim perdesi açılmaz; isim değişiminde sabit başlık güncellenir. Sayaç ve oynatma olayları başlığı yeniden yazmaz.", "Başlık tam merkezde, iki eşit süsleme alanı arasında yer alır. Uzun isimler ekrana göre ölçülür; kelime içi kırılma, kayan metin ve yanıp sönme yoktur.", "Ses motoru, kayıt anahtarları, sayaç, hedef, 28/99 seyir sahipliği ve 7/9 yüzük erişimi r738’den korunur."];
+const NOTLAR = ["r741 · Tefekkürdeki isim başlığı yalnız seçili Z kaydından ve kanonik isim matrisinden okunur; akıllı seansın geçici oynatma adı başlığı değiştirmez.", "r740’tan kalan görünüm çakışmaları giderildi. Sabit, Animasyon ve Kapalı tercihleri Tefekkürde ikinci bir isim perdesi üretmez; normal ekran tercihleri korunur.", "Başlık yalnız gerçek seçim değişikliğinde güncellenir. Tekrarlanan sayaç, oynatma ve akıllı seans olayları yazıyı yeniden oluşturmaz veya giriş animasyonunu başlatmaz.", "Hûtîrin ve diğer uzun isimler, eşit yan süsleme alanları arasında ölçülerek ortalanır; metin kesilmez, kayan yazı ve kelime içi kırılma kullanılmaz.", "Ses, kayıt, hedef ve sayaç verileri değiştirilmedi. 28/99 seyir, durdurma bariyeri ve 7/9 yüzük erişimi korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
