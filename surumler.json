@@ -1,5 +1,16 @@
 [
   {
+    "v": "r733",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r733 · Rahmân gibi sesli zikri Durdur → Başla ile yeniden açarken sayaç, hedef ve kayıt seçimi korunur; durdurma temizliği tamamlanmadan yeni ses başlatılmaz.",
+      "Yeni Durdur, bekleyen yeniden başlatmayı iptal eder. Gerçek Duraklat → Devam et mevcut oturumu sürdürür; 28/99 seyirlerin sahipliği değişmez.",
+      "Başlangıçta niyet veya ses hazırlanıyorsa ilk bekleme artık otomatik zikri sonlandırmaz. Sayaç yalnız gerçek okuma kapısı izin verdiğinde ilerler.",
+      "Ana Başla düğmesinin 620 ms sessiz reddi kaldırıldı; eski logger/mini sarmalayıcıları gerçek başlatma sonucunu korur.",
+      "Tanı raporuna 48 olaylık sınırlı restart izi eklendi. Gerçek tıklama, kabul edilen komut, bekleyen durdurma ve iptal ayrı görülebilir."
+    ]
+  },
+  {
     "v": "r732",
     "t": "9 Eylül 2026",
     "b": [

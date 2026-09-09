@@ -1,0 +1,24 @@
+{
+  "build": "r733",
+  "base": "r732",
+  "date": "2026-09-09",
+  "cache": "sukun-r733-20260909a",
+  "htmlSha256": "15649b9ccfaf9af6c72b7da72a4104bcc0b71f66eabb4aaf9e36f75a2c0ee8f6",
+  "verification": {
+    "sourceVM": 31,
+    "miniVM": 5,
+    "restartVM": 10,
+    "fullHTMLInteraction": 8,
+    "browserRestartFixture": 4,
+    "realAndroid": false,
+    "realRecordingPlayback": false
+  },
+  "changes": [
+    "restart-stop-barrier",
+    "intent-epoch-cancellation",
+    "first-voice-wait",
+    "start-result-propagation",
+    "native-click-tracing",
+    "main-start-debounce-removal"
+  ]
+}

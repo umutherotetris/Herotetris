@@ -1,8 +1,8 @@
 /* SÜKÛN r732 — Containment Conflict Resolution & Package Hygiene */
 'use strict';
 
-const SURUM = 'r732';
-const CACHE = 'sukun-r732-20260909a';
+const SURUM = 'r733';
+const CACHE = 'sukun-r733-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r732__.json';
+const BUILD_MARKER='./__sukun_build_r733__.json';
 
-const NOTLAR = ["r732 · Dokunma ve kaydırma sırasında akış barı yerleşimi yeniden kurulmaz; ölçüm parmak hareketi bittikten sonra yapılır.", "Eski panel perdeleri ve kapalı modal katmanlar tıklamaları yakalayamaz. Açık panelin scroll ve odak sahipliği korunur.", "Tefekkür, zikir, seyirler ve sesler arasında gezinmede gereksiz sayfa sıfırlamaları kaldırıldı. Ses, kayıt, sayaç ve seyir sahipleri değişmedi.", "320 px ekranlarda gizlenen Ayarlar düğmesi geri getirildi; üstteki üç ikon 44 px dokunma alanını korur.", "Mini/Midi/Max geçişi sonrası tefekkür çıkışı oyuncunun altında kalırsa yalnız kullanıcı kip değiştirdiğinde görünür konuma getirilir; doğal kaydırma ve ses durumuna müdahale edilmez.", "Tefekkür Mini’de eski kuralın gizlediği aktif isim, ses kaynağı ve ince ilerleme satırı yeniden görünür."];
+const NOTLAR = ["r733 · Rahmân gibi sesli zikri Durdur → Başla ile yeniden açarken sayaç, hedef ve kayıt seçimi korunur; durdurma temizliği tamamlanmadan yeni ses başlatılmaz.", "Yeni Durdur, bekleyen yeniden başlatmayı iptal eder. Gerçek Duraklat → Devam et mevcut oturumu sürdürür; 28/99 seyirlerin sahipliği değişmez.", "Başlangıçta niyet veya ses hazırlanıyorsa ilk bekleme artık otomatik zikri sonlandırmaz. Sayaç yalnız gerçek okuma kapısı izin verdiğinde ilerler.", "Ana Başla düğmesinin 620 ms sessiz reddi kaldırıldı; eski logger/mini sarmalayıcıları gerçek başlatma sonucunu korur.", "Tanı raporuna 48 olaylık sınırlı restart izi eklendi. Gerçek tıklama, kabul edilen komut, bekleyen durdurma ve iptal ayrı görülebilir."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
