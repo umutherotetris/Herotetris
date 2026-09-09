@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r743">
+<meta name="sukun-build" content="r744">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r743">
+<link rel="manifest" href="./manifest.webmanifest?v=r744">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r743</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r744</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r744",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r744 · Ana sayaç başlığı Tefekkür ile aynı yatay düzende; çember altında Hedef/Kalan yan yana ve kompakt kontroller.",
+      "Tam ekran tanısı eski sürüm numarası yerine gerçek API ve tercih tutarlılığını denetler; ana sayaç geometrisi kontrolü eklendi.",
+      "Gizli oynatıcı dönüş düğmesi görünür viewport içinde tutulur; mevcut dokunma/kaydırma ertelemesi korunur.",
+      "Kayıt stüdyosunda yanlış kaydın üzerine yazma, eski analiz, çift kayıt ve boş/hatalı kayıt saklama sorunları giderildi.",
+      "Stereo sessizlik kırpma ve örnek tepe analizi düzeltildi. 137 kaynak/VM kontrolü geçti; gerçek cihaz testi yapılmadı."
+    ]
+  },
   {
     "v": "r743",
     "t": "9 Eylül 2026",
@@ -26202,7 +26213,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r743';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r744';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -38317,7 +38328,7 @@ function queueRender(){const q=document.getElementById('r170Queue');if(!q)return
 function savedRender(){const h=document.getElementById('r170SavedSessions');if(!h)return;h.innerHTML='';let sessions=ls.get('sukun.sessions.v2',[]);try{sessions=window.SukunSecretPolicy?.visibleSessions(sessions)||sessions}catch(e){}for(const s of sessions){const b=document.createElement('button');b.textContent='↻ '+s.name;b.onclick=()=>{P.set(s.queue,s.name);const n=document.getElementById('r170SessionName');if(n)n.value=s.name};h.appendChild(b)}}
 
 /* ═══ 3: KENDİ SESLERİM STÜDYOSU ═══ */
-const Studio=R170.Studio={key:null,stream:null,mr:null,chunks:[],raf:0,audioCtx:null};
+const Studio=R170.Studio={key:null,stream:null,mr:null,chunks:[],raf:0,audioCtx:null,analysisSeq:0,keysSeq:0,edit:null,session:null};
 function wavFromBuffer(buf,scale=1,start=0,end=buf.length){const ch=buf.numberOfChannels,sr=buf.sampleRate,len=Math.max(0,end-start),ab=new ArrayBuffer(44+len*ch*2),v=new DataView(ab);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+len*ch*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,len*ch*2,true);let o=44;for(let i=start;i<end;i++)for(let c=0;c<ch;c++){let x=Math.max(-1,Math.min(1,buf.getChannelData(c)[i]*scale));v.setInt16(o,x<0?x*32768:x*32767,true);o+=2}return new Blob([ab],{type:'audio/wav'})}
 /* ═══ r510 — B-03: KOD ÇÖZME İÇİN ASLA YENİ CANLI AudioContext AÇMA ═══
    Eski kod `ctx || new AudioContext()` yazıyordu. Ama ctx, ilk dokunuşla
@@ -38344,87 +38355,194 @@ async function decodeBlob(blob){
   const off=new OAC(1,1,44100);
   return await off.decodeAudioData(a.slice(0));
 }
-async function analyzeKey(key,draw=true){const blob=await REC_DB.get(key);if(!blob)return null;const b=await decodeBlob(blob);let peak=0,sum=0,n=0;for(let c=0;c<b.numberOfChannels;c++){const d=b.getChannelData(c);for(let i=0;i<d.length;i+=Math.max(1,Math.floor(d.length/200000))){const x=Math.abs(d[i]);peak=Math.max(peak,x);sum+=x*x;n++}}const rms=Math.sqrt(sum/Math.max(1,n)),dur=b.duration;if(draw)drawWave(b);return{b,peak,rms,dur,size:blob.size}}
-function drawWave(b,live){const cv=document.getElementById('r170Wave');if(!cv)return;const dpr=Math.min(2,devicePixelRatio||1),w=cv.clientWidth||300,h=cv.clientHeight||96;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,w,h);x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#c99a42';x.lineWidth=1;const d=b.getChannelData?b.getChannelData(0):b,step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const y=d[Math.min(d.length-1,i*step+j)]||0;mn=Math.min(mn,y);mx=Math.max(mx,y)}x.moveTo(i,(1+mn)*h/2);x.lineTo(i,(1+mx)*h/2)}x.stroke()}
-function studioCreate(){const lib=document.getElementById('sesKutuphane');if(!lib||document.getElementById('r170Studio'))return;const d=document.createElement('details');d.id='r170Studio';d.className='r170Hub';d.innerHTML=`<summary><span>🎙</span><span><b>KAYIT STÜDYOSU</b><small>analiz · normalize · sessizlik kırp · yeniden kayıt</small></span></summary><div class="r170Body"><select class="r170Select" id="r170StudioSel" style="width:100%" aria-label="Stüdyo kaydı seç"><option value="">Bir kayıt seç…</option></select><canvas id="r170Wave"></canvas><div class="r170StudioMeta"><div><b id="r170Dur">—</b><small>SÜRE</small></div><div><b id="r170Peak">—</b><small>TEPE</small></div><div><b id="r170Size">—</b><small>BOYUT</small></div></div><div class="r170Row" style="margin-top:8px"><button class="r170Btn" id="r170Analyze">Analiz et</button><button class="r170Btn" id="r170Norm">Normalize</button><button class="r170Btn" id="r170Trim">Sessizliği kırp</button><button class="r170Btn" id="r170ReRec">Yeniden kaydet</button></div><div class="r168Status" id="r170StudioStat">Bir kayıt seç.</div></div>`;lib.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)studioKeys()});d.querySelector('#r170StudioSel').onchange=e=>{Studio.key=e.target.value;if(Studio.key)studioAnalyze()};d.querySelector('#r170Analyze').onclick=studioAnalyze;d.querySelector('#r170Norm').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key);if(!a)return;const scale=a.peak>.001?Math.min(4,.92/a.peak):1;await REC_DB.set(Studio.key,wavFromBuffer(a.b,scale));document.getElementById('r170StudioStat').textContent='Normalize edildi · tepe ≈ %92';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170Trim').onclick=async()=>{if(!Studio.key)return;const a=await analyzeKey(Studio.key),b=a?.b;if(!b)return;const d0=b.getChannelData(0),th=.012;let s=0,e=d0.length-1;while(s<e&&Math.abs(d0[s])<th)s++;while(e>s&&Math.abs(d0[e])<th)e--;const pad=Math.round(b.sampleRate*.08);s=Math.max(0,s-pad);e=Math.min(d0.length,e+pad);await REC_DB.set(Studio.key,wavFromBuffer(b,1,s,e));document.getElementById('r170StudioStat').textContent='Baş/son sessizlik kırpıldı.';studioAnalyze();try{mediaRender()}catch(e){}};d.querySelector('#r170ReRec').onclick=studioRecord}
-async function studioKeys(){const s=document.getElementById('r170StudioSel');if(!s)return;const cur=s.value;let keys=[];try{keys=await REC_DB.keys()}catch(e){}try{keys=window.SukunSecretPolicy?.visibleRecKeys(keys)||keys}catch(e){}if(!keys.includes(cur)){Studio.key=null;s.value=''}s.innerHTML='<option value="">Bir kayıt seç…</option>'+keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyLabel(k))+'</option>').join('');if(keys.includes(cur))s.value=cur}
-async function studioAnalyze(){if(!Studio.key)return;const st=document.getElementById('r170StudioStat');try{st.textContent='Analiz ediliyor…';const a=await analyzeKey(Studio.key);document.getElementById('r170Dur').textContent=a.dur.toFixed(1)+' sn';document.getElementById('r170Peak').textContent=Math.round(a.peak*100)+'%';document.getElementById('r170Size').textContent=(a.size/1024).toFixed(0)+' KB';st.textContent='Hazır · RMS '+Math.round(a.rms*100)+'%'}catch(e){st.textContent='Analiz yapılamadı: '+e.message}}
-/* ═══ r510 — U-02: MİKROFON VE BAĞLAM TEK KAPIDAN SERBEST BIRAKILIR ═══
-   İki uç durum vardı:
-   1) new MediaRecorder(stream) patlarsa (cihazın desteklemediği MIME —
-      bazı One UI sürümlerinde görülüyor) catch yalnız metin yazıyordu;
-      stream hiç durdurulmuyor, Android durum çubuğundaki MİKROFON
-      GÖSTERGESİ AÇIK KALIYORDU. Bir zikir uygulamasında bu, kullanıcının
-      haklı olarak paniklediği bir şey.
-   2) c.close() yalnız live() rAF döngüsünün içinde çağrılıyordu. Android'de
-      ekran kapanınca rAF DURUR; kayıt ekran kapalıyken bitirilirse döngü bir
-      daha hiç dönmez ve bağlam kapanmaz → birkaç kayıt sonra B-03'teki
-      6-bağlam duvarı.
-   Artık tek temizle() kapısı hem hata hem onstop hem onerror yolundan çağrılıyor. */
-async function studioRecord(){
-  if(!Studio.key){document.getElementById('r170StudioStat').textContent='Önce üzerine yazılacak kaydı seç.';return}
-  const st=document.getElementById('r170StudioStat');
-  let stream=null,c=null;
-
-  const temizle=()=>{
-    try{ if(Studio.raf)cancelAnimationFrame(Studio.raf) }catch(_){}
-    Studio.raf=null;
-    try{ stream&&stream.getTracks().forEach(t=>t.stop()) }catch(_){}
-    try{ Studio.stream&&Studio.stream!==stream&&Studio.stream.getTracks().forEach(t=>t.stop()) }catch(_){}
-    Studio.stream=null;
-    try{ c&&c.state!=='closed'&&c.close() }catch(_){}
-    stream=null;c=null;
-  };
-
-  try{
-    if(Studio.mr&&Studio.mr.state==='recording'){Studio.mr.stop();return}
-    st.textContent='3…';await sleep(700);
-    st.textContent='2…';await sleep(700);
-    st.textContent='1…';await sleep(700);
-
-    stream=await navigator.mediaDevices.getUserMedia({audio:typeof micKisit==='function'?micKisit().audio:true});
-    Studio.stream=stream;
-
-    /* r510: MIME desteğini kayıt başlamadan doğrula */
-    const tur=['audio/webm;codecs=opus','audio/webm','audio/mp4','']
-      .find(t=>!t||(window.MediaRecorder&&window.MediaRecorder.isTypeSupported&&window.MediaRecorder.isTypeSupported(t)));
-    const mr=new MediaRecorder(stream,tur?{mimeType:tur}:undefined);
-
-    Studio.mr=mr;Studio.chunks=[];
-    mr.ondataavailable=e=>{if(e.data&&e.data.size)Studio.chunks.push(e.data)};
-    mr.onerror=()=>{temizle();Studio.mr=null;st.textContent='Kayıt hatası — mikrofon serbest bırakıldı.'};
-    mr.onstop=async()=>{
-      temizle();                                   /* rAF'a bağımlı değil */
-      try{
-        const blob=new Blob(Studio.chunks,{type:mr.mimeType||'audio/webm'});
-        await REC_DB.set(Studio.key,blob);
-        st.textContent='Yeni kayıt kaydedildi ✦';
-      }catch(e){ st.textContent='Kayıt saklanamadı: '+e.message }
-      Studio.mr=null;
-      try{studioAnalyze()}catch(e){}
-      try{mediaRender()}catch(e){}
-    };
-    mr.start(250);
-    st.textContent='⏺ Kayıt sürüyor — “Yeniden kaydet” düğmesine tekrar basınca biter.';
-
-    const AC=window.AudioContext||window.webkitAudioContext;
-    c=new AC();
-    const src=c.createMediaStreamSource(stream),an=c.createAnalyser();
-    an.fftSize=512;src.connect(an);
-    const arr=new Float32Array(an.fftSize);
-    const live=()=>{
-      if(!Studio.mr||Studio.mr.state!=='recording')return;   /* temizlik onstop'ta */
-      if(!c||c.state==='closed')return;
-      an.getFloatTimeDomainData(arr);drawWave(arr,true);
-      Studio.raf=requestAnimationFrame(live);
-    };
-    live();
-
-  }catch(e){
-    temizle();                                     /* ⬅ eksik olan buydu */
-    Studio.mr=null;
-    st.textContent='Mikrofon açılamadı: '+e.message;
+async function analyzeKey(key,draw=true){
+  const blob=await REC_DB.get(key);if(!blob)return null;
+  const b=await decodeBlob(blob);let peak=0,sum=0,n=0;
+  // Every sample participates: skipped transients could be clipped by normalization.
+  for(let c=0;c<b.numberOfChannels;c++){
+    const data=b.getChannelData(c);
+    for(let i=0;i<data.length;i++){const x=Math.abs(data[i]);peak=Math.max(peak,x);sum+=x*x;n++;}
   }
+  if(draw)drawWave(b);
+  return{b,peak,rms:Math.sqrt(sum/Math.max(1,n)),dur:b.duration,size:blob.size};
+}
+function drawWave(b,live){
+  const cv=document.getElementById('r170Wave');if(!cv)return;
+  const dpr=Math.min(2,devicePixelRatio||1),w=cv.clientWidth||300,h=cv.clientHeight||96;
+  cv.width=w*dpr;cv.height=h*dpr;
+  const x=cv.getContext('2d');if(!x)return;
+  x.scale(dpr,dpr);x.clearRect(0,0,w,h);
+  x.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--gold')||'#c99a42';x.lineWidth=1;
+  const channels=b?.getChannelData?Array.from({length:b.numberOfChannels},(_,i)=>b.getChannelData(i)):[b];
+  const length=channels[0]?.length||0;if(!length)return;
+  x.beginPath();
+  for(let i=0;i<w;i++){
+    const start=Math.floor(i*length/w),end=Math.min(length,Math.max(start+1,Math.ceil((i+1)*length/w)));let mn=1,mx=-1;
+    for(const data of channels)for(let j=start;j<end;j++){const y=data[j]||0;mn=Math.min(mn,y);mx=Math.max(mx,y);}
+    x.moveTo(i,(1+mn)*h/2);x.lineTo(i,(1+mx)*h/2);
+  }
+  x.stroke();
+}
+
+function studioCreate(){const lib=document.getElementById('sesKutuphane');if(!lib||document.getElementById('r170Studio'))return;const d=document.createElement('details');d.id='r170Studio';d.className='r170Hub';d.innerHTML=`<summary><span>🎙</span><span><b>KAYIT STÜDYOSU</b><small>analiz · normalize · sessizlik kırp · yeniden kayıt</small></span></summary><div class="r170Body"><select class="r170Select" id="r170StudioSel" style="width:100%" aria-label="Stüdyo kaydı seç"><option value="">Bir kayıt seç…</option></select><canvas id="r170Wave"></canvas><div class="r170StudioMeta"><div><b id="r170Dur">—</b><small>SÜRE</small></div><div><b id="r170Peak">—</b><small>TEPE</small></div><div><b id="r170Size">—</b><small>BOYUT</small></div></div><div class="r170Row" style="margin-top:8px"><button class="r170Btn" id="r170Analyze">Analiz et</button><button class="r170Btn" id="r170Norm">Normalize</button><button class="r170Btn" id="r170Trim">Sessizliği kırp</button><button class="r170Btn" id="r170ReRec">Yeniden kaydet</button></div><div class="r168Status" id="r170StudioStat">Bir kayıt seç.</div></div>`;lib.insertAdjacentElement('afterend',d);d.addEventListener('toggle',()=>{if(d.open)studioKeys()});d.querySelector('#r170StudioSel').onchange=e=>studioSelect(e.target.value);d.querySelector('#r170Analyze').onclick=()=>studioAnalyze();d.querySelector('#r170Norm').onclick=()=>studioEdit('normalize');d.querySelector('#r170Trim').onclick=()=>studioEdit('trim');d.querySelector('#r170ReRec').onclick=studioRecord;studioControls()}
+function studioStatus(text,key=Studio.key){
+  if(key!==Studio.key)return;
+  const el=document.getElementById('r170StudioStat');if(el)el.textContent=text;
+}
+function studioControls(){
+  const phase=Studio.session?.phase||'',recording=!!Studio.session,editing=!!Studio.edit;
+  for(const id of ['r170Norm','r170Trim']){const el=document.getElementById(id);if(el)el.disabled=recording||editing;}
+  for(const id of ['r170StudioSel','r170Analyze']){const el=document.getElementById(id);if(el)el.disabled=recording;}
+  const button=document.getElementById('r170ReRec');
+  if(button){
+    button.disabled=editing||['saving','stopping','cancelling'].includes(phase);
+    button.textContent=phase==='preparing'?'İptal et':phase==='recording'?'Kaydı bitir':phase==='saving'?'Kaydediliyor…':phase==='cancelling'?'İptal ediliyor…':'Yeniden kaydet';
+    button.setAttribute('aria-pressed',String(phase==='recording'));
+  }
+}
+function studioSelect(key){Studio.key=key||null;Studio.analysisSeq++;return studioAnalyze();}
+async function studioKeys(){
+  const select=document.getElementById('r170StudioSel');if(!select)return;
+  const seq=++Studio.keysSeq;
+  try{
+    let keys=await REC_DB.keys();if(seq!==Studio.keysSeq)return;
+    keys=window.SukunSecretPolicy?.visibleRecKeys(keys)||keys;
+    const current=select.value;
+    select.innerHTML='<option value="">Bir kayıt seç…</option>'+keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyLabel(k))+'</option>').join('');
+    if(keys.includes(current)){select.value=current;Studio.key=current;}
+    else{select.value='';studioSelect(null);}
+  }catch(error){if(seq===Studio.keysSeq)studioStatus('Kayıt listesi alınamadı: '+error.message);}
+}
+async function studioAnalyze(){
+  const key=Studio.key,seq=++Studio.analysisSeq;
+  if(Studio.session)return false;
+  if(!key){
+    for(const id of ['r170Dur','r170Peak','r170Size']){const el=document.getElementById(id);if(el)el.textContent='—';}
+    drawWave(new Float32Array(0));studioStatus('Bir kayıt seç.');return false;
+  }
+  const current=()=>seq===Studio.analysisSeq&&key===Studio.key&&!Studio.session;
+  studioStatus('Analiz ediliyor…',key);
+  try{
+    const a=await analyzeKey(key,false);if(!current())return false;
+    if(!a){studioStatus('Bu kayıt artık bulunamıyor.',key);return false;}
+    drawWave(a.b);
+    document.getElementById('r170Dur').textContent=a.dur.toFixed(1)+' sn';
+    document.getElementById('r170Peak').textContent=Math.round(a.peak*100)+'%';
+    document.getElementById('r170Size').textContent=(a.size/1024).toFixed(0)+' KB';
+    studioStatus('Hazır · RMS '+Math.round(a.rms*100)+'%',key);return true;
+  }catch(error){if(current())studioStatus('Analiz yapılamadı: '+error.message,key);return false;}
+}
+async function studioEdit(kind){
+  const key=Studio.key;if(!key||Studio.edit||Studio.session)return false;
+  const task={key,kind};Studio.edit=task;Studio.analysisSeq++;studioControls();
+  studioStatus(kind==='trim'?'Sessizlik inceleniyor…':'Ses düzeyi inceleniyor…',key);
+  let note='';
+  try{
+    const a=await analyzeKey(key,false);if(!a)throw new Error('Kayıt bulunamadı');
+    let blob;
+    if(kind==='trim'){
+      const b=a.b,channels=Array.from({length:b.numberOfChannels},(_,i)=>b.getChannelData(i));
+      const audible=i=>channels.some(data=>Math.abs(data[i])>=.012);
+      let start=0,end=b.length;
+      while(start<end&&!audible(start))start++;
+      if(start===end){studioStatus('İşitilebilir ses bulunamadı; kayıt korundu.',key);return false;}
+      while(end>start&&!audible(end-1))end--;
+      const pad=Math.round(b.sampleRate*.08);start=Math.max(0,start-pad);end=Math.min(b.length,end+pad);
+      blob=wavFromBuffer(b,1,start,end);note='Baş/son sessizlik kırpıldı.';
+    }else{
+      const scale=a.peak>.001?Math.min(4,.92/a.peak):1;
+      blob=wavFromBuffer(a.b,scale);note='Normalize edildi · tepe ≈ %'+Math.round(a.peak*scale*100);
+    }
+    await REC_DB.set(key,blob);
+    if(Studio.key===key&&await studioAnalyze())studioStatus(note,key);
+    try{Promise.resolve(mediaRender()).catch(()=>{});}catch(_){}
+    return true;
+  }catch(error){studioStatus('İşlem tamamlanamadı: '+error.message,key);return false;}
+  finally{if(Studio.edit===task)Studio.edit=null;studioControls();}
+}
+function studioRelease(session){
+  if(session.released)return;session.released=true;
+  try{if(session.raf)cancelAnimationFrame(session.raf);}catch(_){}
+  if(Studio.raf===session.raf)Studio.raf=0;
+  try{session.stream?.getTracks().forEach(track=>track.stop());}catch(_){}
+  if(Studio.stream===session.stream)Studio.stream=null;
+  try{if(session.ctx&&session.ctx.state!=='closed')Promise.resolve(session.ctx.close()).catch(()=>{});}catch(_){}
+  if(Studio.audioCtx===session.ctx)Studio.audioCtx=null;
+}
+function studioFinish(session){
+  studioRelease(session);session.done=true;
+  if(Studio.session===session){Studio.session=null;Studio.mr=null;Studio.chunks=[];studioControls();}
+}
+async function studioRecord(){
+  const active=Studio.session;
+  if(active){
+    if(active.phase==='preparing'){
+      active.cancelled=true;active.phase='cancelling';studioStatus('Kayıt hazırlığı iptal ediliyor…',active.key);studioControls();
+    }else if(active.phase==='recording'){
+      active.phase='stopping';studioControls();
+      try{active.mr.stop();}catch(error){active.failed=true;studioStatus('Kayıt bitirilemedi: '+error.message,active.key);studioFinish(active);}
+    }
+    return false;
+  }
+  if(Studio.edit)return false;
+  const key=Studio.key;if(!key){studioStatus('Önce üzerine yazılacak kaydı seç.');return false;}
+  const session={key,phase:'preparing',stream:null,mr:null,ctx:null,raf:0,chunks:[],cancelled:false,failed:false,done:false,released:false};
+  Studio.session=session;Studio.analysisSeq++;studioControls();
+  const current=()=>Studio.session===session&&!session.done;
+  const cancelled=()=>!current()||session.cancelled||Studio.key!==key;
+  const status=text=>{if(current())studioStatus(text,key);};
+  const cancel=()=>{if(current())studioStatus('Kayıt hazırlığı iptal edildi.');studioFinish(session);return false;};
+  try{
+    for(const number of [3,2,1]){
+      if(cancelled())return cancel();
+      status(number+'…');await sleep(700);
+    }
+    if(cancelled())return cancel();
+    session.stream=await navigator.mediaDevices.getUserMedia({audio:typeof micKisit==='function'?micKisit().audio:true});
+    if(cancelled())return cancel();
+    Studio.stream=session.stream;
+    const type=['audio/webm;codecs=opus','audio/webm','audio/mp4',''].find(t=>!t||window.MediaRecorder?.isTypeSupported?.(t));
+    const mr=new MediaRecorder(session.stream,type?{mimeType:type}:undefined);
+    session.mr=mr;Studio.mr=mr;Studio.chunks=session.chunks;
+    mr.ondataavailable=e=>{if(!session.failed&&!session.done&&e.data?.size)session.chunks.push(e.data);};
+    mr.onerror=()=>{
+      if(session.done)return;session.failed=true;
+      status('Kayıt hatası; önceki kayıt korundu.');
+      try{if(mr.state!=='inactive')mr.stop();}catch(_){}
+      studioFinish(session);
+    };
+    mr.onstop=async()=>{
+      if(session.done)return;session.phase='saving';studioRelease(session);studioControls();
+      let saved=false;
+      try{
+        if(session.failed||session.cancelled)return;
+        const blob=new Blob(session.chunks,{type:mr.mimeType||'audio/webm'});
+        if(!blob.size)throw new Error('Ses alınamadı; önceki kayıt korundu.');
+        status('Kayıt kaydediliyor…');await REC_DB.set(key,blob);saved=true;
+        status('Yeni kayıt kaydedildi ✦');
+      }catch(error){status('Kayıt saklanamadı: '+error.message);}
+      finally{studioFinish(session);}
+      if(saved&&!Studio.session){
+        if(await studioAnalyze())studioStatus('Yeni kayıt kaydedildi ✦',key);
+        try{Promise.resolve(mediaRender()).catch(()=>{});}catch(_){}
+      }
+    };
+    mr.start(250);session.phase='recording';studioControls();
+    status('⏺ Kayıt sürüyor — “Kaydı bitir” düğmesine dokununca biter.');
+    // A waveform is optional; it must not interrupt a working MediaRecorder.
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext,c=new AC();session.ctx=c;Studio.audioCtx=c;
+      const source=c.createMediaStreamSource(session.stream),analyser=c.createAnalyser();analyser.fftSize=512;source.connect(analyser);
+      const samples=new Float32Array(analyser.fftSize);
+      const live=()=>{
+        if(!current()||session.phase!=='recording'||session.released||c.state==='closed')return;
+        analyser.getFloatTimeDomainData(samples);drawWave(samples,true);
+        session.raf=requestAnimationFrame(live);Studio.raf=session.raf;
+      };
+      live();
+    }catch(_){status('⏺ Kayıt sürüyor; dalga önizlemesi kullanılamıyor. “Kaydı bitir” ile kaydet.');}
+    return true;
+  }catch(error){session.failed=true;status('Mikrofon açılamadı: '+error.message);studioFinish(session);return false;}
 }
 
 /* ═══ 4: İSTATİSTİK ═══ */
@@ -49515,6 +49633,21 @@ async function safeSuite(){
     const miss=req.filter(id=>!$(id));
     return status(!miss.length,miss.length?'eksik: '+miss.join(', '):'−1 / ana aksiyon / +1 / sayaç mevcut');
   }));
+  R.push(await check('ZİKİR','Ana sayaç yerleşimi',()=>{
+    const root=$('tfRefinedLayout'),hero=$('r611CurrentZikirHero'),heading=$('r740HeroHeading'),name=$('r611CurrentZikirName'),ring=$('zCountVisual');
+    if(document.body.classList.contains('sukun-tefekkur-mode')||!root||!root.getClientRects().length)return{status:'SKIP',detail:'Ana sayaç şu an görünür değil'};
+    const target=$('cntTargetView')?.closest('.zCounterSide'),remain=$('cntRemain')?.closest('.zCounterSide');
+    if(!ring||!target||!remain)return status(false,'Sayaç veya hedef/kalan alanı eksik');
+    const a=ring.getBoundingClientRect(),b=target.getBoundingClientRect(),c=remain.getBoundingClientRect();
+    const aligned=Math.abs(b.top-c.top)<=3&&b.top>=a.bottom-2&&b.right<=c.left+2;
+    let title=true;
+    if(hero&&!hero.hidden&&name&&heading){
+      const n=name.getBoundingClientRect(),h=heading.getBoundingClientRect(),cs=getComputedStyle(name);
+      title=n.width>0&&h.width>0&&n.left>=h.left-2&&n.right<=h.right+2&&cs.wordBreak!=='break-all'&&cs.overflowWrap!=='anywhere';
+    }
+    const ok=aligned&&title;
+    return status(ok,ok?'İsim yatay · sayaç üstte · Hedef/Kalan aynı satırda':`isim düzeni ${title?'uygun':'taşıyor'} · hedef/kalan ${aligned?'aynı satırda':'yerleşimi bozuk'}`);
+  }));
   R.push(await check('TEFEKKÜR','Canonical grid/flex sahipliği',()=>{
     const root=$('tfRefinedLayout'),actions=root?.querySelector('.zCounterActions');
     const u=$('undoBtn'),a=$('autoBtn'),pl=$('plusBtn');
@@ -49585,7 +49718,10 @@ async function safeSuite(){
     const row=$('r530TefFullscreen');
     const choices=[...(row?.querySelectorAll('[data-r530-tef-fs]')||[])];
     const selected=choices.filter(b=>b.getAttribute('aria-pressed')==='true');
-    const ok=api?.version==='r530'&&typeof api.fullscreenEnabled==='function'&&choices.length===2&&selected.length===1;
+    const capable=!!api&&['fullscreenEnabled','setFullscreen','enter','exit','toggle'].every(k=>typeof api[k]==='function');
+    const enabled=capable?api.fullscreenEnabled():false;
+    const modes=choices.map(b=>b.dataset.r530TefFs);
+    const ok=capable&&choices.length===2&&new Set(modes).size===2&&modes.includes('app')&&modes.includes('system')&&selected.length===1&&selected[0].dataset.r530TefFs===(enabled?'system':'app');
     return status(ok,ok?`tercih ${api.fullscreenEnabled()?'sistem tam ekranı':'uygulama içinde'} · iki açık seçenek`:'tam ekran tercih API/ayar sözleşmesi eksik');
   }));
   R.push(await check('SES','Tefekkür source resolver',()=>{
@@ -59665,7 +59801,7 @@ function sync(){
   const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub');
   if(!hero||!name||!sub)return;
   const v=selected(),text=v.text,alt=subtitle(v.cat);
-  const show=!!text&&document.body.classList.contains('sukun-tefekkur-mode');
+  const show=!!text&&(document.body.classList.contains('sukun-tefekkur-mode')||document.body.classList.contains('sukun-zikir-tab'));
   if(name.textContent!==text)name.textContent=text;
   if(sub.textContent!==alt)sub.textContent=alt;
   const long=text.length>18&&text.length<=38,vlong=text.length>38;
@@ -59696,7 +59832,7 @@ function mount(){
   sync();scheduleFit();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
-window.SukunCurrentZikirHero=Object.freeze({version:'r741',sync:schedule,visible:()=>!!$('r611CurrentZikirHero')&&!$('r611CurrentZikirHero').hidden,snapshot:()=>({identity:lastIdentity,text:lastText,width:lastWidth,source:'selected'})});
+window.SukunCurrentZikirHero=Object.freeze({version:'r744',sync:schedule,visible:()=>!!$('r611CurrentZikirHero')&&!$('r611CurrentZikirHero').hidden,snapshot:()=>({identity:lastIdentity,text:lastText,width:lastWidth,source:'selected'})});
 })();
 </script>
 
@@ -62678,13 +62814,30 @@ document.addEventListener('keydown',e=>{
  const first=items[0],lastItem=items[items.length-1];if(e.shiftKey&&(document.activeElement===first||!d.contains(document.activeElement))){e.preventDefault();lastItem.focus()}else if(!e.shiftKey&&(document.activeElement===lastItem||!d.contains(document.activeElement))){e.preventDefault();first.focus()}
 },true);
 
+function placePeek(v,bottom){
+ const peek=$('r433DockPeek');if(!visible(peek))return null;
+ // Chromium's layout/visual viewport metrics may settle on different frames.
+ // Use the rendered rectangle; leave an already fitted control untouched.
+ r706Style(peek.style,'top','auto','important');
+ let current=parseFloat(getComputedStyle(peek).bottom);
+ if(!Number.isFinite(current)){
+  current=Math.max(0,v.layoutH-v.bottom)+bottom;
+  r706Style(peek.style,'bottom',px(current),'important');
+ }
+ const r=peek.getBoundingClientRect();
+ const target=Math.max(v.top+8+Math.min(r.height,Math.max(0,v.height-bottom-8)),v.bottom-bottom);
+ const offset=current+r.bottom-target;
+ r706Style(peek.style,'bottom',px(offset),'important');
+ return {top:target-r.height,bottom:target,height:r.height,offset};
+}
+
 function measure(why='api'){
  if(panActive()||panNow()<panQuietUntil){deferPan(why);armPanEnd();return last;}
  measures++;reason=why;if(!ensure())return null;
  const host=$('r170Now'),shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');const v=viewport(),bottom=reserve(v),m=mode(),tef=B.classList.contains('sukun-tefekkur-mode'),drawer=host.classList.contains('r554-alert-open')&&!($('r554AlertDrawer')?.hidden),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible')||!B.classList.contains('r591-flow-active');
  r706Style(root.style,'--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r699-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r633-max-h',px(Math.max(1,v.height-bottom-16)));r706Style(root.style,'--r633-vvh',px(v.height));r706Style(root.style,'--r633-safe-top',px(v.top+8));r706Style(root.style,'--r699-top',px(v.top+8));r706Style(root.style,'--r699-viewport-h',px(v.height));r706Style(root.style,'--r699-available',px(Math.max(1,v.height-bottom-16)));
  clearLegacy();modalSync();B.classList.toggle('r699-drawer-open',drawer);B.classList.toggle('r699-details-open',B.classList.contains('r434-inline-details-open'));
- if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active','r699-body-scroll','r699-overflow');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
+ if(hidden){const peek=placePeek(v,bottom);B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active','r699-body-scroll','r699-overflow');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,peek,measureCount:measures,rehomeCount,scrollResets};return last}
  B.classList.add('r699-dock-active');
  const changedMode=modeLast!==m;if(changedMode)modeLast=m;if(changedMode&&tef)requestAnimationFrame(()=>revealTefExit(m)); // Native scroll clamps only if the new content is shorter.
  const priorScrollTop=body.scrollTop;const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
@@ -67706,10 +67859,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r743',date='2026-09-09';
+const build=meta?.content||'r744',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r743',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r744',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -69078,6 +69231,142 @@ html body.sukun-tefekkur-mode #nameToastLayer.show{display:none!important;visibi
  html body.sukun-tefekkur-mode #tfRefinedLayout #r740HeroHeading{column-gap:3px!important}
  html body.sukun-tefekkur-mode #tfRefinedLayout #r740HeroHeading .r611HeroOrn{font-size:15px!important}
  html body.sukun-tefekkur-mode #tfRefinedLayout #r611CurrentZikirSub{font-size:9px!important}
+}
+
+
+/* A single, stable heading. No ticker, duplicate text, or opacity animation. */
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r611CurrentZikirHero,
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r611CurrentZikirHero,
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r611CurrentZikirHero{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;gap:3px!important;
+  width:min(100%,560px)!important;max-width:100%!important;
+  min-width:0!important;margin:0 auto 5px!important;padding:3px 4px 7px!important;
+  text-align:center!important;justify-items:stretch!important;align-items:center!important;
+  overflow:visible!important;animation:none!important;transition:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r611CurrentZikirHero[hidden]{display:none!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading{
+  grid-column:1!important;grid-row:1!important;display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,max-content) minmax(0,1fr)!important;
+  align-items:center!important;justify-content:center!important;column-gap:4px!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;position:relative!important;
+  animation:none!important;transition:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading .r740HeroSide{
+  display:flex!important;align-items:center!important;gap:6px!important;
+  min-width:0!important;overflow:hidden!important;pointer-events:none!important;
+  opacity:.78!important;animation:none!important;transition:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading .r740HeroSide.flip{transform:none!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading .r611HeroLine{
+  display:block!important;flex:1 1 auto!important;min-width:0!important;height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(226,199,116,.45))!important;
+  opacity:.75!important;animation:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading .r740HeroSide.flip .r611HeroLine{
+  background:linear-gradient(90deg,rgba(226,199,116,.45),transparent)!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading .r611HeroOrn{
+  display:block!important;flex:0 0 auto!important;font:500 18px/1 "Cormorant Garamond",Georgia,serif!important;
+  color:#dec782!important;opacity:.9!important;text-shadow:0 0 10px rgba(226,199,116,.18)!important;
+  transform:none!important;animation:none!important;transition:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading #r611CurrentZikirName{
+  grid-column:2!important;grid-row:1!important;display:block!important;
+  position:relative!important;inset:auto!important;transform:none!important;
+  width:max-content!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0 3px!important;box-sizing:border-box!important;
+  font-family:"Cormorant Garamond",Georgia,serif!important;font-weight:650!important;
+  font-size:var(--r740-name-size,32px)!important;line-height:1.12!important;letter-spacing:.012em!important;
+  word-break:normal!important;overflow-wrap:normal!important;
+  text-wrap:nowrap!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+  text-align:center!important;justify-self:center!important;hyphens:none!important;
+  animation:none!important;transition:none!important;filter:none!important;
+  background:linear-gradient(100deg,#fff6dc,#e9d18a 27%,#8ff0cc 54%,#fff0c6 78%,#f7e2a9)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;color:transparent!important;text-shadow:none!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r740HeroHeading #r611CurrentZikirName.r740-multiline{
+  white-space:normal!important;text-wrap:balance!important;max-width:calc(100% - 48px)!important;
+  overflow-wrap:normal!important;word-break:normal!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #r611CurrentZikirSub{
+  display:block!important;grid-column:1!important;grid-row:2!important;
+  justify-self:center!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;font-size:10px!important;line-height:1.35!important;
+  letter-spacing:.075em!important;opacity:.86!important;animation:none!important;transition:none!important;
+}
+
+/* r744: the same title structure in the ordinary counter and Tefekkür. */
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout{
+ display:flex!important;flex-direction:column!important;gap:10px!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ height:auto!important;min-height:0!important;max-height:none!important;
+ margin:0!important;padding:0!important;overflow:visible!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout>.tfVisualPanel{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ gap:5px!important;min-width:0!important;width:100%!important;padding:0!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout:has(#r611CurrentZikirHero:not([hidden])) .zCountTitle{display:none!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .cntRow.zCounterRow{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:auto auto!important;grid-auto-flow:row!important;
+ gap:12px 8px!important;align-items:center!important;justify-items:stretch!important;
+ width:100%!important;min-width:0!important;max-width:420px!important;
+ height:auto!important;margin:0 auto!important;padding:8px 0 0!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #zCountVisual{
+ grid-column:1/-1!important;grid-row:1!important;justify-self:center!important;
+ width:min(100%,65vw,260px)!important;min-width:0!important;max-width:260px!important;
+ height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:1!important;
+ margin:10px auto 12px!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide{
+ display:flex!important;grid-row:2!important;flex-direction:row!important;
+ align-items:center!important;justify-content:center!important;gap:8px!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ height:auto!important;min-height:44px!important;max-height:none!important;
+ box-sizing:border-box!important;margin:0!important;padding:6px 8px!important;
+ border-radius:13px!important;border:1px solid rgba(107,224,218,.42)!important;
+ background:rgba(5,27,38,.48)!important;overflow:visible!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide:first-child{grid-column:1!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide:last-child{grid-column:2!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide small{
+ font:500 10px/1.2 system-ui,sans-serif!important;letter-spacing:.05em!important;color:#b5ccca!important;
+ white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide b{
+ font:500 clamp(18px,5vw,24px)/1.15 Georgia,serif!important;margin:0!important;
+ color:#f7f0d7!important;white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important;
+ font-variant-numeric:lining-nums tabular-nums!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide em{display:none!important}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #zCountVisual #cntBig{
+ font-family:Georgia,serif!important;font-variant-numeric:lining-nums tabular-nums!important;
+ letter-spacing:-.025em!important;white-space:nowrap!important;word-break:normal!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout>.tfControlPanel{
+ display:flex!important;flex-direction:column!important;gap:8px!important;
+ width:100%!important;min-width:0!important;max-width:420px!important;margin:0 auto!important;padding:0!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterActions{
+ display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px!important;
+ gap:8px!important;width:100%!important;margin:0!important;padding:0!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterActions button{
+ width:100%!important;min-width:0!important;min-height:44px!important;max-height:none!important;
+ height:auto!important;box-sizing:border-box!important;padding:6px!important;
+}
+html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout #autoBtn{
+ display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+}
+@media(max-width:360px){
+ html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide{gap:5px!important;padding-inline:5px!important}
+ html body:not(.sukun-tefekkur-mode) #tab-zkr #tfRefinedLayout .zCounterSide small{font-size:9px!important}
 }
 </style>
 </body>

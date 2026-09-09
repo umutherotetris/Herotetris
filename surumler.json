@@ -1,5 +1,16 @@
 [
   {
+    "v": "r744",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r744 · Ana sayaç başlığı Tefekkür ile aynı yatay düzende; çember altında Hedef/Kalan yan yana ve kompakt kontroller.",
+      "Tam ekran tanısı eski sürüm numarası yerine gerçek API ve tercih tutarlılığını denetler; ana sayaç geometrisi kontrolü eklendi.",
+      "Gizli oynatıcı dönüş düğmesi görünür viewport içinde tutulur; mevcut dokunma/kaydırma ertelemesi korunur.",
+      "Kayıt stüdyosunda yanlış kaydın üzerine yazma, eski analiz, çift kayıt ve boş/hatalı kayıt saklama sorunları giderildi.",
+      "Stereo sessizlik kırpma ve örnek tepe analizi düzeltildi. 137 kaynak/VM kontrolü geçti; gerçek cihaz testi yapılmadı."
+    ]
+  },
+  {
     "v": "r743",
     "t": "9 Eylül 2026",
     "b": [

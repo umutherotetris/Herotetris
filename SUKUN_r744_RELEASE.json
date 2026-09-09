@@ -1,0 +1,115 @@
+{
+  "build": "r744",
+  "base": "r743",
+  "date": "2026-09-09",
+  "cache": "sukun-r744-20260909a",
+  "htmlSha256": "1e6489c543387dbb8391ad11a01e04fef31f6eb660fcfe94cec22db9cfea9e06",
+  "verification": {
+    "source": {
+      "total": 31,
+      "passed": 31,
+      "failed": 0
+    },
+    "mini": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "restart": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "failure": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "transport": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "ring": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "audit": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "storage": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "settings_queue": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "studio": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0
+    },
+    "ui": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "total": 137,
+    "kind": "source-vm-regression",
+    "browserR744": false,
+    "physicalAndroid": false,
+    "userRecording": false,
+    "realTTS": false,
+    "lockScreen": false,
+    "headset": false,
+    "testedFiles": {
+      "nero.html": "1e6489c543387dbb8391ad11a01e04fef31f6eb660fcfe94cec22db9cfea9e06",
+      "sw.js": "6a23bf60d41c8ab6711cb4d674167c746dfcfbb7c82034aca7593c5815cc9da3",
+      "manifest.webmanifest": "1243d8e648c7b91396e3b3977901c2151e68b0f69b43b669541b44d3bb1bb96f"
+    },
+    "integrity": {
+      "staticIds": 993,
+      "duplicateStaticIds": 0,
+      "missingLocalReferences": 0,
+      "styleBlocks": 169,
+      "unchangedStyles": 168,
+      "changedStyleBlocks": [
+        "r740-canonical-name-style"
+      ],
+      "unchangedAssetFiles": 16,
+      "scriptBlocks": 193,
+      "unchangedScriptBlocks": 186,
+      "changedScriptBlocks": [
+        "surumNotlari",
+        "r514-core-akis-nefs",
+        "r175-workflow-system",
+        "r455-diagnostics-regression-runtime",
+        "r611-current-zikir-hero-runtime",
+        "r633-flow-dock-placement-runtime",
+        "r716-release-identity-runtime"
+      ],
+      "parsedJsonFiles": 104,
+      "preservedHistoricalTextLogs": [
+        "diagnostics/r740/failure_results.json",
+        "diagnostics/r740/ring_results.json",
+        "diagnostics/r740/restart_results.json",
+        "diagnostics/r740/transport_results.json"
+      ]
+    }
+  },
+  "changes": [
+    "main-counter-shared-heading-and-statistics",
+    "fullscreen-diagnostic-capability-contract",
+    "main-counter-layout-diagnostic",
+    "collapsed-player-viewport-boundary",
+    "studio-captured-key-and-stale-analysis",
+    "studio-recording-resource-lifecycle",
+    "stereo-trimming-and-sample-peak-analysis"
+  ]
+}

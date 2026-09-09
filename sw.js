@@ -1,8 +1,8 @@
-/* SÜKÛN r743 — Backup and Pause Reliability */
+/* SÜKÛN r744 — Counter Layout and Recording Reliability */
 'use strict';
 
-const SURUM = 'r743';
-const CACHE = 'sukun-r743-20260909a';
+const SURUM = 'r744';
+const CACHE = 'sukun-r744-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r743__.json';
+const BUILD_MARKER='./__sukun_build_r744__.json';
 
-const NOTLAR = ["r743 · Kayıt deposu okunamadığında boş veya eksik yedek başarılı sayılmaz; hata gösterilir.", "Geri yüklemede ses yazma hataları ve iptaller doğru işlenir. Ayar yazımı başarısız olduğunda aynı işlemde değişen ayarlar geri alınır.", "Kayıtlı seanslar, favoriler, 99 Esmâ ilerlemesi ve yeni görünüm tercihleri yedek kapsamına eklendi.", "Genel duraklatma sırasında gelen yeni tekil ve terkip okumaları bekler; Devam ile sırayla yürür, Durdur ile iptal edilir.", "Tefekkür, mini akış barı, 28/99 seyir, durdurma bariyeri ve Feyz görünümü korunur. 105 kaynak/VM kontrolü geçti."];
+const NOTLAR = ["r744 · Ana sayaç başlığı Tefekkür ile aynı yatay düzende; çember altında Hedef/Kalan yan yana ve kompakt kontroller.", "Tam ekran tanısı eski sürüm numarası yerine gerçek API ve tercih tutarlılığını denetler; ana sayaç geometrisi kontrolü eklendi.", "Gizli oynatıcı dönüş düğmesi görünür viewport içinde tutulur; mevcut dokunma/kaydırma ertelemesi korunur.", "Kayıt stüdyosunda yanlış kaydın üzerine yazma, eski analiz, çift kayıt ve boş/hatalı kayıt saklama sorunları giderildi.", "Stereo sessizlik kırpma ve örnek tepe analizi düzeltildi. 137 kaynak/VM kontrolü geçti; gerçek cihaz testi yapılmadı."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
