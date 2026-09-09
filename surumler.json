@@ -1,5 +1,17 @@
 [
   {
+    "v": "r734",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r734 · Rahmân gibi sesli zikirlerde başarısız okuma açık bir Yeniden dene durumuna geçer; Başla eski başarısız oturumu duraklatmak yerine temiz bir başlangıç yapar.",
+      "Tamamlanmamış sesin geçici sayacı Durdur/başarısızlıkta güvenle geri alınır; tamamlanmış okumalar ve sonraki elle yapılan değişiklikler korunur. Eski ses sonuçları yeni oturuma müdahale edemez.",
+      "Ses bitmeden ikinci sayaç hakkı açılmaz; hedef ve sonraki Esmâ geçişi yalnız doğrulanmış okuma sonucuyla işlenir. 28/99 seyir sahipliği ve kayıt önceliği korunur.",
+      "Günlük değerlendirmesi Tefekkürde ve canlı/duraklatılmış seansta görünmez; normal ekranda isteğe bağlı, küçük ve kapatılabilir bir bildirimdir. Kayıtlar doğru günlük girdisine bağlanır.",
+      "Mini/Midi/Max bildirim rozetleri düğmelerin içine alındı; 320–428 px ekranlarda tek, çift ve 999+ sayılarının kırpılmaması kontrol edildi.",
+      "Başlatma tanısı artık kabul edilen komut ile fiziksel ses sonucunu ayırır. Gerçek Android kayıt, kilit ekranı ve kulaklık doğrulaması hâlâ gereklidir."
+    ]
+  },
+  {
     "v": "r733",
     "t": "9 Eylül 2026",
     "b": [

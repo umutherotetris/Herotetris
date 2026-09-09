@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r733">
+<meta name="sukun-build" content="r734">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r733">
+<link rel="manifest" href="./manifest.webmanifest?v=r734">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r733</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r734</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,18 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r734",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r734 · Rahmân gibi sesli zikirlerde başarısız okuma açık bir Yeniden dene durumuna geçer; Başla eski başarısız oturumu duraklatmak yerine temiz bir başlangıç yapar.",
+      "Tamamlanmamış sesin geçici sayacı Durdur/başarısızlıkta güvenle geri alınır; tamamlanmış okumalar ve sonraki elle yapılan değişiklikler korunur. Eski ses sonuçları yeni oturuma müdahale edemez.",
+      "Ses bitmeden ikinci sayaç hakkı açılmaz; hedef ve sonraki Esmâ geçişi yalnız doğrulanmış okuma sonucuyla işlenir. 28/99 seyir sahipliği ve kayıt önceliği korunur.",
+      "Günlük değerlendirmesi Tefekkürde ve canlı/duraklatılmış seansta görünmez; normal ekranda isteğe bağlı, küçük ve kapatılabilir bir bildirimdir. Kayıtlar doğru günlük girdisine bağlanır.",
+      "Mini/Midi/Max bildirim rozetleri düğmelerin içine alındı; 320–428 px ekranlarda tek, çift ve 999+ sayılarının kırpılmaması kontrol edildi.",
+      "Başlatma tanısı artık kabul edilen komut ile fiziksel ses sonucunu ayırır. Gerçek Android kayıt, kilit ekranı ve kulaklık doğrulaması hâlâ gereklidir."
+    ]
+  },
   {
     "v": "r733",
     "t": "9 Eylül 2026",
@@ -15349,6 +15361,7 @@ function autoStart(){
   if(window.SukunR698Transport?.hasJourney?.())return false;
   window.SukunR698VoiceIntent?.captureStart?.();
   _r477AutoStarting=true;
+  try{window.SukunZikirTransportGate?.invalidate?.('auto-start')}catch(e){}
   try{
 
   /* r640: geçmiş global pause latch'i yeni zikir niyetini boğmasın. */
@@ -15383,6 +15396,7 @@ function autoStart(){
   }finally{_r477AutoStarting=false;}
 }
 function autoStop(){
+  try{window.SukunZikirTransportGate?.invalidate?.('auto-stop')}catch(e){}
   _r477AutoStarting=false;
   if(!Z.auto){
     // Never abort a journey's speech from the independent auto-zikir path.
@@ -15408,7 +15422,7 @@ function autoStop(){
   lockOff(); zUI();
 }
 window.SukunDirectZikirTransportR698=Object.freeze({
-  version:'r733',start:()=>autoStart(),stop:()=>autoStop(),
+  version:'r733',revision:'r734',start:()=>autoStart(),stop:()=>autoStop(),
   primeGesture:()=>{try{ac();if(ctx?.state==='suspended')ctx.resume().catch(()=>{});return true}catch(e){return false}},
   state:()=>({auto:!!Z.auto,cat:Z.cat,idx:Z.idx,count:Z.count,target:Z.target,voiceRequired:zikirSesliAktifMi(),starting:!!_r477AutoStarting}),
   clearStale(){
@@ -16901,14 +16915,21 @@ LOG.touch=(k,detail)=>{
   if(!LOG.cur)LOG.cur={t0:Date.now(),parts:{}};
   LOG.cur.parts[k]=detail;
 };
-LOG.allStopped=()=>!FR.playing&&Object.keys(AMB).length===0&&!Z.auto;
+LOG.allStopped=()=>{
+  const a=window.SukunAudioSessionRegistry?.aggregateSnapshot?.()||{};
+  const j=window.SukunR698Transport?.journey?.();
+  const life=window.AudioLife?.snapshot?.()||{};
+  const truth=window.SukunAudioTruth?.snapshot?.()||{};
+  return !FR.playing&&Object.keys(AMB).length===0&&!Z.auto&&!j&&!a.paused&&!(life.userPaused&&!life.terminalIntent)&&!['paused','recovering','interrupted','preparing','stopping'].includes(life.state)&&!truth.tangible;
+};
 LOG.maybeEnd=()=>{
   if(!LOG.cur||!LOG.allStopped())return;
   const dur=Math.round((Date.now()-LOG.cur.t0)/1000);
   const parts=LOG.cur.parts; LOG.cur=null;
   if(dur<90)return;
-  LOG.push({t:Date.now(),dur,detail:Object.values(parts).join(' · ')});
-  LOG.rate();
+  const entry={t:Date.now(),dur,detail:Object.values(parts).join(' · ')};
+  LOG.push(entry);
+  LOG.rate(entry.t);
 };
 LOG.push=e=>{
   const a=logTemizle(S.get('sukun.log',[]));
@@ -16916,17 +16937,29 @@ LOG.push=e=>{
   a.push(temiz);S.set('sukun.log',a.slice(-100));
 };
 window.LOG=LOG;   /* Tekke modülü kendi kapsamından günlüğe yazabilsin */
-LOG.rate=()=>{
-  $('#rateRow').innerHTML=[1,2,3,4,5].map(n=>'<button data-n="'+n+'">'+'✦'.repeat(n)+'</button>').join('')+'<button data-n="0" style="color:var(--dim)">Geç</button>';
+LOG._rateAt=0;
+LOG.dismissRate=()=>{clearTimeout(LOG._rt);LOG._rt=0;$('#rateToast').hidden=true;};
+LOG.rate=(at=0)=>{
+  const a=logTemizle(S.get('sukun.log',[]));
+  LOG._rateAt=at||a[a.length-1]?.t||0;
+  if(!LOG._rateAt)return;
+  $('#rateRow').innerHTML=[1,2,3,4,5].map(n=>'<button type="button" data-n="'+n+'" aria-label="'+n+' / 5">'+'✦'.repeat(n)+'</button>').join('')+'<button type="button" data-n="0" style="color:var(--dim)">Geç</button>';
+  // A journal prompt must not interrupt a live or paused prayer. It is optional.
+  const busy=()=>document.body.classList.contains('sukun-tefekkur-mode')||!LOG.allStopped();
+  if(busy()){LOG.dismissRate();return;}
   $('#rateToast').hidden=false;
-  clearTimeout(LOG._rt); LOG._rt=setTimeout(()=>$('#rateToast').hidden=true,20000);
+  clearTimeout(LOG._rt);LOG._rt=setTimeout(()=>LOG.dismissRate(),8000);
 };
 $('#rateToast').addEventListener('click',e=>{
   const b=e.target.closest('[data-n]'); if(!b)return;
   const n=+b.dataset.n;
-  if(n){const a=logTemizle(S.get('sukun.log',[])); if(a.length){a[a.length-1].mood=n;S.set('sukun.log',a);}}
-  $('#rateToast').hidden=true;
+  if(n){const a=logTemizle(S.get('sukun.log',[]));const entry=a.findLast(x=>x.t===LOG._rateAt);if(entry){entry.mood=n;S.set('sukun.log',a);}}
+  LOG.dismissRate();
 });
+window.addEventListener('sukun:currentflowchange',()=>{if(!LOG.allStopped())LOG.dismissRate()},{passive:true});
+window.addEventListener('sukun:audioaggregatechange',()=>{if(!LOG.allStopped())LOG.dismissRate()},{passive:true});
+window.addEventListener('sukun:tefekkurchange',()=>{if(document.body.classList.contains('sukun-tefekkur-mode'))LOG.dismissRate()},{passive:true});
+window.SukunLifecycleHub?.onBodyClass?.(()=>{if(document.body.classList.contains('sukun-tefekkur-mode'))LOG.dismissRate()});
 window.addEventListener('sukun:log',e=>{
   const d=e.detail||{}; if(!d.dur)return;
   LOG.push({t:Date.now(),dur:d.dur,detail:d.detail||d.kind,mood:d.mood});
@@ -24064,9 +24097,6 @@ rep=()=>{
   /* r640: görünür sesli otomatikte sayaç gerçek transporttan önce koşamaz.
      Hidden/native r476 yolu bu kapıdan özellikle muaf tutulur. */
   const _r640Gate=window.SukunZikirTransportGate;
-  const _r640Token=(seri&&Z.auto&&!document.hidden)?_r640Gate?.beforeCount?.():null;
-  if(_r640Token===false){_zBekleyen=false;return false}
-
   /* Niyet okunurken veya başlamayı beklerken sayaç 1 bile ilerlemez. */
   if(r485NiyetDue()){
     r485NiyetGate();
@@ -24080,6 +24110,10 @@ rep=()=>{
     return false;
   }
 
+  /* r734: acquire the one provisional credit only after all preconditions
+     pass. A busy or pending niyet must never replace an unfinished token. */
+  const _r640Token=(seri&&Z.auto&&!document.hidden)?_r640Gate?.beforeCount?.():null;
+  if(_r640Token===false){_zBekleyen=false;return false}
   _zBekleyen=false;
 
   /* Hedef dolumu/Esma geçişi ses bitimine kadar ertelenir. */
@@ -24107,20 +24141,7 @@ rep=()=>{
       return ok;
     };
 
-    const watchdog=()=>{
-      emniyet=0;
-      if(islendi||!pending)return;
-      try{
-        if(!ZikirTransitionTxn.isCurrent(pending))return;
-        const busy=!!zikirSesMesgul(),yas=Date.now()-baslangic;
-        if(!busy||yas>=45000){
-          if(gecisiIsle(yas>=45000?'watchdog-hard':'watchdog-idle'))return;
-        }
-        emniyet=setTimeout(watchdog,Math.min(1800,Math.max(500,zAutoTempoMs())));
-      }catch(e){}
-    };
-
-    if(pending)emniyet=setTimeout(watchdog,Math.min(1800,Math.max(700,zAutoTempoMs())));
+    // r734: no watchdog may credit an unverified spoken cycle.
     zikirSesBaslat(false,(result)=>{
       /* r640: okuma başlayamadı/bitemedi ise bu tur gerçekte zikredilmiş
          sayılmaz. Sayaç geri alınır ve prepared transition commit edilmez. */
@@ -24131,7 +24152,7 @@ rep=()=>{
           return;
         }
       }catch(e){}
-      if(!gecisiIsle('voice-end')&&!islendi&&!emniyet)emniyet=setTimeout(watchdog,250);
+      if(result===true||result?.ok===true)gecisiIsle('voice-end');
     });
   }else if(pending&&ZikirTransitionTxn.isCurrent(pending)){
     r482CommitTransition(pending,'direct');
@@ -26087,7 +26108,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r733';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r734';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -62013,6 +62034,25 @@ body.r640-zikir-transport-held #zStage.toz::after{
 if(window.SukunZikirTransportGate?.version==='r640')return;
 const VERSION='r640';
 let held=false,reason='',since=0,failure=false,seq=0,prevented=0,rollbacks=0,lastFailure=null,lastSuccess=null,lastToken=0,resumeTimer=0;
+let generation=0,staleResults=0,pendingCountToken=null,unconfirmedCredits=0;
+function restoreUnconfirmed(t,why){
+  if(!t)return false;
+  pendingCountToken=null;
+  // Only the single provisional automatic credit is ours to undo. Never
+  // overwrite a newer Esma, a committed transition or later manual edits.
+  if(clean(Z.cat)!==t.cat||(+Z.idx||0)!==t.idx)return false;
+  if((+Z.count||0)!==t.count+1||(+Z.total||0)!==t.total+1)return false;
+  Z.count=t.count;Z.devir=t.devir;Z.total=t.total;
+  try{S.set('sukun.total',Z.total)}catch(e){}
+  try{window.SukunUsageStatsRollbackR695?.(1,t.cat,t.idx,'unconfirmed:'+why)}catch(e){}
+  try{zUI()}catch(e){}
+  try{window.currentZikirState?.refresh?.('r734-unconfirmed',true)}catch(e){}
+  unconfirmedCredits++;return true;
+}
+function invalidate(why='intent'){
+  if(pendingCountToken)restoreUnconfirmed(pendingCountToken,why);
+  generation++;lastToken++;return generation;
+}
 const listeners=new Set();
 const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -62024,7 +62064,7 @@ function rawPause(){
 }
 function snapshot(){
   const p=rawPause();
-  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq});
+  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r734',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
 }
 function emit(type='state'){
   seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});
@@ -62052,27 +62092,19 @@ function blocked(){
 }
 function beforeCount(){
   if(!spokenVisibleAuto())return null;
+  // An unfinished reading owns its provisional credit until settled/aborted.
+  if(pendingCountToken){prevented++;return false;}
   const p=rawPause();
   if(held||p.paused){prevented++;setHeld(held?reason:(p.aggregate?'aggregate-paused':'life-user-paused'),failure);return false}
-  const t={id:++lastToken,at:Date.now(),cat:clean(Z.cat),idx:+Z.idx||0,count:+Z.count||0,devir:+Z.devir||0,total:+Z.total||0,target:+Z.target||0};
-  return t;
+  const t={id:++lastToken,generation,at:Date.now(),cat:clean(Z.cat),idx:+Z.idx||0,count:+Z.count||0,devir:+Z.devir||0,total:+Z.total||0,target:+Z.target||0};
+  pendingCountToken=t;return t;
 }
 function okResult(r){return r===true||r?.ok===true}
 function rollback(t,r,pending){
   if(!t)return false;
   const why=clean(r?.reason||(r===false?'voice-false':'voice-failed'))||'voice-failed';
   try{if(pending)window.SukunZikirTransaction?.cancel?.('r640-'+why)}catch(e){}
-  let restored=false,lost=0;
-  try{
-    if(clean(Z.cat)===t.cat&&(+Z.idx||0)===t.idx){
-      lost=Math.max(0,(+Z.total||0)-(+t.total||0));
-      Z.count=t.count;Z.devir=t.devir;Z.total=t.total;restored=true;
-      if(lost)try{window.SukunUsageStatsRollbackR695?.(lost,t.cat,t.idx,'voice-rollback:'+why)}catch(e){}
-      try{S.set('sukun.total',Z.total)}catch(e){}
-      try{zUI()}catch(e){}
-      try{window.currentZikirState?.refresh?.('r640-voice-rollback',true)}catch(e){}
-    }
-  }catch(e){}
+  const restored=restoreUnconfirmed(t,'voice-rollback:'+why);
   rollbacks++;
   lastFailure=Object.freeze({at:Date.now(),reason:why,source:clean(r?.source||''),cat:t.cat,idx:t.idx,count:t.count,restored});
   setHeld('voice-failed:'+why,true);
@@ -62082,7 +62114,10 @@ function voiceResult(t,r,pending){
   /* Yalnız beforeCount tokenı olan görünür SESLİ AUTO turu gate'e tabidir.
      Manuel sayaç ve hidden/native seyir davranışı aynen korunur. */
   if(!t)return true;
+  try{window.SukunR733Restart?.record?.('voice-settled',{ok:okResult(r),source:clean(r?.source||''),reason:clean(r?.reason||''),generation:t.generation,count:t.count,stale:t.generation!==generation||t.id!==lastToken})}catch(e){}
+  if(t.generation!==generation||t.id!==lastToken||!Z.auto){staleResults++;return false;}
   if(okResult(r)){
+    if(pendingCountToken?.id===t.id)pendingCountToken=null;
     lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||'voice-ok'),source:clean(r?.source||''),cat:t.cat,idx:t.idx});
     if(held)reset('voice-ok');
     return true;
@@ -62116,7 +62151,7 @@ document.addEventListener('visibilitychange',()=>{
   setTimeout(()=>reconcile('visible'),0);
 },{passive:true});
 window.addEventListener('pageshow',()=>setTimeout(()=>reconcile('pageshow'),0),{passive:true});
-window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,voiceResult,observeVoice,reconcile,reset,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
+window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,voiceResult,observeVoice,reconcile,reset,invalidate,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
 })();
 </script>
 
@@ -66460,6 +66495,7 @@ function record(type,detail={}){
  restartTrace.push(entry);if(restartTrace.length>48)restartTrace.shift();return entry;
 }
 function directState(){return safe(()=>direct()?.state?.(),{})||{}}
+function directFailed(){const g=safe(()=>window.SukunZikirTransportGate?.snapshot?.(),{})||{};return !!(directState().auto&&g.held&&g.failure)}
 function primeGesture(){safe(()=>direct()?.primeGesture?.());}
 function freshDirectStart(source){
  const d=direct();if(!d)return false;
@@ -66469,7 +66505,7 @@ function freshDirectStart(source){
  d.clearStale?.();
  const result=d.start();
  const after=directState();
- record('direct-start-result',{source,result:result===false?'rejected':result===true?'accepted':'pending',auto:!!after.auto,starting:!!after.starting,cat:after.cat,idx:after.idx,count:after.count});
+ record('direct-start-result',{source,result:result===false?'rejected':result===true?'accepted':'pending',physicalConfirmed:false,auto:!!after.auto,starting:!!after.starting,cat:after.cat,idx:after.idx,count:after.count});
  return result!==false;
 }
 function startAfterStop(source){
@@ -66512,6 +66548,11 @@ function performPlayPause(source='ui'){
   mark('play-pause',source);
   record('play-pause',{source,epoch:intentEpoch,pendingStop:!!pendingStop,pendingStart:!!pendingStart});
   if(pendingStart)return true;
+  if(!journey()&&directFailed()){
+    record('explicit-voice-retry',{source,epoch:intentEpoch});
+    stop('voice-retry:'+source);
+    return startAfterStop(source);
+  }
   const j=journey(),AR=window.SukunAudioSessionRegistry;
   const aggregate=safe(()=>AR?.aggregateSnapshot?.(),null);
   // Resume exactly the providers captured by Pause, including the physical mix.
@@ -66574,29 +66615,37 @@ function presentation(){
  const v=safe(()=>window.SukunVoiceSource?.snapshot?.(),{})||{};
  const paused=!!(a.paused||j?.state?.paused||j?.state?.systemHold||f.paused);
  const running=!!(j?.state?.run||d.auto||(!isDirectContext()&&f.playing));
- const preparing=!paused&&!!(pendingStart||d.starting||(running&&['recovering','loading','preparing'].includes(v.kind)));
+ const failed=directFailed()&&!j;
+ const preparing=!paused&&!failed&&!!(pendingStart||d.starting||(running&&['recovering','loading','preparing'].includes(v.kind))||(d.auto&&d.voiceRequired&&!!window.__SUKUN_ZIKIR_VOICE_PROMISE__&&!safe(()=>window.SukunPhysicalRecordingBusyR696?.(),false)&&!safe(()=>speechSynthesis.speaking||speechSynthesis.pending,false)));
  const canPause=!!window.SukunAudioSessionRegistry?.pauseAll||!!j;
- const label=preparing?'Hazırlanıyor':paused?'Devam et':running?(canPause?'Duraklat':'Durdur'):'Başla';
+ const label=failed?'Yeniden dene':preparing?'Hazırlanıyor':paused?'Devam et':running?(canPause?'Duraklat':'Durdur'):'Başla';
  let voice='Kaynak bekleniyor';
  if(d.voiceRequired===false&&!j&&isDirectContext())voice='Sessiz sayım';
  else if(v.kind==='recording')voice='Kendi kaydın';
  else if(/^tts|^reader/.test(v.kind||''))voice='Sesli okuma';
  else if(['recovering','loading','preparing'].includes(v.kind))voice='Ses hazırlanıyor';
- else if(v.kind==='error')voice='Ses bekleniyor';
+  else if(v.kind==='error'||failed)voice='Ses bekleniyor';
  else if(v.kind==='silent')voice='Ses kullanılamıyor';
  const z=safe(()=>window.currentZikirState?.snapshot?.(),null)||f.zikir||{};
  const target=Number(z.target)||0,devir=Math.max(0,Number(z.devir)||0);
  const tef=document.body.classList.contains('sukun-tefekkur-mode');
  const meta=tef?(target<=0?'Serbest sayım':devir>0?'Devir '+devir:''):(target>0?'Hedef '+target:'Serbest sayım')+' • Devir '+devir;
- return {label,paused,running,preparing,voice,kind:v.kind||'idle',detail:v.detail||voice,meta};
+  return {label,paused,running:running&&!failed,preparing,failed,voice,kind:failed?'error':v.kind||'idle',detail:failed?'Ses tamamlanamadı. Yeniden dene ile aynı zikir ve kayıt seçimi korunarak başlanır.':v.detail||voice,meta};
 }
 function renderUI(){
  const p=presentation(),ab=document.getElementById('autoBtn');
  if(ab){
   const icon=p.paused?'▷':p.preparing?'◌':p.running?(p.label==='Durdur'?'■':'Ⅱ'):'▷';
   const symbol=window.ico?.(p.paused?'play':p.preparing?'refresh':p.running?(p.label==='Durdur'?'stop':'pause'):'play')||icon;
-  const content='<span aria-hidden="true">'+symbol+'</span> <b>'+p.label+'</b>';
-  if(ab.innerHTML!==content)ab.innerHTML=content;
+   let glyph=ab.querySelector(':scope > .r734TransportGlyph'),label=ab.querySelector(':scope > .r734TransportLabel');
+   if(!glyph||!label){
+     // One-time hydration. No subsequent render removes the touched element.
+     ab.replaceChildren();glyph=document.createElement('span');glyph.className='r734TransportGlyph';glyph.setAttribute('aria-hidden','true');
+     label=document.createElement('b');label.className='r734TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
+   }
+   const mark=p.failed?'↻':icon;
+   if(glyph.textContent!==mark)glyph.textContent=mark;
+   if(label.textContent!==p.label)label.textContent=p.label;
   for(const [key,value] of [['aria-label',p.label],['aria-pressed',String(p.running&&!p.paused)],['aria-busy',String(p.preparing)]])if(ab.getAttribute(key)!==value)ab.setAttribute(key,value);
   if(ab.classList.contains('playing')!==(p.running&&!p.paused))ab.classList.toggle('playing',p.running&&!p.paused);
  }
@@ -66618,8 +66667,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 window.SukunLifecycleHub?.onBodyClass?.(scheduleUI,{immediate:true});
 
-const snapshot=()=>Object.freeze({version:'r733',commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
-window.SukunR698Transport=Object.freeze({version:'r733',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
+const snapshot=()=>Object.freeze({version:'r733',revision:'r734',commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
+window.SukunR698Transport=Object.freeze({version:'r733',revision:'r734',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
 // Passive transport evidence: a raw native click is distinct from an accepted
 // command. Never synthesize clicks on pointerdown/cancel; native scrolling owns them.
 const TRACE_CONTROLS='#autoBtn,#r588Play,#r588Stop,#r170Play,#r170Stop';
@@ -66627,7 +66676,7 @@ for(const type of ['pointerdown','pointercancel','click'])document.addEventListe
  const el=e.target?.closest?.(TRACE_CONTROLS);if(!el)return;
  record('input-'+type,{target:el.id,pointerType:e.pointerType||'',trusted:!!e.isTrusted,disabled:!!el.disabled,auto:!!directState().auto});
 },{capture:true,passive:true});
-window.SukunR733Restart=Object.freeze({version:'r733',snapshot,record});
+window.SukunR733Restart=Object.freeze({version:'r733',revision:'r734',snapshot,record});
 renderUI();
 })();
 
@@ -67618,10 +67667,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r733',date='2026-09-09';
+const build=meta?.content||'r734',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r733',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r734',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68854,5 +68903,33 @@ window.SukunR713Stability=api;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
 </script>
+
+<style id="r734-stability-and-badges">
+/* r734: the native hidden attribute wins against every legacy theme. */
+#rateToast[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#rateToast{position:fixed!important;left:12px!important;right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:480px!important;margin-inline:auto!important;padding:10px 12px!important;z-index:900!important;pointer-events:none!important;font-size:12px!important;line-height:1.35!important}
+#rateToast .rateRow{display:flex;flex-wrap:nowrap;gap:5px;margin-top:8px}
+#rateToast .rateRow button{pointer-events:auto;flex:1 1 0;min-width:0;min-height:40px;height:40px;padding:0 2px;font-size:clamp(9px,2.4vw,12px);white-space:nowrap;touch-action:manipulation}
+body.sukun-tefekkur-mode #rateToast{display:none!important;pointer-events:none!important}
+body.r588-mode-mini #rateToast,body.r588-mode-midi #rateToast,body.r588-mode-max #rateToast{bottom:calc(var(--r734-dock-bottom,178px) + 10px)!important}
+/* Compact numbers live inside their buttons, never outside the clipped dock. */
+html body.r698-ui #r588DockShell .r588Top{overflow:visible!important;min-height:44px!important;height:auto!important;max-height:none!important;padding:5px 1px 7px!important;gap:8px!important}
+html body.r698-ui #r588DockShell .r588Identity{min-width:0!important;flex:1 1 auto!important;gap:6px!important}
+html body.r698-ui #r588DockShell .r588Alerts{display:flex!important;flex:0 0 auto!important;gap:8px!important;width:auto!important;min-width:0!important;height:auto!important;min-height:44px!important;max-height:none!important;align-items:center!important;padding:3px 1px!important;overflow:visible!important}
+html body.r698-ui #r588DockShell .r588Alert{position:relative!important;flex:0 0 40px!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;padding:0!important;border-radius:13px!important;overflow:visible!important;display:grid!important;place-items:center!important;font-size:16px!important;line-height:1!important}
+html body.r698-ui #r588DockShell .r588Alert b{position:absolute!important;right:2px!important;top:2px!important;display:grid!important;place-items:center!important;box-sizing:border-box!important;width:auto!important;min-width:18px!important;max-width:calc(100% - 4px)!important;height:18px!important;min-height:18px!important;padding:0 3px!important;border-radius:999px!important;font:850 9.5px/18px Inter,system-ui!important;white-space:nowrap!important;overflow:visible!important;transform:none!important;box-shadow:0 0 0 2px #071b22!important}
+html body.r698-ui #r588DockShell .r588Alert b[hidden]{display:none!important}
+html body.r698-ui #r588DockShell .r588Alert :is(svg,.ico){pointer-events:none!important}
+html body.r698-ui #r588DockShell .r588Top :is(.r588Brand,#r588Live){white-space:nowrap!important}
+html body.r698-ui #r588DockShell .r734TransportGlyph{display:inline-grid;place-items:center;min-width:1.2em;font:800 19px/1 system-ui;vertical-align:middle}
+@media(max-width:359px){
+ html body.r698-ui #r588DockShell .r588Top{gap:5px!important}
+ html body.r698-ui #r588DockShell .r588Alerts{gap:5px!important}
+ html body.r698-ui #r588DockShell .r588Alert{flex-basis:36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;border-radius:12px!important}
+ html body.r698-ui #r588DockShell .r588Brand{font-size:10px!important;letter-spacing:.11em!important}
+ html body.r698-ui #r588DockShell #r588Live{font-size:8px!important;padding-inline:5px!important}
+}
+</style>
+
 </body>
 </html>
