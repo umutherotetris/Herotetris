@@ -1,9 +1,9 @@
 [
   {
-    "v": "r738",
+    "v": "r739",
     "t": "9 Eylül 2026",
     "b": [
-      "r738 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.",
+      "r739 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.",
       "Asenkron durdurma temizliği tamamlanmadan yeni oturum açılmaz. Başarısız temizlik açıkça kaydedilir ve yeni bir Durdur bariyeriyle yeniden denenir.",
       "Yüzüğün tek jest sahibi vardır: 7 dokunuş özel kasa, 9 dokunuş tanı. Alt tanı düğmesi ve eski sürüm/araç/kısayol girişleri kaldırıldı; günlük kurtarma araçları korundu.",
       "Mevcut sayaç, hedef, kayıt seçimi ve 28/99 seyir sahipliği korunur. Ses motorunun fiziksel cihazda doğrulanamayan davranışları ayrıca raporlanır.",
