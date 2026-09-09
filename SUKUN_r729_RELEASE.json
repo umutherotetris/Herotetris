@@ -1,0 +1,18 @@
+{
+  "build": "r729",
+  "date": "2026-09-09",
+  "base": "r728",
+  "cache": "sukun-r729-20260909a",
+  "htmlSha256": "44f2b9f6f89b1d78ecd1eb9894817a09196ab5a454c2e0a2abfbc1f2ec7f8bb1",
+  "fixes": [
+    "preserve-motion-preference-under-temporary-constraints",
+    "visual-intensity-accessible-percentage"
+  ],
+  "verification": {
+    "sourceVM": 31,
+    "atmosphereVM": 20,
+    "cssUnchanged": true,
+    "cacheAssetListsUnchanged": true,
+    "browserRun": false
+  }
+}

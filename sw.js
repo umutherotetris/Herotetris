@@ -1,8 +1,8 @@
-/* SÜKÛN r728 — Containment Conflict Resolution & Package Hygiene */
+/* SÜKÛN r729 — Containment Conflict Resolution & Package Hygiene */
 'use strict';
 
-const SURUM = 'r728';
-const CACHE = 'sukun-r728-20260909a';
+const SURUM = 'r729';
+const CACHE = 'sukun-r729-20260909a';
 
 const CORE = [
   './nero.html',
@@ -21,7 +21,7 @@ const CORE = [
   './assets/ui-exit-r722.svg',
   './assets/ui-speaker-r722.svg'
 ];
-/* r728: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
+/* r729: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
 const OPTIONAL = [
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r728__.json';
+const BUILD_MARKER='./__sukun_build_r729__.json';
 
-const NOTLAR = ["r728 · Zikir kartı content-visibility:auto kapsamından çıkarıldı. Bu özellik sürekli paint containment uyguluyor; kartın akış dışı içeriği hiç boyanmıyor ve kart atlandığında gerçek yükseklik yerine yer tutucu boyut bildiriliyordu.", "Kalan kartlarda intrinsic boyut 'auto'ya alındı: bir kez görüntülenmiş kart tekrar atlandığında gerçek boyutunu hatırlar, kaydırırken belge yüksekliği sıçramaz.", "Uygulamanın hiç kullanmadığı üç eski görsel dosyası servis işçisinin kurulumu bloklayan CORE listesinden opsiyonele alındı; biri eksik olduğunda artık tüm güncelleme başarısız olmuyor.", "Hiçbir yerde referansı olmayan üç artık asset paketten çıkarıldı. Ses, sayaç, kayıt, seyir ve görsel kabuk sahipleri r727 ile aynı.", "Doğrulama: kart içindeki 2679 elemanın konum/boyutunda sıfır fark; beş sekmede tam sayfa piksel karşılaştırması yalnız metin antialias farkı gösterdi."];
+const NOTLAR = ["r729 · Pil ve azaltılmış hareket kısıtında Canlı düğmesine dokunmak kayıtlı hareket tercihini artık değiştirmez.", "Görsel yoğunluk çubuğuna yüzde değer açıklaması, hareket düğmesine geçici kısıt nedeni eklendi. Ses seviyesi ve görsel yoğunluk ayrımı açıklanır.", "r728 yerleşim, containment ve önbellek düzeltmeleri korunur. Ses ve sayaç sahipliği değişmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

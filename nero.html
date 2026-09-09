@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r728">
+<meta name="sukun-build" content="r729">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r728">
+<link rel="manifest" href="./manifest.webmanifest?v=r729">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r728</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r729</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,15 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r729",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r729 · Pil ve azaltılmış hareket kısıtında Canlı düğmesine dokunmak kayıtlı hareket tercihini artık değiştirmez.",
+      "Görsel yoğunluk çubuğuna yüzde değer açıklaması, hareket düğmesine geçici kısıt nedeni eklendi. Ses seviyesi ve görsel yoğunluk ayrımı açıklanır.",
+      "r728 yerleşim, containment ve önbellek düzeltmeleri korunur. Ses ve sayaç sahipliği değişmedi."
+    ]
+  },
   {
     "v": "r728",
     "t": "9 Eylül 2026",
@@ -26038,7 +26047,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r728';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r729';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -67247,7 +67256,15 @@ const cleanups=[],sprites=[],colors=['101,255,192','152,113,255','71,181,255','2
 try{const p=JSON.parse(localStorage.getItem(KEY)||'null');if(p){if(['live','still'].includes(p.mode))preference=p.mode;const v=Number(p.intensity);if(Number.isFinite(v))intensity=Math.max(.2,Math.min(1,v))}}catch(_){}
 const listen=(target,name,fn,options)=>{target?.addEventListener?.(name,fn,options);cleanups.push(()=>target?.removeEventListener?.(name,fn,options))};
 function save(){try{localStorage.setItem(KEY,JSON.stringify({mode:preference,intensity}))}catch(_){}}
-function stationary(){return preference==='still'||!!reduced?.matches||B.dataset.perf==='pil'||B.dataset.perfEffective==='pil'}
+function motionConstraint(){return reduced?.matches?'Azaltılmış hareket etkin.':B.dataset.perf==='pil'||B.dataset.perfEffective==='pil'?'Pil profili etkin.':''}
+function stationary(){return preference==='still'||!!motionConstraint()}
+function updateIntensity(){
+ const input=$('r706Intensity'),output=$('r706IntensityValue');if(!input)return;
+ const value=Math.round(intensity*100),text='Yüzde '+value+' görsel yoğunluk';
+ if(input.getAttribute('aria-valuetext')!==text)input.setAttribute('aria-valuetext',text);
+ if(output&&output.textContent!==value+'%')output.textContent=value+'%';
+}
+
 function allowed(){return active&&visible&&!document.hidden&&!disposed&&!!ctx&&root?.isConnected&&!B.classList.contains('r716-shell')}
 function moving(){return allowed()&&!stationary()}
 function stopFrame(){if(raf)cancelAnimationFrame(raf);raf=0;last=0}
@@ -67303,6 +67320,10 @@ function updateControls(){
  if(!toolbar)return;const on=!stationary(),button=$('r706Motion'),label=on?'Canlı':'Sabit';
  if(button.textContent!==label)button.textContent=label;
  if(button.getAttribute('aria-pressed')!==String(on))button.setAttribute('aria-pressed',String(on));
+ const reason=motionConstraint(),title=reason?reason+' Kayıtlı hareket tercihin korunur.':on?'Görsel hareketi sabitle':'Görsel hareketi canlandır';
+ if(button.title!==title)button.title=title;
+ const accessible=reason?'Görsel hareket. '+reason:'Görsel hareket';
+ if(button.getAttribute('aria-label')!==accessible)button.setAttribute('aria-label',accessible);
  const mode=on?'live':'still';if(root.dataset.r706Motion!==mode)root.dataset.r706Motion=mode;
 }
 function reconcile(){
@@ -67319,10 +67340,10 @@ function mount(){
  root.appendChild(layer);canvas=$('r706Smoke');try{ctx=canvas.getContext('2d')}catch(_){ctx=null}
  if(ctx){try{for(const rgb of colors){const c=document.createElement('canvas');c.width=128;c.height=128;const g=c.getContext('2d');if(!g)throw Error('canvas unavailable');const grad=g.createRadialGradient(64,64,0,64,64,64);grad.addColorStop(0,'rgba('+rgb+',.17)');grad.addColorStop(.4,'rgba('+rgb+',.085)');grad.addColorStop(1,'rgba('+rgb+',0)');g.fillStyle=grad;g.fillRect(0,0,128,128);sprites.push(c)}}catch(_){ctx=null;sprites.length=0}}
  toolbar=document.createElement('div');toolbar.id='r706AtmosphereControls';
- toolbar.innerHTML='<span>TEFEKKÜR</span><button type="button" id="r706Motion" aria-label="Görsel hareket" aria-pressed="true">Canlı</button><label for="r706Intensity">Ambiyans <output id="r706IntensityValue"></output></label><input id="r706Intensity" type="range" min="20" max="100" step="5" aria-label="Görsel ambiyans yoğunluğu">';
- root.appendChild(toolbar);$('r706Intensity').value=String(Math.round(intensity*100));$('r706IntensityValue').textContent=Math.round(intensity*100)+'%';
- listen($('r706Motion'),'click',()=>{preference=stationary()?'live':'still';if(reduced?.matches||B.dataset.perf==='pil'||B.dataset.perfEffective==='pil'){preference='still';window.toast?.('Azaltılmış hareket veya pil profili etkin.')}save();reconcile()});
- listen($('r706Intensity'),'input',e=>{intensity=Number(e.target.value)/100;$('r706IntensityValue').textContent=e.target.value+'%';publishVisualState();draw()});listen($('r706Intensity'),'change',save);
+ toolbar.innerHTML='<span>TEFEKKÜR</span><button type="button" id="r706Motion" aria-label="Görsel hareket" aria-pressed="true">Canlı</button><label for="r706Intensity">Ambiyans <output id="r706IntensityValue"></output></label><input id="r706Intensity" type="range" min="20" max="100" step="5" aria-label="Görsel ambiyans yoğunluğu" title="Görsel yoğunluğu değiştirir; ses seviyesini değiştirmez.">';
+ root.appendChild(toolbar);$('r706Intensity').value=String(Math.round(intensity*100));updateIntensity();
+ listen($('r706Motion'),'click',()=>{const reason=motionConstraint();if(reason){window.toast?.(reason+' Hareket tercihin korunuyor.');reconcile();return}preference=stationary()?'live':'still';save();reconcile()});
+ listen($('r706Intensity'),'input',e=>{intensity=Number(e.target.value)/100;updateIntensity();publishVisualState();draw()});listen($('r706Intensity'),'change',save);
  const counter=$('zCountVisual');if(counter&&!$('r706Orbit')){const ring=document.createElement('div');ring.id='r706Orbit';ring.setAttribute('aria-hidden','true');ring.innerHTML='<span class="r706Ticks"></span><span class="r706Arc"></span><span class="r706Pearl"><i></i></span><span class="r706Satellite"><i></i></span>';counter.appendChild(ring)}
  const count=$('cntBig');if(count&&window.MutationObserver){previousCount=count.textContent;countObserver=new MutationObserver(()=>{const next=count.textContent;if(next!==previousCount){previousCount=next;pulse()}});countObserver.observe(count,{childList:true,characterData:true,subtree:true})}
  if(window.ResizeObserver){ro=new ResizeObserver(scheduleResize);ro.observe(root);if(counter)ro.observe(counter)}
@@ -67435,10 +67456,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r728',date='2026-09-09';
+const build=meta?.content||'r729',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r728',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r729',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68516,7 +68537,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r728',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r729',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  r728:{version:'r728',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),cardContentVisibility:safe(()=>{const c=document.querySelector('#tab-zkr > .card.zCtl');return c?getComputedStyle(c).contentVisibility:''})},
  r727:{version:'r727',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
  r726:{version:'r726',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
