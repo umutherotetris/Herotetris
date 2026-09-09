@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r734">
+<meta name="sukun-build" content="r735">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r734">
+<link rel="manifest" href="./manifest.webmanifest?v=r735">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r734</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r735</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6534,7 +6534,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
   {
-    "v": "r734",
+    "v": "r735",
     "t": "9 Eylül 2026",
     "b": [
       "r734 · Rahmân gibi sesli zikirlerde başarısız okuma açık bir Yeniden dene durumuna geçer; Başla eski başarısız oturumu duraklatmak yerine temiz bir başlangıç yapar.",
@@ -15422,7 +15422,7 @@ function autoStop(){
   lockOff(); zUI();
 }
 window.SukunDirectZikirTransportR698=Object.freeze({
-  version:'r733',revision:'r734',start:()=>autoStart(),stop:()=>autoStop(),
+  version:'r733',revision:'r735',start:()=>autoStart(),stop:()=>autoStop(),
   primeGesture:()=>{try{ac();if(ctx?.state==='suspended')ctx.resume().catch(()=>{});return true}catch(e){return false}},
   state:()=>({auto:!!Z.auto,cat:Z.cat,idx:Z.idx,count:Z.count,target:Z.target,voiceRequired:zikirSesliAktifMi(),starting:!!_r477AutoStarting}),
   clearStale(){
@@ -26108,7 +26108,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r734';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r735';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -62046,7 +62046,7 @@ function restoreUnconfirmed(t,why){
   try{S.set('sukun.total',Z.total)}catch(e){}
   try{window.SukunUsageStatsRollbackR695?.(1,t.cat,t.idx,'unconfirmed:'+why)}catch(e){}
   try{zUI()}catch(e){}
-  try{window.currentZikirState?.refresh?.('r734-unconfirmed',true)}catch(e){}
+  try{window.currentZikirState?.refresh?.('r735-unconfirmed',true)}catch(e){}
   unconfirmedCredits++;return true;
 }
 function invalidate(why='intent'){
@@ -62064,7 +62064,7 @@ function rawPause(){
 }
 function snapshot(){
   const p=rawPause();
-  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r734',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
+  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r735',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
 }
 function emit(type='state'){
   seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});
@@ -66637,11 +66637,11 @@ function renderUI(){
  if(ab){
   const icon=p.paused?'▷':p.preparing?'◌':p.running?(p.label==='Durdur'?'■':'Ⅱ'):'▷';
   const symbol=window.ico?.(p.paused?'play':p.preparing?'refresh':p.running?(p.label==='Durdur'?'stop':'pause'):'play')||icon;
-   let glyph=ab.querySelector(':scope > .r734TransportGlyph'),label=ab.querySelector(':scope > .r734TransportLabel');
+   let glyph=ab.querySelector(':scope > .r735TransportGlyph'),label=ab.querySelector(':scope > .r735TransportLabel');
    if(!glyph||!label){
      // One-time hydration. No subsequent render removes the touched element.
-     ab.replaceChildren();glyph=document.createElement('span');glyph.className='r734TransportGlyph';glyph.setAttribute('aria-hidden','true');
-     label=document.createElement('b');label.className='r734TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
+     ab.replaceChildren();glyph=document.createElement('span');glyph.className='r735TransportGlyph';glyph.setAttribute('aria-hidden','true');
+     label=document.createElement('b');label.className='r735TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
    }
    const mark=p.failed?'↻':icon;
    if(glyph.textContent!==mark)glyph.textContent=mark;
@@ -66667,8 +66667,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 window.SukunLifecycleHub?.onBodyClass?.(scheduleUI,{immediate:true});
 
-const snapshot=()=>Object.freeze({version:'r733',revision:'r734',commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
-window.SukunR698Transport=Object.freeze({version:'r733',revision:'r734',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
+const snapshot=()=>Object.freeze({version:'r733',revision:'r735',commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
+window.SukunR698Transport=Object.freeze({version:'r733',revision:'r735',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
 // Passive transport evidence: a raw native click is distinct from an accepted
 // command. Never synthesize clicks on pointerdown/cancel; native scrolling owns them.
 const TRACE_CONTROLS='#autoBtn,#r588Play,#r588Stop,#r170Play,#r170Stop';
@@ -66676,7 +66676,7 @@ for(const type of ['pointerdown','pointercancel','click'])document.addEventListe
  const el=e.target?.closest?.(TRACE_CONTROLS);if(!el)return;
  record('input-'+type,{target:el.id,pointerType:e.pointerType||'',trusted:!!e.isTrusted,disabled:!!el.disabled,auto:!!directState().auto});
 },{capture:true,passive:true});
-window.SukunR733Restart=Object.freeze({version:'r733',revision:'r734',snapshot,record});
+window.SukunR733Restart=Object.freeze({version:'r733',revision:'r735',snapshot,record});
 renderUI();
 })();
 
@@ -67667,10 +67667,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r734',date='2026-09-09';
+const build=meta?.content||'r735',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r734',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r735',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68904,7 +68904,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<style id="r734-stability-and-badges">
+<style id="r735-stability-and-badges">
 /* r734: the native hidden attribute wins against every legacy theme. */
 #rateToast[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #rateToast{position:fixed!important;left:12px!important;right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:auto!important;max-width:480px!important;margin-inline:auto!important;padding:10px 12px!important;z-index:900!important;pointer-events:none!important;font-size:12px!important;line-height:1.35!important}
@@ -68912,20 +68912,22 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #rateToast .rateRow button{pointer-events:auto;flex:1 1 0;min-width:0;min-height:40px;height:40px;padding:0 2px;font-size:clamp(9px,2.4vw,12px);white-space:nowrap;touch-action:manipulation}
 body.sukun-tefekkur-mode #rateToast{display:none!important;pointer-events:none!important}
 body.r588-mode-mini #rateToast,body.r588-mode-midi #rateToast,body.r588-mode-max #rateToast{bottom:calc(var(--r734-dock-bottom,178px) + 10px)!important}
+/* r735: balance badges and icons so the symbol stays primary and the unread count remains secondary. */
 /* Compact numbers live inside their buttons, never outside the clipped dock. */
-html body.r698-ui #r588DockShell .r588Top{overflow:visible!important;min-height:44px!important;height:auto!important;max-height:none!important;padding:5px 1px 7px!important;gap:8px!important}
+html body.r698-ui #r588DockShell .r588Top{overflow:visible!important;min-height:42px!important;height:auto!important;max-height:none!important;padding:5px 1px 6px!important;gap:7px!important}
 html body.r698-ui #r588DockShell .r588Identity{min-width:0!important;flex:1 1 auto!important;gap:6px!important}
-html body.r698-ui #r588DockShell .r588Alerts{display:flex!important;flex:0 0 auto!important;gap:8px!important;width:auto!important;min-width:0!important;height:auto!important;min-height:44px!important;max-height:none!important;align-items:center!important;padding:3px 1px!important;overflow:visible!important}
-html body.r698-ui #r588DockShell .r588Alert{position:relative!important;flex:0 0 40px!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;padding:0!important;border-radius:13px!important;overflow:visible!important;display:grid!important;place-items:center!important;font-size:16px!important;line-height:1!important}
-html body.r698-ui #r588DockShell .r588Alert b{position:absolute!important;right:2px!important;top:2px!important;display:grid!important;place-items:center!important;box-sizing:border-box!important;width:auto!important;min-width:18px!important;max-width:calc(100% - 4px)!important;height:18px!important;min-height:18px!important;padding:0 3px!important;border-radius:999px!important;font:850 9.5px/18px Inter,system-ui!important;white-space:nowrap!important;overflow:visible!important;transform:none!important;box-shadow:0 0 0 2px #071b22!important}
+html body.r698-ui #r588DockShell .r588Alerts{display:flex!important;flex:0 0 auto!important;gap:6px!important;width:auto!important;min-width:0!important;height:auto!important;min-height:40px!important;max-height:none!important;align-items:center!important;padding:2px 1px!important;overflow:visible!important}
+html body.r698-ui #r588DockShell .r588Alert{position:relative!important;flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;padding:0!important;border-radius:12px!important;overflow:visible!important;display:grid!important;place-items:center!important;font-size:17px!important;line-height:1!important}
+html body.r698-ui #r588DockShell .r588Alert b{position:absolute!important;right:3px!important;top:3px!important;display:grid!important;place-items:center!important;box-sizing:border-box!important;width:auto!important;min-width:15px!important;max-width:calc(100% - 6px)!important;height:15px!important;min-height:15px!important;padding:0 4px!important;border-radius:999px!important;font:900 8px/15px Inter,system-ui!important;white-space:nowrap!important;overflow:visible!important;transform:none!important;box-shadow:0 0 0 1.5px #071b22!important}
 html body.r698-ui #r588DockShell .r588Alert b[hidden]{display:none!important}
 html body.r698-ui #r588DockShell .r588Alert :is(svg,.ico){pointer-events:none!important}
 html body.r698-ui #r588DockShell .r588Top :is(.r588Brand,#r588Live){white-space:nowrap!important}
-html body.r698-ui #r588DockShell .r734TransportGlyph{display:inline-grid;place-items:center;min-width:1.2em;font:800 19px/1 system-ui;vertical-align:middle}
+html body.r698-ui #r588DockShell .r735TransportGlyph{display:inline-grid;place-items:center;min-width:1.2em;font:800 19px/1 system-ui;vertical-align:middle}
 @media(max-width:359px){
- html body.r698-ui #r588DockShell .r588Top{gap:5px!important}
- html body.r698-ui #r588DockShell .r588Alerts{gap:5px!important}
- html body.r698-ui #r588DockShell .r588Alert{flex-basis:36px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;border-radius:12px!important}
+ html body.r698-ui #r588DockShell .r588Top{gap:4px!important}
+ html body.r698-ui #r588DockShell .r588Alerts{gap:4px!important;min-height:36px!important}
+ html body.r698-ui #r588DockShell .r588Alert{flex-basis:33px!important;width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;max-width:33px!important;max-height:33px!important;border-radius:11px!important}
+ html body.r698-ui #r588DockShell .r588Alert b{right:2px!important;top:2px!important;min-width:14px!important;height:14px!important;min-height:14px!important;padding:0 3px!important;font:900 7.5px/14px Inter,system-ui!important}
  html body.r698-ui #r588DockShell .r588Brand{font-size:10px!important;letter-spacing:.11em!important}
  html body.r698-ui #r588DockShell #r588Live{font-size:8px!important;padding-inline:5px!important}
 }
