@@ -1,8 +1,8 @@
-/* SÜKÛN r739 — Playback Race & Diagnostic Access Audit */
+/* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
 'use strict';
 
-const SURUM = 'r739';
-const CACHE = 'sukun-r739-20260909a';
+const SURUM = 'r740';
+const CACHE = 'sukun-r740-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r739__.json';
+const BUILD_MARKER='./__sukun_build_r740__.json';
 
-const NOTLAR = ["r739 · Durdur → Başla → Durdur → Başla yarışında yalnız son kullanıcı niyeti korunur; eski bekleyen başlangıç yenisini yutmaz.", "Asenkron durdurma temizliği tamamlanmadan yeni oturum açılmaz. Başarısız temizlik açıkça kaydedilir ve yeni bir Durdur bariyeriyle yeniden denenir.", "Yüzüğün tek jest sahibi vardır: 7 dokunuş özel kasa, 9 dokunuş tanı. Alt tanı düğmesi ve eski sürüm/araç/kısayol girişleri kaldırıldı; günlük kurtarma araçları korundu.", "Mevcut sayaç, hedef, kayıt seçimi ve 28/99 seyir sahipliği korunur. Ses motorunun fiziksel cihazda doğrulanamayan davranışları ayrıca raporlanır.", "Manifest kimliği ve kapsamı değiştirilmeden HTML, Service Worker, sürüm geçmişi, build marker ve gerçek SHA-256 değerleri eşitlendi."];
+const NOTLAR = ["r740 · Berhetiyye başlığı kanonik isim kaydından tek kez üretilir; Hûtîrin dâhil isimlere oynatma/scroll metni eklenmez.", "r611 ve r678 görsel yazıcıları tek sunum sahibinde birleştirildi. r739’daki hatalı metin ayıklama ve ikinci başlık yazıcısı kaldırıldı.", "Tefekkürde ikinci isim perdesi açılmaz; isim değişiminde sabit başlık güncellenir. Sayaç ve oynatma olayları başlığı yeniden yazmaz.", "Başlık tam merkezde, iki eşit süsleme alanı arasında yer alır. Uzun isimler ekrana göre ölçülür; kelime içi kırılma, kayan metin ve yanıp sönme yoktur.", "Ses motoru, kayıt anahtarları, sayaç, hedef, 28/99 seyir sahipliği ve 7/9 yüzük erişimi r738’den korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

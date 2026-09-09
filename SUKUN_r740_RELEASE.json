@@ -1,0 +1,43 @@
+{
+  "build": "r740",
+  "base": "r738",
+  "date": "2026-09-09",
+  "cache": "sukun-r740-20260909a",
+  "htmlSha256": "310ed47458d935dcc301e470394dedc6448da4388e1cf7655ede65d3cdd16f95",
+  "verification": {
+    "source": 31,
+    "mini": 5,
+    "restart": 10,
+    "failure": 8,
+    "transport": 7,
+    "ring": 6,
+    "heroBrowser": 4,
+    "heroWidths": [
+      320,
+      360,
+      390,
+      428
+    ],
+    "heroModes": [
+      "mini",
+      "midi",
+      "max"
+    ],
+    "realAndroid": false,
+    "userRecording": false,
+    "realTTS": false,
+    "lockScreen": false,
+    "headset": false,
+    "realWavR740": "incomplete-timeout"
+  },
+  "changes": [
+    "canonical-name-identity",
+    "single-hero-writer",
+    "retired-r739-regex",
+    "retired-duplicate-name-observer",
+    "nonblocking-tefekkur-toast",
+    "symmetric-ornament-layout",
+    "identity-only-font-fit",
+    "unchanged-audio-and-user-data"
+  ]
+}
