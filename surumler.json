@@ -1,5 +1,28 @@
 [
   {
+    "v": "r748",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Service Worker sürüm sözleşmesi onarıldı: HTML, manifest, worker, cache ve build marker r748 olarak eşitlendi.",
+      "r747 içindeki SURUM=r741 ve __sukun_build_r741__.json kalıntıları kaldırıldı; yeni worker kurulumunu engelleyen HTML build mismatch giderildi.",
+      "r746/r747 premium görsel entegrasyonları korunur."
+    ]
+  },
+  {
+    "v": "r747",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Premium cam/neon/altın görsel dili genel uygulama yüzeylerine yayıldı."
+    ]
+  },
+  {
+    "v": "r746",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Esmâ-ül Hüsnâ kart dili aktif zikir sahnesi ve isim listelerine entegre edildi."
+    ]
+  },
+  {
     "v": "r741",
     "t": "9 Eylül 2026",
     "b": [

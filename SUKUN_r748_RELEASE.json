@@ -1,0 +1,10 @@
+{
+  "version": "r748",
+  "base": "r747",
+  "title": "SÜKÛN r748 — Service Worker güncelleme onarımı",
+  "summary": [
+    "r747 paketinde kalan SURUM=r741 çakışması düzeltildi.",
+    "HTML meta build, manifest start_url, Service Worker SURUM, cache ve build marker r748 olarak eşitlendi.",
+    "Yeni worker artık CORE doğrulamasında HTML build mismatch nedeniyle redundant olmamalı."
+  ]
+}

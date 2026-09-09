@@ -1,0 +1,12 @@
+{
+  "version": "r748",
+  "build": "r748",
+  "base": "r747",
+  "date": "2026-09-10",
+  "type": "service-worker-contract-repair",
+  "cache": "sukun-r748-20260910b",
+  "notes": [
+    "SW SURUM/cache/build marker/manifest/HTML build eşitlendi",
+    "r747 görsel katmanları korundu"
+  ]
+}

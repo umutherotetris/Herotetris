@@ -1,8 +1,8 @@
-/* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
+/* SÜKÛN r748 — Service Worker version contract repair */
 'use strict';
 
-const SURUM = 'r741';
-const CACHE = 'sukun-r747-20260910a';
+const SURUM = 'r748';
+const CACHE = 'sukun-r748-20260910b';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,14 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r741__.json';
+const BUILD_MARKER='./__sukun_build_r748__.json';
 
-const NOTLAR = ["r741 · Tefekkürdeki isim başlığı yalnız seçili Z kaydından ve kanonik isim matrisinden okunur; akıllı seansın geçici oynatma adı başlığı değiştirmez.", "r740’tan kalan görünüm çakışmaları giderildi. Sabit, Animasyon ve Kapalı tercihleri Tefekkürde ikinci bir isim perdesi üretmez; normal ekran tercihleri korunur.", "Başlık yalnız gerçek seçim değişikliğinde güncellenir. Tekrarlanan sayaç, oynatma ve akıllı seans olayları yazıyı yeniden oluşturmaz veya giriş animasyonunu başlatmaz.", "Hûtîrin ve diğer uzun isimler, eşit yan süsleme alanları arasında ölçülerek ortalanır; metin kesilmez, kayan yazı ve kelime içi kırılma kullanılmaz.", "Ses, kayıt, hedef ve sayaç verileri değiştirilmedi. 28/99 seyir, durdurma bariyeri ve 7/9 yüzük erişimi korunur."];
+const NOTLAR = [
+  "r748 · Service Worker sürüm sözleşmesi düzeltildi: HTML, manifest, worker, cache ve build marker artık aynı r748 sürümünü taşır.",
+  "r747 paketindeki SURUM=r741 ve __sukun_build_r741__.json kalıntıları kaldırıldı; bu kalıntılar yeni worker kurulumunu HTML build mismatch ile düşürüyordu.",
+  "Yeni cache adı sukun-r748-20260910b olarak ayrıldı; başarılı aktivasyondan sonra eski sukun-* cache'leri temizlenir.",
+  "r746/r747 görsel entegrasyonları ve önceki ses/sayaç davranışları korunur."
+];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
