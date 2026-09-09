@@ -1,8 +1,8 @@
-/* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
+/* SÜKÛN r743 — Backup and Pause Reliability */
 'use strict';
 
-const SURUM = 'r741';
-const CACHE = 'sukun-r741-20260909a';
+const SURUM = 'r743';
+const CACHE = 'sukun-r743-20260909a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r741__.json';
+const BUILD_MARKER='./__sukun_build_r743__.json';
 
-const NOTLAR = ["r741 · Tefekkürdeki isim başlığı yalnız seçili Z kaydından ve kanonik isim matrisinden okunur; akıllı seansın geçici oynatma adı başlığı değiştirmez.", "r740’tan kalan görünüm çakışmaları giderildi. Sabit, Animasyon ve Kapalı tercihleri Tefekkürde ikinci bir isim perdesi üretmez; normal ekran tercihleri korunur.", "Başlık yalnız gerçek seçim değişikliğinde güncellenir. Tekrarlanan sayaç, oynatma ve akıllı seans olayları yazıyı yeniden oluşturmaz veya giriş animasyonunu başlatmaz.", "Hûtîrin ve diğer uzun isimler, eşit yan süsleme alanları arasında ölçülerek ortalanır; metin kesilmez, kayan yazı ve kelime içi kırılma kullanılmaz.", "Ses, kayıt, hedef ve sayaç verileri değiştirilmedi. 28/99 seyir, durdurma bariyeri ve 7/9 yüzük erişimi korunur."];
+const NOTLAR = ["r743 · Kayıt deposu okunamadığında boş veya eksik yedek başarılı sayılmaz; hata gösterilir.", "Geri yüklemede ses yazma hataları ve iptaller doğru işlenir. Ayar yazımı başarısız olduğunda aynı işlemde değişen ayarlar geri alınır.", "Kayıtlı seanslar, favoriler, 99 Esmâ ilerlemesi ve yeni görünüm tercihleri yedek kapsamına eklendi.", "Genel duraklatma sırasında gelen yeni tekil ve terkip okumaları bekler; Devam ile sırayla yürür, Durdur ile iptal edilir.", "Tefekkür, mini akış barı, 28/99 seyir, durdurma bariyeri ve Feyz görünümü korunur. 105 kaynak/VM kontrolü geçti."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
@@ -64,14 +64,26 @@ async function marker(cache){
   if(!r)return null;
   try{return await r.json()}catch(e){return null}
 }
-async function kabuguHazirla(){
+let prepareInFlight=null;
+function kabuguHazirla(){
+  if(prepareInFlight)return prepareInFlight;
+  const task=prepareShell();prepareInFlight=task;
+  task.finally(()=>{if(prepareInFlight===task)prepareInFlight=null}).catch(()=>{});
+  return task;
+}
+async function prepareShell(){
   const cache=await caches.open(CACHE);
-  /* CORE tam değilse install başarısız olsun: yarım yeni sürüm asla aktive edilmez. */
+  /* Download and validate the complete core before replacing a working shell.
+     A failed refresh must not partially overwrite the previous complete cache. */
+  const prepared=[];
   for(const path of CORE){
     const {req,res}=await fetchReload(path);
     await validateCore(path,res);
-    await cache.put(req,res.clone());
+    const body=await res.arrayBuffer();
+    prepared.push({req,res:new Response(body,{status:res.status,statusText:res.statusText,headers:res.headers})});
   }
+  for(const {req,res} of prepared)await cache.put(req,res);
+  prepared.length=0;
   /* Opsiyoneller güncellemeyi düşürmez. */
   await Promise.allSettled(OPTIONAL.map(async path=>{
     const {req,res}=await fetchReload(path);await cache.put(req,res.clone());

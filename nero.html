@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r741">
+<meta name="sukun-build" content="r743">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r741">
+<link rel="manifest" href="./manifest.webmanifest?v=r743">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r741</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r743</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,28 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r743",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r743 · Kayıt deposu okunamadığında boş veya eksik yedek başarılı sayılmaz; hata gösterilir.",
+      "Geri yüklemede ses yazma hataları ve iptaller doğru işlenir. Ayar yazımı başarısız olduğunda aynı işlemde değişen ayarlar geri alınır.",
+      "Kayıtlı seanslar, favoriler, 99 Esmâ ilerlemesi ve yeni görünüm tercihleri yedek kapsamına eklendi.",
+      "Genel duraklatma sırasında gelen yeni tekil ve terkip okumaları bekler; Devam ile sırayla yürür, Durdur ile iptal edilir.",
+      "Tefekkür, mini akış barı, 28/99 seyir, durdurma bariyeri ve Feyz görünümü korunur. 105 kaynak/VM kontrolü geçti."
+    ]
+  },
+  {
+    "v": "r742",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r742 · Esma değiştirildiğinde eski kaydın geç gelen sonucu yeni seçimi durduramaz veya onaylayamaz.",
+      "Kilit ekranından dönüşteki ses sonucu, başladığı seçim ve sayım oturumuyla eşleştirilir; daha yeni bir ses hatasını silemez.",
+      "Durdurma işlemi hata verirse yeni ses başlamadan önce temizlik yeniden denenir. Ses hatasında doğru durum etiketi ve yeniden deneme simgesi gösterilir.",
+      "Güncellemenin zorunlu dosyaları tamamen indirilip doğrulanmadan çalışan önbelleğe yazılmaz. Eşzamanlı yenileme istekleri aynı indirmeyi paylaşır.",
+      "Başlat/duraklat simgeleri mevcut SVG ikonlarıyla tutarlı hale getirildi. Feyz görünümü, Tefekkür başlığı, mini giriş ve 28/99 seyir düzeni korunur."
+    ]
+  },
   {
     "v": "r741",
     "t": "9 Eylül 2026",
@@ -15216,8 +15238,9 @@ async function r476EndHidden(){
      220ms'de söndür. Böylece dönüşte ses kesilmez ama çift ses de uzamaz. */
   if(Z.auto&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE){
     try{
+      const observation=window.SukunZikirTransportGate?.captureObservation?.();
       const vp=zikirSesBaslat(false);
-      Promise.resolve(vp).then(r=>window.SukunZikirTransportGate?.observeVoice?.(r,'lock-visible-return')).catch(()=>{});
+      Promise.resolve(vp).then(r=>window.SukunZikirTransportGate?.observeVoice?.(r,'lock-visible-return',observation)).catch(()=>{});
     }catch(e){}
   }
   const t0=performance.now();
@@ -18050,6 +18073,12 @@ const SK_YEDEK_KEYS=new Set(`
   sukun.breath sukun.dailyseen sukun.dayZk sukun.delail sukun.eq sukun.esmaCount
   sukun.fav sukun.genAcik sukun.geo sukun.glassA sukun.hatim sukun.help
   sukun.dock.miniGlass.enabled sukun.dock.miniGlass.transparency
+  sukun.sessions.v2 sukun.session.favorites.v1 sukun.esma99.seyir.state
+  sukun.dock.r588.mode sukun.dock.level sukun.dock.peekStyle
+  sukun.ui.shellMode sukun.ui.shellSkin sukun.shell.r716 sukun.atmosphere.r706
+  sukun.ui.microSfx.enabled sukun.ui.microSfx.volume sukun.ui.navFx.enabled
+  sukun.opening.performance sukun.namePresentation.r474 sukun.nameToastMode
+  sukun.tefekkur.systemFullscreen.v1 sukun.resume.policy.v1
   sukun.hizbAtla sukun.huKip sukun.hzvAtla sukun.hzvGorunum sukun.journey
   sukun.kapi7 sukun.karisim sukun.kilitPin sukun.lang sukun.lastBackup
   sukun.lataif sukun.log sukun.maneviGunluk sukun.muhasebe sukun.myfreq
@@ -26173,7 +26202,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r741';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r743';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -26263,86 +26292,119 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
    ═══════════════════════════════════════════════════════════════ */
 
 /* — Amel Defteri: dışa/içe aktarma — */
-async function idbDumpAll(dbName,store){
-  return new Promise(res=>{
+function skBackupOpenR743(dbName,store,create=false){
+  return new Promise((resolve,reject)=>{
+    let settled=false,rq;
+    const fail=error=>{if(settled)return;settled=true;reject(error||new Error('Kayıt deposuna erişilemedi'));};
     try{
-      const rq=indexedDB.open(dbName);
-      rq.onerror=()=>res({});
-      rq.onsuccess=e=>{
-        const db=e.target.result;
-        if(!db.objectStoreNames.contains(store)){ db.close(); return res({}); }
-        const out={}, tx=db.transaction(store,'readonly'), st=tx.objectStore(store);
-        const kq=st.getAllKeys(), vq=st.getAll();
-        tx.oncomplete=async()=>{
-          try{
-            const keys=kq.result||[], vals=vq.result||[];
-            const blob64=b=>new Promise(r2=>{const fr=new FileReader();fr.onload=()=>r2(fr.result);fr.onerror=()=>r2(null);fr.readAsDataURL(b);});
-            for(let i=0;i<keys.length;i++){
-              const outKey=String(keys[i]||'');
-              if(!/^[\w:.-]{1,200}$/.test(outKey)||/^(?:__proto__|prototype|constructor)$/.test(outKey))continue;
-              const v=vals[i];
-              if(v instanceof Blob){
-                const b64=await blob64(v);
-                if(b64)out[outKey]={__blob:b64,type:v.type||''};
-              }else if(dbName==='sukunCustomAmb'&&v&&typeof v==='object'&&!Array.isArray(v)&&v.blob instanceof Blob){
-                const b64=await blob64(v.blob),name=String(v.name||'').trim().slice(0,64);
-                if(b64&&name){
-                  if(/^h:[a-z0-9_-]{1,60}$/i.test(outKey))out[outKey]={__hybridRecord:{name,blob:b64,mix:isFinite(+v.mix)?Math.max(0,Math.min(1,+v.mix)):.42}};
-                  else out[outKey]={__audioRecord:{name,blob:b64}};
-                }
-              }else if(dbName!=='sukunRec'&&dbName!=='sukunCustomAmb')out[outKey]={__val:v};
-            }
-          }catch(_){}
-          db.close(); res(out);
-        };
-        tx.onerror=()=>{ db.close(); res({}); };
+      rq=indexedDB.open(dbName);
+      rq.onerror=()=>fail(rq.error);
+      rq.onblocked=()=>fail(new Error('Kayıt deposu başka bir sekmede açık. Diğer SÜKÛN sekmesini kapatıp yeniden dene.'));
+      rq.onupgradeneeded=e=>{
+        if(settled){try{rq.transaction?.abort()}catch(_){};return;}
+        try{const db=e.target.result;if(create&&!db.objectStoreNames.contains(store))db.createObjectStore(store);}
+        catch(error){try{rq.transaction?.abort()}catch(_){};fail(error);}
       };
-    }catch(_){res({});}
+      rq.onsuccess=e=>{
+        const db=e.target.result;if(settled){db.close();return;}
+        db.onversionchange=()=>db.close();settled=true;resolve(db);
+      };
+    }catch(error){fail(error);}
   });
+}
+function skBackupBlobR743(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>typeof reader.result==='string'?resolve(reader.result):reject(new Error('Ses kaydı okunamadı'));
+    reader.onerror=()=>reject(reader.error||new Error('Ses kaydı okunamadı'));
+    reader.onabort=()=>reject(new Error('Ses kaydı okuma işlemi yarıda kesildi'));
+    reader.readAsDataURL(blob);
+  });
+}
+async function idbDumpAll(dbName,store){
+  const db=await skBackupOpenR743(dbName,store);
+  let records;
+  try{
+    if(!db.objectStoreNames.contains(store))return {};
+    records=await new Promise((resolve,reject)=>{
+      let tx;
+      try{
+        tx=db.transaction(store,'readonly');
+        tx.onerror=()=>reject(tx.error||new Error('Kayıtlar okunamadı'));
+        tx.onabort=()=>reject(tx.error||new Error('Kayıt okuma işlemi yarıda kesildi'));
+        const st=tx.objectStore(store),kq=st.getAllKeys(),vq=st.getAll();
+        tx.oncomplete=()=>{try{resolve({keys:kq.result||[],vals:vq.result||[]});}catch(error){reject(error);}};
+      }catch(error){try{tx?.abort()}catch(_){};reject(error);}
+    });
+  }finally{db.close();}
+  const out={}, {keys,vals}=records;
+  for(let i=0;i<keys.length;i++){
+    const outKey=String(keys[i]??'');
+    if(!/^[\w:.-]{1,200}$/.test(outKey)||/^(?:__proto__|prototype|constructor)$/.test(outKey))continue;
+    const v=vals[i];
+    if(v instanceof Blob){
+      out[outKey]={__blob:await skBackupBlobR743(v),type:v.type||''};
+    }else if(dbName==='sukunCustomAmb'&&v&&typeof v==='object'&&!Array.isArray(v)&&v.blob instanceof Blob){
+      const name=String(v.name||'').trim().slice(0,64);if(!name)continue;
+      const b64=await skBackupBlobR743(v.blob);
+      if(/^h:[a-z0-9_-]{1,60}$/i.test(outKey))out[outKey]={__hybridRecord:{name,blob:b64,mix:isFinite(+v.mix)?Math.max(0,Math.min(1,+v.mix)):.42}};
+      else out[outKey]={__audioRecord:{name,blob:b64}};
+    }else if(dbName!=='sukunRec'&&dbName!=='sukunCustomAmb')out[outKey]={__val:v};
+  }
+  return out;
 }
 async function idbRestoreAll(dbName,store,data){
-  if(!data||typeof data!=='object'||Array.isArray(data)||!Object.keys(data).length)return;
-  return new Promise(res=>{
-    try{
-      const rq=indexedDB.open(dbName,1);
-      rq.onupgradeneeded=e=>{ const db=e.target.result; if(!db.objectStoreNames.contains(store))db.createObjectStore(store); };
-      rq.onerror=()=>res(false);
-      rq.onsuccess=async e=>{
-        const db=e.target.result;
-        const entries=[];
-        const keys=Object.keys(data);
-        if(keys.length>2000){db.close();return res(false)}
-        let toplam=0;
-        const sesUri=/^data:audio\/[a-z0-9.+-]+(?:;[a-z0-9.+_-]+=[a-z0-9.+_-]+)*;base64,[a-z0-9+/=]+$/i;
-        for(const k of keys){
-          if(!/^[\w:.-]{1,200}$/.test(String(k))||/^(?:__proto__|prototype|constructor)$/.test(String(k)))continue;
-          if(dbName==='sukunRec'&&!window.SukunSecretPolicy?.unlocked?.()&&window.SukunSecretPolicy?.secretRecKey?.(k))continue;
-          const it=data[k];
-          if(dbName==='sukunRec'){
-            /* Yedek içinden uzak URL isteği yapılmasına izin verme. */
-            if(!it||typeof it.__blob!=='string'||!sesUri.test(it.__blob))continue;
-            toplam+=it.__blob.length;if(it.__blob.length>90*1024*1024||toplam>260*1024*1024){db.close();return res(0)}
-            try{const r=await fetch(it.__blob),b=await r.blob();if(/^audio\//i.test(b.type||'')&&b.size<=64*1024*1024)entries.push([String(k).slice(0,200),b]);}catch(_){}
-          }else if(dbName==='sukunCustomAmb'){
-            const isH=/^h:[a-z0-9_-]{1,60}$/i.test(String(k));
-            const a=isH?(it&&it.__hybridRecord):(it&&it.__audioRecord),d=a&&a.blob,name=String(a&&a.name||'').trim().slice(0,isH?64:28);
-            if((!isH&&!/^c\d{8,20}$/.test(String(k)))||!name||typeof d!=='string'||!sesUri.test(d))continue;
-            toplam+=d.length;if(d.length>90*1024*1024||toplam>260*1024*1024){db.close();return res(0)}
-            try{const r=await fetch(d),b=await r.blob();if(/^audio\//i.test(b.type||'')&&b.size<=64*1024*1024)entries.push([String(k),isH?{name,blob:b,mix:isFinite(+a.mix)?Math.max(0,Math.min(1,+a.mix)):.42,hybrid:true}:{name,blob:b}]);}catch(_){}
-          }else if(it&&Object.prototype.hasOwnProperty.call(it,'__val')){
-            let boy=0;try{boy=JSON.stringify(it.__val).length}catch(_){continue}
-            toplam+=boy;if(boy>2*1024*1024||toplam>260*1024*1024){db.close();return res(false)}
-            entries.push([String(k).slice(0,500),it.__val]);
-          }
-        }
-        const tx=db.transaction(store,'readwrite'), st=tx.objectStore(store);
-        entries.forEach(([k,v])=>{ try{st.put(v,k)}catch(_){} });
-        tx.oncomplete=()=>{ db.close(); res(entries.length); };
-        tx.onerror=()=>{ db.close(); res(0); };
-      };
-    }catch(_){res(false);}
-  });
+  if(data==null)return 0;
+  if(typeof data!=='object'||Array.isArray(data))throw new Error('Yedekteki kayıt listesi geçersiz');
+  const keys=Object.keys(data);if(!keys.length)return 0;
+  if(keys.length>2000)throw new Error('Yedekteki kayıt sayısı 2000 sınırını aşıyor');
+  const entries=[];let toplam=0;
+  const sesUri=/^data:audio\/[a-z0-9.+-]+(?:;[a-z0-9.+_-]+=[a-z0-9.+_-]+)*;base64,[a-z0-9+/=]+$/i;
+  const decode=async value=>{
+    toplam+=value.length;
+    if(value.length>90*1024*1024||toplam>260*1024*1024)throw new Error('Yedekteki ses verisi boyut sınırını aşıyor');
+    const response=await fetch(value),blob=await response.blob();
+    if(!/^audio\//i.test(blob.type||'')||blob.size>64*1024*1024)throw new Error('Yedekteki ses kaydı çözümlenemedi');
+    return blob;
+  };
+  // Finish decoding before starting any write transaction.
+  for(const k of keys){
+    if(!/^[\w:.-]{1,200}$/.test(k)||/^(?:__proto__|prototype|constructor)$/.test(k))continue;
+    if(dbName==='sukunRec'&&!window.SukunSecretPolicy?.unlocked?.()&&window.SukunSecretPolicy?.secretRecKey?.(k))continue;
+    const it=data[k];
+    if(dbName==='sukunRec'){
+      if(!it||typeof it.__blob!=='string'||!sesUri.test(it.__blob))continue;
+      entries.push([k,await decode(it.__blob)]);
+    }else if(dbName==='sukunCustomAmb'){
+      const isH=/^h:[a-z0-9_-]{1,60}$/i.test(k);
+      const a=isH?(it&&it.__hybridRecord):(it&&it.__audioRecord),d=a&&a.blob,name=String(a&&a.name||'').trim().slice(0,isH?64:28);
+      if((!isH&&!/^c\d{8,20}$/.test(k))||!name||typeof d!=='string'||!sesUri.test(d))continue;
+      const blob=await decode(d);
+      entries.push([k,isH?{name,blob,mix:isFinite(+a.mix)?Math.max(0,Math.min(1,+a.mix)):.42,hybrid:true}:{name,blob}]);
+    }else if(it&&Object.prototype.hasOwnProperty.call(it,'__val')){
+      let boy;try{boy=JSON.stringify(it.__val).length}catch(_){continue;}
+      toplam+=boy;if(boy>2*1024*1024||toplam>260*1024*1024)throw new Error('Yedekteki veri boyut sınırını aşıyor');
+      entries.push([k,it.__val]);
+    }
+  }
+  if(!entries.length)return 0;
+  const db=await skBackupOpenR743(dbName,store,true);
+  try{
+    if(!db.objectStoreNames.contains(store))throw new Error('Kayıt deposu bulunamadı');
+    return await new Promise((resolve,reject)=>{
+      let tx;
+      try{
+        tx=db.transaction(store,'readwrite');
+        tx.oncomplete=()=>resolve(entries.length);
+        tx.onerror=()=>reject(tx.error||new Error('Ses kayıtları yazılamadı'));
+        tx.onabort=()=>reject(tx.error||new Error('Ses kaydı yazma işlemi yarıda kesildi'));
+        const st=tx.objectStore(store);
+        for(const [key,value] of entries)st.put(value,key);
+      }catch(error){try{tx?.abort()}catch(_){};reject(error);}
+    });
+  }finally{db.close();}
 }
+
 async function skExportData(){
   const data={app:'SUKUN',fmt:1,t:Date.now(),ls:{},idb:{}};
   /* Güvenlik: Claude API anahtarı hiçbir yedek dosyasına girmez.
@@ -26375,41 +26437,49 @@ async function skExportData(){
 async function skImportData(json){
   const data=typeof json==='string'?JSON.parse(json):json;
   if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('Bu bir SÜKÛN yedeği değil');
-  let lsToplam=0,atlanan=0;
-  const guvenliYaz=(k,v)=>{
-    if(!skYedekKey(k)){atlanan++;return false;}
-    if(!window.SukunSecretPolicy?.unlocked?.()&&window.SukunSecretPolicy?.privateLocalKey?.(k)){atlanan++;return false;}
+  const legacy=data._app==='SÜKÛN'&&!data.ls;
+  if(!legacy&&(data.app!=='SUKUN'||!data.ls||typeof data.ls!=='object'||Array.isArray(data.ls)))throw new Error('Bu bir SÜKÛN yedeği değil');
+  if(!legacy&&data.idb!=null&&(typeof data.idb!=='object'||Array.isArray(data.idb)))throw new Error('Yedekteki kayıt deposu geçersiz');
+  for(const name of ['sukunRec','sukunCustomAmb']){
+    const records=legacy?null:data.idb?.[name];
+    if(records!=null&&(typeof records!=='object'||Array.isArray(records)))throw new Error('Yedekteki kayıt listesi geçersiz');
+  }
+  const planned=[];let lsToplam=0,atlanan=0,ses=0;
+  // Validate the complete settings payload before the first write.
+  for(let [k,v] of Object.entries(legacy?data:data.ls)){
+    if(legacy&&k.startsWith('_'))continue;
+    if(!skYedekKey(k)){atlanan++;continue;}
+    if(!window.SukunSecretPolicy?.unlocked?.()&&window.SukunSecretPolicy?.privateLocalKey?.(k)){atlanan++;continue;}
     if(!window.SukunSecretPolicy?.unlocked?.()&&k==='sukun.sessions.v2')v=window.SukunSecretPolicy.sanitizeSessionArrayValue(v);
     const temiz=skYedekDeger(k,v);
-    if(temiz===null||k.length>300||temiz.length>4*1024*1024){atlanan++;return false;}
+    if(temiz===null||k.length>300||temiz.length>4*1024*1024){atlanan++;continue;}
     lsToplam+=temiz.length;if(lsToplam>16*1024*1024)throw new Error('Yedek ayar verisi olağan dışı büyük');
-    try{localStorage.setItem(k,temiz);return true}catch(_){atlanan++;return false}
-  };
-  /* Eski düz format — {_app:'SÜKÛN','sukun.x':deger,...}. Geriye uyum:
-     o dönemin yedeklerinde ses kaydı (IndexedDB) yoktu, yalnız localStorage var. */
-  if(data._app==='SÜKÛN' && !data.ls){
-    let n=0;
-    Object.entries(data).forEach(([k,v])=>{if(k.startsWith('_'))return;if(guvenliYaz(k,v))n++});
-    if(!n)throw new Error('Yedekte geri yüklenecek kayıt bulunamadı');
+    planned.push([k,temiz]);
+  }
+  try{
+    if(!legacy&&data.idb){
+      for(const [name,store] of [['sukunRec','clips'],['sukunCustomAmb','sounds']]){
+        const records=data.idb[name],n=await idbRestoreAll(name,store,records);
+        ses+=n;atlanan+=Math.max(0,Object.keys(records||{}).length-n);
+      }
+    }
+    if(!planned.length&&!ses)throw new Error('Yedekte geri yüklenecek güvenli kayıt bulunamadı');
+    const old=new Map(planned.map(([key])=>[key,localStorage.getItem(key)])),written=[];
+    try{
+      for(const [key,value] of planned){localStorage.setItem(key,value);written.push(key);}
+    }catch(error){
+      let restored=true;
+      for(const key of written.reverse()){
+        try{const value=old.get(key);if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}
+        catch(_){restored=false;}
+      }
+      throw new Error(restored?'Ayarlar yazılamadı; önceki ayarlar korundu. Depolama alanını kontrol et.':'Ayarlar yazılamadı ve bazı ayarlar geri alınamadı. Depolama alanını kontrol et.');
+    }
     try{localStorage.setItem('sukun.kilitAcik','false');localStorage.removeItem('sukun.diag')}catch(_){}
-    return {ok:true,n,atlanan};
-  }
-  if(data.app!=='SUKUN'||!data.ls||typeof data.ls!=='object'||Array.isArray(data.ls))throw new Error('Bu bir SÜKÛN yedeği değil');
-  let n=0;
-  Object.keys(data.ls).forEach(k=>{
-    /* Yedek dosyası kötü niyetli/yanlışlıkla API anahtarı içeriyor olsa bile
-       mevcut cihazdaki anahtarı ezmesine izin verme. */
-    if(guvenliYaz(k,data.ls[k]))n++;
-  });
-  let ses=0;
-  if(data.idb){
-    ses+=+(await idbRestoreAll('sukunRec','clips',data.idb.sukunRec)||0);
-    ses+=+(await idbRestoreAll('sukunCustomAmb','sounds',data.idb.sukunCustomAmb)||0);
-  }
-  if(!n&&!ses)throw new Error('Yedekte geri yüklenecek güvenli kayıt bulunamadı');
-  try{localStorage.setItem('sukun.kilitAcik','false');localStorage.removeItem('sukun.diag')}catch(_){}
-  return {ok:true,n,ses,atlanan};
+    return {ok:true,n:planned.length,ses,atlanan};
+  }catch(error){if(ses>0)error.partialRecords=ses;throw error;}
 }
+
 function bakStatRender(){
   const el=$('#bakStat'); if(!el)return;
   const t=S.get('sukun.lastBackup',0);
@@ -26442,9 +26512,9 @@ $('#bakFile').addEventListener('change',async e=>{
     const sonuc=await skImportData(txt);
     try{window.SukunDataMigration?.resetLedger?.();await window.SukunDataMigration?.run?.('backup-import')}catch(e){}
     sfx('done'); vib([60,40,60]);
-    skToast('Yedek geri yüklendi ('+sonuc.n+' ayar'+(sonuc.ses?' · '+sonuc.ses+' ses':'')+(sonuc.atlanan?' · '+sonuc.atlanan+' geçersiz/bilinmeyen kayıt atlandı':'')+') — uygulama yenileniyor…',null,null,5000);
+    skToast('Yedek geri yüklendi ('+sonuc.n+' ayar'+(sonuc.ses?' · '+sonuc.ses+' ses':'')+(sonuc.atlanan?' · '+sonuc.atlanan+' uygun olmayan kayıt atlandı':'')+') — uygulama yenileniyor…',null,null,5000);
     setTimeout(()=>location.reload(),1200);
-  }catch(err){ skToast('Geri yükleme başarısız: '+err.message,null,null,8000); }
+  }catch(err){ skToast('Geri yükleme tamamlanamadı: '+err.message+(err.partialRecords?' '+err.partialRecords+' ses kaydı aktarıldı; diğer adımlar tamamlanmadı.':''),null,null,10000); }
 });
 /* — Nazik hatırlatma: anlamlı veri var + 30 gün geçmiş → oturumda bir kez — */
 function skBackupMaybeRemind(){
@@ -61976,6 +62046,9 @@ function invalidate(why='intent'){
 const listeners=new Set();
 const safe=(fn,f=null)=>{try{return fn()}catch(e){return f}};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+function selectionKey(){return safe(()=>clean(Z.cat)+':'+(+Z.idx||0),'')}
+function sameSelection(t){return !!t&&safe(()=>clean(Z.cat)===t.cat&&(+Z.idx||0)===t.idx,false)}
+let lastSelection=selectionKey();
 function spokenVisibleAuto(){return !!safe(()=>Z.auto&&!document.hidden&&zikirSesliAktifMi()&&!ZIKIR_BIRLIKTE,false)}
 function rawPause(){
   const agg=safe(()=>window.SukunAudioSessionRegistry?.aggregateSnapshot?.(),{})||{};
@@ -61984,7 +62057,7 @@ function rawPause(){
 }
 function snapshot(){
   const p=rawPause();
-  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r738',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
+  return Object.freeze({version:VERSION,held,reason,since,failure,blocked:blocked(),spokenVisibleAuto:spokenVisibleAuto(),rawPaused:p.paused,aggregatePaused:p.aggregate,lifeUserPaused:p.life,prevented,rollbacks,lastFailure,lastSuccess,seq,revision:'r742',generation,staleResults,unconfirmedCredits,pendingCount:pendingCountToken?{cat:pendingCountToken.cat,idx:pendingCountToken.idx,count:pendingCountToken.count}:null});
 }
 function emit(type='state'){
   seq++;const s=snapshot();listeners.forEach(fn=>{try{fn(s)}catch(e){}});
@@ -62013,6 +62086,7 @@ function blocked(){
 function beforeCount(){
   if(!spokenVisibleAuto())return null;
   // An unfinished reading owns its provisional credit until settled/aborted.
+  if(pendingCountToken&&!sameSelection(pendingCountToken))invalidate('stale-selection');
   if(pendingCountToken){prevented++;return false;}
   const p=rawPause();
   if(held||p.paused){prevented++;setHeld(held?reason:(p.aggregate?'aggregate-paused':'life-user-paused'),failure);return false}
@@ -62034,8 +62108,11 @@ function voiceResult(t,r,pending){
   /* Yalnız beforeCount tokenı olan görünür SESLİ AUTO turu gate'e tabidir.
      Manuel sayaç ve hidden/native seyir davranışı aynen korunur. */
   if(!t)return true;
-  try{window.SukunR733Restart?.record?.('voice-settled',{ok:okResult(r),source:clean(r?.source||''),reason:clean(r?.reason||''),generation:t.generation,count:t.count,stale:t.generation!==generation||t.id!==lastToken})}catch(e){}
-  if(t.generation!==generation||t.id!==lastToken||!Z.auto){staleResults++;return false;}
+  try{window.SukunR733Restart?.record?.('voice-settled',{ok:okResult(r),source:clean(r?.source||''),reason:clean(r?.reason||''),generation:t.generation,count:t.count,stale:t.generation!==generation||t.id!==lastToken||!Z.auto||!sameSelection(t)})}catch(e){}
+  if(t.generation!==generation||t.id!==lastToken||!Z.auto||!sameSelection(t)){
+    if(pendingCountToken?.id===t.id&&!sameSelection(t))invalidate('stale-result');
+    staleResults++;return false;
+  }
   if(okResult(r)){
     if(pendingCountToken?.id===t.id)pendingCountToken=null;
     lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||'voice-ok'),source:clean(r?.source||''),cat:t.cat,idx:t.idx});
@@ -62048,7 +62125,14 @@ function scheduleResume(why){
   if(resumeTimer||!safe(()=>Z.auto,false)||document.hidden)return;
   resumeTimer=setTimeout(()=>{resumeTimer=0;if(!safe(()=>Z.auto,false)||document.hidden||blocked())return;try{_zAutoSon=Date.now();zAutoKur(true)}catch(e){}},80);
 }
-function observeVoice(r,why='voice-observed'){
+function captureObservation(){
+  return Object.freeze({generation,token:lastToken,cat:clean(Z.cat),idx:+Z.idx||0});
+}
+function observeVoice(r,why='voice-observed',observation=null){
+  // Foreground handoff belongs to the selection and count intent it started in.
+  if(observation&&(observation.generation!==generation||observation.token!==lastToken||!sameSelection(observation)||!safe(()=>Z.auto,false))){
+    staleResults++;return false;
+  }
   if(okResult(r)){
     lastSuccess=Object.freeze({at:Date.now(),reason:clean(r?.reason||why),source:clean(r?.source||''),observed:true});
     if(held){reset(why);scheduleResume(why)}
@@ -62065,13 +62149,21 @@ function reconcile(why='event'){
   if(!held&&spokenVisibleAuto()&&p.paused){setHeld(p.aggregate?'aggregate-paused':'life-user-paused',false);return false}
   return false;
 }
+// renderZikir signals actual identity changes, not ordinary repainting.
+window.addEventListener('sukun:zikirselectionchange',()=>{
+  const next=selectionKey();if(next===lastSelection)return;lastSelection=next;
+  invalidate('selection-change');
+  if(held&&failure&&lastFailure&&!sameSelection(lastFailure)){
+    reset('selection-change');scheduleResume('selection-change');
+  }
+},{passive:true});
 ['sukun:audioaggregatechange','sukun:audiostate','sukun:audiotruthchange'].forEach(ev=>window.addEventListener(ev,()=>reconcile(ev),{passive:true}));
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden)return; /* hidden/native r476 tek otorite; sayaç kapısı karışmaz */
   setTimeout(()=>reconcile('visible'),0);
 },{passive:true});
 window.addEventListener('pageshow',()=>setTimeout(()=>reconcile('pageshow'),0),{passive:true});
-window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,voiceResult,observeVoice,reconcile,reset,invalidate,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
+window.SukunZikirTransportGate=Object.freeze({version:VERSION,snapshot,blocked,beforeCount,voiceResult,captureObservation,observeVoice,reconcile,reset,invalidate,subscribe(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);try{fn(snapshot())}catch(e){};return()=>listeners.delete(fn)}});
 })();
 </script>
 
@@ -62802,7 +62894,7 @@ function runOrQueue(spec,runner,opt={}){
     push('merge',{type:spec.type,identity:spec.identity,with:busy.type});emit('merge');
     return Promise.resolve({ok:true,source:'foreground-arbiter',merged:true,reason:'same-identity'});
   }
-  if(busy)return enqueuePromise(spec,runner,opt);
+  if(busy||pauseHeld())return enqueuePromise(spec,runner,opt);
   return execute({...spec,id:spec.id||('fg:'+ (++seq)+':'+Date.now()),runner,waiters:[],createdAt:Date.now()});
 }
 function queueResume(type,source='preempted'){
@@ -66530,8 +66622,8 @@ function stop(source='ui'){
    catch(error){tasks.push(Promise.reject(error))}
    // Direct auto owns the scheduler and provisional credit. Release it now,
    // but also await any asynchronous cleanup it returns before a new Play.
-   const directResult=safe(()=>direct()?.stop?.(),true);
-   tasks.push(Promise.resolve(directResult));
+   try{tasks.push(Promise.resolve(direct()?.stop?.()))}
+   catch(error){tasks.push(Promise.reject(error))}
    const barrier=Promise.allSettled(tasks).then(results=>{
      const ok=results.every(r=>r.status==='fulfilled'&&r.value!==false);
      cleanupFailure=!ok;
@@ -66564,7 +66656,8 @@ function presentation(){
  const canPause=!!window.SukunAudioSessionRegistry?.pauseAll||!!j;
  const label=failed?'Yeniden dene':preparing?'Hazırlanıyor':paused?'Devam et':running?(canPause?'Duraklat':'Durdur'):'Başla';
  let voice='Kaynak bekleniyor';
- if(d.voiceRequired===false&&!j&&isDirectContext())voice='Sessiz sayım';
+ if(failed)voice='Ses bekleniyor';
+ else if(d.voiceRequired===false&&!j&&isDirectContext())voice='Sessiz sayım';
  else if(v.kind==='recording')voice='Kendi kaydın';
  else if(/^tts|^reader/.test(v.kind||''))voice='Sesli okuma';
  else if(['recovering','loading','preparing'].includes(v.kind))voice='Ses hazırlanıyor';
@@ -66580,15 +66673,18 @@ function renderUI(){
  const p=presentation(),ab=document.getElementById('autoBtn');
  if(ab){
   const icon=p.paused?'▷':p.preparing?'◌':p.running?(p.label==='Durdur'?'■':'Ⅱ'):'▷';
-  const symbol=window.ico?.(p.paused?'play':p.preparing?'refresh':p.running?(p.label==='Durdur'?'stop':'pause'):'play')||icon;
+  const symbolKey=p.failed?'refresh':p.paused?'play':p.preparing?'refresh':p.running?(p.label==='Durdur'?'stop':'pause'):'play';
    let glyph=ab.querySelector(':scope > .r738TransportGlyph'),label=ab.querySelector(':scope > .r738TransportLabel');
    if(!glyph||!label){
      // One-time hydration. No subsequent render removes the touched element.
      ab.replaceChildren();glyph=document.createElement('span');glyph.className='r738TransportGlyph';glyph.setAttribute('aria-hidden','true');
      label=document.createElement('b');label.className='r738TransportLabel';ab.append(glyph,document.createTextNode(' '),label);
    }
-   const mark=p.failed?'↻':icon;
-   if(glyph.textContent!==mark)glyph.textContent=mark;
+   if(glyph.dataset.r742Symbol!==symbolKey){
+     const symbol=window.ico?.(symbolKey);
+     if(symbol)glyph.innerHTML=symbol;else glyph.textContent=p.failed?'↻':icon;
+     glyph.dataset.r742Symbol=symbolKey;
+   }
    if(label.textContent!==p.label)label.textContent=p.label;
   for(const [key,value] of [['aria-label',p.label],['aria-pressed',String(p.running&&!p.paused)],['aria-busy',String(p.preparing)]])if(ab.getAttribute(key)!==value)ab.setAttribute(key,value);
   if(ab.classList.contains('playing')!==(p.running&&!p.paused))ab.classList.toggle('playing',p.running&&!p.paused);
@@ -66611,8 +66707,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 window.SukunLifecycleHub?.onBodyClass?.(scheduleUI,{immediate:true});
 
-const snapshot=()=>Object.freeze({version:'r733',revision:'r738',cleanupFailure,commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
-window.SukunR698Transport=Object.freeze({version:'r733',revision:'r738',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
+const snapshot=()=>Object.freeze({version:'r733',revision:'r742',cleanupFailure,commandSeq,lastCommand,lastAt,stopping,pendingStop:!!pendingStop,pendingStart:!!pendingStart,intentEpoch,journey:journey()?.kind||'',direct:directState(),restartTrace:restartTrace.map(x=>({...x}))});
+window.SukunR698Transport=Object.freeze({version:'r733',revision:'r742',journey,hasJourney:()=>!!journey(),playPause,stop,snapshot,presentation,renderUI});
 // Passive transport evidence: a raw native click is distinct from an accepted
 // command. Never synthesize clicks on pointerdown/cancel; native scrolling owns them.
 const TRACE_CONTROLS='#autoBtn,#r588Play,#r588Stop,#r170Play,#r170Stop';
@@ -66620,7 +66716,7 @@ for(const type of ['pointerdown','pointercancel','click'])document.addEventListe
  const el=e.target?.closest?.(TRACE_CONTROLS);if(!el)return;
  record('input-'+type,{target:el.id,pointerType:e.pointerType||'',trusted:!!e.isTrusted,disabled:!!el.disabled,auto:!!directState().auto});
 },{capture:true,passive:true});
-window.SukunR733Restart=Object.freeze({version:'r733',revision:'r738',snapshot,record});
+window.SukunR733Restart=Object.freeze({version:'r733',revision:'r742',snapshot,record});
 renderUI();
 })();
 
@@ -67610,10 +67706,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r741',date='2026-09-09';
+const build=meta?.content||'r743',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r741',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r743',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
