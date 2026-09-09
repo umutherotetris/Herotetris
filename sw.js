@@ -1,8 +1,8 @@
-/* SÜKÛN r744 — Counter Layout and Recording Reliability */
+/* SÜKÛN r738 — Playback Race & Diagnostic Access Audit */
 'use strict';
 
-const SURUM = 'r744';
-const CACHE = 'sukun-r744-20260909a';
+const SURUM = 'r741';
+const CACHE = 'sukun-r747-20260910a';
 
 const CORE = [
   './nero.html',
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r744__.json';
+const BUILD_MARKER='./__sukun_build_r741__.json';
 
-const NOTLAR = ["r744 · Ana sayaç başlığı Tefekkür ile aynı yatay düzende; çember altında Hedef/Kalan yan yana ve kompakt kontroller.", "Tam ekran tanısı eski sürüm numarası yerine gerçek API ve tercih tutarlılığını denetler; ana sayaç geometrisi kontrolü eklendi.", "Gizli oynatıcı dönüş düğmesi görünür viewport içinde tutulur; mevcut dokunma/kaydırma ertelemesi korunur.", "Kayıt stüdyosunda yanlış kaydın üzerine yazma, eski analiz, çift kayıt ve boş/hatalı kayıt saklama sorunları giderildi.", "Stereo sessizlik kırpma ve örnek tepe analizi düzeltildi. 137 kaynak/VM kontrolü geçti; gerçek cihaz testi yapılmadı."];
+const NOTLAR = ["r741 · Tefekkürdeki isim başlığı yalnız seçili Z kaydından ve kanonik isim matrisinden okunur; akıllı seansın geçici oynatma adı başlığı değiştirmez.", "r740’tan kalan görünüm çakışmaları giderildi. Sabit, Animasyon ve Kapalı tercihleri Tefekkürde ikinci bir isim perdesi üretmez; normal ekran tercihleri korunur.", "Başlık yalnız gerçek seçim değişikliğinde güncellenir. Tekrarlanan sayaç, oynatma ve akıllı seans olayları yazıyı yeniden oluşturmaz veya giriş animasyonunu başlatmaz.", "Hûtîrin ve diğer uzun isimler, eşit yan süsleme alanları arasında ölçülerek ortalanır; metin kesilmez, kayan yazı ve kelime içi kırılma kullanılmaz.", "Ses, kayıt, hedef ve sayaç verileri değiştirilmedi. 28/99 seyir, durdurma bariyeri ve 7/9 yüzük erişimi korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
@@ -64,26 +64,14 @@ async function marker(cache){
   if(!r)return null;
   try{return await r.json()}catch(e){return null}
 }
-let prepareInFlight=null;
-function kabuguHazirla(){
-  if(prepareInFlight)return prepareInFlight;
-  const task=prepareShell();prepareInFlight=task;
-  task.finally(()=>{if(prepareInFlight===task)prepareInFlight=null}).catch(()=>{});
-  return task;
-}
-async function prepareShell(){
+async function kabuguHazirla(){
   const cache=await caches.open(CACHE);
-  /* Download and validate the complete core before replacing a working shell.
-     A failed refresh must not partially overwrite the previous complete cache. */
-  const prepared=[];
+  /* CORE tam değilse install başarısız olsun: yarım yeni sürüm asla aktive edilmez. */
   for(const path of CORE){
     const {req,res}=await fetchReload(path);
     await validateCore(path,res);
-    const body=await res.arrayBuffer();
-    prepared.push({req,res:new Response(body,{status:res.status,statusText:res.statusText,headers:res.headers})});
+    await cache.put(req,res.clone());
   }
-  for(const {req,res} of prepared)await cache.put(req,res);
-  prepared.length=0;
   /* Opsiyoneller güncellemeyi düşürmez. */
   await Promise.allSettled(OPTIONAL.map(async path=>{
     const {req,res}=await fetchReload(path);await cache.put(req,res.clone());

@@ -1,38 +1,5 @@
 [
   {
-    "v": "r744",
-    "t": "9 Eylül 2026",
-    "b": [
-      "r744 · Ana sayaç başlığı Tefekkür ile aynı yatay düzende; çember altında Hedef/Kalan yan yana ve kompakt kontroller.",
-      "Tam ekran tanısı eski sürüm numarası yerine gerçek API ve tercih tutarlılığını denetler; ana sayaç geometrisi kontrolü eklendi.",
-      "Gizli oynatıcı dönüş düğmesi görünür viewport içinde tutulur; mevcut dokunma/kaydırma ertelemesi korunur.",
-      "Kayıt stüdyosunda yanlış kaydın üzerine yazma, eski analiz, çift kayıt ve boş/hatalı kayıt saklama sorunları giderildi.",
-      "Stereo sessizlik kırpma ve örnek tepe analizi düzeltildi. 137 kaynak/VM kontrolü geçti; gerçek cihaz testi yapılmadı."
-    ]
-  },
-  {
-    "v": "r743",
-    "t": "9 Eylül 2026",
-    "b": [
-      "r743 · Kayıt deposu okunamadığında boş veya eksik yedek başarılı sayılmaz; hata gösterilir.",
-      "Geri yüklemede ses yazma hataları ve iptaller doğru işlenir. Ayar yazımı başarısız olduğunda aynı işlemde değişen ayarlar geri alınır.",
-      "Kayıtlı seanslar, favoriler, 99 Esmâ ilerlemesi ve yeni görünüm tercihleri yedek kapsamına eklendi.",
-      "Genel duraklatma sırasında gelen yeni tekil ve terkip okumaları bekler; Devam ile sırayla yürür, Durdur ile iptal edilir.",
-      "Tefekkür, mini akış barı, 28/99 seyir, durdurma bariyeri ve Feyz görünümü korunur. 105 kaynak/VM kontrolü geçti."
-    ]
-  },
-  {
-    "v": "r742",
-    "t": "9 Eylül 2026",
-    "b": [
-      "r742 · Esma değiştirildiğinde eski kaydın geç gelen sonucu yeni seçimi durduramaz veya onaylayamaz.",
-      "Kilit ekranından dönüşteki ses sonucu, başladığı seçim ve sayım oturumuyla eşleştirilir; daha yeni bir ses hatasını silemez.",
-      "Durdurma işlemi hata verirse yeni ses başlamadan önce temizlik yeniden denenir. Ses hatasında doğru durum etiketi ve yeniden deneme simgesi gösterilir.",
-      "Güncellemenin zorunlu dosyaları tamamen indirilip doğrulanmadan çalışan önbelleğe yazılmaz. Eşzamanlı yenileme istekleri aynı indirmeyi paylaşır.",
-      "Başlat/duraklat simgeleri mevcut SVG ikonlarıyla tutarlı hale getirildi. Feyz görünümü, Tefekkür başlığı, mini giriş ve 28/99 seyir düzeni korunur."
-    ]
-  },
-  {
     "v": "r741",
     "t": "9 Eylül 2026",
     "b": [

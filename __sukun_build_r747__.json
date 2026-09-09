@@ -1,0 +1,11 @@
+{
+  "version": "r747",
+  "base": "r741",
+  "date": "2026-09-09",
+  "type": "visual-premium-integration",
+  "notes": [
+    "çalışma alanındaki premium mockup görsel dili uygulandı",
+    "işlev mantığına dokunulmadı; görsel katman ve etkileşim yüzeyleri korundu"
+  ],
+  "build": "r747"
+}

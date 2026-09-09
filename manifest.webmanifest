@@ -3,7 +3,7 @@
   "short_name": "SÜKÛN",
   "description": "Tasavvufî ses, zikir, sükûn, frekans ve tefekkür uygulaması.",
   "id": "./nero.html",
-  "start_url": "./nero.html?v=r744",
+  "start_url": "./nero.html?v=r747",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -43,7 +43,7 @@
     {
       "name": "SÜKÛN'u Aç",
       "short_name": "SÜKÛN",
-      "url": "./nero.html?v=r744",
+      "url": "./nero.html?v=r747",
       "icons": [
         {
           "src": "./icon-192.png",
@@ -52,5 +52,6 @@
         }
       ]
     }
-  ]
+  ],
+  "version": "r747"
 }
