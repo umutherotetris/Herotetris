@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r731">
+<meta name="sukun-build" content="r732">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r731">
+<link rel="manifest" href="./manifest.webmanifest?v=r732">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r731</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r732</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,18 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r732",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r732 · Dokunma ve kaydırma sırasında akış barı yerleşimi yeniden kurulmaz; ölçüm parmak hareketi bittikten sonra yapılır.",
+      "Eski panel perdeleri ve kapalı modal katmanlar tıklamaları yakalayamaz. Açık panelin scroll ve odak sahipliği korunur.",
+      "Tefekkür, zikir, seyirler ve sesler arasında gezinmede gereksiz sayfa sıfırlamaları kaldırıldı. Ses, kayıt, sayaç ve seyir sahipleri değişmedi.",
+      "320 px ekranlarda gizlenen Ayarlar düğmesi geri getirildi; üstteki üç ikon 44 px dokunma alanını korur.",
+      "Mini/Midi/Max geçişi sonrası tefekkür çıkışı oyuncunun altında kalırsa yalnız kullanıcı kip değiştirdiğinde görünür konuma getirilir; doğal kaydırma ve ses durumuna müdahale edilmez.",
+      "Tefekkür Mini’de eski kuralın gizlediği aktif isim, ses kaynağı ve ince ilerleme satırı yeniden görünür."
+    ]
+  },
   {
     "v": "r731",
     "t": "9 Eylül 2026",
@@ -55211,17 +55223,22 @@ if(window.SukunViewportPolicy?.version==='r508')return;
 const nativeScrollIntoView=Element.prototype.scrollIntoView;
 let suppressUntil=0,suppressReason='';
 let explicitDepth=0;
-let userIntentUntil=0,userReason='';
+let userIntentUntil=0,userReason='',userSequence=0,activeInput=0;
 let blocked=0,allowed=0,last=null;
 
 const now=()=>performance.now();
 const markUser=reason=>{
-  userIntentUntil=now()+1250;
+  userIntentUntil=now()+1250;userSequence++;
   userReason=reason||'user';
 };
 
 document.addEventListener('pointerdown',()=>markUser('pointer'),{capture:true,passive:true});
-document.addEventListener('touchstart',()=>markUser('touch'),{capture:true,passive:true});
+document.addEventListener('touchstart',()=>{activeInput++;markUser('touch')},{capture:true,passive:true});
+document.addEventListener('click',()=>markUser('click'),{capture:true,passive:true});
+for(const type of ['touchend','touchcancel'])document.addEventListener(type,()=>{activeInput=Math.max(0,activeInput-1);userSequence++;userReason=type;userIntentUntil=now()},{capture:true,passive:true});
+document.addEventListener('touchmove',()=>{userIntentUntil=now();userSequence++;userReason='native-pan'},{capture:true,passive:true});
+document.addEventListener('scroll',()=>{userSequence++;userReason='native-scroll';userIntentUntil=now()},{capture:true,passive:true});
+window.addEventListener('wheel',()=>{userSequence++;userReason='wheel';userIntentUntil=now()},{capture:true,passive:true});
 document.addEventListener('keydown',e=>{
   if(['Enter',' ','Spacebar','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End'].includes(e.key)){
     markUser('keyboard');
@@ -55282,10 +55299,10 @@ function preserve(fn,opt={}){
   const y=window.scrollY||document.documentElement.scrollTop||0;
   const ms=Math.max(120,+opt.ms||520);
   suppress(ms,opt.reason||'preserve-scroll');
-  const intentAtStart=userIntentUntil;
+  const intentAtStart=userSequence;
 
   const restore=()=>{
-    if(userIntentUntil>intentAtStart)return;
+    if(userSequence!==intentAtStart||activeInput||window.SukunInteractionGateR732?.active?.())return;
     if(anchor?.isConnected&&Number.isFinite(anchorTop)){
       const dy=anchor.getBoundingClientRect().top-anchorTop;
       if(Math.abs(dy)>.5)window.scrollBy(0,dy);
@@ -58046,7 +58063,7 @@ const $=id=>document.getElementById(id);
 const saved=new WeakMap(),seen=new Map(),stack=[];
 let owner='',initialized=false,observer=null,rootObserver=null,scheduled=false,mutations=0,syncs=0,closures=0,focusRestores=0;
 const safe=(fn,f=null)=>{try{return fn()}catch(_){return f}};
-const active=e=>{if(!e||e.hidden||!e.isConnected)return false;if(e.hasAttribute('data-r725-suspended'))return true;const c=getComputedStyle(e);return c.display!=='none'&&c.visibility!=='hidden';};
+const active=e=>{if(!e||e.hidden||!e.isConnected)return false;if(e.hasAttribute('data-r725-suspended'))return e.style.display!=='none'&&e.style.visibility!=='hidden';const c=getComputedStyle(e);return c.display!=='none'&&c.visibility!=='hidden';};
 function saveState(e,refresh=false){if(refresh||!saved.has(e))saved.set(e,{inert:e.inert,aria:e.getAttribute('aria-hidden'),opener:saved.get(e)?.opener||null});}
 function setAttr(e,k,v){if(v===null){if(e.hasAttribute(k))e.removeAttribute(k)}else if(e.getAttribute(k)!==v)e.setAttribute(k,v)}
 function suspend(e,on){
@@ -60341,6 +60358,7 @@ function setSoundButtons(t){
 function go(view,sub,skipLegacy,keepScroll){
   const home=$('r616Home'),journeys=$('r616Journeys'),sounds=$('r616SoundHeader');
   if(!home||!journeys||!sounds)return false;
+  const sameView=currentView===view;
   currentView=view;
   document.body.dataset.r616View=view;
   home.hidden=view!=='home';journeys.hidden=view!=='journeys';sounds.hidden=view!=='sounds';
@@ -60373,7 +60391,7 @@ function go(view,sub,skipLegacy,keepScroll){
   }
   document.body.classList.toggle('sukun-zikir-tab',view==='zikir'||view==='journeys');
   setNav(view);
-  if(!keepScroll)try{window.scrollTo({top:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}
+  if(!keepScroll&&!sameView)try{window.scrollTo({top:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}
   try{window.dispatchEvent(new CustomEvent('sukun:r616viewchange',{detail:{view,sub:sub||null}}))}catch(e){}
   return true;
 }
@@ -61224,7 +61242,7 @@ body.r616-ui[data-r619-skin="samarkand"] #r616HomeHero::before{
   .r619SkinRow{grid-template-columns:1fr}.r619SkinBtn{min-height:44px}
 }
 @media(max-width:340px){
-  body.r616-ui #r616SettingsBtn{display:none!important}
+  body.r616-ui #r616Topbar .r616IconBtn{min-height:44px!important}
   body.r616-ui #r616BottomNav button span{font-size:8px!important}
 }
 @media(prefers-reduced-motion:reduce){.r619Orb,.r619FreqScene path{animation:none!important}}
@@ -62478,7 +62496,7 @@ body.r588-mode-mini.r588-dock-ready.r431-dock-visible:not(.r433-dock-hidden) #r1
 (()=>{
 'use strict';
 if(window.SukunR699Layout)return;
-const VERSION='r708', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const VERSION='r732', $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const root=document.documentElement, B=document.body;
 const KEY='sukun.dockY.r633';
 let stateSig='',y=0,raf=0,last=null,reason='boot',measures=0,coalesced=0,ro=null,drag=null,quietUntil=0,deferred=false,resizeTimer=0,modeLast='',drawerLast=false,detailsLast=false,anchorLast='',scrollResets=0,rehomeCount=0,violations=0;
@@ -62487,6 +62505,30 @@ const safe=(fn,fallback)=>{try{return fn()}catch(_){return fallback}};
 const visible=e=>{if(!e||e.hidden)return false;const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&+s.opacity>.01&&r.width>1&&r.height>1};
 const rect=e=>{const r=e?.getBoundingClientRect();return r?{x:r.x,y:r.y,width:r.width,height:r.height,top:r.top,bottom:r.bottom,left:r.left,right:r.right}:null};
 const px=n=>Math.round(n*10)/10+'px';
+// r732 — input-aware geometry. The browser owns all native scroll gestures.
+const activeTouches=new Set(),activePointers=new Set();
+let panQuietUntil=0,panTimer=0,panPending=false,panDeferrals=0,panEvents=0,panSequence=0,lastPanReason='boot';
+const panNow=()=>performance.now();
+const panActive=()=>activeTouches.size>0||activePointers.size>0;
+function deferPan(reason){panDeferrals++;panPending=true;lastPanReason=reason;}
+function armPanEnd(){
+ if(panTimer)clearTimeout(panTimer);
+ if(!panPending||document.hidden||panActive())return;
+ panTimer=setTimeout(()=>{panTimer=0;if(panActive()){armPanEnd();return;}if(panNow()<panQuietUntil){armPanEnd();return;}if(panPending){panPending=false;schedule('input-settled');}},Math.max(1,panQuietUntil-panNow()+8));
+}
+function markPan(reason,ms=130){panEvents++;lastPanReason=reason;panQuietUntil=Math.max(panQuietUntil,panNow()+ms);armPanEnd();}
+function endPan(reason){markPan(reason,160);armPanEnd();}
+document.addEventListener('touchstart',e=>{for(const t of e.changedTouches)activeTouches.add(t.identifier);panSequence++;markPan('touchstart',80)},{capture:true,passive:true});
+document.addEventListener('touchmove',()=>markPan('touchmove',160),{capture:true,passive:true});
+for(const type of ['touchend','touchcancel'])document.addEventListener(type,e=>{for(const t of e.changedTouches)activeTouches.delete(t.identifier);endPan(type)},{capture:true,passive:true});
+document.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;activePointers.add(e.pointerId);panSequence++;markPan('pointerdown',80)},{capture:true,passive:true});
+for(const type of ['pointerup','pointercancel'])document.addEventListener(type,e=>{if(e.pointerType==='mouse')return;activePointers.delete(e.pointerId);endPan(type)},{capture:true,passive:true});
+document.addEventListener('scroll',e=>{if(e.target===document||e.target===root||e.target===B||e.target?.closest?.('#r659DockBody,#r674DetailsScroll,#r554DrawerList,#calanSayfa'))markPan('native-scroll',160)},{capture:true,passive:true});
+window.addEventListener('pagehide',()=>{activeTouches.clear();activePointers.clear();panPending=false;clearTimeout(panTimer);panTimer=0},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){activeTouches.clear();activePointers.clear();panQuietUntil=0;clearTimeout(panTimer);panTimer=0}}, {passive:true});
+window.addEventListener('pageshow',()=>{activeTouches.clear();activePointers.clear();panQuietUntil=0;armPanEnd()},{passive:true});
+window.SukunInteractionGateR732=Object.freeze({version:'r732',active:()=>panActive()||panNow()<panQuietUntil,whenIdle:fn=>{if(typeof fn!=='function')return;const wait=()=>{if(panActive()||panNow()<panQuietUntil){setTimeout(wait,Math.max(20,panQuietUntil-panNow()+8));return;}fn()};wait()},snapshot:()=>({version:'r732',touches:activeTouches.size,pointers:activePointers.size,active:panActive(),quietMs:Math.max(0,Math.round(panQuietUntil-panNow())),pending:panPending,deferrals:panDeferrals,events:panEvents,sequence:panSequence,lastReason:lastPanReason})});
+
 // r706: local style guard, no browser prototype patching.
 function r706Style(style,key,value,priority=''){if(!style)return;value=String(value);if(style.getPropertyValue(key)!==value||(style.getPropertyPriority?.(key)||'')!==priority)style.setProperty(key,value,priority)}
 function mode(){return B.classList.contains('r588-mode-max')?'max':B.classList.contains('r588-mode-midi')?'midi':'mini'}
@@ -62518,10 +62560,36 @@ function bindGrip(grip){
 function naturalHeight(shell,body,footer,grip){
  const cs=getComputedStyle(shell),pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0),gap=parseFloat(cs.rowGap)||0;
  const gh=grip?.getBoundingClientRect().height||0,fh=footer?.getBoundingClientRect().height||0;
- // Measure intrinsic content, not the height left over by an old fixed grid.
- let bh=body?.scrollHeight||0;
- if(body){const r=body.getBoundingClientRect();for(const child of body.children){const c=getComputedStyle(child);if(c.display==='none'||c.position==='absolute'||c.position==='fixed')continue;const cr=child.getBoundingClientRect();bh=Math.max(bh,cr.bottom-r.top+body.scrollTop+(parseFloat(c.marginBottom)||0));}}
+ // r732: a read-only intrinsic pass. Never change display, grid rows, overflow or
+ // scrollTop to find content height. A live scrollport must remain stable.
+ let bh=0;
+ if(body){
+  const r=body.getBoundingClientRect(),bs=getComputedStyle(body);
+  const bottomPad=parseFloat(bs.paddingBottom)||0;
+  bh=Math.max(0,parseFloat(bs.paddingTop)||0);
+  for(const child of body.children){
+   const c=getComputedStyle(child);if(c.display==='none'||c.position==='absolute'||c.position==='fixed')continue;
+   const cr=child.getBoundingClientRect();
+   bh=Math.max(bh,cr.bottom-r.top+body.scrollTop+(parseFloat(c.marginBottom)||0)+bottomPad);
+  }
+ }
  return Math.ceil(pad+gh+fh+Math.max(0,bh)+gap*2);
+}
+
+let exitRevealSeq=0;
+function revealTefExit(expected){
+ const token=++exitRevealSeq;
+ const run=()=>{
+  if(token!==exitRevealSeq||document.hidden||!B.classList.contains('sukun-tefekkur-mode')||mode()!==expected||B.classList.contains('r699-drawer-open')||B.classList.contains('r434-inline-details-open'))return;
+  if(window.SukunInteractionGateR732?.active?.()){window.SukunInteractionGateR732.whenIdle(run);return;}
+  const exit=$('tefExitBtn'),dock=$('r170Now');if(!visible(exit)||!visible(dock))return;
+  const a=exit.getBoundingClientRect(),b=dock.getBoundingClientRect();
+  if(a.bottom>b.top-12&&a.top<b.bottom){
+   window.SukunViewportPolicy?.markUserIntent?.('explicit-dock-mode-exit-visibility');
+   window.scrollBy({top:Math.ceil(a.bottom-b.top+12),left:0,behavior:'instant'});
+  }
+ };
+ requestAnimationFrame(()=>{const gate=window.SukunInteractionGateR732;if(gate)gate.whenIdle(run);else run();});
 }
 function clearLegacy(){
  // Current r699 dimensions stay installed while intrinsic content is measured.
@@ -62552,19 +62620,18 @@ document.addEventListener('keydown',e=>{
 },true);
 
 function measure(why='api'){
+ if(panActive()||panNow()<panQuietUntil){deferPan(why);armPanEnd();return last;}
  measures++;reason=why;if(!ensure())return null;
  const host=$('r170Now'),shell=$('r588DockShell'),body=$('r659DockBody'),footer=shell.querySelector(':scope > .r588Mode'),grip=$('r633DockGrip');const v=viewport(),bottom=reserve(v),m=mode(),tef=B.classList.contains('sukun-tefekkur-mode'),drawer=host.classList.contains('r554-alert-open')&&!($('r554AlertDrawer')?.hidden),hidden=B.classList.contains('r433-dock-hidden')||!B.classList.contains('r431-dock-visible')||!B.classList.contains('r591-flow-active');
  r706Style(root.style,'--r633-dock-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r699-bottom',px(v.layoutH-v.bottom+bottom));r706Style(root.style,'--r633-max-h',px(Math.max(1,v.height-bottom-16)));r706Style(root.style,'--r633-vvh',px(v.height));r706Style(root.style,'--r633-safe-top',px(v.top+8));r706Style(root.style,'--r699-top',px(v.top+8));r706Style(root.style,'--r699-viewport-h',px(v.height));r706Style(root.style,'--r699-available',px(Math.max(1,v.height-bottom-16)));
  clearLegacy();modalSync();B.classList.toggle('r699-drawer-open',drawer);B.classList.toggle('r699-details-open',B.classList.contains('r434-inline-details-open'));
  if(hidden){B.classList.remove('r699-keyboard-compact');if(drawer){safe(()=>window.SukunAlertCenter?.close?.(),null);modalSync()}B.classList.remove('r699-dock-active','r699-body-scroll','r699-overflow');r706Style(root.style,'--r699-content-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+12:bottom+12));r706Style(root.style,'--r699-surface-bottom',px(v.layoutH-v.bottom+parseFloat(root.style.getPropertyValue('--r699-content-reserve'))));r706Style(root.style,'--r659-wrap-reserve',px(0));r706Style(root.style,'--r660-peek-reserve',px(visible($('r433DockPeek'))?$('r433DockPeek').getBoundingClientRect().height+bottom+8:62));last={version:VERSION,reason,active:false,hidden:true,mode:m,viewportHeight:v.height,measureCount:measures,rehomeCount,scrollResets};return last}
  B.classList.add('r699-dock-active');
- const changedMode=modeLast!==m;if(changedMode)modeLast=m; // Native scroll clamps only if the new content is shorter.
+ const changedMode=modeLast!==m;if(changedMode)modeLast=m;if(changedMode&&tef)requestAnimationFrame(()=>revealTefExit(m)); // Native scroll clamps only if the new content is shorter.
  const priorScrollTop=body.scrollTop;const cap=Math.max(1,v.height-bottom-16);let need=0,desired=0;const keyboardCompact=v.height<280||(v.height<360&&!!document.activeElement?.matches?.('input,textarea,select,[contenteditable=true]')&&!host.contains(document.activeElement));B.classList.toggle('r699-keyboard-compact',keyboardCompact);
  if(keyboardCompact&&!drawer){need=58;desired=Math.min(cap,58)}else if(drawer){need=Math.max(350,Math.ceil(v.height*.75));desired=Math.min(cap,Math.max(350,Math.min(650,need)));}
  else{
-  B.classList.add('r699-measuring');
   need=naturalHeight(shell,body,footer,grip);
-  B.classList.remove('r699-measuring');
   let profile=m==='mini'?Math.min(cap,Math.max(180,v.height*(tef?.32:.40))):m==='midi'?Math.min(cap,Math.max(240,v.height*(tef?.46:.60))):cap;
   // Short landscape screens must retain a usable reading area even in Max.
   if(v.height<480&&v.width>v.height)profile=Math.min(profile,Math.max(160,Math.floor(v.height*.60)));
@@ -62580,7 +62647,7 @@ function measure(why='api'){
  const actualOverflow=!drawer&&body.scrollHeight>body.clientHeight+2;
  B.classList.toggle('r699-body-scroll',actualOverflow);B.classList.toggle('r699-overflow',actualOverflow);
  // Preserve the user's reading position across a mode switch; let native bounds clamp it.
- if(changedMode&&!drag&&Math.abs(body.scrollTop-priorScrollTop)>.5)body.scrollTop=Math.min(priorScrollTop,Math.max(0,body.scrollHeight-body.clientHeight));
+ // Native scroll position is retained; r725 handles explicit mode-top navigation.
  // Max is not a document lock. The zikir surface may scroll naturally behind the fixed player.
  const card=document.querySelector('#tab-zkr>.card.zCtl');let boundaryTop=null,cardH=0;
  if(tef&&visible(card)){
@@ -62591,7 +62658,7 @@ function measure(why='api'){
  last={version:VERSION,reason,active:true,bottomFit:!free,hidden:false,mode:m,density:'compact',viewportTop:v.top,viewportHeight:v.height,viewportBottom:v.bottom,appliedHeight:desired,intrinsicNeed:need,naturalCap:cap,profileCap:cap,maxHeight:cap,minHeight:0,rawGap:Math.max(0,cap-desired),rawAvailableHeight:cap,overlayPx:0,unusedGapPx:Math.max(0,cap-desired),exactFillPx:Math.max(0,cap-need),wrapReserve:reservePx,bodyOverflowPx:Math.max(0,body.scrollHeight-body.clientHeight),bodyScrollTop:body.scrollTop,drawerOpen:drawer,drawerClientHeight:dm?.clientHeight||0,drawerScrollHeight:dm?.scrollHeight||0,drawerMaxScroll:Math.max(0,(dm?.scrollHeight||0)-(dm?.clientHeight||0)),drawerScrollable:scrollable,bottomReachable:!drawer||!!dm&&dm.clientHeight>0,lastY:y,cardHeight:cardH,boundaryTop,measureCount:measures,rehomeCount,scrollResets,rafCoalesced:coalesced,resizeEvents:0,layoutSyncs:measures,convergence:0,panActive:!!drag,gestureDeferrals:0,viewportScrollIgnored:0,geometryDebounces:0,viewportDebounces:0,at:Date.now()};
  return last;
 }
-function schedule(why='event'){reason=why;if(document.hidden)return;if(drag){deferred=true;return}if(raf){coalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(reason)})}
+function schedule(why='event'){reason=why;if(document.hidden)return;if(drag){deferred=true;return}if(panActive()||panNow()<panQuietUntil){deferPan(why);armPanEnd();return}if(raf){coalesced++;return}raf=requestAnimationFrame(()=>{raf=0;measure(reason)})}
 function reset(announce=false){setY(0,true);schedule('reset');if(announce)safe(()=>window.toast?.('Akış barı güvenli konuma alındı ↕'),null);return true}
 function reflow(why='reflow'){return measure(why)}
 function boundary(){const c=document.querySelector('#tab-zkr>.card.zCtl');return{version:VERSION,cardHeight:last?.cardHeight||0,boundaryTop:last?.boundaryTop||0,kind:last?.active?'dock':'none',gap:8,measures};}
@@ -67485,10 +67552,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r731',date='2026-09-09';
+const build=meta?.content||'r732',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r731',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r732',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68558,6 +68625,45 @@ html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode #tab-zkr>
 html body.r716-shell.r709-sanctuary.r699-layout.r485-controls.r706-neon.sukun-tefekkur-mode:is(body,.r588-mode-max) #tab-zkr>.card.zCtl>#tfRefinedLayout .zCounterActions :is(#autoBtn,#undoBtn,#plusBtn){min-height:44px!important;height:44px!important;max-height:none!important}
 html body.r716-shell.r709-sanctuary.r699-layout.r485-controls.r706-neon.sukun-tefekkur-mode:is(body,.r588-mode-max) #tab-zkr>.card.zCtl>#tfRefinedLayout .tfStatusRow>.tfExitRow>#tefExitBtn{min-height:44px!important;height:44px!important;max-height:none!important}
 </style>
+<style id="r732-interaction-boundary-style">
+/* r732 — explicit native scroll and hidden-layer boundaries. */
+html body.r699-layout:not(.sukun-tefekkur-mode){touch-action:auto!important;overscroll-behavior-y:auto!important}
+html body.r699-layout:not(.sukun-tefekkur-mode)>.wrap{touch-action:pan-y pinch-zoom!important;overflow:visible!important}
+html body.r699-layout:not(.sukun-tefekkur-mode) #tab-zkr{touch-action:pan-y pinch-zoom!important;overflow:visible!important}
+html body.r699-layout #r588DockShell>#r659DockBody{overscroll-behavior-y:auto!important;-webkit-overflow-scrolling:touch!important}
+/* The real drag grip alone opts out of native panning. */
+html body.r699-layout #r633DockGrip{touch-action:none!important}
+/* Legacy sheet ownership is exclusive; a child cannot re-enable a disabled dock. */
+html body.r725-sheet-active #r170Now.r588-authority,
+html body.r725-sheet-active #r170Now.r588-authority #r588DockShell,
+html body.r725-sheet-active #r170Now.r588-authority #r588DockShell *{pointer-events:none!important}
+/* A suspended or closed legacy sheet is never a transparent input shield. */
+html body :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet)[hidden],
+html body :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet)[data-r725-suspended],
+html body :is(#sheetScrim,#r616ToolsScrim,#r616ToolsSheet,#r617ModeScrim,#r617ModeSheet,#r699ModalBackdrop,#r677DetailsBackdrop,#r434InlineDetails,#r554AlertDrawer)[hidden]{display:none!important;pointer-events:none!important}
+html body:not(.r699-drawer-open) #r699ModalBackdrop,
+html body:not(.r434-inline-details-open) #r677DetailsBackdrop{display:none!important;pointer-events:none!important}
+html body:not(.r616-sheet-open) :is(#r616ToolsScrim,#r616ToolsSheet){display:none!important;pointer-events:none!important}
+/* Noninteractive atmosphere is never a hit-test owner. */
+html body :is(#r706Atmosphere,#r706Smoke,#r706Orbit,#r717Scene,#r709SceneArt,#r709SceneVeil,#r716Flames,#nameToastLayer,#breathHalo,#r592DockCurtain){pointer-events:none!important}
+
+/* r732: the settings entry must not disappear on narrow phones. */
+@media(max-width:390px){
+ html body.r616-ui #r616Topbar{gap:4px!important;grid-template-columns:minmax(0,1fr) auto!important}
+ html body.r616-ui .r616Brand{gap:5px!important;min-width:0!important}
+ html body.r616-ui .r616BrandMark{width:34px!important;height:34px!important;border-radius:12px!important}
+ html body.r616-ui .r616BrandText b{font-size:clamp(13px,4vw,18px)!important;letter-spacing:.08em!important}
+ html body.r616-ui .r616TopActions{gap:3px!important;flex-shrink:0!important}
+ html body.r616-ui #r616Topbar .r616IconBtn{display:grid!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;padding:0!important}
+}
+
+/* Keep document controls reachable above the fixed player. */
+html body.r699-layout.sukun-tefekkur-mode #tefExitBtn{scroll-margin-bottom:calc(var(--r699-content-reserve,20px) + 12px)!important}
+html body.r699-layout.sukun-tefekkur-mode #tab-zkr{scroll-padding-bottom:calc(var(--r699-content-reserve,20px) + 12px)!important}
+
+html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode.r588-mode-mini #r170Now.r588-authority #r588DockShell #r659DockBody>.r588Main{display:grid!important;grid-template-columns:30px minmax(0,1fr)!important;min-height:38px!important;height:auto!important;max-height:none!important;gap:7px!important;padding:3px 0!important;margin:0!important;overflow:visible!important}
+html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode.r588-mode-mini #r170Now.r588-authority #r588DockShell #r659DockBody>.r588Progress{display:block!important;height:2px!important;margin:3px 0 0!important}
+</style>
 <script id="r725-dock-boundary-runtime">(()=>{
 'use strict';
 if(window.SukunDockTopBoundary)return;
@@ -68570,6 +68676,7 @@ function reveal(reason='mode'){
  pending=requestAnimationFrame(()=>{
   pending=0;const body=$('r659DockBody'),top=body?.querySelector('.r588Top');
   if(!body||!top||!expected||!B.classList.contains('r588-mode-'+expected)||active.size||document.hidden){skips++;return;}
+  if(window.SukunInteractionGateR732?.active?.()){window.SukunInteractionGateR732.whenIdle(()=>{if(B.classList.contains('r588-mode-'+expected))reveal('settled-'+reason)});return;}
   if(!B.classList.contains('r431-dock-visible')||B.classList.contains('r433-dock-hidden')||$('r170Now')?.classList.contains('r554-alert-open')){skips++;return;}
   // A user mode change is navigation to the top of that mode, not a continuous scroll correction.
   if(body.scrollTop>0){body.scrollTop=0;reveals++;}
@@ -68647,7 +68754,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r731',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r732',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  r728:{version:'r728',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),cardContentVisibility:safe(()=>{const c=document.querySelector('#tab-zkr > .card.zCtl');return c?getComputedStyle(c).contentVisibility:''})},
  r727:{version:'r727',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
  r726:{version:'r726',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
@@ -68663,6 +68770,7 @@ function snapshot(){return Object.freeze({
  truth:safe(()=>window.SukunAudioTruth?.snapshot?.()),
  transport:safe(()=>window.SukunR698Transport?.snapshot?.()),
  taps:safe(()=>window.SukunR688TapAuthority?.snapshot?.()),
+  interactionR732:safe(()=>window.SukunInteractionGateR732?.snapshot?.()),
  layout:safe(()=>window.SukunR699Layout?.snapshot?.()),
  atmosphere:safe(()=>window.SukunAtmosphereR706?.snapshot?.())
 });}

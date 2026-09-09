@@ -1,0 +1,24 @@
+{
+  "build": "r732",
+  "base": "r731",
+  "date": "2026-09-09",
+  "cache": "sukun-r732-20260909a",
+  "htmlSha256": "7e5e9cec58e576e39aa4e358123cabac544f1a6d5ac499a240928662b0e8eeba",
+  "verification": {
+    "sourceVM": 31,
+    "miniVM": 5,
+    "fullHTMLLayout": 4,
+    "interaction390x844": 8,
+    "realAndroid": false
+  },
+  "changes": [
+    "read-only-dock-geometry",
+    "input-aware-measurement",
+    "native-scroll-restoration-guard",
+    "legacy-sheet-inert-release",
+    "same-view-scroll-preservation",
+    "narrow-screen-settings",
+    "tefekkur-exit-reveal",
+    "mini-intrinsic-height-and-current-name"
+  ]
+}

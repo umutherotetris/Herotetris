@@ -1,5 +1,17 @@
 [
   {
+    "v": "r732",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r732 · Dokunma ve kaydırma sırasında akış barı yerleşimi yeniden kurulmaz; ölçüm parmak hareketi bittikten sonra yapılır.",
+      "Eski panel perdeleri ve kapalı modal katmanlar tıklamaları yakalayamaz. Açık panelin scroll ve odak sahipliği korunur.",
+      "Tefekkür, zikir, seyirler ve sesler arasında gezinmede gereksiz sayfa sıfırlamaları kaldırıldı. Ses, kayıt, sayaç ve seyir sahipleri değişmedi.",
+      "320 px ekranlarda gizlenen Ayarlar düğmesi geri getirildi; üstteki üç ikon 44 px dokunma alanını korur.",
+      "Mini/Midi/Max geçişi sonrası tefekkür çıkışı oyuncunun altında kalırsa yalnız kullanıcı kip değiştirdiğinde görünür konuma getirilir; doğal kaydırma ve ses durumuna müdahale edilmez.",
+      "Tefekkür Mini’de eski kuralın gizlediği aktif isim, ses kaynağı ve ince ilerleme satırı yeniden görünür."
+    ]
+  },
+  {
     "v": "r731",
     "t": "9 Eylül 2026",
     "b": [

@@ -1,8 +1,8 @@
-/* SÜKÛN r731 — Containment Conflict Resolution & Package Hygiene */
+/* SÜKÛN r732 — Containment Conflict Resolution & Package Hygiene */
 'use strict';
 
-const SURUM = 'r731';
-const CACHE = 'sukun-r731-20260909a';
+const SURUM = 'r732';
+const CACHE = 'sukun-r732-20260909a';
 
 const CORE = [
   './nero.html',
@@ -21,7 +21,7 @@ const CORE = [
   './assets/ui-exit-r722.svg',
   './assets/ui-speaker-r722.svg'
 ];
-/* r731: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
+/* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
 const OPTIONAL = [
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r731__.json';
+const BUILD_MARKER='./__sukun_build_r732__.json';
 
-const NOTLAR = ["r731 · Mini akış barı tek satırlı başlık, iki satırlı aktif zikir bilgisi ve kompakt sürükleme alanıyla toparlandı; ayrıntılı istatistikler Midi/Max’ta korunur.", "Dar ekranlarda Tefekkür ikonu ve durum noktası küçülürken bildirim/oynatma dokunma alanları 44 px kalır. Tefekkür sayaç eylemleri de en az 44 px yüksekliğindedir.", "Tefekkür girişi tekrar çağrıldığında ikinci geçiş başlatılmaz. Çıkış ses ve sayaç sahiplerine dokunmaz; yeni başlangıç yalnız mevcut oynatma komutlarıyla yapılır."];
+const NOTLAR = ["r732 · Dokunma ve kaydırma sırasında akış barı yerleşimi yeniden kurulmaz; ölçüm parmak hareketi bittikten sonra yapılır.", "Eski panel perdeleri ve kapalı modal katmanlar tıklamaları yakalayamaz. Açık panelin scroll ve odak sahipliği korunur.", "Tefekkür, zikir, seyirler ve sesler arasında gezinmede gereksiz sayfa sıfırlamaları kaldırıldı. Ses, kayıt, sayaç ve seyir sahipleri değişmedi.", "320 px ekranlarda gizlenen Ayarlar düğmesi geri getirildi; üstteki üç ikon 44 px dokunma alanını korur.", "Mini/Midi/Max geçişi sonrası tefekkür çıkışı oyuncunun altında kalırsa yalnız kullanıcı kip değiştirdiğinde görünür konuma getirilir; doğal kaydırma ve ses durumuna müdahale edilmez.", "Tefekkür Mini’de eski kuralın gizlediği aktif isim, ses kaynağı ve ince ilerleme satırı yeniden görünür."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
