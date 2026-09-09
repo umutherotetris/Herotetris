@@ -1,8 +1,8 @@
-/* SÜKÛN r730 — Containment Conflict Resolution & Package Hygiene */
+/* SÜKÛN r731 — Containment Conflict Resolution & Package Hygiene */
 'use strict';
 
-const SURUM = 'r730';
-const CACHE = 'sukun-r730-20260909a';
+const SURUM = 'r731';
+const CACHE = 'sukun-r731-20260909a';
 
 const CORE = [
   './nero.html',
@@ -21,7 +21,7 @@ const CORE = [
   './assets/ui-exit-r722.svg',
   './assets/ui-speaker-r722.svg'
 ];
-/* r730: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
+/* r731: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
 const OPTIONAL = [
@@ -33,9 +33,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r730__.json';
+const BUILD_MARKER='./__sukun_build_r731__.json';
 
-const NOTLAR = ["r730 · Feyz kartları ve üst/alt barları daha saydam; sahnenin koyu perdesi ve yüzey bulanıklığı azaltıldı.", "Mini akış barının üst sırasında Tefekkür düğmesi; mevcut Tefekkür giriş işlevini kullanır. Oynat/durdur sahipliği korunur."];
+const NOTLAR = ["r731 · Mini akış barı tek satırlı başlık, iki satırlı aktif zikir bilgisi ve kompakt sürükleme alanıyla toparlandı; ayrıntılı istatistikler Midi/Max’ta korunur.", "Dar ekranlarda Tefekkür ikonu ve durum noktası küçülürken bildirim/oynatma dokunma alanları 44 px kalır. Tefekkür sayaç eylemleri de en az 44 px yüksekliğindedir.", "Tefekkür girişi tekrar çağrıldığında ikinci geçiş başlatılmaz. Çıkış ses ve sayaç sahiplerine dokunmaz; yeni başlangıç yalnız mevcut oynatma komutlarıyla yapılır."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

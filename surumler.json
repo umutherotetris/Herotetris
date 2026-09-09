@@ -1,5 +1,14 @@
 [
   {
+    "v": "r731",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r731 · Mini akış barı tek satırlı başlık, iki satırlı aktif zikir bilgisi ve kompakt sürükleme alanıyla toparlandı; ayrıntılı istatistikler Midi/Max’ta korunur.",
+      "Dar ekranlarda Tefekkür ikonu ve durum noktası küçülürken bildirim/oynatma dokunma alanları 44 px kalır. Tefekkür sayaç eylemleri de en az 44 px yüksekliğindedir.",
+      "Tefekkür girişi tekrar çağrıldığında ikinci geçiş başlatılmaz. Çıkış ses ve sayaç sahiplerine dokunmaz; yeni başlangıç yalnız mevcut oynatma komutlarıyla yapılır."
+    ]
+  },
+  {
     "v": "r730",
     "t": "9 Eylül 2026",
     "b": [
