@@ -1,5 +1,13 @@
 [
   {
+    "v": "r730",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r730 · Feyz kartları ve üst/alt barları daha saydam; sahnenin koyu perdesi ve yüzey bulanıklığı azaltıldı.",
+      "Mini akış barının üst sırasında Tefekkür düğmesi; mevcut Tefekkür giriş işlevini kullanır. Oynat/durdur sahipliği korunur."
+    ]
+  },
+  {
     "v": "r729",
     "t": "9 Eylül 2026",
     "b": [

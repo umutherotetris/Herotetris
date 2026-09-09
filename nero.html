@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r729">
+<meta name="sukun-build" content="r730">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r729">
+<link rel="manifest" href="./manifest.webmanifest?v=r730">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r729</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.25 — build 2026-09-09-r730</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
     <button id="r625DiagQuick" type="button">Tanı · Test · JSON Rapor</button>
   </footer>
 </div>
@@ -6533,6 +6533,14 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r730",
+    "t": "9 Eylül 2026",
+    "b": [
+      "r730 · Feyz kartları ve üst/alt barları daha saydam; sahnenin koyu perdesi ve yüzey bulanıklığı azaltıldı.",
+      "Mini akış barının üst sırasında Tefekkür düğmesi; mevcut Tefekkür giriş işlevini kullanır. Oynat/durdur sahipliği korunur."
+    ]
+  },
   {
     "v": "r729",
     "t": "9 Eylül 2026",
@@ -26047,7 +26055,7 @@ function neYenilendi(notlar,basligiEk){
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r729';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r730';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -56742,7 +56750,7 @@ function ensure(){
   if(!shell){
     shell=document.createElement('div');shell.id='r588DockShell';shell.setAttribute('aria-label','SÜKÛN canlı akış barı');
     shell.innerHTML=`
-      <div class="r588Top"><div class="r588Identity"><span class="r588Brand">SÜKÛN</span><span id="r588Live" class="ready">HAZIR</span></div><div class="r588Alerts" aria-label="Akış bildirimleri"><button class="r588Alert esma" data-r588-alert="esma" aria-label="Esmâ bildirimleri">✦<b hidden>0</b></button><button class="r588Alert berhet" data-r588-alert="berhet" aria-label="Berhetiyye bildirimleri">۞<b hidden>0</b></button><button class="r588Alert warning" data-r588-alert="warning" aria-label="Uyarılar">!<b hidden>0</b></button></div></div>
+      <div class="r588Top"><div class="r588Identity"><button type="button" id="r730MiniTef" aria-label="Tefekkür moduna geç" title="Tefekkür moduna geç"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 2C11 8 5 10 5 15a7 7 0 0 0 14 0c0-5-6-7-7-13Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 10c0 4-3 4-3 7a3 3 0 0 0 6 0c0-3-3-3-3-7Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Tefekkür</span></button><span class="r588Brand">SÜKÛN</span><span id="r588Live" class="ready">HAZIR</span></div><div class="r588Alerts" aria-label="Akış bildirimleri"><button class="r588Alert esma" data-r588-alert="esma" aria-label="Esmâ bildirimleri">✦<b hidden>0</b></button><button class="r588Alert berhet" data-r588-alert="berhet" aria-label="Berhetiyye bildirimleri">۞<b hidden>0</b></button><button class="r588Alert warning" data-r588-alert="warning" aria-label="Uyarılar">!<b hidden>0</b></button></div></div>
       <div class="r588Main"><span class="r588Signal" aria-hidden="true"></span><div class="r588Text"><b id="r588Title">SÜKÛN</b><span id="r588Source">—</span><span id="r588State" hidden></span><span id="r588Current"></span></div></div>
       <div class="r588Stats"><span class="r588Stat core"><i>İLERLEME</i><b id="r588ProgressText">—</b></span><span class="r588Stat core"><i>KALAN</i><b id="r588Remain">—</b></span><span class="r588Stat core"><i>SEYİR</i><b id="r588Journey">—</b></span><span class="r588Stat freq r588MidOnly"><i>FREKANS</i><b id="r588Freq">Kapalı</b></span><span class="r588Stat calc r588MidOnly"><i>HESAP</i><b id="r588Calc">—</b></span><span class="r588Stat r588MidOnly"><i>TEMPO</i><b id="r588Tempo">—</b></span></div>
       <div class="r588Meta r588MaxOnly"><span><em>TÜR</em><b id="r588Type">—</b></span><span class="r698RedundantState" hidden><em>DURUM</em><b id="r588MetaState">—</b></span><span><em>KATMAN</em><b id="r588LayerCount">—</b></span><span><em>SES</em><b id="r588Volume">—</b></span><span><em>SÜRE</em><b id="r588Time">—</b></span><span><em>ÖĞE</em><b id="r588Item">—</b></span></div>
@@ -56766,6 +56774,16 @@ function r682Journey(){
   return null;
 }
 function onClick(e){
+  if(e.target.closest('#r730MiniTef')){
+    e.preventDefault();e.stopPropagation();
+    if(!document.body.classList.contains('sukun-tefekkur-mode')){
+      const enter=window.SUKUN_TEFEKKUR?.enter;
+      if(typeof enter==='function')Promise.resolve(enter()).catch(()=>window.toast?.('Tefekkür açılamadı. Yeniden deneyin.'));
+      else window.toast?.('Tefekkür henüz hazır değil.');
+    }
+    return;
+  }
+
   const m=e.target.closest('[data-r588-mode]');if(m){e.preventDefault();setMode(m.dataset.r588Mode,true);try{navigator.vibrate?.(7)}catch(_){ }return}
   const a=e.target.closest('[data-r588-alert]');if(a){e.preventDefault();try{const ntf=document.querySelector('.tab[data-t="ntf"]');const centerActive=!!ntf?.classList.contains('act');if(centerActive)window.SukunAlertCenter?.openCenter?.(a.dataset.r588Alert);else window.SukunAlertCenter?.toggle?.(a.dataset.r588Alert)}catch(_){ }return}
   if(e.target.closest('#r588Play')){
@@ -67456,10 +67474,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r729',date='2026-09-09';
+const build=meta?.content||'r730',date='2026-09-09';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r729',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r730',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68448,6 +68466,33 @@ html body.r725-boundary.r699-layout.r588-dock-ready #r170Now.r588-authority:not(
 html body :is(#temaSheet,#helpSheet,#recSheet,#customSoundSheet,#micHelpSheet,#logSheet,#sozSheet,#dlEditSheet,#kurSheet)[hidden]{display:none!important;pointer-events:none!important}
 
 </style>
+<style id="r730-feyz-glass-mini">
+/* Feyz glass: tint the surface, never fade its text or controls. */
+html body.r716-shell{
+ --feyz-surface:linear-gradient(155deg,rgba(7,39,48,.38),rgba(5,21,35,.56));
+ --r616-surface:rgba(6,31,42,.48);--r619-surface:rgba(6,31,42,.48);
+ --r717-veil:linear-gradient(180deg,rgba(1,10,17,.08),rgba(2,15,25,.14) 40%,rgba(2,12,22,.32));
+}
+html body.r716-shell :is(#r616Topbar,#r616BottomNav){background:linear-gradient(130deg,rgba(7,37,47,.46),rgba(4,19,31,.64))!important;backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important}
+html body.r716-shell :is(.r616Card,.r616Fold,.r616JourneyRow,.r616JourneyCard,.card:not(#ns *),.r616Stat){backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html body.r716-shell :is(.r616Secondary,.r616Shortcut,.r616Tool){background:linear-gradient(135deg,rgba(7,42,52,.42),rgba(4,27,42,.6))!important}
+html body.r716-shell #r616HomeHero{background:linear-gradient(165deg,rgba(3,19,32,.08),rgba(3,18,30,.45) 80%)!important}
+html body.r716-shell:is(body,.sukun-tefekkur-mode) #r170Now.r588-authority>#r588DockShell{background:linear-gradient(145deg,rgba(8,35,45,.5),rgba(5,18,32,.68))!important;backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important}
+html body.r716-shell.r662-coupled-dock #r588DockShell>.r588Mode{background:rgba(5,20,31,.42)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html body #r588DockShell #r730MiniTef{display:none!important}
+html body.r588-mode-mini:not(.sukun-tefekkur-mode) #r588DockShell #r730MiniTef{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;
+ flex:0 0 auto!important;min-width:82px!important;min-height:44px!important;padding:4px 7px!important;
+ border:1px solid #d2b67988!important;border-radius:13px!important;background:linear-gradient(120deg,#075547b8,#113e65c2)!important;
+ color:#f4e6bd!important;font:600 11px/1.2 system-ui!important;cursor:pointer;touch-action:manipulation!important;
+}
+html body.r588-mode-mini:not(.sukun-tefekkur-mode) #r588DockShell .r588Identity{flex-wrap:wrap!important;gap:4px!important;overflow:visible!important}
+html body.r588-mode-mini:not(.sukun-tefekkur-mode) #r588DockShell .r588Brand{display:none!important}
+html body #r588DockShell #r730MiniTef :is(svg,span){pointer-events:none!important}
+html body #r588DockShell #r730MiniTef:focus-visible{outline:2px solid #f4ddb0!important;outline-offset:-3px!important}
+html body.r716-shell.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode:is(body,.r588-mode-max) #tab-zkr>.card.zCtl>#tfRefinedLayout :is(#r706AtmosphereControls,.zCounterSide,#r470VoiceSource){background:rgba(5,27,38,.48)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html body.r716-shell.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode:is(body,.r588-mode-max) #tab-zkr>.card.zCtl>#tfRefinedLayout #r494TefNavSlot .r494NavBtn{background:rgba(6,29,39,.52)!important}
+</style>
 <script id="r725-dock-boundary-runtime">(()=>{
 'use strict';
 if(window.SukunDockTopBoundary)return;
@@ -68537,7 +68582,7 @@ try{new PerformanceObserver(list=>{for(const x of list.getEntries()){
 }}).observe({type:'longtask',buffered:false})}catch(e){}
 armLag();
 function snapshot(){return Object.freeze({
- version:VERSION,revision:'r729',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
+ version:VERSION,revision:'r730',build:document.querySelector('meta[name="sukun-build"]')?.content||'',
  r728:{version:'r728',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.()),cardContentVisibility:safe(()=>{const c=document.querySelector('#tab-zkr > .card.zCtl');return c?getComputedStyle(c).contentVisibility:''})},
  r727:{version:'r727',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
  r726:{version:'r726',flow:safe(()=>window.SukunZCtlFlow?.snapshot?.())},
