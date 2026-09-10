@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r765">
+<meta name="sukun-build" content="r766">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest?v=r765">
@@ -71681,5 +71681,241 @@ window.SukunR765ActiveNameGlass={version:'r765',sync:syncAll};
 })();
 </script>
 
+<style id="sukun-r766-name-in-glass-host-fix">
+/* r766 — Aktif Berhetiyye/Esmâ ismini üst cam perdenin içine gerçekten al.
+   Sorun: isim alt sahnede boşta görünüyordu. Çözüm: zAr kabı tek cam host olur;
+   Arapça satır ve aktif isim aynı lüks cam perdenin içinde yaşar. */
+body.sukun-zikir-tab #zStage>.zAr,
+body.sukun-tefekkur-mode #zStage>.zAr{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  width:min(92%,660px)!important;
+  max-width:min(92%,660px)!important;
+  margin:0 auto 12px!important;
+  padding:12px 18px 10px!important;
+  border-radius:22px!important;
+  direction:ltr!important;
+  font-family:inherit!important;
+  font-size:inherit!important;
+  line-height:normal!important;
+  text-align:center!important;
+  background:
+    linear-gradient(180deg,rgba(10,42,52,.20),rgba(7,23,32,.12))!important;
+  border:1px solid rgba(232,197,120,.18)!important;
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.12)!important;
+  backdrop-filter:blur(18px) saturate(1.08)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.08)!important;
+  overflow:hidden!important;
+}
+body.sukun-zikir-tab #zStage>.zAr::before,
+body.sukun-tefekkur-mode #zStage>.zAr::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 32%);
+  opacity:.58;
+}
+body.sukun-zikir-tab #zStage>.zAr>.r766ArabicWrap,
+body.sukun-tefekkur-mode #zStage>.zAr>.r766ArabicWrap{
+  position:relative!important;
+  z-index:1!important;
+  width:100%!important;
+  display:block!important;
+  direction:rtl!important;
+  font-family:var(--fA)!important;
+  font-size:clamp(23px,6.2vw,34px)!important;
+  line-height:1.26!important;
+  letter-spacing:0!important;
+  color:var(--goldh)!important;
+  text-align:center!important;
+  text-shadow:0 2px 18px rgba(232,197,120,.16),0 0 24px rgba(73,208,191,.12)!important;
+}
+body.sukun-zikir-tab #zStage>.zAr>.r766ArabicWrap.long,
+body.sukun-tefekkur-mode #zStage>.zAr>.r766ArabicWrap.long{
+  font-size:clamp(18px,5vw,26px)!important;
+  line-height:1.48!important;
+}
+body.sukun-zikir-tab #zStage>.zAr>.r766ArabicWrap.vlong,
+body.sukun-tefekkur-mode #zStage>.zAr>.r766ArabicWrap.vlong{
+  font-size:clamp(16px,4.2vw,22px)!important;
+  line-height:1.56!important;
+}
+body.sukun-zikir-tab #zStage>.zAr>#r611CurrentZikirHero:not([hidden]),
+body.sukun-tefekkur-mode #zStage>.zAr>#r611CurrentZikirHero:not([hidden]){
+  position:relative!important;
+  z-index:1!important;
+  order:2!important;
+  display:grid!important;
+  width:100%!important;
+  margin:0!important;
+  padding:1px 2px 0!important;
+  grid-template-columns:minmax(18px,1fr) auto minmax(0,max-content) auto minmax(18px,1fr)!important;
+  column-gap:7px!important;
+  row-gap:3px!important;
+  align-items:center!important;
+  justify-items:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+body.sukun-zikir-tab #zStage>#r611CurrentZikirHero:not([hidden]),
+body.sukun-tefekkur-mode #zStage>#r611CurrentZikirHero:not([hidden]){
+  display:none!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirName,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirName{
+  max-width:min(84vw,560px)!important;
+  min-width:0!important;
+  padding:0!important;
+  border:0!important;
+  background:linear-gradient(96deg,#fff8e2 0%,#f0d791 28%,#9df3d8 55%,#fff4d1 78%,#ecd089 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  color:transparent!important;
+  font-size:var(--r766-name-size,clamp(22px,6vw,38px))!important;
+  line-height:1.06!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  letter-spacing:.013em!important;
+  text-wrap:nowrap!important;
+  text-align:center!important;
+  filter:drop-shadow(0 0 8px rgba(231,198,112,.18)) drop-shadow(0 0 14px rgba(87,231,187,.11))!important;
+  text-shadow:none!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirHero.r611-long #r611CurrentZikirName,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero.r611-long #r611CurrentZikirName{
+  font-size:var(--r766-name-size,clamp(18px,5.3vw,30px))!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirHero.r611-vlong #r611CurrentZikirName,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero.r611-vlong #r611CurrentZikirName{
+  font-size:var(--r766-name-size,clamp(15px,4.4vw,24px))!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirHero .r611HeroOrn,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero .r611HeroOrn{
+  color:rgba(226,198,121,.72)!important;
+  font-size:16px!important;
+  opacity:.78!important;
+  text-shadow:0 0 10px rgba(226,198,121,.09)!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirHero .r611HeroLine,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero .r611HeroLine{
+  min-width:16px!important;
+  opacity:.48!important;
+  background:linear-gradient(90deg,transparent,rgba(229,197,116,.28))!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirHero .r611HeroLine:nth-of-type(2),
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero .r611HeroLine:nth-of-type(2){
+  background:linear-gradient(90deg,rgba(229,197,116,.28),transparent)!important;
+}
+body.sukun-zikir-tab #zStage #r611CurrentZikirSub,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirSub{
+  margin-top:-1px!important;
+  font-size:8px!important;
+  letter-spacing:.10em!important;
+  color:color-mix(in srgb,#94ecd0 48%,var(--mut))!important;
+  opacity:.90!important;
+}
+body.sukun-zikir-tab:has(#zStage .zAr>#r611CurrentZikirHero:not([hidden])) .zCtl>.zCountTitle,
+body.sukun-tefekkur-mode:has(#zStage .zAr>#r611CurrentZikirHero:not([hidden])) .zCtl>.zCountTitle{
+  display:none!important;
+}
+@media (max-width:430px){
+  body.sukun-zikir-tab #zStage>.zAr,
+  body.sukun-tefekkur-mode #zStage>.zAr{padding:11px 12px 9px!important;gap:6px!important;border-radius:19px!important}
+  body.sukun-zikir-tab #zStage #r611CurrentZikirName,
+  body.sukun-tefekkur-mode #zStage #r611CurrentZikirName{max-width:min(86vw,520px)!important}
+}
+@media (max-width:360px){
+  body.sukun-zikir-tab #zStage #r611CurrentZikirHero .r611HeroOrn,
+  body.sukun-tefekkur-mode #zStage #r611CurrentZikirHero .r611HeroOrn{display:none!important}
+  body.sukun-zikir-tab #zStage>.zAr>#r611CurrentZikirHero:not([hidden]),
+  body.sukun-tefekkur-mode #zStage>.zAr>#r611CurrentZikirHero:not([hidden]){grid-template-columns:1fr minmax(0,max-content) 1fr!important}
+  body.sukun-zikir-tab #zStage #r611CurrentZikirName,
+  body.sukun-tefekkur-mode #zStage #r611CurrentZikirName{grid-column:2!important}
+}
+</style>
+<script id="sukun-r766-name-in-glass-host-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R766_NAME_IN_GLASS__)return;
+window.__SUKUN_R766_NAME_IN_GLASS__=1;
+const EVT=['sukun:zikirselectionchange','sukun:zikirnav','sukun:tabchange','sukun:journey-advance','pageshow'];
+function ensureHost(){
+  const stage=document.getElementById('zStage');
+  const hero=document.getElementById('r611CurrentZikirHero');
+  const ar=document.getElementById('zAr');
+  if(!stage||!hero||!ar)return;
+  let wrap=document.getElementById('r766ArabicWrap');
+  if(!wrap){
+    wrap=document.createElement('div');
+    wrap.id='r766ArabicWrap';
+    wrap.className='r766ArabicWrap';
+    const nodes=[...ar.childNodes].filter(n=>!(n.nodeType===1&&n.id==='r611CurrentZikirHero'));
+    if(nodes.length===0){
+      wrap.textContent=(ar.textContent||'').trim();
+      ar.textContent='';
+    }else{
+      nodes.forEach(n=>wrap.appendChild(n));
+    }
+    ar.prepend(wrap);
+  }else{
+    [...ar.childNodes].forEach(n=>{
+      if(n===wrap||n===hero)return;
+      wrap.appendChild(n);
+    });
+  }
+  wrap.classList.toggle('long',hero.classList.contains('r611-long'));
+  wrap.classList.toggle('vlong',hero.classList.contains('r611-vlong'));
+  if(hero.parentNode!==ar)ar.appendChild(hero);
+  ar.classList.add('r766-hero-host');
+  stage.classList.add('r766-hero-in-zar');
+  try{window.SukunCurrentZikirHero?.sync?.()}catch(e){}
+}
+function fit(){
+  const row=document.getElementById('r740HeroHeading');
+  const name=document.getElementById('r611CurrentZikirName');
+  const host=document.getElementById('r766ArabicWrap')||document.getElementById('zAr');
+  if(!row||!name||!name.textContent||!row.getClientRects().length)return;
+  if(!fit.ctx)fit.ctx=document.createElement('canvas').getContext('2d');
+  const ctx=fit.ctx;if(!ctx)return;
+  const cs=getComputedStyle(name);
+  const family=cs.fontFamily||'Cormorant Garamond, serif';
+  const weight=cs.fontWeight||'600';
+  const letterSpacing=parseFloat(cs.letterSpacing)||0;
+  const text=name.textContent.trim();
+  const width=row.clientWidth||host?.clientWidth||row.getBoundingClientRect().width||0;
+  if(width<=0)return;
+  const available=Math.max(72,width-36);
+  let size=Math.min(38,Math.max(15,width*0.082));
+  const min=14;
+  const measure=n=>{
+    ctx.font=`${weight} ${n}px ${family}`;
+    return ctx.measureText(text).width + Math.max(0,[...text].length-1)*letterSpacing;
+  };
+  while(size>min&&measure(size)>available)size=Math.max(min,size-.5);
+  name.style.setProperty('--r766-name-size',size.toFixed(1)+'px');
+  name.title=text;
+}
+function sync(){ensureHost();requestAnimationFrame(fit);setTimeout(fit,60)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});
+else sync();
+EVT.forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(sync),{passive:true}));
+window.addEventListener('resize',()=>requestAnimationFrame(fit),{passive:true});
+const mo=new MutationObserver(()=>requestAnimationFrame(sync));
+setTimeout(()=>{const ar=document.getElementById('zAr');if(ar)mo.observe(ar,{childList:true,subtree:false});},200);
+setTimeout(sync,320);
+setTimeout(sync,1200);
+window.SukunR766NameInGlass={version:'r766',sync};
+})();
+</script>
 </body>
 </html>
