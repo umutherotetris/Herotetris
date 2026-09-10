@@ -1,0 +1,11 @@
+{
+  "version": "r754",
+  "base": "r753",
+  "title": "SÜKÛN r754 — Berhetiyye derin Tefekkür, kaynak sıçrama ve premium tema",
+  "summary": [
+    "Tefekkür ekranında aktif Berhetiyye ismi kaynak görselindeki unsur ve ruhânî damar bağlamıyla daha derin gösteriliyor",
+    "İlgili kaynak sayfasına tek dokunuşla geçiş eklendi",
+    "Berhetiyye için genel SÜKÛN temasından ayrışan premium görsel dil eklendi",
+    "Kaynak görsel ile uygulama içi unsur kaydı çelişiyorsa birleştirilmeden ayrı katmanlar olarak gösteriliyor"
+  ]
+}

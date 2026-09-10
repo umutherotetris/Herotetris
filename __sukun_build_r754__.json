@@ -1,0 +1,15 @@
+{
+  "version": "r754",
+  "build": "r754",
+  "base": "r753",
+  "date": "2026-09-10",
+  "type": "berhetiyye-deep-theme-source-jumps",
+  "cache": "sukun-r754-20260910a",
+  "notes": [
+    "Tefekkür ekranına aktif Berhetiyye kaynak bağlamı eklendi",
+    "İsim matrisi, Element/Esîr ve 7 Ruhânî Damar kaynak sayfalarına tek dokunuş eklendi",
+    "Berhetiyye seçili durum için ayrı premium tema dili eklendi",
+    "Görsel kaynak eşlemesi ile uygulamanın mevcut unsur verisi çakışırsa ikisi ayrı gösteriliyor",
+    "HTML meta, manifest, service worker ve build marker r754 olarak senkronlandı"
+  ]
+}

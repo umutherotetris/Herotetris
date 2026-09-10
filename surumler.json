@@ -1,5 +1,23 @@
 [
   {
+    "version": "r754",
+    "date": "2026-09-10",
+    "title": "Berhetiyye derin Tefekkür + kaynak sıçrama + premium tema",
+    "base": "r753"
+  },
+  {
+    "version": "r752",
+    "date": "2026-09-10",
+    "title": "Berhetiyye premium kaynak kartı entegrasyonu",
+    "base": "r751"
+  },
+  {
+    "version": "r751",
+    "date": "2026-09-10",
+    "title": "Aktif isim tek satır düzeltmesi",
+    "base": "r750"
+  },
+  {
     "version": "r750",
     "date": "2026-09-10",
     "title": "Durdur düğmesi renk düzeltmesi",

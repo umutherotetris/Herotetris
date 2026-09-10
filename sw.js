@@ -1,8 +1,8 @@
-/* SÜKÛN r750 — Stop button color fix */
+/* SÜKÛN r754 — Berhetiyye deep theme + source jumps */
 'use strict';
 
-const SURUM = 'r750';
-const CACHE = 'sukun-r750-20260910a';
+const SURUM = 'r754';
+const CACHE = 'sukun-r754-20260910a';
 
 const CORE = [
   './nero.html',
@@ -33,13 +33,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r749__.json';
+const BUILD_MARKER='./__sukun_build_r754__.json';
 
 const NOTLAR = [
-  "r749 · Berhetiyye kaynak PDF'sinin 15 görsel sayfası yalnız kilitli kasa açıldıktan sonra yüklenen atlas olarak eklendi.",
-  "r749 · Esmâ Kartları Diriliş r50 içeriği mevcut 99'luk sıra değiştirilmeden eşleşen isimlerin bilgi kartlarına ve Esmâ Kaynak Derinliği bölümüne bağlandı.",
-  "r749 · Kaynak bütünlüğü: r50 dosyasında Allah iki kez, Ehad ve Vâlî ayrı kart olmadan bulunduğu için çekirdek sıra değiştirilmedi; 97 mevcut isim kaynakla zenginleştirildi.",
-  "r748 Service Worker sözleşme onarımı ve r746/r747 görsel katmanları korunur."
+  "r754 · Tefekkür ekranına aktif Berhetiyye isminin görsel kaynak grubu, 7 Ruhânî Damar basamağı ve mevcut uygulama verisi birlikte bağlandı.",
+  "r754 · İlgili isim matrisine, Element/Esîr haritasına ve 7 Ruhânî Damar sayfasına tek dokunuşla kaynak görseli açma eklendi.",
+  "r754 · Berhetiyye seçiliyken uygulamanın genel tasarımından ayrışan mor-camgöbeği-altın premium tema dili etkinleşir; kaynak ve uygulama katmanları çakışırsa ikisi ayrı etiketlenir.",
+  "r754 · HTML/manifest/SW/build marker atomik olarak r754'e senkronlandı."
 ];
 
 function buildOfHtml(text){
