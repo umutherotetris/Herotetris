@@ -1,5 +1,11 @@
 [
   {
+    "version": "r750",
+    "date": "2026-09-10",
+    "title": "Durdur düğmesi renk düzeltmesi",
+    "base": "r749"
+  },
+  {
     "v": "r749",
     "t": "10 Eylül 2026",
     "b": [

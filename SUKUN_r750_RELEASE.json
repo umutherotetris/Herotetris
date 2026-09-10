@@ -1,0 +1,10 @@
+{
+  "version": "r750",
+  "base": "r749",
+  "title": "SÜKÛN r750 — Durdur düğmesi renk düzeltmesi",
+  "summary": [
+    "Global DURDUR düğmesinin rengi düzeltildi",
+    "Metin ve ikon görünürlüğü güçlendirildi",
+    "SW/manifest/build sürümleri atomik biçimde r750 olarak güncellendi"
+  ]
+}

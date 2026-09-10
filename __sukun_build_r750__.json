@@ -1,0 +1,13 @@
+{
+  "version": "r750",
+  "build": "r750",
+  "base": "r749",
+  "date": "2026-09-10",
+  "type": "stop-button-color-fix",
+  "cache": "sukun-r750-20260910a",
+  "notes": [
+    "Üst paneldeki global DURDUR düğmesinin premium temayla çakışan mor tonu düzeltildi",
+    "Stop butonu kırmızı-gül gradyanına, daha okunur metne ve daha belirgin ikona geçirildi",
+    "SW/manifest/html sürümleri r750 olarak senkronlandı"
+  ]
+}

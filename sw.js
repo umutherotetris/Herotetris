@@ -1,8 +1,8 @@
-/* SÜKÛN r749 — Source atlas integration */
+/* SÜKÛN r750 — Stop button color fix */
 'use strict';
 
-const SURUM = 'r749';
-const CACHE = 'sukun-r749-20260910a';
+const SURUM = 'r750';
+const CACHE = 'sukun-r750-20260910a';
 
 const CORE = [
   './nero.html',
