@@ -1,0 +1,98 @@
+{
+  "build": "r760",
+  "version": "r760",
+  "base": "r759",
+  "date": "2026-09-10",
+  "cache": "sukun-r760-20260910a",
+  "notes": [
+    "Tefekkür yüzeyleri saydamlaştırıldı; ana sahne body boyasının üzerine, içeriklerin arkasına alındı.",
+    "Tesbih, nur katmanları ve ilerleme çemberi ortak merkeze hizalandı. Yeşil ilerleme yayı mor-maviye dönüştürüldü.",
+    "SÜKÛN başlığının üstündeki dekoratif simge kaldırıldı; sayaç ve oynatma işlevleri korunur."
+  ],
+  "htmlSha256": "a1c10987aace927f8c7e045ad97bd97c0712c7828328e8438fc6ec707caab494",
+  "verification": {
+    "build": "r760",
+    "at": "2026-09-10T04:17:33.307Z",
+    "kind": "source-vm-regression",
+    "total": 174,
+    "verification": {
+      "source": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      },
+      "mini": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "restart": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "failure": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "transport": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "ring": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "audit": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "storage": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "settings_queue": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "studio": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "ui": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "visual_sources": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "repairs": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "seal": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      }
+    },
+    "testedFiles": {
+      "nero.html": "a1c10987aace927f8c7e045ad97bd97c0712c7828328e8438fc6ec707caab494",
+      "sw.js": "2db4a6968c4703f58307e8658d8511ca6e1a8a36201dd8248ba86d9c8f542516",
+      "manifest.webmanifest": "c320fe3d6313d7e5993a9396469f9a039548563becda9b4c6d9d25fe279c062a"
+    },
+    "browserRun": false,
+    "physicalDeviceRun": false
+  }
+}

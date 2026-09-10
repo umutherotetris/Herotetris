@@ -1,8 +1,8 @@
-/* SÜKÛN r759 — Nur visual merge and runtime repairs */
+/* SÜKÛN r760 — Nur visual merge and runtime repairs */
 'use strict';
 
-const SURUM = 'r759';
-const CACHE = 'sukun-r759-20260910a';
+const SURUM = 'r760';
+const CACHE = 'sukun-r760-20260910a';
 
 const CORE = [
   './nero.html',

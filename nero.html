@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r759">
+<meta name="sukun-build" content="r760">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r759">
+<link rel="manifest" href="./manifest.webmanifest?v=r760">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -5559,7 +5559,6 @@ body[data-focus="1"] .zCtl{
 
   <!-- ═══ BAŞLIK ═══ -->
   <header>
-    <span class="logo shimmer-logo"><span class="girih" aria-hidden="true"><i></i><i></i></span>۞<i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i></span>
     <h1 class="shimmer-text">SÜKÛN</h1>
     <div class="sub">Tasavvufî Ses, Zikir &amp; Tefekkür</div>
   </header>
@@ -6032,7 +6031,7 @@ body[data-focus="1"] .zCtl{
             <circle id="zProgArc" cx="138" cy="138" r="132" fill="none" stroke="url(#zpg)" stroke-width="5"
               stroke-linecap="round" stroke-dasharray="829.38" stroke-dashoffset="829.38"/>
             <defs><linearGradient id="zpg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#ecd27e"/><stop offset="1" stop-color="#2e8f7f"/>
+              <stop offset="0" stop-color="#d4a0ff"/><stop offset="1" stop-color="#799bff"/>
             </linearGradient></defs>
           </svg></div>
           <div class="cntNums">
@@ -6509,7 +6508,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r759</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r760</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6531,15 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r760",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Tefekkür yüzeyleri saydamlaştırıldı; ana sahne body boyasının üzerine, içeriklerin arkasına alındı.",
+      "Tesbih, nur katmanları ve ilerleme çemberi ortak merkeze hizalandı. Yeşil ilerleme yayı mor-maviye dönüştürüldü.",
+      "SÜKÛN başlığının üstündeki dekoratif simge kaldırıldı; sayaç ve oynatma işlevleri korunur."
+    ]
+  },
   {
     "v": "r759",
     "t": "10 Eylül 2026",
@@ -26314,7 +26322,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r759';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r760';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -67972,10 +67980,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r759',date='2026-09-10';
+const build=meta?.content||'r760',date='2026-09-10';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r759',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r760',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -71192,6 +71200,40 @@ html body.r716-shell:not(.r716-motion) #zCountVisual #r759SealAura *{animation-p
 @keyframes r759MistBreath{from{scale:.98;opacity:.38}to{scale:1.025;opacity:.76}}
 @keyframes r759PearlBreath{from{scale:.78;opacity:.72}to{scale:1.2;opacity:1}}
 @media(prefers-reduced-motion:reduce){html body.r716-shell.r716-motion #zCountVisual #r759SealAura *{animation-play-state:paused!important}}
+
+</style>
+<style id="sukun-r760-centred-scene">
+/* One full-page scene, above the body paint but behind content. */
+html body.r716-shell>#r717Scene{z-index:0!important;pointer-events:none!important}
+html body.r716-shell>.wrap{position:relative;z-index:1;background:transparent!important}
+html body.r716-shell #tab-zkr#tab-zkr,
+html body.r716-shell #tab-zkr#tab-zkr>.card.zCtl,
+html body.r716-shell #tab-zkr #tfRefinedLayout#tfRefinedLayout,
+html body.r716-shell #tab-zkr #tfRefinedLayout :is(.tfVisualPanel,.tfControlPanel,.cntRow){
+ background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+}
+html body.r716-shell #tab-zkr#tab-zkr>.card.zCtl::before,
+html body.r716-shell #tab-zkr#tab-zkr>.card.zCtl::after{content:none!important;display:none!important}
+/* All circular layers use the counter centre, never percentage inset plus 100% size. */
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual{padding:0!important;border:0!important;box-sizing:border-box!important;aspect-ratio:1}
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual :is(#zMuhr,.progArc,#r716Flames,#r759SealAura){
+ position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+ margin:0!important;translate:-50% -50%!important;box-sizing:border-box!important;pointer-events:none!important;
+}
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual :is(#r716Flames,#r759SealAura){width:100%!important;height:100%!important}
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual #zMuhr{width:66%!important;height:66%!important;max-width:none!important;max-height:none!important}
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual .progArc{
+ width:104%!important;height:104%!important;max-width:none!important;max-height:none!important;opacity:.95!important;z-index:2!important;
+}
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual .progArc svg{
+ width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;display:block!important;overflow:visible!important;
+ transform:rotate(-90deg) scaleY(-1)!important;
+}
+html body.r716-shell #tab-zkr #zCountVisual #zProgArc{stroke:url(#zpg)!important;stroke-width:3!important;filter:drop-shadow(0 0 3px #b780ff)}
+html body.r716-shell #tab-zkr #zCountVisual .progArc circle:first-child{stroke:rgba(146,139,245,.16)!important;stroke-width:2!important}
+html body.r716-shell #tab-zkr #zCountVisual #r759SealAura .r759Weave{left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;translate:-50% -50%;width:66%!important;height:66%!important}
+/* Remove the superfluous ornament above the wordmark only. */
+html body .wrap>header .shimmer-logo{display:none!important}
 
 </style>
 </body>
