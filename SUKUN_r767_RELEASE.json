@@ -1,0 +1,19 @@
+{
+  "build": "r767",
+  "date": "2026-09-11",
+  "base": "r766",
+  "summary": [
+    "Berhetiyye 7’li isim matrisi ve 7 Ruhânî Damar kaynak düğmeleri, atlas panelinin ayrıca açık olmasını istemeden doğrudan kaynak görüntüleyiciyi açar.",
+    "Kilit dönüşündeki visibility/focus/pageshow toparlanmaları tek recovery lease içinde birleştirildi; aynı seyire ait ikinci fiziksel medya kaynağı hedefli olarak budanır.",
+    "Baked eko hazırlığı mevcut Berhetiyye/Esmâ isminden başlar; kilit ekranına geçmeden mevcut ve sonraki kaynaklar önden hazırlanır.",
+    "Bendir/usûl, askıya alınmış AudioContext görünür ekranda toparlandıktan sonra tek vuruş olarak devam eder.",
+    "Akıllı Seans ve Global Akış tam panelleri Araçlar/Ana Sayfa sahipliğinden çıkarılıp Zikir > Akış & Seans altında toplandı; kaynak merkezi Zikir > Kaynaklar altında tek sahipliğe alındı.",
+    "Latin aktif isim cam hostta zorunlu ikinci satır olarak korunur; eski r614 Tefekkür hero sahibi r767 glass owner varken devreden çıkar."
+  ],
+  "validation": {
+    "browserRun": false,
+    "physicalDeviceRun": false,
+    "staticRegression": "174/174 PASS",
+    "swSyntax": "PASS"
+  }
+}

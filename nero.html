@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r766">
+<meta name="sukun-build" content="r767">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r765">
+<link rel="manifest" href="./manifest.webmanifest?v=r767">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.29 — build 2026-09-10-r765</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.30 — build 2026-09-11-r767</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,26 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r767",
+    "t": "11 Eylül 2026",
+    "b": [
+      "Berhetiyye 7’li isim matrisi ve 7 Ruhânî Damar kaynak düğmeleri, atlas panelinin ayrıca açık olmasını istemeden doğrudan kaynak görüntüleyiciyi açar.",
+      "Kilit dönüşündeki visibility/focus/pageshow toparlanmaları tek recovery lease içinde birleştirildi; aynı seyire ait ikinci fiziksel medya kaynağı hedefli olarak budanır.",
+      "Baked eko hazırlığı mevcut Berhetiyye/Esmâ isminden başlar; kilit ekranına geçmeden mevcut ve sonraki kaynaklar önden hazırlanır.",
+      "Bendir/usûl, askıya alınmış AudioContext görünür ekranda toparlandıktan sonra tek vuruş olarak devam eder.",
+      "Akıllı Seans ve Global Akış tam panelleri Araçlar/Ana Sayfa sahipliğinden çıkarılıp Zikir > Akış & Seans altında toplandı; kaynak merkezi Zikir > Kaynaklar altında tek sahipliğe alındı.",
+      "Latin aktif isim cam hostta zorunlu ikinci satır olarak korunur; eski r614 Tefekkür hero sahibi r767 glass owner varken devreden çıkar."
+    ]
+  },
+  {
+    "v": "r766",
+    "t": "11 Eylül 2026",
+    "b": [
+      "Aktif Berhetiyye/Esmâ ismi Arapça satırla aynı üst cam host içinde toplandı.",
+      "Mobil tek satır auto-fit ve cam perde yerleşimi güçlendirildi."
+    ]
+  },
   {
     "v": "r765",
     "t": "10 Eylül 2026",
@@ -17319,13 +17339,26 @@ const USULLER={
   devrihindi:[[0,'D'],[0.375,'T'],[0.625,'D'],[0.875,'T']],
   cifte:[[0,'D'],[0.25,'T'],[0.5,'D'],[0.75,'T']]
 };
+let USUL_RESUME=null,USUL_PENDING=false;
 function playUsul(){
-  if(!ctx)return;
+  if(!ctx)return false;
+  if(ctx.state!=='running'){
+    if(document.hidden)return false;
+    USUL_PENDING=true;
+    if(!USUL_RESUME){
+      USUL_RESUME=Promise.resolve().then(()=>ctx.resume()).then(()=>{
+        if(USUL_PENDING&&ctx&&ctx.state==='running'){USUL_PENDING=false;playUsul();}
+      }).catch(()=>{}).finally(()=>{USUL_RESUME=null});
+    }
+    return false;
+  }
+  USUL_PENDING=false;
   const unit=Math.min(1.6,Math.max(.4,Z.tempo)); const t0=ctx.currentTime+.02;
   (USULLER[USUL]||USULLER.duyek).forEach(([off,ty])=>{
     const t=t0+off*unit;
     if(ty==='D')drumDum(t); else drumTek(t);
   });
+  return true;
 }
 $('#optBendir').onclick=()=>{
   BENDIR=!BENDIR; $('#optBendir').classList.toggle('on',BENDIR);
@@ -26054,7 +26087,7 @@ rep=()=>{
   const beforeTotal=Math.max(0,+Z.total||0),beforeCat=zKat(),beforeIdx=zIdx(),beforeTarget=Math.max(0,+Z.target||0),beforeCount=Math.max(0,+Z.count||0);
   const out=_repL(),delta=Math.max(0,(+Z.total||0)-beforeTotal);
   if(delta){
-    if(BENDIR&&ctx)playUsul();
+    if(BENDIR){try{if(!ctx)ac()}catch(e){};playUsul();}
     const completed=!!(beforeTarget>0&&beforeCount<beforeTarget&&delta>=beforeTarget-beforeCount);
     try{window.SukunUsageStatsAdjustR695?.(delta,beforeCat,beforeIdx,{daily:false,esma:true,completed,reason:'visible-rep'})}catch(e){}
   }
@@ -26365,7 +26398,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r765';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r767';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -37947,7 +37980,7 @@ async function seyirLoop(token){
       }catch(e){ try{sukunReport('seyir-hedef',e,BS.i)}catch(_){} }
       try{if(!document.hidden){renderZikir(false);zUI()}}catch(e){sukunReport('seyir-render',e,BS.i)}
       try{window.SukunSectionIdentityCommit?.commit?.('journey28',BS.i,'journey-show')}catch(e){}
-      if(!document.hidden)try{window.SukunJourneyEchoPrewarm?.schedule?.('berhet',BS.i+1,3)}catch(e){}
+      if(!document.hidden)try{window.SukunJourneyEchoPrewarm?.schedule?.('berhet',BS.i,4)}catch(e){}
       BS.shown=BS.i;
     }
     let autoRetries=0,staleRetries=0;
@@ -54042,7 +54075,7 @@ async function loop(token){
       try{ if(typeof window.zHedefSecimeUyarla==='function')window.zHedefSecimeUyarla(true); }catch(e){}
       try{if(!document.hidden){renderCats();renderZikir(false);zUI()}saveSettings()}catch(e){try{sukunReport('esma99-render',e,ES.i)}catch(_){}}
       try{window.SukunSectionIdentityCommit?.commit?.('journey99',ES.i,'journey-show')}catch(e){}
-      if(!document.hidden)try{window.SukunJourneyEchoPrewarm?.schedule?.('esma',ES.i+1,3)}catch(e){}
+      if(!document.hidden)try{window.SukunJourneyEchoPrewarm?.schedule?.('esma',ES.i,4)}catch(e){}
       ES.shown=ES.i;
     }
     let autoRetries=0,staleRetries=0;
@@ -60155,12 +60188,14 @@ body.sukun-tefekkur-mode.r433-dock-hidden #tab-zkr > .card.zCtl{
   body.sukun-tefekkur-mode #tfRefinedLayout .r611HeroName{font-size:clamp(24px,7.4vw,33px)!important}
 }
 </style>
+<script id="r767-glass-owner-flag">window.__SUKUN_R767_NAME_GLASS_OWNER__=1;</script>
 <script id="r614-tefekkur-hero-owner">
 (()=>{
 'use strict';
 if(window.__SUKUN_R614_TEFEKKUR_HERO__)return;
 window.__SUKUN_R614_TEFEKKUR_HERO__=1;
 function place(){
+  if(window.__SUKUN_R767_NAME_GLASS_OWNER__)return;
   const hero=document.getElementById('r611CurrentZikirHero');
   const root=document.getElementById('tfRefinedLayout');
   const visual=root?.querySelector(':scope > .tfVisualPanel');
@@ -61655,19 +61690,7 @@ function kicker(view){
 }
 function extraTools(){
   const grid=document.querySelector('#r616ToolsSheet .r616ToolGrid');if(!grid)return false;
-  if(!grid.querySelector('[data-r619-tool="smart"]')){
-    const smart=document.createElement('button');smart.type='button';smart.className='r616Tool';smart.dataset.r619Tool='smart';smart.innerHTML='<i aria-hidden="true" data-ico="star"></i><span>Akıllı Seans</span>';
-    const queue=document.createElement('button');queue.type='button';queue.className='r616Tool';queue.dataset.r619Tool='queue';queue.innerHTML='<i aria-hidden="true" data-ico="refresh"></i><span>Global Akış</span>';
-    grid.insertBefore(queue,grid.firstChild);grid.insertBefore(smart,grid.firstChild);
-    grid.addEventListener('click',e=>{
-      const b=e.target.closest('[data-r619-tool]');if(!b)return;
-      window.SukunFriendlyUI?.closeTools?.();
-      try{window.SukunFriendlyUI?.go?.('home')}catch(err){}
-      document.body.classList.add('r619-legacy-tool-open');
-      const id=b.dataset.r619Tool==='smart'?'r170SessionHub':'gqHub';
-      setTimeout(()=>{const d=document.getElementById(id);if(d){d.open=true;try{d.scrollIntoView({block:'start',behavior:'smooth'})}catch(err){}}},80);
-    });
-  }
+  grid.querySelectorAll('[data-r619-tool="smart"],[data-r619-tool="queue"]').forEach(x=>x.remove());
   return true;
 }
 function sheetBuild(){const x=document.querySelector('.r616SheetBuild'),b=document.querySelector('meta[name="sukun-build"]')?.content||'r704';r704Text(x,'SÜKÛN v20.23 · '+b+' · '+appearanceState().label)}
@@ -70242,7 +70265,7 @@ function injectInfo(){
 function installEsma(){ensureHub();syncHub();document.addEventListener('click',e=>{const zero=e.target.closest?.('#zList .esmaZero');if(zero){e.preventDefault();openAllah();return}if(e.target.closest?.('#zList .zItem,#zCats [data-c]'))setTimeout(syncHub,0)});document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest?.('#zList .esmaZero')){e.preventDefault();openAllah()}});document.addEventListener('input',e=>{if(e.target?.id==='zSearch')setTimeout(syncHub,0)});['sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(syncHub,0),{passive:true}));document.getElementById('r611CurrentZikirName')?.addEventListener('click',()=>setTimeout(injectInfo,0));}
 
 let viewerIndex=0,viewer=null,swipeX=null,viewerReturnFocus=null,priorOverflow=null;
-function sourceUnlocked(){try{return !!window.SukunSecretPolicy?.unlocked?.()&&!document.getElementById('vaultOpen')?.hidden}catch(_){return false}}
+function sourceUnlocked(){try{return !!window.SukunSecretPolicy?.unlocked?.()}catch(_){return false}}
 function ensureViewer(){if(viewer)return viewer;viewer=document.createElement('div');viewer.className='r749BerhViewer';viewer.id='r749BerhViewer';viewer.hidden=true;viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-labelledby','r749BerhViewerTitle');viewer.innerHTML='<div class="r749BerhViewerTop"><b id="r749BerhViewerTitle">Berhetiyye</b><button type="button" data-r749-close aria-label="Görseli kapat">×</button></div><div class="r749BerhViewerStage"><img id="r749BerhViewerImg" alt=""></div><div class="r749BerhViewerBottom"><button type="button" data-r749-prev aria-label="Önceki sayfa">‹</button><span id="r749BerhViewerCount">1 / 15</span><button type="button" data-r749-next aria-label="Sonraki sayfa">›</button></div>';document.body.appendChild(viewer);viewer.querySelector('[data-r749-close]').onclick=closeViewer;viewer.querySelector('[data-r749-prev]').onclick=()=>showPage(viewerIndex-1);viewer.querySelector('[data-r749-next]').onclick=()=>showPage(viewerIndex+1);const st=viewer.querySelector('.r749BerhViewerStage');st.addEventListener('pointerdown',e=>{swipeX=e.clientX},{passive:true});st.addEventListener('pointerup',e=>{if(swipeX===null)return;const dx=e.clientX-swipeX;swipeX=null;if(Math.abs(dx)>55)showPage(viewerIndex+(dx<0?1:-1))},{passive:true});st.addEventListener('pointercancel',()=>{swipeX=null},{passive:true});return viewer}
 function pageSrc(i){return './assets/berhetiyye-cosmic/berhetiyye-'+String(i+1).padStart(2,'0')+'.webp'}
 function showPage(i){
@@ -70271,7 +70294,7 @@ function closeViewer(){
  window.dispatchEvent(new CustomEvent('sukun:sourceviewerchange',{detail:{open:false}}));
 }
 
-function mountBerh(){const open=document.getElementById('vaultOpen'),grid=document.getElementById('r749BerhAtlasGrid');if(!open||open.hidden||!sourceUnlocked()||!grid||grid.childElementCount)return;const frag=document.createDocumentFragment();PAGE_TITLES.forEach((title,i)=>{const b=document.createElement('button');b.type='button';b.className='r749BerhPage';b.dataset.page=String(i);b.innerHTML='<img loading="lazy" decoding="async" src="'+pageSrc(i)+'" alt="'+esc(title)+'"><span class="r749BerhCap"><b>'+(i+1)+'</b><span>'+esc(title)+'</span></span>';b.onclick=()=>showPage(i);frag.appendChild(b)});grid.appendChild(frag)}
+function mountBerh(){const open=document.getElementById('vaultOpen'),grid=document.getElementById('r749BerhAtlasGrid');if(!open||!sourceUnlocked()||!grid||grid.childElementCount)return;const frag=document.createDocumentFragment();PAGE_TITLES.forEach((title,i)=>{const b=document.createElement('button');b.type='button';b.className='r749BerhPage';b.dataset.page=String(i);b.innerHTML='<img loading="lazy" decoding="async" src="'+pageSrc(i)+'" alt="'+esc(title)+'"><span class="r749BerhCap"><b>'+(i+1)+'</b><span>'+esc(title)+'</span></span>';b.onclick=()=>showPage(i);frag.appendChild(b)});grid.appendChild(frag)}
 function unmountBerh(){closeViewer();const g=document.getElementById('r749BerhAtlasGrid');if(g)g.replaceChildren()}
 function wrapVault(){
  const oldOpen=window.vaultTryOpen;if(typeof oldOpen==='function'&&!oldOpen.__r749){const w=async function(){const r=await oldOpen.apply(this,arguments);if(!document.getElementById('vaultOpen')?.hidden)mountBerh();return r};w.__r749=1;window.vaultTryOpen=w;const b=document.getElementById('vaultGo');if(b)b.onclick=w}
@@ -70281,7 +70304,7 @@ window.addEventListener('keydown',e=>{if(viewer&&!viewer.hidden){if(['Escape','A
 window.addEventListener('sukun:secretaccesschange',()=>{if(!sourceUnlocked())unmountBerh()},{passive:true});
 function boot(){installEsma();wrapVault();if(!document.getElementById('vaultOpen')?.hidden)mountBerh()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.SukunR749Sources=Object.freeze({version:'r755',esma:{records:R50.length,unique:new Set(R50.map(x=>clean(x.name_tr))).size,matched},berhetiyye:{pages:PAGE_TITLES.length,mount:mountBerh,unmount:unmountBerh},snapshot:()=>({version:'r752',esmaMatched:matched,berhMounted:document.getElementById('r749BerhAtlasGrid')?.childElementCount||0,viewerOpen:!!viewer&&!viewer.hidden})});
+window.SukunR749Sources=Object.freeze({version:'r755',esma:{records:R50.length,unique:new Set(R50.map(x=>clean(x.name_tr))).size,matched},berhetiyye:{pages:PAGE_TITLES.length,mount:mountBerh,unmount:unmountBerh,openPage:showPage},snapshot:()=>({version:'r752',esmaMatched:matched,berhMounted:document.getElementById('r749BerhAtlasGrid')?.childElementCount||0,viewerOpen:!!viewer&&!viewer.hidden})});
 })();
 </script>\n
 
@@ -70722,7 +70745,8 @@ function mountSource(){try{window.SukunR749Sources?.berhetiyye?.mount?.()}catch(
 function openSourcePage(page){
  if(!unlocked()){toast('Berhetiyye kaynak görselleri kilitli bölüm açılınca erişilebilir.');return false}
  mountSource();
- const go=()=>{if(!unlocked())return false;const b=document.querySelector('#r749BerhAtlasGrid [data-page="'+page+'"]');if(b){b.click();return true}toast('Kaynak görseli şu anda açılamadı. Kilitli Berhetiyye atlasını bir kez açıp tekrar dene.');return false};
+ try{if(window.SukunR749Sources?.berhetiyye?.openPage?.(page))return true}catch(e){}
+ const go=()=>{if(!unlocked())return false;try{if(window.SukunR749Sources?.berhetiyye?.openPage?.(page))return true}catch(e){}const b=document.querySelector('#r749BerhAtlasGrid [data-page="'+page+'"]');if(b){b.click();return true}toast('Kaynak görseli şu anda açılamadı.');return false};
  return setTimeout(go,20),true;
 }
 function jumpButtons(i,it){const p=profile(it);return '<div class="r754SourceJumps">'+
@@ -71917,5 +71941,128 @@ setTimeout(sync,1200);
 window.SukunR766NameInGlass={version:'r766',sync};
 })();
 </script>
+
+<style id="sukun-r767-ownership-and-audio-fix">
+/* r767 — tek sahiplik: Akış/Seans ve Kaynaklar Zikir altında; Ana sayfa özet kalır. */
+body.r616-ui #zmgAkis #r170SessionHub,
+body.r616-ui #zmgAkis #gqHub,
+body.r616-ui #zmgAkis #r170Stats{display:block!important;margin:0!important;border-radius:18px!important}
+body.r616-ui #zmgKaynaklar #r170Sources{display:block!important;margin:0!important}
+#zmgAkis>.zMegaBody,#zmgKaynaklar>.zMegaBody{display:grid;gap:10px}
+#zmgAkis>summary .zMegaIc{color:#8fe5d6}
+#zmgKaynaklar>summary .zMegaIc{color:#e8ca83}
+body.r616-ui #r616ToolsSheet [data-r619-tool="smart"],
+body.r616-ui #r616ToolsSheet [data-r619-tool="queue"]{display:none!important}
+/* Latin aktif isim cam hostun ayrılmaz ikinci satırıdır. */
+body.sukun-zikir-tab #zStage>.zAr>#r611CurrentZikirHero:not([hidden]),
+body.sukun-tefekkur-mode #zStage>.zAr>#r611CurrentZikirHero:not([hidden]){display:grid!important;visibility:visible!important;opacity:1!important}
+body.sukun-zikir-tab #zStage #r611CurrentZikirName,
+body.sukun-tefekkur-mode #zStage #r611CurrentZikirName{display:block!important;visibility:visible!important;opacity:1!important;min-height:1.12em!important}
+</style>
+<script id="sukun-r767-runtime-fixes">
+(()=>{
+'use strict';
+if(window.__SUKUN_R767_FIXES__)return;window.__SUKUN_R767_FIXES__=1;
+const $=id=>document.getElementById(id);
+const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+
+/* 1) Latin aktif isim: tek veri sahibi Z/ZIKIR; r611 düğmesini kopyalamadan aynı DOM'u cam hostta tut. */
+function selectedName(){
+  try{
+    const z=typeof Z!=='undefined'?Z:window.Z,db=typeof ZIKIR!=='undefined'?ZIKIR:window.ZIKIR;
+    let cat=clean(z?.cat),idx=Number(z?.idx),it=Number.isInteger(idx)?db?.[cat]?.items?.[idx]:null;
+    if(cat==='fav'&&it){cat=clean(it._src||cat);idx=Number(it._i);it=db?.[cat]?.items?.[idx]||it}
+    if(!it)return null;
+    const base=clean(it.tr||it.t||it.nm||it.oku||'');if(!base)return null;
+    try{if(window.SukunSecretPolicy?.secretStep?.({cat,name:base}))return null}catch(e){}
+    const text=(cat==='esma'||cat==='berhet')&&!/^y[âa]\s/i.test(base)?'Yâ '+base:base;
+    return {cat,idx,it,text};
+  }catch(e){return null}
+}
+function latinSync(){
+  const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub'),ar=$('zAr');
+  const s=selectedName();if(!hero||!name||!sub||!ar||!s)return false;
+  const active=document.body.classList.contains('sukun-zikir-tab')||document.body.classList.contains('sukun-tefekkur-mode');if(!active)return false;
+  if(hero.parentNode!==ar)ar.appendChild(hero);
+  if(name.textContent!==s.text)name.textContent=s.text;
+  const label=s.cat==='berhet'?'şu an zikredilen berhetiyye ismi':s.cat==='esma'?'şu an zikredilen esmâ':'şu an zikredilen zikir';
+  if(sub.textContent!==label)sub.textContent=label;
+  hero.hidden=false;hero.setAttribute('aria-hidden','false');
+  try{window.SukunR766NameInGlass?.sync?.()}catch(e){}
+  return true;
+}
+let latinTimer=0;function queueLatin(){clearTimeout(latinTimer);latinTimer=setTimeout(latinSync,24)}
+['sukun:zikirselectionchange','sukun:zikirnav','sukun:tabchange','sukun:journey-advance','sukun:secretaccesschange','sukun:currentzikirchange'].forEach(ev=>window.addEventListener(ev,queueLatin,{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(latinSync,80)},{passive:true});
+
+/* 2) Kilit dönüşü: visibility/pageshow/focus aynı fiziksel olayı yalnız bir recover lease'e indirir. */
+function journeyMediaDedupe(reason='r767'){
+  try{
+    const S=typeof SES!=='undefined'?SES:window.SES,J=window.__sukJourneyNative;
+    if(!S?.ler)return 0;
+    const all=[...S.ler].filter(a=>a&&!a.paused&&!a.ended);
+    const journeyish=all.filter(a=>a===J?.a||a?._r648Lease||a?._r651Lease||/journey|berhet|esma/i.test(clean(a?._sukunAd)+' '+clean(a?._sukunRecordingKey)));
+    if(journeyish.length<2)return 0;
+    const keep=(J?.a&&!J.a.paused&&!J.a.ended)?J.a:journeyish[journeyish.length-1];let n=0;
+    journeyish.forEach(a=>{if(a===keep)return;try{window.SukunNativeEchoBridge?.stop?.(a,'r767-dedupe')}catch(e){}try{a._sukunFinish?.(false,'r767-visible-dedupe')}catch(e){}try{a.pause?.()}catch(e){}try{S.ler.delete(a)}catch(e){}n++});
+    if(n)try{window.dispatchEvent(new CustomEvent('sukun:r767-media-dedupe',{detail:{reason,count:n,at:Date.now()}}))}catch(e){}
+    return n;
+  }catch(e){return 0}
+}
+function installRecoverSingleflight(){
+  const A=window.AudioLife;if(!A||A.__r767RecoverWrapped||typeof A.recover!=='function')return false;
+  const base=A.recover.bind(A);let flight=null,timer=0,lastRun=0;const reasons=new Set();
+  A.recover=function(reason='resume'){
+    reason=clean(reason)||'resume';reasons.add(reason);
+    if(document.hidden)return base(reason);
+    if(flight)return flight;
+    flight=new Promise(resolve=>{clearTimeout(timer);timer=setTimeout(async()=>{
+      const why='r767-singleflight:'+([...reasons].join('+')||reason);reasons.clear();
+      try{
+        const fresh=Date.now()-lastRun<650&&A.state==='playing'&&A.busy?.();
+        let ok=fresh?true:await base(why);if(!fresh)lastRun=Date.now();
+        setTimeout(()=>journeyMediaDedupe('post-recover'),50);resolve(ok);
+      }catch(e){resolve(false)}finally{setTimeout(()=>{flight=null},0)}
+    },150)});return flight;
+  };
+  A.__r767RecoverWrapped=true;return true;
+}
+
+/* 3) Eko: mevcut Berhetiyye/Esmâ öğesini de önden baked hazırla. */
+function prewarmCurrent(){
+  if(document.hidden)return false;const s=selectedName();if(!s||(s.cat!=='berhet'&&s.cat!=='esma'))return false;
+  try{return !!window.SukunJourneyEchoPrewarm?.schedule?.(s.cat,s.idx,4)}catch(e){return false}
+}
+
+/* 4) Kategori sahipliği: tam Akıllı Seans / Global Akış sadece Zikir > Akış & Seans. */
+function group(id,title,desc,icon,beforeId='zmgAraclar'){
+  const host=$('zMegaHost');if(!host)return null;let d=$(id);if(d)return d;
+  d=document.createElement('details');d.id=id;d.className='zMegaGroup';d.open=false;
+  d.innerHTML='<summary><span class="zMegaIc" aria-hidden="true">'+icon+'</span><span class="zMegaTxt"><b>'+title+'</b><small>'+desc+'</small></span><span class="zMegaRight"><span class="zMegaCount">0</span><span class="zMegaChev">⌄</span></span></summary><div class="zMegaBody"></div>';
+  const before=$(beforeId);before?.parentNode===host?host.insertBefore(d,before):host.appendChild(d);return d;
+}
+function categorySync(){
+  const flow=group('zmgAkis','AKIŞ & SEANS','Akıllı seans, global kuyruk ve zikir istatistikleri','⟲');
+  const sources=group('zmgKaynaklar','KAYNAKLAR','Esmâ ve Berhetiyye kaynak katmanları','⌘');
+  const fb=flow?.querySelector('.zMegaBody'),sb=sources?.querySelector('.zMegaBody');
+  ['r170SessionHub','gqHub','r170Stats'].forEach(id=>{const el=$(id);if(el&&fb&&el.parentNode!==fb)fb.appendChild(el)});
+  ['r170Sources'].forEach(id=>{const el=$(id);if(el&&sb&&el.parentNode!==sb)sb.appendChild(el)});
+  if(flow){const c=flow.querySelector('.zMegaCount');if(c&&fb)c.textContent=String(fb.children.length)}
+  if(sources){const c=sources.querySelector('.zMegaCount');if(c&&sb)c.textContent=String(sb.children.length)}
+  document.querySelectorAll('#r616ToolsSheet [data-r619-tool="smart"],#r616ToolsSheet [data-r619-tool="queue"]').forEach(x=>x.remove());
+  document.body.classList.remove('r619-legacy-tool-open');
+}
+
+function boot(){installRecoverSingleflight();categorySync();latinSync();prewarmCurrent();journeyMediaDedupe('boot')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+[120,320,700,1400].forEach(ms=>setTimeout(()=>{categorySync();latinSync();installRecoverSingleflight()},ms));
+window.addEventListener('sukun:r616viewchange',()=>setTimeout(categorySync,0),{passive:true});
+window.addEventListener('sukun:journey-advance',()=>{setTimeout(prewarmCurrent,30);setTimeout(latinSync,40)},{passive:true});
+window.addEventListener('focus',()=>{if(!document.hidden){setTimeout(()=>journeyMediaDedupe('focus'),280);setTimeout(latinSync,60)}},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){setTimeout(()=>journeyMediaDedupe('visible'),320);setTimeout(prewarmCurrent,380)}},{passive:true});
+window.SukunR767=Object.freeze({version:'r767',latinSync,categorySync,prewarmCurrent,journeyMediaDedupe});
+})();
+</script>
+
 </body>
 </html>
