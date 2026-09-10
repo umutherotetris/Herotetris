@@ -1,8 +1,8 @@
-/* SÜKÛN r748 — Service Worker version contract repair */
+/* SÜKÛN r749 — Source atlas integration */
 'use strict';
 
-const SURUM = 'r748';
-const CACHE = 'sukun-r748-20260910b';
+const SURUM = 'r749';
+const CACHE = 'sukun-r749-20260910a';
 
 const CORE = [
   './nero.html',
@@ -33,13 +33,13 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r748__.json';
+const BUILD_MARKER='./__sukun_build_r749__.json';
 
 const NOTLAR = [
-  "r748 · Service Worker sürüm sözleşmesi düzeltildi: HTML, manifest, worker, cache ve build marker artık aynı r748 sürümünü taşır.",
-  "r747 paketindeki SURUM=r741 ve __sukun_build_r741__.json kalıntıları kaldırıldı; bu kalıntılar yeni worker kurulumunu HTML build mismatch ile düşürüyordu.",
-  "Yeni cache adı sukun-r748-20260910b olarak ayrıldı; başarılı aktivasyondan sonra eski sukun-* cache'leri temizlenir.",
-  "r746/r747 görsel entegrasyonları ve önceki ses/sayaç davranışları korunur."
+  "r749 · Berhetiyye kaynak PDF'sinin 15 görsel sayfası yalnız kilitli kasa açıldıktan sonra yüklenen atlas olarak eklendi.",
+  "r749 · Esmâ Kartları Diriliş r50 içeriği mevcut 99'luk sıra değiştirilmeden eşleşen isimlerin bilgi kartlarına ve Esmâ Kaynak Derinliği bölümüne bağlandı.",
+  "r749 · Kaynak bütünlüğü: r50 dosyasında Allah iki kez, Ehad ve Vâlî ayrı kart olmadan bulunduğu için çekirdek sıra değiştirilmedi; 97 mevcut isim kaynakla zenginleştirildi.",
+  "r748 Service Worker sözleşme onarımı ve r746/r747 görsel katmanları korunur."
 ];
 
 function buildOfHtml(text){

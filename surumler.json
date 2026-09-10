@@ -1,5 +1,15 @@
 [
   {
+    "v": "r749",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Berhetiyye Kozmik Mimari PDF’sinin 15 görsel sayfası gizli kasaya kaynak atlası olarak eklendi; sayfalar kasa açılınca yüklenir ve tam ekran gezilebilir.",
+      "Esmâ Kartları Diriliş r50, mevcut 99 isim sırası bozulmadan kaynak derinliği katmanına işlendi; 97 isim eşleşti, Lafza-i Celâl ayrı 0. bilgi kapısı olarak bağlandı.",
+      "Kaynak tutarsızlığı görünür biçimde korundu: r50 dosyasında Allah iki kez geçiyor; Ehad ve Vâlî için ayrı kart bulunmuyor. Bu nedenle çekirdek zikir verisi kaynak dosyayla körlemesine değiştirilmedi.",
+      "HTML/manifest/SW/cache/build marker r749 olarak senkronlandı; r748 Service Worker sözleşme onarımı korundu."
+    ]
+  },
+  {
     "v": "r748",
     "t": "10 Eylül 2026",
     "b": [

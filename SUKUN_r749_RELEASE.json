@@ -1,0 +1,11 @@
+{
+  "version": "r749",
+  "base": "r748",
+  "title": "SÜKÛN r749 — Berhetiyye ve Esmâ kaynak atlasları",
+  "summary": [
+    "Berhetiyye: Kozmik Mimari ve Esma Sırları PDF’sinin 15 sayfası optimize WebP görselleriyle gizli kasanın içine eklendi; görseller kasa açılmadan DOM’a yüklenmez.",
+    "Esmâ Kartları Diriliş r50 verisi Esmâ Kaynak Derinliği paneline ve aktif Esmâ bilgi kartına bağlandı; âyet, hadis aktarımı, mahiyet, tecelli, gölge ve denge alanları gösterilir.",
+    "Kaynak dosyadaki 99 kayıt 98 benzersiz isim içeriyor: Allah iki kez geçiyor, Ehad ve Vâlî için ayrı kart yok. Bu nedenle SÜKÛN’un mevcut 99 isim sırası değiştirilmedi; 97 isim kaynakla zenginleştirildi ve Allah 0. bilgi kapısı olarak kullanıldı.",
+    "r748 Service Worker sürüm sözleşmesi korunarak manifest, SW, cache ve build marker r749’a yükseltildi."
+  ]
+}

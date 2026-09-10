@@ -1,0 +1,13 @@
+{
+  "version": "r749",
+  "build": "r749",
+  "base": "r748",
+  "date": "2026-09-10",
+  "type": "source-atlas-integration",
+  "cache": "sukun-r749-20260910a",
+  "notes": [
+    "Berhetiyye 15 sayfalık görsel kaynak atlası kilitli kasa içine eklendi",
+    "Esmâ Kartları Diriliş r50 eşleşen 97 isim + Lafza-i Celâl bilgi katmanına işlendi",
+    "r50 kaynak tutarsızlığı çekirdek 99 sırasını değiştirmeden korundu"
+  ]
+}
