@@ -1,0 +1,10 @@
+{
+  "version": "r756",
+  "base": "r755",
+  "title": "SÜKÛN r756 — İpeksi kart ve Berhetiyye sayfa geçişleri",
+  "summary": [
+    "Berhetiyye bilgi kartının açılış/kapanış hareketleri daha yumuşak ve premium hâle getirildi",
+    "Kaynak atlasındaki sayfa değişimleri ani görüntü sıçraması yerine yönlü fade ile geçiyor",
+    "Reduced Motion erişilebilirlik tercihi korunuyor"
+  ]
+}

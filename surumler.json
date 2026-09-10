@@ -1,5 +1,17 @@
 [
   {
+    "version": "r756",
+    "date": "2026-09-10",
+    "title": "İpeksi kart ve Berhetiyye sayfa geçişleri",
+    "base": "r755"
+  },
+  {
+    "version": "r755",
+    "date": "2026-09-10",
+    "title": "Berhetiyye detay kartı flashing düzeltmesi",
+    "base": "r754"
+  },
+  {
     "version": "r754",
     "date": "2026-09-10",
     "title": "Berhetiyye derin Tefekkür + kaynak sıçrama + premium tema",

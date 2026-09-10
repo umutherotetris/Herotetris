@@ -1,8 +1,8 @@
-/* SÜKÛN r754 — Berhetiyye deep theme + source jumps */
+/* SÜKÛN r756 — Berhetiyye deep theme + source jumps */
 'use strict';
 
-const SURUM = 'r754';
-const CACHE = 'sukun-r754-20260910a';
+const SURUM = 'r756';
+const CACHE = 'sukun-r756-20260910a';
 
 const CORE = [
   './nero.html',
@@ -33,13 +33,12 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r754__.json';
+const BUILD_MARKER='./__sukun_build_r756__.json';
 
 const NOTLAR = [
-  "r754 · Tefekkür ekranına aktif Berhetiyye isminin görsel kaynak grubu, 7 Ruhânî Damar basamağı ve mevcut uygulama verisi birlikte bağlandı.",
-  "r754 · İlgili isim matrisine, Element/Esîr haritasına ve 7 Ruhânî Damar sayfasına tek dokunuşla kaynak görseli açma eklendi.",
-  "r754 · Berhetiyye seçiliyken uygulamanın genel tasarımından ayrışan mor-camgöbeği-altın premium tema dili etkinleşir; kaynak ve uygulama katmanları çakışırsa ikisi ayrı etiketlenir.",
-  "r754 · HTML/manifest/SW/build marker atomik olarak r754'e senkronlandı."
+  "r756 · Berhetiyye detay bilgi kartı daha ipeksi giriş/çıkış animasyonuna geçirildi; r755 flashing koruması korunur.",
+  "r756 · Berhetiyye kaynak görseli sayfa geçişleri fade + yönlü kayma ile akıcı hâle getirildi; yükleme gecikmesinde eski görsel sert sıçramaz.",
+  "r756 · Reduced Motion tercihinde tüm yeni animasyonlar otomatik kapanır; SW/manifest/build atomik r756'dır."
 ];
 
 function buildOfHtml(text){

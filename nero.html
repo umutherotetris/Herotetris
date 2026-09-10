@@ -8,7 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r754">
+<meta name="sukun-build" content="r756">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest?v=r751">
@@ -69690,7 +69690,7 @@ function wrapVault(){
 window.addEventListener('keydown',e=>{if(viewer&&!viewer.hidden){if(e.key==='Escape'){e.preventDefault();closeViewer()}else if(e.key==='ArrowLeft'){e.preventDefault();showPage(viewerIndex-1)}else if(e.key==='ArrowRight'){e.preventDefault();showPage(viewerIndex+1)}}});
 function boot(){installEsma();wrapVault();if(!document.getElementById('vaultOpen')?.hidden)mountBerh()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.SukunR749Sources=Object.freeze({version:'r752',esma:{records:R50.length,unique:new Set(R50.map(x=>clean(x.name_tr))).size,matched},berhetiyye:{pages:PAGE_TITLES.length,mount:mountBerh,unmount:unmountBerh},snapshot:()=>({version:'r752',esmaMatched:matched,berhMounted:document.getElementById('r749BerhAtlasGrid')?.childElementCount||0,viewerOpen:!!viewer&&!viewer.hidden})});
+window.SukunR749Sources=Object.freeze({version:'r755',esma:{records:R50.length,unique:new Set(R50.map(x=>clean(x.name_tr))).size,matched},berhetiyye:{pages:PAGE_TITLES.length,mount:mountBerh,unmount:unmountBerh},snapshot:()=>({version:'r752',esmaMatched:matched,berhMounted:document.getElementById('r749BerhAtlasGrid')?.childElementCount||0,viewerOpen:!!viewer&&!viewer.hidden})});
 })();
 </script>\n
 
@@ -70116,7 +70116,7 @@ const PATH=[
 const STEP_BY={};PATH.forEach(x=>STEP_BY[x.key]=x);
 function liveZ(){try{return (typeof Z!=='undefined'&&Z)?Z:(window.Z||null)}catch(e){return window.Z||null}}
 function arr(){try{return (typeof ZIKIR!=='undefined'&&ZIKIR?.berhet?.items)?ZIKIR.berhet.items:(window.ZIKIR?.berhet?.items||[])}catch(e){return window.ZIKIR?.berhet?.items||[]}}
-function selected(){const z=liveZ();if(clean(z?.cat)==='berhet'){const i=Number(z.idx)||0;return{i,it:arr()[i]||null,source:'selected'}}try{const s=window.SukunActiveNameInfo?.snapshot?.().state;if(clean(s?.cat)==='berhet'){const i=Number(s.idx)||0;return{i,it:arr()[i]||null,source:'active'}}catch(e){}return null}
+function selected(){const z=liveZ();if(clean(z?.cat)==='berhet'){const i=Number(z.idx)||0;return {i,it:arr()[i]||null,source:'selected'};}try{const s=window.SukunActiveNameInfo?.snapshot?.().state;if(clean(s?.cat)==='berhet'){const i=Number(s.idx)||0;return {i,it:arr()[i]||null,source:'active'};}}catch(e){}return null;}
 function profile(it){const k=norm(it?.tr||it?.oku||'');return{key:k,group:GROUP_BY[k]||null,step:STEP_BY[k]||null}}
 function matrixPage(i){return 3+Math.max(0,Math.min(3,Math.floor((Number(i)||0)/7)))}
 function unlocked(){try{return !!window.SukunSecretPolicy?.unlocked?.()}catch(e){return false}}
@@ -70189,10 +70189,267 @@ document.addEventListener('change',e=>{if(e.target?.matches?.('#r170CmpA,#r170Cm
 ['sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange','sukun:nowplayingchange','sukun:secretaccesschange'].forEach(ev=>window.addEventListener(ev,queue,{passive:true}));
 const bodyObs=new MutationObserver(queue);if(document.body)bodyObs.observe(document.body,{attributes:true,attributeFilter:['class']});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{const tab=$('tab-zkr');if(tab)new MutationObserver(queue).observe(tab,{subtree:true,childList:true});queue()},{once:true});else{const tab=$('tab-zkr');if(tab)new MutationObserver(queue).observe(tab,{subtree:true,childList:true});queue()}
-window.SukunR754Berhetiyye=Object.freeze({version:'r754',refresh:queue,openSourcePage,snapshot:()=>{const s=selected();return{version:'r754',selected:s?{idx:s.i,name:s.it?.tr||'',profile:profile(s.it)}:null,theme:document.body.classList.contains('r754-berhet-theme')}}});
+window.SukunR754Berhetiyye=Object.freeze({version:'r755',refresh:queue,openSourcePage,snapshot:()=>{const s=selected();return{version:'r755',selected:s?{idx:s.i,name:s.it?.tr||'',profile:profile(s.it)}:null,theme:document.body.classList.contains('r754-berhet-theme')}}});
 })();
 </script>
 
+
+
+<style id="sukun-r755-berhetiyye-info-flash-fix">
+/* r755 — Berhetiyye detay kartında eski bilginin anlık görünmesini bastır */
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard:not(.r755-berhet-ready) .r642InfoArabic,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard:not(.r755-berhet-ready) .r642InfoRows,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard:not(.r755-berhet-ready) .r642InfoNote,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard:not(.r755-berhet-ready) #r749InfoExtra{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoArabic,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoRows,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoNote,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready #r749InfoExtra{
+  opacity:1!important;
+  visibility:visible!important;
+  transition:opacity .14s ease;
+}
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-pending::before{
+  box-shadow:0 0 0 1px rgba(111,239,219,.08),0 0 28px rgba(98,233,217,.08),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+</style>
+<script id="sukun-r755-berhetiyye-info-flash-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R755_BERHET_INFO_FLASH_FIX__)return;
+window.__SUKUN_R755_BERHET_INFO_FLASH_FIX__=1;
+const $=id=>document.getElementById(id);
+const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+const state=()=>{try{return window.SukunActiveNameInfo?.snapshot?.().state||window.currentZikirState?.snapshot?.()||null}catch(e){return null}};
+let t=0;
+function markReady(card,ready){card.classList.toggle('r755-berhet-ready',!!ready);card.classList.toggle('r755-berhet-pending',!ready);}
+function sync(){
+  const layer=$('r642ZikirInfoLayer'), card=$('r642ZikirInfoCard');
+  if(!card){return}
+  const s=state();
+  const active=!!layer && !layer.hidden && clean(s?.cat)==='berhet';
+  if(!active){card.classList.remove('r755-berhet-ready','r755-berhet-pending');return}
+  markReady(card,false);
+  requestAnimationFrame(()=>{
+    try{window.SukunR752BerhetiyyeCard?.apply?.();}catch(e){}
+    try{window.SukunR754Berhetiyye?.refresh?.();}catch(e){}
+    const ok=!!card.querySelector('#r752BerhetRich');
+    markReady(card,ok);
+    if(!ok){setTimeout(()=>{
+      try{window.SukunR752BerhetiyyeCard?.apply?.();}catch(e){}
+      const ok2=!!card.querySelector('#r752BerhetRich');
+      markReady(card,ok2);
+    },24)}
+  })
+}
+function queue(){clearTimeout(t);t=setTimeout(sync,0)}
+const mo=new MutationObserver(queue);
+mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
+['click','input','change'].forEach(ev=>document.addEventListener(ev,queue,{passive:true}));
+['sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange','sukun:nowplayingchange'].forEach(ev=>window.addEventListener(ev,queue,{passive:true}));
+window.addEventListener('resize',queue,{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queue,{once:true}); else queue();
+window.SukunR755BerhetiyyeFlashFix=Object.freeze({version:'r755',refresh:queue});
+})();
+</script>
+
+
+<style id="sukun-r756-silk-motion-style">
+/* r756 — ipeksi bilgi kartı + Berhetiyye kaynak sayfası geçişleri */
+:root{
+  --r756-silk:cubic-bezier(.22,.72,.18,1);
+  --r756-soft:cubic-bezier(.16,.84,.24,1);
+}
+#r642ZikirInfoBackdrop{
+  opacity:0;
+}
+body.r642-info-open #r642ZikirInfoBackdrop{
+  animation:r756BackdropIn .24s ease-out both;
+}
+body.r642-info-open #r642ZikirInfoCard{
+  transform:translateX(-50%) translateY(10px) scale(.985);
+  transform-origin:50% 8%;
+  opacity:0;
+  animation:r756CardIn .32s var(--r756-silk) both;
+  transition:top .22s var(--r756-soft),box-shadow .22s ease,border-color .22s ease;
+  will-change:transform,opacity;
+}
+#r642ZikirInfoLayer.r756-info-closing #r642ZikirInfoBackdrop{
+  animation:r756BackdropOut .17s ease-in both!important;
+}
+#r642ZikirInfoLayer.r756-info-closing #r642ZikirInfoCard{
+  animation:r756CardOut .18s cubic-bezier(.4,0,.7,.2) both!important;
+  pointer-events:none;
+}
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoArabic,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoRows,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready .r642InfoNote,
+body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready #r749InfoExtra{
+  animation:r756ContentBloom .26s var(--r756-soft) both;
+}
+@keyframes r756CardIn{
+  0%{opacity:0;transform:translateX(-50%) translateY(13px) scale(.977);filter:blur(1.7px)}
+  46%{opacity:1;filter:blur(.25px)}
+  100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1);filter:none}
+}
+@keyframes r756CardOut{
+  from{opacity:1;transform:translateX(-50%) translateY(0) scale(1);filter:none}
+  to{opacity:0;transform:translateX(-50%) translateY(7px) scale(.988);filter:blur(1px)}
+}
+@keyframes r756BackdropIn{from{opacity:0}to{opacity:1}}
+@keyframes r756BackdropOut{from{opacity:1}to{opacity:0}}
+@keyframes r756ContentBloom{
+  from{opacity:0;transform:translateY(4px);filter:blur(.7px)}
+  to{opacity:1;transform:none;filter:none}
+}
+
+/* Kaynak görseli: aynı img öğesi üzerinde yükleme sırasında fade + yön hissi. */
+.r749BerhViewer{
+  --r756-page-dir:1;
+}
+.r749BerhViewerStage{
+  position:relative;
+  perspective:1000px;
+}
+.r749BerhViewerStage img{
+  transform:translate3d(0,0,0) scale(1);
+  opacity:1;
+  transition:opacity .26s var(--r756-soft),transform .34s var(--r756-silk),filter .28s ease;
+  will-change:transform,opacity,filter;
+  backface-visibility:hidden;
+}
+.r749BerhViewer.r756-page-changing .r749BerhViewerStage img{
+  opacity:.10;
+  transform:translate3d(calc(var(--r756-page-dir) * -18px),0,0) scale(.992);
+  filter:blur(1.2px) brightness(.88);
+  transition:opacity .13s ease-in,transform .17s ease-in,filter .14s ease-in;
+}
+.r749BerhViewer.r756-page-arriving .r749BerhViewerStage img{
+  animation:r756PageArrive .36s var(--r756-silk) both;
+}
+.r749BerhViewer.r756-page-changing .r749BerhViewerTop b,
+.r749BerhViewer.r756-page-changing .r749BerhViewerBottom span{
+  opacity:.48;
+  transform:translateY(2px);
+}
+.r749BerhViewerTop b,.r749BerhViewerBottom span{
+  transition:opacity .2s ease,transform .25s var(--r756-soft);
+}
+.r749BerhViewer.r756-viewer-enter{
+  animation:r756ViewerIn .24s ease-out both;
+}
+@keyframes r756PageArrive{
+  0%{opacity:.08;transform:translate3d(calc(var(--r756-page-dir) * 15px),0,0) scale(.993);filter:blur(1.15px) brightness(.9)}
+  52%{opacity:1;filter:blur(.12px)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:none}
+}
+@keyframes r756ViewerIn{from{opacity:0}to{opacity:1}}
+
+@media(prefers-reduced-motion:reduce){
+  body.r642-info-open #r642ZikirInfoBackdrop,
+  body.r642-info-open #r642ZikirInfoCard,
+  #r642ZikirInfoLayer.r756-info-closing #r642ZikirInfoBackdrop,
+  #r642ZikirInfoLayer.r756-info-closing #r642ZikirInfoCard,
+  body.r754-berhet-theme.r642-info-open #r642ZikirInfoCard.r755-berhet-ready :is(.r642InfoArabic,.r642InfoRows,.r642InfoNote,#r749InfoExtra),
+  .r749BerhViewer.r756-page-arriving .r749BerhViewerStage img,
+  .r749BerhViewer.r756-viewer-enter{
+    animation:none!important;
+  }
+  .r749BerhViewerStage img,.r749BerhViewerTop b,.r749BerhViewerBottom span,#r642ZikirInfoCard{
+    transition:none!important;
+  }
+  .r749BerhViewer.r756-page-changing .r749BerhViewerStage img{
+    opacity:1!important;transform:none!important;filter:none!important;
+  }
+}
+</style>
+<script id="sukun-r756-silk-motion-runtime">
+(()=>{
+'use strict';
+if(window.__SUKUN_R756_SILK_MOTION__)return;
+window.__SUKUN_R756_SILK_MOTION__=1;
+const reduce=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+const $=id=>document.getElementById(id);
+
+/* Detay kartı kapatılırken hidden=true olmadan önce kısa ve temiz bir çıkış ver. */
+let closing=false;
+function softClose(ev){
+  const layer=$('r642ZikirInfoLayer');
+  if(!layer||layer.hidden||closing)return false;
+  if(reduce())return false;
+  closing=true;
+  ev?.preventDefault?.();ev?.stopImmediatePropagation?.();ev?.stopPropagation?.();
+  layer.classList.add('r756-info-closing');
+  setTimeout(()=>{
+    try{window.SukunActiveNameInfo?.close?.()}catch(e){}
+    layer.classList.remove('r756-info-closing');
+    closing=false;
+  },175);
+  return true;
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest?.('#r642InfoClose,#r642ZikirInfoBackdrop'))softClose(e);
+},true);
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!$('r642ZikirInfoLayer')?.hidden)softClose(e);
+},true);
+
+/* Kaynak viewer yaratıldığında src değişimlerini izleyerek eski görseli yumuşat,
+   yeni görsel decode/load olduğunda yönlü bir giriş ver. */
+let viewer=null,img=null,imgObs=null,viewerObs=null,lastIndex=null,token=0;
+function pageIndex(src){const m=String(src||'').match(/berhetiyye-(\d+)\.webp/i);return m?Math.max(0,Number(m[1])-1):null}
+function dirFor(a,b){
+  if(a==null||b==null||a===b)return 1;
+  const n=15,d=(b-a+n)%n;
+  if(d===1)return 1;if(d===n-1)return -1;
+  return b>a?1:-1;
+}
+function finishPage(localToken){
+  if(!viewer||!img||localToken!==token)return;
+  viewer.classList.remove('r756-page-changing');
+  viewer.classList.remove('r756-page-arriving');
+  void img.offsetWidth;
+  viewer.classList.add('r756-page-arriving');
+  setTimeout(()=>{if(localToken===token)viewer?.classList.remove('r756-page-arriving')},390);
+}
+function onSrcChange(){
+  if(!viewer||!img)return;
+  const next=pageIndex(img.getAttribute('src')||img.src);
+  const dir=dirFor(lastIndex,next);lastIndex=next;
+  viewer.style.setProperty('--r756-page-dir',String(dir));
+  const local=++token;
+  if(reduce()){viewer.classList.remove('r756-page-changing','r756-page-arriving');return}
+  viewer.classList.remove('r756-page-arriving');
+  viewer.classList.add('r756-page-changing');
+  const ready=()=>finishPage(local);
+  img.addEventListener('load',ready,{once:true});
+  if(img.complete&&img.naturalWidth>0)setTimeout(ready,28);
+  setTimeout(()=>finishPage(local),650); // ağ/yükleme olayı kaçarsa kart asılı kalmasın
+}
+function attachViewer(v){
+  if(viewer===v)return;
+  viewer=v;img=v.querySelector('#r749BerhViewerImg');if(!img)return;
+  lastIndex=pageIndex(img.getAttribute('src')||img.src);
+  imgObs?.disconnect();
+  imgObs=new MutationObserver(ms=>{if(ms.some(m=>m.attributeName==='src'))onSrcChange()});
+  imgObs.observe(img,{attributes:true,attributeFilter:['src']});
+  const hiddenObs=new MutationObserver(()=>{
+    if(!viewer.hidden&&!reduce()){
+      viewer.classList.remove('r756-viewer-enter');void viewer.offsetWidth;viewer.classList.add('r756-viewer-enter');
+      setTimeout(()=>viewer?.classList.remove('r756-viewer-enter'),280);
+    }else viewer.classList.remove('r756-viewer-enter','r756-page-changing','r756-page-arriving');
+  });
+  hiddenObs.observe(viewer,{attributes:true,attributeFilter:['hidden']});
+}
+function scan(){const v=$('r749BerhViewer');if(v)attachViewer(v)}
+viewerObs=new MutationObserver(scan);viewerObs.observe(document.documentElement,{subtree:true,childList:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan,{once:true});else scan();
+window.SukunR756SilkMotion=Object.freeze({version:'r756',refresh:scan});
+})();
+</script>
 
 </body>
 </html>

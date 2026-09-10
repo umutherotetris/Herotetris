@@ -1,0 +1,10 @@
+{
+  "version": "r755",
+  "base": "r754",
+  "title": "SÜKÛN r755 — Berhetiyye detay kartı flashing düzeltmesi",
+  "summary": [
+    "Berhetiyye isim detay bilgi kısmında eski kartın anlık görünüp kaybolması engellendi",
+    "Premium kaynak kartı tek fazda ve daha temiz açılıyor",
+    "Manifest, service worker ve build marker r755 olarak güncellendi"
+  ]
+}

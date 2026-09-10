@@ -1,0 +1,14 @@
+{
+  "version": "r756",
+  "build": "r756",
+  "base": "r755",
+  "date": "2026-09-10",
+  "type": "silky-card-and-source-page-motion",
+  "cache": "sukun-r756-20260910a",
+  "notes": [
+    "Berhetiyye bilgi kartına 320 ms ipeksi giriş ve 180 ms yumuşak çıkış eklendi",
+    "r755 flashing koruması ile içerik hazır olunca kısa content bloom uygulanır",
+    "Berhetiyye kaynak görsellerinde sayfa değişimi fade/yönlü hareket ile yumuşatıldı",
+    "prefers-reduced-motion desteklenir"
+  ]
+}
