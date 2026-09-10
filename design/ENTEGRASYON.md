@@ -1,3 +1,7 @@
+# r759 güncellemesi
+
+Çizgili tesbih, saydam merkez, altı nur topu ve mor/kırmızı/turkuaz dumansı vektörler eklendi. Güncel davranış ve kontroller: `RAPOR_r759.md`. Yeni dosyalar `assets/sukun-tesbih-weave-r759.svg` ve `assets/sukun-nur-mist-r759.svg`; Service Worker çekirdeğinde yer alır. Diğer görsel dosyaları değişmedi.
+
 # SÜKÛN · Feyz Nur / r758
 
 Bu tasarım r756 uygulamasına işlendi. Giriş dosyası `nero.html`.
