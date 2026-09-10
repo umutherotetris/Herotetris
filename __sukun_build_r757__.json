@@ -1,0 +1,16 @@
+{
+  "build": "r757",
+  "version": "r757",
+  "base": "r756",
+  "mergedFixesFrom": "r744",
+  "date": "2026-09-10",
+  "cache": "sukun-r757-20260910a",
+  "htmlSha256": "3e90fa23413e43176dcd295f409e7e7ce2f8683423df9f0f4dd06ce841419f11",
+  "notes": [
+    "r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.",
+    "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.",
+    "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.",
+    "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.",
+    "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."
+  ]
+}

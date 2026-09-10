@@ -1,39 +1,80 @@
 [
   {
+    "v": "r757",
+    "t": "10 Eylül 2026",
+    "b": [
+      "r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.",
+      "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.",
+      "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.",
+      "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.",
+      "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."
+    ]
+  },
+  {
     "version": "r756",
     "date": "2026-09-10",
     "title": "İpeksi kart ve Berhetiyye sayfa geçişleri",
-    "base": "r755"
+    "base": "r755",
+    "v": "r756",
+    "t": "2026-09-10",
+    "b": [
+      "İpeksi kart ve Berhetiyye sayfa geçişleri"
+    ]
   },
   {
     "version": "r755",
     "date": "2026-09-10",
     "title": "Berhetiyye detay kartı flashing düzeltmesi",
-    "base": "r754"
+    "base": "r754",
+    "v": "r755",
+    "t": "2026-09-10",
+    "b": [
+      "Berhetiyye detay kartı flashing düzeltmesi"
+    ]
   },
   {
     "version": "r754",
     "date": "2026-09-10",
     "title": "Berhetiyye derin Tefekkür + kaynak sıçrama + premium tema",
-    "base": "r753"
+    "base": "r753",
+    "v": "r754",
+    "t": "2026-09-10",
+    "b": [
+      "Berhetiyye derin Tefekkür + kaynak sıçrama + premium tema"
+    ]
   },
   {
     "version": "r752",
     "date": "2026-09-10",
     "title": "Berhetiyye premium kaynak kartı entegrasyonu",
-    "base": "r751"
+    "base": "r751",
+    "v": "r752",
+    "t": "2026-09-10",
+    "b": [
+      "Berhetiyye premium kaynak kartı entegrasyonu"
+    ]
   },
   {
     "version": "r751",
     "date": "2026-09-10",
     "title": "Aktif isim tek satır düzeltmesi",
-    "base": "r750"
+    "base": "r750",
+    "v": "r751",
+    "t": "2026-09-10",
+    "b": [
+      "Aktif isim tek satır düzeltmesi"
+    ]
   },
   {
     "version": "r750",
     "date": "2026-09-10",
     "title": "Durdur düğmesi renk düzeltmesi",
-    "base": "r749"
+    "base": "r749",
+    "v": "r750",
+    "t": "2026-09-10",
+    "b": [
+      "Durdur düğmesi renk düzeltmesi"
+    ]
   },
   {
     "v": "r749",

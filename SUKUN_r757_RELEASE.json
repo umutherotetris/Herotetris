@@ -1,0 +1,155 @@
+{
+  "build": "r757",
+  "version": "r757",
+  "base": "r756",
+  "mergedFixesFrom": "r744",
+  "date": "2026-09-10",
+  "cache": "sukun-r757-20260910a",
+  "htmlSha256": "3e90fa23413e43176dcd295f409e7e7ce2f8683423df9f0f4dd06ce841419f11",
+  "notes": [
+    "r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.",
+    "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.",
+    "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.",
+    "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.",
+    "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."
+  ],
+  "verification": {
+    "build": "r757",
+    "at": "2026-09-10T02:49:04.655Z",
+    "kind": "source-vm-regression",
+    "total": 155,
+    "verification": {
+      "source": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      },
+      "mini": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "restart": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "failure": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "transport": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "ring": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "audit": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "storage": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "settings_queue": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "studio": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "ui": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "visual_sources": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      }
+    },
+    "testedFiles": {
+      "nero.html": "3e90fa23413e43176dcd295f409e7e7ce2f8683423df9f0f4dd06ce841419f11",
+      "sw.js": "e0ce5538e235b0d2bc5aa06125a0862d962a53f1400fd168770e732759975069",
+      "manifest.webmanifest": "049790e95772fce43210831cf69455ae4479c49c25514cea87888329b93f8c3b"
+    },
+    "browserRun": false,
+    "physicalDeviceRun": false
+  },
+  "integrity": {
+    "staticIds": 1015,
+    "duplicateIds": 0,
+    "preservedBaseAssets": 31,
+    "newAssets": 3,
+    "changedScriptBlocks": [
+      "surumNotlari",
+      "r514-core-zikir-sentez",
+      "r514-core-letaif-kayit",
+      "r514-core-akis-nefs",
+      "r514-core-yedek-vird",
+      "r175-workflow-system",
+      "r455-diagnostics-regression-runtime",
+      "r611-current-zikir-hero-runtime",
+      "r640-zikir-transport-gate",
+      "r633-flow-dock-placement-runtime",
+      "r635-unified-foreground-runtime",
+      "r642-active-name-info-runtime",
+      "r698-transport-authority",
+      "r716-release-identity-runtime",
+      "r716-shell-runtime",
+      "sukun-r749-source-atlas-runtime",
+      "sukun-r752-berhetiyye-sourcecard-runtime",
+      "sukun-r754-berhetiyye-deep-runtime",
+      "sukun-r755-berhetiyye-info-flash-runtime",
+      "sukun-r756-silk-motion-runtime"
+    ],
+    "changedStyleBlocks": [
+      "r740-canonical-name-style",
+      "sukun-r756-silk-motion-style"
+    ],
+    "addedStyleBlocks": [
+      "sukun-r757-nur-theme"
+    ],
+    "sourceDataPreserved": true,
+    "browserVisualCheck": false,
+    "physicalDeviceCheck": false
+  },
+  "artwork": [
+    {
+      "file": "assets/sukun-nur-sanctuary-r757.png",
+      "width": 887,
+      "height": 1774,
+      "mode": "RGB",
+      "bytes": 2662367,
+      "sha256": "069f73cef939fc839113e61248e8b41c9787836b7a017d8b7b6e3d3f5ee33cb4"
+    },
+    {
+      "file": "assets/sukun-nur-ring-r757.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 1713434,
+      "sha256": "b9bf594010438b1c49ab693a94ba5022569462c334f606754306bb63f808f6fb"
+    },
+    {
+      "file": "design/sukun-nur-concept.png",
+      "width": 887,
+      "height": 1774,
+      "mode": "RGB",
+      "bytes": 2641084,
+      "sha256": "e308a576b00403d48c83869cfca01b02fa8b2f885e04951033bd9e6bcefec226"
+    }
+  ]
+}

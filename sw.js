@@ -1,8 +1,8 @@
-/* SÜKÛN r756 — Berhetiyye deep theme + source jumps */
+/* SÜKÛN r757 — Nur visual merge and runtime repairs */
 'use strict';
 
-const SURUM = 'r756';
-const CACHE = 'sukun-r756-20260910a';
+const SURUM = 'r757';
+const CACHE = 'sukun-r757-20260910a';
 
 const CORE = [
   './nero.html',
@@ -19,7 +19,10 @@ const CORE = [
   './assets/ui-target-r722.svg',
   './assets/ui-hourglass-r722.svg',
   './assets/ui-exit-r722.svg',
-  './assets/ui-speaker-r722.svg'
+  './assets/ui-speaker-r722.svg',
+  './assets/sukun-nur-sanctuary-r757.png',
+  './assets/sukun-nur-ring-r757.png',
+  './assets/sukun-nur-orbit-r757.svg'
 ];
 /* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
@@ -33,13 +36,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r756__.json';
+const BUILD_MARKER='./__sukun_build_r757__.json';
 
-const NOTLAR = [
-  "r756 · Berhetiyye detay bilgi kartı daha ipeksi giriş/çıkış animasyonuna geçirildi; r755 flashing koruması korunur.",
-  "r756 · Berhetiyye kaynak görseli sayfa geçişleri fade + yönlü kayma ile akıcı hâle getirildi; yükleme gecikmesinde eski görsel sert sıçramaz.",
-  "r756 · Reduced Motion tercihinde tüm yeni animasyonlar otomatik kapanır; SW/manifest/build atomik r756'dır."
-];
+const NOTLAR = ["r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.", "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.", "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.", "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.", "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
@@ -68,14 +67,26 @@ async function marker(cache){
   if(!r)return null;
   try{return await r.json()}catch(e){return null}
 }
-async function kabuguHazirla(){
+let prepareInFlight=null;
+function kabuguHazirla(){
+  if(prepareInFlight)return prepareInFlight;
+  const task=prepareShell();prepareInFlight=task;
+  task.finally(()=>{if(prepareInFlight===task)prepareInFlight=null}).catch(()=>{});
+  return task;
+}
+async function prepareShell(){
   const cache=await caches.open(CACHE);
-  /* CORE tam değilse install başarısız olsun: yarım yeni sürüm asla aktive edilmez. */
+  /* Download and validate the complete core before replacing a working shell.
+     A failed refresh must not partially overwrite the previous complete cache. */
+  const prepared=[];
   for(const path of CORE){
     const {req,res}=await fetchReload(path);
     await validateCore(path,res);
-    await cache.put(req,res.clone());
+    const body=await res.arrayBuffer();
+    prepared.push({req,res:new Response(body,{status:res.status,statusText:res.statusText,headers:res.headers})});
   }
+  for(const {req,res} of prepared)await cache.put(req,res);
+  prepared.length=0;
   /* Opsiyoneller güncellemeyi düşürmez. */
   await Promise.allSettled(OPTIONAL.map(async path=>{
     const {req,res}=await fetchReload(path);await cache.put(req,res.clone());
