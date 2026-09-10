@@ -1,0 +1,22 @@
+{
+  "build": "r762",
+  "version": "r762",
+  "base": "r761",
+  "date": "2026-09-10",
+  "cache": "sukun-r762-20260910a",
+  "notes": [
+    "Ambiyans/Frekanslar/Zikir/Düzen/Bildirimler/Tekke ana sekme çubuğunun sticky davranışı geri getirildi.",
+    "Normal görünümde body yeniden ayrı scroll-container olmaktan çıkarıldı; sticky belge kaydırmasına bağlandı.",
+    "Ana header, navigasyon ve Kişisel Merkez cam yüzeyleri daha şeffaflaştırılarak arka plan görseli daha görünür hale getirildi.",
+    "r761 marka sahipliği korunur; üst bar Gemini-benzeri işaret geri getirilmez."
+  ],
+  "verification": {
+    "browserRun": false,
+    "physicalDeviceRun": false
+  },
+  "testedFiles": {
+    "nero.html": "32e419e7965a7db6f7fcf1df17b390bfce40a661f392f5aa0fe5c616036fa4b8",
+    "sw.js": "c1e9ac9d732ce68e2b60c1981caba7583a953a753b58b1fa7ac46d574fab8dc7",
+    "manifest.webmanifest": "a0b4a71a927befd779edc8e2764603a878ef8b49f74fcc9db22323cb16307d6f"
+  }
+}

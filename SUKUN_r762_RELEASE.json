@@ -1,0 +1,11 @@
+{
+  "version": "r762",
+  "base": "r761",
+  "title": "SÜKÛN r762 — Sticky ana menü ve daha şeffaf ana sayfa",
+  "summary": [
+    "Ana sekme menüsü yeniden sticky",
+    "Ana sayfa cam yüzeyleri daha transparan",
+    "Arka plan görselinin görünürlüğü artırıldı",
+    "r761 logo/marka sahipliği korunuyor"
+  ]
+}

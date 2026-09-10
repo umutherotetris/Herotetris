@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r761">
+<meta name="sukun-build" content="r762">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r761">
+<link rel="manifest" href="./manifest.webmanifest?v=r762">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r761</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r762</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -26332,7 +26332,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r761';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r762';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -67989,10 +67989,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r761',date='2026-09-10';
+const build=meta?.content||'r762',date='2026-09-10';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r761',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r762',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -71249,6 +71249,114 @@ html body.r716-shell #tab-zkr #zCountVisual #r759SealAura .r759Weave{left:50%!im
 html body #r616Topbar .r616BrandMark{display:none!important}
 html body #r616Topbar .r616Brand{gap:0!important}
 html body .wrap>header .shimmer-logo{display:inline-block!important}
+</style>
+
+
+<style id="sukun-r762-sticky-transparent-home">
+/* r762 — ana menü sticky geri dönüş + ana sayfa daha şeffaf */
+:root{--r762-sticky-top:max(6px,env(safe-area-inset-top,0px))}
+
+/* r532 sözleşmesini yeniden kur: gerçek belge kaydırır, body gizli scroll-container olmaz. */
+html body.r699-layout:not(.sukun-tefekkur-mode){
+  overflow-x:visible!important;
+  overflow-y:visible!important;
+}
+html body.r699-layout:not(.sukun-tefekkur-mode)>.wrap{
+  overflow:visible!important;
+  contain:none!important;
+}
+
+/* Ambiyans · Frekanslar · Zikir · Düzen · Bildirimler · Tekke ana navigasyonu */
+html body:not(.sukun-tefekkur-mode) .wrap>.tabs{
+  position:-webkit-sticky!important;
+  position:sticky!important;
+  top:var(--r762-sticky-top)!important;
+  z-index:620!important;
+  isolation:isolate!important;
+  margin-top:10px!important;
+  margin-bottom:14px!important;
+  background:
+    radial-gradient(110% 150% at 18% 0%,rgba(78,224,202,.075),transparent 48%),
+    linear-gradient(180deg,rgba(5,26,34,.58),rgba(4,17,28,.46))!important;
+  border-color:rgba(120,225,211,.22)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.20),0 0 0 1px rgba(233,202,126,.035),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  backdrop-filter:blur(15px) saturate(1.11)!important;
+  -webkit-backdrop-filter:blur(15px) saturate(1.11)!important;
+}
+html body:not(.sukun-tefekkur-mode) .wrap>.tabs::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:linear-gradient(105deg,rgba(255,255,255,.025),transparent 24%,transparent 76%,rgba(106,239,216,.025));
+}
+
+/* Arka planın kendisini daha görünür yap: karartma perdesini incelt. */
+html body.r716-shell{
+  background-color:#031018!important;
+  background-image:
+    linear-gradient(180deg,rgba(2,10,16,.08),rgba(3,12,20,.16) 62%,rgba(2,8,14,.30)),
+    url('./assets/tefekkur-sanctuary-r710.webp')!important;
+}
+html body.r716-shell::before{opacity:.46!important}
+
+/* Ana marka kartı: cam kalır, fakat manzara artık arkadan okunur. */
+html body.r716-shell .wrap>header{
+  background:
+    radial-gradient(110% 135% at 50% 0%,rgba(39,156,143,.12),transparent 52%),
+    linear-gradient(135deg,rgba(9,55,61,.50),rgba(3,18,30,.58))!important;
+  border-color:rgba(160,222,205,.28)!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.18),0 0 26px rgba(43,191,168,.045),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  backdrop-filter:blur(7px) saturate(1.06)!important;
+  -webkit-backdrop-filter:blur(7px) saturate(1.06)!important;
+}
+html body.r716-shell .wrap>header::before{opacity:.34!important}
+
+/* Ana sayfanın büyük yüzeyleri — daha hafif cam. */
+html body.r716-shell .wrap>.masterBar,
+html body.r716-shell .wrap>#todayCard,
+html body.r716-shell .wrap>#prDashboard{
+  background:
+    radial-gradient(120% 150% at 0% 0%,rgba(86,235,210,.045),transparent 43%),
+    radial-gradient(115% 145% at 100% 100%,rgba(157,108,255,.045),transparent 46%),
+    linear-gradient(155deg,rgba(5,25,34,.46),rgba(4,17,28,.34))!important;
+  border-color:rgba(104,231,211,.16)!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.035)!important;
+  backdrop-filter:blur(8px) saturate(1.05)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(1.05)!important;
+}
+html body.r716-shell #prDashboard::before{opacity:.40!important}
+
+/* Kişisel Merkez iç kartları da koyu blok olmaktan çıksın. */
+html body.r716-shell #prDashboard :is(.prDashTop,.prNow,.prDashActions,.prMetric){
+  background:linear-gradient(180deg,rgba(5,23,31,.31),rgba(3,14,23,.19))!important;
+  border-color:rgba(112,226,210,.105)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+html body.r716-shell #prDashboard .prSearchBtn{
+  background:rgba(3,14,23,.22)!important;
+  border-color:rgba(112,226,210,.11)!important;
+}
+html body.r716-shell :is(.tcStat,.session-stat){
+  background:linear-gradient(180deg,rgba(5,20,28,.40),rgba(4,14,23,.26))!important;
+}
+
+/* Sticky bar üstteyken odak/overlay katmanlarının altında kalır. */
+body.r642-info-open .wrap>.tabs,
+body.r434-inline-details-open .wrap>.tabs{z-index:180!important}
+
+@media(max-width:430px){
+  html body:not(.sukun-tefekkur-mode) .wrap>.tabs{
+    top:max(4px,env(safe-area-inset-top,0px))!important;
+    padding:6px!important;
+    border-radius:19px!important;
+  }
+  html body.r716-shell .wrap>header{backdrop-filter:blur(6px) saturate(1.04)!important;-webkit-backdrop-filter:blur(6px) saturate(1.04)!important}
+}
+@media(prefers-reduced-transparency:reduce){
+  html body.r716-shell .wrap>header,
+  html body:not(.sukun-tefekkur-mode) .wrap>.tabs,
+  html body.r716-shell .wrap>.masterBar,
+  html body.r716-shell .wrap>#todayCard,
+  html body.r716-shell .wrap>#prDashboard{background:rgba(5,22,31,.88)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
 </style>
 
 </body>
