@@ -1,4 +1,4 @@
-# SÜKÛN · Feyz Nur / r757
+# SÜKÛN · Feyz Nur / r758
 
 Bu tasarım r756 uygulamasına işlendi. Giriş dosyası `nero.html`.
 Feyz görünümü açıkken yeni sahne ve çember kullanılır. Mevcut tema tercihi
@@ -22,21 +22,9 @@ yerleşik image_gen kullanıldı.
 
 1. `#r717Scene` tek arka planı taşır. Sayaç kartında tekrarlayan ikinci bir
    sahne yerine şeffaf yüzey kullanılır. Mobilde küçük eski görsele geçilmez.
-2. `#r716Flames` içindeki PNG ayrıntılı çemberi taşır. Dosya RGB'dir;
-   gerçek alfa kanalı yoktur. Siyah zemin CSS `mix-blend-mode: screen`
-   ile ışık olarak birleştirilir. Uygulamaya dama desenli taslak eklenmedi.
-   Bu birleştirme, hedef arka planla renkleri doğal olarak etkileştirir;
-   her zeminde aynı piksel rengini koruduğu iddia edilmez.
-3. Aynı çemberde iki SVG ışık katmanı 28 ve 43 saniyelik ters yönlü
-   dönüşlerle hareket eder. İşlemeli ana halka sabit kalır. Sayı, yüzde,
-   hedef ve düğmeler canlı HTML öğeleridir.
-4. Hareketin sahibi mevcut `SukunR716Shell` modülüdür. Yeni sürekli
-   JavaScript çizim döngüsü kurulmaz. Canlı Tefekkür görünümünde hareket
-   eder; Sabit, azaltılmış hareket, pil modu, gizli sekme, bilgi kartı ve
-   kaynak görüntüleyici durumlarında dekoratif hareket durur.
-5. Berhetiyye kartları gerçek veri ve okunabilir metin kullanır. Unsur
-   simgeleri cihaz emojisi yerine SVG'dir. Yedi basamak dar ekranda yatay
-   kaydırılır; açıklamalar içerikten çıkarılmaz.
+2. `#r716Flames` içindeki RGB master değişmeden korunur. r758 inline SVG filtresi siyah piksellerin alfasını sıfırlar; çok sönük pikselleri kademeli saydamlaştırır. `screen` katman karıştırması kullanılmaz.
+3. Ana halka 64 saniyede, iki SVG ışık katmanı 28 ve 43 saniyede saat yönünün tersine döner. Sayı ve kontroller canlı HTML olarak kalır.
+4. Mevcut `SukunR716Shell` hareket sahibidir. Ana zikir ve tefekkürde Canlı tercihi geçerlidir; Sabit, azaltılmış hareket, pil modu, gizli sekme ve bilgi penceresi dönüşü durdurur. Yeni sürekli JavaScript çizim döngüsü yoktur.
 
 ## Kurulum
 
@@ -57,4 +45,4 @@ konseptle piksel düzeyinde eşleşme garanti edilmez.
 
 Bu komut izole kaynak/VM ve DOM-fixture testlerini çalıştırır; bir
 tarayıcı veya fiziksel cihaz testi değildir. Birleşim raporu kökteki
-`RAPOR_r757.md`, kaynak farkı `diagnostics/r757/SOURCE_DIFF.patch` içindedir.
+`RAPOR_r758.md`, kaynak farkı `diagnostics/r758/SOURCE_DIFF.patch` içindedir.
