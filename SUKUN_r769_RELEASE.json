@@ -1,0 +1,16 @@
+{
+  "app": "SUKUN",
+  "version": "r769",
+  "build": "r769",
+  "date": "2026-09-11",
+  "base": "r768",
+  "notes": [
+    "Tefekkür ses kaynağı alanındaki yanıltıcı ‘Kaynak bekleniyor’ placeholderı kaldırıldı; kaynak bilinmiyorsa rozet görünmez.",
+    "Gerçek ses hazırlığı sırasında yalnız ‘Ses hazırlanıyor’ gösterilir; kaynak kesinleşince Kendi kaydın, Sesli okuma veya Sessiz sayım durumu görünür.",
+    "r768 kalıcı Arapça + Latin aktif isim cam sahipliği ve r767 ses/kaynak/kategori onarımları korunmuştur."
+  ],
+  "validation": {
+    "browser": false,
+    "physicalAndroid": false
+  }
+}

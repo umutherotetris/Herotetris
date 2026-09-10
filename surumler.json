@@ -1,5 +1,24 @@
 [
   {
+    "v": "r769",
+    "t": "11 Eylül 2026",
+    "b": [
+      "Tefekkür ses kaynağı alanındaki yanıltıcı ‘Kaynak bekleniyor’ placeholderı kaldırıldı; kaynak bilinmiyorsa rozet görünmez.",
+      "Gerçek ses hazırlığı sırasında yalnız ‘Ses hazırlanıyor’ gösterilir; kaynak kesinleşince Kendi kaydın, Sesli okuma veya Sessiz sayım durumu görünür.",
+      "r768 kalıcı Arapça + Latin aktif isim cam sahipliği ve r767 ses/kaynak/kategori onarımları korunmuştur."
+    ]
+  },
+  {
+    "v": "r768",
+    "t": "11 Eylül 2026",
+    "b": [
+      "Berhetiyye/Esmâ Latin aktif adı artık zAr'ın çocuğu değildir; Arapça ve Latin ad kalıcı r768ActiveGlassHost içinde kardeş katmanlar olarak yaşar.",
+      "renderZikir zAr.textContent değerini yenilese bile Latin ad silinmez; r530/r765/r766 eski yerleşim sahipleri r768 cam sahibi etkin olduğunda hero'yu taşıyamaz.",
+      "Mobil tek satır Latin ad, cam host genişliğine göre yeniden ölçülür ve Arapça satırın hemen altında görünür kalır.",
+      "r767 kaynak, kategori, kilit-dönüş, baked eko ve Bendir onarımları korunmuştur."
+    ]
+  },
+  {
     "v": "r767",
     "t": "11 Eylül 2026",
     "b": [

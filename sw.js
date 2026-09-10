@@ -1,8 +1,8 @@
-/* SÜKÛN r767 — source/audio/category ownership repair */
+/* SÜKÛN r769 — clean source-status presentation */
 'use strict';
 
-const SURUM = 'r767';
-const CACHE = 'sukun-r767-20260911b';
+const SURUM = 'r769';
+const CACHE = 'sukun-r769-20260911a';
 
 const CORE = [
   './nero.html',
@@ -38,7 +38,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r767__.json';
+const BUILD_MARKER='./__sukun_build_r769__.json';
 
 const NOTLAR = ["r766 aktif zikir ismi üst cam perdeye taşındı; alt tekrar başlığı kaldırıldı ve tek satır auto-fit düzeni eklendi.", "r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.", "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.", "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.", "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.", "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."];
 
