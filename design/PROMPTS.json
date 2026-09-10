@@ -1,0 +1,18 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "file": "design/sukun-nur-concept.png",
+      "role": "UI concept; not a running screenshot"
+    },
+    {
+      "file": "assets/sukun-nur-sanctuary-r757.png",
+      "role": "Text-free background"
+    },
+    {
+      "file": "assets/sukun-nur-ring-r757.png",
+      "role": "RGB luminous ring for CSS screen compositing; not RGBA",
+      "prompt": "Use case: precise-object-edit. Edit target: attached SÜKÛN jeweled circular ring. Replace every gray-and-white checkerboard pixel inside the central aperture and outside the ring with PURE SOLID BLACK (#000000), perfectly uniform black. Keep all ring ornament details, gold filigree, cyan pearl highlights, sapphire/emerald/violet silk light ribbons, their original color, positions, sharpness and material quality. The outer luminous ribbons fade naturally into pure black. Center is empty perfectly flat black; no symbols or count. Flat black all four corners. Square composition at same scale. This is a high resolution light sprite intended for additive screen compositing over an app background. NOT a transparency preview: DO NOT draw any checkerboard, grid, texture, gray or white. The black background must be truly empty and untextured. Preserve the ring exactly, change only the background."
+    }
+  ]
+}
