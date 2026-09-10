@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r758">
+<meta name="sukun-build" content="r759">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r758">
+<link rel="manifest" href="./manifest.webmanifest?v=r759">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r758</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r759</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,15 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r759",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Çizgili tesbih örgüsü ve sayaçla aydınlanan taneler geri getirildi; mühür merkezi transparan.",
+      "Mor, pembe-kırmızı ve turkuaz dumansı kurdeleler; altı ışıklı nur tanesi; saat yönünün tersine yörüngeler.",
+      "Canlı/Sabit ve görünürlük kuralları tesbih çizimine de uygulanır; gereksiz arka plan çizim döngüsü durur."
+    ]
+  },
   {
     "v": "r758",
     "t": "10 Eylül 2026",
@@ -26305,7 +26314,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r758';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r759';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -29120,7 +29129,7 @@ const MUHR={
     if(done>0){
       x.beginPath();
       for(let i=0;i<done;i++){
-        const a1=(i/n)*_TAU-Math.PI/2, a2=(((i+k)%n)/n)*_TAU-Math.PI/2;
+        const a1=-(i/n)*_TAU-Math.PI/2, a2=-(((i+k)%n)/n)*_TAU-Math.PI/2;
         x.moveTo(cx+Math.cos(a1)*R, cy+Math.sin(a1)*R);
         x.lineTo(cx+Math.cos(a2)*R, cy+Math.sin(a2)*R);
       }
@@ -29144,7 +29153,7 @@ const MUHR={
 
     /* — taneler — */
     for(let i=0;i<n;i++){
-      const a=(i/n)*_TAU-Math.PI/2;
+      const a=-(i/n)*_TAU-Math.PI/2;
       const px=cx+Math.cos(a)*R, py=cy+Math.sin(a)*R;
       const lit=i<done;
       x.beginPath(); x.arc(px,py,lit?2.7:1.45,0,_TAU);
@@ -29175,11 +29184,13 @@ const MUHR={
   /* Görünmezken döngüyü SÜRDÜRMEK yerine BIRAK: sekmeye dönünce wake() uyandırır.
      (Eskisi her karede getElementById çağırıp boş dönüyordu.) */
   wake(){
+    if(document.body.classList.contains('r716-shell')&&!document.body.classList.contains('r716-motion')){this.draw();return;}
     if(document.body.dataset.perf==='pil'){ this.draw(); return; }
     if(!this.raf && !this.reduced && this.x){ this.last=performance.now(); this.loop(); }
   },
 
   loop(){
+    if(document.body.classList.contains('r716-shell')&&!document.body.classList.contains('r716-motion')){this.raf=null;return;}
     const sec=document.getElementById('tab-zkr');
     if(!this.x||document.hidden||!sec||sec.hidden){ this.raf=null; return; }   /* uyu */
     if(document.body.dataset.perf==='pil'){ this.raf=null; this.draw(); return; }
@@ -67961,10 +67972,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r758',date='2026-09-10';
+const build=meta?.content||'r759',date='2026-09-10';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r758',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r759',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68838,7 +68849,7 @@ html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode:is(body,.
 'use strict';
 if(window.SukunR716Shell)return;
 // Keep the r716 API and preference key so an upgrade preserves the user's choice.
-const VERSION='r758',KEY='sukun.shell.r716',B=document.body;
+const VERSION='r759',KEY='sukun.shell.r716',B=document.body;
 let enabled=true,applied=false,flames=null,pulseAnimation=null,pending=0,updates=0,lastReason='',lastPulse=0,departed=false,appearanceSig='';
 const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
 try{enabled=localStorage.getItem(KEY)!=='0'}catch(_){}
@@ -68858,18 +68869,36 @@ function ensureFlames(){
  }
  return true;
 }
+function ensureSeal(){
+ const ring=document.getElementById('zCountVisual');if(!ring||document.getElementById('r759SealAura'))return;
+ const aura=document.createElement('span');aura.id='r759SealAura';aura.setAttribute('aria-hidden','true');
+ for(const [cls,src] of [['r759Weave','sukun-tesbih-weave-r759.svg'],['r759Mist','sukun-nur-mist-r759.svg'],['r759Mist echo','sukun-nur-mist-r759.svg']]){
+  const img=document.createElement('img');img.className=cls;img.src='./assets/'+src;img.alt='';img.draggable=false;img.decoding='async';aura.appendChild(img);
+ }
+ for(let i=0;i<6;i++){
+  const orbit=document.createElement('span');orbit.className='r759PearlOrbit';orbit.style.setProperty('--pearl-phase',(-i*60)+'deg');orbit.style.setProperty('--pearl-time',(19+i*4)+'s');
+  const pearl=document.createElement('i');pearl.className='r759Pearl';pearl.style.setProperty('--pearl-color',['#99ffe2','#c086ff','#ff7091'][i%3]);orbit.appendChild(pearl);aura.appendChild(orbit);
+ }
+ ring.appendChild(aura);
+}
+function syncMuhr(motion){
+ safe(()=>{if(typeof MUHR==='undefined')return;if(motion)MUHR.wake();else{if(MUHR.raf)cancelAnimationFrame(MUHR.raf);MUHR.raf=null;MUHR.draw()}});
+}
+
 function setClass(name,on){if(B.classList.contains(name)!==on)B.classList.toggle(name,on)}
 function update(reason='refresh'){
  if(pending)cancelAnimationFrame(pending);pending=0;lastReason=reason;updates++;
- applied=enabled&&!['amoled','sabah'].includes(B.dataset.tema);
+ const wasApplied=applied;applied=enabled&&!['amoled','sabah'].includes(B.dataset.tema);
  setClass('r716-shell',applied);
  const a=safe(()=>window.SukunAtmosphereR706?.snapshot?.(),{})||{};
  const value=Number(a.intensity),intensity=Number.isFinite(value)?Math.max(.2,Math.min(1,value)):.85;
  if(B.style.getPropertyValue('--r717-ambience')!==String(intensity))B.style.setProperty('--r717-ambience',String(intensity));
  const motion=applied&&(B.classList.contains('sukun-tefekkur-mode')||B.classList.contains('sukun-zikir-tab'))&&!B.classList.contains('r699-drawer-open')&&!B.classList.contains('r434-inline-details-open')&&!B.classList.contains('r642-info-open')&&!document.getElementById('r749BerhViewer')?.matches(':not([hidden])')&&(!B.classList.contains('sukun-tefekkur-mode')||a.visible!==false)&&!document.hidden&&!departed&&!reduced?.matches&&(a.preference||'live')==='live'&&B.dataset.perf!=='pil'&&B.dataset.perfEffective!=='pil';
+ const changedMotion=B.classList.contains('r716-motion')!==motion;
  setClass('r716-motion',motion);
  if(!motion){pulseAnimation?.cancel();pulseAnimation=null}
- if(applied){ensureScene();ensureFlames()}
+ if(applied){ensureScene();ensureFlames();ensureSeal()}
+ if(changedMotion||wasApplied!==applied)syncMuhr(motion||!applied);
  if(flames&&flames.hidden===applied)flames.hidden=!applied;
  const nextAppearance=[enabled,applied,B.dataset.tema||''].join('|');
  if(nextAppearance!==appearanceSig){
@@ -71130,6 +71159,39 @@ html body #r642ZikirInfoBackdrop{touch-action:pan-y pinch-zoom;backdrop-filter:n
 @media(prefers-contrast:more){
  html body.r716-shell.r745-visual-polish #tab-zkr>.card.zCtl,html body.r716-shell.sukun-tefekkur-mode #tab-zkr>.card.zCtl{background:rgba(3,17,28,.95)!important}
 }
+
+</style>
+<style id="sukun-r759-living-seal">
+/* r759: centre has no fill; the line work and live count share the sanctuary. */
+html body.r716-shell #tab-zkr #zCountVisual#zCountVisual,
+html body.r716-shell #tab-zkr #tfRefinedLayout #zCountVisual#zCountVisual,
+html body.r716-shell #tab-zkr #zCountVisual .cntNums{background:transparent!important;box-shadow:none!important}
+html body.r716-shell #tab-zkr #zCountVisual #zMuhr{
+ display:block!important;visibility:visible!important;position:absolute!important;
+ inset:17%!important;margin:0!important;width:66%!important;height:66%!important;
+ opacity:.9!important;z-index:1!important;pointer-events:none!important;
+ background:transparent!important;transform:none!important;filter:none!important;
+}
+html body.r716-shell #zCountVisual .cntNums{z-index:6!important;text-shadow:0 2px 7px #02151c,0 0 15px #02151c}
+#r759SealAura{display:none}
+html body.r716-shell #zCountVisual #r759SealAura{
+ display:block;position:absolute;inset:0;z-index:1;overflow:visible;pointer-events:none!important;opacity:var(--r717-ambience,.85);
+}
+html body.r716-shell #zCountVisual #r759SealAura *{pointer-events:none!important;user-select:none;-webkit-user-drag:none}
+#r759SealAura img{position:absolute;display:block;object-fit:contain;max-width:none}
+#r759SealAura .r759Weave{inset:17%;width:66%;height:66%;opacity:.55;animation:r759Turn 96s linear infinite paused}
+#r759SealAura .r759Mist{inset:-7%;width:114%;height:114%;opacity:calc(.3 + var(--r717-ambience,.85) * .5);animation:r759Turn 37s linear infinite paused,r759MistBreath 9s ease-in-out infinite alternate paused}
+#r759SealAura .r759Mist.echo{inset:-2%;width:104%;height:104%;opacity:.38;animation-duration:53s,13s;animation-delay:-19s,-5s}
+#r759SealAura .r759PearlOrbit{position:absolute;inset:1%;border-radius:50%;animation:r759PearlTurn var(--pearl-time) linear infinite paused;rotate:var(--pearl-phase)}
+#r759SealAura .r759PearlOrbit:nth-last-child(even){inset:7%}
+#r759SealAura .r759Pearl{display:block;position:absolute;left:50%;top:0;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#fff 0 12%,var(--pearl-color) 36%,transparent 76%);box-shadow:0 0 8px 2px var(--pearl-color),0 0 20px var(--pearl-color);animation:r759PearlBreath 3.7s ease-in-out infinite alternate paused}
+html body.r716-shell.r716-motion #zCountVisual #r759SealAura :is(img,.r759PearlOrbit,.r759Pearl){animation-play-state:running!important}
+html body.r716-shell:not(.r716-motion) #zCountVisual #r759SealAura *{animation-play-state:paused!important}
+@keyframes r759Turn{from{rotate:0deg}to{rotate:-360deg}}
+@keyframes r759PearlTurn{from{rotate:var(--pearl-phase)}to{rotate:calc(var(--pearl-phase) - 360deg)}}
+@keyframes r759MistBreath{from{scale:.98;opacity:.38}to{scale:1.025;opacity:.76}}
+@keyframes r759PearlBreath{from{scale:.78;opacity:.72}to{scale:1.2;opacity:1}}
+@media(prefers-reduced-motion:reduce){html body.r716-shell.r716-motion #zCountVisual #r759SealAura *{animation-play-state:paused!important}}
 
 </style>
 </body>

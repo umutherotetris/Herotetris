@@ -1,0 +1,98 @@
+{
+  "build": "r759",
+  "version": "r759",
+  "base": "r758",
+  "date": "2026-09-10",
+  "cache": "sukun-r759-20260910a",
+  "notes": [
+    "Çizgili tesbih örgüsü ve sayaçla aydınlanan taneler geri getirildi; mühür merkezi transparan.",
+    "Mor, pembe-kırmızı ve turkuaz dumansı kurdeleler; altı ışıklı nur tanesi; saat yönünün tersine yörüngeler.",
+    "Canlı/Sabit ve görünürlük kuralları tesbih çizimine de uygulanır; gereksiz arka plan çizim döngüsü durur."
+  ],
+  "htmlSha256": "968b1aacfeff7893ebe782ed1b168a3ee4d2c9b857c3cd380701c098c0b9943f",
+  "verification": {
+    "build": "r759",
+    "at": "2026-09-10T03:48:18.020Z",
+    "kind": "source-vm-regression",
+    "total": 174,
+    "verification": {
+      "source": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      },
+      "mini": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "restart": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "failure": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "transport": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "ring": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "audit": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "storage": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "settings_queue": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "studio": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "ui": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "visual_sources": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "repairs": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "seal": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      }
+    },
+    "testedFiles": {
+      "nero.html": "968b1aacfeff7893ebe782ed1b168a3ee4d2c9b857c3cd380701c098c0b9943f",
+      "sw.js": "4f7d28a13570a4d2a5b6cb2430e487ff307a8e1de5a44f778587970b7c5a7e6b",
+      "manifest.webmanifest": "1dab24202a240ca592b1024f6b73811a57e9ea659ea3b5870e4bdc6605b0d6f4"
+    },
+    "browserRun": false,
+    "physicalDeviceRun": false
+  }
+}
