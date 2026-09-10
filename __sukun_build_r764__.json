@@ -1,0 +1,21 @@
+{
+  "build": "r764",
+  "version": "r764",
+  "base": "r763",
+  "date": "2026-09-10",
+  "cache": "sukun-r764-20260910a",
+  "notes": [
+    "Başlık camı daha ince ve lüks hâle getirildi; cam hissi korunurken blur baskısı azaltıldı.",
+    "Ana sayfa kart yüzeyleri daha transparan yapıldı; arka plan sahnesi daha çok öne çıktı.",
+    "Altın çizgiler ve vurgu tonları inceltilerek daha zarif bir görünüm verildi."
+  ],
+  "verification": {
+    "browserRun": false,
+    "physicalDeviceRun": false
+  },
+  "testedFiles": {
+    "nero.html": "15b48784bee3f29e0f28b63270bee6c49b403407f05ca9673adb84e9437e7cd5",
+    "sw.js": "f000c9367126076610fb3dcf8baf1662c4ddeeeef0ebc39dd9324f26da2f2baa",
+    "manifest.webmanifest": "bab27820c8463d10e8258dedaf205d97345e86dfec395e289627ac0db6906648"
+  }
+}

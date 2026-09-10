@@ -1,8 +1,8 @@
-/* SÜKÛN r762 — Header logo ownership repair */
+/* SÜKÛN r764 — Luxury glass and transparency tune */
 'use strict';
 
-const SURUM = 'r762';
-const CACHE = 'sukun-r762-20260910a';
+const SURUM = 'r764';
+const CACHE = 'sukun-r764-20260910a';
 
 const CORE = [
   './nero.html',
@@ -38,7 +38,7 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r762__.json';
+const BUILD_MARKER='./__sukun_build_r764__.json';
 
 const NOTLAR = ["r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.", "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.", "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.", "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.", "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."];
 
