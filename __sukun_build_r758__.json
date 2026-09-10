@@ -1,0 +1,94 @@
+{
+  "build": "r758",
+  "version": "r758",
+  "base": "r757",
+  "date": "2026-09-10",
+  "cache": "sukun-r758-20260910a",
+  "htmlSha256": "34da1b89aac02ec908cdf2d5a344a016dfc93e5a995caa4e3519df6a5f4fbd66",
+  "notes": [
+    "Çember siyahı SVG alfa filtresiyle şeffaf işlenir; kaynak görsel değiştirilmez. Feyz sahnesini örten opak katmanlar kaldırıldı.",
+    "Nur halkası ve ışık yörüngeleri ana zikir ve tefekkürde saat yönünün tersine döner; Sabit, azaltılmış hareket ve pil tercihleri korunur.",
+    "Berhetiyye kartında genişleyen grid zinciri düzeltildi; açıklamalar ve yedi basamak mobilde tek sütunda okunur.",
+    "Bilgi kartı viewport içinde sabitlenir; sayaç olaylarında yeniden konumlandırılmaz. Kapat düğmesi kaydırırken görünür kalır."
+  ],
+  "verification": {
+    "build": "r758",
+    "at": "2026-09-10T03:18:52.768Z",
+    "kind": "source-vm-regression",
+    "total": 166,
+    "verification": {
+      "source": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      },
+      "mini": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "restart": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "failure": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "transport": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "ring": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "audit": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "storage": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "settings_queue": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "studio": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "ui": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "visual_sources": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "repairs": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      }
+    },
+    "testedFiles": {
+      "nero.html": "34da1b89aac02ec908cdf2d5a344a016dfc93e5a995caa4e3519df6a5f4fbd66",
+      "sw.js": "361a2ed63f43f65b79a7dd147b2c759b2a24bb0f5ac2fe91b7b4354d088c6b9b",
+      "manifest.webmanifest": "4049c21e92cae3029282552a6196a36f33965b3080dc3b2be3df64541daf8ac8"
+    },
+    "browserRun": false,
+    "physicalDeviceRun": false
+  }
+}

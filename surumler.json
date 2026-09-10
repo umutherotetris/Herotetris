@@ -1,5 +1,15 @@
 [
   {
+    "v": "r758",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Çember siyahı SVG alfa filtresiyle şeffaf işlenir; kaynak görsel değiştirilmez. Feyz sahnesini örten opak katmanlar kaldırıldı.",
+      "Nur halkası ve ışık yörüngeleri ana zikir ve tefekkürde saat yönünün tersine döner; Sabit, azaltılmış hareket ve pil tercihleri korunur.",
+      "Berhetiyye kartında genişleyen grid zinciri düzeltildi; açıklamalar ve yedi basamak mobilde tek sütunda okunur.",
+      "Bilgi kartı viewport içinde sabitlenir; sayaç olaylarında yeniden konumlandırılmaz. Kapat düğmesi kaydırırken görünür kalır."
+    ]
+  },
+  {
     "v": "r757",
     "t": "10 Eylül 2026",
     "b": [

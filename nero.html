@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r757">
+<meta name="sukun-build" content="r758">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r757">
+<link rel="manifest" href="./manifest.webmanifest?v=r758">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6509,7 +6509,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r757</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.26 — build 2026-09-10-r758</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6532,6 +6532,16 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r758",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Çember siyahı SVG alfa filtresiyle şeffaf işlenir; kaynak görsel değiştirilmez. Feyz sahnesini örten opak katmanlar kaldırıldı.",
+      "Nur halkası ve ışık yörüngeleri ana zikir ve tefekkürde saat yönünün tersine döner; Sabit, azaltılmış hareket ve pil tercihleri korunur.",
+      "Berhetiyye kartında genişleyen grid zinciri düzeltildi; açıklamalar ve yedi basamak mobilde tek sütunda okunur.",
+      "Bilgi kartı viewport içinde sabitlenir; sayaç olaylarında yeniden konumlandırılmaz. Kapat düğmesi kaydırırken görünür kalır."
+    ]
+  },
   {
     "v": "r757",
     "t": "10 Eylül 2026",
@@ -26295,7 +26305,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r757';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r758';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -63544,27 +63554,29 @@ function render(){
   return true;
 }
 function place(){
-  const card=$('r642ZikirInfoCard'),trigger=$('r611CurrentZikirName');if(!card||!trigger)return;
-  const r=trigger.getBoundingClientRect(),vv=window.visualViewport;const top0=(vv?.offsetTop||0),vh=(vv?.height||innerHeight);
-  const safeTop=top0+12;let top=Math.max(safeTop+78,r.bottom+12);const maxTop=top0+Math.max(112,vh-190);top=Math.min(top,maxTop);
-  card.style.setProperty('--r642-card-top',Math.round(top)+'px');
-  requestAnimationFrame(()=>{const cr=card.getBoundingClientRect(),bottom=top0+vh-10;if(cr.bottom>bottom){const next=Math.max(safeTop+64,top-(cr.bottom-bottom));card.style.setProperty('--r642-card-top',Math.round(next)+'px')}});
+  const card=$('r642ZikirInfoCard');if(!card)return;
+  const vv=window.visualViewport,top=Number(vv?.offsetTop)||0,left=Number(vv?.offsetLeft)||0;
+  const h=Number(vv?.height)||innerHeight,w=Number(vv?.width)||innerWidth;
+  // r758: fixed viewport geometry, independent of live counter/trigger position.
+  const values={'--r642-card-top':(top+12)+'px','--r758-card-height':Math.max(1,h-24)+'px','--r758-card-width':Math.max(1,Math.min(620,w-24))+'px','--r758-card-left':(left+w/2)+'px'};
+  for(const [key,value] of Object.entries(values))if(card.style.getPropertyValue(key)!==value)card.style.setProperty(key,value);
 }
 function open(){
-  const layer=ensure();if(!render())return;lastFocus=document.activeElement;layer.hidden=false;layer.setAttribute('aria-hidden','false');document.body.classList.add('r642-info-open');window.dispatchEvent(new CustomEvent('sukun:nameinfochange',{detail:{open:true}}));place();requestAnimationFrame(()=>$('r642ZikirInfoCard')?.focus({preventScroll:true}));
+  const layer=ensure();if(!render())return;if(!layer.hidden)return;lastFocus=document.activeElement;$('r642ZikirInfoCard').scrollTop=0;layer.hidden=false;layer.setAttribute('aria-hidden','false');document.body.classList.add('r642-info-open');window.dispatchEvent(new CustomEvent('sukun:nameinfochange',{detail:{open:true}}));place();requestAnimationFrame(()=>{if(!layer.hidden)$('r642ZikirInfoCard')?.focus({preventScroll:true})});
 }
 function close(){
-  const layer=$('r642ZikirInfoLayer');if(!layer||layer.hidden)return;layer.hidden=true;layer.setAttribute('aria-hidden','true');document.body.classList.remove('r642-info-open');window.dispatchEvent(new CustomEvent('sukun:nameinfochange',{detail:{open:false}}));try{lastFocus?.focus?.({preventScroll:true})}catch(e){};
+  const layer=$('r642ZikirInfoLayer');if(!layer)return;if(layer.hidden){document.body.classList.remove('r642-info-open');return}layer.hidden=true;layer.setAttribute('aria-hidden','true');document.body.classList.remove('r642-info-open');window.dispatchEvent(new CustomEvent('sukun:nameinfochange',{detail:{open:false}}));try{lastFocus?.focus?.({preventScroll:true})}catch(e){};
 }
 function bind(){
   const t=$('r611CurrentZikirName');if(!t||t.dataset.r642Bound==='1')return;t.dataset.r642Bound='1';
   t.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()});
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('r642ZikirInfoLayer')?.hidden){e.preventDefault();close()}});
-['sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange','sukun:nowplayingchange'].forEach(ev=>window.addEventListener(ev,()=>{bind();const l=$('r642ZikirInfoLayer');if(l&&!l.hidden){render();place()}},{passive:true}));
+['sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange','sukun:nowplayingchange'].forEach(ev=>window.addEventListener(ev,()=>{bind();const l=$('r642ZikirInfoLayer');if(l&&!l.hidden)render()},{passive:true}));
 window.addEventListener('resize',()=>{const l=$('r642ZikirInfoLayer');if(l&&!l.hidden)place()},{passive:true});
 window.visualViewport?.addEventListener('resize',()=>{const l=$('r642ZikirInfoLayer');if(l&&!l.hidden)place()},{passive:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+window.addEventListener('pagehide',close,{passive:true});
 window.SukunActiveNameInfo=Object.freeze({version:VERSION,open,close,render,snapshot:()=>({version:VERSION,open:!$('r642ZikirInfoLayer')?.hidden,state:state()})});
 })();
 </script>
@@ -67949,10 +67961,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r757',date='2026-09-10';
+const build=meta?.content||'r758',date='2026-09-10';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.25 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r757',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r758',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -68826,7 +68838,7 @@ html body.r709-sanctuary.r699-layout.r485-controls.sukun-tefekkur-mode:is(body,.
 'use strict';
 if(window.SukunR716Shell)return;
 // Keep the r716 API and preference key so an upgrade preserves the user's choice.
-const VERSION='r757',KEY='sukun.shell.r716',B=document.body;
+const VERSION='r758',KEY='sukun.shell.r716',B=document.body;
 let enabled=true,applied=false,flames=null,pulseAnimation=null,pending=0,updates=0,lastReason='',lastPulse=0,departed=false,appearanceSig='';
 const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
 try{enabled=localStorage.getItem(KEY)!=='0'}catch(_){}
@@ -68854,7 +68866,7 @@ function update(reason='refresh'){
  const a=safe(()=>window.SukunAtmosphereR706?.snapshot?.(),{})||{};
  const value=Number(a.intensity),intensity=Number.isFinite(value)?Math.max(.2,Math.min(1,value)):.85;
  if(B.style.getPropertyValue('--r717-ambience')!==String(intensity))B.style.setProperty('--r717-ambience',String(intensity));
- const motion=applied&&B.classList.contains('sukun-tefekkur-mode')&&!B.classList.contains('r699-drawer-open')&&!B.classList.contains('r434-inline-details-open')&&!B.classList.contains('r642-info-open')&&!document.getElementById('r749BerhViewer')?.matches(':not([hidden])')&&a.active!==false&&a.visible!==false&&!document.hidden&&!departed&&!reduced?.matches&&(a.preference||'live')==='live'&&B.dataset.perf!=='pil'&&B.dataset.perfEffective!=='pil';
+ const motion=applied&&(B.classList.contains('sukun-tefekkur-mode')||B.classList.contains('sukun-zikir-tab'))&&!B.classList.contains('r699-drawer-open')&&!B.classList.contains('r434-inline-details-open')&&!B.classList.contains('r642-info-open')&&!document.getElementById('r749BerhViewer')?.matches(':not([hidden])')&&(!B.classList.contains('sukun-tefekkur-mode')||a.visible!==false)&&!document.hidden&&!departed&&!reduced?.matches&&(a.preference||'live')==='live'&&B.dataset.perf!=='pil'&&B.dataset.perfEffective!=='pil';
  setClass('r716-motion',motion);
  if(!motion){pulseAnimation?.cancel();pulseAnimation=null}
  if(applied){ensureScene();ensureFlames()}
@@ -68874,7 +68886,7 @@ function schedule(reason){
 function setEnabled(value){enabled=!!value;try{localStorage.setItem(KEY,enabled?'1':'0')}catch(_){}update('user-setting');window.SukunAtmosphereR706?.refresh?.();return enabled}
 function pulse(){if(!B.classList.contains('r716-motion')||!flames)return;try{pulseAnimation?.cancel();pulseAnimation=flames.animate([{opacity:.85},{opacity:1},{opacity:.85}],{duration:650,easing:'ease-out'});lastPulse=Date.now()}catch(_){}}
 
-const bodySig=()=>[B.classList.contains('sukun-tefekkur-mode'),B.classList.contains('r699-drawer-open'),B.classList.contains('r434-inline-details-open'),B.classList.contains('r642-info-open'),B.dataset.perf||'',B.dataset.perfEffective||'',B.dataset.tema||''].join('|');
+const bodySig=()=>[B.classList.contains('sukun-zikir-tab'),B.classList.contains('sukun-tefekkur-mode'),B.classList.contains('r699-drawer-open'),B.classList.contains('r434-inline-details-open'),B.classList.contains('r642-info-open'),B.dataset.perf||'',B.dataset.perfEffective||'',B.dataset.tema||''].join('|');
 let sig='';
 const lifecycle=()=>{const next=bodySig();if(next!==sig){sig=next;schedule('lifecycle')}};
 function boot(){update('boot')}
@@ -68882,6 +68894,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 const unsub=safe(()=>window.SukunLifecycleHub?.onBodyClass?.(lifecycle,{immediate:true}),null);
 if(window.MutationObserver){const mo=new MutationObserver(lifecycle);mo.observe(B,{attributes:true,attributeFilter:unsub?['data-tema','data-perf','data-perf-effective']:['class','data-tema','data-perf','data-perf-effective']})}
 window.addEventListener('sukun:sourceviewerchange',()=>schedule('source-viewer'),{passive:true});
+window.addEventListener('sukun:tabchange',()=>schedule('tab'),{passive:true});
 window.addEventListener('sukun:r616viewchange',()=>schedule('view'),{passive:true});
 window.addEventListener('sukun:zikirtransaction',e=>{if(e.detail?.phase==='committed')pulse()},{passive:true});
 window.addEventListener('sukun:atmospherechange',()=>schedule('atmosphere'),{passive:true});
@@ -71030,6 +71043,92 @@ html body.r716-shell .r754SourceJumps button span{font-size:10px;line-height:1.3
 @media(prefers-contrast:more){
  html body.r716-shell{--feyz-surface:rgba(3,17,28,.95);--r747-glass-a:rgba(3,17,28,.94);--r747-glass-b:rgba(3,17,28,.94)}
  html body.r716-shell #r642ZikirInfoCard.r752-berhet-card{background:#041621!important}
+}
+
+</style>
+<svg id="r758NurFilters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;overflow:hidden"><defs><filter id="r758BlackAlpha" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  4 4 4 0 0"/></filter></defs></svg>
+<style id="sukun-r758-repairs">
+/* r758: explicit alpha and a single motion owner in both counter layouts. */
+html body.r716-shell #tab-zkr #zCountVisual #r716Flames,
+html body.r716-shell #tab-zkr #tfRefinedLayout #zCountVisual #r716Flames{
+ inset:0!important;mix-blend-mode:normal!important;contain:none!important;pointer-events:none!important;
+}
+html body.r716-shell #zCountVisual #r716Flames .r716FlameImage{
+ filter:url(#r758BlackAlpha)!important;mix-blend-mode:normal!important;
+ animation:r758NurTurn 64s linear infinite!important;animation-play-state:paused!important;
+ transform-origin:50% 50%!important;transform:none!important;will-change:auto!important;
+}
+html body.r716-shell #zCountVisual #r716Flames .r757NurOrbit{
+ animation:r758NurTurn 28s linear infinite!important;animation-play-state:paused!important;
+ transform-origin:50% 50%!important;will-change:auto!important;
+}
+html body.r716-shell #zCountVisual #r716Flames .r757NurOrbit.counter{
+ animation-name:r758NurTurnOffset!important;animation-duration:43s!important;
+}
+html body.r716-shell.r716-motion #zCountVisual #r716Flames :is(.r716FlameImage,.r757NurOrbit){animation-play-state:running!important}
+@keyframes r758NurTurn{from{rotate:0deg}to{rotate:-360deg}}
+@keyframes r758NurTurnOffset{from{rotate:75deg}to{rotate:-285deg}}
+/* Old opaque stages and duplicate ornaments must not cover the sanctuary. */
+html body.r716-shell #tab-zkr #tfRefinedLayout#tfRefinedLayout,
+html body.r716-shell.sukun-tefekkur-mode #tab-zkr>.card.zCtl>#tfRefinedLayout#tfRefinedLayout{
+ background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+}
+html body.r716-shell.r745-visual-polish #tab-zkr>.card.zCtl,
+html body.r716-shell.sukun-tefekkur-mode #tab-zkr>.card.zCtl{
+ background:linear-gradient(180deg,rgba(3,20,28,.16),rgba(3,20,28,.34))!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html body.r716-shell #tab-zkr #zCountVisual,
+html body.r716-shell #tab-zkr #tfRefinedLayout #zCountVisual{
+ background:radial-gradient(circle,rgba(2,18,26,.72),rgba(2,18,26,.45) 38%,transparent 58%)!important;
+ border:0!important;box-shadow:none!important;
+}
+html body.r716-shell #tab-zkr #tfRefinedLayout::before,
+html body.r716-shell #tab-zkr #tfRefinedLayout::after,
+html body.r716-shell #tab-zkr #zCountVisual::before,
+html body.r716-shell #tab-zkr #zCountVisual::after,
+html body.r716-shell #tab-zkr #tfRefinedLayout::before,
+html body.r716-shell #tab-zkr #tfRefinedLayout::after{content:none!important;display:none!important}
+html body.r716-shell #tab-zkr #tfRefinedLayout :is(#r706Orbit,#r706Atmosphere,#r709SceneArt,#r709SceneVeil){display:none!important;pointer-events:none!important}
+/* Constrain intrinsic grid sizes BEFORE clipping the outer sheet. Native vertical scroll. */
+html body #r642ZikirInfoLayer{touch-action:pan-y pinch-zoom!important}
+html body #r642ZikirInfoCard,
+html body.r716-shell #r642ZikirInfoCard.r752-berhet-card{
+ box-sizing:border-box!important;left:var(--r758-card-left,50%)!important;
+ width:var(--r758-card-width,min(620px,calc(100vw - 24px)))!important;
+ max-width:calc(100vw - 24px)!important;min-width:0!important;
+ top:var(--r642-card-top,12px)!important;
+ max-height:var(--r758-card-height,calc(100dvh - 24px))!important;
+ overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:contain!important;
+ touch-action:pan-y pinch-zoom!important;scroll-behavior:auto!important;overflow-anchor:none;
+ padding:12px!important;transition:none!important;scroll-padding-top:80px;
+}
+html body #r642ZikirInfoCard *,html body #r642ZikirInfoCard *::before,html body #r642ZikirInfoCard *::after{box-sizing:border-box}
+html body #r642ZikirInfoCard :is(.r642InfoRows,#r752BerhetRich,.r752Prose,.r752Section,.r752HeroBand,.r752ElementText,.r752MetaCard,.r752HeroTop,.r752HeroPills,.r754Ctx,.r754Grid,#r749InfoExtra){min-width:0!important;max-width:100%!important}
+html body #r642ZikirInfoCard :is(.r642InfoRows,#r752BerhetRich,.r752Prose){grid-template-columns:minmax(0,1fr)!important}
+html body #r642ZikirInfoCard :is(p,b,h4,span,em,small,strong,button){white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;max-width:100%}
+html body #r642ZikirInfoCard .r752ElementPanel{grid-template-columns:60px minmax(0,1fr)!important;min-width:0;max-width:100%}
+html body #r642ZikirInfoCard .r642InfoHead{grid-template-columns:40px minmax(0,1fr) 44px!important;gap:8px!important;position:sticky;top:-12px;z-index:5;background:rgba(3,21,31,.97);padding:10px 0!important}
+html body #r642ZikirInfoCard .r642InfoSeal{width:38px;height:38px}
+html body #r642ZikirInfoCard #r642InfoName{font-size:clamp(22px,6vw,32px)!important;line-height:1.2!important}
+html body #r642ZikirInfoCard .r752Path{grid-template-columns:minmax(0,1fr)!important;overflow:visible!important;scroll-snap-type:none!important;min-width:0;max-width:100%}
+html body #r642ZikirInfoCard .r752Step{grid-template-columns:34px minmax(0,1fr)!important;justify-items:stretch!important;text-align:left!important;align-items:start;gap:10px}
+html body #r642ZikirInfoCard .r752MetaGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+html body #r642ZikirInfoCard .r752HeroBand h4{line-height:1.4}
+html body #r642ZikirInfoCard :is(.r752HeroPill,.r752Chip,.r752SrcTag){min-width:0;flex-wrap:wrap}
+html body #r642ZikirInfoCard #r642InfoClose{width:44px!important;height:44px!important;min-width:44px!important;touch-action:manipulation!important}
+html body #r642ZikirInfoCard::before{display:none!important}
+html body #r642ZikirInfoLayer[hidden]{display:none!important;pointer-events:none!important}
+html body #r642ZikirInfoBackdrop{touch-action:pan-y pinch-zoom;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@media(max-width:420px){
+ html body #r642ZikirInfoCard :is(.r752MetaGrid,.r754Grid,.r754SourceJumps){grid-template-columns:minmax(0,1fr)!important}
+ html body #r642ZikirInfoCard .r752Section{padding:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ html body.r716-shell.r716-motion #zCountVisual #r716Flames :is(.r716FlameImage,.r757NurOrbit){animation-play-state:paused!important}
+}
+@media(prefers-contrast:more){
+ html body.r716-shell.r745-visual-polish #tab-zkr>.card.zCtl,html body.r716-shell.sukun-tefekkur-mode #tab-zkr>.card.zCtl{background:rgba(3,17,28,.95)!important}
 }
 
 </style>
