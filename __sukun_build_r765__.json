@@ -1,0 +1,29 @@
+{
+  "build": "r765",
+  "version": "r765",
+  "date": "2026-09-10",
+  "focus": [
+    "active-name-glass-header",
+    "single-line-auto-fit",
+    "duplicate-title-removal"
+  ],
+  "base": "r764",
+  "cache": "sukun-r765-20260910a",
+  "notes": [
+    "Aktif isim üst cam perdeye taşındı; alt tekrar başlığı kaldırıldı.",
+    "Tek satır auto-fit ve kısa açıklama düzeni eklendi.",
+    "r762 tam asset/design/diagnostics tabanı korunarak r763-r765 görsel katmanları paketlendi."
+  ],
+  "verification": {
+    "kind": "source-vm-regression",
+    "total": 174,
+    "passed": 174,
+    "browserRun": false,
+    "physicalDeviceRun": false
+  },
+  "testedFiles": {
+    "nero.html": "19c728012d6e769b0683d11e7a9e68a61ad1aa3e7ddf1bf04bce1f00e3bc6a96",
+    "sw.js": "2482ae1ad91e8866856bb58ed947ea25145ec11641be13202fd3d27a4c2b10c2",
+    "manifest.webmanifest": "87c39c0e324e092f8d09da28c04c7648086b1d1f19563cac3a7dc33e56a3486e"
+  }
+}

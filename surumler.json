@@ -1,9 +1,36 @@
 [
   {
-    "version": "r762",
-    "date": "2026-09-10",
-    "title": "Sticky ana menü + daha şeffaf ana sayfa",
-    "base": "r761"
+    "v": "r765",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Aktif zikir/Berhetiyye adı üst cam perde içine taşındı; alttaki tekrar eden büyük başlık kaldırıldı.",
+      "Cam perdede Arapça kimlik üstte, aktif isim tek satır auto-fit olarak ortada, kısa açıklama altta kalır.",
+      "r764 lüks cam, transparan kart ve zarif altın görünümü korunurken SW/manifest/build sözleşmesi r765'e eşitlendi."
+    ]
+  },
+  {
+    "v": "r764",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Başlık camı daha ince ve lüks hâle getirildi; ana kartların opaklığı azaltıldı.",
+      "Arka plan sahnesi daha görünür, altın çizgiler ve ayırıcılar daha zarif olacak şekilde inceltildi."
+    ]
+  },
+  {
+    "v": "r763",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Ana SÜKÛN başlık çerçevesindeki ağır blur kaldırıldı; daha saydam cam görünümü verildi.",
+      "Başlık alanından arka plan sahnesinin daha net görünmesi sağlandı."
+    ]
+  },
+  {
+    "v": "r762",
+    "t": "10 Eylül 2026",
+    "b": [
+      "Ambiyans/Frekanslar/Zikir/Düzen/Bildirimler/Tekke ana menüsü yeniden sticky hâle getirildi.",
+      "Ana sayfadaki büyük cam yüzeylerin opaklığı düşürüldü; arka plan daha görünür oldu."
+    ]
   },
   {
     "v": "r761",
