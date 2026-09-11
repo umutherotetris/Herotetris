@@ -1,5 +1,16 @@
 [
  {
+  "v": "r771",
+  "t": "11 Eylül 2026",
+  "b": [
+   "r771 · Mücevher Sarayı görünümünde zikir sayacının halkası taşlandı: altın yuva üzerinde 12 taş (zümrüt, ametist, yakut, safir) ve aralarında 12 inci; ardında sıcak fener yansıması.",
+   "Taşlar tek sözde-öğede duran 25 radial-gradient. Animasyon, canvas ve yeni DOM yok; halka 320–412px arası büyürken taşlar birlikte ölçekleniyor.",
+   "Taşlar rakamların ve ilerleme yayının altında kalır, tıklamayı yemez; görsel efektler kapalıyken ve düşük performans profilinde halo sadeleşir. Diğer iki görünüm hiç etkilenmez.",
+   "Android'de URL çubuğu geri geldiğinde ekranın altında kalan “Oynatıcıyı göster” düğmesi düzeltildi: sabit peek artık görsel viewport'u kare başına en fazla bir kez, parmak ekrandayken bile takip ediyor.",
+   "Cihaz tanısında ölçülen 48.4px taşma (r743'te 104.8px) bu yolla kapandı; pahalı tam ölçüm ve pan erteleme davranışı değişmedi."
+  ]
+ },
+ {
   "v": "r770",
   "t": "11 Eylül 2026",
   "b": [

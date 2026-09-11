@@ -1,0 +1,15 @@
+{
+  "build": "r771",
+  "date": "2026-09-11",
+  "base": "r770",
+  "cache": "sukun-r771-20260911a",
+  "feature": "jewelled-ring-and-peek-viewport-tracking",
+  "htmlSha256": "2e576fd49f0cfc0ec405caa3cead30d9dc7dedb60021728bf01ed4af1244fe56",
+  "verification": {
+    "regressionSuite": "174/174",
+    "peekViewport": "6/6",
+    "jewels": "5/5",
+    "skin": "9/9",
+    "jsBlocks": 204
+  }
+}

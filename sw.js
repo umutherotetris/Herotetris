@@ -1,8 +1,8 @@
-/* SÜKÛN r770 — Mücevher Sarayı appearance */
+/* SÜKÛN r771 — jewelled counter ring & peek viewport tracking */
 'use strict';
 
-const SURUM = 'r770';
-const CACHE = 'sukun-r770-20260911a';
+const SURUM = 'r771';
+const CACHE = 'sukun-r771-20260911a';
 
 const CORE = [
   './nero.html',
@@ -38,9 +38,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r770__.json';
+const BUILD_MARKER='./__sukun_build_r771__.json';
 
-const NOTLAR = ["r770 · Üçüncü görünüm eklendi: Mücevher Sarayı. Safir gece, sıcak altın çerçeve ve zümrüt/yakut/ametist/safir vurguları; Osmanlı Mührü tek renkli-sıcak, Semerkant Neon tek renkli-soğuk kalırken bu üçüncüsü çok taşlı.", "Başlığın altına ince çok taşlı bir ray, kartlara altın tel kenar, ana karta taçlı çift kemer ve alt kenara fener sıcaklığı geldi.", "Görünüm seçicisi üç sütundan iki sütuna alındı; dört seçenek 2x2 oturuyor, dördüncüsü tek başına kalmıyor.", "Skin sözleşmesi yalnız CSS değişkenleri ve data katmanında kaldı; motor, oturum, transport ve DOM sahipliği değişmedi.", "Eski kayıtlar korunuyor: halvet → Semerkant, jewel → Mücevher, tanınmayan değer → Osmanlı Mührü."];
+const NOTLAR = ["r771 · Mücevher Sarayı görünümünde zikir sayacının halkası taşlandı: altın yuva üzerinde 12 taş (zümrüt, ametist, yakut, safir) ve aralarında 12 inci; ardında sıcak fener yansıması.", "Taşlar tek sözde-öğede duran 25 radial-gradient. Animasyon, canvas ve yeni DOM yok; halka 320–412px arası büyürken taşlar birlikte ölçekleniyor.", "Taşlar rakamların ve ilerleme yayının altında kalır, tıklamayı yemez; görsel efektler kapalıyken ve düşük performans profilinde halo sadeleşir. Diğer iki görünüm hiç etkilenmez.", "Android'de URL çubuğu geri geldiğinde ekranın altında kalan “Oynatıcıyı göster” düğmesi düzeltildi: sabit peek artık görsel viewport'u kare başına en fazla bir kez, parmak ekrandayken bile takip ediyor.", "Cihaz tanısında ölçülen 48.4px taşma (r743'te 104.8px) bu yolla kapandı; pahalı tam ölçüm ve pan erteleme davranışı değişmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
