@@ -1,0 +1,38 @@
+{
+  "build": "r774",
+  "date": "2026-09-11",
+  "feature": "berhetiyye-billur-saray-full-skin",
+  "base": "r773",
+  "cache": "sukun-r774-20260911a",
+  "htmlSha256": "983d13743a2a4ca0abeddd647f30e8b389c2b987b00bc9898e1891242f06078e",
+  "swSha256": "c836ae5c2ff8729693cbcb191fe996178109e4d425de46c37fcb108151856615",
+  "manifestSha256": "83c9f4f47fdfb710cfe75f6d9a2ecadb47e2a6223abf746f09895d73653cadd2",
+  "verification": {
+    "sourceVmRegression": "174/174 PASS",
+    "fullSkinFixture": "6/6 PASS",
+    "swSyntax": "PASS",
+    "runtimeSyntax": "PASS",
+    "premiumAssetLinks": "11/11 PASS"
+  },
+  "assets": [
+    "assets/berhetiyye-premium/berhetiyye-ring.png",
+    "assets/berhetiyye-premium/berhetiyye-palace.png",
+    "assets/berhetiyye-premium/berhetiyye-name-frame.png",
+    "assets/berhetiyye-premium/berhetiyye-controls-sheet.png",
+    "assets/berhetiyye-premium/berhetiyye-panel.png",
+    "assets/berhetiyye-premium/control-primary.png",
+    "assets/berhetiyye-premium/control-minus.png",
+    "assets/berhetiyye-premium/control-plus.png",
+    "assets/berhetiyye-premium/control-prev.png",
+    "assets/berhetiyye-premium/control-restart.png",
+    "assets/berhetiyye-premium/control-next.png",
+    "assets/berhetiyye-premium/control-sound.png",
+    "assets/berhetiyye-premium/control-exit.png"
+  ],
+  "notes": [
+    "Berhetiyye ana zikir yüzeyi Billur Saray full skin ile giydirildi.",
+    "Hedef/Kalan, −1/+1, Duraklat, Önceki/Baştan/Sonraki, ayarlar, bağlam kartları ve mini oynatıcı aynı kristal-altın dilde.",
+    "Tefekkür ve 28 İsim Seyri aynı skin sözleşmesini kullanır.",
+    "Davranış/ses/sayaç sahipliği değiştirilmedi; görsel katman Berhetiyye dışında devreden çıkar."
+  ]
+}

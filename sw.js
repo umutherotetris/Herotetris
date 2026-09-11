@@ -1,8 +1,8 @@
-/* SÜKÛN r773 — Berhetiyye premium visual layer */
+/* SÜKÛN r774 — Berhetiyye Billur Saray full skin */
 'use strict';
 
-const SURUM = 'r773';
-const CACHE = 'sukun-r773-20260911a';
+const SURUM = 'r774';
+const CACHE = 'sukun-r774-20260911a';
 
 const CORE = [
   './nero.html',
@@ -51,9 +51,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r773__.json';
+const BUILD_MARKER='./__sukun_build_r774__.json';
 
-const NOTLAR = ["r773 · Berhetiyye zikri için premium görsel katman eklendi: 3B yüzük zikirmatik, ham ametist kristaller, billur saray/Ayasofya ambiyansı ve bakır-altın detaylar.", "Premium katman yalnız Berhetiyye seçiliyken etkinleşir; sayaç, ses, kayıt, seyir ve transport motoruna dokunmaz.", "Arapça ve Latin aktif isim r772 tek-sahip mimarisinde kalır; cam isim perdesi yeni Berhetiyye assetiyle giydirildi.", "Berhetiyye bağlam kartları ve sayaç kontrolleri yeni cam/kristal assetlerle yenilendi; assetler assets/berhetiyye-premium altında paketlenir.", "Kur’an/mushaf görseli premium Berhetiyye asset setinde kullanılmaz; r767-r772 onarımları korunur."];
+const NOTLAR = ["r774 · Berhetiyye Billur Saray teması full skin oldu: arka plan, sayaç, hedef/kalan, duraklat, −1/+1, önceki/baştan/sonraki ve oynatıcı çekmecesi tek görsel dilde.", "Ana zikir, Tefekkür ve 28 İsim Seyri yüzeyleri aynı kristal-altın skin sözleşmesini kullanır; diğer zikir kategorileri etkilenmez.", "Zikir ayarları, hedef modu, ses kontrolleri, isim seçici, kaynak/bağlam kartları ve seyir düğmeleri koyu billur camla giydirildi.", "JS davranış sahipliği değiştirilmedi; sayaç, ses, kayıt/TTS, seyir ve pause/stop/resume motorları r773/r772 mimarisinde kaldı.", "r773 premium assetleri yeniden kullanıldı; ek runtime görsel katmanı tıklama yüzeylerinde pointer sahipliğini değiştirmez."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

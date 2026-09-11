@@ -1,0 +1,34 @@
+SÜKÛN r774 REGRESSION
+Date: 2026-09-11
+Base: r773
+
+SOURCE/VM REGRESSION: 174/174 PASS
+- source 31/31
+- mini 5/5
+- restart 10/10
+- failure 8/8
+- transport 7/7
+- ring 6/6
+- audit 15/15
+- storage 15/15
+- settings_queue 8/8
+- studio 19/19
+- ui 13/13
+- visual_sources 18/18
+- repairs 11/11
+- seal 8/8
+
+R774 FULL-SKIN FIXTURE: 6/6 PASS
+- Berhetiyye activation/deactivation
+- Palace + Hedef/Kalan + Duraklat + -1/+1 + Önceki/Baştan/Sonraki assets
+- Context/28-name journey/mini-player skin
+- 320–412px no horizontal overflow in focused fixture
+- Tefekkür same-skin contract
+
+SYNTAX / PACKAGE CONTRACT
+- sw.js node --check: PASS
+- r774 runtime node --check: PASS
+- premium asset references: 11/11 exist
+- manifest/start_url/build/SW version: r774 synchronized
+
+Limitations: browser navigation to localhost/file:// is blocked by the execution sandbox, so full-app visual browser navigation was not used. Focused Chromium set_content fixture and existing source/VM regression suite were used instead. Physical Android lock-screen/audio/headset behavior was not re-exercised because r774 changes only the visual skin layer.

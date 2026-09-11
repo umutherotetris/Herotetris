@@ -1,0 +1,15 @@
+source: 31/31
+mini: 5/5
+restart: 10/10
+failure: 8/8
+transport: 7/7
+ring: 6/6
+audit: 15/15
+storage: 15/15
+settings_queue: 8/8
+studio: 19/19
+ui: 13/13
+visual_sources: 18/18
+repairs: 11/11
+seal: 8/8
+Total: 174 passed
