@@ -72486,7 +72486,7 @@ body.r775-berhet-palace{
   --b775-gold:#f4d58a;--b775-gold2:#fff0bd;--b775-cyan:#7be9f0;--b775-violet:#bb79ff;
   --b775-deep:rgba(3,12,28,.83);--b775-deep2:rgba(5,18,38,.72);--b775-line:rgba(244,213,138,.56);
   background-color:#020915!important;
-  background-image:linear-gradient(180deg,rgba(2,7,18,.18),rgba(2,9,22,.46) 42%,rgba(2,7,18,.70)),url('./assets/berhetiyye-premium/berhetiyye-palace.png')!important;
+  background-image:linear-gradient(180deg,rgba(2,7,18,.18),rgba(2,9,22,.46) 42%,rgba(2,7,18,.70)),var(--r777-berhet-bg-image,url('./assets/berhetiyye-premium/berhetiyye-palace.png'))!important;
   background-size:cover,cover!important;background-position:center top,center top!important;background-repeat:no-repeat!important;background-attachment:fixed,fixed!important;
 }
 body.r775-berhet-palace::before{opacity:.22!important;background:radial-gradient(65% 42% at 50% 8%,rgba(115,238,241,.16),transparent 62%),radial-gradient(50% 38% at 86% 22%,rgba(176,102,255,.13),transparent 60%)!important}
@@ -72530,6 +72530,14 @@ body.r775-berhet-palace #cntSub{color:#c5d6da!important}
 body.r775-berhet-palace :is(#undoBtn,#plusBtn,#autoBtn,#resetBtn,#spkOnce,#r616ZikirNavRow button){
   color:#fff0c2!important;border:0!important;background-color:transparent!important;background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;box-shadow:none!important;text-shadow:0 1px 3px rgba(0,0,0,.86)!important;filter:drop-shadow(0 8px 12px rgba(0,0,0,.24));
 }
+body.r775-berhet-palace #undoBtn{box-shadow:0 0 0 1px rgba(102,226,255,.18),0 0 22px rgba(73,182,255,.18)!important}
+body.r775-berhet-palace #plusBtn{box-shadow:0 0 0 1px rgba(102,226,255,.18),0 0 22px rgba(73,182,255,.18)!important}
+body.r775-berhet-palace #autoBtn{box-shadow:0 0 0 1px rgba(180,103,255,.15),0 0 26px rgba(129,92,255,.16)!important}
+body.r775-berhet-palace #spkOnce{box-shadow:0 0 0 1px rgba(241,96,136,.15),0 0 20px rgba(253,89,155,.13)!important}
+body.r775-berhet-palace #resetBtn{box-shadow:0 0 0 1px rgba(237,191,80,.18),0 0 20px rgba(255,211,96,.13)!important}
+body.r775-berhet-palace #r616ZikirNavRow button:nth-child(1){box-shadow:0 0 0 1px rgba(237,191,80,.18),0 0 18px rgba(255,211,96,.12)!important}
+body.r775-berhet-palace #r616ZikirNavRow button:nth-child(2){box-shadow:0 0 0 1px rgba(180,103,255,.16),0 0 18px rgba(176,89,255,.12)!important}
+body.r775-berhet-palace #r616ZikirNavRow button:nth-child(3){box-shadow:0 0 0 1px rgba(102,226,255,.18),0 0 18px rgba(73,182,255,.12)!important}
 body.r775-berhet-palace #undoBtn{background-image:url('./assets/berhetiyye-premium/control-minus.png')!important}
 body.r775-berhet-palace #plusBtn{background-image:url('./assets/berhetiyye-premium/control-plus.png')!important}
 body.r775-berhet-palace #autoBtn{background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;min-height:66px!important;font-weight:850!important;font-size:14px!important}
@@ -72564,7 +72572,7 @@ body.r775-berhet-palace #berhetSeyir .r168Buttons button{border-color:rgba(244,2
 body.r775-berhet-palace #berhetSeyir :is(#bsStart,#bsPause){color:#fff0bd!important;border-color:rgba(244,213,138,.55)!important;background:linear-gradient(125deg,rgba(12,73,76,.94),rgba(19,31,70,.95),rgba(52,24,82,.92))!important}
 
 /* Tefekkür de ayrı düz panel değil aynı sarayın içinde. */
-body.r775-berhet-palace.sukun-tefekkur-mode #tfRefinedLayout{background-image:linear-gradient(180deg,rgba(3,10,24,.15),rgba(4,11,27,.57)),url('./assets/berhetiyye-premium/berhetiyye-palace.png')!important;background-size:cover!important;background-position:center top!important;background-repeat:no-repeat!important;border-color:rgba(244,213,138,.35)!important}
+body.r775-berhet-palace.sukun-tefekkur-mode #tfRefinedLayout{background-image:linear-gradient(180deg,rgba(3,10,24,.15),rgba(4,11,27,.57)),var(--r777-berhet-bg-image,url('./assets/berhetiyye-premium/berhetiyye-palace.png'))!important;background-size:cover!important;background-position:center top!important;background-repeat:no-repeat!important;border-color:rgba(244,213,138,.35)!important}
 body.r775-berhet-palace.sukun-tefekkur-mode #tfRefinedLayout>.tfVisualPanel,body.r775-berhet-palace.sukun-tefekkur-mode #tfRefinedLayout>.tfControlPanel{background:linear-gradient(160deg,rgba(4,20,37,.64),rgba(5,12,31,.78))!important;border-color:rgba(244,213,138,.30)!important}
 body.r775-berhet-palace.sukun-tefekkur-mode #tefExitBtn{color:#fff0be!important;border-color:rgba(244,213,138,.46)!important;background:linear-gradient(130deg,rgba(55,18,54,.84),rgba(19,34,75,.88),rgba(9,61,65,.80))!important}
 
@@ -72587,25 +72595,53 @@ body[data-perf="dusuk"].r775-berhet-palace #r775RingSkin{animation:none!importan
 <script id="sukun-r775-berhetiyye-palace-runtime">
 (()=>{'use strict';
 if(window.__SUKUN_R775_BERHET_PALACE__)return;window.__SUKUN_R775_BERHET_PALACE__=1;
-let timer=0,last=null;
-function stateSelected(){
+const SCENES=[
+  './assets/berhetiyye-premium/scenes/scene-01.png',
+  './assets/berhetiyye-premium/scenes/scene-02.png',
+  './assets/berhetiyye-premium/scenes/scene-03.png',
+  './assets/berhetiyye-premium/scenes/scene-04.png',
+  './assets/berhetiyye-premium/scenes/scene-05.png'
+];
+let timer=0,last=null,lastScene=-1;
+function visibleZikir(){const z=document.getElementById('tab-zkr');return !!z&&!z.hidden}
+function selectedBerhet(){
   try{if(typeof Z!=='undefined'&&String(Z.cat||'')==='berhet')return true}catch(e){}
   try{if(document.querySelector('#zCats [data-c="berhet"].act'))return true}catch(e){}
-  try{const b=window.BERHET_SEYIR;if(b&&(b.run||b.paused||b.systemHold))return true}catch(e){}
   try{const s=window.SukunActiveNameInfo?.snapshot?.().state;if(String(s?.cat||'')==='berhet')return true}catch(e){}
   try{if(document.body.dataset.r474NameCategory==='berhet')return true}catch(e){}
   return false;
 }
-function visibleZikir(){const z=document.getElementById('tab-zkr');return !!z&&!z.hidden}
+function journeyPlaying(){try{const b=window.BERHET_SEYIR;return !!(b&&b.run)}catch(e){return false}}
+function berhetIndex(){
+  try{if(typeof Z!=='undefined'&&String(Z.cat||'')==='berhet'&&Number.isFinite(+Z.i))return Math.max(0,+Z.i)}catch(e){}
+  try{if(typeof Z!=='undefined'&&String(Z.cat||'')==='berhet'&&Number.isFinite(+Z.idx))return Math.max(0,+Z.idx)}catch(e){}
+  try{const s=window.SukunActiveNameInfo?.snapshot?.().state;if(String(s?.cat||'')==='berhet'){if(Number.isFinite(+s.i))return Math.max(0,+s.i);if(Number.isFinite(+s.idx))return Math.max(0,+s.idx)}}catch(e){}
+  try{const b=window.BERHET_SEYIR;if(Number.isFinite(+b?.i))return Math.max(0,+b.i)}catch(e){}
+  return 0;
+}
 function ensureRing(){const host=document.getElementById('zCountVisual');if(!host)return;let r=document.getElementById('r775RingSkin');if(!r){r=document.createElement('div');r.id='r775RingSkin';r.setAttribute('aria-hidden','true');host.insertBefore(r,host.firstChild)}}
-function sync(reason){const on=stateSelected()&&(visibleZikir()||document.body.classList.contains('sukun-tefekkur-mode')||!!window.BERHET_SEYIR?.run||!!window.BERHET_SEYIR?.paused);if(on!==last){document.body.classList.toggle('r775-berhet-palace',on);last=on}if(on)ensureRing();try{document.body.dataset.r775BerhetPalace=on?'1':'0'}catch(e){}}
+function setScene(i){
+  const idx=((i%SCENES.length)+SCENES.length)%SCENES.length;
+  if(idx===lastScene)return;
+  lastScene=idx;
+  document.body.style.setProperty('--r777-berhet-bg-image',`url('${SCENES[idx]}')`);
+  try{document.body.dataset.r777BerhetScene=String(idx+1)}catch(e){}
+}
+function clearScene(){lastScene=-1;document.body.style.removeProperty('--r777-berhet-bg-image');try{delete document.body.dataset.r777BerhetScene}catch(e){}}
+function sync(reason){
+  const on=(selectedBerhet()&&(visibleZikir()||document.body.classList.contains('sukun-tefekkur-mode'))) || journeyPlaying();
+  if(on!==last){document.body.classList.toggle('r775-berhet-palace',on);last=on}
+  if(on){ensureRing();setScene(berhetIndex())}else{clearScene()}
+  try{document.body.dataset.r775BerhetPalace=on?'1':'0'}catch(e){}
+}
 function queue(reason,ms=20){clearTimeout(timer);timer=setTimeout(()=>sync(reason),ms)}
 function boot(){sync('boot');const cats=document.getElementById('zCats');if(cats)new MutationObserver(()=>queue('cats',0)).observe(cats,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});new MutationObserver(()=>queue('body',10)).observe(document.body,{attributes:true,attributeFilter:['class','data-r474-name-category']});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-['sukun:nowplayingchange','sukun:playbackchange','sukun:zikirchange','sukun:currentzikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:secretaccesschange','popstate','pageshow'].forEach(ev=>addEventListener(ev,()=>queue(ev),{passive:true}));
+['sukun:nowplayingchange','sukun:playbackchange','sukun:zikirchange','sukun:currentzikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:journey-complete','sukun:secretaccesschange','popstate','pageshow'].forEach(ev=>addEventListener(ev,()=>queue(ev),{passive:true}));
 document.addEventListener('pointerup',()=>queue('pointer',35),{passive:true});document.addEventListener('change',()=>queue('change',10),{passive:true});
 setInterval(()=>sync('lease'),700);
-window.SukunR775BerhetiyyePalace=Object.freeze({version:'r775',sync:()=>sync('api'),active:()=>document.body.classList.contains('r775-berhet-palace')});
+window.SukunR775BerhetiyyePalace=Object.freeze({version:'r777',sync:()=>sync('api'),active:()=>document.body.classList.contains('r775-berhet-palace'),scene:()=>document.body.dataset.r777BerhetScene||''});
+window.SukunR777BerhetiyyePalace=window.SukunR775BerhetiyyePalace;
 })();
 </script>
 
