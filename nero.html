@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r769">
+<meta name="sukun-build" content="r770">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r769">
+<link rel="manifest" href="./manifest.webmanifest?v=r770">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.32 — build 2026-09-11-r769</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.32 — build 2026-09-11-r770</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6536,6 +6536,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r770",
+    "t": "11 Eylül 2026",
+    "b": [
+      "r770 · Üçüncü görünüm eklendi: Mücevher Sarayı. Safir gece, sıcak altın çerçeve ve zümrüt/yakut/ametist/safir vurguları; Osmanlı Mührü tek renkli-sıcak, Semerkant Neon tek renkli-soğuk kalırken bu üçüncüsü çok taşlı.",
+      "Başlığın altına ince çok taşlı bir ray, kartlara altın tel kenar, ana karta taçlı çift kemer ve alt kenara fener sıcaklığı geldi.",
+      "Görünüm seçicisi üç sütundan iki sütuna alındı; dört seçenek 2x2 oturuyor, dördüncüsü tek başına kalmıyor.",
+      "Skin sözleşmesi yalnız CSS değişkenleri ve data katmanında kaldı; motor, oturum, transport ve DOM sahipliği değişmedi.",
+      "Eski kayıtlar korunuyor: halvet → Semerkant, jewel → Mücevher, tanınmayan değer → Osmanlı Mührü."
+    ]
+  },
   {
     "v": "r769",
     "t": "11 Eylül 2026",
@@ -26421,7 +26432,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r769';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r770';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -61628,10 +61639,10 @@ const r704Text=(el,value)=>{if(el&&el.textContent!==String(value))el.textContent
 
 if(window.__SUKUN_R619_FEYZ_SHELL__)return;window.__SUKUN_R619_FEYZ_SHELL__=1;
 const KEY='sukun.ui.shellSkin';
-const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon'};
+const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon',mucevher:'Mücevher Sarayı'};
 const $=id=>document.getElementById(id);
 function normalizeSkin(x){
-  return x==='samarkand'||x==='halvet' ? 'samarkand' : x==='ottoman' ? 'ottoman' : 'ottoman';
+  return x==='samarkand'||x==='halvet' ? 'samarkand' : x==='mucevher'||x==='jewel' ? 'mucevher' : 'ottoman';
 }
 function readSkin(){
   try{return normalizeSkin(localStorage.getItem(KEY)||document.body.dataset.r619Skin||'ottoman')}catch(e){return normalizeSkin(document.body.dataset.r619Skin||'ottoman')}
@@ -61639,7 +61650,7 @@ function readSkin(){
 let skin=readSkin();
 // Legacy get/set still own only the remembered Osmanlı/Semerkant skin.
 // UI appearance selection also controls the existing Feyz preference owner.
-const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant'};
+const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant',mucevher:'Mücevher'};
 function appearanceState(){
   let enabled=true;
   try{enabled=window.SukunR716Shell?.snapshot?.()?.enabled??(localStorage.getItem('sukun.shell.r716')!=='0')}catch(e){}
@@ -61776,10 +61787,10 @@ body.r616-ui #tab-amb #mixer .preAccHead{
 'use strict';
 if(window.__SUKUN_R620_SKIN_AMB_FIX__)return;window.__SUKUN_R620_SKIN_AMB_FIX__=1;
 const $=id=>document.getElementById(id);
-const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon'};
-const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant'};
+const skins={ottoman:'Osmanlı Mührü',samarkand:'Semerkant Neon',mucevher:'Mücevher Sarayı'};
+const appearances={feyz:'Feyz',ottoman:'Osmanlı',samarkand:'Semerkant',mucevher:'Mücevher'};
 function normalizeSkin(x){
-  return x==='samarkand'||x==='halvet' ? 'samarkand' : x==='ottoman' ? 'ottoman' : 'ottoman';
+  return x==='samarkand'||x==='halvet' ? 'samarkand' : x==='mucevher'||x==='jewel' ? 'mucevher' : 'ottoman';
 }
 function currentSkin(){
   try{return normalizeSkin(window.SukunShellSkin?.get?.()||document.body.dataset.r619Skin||localStorage.getItem('sukun.ui.shellSkin')||'ottoman')}catch(e){return normalizeSkin(document.body.dataset.r619Skin||'ottoman')}
@@ -62744,7 +62755,7 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
     out.push(issue('section-identity',sidNeed&&!sidOk?'FAIL':'PASS',sidDetail));
     const leaks=providerLeaks();out.push(issue('diagnostic-provider-leak',leaks.length?'FAIL':'PASS',leaks.length?'sızan sağlayıcı: '+leaks.join(', '):'tanı sağlayıcısı sızıntısı yok'));
     const dup=criticalIdDuplicates();out.push(issue('critical-dom-owner',dup.length?'FAIL':'PASS',dup.length?'çoğalan kritik id: '+dup.join(', '):'kritik DOM sahipleri tekil'));
-    const skin=a?.ui?.skin||'';out.push(issue('skin-contract',['ottoman','samarkand'].includes(skin)?'PASS':'WARN',['ottoman','samarkand'].includes(skin)?skin+' geçerli':skin+' eski/geçersiz skin',true));
+    const skin=a?.ui?.skin||'';const SKIN_OK=['ottoman','samarkand','mucevher'];out.push(issue('skin-contract',SKIN_OK.includes(skin)?'PASS':'WARN',SKIN_OK.includes(skin)?skin+' geçerli':skin+' eski/geçersiz skin',true));
     const overlap=safe(()=>!!window.SukunLayoutEngine?.snapshot?.()?.overlap,false);out.push(issue('layout-overlap',overlap?'WARN':'PASS',overlap?'LayoutEngine görünür overlap bildiriyor':'dock/layout güvenli'));
     const meta=clean(document.querySelector('meta[name="sukun-build"]')?.content||'');out.push(issue('build-meta',meta===BUILD?'PASS':'FAIL','meta '+(meta||'yok')+' / beklenen '+BUILD));
     const reg=window.SukunAudioSessionRegistry;const list=safe(()=>reg?.list?.(),[])||[];const missing=['esma99','berhetiyye'].filter(x=>!list.includes(x));
@@ -62752,8 +62763,8 @@ if(!window.SukunRegressionShield||window.SukunRegressionShield.version!==VERSION
     return out;
   }
   function normalizeSkin(a){
-    const skin=a?.ui?.skin;if(['ottoman','samarkand'].includes(skin))return false;
-    const next=(skin==='halvet')?'samarkand':'ottoman';
+    const skin=a?.ui?.skin;if(['ottoman','samarkand','mucevher'].includes(skin))return false;
+    const next=(skin==='halvet')?'samarkand':(skin==='jewel')?'mucevher':'ottoman';
     try{window.SukunShellSkin?.set?.(next)}catch(e){try{document.body.dataset.r619Skin=next;localStorage.setItem('sukun.ui.shellSkin',next)}catch(_) {}}
     recoveries++;return true;
   }
@@ -68685,7 +68696,8 @@ html body.r716-shell :is(button,[role="button"]):is(:disabled,[aria-disabled="tr
 /* r719: one appearance choice and readable labels, with the accepted r718 art. */
 html body.r616-ui #r619SkinPicker .r619SkinRow,
 html body.r616-ui #r620SkinPanel .r619SkinRow{
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  /* r770: dört görünüm 2x2 oturur; üç sütunda dördüncü tek başına kalıyordu. */
+  grid-template-columns:repeat(2,minmax(0,1fr));
 }
 html body.r616-ui #r619SkinPicker .r619SkinBtn,
 html body.r616-ui #r620SkinPanel .r619SkinBtn{
@@ -72180,6 +72192,111 @@ window.SukunR768ActiveGlass=Object.freeze({version:'r768',sync,normalize,fit});
 /* r769 — Tefekkürde belirsiz kaynak placeholderı gösterilmez. Gerçek hazırlık/kaynak durumu gelince açılır. */
 html body #r470VoiceSource[data-kind="idle"]{display:none!important}
 html body #r470VoiceSource:not([data-kind="idle"]){visibility:visible}
+</style>
+<style id="r770-mucevher-skin">
+/* ═══════════════════════════════════════════════════════════════════════
+   r770 — Mücevher Sarayı · üçüncü görünüm
+   Sözleşme korunur: skin yalnız CSS değişkenleri ve data katmanında yaşar.
+   Motor, oturum, transport ve DOM sahipliği bu blokta hiç değişmez.
+
+   Yön: Osmanlı Mührü tek renkli-sıcak, Semerkant Neon tek renkli-soğuk.
+   Bu üçüncüsü çok taşlı: safir gece + sıcak altın çerçeve + zümrüt,
+   yakut, ametist ve inci vurguları. Referans görseldeki gece sarayı,
+   fener sıcaklığı ve su yansıması buradan geliyor.
+   ═══════════════════════════════════════════════════════════════════════ */
+body[data-r619-skin="mucevher"]{
+  --r619-emerald:#3ddda6;--r619-violet:#a874ff;--r619-blue:#4f8dff;
+  --r619-rose:#ff5f80;--r619-orange:#ffb264;--r619-gold:#f2d18a;
+  --r770-pearl:#f4ecd8;--r770-lantern:#ffc478;--r770-deep:#04141f;
+  --r619-surface:color-mix(in srgb,#06202f 74%,rgba(var(--sayfa2K),.64));
+  --r619-surface-strong:color-mix(in srgb,#08283a 84%,rgba(var(--sayfa2K),.86));
+  --r619-shell-line:rgba(242,209,138,.24);
+}
+
+/* Gece safiri, üstte ay ışığı, altta fener sıcaklığı ve su yansıması. */
+body.r616-ui[data-r619-skin="mucevher"]{
+  background:
+    radial-gradient(600px 300px at 50% -6%,rgba(126,178,255,.11),transparent 70%),
+    radial-gradient(400px 240px at 88% 14%,rgba(168,116,255,.075),transparent 72%),
+    radial-gradient(440px 250px at 6% 62%,rgba(61,221,166,.06),transparent 74%),
+    /* iki yandan fener havuzu ve altta su yansımasının sıcaklığı */
+    radial-gradient(300px 300px at -8% 88%,rgba(255,178,100,.085),transparent 70%),
+    radial-gradient(300px 300px at 108% 84%,rgba(255,178,100,.075),transparent 70%),
+    radial-gradient(760px 320px at 50% 100%,rgba(255,188,112,.10),transparent 74%),
+    rgb(var(--sayfaK));
+}
+
+/* Kartlar altın tel kenarlı mücevher kutusu gibi durur. */
+body.r616-ui[data-r619-skin="mucevher"] #r616Topbar,
+body.r616-ui[data-r619-skin="mucevher"] .r616Card{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 0 0 1px rgba(242,209,138,.11),
+    0 0 30px rgba(79,141,255,.05),
+    0 24px 48px -44px rgba(0,0,0,.9)!important;
+}
+/* NOT: #r616HomeHero::after kabuğun kendi büyük ışık şekli. Buraya taş
+   parıltısı yazmak onu eziyordu (denendi, kart yeşil bir lekeye döndü).
+   Süs istenirse yeni bir öğe gerekir; bu da skin sözleşmesini bozar.
+   Bu yüzden mücevher vurgusu rayda ve kenar çizgilerinde kalıyor. */
+/* Birincil eylem sıcak altın kenar alır; renk motoru değişmez. */
+body.r616-ui[data-r619-skin="mucevher"] .r616Card .r616Primary,
+body.r616-ui[data-r619-skin="mucevher"] #r616HomeHero button[data-r616-start]{
+  border-color:color-mix(in srgb,var(--r619-gold) 26%,var(--line2))!important;
+  box-shadow:inset 0 0 0 1px rgba(242,209,138,.09),0 0 22px rgba(255,188,112,.07)!important;
+}
+
+/* Ana kart: taçlı çift kemer ve tepede tek taş parıltısı. */
+body.r616-ui[data-r619-skin="mucevher"] #r616HomeHero::before{
+  content:'';position:absolute;left:12%;right:12%;top:9px;height:86px;
+  border:1px solid rgba(242,209,138,.16);border-bottom:0;
+  border-radius:150px 150px 0 0;pointer-events:none;
+  box-shadow:
+    0 0 22px rgba(242,209,138,.07),
+    inset 0 -34px 40px -34px rgba(255,196,120,.16);
+}
+
+/* Mücevher rayı: başlığın altında çok taşlı ince bir şerit. */
+body.r616-ui[data-r619-skin="mucevher"] #r616Topbar{
+  position:relative;
+}
+body.r616-ui[data-r619-skin="mucevher"] #r616Topbar::after{
+  content:'';position:absolute;left:14px;right:14px;bottom:0;height:1px;
+  pointer-events:none;opacity:.62;
+  background:linear-gradient(90deg,
+    transparent,
+    var(--r619-emerald) 14%,
+    var(--r619-gold) 32%,
+    var(--r619-rose) 50%,
+    var(--r619-violet) 68%,
+    var(--r619-blue) 84%,
+    transparent);
+}
+
+/* Alt gezinme: seçili sekmede sıcak fener izi. */
+body.r616-ui[data-r619-skin="mucevher"] #r616BottomNav button[aria-current="page"],
+body.r616-ui[data-r619-skin="mucevher"] #r616BottomNav button.active{
+  text-shadow:0 0 14px rgba(255,196,120,.22);
+}
+
+/* Seçici örneği: dört görünüm birbirinden ilk bakışta ayrılsın. */
+html body.r616-ui .r619SkinBtn[data-r619-skin="mucevher"] i{
+  background:linear-gradient(90deg,#3ddda6,#f2d18a 34%,#ff5f80 58%,#a874ff 78%,#4f8dff);
+}
+html body.r616-ui .r619SkinBtn[data-r619-skin="mucevher"][aria-pressed="true"]{
+  border-color:color-mix(in srgb,var(--r619-gold) 40%,var(--line2));
+  background:color-mix(in srgb,var(--r619-gold) 7%,rgba(var(--sayfa2K),.60));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--r619-gold) 9%,transparent),
+    0 0 18px color-mix(in srgb,var(--r619-gold) 6%,transparent);
+}
+
+/* Hareket azaltma ve navfx kapalıyken ek bir hareket doğmaz; bu katman
+   zaten statiktir, yine de ileride biri animasyon eklerse diye bağlanır. */
+@media(prefers-reduced-motion:reduce){
+  body.r616-ui[data-r619-skin="mucevher"] #r616Topbar::after{animation:none!important}
+}
+body.r607-navfx-off[data-r619-skin="mucevher"] #r616Topbar::after{animation:none!important}
 </style>
 </body>
 </html>

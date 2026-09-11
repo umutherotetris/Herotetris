@@ -1,8 +1,8 @@
-/* SÜKÛN r769 — clean source-status presentation */
+/* SÜKÛN r770 — Mücevher Sarayı appearance */
 'use strict';
 
-const SURUM = 'r769';
-const CACHE = 'sukun-r769-20260911a';
+const SURUM = 'r770';
+const CACHE = 'sukun-r770-20260911a';
 
 const CORE = [
   './nero.html',
@@ -38,9 +38,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r769__.json';
+const BUILD_MARKER='./__sukun_build_r770__.json';
 
-const NOTLAR = ["r766 aktif zikir ismi üst cam perdeye taşındı; alt tekrar başlığı kaldırıldı ve tek satır auto-fit düzeni eklendi.", "r756 kaynak kartları, 15 sayfalık Berhetiyye atlası ve Esmâ içerikleri r744 güvenilirlik düzeltmeleriyle birleştirildi.", "Feyz Nur: orijinal PNG sahne ve işlemeli nur çemberi; bağımsız vektör ışık katmanları, şeffaf yüzeyler ve kompakt kontroller.", "Ana sayaç başlığı, yan yana Hedef/Kalan ve gizli oynatıcı konumu onarıldı; kayıt stüdyosu ve güvenli SW yenilemesi geri taşındı.", "Bilgi kartı tek aşamada çizilir; yeniden çizim döngüsü giderildi. Kaynak görüntüleyicinin kaydırma kilidi ve yükleme animasyonları düzeltildi.", "Sürüm bilgileri eşitlendi. Kaynak/VM doğrulamaları raporda; fiziksel cihaz ve görsel tarayıcı doğrulaması yapılmadı."];
+const NOTLAR = ["r770 · Üçüncü görünüm eklendi: Mücevher Sarayı. Safir gece, sıcak altın çerçeve ve zümrüt/yakut/ametist/safir vurguları; Osmanlı Mührü tek renkli-sıcak, Semerkant Neon tek renkli-soğuk kalırken bu üçüncüsü çok taşlı.", "Başlığın altına ince çok taşlı bir ray, kartlara altın tel kenar, ana karta taçlı çift kemer ve alt kenara fener sıcaklığı geldi.", "Görünüm seçicisi üç sütundan iki sütuna alındı; dört seçenek 2x2 oturuyor, dördüncüsü tek başına kalmıyor.", "Skin sözleşmesi yalnız CSS değişkenleri ve data katmanında kaldı; motor, oturum, transport ve DOM sahipliği değişmedi.", "Eski kayıtlar korunuyor: halvet → Semerkant, jewel → Mücevher, tanınmayan değer → Osmanlı Mührü."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

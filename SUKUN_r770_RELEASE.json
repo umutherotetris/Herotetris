@@ -1,0 +1,14 @@
+{
+  "build": "r770",
+  "date": "2026-09-11",
+  "base": "r769",
+  "cache": "sukun-r770-20260911a",
+  "feature": "mucevher-sarayi-third-appearance",
+  "htmlSha256": "e65046f909659f9b66732f9533b123687c634b6749c3cdaa7c16b75338e11c49",
+  "verification": {
+    "regressionSuite": "174/174",
+    "skinBrowserBattery": "9/9",
+    "executableJsBlocks": 204,
+    "offline": "r770 / mucevher"
+  }
+}
