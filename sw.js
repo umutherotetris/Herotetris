@@ -1,8 +1,8 @@
-/* SÜKÛN r772 — single owner for the active name */
+/* SÜKÛN r773 — Berhetiyye premium visual layer */
 'use strict';
 
-const SURUM = 'r772';
-const CACHE = 'sukun-r772-20260911a';
+const SURUM = 'r773';
+const CACHE = 'sukun-r773-20260911a';
 
 const CORE = [
   './nero.html',
@@ -30,6 +30,19 @@ const CORE = [
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
 const OPTIONAL = [
+  './assets/berhetiyye-premium/berhetiyye-ring.png',
+  './assets/berhetiyye-premium/berhetiyye-palace.png',
+  './assets/berhetiyye-premium/berhetiyye-name-frame.png',
+  './assets/berhetiyye-premium/berhetiyye-controls-sheet.png',
+  './assets/berhetiyye-premium/berhetiyye-panel.png',
+  './assets/berhetiyye-premium/control-primary.png',
+  './assets/berhetiyye-premium/control-minus.png',
+  './assets/berhetiyye-premium/control-plus.png',
+  './assets/berhetiyye-premium/control-prev.png',
+  './assets/berhetiyye-premium/control-restart.png',
+  './assets/berhetiyye-premium/control-next.png',
+  './assets/berhetiyye-premium/control-sound.png',
+  './assets/berhetiyye-premium/control-exit.png',
   './assets/feyz-mark.svg',
   './assets/feyz-flame-ring.svg',
   './assets/feyz-flame-ring.webp',
@@ -38,9 +51,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r772__.json';
+const BUILD_MARKER='./__sukun_build_r773__.json';
 
-const NOTLAR = ["r772 · Aktif ismin Latin yazımı tek sahibe bağlandı. Aynı iki alana (#r611CurrentZikirName metni ve hero görünürlüğü) üç ayrı blok yazıyordu; ikisi dosyadaki sahip bayrağını okumuyordu.", "Sahipler farklı politika uyguluyordu: alan listeleri, gizlilik kapısı ve sekme kapısı üçünde aynı değildi. Arapça ayrı elemandan geldiği için bu kavgadan etkilenmiyor, Latin ad etkileniyordu.", "r767 hero'yu #zAr içine, r768 #r768ActiveGlassHost altına taşıyordu; r768'in #zAr üzerindeki gözlemcisi her taşımayı geri tetikliyordu. Ebeveyn savaşı bitti, tek sahip r768.", "Tek sahibe eksik iki politika verildi: gizlilik kapısı artık çözücüde de uygulanıyor ve görünürlük iki yönlü — çözücü sonuç veremezse ad gizleniyor, önceki ad ekranda kalmıyor.", "r771 mücevherli sayaç halkası ve peek görsel-viewport takibi korunmuştur."];
+const NOTLAR = ["r773 · Berhetiyye zikri için premium görsel katman eklendi: 3B yüzük zikirmatik, ham ametist kristaller, billur saray/Ayasofya ambiyansı ve bakır-altın detaylar.", "Premium katman yalnız Berhetiyye seçiliyken etkinleşir; sayaç, ses, kayıt, seyir ve transport motoruna dokunmaz.", "Arapça ve Latin aktif isim r772 tek-sahip mimarisinde kalır; cam isim perdesi yeni Berhetiyye assetiyle giydirildi.", "Berhetiyye bağlam kartları ve sayaç kontrolleri yeni cam/kristal assetlerle yenilendi; assetler assets/berhetiyye-premium altında paketlenir.", "Kur’an/mushaf görseli premium Berhetiyye asset setinde kullanılmaz; r767-r772 onarımları korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

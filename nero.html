@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r772">
+<meta name="sukun-build" content="r773">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r772">
+<link rel="manifest" href="./manifest.webmanifest?v=r773">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.32 — build 2026-09-11-r772</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.33 — build 2026-09-11-r773</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6536,6 +6536,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r773",
+    "t": "11 Eylül 2026",
+    "b": [
+      "r773 · Berhetiyye zikri için premium görsel katman eklendi: 3B yüzük zikirmatik, ham ametist kristaller, billur saray/Ayasofya ambiyansı ve bakır-altın detaylar.",
+      "Premium katman yalnız Berhetiyye seçiliyken etkinleşir; sayaç, ses, kayıt, seyir ve transport motoruna dokunmaz.",
+      "Arapça ve Latin aktif isim r772 tek-sahip mimarisinde kalır; cam isim perdesi yeni Berhetiyye assetiyle giydirildi.",
+      "Berhetiyye bağlam kartları ve sayaç kontrolleri yeni cam/kristal assetlerle görsel olarak yenilendi; tüm assetler paket içinde assets/berhetiyye-premium altında taşınır.",
+      "Kur’an/mushaf görseli premium Berhetiyye asset setinde kullanılmaz; r767-r772 ses, kaynak ve aktif isim onarımları korunur."
+    ]
+  },
   {
     "v": "r772",
     "t": "11 Eylül 2026",
@@ -26454,7 +26465,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r772';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r773';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -72448,3 +72459,129 @@ body[data-perf="dusuk"][data-r619-skin="mucevher"] #ringHost::after{display:none
 </style>
 </body>
 </html>
+
+<style id="sukun-r773-berhetiyye-premium">
+/* r773 — Berhetiyye özel premium katman. Motor/transport DOM sahipliğini değiştirmez. */
+body.r773-berhet-premium #tab-zkr{
+  background-image:
+    linear-gradient(180deg,rgba(3,13,25,.34),rgba(4,16,27,.63) 32%,rgba(3,12,22,.82) 82%),
+    url('./assets/berhetiyye-premium/berhetiyye-palace.png');
+  background-size:cover,cover;
+  background-position:center top,center top;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+}
+body.r773-berhet-premium #tab-zkr :is(.card,.jEd,.zMegaGroup,.zCtl,.zStage){
+  --r773-glass:rgba(5,17,29,.61);
+}
+body.r773-berhet-premium #zStage,
+body.r773-berhet-premium .zCtl{
+  background:linear-gradient(155deg,rgba(7,22,35,.58),rgba(7,13,28,.48))!important;
+  border-color:rgba(222,185,91,.24)!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  backdrop-filter:blur(7px) saturate(1.12);
+  -webkit-backdrop-filter:blur(7px) saturate(1.12);
+}
+body.r773-berhet-premium #r768ActiveGlassHost{
+  position:relative!important;
+  overflow:visible!important;
+  min-height:118px!important;
+  padding:20px 28px 18px!important;
+  border:0!important;
+  background:
+    linear-gradient(180deg,rgba(4,14,28,.14),rgba(8,12,30,.12)),
+    url('./assets/berhetiyye-premium/berhetiyye-name-frame.png') center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+}
+body.r773-berhet-premium #r768ActiveGlassHost::after{
+  content:'✦  BERHETİYYE  ✦';position:absolute;left:50%;bottom:7px;transform:translateX(-50%);
+  color:rgba(232,204,132,.68);font:700 8px/1 system-ui,sans-serif;letter-spacing:.22em;white-space:nowrap;pointer-events:none;
+}
+body.r773-berhet-premium #zAr{
+  color:#f4e7c2!important;text-shadow:0 0 18px rgba(176,104,255,.30),0 1px 1px rgba(0,0,0,.72)!important;
+  position:relative;z-index:2;
+}
+body.r773-berhet-premium #r611CurrentZikirHero{position:relative!important;z-index:3!important;margin-top:2px!important}
+body.r773-berhet-premium #r611CurrentZikirName{
+  color:#f8edcc!important;text-shadow:0 0 18px rgba(165,92,255,.26)!important;
+  white-space:nowrap!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;
+}
+body.r773-berhet-premium #r611CurrentZikirSub{color:#8fdccd!important;letter-spacing:.12em!important}
+
+body.r773-berhet-premium #zCountVisual{
+  overflow:visible!important;background:radial-gradient(circle,rgba(42,13,66,.30),rgba(7,20,34,.08) 58%,transparent 70%)!important;
+  filter:drop-shadow(0 18px 28px rgba(15,2,30,.34));
+}
+body.r773-berhet-premium #r773RingSkin{
+  position:absolute;inset:-24%;z-index:1;pointer-events:none;
+  background:url('./assets/berhetiyye-premium/berhetiyye-ring.png') center/contain no-repeat;
+  filter:drop-shadow(0 0 16px rgba(147,76,255,.20));
+  animation:r773RingBreath 7.5s ease-in-out infinite;
+}
+body.r773-berhet-premium #zCountVisual .cntNums{z-index:7!important}
+body.r773-berhet-premium #zCountVisual .progArc{z-index:6!important;opacity:.82}
+body.r773-berhet-premium #zCountVisual :is(.rings,.zMuhr){opacity:.13!important}
+body.r773-berhet-premium #zCountVisual :is(.zGlow,.breathHalo,.tsbGauge){z-index:5!important;opacity:.72}
+@keyframes r773RingBreath{0%,100%{transform:scale(.985) rotate(-.35deg);filter:drop-shadow(0 0 12px rgba(139,74,255,.16))}50%{transform:scale(1.018) rotate(.35deg);filter:drop-shadow(0 0 26px rgba(161,88,255,.36))}}
+
+body.r773-berhet-premium .zCounterSide{
+  background:linear-gradient(180deg,rgba(14,29,42,.63),rgba(15,12,34,.55))!important;
+  border-color:rgba(226,189,94,.26)!important;box-shadow:inset 0 0 22px rgba(105,52,168,.08)!important;
+}
+body.r773-berhet-premium :is(#undoBtn,#plusBtn,#autoBtn,#resetBtn,#spkOnce){
+  color:#f5e8be!important;border:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:100% 100%!important;box-shadow:none!important;
+}
+body.r773-berhet-premium #undoBtn{background-image:url('./assets/berhetiyye-premium/control-minus.png')!important}
+body.r773-berhet-premium #plusBtn{background-image:url('./assets/berhetiyye-premium/control-plus.png')!important}
+body.r773-berhet-premium #autoBtn{background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;min-height:72px!important}
+body.r773-berhet-premium #resetBtn{background-image:url('./assets/berhetiyye-premium/control-restart.png')!important;min-height:54px!important}
+body.r773-berhet-premium #spkOnce{background-image:url('./assets/berhetiyye-premium/control-sound.png')!important}
+body.r773-berhet-premium :is(#undoBtn,#plusBtn,#autoBtn,#resetBtn,#spkOnce):active{transform:scale(.975)!important}
+
+body.r773-berhet-premium :is(#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r754InfoSourceJumps .r754Ctx){
+  background-image:linear-gradient(180deg,rgba(5,15,27,.56),rgba(8,11,31,.72)),url('./assets/berhetiyye-premium/berhetiyye-panel.png')!important;
+  background-size:cover,100% 100%!important;background-position:center!important;
+  border-color:rgba(224,184,90,.24)!important;box-shadow:0 14px 34px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.04)!important;
+}
+body.r773-berhet-premium.sukun-tefekkur-mode #tfRefinedLayout{
+  background-image:linear-gradient(180deg,rgba(3,12,24,.20),rgba(4,12,28,.58)),url('./assets/berhetiyye-premium/berhetiyye-palace.png')!important;
+  background-size:cover!important;background-position:center top!important;background-repeat:no-repeat!important;
+}
+@media(max-width:430px){
+  body.r773-berhet-premium #r768ActiveGlassHost{min-height:104px!important;padding:16px 17px 16px!important}
+  body.r773-berhet-premium #r773RingSkin{inset:-20%}
+  body.r773-berhet-premium #autoBtn{min-height:66px!important}
+}
+@media(prefers-reduced-motion:reduce){body.r773-berhet-premium #r773RingSkin{animation:none!important}}
+body[data-perf="dusuk"].r773-berhet-premium #r773RingSkin{animation:none!important;filter:none!important}
+</style>
+<script id="sukun-r773-berhetiyye-premium-runtime">
+(()=>{'use strict';
+if(window.__SUKUN_R773_BERHET_PREMIUM__)return;window.__SUKUN_R773_BERHET_PREMIUM__=1;
+const VERSION='r773';let last=null,timer=0;
+function isUnlocked(){try{return window.SukunSecretPolicy?.unlocked?.()!==false}catch(e){return true}}
+function isBerhet(){
+  try{if(typeof Z!=='undefined'&&String(Z.cat||'')==='berhet')return isUnlocked()}catch(e){}
+  try{const b=window.BERHET_SEYIR;if(b&&(b.run||b.paused)&&isUnlocked())return true}catch(e){}
+  return false;
+}
+function ensureRing(){
+  const host=document.getElementById('zCountVisual');if(!host)return;
+  let ring=document.getElementById('r773RingSkin');if(!ring){ring=document.createElement('div');ring.id='r773RingSkin';ring.setAttribute('aria-hidden','true');host.insertBefore(ring,host.firstChild)}
+}
+function sync(reason){
+  const on=isBerhet();if(on!==last){document.body.classList.toggle('r773-berhet-premium',on);last=on}
+  if(on)ensureRing();
+  try{document.body.dataset.r773BerhetPremium=on?'1':'0'}catch(e){}
+}
+function schedule(reason,ms=35){clearTimeout(timer);timer=setTimeout(()=>sync(reason),ms)}
+addEventListener('DOMContentLoaded',()=>{sync('dom');const a=document.getElementById('zAr'),h=document.getElementById('r611CurrentZikirHero');const mo=new MutationObserver(()=>schedule('mutation',20));if(a)mo.observe(a,{subtree:true,childList:true,characterData:true});if(h)mo.observe(h,{subtree:true,childList:true,characterData:true,attributes:true});},{once:true});
+['sukun:nowplayingchange','sukun:playbackchange','sukun:zikirchange','popstate','pageshow'].forEach(ev=>addEventListener(ev,()=>schedule(ev,25),{passive:true}));
+document.addEventListener('pointerup',()=>schedule('pointer',60),{passive:true});
+document.addEventListener('change',()=>schedule('change',30),{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule('visible',80)},{passive:true});
+setInterval(()=>sync('lease'),1200);
+window.SukunR773BerhetiyyePremium=Object.freeze({version:VERSION,sync:()=>sync('api'),active:()=>document.body.classList.contains('r773-berhet-premium')});
+})();
+</script>
+

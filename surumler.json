@@ -1,5 +1,16 @@
 [
  {
+  "v": "r773",
+  "t": "11 Eylül 2026",
+  "b": [
+   "r773 · Berhetiyye zikri için premium görsel katman eklendi: 3B yüzük zikirmatik, ham ametist kristaller, billur saray/Ayasofya ambiyansı ve bakır-altın detaylar.",
+   "Premium katman yalnız Berhetiyye seçiliyken etkinleşir; sayaç, ses, kayıt, seyir ve transport motoruna dokunmaz.",
+   "Arapça ve Latin aktif isim r772 tek-sahip mimarisinde kalır; cam isim perdesi yeni Berhetiyye assetiyle giydirildi.",
+   "Berhetiyye bağlam kartları ve sayaç kontrolleri yeni cam/kristal assetlerle görsel olarak yenilendi; tüm assetler paket içinde assets/berhetiyye-premium altında taşınır.",
+   "Kur’an/mushaf görseli premium Berhetiyye asset setinde kullanılmaz; r767-r772 ses, kaynak ve aktif isim onarımları korunur."
+  ]
+ },
+ {
   "v": "r772",
   "t": "11 Eylül 2026",
   "b": [

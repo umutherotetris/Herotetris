@@ -1,0 +1,20 @@
+{
+  "build": "r773",
+  "date": "2026-09-11",
+  "base": "r772",
+  "cache": "sukun-r773-20260911a",
+  "feature": "berhetiyye-premium-ring-palace-assets",
+  "htmlSha256": "292fb2ff9583d1c588bfeca5e0bd1b7a4f1461dbdab74bedbf02d50f2b362305",
+  "assets": [
+    "assets/berhetiyye-premium/berhetiyye-ring.png",
+    "assets/berhetiyye-premium/berhetiyye-palace.png",
+    "assets/berhetiyye-premium/berhetiyye-name-frame.png",
+    "assets/berhetiyye-premium/berhetiyye-controls-sheet.png",
+    "assets/berhetiyye-premium/berhetiyye-panel.png"
+  ],
+  "verification": {
+    "regressionSuite": "174/174 PASS",
+    "swSyntax": "PASS",
+    "assetLinks": "PASS"
+  }
+}
