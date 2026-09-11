@@ -1,0 +1,72 @@
+{
+  "version": "r774",
+  "purpose": "Berhetiyye Billur Saray full runtime skin",
+  "runtime_path": "assets/berhetiyye-premium",
+  "files": [
+    {
+      "name": "berhetiyye-controls-sheet.png",
+      "bytes": 1555175,
+      "sha256": "407bccac53622b3b3d829c1f4a43347aa08f9a3b9073bb238108dd9aa5e5a8c8"
+    },
+    {
+      "name": "berhetiyye-name-frame.png",
+      "bytes": 1826705,
+      "sha256": "30b44334edc9c350a7267fd3e4a672dcc96f220ef3e87e7e9ac0a31ddaa6b3d4"
+    },
+    {
+      "name": "berhetiyye-palace.png",
+      "bytes": 3009561,
+      "sha256": "462e9833e7e5d74bc6cc0589aca16f558a1f6e8128ac62acfe007bd5122229c0"
+    },
+    {
+      "name": "berhetiyye-panel.png",
+      "bytes": 1922780,
+      "sha256": "f9d7074b3c018e066233622603004dc5599ed774417bddf038338de09924148e"
+    },
+    {
+      "name": "berhetiyye-ring.png",
+      "bytes": 2782631,
+      "sha256": "bbcce2c3567542a1a15ded4498a708c37e7c513b730774bc28851dfd1e5d6733"
+    },
+    {
+      "name": "control-exit.png",
+      "bytes": 194451,
+      "sha256": "941eb1d4e23ae6fd28d11a8e74381ccd47a6e6ab76a1c6a497bf598e7303c37f"
+    },
+    {
+      "name": "control-minus.png",
+      "bytes": 128296,
+      "sha256": "728ed38fadb0c345ba5dbe31395170db3ce801c0f9d70618bae22d88c7e6f73b"
+    },
+    {
+      "name": "control-next.png",
+      "bytes": 149016,
+      "sha256": "e2d97b7fbe02a55c528809b6a6a4f4ee278f713d22467115e003431f925208b0"
+    },
+    {
+      "name": "control-plus.png",
+      "bytes": 127165,
+      "sha256": "e55ac15d22de9d0e815753d68494c2be1617046473ada74d0269492c1f0afcf2"
+    },
+    {
+      "name": "control-prev.png",
+      "bytes": 140129,
+      "sha256": "f40d06129ce90123688408ca03101f7ce7b83157552f79133dbfcfb578606c7d"
+    },
+    {
+      "name": "control-primary.png",
+      "bytes": 454104,
+      "sha256": "bd7185630f0f33992412ec4c567d73df407434024c4ee64b852a48a81b8ccb1e"
+    },
+    {
+      "name": "control-restart.png",
+      "bytes": 133381,
+      "sha256": "e6ad074d8c1789b4097c142496a88e91dda9221fee254ef4d5e11f3201507d6e"
+    },
+    {
+      "name": "control-sound.png",
+      "bytes": 184416,
+      "sha256": "73c5b8e5a4b95a4184731d4ae5b388132641591c34df8da494fc719f019b4f09"
+    }
+  ]
+}
