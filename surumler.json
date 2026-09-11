@@ -1,5 +1,16 @@
 [
  {
+  "v": "r772",
+  "t": "11 Eylül 2026",
+  "b": [
+   "r772 · Aktif ismin Latin yazımı tek sahibe bağlandı. Aynı iki alana (#r611CurrentZikirName metni ve hero görünürlüğü) üç ayrı blok yazıyordu; ikisi dosyadaki sahip bayrağını okumuyordu.",
+   "Sahipler farklı politika uyguluyordu: alan listeleri, gizlilik kapısı ve sekme kapısı üçünde aynı değildi. Arapça ayrı elemandan geldiği için bu kavgadan etkilenmiyor, Latin ad etkileniyordu.",
+   "r767 hero'yu #zAr içine, r768 #r768ActiveGlassHost altına taşıyordu; r768'in #zAr üzerindeki gözlemcisi her taşımayı geri tetikliyordu. Ebeveyn savaşı bitti, tek sahip r768.",
+   "Tek sahibe eksik iki politika verildi: gizlilik kapısı artık çözücüde de uygulanıyor ve görünürlük iki yönlü — çözücü sonuç veremezse ad gizleniyor, önceki ad ekranda kalmıyor.",
+   "r771 mücevherli sayaç halkası ve peek görsel-viewport takibi korunmuştur."
+  ]
+ },
+ {
   "v": "r771",
   "t": "11 Eylül 2026",
   "b": [

@@ -1,8 +1,8 @@
-/* SÜKÛN r771 — jewelled counter ring & peek viewport tracking */
+/* SÜKÛN r772 — single owner for the active name */
 'use strict';
 
-const SURUM = 'r771';
-const CACHE = 'sukun-r771-20260911a';
+const SURUM = 'r772';
+const CACHE = 'sukun-r772-20260911a';
 
 const CORE = [
   './nero.html',
@@ -38,9 +38,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r771__.json';
+const BUILD_MARKER='./__sukun_build_r772__.json';
 
-const NOTLAR = ["r771 · Mücevher Sarayı görünümünde zikir sayacının halkası taşlandı: altın yuva üzerinde 12 taş (zümrüt, ametist, yakut, safir) ve aralarında 12 inci; ardında sıcak fener yansıması.", "Taşlar tek sözde-öğede duran 25 radial-gradient. Animasyon, canvas ve yeni DOM yok; halka 320–412px arası büyürken taşlar birlikte ölçekleniyor.", "Taşlar rakamların ve ilerleme yayının altında kalır, tıklamayı yemez; görsel efektler kapalıyken ve düşük performans profilinde halo sadeleşir. Diğer iki görünüm hiç etkilenmez.", "Android'de URL çubuğu geri geldiğinde ekranın altında kalan “Oynatıcıyı göster” düğmesi düzeltildi: sabit peek artık görsel viewport'u kare başına en fazla bir kez, parmak ekrandayken bile takip ediyor.", "Cihaz tanısında ölçülen 48.4px taşma (r743'te 104.8px) bu yolla kapandı; pahalı tam ölçüm ve pan erteleme davranışı değişmedi."];
+const NOTLAR = ["r772 · Aktif ismin Latin yazımı tek sahibe bağlandı. Aynı iki alana (#r611CurrentZikirName metni ve hero görünürlüğü) üç ayrı blok yazıyordu; ikisi dosyadaki sahip bayrağını okumuyordu.", "Sahipler farklı politika uyguluyordu: alan listeleri, gizlilik kapısı ve sekme kapısı üçünde aynı değildi. Arapça ayrı elemandan geldiği için bu kavgadan etkilenmiyor, Latin ad etkileniyordu.", "r767 hero'yu #zAr içine, r768 #r768ActiveGlassHost altına taşıyordu; r768'in #zAr üzerindeki gözlemcisi her taşımayı geri tetikliyordu. Ebeveyn savaşı bitti, tek sahip r768.", "Tek sahibe eksik iki politika verildi: gizlilik kapısı artık çözücüde de uygulanıyor ve görünürlük iki yönlü — çözücü sonuç veremezse ad gizleniyor, önceki ad ekranda kalmıyor.", "r771 mücevherli sayaç halkası ve peek görsel-viewport takibi korunmuştur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r771">
+<meta name="sukun-build" content="r772">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r771">
+<link rel="manifest" href="./manifest.webmanifest?v=r772">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.32 — build 2026-09-11-r771</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.32 — build 2026-09-11-r772</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6536,6 +6536,17 @@ body[data-focus="1"] .zCtl{
      ilk kaydını buradan çıkarıp sayfaya iletir, böylece «Yenile»
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
+  {
+    "v": "r772",
+    "t": "11 Eylül 2026",
+    "b": [
+      "r772 · Aktif ismin Latin yazımı tek sahibe bağlandı. Aynı iki alana (#r611CurrentZikirName metni ve hero görünürlüğü) üç ayrı blok yazıyordu; ikisi dosyadaki sahip bayrağını okumuyordu.",
+      "Sahipler farklı politika uyguluyordu: alan listeleri, gizlilik kapısı ve sekme kapısı üçünde aynı değildi. Arapça ayrı elemandan geldiği için bu kavgadan etkilenmiyor, Latin ad etkileniyordu.",
+      "r767 hero'yu #zAr içine, r768 #r768ActiveGlassHost altına taşıyordu; r768'in #zAr üzerindeki gözlemcisi her taşımayı geri tetikliyordu. Ebeveyn savaşı bitti, tek sahip r768.",
+      "Tek sahibe eksik iki politika verildi: gizlilik kapısı artık çözücüde de uygulanıyor ve görünürlük iki yönlü — çözücü sonuç veremezse ad gizleniyor, önceki ad ekranda kalmıyor.",
+      "r771 mücevherli sayaç halkası ve peek görsel-viewport takibi korunmuştur."
+    ]
+  },
   {
     "v": "r771",
     "t": "11 Eylül 2026",
@@ -26443,7 +26454,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r771';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r772';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -60035,14 +60046,24 @@ function sync(){
   if(!hero||!name||!sub)return;
   const v=selected(),text=v.text,alt=subtitle(v.cat);
   const show=!!text&&(document.body.classList.contains('sukun-tefekkur-mode')||document.body.classList.contains('sukun-zikir-tab'));
-  if(name.textContent!==text)name.textContent=text;
-  if(sub.textContent!==alt)sub.textContent=alt;
+  /* r772: r768 aktif isim cam sahibi kuruluysa ad ve görünürlük yazımı ona
+     aittir. Ölçü ve sınıf işi burada sürer, ama aynı alanlara ikinci bir el
+     değmez. Dosyadaki sahip bayrağı deseni bunu zaten söylüyordu; bu blok
+     bayrağı okumayan iki yerden biriydi. */
+  const glassOwns=!!window.__SUKUN_R768_ACTIVE_GLASS_OWNER__;
+  if(!glassOwns){
+    if(name.textContent!==text)name.textContent=text;
+    if(sub.textContent!==alt)sub.textContent=alt;
+  }
   const long=text.length>18&&text.length<=38,vlong=text.length>38;
   hero.classList.toggle('r611-long',long);
   hero.classList.toggle('r611-vlong',vlong);
-  if(hero.hidden===show){hero.hidden=!show;if(show)scheduleFit();}
-  const aria=String(!show);
-  if(hero.getAttribute('aria-hidden')!==aria)hero.setAttribute('aria-hidden',aria);
+  if(glassOwns){if(!hero.hidden)scheduleFit();}
+  else{
+    if(hero.hidden===show){hero.hidden=!show;if(show)scheduleFit();}
+    const aria=String(!show);
+    if(hero.getAttribute('aria-hidden')!==aria)hero.setAttribute('aria-hidden',aria);
+  }
   const idChanged=v.identity!==lastIdentity||text!==lastText;
   if(idChanged){lastIdentity=v.identity;lastText=text;scheduleFit()}
   if(show&&lastWidth!==$('r740HeroHeading')?.clientWidth)scheduleFit();
@@ -72056,6 +72077,10 @@ function selectedName(){
   }catch(e){return null}
 }
 function latinSync(){
+  /* r772: r768 hero'yu #r768ActiveGlassHost altına, bu blok #zAr içine taşıyordu.
+     r768'in #zAr üzerindeki MutationObserver'ı her taşımayı yeniden tetiklediği
+     için ikisi birbirini geri alıyordu. Tek sahip r768; burası geri çekiliyor. */
+  if(window.__SUKUN_R768_ACTIVE_GLASS_OWNER__)return false;
   const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub'),ar=$('zAr'),glass=$('r768ActiveGlassHost');
   const s=selectedName();if(!hero||!name||!sub||!ar||!glass||!s)return false;
   const active=document.body.classList.contains('sukun-zikir-tab')||document.body.classList.contains('sukun-tefekkur-mode');if(!active)return false;
@@ -72211,9 +72236,27 @@ function normalize(){
   if(host.parentNode!==stage)stage.prepend(host);
   return true;
 }
-function selected(){try{const z=typeof Z!=='undefined'?Z:window.Z,db=typeof ZIKIR!=='undefined'?ZIKIR:window.ZIKIR;let cat=String(z?.cat||''),idx=Number(z?.idx),it=Number.isInteger(idx)?db?.[cat]?.items?.[idx]:null;if(cat==='fav'&&it){cat=String(it._src||cat);idx=Number(it._i);it=db?.[cat]?.items?.[idx]||it}const base=String(it?.tr||it?.t||it?.nm||it?.oku||'').replace(/\s+/g,' ').trim();if(!base)return null;return{cat,text:(cat==='berhet'||cat==='esma')&&!/^y[âa]\s/i.test(base)?'Yâ '+base:base}}catch(e){return null}}
+function selected(){try{const z=typeof Z!=='undefined'?Z:window.Z,db=typeof ZIKIR!=='undefined'?ZIKIR:window.ZIKIR;let cat=String(z?.cat||''),idx=Number(z?.idx),it=Number.isInteger(idx)?db?.[cat]?.items?.[idx]:null;if(cat==='fav'&&it){cat=String(it._src||cat);idx=Number(it._i);it=db?.[cat]?.items?.[idx]||it}const base=String(it?.tr||it?.t||it?.nm||it?.oku||'').replace(/\s+/g,' ').trim();if(!base)return null;/* r772: gizlilik kapısı burada da uygulanır. r744 ve r767 bu kapıyı zaten   uyguluyordu, r768 uygulamıyordu; kilitli bir Berhetiyye adı sahiplerden   birine göre gizlenip diğerine göre yazılabiliyordu. */try{if(window.SukunSecretPolicy?.secretStep?.({cat,name:base}))return null}catch(e){}return{cat,text:(cat==='berhet'||cat==='esma')&&!/^y[âa]\s/i.test(base)?'Yâ '+base:base}}catch(e){return null}}
 function fit(){const host=$('r768ActiveGlassHost'),name=$('r611CurrentZikirName');if(!host||!name||!name.textContent||!name.getClientRects().length)return;if(!fit.ctx)fit.ctx=document.createElement('canvas').getContext('2d');const ctx=fit.ctx;if(!ctx)return;const cs=getComputedStyle(name),text=name.textContent.trim(),family=cs.fontFamily||'Georgia,serif',weight=cs.fontWeight||'500',ls=parseFloat(cs.letterSpacing)||0,width=host.clientWidth||host.getBoundingClientRect().width||0;if(width<80)return;const available=Math.max(92,width-86);let size=Math.min(29,Math.max(14,width*.055));const measure=n=>{ctx.font=`${weight} ${n}px ${family}`;return ctx.measureText(text).width+Math.max(0,[...text].length-1)*ls};while(size>13.5&&measure(size)>available)size-=.5;name.style.setProperty('--r768-name-size',size.toFixed(1)+'px');name.title=text}
-function sync(){if(!normalize())return false;const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub'),x=selected();if(x&&hero&&name&&sub){if(name.textContent!==x.text)name.textContent=x.text;sub.textContent=x.cat==='berhet'?'şu an zikredilen berhetiyye ismi':x.cat==='esma'?'şu an zikredilen esmâ':'şu an zikredilen zikir';hero.hidden=false;hero.setAttribute('aria-hidden','false')}requestAnimationFrame(fit);return true}
+function sync(){
+  if(!normalize())return false;
+  const hero=$('r611CurrentZikirHero'),name=$('r611CurrentZikirName'),sub=$('r611CurrentZikirSub'),x=selected();
+  if(!hero||!name||!sub)return false;
+  /* r772: görünürlük artık iki yönlü. Önceden yalnız açma yolu vardı; çözücü
+     null dönünce hiçbir şey yapılmıyordu ve bir önceki ad ekranda kalıyordu
+     (ölçüldü: berhet seçiliyken başlıkta hâlâ 'Yâ Rahmân' duruyordu). */
+  const active=document.body.classList.contains('sukun-zikir-tab')||document.body.classList.contains('sukun-tefekkur-mode');
+  const show=!!x&&active;
+  if(show){
+    if(name.textContent!==x.text)name.textContent=x.text;
+    const label=x.cat==='berhet'?'şu an zikredilen berhetiyye ismi':x.cat==='esma'?'şu an zikredilen esmâ':'şu an zikredilen zikir';
+    if(sub.textContent!==label)sub.textContent=label;
+    if(hero.hidden)hero.hidden=false;
+  }else if(!hero.hidden)hero.hidden=true;
+  const aria=String(!show);
+  if(hero.getAttribute('aria-hidden')!==aria)hero.setAttribute('aria-hidden',aria);
+  requestAnimationFrame(fit);return true;
+}
 let q=0;function queue(){clearTimeout(q);q=setTimeout(sync,16)}
 ['sukun:zikirselectionchange','sukun:zikirnav','sukun:tabchange','sukun:journey-advance','sukun:currentzikirchange','sukun:r616viewchange','pageshow'].forEach(ev=>window.addEventListener(ev,queue,{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(sync,40)},{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(fit),{passive:true});
