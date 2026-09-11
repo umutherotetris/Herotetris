@@ -1,0 +1,17 @@
+{
+  "build": "r775",
+  "date": "2026-09-11",
+  "feature": "berhetiyye-billur-saray-real-activation",
+  "base": "r774",
+  "cache": "sukun-r775-20260911a",
+  "htmlSha256": "fca010a3d81574e7d00b28c6f1a160628770dd8e501c6dfeec90b732658ab79e",
+  "swSha256": "2b173344f972434a75236fb8b5cbbfd2aa0fa0bd1987d6b859432c449c731782",
+  "manifestSha256": "2486c7e449947716bd58a6706c796be6fcdf87767b178176711f181eb0841978",
+  "fixes": [
+    "r774 tema blokları </html> sonrasındaydı; kaldırılıp </body> içine alındı",
+    "arka plan #tab-zkr sınırından body seviyesine taşındı",
+    "tema aktivasyonu Z.cat + seçili DOM + 28 İsim Seyri + aktif isim snapshot ile sağlamlaştırıldı",
+    "Hedef/Kalan ve zikir kumandaları Billur Saray assetleriyle tek skin altında tutuldu"
+  ],
+  "behaviorOwnership": "unchanged"
+}

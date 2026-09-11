@@ -1,0 +1,11 @@
+{
+  "skin_before_body": true,
+  "runtime_before_body": true,
+  "nothing_after_html": true,
+  "old_r774_skin_removed": true,
+  "old_r773_skin_removed": true,
+  "body_background_asset": true,
+  "target_skin": true,
+  "control_skin": true,
+  "assets_present": true
+}

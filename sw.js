@@ -1,8 +1,8 @@
-/* SÜKÛN r774 — Berhetiyye Billur Saray full skin */
+/* SÜKÛN r775 — Berhetiyye Billur Saray full skin */
 'use strict';
 
-const SURUM = 'r774';
-const CACHE = 'sukun-r774-20260911a';
+const SURUM = 'r775';
+const CACHE = 'sukun-r775-20260911a';
 
 const CORE = [
   './nero.html',
@@ -51,9 +51,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r774__.json';
+const BUILD_MARKER='./__sukun_build_r775__.json';
 
-const NOTLAR = ["r774 · Berhetiyye Billur Saray teması full skin oldu: arka plan, sayaç, hedef/kalan, duraklat, −1/+1, önceki/baştan/sonraki ve oynatıcı çekmecesi tek görsel dilde.", "Ana zikir, Tefekkür ve 28 İsim Seyri yüzeyleri aynı kristal-altın skin sözleşmesini kullanır; diğer zikir kategorileri etkilenmez.", "Zikir ayarları, hedef modu, ses kontrolleri, isim seçici, kaynak/bağlam kartları ve seyir düğmeleri koyu billur camla giydirildi.", "JS davranış sahipliği değiştirilmedi; sayaç, ses, kayıt/TTS, seyir ve pause/stop/resume motorları r773/r772 mimarisinde kaldı.", "r773 premium assetleri yeniden kullanıldı; ek runtime görsel katmanı tıklama yüzeylerinde pointer sahipliğini değiştirmez."];
+const NOTLAR = ["r775 · Berhetiyye Billur Saray skin aktivasyonu gerçek document body içine taşındı; arka plan artık tam ekran ve kalıcıdır.", "Hedef/Kalan ve tüm zikir kumandaları Berhetiyye seçiliyken billur-altın assetleri kullanır.", "Tema seçimi Z.cat yanında seçili kategori DOM’u, 28 İsim Seyri ve aktif isim durumundan da doğrulanır.", "Ses, sayaç ve transport sahipliği değişmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
