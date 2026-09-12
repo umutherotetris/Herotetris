@@ -1,0 +1,9 @@
+{
+  "build": "r779",
+  "version": "r779",
+  "date": "2026-09-12",
+  "notes": [
+    "Berhetiyye sahneleri #r717Scene görünür arka plan katmanına bağlandı",
+    "Berhetiyye çıkışında mevcut SÜKÛN r717/r757 arka planı otomatik geri gelir"
+  ]
+}
