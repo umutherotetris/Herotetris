@@ -1,0 +1,10 @@
+{
+  "build": "r780",
+  "version": "r780",
+  "date": "2026-09-12",
+  "notes": [
+    "Ana ekran kartları ve vakit/yolculuk yüzeylerinde transparanlık artırıldı; arka plan görselleri daha görünür hâle geldi",
+    "Berhetiyye sahneleri için #r717Scene tabanlı görünür arka plan fix’i korunarak panel karartması bir kademe daha inceltildi",
+    "SW/cache/manifest kimliği r780 olarak yenilendi"
+  ]
+}

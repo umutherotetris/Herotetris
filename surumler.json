@@ -1,5 +1,14 @@
 [
   {
+    "v": "r780",
+    "t": "12 Eylül 2026",
+    "b": [
+      "Ana ekran kartları ve vakit/yolculuk yüzeylerinde transparanlık artırıldı; arka plan görselleri daha görünür hâle geldi",
+      "Berhetiyye sahneleri için #r717Scene tabanlı görünür arka plan fix’i korunarak panel karartması bir kademe daha inceltildi",
+      "SW/cache/manifest kimliği r780 olarak yenilendi"
+    ]
+  },
+  {
     "v": "r778",
     "t": "12 Eylül 2026",
     "b": [

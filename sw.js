@@ -1,8 +1,8 @@
-/* SÜKÛN r779 — Berhetiyye visible scene layer fix */
+/* SÜKÛN r780 — transparency pass + visible scene layer fix */
 'use strict';
 
-const SURUM = 'r779';
-const CACHE = 'sukun-r779-20260912a';
+const SURUM = 'r780';
+const CACHE = 'sukun-r780-20260912a';
 
 const CORE = [
   './nero.html',
@@ -59,9 +59,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r779__.json';
+const BUILD_MARKER='./__sukun_build_r780__.json';
 
-const NOTLAR = ["r779 · Berhetiyye scene arka planları gerçek #r717Scene görünür katmanına bağlandı.","r778 · Berhetiyye Billur Saray build/cache kimliği düzeltildi.","Otomatik + 6 özel Berhetiyye sahnesi eklendi.","Safir/yakut/amethyst sayaç yüzüğü ve mücevher kontrol skinleri visual authority tarafından uygulanır.","Berhetiyye alanından çıkınca normal SÜKÛN görünümü geri gelir."];
+const NOTLAR = ["r780 · Ana sayfa ve Berhetiyye yüzeylerinde transparanlık artırıldı; arka plan sahnesi daha görünür oldu.","r779 · Berhetiyye scene arka planları gerçek #r717Scene görünür katmanına bağlandı.","Otomatik + 6 özel Berhetiyye sahnesi korunuyor.","Safir/yakut/amethyst sayaç yüzüğü ve mücevher kontrol skinleri visual authority tarafından uygulanır.","Berhetiyye alanından çıkınca normal SÜKÛN görünümü geri gelir."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
