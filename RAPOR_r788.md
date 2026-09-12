@@ -1,0 +1,6 @@
+# SÜKÛN r788 — Berhetiyye Button Skin Authority
+
+- Berhetiyye’de eski cam görünümde kalan Önceki / Baştan / Sonraki kontrolleri aynı doğal taşlı mücevher skin ailesine bağlandı.
+- 28 İsim Seyri Önceki/Sonraki/Baştan/Bitir/Tüm seyri baştan düğmeleri ve Atlas okları dinamik oluşturulsa bile r788 skin otoritesiyle yeniden giydirilir.
+- Yeni r788 asset adları kullanılarak tarayıcı/service-worker eski görsel önbelleği bypass edilir; zikir çemberi ve r786 geometri düzeni değiştirilmez.
+- Hedef/Kalan, ±1, Duraklat, altı yardımcı aksiyon, Tefekküre Geç ve mini oynatıcı aynı tema ailesinde tutulur.

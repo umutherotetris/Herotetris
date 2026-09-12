@@ -1,8 +1,8 @@
-/* SÜKÛN r786 — Berhetiyye geometry authority */
+/* SÜKÛN r788 — Berhetiyye button skin authority */
 'use strict';
 
-const SURUM = 'r786';
-const CACHE = 'sukun-r786-20260912a';
+const SURUM = 'r788';
+const CACHE = 'sukun-r788-20260912a';
 
 const CORE = [
   './nero.html',
@@ -43,6 +43,16 @@ const OPTIONAL = [
   './assets/berhetiyye-premium/control-next.png',
   './assets/berhetiyye-premium/control-sound.png',
   './assets/berhetiyye-premium/control-exit.png',
+  './assets/berhetiyye-premium/control-nav-emerald-r788.png',
+  './assets/berhetiyye-premium/control-nav-amethyst-r788.png',
+  './assets/berhetiyye-premium/control-nav-sapphire-r788.png',
+  './assets/berhetiyye-premium/control-primary-r788.png',
+  './assets/berhetiyye-premium/control-round-plus-r788.png',
+  './assets/berhetiyye-premium/control-round-minus-r788.png',
+  './assets/berhetiyye-premium/control-utility-emerald-r788.png',
+  './assets/berhetiyye-premium/control-utility-sapphire-r788.png',
+  './assets/berhetiyye-premium/control-utility-gold-r788.png',
+  './assets/berhetiyye-premium/control-panelbar-r788.png',
   './assets/berhetiyye-premium/scenes/scene-01-billur.png',
   './assets/berhetiyye-premium/scenes/scene-02-asa.png',
   './assets/berhetiyye-premium/scenes/scene-03-selale.png',
@@ -66,9 +76,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r786__.json';
+const BUILD_MARKER='./__sukun_build_r788__.json';
 
-const NOTLAR = ["r786 · Berhetiyye geometry authority: dinamik kartlardan gerilen raster çerçeveler kaldırıldı; CSS cam/kontur düzenine geçirildi.", "Sayaç DOM'u hedef + ring + kalan yapısına göre yeniden gridlendi; ring üstte, hedef/kalan altında hizalanır.", "Alt mini oynatıcıdaki çift translate hatası düzeltildi; artık sola taşmadan ekran ortasında kalır.", "Zikir yardımcı tuşları 2 kolon, seyir tuşları 2 kolon ve mobil güvenli ölçülerle yeniden düzenlendi.", "r784 sahneleri, mücevher ringi, ters saat yönlü canlı dönüş ve r782 Tekke flashing düzeltmesi korunur."];
+const NOTLAR = ["r788 · Berhetiyye sabit kontrol skin otoritesi: eski cam kalan gezinme ve seyir düğmeleri mücevher asset ailesine bağlandı.", "Dinamik oluşan Önceki/Sonraki/Atlas/Seyir düğmelerine MutationObserver ile skin yeniden uygulanır.", "Yeni r788 asset URL'leri eski SW/browser cache'ini bypass eder; r786 geometri ve zikir çemberi korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

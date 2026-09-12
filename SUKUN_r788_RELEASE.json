@@ -1,0 +1,17 @@
+{
+  "build": "r788",
+  "base": "r786",
+  "focus": "Berhetiyye button skin completion",
+  "assets": [
+    "control-nav-emerald-r788.png",
+    "control-nav-amethyst-r788.png",
+    "control-nav-sapphire-r788.png",
+    "control-primary-r788.png",
+    "control-round-plus-r788.png",
+    "control-round-minus-r788.png",
+    "control-utility-emerald-r788.png",
+    "control-utility-sapphire-r788.png",
+    "control-utility-gold-r788.png",
+    "control-panelbar-r788.png"
+  ]
+}
