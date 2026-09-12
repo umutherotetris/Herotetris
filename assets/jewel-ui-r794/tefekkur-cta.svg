@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="132" viewBox="0 0 900 132">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#05172f"/><stop offset=".48" stop-color="#07152f"/><stop offset="1" stop-color="#130e35"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8e4d16"/><stop offset=".17" stop-color="#ffe9a8"/><stop offset=".43" stop-color="#d88e2c"/><stop offset=".7" stop-color="#fff0ba"/><stop offset="1" stop-color="#7b3f10"/></linearGradient>
+ <radialGradient id="sapphire"><stop stop-color="#d6fbff"/><stop offset=".18" stop-color="#40d9ff"/><stop offset=".56" stop-color="#0b6fdf"/><stop offset="1" stop-color="#06154d"/></radialGradient>
+ <radialGradient id="amethyst"><stop stop-color="#ffe4ff"/><stop offset=".18" stop-color="#e672ff"/><stop offset=".58" stop-color="#6f22d9"/><stop offset="1" stop-color="#230650"/></radialGradient>
+ <filter id="g"><feGaussianBlur stdDeviation="3.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect x="2" y="2" width="896" height="128" rx="28" fill="url(#bg)" stroke="url(#gold)" stroke-width="4"/>
+<rect x="8" y="8" width="884" height="116" rx="21" fill="none" stroke="#5fd9ff" stroke-opacity=".20" stroke-width="1.3"/>
+<path d="M 162.0 7 H 738.0" stroke="#fff2bf" stroke-opacity=".25"/>
+<g filter="url(#g)">
+ <ellipse cx="14.4" cy="66.0" rx="11.16" ry="7.74" fill="url(#sapphire)" stroke="#ffd783" stroke-width="1.6"/>
+ <ellipse cx="885.6" cy="66.0" rx="11.16" ry="7.74" fill="url(#amethyst)" stroke="#ffd783" stroke-width="1.6"/>
+ <rect x="441.0" y="-6.0" width="18" height="18" transform="rotate(45 450.0 3.0)" fill="url(#sapphire)" stroke="#ffd783" stroke-width="1.5"/>
+</g>
+</svg>
