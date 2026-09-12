@@ -1,8 +1,8 @@
-/* SÜKÛN r783 — Berhetiyye tam entegrasyon + fit polish */
+/* SÜKÛN r784 — Berhetiyye asset finalization */
 'use strict';
 
-const SURUM = 'r783';
-const CACHE = 'sukun-r783-20260912a';
+const SURUM = 'r784';
+const CACHE = 'sukun-r784-20260912a';
 
 const CORE = [
   './nero.html',
@@ -49,6 +49,13 @@ const OPTIONAL = [
   './assets/berhetiyye-premium/scenes/scene-04-teras.png',
   './assets/berhetiyye-premium/scenes/scene-05-kristal.png',
   './assets/berhetiyye-premium/scenes/scene-06-yuzuk.png',
+  './assets/berhetiyye-premium/panel-tall-r784.png',
+  './assets/berhetiyye-premium/panel-wide-r784.png',
+  './assets/berhetiyye-premium/panel-wide2-r784.png',
+  './assets/berhetiyye-premium/panel-card-r784.png',
+  './assets/berhetiyye-premium/panel-short-r784.png',
+  './assets/berhetiyye-premium/scenes/scene-07-mor-kristal.png',
+  './assets/berhetiyye-premium/scenes/scene-08-ayasofya-billur.png',
   './assets/berhetiyye-premium/r778-controls-source.png',
   './assets/berhetiyye-premium/r778-ui-source.png',
   './assets/feyz-mark.svg',
@@ -59,9 +66,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r783__.json';
+const BUILD_MARKER='./__sukun_build_r784__.json';
 
-const NOTLAR = ["r783 · Berhetiyye full-shell polish uygulandı: yüzeyler daha şeffaf, kartlar daha oturmuş ve alt dock çakışması hafifletildi.", "Berhetiyye zikirmatik yüzüğü canlı oynatma sırasında saat yönünün tersine döner; durunca sakin kalır.", "r782 · Tekke sekmesindeki flashing düzeltmesi korunur.", "r781 · Berhetiyye full shell skin entegrasyonu korunur.", "Otomatik + 6 özel Berhetiyye sahnesi ve çıkışta normal SÜKÛN görünümüne dönüş korunur."];
+const NOTLAR = ["r784 · Asset finalizasyonu: yeni kristal yüzük, safir-altın kontrol ailesi ve panel çerçeveleri gerçek runtime assetlerine dönüştürüldü.", "Berhetiyye sahne seçicisine Mor Kristal Saray ve Ayasofya & Billur olmak üzere iki yeni arka plan eklendi.", "Canlı zikirmatik yüzüğü r783 davranışıyla saat yönünün tersine döner; pause/stop/çıkışta durur.", "r782 Tekke flashing düzeltmesi ve r783 transparan/fit polish korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

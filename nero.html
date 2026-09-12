@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r783">
+<meta name="sukun-build" content="r784">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r783">
+<link rel="manifest" href="./manifest.webmanifest?v=r784">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.42 — build 2026-09-12-r782</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.44 — build 2026-09-12-r784</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -26508,7 +26508,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r782';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r784';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -68193,10 +68193,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r782',date='2026-09-12';
+const build=meta?.content||'r784',date='2026-09-12';
 const label=document.getElementById('surumEtiket');
-if(label){const text='SÜKÛN v20.38 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r782',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+if(label){const text='SÜKÛN v20.44 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
+window.SukunReleaseIdentity=Object.freeze({build,version:'r784',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -72556,7 +72556,9 @@ const SCENES=[
  {id:'selale',label:'Şelale Vadisi',file:'scenes/scene-03-selale.png'},
  {id:'teras',label:'Ay Terası',file:'scenes/scene-04-teras.png'},
  {id:'kristal',label:'Kristal Şehir',file:'scenes/scene-05-kristal.png'},
- {id:'yuzuk',label:'Süleyman Yüzüğü',file:'scenes/scene-06-yuzuk.png'}
+ {id:'yuzuk',label:'Süleyman Yüzüğü',file:'scenes/scene-06-yuzuk.png'},
+ {id:'morkristal',label:'Mor Kristal Saray',file:'scenes/scene-07-mor-kristal.png'},
+ {id:'ayasofyabillur',label:'Ayasofya & Billur',file:'scenes/scene-08-ayasofya-billur.png'}
 ];
 const touched=new Map();let timer=0,last=false,painting=false,completedHold=false,lastIdx=-1;
 let sceneMode='auto';try{sceneMode=localStorage.getItem('sukun.berhet.scene')||'auto'}catch(e){}
@@ -72604,8 +72606,8 @@ function skin(){if(painting)return;painting=true;try{
  paint('.tabs .tab[data-t="zkr"],.tabs .tab.act',{...smallPanel,'background-image':'linear-gradient(145deg,rgba(17,63,88,.94),rgba(47,21,78,.93))','border-color':'rgba(246,217,138,.65)','box-shadow':'0 0 18px rgba(49,151,255,.14),inset 0 0 18px rgba(246,217,138,.07)'});
  paint('#tab-zkr .zNav',{...panel});paint('#tab-zkr .zNav button',{...smallPanel});paint('#tab-zkr .zNav button.act',{...smallPanel,'border-color':'rgba(246,217,138,.63)','color':'#fff0bd','background-image':'linear-gradient(145deg,rgba(17,67,94,.92),rgba(48,21,78,.92))'});
  paint('#tab-zkr>.card.zCtl',{...panel,'background-image':'linear-gradient(160deg,rgba(3,18,37,.14),rgba(7,11,28,.22))','border':'0','box-shadow':'none','backdrop-filter':'blur(1.5px) saturate(1.02)','-webkit-backdrop-filter':'blur(1.5px) saturate(1.02)'});
- paint('#zStage',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.32),rgba(8,12,31,.45)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0','box-shadow':'0 17px 38px rgba(0,0,0,.22),0 0 24px rgba(96,107,255,.055)'});
- paint('#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.40),rgba(8,12,31,.52)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
+ paint('#zStage',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.32),rgba(8,12,31,.45)),${bg('panel-card-r784.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0','box-shadow':'0 17px 38px rgba(0,0,0,.22),0 0 24px rgba(96,107,255,.055)'});
+ paint('#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.40),rgba(8,12,31,.52)),${bg('panel-tall-r784.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
  paint('#berhetAtlas .r168Cell,#berhetSeyir .r168MiniRow,#berhetSeyir .r168Status,#berhetSeyir .r168Progress,#targetPremium .targetDetailCard,#targetPremium .targetDetailCol',{...smallPanel});
  paint('#tab-zkr :is(.cat,.zItem,#zListToggle,.targetModeBtn,.targetManualBtn,.targetApplyBtn,.targetValueBox,.targetValueInput,#bsMode,#bsGap,#bsCustom)',smallPanel);
  paint('#tab-zkr :is(.cat.act,.zItem.act,.targetModeBtn.act,.targetApplyBtn)',{...smallPanel,'border-color':'rgba(246,217,138,.62)','color':'#fff0bd','background-image':'linear-gradient(145deg,rgba(17,67,94,.93),rgba(48,20,78,.93))'});
@@ -72625,7 +72627,7 @@ function skin(){if(painting)return;painting=true;try{
  const nav=document.querySelectorAll('#r616ZikirNavRow button');if(nav[0])ctrl(nav[0],'control-prev.png','48px','0 0 15px rgba(22,119,232,.11)');if(nav[1])ctrl(nav[1],'control-restart.png','48px','0 0 15px rgba(210,31,97,.09)');if(nav[2])ctrl(nav[2],'control-next.png','48px','0 0 15px rgba(22,119,232,.11)');
  document.querySelectorAll('#r494TefNavSlot .r494NavBtn').forEach(el=>{const a=el.dataset.action;ctrl(el,a==='prev'?'control-prev.png':a==='next'?'control-next.png':'control-restart.png','42px')});
  document.querySelectorAll('#berhetSeyir .r168Buttons button').forEach(el=>{const id=el.id||'';ctrl(el,id==='bsPause'||id==='bsStart'?'control-primary.png':id==='bsPrev'?'control-prev.png':id==='bsNext'?'control-next.png':'control-restart.png','44px')});
- paint('#tfRefinedLayout,#tfRefinedLayout>.tfVisualPanel,#tfRefinedLayout>.tfControlPanel',{...panel,'background-image':`linear-gradient(160deg,rgba(3,16,34,.24),rgba(6,11,28,.42)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
+ paint('#tfRefinedLayout,#tfRefinedLayout>.tfVisualPanel,#tfRefinedLayout>.tfControlPanel',{...panel,'background-image':`linear-gradient(160deg,rgba(3,16,34,.24),rgba(6,11,28,.42)),${bg('panel-card-r784.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
  paint('#tfRefinedLayout #r706AtmosphereControls,#tfRefinedLayout #r706Motion,#tfRefinedLayout #r470VoiceSource,#tefExitBtn',{...smallPanel});
  paint('#r170Now,#r588DockShell,#r588Peek,#r588Bar,.r588Peek,.r588Bar',{...panel,'background-image':`linear-gradient(155deg,rgba(2,14,31,.94),rgba(7,10,26,.97)),${bg('berhetiyye-name-frame.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0','box-shadow':'0 -10px 34px rgba(0,0,0,.42),0 0 22px rgba(111,230,236,.08)'});
  paint('#r588DockShell button,#r170Now button',{...smallPanel,'color':'#ffe9ae'});
@@ -72676,8 +72678,8 @@ html body.r716-shell.r778-berhet-palace #zStage{background:linear-gradient(160de
 </style>
 <script id="sukun-r779-berhetiyye-scene-diagnostics">
 (()=>{'use strict';if(window.__SUKUN_R779_SCENE_FIX__)return;window.__SUKUN_R779_SCENE_FIX__=1;
-function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r782',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
-window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r782',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
+function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r784',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
+window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r784',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
 })();
 </script>
 
@@ -73058,6 +73060,45 @@ function sync(){
  sync();
 })();
 </script>
+
+
+<style id="sukun-r784-asset-finalization">
+/* r784 — Asset finalization: generated transparent jewels are now real web assets. */
+body.r778-berhet-palace #zStage{
+  background-image:linear-gradient(155deg,rgba(3,17,35,.10),rgba(8,12,31,.18)),url('./assets/berhetiyye-premium/panel-card-r784.png')!important;
+  background-size:cover,100% 100%!important;
+}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx){
+  background-image:linear-gradient(155deg,rgba(3,17,35,.11),rgba(8,12,31,.19)),url('./assets/berhetiyye-premium/panel-tall-r784.png')!important;
+  background-size:cover,100% 100%!important;
+}
+body.r778-berhet-palace :is(#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r642ZikirInfoCard){
+  background-image:linear-gradient(155deg,rgba(3,17,35,.09),rgba(8,12,31,.17)),url('./assets/berhetiyye-premium/panel-card-r784.png')!important;
+}
+body.r778-berhet-palace #r679ZikirAyarBox,
+body.r778-berhet-palace #targetPremium{
+  background-image:linear-gradient(155deg,rgba(3,17,35,.08),rgba(8,12,31,.15)),url('./assets/berhetiyye-premium/panel-wide-r784.png')!important;
+}
+body.r778-berhet-palace #r433DockPeek,
+body.r778-berhet-palace :is(#r588Peek,.r588Peek){
+  background-image:url('./assets/berhetiyye-premium/panel-short-r784.png')!important;
+  background-size:100% 100%!important;
+  background-color:transparent!important;
+}
+body.r778-berhet-palace #r768ActiveGlassHost,
+body.r778-berhet-palace :is(#r170Now,#r588DockShell,#r588Bar,.r588Bar){
+  background-image:linear-gradient(155deg,rgba(3,17,35,.08),rgba(8,12,31,.16)),url('./assets/berhetiyye-premium/berhetiyye-name-frame.png')!important;
+  background-size:cover,100% 100%!important;
+}
+/* Final ring fits in front of the scene and remains text-independent. */
+body.r778-berhet-palace #r778RingSkin{inset:-15%!important;background-image:url('./assets/berhetiyye-premium/berhetiyye-ring.png')!important}
+/* Prevent decorative raster from blocking controls. */
+body.r778-berhet-palace :is(#r778RingSkin,#zStage::before,#zStage::after){pointer-events:none!important}
+@media(max-width:430px){
+  body.r778-berhet-palace #r778RingSkin{inset:-12%!important}
+  body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,.r754Ctx){background-size:cover,100% 100%!important}
+}
+</style>
 
 </body>
 </html>

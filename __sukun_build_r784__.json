@@ -1,0 +1,11 @@
+{
+  "build": "r784",
+  "version": "r784",
+  "date": "2026-09-12",
+  "notes": [
+    "r784 · Asset finalizasyonu: yeni kristal yüzük, safir-altın kontrol ailesi ve panel çerçeveleri gerçek runtime assetlerine dönüştürüldü.",
+    "Berhetiyye sahne seçicisine Mor Kristal Saray ve Ayasofya & Billur olmak üzere iki yeni arka plan eklendi.",
+    "Canlı zikirmatik yüzüğü r783 davranışıyla saat yönünün tersine döner; pause/stop/çıkışta durur.",
+    "r782 Tekke flashing düzeltmesi ve r783 transparan/fit polish korunur."
+  ]
+}
