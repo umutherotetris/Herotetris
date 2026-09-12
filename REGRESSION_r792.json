@@ -1,0 +1,12 @@
+{
+  "build": "r792",
+  "base": "r791",
+  "checks": {
+    "meta_r792": true,
+    "tap_authority": true,
+    "jewel_r792": true,
+    "sw_r792": true,
+    "manifest_r792": true
+  },
+  "audio_ownership_changed": false
+}

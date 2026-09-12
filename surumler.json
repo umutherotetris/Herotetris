@@ -1,5 +1,16 @@
 [
   {
+    "v": "r792",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Tefekküre Geç düğmesi için mobil tap otoritesi eklendi; click yutulsa bile pointerup geometrisiyle geçiş çalışır.",
+      "Legacy r700 click handler ile çift toggle yarışı engellendi.",
+      "Tefekkür CTA z-index/hit-test katmanı yükseltildi; dekoratif glass katmanlar dokunmayı kesemez.",
+      "Jewel assetleri assets/jewel-ui-r792 altında self-contained olarak yeniden paketlendi.",
+      "Ses, sayaç, pause/stop/resume ve 28/99 seyir motorları değiştirilmedi."
+    ]
+  },
+  {
     "v": "r791",
     "t": "13 Eylül 2026",
     "b": [

@@ -1,0 +1,16 @@
+{
+  "build": "r792",
+  "base": "r791",
+  "focus": "Tefekkür Tap Authority",
+  "rootCause": [
+    "visible CTA could still lose native tap delivery in layered mobile zikir UI",
+    "r791 jewel assets could be absent on a partial deploy"
+  ],
+  "changes": [
+    "window-capture pointer tap authority",
+    "geometry-based mobile hit acceptance",
+    "legacy click double-toggle suppression",
+    "r792 jewel asset namespace",
+    "no audio/transport ownership changes"
+  ]
+}

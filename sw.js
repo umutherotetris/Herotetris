@@ -1,8 +1,8 @@
-/* SÜKÛN r791 — Jewel final authority */
+/* SÜKÛN r792 — Jewel final authority */
 'use strict';
 
-const SURUM = 'r791';
-const CACHE = 'sukun-r791-20260913a';
+const SURUM = 'r792';
+const CACHE = 'sukun-r792-20260913b';
 
 const CORE = [
   './nero.html',
@@ -36,18 +36,18 @@ const CORE = [
   './assets/jewel-ui-r790/player.svg',
   './assets/jewel-ui-r790/divider.svg',
   './assets/jewel-ui-r790/ASSET_CARDS_r790.json',
-  './assets/jewel-ui-r791/card-wide.svg',
-  './assets/jewel-ui-r791/card-medium.svg',
-  './assets/jewel-ui-r791/field.svg',
-  './assets/jewel-ui-r791/chip.svg',
-  './assets/jewel-ui-r791/button-wide.svg',
-  './assets/jewel-ui-r791/button-small.svg',
-  './assets/jewel-ui-r791/panel-tall.svg',
-  './assets/jewel-ui-r791/player.svg',
-  './assets/jewel-ui-r791/divider.svg',
-  './assets/jewel-ui-r791/toolbar-button.svg',
-  './assets/jewel-ui-r791/tefekkur-cta.svg',
-  './assets/jewel-ui-r791/ASSET_CARDS_r791.json'];
+  './assets/jewel-ui-r792/card-wide.svg',
+  './assets/jewel-ui-r792/card-medium.svg',
+  './assets/jewel-ui-r792/field.svg',
+  './assets/jewel-ui-r792/chip.svg',
+  './assets/jewel-ui-r792/button-wide.svg',
+  './assets/jewel-ui-r792/button-small.svg',
+  './assets/jewel-ui-r792/panel-tall.svg',
+  './assets/jewel-ui-r792/player.svg',
+  './assets/jewel-ui-r792/divider.svg',
+  './assets/jewel-ui-r792/toolbar-button.svg',
+  './assets/jewel-ui-r792/tefekkur-cta.svg',
+  './assets/jewel-ui-r792/ASSET_CARDS_r792.json'];
 /* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
@@ -98,9 +98,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r791__.json';
+const BUILD_MARKER='./__sukun_build_r792__.json';
 
-const NOTLAR = ["r791 · Jewel Final Authority: mücevher skin artık geçici Berhetiyye body classına bağlı değil; Zikir yüzeyinin kalıcı görsel sözleşmesidir.", "Kendi Sesin, Favori, Nasıl ve Tefekküre Geç kontrollerinin eksik/okunmayan asset sorunu giderildi; mobilde iki sütunla tam etiket görünürlüğü sağlandı.", "r700/r474 ile r789/r790 arasındaki CSS specificity çakışması kapatıldı; ses/sayaç/seyir motorları değiştirilmedi."];
+const NOTLAR = ["r792 · Tefekkür Tap Authority: Tefekküre Geç mobil dokunma zinciri window-capture ve geometrik hit-test ile tek sahipli hale getirildi.", "Jewel assetleri assets/jewel-ui-r792 klasöründe self-contained paketlendi; r791 yoluna bağımlılık kaldırıldı.", "Ses, sayaç, kuyruk, pause/stop/resume ve 28/99 seyir sahipliği değiştirilmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
