@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r780">
+<meta name="sukun-build" content="r781">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r780">
+<link rel="manifest" href="./manifest.webmanifest?v=r781">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.40 — build 2026-09-12-r780</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.41 — build 2026-09-12-r781</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -26508,7 +26508,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r780';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r781';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -68193,10 +68193,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r780',date='2026-09-12';
+const build=meta?.content||'r781',date='2026-09-12';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.38 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r780',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r781',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -72603,8 +72603,9 @@ function skin(){if(painting)return;painting=true;try{
  paint('.tabs .tab,#tekkeTab',{...smallPanel,'border-color':'rgba(246,217,138,.25)'});
  paint('.tabs .tab[data-t="zkr"],.tabs .tab.act',{...smallPanel,'background-image':'linear-gradient(145deg,rgba(17,63,88,.94),rgba(47,21,78,.93))','border-color':'rgba(246,217,138,.65)','box-shadow':'0 0 18px rgba(49,151,255,.14),inset 0 0 18px rgba(246,217,138,.07)'});
  paint('#tab-zkr .zNav',{...panel});paint('#tab-zkr .zNav button',{...smallPanel});paint('#tab-zkr .zNav button.act',{...smallPanel,'border-color':'rgba(246,217,138,.63)','color':'#fff0bd','background-image':'linear-gradient(145deg,rgba(17,67,94,.92),rgba(48,21,78,.92))'});
- paint('#tab-zkr>.card.zCtl,#zStage',{...panel,'background-image':'linear-gradient(160deg,rgba(3,18,37,.38),rgba(7,11,28,.54))'});
- paint('#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx',{...panel});
+ paint('#tab-zkr>.card.zCtl',{...panel,'background-image':'linear-gradient(160deg,rgba(3,18,37,.14),rgba(7,11,28,.22))','border':'0','box-shadow':'none','backdrop-filter':'blur(1.5px) saturate(1.02)','-webkit-backdrop-filter':'blur(1.5px) saturate(1.02)'});
+ paint('#zStage',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.32),rgba(8,12,31,.45)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0','box-shadow':'0 17px 38px rgba(0,0,0,.22),0 0 24px rgba(96,107,255,.055)'});
+ paint('#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx',{...panel,'background-image':`linear-gradient(155deg,rgba(3,17,35,.40),rgba(8,12,31,.52)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
  paint('#berhetAtlas .r168Cell,#berhetSeyir .r168MiniRow,#berhetSeyir .r168Status,#berhetSeyir .r168Progress,#targetPremium .targetDetailCard,#targetPremium .targetDetailCol',{...smallPanel});
  paint('#tab-zkr :is(.cat,.zItem,#zListToggle,.targetModeBtn,.targetManualBtn,.targetApplyBtn,.targetValueBox,.targetValueInput,#bsMode,#bsGap,#bsCustom)',smallPanel);
  paint('#tab-zkr :is(.cat.act,.zItem.act,.targetModeBtn.act,.targetApplyBtn)',{...smallPanel,'border-color':'rgba(246,217,138,.62)','color':'#fff0bd','background-image':'linear-gradient(145deg,rgba(17,67,94,.93),rgba(48,20,78,.93))'});
@@ -72613,11 +72614,18 @@ function skin(){if(painting)return;painting=true;try{
  ctrl(document.getElementById('plusBtn'),'control-plus.png','58px','0 0 20px rgba(47,146,255,.17)');
  ctrl(document.getElementById('autoBtn'),'control-primary.png','60px','0 0 25px rgba(172,83,255,.16),0 0 12px rgba(210,31,97,.10)');
  ctrl(document.getElementById('resetBtn'),'control-restart.png','48px','0 0 18px rgba(246,198,78,.12)');
- ctrl(document.getElementById('spkOnce'),'control-sound.png','44px','0 0 17px rgba(210,31,97,.12)');
+ ctrl(document.getElementById('spkOnce'),'control-sound.png','48px','0 0 17px rgba(210,31,97,.12)');
+ ctrl(document.getElementById('zDonguBtn'),'control-restart.png','48px','0 0 16px rgba(124,108,255,.14)');
+ ctrl(document.getElementById('itemRecBtn'),'control-primary.png','48px','0 0 18px rgba(22,119,232,.15)');
+ ctrl(document.getElementById('niyetRecBtn'),'control-primary.png','48px','0 0 15px rgba(246,198,78,.10)');
+ ctrl(document.getElementById('favBtn'),'control-primary.png','48px','0 0 15px rgba(246,198,78,.10)');
+ ctrl(document.getElementById('zBarHelp'),'control-primary.png','48px','0 0 15px rgba(187,120,255,.13)');
+ ctrl(document.getElementById('r442TefekkurBtn'),'control-primary.png','58px','0 0 24px rgba(187,120,255,.14),0 0 15px rgba(112,223,242,.12)');
+ ctrl(document.getElementById('r433DockPeek'),'control-primary.png','58px','0 0 22px rgba(22,119,232,.12),0 0 16px rgba(187,120,255,.12)');
  const nav=document.querySelectorAll('#r616ZikirNavRow button');if(nav[0])ctrl(nav[0],'control-prev.png','48px','0 0 15px rgba(22,119,232,.11)');if(nav[1])ctrl(nav[1],'control-restart.png','48px','0 0 15px rgba(210,31,97,.09)');if(nav[2])ctrl(nav[2],'control-next.png','48px','0 0 15px rgba(22,119,232,.11)');
  document.querySelectorAll('#r494TefNavSlot .r494NavBtn').forEach(el=>{const a=el.dataset.action;ctrl(el,a==='prev'?'control-prev.png':a==='next'?'control-next.png':'control-restart.png','42px')});
  document.querySelectorAll('#berhetSeyir .r168Buttons button').forEach(el=>{const id=el.id||'';ctrl(el,id==='bsPause'||id==='bsStart'?'control-primary.png':id==='bsPrev'?'control-prev.png':id==='bsNext'?'control-next.png':'control-restart.png','44px')});
- paint('#tfRefinedLayout,#tfRefinedLayout>.tfVisualPanel,#tfRefinedLayout>.tfControlPanel',{...panel,'background-image':'linear-gradient(160deg,rgba(3,16,34,.28),rgba(6,11,28,.55))'});
+ paint('#tfRefinedLayout,#tfRefinedLayout>.tfVisualPanel,#tfRefinedLayout>.tfControlPanel',{...panel,'background-image':`linear-gradient(160deg,rgba(3,16,34,.24),rgba(6,11,28,.42)),${bg('berhetiyye-panel.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0'});
  paint('#tfRefinedLayout #r706AtmosphereControls,#tfRefinedLayout #r706Motion,#tfRefinedLayout #r470VoiceSource,#tefExitBtn',{...smallPanel});
  paint('#r170Now,#r588DockShell,#r588Peek,#r588Bar,.r588Peek,.r588Bar',{...panel,'background-image':`linear-gradient(155deg,rgba(2,14,31,.94),rgba(7,10,26,.97)),${bg('berhetiyye-name-frame.png')}`,'background-size':'cover,100% 100%','background-position':'center','background-repeat':'no-repeat','border':'0','box-shadow':'0 -10px 34px rgba(0,0,0,.42),0 0 22px rgba(111,230,236,.08)'});
  paint('#r588DockShell button,#r170Now button',{...smallPanel,'color':'#ffe9ae'});
@@ -72668,8 +72676,8 @@ html body.r716-shell.r778-berhet-palace #zStage{background:linear-gradient(160de
 </style>
 <script id="sukun-r779-berhetiyye-scene-diagnostics">
 (()=>{'use strict';if(window.__SUKUN_R779_SCENE_FIX__)return;window.__SUKUN_R779_SCENE_FIX__=1;
-function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r780',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
-window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r780',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
+function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r781',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
+window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r781',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
 })();
 </script>
 
@@ -72747,6 +72755,121 @@ html body.r716-shell.r778-berhet-palace #vakitBox{
     background:rgba(5,22,31,.80)!important;
     backdrop-filter:none!important;
     -webkit-backdrop-filter:none!important;
+  }
+}
+</style>
+
+
+<style id="sukun-r781-berhetiyye-full-shell">
+/* r781 — Berhetiyye full shell. Missing generic SÜKÛN surfaces are now dressed
+   with the same sapphire / amethyst / gold family used by the counter. */
+body.r778-berhet-palace{--b781-gold:#f5d681;--b781-blue:#1677e8;--b781-cyan:#70dff2;--b781-violet:#bb78ff;--b781-ink:rgba(3,13,31,.72)}
+
+/* Identity/info cards: use the approved jeweled panel instead of a plain dark card. */
+body.r778-berhet-palace #zStage,
+body.r778-berhet-palace #r768ActiveGlassHost,
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx){
+  border:0!important;
+  outline:0!important;
+  background-color:transparent!important;
+  background-image:linear-gradient(155deg,rgba(3,17,35,.36),rgba(8,12,31,.48)),url('./assets/berhetiyye-premium/berhetiyye-panel.png')!important;
+  background-size:cover,100% 100%!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  box-shadow:0 17px 38px rgba(0,0,0,.22),0 0 24px rgba(96,107,255,.055)!important;
+}
+body.r778-berhet-palace #r768ActiveGlassHost{
+  background-image:linear-gradient(155deg,rgba(3,17,35,.23),rgba(8,12,31,.38)),url('./assets/berhetiyye-premium/berhetiyye-name-frame.png')!important;
+  background-size:cover,100% 100%!important;
+  padding:clamp(17px,4.2vw,25px) clamp(20px,6vw,38px)!important;
+  border-radius:20px!important;
+}
+body.r778-berhet-palace #zStage{padding:12px 10px 14px!important}
+
+/* Reading/control matrix — every cell belongs to the jewel skin now. */
+body.r778-berhet-palace #zBar{
+  gap:8px!important;
+  padding:10px 5px 7px!important;
+  background:transparent!important;
+  border:0!important;
+}
+body.r778-berhet-palace #zBar .spkBtn{
+  min-height:48px!important;
+  color:#fff0c2!important;
+  font-weight:760!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.92)!important;
+  border:0!important;
+  border-radius:0!important;
+}
+body.r778-berhet-palace #zBar .spkBtn :is(span,.ico){position:relative!important;z-index:2!important}
+body.r778-berhet-palace #zBar .spkBtn:active{transform:scale(.972)!important;filter:brightness(1.08) drop-shadow(0 7px 12px rgba(0,0,0,.28))!important}
+
+/* Tefekkür CTA: no longer a generic neon capsule inside Berhetiyye. */
+body.r778-berhet-palace #r700TefEntry{margin:12px 0 13px!important;padding:0 5px!important;background:transparent!important;border:0!important}
+body.r778-berhet-palace #r700TefEntry #r442TefekkurBtn{
+  min-height:62px!important;
+  padding:9px clamp(22px,7vw,42px)!important;
+  color:#fff1c8!important;
+  border:0!important;
+  border-radius:0!important;
+  background-color:transparent!important;
+  background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;
+  background-position:center!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  box-shadow:0 0 22px rgba(85,161,255,.10),0 0 22px rgba(187,120,255,.09)!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)!important;
+}
+body.r778-berhet-palace #r700TefEntry #r442TefekkurBtn .r700TefIcon{border:0!important;background:transparent!important;box-shadow:none!important}
+body.r778-berhet-palace #r700TefEntry #r442TefekkurBtn .r700TefArrow{color:#e6b7ff!important}
+
+/* Counter shell: remove the last plain rectangular container around the jewel ring. */
+body.r778-berhet-palace #tab-zkr>.card.zCtl{
+  border:0!important;
+  background:linear-gradient(160deg,rgba(3,18,37,.13),rgba(7,11,28,.22))!important;
+  box-shadow:none!important;
+}
+body.r778-berhet-palace .zCountTitle{color:#f4dfa8!important;letter-spacing:.22em!important;text-shadow:0 0 12px rgba(246,217,138,.16)!important}
+body.r778-berhet-palace .cntRow{border:0!important;background:transparent!important}
+
+/* Context card internal chips — sapphire glass + gold rim rather than default gray pills. */
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,.r754Ctx) :is(.r168Cell,.r168Tag,.srcBadge,.r168MiniRow,.r168Status,.r168Progress,.r754CtxChip,button:not(.r168Head)){
+  border-color:rgba(246,217,138,.24)!important;
+  background:linear-gradient(145deg,rgba(4,30,51,.58),rgba(16,13,43,.60))!important;
+  color:#f2ead8!important;
+}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,.r754Ctx) :is(b,strong,.r168Head){color:#fff0bd!important}
+
+/* Collapsed player/flow bar: visually belongs to Berhetiyye instead of returning to black SÜKÛN shell. */
+body.r778-berhet-palace.r431-dock-visible.r433-dock-hidden #r433DockPeek{
+  border:0!important;
+  border-radius:0!important;
+  color:#fff0c2!important;
+  background-color:transparent!important;
+  background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  box-shadow:0 15px 34px rgba(0,0,0,.40),0 0 20px rgba(80,151,255,.10)!important;
+}
+body.r778-berhet-palace #r433DockPeek .r433Ico,
+body.r778-berhet-palace #r433DockPeek::after{border-color:rgba(246,217,138,.35)!important;color:#ffe5a3!important;background:rgba(4,21,43,.50)!important}
+body.r778-berhet-palace #r433DockPeek .r433Txt{color:#fff2d0!important}
+body.r778-berhet-palace #r433DockPeek .r433Sub{color:#a9cbd1!important}
+
+/* Generic boxes that can appear between Berhetiyye sections should not break the shell. */
+body.r778-berhet-palace #tab-zkr :is(.card,.box,details,.zStage,.zTools,.zList){border-color:rgba(246,217,138,.16)!important}
+body.r778-berhet-palace #tab-zkr :is(.zTools,.zList){background:linear-gradient(155deg,rgba(3,17,35,.18),rgba(8,12,31,.16))!important}
+
+@media(max-width:430px){
+  body.r778-berhet-palace #zBar{gap:6px!important}
+  body.r778-berhet-palace #zBar .spkBtn{min-height:46px!important;font-size:clamp(9px,2.55vw,11px)!important}
+  body.r778-berhet-palace #r700TefEntry #r442TefekkurBtn{min-height:56px!important}
+}
+@media(prefers-reduced-transparency:reduce){
+  body.r778-berhet-palace #zStage,body.r778-berhet-palace #r768ActiveGlassHost,
+  body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,.r754Ctx){
+    background-color:#07152a!important;
   }
 }
 </style>

@@ -1,8 +1,8 @@
-/* SÜKÛN r780 — transparency pass + visible scene layer fix */
+/* SÜKÛN r781 — Berhetiyye full shell coverage */
 'use strict';
 
-const SURUM = 'r780';
-const CACHE = 'sukun-r780-20260912a';
+const SURUM = 'r781';
+const CACHE = 'sukun-r781-20260912a';
 
 const CORE = [
   './nero.html',
@@ -59,9 +59,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r780__.json';
+const BUILD_MARKER='./__sukun_build_r781__.json';
 
-const NOTLAR = ["r780 · Ana sayfa ve Berhetiyye yüzeylerinde transparanlık artırıldı; arka plan sahnesi daha görünür oldu.","r779 · Berhetiyye scene arka planları gerçek #r717Scene görünür katmanına bağlandı.","Otomatik + 6 özel Berhetiyye sahnesi korunuyor.","Safir/yakut/amethyst sayaç yüzüğü ve mücevher kontrol skinleri visual authority tarafından uygulanır.","Berhetiyye alanından çıkınca normal SÜKÛN görünümü geri gelir."];
+const NOTLAR = ["r781 · Berhetiyye kabuğunda açıkta kalan Dinle/Döngü/Kendi Sesin/Niyet/Favori/Nasıl, Tefekkür CTA, bilgi kartları ve mini oynatıcı mücevher skin ailesine alındı.","r780 · Ana sayfa transparanlık geçişi korunuyor.","r779 · Berhetiyye sahneleri görünür #r717Scene katmanında.","Otomatik + 6 özel Berhetiyye sahnesi ve çıkışta normal SÜKÛN görünümüne dönüş korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
