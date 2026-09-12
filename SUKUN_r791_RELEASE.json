@@ -1,0 +1,20 @@
+{
+  "build": "r791",
+  "base": "r790",
+  "focus": "Jewel Final Authority",
+  "rootCause": [
+    "r790 jewel CSS was still scoped mainly to r778-berhet-palace",
+    "r700/r474 Tefekkür selectors had higher-specificity !important rules",
+    "zBar mobile 3-column + ellipsis clipped Kendi Sesin/Favori/Nasıl labels"
+  ],
+  "changes": [
+    "permanent r791-jewel-ui skin authority",
+    "2-column mobile zikir toolbar",
+    "dedicated toolbar jewel asset",
+    "dedicated Tefekkür CTA jewel asset",
+    "active favorite label shortened to Favori ✓",
+    "Tefekkür entry visibility restored under canonical hidden state",
+    "structural cards and counter panels moved to final jewel owner",
+    "no audio/event/transport ownership changes"
+  ]
+}

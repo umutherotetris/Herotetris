@@ -1,0 +1,17 @@
+{
+  "build": "r791",
+  "checks": {
+    "meta_r791": true,
+    "class_contract": true,
+    "toolbar_asset": true,
+    "tef_asset": true,
+    "favorite_label": true,
+    "tef_visible_rule": true,
+    "audio_ownership_unchanged": true,
+    "sw_r791": true,
+    "manifest_r791": true,
+    "single_final_style": true,
+    "single_contract": true
+  },
+  "ok": true
+}

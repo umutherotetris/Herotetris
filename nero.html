@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r790">
+<meta name="sukun-build" content="r791">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r790">
+<link rel="manifest" href="./manifest.webmanifest?v=r791">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.49 — build 2026-09-13-r790</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.50 — build 2026-09-13-r791</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -13762,7 +13762,7 @@ function favUI(){
   b.classList.toggle('on',acik);
   b.setAttribute('aria-pressed',acik?'true':'false');
   const et=b.querySelector('.favEt');
-  if(et)et.textContent=acik?'Favoride':'Favori';
+  if(et)et.textContent=acik?'Favori ✓':'Favori';
   b.setAttribute('aria-label',acik?'Bu zikri favorilerden çıkar':'Bu zikri favorilere ekle');
 }
 
@@ -26508,7 +26508,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r790';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r791';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -68193,10 +68193,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r790',date='2026-09-13';
+const build=meta?.content||'r791',date='2026-09-13';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.47 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r790',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r791',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -73746,6 +73746,156 @@ body.r778-berhet-palace #r433DockPeek::before{background-image:var(--j790-player
 </style>
 <script id="sukun-r790-jewel-contract">
 (()=>{'use strict';window.SukunJewelUI=Object.freeze({version:'r790',mode:'visual-css-only',assets:'assets/jewel-ui-r790',audioOwnershipChanged:false,domOwnershipChanged:false});})();
+</script>
+
+<style id="sukun-r791-jewel-final-authority">
+/* r791 — FINAL JEWEL AUTHORITY
+   Root cause fixed: previous jewel rules were tied to the transient
+   `r778-berhet-palace` state and the older r700/r474 rules could still win
+   on Tefekkür + toolbar controls. This layer is deliberately last in the
+   cascade and scopes only to the existing Zikir UI. No event/audio owners change. */
+:root{
+ --j791-card:url('./assets/jewel-ui-r791/card-wide.svg');
+ --j791-field:url('./assets/jewel-ui-r791/field.svg');
+ --j791-chip:url('./assets/jewel-ui-r791/chip.svg');
+ --j791-btn:url('./assets/jewel-ui-r791/button-small.svg');
+ --j791-btn-wide:url('./assets/jewel-ui-r791/button-wide.svg');
+ --j791-toolbar:url('./assets/jewel-ui-r791/toolbar-button.svg');
+ --j791-tef:url('./assets/jewel-ui-r791/tefekkur-cta.svg');
+ --j791-panel:url('./assets/jewel-ui-r791/panel-tall.svg');
+ --j791-player:url('./assets/jewel-ui-r791/player.svg');
+ --j791-gold:#f3d58d;--j791-pearl:#fff1c7;--j791-cyan:#65dcff;--j791-violet:#c968ff;
+}
+
+/* The jewel language is a Zikir-system skin, not a Berhetiyye-state skin. */
+html body.r791-jewel-ui #zStage,
+html body.r791-jewel-ui :is(.zCtl,#zMegaHost,.zMegaGroup,#berhetSeyir,.r168Buttons,.r168MiniRow,#r679ZikirAyarBox,.cntRow,.zCounterActions,#r616ZikirNavRow,#r700TefEntry){overflow:visible!important}
+
+/* Zikir utility toolbar: six real buttons, same DOM, guaranteed readable labels. */
+html body.r791-jewel-ui #zStage #zBar{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;
+ width:100%!important;padding:10px 2px 5px!important;margin:12px 0 4px!important;overflow:visible!important;border:0!important;background:none!important;
+}
+html body.r791-jewel-ui #zStage #zBar .spkBtn{
+ position:relative!important;inset:auto!important;isolation:isolate!important;
+ display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+ width:100%!important;min-width:0!important;max-width:none!important;height:56px!important;min-height:56px!important;max-height:56px!important;
+ margin:0!important;padding:0 14px!important;border:0!important;border-radius:0!important;
+ background-color:transparent!important;background-image:var(--j791-toolbar)!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;
+ box-shadow:none!important;filter:drop-shadow(0 5px 8px rgba(0,0,0,.24))!important;
+ color:var(--j791-pearl)!important;text-shadow:0 2px 4px rgba(0,0,0,.9)!important;overflow:visible!important;
+ writing-mode:horizontal-tb!important;opacity:1!important;visibility:visible!important;
+}
+/* Historical r789 pseudo skin is disabled here so there is exactly one frame. */
+html body.r791-jewel-ui #zStage #zBar .spkBtn::before{content:none!important;display:none!important;background:none!important}
+html body.r791-jewel-ui #zStage #zBar .spkBtn :is(.ico,[data-r-icon],svg){position:relative!important;z-index:2!important;width:19px!important;height:19px!important;min-width:19px!important;max-width:19px!important;justify-self:center!important;color:#89e9ff!important;filter:drop-shadow(0 0 6px rgba(81,206,255,.32))!important}
+html body.r791-jewel-ui #zStage #zBar .spkBtn span,
+html body.r791-jewel-ui #zStage #zBar .spkBtn span:last-child{
+ position:relative!important;z-index:2!important;display:block!important;min-width:0!important;max-width:100%!important;
+ margin:0!important;color:var(--j791-pearl)!important;font:700 10.5px/1.12 system-ui,-apple-system,'Segoe UI',sans-serif!important;
+ letter-spacing:.04em!important;text-transform:none!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+}
+html body.r791-jewel-ui #zStage #zBar #favBtn.on{filter:brightness(1.10) drop-shadow(0 0 10px rgba(255,205,96,.22))!important}
+html body.r791-jewel-ui #zStage #zBar #favBtn.on span{color:#ffe59a!important}
+html body.r791-jewel-ui #zStage #zBar .spkBtn:is(:active,.recording,.has){transform:scale(.982)!important;filter:brightness(1.08) drop-shadow(0 5px 9px rgba(0,0,0,.24))!important}
+
+/* Tefekkür entrance: old r474/r700 gate and ::before rules no longer erase the jewel.
+   The canonical button's JS hidden state is still respected. */
+html body.r791-jewel-ui.r700-tef-entry.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r700TefEntry{
+ display:flex!important;visibility:visible!important;pointer-events:auto!important;width:100%!important;max-width:100%!important;
+ margin:10px 0 13px!important;padding:0 3px!important;overflow:visible!important;background:none!important;border:0!important;
+}
+html body.r791-jewel-ui.r700-tef-entry.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r700TefEntry #r442TefekkurBtn:not([hidden]){
+ appearance:none!important;display:flex!important;visibility:visible!important;pointer-events:auto!important;
+ position:relative!important;inset:auto!important;float:none!important;transform:none!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;height:64px!important;min-height:64px!important;max-height:64px!important;
+ margin:0!important;padding:0 24px!important;gap:12px!important;border:0!important;border-radius:0!important;
+ background-color:transparent!important;background-image:var(--j791-tef)!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;
+ box-shadow:none!important;color:#fff1c7!important;text-shadow:0 2px 4px rgba(0,0,0,.9)!important;
+ font:600 16px/1.2 Georgia,'Times New Roman',serif!important;letter-spacing:.02em!important;text-align:center!important;overflow:visible!important;
+}
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry #r442TefekkurBtn::before,
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry #r442TefekkurBtn::after{content:none!important;display:none!important}
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry #r442TefekkurBtn .r700TefIcon{
+ flex:0 0 36px!important;width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;max-height:36px!important;
+ border:0!important;background:radial-gradient(circle,rgba(74,213,255,.17),transparent 70%)!important;box-shadow:none!important;color:#9beaff!important;
+}
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry #r442TefekkurBtn .r700TefIcon svg{width:25px!important;height:25px!important;fill:rgba(111,216,255,.20)!important;stroke:#b8eeff!important}
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry .r700TefLabel{color:#fff1c7!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
+html body.r791-jewel-ui.r700-tef-entry #r700TefEntry .r700TefArrow{color:#d8a6ff!important;flex-basis:22px!important}
+
+/* Exit action uses the same family once Tefekkür is open. */
+html body.r791-jewel-ui.sukun-tefekkur-mode #tefExitBtn{
+ position:relative!important;isolation:isolate!important;border:0!important;border-radius:0!important;background-color:transparent!important;
+ background-image:var(--j791-btn)!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ color:#fff0c7!important;box-shadow:none!important;text-shadow:0 2px 4px rgba(0,0,0,.9)!important;overflow:visible!important;
+}
+
+/* Counter micro-panels and controls always inherit the jewel family, not only while r778 body flag is leased. */
+html body.r791-jewel-ui .zCounterSide{
+ position:relative!important;isolation:isolate!important;min-width:0!important;min-height:76px!important;padding:13px 12px!important;border:0!important;border-radius:0!important;
+ background-color:transparent!important;background-image:var(--j791-field)!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ box-shadow:none!important;overflow:visible!important;
+}
+html body.r791-jewel-ui .zCounterSide::before{content:none!important;display:none!important}
+html body.r791-jewel-ui .zCounterSide small{color:#dfe8ef!important;letter-spacing:.10em!important}
+html body.r791-jewel-ui .zCounterSide b{color:#fff0b9!important;text-shadow:0 0 12px rgba(255,207,105,.18)!important}
+html body.r791-jewel-ui .zCounterSide em{color:#aebdc8!important}
+
+html body.r791-jewel-ui :is(#autoBtn,#resetBtn,#r616ZikirNavRow button){
+ position:relative!important;isolation:isolate!important;border:0!important;border-radius:0!important;background-color:transparent!important;
+ background-image:var(--j791-btn)!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ box-shadow:none!important;color:#fff1c7!important;text-shadow:0 2px 4px rgba(0,0,0,.88)!important;overflow:visible!important;
+}
+html body.r791-jewel-ui #autoBtn{background-image:var(--j791-btn-wide)!important;min-height:62px!important;height:62px!important}
+html body.r791-jewel-ui :is(#autoBtn,#resetBtn,#r616ZikirNavRow button)::before{content:none!important;display:none!important}
+
+/* Structural accordion/card headers: global Zikir system ownership. */
+html body.r791-jewel-ui #zMegaHost>.zMegaGroup,
+html body.r791-jewel-ui #r679ZikirAyarBox{overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
+html body.r791-jewel-ui #zMegaHost>.zMegaGroup>summary,
+html body.r791-jewel-ui #r679ZikirAyarBox>summary,
+html body.r791-jewel-ui #niyetBox>summary,
+html body.r791-jewel-ui #vhBox>summary{
+ position:relative!important;isolation:isolate!important;min-height:62px!important;padding:12px 20px!important;border:0!important;border-radius:0!important;
+ background-color:transparent!important;background-image:var(--j791-card)!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ box-shadow:none!important;color:#fff0ca!important;overflow:visible!important;
+}
+html body.r791-jewel-ui #zMegaHost>.zMegaGroup>summary::before,
+html body.r791-jewel-ui #r679ZikirAyarBox>summary::before,
+html body.r791-jewel-ui #niyetBox>summary::before,
+html body.r791-jewel-ui #vhBox>summary::before{content:none!important;display:none!important}
+
+/* 28-name journey keeps the stable direct scope and receives the same card family. */
+html body.r791-jewel-ui #berhetSeyir{overflow:visible!important}
+html body.r791-jewel-ui #berhetSeyir>summary{background-image:var(--j791-card)!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important}
+html body.r791-jewel-ui #berhetSeyir>summary::before{content:none!important;display:none!important}
+
+/* Native form controls in the zikir surface: no legacy flat grey islands. */
+html body.r791-jewel-ui #tab-zkr :is(select,input[type="search"],input[type="number"],.targetValueBox,.targetValueInput,#r470VoiceSource){
+ border:1px solid rgba(243,202,113,.42)!important;background:linear-gradient(180deg,rgba(5,27,56,.90),rgba(5,16,38,.92))!important;color:#f7edd2!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.05),inset 0 0 0 1px rgba(68,176,255,.08)!important;border-radius:15px!important;
+}
+
+@media(max-width:430px){
+ html body.r791-jewel-ui #zStage #zBar{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ html body.r791-jewel-ui #zStage #zBar .spkBtn{height:54px!important;min-height:54px!important;max-height:54px!important;padding-inline:13px!important;gap:6px!important}
+ html body.r791-jewel-ui #zStage #zBar .spkBtn span,html body.r791-jewel-ui #zStage #zBar .spkBtn span:last-child{font-size:10px!important;letter-spacing:.025em!important}
+ html body.r791-jewel-ui.r700-tef-entry.sukun-zikir-tab:not(.sukun-tefekkur-mode) #r700TefEntry #r442TefekkurBtn:not([hidden]){height:60px!important;min-height:60px!important;max-height:60px!important;padding-inline:18px!important;font-size:15px!important}
+ html body.r791-jewel-ui .zCounterSide{min-height:70px!important;padding:11px 8px!important}
+ html body.r791-jewel-ui #zMegaHost>.zMegaGroup>summary,html body.r791-jewel-ui #r679ZikirAyarBox>summary{min-height:58px!important;padding:10px 15px!important}
+}
+@media(max-width:350px){
+ html body.r791-jewel-ui #zStage #zBar .spkBtn{padding-inline:9px!important;gap:4px!important}
+ html body.r791-jewel-ui #zStage #zBar .spkBtn span,html body.r791-jewel-ui #zStage #zBar .spkBtn span:last-child{font-size:9.2px!important}
+}
+</style>
+<script id="sukun-r791-jewel-contract">
+(()=>{'use strict';
+ const apply=()=>{try{document.body?.classList.add('r791-jewel-ui');document.documentElement.classList.add('r791-jewel-ui')}catch(e){}};
+ apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
+ window.SukunJewelUI=Object.freeze({version:'r791',mode:'final-css-authority',assets:'assets/jewel-ui-r791',scope:'zikir-system',audioOwnershipChanged:false,domOwnershipChanged:false});
+})();
 </script>
 
 </body>

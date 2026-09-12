@@ -1,5 +1,16 @@
 [
   {
+    "v": "r791",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Jewel Final Authority: assetler artık geçici Berhetiyye body classına bağlı değil.",
+      "Kendi Sesin, Favori, Nasıl? ve Tefekküre Geç eksik/okunmayan çerçeveleri düzeltildi.",
+      "Mobil zikir araç çubuğu iki sütuna alındı; etiketler tam okunur.",
+      "r700/r474 ile r789/r790 specificity çakışması kapatıldı.",
+      "Ses, sayaç ve seyir motorlarına dokunulmadı."
+    ]
+  },
+  {
     "v": "r790",
     "t": "13 Eylül 2026",
     "b": [

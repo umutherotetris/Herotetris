@@ -1,8 +1,8 @@
-/* SÜKÛN r790 — Jewel UI component pass */
+/* SÜKÛN r791 — Jewel final authority */
 'use strict';
 
-const SURUM = 'r790';
-const CACHE = 'sukun-r790-20260913a';
+const SURUM = 'r791';
+const CACHE = 'sukun-r791-20260913a';
 
 const CORE = [
   './nero.html',
@@ -35,7 +35,19 @@ const CORE = [
   './assets/jewel-ui-r790/panel-tall.svg',
   './assets/jewel-ui-r790/player.svg',
   './assets/jewel-ui-r790/divider.svg',
-  './assets/jewel-ui-r790/ASSET_CARDS_r790.json'];
+  './assets/jewel-ui-r790/ASSET_CARDS_r790.json',
+  './assets/jewel-ui-r791/card-wide.svg',
+  './assets/jewel-ui-r791/card-medium.svg',
+  './assets/jewel-ui-r791/field.svg',
+  './assets/jewel-ui-r791/chip.svg',
+  './assets/jewel-ui-r791/button-wide.svg',
+  './assets/jewel-ui-r791/button-small.svg',
+  './assets/jewel-ui-r791/panel-tall.svg',
+  './assets/jewel-ui-r791/player.svg',
+  './assets/jewel-ui-r791/divider.svg',
+  './assets/jewel-ui-r791/toolbar-button.svg',
+  './assets/jewel-ui-r791/tefekkur-cta.svg',
+  './assets/jewel-ui-r791/ASSET_CARDS_r791.json'];
 /* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
@@ -86,9 +98,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r790__.json';
+const BUILD_MARKER='./__sukun_build_r791__.json';
 
-const NOTLAR = ["r790 · Mücevher UI Component Pass: Akış & Seans, Kaynaklar, Araçlar, Okumalar, Seyirler, Zikir Ayarları ve 28 İsim Seyri aynı altın-safir çerçeve sistemine alındı.", "Hedef/Kalan, Devam Et, önceki/sonraki/baştan ve seyir durum alanlarında eski düz/native görünüm temizlendi.", "Değişiklik görsel katmandadır; ses sahipliği, pause/stop/resume ve seyir motorları değiştirilmedi."];
+const NOTLAR = ["r791 · Jewel Final Authority: mücevher skin artık geçici Berhetiyye body classına bağlı değil; Zikir yüzeyinin kalıcı görsel sözleşmesidir.", "Kendi Sesin, Favori, Nasıl ve Tefekküre Geç kontrollerinin eksik/okunmayan asset sorunu giderildi; mobilde iki sütunla tam etiket görünürlüğü sağlandı.", "r700/r474 ile r789/r790 arasındaki CSS specificity çakışması kapatıldı; ses/sayaç/seyir motorları değiştirilmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
