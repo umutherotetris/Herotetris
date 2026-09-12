@@ -1,0 +1,10 @@
+{
+  "build": "r782",
+  "version": "r782",
+  "date": "2026-09-12",
+  "notes": [
+    "Tekke sekmesindeki flashing animasyon çakışması düzeltildi",
+    "Touch cihazlarda sticky hover için statik Tekke durumu zorlandı",
+    "r781 Berhetiyye full shell değişiklikleri korunur"
+  ]
+}

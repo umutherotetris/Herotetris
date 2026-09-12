@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r781">
+<meta name="sukun-build" content="r782">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r781">
+<link rel="manifest" href="./manifest.webmanifest?v=r782">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.41 — build 2026-09-12-r781</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.42 — build 2026-09-12-r782</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -26508,7 +26508,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r781';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r782';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -68193,10 +68193,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r781',date='2026-09-12';
+const build=meta?.content||'r782',date='2026-09-12';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.38 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r781',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r782',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -72676,8 +72676,8 @@ html body.r716-shell.r778-berhet-palace #zStage{background:linear-gradient(160de
 </style>
 <script id="sukun-r779-berhetiyye-scene-diagnostics">
 (()=>{'use strict';if(window.__SUKUN_R779_SCENE_FIX__)return;window.__SUKUN_R779_SCENE_FIX__=1;
-function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r781',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
-window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r781',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
+function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r782',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
+window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r782',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
 })();
 </script>
 
@@ -72870,6 +72870,47 @@ body.r778-berhet-palace #tab-zkr :is(.zTools,.zList){background:linear-gradient(
   body.r778-berhet-palace #zStage,body.r778-berhet-palace #r768ActiveGlassHost,
   body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,.r754Ctx){
     background-color:#07152a!important;
+  }
+}
+</style>
+
+<style id="sukun-r782-tekke-flash-fix">
+/* r782 — Android touch ekranlarda Tekke sekmesinin :hover durumu latch olabiliyordu.
+   r607TekkeGlow + r610TekkeIdle aynı elemanda üst üste binip sürekli parlama/flash hissi veriyordu.
+   Tekke artık idle durumda tamamen sabit; yalnız gerçek pointer hover cihazlarında hafif statik vurgu var. */
+#tekkeTab.tabTekke{
+  animation:none!important;
+  filter:none!important;
+  transition:border-color .18s ease,background-color .18s ease,box-shadow .18s ease,transform .12s ease!important;
+}
+#tekkeTab.tabTekke::before,#tekkeTab.tabTekke::after{animation:none!important;transition:opacity .18s ease!important}
+#tekkeTab.tabTekke .tbRub{animation:none!important;filter:drop-shadow(0 0 6px rgba(116,182,255,.20))!important}
+/* Touch cihazında sticky hover parlama döngüsü hiç çalışmasın. */
+@media (hover:none),(pointer:coarse){
+  #tekkeTab.tabTekke,
+  #tekkeTab.tabTekke:hover,
+  #tekkeTab.tabTekke:focus,
+  #tekkeTab.tabTekke:focus-visible{
+    animation:none!important;
+    transform:none!important;
+    background:color-mix(in srgb,var(--gold) 7%,transparent)!important;
+    border-color:var(--line2)!important;
+    box-shadow:0 0 14px color-mix(in srgb,var(--gold) 8%,transparent) inset!important;
+  }
+  #tekkeTab.tabTekke::before,#tekkeTab.tabTekke::after{opacity:0!important}
+  #tekkeTab.tabTekke:active{
+    transform:scale(.985)!important;
+    background:linear-gradient(180deg,rgba(66,143,255,.13),rgba(20,61,143,.10))!important;
+    border-color:color-mix(in srgb,#75c6ff 32%,var(--line2))!important;
+  }
+}
+/* Fareli cihazlarda da sonsuz animasyon yok; sadece sabit hover vurgusu. */
+@media (hover:hover) and (pointer:fine){
+  #tekkeTab.tabTekke:hover,#tekkeTab.tabTekke:focus-visible{
+    animation:none!important;
+    transform:translateY(-1px)!important;
+    border-color:color-mix(in srgb,#75c6ff 32%,var(--line2))!important;
+    box-shadow:0 0 0 1px rgba(117,198,255,.10),0 0 14px rgba(80,140,255,.10),inset 0 0 16px rgba(66,143,255,.05)!important;
   }
 }
 </style>

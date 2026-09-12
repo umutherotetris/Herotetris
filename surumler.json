@@ -1,5 +1,14 @@
 [
   {
+    "v": "r782",
+    "t": "12 Eylül 2026",
+    "b": [
+      "Tekke sekmesindeki sürekli renk/parlama animasyonu kaldırıldı.",
+      "Android/touch cihazlarda kalıcı :hover nedeniyle oluşan flashing döngüsü engellendi.",
+      "Fareli cihazlarda Tekke yalnız hover sırasında statik ve hafif vurgu gösterir."
+    ]
+  },
+  {
     "v": "r781",
     "t": "12 Eylül 2026",
     "b": [
