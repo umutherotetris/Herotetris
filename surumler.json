@@ -1,5 +1,16 @@
 [
   {
+    "v": "r790",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Mücevher UI Component Pass ile Zikir ekranındaki eksik çerçeveler tamamlandı.",
+      "Akış & Seans, Kaynaklar, Araçlar, Okumalar, Seyirler ve Zikir Ayarları ortak altın-safir kart sistemine alındı.",
+      "28 İsim Seyri seçim, ilerleme, durum, bilgi ve kontrol alanları aynı ailede yeniden giydirildi.",
+      "Hedef/Kalan ve ana sayaç kontrolleri bütünleştirildi; overflow kırpılması azaltıldı.",
+      "Ses sahipliği ve pause/stop/resume motorlarına dokunulmadı."
+    ]
+  },
+  {
     "v": "r789",
     "t": "12 Eylül 2026",
     "b": [

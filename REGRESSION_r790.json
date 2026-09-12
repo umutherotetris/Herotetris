@@ -1,0 +1,20 @@
+{
+  "build": "r790",
+  "inline_scripts_checked": 209,
+  "inline_scripts_skipped_non_js": 4,
+  "script_errors": [],
+  "duplicate_ids": {},
+  "core_missing": [],
+  "new_asset_count": 11,
+  "checks": {
+    "meta_r790": true,
+    "release_identity_r790": true,
+    "jewel_contract": true,
+    "journey_engine_present": true,
+    "pause_button_present": true,
+    "stop_button_present": true,
+    "audio_owner_present": true,
+    "new_observer_in_r790": false
+  },
+  "ok": true
+}

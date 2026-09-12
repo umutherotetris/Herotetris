@@ -1,0 +1,14 @@
+{
+  "build": "r790",
+  "base": "r789",
+  "focus": "SÜKÛN Jewel UI Component Pass",
+  "assets": "assets/jewel-ui-r790",
+  "changes": [
+    "unified structural jewel cards",
+    "28-name journey full frame pass",
+    "target/remain and CTA frame pass",
+    "native field cleanup",
+    "overflow clipping repair",
+    "visual-only ownership preserved"
+  ]
+}

@@ -1,8 +1,8 @@
-/* SÜKÛN r789 — Berhetiyye single-owner no-flash button skin */
+/* SÜKÛN r790 — Jewel UI component pass */
 'use strict';
 
-const SURUM = 'r789';
-const CACHE = 'sukun-r789-20260912a';
+const SURUM = 'r790';
+const CACHE = 'sukun-r790-20260913a';
 
 const CORE = [
   './nero.html',
@@ -25,7 +25,17 @@ const CORE = [
   './assets/sukun-nur-sanctuary-r757.png',
   './assets/sukun-nur-ring-r757.png',
   './assets/sukun-nur-orbit-r757.svg'
-];
+,
+  './assets/jewel-ui-r790/card-wide.svg',
+  './assets/jewel-ui-r790/card-medium.svg',
+  './assets/jewel-ui-r790/field.svg',
+  './assets/jewel-ui-r790/chip.svg',
+  './assets/jewel-ui-r790/button-wide.svg',
+  './assets/jewel-ui-r790/button-small.svg',
+  './assets/jewel-ui-r790/panel-tall.svg',
+  './assets/jewel-ui-r790/player.svg',
+  './assets/jewel-ui-r790/divider.svg',
+  './assets/jewel-ui-r790/ASSET_CARDS_r790.json'];
 /* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
    listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
    önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
@@ -76,9 +86,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r789__.json';
+const BUILD_MARKER='./__sukun_build_r790__.json';
 
-const NOTLAR = ["r789 · Berhetiyye butonlarında tek görsel sahiplik: gerçek DOM düğmesi korunur, mücevher skin yalnız ::before dekor katmanında yaşar.", "r788 skin MutationObserver kaldırıldı; 28 İsim Seyri düğmeleri #berhetSeyir üzerinden doğrudan CSS ile giydirilir ve body class uzlaşmasından etkilenmez.", "r778 legacy painter bu kontrollerin background/border alanına artık yazmaz; cam ↔ mücevher flashing yarışı kesilir."];
+const NOTLAR = ["r790 · Mücevher UI Component Pass: Akış & Seans, Kaynaklar, Araçlar, Okumalar, Seyirler, Zikir Ayarları ve 28 İsim Seyri aynı altın-safir çerçeve sistemine alındı.", "Hedef/Kalan, Devam Et, önceki/sonraki/baştan ve seyir durum alanlarında eski düz/native görünüm temizlendi.", "Değişiklik görsel katmandadır; ses sahipliği, pause/stop/resume ve seyir motorları değiştirilmedi."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
