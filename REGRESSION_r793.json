@@ -1,0 +1,29 @@
+{
+  "build": "r793",
+  "base": "r792",
+  "checks": {
+    "meta_r793": true,
+    "manifest_r793": true,
+    "sw_r793": true,
+    "latest_marker_r793": true,
+    "build_marker_r793": true,
+    "sw_auto_skipwaiting": true,
+    "network_newer_wins": true,
+    "latest_probe_network_first": true,
+    "old_cache_preserved": true,
+    "r793_recovery_client": true,
+    "jewel_r792_preserved": true,
+    "tefekkur_r792_preserved": true,
+    "core_files_exist": true,
+    "inline_js_syntax": true,
+    "sw_js_syntax": true,
+    "embedded_notes_json": true,
+    "surumler_r793_first": true,
+    "no_audio_transport_mutation": true
+  },
+  "inline_js_blocks_checked": 212,
+  "inline_js_errors": [],
+  "core_missing": [],
+  "audio_ownership_changed": false,
+  "notes": "Update state-machine only; Jewel/Tefekkür/audio/journey ownership intentionally preserved."
+}

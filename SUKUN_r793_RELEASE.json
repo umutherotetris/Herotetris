@@ -1,0 +1,18 @@
+{
+  "build": "r793",
+  "base": "r792",
+  "focus": "Update Recovery Authority",
+  "rootCause": [
+    "old worker intentionally returned its cached shell whenever network HTML had a different build",
+    "a transient install/core mismatch could therefore leave no waiting worker and every refresh returned the old version"
+  ],
+  "changes": [
+    "build-aware network-first navigation",
+    "non-fatal SW install/precache",
+    "automatic skipWaiting without forced audio interruption",
+    "stable latest-build marker",
+    "visibility/online recovery checks"
+  ],
+  "ui_changed": false,
+  "audio_ownership_changed": false
+}

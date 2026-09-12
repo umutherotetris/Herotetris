@@ -1,14 +1,28 @@
-/* SÜKÛN r792 — Jewel final authority */
+/* SÜKÛN r793 — Update Recovery Authority
+   Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
+   kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
+   kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r792';
-const CACHE = 'sukun-r792-20260913b';
+const SURUM = 'r793';
+const CACHE = 'sukun-r793-20260913c';
+const CACHE_META = './__sukun_cache_meta_r793__.json';
+const BUILD_MARKER = './__sukun_build_r793__.json';
+const LATEST_MARKER = './__sukun_latest__.json';
 
+/* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
+   Shell doğrulaması bağımsız; geri kalan assetler best-effort pre-cache ve
+   normal fetch sırasında current cache'e yazılır. */
 const CORE = [
   './nero.html',
+  './manifest.webmanifest',
+  BUILD_MARKER,
+  LATEST_MARKER
+];
+
+const PRECACHE = [
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
-  './manifest.webmanifest',
   './assets/tefekkur-sanctuary.webp',
   './assets/tefekkur-sanctuary-r710.webp',
   './assets/tefekkur-sanctuary-r710-small.webp',
@@ -24,18 +38,7 @@ const CORE = [
   './assets/ui-speaker-r722.svg',
   './assets/sukun-nur-sanctuary-r757.png',
   './assets/sukun-nur-ring-r757.png',
-  './assets/sukun-nur-orbit-r757.svg'
-,
-  './assets/jewel-ui-r790/card-wide.svg',
-  './assets/jewel-ui-r790/card-medium.svg',
-  './assets/jewel-ui-r790/field.svg',
-  './assets/jewel-ui-r790/chip.svg',
-  './assets/jewel-ui-r790/button-wide.svg',
-  './assets/jewel-ui-r790/button-small.svg',
-  './assets/jewel-ui-r790/panel-tall.svg',
-  './assets/jewel-ui-r790/player.svg',
-  './assets/jewel-ui-r790/divider.svg',
-  './assets/jewel-ui-r790/ASSET_CARDS_r790.json',
+  './assets/sukun-nur-orbit-r757.svg',
   './assets/jewel-ui-r792/card-wide.svg',
   './assets/jewel-ui-r792/card-medium.svg',
   './assets/jewel-ui-r792/field.svg',
@@ -47,212 +50,206 @@ const CORE = [
   './assets/jewel-ui-r792/divider.svg',
   './assets/jewel-ui-r792/toolbar-button.svg',
   './assets/jewel-ui-r792/tefekkur-cta.svg',
-  './assets/jewel-ui-r792/ASSET_CARDS_r792.json'];
-/* r732: HTML'in hiç referans vermediği eski görseller kurulumu bloklayan CORE
-   listesinden çıkarıldı. Biri eksik olsa bile güncelleme artık düşmez; yine de
-   önbelleğe alınırlar, çünkü eski bir kabuk onlara başvurabilir. */
-const OPTIONAL = [
-  './assets/berhetiyye-premium/berhetiyye-ring.png',
-  './assets/berhetiyye-premium/berhetiyye-palace.png',
-  './assets/berhetiyye-premium/berhetiyye-name-frame.png',
-  './assets/berhetiyye-premium/berhetiyye-controls-sheet.png',
-  './assets/berhetiyye-premium/berhetiyye-panel.png',
-  './assets/berhetiyye-premium/control-primary.png',
-  './assets/berhetiyye-premium/control-minus.png',
-  './assets/berhetiyye-premium/control-plus.png',
-  './assets/berhetiyye-premium/control-prev.png',
-  './assets/berhetiyye-premium/control-restart.png',
-  './assets/berhetiyye-premium/control-next.png',
-  './assets/berhetiyye-premium/control-sound.png',
-  './assets/berhetiyye-premium/control-exit.png',
-  './assets/berhetiyye-premium/control-nav-emerald-r788.png',
-  './assets/berhetiyye-premium/control-nav-amethyst-r788.png',
-  './assets/berhetiyye-premium/control-nav-sapphire-r788.png',
-  './assets/berhetiyye-premium/control-primary-r788.png',
-  './assets/berhetiyye-premium/control-round-plus-r788.png',
-  './assets/berhetiyye-premium/control-round-minus-r788.png',
-  './assets/berhetiyye-premium/control-utility-emerald-r788.png',
-  './assets/berhetiyye-premium/control-utility-sapphire-r788.png',
-  './assets/berhetiyye-premium/control-utility-gold-r788.png',
-  './assets/berhetiyye-premium/control-panelbar-r788.png',
-  './assets/berhetiyye-premium/scenes/scene-01-billur.png',
-  './assets/berhetiyye-premium/scenes/scene-02-asa.png',
-  './assets/berhetiyye-premium/scenes/scene-03-selale.png',
-  './assets/berhetiyye-premium/scenes/scene-04-teras.png',
-  './assets/berhetiyye-premium/scenes/scene-05-kristal.png',
-  './assets/berhetiyye-premium/scenes/scene-06-yuzuk.png',
-  './assets/berhetiyye-premium/panel-tall-r784.png',
-  './assets/berhetiyye-premium/panel-wide-r784.png',
-  './assets/berhetiyye-premium/panel-wide2-r784.png',
-  './assets/berhetiyye-premium/panel-card-r784.png',
-  './assets/berhetiyye-premium/panel-short-r784.png',
-  './assets/berhetiyye-premium/scenes/scene-07-mor-kristal.png',
-  './assets/berhetiyye-premium/scenes/scene-08-ayasofya-billur.png',
-  './assets/berhetiyye-premium/r778-controls-source.png',
-  './assets/berhetiyye-premium/r778-ui-source.png',
-  './assets/feyz-mark.svg',
-  './assets/feyz-flame-ring.svg',
-  './assets/feyz-flame-ring.webp',
+  './assets/jewel-ui-r792/ASSET_CARDS_r792.json',
   './surumler.json',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r792__.json';
 
-const NOTLAR = ["r792 · Tefekkür Tap Authority: Tefekküre Geç mobil dokunma zinciri window-capture ve geometrik hit-test ile tek sahipli hale getirildi.", "Jewel assetleri assets/jewel-ui-r792 klasöründe self-contained paketlendi; r791 yoluna bağımlılık kaldırıldı.", "Ses, sayaç, kuyruk, pause/stop/resume ve 28/99 seyir sahipliği değiştirilmedi."];
+const NOTLAR = [
+  'r793 · Güncelleme Kurtarma Otoritesi: yeni worker artık install/waiting çıkmazında eski sürümde takılı kalmaz.',
+  'Navigasyon network-first + build-aware oldu; ağda daha yeni doğrulanmış HTML varsa eski shell yerine yeni HTML açılır.',
+  'Service worker skipWaiting ile aktive olur; aktif ses varken sayfa zorla reload edilmez.',
+  'Jewel/Tefekkür/ses/sayaç/28-99 seyir motorlarında işlevsel değişiklik yapılmadı.'
+];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
   return m?m[1]:'';
 }
-async function fetchReload(path){
-  const req=new Request(path,{cache:'reload'});
-  const res=await fetch(req);
-  if(!res||!res.ok||res.type==='opaque')throw new Error('fetch '+path+' '+(res?.status||'failed'));
-  return{req,res};
+function vnum(v){const m=String(v||'').match(/r(\d+)/i);return m?Number(m[1]):-1}
+function sameOriginPath(path){return new URL(path,self.location.href).pathname}
+async function fetchFresh(path,timeout=4500){
+  const req=new Request(path,{cache:'no-store'});
+  let timer;
+  try{
+    const ctl=new AbortController();
+    timer=setTimeout(()=>ctl.abort(),timeout);
+    const res=await fetch(new Request(req,{signal:ctl.signal,cache:'no-store'}));
+    if(!res||!res.ok||res.type==='opaque')throw new Error('fetch '+path+' '+(res?.status||'failed'));
+    return res;
+  }finally{clearTimeout(timer)}
 }
-async function validateCore(path,res){
-  if(path.includes('nero.html')){
-    const text=await res.clone().text();
-    if(buildOfHtml(text)!==SURUM)throw new Error('HTML build mismatch: '+buildOfHtml(text)+' != '+SURUM);
-  }else if(path.includes('manifest.webmanifest')){
-    const obj=await res.clone().json();
-    if(!obj||obj.short_name!=='SÜKÛN'||!obj.start_url)throw new Error('manifest invalid');
-    const start=new URL(obj.start_url,self.location.href);
-    if(start.searchParams.get('v')!==SURUM)throw new Error('manifest build mismatch');
-  }
-  return true;
+async function put(cache,key,res){try{await cache.put(key,res.clone());return true}catch(e){return false}}
+async function readCacheMeta(){
+  try{const c=await caches.open(CACHE),r=await c.match(CACHE_META,{ignoreSearch:true});return r?await r.json():null}catch(e){return null}
 }
-async function marker(cache){
-  const r=await cache.match(BUILD_MARKER);
-  if(!r)return null;
-  try{return await r.json()}catch(e){return null}
-}
-let prepareInFlight=null;
-function kabuguHazirla(){
-  if(prepareInFlight)return prepareInFlight;
-  const task=prepareShell();prepareInFlight=task;
-  task.finally(()=>{if(prepareInFlight===task)prepareInFlight=null}).catch(()=>{});
-  return task;
-}
-async function prepareShell(){
-  const cache=await caches.open(CACHE);
-  /* Download and validate the complete core before replacing a working shell.
-     A failed refresh must not partially overwrite the previous complete cache. */
-  const prepared=[];
-  for(const path of CORE){
-    const {req,res}=await fetchReload(path);
-    await validateCore(path,res);
-    const body=await res.arrayBuffer();
-    prepared.push({req,res:new Response(body,{status:res.status,statusText:res.statusText,headers:res.headers})});
-  }
-  for(const {req,res} of prepared)await cache.put(req,res);
-  prepared.length=0;
-  /* Opsiyoneller güncellemeyi düşürmez. */
-  await Promise.allSettled(OPTIONAL.map(async path=>{
-    const {req,res}=await fetchReload(path);await cache.put(req,res.clone());
-  }));
-  const meta={v:SURUM,cache:CACHE,complete:true,at:Date.now(),core:CORE.slice()};
-  await cache.put(BUILD_MARKER,new Response(JSON.stringify(meta),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}));
+async function writeCacheMeta(meta){
+  try{const c=await caches.open(CACHE);await c.put(CACHE_META,new Response(JSON.stringify(meta),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))}catch(e){}
   return meta;
 }
-async function currentComplete(){
-  const cache=await caches.open(CACHE);const m=await marker(cache);
-  if(!m||m.v!==SURUM||m.complete!==true)return false;
-  for(const path of CORE){if(!await cache.match(path,{ignoreSearch:true}))return false}
-  return true;
+
+let prepareInFlight=null;
+function prepareShell(){
+  if(prepareInFlight)return prepareInFlight;
+  const p=(async()=>{
+    const cache=await caches.open(CACHE);
+    const meta={v:SURUM,cache:CACHE,at:Date.now(),shell:false,manifest:false,marker:false,latest:false,complete:false,errors:[]};
+
+    /* Her parça bağımsız. Tek bir 404 yeni worker'ı redundant yapamaz. */
+    try{
+      const r=await fetchFresh(BUILD_MARKER);const j=await r.clone().json();
+      if(String(j?.v||'')===SURUM||String(j?.build||'').includes(SURUM)){await put(cache,BUILD_MARKER,r);meta.marker=true}else throw new Error('build marker mismatch');
+    }catch(e){meta.errors.push('marker:'+String(e?.message||e))}
+    try{
+      const r=await fetchFresh(LATEST_MARKER);const j=await r.clone().json();
+      if(j&&j.v){await put(cache,LATEST_MARKER,r);meta.latest=true}else throw new Error('latest invalid');
+    }catch(e){meta.errors.push('latest:'+String(e?.message||e))}
+    try{
+      const r=await fetchFresh('./manifest.webmanifest');const j=await r.clone().json();
+      const u=new URL(j?.start_url||'',self.location.href);
+      if(j?.short_name==='SÜKÛN'&&u.searchParams.get('v')===SURUM){await put(cache,'./manifest.webmanifest',r);meta.manifest=true}else throw new Error('manifest mismatch');
+    }catch(e){meta.errors.push('manifest:'+String(e?.message||e))}
+    try{
+      const r=await fetchFresh('./nero.html',6500);const b=buildOfHtml(await r.clone().text());
+      if(b===SURUM){await put(cache,'./nero.html',r);meta.shell=true}else throw new Error('html '+(b||'unknown')+' != '+SURUM);
+    }catch(e){meta.errors.push('html:'+String(e?.message||e))}
+
+    meta.complete=meta.shell&&meta.manifest&&meta.marker;
+    await writeCacheMeta(meta);
+
+    /* Görseller kurulumun kaderini belirlemez. */
+    Promise.allSettled(PRECACHE.map(async path=>{
+      try{const r=await fetchFresh(path,5000);await put(cache,path,r)}catch(e){}
+    })).catch(()=>{});
+    return meta;
+  })();
+  prepareInFlight=p;
+  p.finally(()=>{if(prepareInFlight===p)prepareInFlight=null}).catch(()=>{});
+  return p;
+}
+
+async function cachedShellFrom(cacheName){
+  try{
+    const c=await caches.open(cacheName),r=await c.match('./nero.html',{ignoreSearch:true});
+    if(!r)return null;const b=buildOfHtml(await r.clone().text());return b?{res:r,build:b,cache:cacheName}:null;
+  }catch(e){return null}
+}
+async function bestCachedShell(){
+  const current=await cachedShellFrom(CACHE);if(current)return current;
+  const keys=(await caches.keys()).filter(k=>k.startsWith('sukun-')&&k!==CACHE)
+    .sort((a,b)=>vnum(b)-vnum(a));
+  for(const k of keys){const x=await cachedShellFrom(k);if(x)return x}
+  return null;
+}
+async function broadcastStatus(extra={}){
+  const m=await readCacheMeta();
+  const cs=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  const msg={type:'SUKUN_SW_STATUS',v:SURUM,cache:CACHE,complete:!!m?.complete,marker:m||null,...extra};
+  cs.forEach(c=>{try{c.postMessage(msg)}catch(e){}});
 }
 
 self.addEventListener('install',event=>{
-  /* skipWaiting YOK: güncelleme waiting'de kalır, kullanıcı Yenile derse aktive olur. */
-  event.waitUntil(kabuguHazirla());
+  event.waitUntil((async()=>{
+    /* r793: install hiçbir geçici Pages yayılım uyuşmazlığında beklemeye kilitlenmez.
+       Sekiz saniyeden uzun CDN gecikmesinde aktivasyon yine devam eder; activate
+       aşaması shell hazırlığını yeniden dener. */
+    try{await Promise.race([prepareShell(),new Promise(r=>setTimeout(r,8000))])}catch(e){}
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    if(!await currentComplete())throw new Error(SURUM+' cache incomplete — old worker preserved');
-    const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k.startsWith('sukun-')&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
-    const cs=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-    cs.forEach(c=>{try{c.postMessage({type:'SUKUN_SW_STATUS',v:SURUM,cache:CACHE,complete:true})}catch(e){}});
+    try{await prepareShell()}catch(e){}
+    await broadcastStatus({phase:'activated'});
+    /* Eski cache'leri burada silmiyoruz: yeni shell henüz CDN'e yayılmadıysa
+       çevrimdışı güvenlik ağı olarak kalırlar. */
   })());
 });
 
-const AG_ZAMAN_ASIMI=2500;
-function zamanliFetch(request,ms){
-  return new Promise(resolve=>{let done=false;const t=setTimeout(()=>{if(!done){done=true;resolve(null)}},ms);fetch(request).then(r=>{if(!done){done=true;clearTimeout(t);resolve(r)}}).catch(()=>{if(!done){done=true;clearTimeout(t);resolve(null)}})});
+const NET_TIMEOUT=3500;
+async function timedFetch(request,ms=NET_TIMEOUT){
+  return new Promise(resolve=>{
+    let done=false;const t=setTimeout(()=>{if(!done){done=true;resolve(null)}},ms);
+    fetch(request).then(r=>{if(!done){done=true;clearTimeout(t);resolve(r)}}).catch(()=>{if(!done){done=true;clearTimeout(t);resolve(null)}});
+  });
 }
-async function shellCached(){
-  const cache=await caches.open(CACHE);
-  if(!(await marker(cache))?.complete)return null;
-  return await cache.match('./nero.html',{ignoreSearch:true});
-}
-async function responseBuild(res){
-  try{return buildOfHtml(await res.clone().text())}catch(e){return''}
-}
-async function kabukOncelikli(request){
-  const cache=await caches.open(CACHE);
-  const cached=await shellCached();
-  const fresh=await zamanliFetch(new Request(request,{cache:'no-store'}),AG_ZAMAN_ASIMI);
+async function navigationResponse(request){
+  /* Güncelleme deadlock'unu kıran kritik fark:
+     ağdaki HTML bu workerdan daha yeniyse CACHE'e dönmek yerine onu göster. */
+  const fresh=await timedFetch(new Request(request,{cache:'no-store'}));
   if(fresh&&fresh.ok&&fresh.type!=='opaque'){
-    const b=await responseBuild(fresh);
-    if(b===SURUM){
-      /* Yalnız AYNI build mevcut worker cache'ine yazılabilir. */
-      eventlessPut(cache,'./nero.html',fresh.clone());
-      return fresh;
-    }
-    if(b&&b!==SURUM){
-      /* Ağda daha yeni HTML var ama bu worker eski: sürümleri karıştırma. */
-      try{self.registration.update()}catch(e){}
-      if(cached)return cached;
-      /* İlk kurulum gibi cache yoksa ağdaki sayfa son çare; yeni worker hemen kurulacaktır. */
+    const b=buildOfHtml(await fresh.clone().text());
+    if(b){
+      if(vnum(b)>vnum(SURUM)){
+        try{self.registration.update()}catch(e){}
+        return fresh;
+      }
+      if(b===SURUM){
+        const c=await caches.open(CACHE);put(c,'./nero.html',fresh.clone());
+        const m=await readCacheMeta()||{v:SURUM,cache:CACHE};m.shell=true;m.complete=!!(m.shell&&m.manifest&&m.marker);m.at=Date.now();writeCacheMeta(m);
+        return fresh;
+      }
+      /* CDN kısa süreli eski HTML döndürüyorsa mevcut daha yeni shell'i koru. */
+      const cached=await bestCachedShell();
+      if(cached&&vnum(cached.build)>=vnum(b))return cached.res;
       return fresh;
     }
   }
-  if(cached){
-    /* Arka plan refresh yalnız aynı buildse cache'e girer. */
-    fetch(new Request(request,{cache:'no-store'})).then(async r=>{
-      if(r?.ok&&(await responseBuild(r))===SURUM)eventlessPut(cache,'./nero.html',r.clone());
-      else if(r?.ok)try{self.registration.update()}catch(e){}
-    }).catch(()=>{});
-    return cached;
-  }
-  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SÜKÛN</title><body style="background:#05090c;color:#8fe9ff;font:16px/1.7 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px"><div><div style="font-size:44px;opacity:.75">۞</div><p>SÜKÛN çevrimdışı ve doğrulanmış önbellek yok.</p><p style="opacity:.6;font-size:14px">Bir kez çevrimiçi aç; sonrası çevrimdışı çalışır.</p></div>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+  const cached=await bestCachedShell();
+  if(cached)return cached.res;
+  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SÜKÛN</title><body style="background:#05090c;color:#8fe9ff;font:16px/1.7 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px"><div><div style="font-size:44px;opacity:.75">۞</div><p>SÜKÛN çevrimdışı ve doğrulanmış kabuk bulunamadı.</p><p style="opacity:.6;font-size:14px">Bağlantı geldiğinde sayfayı yeniden aç.</p></div>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
 }
-function eventlessPut(cache,key,res){cache.put(key,res).catch(()=>{})}
 
-async function onbellekOncelikli(request){
-  const url=new URL(request.url);
-  const packaged=[...CORE,...OPTIONAL].some(path=>new URL(path,self.location.href).pathname===url.pathname);
-  const cache=await caches.open(CACHE);
-  const cached=await cache.match(request,{ignoreSearch:packaged||!url.search});
+async function assetResponse(request){
+  const url=new URL(request.url),current=await caches.open(CACHE);
+  const latestPath=sameOriginPath(LATEST_MARKER),manifestPath=sameOriginPath('./manifest.webmanifest');
+  const updateProbe=(url.pathname===latestPath)||url.pathname.endsWith('/sw.js')||/\/__sukun_build_r\d+__\.json$/.test(url.pathname);
+  /* Update probeları cache-first olamaz; aksi halde latest marker kendi cache'inde
+     sonsuza dek kalır ve bir sonraki sürüm hiç algılanmaz. */
+  if(updateProbe){
+    try{
+      const fresh=await fetch(new Request(request,{cache:'no-store'}));
+      if(fresh?.ok&&fresh.type!=='opaque')put(current,new Request(url.origin+url.pathname),fresh.clone());
+      return fresh;
+    }catch(e){
+      const fb=await current.match(new Request(url.origin+url.pathname),{ignoreSearch:true});
+      if(fb)return fb;
+    }
+  }
+  const cached=await current.match(request,{ignoreSearch:false})||await current.match(new Request(url.origin+url.pathname),{ignoreSearch:true});
   if(cached)return cached;
   try{
     const res=await fetch(request);
-    if(res?.ok&&res.type!=='opaque'){
-      if(url.pathname===new URL('./manifest.webmanifest',self.location.href).pathname)await validateCore('./manifest.webmanifest',res);
-      eventlessPut(cache,request,res.clone());
-    }
+    if(res?.ok&&res.type!=='opaque')put(current,request,res.clone());
     return res;
-  }catch(e){return Response.error()}
+  }catch(e){
+    const keys=(await caches.keys()).filter(k=>k.startsWith('sukun-')&&k!==CACHE).sort((a,b)=>vnum(b)-vnum(a));
+    for(const k of keys){try{const c=await caches.open(k),r=await c.match(request,{ignoreSearch:true});if(r)return r}catch(_){} }
+    return Response.error();
+  }
 }
 
 self.addEventListener('fetch',event=>{
-  const request=event.request;if(request.method!=='GET')return;
-  const url=new URL(request.url);if(url.origin!==self.location.origin)return;
-  event.respondWith(request.mode==='navigate'?kabukOncelikli(request):onbellekOncelikli(request));
+  const req=event.request;if(req.method!=='GET')return;
+  const url=new URL(req.url);if(url.origin!==self.location.origin)return;
+  event.respondWith(req.mode==='navigate'?navigationResponse(req):assetResponse(req));
 });
 
 self.addEventListener('message',event=>{
   const d=event.data||{},port=event.ports?.[0];
-  if(d.type==='SKIP_WAITING'){self.skipWaiting();return}
+  if(d.type==='SKIP_WAITING'){event.waitUntil(self.skipWaiting());return}
   if(d.type==='SURUM_NOTU'){try{port?.postMessage({v:SURUM,notlar:NOTLAR})}catch(e){};return}
   if(d.type==='STATUS'){
-    event.waitUntil((async()=>{const cache=await caches.open(CACHE),m=await marker(cache);try{port?.postMessage({v:SURUM,cache:CACHE,complete:!!m?.complete,marker:m,error:m?'':'marker missing'})}catch(e){}})());return;
+    event.waitUntil((async()=>{const m=await readCacheMeta();try{port?.postMessage({v:SURUM,cache:CACHE,complete:!!m?.complete,marker:m,error:m?.errors?.join(' | ')||''})}catch(e){}})());return;
   }
   if(d.type==='CACHE_REFRESH'){
-    event.waitUntil(kabuguHazirla().then(m=>{try{port?.postMessage({ok:true,v:SURUM,cache:CACHE,complete:!!m?.complete})}catch(e){}}).catch(e=>{try{port?.postMessage({ok:false,v:SURUM,error:String(e?.message||e)})}catch(_){}}));
+    event.waitUntil(prepareShell().then(async m=>{await broadcastStatus({phase:'refresh'});try{port?.postMessage({ok:true,v:SURUM,cache:CACHE,complete:!!m?.complete,marker:m})}catch(e){}}).catch(e=>{try{port?.postMessage({ok:false,v:SURUM,error:String(e?.message||e)})}catch(_){}}));return;
+  }
+  if(d.type==='CHECK_UPDATE'){
+    event.waitUntil((async()=>{try{await self.registration.update();port?.postMessage({ok:true,v:SURUM})}catch(e){port?.postMessage({ok:false,v:SURUM,error:String(e?.message||e)})}})());
   }
 });

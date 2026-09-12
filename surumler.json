@@ -1,5 +1,16 @@
 [
   {
+    "v": "r793",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Güncelleme deadlock’u giderildi: eski service worker artık ağda daha yeni HTML gördüğünde eski shell’i zorla geri döndürmez.",
+      "Yeni worker install aşamasında tek bir asset/Pages yayılım gecikmesi yüzünden redundant olmaz; skipWaiting ile güvenle aktive olur.",
+      "Aktif ses varsa controller değişimi sayfayı zorla yenilemez; sessiz durumda yeni sürüm tek seferde devreye girer.",
+      "Sabit latest-build işareti ve görünürlük/online kontrolü ile sürüm denetimi kendi kendini toparlar.",
+      "Jewel, Tefekkür, sayaç, pause/stop/resume ve 28/99 seyir motorları değiştirilmedi."
+    ]
+  },
+  {
     "v": "r792",
     "t": "13 Eylül 2026",
     "b": [
