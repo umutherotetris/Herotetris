@@ -1,8 +1,8 @@
-/* SÜKÛN r782 — Tekke flash fix */
+/* SÜKÛN r783 — Berhetiyye tam entegrasyon + fit polish */
 'use strict';
 
-const SURUM = 'r782';
-const CACHE = 'sukun-r782-20260912a';
+const SURUM = 'r783';
+const CACHE = 'sukun-r783-20260912a';
 
 const CORE = [
   './nero.html',
@@ -59,9 +59,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r782__.json';
+const BUILD_MARKER='./__sukun_build_r783__.json';
 
-const NOTLAR = ["r782 · Tekke sekmesindeki sürekli parlama/flashing kaldırıldı; touch cihazlarda sticky hover döngüsü engellendi.","r781 · Berhetiyye kabuğunda açıkta kalan Dinle/Döngü/Kendi Sesin/Niyet/Favori/Nasıl, Tefekkür CTA, bilgi kartları ve mini oynatıcı mücevher skin ailesine alındı.","r780 · Ana sayfa transparanlık geçişi korunuyor.","r779 · Berhetiyye sahneleri görünür #r717Scene katmanında.","Otomatik + 6 özel Berhetiyye sahnesi ve çıkışta normal SÜKÛN görünümüne dönüş korunur."];
+const NOTLAR = ["r783 · Berhetiyye full-shell polish uygulandı: yüzeyler daha şeffaf, kartlar daha oturmuş ve alt dock çakışması hafifletildi.", "Berhetiyye zikirmatik yüzüğü canlı oynatma sırasında saat yönünün tersine döner; durunca sakin kalır.", "r782 · Tekke sekmesindeki flashing düzeltmesi korunur.", "r781 · Berhetiyye full shell skin entegrasyonu korunur.", "Otomatik + 6 özel Berhetiyye sahnesi ve çıkışta normal SÜKÛN görünümüne dönüş korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

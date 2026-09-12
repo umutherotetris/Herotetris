@@ -1,0 +1,11 @@
+{
+  "build": "r783",
+  "version": "r783",
+  "date": "2026-09-12",
+  "notes": [
+    "Berhetiyye katmanları tam shell entegrasyonu ile oturtuldu",
+    "Transparanlık artırıldı ve taşma/oturma sorunları hafifletildi",
+    "Canlı durumda zikirmatik yüzüğü saat yönünün tersine döner",
+    "Tekke flashing düzeltmesi korunur"
+  ]
+}
