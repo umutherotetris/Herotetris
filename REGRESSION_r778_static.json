@@ -1,0 +1,10 @@
+{
+  "meta_r778": true,
+  "manifest_query": true,
+  "footer_r778": true,
+  "authority": true,
+  "scene_picker": true,
+  "sw_r778": true,
+  "marker": true,
+  "assets": true
+}

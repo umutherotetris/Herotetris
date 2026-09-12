@@ -1,5 +1,22 @@
 [
   {
+    "v": "r778",
+    "t": "12 Eylül 2026",
+    "b": [
+      "Build/meta/manifest/SW/cache senkronu r778'e yükseltildi; r775 cache'inde kalma sorunu giderildi.",
+      "Berhetiyye Billur Saray skin authority, onaylanan özel arka plan/yüzük/buton assetleriyle tam entegre edildi.",
+      "Otomatik + 6 seçilebilir Berhetiyye arka plan sahnesi eklendi; bölümden çıkınca normal SÜKÛN görünümü geri gelir."
+    ]
+  },
+  {
+    "v": "r776",
+    "t": "12 Eylül 2026",
+    "b": [
+      "Berhetiyye Billur Saray visual authority eklendi.",
+      "Eski yüksek özgüllüklü kontrol ve sanctuary arka plan kuralları Berhetiyye açıkken görsel olarak eziliyor."
+    ]
+  },
+  {
     "v": "r775",
     "t": "11 Eylül 2026",
     "b": [

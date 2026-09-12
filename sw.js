@@ -1,8 +1,8 @@
-/* SÜKÛN r775 — Berhetiyye Billur Saray full skin */
+/* SÜKÛN r778 — Berhetiyye Billur Saray scenes + jewel skin */
 'use strict';
 
-const SURUM = 'r775';
-const CACHE = 'sukun-r775-20260911a';
+const SURUM = 'r778';
+const CACHE = 'sukun-r778-20260912a';
 
 const CORE = [
   './nero.html',
@@ -43,6 +43,14 @@ const OPTIONAL = [
   './assets/berhetiyye-premium/control-next.png',
   './assets/berhetiyye-premium/control-sound.png',
   './assets/berhetiyye-premium/control-exit.png',
+  './assets/berhetiyye-premium/scenes/scene-01-billur.png',
+  './assets/berhetiyye-premium/scenes/scene-02-asa.png',
+  './assets/berhetiyye-premium/scenes/scene-03-selale.png',
+  './assets/berhetiyye-premium/scenes/scene-04-teras.png',
+  './assets/berhetiyye-premium/scenes/scene-05-kristal.png',
+  './assets/berhetiyye-premium/scenes/scene-06-yuzuk.png',
+  './assets/berhetiyye-premium/r778-controls-source.png',
+  './assets/berhetiyye-premium/r778-ui-source.png',
   './assets/feyz-mark.svg',
   './assets/feyz-flame-ring.svg',
   './assets/feyz-flame-ring.webp',
@@ -51,9 +59,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r775__.json';
+const BUILD_MARKER='./__sukun_build_r778__.json';
 
-const NOTLAR = ["r775 · Berhetiyye Billur Saray skin aktivasyonu gerçek document body içine taşındı; arka plan artık tam ekran ve kalıcıdır.", "Hedef/Kalan ve tüm zikir kumandaları Berhetiyye seçiliyken billur-altın assetleri kullanır.", "Tema seçimi Z.cat yanında seçili kategori DOM’u, 28 İsim Seyri ve aktif isim durumundan da doğrulanır.", "Ses, sayaç ve transport sahipliği değişmedi."];
+const NOTLAR = ["r778 · Berhetiyye Billur Saray build/cache kimliği düzeltildi.","Otomatik + 6 özel Berhetiyye sahnesi eklendi.","Safir/yakut/amethyst sayaç yüzüğü ve mücevher kontrol skinleri visual authority tarafından uygulanır.","Berhetiyye alanından çıkınca normal SÜKÛN görünümü geri gelir."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

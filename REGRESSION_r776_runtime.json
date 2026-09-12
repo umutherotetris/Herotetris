@@ -1,0 +1,95 @@
+{
+  "active": true,
+  "body_bg": "linear-gradient(rgba(2, 7, 18, 0.12), rgba(2, 9, 22, 0.3) 44%, rgba(2, 7, 18, 0.62)), url(\"https://example.com/assets/berhetiyye-premium/berhetiyye-palace.png\")",
+  "target": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-primary.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-primary.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 58px !important;"
+  },
+  "auto": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-primary.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-primary.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 60px !important;"
+  },
+  "minus": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-minus.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-minus.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 58px !important;"
+  },
+  "plus": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-plus.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-plus.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 58px !important;"
+  },
+  "prev": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-prev.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-prev.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 48px !important;"
+  },
+  "restart": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-restart.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-restart.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 48px !important;"
+  },
+  "next": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-next.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-next.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 48px !important;"
+  },
+  "tabs": {
+    "bg": "linear-gradient(155deg, rgba(2, 15, 34, 0.88), rgba(8, 10, 29, 0.9)), url(\"https://example.com/assets/berhetiyye-premium/berhetiyye-name-frame.png\")",
+    "border": "1px solid rgba(246, 217, 138, 0.42)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: linear-gradient(155deg, rgba(2, 15, 34, 0.88), rgba(8, 10, 29, 0.9)), url(\"./assets/berhetiyye-premium/berhetiyye-name-frame.png\") !important; background-color: transparent !important; border: 1px solid rgba(246, 217, 138, 0.42) !important; box-shadow: rgba(0, 0, 0, 0.32) 0px 16px 40px, rgba(255, 245, 205, 0.07) 0px 1px inset !important; backdrop-filter: blur(10px) saturate(1.06) !important; background-size: cover, 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important;"
+  },
+  "dock": {
+    "bg": "linear-gradient(155deg, rgba(2, 14, 31, 0.94), rgba(7, 10, 26, 0.97)), url(\"https://example.com/assets/berhetiyye-premium/berhetiyye-name-frame.png\")",
+    "border": "0px none rgb(223, 245, 239)",
+    "bgc": "rgba(0, 0, 0, 0)",
+    "inline": "background-image: linear-gradient(155deg, rgba(2, 14, 31, 0.94), rgba(7, 10, 26, 0.97)), url(\"./assets/berhetiyye-premium/berhetiyye-name-frame.png\") !important; background-color: transparent !important; border: 0px !important; box-shadow: rgba(0, 0, 0, 0.42) 0px -10px 34px, rgba(111, 230, 236, 0.08) 0px 0px 22px !important; backdrop-filter: blur(10px) saturate(1.06) !important; background-size: cover, 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important;"
+  },
+  "tef_mode": true,
+  "tef_auto": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-primary.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-primary.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 60px !important;"
+  },
+  "tef_target": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-primary.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-primary.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 58px !important;"
+  },
+  "tef_prev": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-prev.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-prev.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 42px !important;"
+  },
+  "tef_next": {
+    "bg": "url(\"https://example.com/assets/berhetiyye-premium/control-next.png\")",
+    "border": "0px none rgb(255, 240, 194)",
+    "inline": "background-image: url(\"./assets/berhetiyye-premium/control-next.png\") !important; background-color: transparent !important; background-size: 100% 100% !important; background-position: center center !important; background-repeat: no-repeat !important; border: 0px !important; box-shadow: none !important; color: rgb(255, 240, 194) !important; text-shadow: rgba(0, 0, 0, 0.9) 0px 1px 3px !important; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 8px 12px) !important; border-radius: 0px !important; min-height: 42px !important;"
+  },
+  "checks": {
+    "active": true,
+    "body_palace": true,
+    "target_asset": true,
+    "auto_asset": true,
+    "minus_asset": true,
+    "plus_asset": true,
+    "prev_asset": true,
+    "restart_asset": true,
+    "next_asset": true,
+    "dock_skinned": true,
+    "tef_auto": true,
+    "tef_target": true,
+    "tef_prev": true,
+    "tef_next": true
+  }
+}

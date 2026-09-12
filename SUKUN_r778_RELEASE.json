@@ -1,0 +1,11 @@
+{
+  "build": "r778",
+  "date": "2026-09-12",
+  "feature": "Berhetiyye Billur Saray scenes + jewel skin",
+  "assets": {
+    "scenes": 6,
+    "ring": "berhetiyye-ring.png",
+    "controls": 8
+  },
+  "reverts_on_exit": true
+}
