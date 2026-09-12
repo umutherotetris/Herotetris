@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r784">
+<meta name="sukun-build" content="r785">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r784">
+<link rel="manifest" href="./manifest.webmanifest?v=r785">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.44 — build 2026-09-12-r784</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.45 — build 2026-09-12-r785</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -73097,6 +73097,220 @@ body.r778-berhet-palace :is(#r778RingSkin,#zStage::before,#zStage::after){pointe
 @media(max-width:430px){
   body.r778-berhet-palace #r778RingSkin{inset:-12%!important}
   body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,.r754Ctx){background-size:cover,100% 100%!important}
+}
+</style>
+
+
+<style id="sukun-r785-berhetiyye-fit-template">
+/* r785 — screenshot-measured Berhetiyye fit pass.
+   Phone target: 360–430 CSS px. Decorative rasters stay on fixed-size controls;
+   dynamic content cards use flexible glass shells so the artwork cannot stretch. */
+body.r778-berhet-palace{
+  --b785-gap:clamp(8px,2.7vw,12px);
+  --b785-pad:clamp(10px,3.2vw,14px);
+  --b785-card:rgba(3,18,34,.54);
+  --b785-card2:rgba(5,15,31,.46);
+  --b785-line:rgba(246,217,138,.42);
+  --b785-line2:rgba(104,223,238,.24);
+}
+/* Content shell: align every Berhetiyye layer to one mobile column. */
+body.r778-berhet-palace #tab-zkr > *{
+  width:min(calc(100% - 12px),430px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  min-width:0!important;
+}
+body.r778-berhet-palace #tab-zkr>.card.zCtl,
+body.r778-berhet-palace #zStage{
+  width:100%!important;
+  max-width:430px!important;
+  padding:10px 8px 14px!important;
+  margin-inline:auto!important;
+  overflow:hidden!important;
+  background:linear-gradient(160deg,rgba(3,18,37,.10),rgba(7,11,28,.16))!important;
+  border:1px solid rgba(246,217,138,.12)!important;
+  border-radius:24px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.14)!important;
+}
+/* Active-name glass: one fitted header, never wider than content. */
+body.r778-berhet-palace :is(#r768ActiveGlassHost,#r170Now){
+  width:calc(100% - 8px)!important;
+  max-width:410px!important;
+  margin:8px auto 10px!important;
+  min-height:96px!important;
+  padding:14px 18px!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background-image:linear-gradient(155deg,rgba(3,17,35,.42),rgba(8,12,31,.44)),url('./assets/berhetiyye-premium/berhetiyye-name-frame.png')!important;
+  background-size:cover,100% 100%!important;
+  background-position:center!important;
+}
+/* Progress / tefekkür bar. */
+body.r778-berhet-palace #r700TefEntry{
+  width:calc(100% - 10px)!important;
+  margin:8px auto 12px!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+}
+body.r778-berhet-palace #r700TefEntry #r442TefekkurBtn{
+  width:100%!important;
+  min-height:58px!important;
+  padding:8px 20px!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  background-color:transparent!important;
+  box-shadow:none!important;
+}
+/* Counter: fixed optical size from current phone screenshots. */
+body.r778-berhet-palace #zCountVisual{
+  width:clamp(244px,76vw,316px)!important;
+  height:auto!important;
+  aspect-ratio:1/1!important;
+  margin:4px auto 8px!important;
+  overflow:visible!important;
+  position:relative!important;
+}
+body.r778-berhet-palace #r778RingSkin{inset:-7%!important;z-index:4!important}
+body.r778-berhet-palace #zCountVisual .cntNums{z-index:7!important}
+/* Target / remaining plates line up exactly under the ring. */
+body.r778-berhet-palace .zCounterRow{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:10px!important;
+  width:100%!important;
+  margin:2px 0 8px!important;
+}
+body.r778-berhet-palace .zCounterSide{
+  min-width:0!important;
+  width:100%!important;
+  min-height:62px!important;
+  padding:9px 10px!important;
+  border:0!important;
+  border-radius:0!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  overflow:hidden!important;
+}
+body.r778-berhet-palace .zCounterSide small{font-size:clamp(10px,2.8vw,12px)!important;white-space:nowrap!important}
+body.r778-berhet-palace .zCounterSide b{font-size:clamp(25px,7vw,32px)!important;line-height:1!important}
+/* -1 / pause / +1: one compact row, no oversized jewel overlap. */
+body.r778-berhet-palace .zCounterActions{
+  display:grid!important;
+  grid-template-columns:64px minmax(0,1fr) 64px!important;
+  gap:8px!important;
+  width:100%!important;
+  margin:6px 0 8px!important;
+  align-items:center!important;
+}
+body.r778-berhet-palace .zCounterActions>*{min-width:0!important;width:100%!important}
+body.r778-berhet-palace :is(#undoBtn,#plusBtn){
+  width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;
+  padding:0!important;border:0!important;border-radius:50%!important;background-size:100% 100%!important;
+}
+body.r778-berhet-palace #autoBtn{
+  min-height:64px!important;height:64px!important;padding:0 24px!important;background-size:100% 100%!important;
+  font-size:clamp(12px,3.5vw,15px)!important;
+}
+/* Previous / restart / next: equal columns, artwork never protrudes. */
+body.r778-berhet-palace #r616ZikirNavRow{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.18fr) minmax(0,1fr)!important;
+  gap:8px!important;
+  width:100%!important;
+  padding:0!important;
+  margin:0 0 10px!important;
+}
+body.r778-berhet-palace #r616ZikirNavRow button{
+  width:100%!important;min-width:0!important;min-height:50px!important;height:50px!important;
+  padding:0 10px!important;background-size:100% 100%!important;background-position:center!important;overflow:hidden!important;
+  font-size:clamp(9px,2.8vw,12px)!important;white-space:nowrap!important;
+}
+/* Dynamic information cards: remove stretched full-image frames. */
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx){
+  width:calc(100% - 8px)!important;
+  max-width:414px!important;
+  margin:10px auto!important;
+  padding:clamp(14px,4vw,18px)!important;
+  min-width:0!important;
+  border:1px solid var(--b785-line)!important;
+  border-radius:24px!important;
+  background:linear-gradient(155deg,var(--b785-card),var(--b785-card2))!important;
+  box-shadow:0 16px 34px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.035)!important;
+  backdrop-filter:blur(9px) saturate(1.04)!important;
+  -webkit-backdrop-filter:blur(9px) saturate(1.04)!important;
+  overflow:hidden!important;
+}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx)::before{display:none!important}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx) *{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,.r754Ctx) :is(.r168Grid,.r168Meta,.r168MiniGrid,.r754CtxGrid,.r168Buttons){
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+}
+body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,.r754Ctx) :is(.r168Cell,.r168MiniRow,.r168Status,.r168Progress,.r168Tag,.srcBadge,.r754CtxChip){
+  width:auto!important;max-width:100%!important;overflow-wrap:anywhere!important;white-space:normal!important;
+}
+body.r778-berhet-palace #berhetSeyir .r168Buttons{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+/* Journey selectors / controls fit within the panel. */
+body.r778-berhet-palace #berhetSeyir :is(select,input,button){max-width:100%!important}
+body.r778-berhet-palace #berhetSeyir select{min-height:44px!important}
+body.r778-berhet-palace #berhetSeyir .r168Progress{width:100%!important;overflow:hidden!important}
+/* Settings and wide accordions: use glass, not stretched ornamental source. */
+body.r778-berhet-palace :is(#r679ZikirAyarBox,#targetPremium){
+  width:calc(100% - 8px)!important;max-width:414px!important;margin:10px auto!important;
+  padding:12px 14px!important;border:1px solid rgba(246,217,138,.28)!important;border-radius:20px!important;
+  background:linear-gradient(155deg,rgba(3,18,34,.46),rgba(8,12,31,.40))!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.16)!important;overflow:hidden!important;
+}
+/* Tool row under context card. */
+body.r778-berhet-palace :is(#spkOnce,#tefExitBtn){
+  min-height:52px!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(5,28,47,.58),rgba(14,16,42,.60))!important;
+  border:1px solid rgba(246,217,138,.30)!important;box-shadow:none!important;
+}
+/* Floating collapsed player: no rectangular backing, no content coverage. */
+body.r778-berhet-palace.r431-dock-visible.r433-dock-hidden #r433DockPeek{
+  position:fixed!important;
+  left:50%!important;right:auto!important;
+  bottom:max(10px,calc(env(safe-area-inset-bottom,0px) + 8px))!important;
+  transform:translateX(-50%)!important;
+  width:min(calc(100vw - 28px),402px)!important;
+  min-width:0!important;max-width:402px!important;
+  min-height:64px!important;height:64px!important;
+  padding:7px 18px 7px 18px!important;
+  border:0!important;border-radius:0!important;
+  background-color:transparent!important;
+  background-image:url('./assets/berhetiyye-premium/control-primary.png')!important;
+  background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+  box-shadow:none!important;overflow:visible!important;z-index:2147481000!important;
+}
+body.r778-berhet-palace #r433DockPeek::before{display:none!important}
+body.r778-berhet-palace #r433DockPeek::after{
+  right:16px!important;width:32px!important;height:32px!important;border-radius:50%!important;
+  background:rgba(3,29,48,.72)!important;border:1px solid rgba(111,224,240,.42)!important;
+}
+body.r778-berhet-palace #r433DockPeek .r433Ico{width:38px!important;height:38px!important;border-radius:50%!important;margin-left:4px!important}
+body.r778-berhet-palace #r433DockPeek .r433TxtWrap{padding-right:38px!important;overflow:hidden!important}
+body.r778-berhet-palace #r433DockPeek .r433Txt,
+body.r778-berhet-palace #r433DockPeek .r433Sub{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+body.r778-berhet-palace.r431-dock-visible.r433-dock-hidden #tab-zkr,
+body.r778-berhet-palace.r431-dock-visible.r433-dock-hidden .wrap{padding-bottom:max(112px,calc(env(safe-area-inset-bottom,0px) + 104px))!important}
+/* Keep fixed top nav readable without swallowing content. */
+body.r778-berhet-palace .masterBar{max-width:430px!important;margin-inline:auto!important}
+@media(max-width:390px){
+  body.r778-berhet-palace #zCountVisual{width:min(73vw,286px)!important}
+  body.r778-berhet-palace .zCounterActions{grid-template-columns:58px minmax(0,1fr) 58px!important;gap:6px!important}
+  body.r778-berhet-palace :is(#undoBtn,#plusBtn){width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important}
+  body.r778-berhet-palace #autoBtn{height:58px!important;min-height:58px!important;padding-inline:16px!important}
+  body.r778-berhet-palace #r616ZikirNavRow{gap:6px!important}
+  body.r778-berhet-palace #r616ZikirNavRow button{height:46px!important;min-height:46px!important;padding-inline:7px!important;font-size:10px!important}
+  body.r778-berhet-palace :is(#berhetAtlas,#berhetSeyir,#r642ZikirInfoCard,.r754Ctx) :is(.r168Grid,.r168Meta,.r168MiniGrid,.r754CtxGrid){grid-template-columns:1fr!important}
+  body.r778-berhet-palace #berhetSeyir .r168Buttons{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:350px){
+  body.r778-berhet-palace #r616ZikirNavRow{grid-template-columns:1fr!important}
+  body.r778-berhet-palace #r616ZikirNavRow button{height:44px!important}
 }
 </style>
 

@@ -1,8 +1,8 @@
-/* SÜKÛN r784 — Berhetiyye asset finalization */
+/* SÜKÛN r785 — Berhetiyye asset finalization */
 'use strict';
 
-const SURUM = 'r784';
-const CACHE = 'sukun-r784-20260912a';
+const SURUM = 'r785';
+const CACHE = 'sukun-r785-20260912a';
 
 const CORE = [
   './nero.html',
@@ -66,9 +66,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r784__.json';
+const BUILD_MARKER='./__sukun_build_r785__.json';
 
-const NOTLAR = ["r784 · Asset finalizasyonu: yeni kristal yüzük, safir-altın kontrol ailesi ve panel çerçeveleri gerçek runtime assetlerine dönüştürüldü.", "Berhetiyye sahne seçicisine Mor Kristal Saray ve Ayasofya & Billur olmak üzere iki yeni arka plan eklendi.", "Canlı zikirmatik yüzüğü r783 davranışıyla saat yönünün tersine döner; pause/stop/çıkışta durur.", "r782 Tekke flashing düzeltmesi ve r783 transparan/fit polish korunur."];
+const NOTLAR = ["r785 · Telefon ekran görüntüsü ölçülerine göre Berhetiyye fit-pass: sayaç, hedef/kalan, transport, bilgi kartı, seyir ve mini oynatıcı aynı mobil kolon üzerine oturtuldu.", "Dinamik yüksek kartlarda raster panel germe kaldırıldı; esnek cam/kontur kullanılarak taşma ve deformasyon azaltıldı.", "Mini oynatıcıdaki dikdörtgen arka plaka kaldırıldı ve içerik üstünü kapatmaması için güvenli alt boşluk ayarlandı.", "r784 asset finalizasyonu, 8 Berhetiyye sahnesi ve ters saat yönlü canlı zikirmatik dönüşü korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
