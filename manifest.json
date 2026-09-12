@@ -1,26 +1,29 @@
 {
-  "name": "Hero Oyun Portalı",
-  "short_name": "Hero Portal",
-  "description": "Tetris, Satranç, Tavla ve daha fazlası — sosyal oyun portalı",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0a0e1a",
-  "theme_color": "#7C4DFF",
-  "categories": ["games", "entertainment", "social"],
-  "icons": [
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%230a0e1a'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230a0e1a'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle'%3E%F0%9F%8E%AE%3C/text%3E%3C/svg%3E",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "source_sheet": "/mnt/data/ornate_cosmic_fantasy_ui_asset_sheet.png",
+  "generated_assets": [
+    "control-primary.png",
+    "control-primary-compact.png",
+    "control-primary-alt.png",
+    "control-slot.png",
+    "control-plus.png",
+    "control-minus.png",
+    "control-prev.png",
+    "control-next.png",
+    "control-square.png",
+    "control-toggle.png",
+    "control-sound.png",
+    "control-restart.png",
+    "divider-ornate.png",
+    "panel-card-emerald.png",
+    "panel-card-amethyst.png",
+    "panel-wide-bottom.png",
+    "panel-card-r784.png",
+    "panel-tall-r784.png",
+    "panel-wide-r784.png",
+    "panel-short-r784.png",
+    "berhetiyye-panel.png",
+    "berhetiyye-name-frame.png",
+    "control-primary-wide.png"
+  ],
+  "notes": "Extracted from ornate_cosmic_fantasy_ui_asset_sheet.png for Berhetiyye button/frame integration. Transparent PNG assets."
 }
