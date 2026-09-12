@@ -1,8 +1,8 @@
-/* SÜKÛN r785 — Berhetiyye asset finalization */
+/* SÜKÛN r786 — Berhetiyye geometry authority */
 'use strict';
 
-const SURUM = 'r785';
-const CACHE = 'sukun-r785-20260912a';
+const SURUM = 'r786';
+const CACHE = 'sukun-r786-20260912a';
 
 const CORE = [
   './nero.html',
@@ -66,9 +66,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r785__.json';
+const BUILD_MARKER='./__sukun_build_r786__.json';
 
-const NOTLAR = ["r785 · Telefon ekran görüntüsü ölçülerine göre Berhetiyye fit-pass: sayaç, hedef/kalan, transport, bilgi kartı, seyir ve mini oynatıcı aynı mobil kolon üzerine oturtuldu.", "Dinamik yüksek kartlarda raster panel germe kaldırıldı; esnek cam/kontur kullanılarak taşma ve deformasyon azaltıldı.", "Mini oynatıcıdaki dikdörtgen arka plaka kaldırıldı ve içerik üstünü kapatmaması için güvenli alt boşluk ayarlandı.", "r784 asset finalizasyonu, 8 Berhetiyye sahnesi ve ters saat yönlü canlı zikirmatik dönüşü korunur."];
+const NOTLAR = ["r786 · Berhetiyye geometry authority: dinamik kartlardan gerilen raster çerçeveler kaldırıldı; CSS cam/kontur düzenine geçirildi.", "Sayaç DOM'u hedef + ring + kalan yapısına göre yeniden gridlendi; ring üstte, hedef/kalan altında hizalanır.", "Alt mini oynatıcıdaki çift translate hatası düzeltildi; artık sola taşmadan ekran ortasında kalır.", "Zikir yardımcı tuşları 2 kolon, seyir tuşları 2 kolon ve mobil güvenli ölçülerle yeniden düzenlendi.", "r784 sahneleri, mücevher ringi, ters saat yönlü canlı dönüş ve r782 Tekke flashing düzeltmesi korunur."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);

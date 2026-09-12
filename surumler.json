@@ -1,5 +1,15 @@
 [
   {
+    "v": "r786",
+    "t": "12 Eylül 2026",
+    "b": [
+      "r786 · Berhetiyye geometry authority: dinamik kartlardan gerilen raster çerçeveler kaldırıldı; CSS cam/kontur düzenine geçirildi.",
+      "Sayaç DOM'u hedef + ring + kalan yapısına göre yeniden gridlendi; ring üstte, hedef/kalan altında hizalanır.",
+      "Alt mini oynatıcıdaki çift translate hatası düzeltildi; artık sola taşmadan ekran ortasında kalır.",
+      "Zikir yardımcı tuşları 2 kolon, seyir tuşları 2 kolon ve mobil güvenli ölçülerle yeniden düzenlendi."
+    ]
+  },
+  {
     "v": "r785",
     "t": "12 Eylül 2026",
     "b": [
