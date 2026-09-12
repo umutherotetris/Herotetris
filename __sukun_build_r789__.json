@@ -1,0 +1,11 @@
+{
+  "build": "r789",
+  "version": "r789",
+  "date": "2026-09-12",
+  "notes": [
+    "Berhetiyye buton skininde MutationObserver tabanlı repaint kaldırıldı.",
+    "28 İsim Seyri kontrolleri tek DOM node + CSS ::before mücevher katmanı kullanır.",
+    "r778 legacy painter aynı kontrollerin arka planını artık değiştirmez; flashing race kapatıldı.",
+    "r788 doğal taş assetleri yeniden kullanılır; yeni görsel dosyası gerekmez."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "build": "r789",
+  "base": "r788",
+  "focus": "Berhetiyye no-flash single-owner button skin",
+  "assets": "reuses r788 jewel assets",
+  "changes": [
+    "remove r788 skin MutationObserver",
+    "CSS pseudo-element skin ownership",
+    "exclude jewel controls from r778 inline painter"
+  ]
+}

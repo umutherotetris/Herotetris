@@ -1,5 +1,15 @@
 [
   {
+    "v": "r789",
+    "t": "12 Eylül 2026",
+    "b": [
+      "Berhetiyye 28 İsim Seyri düğmelerindeki cam ↔ mücevher flashing yarışı kaldırıldı; skin artık gerçek butonun ::before dekor katmanında tek sahipli çalışır.",
+      "r788 skin MutationObserver kaldırıldı. Dinamik seyir düğmeleri ek JS repaint olmadan #berhetSeyir CSS kapsamıyla otomatik giydirilir.",
+      "r778 legacy skin painter Önceki/Sonraki/Baştan/Bitir/Duraklat ve ilgili Berhetiyye kontrollerinin background/border alanına artık yazmaz.",
+      "Zikir çemberi, ses motoru, pause/stop/resume akışı ve r786 mobil geometri korunur."
+    ]
+  },
+  {
     "v": "r788",
     "t": "12 Eylül 2026",
     "b": [

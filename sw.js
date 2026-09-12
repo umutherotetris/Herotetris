@@ -1,8 +1,8 @@
-/* SÜKÛN r788 — Berhetiyye button skin authority */
+/* SÜKÛN r789 — Berhetiyye single-owner no-flash button skin */
 'use strict';
 
-const SURUM = 'r788';
-const CACHE = 'sukun-r788-20260912a';
+const SURUM = 'r789';
+const CACHE = 'sukun-r789-20260912a';
 
 const CORE = [
   './nero.html',
@@ -76,9 +76,9 @@ const OPTIONAL = [
   './icon-512.png',
   './icon-512-maskable.png'
 ];
-const BUILD_MARKER='./__sukun_build_r788__.json';
+const BUILD_MARKER='./__sukun_build_r789__.json';
 
-const NOTLAR = ["r788 · Berhetiyye sabit kontrol skin otoritesi: eski cam kalan gezinme ve seyir düğmeleri mücevher asset ailesine bağlandı.", "Dinamik oluşan Önceki/Sonraki/Atlas/Seyir düğmelerine MutationObserver ile skin yeniden uygulanır.", "Yeni r788 asset URL'leri eski SW/browser cache'ini bypass eder; r786 geometri ve zikir çemberi korunur."];
+const NOTLAR = ["r789 · Berhetiyye butonlarında tek görsel sahiplik: gerçek DOM düğmesi korunur, mücevher skin yalnız ::before dekor katmanında yaşar.", "r788 skin MutationObserver kaldırıldı; 28 İsim Seyri düğmeleri #berhetSeyir üzerinden doğrudan CSS ile giydirilir ve body class uzlaşmasından etkilenmez.", "r778 legacy painter bu kontrollerin background/border alanına artık yazmaz; cam ↔ mücevher flashing yarışı kesilir."];
 
 function buildOfHtml(text){
   const m=String(text||'').match(/<meta\s+name=["']sukun-build["']\s+content=["']([^"']+)["']/i);
