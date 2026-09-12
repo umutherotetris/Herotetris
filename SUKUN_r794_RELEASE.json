@@ -1,0 +1,19 @@
+{
+  "build": "r794",
+  "base": "r793",
+  "focus": "Jewel Hard Bind Authority",
+  "rootCause": [
+    "r790/r792 jewel visuals still depended on external asset URLs and pseudo-element stacking",
+    "older r778 selectors explicitly hid panel/context pseudo-elements with display:none!important, so later background assignment alone could not restore them",
+    "deployment missing/stale asset directories could leave buttons as legacy glass while the old mini-player raster remained visible"
+  ],
+  "changes": [
+    "critical jewel SVGs embedded directly in nero.html as data URIs",
+    "28-name journey panel/context/status/buttons use real-element backgrounds instead of hidden pseudo-elements",
+    "99-name journey, Zikir tool row, counter cards, accordions, Tefekkür CTA and main controls receive the same hard-bound fallback",
+    "external r794 asset source folder still shipped for maintainability"
+  ],
+  "ui_changed": true,
+  "audio_ownership_changed": false,
+  "dom_ownership_changed": false
+}

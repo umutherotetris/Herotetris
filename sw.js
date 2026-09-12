@@ -1,13 +1,13 @@
-/* SÜKÛN r793 — Update Recovery Authority
+/* SÜKÛN r794 — Update Recovery Authority
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r793';
-const CACHE = 'sukun-r793-20260913c';
-const CACHE_META = './__sukun_cache_meta_r793__.json';
-const BUILD_MARKER = './__sukun_build_r793__.json';
+const SURUM = 'r794';
+const CACHE = 'sukun-r794-20260913a';
+const CACHE_META = './__sukun_cache_meta_r794__.json';
+const BUILD_MARKER = './__sukun_build_r794__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
@@ -51,6 +51,18 @@ const PRECACHE = [
   './assets/jewel-ui-r792/toolbar-button.svg',
   './assets/jewel-ui-r792/tefekkur-cta.svg',
   './assets/jewel-ui-r792/ASSET_CARDS_r792.json',
+  './assets/jewel-ui-r794/card-wide.svg',
+  './assets/jewel-ui-r794/card-medium.svg',
+  './assets/jewel-ui-r794/field.svg',
+  './assets/jewel-ui-r794/chip.svg',
+  './assets/jewel-ui-r794/button-wide.svg',
+  './assets/jewel-ui-r794/button-small.svg',
+  './assets/jewel-ui-r794/panel-tall.svg',
+  './assets/jewel-ui-r794/player.svg',
+  './assets/jewel-ui-r794/divider.svg',
+  './assets/jewel-ui-r794/toolbar-button.svg',
+  './assets/jewel-ui-r794/tefekkur-cta.svg',
+  './assets/jewel-ui-r794/ASSET_CARDS_r794.json',
   './surumler.json',
   './icon-192.png',
   './icon-512.png',
@@ -58,6 +70,7 @@ const PRECACHE = [
 ];
 
 const NOTLAR = [
+  'r794 · Jewel Hard Bind: kritik mücevher görselleri nero.html içine data URI olarak gömüldü; dosya yolu/cache/SW yüzünden düz cama düşemez.',
   'r793 · Güncelleme Kurtarma Otoritesi: yeni worker artık install/waiting çıkmazında eski sürümde takılı kalmaz.',
   'Navigasyon network-first + build-aware oldu; ağda daha yeni doğrulanmış HTML varsa eski shell yerine yeni HTML açılır.',
   'Service worker skipWaiting ile aktive olur; aktif ses varken sayfa zorla reload edilmez.',

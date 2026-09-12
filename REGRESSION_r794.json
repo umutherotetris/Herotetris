@@ -1,0 +1,11 @@
+{
+  "build": "r794",
+  "checks": {
+    "html_build_meta": "r794",
+    "inline_jewel_data_uri": true,
+    "berhet_direct_background": true,
+    "external_asset_dependency_required": false,
+    "audio_ownership_changed": false,
+    "dom_ownership_changed": false
+  }
+}
