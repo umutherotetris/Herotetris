@@ -1,13 +1,13 @@
-/* SÜKÛN r797 — Update Recovery + Jewel Component Authority
+/* SÜKÛN r798 — Update Recovery + Jewel Component Authority
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r797';
-const CACHE = 'sukun-r797-20260913a';
-const CACHE_META = './__sukun_cache_meta_r797__.json';
-const BUILD_MARKER = './__sukun_build_r797__.json';
+const SURUM = 'r798';
+const CACHE = 'sukun-r798-20260913a';
+const CACHE_META = './__sukun_cache_meta_r798__.json';
+const BUILD_MARKER = './__sukun_build_r798__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
@@ -26,26 +26,26 @@ const PRECACHE = [
   './css/jewel-layout-r797.css',
   './css/jewel-containment-r797.css',
   './js/jewel-bindings-r797.js',
-  './assets/jewel-r797/ASSET_MANIFEST_r797.json',
-  './assets/jewel-r797/btn-primary-wide.png',
-  './assets/jewel-r797/btn-secondary-sapphire.png',
-  './assets/jewel-r797/btn-secondary-amethyst.png',
-  './assets/jewel-r797/btn-secondary-emerald.png',
-  './assets/jewel-r797/btn-compact-sapphire.png',
-  './assets/jewel-r797/btn-compact-gold.png',
-  './assets/jewel-r797/btn-compact-emerald.png',
-  './assets/jewel-r797/btn-round-minus.png',
-  './assets/jewel-r797/btn-round-plus.png',
-  './assets/jewel-r797/btn-round-minus-exact.png',
-  './assets/jewel-r797/btn-round-plus-exact.png',
-  './assets/jewel-r797/card-wide.png',
-  './assets/jewel-r797/card-wide-ornate.png',
-  './assets/jewel-r797/card-medium.png',
-  './assets/jewel-r797/panel-tall.png',
-  './assets/jewel-r797/panel-short.png',
-  './assets/jewel-r797/panelbar.png',
-  './assets/jewel-r797/panel-context.png',
-  './assets/jewel-r797/ring.png',
+  './assets/jewel-r798/ASSET_MANIFEST_r798.json',
+  './assets/jewel-r798/btn-primary-wide.png',
+  './assets/jewel-r798/btn-secondary-sapphire.png',
+  './assets/jewel-r798/btn-secondary-amethyst.png',
+  './assets/jewel-r798/btn-secondary-emerald.png',
+  './assets/jewel-r798/btn-compact-sapphire.png',
+  './assets/jewel-r798/btn-compact-gold.png',
+  './assets/jewel-r798/btn-compact-emerald.png',
+  './assets/jewel-r798/btn-round-minus.png',
+  './assets/jewel-r798/btn-round-plus.png',
+  './assets/jewel-r798/btn-round-minus-exact.png',
+  './assets/jewel-r798/btn-round-plus-exact.png',
+  './assets/jewel-r798/card-wide.png',
+  './assets/jewel-r798/card-wide-ornate.png',
+  './assets/jewel-r798/card-medium.png',
+  './assets/jewel-r798/panel-tall.png',
+  './assets/jewel-r798/panel-short.png',
+  './assets/jewel-r798/panelbar.png',
+  './assets/jewel-r798/panel-context.png',
+  './assets/jewel-r798/ring.png',
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
   './assets/tefekkur-sanctuary.webp',
@@ -95,9 +95,9 @@ const PRECACHE = [
 ];
 
 const NOTLAR = [
-  'r797 · Containment Authority: Jewel kartları normal akışa alındı; atlas, sayaç, 28/99 seyir, ayarlar ve accordion taşmaları mobilde sınırlandı.',
-  'Dinamik yeniden mount sonrasında ID tabanlı fallback kuralları Jewel görünümünün düz panele dönmesini engeller.',
-  'Service worker r797 asset ailesini best-effort pre-cache eder; install bir görsel 404 yüzünden kilitlenmez.',
+  'r798 · Berhetiyye ownership fix: r778 inline !important painter is gated off Berhetiyye content surfaces; Jewel is the sole visual owner there.',
+  'Atlas, 28/99 seyir, bağlam panelleri ve Zikir Ayarları normal akışta; legacy inline visual residue r798 binder tarafından temizlenir.',
+  'Service worker r798 Jewel asset ailesini best-effort pre-cache eder; install bir görsel 404 yüzünden kilitlenmez.',
   'Ses motoru, Global Queue, sayaç mantığı, pause/resume/stop ve 28/99 state makineleri değiştirilmedi.'
 ];
 

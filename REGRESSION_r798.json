@@ -1,0 +1,21 @@
+{
+  "version": "r798",
+  "base": "r797",
+  "date": "2026-09-13",
+  "checks": {
+    "single_body_close": true,
+    "single_html_close": true,
+    "html_close_at_eof": true,
+    "root_authority": true,
+    "r778_ownership_gate": true,
+    "atlas_owner_css": true,
+    "legacy_inline_scrub": true,
+    "jewel_asset_refs_missing": []
+  },
+  "script_check": {
+    "inline_js_checked": 211,
+    "inline_js_failures": 0,
+    "sw_node_check": "pass"
+  },
+  "note": "Browser-level visual screenshot was not used for release validation in this environment; release is based on DOM/CSS ownership, syntax, asset existence and package integrity checks."
+}
