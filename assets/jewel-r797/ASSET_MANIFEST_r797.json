@@ -1,0 +1,26 @@
+{
+  "version": "r797",
+  "purpose": "single Jewel component authority; user-approved target structure",
+  "assets": [
+    "btn-compact-emerald.png",
+    "btn-compact-gold.png",
+    "btn-compact-sapphire.png",
+    "btn-primary-wide.png",
+    "btn-round-minus-exact.png",
+    "btn-round-minus.png",
+    "btn-round-plus-exact.png",
+    "btn-round-plus.png",
+    "btn-secondary-amethyst.png",
+    "btn-secondary-emerald.png",
+    "btn-secondary-sapphire.png",
+    "card-medium.png",
+    "card-wide-ornate.png",
+    "card-wide.png",
+    "name-frame.png",
+    "panel-context.png",
+    "panel-short.png",
+    "panel-tall.png",
+    "panelbar.png",
+    "ring.png"
+  ]
+}
