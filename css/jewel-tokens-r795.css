@@ -1,0 +1,36 @@
+/* SÜKÛN r795 — Jewel design tokens.  Visuals only; no behaviour ownership. */
+html body.sukun-jewel-ui{
+  --jewel-gold:#f4d58a;
+  --jewel-gold-hi:#fff0bd;
+  --jewel-blue:#53cfff;
+  --jewel-violet:#c553ff;
+  --jewel-cyan:#61f0dc;
+  --jewel-ink:#04122d;
+  --jewel-panel-bg:rgba(3,15,38,.76);
+  --jewel-text:#fff2cd;
+  --jewel-muted:#b8c9d8;
+  --jewel-gap-xs:6px;
+  --jewel-gap-sm:9px;
+  --jewel-gap-md:13px;
+  --jewel-touch:46px;
+  --jewel-glow-soft:0 8px 20px rgba(0,0,0,.25),0 0 18px rgba(68,132,255,.10);
+  --jewel-glow-strong:0 12px 26px rgba(0,0,0,.34),0 0 22px rgba(126,72,255,.18);
+  --jewel-btn-primary:url('../assets/jewel-r795/btn-primary-wide.png');
+  --jewel-btn-secondary:url('../assets/jewel-r795/btn-secondary-sapphire.png');
+  --jewel-btn-amethyst:url('../assets/jewel-r795/btn-secondary-amethyst.png');
+  --jewel-btn-emerald:url('../assets/jewel-r795/btn-secondary-emerald.png');
+  --jewel-btn-compact:url('../assets/jewel-r795/btn-compact-sapphire.png');
+  --jewel-btn-compact-gold:url('../assets/jewel-r795/btn-compact-gold.png');
+  --jewel-btn-compact-emerald:url('../assets/jewel-r795/btn-compact-emerald.png');
+  --jewel-btn-minus:url('../assets/jewel-r795/btn-round-minus.png');
+  --jewel-btn-plus:url('../assets/jewel-r795/btn-round-plus.png');
+  --jewel-card:url('../assets/jewel-r795/card-wide.png');
+  --jewel-card-ornate:url('../assets/jewel-r795/card-wide-ornate.png');
+  --jewel-card-medium:url('../assets/jewel-r795/card-medium.png');
+  --jewel-stat:url('../assets/jewel-r795/card-wide.png');
+  --jewel-accordion:url('../assets/jewel-r795/panel-short.png');
+  --jewel-panel:url('../assets/jewel-r795/panel-tall.png');
+  --jewel-panel-short:url('../assets/jewel-r795/panel-short.png');
+  --jewel-panelbar:url('../assets/jewel-r795/panelbar.png');
+  --jewel-context:url('../assets/jewel-r795/card-medium.png');
+}

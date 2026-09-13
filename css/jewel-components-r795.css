@@ -1,0 +1,59 @@
+/* SÜKÛN r795 — one component family.  Later than legacy styles by design. */
+html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-select,.jewel-accordion>summary,.jewel-context){
+  box-sizing:border-box!important;
+}
+html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context){
+  border:0!important;
+  border-radius:0!important;
+  background-color:rgba(3,15,38,.86)!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+  box-shadow:none!important;
+}
+html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context)::before,
+html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context)::after{
+  content:none!important;display:none!important;
+}
+html body.sukun-jewel-ui .jewel-btn{
+  position:relative!important;z-index:1!important;isolation:isolate!important;
+  min-height:var(--jewel-touch)!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+  padding:0 17px!important;margin:0!important;
+  color:var(--jewel-text)!important;text-shadow:0 2px 4px rgba(0,0,0,.92)!important;
+  font-weight:700!important;line-height:1.12!important;letter-spacing:.01em!important;
+  cursor:pointer!important;touch-action:manipulation!important;pointer-events:auto!important;
+  overflow:visible!important;filter:drop-shadow(0 6px 8px rgba(0,0,0,.24))!important;
+}
+html body.sukun-jewel-ui .jewel-btn:active{transform:scale(.978)!important;filter:brightness(1.10) drop-shadow(0 4px 6px rgba(0,0,0,.26))!important}
+html body.sukun-jewel-ui .jewel-btn:focus-visible{outline:2px solid rgba(99,230,255,.78)!important;outline-offset:1px!important}
+html body.sukun-jewel-ui .jewel-btn--primary{background-image:var(--jewel-btn-primary)!important;min-height:62px!important;font:700 17px/1.08 Georgia,'Times New Roman',serif!important}
+html body.sukun-jewel-ui .jewel-btn--secondary{background-image:var(--jewel-btn-secondary)!important;min-height:52px!important;font-size:12px!important}
+html body.sukun-jewel-ui .jewel-btn--amethyst{background-image:var(--jewel-btn-amethyst)!important}
+html body.sukun-jewel-ui .jewel-btn--emerald{background-image:var(--jewel-btn-emerald)!important}
+html body.sukun-jewel-ui .jewel-btn--compact{background-image:var(--jewel-btn-compact)!important;min-height:56px!important;padding:0 13px!important;font-size:11.5px!important}
+html body.sukun-jewel-ui .jewel-btn--compact-gold{background-image:var(--jewel-btn-compact-gold)!important}
+html body.sukun-jewel-ui .jewel-btn--compact-emerald{background-image:var(--jewel-btn-compact-emerald)!important}
+html body.sukun-jewel-ui .jewel-btn--round{width:68px!important;min-width:68px!important;height:68px!important;min-height:68px!important;padding:0!important;background-size:100% 100%!important;font:800 18px/1 system-ui,sans-serif!important}
+html body.sukun-jewel-ui .jewel-btn--minus{background-image:var(--jewel-btn-minus)!important}
+html body.sukun-jewel-ui .jewel-btn--plus{background-image:var(--jewel-btn-plus)!important}
+html body.sukun-jewel-ui .jewel-btn[disabled]{opacity:.48!important;filter:grayscale(.28)!important;pointer-events:none!important}
+
+html body.sukun-jewel-ui .jewel-card{background-image:var(--jewel-card)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 8px 12px rgba(0,0,0,.18))!important}
+html body.sukun-jewel-ui .jewel-panel{background-image:var(--jewel-panel)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24))!important}
+html body.sukun-jewel-ui .jewel-context{background-image:var(--jewel-context)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 9px 14px rgba(0,0,0,.22))!important}
+html body.sukun-jewel-ui .jewel-stat{background-image:var(--jewel-stat)!important;min-height:88px!important;color:var(--jewel-text)!important;filter:drop-shadow(0 7px 10px rgba(0,0,0,.22))!important}
+html body.sukun-jewel-ui .jewel-pill{background-image:var(--jewel-panelbar)!important;min-height:44px!important;color:#eef6fb!important;padding:9px 17px!important}
+html body.sukun-jewel-ui .jewel-accordion{border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+html body.sukun-jewel-ui .jewel-accordion>summary{background-image:var(--jewel-accordion)!important;min-height:70px!important;padding:13px 24px!important;color:var(--jewel-text)!important;list-style:none!important;overflow:visible!important}
+html body.sukun-jewel-ui .jewel-accordion>summary::-webkit-details-marker{display:none!important}
+
+html body.sukun-jewel-ui .jewel-select{
+  min-width:0!important;min-height:46px!important;padding:0 34px 0 15px!important;
+  border:1px solid rgba(244,213,138,.42)!important;border-radius:15px!important;
+  color:#fff0c8!important;background:linear-gradient(180deg,rgba(8,35,72,.96),rgba(5,18,44,.98))!important;
+  box-shadow:inset 0 0 0 1px rgba(80,191,255,.11),0 0 14px rgba(75,123,255,.08)!important;
+  font:600 14px/1.1 system-ui,sans-serif!important;
+}
+html body.sukun-jewel-ui .jewel-progress{height:14px!important;padding:2px!important;border:1px solid rgba(244,211,127,.36)!important;border-radius:999px!important;background:#05132d!important;overflow:hidden!important;box-shadow:inset 0 0 0 1px rgba(85,181,255,.08)!important}
+html body.sukun-jewel-ui .jewel-progress>*{height:100%!important;border-radius:999px!important;background:linear-gradient(90deg,#ff4ee8,#8f54ff 43%,#32c8ff 76%,#ffd574)!important;box-shadow:0 0 14px rgba(160,75,255,.42)!important}
