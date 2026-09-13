@@ -1,5 +1,16 @@
 [
   {
+    "v": "r797",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Jewel taşma otoritesi yeniden kuruldu: geniş overflow:visible mirası kaldırıldı, ana Zikir yüzeyleri gerçek kutu sınırlarına bağlandı.",
+      "Berhetiyye Atlası mobilde tek sütuna iner; uzun kaynak/şerh metinleri içerik yüksekliğiyle büyür ve kart dışına taşmaz.",
+      "Sayaç, -1/+1, ana CTA, Önceki/Baştan/Sonraki ve Zikir Ayarları normal document-flow içinde kilitlendi; üst üste binme engellendi.",
+      "28/99 Seyir seçim, durum, progress, bağlam ve kontrol alanlarında max-width/overflow sözleşmesi uygulandı; eski çift pseudo-frame katmanları kapatıldı.",
+      "Accordion kartları ve alt oyuncu için mobil safe-area/scroll payı eklendi; ses/queue/sayaç/seyir state motorlarına dokunulmadı."
+    ]
+  },
+  {
     "v": "r796",
     "t": "13 Eylül 2026",
     "b": [

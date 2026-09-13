@@ -1,0 +1,20 @@
+{
+  "version": "r797",
+  "build": "2026-09-13-r797",
+  "base": "r796",
+  "focus": "Jewel containment, responsive flow, atlas card wrapping, duplicate pseudo-frame suppression",
+  "changed": [
+    "nero.html",
+    "sw.js",
+    "manifest.webmanifest",
+    "__sukun_latest__.json",
+    "__sukun_build_r797__.json",
+    "__sukun_cache_meta_r797__.json",
+    "css/jewel-tokens-r797.css",
+    "css/jewel-components-r797.css",
+    "css/jewel-layout-r797.css",
+    "css/jewel-containment-r797.css",
+    "js/jewel-bindings-r797.js",
+    "assets/jewel-r797/*"
+  ]
+}

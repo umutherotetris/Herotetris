@@ -1,0 +1,22 @@
+{
+  "version": "r797",
+  "base": "r796",
+  "checks": {
+    "inline_javascript": "211/211 syntax PASS",
+    "service_worker": "syntax PASS",
+    "manifest_json": "PASS",
+    "service_worker_precache_paths": "PASS",
+    "final_containment_cascade_after_jewel_binding": true,
+    "responsive_harness": {
+      "360px": {"document_overflow": false, "component_overflow": false},
+      "393px": {"document_overflow": false, "component_overflow": false},
+      "430px": {"document_overflow": false, "component_overflow": false}
+    }
+  },
+  "notes": [
+    "Atlas long-prose cards are one-column below 700px and auto-height.",
+    "Main counter/settings/navigation are forced into normal document flow.",
+    "Legacy pseudo-frame layers are suppressed on critical Jewel controls.",
+    "Playback, queue, counter and journey state machines were not rewritten."
+  ]
+}
