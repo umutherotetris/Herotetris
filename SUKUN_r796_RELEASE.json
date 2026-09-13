@@ -1,0 +1,16 @@
+{
+  "version": "r796",
+  "date": "2026-09-13",
+  "base": "r795",
+  "theme": "Jewel UI Single Authority",
+  "files": [
+    "nero.html",
+    "sw.js",
+    "manifest.webmanifest",
+    "css/jewel-tokens-r796.css",
+    "css/jewel-components-r796.css",
+    "css/jewel-layout-r796.css",
+    "js/jewel-bindings-r796.js",
+    "assets/jewel-r796/*"
+  ]
+}

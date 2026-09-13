@@ -1,13 +1,13 @@
-/* SÜKÛN r795 — Update Recovery + Jewel Component Authority
+/* SÜKÛN r796 — Update Recovery + Jewel Component Authority
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r795';
-const CACHE = 'sukun-r795-20260913a';
-const CACHE_META = './__sukun_cache_meta_r795__.json';
-const BUILD_MARKER = './__sukun_build_r795__.json';
+const SURUM = 'r796';
+const CACHE = 'sukun-r796-20260913b';
+const CACHE_META = './__sukun_cache_meta_r796__.json';
+const BUILD_MARKER = './__sukun_build_r796__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
@@ -21,27 +21,30 @@ const CORE = [
 ];
 
 const PRECACHE = [
-  './css/jewel-tokens-r795.css',
-  './css/jewel-components-r795.css',
-  './css/jewel-layout-r795.css',
-  './js/jewel-bindings-r795.js',
-  './assets/jewel-r795/ASSET_MANIFEST_r795.json',
-  './assets/jewel-r795/btn-primary-wide.png',
-  './assets/jewel-r795/btn-secondary-sapphire.png',
-  './assets/jewel-r795/btn-secondary-amethyst.png',
-  './assets/jewel-r795/btn-secondary-emerald.png',
-  './assets/jewel-r795/btn-compact-sapphire.png',
-  './assets/jewel-r795/btn-compact-gold.png',
-  './assets/jewel-r795/btn-compact-emerald.png',
-  './assets/jewel-r795/btn-round-minus.png',
-  './assets/jewel-r795/btn-round-plus.png',
-  './assets/jewel-r795/card-wide.png',
-  './assets/jewel-r795/card-wide-ornate.png',
-  './assets/jewel-r795/card-medium.png',
-  './assets/jewel-r795/panel-tall.png',
-  './assets/jewel-r795/panel-short.png',
-  './assets/jewel-r795/panelbar.png',
-  './assets/jewel-r795/panel-context.png',
+  './css/jewel-tokens-r796.css',
+  './css/jewel-components-r796.css',
+  './css/jewel-layout-r796.css',
+  './js/jewel-bindings-r796.js',
+  './assets/jewel-r796/ASSET_MANIFEST_r796.json',
+  './assets/jewel-r796/btn-primary-wide.png',
+  './assets/jewel-r796/btn-secondary-sapphire.png',
+  './assets/jewel-r796/btn-secondary-amethyst.png',
+  './assets/jewel-r796/btn-secondary-emerald.png',
+  './assets/jewel-r796/btn-compact-sapphire.png',
+  './assets/jewel-r796/btn-compact-gold.png',
+  './assets/jewel-r796/btn-compact-emerald.png',
+  './assets/jewel-r796/btn-round-minus.png',
+  './assets/jewel-r796/btn-round-plus.png',
+  './assets/jewel-r796/btn-round-minus-exact.png',
+  './assets/jewel-r796/btn-round-plus-exact.png',
+  './assets/jewel-r796/card-wide.png',
+  './assets/jewel-r796/card-wide-ornate.png',
+  './assets/jewel-r796/card-medium.png',
+  './assets/jewel-r796/panel-tall.png',
+  './assets/jewel-r796/panel-short.png',
+  './assets/jewel-r796/panelbar.png',
+  './assets/jewel-r796/panel-context.png',
+  './assets/jewel-r796/ring.png',
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
   './assets/tefekkur-sanctuary.webp',
@@ -91,11 +94,10 @@ const PRECACHE = [
 ];
 
 const NOTLAR = [
-  'r795 · Jewel Component Authority: eski r790/r792/r794 geçici skin otoriteleri kaldırıldı; Zikir, Tefekkür, 28/99 Seyir ve accordionlar ortak component sınıflarına bağlandı.',
-  'r793 · Güncelleme Kurtarma Otoritesi: yeni worker artık install/waiting çıkmazında eski sürümde takılı kalmaz.',
-  'Navigasyon network-first + build-aware oldu; ağda daha yeni doğrulanmış HTML varsa eski shell yerine yeni HTML açılır.',
-  'Service worker skipWaiting ile aktive olur; aktif ses varken sayfa zorla reload edilmez.',
-  'Jewel/Tefekkür/ses/sayaç/28-99 seyir motorlarında işlevsel değişiklik yapılmadı.'
+  'r796 · Jewel UI Single Authority: kullanıcı onaylı hedef yapı ana sayaç, Tefekkür, 28/99 Seyir ve accordionlara doğrudan bağlandı.',
+  'Dinamik yeniden mount sonrasında ID tabanlı fallback kuralları Jewel görünümünün düz panele dönmesini engeller.',
+  'Service worker r796 asset ailesini best-effort pre-cache eder; install bir görsel 404 yüzünden kilitlenmez.',
+  'Ses motoru, Global Queue, sayaç mantığı, pause/resume/stop ve 28/99 state makineleri değiştirilmedi.'
 ];
 
 function buildOfHtml(text){

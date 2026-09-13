@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r795">
+<meta name="sukun-build" content="r796">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r792">
+<link rel="manifest" href="./manifest.webmanifest?v=r796">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.52 — build 2026-09-13-r795</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.53 — build 2026-09-13-r796</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -6537,7 +6537,7 @@ body[data-focus="1"] .zCtl{
      bildiriminde gerçekten NEYİN değiştiği yazabilir. -->
 <script type="application/json" id="surumNotlari">[
   {
-    "v": "r795",
+    "v": "r796",
     "t": "13 Eylül 2026",
     "b": [
       "Jewel artık skin değil ortak UI component sistemi: primary/secondary/compact/round button, card, panel, stat, select, pill, accordion ve player sınıfları tek otoritede toplandı.",
@@ -26530,7 +26530,7 @@ kat.addEventListener('click',e=>{ if(e.target===kat)kapat(); });
   if(!('serviceWorker' in navigator))return;
   if(!/^https?:$/.test(location.protocol))return;
 
-  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r795';
+  const SW_CLIENT_BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r796';
   const state={version:SW_CLIENT_BUILD,registration:null,waiting:null,installing:null,active:null,
     phase:'idle',workerVersion:'',cache:'',complete:null,lastError:'',lastChange:Date.now(),reloadArmed:false};
   const set=(phase,extra={})=>{Object.assign(state,extra,{phase,lastChange:Date.now()});try{window.dispatchEvent(new CustomEvent('sukun:swstate',{detail:{...state,registration:undefined,waiting:undefined,installing:undefined,active:undefined}}))}catch(e){}};
@@ -68215,10 +68215,10 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r795',date='2026-09-13';
+const build=meta?.content||'r796',date='2026-09-13';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.48 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r795',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r796',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -73763,11 +73763,11 @@ window.SukunR792TefTap=Object.freeze({version:'r792',enter:()=>enter('api'),acti
 </body>
 </html>
 
-<script id="sukun-r795-update-recovery-authority">
+<script id="sukun-r796-update-recovery-authority">
 (()=>{
 'use strict';
-if(window.SukunUpdateRecoveryR795)return;
-const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r795';
+if(window.SukunUpdateRecoveryR796)return;
+const BUILD=document.querySelector('meta[name="sukun-build"]')?.content||'r796';
 const LATEST='./__sukun_latest__.json';
 let reg=null,busy=false,lastCheck=0,reloadOnce=false,lastLatest='',lastError='';
 function vnum(v){const m=String(v||'').match(/r(\d+)/i);return m?Number(m[1]):-1}
@@ -73785,8 +73785,8 @@ async function latest(){
     const j=await r.json();lastLatest=String(j?.v||'');return j;
   }catch(e){lastError=String(e?.message||e);return null}
 }
-function armReload(){try{sessionStorage.setItem('sukun.r795.reload','1')}catch(e){}}
-function consumeReload(){try{const x=sessionStorage.getItem('sukun.r795.reload')==='1';if(x)sessionStorage.removeItem('sukun.r795.reload');return x}catch(e){return false}}
+function armReload(){try{sessionStorage.setItem('sukun.r796.reload','1')}catch(e){}}
+function consumeReload(){try{const x=sessionStorage.getItem('sukun.r796.reload')==='1';if(x)sessionStorage.removeItem('sukun.r796.reload');return x}catch(e){return false}}
 async function activateWaiting(r,reason='auto'){
   const w=r?.waiting;if(!w)return false;
   if(audioBusy()&&reason!=='manual')return false;
@@ -73832,7 +73832,7 @@ async function force(){
   }
   return x;
 }
-function snapshot(){return{version:'r795',build:BUILD,latest:lastLatest,lastError,waiting:!!reg?.waiting,installing:!!reg?.installing,active:reg?.active?.scriptURL||'',audioBusy:audioBusy(),lastCheck}}
+function snapshot(){return{version:'r796',build:BUILD,latest:lastLatest,lastError,waiting:!!reg?.waiting,installing:!!reg?.installing,active:reg?.active?.scriptURL||'',audioBusy:audioBusy(),lastCheck}}
 if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
     if(reloadOnce)return;
@@ -73847,252 +73847,251 @@ if('serviceWorker' in navigator){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)check('visible')},{passive:true});
   setInterval(()=>{if(!document.hidden)check('interval')},60000);
 }
-window.SukunUpdateRecoveryR795=Object.freeze({version:'r795',check:()=>check('manual',true),force,snapshot});
+window.SukunUpdateRecoveryR796=Object.freeze({version:'r796',check:()=>check('manual',true),force,snapshot});
 })();
 </script>
 
-<!-- r795 · Jewel UI Component Authority — visual only; behaviour owners unchanged -->
-<style id="sukun-r795-jewel-tokens">
-/* SÜKÛN r795 — Jewel design tokens.  Visuals only; no behaviour ownership. */
-html body.sukun-jewel-ui{
-  --jewel-gold:#f4d58a;
-  --jewel-gold-hi:#fff0bd;
-  --jewel-blue:#53cfff;
-  --jewel-violet:#c553ff;
-  --jewel-cyan:#61f0dc;
-  --jewel-ink:#04122d;
-  --jewel-panel-bg:rgba(3,15,38,.76);
-  --jewel-text:#fff2cd;
-  --jewel-muted:#b8c9d8;
-  --jewel-gap-xs:6px;
-  --jewel-gap-sm:9px;
-  --jewel-gap-md:13px;
-  --jewel-touch:46px;
-  --jewel-glow-soft:0 8px 20px rgba(0,0,0,.25),0 0 18px rgba(68,132,255,.10);
-  --jewel-glow-strong:0 12px 26px rgba(0,0,0,.34),0 0 22px rgba(126,72,255,.18);
-  --jewel-btn-primary:url('./assets/jewel-r795/btn-primary-wide.png');
-  --jewel-btn-secondary:url('./assets/jewel-r795/btn-secondary-sapphire.png');
-  --jewel-btn-amethyst:url('./assets/jewel-r795/btn-secondary-amethyst.png');
-  --jewel-btn-emerald:url('./assets/jewel-r795/btn-secondary-emerald.png');
-  --jewel-btn-compact:url('./assets/jewel-r795/btn-compact-sapphire.png');
-  --jewel-btn-compact-gold:url('./assets/jewel-r795/btn-compact-gold.png');
-  --jewel-btn-compact-emerald:url('./assets/jewel-r795/btn-compact-emerald.png');
-  --jewel-btn-minus:url('./assets/jewel-r795/btn-round-minus.png');
-  --jewel-btn-plus:url('./assets/jewel-r795/btn-round-plus.png');
-  --jewel-card:url('./assets/jewel-r795/card-wide.png');
-  --jewel-card-ornate:url('./assets/jewel-r795/card-wide-ornate.png');
-  --jewel-card-medium:url('./assets/jewel-r795/card-medium.png');
-  --jewel-stat:url('./assets/jewel-r795/card-wide.png');
-  --jewel-accordion:url('./assets/jewel-r795/panel-short.png');
-  --jewel-panel:url('./assets/jewel-r795/panel-tall.png');
-  --jewel-panel-short:url('./assets/jewel-r795/panel-short.png');
-  --jewel-panelbar:url('./assets/jewel-r795/panelbar.png');
-  --jewel-context:url('./assets/jewel-r795/card-medium.png');
+<!-- r796 · Jewel UI Single Authority — approved target structure -->
+<style id="sukun-r796-jewel-tokens">
+/* SÜKÛN r796 — Jewel UI Single Authority tokens. */
+html body.sukun-jewel-r796{
+  --j796-gold:#f7d875;--j796-gold2:#fff0bd;--j796-cyan:#5cecff;--j796-blue:#0a55d8;
+  --j796-violet:#b44cff;--j796-ink:#03142f;--j796-text:#fff0c7;--j796-muted:#bfd0df;
+  --j796-primary:url('./assets/jewel-r796/btn-primary-wide.png');
+  --j796-secondary:url('./assets/jewel-r796/btn-secondary-sapphire.png');
+  --j796-amethyst:url('./assets/jewel-r796/btn-secondary-amethyst.png');
+  --j796-emerald:url('./assets/jewel-r796/btn-secondary-emerald.png');
+  --j796-compact:url('./assets/jewel-r796/btn-compact-sapphire.png');
+  --j796-compact-gold:url('./assets/jewel-r796/btn-compact-gold.png');
+  --j796-compact-emerald:url('./assets/jewel-r796/btn-compact-emerald.png');
+  --j796-minus:url('./assets/jewel-r796/btn-round-minus-exact.png');
+  --j796-plus:url('./assets/jewel-r796/btn-round-plus-exact.png');
+  --j796-card:url('./assets/jewel-r796/card-wide.png');
+  --j796-card-ornate:url('./assets/jewel-r796/card-wide-ornate.png');
+  --j796-medium:url('./assets/jewel-r796/card-medium.png');
+  --j796-panel:url('./assets/jewel-r796/panel-tall.png');
+  --j796-panel-context:url('./assets/jewel-r796/panel-context.png');
+  --j796-panel-short:url('./assets/jewel-r796/panel-short.png');
+  --j796-bar:url('./assets/jewel-r796/panelbar.png');
+  --j796-ring:url('./assets/jewel-r796/ring.png');
+  --j796-shadow:drop-shadow(0 10px 14px rgba(0,0,0,.28));
 }
-
 </style>
-<style id="sukun-r795-jewel-components">
-/* SÜKÛN r795 — one component family.  Later than legacy styles by design. */
-html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-select,.jewel-accordion>summary,.jewel-context){
-  box-sizing:border-box!important;
+<style id="sukun-r796-jewel-components">
+/* SÜKÛN r796 — ONE OWNER. IDs below are deliberate fallbacks: dynamic recreation cannot lose Jewel. */
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn,#autoBtn,#r616ZikirNavRow button,#zBar .spkBtn,#r442TefekkurBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button){
+  box-sizing:border-box!important;border:0!important;border-radius:0!important;background-color:transparent!important;
+  background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;
+  box-shadow:none!important;color:var(--j796-text)!important;text-shadow:0 2px 4px rgba(0,0,0,.92)!important;
+  position:relative!important;isolation:isolate!important;overflow:visible!important;pointer-events:auto!important;touch-action:manipulation!important;
 }
-html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context){
-  border:0!important;
-  border-radius:0!important;
-  background-color:rgba(3,15,38,.86)!important;
-  background-position:center!important;
-  background-repeat:no-repeat!important;
-  background-size:100% 100%!important;
-  box-shadow:none!important;
-}
-html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context)::before,
-html body.sukun-jewel-ui :is(.jewel-btn,.jewel-card,.jewel-panel,.jewel-stat,.jewel-pill,.jewel-accordion>summary,.jewel-context)::after{
-  content:none!important;display:none!important;
-}
-html body.sukun-jewel-ui .jewel-btn{
-  position:relative!important;z-index:1!important;isolation:isolate!important;
-  min-height:var(--jewel-touch)!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
-  padding:0 17px!important;margin:0!important;
-  color:var(--jewel-text)!important;text-shadow:0 2px 4px rgba(0,0,0,.92)!important;
-  font-weight:700!important;line-height:1.12!important;letter-spacing:.01em!important;
-  cursor:pointer!important;touch-action:manipulation!important;pointer-events:auto!important;
-  overflow:visible!important;filter:drop-shadow(0 6px 8px rgba(0,0,0,.24))!important;
-}
-html body.sukun-jewel-ui .jewel-btn:active{transform:scale(.978)!important;filter:brightness(1.10) drop-shadow(0 4px 6px rgba(0,0,0,.26))!important}
-html body.sukun-jewel-ui .jewel-btn:focus-visible{outline:2px solid rgba(99,230,255,.78)!important;outline-offset:1px!important}
-html body.sukun-jewel-ui .jewel-btn--primary{background-image:var(--jewel-btn-primary)!important;min-height:62px!important;font:700 17px/1.08 Georgia,'Times New Roman',serif!important}
-html body.sukun-jewel-ui .jewel-btn--secondary{background-image:var(--jewel-btn-secondary)!important;min-height:52px!important;font-size:12px!important}
-html body.sukun-jewel-ui .jewel-btn--amethyst{background-image:var(--jewel-btn-amethyst)!important}
-html body.sukun-jewel-ui .jewel-btn--emerald{background-image:var(--jewel-btn-emerald)!important}
-html body.sukun-jewel-ui .jewel-btn--compact{background-image:var(--jewel-btn-compact)!important;min-height:56px!important;padding:0 13px!important;font-size:11.5px!important}
-html body.sukun-jewel-ui .jewel-btn--compact-gold{background-image:var(--jewel-btn-compact-gold)!important}
-html body.sukun-jewel-ui .jewel-btn--compact-emerald{background-image:var(--jewel-btn-compact-emerald)!important}
-html body.sukun-jewel-ui .jewel-btn--round{width:68px!important;min-width:68px!important;height:68px!important;min-height:68px!important;padding:0!important;background-size:100% 100%!important;font:800 18px/1 system-ui,sans-serif!important}
-html body.sukun-jewel-ui .jewel-btn--minus{background-image:var(--jewel-btn-minus)!important}
-html body.sukun-jewel-ui .jewel-btn--plus{background-image:var(--jewel-btn-plus)!important}
-html body.sukun-jewel-ui .jewel-btn[disabled]{opacity:.48!important;filter:grayscale(.28)!important;pointer-events:none!important}
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn,#autoBtn,#r616ZikirNavRow button,#zBar .spkBtn,#r442TefekkurBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button):active{transform:scale(.975)!important;filter:brightness(1.09) var(--j796-shadow)!important}
 
-html body.sukun-jewel-ui .jewel-card{background-image:var(--jewel-card)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 8px 12px rgba(0,0,0,.18))!important}
-html body.sukun-jewel-ui .jewel-panel{background-image:var(--jewel-panel)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24))!important}
-html body.sukun-jewel-ui .jewel-context{background-image:var(--jewel-context)!important;color:var(--jewel-text)!important;filter:drop-shadow(0 9px 14px rgba(0,0,0,.22))!important}
-html body.sukun-jewel-ui .jewel-stat{background-image:var(--jewel-stat)!important;min-height:88px!important;color:var(--jewel-text)!important;filter:drop-shadow(0 7px 10px rgba(0,0,0,.22))!important}
-html body.sukun-jewel-ui .jewel-pill{background-image:var(--jewel-panelbar)!important;min-height:44px!important;color:#eef6fb!important;padding:9px 17px!important}
-html body.sukun-jewel-ui .jewel-accordion{border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
-html body.sukun-jewel-ui .jewel-accordion>summary{background-image:var(--jewel-accordion)!important;min-height:70px!important;padding:13px 24px!important;color:var(--jewel-text)!important;list-style:none!important;overflow:visible!important}
-html body.sukun-jewel-ui .jewel-accordion>summary::-webkit-details-marker{display:none!important}
+/* exact fixed -1/+1 approved assets */
+html body.sukun-jewel-r796 #undoBtn{background-image:var(--j796-minus)!important;color:transparent!important;text-shadow:none!important}
+html body.sukun-jewel-r796 #plusBtn{background-image:var(--j796-plus)!important;color:transparent!important;text-shadow:none!important}
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn)>*{visibility:hidden!important}
 
-html body.sukun-jewel-ui .jewel-select{
-  min-width:0!important;min-height:46px!important;padding:0 34px 0 15px!important;
-  border:1px solid rgba(244,213,138,.42)!important;border-radius:15px!important;
-  color:#fff0c8!important;background:linear-gradient(180deg,rgba(8,35,72,.96),rgba(5,18,44,.98))!important;
-  box-shadow:inset 0 0 0 1px rgba(80,191,255,.11),0 0 14px rgba(75,123,255,.08)!important;
-  font:600 14px/1.1 system-ui,sans-serif!important;
-}
-html body.sukun-jewel-ui .jewel-progress{height:14px!important;padding:2px!important;border:1px solid rgba(244,211,127,.36)!important;border-radius:999px!important;background:#05132d!important;overflow:hidden!important;box-shadow:inset 0 0 0 1px rgba(85,181,255,.08)!important}
-html body.sukun-jewel-ui .jewel-progress>*{height:100%!important;border-radius:999px!important;background:linear-gradient(90deg,#ff4ee8,#8f54ff 43%,#32c8ff 76%,#ffd574)!important;box-shadow:0 0 14px rgba(160,75,255,.42)!important}
+html body.sukun-jewel-r796 #autoBtn,
+html body.sukun-jewel-r796 #r442TefekkurBtn,
+html body.sukun-jewel-r796 :is(#bsStart,#es99Start){background-image:var(--j796-primary)!important;font:700 20px/1.05 Georgia,'Times New Roman',serif!important}
+html body.sukun-jewel-r796 #r616ZikirNavRow button,
+html body.sukun-jewel-r796 :is(#bsPrev,#bsNext,#bsAgain,#bsReset,#es99Prev,#es99Next,#es99Again,#es99Reset){background-image:var(--j796-secondary)!important;font:700 14px/1.05 system-ui,sans-serif!important}
+html body.sukun-jewel-r796 :is(#bsStop,#es99Stop){background-image:var(--j796-amethyst)!important;font:700 14px/1.05 system-ui,sans-serif!important}
+html body.sukun-jewel-r796 #zBar .spkBtn{background-image:var(--j796-compact)!important;font:700 12px/1.05 system-ui,sans-serif!important;letter-spacing:.05em!important}
+html body.sukun-jewel-r796 #zBar #niyetRecBtn{background-image:var(--j796-compact-gold)!important}
+html body.sukun-jewel-r796 #zBar #zBarHelp{background-image:var(--j796-compact-emerald)!important}
+html body.sukun-jewel-r796 #zBar #favBtn.on{background-image:var(--j796-amethyst)!important;filter:brightness(1.12) var(--j796-shadow)!important}
 
+/* dynamic text always above frame */
+html body.sukun-jewel-r796 :is(#autoBtn,#r442TefekkurBtn,#r616ZikirNavRow button,#zBar .spkBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button)>*{position:relative!important;z-index:2!important}
 </style>
-<style id="sukun-r795-jewel-layout">
-/* SÜKÛN r795 — component layout contracts. */
-html body.sukun-jewel-ui :is(.zCtl,#zStage,#zMegaHost,.zMegaGroup,#berhetSeyir,#esmaSeyir99,.r168Buttons,.r168MiniRow,#r679ZikirAyarBox,.zCounterActions,#r616ZikirNavRow,#r700TefEntry,#r754SeyirContext){overflow:visible!important}
+<style id="sukun-r796-jewel-layout">
+/* SÜKÛN r796 — target structure copied from the approved reference, not a decorative overlay. */
+html body.sukun-jewel-r796 :is(.card.zCtl,.zCounterRow,.zCounterActions,#r616ZikirNavRow,#zBar,#r700TefEntry,#berhetSeyir,#esmaSeyir99,#zMegaHost,.zMegaGroup,.r168Buttons,.r168MiniRow,#r754SeyirContext){overflow:visible!important;box-sizing:border-box!important}
 
-/* main zikir counter */
-html body.sukun-jewel-ui .zCounterSide.jewel-stat{padding:14px 13px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important}
-html body.sukun-jewel-ui .zCounterSide.jewel-stat small{color:#e3eaf1!important;letter-spacing:.12em!important}
-html body.sukun-jewel-ui .zCounterSide.jewel-stat b{font-family:Georgia,'Times New Roman',serif!important;color:#fff0bf!important;text-shadow:0 0 12px rgba(255,206,111,.16)!important}
-html body.sukun-jewel-ui .zCounterActions{grid-template-columns:68px minmax(0,1fr) 68px!important;gap:9px!important;align-items:center!important;margin-top:12px!important;overflow:visible!important}
-html body.sukun-jewel-ui #autoBtn.jewel-btn--primary{height:68px!important;min-height:68px!important;padding-inline:25px!important}
-html body.sukun-jewel-ui #autoBtn.jewel-btn--primary b{font:700 17px/1.05 Georgia,'Times New Roman',serif!important;color:#fff0c7!important}
-html body.sukun-jewel-ui #autoBtn.jewel-btn--primary small{display:none!important}
-html body.sukun-jewel-ui #undoBtn.jewel-btn--round :is(span){display:none!important}
-html body.sukun-jewel-ui #plusBtn.jewel-btn--round :is(span){display:none!important}
-html body.sukun-jewel-ui #resetBtn.jewel-btn--secondary{width:min(76%,330px)!important;margin:9px auto 2px!important;min-height:48px!important}
-html body.sukun-jewel-ui #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
-html body.sukun-jewel-ui #r616ZikirNavRow .jewel-btn{min-width:0!important;padding-inline:8px!important}
+/* ===== MAIN ZIKIR: orb -> Hedef/Kalan -> -1 CTA +1 -> prev/reset/next ===== */
+html body.sukun-jewel-r796 .zCounterRow{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto!important;gap:12px 14px!important;align-items:center!important;justify-items:stretch!important;margin:0!important;padding:0!important}
+html body.sukun-jewel-r796 .zCounterRow>.zCountVisual{grid-column:1/-1!important;grid-row:1!important;justify-self:center!important;width:min(92vw,430px)!important;max-width:430px!important;height:auto!important;aspect-ratio:1/1!important;margin:0 auto 4px!important;border:0!important;border-radius:0!important;background:var(--j796-ring) center/contain no-repeat!important;box-shadow:none!important;filter:drop-shadow(0 12px 22px rgba(0,0,0,.34))!important;overflow:visible!important}
+html body.sukun-jewel-r796 .zCountVisual :is(.rings,.zGlow,.zMuhr,.progArc){opacity:0!important;visibility:hidden!important}
+html body.sukun-jewel-r796 .zCountVisual .cntNums{z-index:4!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;inset:17%!important}
+html body.sukun-jewel-r796 .zCountVisual .cntNums small{font:500 17px/1 Georgia,'Times New Roman',serif!important;letter-spacing:.16em!important;color:#fff1c7!important}
+html body.sukun-jewel-r796 .zCountVisual .cntBig{font:700 clamp(68px,20vw,104px)/.95 Georgia,'Times New Roman',serif!important;color:#fff0b7!important;text-shadow:0 0 18px rgba(255,221,130,.20)!important}
+html body.sukun-jewel-r796 .zCountVisual .cntPct{font:600 19px/1 system-ui,sans-serif!important;color:#e6e9ff!important}
+html body.sukun-jewel-r796 .zCounterRow>.zCounterSide{grid-row:2!important;min-width:0!important;min-height:106px!important;margin:0!important;padding:17px 18px!important;border:0!important;border-radius:0!important;background:var(--j796-card-ornate) center/100% 100% no-repeat!important;filter:var(--j796-shadow)!important;display:grid!important;grid-template-columns:auto auto!important;grid-template-areas:'label value' 'em value'!important;align-content:center!important;align-items:center!important;justify-content:center!important;column-gap:13px!important}
+html body.sukun-jewel-r796 .zCounterRow>.zCounterSide:first-child{grid-column:1!important}
+html body.sukun-jewel-r796 .zCounterRow>.zCounterSide:last-child{grid-column:2!important}
+html body.sukun-jewel-r796 .zCounterSide small{grid-area:label!important;font:700 12px/1 system-ui,sans-serif!important;letter-spacing:.10em!important;color:#dbe5ea!important;opacity:.9!important}
+html body.sukun-jewel-r796 .zCounterSide b{grid-area:value!important;font:700 clamp(29px,8vw,40px)/1 Georgia,'Times New Roman',serif!important;color:#fff1bd!important}
+html body.sukun-jewel-r796 .zCounterSide em{grid-area:em!important;font:500 9px/1.1 system-ui,sans-serif!important;color:#a9bdc9!important;font-style:normal!important;opacity:.85!important}
 
-/* stage tool row: always 2 x 3 on phone, same component family */
-html body.sukun-jewel-ui #zBar.jewel-toolbar{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin:14px 0 3px!important;padding:0!important;border:0!important;overflow:visible!important}
-html body.sukun-jewel-ui #zBar.jewel-toolbar .spkBtn.jewel-btn--compact{position:relative!important;inset:auto!important;right:auto!important;top:auto!important;transform:none!important;translate:none!important;width:100%!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;overflow:visible!important;white-space:nowrap!important}
-html body.sukun-jewel-ui #zBar.jewel-toolbar .spkBtn.jewel-btn--compact span:last-child{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important;max-width:none!important}
-html body.sukun-jewel-ui #zBar.jewel-toolbar .spkBtn svg{width:18px!important;height:18px!important;flex:0 0 18px!important}
-html body.sukun-jewel-ui #zBar.jewel-toolbar #favBtn.on{filter:brightness(1.14) drop-shadow(0 0 11px rgba(197,83,255,.26))!important}
+html body.sukun-jewel-r796 .zCounterActions{display:grid!important;grid-template-columns:76px minmax(0,1fr) 76px!important;gap:10px!important;align-items:center!important;margin:13px 0 8px!important;padding:0!important}
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn){width:76px!important;height:76px!important;min-width:76px!important;min-height:76px!important;padding:0!important;margin:0!important;background-size:100% 100%!important}
+html body.sukun-jewel-r796 #autoBtn{width:100%!important;height:76px!important;min-height:76px!important;padding:0 28px!important;margin:0!important;justify-content:center!important;gap:10px!important}
+html body.sukun-jewel-r796 #autoBtn small{display:none!important}
+html body.sukun-jewel-r796 #autoBtn b{font:700 20px/1 Georgia,'Times New Roman',serif!important;color:#fff0c2!important}
+html body.sukun-jewel-r796 #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;margin:5px 0 8px!important;padding:0!important}
+html body.sukun-jewel-r796 #r616ZikirNavRow button{width:100%!important;min-width:0!important;min-height:58px!important;padding:0 11px!important;white-space:nowrap!important}
+html body.sukun-jewel-r796 #resetBtn{display:none!important}
+html body.sukun-jewel-r796 #cntSub{margin:7px auto 10px!important;color:#d4dfeb!important;font-size:12px!important}
 
-/* tefekkür entry */
-html body.sukun-jewel-ui #r700TefEntry{width:100%!important;margin:12px auto 13px!important;padding:0 3px!important;border:0!important;background:transparent!important;overflow:visible!important}
-html body.sukun-jewel-ui #r700TefEntry #r442TefekkurBtn.jewel-btn--primary{width:100%!important;min-height:68px!important;height:auto!important;padding:4px 24px!important;pointer-events:auto!important;touch-action:manipulation!important;overflow:visible!important}
-html body.sukun-jewel-ui #r700TefEntry #r442TefekkurBtn .r700TefLabel{color:#fff0c4!important;font:700 17px/1.08 Georgia,'Times New Roman',serif!important;white-space:nowrap!important}
-html body.sukun-jewel-ui #r700TefEntry #r442TefekkurBtn .r700TefIcon{background:transparent!important;border:0!important;box-shadow:none!important}
+/* ===== active-name action tools: exact 2 x 3 family ===== */
+html body.sukun-jewel-r796 #zBar{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin:13px 0 5px!important;padding:0!important;border:0!important;background:none!important}
+html body.sukun-jewel-r796 #zBar .spkBtn{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;max-width:none!important;min-width:0!important;height:72px!important;min-height:72px!important;margin:0!important;padding:0 13px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;white-space:nowrap!important}
+html body.sukun-jewel-r796 #zBar .spkBtn :is(svg,.ico){width:20px!important;height:20px!important;flex:0 0 20px!important}
+html body.sukun-jewel-r796 #zBar .spkBtn span{max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
 
-/* 28 / 99 shared journey */
-html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey{padding:17px 15px 20px!important;margin:12px auto!important;border:0!important;background-image:var(--jewel-panel)!important;background-color:transparent!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;box-shadow:none!important;overflow:visible!important}
-html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey>summary{min-height:62px!important;padding:11px 20px!important;border:0!important;border-radius:0!important;background-image:var(--jewel-panel-short)!important;background-color:transparent!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;color:#fff1c8!important;box-shadow:none!important;list-style:none!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:9px!important}
-html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey>summary::before,
-html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey>summary::after{content:none!important;display:none!important}
-html body.sukun-jewel-ui .jewel-journey .r168Head b{font:700 16px/1.1 Georgia,'Times New Roman',serif!important;letter-spacing:.07em!important;color:#fff0bf!important}
-html body.sukun-jewel-ui .jewel-journey .r168Tag{border:1px solid rgba(244,210,126,.27)!important;border-radius:999px!important;background:rgba(4,20,50,.72)!important;color:#cbd8e5!important;padding:7px 10px!important;font-size:10.5px!important;white-space:normal!important;line-height:1.2!important}
-html body.sukun-jewel-ui .jewel-journey .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:12px!important;margin:10px 0!important;border:0!important;border-radius:0!important;background-image:var(--jewel-card)!important;background-color:transparent!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;overflow:visible!important}
-html body.sukun-jewel-ui .jewel-journey .r168MiniRow label{min-width:0!important;display:grid!important;grid-template-columns:1fr!important;gap:7px!important;color:#fff0c8!important;font-size:13px!important}
-html body.sukun-jewel-ui .jewel-journey .r168MiniRow :is(select,input){width:100%!important;max-width:100%!important;min-width:0!important}
-html body.sukun-jewel-ui .jewel-journey .r168Status{margin:9px 0!important;font-size:11.5px!important;line-height:1.25!important}
-html body.sukun-jewel-ui .jewel-journey .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin-top:14px!important;overflow:visible!important}
-html body.sukun-jewel-ui .jewel-journey .r168Buttons .jewel-btn{width:100%!important;min-width:0!important}
-html body.sukun-jewel-ui .jewel-journey .r168Buttons :is(#bsStart,#es99Start,#bsReset,#es99Reset){grid-column:1/-1!important}
-html body.sukun-jewel-ui .jewel-journey .r168Buttons :is(#bsStop,#es99Stop){background-image:var(--jewel-btn-amethyst)!important}
+/* Tefekkür = same A-level CTA */
+html body.sukun-jewel-r796 #r700TefEntry{width:100%!important;margin:14px 0!important;padding:0!important;border:0!important;background:none!important}
+html body.sukun-jewel-r796 #r700TefEntry #r442TefekkurBtn{width:100%!important;min-height:76px!important;height:76px!important;padding:0 26px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+html body.sukun-jewel-r796 #r700TefEntry #r442TefekkurBtn .r700TefLabel{font:700 21px/1 Georgia,'Times New Roman',serif!important;color:#fff0c4!important;white-space:nowrap!important}
+html body.sukun-jewel-r796 #r700TefEntry #r442TefekkurBtn .r700TefIcon{border:0!important;background:none!important;box-shadow:none!important}
 
-/* context card */
-html body.sukun-jewel-ui :is(#r754SeyirContext,.r754Ctx).jewel-context{padding:22px 18px!important;margin:12px 0!important;overflow:visible!important}
-html body.sukun-jewel-ui :is(#r754SeyirContext,.r754Ctx).jewel-context .r754BerhetSigil{border:0!important;border-radius:0!important;background-image:var(--jewel-panelbar)!important;background-color:transparent!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;color:#fff0bd!important;padding:10px 18px!important}
-html body.sukun-jewel-ui :is(#r754SeyirContext,.r754Ctx).jewel-context :is(.r754Mini,[data-r754-source]){border:1px solid rgba(244,210,126,.17)!important;border-radius:999px!important;background:rgba(4,20,48,.72)!important;color:#dbe7f0!important}
+/* ===== 28 / 99 journey ===== */
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99){margin:16px 0!important;padding:18px 15px 22px!important;border:0!important;border-radius:0!important;background:rgba(2,13,34,.22)!important;box-shadow:none!important;overflow:visible!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important;width:100%!important;min-height:74px!important;margin:0 0 13px!important;padding:8px 28px!important;border:0!important;border-radius:0!important;background:var(--j796-primary) center/100% 100% no-repeat!important;box-shadow:none!important;list-style:none!important;overflow:visible!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary::-webkit-details-marker{display:none!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary::before,html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary::after{content:none!important;display:none!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary .r168Head{min-width:0!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary b{font:700 clamp(18px,4.8vw,25px)/1.05 Georgia,'Times New Roman',serif!important;letter-spacing:.045em!important;color:#fff0bc!important;white-space:normal!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary .r168Tag{max-width:190px!important;border:1px solid rgba(219,229,255,.24)!important;border-radius:999px!important;background:rgba(5,21,53,.65)!important;color:#dce7f3!important;padding:8px 12px!important;font:500 12px/1.2 system-ui,sans-serif!important;text-align:center!important}
 
-/* accordion cards */
-html body.sukun-jewel-ui #zMegaHost>.zMegaGroup.jewel-accordion{margin:12px auto!important}
-html body.sukun-jewel-ui #zMegaHost>.zMegaGroup.jewel-accordion>.zMegaBody{margin-top:7px!important;padding:8px 9px 10px!important;border-left:1px solid rgba(244,213,138,.12)!important;border-right:1px solid rgba(244,213,138,.12)!important;background:rgba(3,12,30,.20)!important}
-html body.sukun-jewel-ui .jewel-accordion>summary{display:flex!important;align-items:center!important;gap:12px!important}
-html body.sukun-jewel-ui .jewel-accordion>summary .zMegaTxt{min-width:0!important;flex:1!important}
-html body.sukun-jewel-ui .jewel-accordion>summary .zMegaTxt b{font:700 16px/1.1 Georgia,'Times New Roman',serif!important;letter-spacing:.05em!important;color:#fff1ce!important}
-html body.sukun-jewel-ui .jewel-accordion>summary .zMegaTxt small{color:#b6c6d3!important;font-size:10.5px!important;line-height:1.35!important}
-html body.sukun-jewel-ui .jewel-accordion .zMegaChev{font-size:0!important;width:24px!important;height:24px!important;display:grid!important;place-items:center!important}
-html body.sukun-jewel-ui .jewel-accordion .zMegaChev::after{content:'⌄'!important;display:block!important;font-size:22px!important;line-height:1!important;color:#ffc866!important;transform:none!important}
-html body.sukun-jewel-ui .jewel-accordion[open] .zMegaChev::after{transform:rotate(180deg)!important}
-html body.sukun-jewel-ui #r679ZikirAyarBox.jewel-accordion>summary{min-height:70px!important}
+/* each select gets its own ornate field like approved reference */
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:0 0 12px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow label{display:grid!important;grid-template-rows:auto 52px!important;gap:5px!important;min-width:0!important;padding:14px 15px 12px!important;border:0!important;border-radius:0!important;background:var(--j796-card) center/100% 100% no-repeat!important;color:#fff0ca!important;font:600 14px/1 system-ui,sans-serif!important;overflow:visible!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow select{width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;padding:0 38px 0 15px!important;border:0!important;border-radius:0!important;background:var(--j796-bar) center/100% 100% no-repeat!important;color:#fff1cf!important;font:600 15px/1 system-ui,sans-serif!important;appearance:auto!important;box-shadow:none!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow input:not([hidden]){width:100%!important;min-width:0!important;height:52px!important;border:0!important;background:var(--j796-bar) center/100% 100% no-repeat!important;color:#fff1cf!important}
 
-/* player stays the strong A-level element; do not let component cleanup flatten it. */
-html body.sukun-jewel-ui #r433DockPeek.jewel-player{overflow:visible!important;pointer-events:auto!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Progress{height:37px!important;width:100%!important;margin:0 0 10px!important;padding:8px 24px!important;border:0!important;border-radius:0!important;background:var(--j796-bar) center/100% 100% no-repeat!important;overflow:hidden!important;box-sizing:border-box!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Progress i{display:block!important;height:100%!important;border-radius:999px!important;background:linear-gradient(90deg,#fd53ef,#8b5dff 48%,#49c7ff 78%,#ffe28a)!important;box-shadow:0 0 18px rgba(178,79,255,.44)!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Status{min-height:52px!important;margin:0 0 12px!important;padding:15px 23px 13px 52px!important;border:0!important;border-radius:0!important;background:var(--j796-bar) center/100% 100% no-repeat!important;color:#edf4fa!important;font:500 13px/1.25 system-ui,sans-serif!important;display:flex!important;align-items:center!important;overflow:visible!important}
+
+/* Context is a real large card, not a plain glass panel */
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx){position:relative!important;margin:12px 0 14px!important;padding:26px 24px 25px!important;border:0!important;border-radius:0!important;background:var(--j796-panel-context) center/100% 100% no-repeat!important;box-shadow:none!important;color:#f5efe0!important;overflow:visible!important;min-width:0!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) .r754CtxTop{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important;margin-bottom:12px!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) h4{margin:0!important;font:700 clamp(22px,6vw,31px)/1.05 Georgia,'Times New Roman',serif!important;color:#fff0c4!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) .r754CtxTop small{color:#63e7e0!important;text-transform:uppercase!important;letter-spacing:.06em!important;font-weight:700!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) .r754BerhetSigil{flex:0 0 auto!important;max-width:48%!important;padding:10px 16px!important;border:0!important;border-radius:0!important;background:var(--j796-bar) center/100% 100% no-repeat!important;color:#fff0b8!important;font-weight:700!important;white-space:normal!important;text-align:center!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) p{font:600 15px/1.4 system-ui,sans-serif!important;color:#eef3f5!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) :is(.r754Badges,.r754CtxGrid,.r754Grid){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) :is(.r754Mini,[data-r754-source],.r754CtxChip){min-width:0!important;padding:11px 13px!important;border:0!important;border-radius:0!important;background:var(--j796-compact) center/100% 100% no-repeat!important;color:#e7eef5!important;box-shadow:none!important}
+
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:12px!important;padding:0!important;overflow:visible!important}
+html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{width:100%!important;min-width:0!important;min-height:60px!important;height:60px!important;margin:0!important;padding:0 12px!important;white-space:nowrap!important}
+html body.sukun-jewel-r796 :is(#bsStart,#es99Start){grid-column:1/-1!important;height:78px!important;min-height:78px!important;font-size:24px!important}
+html body.sukun-jewel-r796 :is(#bsReset,#es99Reset){grid-column:1/-1!important;height:64px!important;min-height:64px!important}
+
+/* ===== accordion cards: ornate but secondary hierarchy ===== */
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup{margin:12px 0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary,
+html body.sukun-jewel-r796 #r679ZikirAyarBox>summary{position:relative!important;display:flex!important;align-items:center!important;gap:13px!important;width:100%!important;min-height:84px!important;margin:0!important;padding:13px 27px!important;border:0!important;border-radius:0!important;background:var(--j796-card-ornate) center/100% 100% no-repeat!important;color:#fff0ca!important;box-shadow:none!important;overflow:visible!important;list-style:none!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary::-webkit-details-marker,html body.sukun-jewel-r796 #r679ZikirAyarBox>summary::-webkit-details-marker{display:none!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaTxt{min-width:0!important;flex:1!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaTxt b{display:block!important;font:700 18px/1.05 Georgia,'Times New Roman',serif!important;letter-spacing:.055em!important;color:#fff0c6!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaTxt small{display:block!important;margin-top:4px!important;font:500 12px/1.35 system-ui,sans-serif!important;color:#c4d2df!important;white-space:normal!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaIcon{flex:0 0 49px!important;width:49px!important;height:49px!important;display:grid!important;place-items:center!important;border-radius:50%!important;background:rgba(5,30,66,.76)!important;border:1px solid rgba(102,215,255,.25)!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaCount{flex:0 0 39px!important;width:39px!important;height:39px!important;display:grid!important;place-items:center!important;border-radius:50%!important;border:1px solid rgba(226,105,72,.42)!important;background:rgba(37,20,38,.62)!important;color:#ffce83!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaChev{flex:0 0 24px!important;color:#ffc75d!important;font-size:0!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaChev::after{content:'›'!important;display:block!important;font:700 34px/1 Georgia,serif!important;color:#ffca62!important;transform:none!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup[open]>summary .zMegaChev::after{transform:rotate(90deg)!important}
+html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>.zMegaBody{margin-top:4px!important;padding:8px 9px!important;border:0!important;background:rgba(3,14,34,.18)!important}
+
+html body.sukun-jewel-r796 #r679ZikirAyarBox{margin:12px 0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important}
+html body.sukun-jewel-r796 #r679ZikirAyarBox>summary{min-height:78px!important}
+html body.sukun-jewel-r796 #r679ZikirAyarBox .r679SettingsTitle b{font:700 17px/1.1 Georgia,'Times New Roman',serif!important;color:#fff0c5!important}
+html body.sukun-jewel-r796 #r679ZikirAyarBox .r679SettingsTitle small{color:#c1d0dd!important}
+
+/* player already matches target; only protect it */
+html body.sukun-jewel-r796 #r433DockPeek{z-index:2147482500!important;overflow:visible!important;pointer-events:auto!important}
 
 @media(max-width:430px){
- html body.sukun-jewel-ui .zCounterActions{grid-template-columns:62px minmax(0,1fr) 62px!important;gap:7px!important}
- html body.sukun-jewel-ui .jewel-btn--round{width:62px!important;min-width:62px!important;height:62px!important;min-height:62px!important}
- html body.sukun-jewel-ui #autoBtn.jewel-btn--primary{height:62px!important;min-height:62px!important;padding-inline:16px!important}
- html body.sukun-jewel-ui #zBar.jewel-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
- html body.sukun-jewel-ui #zBar.jewel-toolbar .spkBtn.jewel-btn--compact{min-height:60px!important;padding-inline:8px!important;font-size:10.5px!important}
- html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey{padding:14px 11px 17px!important}
- html body.sukun-jewel-ui :is(#berhetSeyir,#esmaSeyir99).jewel-journey>summary{padding:10px 14px!important;min-height:58px!important}
- html body.sukun-jewel-ui .jewel-journey .r168Head b{font-size:14px!important}
- html body.sukun-jewel-ui .jewel-journey .r168Tag{font-size:9.5px!important;padding:6px 8px!important;max-width:48%!important}
- html body.sukun-jewel-ui .jewel-journey .r168MiniRow{gap:8px!important;padding:9px!important}
- html body.sukun-jewel-ui .jewel-journey .r168Buttons{gap:8px!important}
- html body.sukun-jewel-ui .jewel-journey .r168Buttons .jewel-btn--secondary{min-height:50px!important;padding-inline:7px!important;font-size:10.5px!important}
- html body.sukun-jewel-ui .jewel-journey .r168Buttons .jewel-btn--primary{min-height:58px!important;font-size:15px!important}
- html body.sukun-jewel-ui .jewel-accordion>summary{min-height:64px!important;padding:11px 16px!important}
- html body.sukun-jewel-ui .jewel-accordion>summary .zMegaTxt b{font-size:14px!important}
- html body.sukun-jewel-ui #r700TefEntry #r442TefekkurBtn.jewel-btn--primary{min-height:62px!important}
+ html body.sukun-jewel-r796 .zCounterRow{gap:9px 9px!important}
+ html body.sukun-jewel-r796 .zCounterRow>.zCountVisual{width:min(94vw,390px)!important}
+ html body.sukun-jewel-r796 .zCounterRow>.zCounterSide{min-height:94px!important;padding:14px 12px!important;column-gap:8px!important}
+ html body.sukun-jewel-r796 .zCounterActions{grid-template-columns:67px minmax(0,1fr) 67px!important;gap:7px!important}
+ html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn){width:67px!important;height:67px!important;min-width:67px!important;min-height:67px!important}
+ html body.sukun-jewel-r796 #autoBtn{height:67px!important;min-height:67px!important;padding-inline:15px!important}
+ html body.sukun-jewel-r796 #r616ZikirNavRow{gap:6px!important}
+ html body.sukun-jewel-r796 #r616ZikirNavRow button{min-height:54px!important;padding-inline:7px!important;font-size:11px!important}
+ html body.sukun-jewel-r796 #zBar{gap:8px!important}
+ html body.sukun-jewel-r796 #zBar .spkBtn{height:64px!important;min-height:64px!important;padding-inline:8px!important;font-size:10.5px!important}
+ html body.sukun-jewel-r796 #r700TefEntry #r442TefekkurBtn{height:68px!important;min-height:68px!important}
+ html body.sukun-jewel-r796 #r700TefEntry #r442TefekkurBtn .r700TefLabel{font-size:18px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99){padding:14px 10px 18px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary{min-height:68px!important;padding:8px 18px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99)>summary .r168Tag{font-size:10px!important;max-width:47%!important;padding:7px 9px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{gap:7px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow label{padding:12px 9px 9px!important;font-size:12px!important;grid-template-rows:auto 46px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow select{height:46px!important;min-height:46px!important;font-size:13px!important;padding-left:10px!important}
+ html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx){padding:22px 17px!important}
+ html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) h4{font-size:25px!important}
+ html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) .r754BerhetSigil{font-size:10.5px!important;padding:8px 10px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{gap:7px!important}
+ html body.sukun-jewel-r796 :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{height:55px!important;min-height:55px!important;font-size:11px!important;padding-inline:7px!important}
+ html body.sukun-jewel-r796 :is(#bsStart,#es99Start){height:70px!important;min-height:70px!important;font-size:20px!important}
+ html body.sukun-jewel-r796 :is(#bsReset,#es99Reset){height:58px!important;min-height:58px!important}
+ html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary{min-height:78px!important;padding:12px 19px!important;gap:10px!important}
+ html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaTxt b{font-size:16px!important}
+ html body.sukun-jewel-r796 #zMegaHost>.zMegaGroup>summary .zMegaTxt small{font-size:10.5px!important}
 }
-
 @media(max-width:350px){
- html body.sukun-jewel-ui .jewel-journey .r168MiniRow{grid-template-columns:1fr!important}
- html body.sukun-jewel-ui #r616ZikirNavRow{grid-template-columns:1fr!important}
+ html body.sukun-jewel-r796 #r616ZikirNavRow{grid-template-columns:1fr!important}
+ html body.sukun-jewel-r796 :is(#r754SeyirContext,.r754Ctx) :is(.r754Badges,.r754CtxGrid,.r754Grid){grid-template-columns:1fr!important}
 }
-
 </style>
-<script id="sukun-r795-jewel-bindings">
-/* SÜKÛN r795 — visual component binder. Uses existing r656 hydration bus; no new broad MutationObserver. */
+<script id="sukun-r796-jewel-bindings">
+/* SÜKÛN r796 — DOM-to-component authority. Narrow observers only. */
 (()=>{'use strict';
- const V='r795';
- const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
- const add=(el,...cls)=>{if(el)el.classList.add(...cls.filter(Boolean));return el};
- const button=(id,kind='secondary',variant='')=>{
-   const el=document.getElementById(id);if(!el)return;
-   add(el,'jewel-btn',`jewel-btn--${kind}`);if(variant)add(el,`jewel-btn--${variant}`);
- };
- function bind(root=document){
-   document.documentElement.classList.add('sukun-jewel-ui');
-   document.body?.classList.add('sukun-jewel-ui');
-
-   qa('.zCounterSide',root===document?document:root).forEach(el=>add(el,'jewel-stat'));
-   button('undoBtn','round','minus');button('plusBtn','round','plus');button('autoBtn','primary');button('resetBtn','secondary');
-   qa('#r616ZikirNavRow button').forEach(el=>add(el,'jewel-btn','jewel-btn--secondary'));
-
-   const zbar=document.getElementById('zBar');if(zbar){add(zbar,'jewel-toolbar');qa('.spkBtn',zbar).forEach(el=>add(el,'jewel-btn','jewel-btn--compact'));
-     add(document.getElementById('niyetRecBtn'),'jewel-btn--compact-gold');
-     add(document.getElementById('zBarHelp'),'jewel-btn--compact-emerald');
-   }
-   button('r442TefekkurBtn','primary');
-
-   ['berhetSeyir','esmaSeyir99'].forEach(id=>{
-     const box=document.getElementById(id);if(!box)return;add(box,'jewel-journey','jewel-panel');
-     const head=q(':scope>summary',box);if(head)add(head,'jewel-card');
-     qa('.r168MiniRow select,.r168MiniRow input',box).forEach(el=>add(el,'jewel-select'));
-     qa('.r168Progress',box).forEach(el=>add(el,'jewel-progress'));
-     qa('.r168Status',box).forEach(el=>add(el,'jewel-pill'));
-   });
-   [['bsStart','primary'],['bsPrev','secondary'],['bsNext','secondary'],['bsAgain','secondary'],['bsStop','secondary'],['bsReset','primary'],
-    ['es99Start','primary'],['es99Prev','secondary'],['es99Next','secondary'],['es99Again','secondary'],['es99Stop','secondary'],['es99Reset','primary']].forEach(x=>button(x[0],x[1]));
-   add(document.getElementById('bsStop'),'jewel-btn--amethyst');add(document.getElementById('es99Stop'),'jewel-btn--amethyst');
-
-   const ctx=document.getElementById('r754SeyirContext');if(ctx)add(ctx,'jewel-context');
-   qa('.r754Ctx').forEach(el=>add(el,'jewel-context'));
-
-   qa('#zMegaHost>.zMegaGroup').forEach(el=>add(el,'jewel-accordion'));
-   ['r679ZikirAyarBox','niyetBox','vhBox'].forEach(id=>add(document.getElementById(id),'jewel-accordion'));
-   add(document.getElementById('r433DockPeek'),'jewel-player');
+ if(window.SukunJewelUIR796)return;
+ const V='r796', $=id=>document.getElementById(id), qa=(s,r=document)=>[...r.querySelectorAll(s)];
+ let busy=false;
+ function cls(el,...names){if(el)names.forEach(n=>n&&el.classList.add(n));return el}
+ function normalizeAuto(){
+   const a=$('autoBtn');if(!a)return;
+   cls(a,'j796-btn','j796-primary');
+   const txt=(a.textContent||'').toLowerCase();
+   a.classList.toggle('is-paused',/duraklat|sürdür/.test(txt));
  }
- function initial(){bind(document);requestAnimationFrame(()=>bind(document));setTimeout(()=>bind(document),180)}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initial,{once:true});else initial();
- window.addEventListener('sukun:domhydrate',e=>{try{for(const r of e?.detail?.roots||[])bind(r);bind(document)}catch(_){bind(document)}},{passive:true});
- window.addEventListener('sukun:tab-change',()=>requestAnimationFrame(()=>bind(document)),{passive:true});
- window.addEventListener('pageshow',()=>requestAnimationFrame(()=>bind(document)),{passive:true});
- window.SukunJewelUIR795=Object.freeze({version:V,mode:'component-system',bind:()=>bind(document),snapshot:()=>({version:V,body:document.body?.classList.contains('sukun-jewel-ui')||false,journeys:qa('.jewel-journey').length,buttons:qa('.jewel-btn').length,accordions:qa('.jewel-accordion').length,toolbar:!!document.querySelector('#zBar.jewel-toolbar')})});
+ function reorderMain(){
+   const ctl=document.querySelector('.card.zCtl'),row=document.querySelector('.zCounterRow'),actions=document.querySelector('.zCounterActions'),nav=$('r616ZikirNavRow'),sub=$('cntSub'),settings=$('r679ZikirAyarBox');
+   if(!ctl||!row)return;
+   try{
+     if(actions&&actions.parentElement===ctl&&row.nextElementSibling!==actions)row.insertAdjacentElement('afterend',actions);
+     if(nav&&nav.parentElement===ctl&&actions&&actions.nextElementSibling!==nav)actions.insertAdjacentElement('afterend',nav);
+     if(sub&&sub.parentElement===ctl&&nav&&nav.nextElementSibling!==sub)nav.insertAdjacentElement('afterend',sub);
+     if(settings&&settings.parentElement===ctl&&sub&&sub.nextElementSibling!==settings)sub.insertAdjacentElement('afterend',settings);
+   }catch(e){}
+ }
+ function bind(){
+   if(busy)return;busy=true;
+   try{
+     document.documentElement.classList.add('sukun-jewel-r796');document.body?.classList.add('sukun-jewel-r796');
+     // Main fixed selectors do not need classes, but semantic classes are useful for diagnostics.
+     qa('.zCounterSide').forEach(e=>cls(e,'j796-stat'));
+     ['undoBtn','plusBtn','autoBtn'].forEach(id=>cls($(id),'j796-control'));
+     normalizeAuto();
+     qa('#r616ZikirNavRow button').forEach(e=>cls(e,'j796-nav-btn'));
+     const bar=$('zBar');if(bar){cls(bar,'j796-toolbar');qa('.spkBtn',bar).forEach(e=>cls(e,'j796-tool-btn'))}
+     cls($('r442TefekkurBtn'),'j796-primary');
+     ['berhetSeyir','esmaSeyir99'].forEach(id=>{
+       const box=$(id);if(!box)return;cls(box,'j796-journey');
+       qa('.r168MiniRow label',box).forEach(e=>cls(e,'j796-field-card'));
+       qa('.r168Progress',box).forEach(e=>cls(e,'j796-progress'));
+       qa('.r168Status',box).forEach(e=>cls(e,'j796-status'));
+       qa('.r168Buttons button',box).forEach(e=>cls(e,'j796-journey-btn'));
+     });
+     cls($('r754SeyirContext'),'j796-context');qa('.r754Ctx').forEach(e=>cls(e,'j796-context'));
+     qa('#zMegaHost>.zMegaGroup').forEach(e=>cls(e,'j796-accordion'));
+     cls($('r679ZikirAyarBox'),'j796-settings');cls($('r433DockPeek'),'j796-player');
+     reorderMain();
+   }finally{busy=false}
+ }
+ function queue(){if(busy)return;requestAnimationFrame(bind)}
+ function observe(root){if(!root||root.__j796Obs)return;root.__j796Obs=1;new MutationObserver(queue).observe(root,{childList:true,subtree:true})}
+ function init(){bind();['tab-zkr','zStage','zMegaHost'].forEach(id=>observe($(id)));setTimeout(()=>{bind();['tab-zkr','zStage','zMegaHost'].forEach(id=>observe($(id)))},220)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ ['sukun:domhydrate','sukun:tabchange','sukun:tab-change','sukun:currentzikirchange','sukun:journey-advance','sukun:currentflowchange'].forEach(ev=>window.addEventListener(ev,queue,{passive:true}));
+ window.addEventListener('pageshow',queue,{passive:true});
+ window.SukunJewelUIR796=Object.freeze({version:V,bind,snapshot:()=>({version:V,body:!!document.body?.classList.contains('sukun-jewel-r796'),stats:qa('.j796-stat').length,tools:qa('.j796-tool-btn').length,journeys:qa('.j796-journey').length,accordions:qa('.j796-accordion').length,context:qa('.j796-context').length})});
 })();
-
 </script>

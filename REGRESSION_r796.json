@@ -1,0 +1,95 @@
+{
+  "version": "r796",
+  "date": "2026-09-13",
+  "base": "r795",
+  "checks": [
+    {
+      "check": "source:id=\"undoBtn\"",
+      "ok": true
+    },
+    {
+      "check": "source:id=\"plusBtn\"",
+      "ok": true
+    },
+    {
+      "check": "source:id=\"autoBtn\"",
+      "ok": true
+    },
+    {
+      "check": "source:r616ZikirNavRow",
+      "ok": true
+    },
+    {
+      "check": "source:berhetSeyir",
+      "ok": true
+    },
+    {
+      "check": "source:esmaSeyir99",
+      "ok": true
+    },
+    {
+      "check": "source:r700TefEntry",
+      "ok": true
+    },
+    {
+      "check": "source:r442TefekkurBtn",
+      "ok": true
+    },
+    {
+      "check": "source:r754SeyirContext",
+      "ok": true
+    },
+    {
+      "check": "source:r433DockPeek",
+      "ok": true
+    },
+    {
+      "check": "asset:btn-round-minus-exact.png",
+      "ok": true
+    },
+    {
+      "check": "asset:btn-round-plus-exact.png",
+      "ok": true
+    },
+    {
+      "check": "asset:btn-primary-wide.png",
+      "ok": true
+    },
+    {
+      "check": "asset:btn-secondary-sapphire.png",
+      "ok": true
+    },
+    {
+      "check": "asset:panel-context.png",
+      "ok": true
+    },
+    {
+      "check": "asset:ring.png",
+      "ok": true
+    },
+    {
+      "check": "meta-r796",
+      "ok": true
+    },
+    {
+      "check": "single-authority",
+      "ok": true
+    },
+    {
+      "check": "no-r795-active-assets",
+      "ok": true
+    },
+    {
+      "check": "manifest-r796",
+      "ok": true
+    },
+    {
+      "check": "sw-r796",
+      "ok": true
+    }
+  ],
+  "ok": true,
+  "notes": [
+    "Static source/asset validation. Runtime behavior owners intentionally unchanged."
+  ]
+}
