@@ -1,0 +1,23 @@
+{
+  "build": "r795",
+  "base": "r794",
+  "focus": "Jewel UI Component Authority",
+  "principle": "Jewel skin değil, UI sistemi",
+  "rootCause": [
+    "same control family was styled by several release-specific CSS authorities (r778/r790/r792/r794)",
+    "visual assets were applied per-selector instead of through a shared component contract",
+    "dynamic 28/99 journey DOM and zikir toolbar could fall back to legacy glass styles after remount/hydration"
+  ],
+  "changes": [
+    "removed r790/r792/r794 temporary jewel visual authorities from nero.html",
+    "introduced canonical jewel tokens/components/layout contracts under body.sukun-jewel-ui",
+    "bound main counter, 2x3 tool row, Tefekkür CTA, 28/99 journeys, context cards and accordion summaries to shared component classes",
+    "reused blank raster jewel assets; all live labels, counts, states and hit targets remain real DOM",
+    "binding uses the existing r656 DOM hydration bus rather than adding another broad MutationObserver",
+    "audio ownership, counter semantics, pause/stop/resume, queue and lock-screen journey engines are untouched"
+  ],
+  "ui_changed": true,
+  "audio_ownership_changed": false,
+  "journey_state_changed": false,
+  "dom_behavior_ownership_changed": false
+}

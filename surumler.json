@@ -1,5 +1,16 @@
 [
   {
+    "v": "r795",
+    "t": "13 Eylül 2026",
+    "b": [
+      "Jewel skin yaklaşımı kaldırıldı; primary/secondary/compact/round button, card, panel, stat, select, pill ve accordion tek component otoritesine bağlandı.",
+      "28 İsim ve 99 Esmâ seyirleri aynı Jewel component sözleşmesini kullanır; dinamik yeniden mount sonrasında düz cama geri düşmez.",
+      "Dinle/Döngü/Kendi Sesin/Niyet/Favori/Nasıl? araçları mobilde 2×3 ortak Jewel gridine geçti; etiketler ve tıklama hedefleri canlı DOM olarak kaldı.",
+      "Hedef/Kalan, −1/+1, ana Duraklat/Devam, Tefekküre Geç, Zikir Ayarları ve Zikir accordionları aynı görsel aileye geçirildi.",
+      "Yeni geniş MutationObserver eklenmedi; r656 DOM Hydration Bus kullanıldı. Ses, sayaç, pause/stop/resume ve 28/99 state motorlarına dokunulmadı."
+    ]
+  },
+  {
     "v": "r794",
     "t": "13 Eylül 2026",
     "b": [

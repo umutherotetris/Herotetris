@@ -1,0 +1,64 @@
+{
+  "release": "r795",
+  "title": "Jewel UI Component Authority",
+  "status": "pass",
+  "checks": {
+    "html_build_meta_r795": {
+      "ok": true
+    },
+    "legacy_jewel_authority_ids_removed": {
+      "ok": true
+    },
+    "r795_component_authority_present": {
+      "ok": true
+    },
+    "tefekkur_tap_authority_preserved": {
+      "ok": true
+    },
+    "update_recovery_guard_r795": {
+      "ok": true
+    },
+    "binder_uses_hydration_bus": {
+      "ok": true
+    },
+    "binder_adds_no_mutation_observer": {
+      "ok": true
+    },
+    "binder_binds_28_and_99": {
+      "ok": true
+    },
+    "toolbar_2x3_contract": {
+      "ok": true
+    },
+    "all_canonical_assets_exist": {
+      "ok": true,
+      "detail": "19/19"
+    },
+    "inline_asset_paths_runtime_relative": {
+      "ok": true
+    },
+    "external_css_asset_paths_css_relative": {
+      "ok": true
+    },
+    "sw_r795": {
+      "ok": true
+    },
+    "manifest_r795": {
+      "ok": true
+    },
+    "latest_marker_r795": {
+      "ok": true
+    },
+    "build_marker_r795": {
+      "ok": true
+    },
+    "release_files_exist": {
+      "ok": true
+    }
+  },
+  "notes": [
+    "Visual browser screenshot validation was not used in this environment.",
+    "Audio/queue/journey state engines were intentionally not refactored by the Jewel binder.",
+    "Runtime CSS is inlined at the end of nero.html; external css/js files are maintenance mirrors and precache targets."
+  ]
+}
