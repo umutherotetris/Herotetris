@@ -1,13 +1,13 @@
-/* SÜKÛN r798 — Update Recovery + Jewel Component Authority
+/* SÜKÛN r799 — Berhetiyye Counter Ring + Update Recovery
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r798';
-const CACHE = 'sukun-r798-20260913a';
-const CACHE_META = './__sukun_cache_meta_r798__.json';
-const BUILD_MARKER = './__sukun_build_r798__.json';
+const SURUM = 'r799';
+const CACHE = 'sukun-r799-20260913a';
+const CACHE_META = './__sukun_cache_meta_r799__.json';
+const BUILD_MARKER = './__sukun_build_r799__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
@@ -46,6 +46,7 @@ const PRECACHE = [
   './assets/jewel-r798/panelbar.png',
   './assets/jewel-r798/panel-context.png',
   './assets/jewel-r798/ring.png',
+  './assets/berhetiyye-premium/berhetiyye-ring-r799.png',
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
   './assets/tefekkur-sanctuary.webp',
@@ -95,9 +96,9 @@ const PRECACHE = [
 ];
 
 const NOTLAR = [
-  'r798 · Berhetiyye ownership fix: r778 inline !important painter is gated off Berhetiyye content surfaces; Jewel is the sole visual owner there.',
-  'Atlas, 28/99 seyir, bağlam panelleri ve Zikir Ayarları normal akışta; legacy inline visual residue r798 binder tarafından temizlenir.',
-  'Service worker r798 Jewel asset ailesini best-effort pre-cache eder; install bir görsel 404 yüzünden kilitlenmez.',
+  'r799 · Berhetiyye zikir sayacı özel doğal kristal yüzüğe bağlandı; genel Jewel yüzüğü diğer zikirlerde korunur.',
+  'Özel halka yalnız canlı Berhetiyye seansında saat yönünün tersine sabit düzlemde döner; sayaç rakamları dönmez.',
+  'Yeni berhetiyye-ring-r799.png best-effort pre-cache edilir; install tek görsel hatası yüzünden kilitlenmez.',
   'Ses motoru, Global Queue, sayaç mantığı, pause/resume/stop ve 28/99 state makineleri değiştirilmedi.'
 ];
 

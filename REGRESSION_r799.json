@@ -1,0 +1,30 @@
+{
+  "version": "r799",
+  "base": "r798",
+  "date": "2026-09-13",
+  "checks": {
+    "single_body_close": true,
+    "single_html_close": true,
+    "html_close_at_eof": true,
+    "build_meta_r799": true,
+    "berhet_only_scope": true,
+    "generic_jewel_removed_only_in_berhet": true,
+    "dedicated_ring_asset_ref": true,
+    "counter_clockwise_rotation": true,
+    "no_scale_skew_in_r799_keyframe": true,
+    "count_layer_stationary": true,
+    "new_asset_exists": true,
+    "sw_precache_ref": true,
+    "manifest_r799": true
+  },
+  "script_check": {
+    "inline_js_checked": 211,
+    "inline_js_failures": 0,
+    "sw_node_check": "pass"
+  },
+  "browser_check": {
+    "status": "not_run",
+    "reason": "local/file navigation blocked by administrator in this execution environment"
+  },
+  "note": "Static DOM/CSS ownership, JS syntax, service-worker syntax, release identity, asset existence and package integrity were validated. Physical Android animation/visual verification remains a device check."
+}
