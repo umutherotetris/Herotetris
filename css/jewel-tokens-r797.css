@@ -1,0 +1,23 @@
+/* SÜKÛN r797 — Jewel UI Single Authority tokens. */
+html body.sukun-jewel-r797{
+  --j797-gold:#f7d875;--j797-gold2:#fff0bd;--j797-cyan:#5cecff;--j797-blue:#0a55d8;
+  --j797-violet:#b44cff;--j797-ink:#03142f;--j797-text:#fff0c7;--j797-muted:#bfd0df;
+  --j797-primary:url('../assets/jewel-r797/btn-primary-wide.png');
+  --j797-secondary:url('../assets/jewel-r797/btn-secondary-sapphire.png');
+  --j797-amethyst:url('../assets/jewel-r797/btn-secondary-amethyst.png');
+  --j797-emerald:url('../assets/jewel-r797/btn-secondary-emerald.png');
+  --j797-compact:url('../assets/jewel-r797/btn-compact-sapphire.png');
+  --j797-compact-gold:url('../assets/jewel-r797/btn-compact-gold.png');
+  --j797-compact-emerald:url('../assets/jewel-r797/btn-compact-emerald.png');
+  --j797-minus:url('../assets/jewel-r797/btn-round-minus-exact.png');
+  --j797-plus:url('../assets/jewel-r797/btn-round-plus-exact.png');
+  --j797-card:url('../assets/jewel-r797/card-wide.png');
+  --j797-card-ornate:url('../assets/jewel-r797/card-wide-ornate.png');
+  --j797-medium:url('../assets/jewel-r797/card-medium.png');
+  --j797-panel:url('../assets/jewel-r797/panel-tall.png');
+  --j797-panel-context:url('../assets/jewel-r797/panel-context.png');
+  --j797-panel-short:url('../assets/jewel-r797/panel-short.png');
+  --j797-bar:url('../assets/jewel-r797/panelbar.png');
+  --j797-ring:url('../assets/jewel-r797/ring.png');
+  --j797-shadow:drop-shadow(0 10px 14px rgba(0,0,0,.28));
+}
