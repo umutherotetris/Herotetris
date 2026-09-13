@@ -1,0 +1,27 @@
+/* SÜKÛN r796 — ONE OWNER. IDs below are deliberate fallbacks: dynamic recreation cannot lose Jewel. */
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn,#autoBtn,#r616ZikirNavRow button,#zBar .spkBtn,#r442TefekkurBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button){
+  box-sizing:border-box!important;border:0!important;border-radius:0!important;background-color:transparent!important;
+  background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;
+  box-shadow:none!important;color:var(--j796-text)!important;text-shadow:0 2px 4px rgba(0,0,0,.92)!important;
+  position:relative!important;isolation:isolate!important;overflow:visible!important;pointer-events:auto!important;touch-action:manipulation!important;
+}
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn,#autoBtn,#r616ZikirNavRow button,#zBar .spkBtn,#r442TefekkurBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button):active{transform:scale(.975)!important;filter:brightness(1.09) var(--j796-shadow)!important}
+
+/* exact fixed -1/+1 approved assets */
+html body.sukun-jewel-r796 #undoBtn{background-image:var(--j796-minus)!important;color:transparent!important;text-shadow:none!important}
+html body.sukun-jewel-r796 #plusBtn{background-image:var(--j796-plus)!important;color:transparent!important;text-shadow:none!important}
+html body.sukun-jewel-r796 :is(#undoBtn,#plusBtn)>*{visibility:hidden!important}
+
+html body.sukun-jewel-r796 #autoBtn,
+html body.sukun-jewel-r796 #r442TefekkurBtn,
+html body.sukun-jewel-r796 :is(#bsStart,#es99Start){background-image:var(--j796-primary)!important;font:700 20px/1.05 Georgia,'Times New Roman',serif!important}
+html body.sukun-jewel-r796 #r616ZikirNavRow button,
+html body.sukun-jewel-r796 :is(#bsPrev,#bsNext,#bsAgain,#bsReset,#es99Prev,#es99Next,#es99Again,#es99Reset){background-image:var(--j796-secondary)!important;font:700 14px/1.05 system-ui,sans-serif!important}
+html body.sukun-jewel-r796 :is(#bsStop,#es99Stop){background-image:var(--j796-amethyst)!important;font:700 14px/1.05 system-ui,sans-serif!important}
+html body.sukun-jewel-r796 #zBar .spkBtn{background-image:var(--j796-compact)!important;font:700 12px/1.05 system-ui,sans-serif!important;letter-spacing:.05em!important}
+html body.sukun-jewel-r796 #zBar #niyetRecBtn{background-image:var(--j796-compact-gold)!important}
+html body.sukun-jewel-r796 #zBar #zBarHelp{background-image:var(--j796-compact-emerald)!important}
+html body.sukun-jewel-r796 #zBar #favBtn.on{background-image:var(--j796-amethyst)!important;filter:brightness(1.12) var(--j796-shadow)!important}
+
+/* dynamic text always above frame */
+html body.sukun-jewel-r796 :is(#autoBtn,#r442TefekkurBtn,#r616ZikirNavRow button,#zBar .spkBtn,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button)>*{position:relative!important;z-index:2!important}
