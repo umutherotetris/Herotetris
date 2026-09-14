@@ -1,0 +1,9 @@
+{
+  "v": "r803",
+  "build": "2026-09-14-r803",
+  "purpose": "Berhetiyye-only natural crystal counter ring integration",
+  "notes": [
+    "r802 · Berhetiyye pasifken normal sayaç korunur; aktifken özel yüzük otomatik görünür. Geçişte ring DOM’u korunarak görsel zıplama azaltıldı.",
+    "r803 · Berhetiyye sayaç geçişine hafif fade/glow blend, asil aktivasyon ve sade çözülme animasyonu eklendi."
+  ]
+}
