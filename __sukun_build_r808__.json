@@ -1,0 +1,9 @@
+{
+  "v": "r808",
+  "build": "2026-09-14-r808",
+  "notes": [
+    "Berhetiyye visual ownership consolidated: legacy visual authorities removed, one r807 owner retained.",
+    "Counter ring, helper controls, Tefekkur entry/exit, journey headers and player dock normalized.",
+    "r808 · Berhetiyye sayaç görseli legacy zCountVisual katmanından tamamen ayrıldı; yeni izole sayaç DOM’u kullanılır. r778 legacy class artık etkinleştirilmez. bsPause/es99Pause zorla gizlenir; kontrol görselleri tek inline-important otoriteye alınır."
+  ]
+}

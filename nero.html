@@ -4,15 +4,15 @@
      Tek dosya • Web Audio API (tüm sesler cihazda sentezlenir)
      Binaural Beats + Isochronic Tones + Esmâ/Zikir Modülü
      ════════════════════════════════════════════════════════════════ -->
-<html lang="tr" class="sukun-jewel-r798 sukun-r799-berhet-counter sukun-r802-berhet-switch sukun-r803-berhet-anim">
+<html lang="tr" class="sukun-jewel-r798">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r807">
+<meta name="sukun-build" content="r808">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r807">
+<link rel="manifest" href="./manifest.webmanifest?v=r808">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.62 — build 2026-09-14-r807</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.62 — build 2026-09-14-r808</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -68339,7 +68339,7 @@ const meta=document.querySelector('meta[name="sukun-build"]');
 const build=meta?.content||'r806',date='2026-09-14';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.48 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r807',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r808',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -72651,7 +72651,7 @@ body[data-perf="dusuk"][data-r619-skin="mucevher"] #ringHost::after{display:none
 
 <script id="sukun-r779-berhetiyye-scene-diagnostics">
 (()=>{'use strict';if(window.__SUKUN_R779_SCENE_FIX__)return;window.__SUKUN_R779_SCENE_FIX__=1;
-function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r784',active:b.classList.contains('r778-berhet-palace'),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
+function snap(){const b=document.body,s=document.getElementById('r717Scene');return{version:'r808',active:!!window.SukunR808Berhetiyye?.active?.(),scene:b.dataset.r778BerhetScene||'',visibleLayer:!!s,background:s?getComputedStyle(s).backgroundImage:'',bodyBackground:getComputedStyle(b).backgroundImage}}
 window.SukunR779BerhetiyyeSceneFix=Object.freeze({version:'r784',snapshot:snap,refresh:()=>{try{window.SukunR778BerhetiyyeAuthority?.repaint?.()}catch(e){};return snap()}});
 })();
 </script>
@@ -72983,7 +72983,7 @@ async function force(){
   }
   return x;
 }
-function snapshot(){return{version:'r807',build:BUILD,latest:lastLatest,lastError,waiting:!!reg?.waiting,installing:!!reg?.installing,active:reg?.active?.scriptURL||'',audioBusy:audioBusy(),lastCheck}}
+function snapshot(){return{version:'r808',build:BUILD,latest:lastLatest,lastError,waiting:!!reg?.waiting,installing:!!reg?.installing,active:reg?.active?.scriptURL||'',audioBusy:audioBusy(),lastCheck}}
 if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
     if(reloadOnce)return;
@@ -72998,7 +72998,7 @@ if('serviceWorker' in navigator){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)check('visible')},{passive:true});
   setInterval(()=>{if(!document.hidden)check('interval')},60000);
 }
-window.SukunUpdateRecoveryR798=Object.freeze({version:'r807',check:()=>check('manual',true),force,snapshot});
+window.SukunUpdateRecoveryR798=Object.freeze({version:'r808',check:()=>check('manual',true),force,snapshot});
 })();
 </script>
 
@@ -73573,211 +73573,89 @@ html.sukun-jewel-r798 body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons :is(#bsSt
 
 
 
-<style id="sukun-r807-berhetiyye-one-owner">
-/* r807 — TRUE one-owner Berhetiyye layer.
-   Legacy r778/r779/r781/r783/r784/r785/r786/r789/r799/r806 visual authorities
-   are physically removed from this file. This is not another override layer. */
-html[data-r807-berhet="1"]{
-  --bh-max:min(calc(100vw - 18px),552px);
-  --bh-prev:url('./assets/berhetiyye-premium/control-nav-emerald-r788.png');
-  --bh-reset:url('./assets/berhetiyye-premium/control-nav-sapphire-r788.png');
-  --bh-next:url('./assets/berhetiyye-premium/control-nav-amethyst-r788.png');
-  --bh-primary:url('./assets/berhetiyye-premium/control-primary-r788.png');
-  --bh-exit:url('./assets/berhetiyye-premium/control-exit.png');
-  --bh-minus:url('./assets/berhetiyye-premium/control-round-minus-r788.png');
-  --bh-plus:url('./assets/berhetiyye-premium/control-round-plus-r788.png');
-  --bh-util-a:url('./assets/berhetiyye-premium/control-utility-sapphire-r788.png');
-  --bh-util-b:url('./assets/berhetiyye-premium/control-utility-emerald-r788.png');
-  --bh-util-c:url('./assets/berhetiyye-premium/control-utility-gold-r788.png');
-  --bh-panel:url('./assets/berhetiyye-premium/panel-tall-r784.png');
-  --bh-panel-wide:url('./assets/berhetiyye-premium/panel-wide-r784.png');
+<style id="sukun-r808-berhetiyye-isolated-owner">
+/* r808 — Berhetiyye visual isolation.
+   No legacy r778 class is used. This keeps r780/r789/r799-era rules dormant. */
+html[data-r808-berhet="1"]{
+  --r808-max:min(calc(100vw - 18px),548px);
+  --r808-primary:url('./assets/berhetiyye-premium/control-primary-r788.png');
+  --r808-prev:url('./assets/berhetiyye-premium/control-nav-emerald-r788.png');
+  --r808-reset:url('./assets/berhetiyye-premium/control-nav-sapphire-r788.png');
+  --r808-next:url('./assets/berhetiyye-premium/control-nav-amethyst-r788.png');
+  --r808-util-a:url('./assets/berhetiyye-premium/control-utility-sapphire-r788.png');
+  --r808-util-b:url('./assets/berhetiyye-premium/control-utility-emerald-r788.png');
+  --r808-util-c:url('./assets/berhetiyye-premium/control-utility-gold-r788.png');
+  --r808-minus:url('./assets/berhetiyye-premium/control-round-minus-r788.png');
+  --r808-plus:url('./assets/berhetiyye-premium/control-round-plus-r788.png');
 }
-html[data-r807-berhet="1"] body{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-01-billur.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="asa"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-02-asa.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="selale"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-03-selale.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="teras"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-04-teras.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="kristal"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-05-kristal.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="yuzuk"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-06-yuzuk.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="morkristal"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-07-mor-kristal.png')}
-html[data-r807-berhet="1"] body[data-r778-berhet-scene="ayasofyabillur"]{--bh-scene:url('./assets/berhetiyye-premium/scenes/scene-08-ayasofya-billur.png')}
+html[data-r808-berhet="1"] body{overflow-x:hidden!important}
+html[data-r808-berhet="1"] body #tab-zkr{overflow-x:hidden!important;padding-bottom:max(156px,calc(env(safe-area-inset-bottom,0px) + 146px))!important}
+html[data-r808-berhet="1"] body #tab-zkr>.card.zCtl{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;padding-inline:9px!important;overflow:visible!important}
+html[data-r808-berhet="1"] body :is(#zStage,#berhetAtlas,#berhetSeyir,#esmaSeyir99,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx,#tfRefinedLayout){box-sizing:border-box!important;width:min(100%,var(--r808-max))!important;max-width:var(--r808-max)!important;min-width:0!important;margin-inline:auto!important}
 
-html[data-r807-berhet="1"] body.r716-shell>#r717Scene{
-  display:block!important;background-image:linear-gradient(180deg,rgba(2,7,18,.05),rgba(2,9,22,.15) 45%,rgba(2,7,18,.44)),var(--bh-scene)!important;
-  background-position:center top!important;background-size:cover!important;background-repeat:no-repeat!important;filter:none!important;
-}
-html[data-r807-berhet="1"] body #tab-zkr{overflow-x:clip!important;padding-bottom:max(150px,calc(env(safe-area-inset-bottom,0px) + 142px))!important}
-html[data-r807-berhet="1"] body #tab-zkr>.card.zCtl{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;padding-inline:9px!important;overflow:visible!important}
-html[data-r807-berhet="1"] body :is(#zStage,#berhetAtlas,#berhetSeyir,#esmaSeyir99,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx,#tfRefinedLayout){
-  box-sizing:border-box!important;width:min(100%,var(--bh-max))!important;max-width:var(--bh-max)!important;min-width:0!important;margin-inline:auto!important;
-}
+/* r808 counter is a separate DOM surface. The polluted legacy zCountVisual is not rendered. */
+html[data-r808-berhet="1"] body .zCounterRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:"r808ring r808ring" "target remain"!important;gap:10px!important;width:100%!important;align-items:stretch!important}
+html[data-r808-berhet="1"] body .zCounterRow>.zCounterSide:first-child{grid-area:target!important}
+html[data-r808-berhet="1"] body .zCounterRow>.zCounterSide:last-child{grid-area:remain!important}
+html[data-r808-berhet="1"] body #zCountVisual{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+html[data-r808-berhet="1"] body #r808BerhetCounter{grid-area:r808ring!important;box-sizing:border-box!important;position:relative!important;justify-self:center!important;width:min(78vw,306px)!important;max-width:306px!important;aspect-ratio:1/1!important;margin:2px auto 8px!important;display:grid!important;place-items:center!important;isolation:isolate!important;overflow:visible!important;cursor:pointer!important;touch-action:manipulation!important;user-select:none!important;-webkit-user-select:none!important;outline:0!important}
+html[data-r808-berhet="1"] body #r808BerhetCounter::before,html[data-r808-berhet="1"] body #r808BerhetCounter::after{content:none!important;display:none!important}
+html[data-r808-berhet="1"] body #r808BerhetRing{position:absolute!important;inset:-2.5%!important;z-index:1!important;width:105%!important;height:105%!important;object-fit:contain!important;pointer-events:none!important;transform-origin:50% 50%!important;animation:r808BerhetCCW 24s linear infinite!important;filter:drop-shadow(0 10px 18px rgba(0,0,0,.30)) drop-shadow(0 0 12px rgba(144,86,255,.13))!important;backface-visibility:hidden!important;-webkit-backface-visibility:hidden!important}
+@keyframes r808BerhetCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+html[data-r808-berhet="1"] body #r808BerhetNums{position:relative!important;z-index:3!important;width:54%!important;height:54%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;pointer-events:none!important}
+html[data-r808-berhet="1"] body #r808BerhetNums small{display:block!important;margin:0 0 5px!important;font:700 clamp(11px,3vw,14px)/1 Figtree,system-ui!important;letter-spacing:.16em!important;color:#fff0c8!important}
+html[data-r808-berhet="1"] body #r808BerhetBig{display:block!important;margin:0!important;font:700 clamp(50px,15.5vw,74px)/.92 Georgia,serif!important;letter-spacing:-.03em!important;color:#fff3cf!important;text-shadow:0 0 16px rgba(255,225,154,.16)!important;white-space:nowrap!important}
+html[data-r808-berhet="1"] body #r808BerhetPct{display:block!important;margin-top:5px!important;font:700 clamp(11px,3.2vw,15px)/1 Figtree,system-ui!important;color:#cbeff1!important;white-space:nowrap!important}
+html[data-r808-berhet="1"] body .zCounterSide{box-sizing:border-box!important;min-width:0!important;min-height:82px!important;padding:10px 12px!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-align:center!important;overflow:hidden!important;background:linear-gradient(160deg,rgba(6,24,42,.76),rgba(7,15,36,.72))!important;border:1px solid rgba(246,217,138,.24)!important;border-radius:20px!important}
+html[data-r808-berhet="1"] body .zCounterSide small{font:700 clamp(10px,2.8vw,12px)/1 Figtree,system-ui!important;letter-spacing:.08em!important;color:#c9d3d8!important}
+html[data-r808-berhet="1"] body .zCounterSide b{font:600 clamp(24px,7.8vw,32px)/1 Georgia,serif!important;color:#fff2cf!important}
+html[data-r808-berhet="1"] body .zCounterSide em{display:none!important}
 
-/* One direct background owner. No decorative ::before skin layer. */
-html[data-r807-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#r630TekkeQuick){
-  box-sizing:border-box!important;position:relative!important;inset:auto!important;isolation:isolate!important;
-  border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;background-color:transparent!important;
-  background-position:center!important;background-repeat:no-repeat!important;background-size:100% 100%!important;
-  color:#fff0c8!important;text-shadow:0 2px 4px rgba(0,0,0,.86)!important;filter:none!important;
-  animation:none!important;transition:transform .12s ease,filter .12s ease!important;
-}
-html[data-r807-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#r630TekkeQuick)::before,
-html[data-r807-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#r630TekkeQuick)::after{content:none!important;display:none!important;animation:none!important;transition:none!important}
-html[data-r807-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#r630TekkeQuick):active{transform:scale(.982)!important;filter:brightness(1.06)!important}
+/* Explicit hidden wins over every generic display:flex rule. */
+html[data-r808-berhet="1"] body #berhetSeyir button[hidden],html[data-r808-berhet="1"] body #esmaSeyir99 button[hidden],html[data-r808-berhet="1"] body #bsPause,html[data-r808-berhet="1"] body #es99Pause{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;width:0!important;height:0!important;overflow:hidden!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99){animation:none!important;transition:none!important}
 
-/* Tefekkür entry / exit */
-html[data-r807-berhet="1"] body #r700TefEntry{box-sizing:border-box!important;width:min(100%,var(--bh-max))!important;margin:12px auto 14px!important;padding:0!important;background:none!important;border:0!important;overflow:visible!important}
-html[data-r807-berhet="1"] body #r700TefEntry #r442TefekkurBtn{
-  background-image:var(--bh-primary)!important;width:100%!important;max-width:none!important;min-width:0!important;height:62px!important;min-height:62px!important;padding:0 19px!important;
-  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;overflow:hidden!important;
-}
-html[data-r807-berhet="1"] body #r442TefekkurBtn .r700TefIcon{flex:0 0 38px!important;width:38px!important;height:38px!important;display:grid!important;place-items:center!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
-html[data-r807-berhet="1"] body #r442TefekkurBtn .r700TefLabel{flex:1 1 auto!important;min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font:700 clamp(15px,4.8vw,20px)/1.05 Georgia,serif!important;color:#fff1ca!important}
-html[data-r807-berhet="1"] body #r442TefekkurBtn .r700TefArrow{flex:0 0 18px!important;width:18px!important;font-size:24px!important;line-height:1!important;color:#e7b7ff!important}
-html[data-r807-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important}
-html[data-r807-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #tefExitBtn{
-  background-image:var(--bh-exit)!important;width:100%!important;max-width:none!important;min-width:0!important;height:52px!important;min-height:52px!important;max-height:52px!important;
-  margin:0!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;overflow:hidden!important;
-  font:700 12px/1.05 Figtree,system-ui!important;white-space:nowrap!important;
-}
-html[data-r807-berhet="1"] body.sukun-tefekkur-mode #tefExitBtn .r697ExitFull{display:inline!important;min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-html[data-r807-berhet="1"] body.sukun-tefekkur-mode #tefExitBtn .r697ExitShort{display:none!important}
+/* Structural journey layout. Appearance is written inline by the single r808 owner. */
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(88px,.75fr)!important;gap:10px!important;align-items:center!important;width:100%!important;min-height:74px!important;padding:9px 12px!important;overflow:hidden!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;overflow:hidden!important;font:700 clamp(17px,5.3vw,24px)/.94 Georgia,serif!important;color:#fff0ca!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>.r168Tag{box-sizing:border-box!important;min-width:88px!important;max-width:118px!important;padding:6px 8px!important;border-radius:999px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;font:700 8.6px/1.04 Figtree,system-ui!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:end!important;width:100%!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow>*{min-width:0!important;max-width:100%!important}
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;width:100%!important;align-items:stretch!important}
+html[data-r808-berhet="1"] body #berhetSeyir :is(#bsStart,#bsReset),html[data-r808-berhet="1"] body #esmaSeyir99 :is(#es99Start,#es99Reset){grid-column:1/-1!important}
 
-/* Six utility controls */
-html[data-r807-berhet="1"] body #zBar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:14px 0 4px!important;align-items:stretch!important}
-html[data-r807-berhet="1"] body #zBar .spkBtn{
-  width:100%!important;min-width:0!important;max-width:none!important;height:88px!important;min-height:88px!important;max-height:88px!important;
-  margin:0!important;padding:12px 6px 10px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;overflow:hidden!important;
-}
-html[data-r807-berhet="1"] body #zBar #spkOnce{background-image:var(--bh-util-a)!important}
-html[data-r807-berhet="1"] body #zBar #zDonguBtn{background-image:var(--bh-util-c)!important}
-html[data-r807-berhet="1"] body #zBar #itemRecBtn{background-image:var(--bh-util-a)!important}
-html[data-r807-berhet="1"] body #zBar #niyetRecBtn{background-image:var(--bh-util-c)!important}
-html[data-r807-berhet="1"] body #zBar #favBtn{background-image:var(--bh-util-b)!important}
-html[data-r807-berhet="1"] body #zBar #zBarHelp{background-image:var(--bh-util-b)!important}
-html[data-r807-berhet="1"] body #zBar .spkBtn>.ico{display:none!important}
-html[data-r807-berhet="1"] body #zBar .spkBtn>span:last-child,
-html[data-r807-berhet="1"] body #zBar .spkBtn>span:only-child{
-  display:block!important;min-width:0!important;max-width:72px!important;margin:0 auto!important;text-align:center!important;
-  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal!important;word-break:normal!important;
-  font:700 9.5px/1.06 Figtree,system-ui!important;letter-spacing:.06em!important;text-transform:uppercase!important;color:#ffecc2!important;
-}
-html[data-r807-berhet="1"] body #zBar #itemRecBtn>span:last-child{font-size:8.8px!important;line-height:1.02!important;max-width:66px!important}
+/* Counter action/nav structures. */
+html[data-r808-berhet="1"] body .zCounterActions{display:grid!important;grid-template-columns:58px minmax(0,1fr) 58px!important;gap:8px!important;width:100%!important;margin:12px 0 0!important;align-items:stretch!important}
+html[data-r808-berhet="1"] body #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:11px auto 10px!important;align-items:stretch!important}
 
-/* Atlas / journey headers */
-html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head{
-  box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(96px,.85fr)!important;gap:10px!important;align-items:center!important;
-  width:100%!important;min-height:76px!important;padding:10px 14px!important;overflow:hidden!important;
-  background-image:var(--bh-panel-wide)!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-position:center!important;border:0!important;
-}
-html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{
-  display:block!important;min-width:0!important;max-width:100%!important;margin:0!important;white-space:normal!important;overflow:visible!important;overflow-wrap:normal!important;word-break:normal!important;
-  font:700 clamp(17px,5.2vw,25px)/.96 Georgia,serif!important;letter-spacing:.01em!important;color:#fff0bd!important;text-shadow:0 2px 4px rgba(0,0,0,.88)!important;
-}
-html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head>.r168Tag{
-  box-sizing:border-box!important;min-width:92px!important;max-width:128px!important;margin:0!important;padding:7px 9px!important;border-radius:999px!important;
-  white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;text-align:center!important;font:700 9px/1.05 Figtree,system-ui!important;letter-spacing:.035em!important;
-  color:#e9eef2!important;background:rgba(7,23,42,.72)!important;border:1px solid rgba(246,217,138,.25)!important;
-}
+/* Tefekkür structure only. Appearance is inline-owned. */
+html[data-r808-berhet="1"] body #r700TefEntry{box-sizing:border-box!important;width:min(100%,var(--r808-max))!important;margin:12px auto 14px!important;padding:0!important;background:none!important;border:0!important;overflow:visible!important}
+html[data-r808-berhet="1"] body #r442TefekkurBtn .r700TefIcon{flex:0 0 38px!important;width:38px!important;height:38px!important;display:grid!important;place-items:center!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html[data-r808-berhet="1"] body #r442TefekkurBtn .r700TefLabel{flex:1 1 auto!important;min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font:700 clamp(15px,4.8vw,20px)/1.05 Georgia,serif!important;color:#fff1ca!important}
+html[data-r808-berhet="1"] body #r442TefekkurBtn .r700TefArrow{flex:0 0 18px!important;width:18px!important;font-size:24px!important;line-height:1!important;color:#e7b7ff!important}
 
-/* Counter: only one ring and one static number layer. */
-html[data-r807-berhet="1"] body .zCounterRow{
-  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:"ring ring" "target remain"!important;gap:10px!important;align-items:stretch!important;width:100%!important;
-}
-html[data-r807-berhet="1"] body .zCounterRow>.zCounterSide:first-child{grid-area:target!important}
-html[data-r807-berhet="1"] body .zCounterRow>.zCounterSide:last-child{grid-area:remain!important}
-html[data-r807-berhet="1"] body .zCounterRow>.zCountVisual{
-  grid-area:ring!important;justify-self:center!important;align-self:center!important;box-sizing:border-box!important;
-  width:min(75vw,296px)!important;max-width:296px!important;height:auto!important;aspect-ratio:1/1!important;margin:2px auto 8px!important;
-  border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;filter:none!important;overflow:visible!important;isolation:isolate!important;transform:none!important;
-}
-html[data-r807-berhet="1"] body #zCountVisual>:is(.zGlow,.breathHalo,.tsbGauge,.rings,.progArc,.zMuhr,#r706Orbit,#r709Mandala,#r716FlameRing,#r716FlameLayer){display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important}
-html[data-r807-berhet="1"] body #zCountVisual>#r778RingSkin{
-  display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;inset:-3%!important;z-index:2!important;pointer-events:none!important;
-  background-image:url('./assets/berhetiyye-premium/berhetiyye-ring-r806.png')!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;
-  filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)) drop-shadow(0 0 13px rgba(139,92,246,.14))!important;transform-origin:50% 50%!important;
-  animation:r807BerhetCCW 22s linear infinite!important;will-change:transform!important;
-}
-@keyframes r807BerhetCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
-html[data-r807-berhet="1"] body #zCountVisual>.cntNums{
-  display:flex!important;visibility:visible!important;opacity:1!important;position:absolute!important;inset:25% 22% 23% 22%!important;z-index:10!important;
-  flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;pointer-events:none!important;transform:none!important;
-}
-html[data-r807-berhet="1"] body #zCountVisual .cntNums small{display:block!important;margin:0 0 4px!important;font:700 clamp(11px,3vw,14px)/1 Figtree,system-ui!important;letter-spacing:.15em!important;color:#fff0c8!important}
-html[data-r807-berhet="1"] body #zCountVisual .cntBig{display:block!important;margin:0!important;font:700 clamp(48px,15vw,72px)/.92 Georgia,serif!important;letter-spacing:-.03em!important;color:#fff3cf!important;text-shadow:0 0 15px rgba(255,226,155,.16)!important;white-space:nowrap!important}
-html[data-r807-berhet="1"] body #zCountVisual .cntPct{display:block!important;margin-top:4px!important;font:700 clamp(11px,3.2vw,15px)/1 Figtree,system-ui!important;color:#cbeff1!important;white-space:nowrap!important}
-html[data-r807-berhet="1"] body .zCounterSide{
-  box-sizing:border-box!important;min-width:0!important;min-height:82px!important;padding:10px 12px!important;margin:0!important;overflow:hidden!important;
-  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-align:center!important;
-  background:linear-gradient(160deg,rgba(6,24,42,.76),rgba(7,15,36,.72))!important;border:1px solid rgba(246,217,138,.24)!important;border-radius:20px!important;
-}
-html[data-r807-berhet="1"] body .zCounterSide small{font:700 clamp(10px,2.8vw,12px)/1 Figtree,system-ui!important;letter-spacing:.08em!important;color:#c9d3d8!important}
-html[data-r807-berhet="1"] body .zCounterSide b{font:600 clamp(24px,7.8vw,32px)/1 Georgia,serif!important;color:#fff2cf!important}
-html[data-r807-berhet="1"] body .zCounterSide em{display:none!important}
-html[data-r807-berhet="1"] body #cntSub{text-align:center!important;line-height:1.3!important}
-
-/* Counter controls */
-html[data-r807-berhet="1"] body .zCounterActions{display:grid!important;grid-template-columns:58px minmax(0,1fr) 58px!important;gap:8px!important;width:100%!important;margin:12px 0 0!important;align-items:stretch!important}
-html[data-r807-berhet="1"] body #undoBtn{background-image:var(--bh-minus)!important}
-html[data-r807-berhet="1"] body #plusBtn{background-image:var(--bh-plus)!important}
-html[data-r807-berhet="1"] body :is(#undoBtn,#plusBtn){width:58px!important;min-width:58px!important;max-width:58px!important;height:58px!important;min-height:58px!important;max-height:58px!important;padding:0!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;overflow:hidden!important}
-html[data-r807-berhet="1"] body :is(#undoBtn,#plusBtn)>b{display:block!important;font-size:21px!important;line-height:1!important;color:#fff0c7!important}
-html[data-r807-berhet="1"] body :is(#undoBtn,#plusBtn)>span{display:block!important;max-width:44px!important;text-align:center!important;font-size:8px!important;line-height:1.02!important;letter-spacing:.01em!important;white-space:normal!important;overflow-wrap:normal!important;color:#f4e7ca!important}
-html[data-r807-berhet="1"] body #autoBtn{
-  background-image:var(--bh-primary)!important;width:100%!important;min-width:0!important;max-width:none!important;height:58px!important;min-height:58px!important;max-height:58px!important;
-  margin:0!important;padding:6px 12px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;text-align:center!important;overflow:hidden!important;
-}
-html[data-r807-berhet="1"] body #autoBtn>b{display:block!important;max-width:100%!important;font-size:13px!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#fff0c7!important}
-html[data-r807-berhet="1"] body #autoBtn>small{display:block!important;max-width:100%!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#e8e2d5!important}
-html[data-r807-berhet="1"] body #resetBtn{background-image:var(--bh-reset)!important;width:min(100%,320px)!important;max-width:320px!important;height:46px!important;min-height:46px!important;margin:8px auto 0!important;padding:0 12px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-size:11px!important;line-height:1.05!important;overflow:hidden!important}
-
-/* Previous / restart / next */
-html[data-r807-berhet="1"] body #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:11px auto 10px!important;align-items:stretch!important}
-html[data-r807-berhet="1"] body #r616ZikirNavRow button{width:100%!important;min-width:0!important;max-width:none!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important;padding:0 7px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;overflow:hidden!important;font:700 9.6px/1.05 Figtree,system-ui!important;color:#fff0c7!important}
-html[data-r807-berhet="1"] body #r616ZikirNavRow button:nth-child(1){background-image:var(--bh-prev)!important}
-html[data-r807-berhet="1"] body #r616ZikirNavRow button:nth-child(2){background-image:var(--bh-reset)!important}
-html[data-r807-berhet="1"] body #r616ZikirNavRow button:nth-child(3){background-image:var(--bh-next)!important}
-
-/* 28 / 99 journey controls */
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:end!important;width:100%!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow>*{min-width:0!important;max-width:100%!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important;align-items:stretch!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{width:100%!important;min-width:0!important;max-width:none!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important;padding:0 8px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;overflow:hidden!important;font:700 9.8px/1.04 Figtree,system-ui!important;color:#fff0c7!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) :is(#bsStart,#bsPause,#es99Start,#es99Pause){background-image:var(--bh-primary)!important;grid-column:1/-1!important;height:54px!important;min-height:54px!important;max-height:54px!important;font-size:11.5px!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) :is(#bsPrev,#es99Prev){background-image:var(--bh-prev)!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) :is(#bsNext,#es99Next){background-image:var(--bh-next)!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) :is(#bsAgain,#es99Again,#bsReset,#es99Reset,#bsStop,#es99Stop){background-image:var(--bh-reset)!important}
-html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) :is(#bsReset,#es99Reset,#bsStop,#es99Stop){grid-column:1/-1!important;height:52px!important;min-height:52px!important;max-height:52px!important}
-
-/* Dock: fixed but never wider than content, reserve space above Android nav. */
-html[data-r807-berhet="1"] body #r433DockPeek{box-sizing:border-box!important;width:min(calc(100vw - 18px),548px)!important;max-width:548px!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 8px)!important;height:58px!important;min-height:58px!important;max-height:58px!important;padding:0 18px!important;background-image:var(--bh-primary)!important;overflow:hidden!important}
-html[data-r807-berhet="1"] body #r433DockPeek>*{min-width:0!important;max-width:100%!important}
-
+/* No host wake/flash in Berhetiyye. */
+html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99,.r604-action-wake,.r604-action-tap){animation:none!important;transition:none!important}
 @media(max-width:390px){
- html[data-r807-berhet="1"]{--bh-max:min(calc(100vw - 14px),520px)}
- html[data-r807-berhet="1"] body #zBar .spkBtn{height:84px!important;min-height:84px!important;max-height:84px!important;padding:10px 5px 8px!important}
- html[data-r807-berhet="1"] body #zBar .spkBtn>span:last-child,html[data-r807-berhet="1"] body #zBar .spkBtn>span:only-child{font-size:9px!important;max-width:66px!important}
- html[data-r807-berhet="1"] body .zCounterRow>.zCountVisual{width:min(76vw,278px)!important;max-width:278px!important}
- html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head{grid-template-columns:minmax(0,1.2fr) minmax(86px,.8fr)!important;padding:9px 12px!important;min-height:72px!important}
- html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{font-size:clamp(16px,5vw,22px)!important}
- html[data-r807-berhet="1"] body :is(#berhetAtlas,#berhetSeyir,#esmaSeyir99)>summary.r168Head>.r168Tag{min-width:84px!important;max-width:112px!important;font-size:8.5px!important;padding:6px 8px!important}
- html[data-r807-berhet="1"] body #r616ZikirNavRow button{font-size:9px!important;padding-inline:5px!important}
+ html[data-r808-berhet="1"] body #r808BerhetCounter{width:min(80vw,288px)!important;max-width:288px!important}
+ html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{grid-template-columns:minmax(0,1.25fr) minmax(82px,.75fr)!important;padding:8px 10px!important}
+ html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{font-size:clamp(16px,5vw,22px)!important}
+ html[data-r808-berhet="1"] body #r616ZikirNavRow{gap:7px!important}
 }
 @media(max-width:350px){
- html[data-r807-berhet="1"] body #zBar{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- html[data-r807-berhet="1"] body #r616ZikirNavRow{grid-template-columns:1fr!important}
- html[data-r807-berhet="1"] body #r616ZikirNavRow button{height:46px!important;min-height:46px!important;max-height:46px!important}
- html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow,html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{grid-template-columns:1fr!important}
- html[data-r807-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{grid-column:1!important}
+ html[data-r808-berhet="1"] body #r616ZikirNavRow{grid-template-columns:1fr!important}
+ html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow,html[data-r808-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{grid-template-columns:1fr!important}
+ html[data-r808-berhet="1"] body #berhetSeyir .r168Buttons button,html[data-r808-berhet="1"] body #esmaSeyir99 .r168Buttons button{grid-column:1!important}
 }
-@media(prefers-reduced-motion:reduce){html[data-r807-berhet="1"] body #zCountVisual>#r778RingSkin{animation:none!important}}
+@media(prefers-reduced-motion:reduce){html[data-r808-berhet="1"] body #r808BerhetRing{animation:none!important}}
 </style>
-<script id="sukun-r807-berhetiyye-one-owner-runtime">
+<script id="sukun-r808-berhetiyye-isolated-owner-runtime">
 (()=>{
 'use strict';
-if(window.SukunR807Berhetiyye)return;
+if(window.SukunR808Berhetiyye)return;
 const root=document.documentElement;
-let active=false,raf=0,offTimer=0;
-const SCENES=['billur','asa','selale','teras','kristal','yuzuk','morkristal','ayasofyabillur'];
-let scene='auto';try{scene=localStorage.getItem('sukun.berhet.scene')||'auto'}catch(_){ }
+const A='./assets/berhetiyye-premium/';
+let active=false,raf=0,obsCounter=null;
 function snapshot(){try{return window.currentZikirState?.snapshot?.()||null}catch(_){return null}}
 function selected(){
  try{if(typeof Z!=='undefined'&&String(Z.cat||'')==='berhet')return true}catch(_){ }
@@ -73786,45 +73664,83 @@ function selected(){
  try{if(document.querySelector('#zCats [data-c="berhet"].act'))return true}catch(_){ }
  return false;
 }
-function visible(){const tab=document.getElementById('tab-zkr');return !!(document.body?.classList.contains('sukun-tefekkur-mode')||(tab&&!tab.hidden))}
-function idx(){try{if(typeof Z!=='undefined'&&Number.isFinite(+Z.idx))return Math.max(0,+Z.idx)}catch(_){ }try{const s=snapshot();if(Number.isFinite(+s?.idx))return Math.max(0,+s.idx)}catch(_){ }return 0}
-function sceneId(){if(scene!=='auto'&&SCENES.includes(scene))return scene;return SCENES[idx()%SCENES.length]}
-function ensureRing(){const host=document.getElementById('zCountVisual');if(!host)return null;let r=document.getElementById('r778RingSkin');if(!r){r=document.createElement('div');r.id='r778RingSkin';r.setAttribute('aria-hidden','true');host.insertBefore(r,host.firstChild)}return r}
-const INLINE_PROPS=['background','background-image','background-color','background-size','background-position','background-repeat','border','border-color','border-radius','box-shadow','filter','transform','width','min-width','max-width','height','min-height','max-height','padding','padding-left','padding-right','padding-top','padding-bottom','margin','margin-left','margin-right','margin-top','margin-bottom','inset','top','right','bottom','left','font-size','line-height','overflow','overflow-x','overflow-y'];
-function clearInline(el){if(!el?.style)return;INLINE_PROPS.forEach(p=>{if(el.style.getPropertyPriority(p)==='important')el.style.removeProperty(p)})}
-function sanitize(){
- const list=document.querySelectorAll('#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#zCountVisual,#r778RingSkin');
- list.forEach(clearInline);
- const nums=document.querySelector('#zCountVisual>.cntNums');if(nums){['opacity','visibility','transform','inset','position','width','height'].forEach(p=>{if(nums.style.getPropertyPriority(p)==='important')nums.style.removeProperty(p)})}
+function imp(el,p,v){if(!el?.style)return;if(el.style.getPropertyValue(p)!==v||el.style.getPropertyPriority(p)!=='important')el.style.setProperty(p,v,'important')}
+function clearLegacyState(){
+ root.classList.remove('sukun-r799-berhet-counter','sukun-r802-berhet-switch','sukun-r803-berhet-anim');
+ document.body?.classList.remove('r778-berhet-palace','r783-ring-live','r803-berhet-entering','r803-berhet-exiting','r803-berhet-glowhold');
+ delete root.dataset.r807Berhet;
 }
-function labels(){
- const nav=[...document.querySelectorAll('#r616ZikirNavRow button')];
- const vals=['← Önceki','↺ Baştan başlat','Sonraki →'];nav.forEach((b,i)=>{if(vals[i]&&b.dataset.r807Label!==vals[i]){b.textContent=vals[i];b.dataset.r807Label=vals[i]}});
- const m={bsPrev:'← Önceki İsim',bsNext:'Sonraki İsim →',bsAgain:'↺ Bu İsmi Baştan',bsStop:'■ Bitir',bsReset:'↺ Tüm Seyri Baştan',es99Prev:'← Önceki İsim',es99Next:'Sonraki İsim →',es99Again:'↺ Bu İsmi Baştan',es99Stop:'■ Bitir',es99Reset:'↺ Tüm Seyri Baştan'};
- for(const [id,txt] of Object.entries(m)){const el=document.getElementById(id);if(el&&el.dataset.r807Label!==txt){el.textContent=txt;el.dataset.r807Label=txt}}
-}
-function commit(on){
- on=!!on;if(on===active&&root.dataset.r807Berhet===(on?'1':undefined)){if(on){sanitize();labels();ensureRing()}return}
- active=on;
- if(on){
-  root.dataset.r807Berhet='1';document.body?.classList.add('r778-berhet-palace');ensureRing();sanitize();labels();
-  if(document.body)document.body.dataset.r778BerhetScene=sceneId();
- }else{
-  delete root.dataset.r807Berhet;document.body?.classList.remove('r778-berhet-palace','r783-ring-live');
-  if(document.body)delete document.body.dataset.r778BerhetPalace;
+function ensureCounter(){
+ const row=document.querySelector('.zCounterRow'),legacy=document.getElementById('zCountVisual');if(!row||!legacy)return null;
+ let c=document.getElementById('r808BerhetCounter');
+ if(!c){
+  c=document.createElement('div');c.id='r808BerhetCounter';c.setAttribute('role','button');c.tabIndex=0;c.setAttribute('aria-label','Berhetiyye zikir sayacı');
+  c.innerHTML='<img id="r808BerhetRing" alt="" aria-hidden="true" src="./assets/berhetiyye-premium/berhetiyye-ring-r808.png?v=r808"><div id="r808BerhetNums"><small>TEKRAR</small><div id="r808BerhetBig">0</div><div id="r808BerhetPct">%0</div></div>';
+  legacy.insertAdjacentElement('afterend',c);
+  const proxy=()=>{try{legacy.click()}catch(_){}};c.addEventListener('click',proxy);c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();proxy()}});
  }
+ return c;
 }
-function reconcile(){raf=0;const yes=selected()&&visible();if(yes){clearTimeout(offTimer);commit(true);return}if(!active){commit(false);return}clearTimeout(offTimer);offTimer=setTimeout(()=>{if(!(selected()&&visible()))commit(false)},420)}
+function syncCounter(){
+ const c=ensureCounter();if(!c)return;
+ const big=document.getElementById('cntBig')?.textContent?.trim()||'0',pct=document.getElementById('cntPct')?.textContent?.trim()||'%0';
+ const b=document.getElementById('r808BerhetBig'),p=document.getElementById('r808BerhetPct');if(b&&b.textContent!==big)b.textContent=big;if(p&&p.textContent!==pct)p.textContent=pct;
+ const legacy=document.getElementById('zCountVisual');if(legacy){imp(legacy,'display','none');imp(legacy,'visibility','hidden');imp(legacy,'opacity','0');imp(legacy,'pointer-events','none')}
+}
+const IMG={
+ primary:A+'control-primary-r788.png',prev:A+'control-nav-emerald-r788.png',reset:A+'control-nav-sapphire-r788.png',next:A+'control-nav-amethyst-r788.png',
+ utilA:A+'control-utility-sapphire-r788.png',utilB:A+'control-utility-emerald-r788.png',utilC:A+'control-utility-gold-r788.png',minus:A+'control-round-minus-r788.png',plus:A+'control-round-plus-r788.png'
+};
+function skin(el,img,opt={}){
+ if(!el)return;
+ imp(el,'box-sizing','border-box');imp(el,'position','relative');imp(el,'inset','auto');imp(el,'background',`url("${img}") center / 100% 100% no-repeat`);imp(el,'background-color','transparent');imp(el,'border','0');imp(el,'border-radius','0');imp(el,'box-shadow','none');imp(el,'filter','none');imp(el,'animation','none');imp(el,'color','#fff0c8');imp(el,'text-shadow','0 2px 4px rgba(0,0,0,.86)');imp(el,'overflow','hidden');imp(el,'text-align','center');imp(el,'font-family','Figtree,system-ui,sans-serif');
+ if(opt.w)imp(el,'width',opt.w);if(opt.minw)imp(el,'min-width',opt.minw);if(opt.maxw)imp(el,'max-width',opt.maxw);if(opt.h){imp(el,'height',opt.h);imp(el,'min-height',opt.h);imp(el,'max-height',opt.h)}if(opt.pad)imp(el,'padding',opt.pad);
+ imp(el,'display',opt.display||'flex');imp(el,'align-items','center');imp(el,'justify-content','center');if(opt.dir)imp(el,'flex-direction',opt.dir);if(opt.gap)imp(el,'gap',opt.gap);if(opt.font)imp(el,'font',opt.font);
+}
+function hideMergedPause(){for(const id of ['bsPause','es99Pause']){const b=document.getElementById(id);if(!b)continue;b.hidden=true;b.setAttribute('aria-hidden','true');imp(b,'display','none');imp(b,'visibility','hidden');imp(b,'opacity','0');imp(b,'pointer-events','none');imp(b,'position','absolute');imp(b,'width','0');imp(b,'height','0')}}
+function skinControls(){
+ // Main counter controls
+ skin(document.getElementById('undoBtn'),IMG.minus,{w:'58px',minw:'58px',maxw:'58px',h:'58px',pad:'0',dir:'column',gap:'2px'});
+ skin(document.getElementById('plusBtn'),IMG.plus,{w:'58px',minw:'58px',maxw:'58px',h:'58px',pad:'0',dir:'column',gap:'2px'});
+ skin(document.getElementById('autoBtn'),IMG.primary,{w:'100%',minw:'0',h:'58px',pad:'6px 12px',dir:'column',gap:'2px'});
+ skin(document.getElementById('resetBtn'),IMG.reset,{w:'min(100%,360px)',h:'48px',pad:'0 14px',font:'700 11px/1.05 Figtree,system-ui'});
+ // Main nav
+ const nav=[...document.querySelectorAll('#r616ZikirNavRow button')],nimgs=[IMG.prev,IMG.reset,IMG.next],ntxt=['← Önceki','↺ Baştan başlat','Sonraki →'];
+ nav.forEach((b,i)=>{if(!b)return;b.textContent=ntxt[i]||b.textContent;skin(b,nimgs[i]||IMG.primary,{w:'100%',minw:'0',h:'48px',pad:'0 7px',font:'700 9.7px/1.04 Figtree,system-ui'})});
+ // Journey controls: no duplicate pause.
+ hideMergedPause();
+ const map={
+  bsStart:[IMG.primary,'54px','700 11.5px/1.04 Figtree,system-ui'],bsPrev:[IMG.prev,'48px','700 10px/1.04 Figtree,system-ui'],bsNext:[IMG.next,'48px','700 10px/1.04 Figtree,system-ui'],bsAgain:[IMG.prev,'48px','700 9.7px/1.04 Figtree,system-ui'],bsStop:[IMG.next,'48px','700 10px/1.04 Figtree,system-ui'],bsReset:[IMG.reset,'52px','700 10.5px/1.04 Figtree,system-ui'],
+  es99Start:[IMG.primary,'54px','700 11.5px/1.04 Figtree,system-ui'],es99Prev:[IMG.prev,'48px','700 10px/1.04 Figtree,system-ui'],es99Next:[IMG.next,'48px','700 10px/1.04 Figtree,system-ui'],es99Again:[IMG.prev,'48px','700 9.7px/1.04 Figtree,system-ui'],es99Stop:[IMG.next,'48px','700 10px/1.04 Figtree,system-ui'],es99Reset:[IMG.reset,'52px','700 10.5px/1.04 Figtree,system-ui']
+ };
+ for(const [id,[img,h,font]] of Object.entries(map)){const b=document.getElementById(id);if(!b)continue;skin(b,img,{w:'100%',minw:'0',h,pad:'0 8px',font})}
+ // Utility six
+ const util={spkOnce:IMG.utilA,zDonguBtn:IMG.utilC,itemRecBtn:IMG.utilA,niyetRecBtn:IMG.utilC,favBtn:IMG.utilB,zBarHelp:IMG.utilB};
+ for(const [id,img] of Object.entries(util)){const b=document.getElementById(id);if(!b)continue;skin(b,img,{w:'100%',minw:'0',h:'88px',pad:'11px 6px 9px',dir:'column',gap:'5px',font:'700 9.3px/1.05 Figtree,system-ui'})}
+ // Tefekkür in/out
+ skin(document.getElementById('r442TefekkurBtn'),IMG.primary,{w:'100%',minw:'0',h:'62px',pad:'0 19px',gap:'10px'});
+ skin(document.getElementById('tefExitBtn'),IMG.next,{w:'100%',minw:'0',h:'52px',pad:'0 16px',gap:'7px',font:'700 12px/1.05 Figtree,system-ui'});
+ // Collapsed player: appearance only; keep positioning owned by dock system.
+ const peek=document.getElementById('r433DockPeek');if(peek){imp(peek,'background',`url("${IMG.primary}") center / 100% 100% no-repeat`);imp(peek,'border','0');imp(peek,'border-radius','0');imp(peek,'box-shadow','none');imp(peek,'filter','none');imp(peek,'animation','none');imp(peek,'color','#fff0c8');imp(peek,'text-shadow','0 2px 4px rgba(0,0,0,.86)');}
+}
+function normalizeLabels(){
+ const m={bsPrev:'← Önceki İsim',bsNext:'Sonraki İsim →',bsAgain:'↺ Bu İsmi Baştan',bsStop:'■ Bitir',bsReset:'↺ Tüm Seyri Baştan',es99Prev:'← Önceki İsim',es99Next:'Sonraki İsim →',es99Again:'↺ Bu İsmi Baştan',es99Stop:'■ Bitir',es99Reset:'↺ Tüm Seyri Baştan'};
+ for(const [id,t] of Object.entries(m)){const b=document.getElementById(id);if(b&&b.textContent!==t)b.textContent=t}
+}
+function enter(){active=true;clearLegacyState();root.dataset.r808Berhet='1';ensureCounter();syncCounter();normalizeLabels();skinControls();
+ const big=document.getElementById('cntBig'),pct=document.getElementById('cntPct');if(obsCounter)obsCounter.disconnect();obsCounter=new MutationObserver(syncCounter);if(big)obsCounter.observe(big,{childList:true,characterData:true,subtree:true});if(pct)obsCounter.observe(pct,{childList:true,characterData:true,subtree:true});
+}
+function leave(){active=false;delete root.dataset.r808Berhet;const c=document.getElementById('r808BerhetCounter');if(c)c.remove();if(obsCounter){obsCounter.disconnect();obsCounter=null}const legacy=document.getElementById('zCountVisual');if(legacy){for(const p of ['display','visibility','opacity','pointer-events'])if(legacy.style.getPropertyPriority(p)==='important')legacy.style.removeProperty(p)}}
+function reconcile(){raf=0;const yes=selected();if(yes){if(!active)enter();else{clearLegacyState();syncCounter();normalizeLabels();skinControls()}}else if(active)leave()}
 function queue(){if(raf)return;raf=requestAnimationFrame(reconcile)}
-function setScene(id){scene=(id==='auto'||SCENES.includes(id))?id:'auto';try{localStorage.setItem('sukun.berhet.scene',scene)}catch(_){ }if(active&&document.body)document.body.dataset.r778BerhetScene=sceneId();return scene}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queue,{once:true});else queue();
-['pageshow','popstate','resize','orientationchange','sukun:nowplayingchange','sukun:playbackchange','sukun:zikirchange','sukun:currentzikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:tabchange','sukun:domhydrate'].forEach(ev=>window.addEventListener(ev,queue,{passive:true}));
-document.addEventListener('pointerup',e=>{const c=e.target.closest?.('#zCats [data-c]');if(c?.dataset.c==='berhet'){clearTimeout(offTimer);commit(true)}else if(c&&c.dataset.c!=='berhet')commit(false);setTimeout(queue,20)},{passive:true});
-new MutationObserver(queue).observe(document.body||document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','data-r474-name-category','aria-selected','aria-pressed']});
-/* Compatibility API for code that still calls the old r778 authority. Visual painting is intentionally gone. */
-window.SukunR778BerhetiyyeAuthority=Object.freeze({version:'r807-shim',sync:queue,active:()=>active,repaint:()=>{},scene:()=>scene,setScene});
-window.SukunR807Berhetiyye=Object.freeze({version:'r807',active:()=>active,refresh:queue,setScene,sanitize});
+['pageshow','popstate','resize','orientationchange','sukun:nowplayingchange','sukun:playbackchange','sukun:zikirchange','sukun:currentzikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:tabchange','sukun:domhydrate'].forEach(e=>window.addEventListener(e,queue,{passive:true}));
+document.addEventListener('pointerup',e=>{const c=e.target.closest?.('#zCats [data-c]');if(c){if(c.dataset.c==='berhet'){active=false;setTimeout(queue,0)}else if(active)leave()}setTimeout(queue,20)},{passive:true});
+new MutationObserver(queue).observe(document.body||document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style','data-r474-name-category','aria-selected','aria-pressed']});
+window.SukunR778BerhetiyyeAuthority=Object.freeze({version:'r808-shim',sync:queue,active:()=>active,repaint:()=>{},scene:()=>document.body?.dataset?.r778BerhetScene||'auto',setScene:id=>{if(document.body)document.body.dataset.r778BerhetScene=id||'auto';return id}});
+window.SukunR808Berhetiyye=Object.freeze({version:'r808',active:()=>active,refresh:queue,syncCounter,skinControls});
 })();
 </script>
+
 </body>
 </html>
