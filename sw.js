@@ -1,19 +1,20 @@
-/* SÜKÛN r819 — Berhetiyye Counter Ring + Update Recovery
+/* SÜKÛN r820 — Berhetiyye Counter Ring + Update Recovery
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r819';
-const CACHE = 'sukun-r819-20260914a';
-const CACHE_META = './__sukun_cache_meta_r819__.json';
-const BUILD_MARKER = './__sukun_build_r819__.json';
+const SURUM = 'r820';
+const CACHE = 'sukun-r820-20260914a';
+const CACHE_META = './__sukun_cache_meta_r820__.json';
+const BUILD_MARKER = './__sukun_build_r820__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
    Shell doğrulaması bağımsız; geri kalan assetler best-effort pre-cache ve
    normal fetch sırasında current cache'e yazılır. */
 const CORE = [
+  './index.html',
   './nero.html',
   './manifest.webmanifest',
   BUILD_MARKER,
@@ -46,7 +47,7 @@ const PRECACHE = [
   './assets/jewel-r798/panelbar.png',
   './assets/jewel-r798/panel-context.png',
   './assets/jewel-r798/ring.png',
-  './assets/berhetiyye-premium/berhetiyye-ring-r819.png',
+  './assets/berhetiyye-premium/berhetiyye-ring-r820.png',
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
   './assets/tefekkur-sanctuary.webp',
@@ -98,7 +99,7 @@ const PRECACHE = [
 const NOTLAR = [
   'r809 · Berhetiyye zikir sayacı özel doğal kristal yüzüğe bağlandı; genel Jewel yüzüğü diğer zikirlerde korunur.',
   'Özel halka yalnız canlı Berhetiyye seansında saat yönünün tersine sabit düzlemde döner; sayaç rakamları dönmez.',
-  'Yeni berhetiyye-ring-r819.png best-effort pre-cache edilir; install tek görsel hatası yüzünden kilitlenmez.',
+  'Yeni berhetiyye-ring-r820.png best-effort pre-cache edilir; install tek görsel hatası yüzünden kilitlenmez.',
   'Ses motoru, Global Queue, sayaç mantığı, pause/resume/stop ve 28/99 state makineleri değiştirilmedi.'
 ];
 

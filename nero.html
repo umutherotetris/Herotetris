@@ -9,11 +9,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="r819" name="sukun-build"/>
+<meta content="r820" name="sukun-build"/>
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta content="no-referrer" name="referrer"/>
 <meta content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'" http-equiv="Content-Security-Policy"/>
-<link href="./manifest.webmanifest?v=r819" rel="manifest"/>
+<link href="./manifest.webmanifest?v=r820" rel="manifest"/>
 <meta content="yes" name="mobile-web-app-capable"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
@@ -5337,6 +5337,20 @@ body[data-focus="1"] .zCtl{
 <style id="r697-canonical-cascade-final">
 /* Superseded by the single r698 visual authority below. */
 </style>
+
+<script id="r820-release-recovery">
+(()=>{
+  const BUILD='r820';
+  try{document.documentElement.dataset.release=BUILD}catch(e){}
+  addEventListener('load',async()=>{
+    if(!('serviceWorker' in navigator))return;
+    try{
+      const regs=await navigator.serviceWorker.getRegistrations();
+      for(const reg of regs){try{await reg.update()}catch(e){}}
+    }catch(e){}
+  },{once:true});
+})();
+</script>
 </head>
 <body data-perf="dengeli">
 <!-- ═══ r519 — AÇILIŞ PERDESİ ═══════════════════════════════════════════
@@ -6430,7 +6444,7 @@ body[data-focus="1"] .zCtl{
 <input accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden="" id="bakFile" type="file"/>
 <div class="bakStat" id="bakStat"></div>
 </details>
-<span id="surumEtiket">SÜKÛN v20.68 — build 2026-09-14-r819</span> — kalp huzuru niyetiyle <span aria-label="Mühür" id="vaultTrigger" role="button" tabindex="0"><span class="ico" data-ico="ring"></span></span><br/>
+<span id="surumEtiket">SÜKÛN v20.68 — build 2026-09-14-r820</span> — kalp huzuru niyetiyle <span aria-label="Mühür" id="vaultTrigger" role="button" tabindex="0"><span class="ico" data-ico="ring"></span></span><br/>
 </footer>
 </div>
 <!-- ══ İLK AÇILIŞ TURU ══ -->
@@ -67916,9 +67930,9 @@ window.SukunR708Focus=Object.freeze({version:'r708',enter,snapshot:()=>last});
 <script id="r716-release-identity-runtime">(()=>{
 'use strict';
 const meta=document.querySelector('meta[name="sukun-build"]');
-const build=meta?.content||'r806',date='2026-09-14';
+const build=meta?.content||'r820',date='2026-09-14';
 const label=document.getElementById('surumEtiket');
-if(label){const text='SÜKÛN v20.48 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
+if(label){const text='SÜKÛN v20.69 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
 window.SukunReleaseIdentity=Object.freeze({build,version:'r811',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
@@ -73418,7 +73432,7 @@ html[data-r819-counter="generic"] body #r819CounterDisc{
   background-image:url('./assets/sukun-nur-ring-r757.png?v=r819')!important;
 }
 html[data-r819-counter="berhet"] body #r819CounterDisc{
-  background-image:url('./assets/berhetiyye-premium/berhetiyye-ring-r819.png?v=r819')!important;
+  background-image:url('./assets/berhetiyye-premium/berhetiyye-ring-r820.png?v=r820')!important;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.34)) drop-shadow(0 0 14px rgba(168,73,255,.18))!important;
 }
 @keyframes r819RingCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
