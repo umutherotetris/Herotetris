@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r810">
+<meta name="sukun-build" content="r811">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r810">
+<link rel="manifest" href="./manifest.webmanifest?v=r811">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.63 — build 2026-09-14-r810</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.63 — build 2026-09-14-r811</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -68345,7 +68345,7 @@ const meta=document.querySelector('meta[name="sukun-build"]');
 const build=meta?.content||'r806',date='2026-09-14';
 const label=document.getElementById('surumEtiket');
 if(label){const text='SÜKÛN v20.48 — build '+date+'-'+build;if(label.textContent!==text)label.textContent=text;label.dataset.sukunBuild=build;}
-window.SukunReleaseIdentity=Object.freeze({build,version:'r810',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
+window.SukunReleaseIdentity=Object.freeze({build,version:'r811',snapshot:()=>({build,footer:label?.textContent||'',meta:meta?.content||''})});
 })();</script>
 <style id="r709-sanctuary-style">
 /* r709 — cinematic sanctuary, solely the canonical Tefekkür surface. */
@@ -73583,35 +73583,35 @@ html.sukun-jewel-r798 body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons :is(#bsSt
 
 
 
-<style id="sukun-r810-berhetiyye-single-surface">
-/* r810 — Berhetiyye: tek yüzey / sticky state / legacy sayaç üstünde tek ring
-   Amaç: injected counter yok, document-wide observer yok, geçici kategori anlarında skin düşmesi yok. */
-html[data-r810-berhet="1"]{
-  --r810-max:min(calc(100vw - 18px),548px);
-  --r810-ring:url('./assets/berhetiyye-premium/berhetiyye-ring-r810.png?v=r810');
-  --r810-primary:url('./assets/berhetiyye-premium/control-primary-r788.png');
-  --r810-prev:url('./assets/berhetiyye-premium/control-nav-emerald-r788.png');
-  --r810-reset:url('./assets/berhetiyye-premium/control-nav-sapphire-r788.png');
-  --r810-next:url('./assets/berhetiyye-premium/control-nav-amethyst-r788.png');
-  --r810-util-a:url('./assets/berhetiyye-premium/control-utility-sapphire-r788.png');
-  --r810-util-b:url('./assets/berhetiyye-premium/control-utility-emerald-r788.png');
-  --r810-util-c:url('./assets/berhetiyye-premium/control-utility-gold-r788.png');
-  --r810-minus:url('./assets/berhetiyye-premium/control-round-minus-r788.png');
-  --r810-plus:url('./assets/berhetiyye-premium/control-round-plus-r788.png');
+\n
+
+<style id="sukun-r811-berhetiyye-authority">
+/* r811 — canonical Berhetiyye state + real IMG ring + r798 guard compatibility */
+html[data-r811-berhet="1"]{
+  --r811-max:min(calc(100vw - 18px),548px);
+  --r811-primary:url('./assets/berhetiyye-premium/control-primary-r788.png');
+  --r811-prev:url('./assets/berhetiyye-premium/control-nav-emerald-r788.png');
+  --r811-reset:url('./assets/berhetiyye-premium/control-nav-sapphire-r788.png');
+  --r811-next:url('./assets/berhetiyye-premium/control-nav-amethyst-r788.png');
+  --r811-util-a:url('./assets/berhetiyye-premium/control-utility-sapphire-r788.png');
+  --r811-util-b:url('./assets/berhetiyye-premium/control-utility-emerald-r788.png');
+  --r811-util-c:url('./assets/berhetiyye-premium/control-utility-gold-r788.png');
+  --r811-minus:url('./assets/berhetiyye-premium/control-round-minus-r788.png');
+  --r811-plus:url('./assets/berhetiyye-premium/control-round-plus-r788.png');
 }
-html[data-r810-berhet="1"] body{overflow-x:hidden!important}
-html[data-r810-berhet="1"] body #tab-zkr{overflow-x:hidden!important;padding-bottom:max(128px,calc(env(safe-area-inset-bottom,0px) + 118px))!important}
-html[data-r810-berhet="1"] body #tab-zkr>.card.zCtl{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;padding-inline:9px!important;overflow:visible!important}
-html[data-r810-berhet="1"] body :is(#zStage,#berhetAtlas,#berhetSeyir,#esmaSeyir99,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx,#tfRefinedLayout,#zMegaHost){box-sizing:border-box!important;width:min(100%,var(--r810-max))!important;max-width:var(--r810-max)!important;min-width:0!important;margin-inline:auto!important}
+html[data-r811-berhet="1"] body{overflow-x:hidden!important}
+html[data-r811-berhet="1"] body #tab-zkr{overflow-x:hidden!important;padding-bottom:max(126px,calc(env(safe-area-inset-bottom,0px) + 116px))!important}
+html[data-r811-berhet="1"] body #tab-zkr>.card.zCtl{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;padding-inline:9px!important;overflow:visible!important}
+html[data-r811-berhet="1"] body :is(#zStage,#berhetAtlas,#berhetSeyir,#esmaSeyir99,#r679ZikirAyarBox,#targetPremium,#r642ZikirInfoCard,#r754TefBerhetContext,#r754AtlasContext,#r754SeyirContext,#r170AtlasTools,.r754Ctx,#tfRefinedLayout,#zMegaHost){box-sizing:border-box!important;width:min(100%,var(--r811-max))!important;max-width:var(--r811-max)!important;min-width:0!important;margin-inline:auto!important}
 
-/* Berhetiyye'de eski continuous motion sahiplerini dondur. */
-html[data-r810-berhet="1"] body #tab-zkr :is(.r168Head,.r168Tag,.r168Buttons button,#zBar .spkBtn,#r616ZikirNavRow button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#zMegaHost>.zMegaGroup>summary,.r604-action-wake,.r604-action-tap){animation:none!important;transition:none!important}
+/* Disable historical animation owners on the Berhetiyye surface. */
+html[data-r811-berhet="1"] body #tab-zkr :is(.r168Head,.r168Tag,.r168Buttons button,#zBar .spkBtn,#r616ZikirNavRow button,#r442TefekkurBtn,#tefExitBtn,#r433DockPeek,#zMegaHost>.zMegaGroup>summary,.r604-action-wake,.r604-action-tap){animation:none!important;transition:none!important}
 
-/* Sayaç — mevcut #zCountVisual işlevsel sahibi korunur. Tek dekoratif ring ::before'dır. */
-html[data-r810-berhet="1"] body .zCounterRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:"ring ring" "target remain"!important;gap:10px!important;width:100%!important;align-items:stretch!important}
-html[data-r810-berhet="1"] body .zCounterRow>.zCounterSide:first-child{grid-area:target!important}
-html[data-r810-berhet="1"] body .zCounterRow>.zCounterSide:last-child{grid-area:remain!important}
-html[data-r810-berhet="1"] body #zCountVisual{
+/* COUNTER: one real ring image, no pseudo ring, no legacy mandala/flame/canvas. */
+html[data-r811-berhet="1"] body .zCounterRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:"ring ring" "target remain"!important;gap:10px!important;width:100%!important;align-items:stretch!important}
+html[data-r811-berhet="1"] body .zCounterRow>.zCounterSide:first-child{grid-area:target!important}
+html[data-r811-berhet="1"] body .zCounterRow>.zCounterSide:last-child{grid-area:remain!important}
+html[data-r811-berhet="1"] body #zCountVisual{
   grid-area:ring!important;box-sizing:border-box!important;position:relative!important;justify-self:center!important;
   display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
   width:min(78vw,304px)!important;height:auto!important;max-width:304px!important;aspect-ratio:1/1!important;
@@ -73619,153 +73619,179 @@ html[data-r810-berhet="1"] body #zCountVisual{
   overflow:visible!important;background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;
   isolation:isolate!important;transform:none!important;touch-action:manipulation!important;
 }
-html[data-r810-berhet="1"] body #zCountVisual> :not(.cntNums){display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important}
-html[data-r810-berhet="1"] body #zCountVisual::before{
-  content:""!important;display:block!important;position:absolute!important;inset:-2%!important;z-index:1!important;pointer-events:none!important;
-  background-image:var(--r810-ring)!important;background-position:center!important;background-size:contain!important;background-repeat:no-repeat!important;
-  opacity:1!important;filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)) drop-shadow(0 0 10px rgba(137,87,255,.12))!important;
-  transform-origin:50% 50%!important;animation:r810BerhetCCW 34s linear infinite!important;
+html[data-r811-berhet="1"] body #zCountVisual::before,
+html[data-r811-berhet="1"] body #zCountVisual::after{content:none!important;display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important}
+html[data-r811-berhet="1"] body #zCountVisual> :not(.cntNums):not(#r811BerhetRing){display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;pointer-events:none!important}
+html[data-r811-berhet="1"] body #r811BerhetRing{
+  display:block!important;visibility:visible!important;opacity:1!important;position:absolute!important;inset:-3%!important;
+  width:106%!important;height:106%!important;max-width:none!important;max-height:none!important;object-fit:contain!important;
+  z-index:1!important;pointer-events:none!important;transform-origin:50% 50%!important;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)) drop-shadow(0 0 10px rgba(137,87,255,.12))!important;
+  animation:r811BerhetCCW 34s linear infinite!important;backface-visibility:hidden!important;-webkit-backface-visibility:hidden!important;
 }
-html[data-r810-berhet="1"] body #zCountVisual::after{content:none!important;display:none!important}
-@keyframes r810BerhetCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
-html[data-r810-berhet="1"] body #zCountVisual .cntNums{
-  position:relative!important;inset:auto!important;z-index:4!important;width:51%!important;height:51%!important;margin:auto!important;
+@keyframes r811BerhetCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+html[data-r811-berhet="1"] body #zCountVisual .cntNums{
+  position:relative!important;inset:auto!important;z-index:4!important;width:50%!important;height:50%!important;margin:auto!important;
   display:flex!important;visibility:visible!important;opacity:1!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;pointer-events:none!important;
 }
-html[data-r810-berhet="1"] body #zCountVisual .cntNums small{display:block!important;margin:0 0 5px!important;font:700 clamp(11px,3vw,14px)/1 Figtree,system-ui!important;letter-spacing:.16em!important;color:#fff0c8!important}
-html[data-r810-berhet="1"] body #zCountVisual .cntBig{display:block!important;margin:0!important;font:700 clamp(48px,15vw,72px)/.92 Georgia,serif!important;letter-spacing:-.03em!important;color:#fff3cf!important;text-shadow:0 0 16px rgba(255,225,154,.15)!important;white-space:nowrap!important}
-html[data-r810-berhet="1"] body #zCountVisual .cntPct{display:block!important;margin-top:5px!important;font:700 clamp(11px,3.2vw,15px)/1 Figtree,system-ui!important;color:#cbeff1!important;white-space:nowrap!important}
-html[data-r810-berhet="1"] body .zCounterSide{box-sizing:border-box!important;min-width:0!important;min-height:80px!important;padding:10px 12px!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-align:center!important;overflow:hidden!important;background:linear-gradient(160deg,rgba(6,24,42,.74),rgba(7,15,36,.70))!important;border:1px solid rgba(246,217,138,.22)!important;border-radius:20px!important}
-html[data-r810-berhet="1"] body .zCounterSide small{font:700 clamp(10px,2.8vw,12px)/1 Figtree,system-ui!important;letter-spacing:.08em!important;color:#c9d3d8!important}
-html[data-r810-berhet="1"] body .zCounterSide b{font:600 clamp(24px,7.5vw,31px)/1 Georgia,serif!important;color:#fff2cf!important}
-html[data-r810-berhet="1"] body .zCounterSide em{display:none!important}
+html[data-r811-berhet="1"] body #zCountVisual .cntNums small{display:block!important;margin:0 0 5px!important;font:700 clamp(11px,3vw,14px)/1 Figtree,system-ui!important;letter-spacing:.16em!important;color:#fff0c8!important}
+html[data-r811-berhet="1"] body #zCountVisual .cntBig{display:block!important;margin:0!important;font:700 clamp(48px,15vw,72px)/.92 Georgia,serif!important;letter-spacing:-.03em!important;color:#fff3cf!important;text-shadow:0 0 16px rgba(255,225,154,.15)!important;white-space:nowrap!important}
+html[data-r811-berhet="1"] body #zCountVisual .cntPct{display:block!important;margin-top:5px!important;font:700 clamp(11px,3.2vw,15px)/1 Figtree,system-ui!important;color:#cbeff1!important;white-space:nowrap!important}
+html[data-r811-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{width:min(76vw,294px)!important;max-width:294px!important;height:auto!important;aspect-ratio:1/1!important;margin:4px auto 12px!important;transform:none!important}
+html[data-r811-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual:active{transform:scale(.992)!important}
+html[data-r811-berhet="1"] body .zCounterSide{box-sizing:border-box!important;min-width:0!important;min-height:80px!important;padding:10px 12px!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-align:center!important;overflow:hidden!important;background:linear-gradient(160deg,rgba(6,24,42,.74),rgba(7,15,36,.70))!important;border:1px solid rgba(246,217,138,.22)!important;border-radius:20px!important}
+html[data-r811-berhet="1"] body .zCounterSide small{font:700 clamp(10px,2.8vw,12px)/1 Figtree,system-ui!important;letter-spacing:.08em!important;color:#c9d3d8!important}
+html[data-r811-berhet="1"] body .zCounterSide b{font:600 clamp(24px,7.5vw,31px)/1 Georgia,serif!important;color:#fff2cf!important}
+html[data-r811-berhet="1"] body .zCounterSide em{display:none!important}
 
-/* Tüm jewel butonlarda eski pseudo/overlay artıklarının çıkmasını engelle. */
-html[data-r810-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn)::before,
-html[data-r810-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn)::after{content:none!important;display:none!important;animation:none!important;transition:none!important}
+/* Strip all historical decorative pseudo fragments from owned controls. */
+html[data-r811-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn)::before,
+html[data-r811-berhet="1"] body :is(#zBar .spkBtn,#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn)::after{content:none!important;display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;transition:none!important}
 
 /* Utility controls */
-html[data-r810-berhet="1"] body #zBar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;align-items:stretch!important;width:100%!important}
-html[data-r810-berhet="1"] body #zBar .spkBtn{box-sizing:border-box!important;position:relative!important;inset:auto!important;width:100%!important;min-width:0!important;height:88px!important;min-height:88px!important;max-height:88px!important;padding:11px 6px 9px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important;color:#fff0c8!important;text-shadow:0 2px 4px rgba(0,0,0,.86)!important;overflow:hidden!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important}
-html[data-r810-berhet="1"] body #spkOnce,html[data-r810-berhet="1"] body #itemRecBtn{background-image:var(--r810-util-a)!important}
-html[data-r810-berhet="1"] body #zDonguBtn,html[data-r810-berhet="1"] body #niyetRecBtn{background-image:var(--r810-util-c)!important}
-html[data-r810-berhet="1"] body #favBtn,html[data-r810-berhet="1"] body #zBarHelp{background-image:var(--r810-util-b)!important}
-html[data-r810-berhet="1"] body #zBar .spkBtn>.ico{display:none!important}
-html[data-r810-berhet="1"] body #zBar .spkBtn span{max-width:76px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;font:700 9.4px/1.05 Figtree,system-ui!important;letter-spacing:.07em!important}
+html[data-r811-berhet="1"] body #zBar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;align-items:stretch!important;width:100%!important}
+html[data-r811-berhet="1"] body #zBar .spkBtn{box-sizing:border-box!important;position:relative!important;inset:auto!important;width:100%!important;min-width:0!important;height:88px!important;min-height:88px!important;max-height:88px!important;padding:11px 6px 9px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important;color:#fff0c8!important;text-shadow:0 2px 4px rgba(0,0,0,.86)!important;overflow:hidden!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important}
+html[data-r811-berhet="1"] body #spkOnce,html[data-r811-berhet="1"] body #itemRecBtn{background-image:var(--r811-util-a)!important}
+html[data-r811-berhet="1"] body #zDonguBtn,html[data-r811-berhet="1"] body #niyetRecBtn{background-image:var(--r811-util-c)!important}
+html[data-r811-berhet="1"] body #favBtn,html[data-r811-berhet="1"] body #zBarHelp{background-image:var(--r811-util-b)!important}
+html[data-r811-berhet="1"] body #zBar .spkBtn>.ico{display:none!important}
+html[data-r811-berhet="1"] body #zBar .spkBtn span{max-width:76px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;font:700 9.4px/1.05 Figtree,system-ui!important;letter-spacing:.07em!important}
 
 /* Main controls */
-html[data-r810-berhet="1"] body .zCounterActions{display:grid!important;grid-template-columns:56px minmax(0,1fr) 56px!important;gap:8px!important;width:100%!important;margin:12px 0 0!important;align-items:stretch!important}
-html[data-r810-berhet="1"] body :is(#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn){box-sizing:border-box!important;position:relative!important;inset:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important;color:#fff0c8!important;text-shadow:0 2px 4px rgba(0,0,0,.86)!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}
-html[data-r810-berhet="1"] body #undoBtn{background-image:var(--r810-minus)!important}
-html[data-r810-berhet="1"] body #plusBtn{background-image:var(--r810-plus)!important}
-html[data-r810-berhet="1"] body #autoBtn{background-image:var(--r810-primary)!important}
-html[data-r810-berhet="1"] body #resetBtn{background-image:var(--r810-reset)!important}
-html[data-r810-berhet="1"] body :is(#undoBtn,#plusBtn){width:56px!important;min-width:56px!important;max-width:56px!important;height:56px!important;min-height:56px!important;max-height:56px!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
-html[data-r810-berhet="1"] body #autoBtn{width:100%!important;min-width:0!important;height:56px!important;min-height:56px!important;max-height:56px!important;padding:6px 12px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
-html[data-r810-berhet="1"] body #resetBtn{display:flex!important;width:min(100%,340px)!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:8px auto 0!important;padding:0 14px!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 11px/1.05 Figtree,system-ui!important}
+html[data-r811-berhet="1"] body .zCounterActions{display:grid!important;grid-template-columns:56px minmax(0,1fr) 56px!important;gap:8px!important;width:100%!important;margin:12px 0 0!important;align-items:stretch!important}
+html[data-r811-berhet="1"] body :is(#undoBtn,#plusBtn,#autoBtn,#resetBtn,#r616ZikirNavRow button,#berhetSeyir .r168Buttons button,#esmaSeyir99 .r168Buttons button,#r442TefekkurBtn,#tefExitBtn){box-sizing:border-box!important;position:relative!important;inset:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important;color:#fff0c8!important;text-shadow:0 2px 4px rgba(0,0,0,.86)!important;background-position:center!important;background-size:100% 100%!important;background-repeat:no-repeat!important;background-color:transparent!important;overflow:hidden!important}
+html[data-r811-berhet="1"] body #undoBtn{background-image:var(--r811-minus)!important}
+html[data-r811-berhet="1"] body #plusBtn{background-image:var(--r811-plus)!important}
+html[data-r811-berhet="1"] body #autoBtn{background-image:var(--r811-primary)!important}
+html[data-r811-berhet="1"] body #resetBtn{background-image:var(--r811-reset)!important}
+html[data-r811-berhet="1"] body :is(#undoBtn,#plusBtn){width:56px!important;min-width:56px!important;max-width:56px!important;height:56px!important;min-height:56px!important;max-height:56px!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
+html[data-r811-berhet="1"] body :is(#undoBtn,#plusBtn) :is(b,span){position:relative!important;z-index:2!important}
+html[data-r811-berhet="1"] body #autoBtn{width:100%!important;min-width:0!important;height:56px!important;min-height:56px!important;max-height:56px!important;padding:6px 12px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
+html[data-r811-berhet="1"] body #resetBtn{display:flex!important;width:min(100%,340px)!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:8px auto 0!important;padding:0 14px!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 11px/1.05 Figtree,system-ui!important}
 
-/* Navigation */
-html[data-r810-berhet="1"] body #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:11px auto 10px!important;align-items:stretch!important}
-html[data-r810-berhet="1"] body #r616ZikirNavRow button{width:100%!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 7px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 9.7px/1.04 Figtree,system-ui!important;white-space:normal!important;overflow-wrap:anywhere!important}
-html[data-r810-berhet="1"] body #r616ZikirNavRow button:nth-child(1){background-image:var(--r810-prev)!important}
-html[data-r810-berhet="1"] body #r616ZikirNavRow button:nth-child(2){background-image:var(--r810-reset)!important}
-html[data-r810-berhet="1"] body #r616ZikirNavRow button:nth-child(3){background-image:var(--r810-next)!important}
+/* Navigation — data attributes first, nth-child only fallback. */
+html[data-r811-berhet="1"] body #r616ZikirNavRow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:11px auto 10px!important;align-items:stretch!important}
+html[data-r811-berhet="1"] body #r616ZikirNavRow button{width:100%!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 7px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 9.7px/1.04 Figtree,system-ui!important;white-space:normal!important;overflow-wrap:anywhere!important}
+html[data-r811-berhet="1"] body #r616ZikirNavRow button[data-r616-znav="prev"],html[data-r811-berhet="1"] body #r616ZikirNavRow button:nth-child(1){background-image:var(--r811-prev)!important}
+html[data-r811-berhet="1"] body #r616ZikirNavRow button[data-r616-znav="reset"],html[data-r811-berhet="1"] body #r616ZikirNavRow button:nth-child(2){background-image:var(--r811-reset)!important}
+html[data-r811-berhet="1"] body #r616ZikirNavRow button[data-r616-znav="next"],html[data-r811-berhet="1"] body #r616ZikirNavRow button:nth-child(3){background-image:var(--r811-next)!important}
 
 /* Journeys */
-html[data-r810-berhet="1"] body :is(#bsPause,#es99Pause){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;width:0!important;height:0!important;overflow:hidden!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99){animation:none!important;transition:none!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(88px,.75fr)!important;gap:10px!important;align-items:center!important;width:100%!important;min-height:72px!important;padding:9px 12px!important;overflow:hidden!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;overflow:hidden!important;font:700 clamp(17px,5.2vw,23px)/.96 Georgia,serif!important;color:#fff0ca!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>.r168Tag{box-sizing:border-box!important;min-width:88px!important;max-width:118px!important;padding:6px 8px!important;border-radius:999px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;font:700 8.6px/1.04 Figtree,system-ui!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:end!important;width:100%!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow>*{min-width:0!important;max-width:100%!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;width:100%!important;align-items:stretch!important;overflow:hidden!important;padding-bottom:1px!important}
-html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{width:100%!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 8px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 10px/1.04 Figtree,system-ui!important;white-space:normal!important;overflow:hidden!important;overflow-wrap:anywhere!important}
-html[data-r810-berhet="1"] body :is(#bsStart,#es99Start){grid-column:1/-1!important;height:54px!important;min-height:54px!important;max-height:54px!important;background-image:var(--r810-primary)!important;font-size:11.5px!important}
-html[data-r810-berhet="1"] body :is(#bsPrev,#es99Prev){background-image:var(--r810-prev)!important}
-html[data-r810-berhet="1"] body :is(#bsNext,#es99Next){background-image:var(--r810-next)!important}
-html[data-r810-berhet="1"] body :is(#bsAgain,#es99Again){background-image:var(--r810-prev)!important}
-html[data-r810-berhet="1"] body :is(#bsStop,#es99Stop){background-image:var(--r810-next)!important}
-html[data-r810-berhet="1"] body :is(#bsReset,#es99Reset){grid-column:1/-1!important;height:52px!important;min-height:52px!important;max-height:52px!important;background-image:var(--r810-reset)!important}
+html[data-r811-berhet="1"] body :is(#bsPause,#es99Pause){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:absolute!important;width:0!important;height:0!important;overflow:hidden!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99){animation:none!important;transition:none!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{box-sizing:border-box!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(88px,.75fr)!important;gap:10px!important;align-items:center!important;width:100%!important;min-height:72px!important;padding:9px 12px 9px 16px!important;overflow:hidden!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;overflow:hidden!important;font:700 clamp(17px,5.2vw,23px)/.96 Georgia,serif!important;color:#fff0ca!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>.r168Tag{box-sizing:border-box!important;min-width:88px!important;max-width:118px!important;padding:6px 8px!important;border-radius:999px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;font:700 8.6px/1.04 Figtree,system-ui!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:end!important;width:100%!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow>*{min-width:0!important;max-width:100%!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;width:100%!important;align-items:stretch!important;overflow:hidden!important;padding:0 0 2px!important}
+html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{width:100%!important;min-width:0!important;height:48px!important;min-height:48px!important;max-height:48px!important;padding:0 8px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:700 10px/1.04 Figtree,system-ui!important;white-space:normal!important;overflow:hidden!important;overflow-wrap:anywhere!important}
+html[data-r811-berhet="1"] body :is(#bsStart,#es99Start){grid-column:1/-1!important;height:54px!important;min-height:54px!important;max-height:54px!important;background-image:var(--r811-primary)!important;font-size:11.5px!important}
+html[data-r811-berhet="1"] body :is(#bsPrev,#es99Prev){background-image:var(--r811-prev)!important}
+html[data-r811-berhet="1"] body :is(#bsNext,#es99Next){background-image:var(--r811-next)!important}
+html[data-r811-berhet="1"] body :is(#bsAgain,#es99Again){background-image:var(--r811-prev)!important}
+html[data-r811-berhet="1"] body :is(#bsStop,#es99Stop){background-image:var(--r811-next)!important;display:flex!important;color:#fff0d6!important}
+html[data-r811-berhet="1"] body :is(#bsReset,#es99Reset){grid-column:1/-1!important;height:52px!important;min-height:52px!important;max-height:52px!important;background-image:var(--r811-reset)!important}
 
 /* Tefekkür entry/exit */
-html[data-r810-berhet="1"] body #r700TefEntry{box-sizing:border-box!important;width:min(100%,var(--r810-max))!important;margin:12px auto 14px!important;padding:0!important;background:none!important;border:0!important;overflow:visible!important}
-html[data-r810-berhet="1"] body #r442TefekkurBtn{width:100%!important;min-width:0!important;height:62px!important;min-height:62px!important;max-height:62px!important;padding:0 19px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;background-image:var(--r810-primary)!important}
-html[data-r810-berhet="1"] body #r442TefekkurBtn .r700TefIcon{flex:0 0 34px!important;width:34px!important;height:34px!important;display:grid!important;place-items:center!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
-html[data-r810-berhet="1"] body #r442TefekkurBtn .r700TefLabel{flex:1 1 auto!important;min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font:700 clamp(15px,4.8vw,20px)/1.05 Georgia,serif!important;color:#fff1ca!important}
-html[data-r810-berhet="1"] body #r442TefekkurBtn .r700TefArrow{flex:0 0 16px!important;width:16px!important;font-size:23px!important;color:#e7b7ff!important}
-html[data-r810-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow{width:100%!important}
-html[data-r810-berhet="1"] body.sukun-tefekkur-mode #tefExitBtn{width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;max-height:52px!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background-image:var(--r810-next)!important;font:700 12px/1.05 Figtree,system-ui!important}
+html[data-r811-berhet="1"] body #r700TefEntry{box-sizing:border-box!important;width:min(100%,var(--r811-max))!important;margin:12px auto 14px!important;padding:0!important;background:none!important;border:0!important;overflow:visible!important}
+html[data-r811-berhet="1"] body #r442TefekkurBtn{width:100%!important;min-width:0!important;height:62px!important;min-height:62px!important;max-height:62px!important;padding:0 19px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;background-image:var(--r811-primary)!important}
+html[data-r811-berhet="1"] body #r442TefekkurBtn .r700TefIcon{flex:0 0 34px!important;width:34px!important;height:34px!important;display:grid!important;place-items:center!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html[data-r811-berhet="1"] body #r442TefekkurBtn .r700TefLabel{flex:1 1 auto!important;min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font:700 clamp(15px,4.8vw,20px)/1.05 Georgia,serif!important;color:#fff1ca!important}
+html[data-r811-berhet="1"] body #r442TefekkurBtn .r700TefArrow{flex:0 0 16px!important;width:16px!important;font-size:23px!important;color:#e7b7ff!important}
+html[data-r811-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout .tfStatusRow>.tfExitRow{width:100%!important}
+html[data-r811-berhet="1"] body.sukun-tefekkur-mode #tefExitBtn{width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;max-height:52px!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background-image:var(--r811-next)!important;font:700 12px/1.05 Figtree,system-ui!important}
 
-/* Player peek: no raster jewel. */
-html[data-r810-berhet="1"] body #r433DockPeek{box-sizing:border-box!important;left:50%!important;right:auto!important;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;width:min(calc(100vw - 28px),430px)!important;min-width:0!important;max-width:430px!important;min-height:58px!important;height:auto!important;padding:9px 13px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;border-radius:19px!important;border:1px solid rgba(121,227,212,.34)!important;background:linear-gradient(180deg,rgba(6,25,35,.96),rgba(5,16,27,.985))!important;background-image:linear-gradient(180deg,rgba(6,25,35,.96),rgba(5,16,27,.985))!important;box-shadow:0 12px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.05)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;filter:none!important;animation:none!important;color:#fff1d1!important;text-shadow:none!important;overflow:hidden!important}
-html[data-r810-berhet="1"] body.r431-dock-visible.r433-dock-hidden #r433DockPeek{transform:translate(-50%,0)!important;opacity:1!important;pointer-events:auto!important}
-html[data-r810-berhet="1"] body #r433DockPeek .r433Ico{flex:0 0 36px!important;width:36px!important;height:36px!important;border-radius:12px!important;background:linear-gradient(145deg,rgba(21,86,101,.72),rgba(37,34,78,.78))!important;border:1px solid rgba(116,226,207,.20)!important;box-shadow:none!important;color:#ffb074!important}
-html[data-r810-berhet="1"] body #r433DockPeek .r433TxtWrap{display:grid!important;min-width:0!important;gap:2px!important;text-align:left!important}
-html[data-r810-berhet="1"] body #r433DockPeek .r433Txt{max-width:100%!important;font-size:12.5px!important;line-height:1.12!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-html[data-r810-berhet="1"] body #r433DockPeek .r433Sub{max-width:100%!important;font-size:10px!important;line-height:1.12!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#b8c5c8!important}
+/* Hidden-player peek: always centered; old transforms cannot push it offscreen. */
+html[data-r811-berhet="1"] body.r433-dock-hidden #r433DockPeek,
+html[data-r811-berhet="1"] body.r431-dock-visible.r433-dock-hidden #r433DockPeek{
+  box-sizing:border-box!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;width:min(calc(100vw - 24px),430px)!important;min-width:0!important;max-width:430px!important;
+  min-height:58px!important;height:auto!important;padding:9px 13px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;
+  border-radius:19px!important;border:1px solid rgba(121,227,212,.34)!important;background:linear-gradient(180deg,rgba(6,25,35,.96),rgba(5,16,27,.985))!important;background-image:linear-gradient(180deg,rgba(6,25,35,.96),rgba(5,16,27,.985))!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.05)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;filter:none!important;animation:none!important;color:#fff1d1!important;text-shadow:none!important;overflow:hidden!important;opacity:1!important;pointer-events:auto!important;
+}
+html[data-r811-berhet="1"] body #r433DockPeek .r433Ico{flex:0 0 36px!important;width:36px!important;height:36px!important;border-radius:12px!important;background:linear-gradient(145deg,rgba(21,86,101,.72),rgba(37,34,78,.78))!important;border:1px solid rgba(116,226,207,.20)!important;box-shadow:none!important;color:#ffb074!important}
+html[data-r811-berhet="1"] body #r433DockPeek .r433TxtWrap{display:grid!important;min-width:0!important;gap:2px!important;text-align:left!important}
+html[data-r811-berhet="1"] body #r433DockPeek .r433Txt{max-width:100%!important;font-size:12.5px!important;line-height:1.12!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html[data-r811-berhet="1"] body #r433DockPeek .r433Sub{max-width:100%!important;font-size:10px!important;line-height:1.12!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#b8c5c8!important}
 
-@media(max-width:390px){
- html[data-r810-berhet="1"]{--r810-max:min(calc(100vw - 16px),520px)}
- html[data-r810-berhet="1"] body #zCountVisual{width:min(76vw,282px)!important;max-width:282px!important}
- html[data-r810-berhet="1"] body #zBar .spkBtn{height:84px!important;min-height:84px!important;max-height:84px!important}
- html[data-r810-berhet="1"] body #zBar .spkBtn span{font-size:8.9px!important;max-width:68px!important}
- html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{grid-template-columns:minmax(0,1.25fr) minmax(82px,.75fr)!important;padding:8px 10px!important}
- html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{font-size:clamp(16px,5vw,22px)!important}
+@media(max-width:430px){
+  html[data-r811-berhet="1"]{--r811-max:min(calc(100vw - 16px),520px)}
+  html[data-r811-berhet="1"] body #zCountVisual{width:min(76vw,282px)!important;max-width:282px!important}
+  html[data-r811-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{width:min(74vw,278px)!important;max-width:278px!important}
+  html[data-r811-berhet="1"] body #zBar .spkBtn{height:84px!important;min-height:84px!important;max-height:84px!important}
+  html[data-r811-berhet="1"] body #zBar .spkBtn span{font-size:8.9px!important;max-width:68px!important}
+  html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head{grid-template-columns:minmax(0,1.25fr) minmax(82px,.75fr)!important;padding:8px 10px 8px 14px!important}
+  html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99)>summary.r168Head>b{font-size:clamp(16px,5vw,22px)!important}
 }
 @media(max-width:350px){
- html[data-r810-berhet="1"] body #zBar{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- html[data-r810-berhet="1"] body #r616ZikirNavRow{grid-template-columns:1fr!important}
- html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow,html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{grid-template-columns:1fr!important}
- html[data-r810-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{grid-column:1!important}
+  html[data-r811-berhet="1"] body #zBar{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-r811-berhet="1"] body #r616ZikirNavRow{grid-template-columns:1fr!important}
+  html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168MiniRow,
+  html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons{grid-template-columns:1fr!important}
+  html[data-r811-berhet="1"] body :is(#berhetSeyir,#esmaSeyir99) .r168Buttons button{grid-column:1!important}
 }
-@media(prefers-reduced-motion:reduce){html[data-r810-berhet="1"] body #zCountVisual::before{animation:none!important}}
+@media(prefers-reduced-motion:reduce){html[data-r811-berhet="1"] body #r811BerhetRing{animation:none!important}}
 </style>
-<script id="sukun-r810-berhetiyye-sticky-runtime">
+<script id="sukun-r811-berhetiyye-authority">
 (()=>{
 'use strict';
-if(window.SukunR810Berhetiyye)return;
+if(window.SukunR811Berhetiyye)return;
 const root=document.documentElement;
-let active=false,catObs=null,bodyObs=null,raf=0;
-function norm(v){return String(v||'').trim().toLowerCase()}
-function zcat(){try{return norm(typeof Z!=='undefined'?Z.cat:'')}catch(_){return''}}
-function bodycat(){return norm(document.body?.dataset?.r474NameCategory)}
-function selectedCat(){const b=document.querySelector('#zCats [data-c].act,#zCats [data-c][aria-selected="true"]');return norm(b?.dataset?.c)}
-function currentCat(){return zcat()||bodycat()||selectedCat()}
+let active=false,raf=0,catObs=null,zObs=null;
+const norm=v=>String(v||'').trim().toLowerCase();
+function canonicalCat(){
+  try{const s=window.currentZikirState?.snapshot?.();if(s?.cat)return norm(s.cat)}catch(_){ }
+  try{if(typeof zKat==='function'){const c=norm(zKat());if(c)return c}}catch(_){ }
+  try{
+    if(typeof Z!=='undefined'){
+      if(Z.cat==='fav'){const it=typeof zItem==='function'?zItem():null;const c=norm(it?._src);if(c)return c}
+      const c=norm(Z.cat);if(c)return c;
+    }
+  }catch(_){ }
+  return norm(document.body?.dataset?.r474NameCategory);
+}
+function ensureRing(){
+  const host=document.getElementById('zCountVisual');if(!host)return null;
+  let img=document.getElementById('r811BerhetRing');
+  if(!img){img=document.createElement('img');img.id='r811BerhetRing';img.alt='';img.setAttribute('aria-hidden','true');img.draggable=false;img.decoding='async';img.src='./assets/berhetiyye-premium/berhetiyye-ring-r811.png?v=r811';host.insertBefore(img,host.firstChild)}
+  else if(img.parentElement!==host)host.insertBefore(img,host.firstChild);
+  return img;
+}
 function hidePause(){for(const id of ['bsPause','es99Pause']){const b=document.getElementById(id);if(b){b.hidden=true;b.setAttribute('aria-hidden','true');b.style.setProperty('display','none','important')}}}
+function labelNav(){const nav=document.getElementById('r616ZikirNavRow');if(!nav)return;nav.querySelectorAll('button').forEach((b,i)=>{if(!b.dataset.r616Znav)b.dataset.r616Znav=i===0?'prev':i===1?'reset':'next'})}
 function enter(){
- if(active)return;active=true;root.dataset.r810Berhet='1';
- delete root.dataset.r809Berhet;
- document.body?.classList.remove('r778-berhet-palace','r783-ring-live','r803-berhet-entering','r803-berhet-exiting','r803-berhet-glowhold');
- hidePause();
+  active=true;root.dataset.r811Berhet='1';
+  /* r798/r604 historical binders already know this guard. Keep it ON on purpose. */
+  root.dataset.r809Berhet='1';
+  delete root.dataset.r810Berhet;
+  document.body?.classList.remove('r778-berhet-palace','r783-ring-live','r803-berhet-entering','r803-berhet-exiting','r803-berhet-glowhold');
+  ensureRing();hidePause();labelNav();
 }
 function leave(){
- if(!active)return;active=false;delete root.dataset.r810Berhet;delete root.dataset.r809Berhet;
- try{window.SukunJewelUIR798?.bind?.()}catch(_){}
-}
-function consensusNonBerhet(){
- const a=zcat(),b=bodycat(),c=selectedCat();
- const vals=[a,b,c].filter(Boolean);
- return vals.length>=2 && vals.every(v=>v!=='berhet');
+  if(!active)return;active=false;delete root.dataset.r811Berhet;delete root.dataset.r809Berhet;delete root.dataset.r810Berhet;
+  document.getElementById('r811BerhetRing')?.remove();
+  try{window.SukunJewelUIR798?.bind?.()}catch(_){ }
 }
 function reconcile(explicit=''){
- const c=norm(explicit)||currentCat();
- if(c==='berhet'){enter();hidePause();return}
- /* Sticky: geçici internal state yüzünden Berhetiyye skinini düşürme. Yalnız iki bağımsız kaynak non-berhet ise bırak. */
- if(active&&consensusNonBerhet())leave();
+  const c=norm(explicit)||canonicalCat();
+  if(c==='berhet'){enter();return}
+  if(active&&c&&c!=='berhet')leave();
 }
 function queue(c=''){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{raf=0;reconcile(c)})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>queue(),{once:true});else queue();
-['pageshow','sukun:zikirchange','sukun:currentzikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:tabchange','sukun:domhydrate'].forEach(ev=>window.addEventListener(ev,()=>queue(),{passive:true}));
-document.addEventListener('pointerup',e=>{const b=e.target.closest?.('#zCats [data-c]');if(!b)return;const c=norm(b.dataset.c);if(c==='berhet')enter();else{setTimeout(()=>{if(consensusNonBerhet())leave()},0)}},{passive:true});
+['pageshow','sukun:zikirchange','sukun:zikirselectionchange','sukun:journey-advance','sukun:tabchange','sukun:domhydrate'].forEach(ev=>window.addEventListener(ev,()=>queue(),{passive:true}));
+window.addEventListener('sukun:currentzikirchange',e=>queue(e?.detail?.cat||''),{passive:true});
 function install(){
- const cats=document.getElementById('zCats');if(cats&&!catObs){catObs=new MutationObserver(()=>queue());catObs.observe(cats,{subtree:true,attributes:true,attributeFilter:['class','aria-selected']})}
- const body=document.body;if(body&&!bodyObs){bodyObs=new MutationObserver(()=>queue());bodyObs.observe(body,{attributes:true,attributeFilter:['data-r474-name-category']})}
+  const cats=document.getElementById('zCats');if(cats&&!catObs){catObs=new MutationObserver(()=>queue());catObs.observe(cats,{subtree:true,attributes:true,attributeFilter:['class','aria-selected']})}
+  const host=document.getElementById('zCountVisual');if(host&&!zObs){zObs=new MutationObserver(()=>{if(active)ensureRing()});zObs.observe(host,{childList:true})}
 }
-install();setTimeout(install,400);
-window.SukunR778BerhetiyyeAuthority=Object.freeze({version:'r810-shim',sync:()=>queue(),active:()=>active,repaint:()=>{},scene:()=>document.body?.dataset?.r778BerhetScene||'auto',setScene:id=>{if(document.body)document.body.dataset.r778BerhetScene=id||'auto';return id}});
-window.SukunR810Berhetiyye=Object.freeze({version:'r810',active:()=>active,refresh:()=>queue(),category:currentCat});
+install();setTimeout(install,350);setTimeout(()=>{queue();install()},900);
+window.SukunR778BerhetiyyeAuthority=Object.freeze({version:'r811-shim',sync:()=>queue(),active:()=>active,repaint:()=>ensureRing(),scene:()=>document.body?.dataset?.r778BerhetScene||'auto',setScene:id=>{if(document.body)document.body.dataset.r778BerhetScene=id||'auto';return id}});
+window.SukunR811Berhetiyye=Object.freeze({version:'r811',active:()=>active,refresh:()=>queue(),category:canonicalCat,ensureRing});
 })();
-</script>\n
+</script>
+
 </body>
 </html>
