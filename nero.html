@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r814">
+<meta name="sukun-build" content="r815">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r814">
+<link rel="manifest" href="./manifest.webmanifest?v=r815">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.66 — build 2026-09-14-r814</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.67 — build 2026-09-14-r815</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -73812,8 +73812,8 @@ function ensureRing(){
   let img=document.getElementById('r811BerhetRing');
   if(!img){
     img=document.createElement('img');img.id='r811BerhetRing';img.alt='';img.setAttribute('aria-hidden','true');img.draggable=false;img.decoding='async';
-    img.src='./assets/berhetiyye-premium/berhetiyye-ring-r814.png?v=r814';
-    img.addEventListener('error',()=>{if(!img.dataset.r814Retry){img.dataset.r814Retry='1';img.src='./assets/berhetiyye-premium/berhetiyye-ring-r814.png'}},{once:true});
+    img.src='./assets/berhetiyye-premium/berhetiyye-ring-r815.png?v=r815';
+    img.addEventListener('error',()=>{if(!img.dataset.r814Retry){img.dataset.r814Retry='1';img.src='./assets/berhetiyye-premium/berhetiyye-ring-r815.png'}},{once:true});
     host.insertBefore(img,host.firstChild);
   }else if(img.parentElement!==host){host.insertBefore(img,host.firstChild)}
   installHostObserver(host);
@@ -74034,7 +74034,7 @@ body[data-r474-name-category="berhet"] #r811BerhetRing{display:block!important;v
 /* If the DOM ring is replaced for one frame, show the same ring through a temporary pseudo fallback. */
 body[data-r474-name-category="berhet"] #zCountVisual:not(:has(#r811BerhetRing))::before{
   content:""!important;display:block!important;position:absolute!important;inset:-3%!important;z-index:1!important;pointer-events:none!important;
-  background:url('./assets/berhetiyye-premium/berhetiyye-ring-r814.png?v=r814') center/contain no-repeat!important;
+  background:url('./assets/berhetiyye-premium/berhetiyye-ring-r815.png?v=r815') center/contain no-repeat!important;
   animation:r811BerhetCCW 34s linear infinite!important;filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)) drop-shadow(0 0 10px rgba(137,87,255,.12))!important;
 }
 /* Stop control is a chronic fall-through point: keep its jewel skin even if class/style writers race. */
@@ -74049,6 +74049,107 @@ html[data-r811-berhet="1"] body.r431-dock-visible.r433-dock-hidden #r433DockPeek
 }
 @media(max-width:390px){html[data-r811-berhet="1"] body.r431-dock-visible.r433-dock-hidden #r433DockPeek{width:min(calc(100vw - 34px),286px)!important;max-width:286px!important}}
 </style>
+
+
+<style id="sukun-r815-berhetiyye-ring-hardguard">
+/* r815 — Berhetiyye çarkı için son görsel otorite.
+   Tefekkür eski pseudo/orbit katmanları, generic sayaç canvas/svg/ring çocukları ve state düşmeleri burada bastırılır. */
+html[data-r815-berhet="1"] body #zCountVisual{
+  position:relative!important;isolation:isolate!important;overflow:visible!important;
+  background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;
+}
+html[data-r815-berhet="1"] body #zCountVisual::before,
+html[data-r815-berhet="1"] body #zCountVisual::after,
+html[data-r815-berhet="1"] body.sukun-tefekkur-mode #zCountVisual::before,
+html[data-r815-berhet="1"] body.sukun-tefekkur-mode #zCountVisual::after{
+  content:none!important;display:none!important;visibility:hidden!important;opacity:0!important;
+  background:none!important;border:0!important;box-shadow:none!important;animation:none!important;transform:none!important;
+}
+html[data-r815-berhet="1"] body #zCountVisual > :not(.cntNums):not(#r811BerhetRing){
+  display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;pointer-events:none!important;
+}
+html[data-r815-berhet="1"] body #r811BerhetRing{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  position:absolute!important;left:50%!important;top:50%!important;inset:auto!important;
+  width:112%!important;height:112%!important;max-width:none!important;max-height:none!important;
+  object-fit:contain!important;object-position:center!important;z-index:2!important;pointer-events:none!important;
+  transform-origin:50% 50%!important;
+  animation:r815BerhetRingCCW 36s linear infinite!important;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.32)) drop-shadow(0 0 12px rgba(145,84,255,.18))!important;
+  backface-visibility:hidden!important;-webkit-backface-visibility:hidden!important;
+}
+@keyframes r815BerhetRingCCW{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(-360deg)}
+}
+html[data-r815-berhet="1"] body #zCountVisual .cntNums{
+  position:relative!important;z-index:5!important;visibility:visible!important;opacity:1!important;
+}
+html[data-r815-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{
+  width:min(78vw,310px)!important;max-width:310px!important;aspect-ratio:1/1!important;height:auto!important;
+  margin:6px auto 14px!important;overflow:visible!important;
+}
+@media(max-width:390px){
+  html[data-r815-berhet="1"] body #r811BerhetRing{width:110%!important;height:110%!important}
+  html[data-r815-berhet="1"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{width:min(80vw,296px)!important;max-width:296px!important}
+}
+@media(prefers-reduced-motion:reduce){html[data-r815-berhet="1"] body #r811BerhetRing{animation:none!important;transform:translate(-50%,-50%)!important}}
+</style>
+<script id="sukun-r815-berhetiyye-ring-hardguard">
+(()=>{
+'use strict';
+if(window.SukunR815BerhetiyyeRing)return;
+const root=document.documentElement;
+const KEY='sukun.r815.berhet.visual.latched';
+let latched=false,timer=0;
+try{latched=sessionStorage.getItem(KEY)==='1'}catch(_){ }
+const norm=v=>String(v||'').trim().toLocaleLowerCase('tr-TR').replace(/[îı]/g,'i').replace(/[ûü]/g,'u').replace(/[â]/g,'a');
+function heroSaysBerhet(){
+  const sub=norm(document.getElementById('r611CurrentZikirSub')?.textContent);
+  const kind=norm(document.getElementById('r642InfoKind')?.textContent);
+  return sub.includes('berhetiyye')||kind.includes('berhetiyye');
+}
+function authoritySaysBerhet(){
+  try{if(window.SukunR814Berhetiyye?.active?.())return true}catch(_){ }
+  try{if(window.SukunR813Berhetiyye?.active?.())return true}catch(_){ }
+  try{if(window.SukunR778BerhetiyyeAuthority?.active?.())return true}catch(_){ }
+  return root.dataset.r811Berhet==='1'||root.dataset.r813Berhet==='1'||root.dataset.r809Berhet==='1'||norm(document.body?.dataset?.r474NameCategory)==='berhet';
+}
+function shouldLatch(){return heroSaysBerhet()||authoritySaysBerhet()||latched&&document.body?.classList.contains('sukun-tefekkur-mode')}
+function setLatch(on){
+  latched=!!on;
+  try{if(latched)sessionStorage.setItem(KEY,'1');else sessionStorage.removeItem(KEY)}catch(_){ }
+}
+function ensureRing(){
+  const host=document.getElementById('zCountVisual');if(!host)return null;
+  let img=document.getElementById('r811BerhetRing');
+  if(!img){img=document.createElement('img');img.id='r811BerhetRing';img.alt='';img.setAttribute('aria-hidden','true');img.draggable=false;img.decoding='async';host.insertBefore(img,host.firstChild)}
+  if(img.parentElement!==host)host.insertBefore(img,host.firstChild);
+  const wanted='./assets/berhetiyye-premium/berhetiyye-ring-r815.png?v=r815';
+  if(!img.src.includes('berhetiyye-ring-r815.png'))img.src=wanted;
+  return img;
+}
+function apply(reason='apply'){
+  const on=shouldLatch();
+  if(on){
+    setLatch(true);
+    root.dataset.r815Berhet='1';root.dataset.r811Berhet='1';root.dataset.r813Berhet='1';root.dataset.r809Berhet='1';
+    ensureRing();
+  }else if(!latched){delete root.dataset.r815Berhet;}
+}
+function clearForExplicitNonBerhet(cat){
+  if(!cat||cat==='berhet'||cat==='fav')return;
+  setLatch(false);delete root.dataset.r815Berhet;
+}
+document.addEventListener('click',e=>{const b=e.target.closest?.('#zCats [data-c]');if(!b)return;const c=norm(b.dataset.c);if(c==='berhet'){setLatch(true);setTimeout(()=>apply('cat-berhet'),0)}else clearForExplicitNonBerhet(c)},{capture:true,passive:true});
+['DOMContentLoaded','pageshow','load','sukun:zikirchange','sukun:zikirselectionchange','sukun:currentzikirchange','sukun:journey-advance','sukun:tefekkurchange','sukun:tabchange','sukun:domhydrate'].forEach(ev=>window.addEventListener(ev,()=>requestAnimationFrame(()=>apply(ev)),{passive:true}));
+const mo=new MutationObserver(()=>{if(latched||heroSaysBerhet())requestAnimationFrame(()=>apply('dom'))});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{mo.observe(document.getElementById('tab-zkr')||document.body,{subtree:true,childList:true});apply('ready')},{once:true});
+else{mo.observe(document.getElementById('tab-zkr')||document.body,{subtree:true,childList:true});apply('boot')}
+timer=setInterval(()=>{if(latched||document.body?.classList.contains('sukun-tefekkur-mode'))apply('watch')},700);
+window.SukunR815BerhetiyyeRing=Object.freeze({version:'r815',apply:()=>apply('api'),active:()=>latched||root.dataset.r815Berhet==='1',ensureRing,clear:()=>{setLatch(false);delete root.dataset.r815Berhet}});
+})();
+</script>
 
 </body>
 </html>

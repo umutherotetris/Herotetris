@@ -1,0 +1,18 @@
+{
+  "v": "r815",
+  "build": "2026-09-14-r815",
+  "notes": [
+    "r809 · Berhetiyye flashing kök nedeni giderildi: document-wide style MutationObserver kaldırıldı.",
+    "r809 · Görsel skinler runtime inline yazım yerine tek CSS sahibiyle sabitlendi; r798 binder Berhetiyye aktifken pasif.",
+    "r809 · Oynatıcıyı göster jewel raster kaplamasından çıkarılıp sabit glass dock yapıldı.",
+    "r809 · Sayaç legacy zCountVisual’dan izole; yalnız özel doğal kristal yüzük animasyonlu kalır.",
+    "r809 · r244 collision style observer Berhetiyye aktifken DOM style yazmıyor.",
+    "r809 · r727 ZCtlFlow otomatik min-height ölçüm döngüsü Berhetiyye aktifken pasif; dikey kayma kaynağı kesildi.",
+    "r810 · Berhetiyye sayaç tekrar legacy #zCountVisual üzerinde tek CSS ring sahibi oldu; injected counter kaldırıldı. State sticky consensus ile stabil; 28/99 kontrollerinde pseudo-artifact katmanları kapatıldı.",
+    "r811 · canonical Berhetiyye kategori tespiti; r798 guard tekrar etkin; pseudo ring yerine gerçek IMG ring; dock merkezleme ve seyir kontrol artıkları temizlendi.",
+    "r812 · Ring/state mantığı korunarak kalan görünür çakışmalar hedeflendi: gerçek r494 Tefekkür gezinmesi jewel skin, 28/99 seyir buton kırıntıları temizliği, kompakt jewel player, Tefekkür kaynak/çıkış skin eşlemesi ve atlas iç boşlukları.",
+    "r813 · Berhetiyye görsel otoritesi sticky canonical selection modeline alındı; Tefekkür/seyir sırasında kategori transient değişse bile yüzük, jewel kontroller ve kompakt player düşmez. r474 kategori fallback ve ring DOM self-heal eklendi.",
+    "r814 · Berhetiyye zikir sayacına seçilen yeni doğal kristal/mücevher çarkı asset olarak entegre edildi; r813 state/authority mimarisi korunarak yalnız sayaç görseli ve build/cache kimliği güncellendi.",
+    "r815 · Berhetiyye çarkı tefekkür sırasında state düşse bile session-latched hard guard ile görünür tutulur; eski orbit/pseudo katmanları kesin bastırılır."
+  ]
+}
