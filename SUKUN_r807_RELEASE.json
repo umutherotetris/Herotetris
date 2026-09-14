@@ -1,0 +1,10 @@
+{
+  "version": "r807",
+  "build": "2026-09-14-r807",
+  "focus": "Berhetiyye single visual authority",
+  "notes": [
+    "Removed legacy competing Berhetiyye visual/layout authorities from nero.html.",
+    "Replaced r778 inline-important painter with state-only compatibility shim.",
+    "Counter, Tefekkur entry/exit, journey controls and dock have one r807 owner."
+  ]
+}

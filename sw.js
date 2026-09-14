@@ -1,13 +1,13 @@
-/* SÜKÛN r806 — Berhetiyye Counter Ring + Update Recovery
+/* SÜKÛN r807 — Berhetiyye Counter Ring + Update Recovery
    Amaç: yeni sürümün "waiting/install mismatch" yüzünden eski shell'de
    kilitlenmesini önlemek. Controller değişimi aktif sesi kendiliğinden
    kesmez; sayfa reload kararı istemci tarafında verilir. */
 'use strict';
 
-const SURUM = 'r806';
-const CACHE = 'sukun-r806-20260914f';
-const CACHE_META = './__sukun_cache_meta_r806__.json';
-const BUILD_MARKER = './__sukun_build_r806__.json';
+const SURUM = 'r807';
+const CACHE = 'sukun-r807-20260914f';
+const CACHE_META = './__sukun_cache_meta_r807__.json';
+const BUILD_MARKER = './__sukun_build_r807__.json';
 const LATEST_MARKER = './__sukun_latest__.json';
 
 /* Kurulumu kırabilecek büyük/görsel dosyaları zorunlu listeye koymuyoruz.
@@ -46,7 +46,7 @@ const PRECACHE = [
   './assets/jewel-r798/panelbar.png',
   './assets/jewel-r798/panel-context.png',
   './assets/jewel-r798/ring.png',
-  './assets/berhetiyye-premium/berhetiyye-ring-r806.png',
+  './assets/berhetiyye-premium/berhetiyye-ring-r807.png',
   './assets/sukun-tesbih-weave-r759.svg',
   './assets/sukun-nur-mist-r759.svg',
   './assets/tefekkur-sanctuary.webp',
@@ -96,9 +96,9 @@ const PRECACHE = [
 ];
 
 const NOTLAR = [
-  'r806 · Berhetiyye zikir sayacı özel doğal kristal yüzüğe bağlandı; genel Jewel yüzüğü diğer zikirlerde korunur.',
+  'r807 · Berhetiyye zikir sayacı özel doğal kristal yüzüğe bağlandı; genel Jewel yüzüğü diğer zikirlerde korunur.',
   'Özel halka yalnız canlı Berhetiyye seansında saat yönünün tersine sabit düzlemde döner; sayaç rakamları dönmez.',
-  'Yeni berhetiyye-ring-r806.png best-effort pre-cache edilir; install tek görsel hatası yüzünden kilitlenmez.',
+  'Yeni berhetiyye-ring-r807.png best-effort pre-cache edilir; install tek görsel hatası yüzünden kilitlenmez.',
   'Ses motoru, Global Queue, sayaç mantığı, pause/resume/stop ve 28/99 state makineleri değiştirilmedi.'
 ];
 
