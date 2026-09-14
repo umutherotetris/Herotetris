@@ -1,0 +1,12 @@
+{
+  "v": "r819",
+  "build": "2026-09-14-r819",
+  "notes": [
+    "Sayaç render mimarisi cerrahi olarak tek sahipli r819 Counter Core'a geçirildi.",
+    "r813/r815/r816/r817/r818 sayaç guard ve renderer katmanları kaldırıldı.",
+    "Normal ve Berhetiyye çarkları aynı izole sibling stage üzerinde çiziliyor; eski canvas/orbit/ring katmanları yalnız mantık için DOM'da kalıyor fakat boyanmıyor.",
+    "Berhetiyye çarkı assets/berhetiyye-premium/berhetiyye-ring-r819.png, normal çark assets/sukun-nur-ring-r757.png kullanıyor.",
+    "Sayı ve yüzde gerçek sayaç DOM'undan aynalanıyor; tıklama gerçek zCountVisual sayım motoruna aktarılıyor.",
+    "SW, manifest, HTML build meta ve latest marker r819 ile senkronlandı."
+  ]
+}
