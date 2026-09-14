@@ -74450,5 +74450,144 @@ window.SukunR817CounterStability=Object.freeze({version:'r817',sync:()=>apply('a
 })();
 </script>
 
+
+
+<style id="sukun-r818-counter-stage">
+/* r818 — sayaç çarkı için tamamen yeni ve tarihsel CSS'ten izole stage. */
+html[data-r818-counter="berhet"] body #zCountVisual{
+  position:relative!important;isolation:isolate!important;overflow:visible!important;
+  width:min(78vw,304px)!important;max-width:304px!important;height:auto!important;aspect-ratio:1/1!important;
+  margin:0 auto 10px!important;padding:0!important;border:0!important;border-radius:50%!important;
+  background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;
+  display:grid!important;place-items:center!important;transform:none!important;
+}
+html[data-r818-counter="berhet"] body.sukun-tefekkur-mode #tfRefinedLayout #zCountVisual{
+  width:min(80vw,304px)!important;max-width:304px!important;height:auto!important;aspect-ratio:1/1!important;
+  margin:8px auto 14px!important;
+}
+html[data-r818-counter="berhet"] body #zCountVisual::before,
+html[data-r818-counter="berhet"] body #zCountVisual::after{
+  content:none!important;display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;
+}
+html[data-r818-counter="berhet"] body #zCountVisual > :not(.cntNums):not(#r818BerhetRingStage){
+  display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;pointer-events:none!important;
+}
+html[data-r818-counter="berhet"] body #r811BerhetRing{display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important}
+html[data-r818-counter="berhet"] body #r818BerhetRingStage{
+  display:grid!important;place-items:center!important;position:absolute!important;inset:-7%!important;
+  z-index:2!important;pointer-events:none!important;overflow:visible!important;transform:none!important;
+}
+html[data-r818-counter="berhet"] body #r818BerhetRing{
+  display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  object-fit:contain!important;object-position:center!important;position:static!important;inset:auto!important;margin:0!important;
+  transform-origin:50% 50%!important;animation:r818RingCCW 36s linear infinite!important;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.28)) drop-shadow(0 0 12px rgba(128,78,255,.16))!important;
+  backface-visibility:hidden!important;-webkit-backface-visibility:hidden!important;
+}
+@keyframes r818RingCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+html[data-r818-counter="berhet"] body #zCountVisual .cntNums{
+  position:absolute!important;inset:0!important;z-index:6!important;width:auto!important;height:auto!important;margin:0!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+  visibility:visible!important;opacity:1!important;pointer-events:none!important;transform:none!important;
+}
+html[data-r818-counter="berhet"] body #zCountVisual .cntNums small{margin:0 0 6px!important;font-size:clamp(11px,3vw,14px)!important;letter-spacing:.16em!important}
+html[data-r818-counter="berhet"] body #zCountVisual .cntBig{font-size:clamp(48px,15vw,72px)!important;line-height:.92!important}
+html[data-r818-counter="berhet"] body #zCountVisual .cntPct{margin-top:6px!important;font-size:clamp(11px,3.2vw,15px)!important}
+
+/* Generic sayaçta tarihsel normal katmanları kesin geri getir. */
+html[data-r818-counter="generic"] body #r818BerhetRingStage,
+html[data-r818-counter="generic"] body #r811BerhetRing{display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important}
+html[data-r818-counter="generic"] body #zCountVisual{
+  position:relative!important;overflow:visible!important;background:revert!important;background-image:revert!important;box-shadow:revert!important;filter:revert!important;
+}
+html[data-r818-counter="generic"] body #zCountVisual .zGlow,
+html[data-r818-counter="generic"] body #zCountVisual #breathHalo,
+html[data-r818-counter="generic"] body #zCountVisual #tsbGauge,
+html[data-r818-counter="generic"] body #zCountVisual .rings,
+html[data-r818-counter="generic"] body #zCountVisual .ring,
+html[data-r818-counter="generic"] body #zCountVisual #zMuhr,
+html[data-r818-counter="generic"] body #zCountVisual .progArc,
+html[data-r818-counter="generic"] body #zCountVisual .progArc svg{
+  display:block!important;visibility:visible!important;opacity:1!important;animation:revert!important;filter:revert!important;
+}
+html[data-r818-counter="generic"] body #zCountVisual::before,
+html[data-r818-counter="generic"] body #zCountVisual::after{display:revert!important;visibility:visible!important;opacity:revert!important;animation:revert!important}
+
+/* Dar ekranda Kendi Sesin ve seyir durumları taşmasın. */
+html body #zBar #itemRecBtn{min-width:0!important;overflow:hidden!important}
+html body #zBar #itemRecBtn > span:last-child{
+  max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;
+  font-size:clamp(8px,2.4vw,10px)!important;line-height:1.02!important;letter-spacing:.04em!important;
+}
+html body #bsStatus,html body #es99Status,html body #r470VoiceSource,html body #cntSub{
+  max-width:100%!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;overflow-wrap:anywhere!important;
+}
+</style>
+<script id="sukun-r818-counter-stage-script">
+(()=>{
+'use strict';
+if(window.SukunR818CounterStage)return;
+const root=document.documentElement;
+let raf=0,last='';
+const norm=v=>String(v||'').trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
+const safe=(fn,fb='')=>{try{return fn()}catch(_){return fb}};
+function selected(){return norm(safe(()=>window.SukunR813Berhetiyye?.selectedCat?.(),safe(()=>typeof Z!=='undefined'?Z.cat:'')))}
+function state(){return norm(safe(()=>window.SukunR813Berhetiyye?.stateCat?.(),safe(()=>window.currentZikirState?.snapshot?.()?.cat,'')))}
+function bodyCat(){return norm(document.body?.dataset?.r474NameCategory)}
+function journey(){
+  const x=safe(()=>window.SukunBerhetiyyeSeyir?.state?.()||window.BERHET_SEYIR||null,null);
+  return !!(x&&(x.run||x.running||x.active||x.playing||x.paused||x.current>=0||x.i>=0));
+}
+function hero(){return [safe(()=>document.getElementById('r611CurrentZikirSub')?.textContent,''),safe(()=>document.getElementById('r642InfoKind')?.textContent,''),safe(()=>document.querySelector('#r611CurrentZikirHero')?.textContent,'')].map(norm).some(x=>x.includes('berhetiyye'))}
+function resolve(){
+  const sel=selected(),st=state(),bc=bodyCat();
+  if(journey()||sel==='berhet'||st==='berhet'||bc==='berhet'||hero())return 'berhet';
+  if(sel&&sel!=='fav')return 'generic';
+  if(st&&st!=='fav')return 'generic';
+  return 'generic';
+}
+function ensureStage(){
+  const host=document.getElementById('zCountVisual'); if(!host)return null;
+  let stage=document.getElementById('r818BerhetRingStage');
+  if(!stage){
+    stage=document.createElement('div'); stage.id='r818BerhetRingStage'; stage.setAttribute('aria-hidden','true');
+    const img=document.createElement('img'); img.id='r818BerhetRing'; img.alt=''; img.draggable=false; img.decoding='async';
+    img.src='./assets/berhetiyye-premium/berhetiyye-ring-r818.png?v=r818';
+    stage.appendChild(img); host.insertBefore(stage,host.firstChild);
+  }else if(stage.parentElement!==host){host.insertBefore(stage,host.firstChild)}
+  const img=stage.querySelector('#r818BerhetRing');
+  if(img&&!img.src.includes('berhetiyye-ring-r818.png'))img.src='./assets/berhetiyye-premium/berhetiyye-ring-r818.png?v=r818';
+  return stage;
+}
+function clearLegacy(){
+  const old=document.getElementById('r811BerhetRing');
+  if(old){old.style.setProperty('display','none','important');old.style.setProperty('visibility','hidden','important');old.style.setProperty('opacity','0','important')}
+}
+function genericCleanup(){
+  delete root.dataset.r811Berhet;delete root.dataset.r813Berhet;delete root.dataset.r809Berhet;delete root.dataset.r815Berhet;
+  const stage=document.getElementById('r818BerhetRingStage');if(stage)stage.style.setProperty('display','none','important');
+  clearLegacy();
+  const host=document.getElementById('zCountVisual');
+  if(host){['.zGlow','#breathHalo','#tsbGauge','.rings','#zMuhr','.progArc'].forEach(sel=>{const el=host.querySelector(sel);if(el){el.style.removeProperty('display');el.style.removeProperty('visibility');el.style.removeProperty('opacity');el.style.removeProperty('animation')}})}
+}
+function apply(reason='apply'){
+  const mode=resolve(); last=mode; root.dataset.r818Counter=mode; root.dataset.r817Counter=mode; root.dataset.r816Counter=mode;
+  if(mode==='berhet'){
+    root.dataset.r811Berhet='1';root.dataset.r813Berhet='1';root.dataset.r809Berhet='1';root.dataset.r815Berhet='1';
+    ensureStage();clearLegacy();
+  }else genericCleanup();
+  root.dataset.r818CounterReason=reason;
+}
+function queue(reason){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;apply(reason)})}
+['DOMContentLoaded','pageshow','load','sukun:zikirchange','sukun:zikirselectionchange','sukun:currentzikirchange','sukun:journey-advance','sukun:tefekkurchange','sukun:tabchange','sukun:domhydrate','sukun:r616viewchange'].forEach(ev=>window.addEventListener(ev,()=>queue(ev),{passive:true}));
+document.addEventListener('click',e=>{if(e.target.closest?.('#zCats [data-c],#berhetSeyir,#esmaSeyir99,#r442TefekkurBtn,#tefExitBtn,#r616ZikirNavRow button'))setTimeout(()=>queue('click'),0)},{capture:true,passive:true});
+const mo=new MutationObserver(()=>queue('mutation'));
+function boot(){const host=document.getElementById('tab-zkr')||document.body;if(host)mo.observe(host,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-r474-name-category']});apply('boot')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+setInterval(()=>apply('watch'),900);
+window.SukunR818CounterStage=Object.freeze({version:'r818',sync:()=>apply('api'),mode:()=>last||root.dataset.r818Counter,snapshot:()=>({mode:last||root.dataset.r818Counter,selected:selected(),state:state(),body:bodyCat(),journey:journey(),hero:hero(),stage:!!document.getElementById('r818BerhetRingStage')})});
+})();
+</script>
+
 </body>
 </html>

@@ -1,0 +1,11 @@
+{
+  "v": "r818",
+  "build": "2026-09-14-r818",
+  "notes": [
+    "Berhetiyye çarkı r818'de tarihsel r811/r815 img stillerinden tamamen izole yeni bir stage içine alındı.",
+    "Berhetiyye modunda generic orbit/ring/pseudo katmanları kesin kapatılır; sayı metni çarkın merkezinde kalır.",
+    "Generic modda standart sayaç katmanları geri yüklenir; premium Berhetiyye stage'i kapatılır.",
+    "Service worker, manifest ve build marker gerçek r818 kimliğine yükseltildi; r815 cache karışıklığı giderildi.",
+    "Kendi Sesin ve seyir durum metinleri için dar ekran overflow koruması sıkılaştırıldı."
+  ]
+}
