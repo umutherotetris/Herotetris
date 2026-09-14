@@ -1,0 +1,13 @@
+{
+  "v": "r806",
+  "build": "2026-09-14-r806",
+  "purpose": "Berhetiyye-only natural crystal counter ring integration",
+  "notes": [
+    "r802 · Berhetiyye pasifken normal sayaç korunur; aktifken özel yüzük otomatik görünür. Geçişte ring DOM’u korunarak görsel zıplama azaltıldı.",
+    "r803 · Berhetiyye sayaç geçişine hafif fade/glow blend, asil aktivasyon ve sade çözülme animasyonu eklendi.",
+    "r806 · r802/r803 Berhetiyye sayaç geçiş katmanları kaldırıldı; tek görsel otoriteye geçildi.",
+    "r806 · Berhetiyye sayacında legacy halka/mandala/progress katmanları gizlenip yalnız özel yüzük + sayı bırakıldı.",
+    "r806 · Tefekküre Geç / Tefekkürden Çık dahil Berhetiyye kontrolleri doğrudan jewel assetlerle kaplandı.",
+    "r806 · Stabil data-r806-berhet durumu geçici DOM değişimlerinde 650ms hysteresis ile flashing engeller."
+  ]
+}
