@@ -55625,8 +55625,129 @@ body.sukun-tefekkur-mode.r431-dock-visible:not(.r433-dock-hidden) #r170Now.r554-
 
 @media(max-width:390px){.tabs>.tab,.tabs>#tekkeTab{padding-inline:1px!important}.tbL{font-size:8.5px!important}.r554NotifySigil{width:20px!important;height:20px!important;min-width:20px}.r554NotifyFilters{gap:4px}.r554Filter{grid-template-columns:auto minmax(0,1fr);font-size:8.5px}.r554Filter>b{grid-column:2;grid-row:1;justify-self:end}.r554NotifyTools button{flex:1 1 130px}.r554DrawerFilters .r554Filter{grid-template-columns:auto minmax(0,1fr);padding-inline:3px}.r554DrawerFilters .r554Filter>b{display:none}.r554AlertMark{width:22px!important;min-width:22px!important;height:22px!important;min-height:22px!important}.r554AlertItem{padding:10px 9px}}
 @media(prefers-reduced-motion:reduce){.r554NotifySigil>i,.r554NotifySigil>span,.r554AlertMark.unread{animation:none!important}.r554NotifySigil>i{transform:scale(1)!important}.r554AlertMark.unread{box-shadow:0 0 0 2px color-mix(in srgb,var(--r554-tone) 12%,transparent),0 0 12px color-mix(in srgb,var(--r554-tone) 24%,transparent)!important}}
+
+<style id="r800-notify-glass-clarity">
+/* r800: Bildirim ekranında okunabilirlik için ince cam tablet katmanı */
+#tab-ntf .r554NotifyCenter{
+  border:1px solid color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  border-radius:22px!important;
+  background:
+    linear-gradient(180deg,rgba(8,18,28,.80),rgba(5,14,22,.72))!important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.08)!important;
+  backdrop-filter:blur(12px) saturate(1.08)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+#tab-ntf .r554NotifyTools,
+#tab-ntf #r607CenterMaint,
+#r554AlertDrawer > #r607DrawerMaint{
+  padding:2px 0 0!important;
+}
+#tab-ntf .r554NotifyTools button,
+#tab-ntf .r607MaintBtn,
+#r554AlertDrawer .r554DrawerActions button,
+#r554AlertDrawer .r607MaintBtn{
+  border-color:color-mix(in srgb,var(--gold) 18%,var(--line))!important;
+  background:linear-gradient(180deg,rgba(11,24,36,.76),rgba(7,18,28,.66))!important;
+  color:color-mix(in srgb,var(--ivory) 88%,var(--goldh))!important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.06)!important;
+  backdrop-filter:blur(10px) saturate(1.06)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 22px rgba(0,0,0,.12)!important;
+}
+#tab-ntf .r607MaintBtn.old,
+#r554AlertDrawer .r607MaintBtn.old{
+  color:color-mix(in srgb,var(--goldh) 82%,#fff2c7)!important;
+}
+#tab-ntf .r607MaintBtn.danger,
+#r554AlertDrawer .r607MaintBtn.danger{
+  color:color-mix(in srgb,#ffe4e4 76%,var(--goldh))!important;
+  background:linear-gradient(180deg,rgba(48,18,22,.76),rgba(20,12,18,.68))!important;
+}
+#tab-ntf .r554CenterStatus,
+#tab-ntf #r607RetentionNote,
+#tab-ntf #r607AlertRetentionNote{
+  color:color-mix(in srgb,var(--ivory) 70%,var(--dim))!important;
+}
+#tab-ntf .r554AlertItem,
+#r554AlertDrawer .r554AlertItem{
+  position:relative!important;
+  overflow:hidden!important;
+  border:1px solid color-mix(in srgb,var(--r554-tone) 22%,var(--line))!important;
+  border-left:4px solid var(--r554-tone)!important;
+  border-radius:22px!important;
+  padding:13px 14px 12px!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015) 24%,transparent 100%),
+    linear-gradient(180deg,color-mix(in srgb,var(--r554-tone) 11%,rgba(8,17,24,.90)),rgba(6,14,22,.78))!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.08)!important;
+  backdrop-filter:blur(14px) saturate(1.08)!important;
+  box-shadow:0 14px 28px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+#tab-ntf .r554AlertItem::before,
+#r554AlertDrawer .r554AlertItem::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(140% 120% at 8% 0%, rgba(255,255,255,.08), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,0) 34%);
+}
+#tab-ntf .r554AlertItem > *,
+#r554AlertDrawer .r554AlertItem > *{
+  position:relative;
+  z-index:1;
+}
+#tab-ntf .r554AlertItemTop,
+#r554AlertDrawer .r554AlertItemTop{
+  margin-bottom:9px!important;
+}
+#tab-ntf .r554AlertItem>b,
+#r554AlertDrawer .r554AlertItem>b{
+  color:#f5fbff!important;
+  text-shadow:0 1px 10px rgba(0,0,0,.18);
+  font-weight:730!important;
+}
+#tab-ntf .r554AlertItem>p,
+#r554AlertDrawer .r554AlertItem>p{
+  color:color-mix(in srgb,var(--ivory) 80%,#bfe9ef)!important;
+}
+#tab-ntf .r554AlertSource,
+#r554AlertDrawer .r554AlertSource,
+#tab-ntf .r554AlertItemTop time,
+#r554AlertDrawer .r554AlertItemTop time{
+  color:color-mix(in srgb,var(--ivory) 56%,var(--dim))!important;
+}
+#tab-ntf .r554AlertItemBtns button,
+#r554AlertDrawer .r554AlertItemBtns button{
+  min-height:36px!important;
+  padding:0 14px!important;
+  border-radius:14px!important;
+  border-color:color-mix(in srgb,var(--gold) 16%,var(--line))!important;
+  background:linear-gradient(180deg,rgba(10,22,34,.78),rgba(7,16,26,.68))!important;
+  color:color-mix(in srgb,var(--ivory) 84%,var(--goldh))!important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.05)!important;
+  backdrop-filter:blur(10px) saturate(1.05)!important;
+}
+#tab-ntf .r554AlertItemBtns .r554AlertAction,
+#r554AlertDrawer .r554AlertItemBtns .r554AlertAction{
+  border-color:color-mix(in srgb,var(--r554-tone) 34%,var(--line))!important;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--r554-tone) 12%,rgba(13,24,36,.76)),rgba(7,16,26,.66))!important;
+  color:color-mix(in srgb,var(--r554-tone) 74%,#f8ffff)!important;
+}
+@media (max-width: 430px){
+  #tab-ntf .r554AlertItem,
+  #r554AlertDrawer .r554AlertItem{padding:12px 12px 11px!important;border-radius:19px!important}
+  #tab-ntf .r554AlertItem>b,
+  #r554AlertDrawer .r554AlertItem>b{font-size:11.8px!important;line-height:1.34!important}
+  #tab-ntf .r554AlertItem>p,
+  #r554AlertDrawer .r554AlertItem>p{font-size:9.8px!important;line-height:1.52!important}
+  #tab-ntf .r554AlertItemBtns button,
+  #r554AlertDrawer .r554AlertItemBtns button{min-height:35px!important;padding:0 12px!important}
+}
 </style>
 
+<script id="r800-version-tag">window.__SUKUN_R800_NOTIFY_GLASS__=1;</script>
 
 <script id="r549-nefs-frequency-truth">
 (()=>{
