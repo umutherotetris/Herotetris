@@ -73792,6 +73792,7 @@ function bodySaysBerhet(){
   return norm(document.body?.dataset?.r474NameCategory)==='berhet';
 }
 function shouldBeActive(){
+  if(document.documentElement?.dataset?.r817Counter==='generic'||document.documentElement?.dataset?.r816Counter==='generic')return false;
   if(selectedCat()==='berhet')return true;
   if(stateCat()==='berhet')return true;
   if(itemLooksBerhet())return true;
@@ -74115,7 +74116,10 @@ function authoritySaysBerhet(){
   try{if(window.SukunR778BerhetiyyeAuthority?.active?.())return true}catch(_){ }
   return root.dataset.r811Berhet==='1'||root.dataset.r813Berhet==='1'||root.dataset.r809Berhet==='1'||norm(document.body?.dataset?.r474NameCategory)==='berhet';
 }
-function shouldLatch(){return heroSaysBerhet()||authoritySaysBerhet()||latched&&document.body?.classList.contains('sukun-tefekkur-mode')}
+function shouldLatch(){
+  if(root.dataset.r817Counter==='generic'||root.dataset.r816Counter==='generic')return false;
+  return heroSaysBerhet()||authoritySaysBerhet()||latched&&document.body?.classList.contains('sukun-tefekkur-mode')
+}
 function setLatch(on){
   latched=!!on;
   try{if(latched)sessionStorage.setItem(KEY,'1');else sessionStorage.removeItem(KEY)}catch(_){ }
@@ -74148,6 +74152,301 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else{mo.observe(document.getElementById('tab-zkr')||document.body,{subtree:true,childList:true});apply('boot')}
 timer=setInterval(()=>{if(latched||document.body?.classList.contains('sukun-tefekkur-mode'))apply('watch')},700);
 window.SukunR815BerhetiyyeRing=Object.freeze({version:'r815',apply:()=>apply('api'),active:()=>latched||root.dataset.r815Berhet==='1',ensureRing,clear:()=>{setLatch(false);delete root.dataset.r815Berhet}});
+})();
+</script>
+
+
+<style id="sukun-r816-counter-authority">
+/* r816 — sayaç otoritesi.
+   Amaç:
+   1) Berhetiyye aktifken mücevher çarkı her koşulda görünür.
+   2) Berhetiyye değilken normal sayaç katmanları geri gelir.
+   3) Kendi sesin / durum satırları dar ekranda taşmaz. */
+html[data-r816-counter="generic"] body #r811BerhetRing{
+  display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;pointer-events:none!important;
+}
+html[data-r816-counter="generic"] body #zCountVisual{
+  overflow:visible!important;
+}
+html[data-r816-counter="generic"] body #zCountVisual > :not(.cntNums):not(#r811BerhetRing){
+  display:revert!important;visibility:visible!important;opacity:revert!important;
+  animation:revert!important;transition:revert!important;filter:revert!important;pointer-events:none!important;
+}
+html[data-r816-counter="generic"] body #zCountVisual::before,
+html[data-r816-counter="generic"] body #zCountVisual::after,
+html[data-r816-counter="generic"] body.sukun-tefekkur-mode #zCountVisual::before,
+html[data-r816-counter="generic"] body.sukun-tefekkur-mode #zCountVisual::after{
+  display:revert!important;visibility:visible!important;opacity:revert!important;
+  animation:revert!important;transition:revert!important;filter:revert!important;transform:revert!important;
+}
+html[data-r816-counter="generic"] body #zCountVisual .cntNums{position:relative!important;z-index:4!important}
+html[data-r816-counter="generic"] body #zCountVisual .progArc,
+html[data-r816-counter="generic"] body #zCountVisual .progArc svg,
+html[data-r816-counter="generic"] body #zCountVisual .rings,
+html[data-r816-counter="generic"] body #zCountVisual .ring,
+html[data-r816-counter="generic"] body #zCountVisual #zMuhr,
+html[data-r816-counter="generic"] body #zCountVisual #tsbGauge,
+html[data-r816-counter="generic"] body #zCountVisual #breathHalo,
+html[data-r816-counter="generic"] body #zCountVisual .zGlow{
+  visibility:visible!important;opacity:1!important;
+}
+
+html body #berhetSeyir .r168Status,
+html body #esmaSeyir99 .r168Status{
+  min-width:0!important;max-width:100%!important;min-height:34px!important;
+  padding:4px 2px 0!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  line-height:1.33!important;font-size:9.7px!important;
+}
+html body #bsStatus,html body #es99Status{
+  display:block!important;white-space:normal!important;overflow-wrap:anywhere!important;
+}
+html body #r470VoiceSource,
+html body #cntSub,
+html body #berhetSeyir .r168Status,
+html body #esmaSeyir99 .r168Status{
+  box-sizing:border-box!important;min-width:0!important;max-width:100%!important;
+}
+html body.sukun-tefekkur-mode #tfRefinedLayout #r470VoiceSource{
+  width:100%!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  white-space:nowrap!important;font-size:clamp(8px,2.2vw,9.6px)!important;padding-inline:6px!important;
+}
+html body #berhetSeyir .r168MiniRow,
+html body #esmaSeyir99 .r168MiniRow{min-width:0!important}
+</style>
+<script id="sukun-r816-counter-authority-script">
+(()=>{
+'use strict';
+if(window.SukunR816CounterAuthority)return;
+const root=document.documentElement;
+let raf=0,lastExplicitCat='',lastMode='';
+const norm=v=>String(v||'').trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
+function safe(fn,fallback=''){try{return fn()}catch(_){return fallback}}
+function selectedCat(){
+  const fromApi=safe(()=>window.SukunR813Berhetiyye?.selectedCat?.(),'');
+  if(fromApi)return norm(fromApi);
+  const zcat=safe(()=>typeof Z!=='undefined'?Z.cat:'','');
+  if(norm(zcat))return norm(zcat);
+  const src=safe(()=>typeof zItem==='function'?zItem()?._src:'','');
+  return norm(src);
+}
+function stateCat(){
+  const fromApi=safe(()=>window.SukunR813Berhetiyye?.stateCat?.(),'');
+  if(fromApi)return norm(fromApi);
+  const snap=safe(()=>window.currentZikirState?.snapshot?.()?.cat,'');
+  if(norm(snap))return norm(snap);
+  const zkat=safe(()=>typeof zKat==='function'?zKat():'','');
+  if(norm(zkat))return norm(zkat);
+  return norm(document.body?.dataset?.r474NameCategory);
+}
+function heroSaysBerhet(){
+  const texts=[
+    safe(()=>document.getElementById('r611CurrentZikirSub')?.textContent,''),
+    safe(()=>document.getElementById('r642InfoKind')?.textContent,''),
+    safe(()=>document.querySelector('#r611CurrentZikirHero .sub')?.textContent,''),
+    safe(()=>document.querySelector('#r611CurrentZikirHero')?.textContent,'')
+  ].map(norm);
+  return texts.some(t=>t.includes('berhetiyye'));
+}
+function explicitGeneric(){
+  const c=norm(lastExplicitCat)||selectedCat()||stateCat();
+  return !!c && c!=='berhet' && c!=='fav';
+}
+function shouldBerhet(){
+  if(heroSaysBerhet())return true;
+  if(selectedCat()==='berhet')return true;
+  if(stateCat()==='berhet')return true;
+  if(explicitGeneric())return false;
+  if(root.dataset.r815Berhet==='1'||root.dataset.r811Berhet==='1'||root.dataset.r813Berhet==='1'||root.dataset.r809Berhet==='1'){
+    if(safe(()=>window.SukunR815BerhetiyyeRing?.active?.(),false))return true;
+    if(safe(()=>window.SukunR814Berhetiyye?.active?.(),false))return true;
+  }
+  return norm(document.body?.dataset?.r474NameCategory)==='berhet' && !explicitGeneric();
+}
+function berhetAsset(){return './assets/berhetiyye-premium/berhetiyye-ring-r815.png?v=r815'}
+function ensureRing(){
+  const host=document.getElementById('zCountVisual'); if(!host)return null;
+  let img=document.getElementById('r811BerhetRing');
+  if(!img){
+    img=document.createElement('img');
+    img.id='r811BerhetRing'; img.alt=''; img.setAttribute('aria-hidden','true');
+    img.draggable=false; img.decoding='async';
+    host.insertBefore(img,host.firstChild);
+  }else if(img.parentElement!==host){
+    host.insertBefore(img,host.firstChild);
+  }
+  if(!img.src.includes('berhetiyye-ring-r815.png'))img.src=berhetAsset();
+  img.style.removeProperty('display');
+  img.style.removeProperty('visibility');
+  img.style.removeProperty('opacity');
+  return img;
+}
+function clearLegacyBerhetFlags(){
+  delete root.dataset.r811Berhet;
+  delete root.dataset.r813Berhet;
+  delete root.dataset.r809Berhet;
+  delete root.dataset.r815Berhet;
+}
+function repairGenericCounter(){
+  const host=document.getElementById('zCountVisual'); if(!host)return;
+  const sels=['.zGlow','#breathHalo','#tsbGauge','.rings','#zMuhr','.progArc'];
+  sels.forEach(sel=>{ const el=host.querySelector(sel); if(el){ el.style.removeProperty('display'); el.style.removeProperty('visibility'); el.style.removeProperty('opacity'); el.style.removeProperty('animation'); }});
+  host.style.removeProperty('background');
+  host.style.removeProperty('background-image');
+  host.style.removeProperty('box-shadow');
+  host.style.removeProperty('filter');
+}
+function setMode(mode,reason='set'){
+  lastMode=mode;
+  root.dataset.r816Counter=mode;
+  if(mode==='berhet'){
+    root.dataset.r811Berhet='1';
+    root.dataset.r813Berhet='1';
+    root.dataset.r809Berhet='1';
+    root.dataset.r815Berhet='1';
+    ensureRing();
+  }else{
+    clearLegacyBerhetFlags();
+    try{window.SukunR815BerhetiyyeRing?.clear?.()}catch(_){ }
+    const img=document.getElementById('r811BerhetRing');
+    if(img){img.style.setProperty('display','none','important');img.style.setProperty('visibility','hidden','important');img.style.setProperty('opacity','0','important');}
+    repairGenericCounter();
+  }
+  root.dataset.r816CounterReason=reason;
+}
+function sync(reason='sync'){
+  const mode=shouldBerhet()?'berhet':'generic';
+  setMode(mode,reason);
+}
+function queue(reason='queue'){
+  if(raf)return;
+  raf=requestAnimationFrame(()=>{raf=0;sync(reason)});
+}
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest?.('#zCats [data-c]');
+  if(btn){lastExplicitCat=norm(btn.dataset.c||'');setTimeout(()=>queue('cat-click:'+lastExplicitCat),0);return;}
+  const sum=e.target.closest?.('#berhetSeyir>summary,#esmaSeyir99>summary,#r442TefekkurBtn,#r616ZikirNavRow button');
+  if(sum)setTimeout(()=>queue('ui-click'),0);
+},{capture:true,passive:true});
+['DOMContentLoaded','pageshow','load','sukun:zikirchange','sukun:zikirselectionchange','sukun:currentzikirchange','sukun:journey-advance','sukun:tefekkurchange','sukun:tabchange','sukun:domhydrate','sukun:r616viewchange'].forEach(ev=>window.addEventListener(ev,()=>queue(ev),{passive:true}));
+const mo=new MutationObserver(()=>queue('dom'));
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{mo.observe(document.getElementById('tab-zkr')||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-r474-name-category','class']});sync('ready')},{once:true});
+else{mo.observe(document.getElementById('tab-zkr')||document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-r474-name-category','class']});sync('boot')}
+setInterval(()=>sync('watch'),900);
+window.SukunR816CounterAuthority=Object.freeze({
+  version:'r816',
+  mode:()=>lastMode||root.dataset.r816Counter||'',
+  sync:()=>sync('api'),
+  snapshot:()=>({mode:lastMode||root.dataset.r816Counter||'',selectedCat:selectedCat(),stateCat:stateCat(),explicit:lastExplicitCat,heroBerhet:heroSaysBerhet(),ring:!!document.getElementById('r811BerhetRing')})
+});
+})();
+</script>
+
+
+
+<style id="sukun-r817-counter-stability">
+/* r817 — tek sayaç sahibi / no-flash pass */
+html[data-r817-counter="berhet"] body #zCountVisual{
+  contain:layout style!important;
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+}
+html[data-r817-counter="berhet"] body #zCountVisual > :not(.cntNums):not(#r811BerhetRing){
+  display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;transition:none!important;
+}
+html[data-r817-counter="berhet"] body #zCountVisual::before,
+html[data-r817-counter="berhet"] body #zCountVisual::after{content:none!important;display:none!important;animation:none!important}
+html[data-r817-counter="berhet"] body #r811BerhetRing{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  will-change:transform!important;
+}
+html[data-r817-counter="generic"] body #r811BerhetRing{
+  display:none!important;visibility:hidden!important;opacity:0!important;animation:none!important;
+}
+html[data-r817-counter="generic"] body #zCountVisual > :not(.cntNums):not(#r811BerhetRing){
+  visibility:visible!important;
+}
+html[data-r817-counter="generic"] body #zCountVisual .zGlow,
+html[data-r817-counter="generic"] body #zCountVisual #breathHalo,
+html[data-r817-counter="generic"] body #zCountVisual #tsbGauge,
+html[data-r817-counter="generic"] body #zCountVisual .rings,
+html[data-r817-counter="generic"] body #zCountVisual #zMuhr,
+html[data-r817-counter="generic"] body #zCountVisual .progArc{
+  display:block!important;visibility:visible!important;opacity:1!important;
+}
+/* Kaynak/durum metinleri tek satır yüzünden kart dışına çıkmasın. */
+html body #berhetSeyir .r168Status,
+html body #esmaSeyir99 .r168Status,
+html body #r470VoiceSource,
+html body #cntSub{
+  overflow-wrap:anywhere!important;word-break:normal!important;max-width:100%!important;min-width:0!important;
+}
+@media(max-width:390px){
+  html body #berhetSeyir .r168Status,html body #esmaSeyir99 .r168Status{font-size:9.2px!important;line-height:1.28!important}
+  html body.sukun-tefekkur-mode #tfRefinedLayout #r470VoiceSource{font-size:8.4px!important;letter-spacing:0!important}
+}
+</style>
+<script id="sukun-r817-counter-stability-script">
+(()=>{
+'use strict';
+if(window.SukunR817CounterStability)return;
+const root=document.documentElement;
+let raf=0,last='';
+const norm=v=>String(v||'').trim().toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
+const safe=(fn,fb='')=>{try{return fn()}catch(_){return fb}};
+function selected(){return norm(safe(()=>window.SukunR813Berhetiyye?.selectedCat?.(),safe(()=>typeof Z!=='undefined'?Z.cat:'')))}
+function state(){return norm(safe(()=>window.SukunR813Berhetiyye?.stateCat?.(),safe(()=>window.currentZikirState?.snapshot?.()?.cat,'')))}
+function journey(){
+  const x=safe(()=>window.SukunBerhetiyyeSeyir?.state?.()||window.BERHET_SEYIR||null,null);
+  if(!x)return false;
+  return !!(x.run||x.running||x.active||x.playing||x.paused||x.current>=0||x.i>=0);
+}
+function bodyCat(){return norm(document.body?.dataset?.r474NameCategory)}
+function hero(){
+  return [
+    safe(()=>document.getElementById('r611CurrentZikirSub')?.textContent,''),
+    safe(()=>document.getElementById('r642InfoKind')?.textContent,''),
+    safe(()=>document.querySelector('#r611CurrentZikirHero')?.textContent,'')
+  ].map(norm).some(x=>x.includes('berhetiyye'));
+}
+function resolve(){
+  const j=journey(),st=state(),sel=selected(),bc=bodyCat();
+  if(j||st==='berhet'||bc==='berhet'||sel==='berhet')return 'berhet';
+  if(sel&&sel!=='fav'&&sel!=='berhet')return 'generic';
+  if(st&&st!=='fav'&&st!=='berhet')return 'generic';
+  return hero()?'berhet':'generic';
+}
+function ensureBerhet(){
+  try{window.SukunR815BerhetiyyeRing?.apply?.()}catch(_){ }
+  try{window.SukunR813Berhetiyye?.ensureRing?.()}catch(_){ }
+  try{window.SukunR816CounterAuthority?.sync?.()}catch(_){ }
+}
+function ensureGeneric(){
+  try{window.SukunR815BerhetiyyeRing?.clear?.()}catch(_){ }
+  delete root.dataset.r811Berhet;delete root.dataset.r813Berhet;delete root.dataset.r809Berhet;delete root.dataset.r815Berhet;
+  const img=document.getElementById('r811BerhetRing');
+  if(img){img.style.setProperty('display','none','important');img.style.setProperty('visibility','hidden','important');img.style.setProperty('opacity','0','important')}
+  const host=document.getElementById('zCountVisual');
+  if(host){
+    ['.zGlow','#breathHalo','#tsbGauge','.rings','#zMuhr','.progArc'].forEach(sel=>{
+      const el=host.querySelector(sel);if(!el)return;
+      el.style.removeProperty('display');el.style.removeProperty('visibility');el.style.removeProperty('opacity');el.style.removeProperty('animation');
+    });
+  }
+}
+function apply(reason='apply'){
+  const mode=resolve();last=mode;root.dataset.r817Counter=mode;root.dataset.r816Counter=mode;
+  if(mode==='berhet')ensureBerhet();else ensureGeneric();
+  root.dataset.r817CounterReason=reason;
+}
+function queue(reason){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;apply(reason)})}
+['DOMContentLoaded','pageshow','load','sukun:zikirchange','sukun:zikirselectionchange','sukun:currentzikirchange','sukun:journey-advance','sukun:tefekkurchange','sukun:tabchange','sukun:domhydrate','sukun:r616viewchange'].forEach(ev=>window.addEventListener(ev,()=>queue(ev),{passive:true}));
+document.addEventListener('click',e=>{if(e.target.closest?.('#zCats [data-c],#berhetSeyir,#esmaSeyir99,#r442TefekkurBtn,#tefExitBtn'))setTimeout(()=>queue('click'),0)},{capture:true,passive:true});
+const mo=new MutationObserver(()=>queue('mutation'));
+function boot(){const host=document.getElementById('tab-zkr')||document.body;if(host)mo.observe(host,{subtree:true,childList:true,attributes:true,attributeFilter:['class','data-r474-name-category']});apply('boot')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+setInterval(()=>apply('watch'),1200);
+window.SukunR817CounterStability=Object.freeze({version:'r817',sync:()=>apply('api'),mode:()=>last||root.dataset.r817Counter,snapshot:()=>({mode:last||root.dataset.r817Counter,selected:selected(),state:state(),body:bodyCat(),journey:journey(),hero:hero(),ring:!!document.getElementById('r811BerhetRing')})});
 })();
 </script>
 
