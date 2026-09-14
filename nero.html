@@ -8,11 +8,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="sukun-build" content="r813">
+<meta name="sukun-build" content="r814">
 <script id="r768-active-glass-owner-flag">window.__SUKUN_R768_ACTIVE_GLASS_OWNER__=1;</script>
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' data: blob: https://api.anthropic.com https://api.groq.com https://openrouter.ai https://generativelanguage.googleapis.com; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'">
-<link rel="manifest" href="./manifest.webmanifest?v=r813">
+<link rel="manifest" href="./manifest.webmanifest?v=r814">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6513,7 +6513,7 @@ body[data-focus="1"] .zCtl{
       <input type="file" id="bakFile" accept=".json,application/json" aria-label="Ayar yedeği dosyası" hidden>
       <div class="bakStat" id="bakStat"></div>
     </details>
-    <span id="surumEtiket">SÜKÛN v20.65 — build 2026-09-14-r813</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
+    <span id="surumEtiket">SÜKÛN v20.66 — build 2026-09-14-r814</span> — kalp huzuru niyetiyle <span id="vaultTrigger" role="button" tabindex="0" aria-label="Mühür"><span class="ico" data-ico="ring"></span></span><br>
   </footer>
 </div>
 
@@ -73812,8 +73812,8 @@ function ensureRing(){
   let img=document.getElementById('r811BerhetRing');
   if(!img){
     img=document.createElement('img');img.id='r811BerhetRing';img.alt='';img.setAttribute('aria-hidden','true');img.draggable=false;img.decoding='async';
-    img.src='./assets/berhetiyye-premium/berhetiyye-ring-r813.png?v=r813';
-    img.addEventListener('error',()=>{if(!img.dataset.r813Retry){img.dataset.r813Retry='1';img.src='./assets/berhetiyye-premium/berhetiyye-ring-r813.png'}},{once:true});
+    img.src='./assets/berhetiyye-premium/berhetiyye-ring-r814.png?v=r814';
+    img.addEventListener('error',()=>{if(!img.dataset.r814Retry){img.dataset.r814Retry='1';img.src='./assets/berhetiyye-premium/berhetiyye-ring-r814.png'}},{once:true});
     host.insertBefore(img,host.firstChild);
   }else if(img.parentElement!==host){host.insertBefore(img,host.firstChild)}
   installHostObserver(host);
@@ -73900,6 +73900,7 @@ setTimeout(()=>queue('t2200'),2200);
 window.SukunR778BerhetiyyeAuthority=Object.freeze({version:'r813-shim',sync:()=>queue('shim-sync'),active:()=>active,repaint:()=>ensureRing(),scene:()=>document.body?.dataset?.r778BerhetScene||'auto',setScene:id=>{if(document.body)document.body.dataset.r778BerhetScene=id||'auto';return id}});
 window.SukunR811Berhetiyye=Object.freeze({version:'r813-compat',active:()=>active,refresh:()=>queue('compat-refresh'),category:selectedCat,ensureRing});
 window.SukunR813Berhetiyye=Object.freeze({version:'r813',active:()=>active,refresh:()=>queue('api-refresh'),selectedCat,stateCat,shouldBeActive,ensureRing,snapshot:()=>({active,lastReason,selectedCat:selectedCat(),stateCat:stateCat(),tefekkur:tef(),journey:journeyBerhet(),bodyCat:document.body?.dataset?.r474NameCategory||'',ring:!!document.getElementById('r811BerhetRing')})});
+window.SukunR814Berhetiyye=Object.freeze({version:'r814',active:()=>active,refresh:()=>queue('r814-refresh'),selectedCat,stateCat,shouldBeActive,ensureRing,snapshot:()=>window.SukunR813Berhetiyye.snapshot()});
 })();
 </script>
 
@@ -74033,7 +74034,7 @@ body[data-r474-name-category="berhet"] #r811BerhetRing{display:block!important;v
 /* If the DOM ring is replaced for one frame, show the same ring through a temporary pseudo fallback. */
 body[data-r474-name-category="berhet"] #zCountVisual:not(:has(#r811BerhetRing))::before{
   content:""!important;display:block!important;position:absolute!important;inset:-3%!important;z-index:1!important;pointer-events:none!important;
-  background:url('./assets/berhetiyye-premium/berhetiyye-ring-r813.png?v=r813') center/contain no-repeat!important;
+  background:url('./assets/berhetiyye-premium/berhetiyye-ring-r814.png?v=r814') center/contain no-repeat!important;
   animation:r811BerhetCCW 34s linear infinite!important;filter:drop-shadow(0 10px 18px rgba(0,0,0,.28)) drop-shadow(0 0 10px rgba(137,87,255,.12))!important;
 }
 /* Stop control is a chronic fall-through point: keep its jewel skin even if class/style writers race. */
