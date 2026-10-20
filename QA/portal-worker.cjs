@@ -90,7 +90,7 @@ const server = http.createServer((req, res) => {
   await page.goto(base + 'hero-recover.html', { waitUntil: 'domcontentloaded' });
   await page.locator('#gameTetris').waitFor({ state: 'visible' }).catch(async error => { console.error('[diagnostic]', await page.url(), await page.title(), await page.locator('body').innerText()); console.error('[states]', await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();return {controller:navigator.serviceWorker.controller?.scriptURL,active:r?.active?.state,waiting:r?.waiting?.state,installing:r?.installing?.state,caches:await caches.keys()}})); for(const w of context.serviceWorkers()){try{console.error('[worker]',w.url(),await w.evaluate(()=>({build:typeof HERO_BUILD==='undefined'?null:HERO_BUILD,scope:self.registration.scope})));}catch(e){console.error('[worker-eval]',e.message)}} throw error; });
   assert.match(await page.title(), /Hero Portal/);
-  assert.equal(await page.locator('meta[name="hero-build"]').getAttribute('content'), '137');
+  assert.equal(await page.locator('meta[name="hero-build"]').getAttribute('content'), '138');
   assert.equal(await page.locator('link[href*="css/portal.css"]').count(), 1);
   const workerBuild = await page.evaluate(() => new Promise((resolve, reject) => {
     const channel = new MessageChannel();
@@ -99,7 +99,7 @@ const server = http.createServer((req, res) => {
     navigator.serviceWorker.controller.postMessage({ type: 'HERO_PING' }, [channel.port2]);
   }));
   assert.equal(workerBuild.type, 'HERO_PONG');
-  assert.equal(workerBuild.build, '137');
+  assert.equal(workerBuild.build, '138');
   assert.equal(await page.evaluate(() => localStorage.getItem('hero_theme')), 'emerald');
 
   const missingAsset = await page.evaluate(async () => {
@@ -121,6 +121,12 @@ const server = http.createServer((req, res) => {
   await page.locator('#gameTetris').waitFor({ state: 'visible' });
   assert.match(await page.title(), /Hero Portal/);
   assert.doesNotMatch(await page.locator('body').innerText(), /SÜKÛN çevrimdışı/);
+  // Navigation must bootstrap from the exact imported URL even when the first
+  // online visit loaded it before the worker took control.
+  await page.evaluate(async () => { const nav = await import('./js/nav.js'); nav.initNav(); });
+  await page.locator('.bottom-nav [data-nav="friends"]').click();
+  assert.equal(await page.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')), true);
+  await page.locator('.bottom-nav [data-nav="home"]').click();
 
   const offlineAsset = await page.evaluate(async () => {
     try {

@@ -47,12 +47,22 @@ async function setup(page, fixtures=true){
   const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
   const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(e.message));
   await setup(page); await page.goto(base); await page.waitForFunction(()=>!!window.Hero);
+  await page.evaluate(()=>document.fonts.ready);
+  await page.waitForFunction(()=>[...document.querySelectorAll('.game-art,.intro-art img')].every(img=>img.complete&&img.naturalWidth>0));
+  assert.equal(await page.evaluate(()=>typeof window.Peer),'function','local multiplayer library loads without a CDN');
+  assert.equal(await page.evaluate(()=>document.fonts.check('600 16px Manrope','Türkçe İstanbul')),true,'local font supports Turkish');
   await page.waitForFunction(()=>!!window.__testSetPlayer);
   for(const width of [320,390,600,768,1024,1440]){
     await page.setViewportSize({width,height:900});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`overflow at ${width}`);
     assert.equal(await page.locator('.game-pc').count(),4);
+    await page.waitForFunction(()=>[...document.querySelectorAll('.game-pc')].every(card=>card.scrollWidth<=card.clientWidth),null,{timeout:2000});
     assert.equal(await page.locator('.game-pc').evaluateAll(cards=>cards.every(card=>card.scrollWidth<=card.clientWidth)),true,`card overflow at ${width}`);
+    for(const screen of ['friends','leaderboard','profile','notifications','home']){
+      await page.locator(`.bottom-nav [data-nav="${screen}"]`).click();
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${screen} overflow at ${width}`);
+    }
   }
   await page.setViewportSize({width:390,height:844});
   for(const screen of ['friends','leaderboard','profile','notifications','home']){
@@ -65,6 +75,9 @@ async function setup(page, fixtures=true){
   await page.locator('.skip-link').focus(); await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>document.activeElement.id),'games');
   assert.equal(await page.locator('[data-screen="home"]').evaluate(el=>el.classList.contains('active')),true);
+  await page.locator('.intro-secondary').click();
+  assert.equal(await page.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
+  await page.locator('.skip-link').focus(); await page.keyboard.press('Enter');
   await page.evaluate(()=>window.__testSetPlayer({level:2,xp:350,kaju:15,best:{tetris:12345}}));
   assert.equal(await page.locator('#statBest').textContent(),'12.3K');
   assert.equal(await page.locator('[role="progressbar"]').getAttribute('aria-valuenow'),'50');
@@ -77,6 +90,21 @@ async function setup(page, fixtures=true){
   }
   // Reload resets the original game modules' open state.
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
+  await page.locator('.bottom-nav [data-nav="profile"]').click();
+  await page.locator('[data-p="settings"]').click();
+  for(const theme of ['neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
+    await page.locator(`.theme-chip[data-theme="${theme}"]`).click();
+    assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${theme} settings overflow`);
+  }
+  await page.locator('.theme-chip[data-theme="neon"]').click();
+  for(const scale of [80,130,100]){
+    await page.locator('#scaleSlider').evaluate((slider,value)=>{slider.value=value;slider.dispatchEvent(new Event('input',{bubbles:true}));},String(scale));
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`UI scale ${scale} overflow`);
+    assert.equal(await page.locator('.nick-modal').evaluate(modal=>{const r=modal.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1;}),true,`settings stay inside viewport at scale ${scale}`);
+  }
+  await page.locator('#stClose').click();
+  await page.locator('.bottom-nav [data-nav="home"]').click();
   await page.evaluate(()=>localStorage.setItem('hero_theme','emerald'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   assert.equal(await page.locator('html').getAttribute('data-theme'),'emerald');
@@ -96,5 +124,5 @@ async function setup(page, fixtures=true){
   await offline.locator('.bottom-nav [data-nav="friends"]').click();
   assert.equal(await offline.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
   await browser.close();
-  console.log('PASS: 6 viewport widths, 5 navigation routes, keyboard/skip focus, live score/XP rendering, 4 real game entry modules, saved theme, reduced motion, offline recovery. Backend: in-memory fixtures.');
+  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 8 themes/settings, reduced motion and connection recovery. Backend: in-memory fixtures.');
 })().catch(error=>{console.error(error);process.exit(1)});

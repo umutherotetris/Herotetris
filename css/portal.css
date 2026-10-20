@@ -1,267 +1,404 @@
-/* Hero Portal — home layout. Game and modal styles remain in components.css. */
+/* Hero Portal 138 — graphite, champagne and a collection of original game art. */
 body.portal {
-  height: auto;
-  min-height: 100vh;
-  overflow-x: clip;
-  --portal-bg: #0c1015;
-  --portal-surface: #141a21;
-  --portal-border: #29323d;
-  --portal-ink: #f3f6fa;
-  --portal-muted: #a2adbb;
-  color: var(--portal-ink);
-  background: var(--portal-bg);
-  font-family: var(--font-body);
-  line-height: 1.5;
+  --portal-bg: #0c0e13;
+  --portal-surface: #14171e;
+  --portal-raised: #1b1e26;
+  --portal-border: #2c2e36;
+  --portal-ink: #f4f0e9;
+  --portal-muted: #a7a8b4;
+  --portal-accent: var(--accent, #dfc299);
+  --text: var(--portal-ink);
+  --text-mute: var(--portal-muted);
+  --text-faint: #999ba9;
+  height: auto; min-height: 100vh; overflow-x: clip;
+  color: var(--portal-ink); background: var(--portal-bg);
+  font: 400 14px/1.6 var(--font-body);
 }
-.portal .portal-glow {
-  position: absolute;
-  width: min(900px, 100%);
-  height: 650px;
-  left: 50%; top: 0; transform: translateX(-50%);
-  background: radial-gradient(ellipse at 78% 12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 62%);
-  pointer-events: none;
-}
-.portal #app {
-  max-width: 1180px;
-  min-height: auto;
-  padding: 0 32px calc(112px + env(safe-area-inset-bottom, 0px));
-}
-.portal .portal-header {
-  position: relative; z-index: 2;
-  max-width: 1180px; margin: 0 auto; min-height: 104px;
-  padding: max(24px, env(safe-area-inset-top, 0px)) 32px 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  border-bottom: 1px solid var(--portal-border);
-}
+[data-theme="neon"] body.portal { --portal-accent: #dfc299; }
+.portal .portal-glow { position: absolute; inset: 0 0 auto; height: 900px; pointer-events: none; background: radial-gradient(ellipse at 80% 10%, #b9935c09, transparent 58%); }
+.portal #app { position: relative; max-width: 1328px; min-height: auto; padding: 0 40px calc(126px + env(safe-area-inset-bottom,0px)); }
+.portal .portal-header { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1328px; min-height: 112px; margin: auto; padding: max(25px,env(safe-area-inset-top,0px)) 40px 25px; }
 .portal .portal-brand { display: inline-flex; align-items: center; gap: 11px; min-height: 44px; flex-shrink: 0; }
-.portal .brand-mark { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; background: var(--accent); border-radius: 11px; color: #071114; }
-.portal .brand-mark svg { width: 25px; height: 25px; }
-.portal .brand-mark { color: var(--accent); background: none; }
-.portal .brand-mark svg { width: 38px; height: 38px; }
-.portal .header-link svg, .portal .gpc-arrow svg { width: 16px; height: 16px; flex-shrink: 0; }
-.portal .portal-status { margin-top: 16px; padding: 14px; border: 1px solid var(--portal-border); border-radius: 10px; color: var(--portal-muted); font-size: 13px; }
-.portal .portal-retry { min-height: 44px; padding: 8px 12px; text-decoration: underline; color: var(--accent); }
-.portal .brand-name { display: block; font: 800 22px/1 var(--font-display); letter-spacing: -.6px; }
-.portal .brand-name em { font-style: normal; font-weight: 500; color: var(--portal-muted); }
-.portal .brand-name small { display: block; margin-top: 7px; font: 600 9px/1 var(--font-body); letter-spacing: 2px; color: var(--portal-muted); }
-.portal .header-note { font-size: 12px; color: #8995a4; }
-.portal .header-link { display: inline-flex; align-items: center; gap: 12px; padding: 11px 15px; border: 1px solid var(--portal-border); border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; background: #141a21; }
-.portal .header-link:hover { border-color: var(--accent); }
-.portal .home-intro { display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; gap: 60px; padding: 58px 0 62px; }
-.portal .eyebrow { display: flex; align-items: center; gap: 8px; font-size: 10px; line-height: 1.4; font-weight: 700; color: var(--portal-muted); letter-spacing: 1.7px; }
-.portal .intro-copy > .eyebrow { color: var(--accent); margin-bottom: 18px; }
-.portal .intro-copy > .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.portal .intro-copy h1 { font-size: clamp(36px, 4.6vw, 57px); line-height: 1.12; letter-spacing: -2.2px; font-weight: 760; }
-.portal .intro-copy h1 em { color: var(--accent); font-style: normal; }
-.portal .intro-description { color: var(--portal-muted); font-size: 14px; line-height: 1.75; max-width: 390px; margin-top: 21px; }
-.portal .intro-link { display: inline-flex; align-items: center; gap: 24px; min-height: 44px; margin-top: 18px; font-size: 13px; font-weight: 700; }
-.portal .intro-link svg { width: 17px; height: 17px; color: var(--accent); }
-.portal .intro-art { display: flex; align-items: center; justify-content: center; position: relative; padding: 4px 15px; }
-.portal .intro-art::before { content: ''; position: absolute; inset: 14% 0; background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 13%, transparent), transparent 65%); filter: blur(26px); }
-.portal .arcade-window { position: relative; width: 290px; padding: 15px 18px 12px; background: #141c24; border: 1px solid #35424e; border-radius: 17px; transform: rotate(5deg); box-shadow: 16px 22px 0 #0f151c, 16px 22px 0 1px #25303a, 0 30px 55px #0004; }
-.portal .arcade-topbar { display: flex; align-items: center; gap: 4px; margin-bottom: 14px; }
-.portal .arcade-topbar i { width: 5px; height: 5px; border-radius: 50%; background: #495767; }
-.portal .arcade-topbar i:first-child { background: var(--accent); }
-.portal .arcade-topbar span { margin-left: auto; font: 600 9px/1.5 monospace; letter-spacing: 2px; color: #a3b5c6; }
-.portal .arcade-board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 8px; background: #0a1118; border: 1px solid #263340; border-radius: 7px; }
-.portal .cell { display: block; aspect-ratio: 1; border: 1px solid #1b2731; border-radius: 3px; background: #0f1821; }
-.portal .cell.filled { background: #62e5c1; border-color: #b2f6e2; box-shadow: inset -3px -3px 0 #0002, inset 2px 2px 0 #fff3; }
-.portal .cell.purple { background: #a78bfa; border-color: #cfbaff; }
-.portal .cell.gold { background: #e8bd6d; border-color: #f9db9e; }
-.portal .arcade-caption { padding-top: 10px; text-align: center; font: 600 8px/1.5 monospace; color: #91a3b6; letter-spacing: 2.4px; }
-.portal #games { scroll-margin-top: 24px; }
-.portal .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 23px; }
-.portal .section-heading .eyebrow { font-size: 9px; letter-spacing: 1.6px; margin-bottom: 7px; }
-.portal .section-heading h2 { color: var(--portal-ink); font-size: 25px; line-height: 1.25; font-weight: 700; letter-spacing: -.8px; }
-.portal .section-count { color: #9ba8b6; font: 600 10px/1.5 monospace; letter-spacing: 1.4px; padding-bottom: 3px; }
-.portal .games-premium { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin: 0; }
-.portal .game-pc { display: flex; flex-direction: column; align-items: stretch; text-align: left; gap: 0; min-width: 0; padding: 20px; border: 1px solid var(--portal-border); border-radius: 17px; background: var(--portal-surface); color: var(--portal-ink); transition: border-color .18s ease, transform .18s ease, background .18s ease; }
-.portal .game-pc::before { width: 100%; height: 185px; top: 0; right: 0; opacity: .55; background: radial-gradient(ellipse at 50% 65%, color-mix(in srgb, var(--gc) 17%, transparent), transparent 68%); animation: none; }
-.portal .game-pc::after { display: none; }
-.portal .game-pc:hover { border-color: color-mix(in srgb, var(--gc) 55%, var(--portal-border)); transform: translateY(-4px); background: #18212a; }
+.portal .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; color: var(--portal-accent); border: 1px solid #dfc29944; border-radius: 12px; background: linear-gradient(135deg,#dfc29916,#dfc29902); }
+.portal .brand-mark svg { width: 32px; height: 32px; }
+.portal .brand-name { display: flex; flex-direction: column; gap: 4px; font: 700 23px/.95 var(--font-display); letter-spacing: 3px; }
+.portal .brand-name > span { font: 500 9px/1.3 var(--font-body); letter-spacing: 4px; color: var(--portal-muted); }
+.portal .header-middle { display: flex; align-items: center; gap: 24px; }
+.portal .header-note { color: #92929e; font-size: 9px; letter-spacing: 1.8px; }
+.portal .header-divider { width: 1px; height: 19px; background: var(--portal-border); }
+.portal .header-discover { display: inline-flex; align-items: center; gap: 13px; min-height: 44px; color: #d0c9bf; font-size: 12px; }
+.portal .header-discover svg { width: 15px; height: 15px; }
+.portal .header-link { display: flex; align-items: center; gap: 11px; padding: 8px 14px 8px 8px; border: 1px solid #34323a; border-radius: 99px; color: #e7e1d8; background: #17191f; font-size: 12px; white-space: nowrap; }
+.portal .header-link > svg { width: 16px; height: 16px; color: var(--portal-accent); margin-left: 7px; }
+.portal .header-avatar { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50%; background: #dfc29913; color: var(--portal-accent); }
+.portal .header-avatar svg { width: 20px; height: 20px; }
+.portal .header-link:hover { border-color: var(--portal-accent); }
+/* The editorial hero keeps its illustration on small screens, too. */
+.portal .home-intro { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; min-height: 548px; padding: 64px 60px 76px; overflow: hidden; border: 1px solid #39343a; border-radius: 28px; background: radial-gradient(ellipse at 88% 10%,#a57b4923,transparent 50%), radial-gradient(ellipse at 55% 100%,#3f706c13,transparent 55%),linear-gradient(125deg,#202026 0%,#17191f 40%,#12161d 100%); box-shadow: inset 0 1px 0 #e6cdab0d, 0 20px 80px #0002; }
+.portal .home-intro::before { content: ''; position: absolute; z-index: -1; inset: 0; border-radius: inherit; background: linear-gradient(115deg,#e8cfa11a,transparent 40%); pointer-events: none; }
+.portal .hero-grid { position: absolute; z-index: -1; inset: 0; opacity: .15; background-image: linear-gradient(#b9b6a50c 1px,transparent 1px),linear-gradient(90deg,#b9b6a50c 1px,transparent 1px); background-size: 50px 50px; mask-image: linear-gradient(90deg,transparent,#000); }
+.portal .intro-copy { position: relative; z-index: 2; }
+.portal .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--portal-muted); font: 600 10px/1.5 var(--font-body); letter-spacing: 2px; }
+.portal .hero-eyebrow { color: var(--portal-accent); margin-bottom: 25px; font-size: 9px; letter-spacing: 1.8px; }
+.portal .eyebrow-line { width: 25px; height: 1px; background: var(--portal-accent); }
+.portal .intro-copy h1 { font: 600 clamp(42px,4.65vw,67px)/1.06 var(--font-display); letter-spacing: -2.8px; }
+.portal .intro-copy h1 em { display: block; color: var(--portal-accent); font-style: normal; font-weight: 500; padding-bottom: 4px; }
+.portal .intro-description { margin-top: 23px; color: #b0afb8; font-size: 14px; line-height: 1.85; }
+.portal .intro-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 23px; margin-top: 29px; }
+.portal .intro-link { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 49px; padding: 13px 22px; border: 1px solid #f0dab088; border-radius: 10px; color: #1e1b15; background: linear-gradient(115deg,color-mix(in srgb,var(--portal-accent) 72%,#fff),var(--portal-accent)); box-shadow: 0 5px 22px #c19c5d14,inset 0 1px 0 #fff5; font-size: 12px; font-weight: 750; transition: transform .2s,box-shadow .2s; }
+.portal .intro-link svg { width: 18px; height: 18px; }
+.portal .intro-link:hover { transform: translateY(-2px); box-shadow: 0 7px 25px #c19c5d30; }
+.portal .intro-secondary { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; color: #dad5cc; font-size: 12px; }
+.portal .intro-secondary span { color: var(--portal-accent); font-size: 18px; }
+.portal .hero-details { display: flex; align-items: center; flex-wrap: wrap; gap: 13px; margin-top: 32px; color: #aba7a9; font-size: 10px; }
+.portal .hero-details > span { display: inline-flex; align-items: center; gap: 7px; }
+.portal .hero-details i { width: 5px; height: 5px; background: #a2c9b5; border-radius: 50%; box-shadow: 0 0 8px #a2c9b540; }
+.portal .hero-details .detail-divider { width: 1px; height: 10px; background: #5a5251; }
+.portal .intro-art { position: absolute; z-index: 1; width: 58%; right: -3%; top: -10%; bottom: -6%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.portal .intro-art > img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 30px #0003); }
+.portal .art-note { position: absolute; bottom: 20%; right: 16%; display: flex; gap: 10px; align-items: center; color: #d8c29b; font: 500 9px/1.5 var(--font-display); letter-spacing: 2px; }
+.portal .art-note-line { width: 20px; height: 1px; background: #ddc9a877; }
+.portal .art-note small { display: block; color: #97949a; font: 500 7px/1.5 var(--font-body); letter-spacing: 2px; margin-top: 4px; }
+.portal .hero-edition { position: absolute; bottom: 20px; left: 60px; right: 40px; display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #b6a18020; color: #8d8583; font: 500 8px/1.5 var(--font-body); letter-spacing: 2px; }
+/* The collection is made of actual, keyboard-operable game buttons. */
+.portal .game-library { padding-top: 52px; scroll-margin-top: 24px; }
+.portal .section-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 23px; }
+.portal .section-heading .eyebrow { margin-bottom: 7px; font-size: 9px; letter-spacing: 1.8px; color: #a39788; }
+.portal .section-heading h2 { font: 600 30px/1.3 var(--font-display); letter-spacing: -1px; color: var(--portal-ink); }
+.portal .section-count { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; color: #95929b; font-size: 8px; letter-spacing: 1.5px; white-space: nowrap; }
+.portal .section-count b { color: #d5c3a7; font: 400 20px/1 var(--font-display); letter-spacing: 0; }
+.portal .games-premium { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; margin: 0; }
+.portal .game-pc { --card-inset: 20px; position: relative; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: var(--card-inset); overflow: hidden; border: 1px solid #303039; border-radius: 20px; background: linear-gradient(160deg,#1c1e26,#13161c 75%); color: var(--portal-ink); text-align: left; transition: border-color .23s,transform .23s,box-shadow .23s; }
+.portal .game-pc::before { content: ''; position: absolute; inset: 0; width: 100%; height: 65%; background: radial-gradient(ellipse at 50% 65%,color-mix(in srgb,var(--gc) 11%,transparent),transparent 70%); opacity: 1; animation: none; pointer-events: none; }
+.portal .game-pc::after { content: ''; position: absolute; top: 0; left: 12%; width: 76%; height: 1px; background: linear-gradient(90deg,transparent,color-mix(in srgb,var(--gc) 50%,transparent),transparent); opacity: .7; }
+.portal .game-pc:hover { transform: translateY(-6px); border-color: color-mix(in srgb,var(--gc) 52%,#303039); box-shadow: 0 16px 30px #0004; }
 .portal .game-pc:active { transform: translateY(-1px); }
-.portal .game-pc-top { display: flex; justify-content: space-between; gap: 8px; position: relative; color: var(--portal-muted); font: 600 9px/1.4 var(--font-body); letter-spacing: 1.3px; }
-.portal .game-number { color: #778695; font-family: monospace; }
-.portal .game-pc-logo { position: relative; width: 100%; height: 123px; margin: 13px 0 12px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.portal .game-pc-top { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: #bcb9c2; font: 500 10px/1.5 var(--font-body); }
+.portal .game-category { display: flex; align-items: center; gap: 7px; }
+.portal .game-category > span { width: 4px; height: 4px; border-radius: 50%; background: var(--gc); }
+.portal .game-number { color: #85818c; font: 400 12px/1 var(--font-display); }
+.portal .game-pc-logo { position: relative; display: flex; width: calc(100% + var(--card-inset)*2); height: 165px; margin: 2px calc(var(--card-inset)*-1) 9px; overflow: hidden; border: 0; border-radius: 0; background: none; box-shadow: none; }
 .portal .game-pc-logo::after { display: none; }
-.portal .game-pc-logo svg { width: 91px; height: 91px; animation: none !important; filter: drop-shadow(0 10px 14px #0003); }
-.portal .game-pc-logo svg * { animation: none !important; }
+.portal .game-art { display: block; width: 100%; height: 100%; object-fit: contain; transition: transform .35s; }
+.portal .game-pc:hover .game-art { transform: translateY(-3px) scale(1.035); }
 .portal .game-pc-info { position: relative; display: block; flex: 1; }
-.portal .game-pc-name { display: block; color: var(--portal-ink); font: 700 19px/1.25 var(--font-display); letter-spacing: -.4px; text-shadow: none; }
-.portal .game-pc-modes { display: block; font-size: 12px; line-height: 1.65; color: var(--portal-muted); margin-top: 8px; min-height: 40px; }
-.portal .game-pc-footer { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 25px; padding-top: 16px; border-top: 1px solid #29333f; }
-.portal .game-tag { font-size: 10px; line-height: 1.4; color: #a6b3c2; }
-.portal .game-pc-play { display: inline-flex; align-items: center; justify-content: center; flex-direction: row; gap: 9px; padding: 7px 10px; min-height: 32px; background: color-mix(in srgb, var(--gc) 11%, transparent); border: 1px solid color-mix(in srgb, var(--gc) 17%, transparent); border-radius: 8px; color: var(--gc); font: 700 11px/1.2 var(--font-body); letter-spacing: 0; text-shadow: none; animation: none; }
-.portal .gpc-arrow { display: inline-flex; font-size: 14px; }
-.portal .player-section { margin-top: 54px; padding-top: 35px; border-top: 1px solid var(--portal-border); }
-.portal .player-section .section-heading { margin-bottom: 20px; }
-.portal .player-section .section-heading h2 { font-size: 22px; }
-.portal .player-section .section-heading p { font-size: 12px; color: var(--portal-muted); }
-.portal .player-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
-.portal .auth-card { margin: 0; border-radius: 15px; border: 1px solid var(--portal-border); background: var(--portal-surface); }
-.portal .auth-guest { height: 100%; padding: 22px; text-align: left; align-items: flex-start; gap: 0; border: none; border-radius: 0; background: none; animation: none; }
-.portal .auth-guest-icon { display: none; }
-.portal .auth-guest-title { font: 700 17px/1.35 var(--font-body); color: var(--portal-ink); background: none; -webkit-text-fill-color: currentColor; letter-spacing: -.3px; margin-bottom: 8px; }
-.portal .auth-guest-sub { font-size: 12px; color: var(--portal-muted); line-height: 1.7; margin-bottom: 16px; max-width: 390px; }
-.portal .auth-google-btn { width: auto; min-width: 210px; max-width: 100%; min-height: 44px; border-radius: 9px; padding: 11px 18px; background: #e9eff5; border: 1px solid #e9eff5; color: #14202c; box-shadow: none; animation: none; font-size: 12px; }
-.portal .auth-google-btn:hover { background: #fff; }
-.portal .auth-guest #authMsg { font-size: 12px; line-height: 1.5; margin-top: 12px; }
-.portal .auth-user { height: 100%; min-height: 160px; background: none; border: none; border-radius: 0; padding: 24px; }
+.portal .game-pc-name { display: block; color: #f1eee8; font: 600 25px/1.3 var(--font-display); letter-spacing: -.6px; text-shadow: none; }
+.portal .game-pc-modes { display: block; min-height: 44px; margin-top: 8px; color: #a4a2af; font-size: 12px; line-height: 1.8; }
+.portal .game-pc-footer { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 5px; margin-top: 22px; padding-top: 15px; border-top: 1px solid #ffffff0c; }
+.portal .game-tag { display: inline-flex; align-items: center; gap: 5px; color: #a7a4af; font-size: 10px; }
+.portal .game-tag svg { width: 15px; height: 15px; }
+.portal .game-pc-play { display: inline-flex; align-items: center; gap: 8px; padding: 0; min-height: 36px; border: 0; border-radius: 0; background: none; color: var(--gc); font: 600 12px/1.3 var(--font-body); letter-spacing: 0; text-shadow: none; animation: none; }
+.portal .gpc-arrow { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid color-mix(in srgb,var(--gc) 25%,transparent); border-radius: 50%; background: color-mix(in srgb,var(--gc) 6%,transparent); }
+.portal .gpc-arrow svg { width: 14px; height: 14px; transform: rotate(-35deg); }
+.portal .portal-status { margin-top: 18px; padding: 15px 18px; border: 1px solid #c7a57550; border-radius: 12px; background: #c7a5750b; color: #d4c6b2; font-size: 13px; }
+.portal .portal-retry { min-height: 44px; padding: 7px 12px; text-decoration: underline; color: var(--portal-accent); }
+/* Player dashboard. */
+.portal .player-section { margin-top: 49px; }
+.portal .player-section .section-heading p:not(.eyebrow) { color: #9d99a6; font-size: 12px; padding-bottom: 4px; }
+.portal .player-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.portal .auth-card, .portal .progress-panel { min-width: 0; margin: 0; border: 1px solid var(--portal-border); border-radius: 20px; background: linear-gradient(120deg,#1c1b22,#14171e); }
+.portal .auth-guest { position: relative; height: 100%; padding: 27px 30px; display: flex; flex-direction: column; align-items: flex-start; gap: 0; text-align: left; background: none; border: none; border-radius: 20px; animation: none; }
+.portal .auth-guest-icon { position: absolute; right: 24px; top: 22px; font-size: 34px; color: #dfc29944; text-shadow: none; animation: none; }
+.portal .auth-guest-copy { position: relative; padding-right: 28px; }
+.portal .auth-guest-title { margin-bottom: 7px; color: var(--portal-ink); background: none; -webkit-text-fill-color: currentColor; font: 600 20px/1.4 var(--font-display); letter-spacing: -.4px; }
+.portal .auth-guest-sub { max-width: 390px; margin-bottom: 17px; color: var(--portal-muted); font-size: 12px; line-height: 1.8; }
+.portal .auth-google-btn { width: auto; min-height: 44px; max-width: 100%; padding: 11px 18px; border: 1px solid #e3d8c5; border-radius: 9px; background: #eee8df; color: #242225; box-shadow: none; animation: none; font-size: 12px; }
+.portal .auth-google-btn:hover { background: #fffaf0; }
+.portal #authMsg { margin-top: 10px; font-size: 12px; line-height: 1.5; }
+.portal .auth-user { height: 100%; min-height: 196px; padding: 30px; background: none; border: none; border-radius: 20px; }
 .portal .auth-user::before { display: none; }
-.portal .auth-user .pc-avatar { animation: none; background: var(--portal-border); }
-.portal .auth-user .pc-name { font-size: 18px; overflow-wrap: anywhere; }
+.portal .auth-user .pc-avatar { background: #292830; animation: none; }
+.portal .auth-user .pc-name { font-size: 20px; overflow-wrap: anywhere; }
 .portal .auth-online-dot { animation: none; box-shadow: none; }
 .portal .auth-online-txt { font-size: 11px; letter-spacing: 0; }
-.portal .auth-kaju-val { font: 700 22px/1.3 var(--font-display); text-shadow: none; }
-.portal .auth-kaju-lbl { font-size: 10px; color: #c7b782; }
+.portal .auth-kaju-val { font: 600 25px/1.3 var(--font-display); text-shadow: none; }
+.portal .auth-kaju-lbl { color: #ccb993; font-size: 10px; }
 .portal .auth-kaju-send { min-height: 44px; padding: 8px 12px; font-size: 12px; }
-.portal .progress-panel { min-width: 0; background: var(--portal-surface); border: 1px solid var(--portal-border); border-radius: 15px; padding: 20px; }
-.portal .stats-bar { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin: 0 0 17px; }
-.portal .stats-bar .stat { padding: 0 8px; border: 0; border-right: 1px solid var(--portal-border); border-radius: 0; background: none; text-align: left; }
+.portal .progress-panel { padding: 28px; background: #16191f; }
+.portal .stats-bar { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 0; margin: 0 0 21px; }
+.portal .stats-bar .stat { min-width: 0; padding: 0 12px; border: 0; border-right: 1px solid #343039; border-radius: 0; background: none; text-align: left; }
 .portal .stats-bar .stat:first-child { padding-left: 0; }
-.portal .stats-bar .stat:last-child { border-right: 0; padding-right: 0; }
+.portal .stats-bar .stat:last-child { padding-right: 0; border-right: 0; }
 .portal .stats-bar .stat::before { display: none; }
-.portal .stats-bar .stat-v { font: 700 19px/1.3 var(--font-display); letter-spacing: -.5px; color: var(--portal-ink); }
-.portal .stats-bar .stat-l { font-size: 11px; line-height: 1.5; color: var(--portal-muted); margin-top: 5px; letter-spacing: 0; }
-.portal .xp-bar-wrap { padding: 14px 0 0; margin: 0; border: none; border-top: 1px solid var(--portal-border); border-radius: 0; background: none; }
-.portal .xp-bar-header { gap: 8px; margin-bottom: 10px; }
-.portal .xp-lv-badge { padding: 0; color: var(--portal-ink); background: none; font: 700 10px/1.5 var(--font-body); border: none; border-radius: 0; }
-.portal .xp-label { font-size: 8px; letter-spacing: .8px; color: var(--portal-muted); }
-.portal .xp-next { font-size: 10px; color: var(--accent); }
-.portal .xp-bar-track { height: 5px; border: none; background: #2b3540; margin-bottom: 9px; overflow: hidden; }
-.portal .xp-bar-fill { background: var(--accent); box-shadow: none; border-radius: 5px; }
+.portal .stats-bar .stat-v { color: #eee4d6; font: 600 25px/1.3 var(--font-display); letter-spacing: -.5px; }
+.portal .stats-bar .stat-l { margin-top: 5px; color: #a8a4af; font-size: 11px; letter-spacing: 0; }
+.portal .xp-bar-wrap { margin: 0; padding: 17px 0 0; background: none; border: 0; border-top: 1px solid #302d36; border-radius: 0; }
+.portal .xp-bar-header { gap: 8px; margin-bottom: 12px; }
+.portal .xp-lv-badge { padding: 0; border: 0; background: none; color: var(--portal-ink); font: 600 11px/1.5 var(--font-display); }
+.portal .xp-label { color: var(--portal-muted); font-size: 9px; letter-spacing: .6px; }
+.portal .xp-next { color: var(--portal-accent); font-size: 11px; }
+.portal .xp-bar-track { height: 5px; margin-bottom: 9px; overflow: hidden; border: 0; background: #36313a; }
+.portal .xp-bar-fill { background: linear-gradient(90deg,#a58661,var(--portal-accent)); box-shadow: none; }
 .portal .xp-bar-fill::after, .portal .xp-bar-glow { display: none; }
-.portal .xp-cur, .portal .xp-pct, .portal .xp-max { font: 500 10px/1.5 var(--font-body); color: var(--portal-muted); }
-.portal .xp-pct { color: var(--portal-ink); }
-.portal .eco-quick-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; margin: 17px 0 0; }
-.portal .eco-quick-btn { min-width: 0; display: flex; flex-direction: row; align-items: center; gap: 13px; padding: 17px 20px; border-radius: 12px; border-color: var(--portal-border); background: #11171e; text-align: left; }
-.portal .eco-quick-btn:hover { border-color: #4a5867; background: #17212a; }
-.portal .eco-quick-ico { font-size: 22px; filter: none; }
+.portal :is(.xp-cur,.xp-pct,.xp-max) { color: #aaa5b0; font: 400 10px/1.5 var(--font-body); }
+.portal .xp-pct { color: #e0cfb5; }
+.portal .eco-quick-row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; margin: 18px 0 0; }
+.portal .eco-quick-btn { display: flex; flex-direction: row; align-items: center; gap: 14px; min-width: 0; min-height: 86px; padding: 19px 24px; border: 1px solid var(--portal-border); border-radius: 15px; background: #15181f; text-align: left; }
+.portal .eco-quick-btn:hover { background: #1c1e25; border-color: #6b5b48; }
+.portal .eco-quick-ico { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #dfc29925; border-radius: 12px; background: #dfc29908; color: #d6bd97; font-size: 23px; filter: none; }
 .portal .eco-quick-copy { display: block; min-width: 0; }
-.portal .eco-quick-lbl { display: block; text-align: left; font-size: 12px; letter-spacing: 0; color: var(--portal-ink); }
-.portal .eco-quick-desc { display: block; font-size: 10px; color: var(--portal-muted); margin-top: 3px; }
-.portal .eco-quick-badge { top: 11px; right: 11px; background: var(--accent); color: #071114; box-shadow: none; animation: none; }
-.portal .portal-footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 30px; color: #82909f; font-size: 10px; }
-.portal .portal-footer > :first-child { font: 600 11px/1.5 var(--font-display); letter-spacing: 1px; }
-.portal .bottom-nav { left: 50%; right: auto; bottom: 18px; width: min(620px, calc(100% - 40px)); transform: translateX(-50%); gap: 4px; padding: 7px; border: 1px solid #34424f; border-radius: 17px; background: #18212bed; box-shadow: 0 12px 35px #0006; backdrop-filter: blur(20px); }
-.portal .nav-item { min-height: 54px; padding: 8px 4px; gap: 4px; border-radius: 10px; color: #a1adba; transition: background .15s, color .15s; }
+.portal .eco-quick-lbl { display: block; color: #e4ded3; text-align: left; font-size: 12px; letter-spacing: 0; }
+.portal .eco-quick-desc { display: block; margin-top: 4px; color: #a7a1ac; font-size: 11px; }
+.portal .eco-quick-badge { top: 11px; right: 11px; background: var(--portal-accent); color: #191712; box-shadow: none; animation: none; }
+.portal .portal-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 39px; padding-top: 24px; border-top: 1px solid #29262e; color: #a39aa1; font-size: 11px; }
+.portal .footer-brand { color: #cbb898; font: 600 13px/1.5 var(--font-display); letter-spacing: 2px; }
+.portal .footer-brand span { color: #a49ca6; font-weight: 400; }
+.portal .portal-footer > a:last-child { display: flex; gap: 10px; align-items: center; min-height: 44px; color: #d2c1a9; }
+/* A consistent visual language for every portal tab. */
+.portal .portal-subscreen { position: relative; max-width: 800px; margin: 10px auto 0; padding-top: 23px; border-radius: 24px; }
+.portal .screen-intro { position: relative; padding: 24px 0 26px; margin-bottom: 12px; border-bottom: 1px solid var(--portal-border); }
+.portal .screen-intro .eyebrow { color: var(--portal-accent); font-size: 10px; }
+.portal .screen-heading { margin: 10px 0 10px; font: 600 39px/1.25 var(--font-display); letter-spacing: -1.3px; }
+.portal .screen-description { color: var(--portal-muted); font-size: 13px; }
+.portal .scr-pad { position: relative; max-width: none; margin: 0; padding: 12px 0 36px; }
+.portal .prf-card { padding: 25px; margin-bottom: 17px; border: 1px solid var(--portal-border); border-radius: 20px; background: linear-gradient(135deg,#1b1c24,#14171f); }
+.portal .prf-name { font: 600 24px/1.4 var(--font-display); color: var(--portal-ink); }
+.portal .prf-sub { color: var(--portal-muted); font-size: 12px; }
+.portal .prf-top { align-items: center; gap: 16px; }
+.portal .prf-ava { width: 72px; height: 72px; background: #24232d; }
+.portal .prf-ava-edit { bottom: 0; right: 0; background: #35303a; }
+.portal .prf-stats { margin: 22px 0 15px; gap: 12px; }
+.portal .prf-stat { padding: 17px 5px; border-color: var(--portal-border); background: #ffffff03; }
+.portal .prf-stat b { color: #e4cba5; font-size: 18px; }
+.portal .prf-stat span { color: #afabb6; font-size: 10px; }
+.portal .prf-lbl { margin-bottom: 13px; color: #c9b99f; font-size: 11px; letter-spacing: 1.5px; }
+.portal :is(.prf-act-btn,.prf-btn) { min-height: 47px; border: 1px solid #38343f; border-radius: 10px; background: #ffffff05; color: #e2dfe7; font-size: 13px; font-weight: 600; }
+.portal .prf-act-primary { color: #e5ceaa; background: #c5a67212; border-color: #b3956944; }
+.portal :is(.prf-act-btn,.prf-btn):hover { background: #c5a6721a; border-color: #b3956977; }
+.portal .prf-xp-premium { padding: 18px; border-color: #b79a652d; background: #b79a6507; }
+.portal .prf-xp-title { color: #b1a8b4; font-size: 10px; letter-spacing: 1px; }
+.portal .prf-xp-track { overflow: hidden; height: 7px; margin-top: 15px; background: #322e39; border: 0; }
+.portal .prf-xp-fill-bar { background: linear-gradient(90deg,#9e7b51,var(--portal-accent)); box-shadow: none; }
+.portal .prf-xp-fill-bar::after, .portal .prf-xp-glow-dot { display: none; }
+.portal :is(.prf-xp-next-lv,.prf-xp-cur) { color: var(--portal-accent); }
+.portal :is(.prf-xp-max,.prf-xp-remain) { color: #b6aebc; font-size: 11px; }
+.portal .prf-rec { min-height: 55px; gap: 15px; padding: 13px 15px; margin-bottom: 8px; border-color: #ffffff0b; border-radius: 11px; background: #ffffff03; color: #d5d0dc; font-size: 14px; }
+.portal .prf-rec > span { min-width: 0; overflow-wrap: anywhere; }
+.portal .prf-rec b { flex-shrink: 0; color: #dfc299; font-size: 13px; }
+.portal .prf-rec.me { border-color: #dfc29955; background: #dfc2990a; }
+.portal :is(.prf-recbody i,.badge-loading) { color: #b0a5b6; font-size: 13px; }
+.portal .badge-item { padding: 17px 8px; border-width: 1px; }
+.portal .badge-item:not(.locked) { animation: none; box-shadow: 0 3px 20px #0002; }
+.portal .badge-item.locked { opacity: .72; }
+.portal .badge-name { margin-top: 5px; color: #e0dce5; font-size: 11px; line-height: 1.5; }
+.portal .badge-rar { font-size: 9px; }
+.portal .badge-item.locked .badge-rar { color: #aaa0b3 !important; }
+.portal .fr-row { gap: 12px; padding: 12px; margin-bottom: 9px; border-color: var(--portal-border); border-radius: 13px; background: #ffffff03; }
+.portal .fr-row:hover { transform: none; background: #dfc29908; border-color: #8f7c5f66; }
+.portal .fr-name { color: var(--portal-ink); font-size: 14px; }
+.portal :is(.fr-status,.fr-off,.fr-hdr-offline,.nav-notif-time) { color: #afa4b4; font-size: 12px; }
+.portal .fr-hdr-total { color: #d0c4db; font-size: 13px; }
+.portal .fr-lv { font-size: 10px; }
+.portal .fr-dot { animation: none; box-shadow: none; }
+.portal :is(.fr-btn,.fr-acc,.fr-rej,.prf-mini) { min-width: 44px; width: 44px; min-height: 44px; height: 44px; border-radius: 11px; }
+.portal .nav-notif-item { padding: 17px; margin-bottom: 9px; }
+.portal .nav-notif-txt { color: #e6e0ec; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.portal .nav-notif-time { margin-top: 5px; font-size: 11px; }
+.portal .placeholder { padding: 45px 25px; margin-top: 0; border: 1px solid var(--portal-border); background: #16191f; color: var(--portal-muted); font-size: 14px; }
+/* Settings and portal dialogs share the same surfaces; board games retain their own UI. */
+.portal :is(.nick-modal,.clan-panel,.pcp-panel,.adm-panel) { background: linear-gradient(140deg,#222129,#12171e); border-color: #504338; box-shadow: 0 20px 70px #0008; }
+.portal .nick-modal { max-height: calc(100dvh - 40px); overflow-y: auto; padding: 25px; border-radius: 20px; }
+.portal .nm-title { color: #f0e8dc; font: 600 22px/1.4 var(--font-display); }
+.portal .nm-sub { color: var(--portal-muted); font-size: 13px; }
+.portal .nm-input { font-size: 16px; border-color: #52483c; background: #ffffff06; }
+.portal :is(.nm-btn,.set-tgl,.clan-btn,.clan-tab,.theme-chip,.scale-btn,.clan-x,.pcp-x,.adm-x) { min-height: 44px; }
+.portal :is(.clan-x,.pcp-x,.adm-x) { min-width: 44px; }
+.portal .nm-save, .portal .clan-btn.p { background: linear-gradient(110deg,#e4caa4,#c4a67b); color: #1b1917; }
+.portal .nm-cancel { color: #e3dce6; background: #ffffff0b; border: 1px solid #ffffff18; }
+.portal .set-row { font-size: 13px; gap: 14px; }
+.portal .set-row > span { min-width: 0; }
+.portal .set-tgl { flex-shrink: 0; font-size: 11px; }
+.portal .set-ver { color: #a399ac; font-size: 11px; }
+.portal .theme-name { color: #ccc3d5; font-size: 10px; }
+.portal .theme-chip { border-color: #3f3945; }
+.portal .theme-chip.active { border-color: var(--portal-accent); }
+.portal .set-theme-lbl, .portal .set-scale-lbl { color: #cfc3d5; font-size: 11px; letter-spacing: 1px; }
+.portal #gemHubPanel { border-color: #b99b674d; background: linear-gradient(145deg,#202028fa,#10151bfc); box-shadow: 0 24px 64px #0009; }
+.portal #gemHubPanel::before { background: linear-gradient(90deg,transparent,#d7bd8d99,transparent); }
+.portal .ghp-drag { background: #dfc29905; border-color: #dfc29915; }
+/* Floating primary navigation. */
+.portal .bottom-nav { left: 50%; right: auto; bottom: 19px; width: min(610px,calc(100% - 40px)); padding: 7px; gap: 4px; transform: translateX(-50%); border: 1px solid #5f50414f; border-radius: 20px; background: #1d1e26f5; backdrop-filter: blur(20px); box-shadow: 0 12px 40px #0008,inset 0 1px 0 #efc9970c; }
+.portal .nav-item { min-width: 0; min-height: 56px; padding: 8px 3px; gap: 5px; border-radius: 13px; color: #b4adb9; transition: background .2s,color .2s; }
 .portal .nav-item .ni-ico { display: inline-flex; font-size: 0; }
 .portal .nav-item .ni-ico svg { width: 20px; height: 20px; }
-.portal .nav-item .ni-lbl { font-size: 9px; letter-spacing: 0; font-weight: 600; }
-.portal .nav-item.active { color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.portal .nav-item .ni-lbl { font-size: 10px; font-weight: 500; letter-spacing: 0; }
+.portal .nav-item.active { color: var(--portal-accent); background: linear-gradient(140deg,#a184581f,#a1845807); }
 .portal .nav-item.active .ni-ico { filter: none; }
-.portal .nav-item:hover { background: #263440; color: #fff; }
-.portal :is(button,a,input,select,textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.portal .skip-link { position: fixed; z-index: 100000; top: 8px; left: 8px; padding: 12px 18px; background: var(--accent); color: #071114; border-radius: 8px; transform: translateY(-150%); font-weight: 700; }
+.portal .nav-item:hover { color: #f3e5d0; background: #dfc2990e; }
+.portal :is(button,a,input,select,textarea,[role="button"]):focus-visible { outline: 2px solid var(--portal-accent); outline-offset: 4px; }
+.portal .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100000; padding: 12px 18px; border-radius: 8px; background: var(--portal-accent); color: #171411; font-weight: 700; transform: translateY(-160%); }
 .portal .skip-link:focus { transform: none; }
-.portal .screen-heading { font-size: 28px; letter-spacing: -.8px; margin: 30px 0 18px; }
-.portal .scr-pad { max-width: 660px; margin: 0 auto; padding: 0 0 40px; }
-.portal .screen-description { color: var(--portal-muted); font-size: 13px; margin: -8px 0 20px; }
 .portal [data-screen].active { animation: none; }
-@media (min-width: 1280px) {
-  .portal .home-intro { gap: 90px; }
-}
-@media (max-width: 900px) {
-  .portal .home-intro { gap: 28px; }
-  .portal .intro-copy h1 { font-size: 43px; }
-  .portal .arcade-window { width: 250px; }
-  .portal .game-pc { padding: 16px; }
-  .portal .game-pc-name { font-size: 17px; }
-  .portal .game-pc-modes { font-size: 11px; }
+@media (max-width:1100px) {
+  .portal .header-note, .portal .header-divider { display: none; }
+  .portal .home-intro { min-height: 505px; padding: 48px 40px 68px; }
+  .portal .intro-copy h1 { font-size: 54px; }
+  .portal .hero-edition { left: 40px; }
+  .portal .game-pc { --card-inset: 17px; }
+  .portal .game-pc-logo { height: 145px; }
+  .portal .game-pc-name { font-size: 22px; }
   .portal .game-tag { font-size: 9px; }
-  .portal .game-pc-footer { gap: 5px; }
-  .portal .game-pc-play { padding: 7px 8px; }
-  .portal .player-layout { grid-template-columns: 1fr 1fr; gap: 14px; }
-  .portal .progress-panel { padding: 20px 16px; }
-  .portal .auth-guest { padding: 20px; }
-  .portal .stats-bar .stat-v { font-size: 17px; }
+  .portal .game-tag svg { display: none; }
+  .portal .progress-panel { padding: 26px 22px; }
+  .portal .stats-bar .stat { padding: 0 8px; }
+  .portal .stats-bar .stat-v { font-size: 22px; }
 }
-@media (max-width: 767px) {
-  .portal #app { padding-right: 24px; padding-left: 24px; }
-  .portal .portal-header { min-height: 88px; padding-right: 24px; padding-left: 24px; }
-  .portal .header-note { display: none; }
-  .portal .home-intro { padding: 42px 0 45px; gap: 24px; }
-  .portal .intro-copy h1 { font-size: 39px; letter-spacing: -1.6px; }
-  .portal .intro-description { font-size: 12px; }
-  .portal .arcade-window { width: 220px; padding: 12px; }
-  .portal .arcade-board { gap: 2px; padding: 5px; }
-  .portal .games-premium { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
-  .portal .game-pc { padding: 20px; }
-  .portal .game-pc-name { font-size: 20px; }
-  .portal .game-pc-modes { font-size: 12px; min-height: 39px; }
-  .portal .game-pc-logo { height: 105px; margin: 8px 0 12px; }
-  .portal .game-pc-logo svg { width: 82px; height: 82px; }
-  .portal .game-pc-footer { margin-top: 20px; }
-  .portal .game-tag { font-size: 10px; }
+@media (max-width:800px) {
+  .portal #app { padding-left: 24px; padding-right: 24px; }
+  .portal .portal-header { padding-left: 24px; padding-right: 24px; min-height: 98px; }
+  .portal .home-intro { grid-template-columns: 1fr; min-height: 455px; padding-left: 32px; padding-right: 32px; }
+  .portal .intro-copy h1 { font-size: 49px; }
+  .portal .intro-description { font-size: 13px; }
+  .portal .intro-actions { gap: 15px; }
+  .portal .intro-link { padding: 12px 16px; gap: 12px; }
+  .portal .intro-secondary { font-size: 11px; }
+  .portal .intro-art { width: 55%; right: -7%; top: 0; opacity: .9; }
+  .portal .art-note { display: none; }
+  .portal .hero-edition { left: 32px; right: 32px; }
+  .portal .games-premium { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 17px; }
+  .portal .game-pc { --card-inset: 22px; }
+  .portal .game-pc-logo { height: 170px; }
+  .portal .game-pc-name { font-size: 27px; }
+  .portal .game-pc-modes { font-size: 13px; }
+  .portal .game-tag { font-size: 11px; }
+  .portal .game-tag svg { display: inline; }
   .portal .player-layout { grid-template-columns: 1fr; }
-  .portal .auth-guest { padding: 23px; }
-  .portal .auth-guest-sub { max-width: none; }
-  .portal .progress-panel { padding: 22px; }
-  .portal .stats-bar .stat-v { font-size: 21px; }
-  .portal .eco-quick-btn { gap: 9px; padding: 15px 12px; }
-  .portal .eco-quick-desc { font-size: 9px; }
-  .portal .eco-quick-ico { font-size: 20px; }
-  .portal .player-section .section-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .portal .eco-quick-btn { padding: 17px; gap: 10px; }
+  .portal .eco-quick-desc { font-size: 10px; }
+  .portal .eco-quick-ico { width: 30px; height: 34px; font-size: 20px; flex-shrink: 0; }
+  .portal .portal-subscreen { padding-top: 0; }
 }
-@media (max-width: 600px) {
-  .portal .portal-header { min-height: 81px; padding: max(18px, env(safe-area-inset-top, 0px)) 20px 18px; }
-  .portal #app { padding: 0 20px calc(100px + env(safe-area-inset-bottom,0px)); }
-  .portal .brand-name { font-size: 20px; }
-  .portal .brand-mark { width: 34px; height: 34px; border-radius: 9px; }
-  .portal .header-link { font-size: 12px; padding: 10px 12px; gap: 8px; }
-  .portal .home-intro { display: block; padding: 30px 0 36px; }
-  .portal .intro-art { display: none; }
-  .portal .intro-copy > .eyebrow { margin-bottom: 15px; font-size: 9px; letter-spacing: 1.3px; }
-  .portal .intro-copy h1 { font-size: 38px; line-height: 1.14; letter-spacing: -1.5px; }
-  .portal .intro-description { max-width: 330px; font-size: 12px; margin-top: 15px; }
-  .portal .intro-link { margin-top: 9px; font-size: 12px; gap: 22px; }
-  .portal .section-heading { margin-bottom: 17px; gap: 10px; }
-  .portal .section-heading h2 { font-size: 22px; letter-spacing: -.6px; }
-  .portal .section-heading .eyebrow { font-size: 8px; letter-spacing: 1.4px; }
-  .portal .section-count { font-size: 8px; letter-spacing: 1px; padding-bottom: 4px; }
-  .portal .games-premium { gap: 11px; }
-  .portal .game-pc { padding: 15px; border-radius: 13px; }
-  .portal .game-pc-top { font-size: 8px; letter-spacing: .9px; }
-  .portal .game-pc-name { font-size: 17px; }
-.portal .game-pc-modes { font-size: 12px; margin-top: 7px; min-height: 40px; }
-  .portal .game-pc-logo { height: 83px; margin: 8px 0 10px; }
-  .portal .game-pc-logo svg { width: 67px; height: 67px; }
-  .portal .game-pc-footer { margin-top: 16px; padding-top: 12px; gap: 4px; flex-wrap: wrap; }
-  .portal .game-tag { font-size: 10px; }
-  .portal .game-pc-play { min-height: 30px; padding: 6px 8px; gap: 6px; font-size: 10px; }
-  .portal .gpc-arrow { font-size: 12px; }
-  .portal .player-section { margin-top: 34px; padding-top: 27px; }
-  .portal .player-section .section-heading h2 { font-size: 21px; }
-  .portal .player-section .section-heading p { font-size: 11px; }
-  .portal .eco-quick-row { gap: 9px; }
-  .portal .eco-quick-btn { flex-direction: column; align-items: flex-start; gap: 9px; padding: 14px 11px; min-height: 92px; }
+@media (max-width:600px) {
+  .portal #app { padding: 0 18px calc(102px + env(safe-area-inset-bottom,0px)); }
+  .portal .portal-header { min-height: 88px; padding: max(18px,env(safe-area-inset-top,0px)) 20px 18px; gap: 12px; }
+  .portal .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
+  .portal .brand-mark svg { width: 28px; height: 28px; }
+  .portal .brand-name { font-size: 20px; gap: 4px; letter-spacing: 2.5px; }
+  .portal .brand-name > span { font-size: 8px; letter-spacing: 3.2px; }
+  .portal .header-middle { display: none; }
+  .portal .header-link { font-size: 11px; padding: 7px 11px 7px 7px; gap: 8px; }
+  .portal .header-link > svg { display: none; }
+  .portal .header-avatar { width: 28px; height: 28px; }
+  .portal .home-intro { display: flex; flex-direction: column; align-items: stretch; min-height: 0; padding: 30px 24px 48px; border-radius: 23px; background: radial-gradient(ellipse at 100% 70%,#9f825522,transparent 60%),linear-gradient(140deg,#222027,#13171e 65%); }
+  .portal .hero-eyebrow { font-size: 8px; letter-spacing: 1.15px; margin-bottom: 19px; gap: 8px; }
+  .portal .eyebrow-line { width: 16px; }
+  .portal .intro-copy h1 { font-size: clamp(33px,9.2vw,49px); line-height: 1.14; letter-spacing: -1.7px; }
+  .portal .intro-description { margin-top: 17px; font-size: 12px; line-height: 1.9; }
+  .portal .intro-actions { gap: 16px; margin-top: 23px; }
+  .portal .intro-link { min-height: 46px; padding: 11px 15px; font-size: 11px; }
+  .portal .intro-secondary { gap: 6px; font-size: 11px; }
+  .portal .hero-details { margin-top: 21px; gap: 10px; font-size: 9px; }
+  .portal .intro-art { position: relative; width: calc(100% + 48px); height: 204px; margin: -7px -24px -11px; top: auto; right: auto; bottom: auto; opacity: 1; }
+  .portal .intro-art > img { width: 100%; height: 120%; }
+  .portal .hero-edition { bottom: 15px; left: 24px; right: 24px; padding-top: 12px; font-size: 6px; letter-spacing: 1.5px; }
+  .portal .game-library { padding-top: 32px; }
+  .portal .section-heading { margin-bottom: 18px; gap: 10px; }
+  .portal .section-heading .eyebrow { font-size: 8px; letter-spacing: 1.2px; margin-bottom: 6px; }
+  .portal .section-heading h2 { font-size: 26px; letter-spacing: -.9px; }
+  .portal .section-count { gap: 5px; font-size: 6px; letter-spacing: .8px; }
+  .portal .section-count b { font-size: 16px; }
+  .portal .games-premium { gap: 12px; }
+  .portal .game-pc { --card-inset: 15px; border-radius: 17px; }
+  .portal .game-pc-top { font-size: 9px; }
+  .portal .game-number { font-size: 10px; }
+  .portal .game-pc-logo { height: 116px; margin-top: 0; margin-bottom: 7px; }
+  .portal .game-pc-name { font-size: 21px; letter-spacing: -.5px; }
+  .portal .game-pc-modes { min-height: 42px; margin-top: 7px; font-size: 11px; line-height: 1.85; }
+  .portal .game-pc-footer { margin-top: 15px; padding-top: 12px; flex-wrap: wrap; gap: 3px; }
+  .portal .game-tag { font-size: 9px; gap: 3px; }
+  .portal .game-tag svg { display: none; }
+  .portal .game-pc-play { font-size: 11px; gap: 5px; }
+  .portal .gpc-arrow { width: 23px; height: 23px; }
+  .portal .gpc-arrow svg { width: 12px; height: 12px; }
+  .portal .player-section { margin-top: 31px; }
+  .portal .player-section .section-heading > p { display: none; }
+  .portal .player-layout { gap: 13px; }
+  .portal .auth-guest, .portal .auth-user { padding: 23px; }
+  .portal .auth-guest-title { font-size: 20px; }
+  .portal .progress-panel { padding: 23px; }
+  .portal .stats-bar .stat-v { font-size: 23px; }
+  .portal .stats-bar .stat-l { font-size: 10px; }
+  .portal .eco-quick-row { gap: 9px; margin-top: 13px; }
+  .portal .eco-quick-btn { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 12px; min-height: 105px; border-radius: 13px; }
   .portal .eco-quick-lbl { font-size: 10px; }
   .portal .eco-quick-desc { display: none; }
   .portal .eco-quick-badge { top: 9px; right: 8px; }
-  .portal .portal-footer { font-size: 9px; padding-top: 25px; }
-  .portal .bottom-nav { bottom: 0; left: 0; width: 100%; transform: none; padding: 6px 8px calc(6px + env(safe-area-inset-bottom,0px)); border-radius: 15px 15px 0 0; border-bottom: 0; border-left: 0; border-right: 0; }
-  .portal .nav-item { min-height: 53px; padding: 8px 2px; }
+  .portal .portal-footer { flex-wrap: wrap; justify-content: center; gap: 5px 24px; margin-top: 25px; padding-top: 20px; font-size: 10px; }
+  .portal .portal-footer > .footer-brand { flex-basis: 100%; text-align: center; font-size: 11px; }
+  .portal .portal-footer > a:last-child { min-height: 38px; }
+  .portal .bottom-nav { bottom: 0; left: 0; width: 100%; transform: none; padding: 7px 8px calc(7px + env(safe-area-inset-bottom,0px)); border-radius: 18px 18px 0 0; border-left: 0; border-right: 0; border-bottom: 0; }
+  .portal .nav-item { min-height: 53px; padding: 7px 2px; border-radius: 11px; }
   .portal .nav-item .ni-lbl { font-size: 10px; }
+  .portal .screen-intro { padding-top: 22px; padding-bottom: 22px; }
+  .portal .screen-intro .eyebrow { font-size: 9px; }
+  .portal .screen-heading { font-size: 31px; letter-spacing: -1px; }
+  .portal .screen-description { font-size: 12px; }
+  .portal .prf-card { padding: 18px; border-radius: 17px; }
+  .portal .prf-name { font-size: 20px; }
+  .portal .prf-top { gap: 12px; }
+  .portal .prf-ava { width: 59px; height: 59px; }
+  .portal .prf-stats { gap: 7px; }
+  .portal .prf-stat { padding: 13px 3px; }
+  .portal .prf-stat b { font-size: 15px; }
+  .portal .prf-stat span { font-size: 9px; }
+  .portal .prf-xp-premium { padding: 13px; }
+  .portal .prf-xp-lv-badge { padding: 4px 9px; font-size: 11px; }
+  .portal .prf-xp-title { font-size: 8px; letter-spacing: .7px; }
+  .portal .prf-xp-next-lv { font-size: 10px; }
+  .portal .prf-xp-remain { padding: 2px 5px; font-size: 9px; }
+  .portal .prf-rec { padding: 12px; font-size: 12px; gap: 8px; }
+  .portal .prf-rec b { font-size: 12px; }
+  .portal .fr-row { gap: 8px; padding: 9px; flex-wrap: wrap; }
+  .portal .fr-info { min-width: 80px; }
+  .portal .fr-ava { width: 36px; height: 36px; font-size: 19px; }
+  .portal .fr-name { font-size: 13px; }
+  .portal .badge-grid { gap: 7px; }
+  .portal .badge-item { padding: 13px 5px; }
+  .portal .badge-name { font-size: 10px; }
+  .portal .nick-modal { padding: 21px; }
 }
-@media (max-width: 379px) {
-  .portal #app { padding-right: 16px; padding-left: 16px; }
-  .portal .portal-header { padding-right: 16px; padding-left: 16px; gap: 10px; }
-  .portal .brand-name { font-size: 17px; }
-  .portal .brand-mark { width: 30px; height: 30px; }
-  .portal .header-link { padding: 10px; font-size: 11px; }
-  .portal .intro-copy h1 { font-size: 32px; }
-  .portal .section-heading h2 { font-size: 20px; }
-  .portal .game-pc { padding: 12px; }
-  .portal .game-pc-name { font-size: 14px; letter-spacing: -.3px; }
-  .portal .game-pc-modes { font-size: 12px; }
-  .portal .game-tag { font-size: 10px; }
-  .portal .game-pc-play { gap: 4px; padding: 6px; font-size: 9px; }
-  .portal .auth-guest { padding: 18px; }
-  .portal .progress-panel { padding: 18px; }
-  .portal .stats-bar .stat-v { font-size: 18px; }
-  .portal .stats-bar .stat-l { font-size: 10px; }
-  .portal .xp-label { font-size: 7px; }
+@media (max-width:359px) {
+  .portal #app { padding-left: 13px; padding-right: 13px; }
+  .portal .portal-header { padding-left: 15px; padding-right: 15px; }
+  .portal .brand-name { font-size: 18px; }
+  .portal .header-link { font-size: 10px; }
+  .portal .home-intro { padding-left: 19px; padding-right: 19px; }
+  .portal .hero-eyebrow { font-size: 7px; letter-spacing: .9px; }
+  .portal .intro-actions { gap: 12px; }
+  .portal .intro-link { padding: 11px 12px; gap: 8px; font-size: 10px; }
+  .portal .intro-secondary { font-size: 10px; }
+  .portal .intro-art { width: calc(100% + 38px); margin-left: -19px; margin-right: -19px; height: 182px; }
+  .portal .section-heading h2 { font-size: 23px; }
+  .portal .game-pc { --card-inset: 12px; }
+  .portal .game-pc-logo { height: 100px; }
+  .portal .game-pc-name { font-size: 18px; }
+  .portal .game-pc-modes { font-size: 10px; }
+  .portal .game-tag { font-size: 8px; }
+  .portal .game-pc-play { font-size: 10px; }
+  .portal .gpc-arrow { width: 20px; height: 20px; }
+  .portal .progress-panel { padding: 20px 17px; }
+  .portal .stats-bar .stat-v { font-size: 20px; }
+  .portal .screen-heading { font-size: 28px; }
 }
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
   .portal *, .portal *::before, .portal *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+/* Quiet social controls that fit the portal instead of covering it with neon. */
+.portal #gemFloatBtn.twin-fab, .portal #adminFloatBtn.twin-fab {
+  width: 40px !important; height: 40px !important; border-radius: 12px !important;
+  border: 1px solid #bfa07566; background: #24212bef;
+  box-shadow: 0 5px 22px #0006,inset 0 1px 0 #e4c99a12; animation: none;
+}
+.portal .tw-gem, .portal .tw-crown { filter: none; animation: none; }
+.portal .tw-spark { display: none; }
+.portal .ghp-title { color: #dfc299; }
+.portal .ghp-tab { min-height: 44px; }
+.portal .ghp-tab.active { color: #e3c8a0; background: #d4b98b12; border-color: #c3a47b55; }
+.portal .ghp-empty-text, .portal .ghp-empty-sub { color: #b7aebe; }
+.portal .set-scale-section { border-color: #b99b6738; background: #dfc29907; }
+.portal .set-scale-lbl #scaleVal { color: var(--portal-accent); font-family: var(--font-body); }
+.portal .scale-btn { color: var(--portal-accent); background: #dfc2990c; border-color: #dfc2993b; }
+.portal .scale-slider { min-width: 0; }
+.portal .scale-slider::-webkit-slider-thumb { background: var(--portal-accent); box-shadow: 0 2px 8px #0005; }
+.portal .scale-slider::-moz-range-thumb { background: var(--portal-accent); box-shadow: 0 2px 8px #0005; }
+.portal .theme-chip.active { background: color-mix(in srgb,var(--portal-accent) 9%,transparent); box-shadow: none; }

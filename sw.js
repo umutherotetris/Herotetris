@@ -1,15 +1,19 @@
-/* Hero Portal 137: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 138: replace the legacy Sukun worker at its existing URL. */
 'use strict';
-const HERO_BUILD = '137';
+const HERO_BUILD = '138';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
 const CACHE_NAME = CACHE_PREFIX + HERO_BUILD;
 const CORE_ASSETS = [
-  'index.html', 'hero.webmanifest', 'assets/hero-portal.svg',
-  'css/tokens.css?v=124', 'css/base.css?v=124', 'css/components.css?v=124',
-  'css/tetris.css?v=124', 'css/themes.css?v=124', 'css/portal.css?v=137',
-  'js/portal-worker.js?v=137', 'js/portal.js?v=137', 'js/nav.js'
+  'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=138',
+  'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=124',
+  'css/tetris.css?v=124', 'css/themes.css?v=124', 'css/portal.css?v=138',
+  'js/portal-worker.js?v=138', 'js/portal.js?v=138', 'js/nav.js',
+  'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=138',
+  'assets/game-chess.svg?v=138', 'assets/game-tavla.svg?v=138', 'assets/game-word.svg?v=138',
+  'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',
+  'js/vendor/peerjs-1.5.4.min.js?v=138'
 ];
 
 function inScope(url){
@@ -67,7 +71,7 @@ self.addEventListener('activate', event => {
 });
 
 function offlineHome(){
-  return new Response(`<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="hero-build" content="${HERO_BUILD}"><title>Hero Portal</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c1015;color:#f3f6fa;font:16px/1.7 system-ui}main{max-width:420px;padding:32px}h1{color:#6ee7e0}a{display:inline-block;padding:12px 20px;margin-top:12px;background:#6ee7e0;color:#0c1015;border-radius:10px;text-decoration:none;font-weight:700}</style></head><body><main><h1>Hero Portal</h1><p>Oyun alanı şu an açılamıyor. İnternet bağlantını kontrol edip yeniden deneyebilirsin.</p><a href="${HOME.pathname}">Yeniden dene</a></main></body></html>`, {
+  return new Response(`<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="hero-build" content="${HERO_BUILD}"><title>Hero Portal</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c0e13;color:#f3f6fa;font:16px/1.7 system-ui}main{max-width:420px;padding:32px}h1{color:#dfc299}a{display:inline-block;padding:12px 20px;margin-top:12px;background:#dfc299;color:#0c0e13;border-radius:10px;text-decoration:none;font-weight:700}</style></head><body><main><h1>Hero Portal</h1><p>Oyun alanı şu an açılamıyor. İnternet bağlantını kontrol edip yeniden deneyebilirsin.</p><a href="${HOME.pathname}">Yeniden dene</a></main></body></html>`, {
     status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }
   });
 }
@@ -110,7 +114,7 @@ function notificationUrl(value){
 }
 function showNotification(data = {}){
   return self.registration.showNotification(data.title || 'Hero Portal', {
-    body: data.body || '', icon: new URL('assets/hero-portal.svg', SCOPE).href,
+    body: data.body || '', icon: new URL('assets/hero-portal.svg?v=138', SCOPE).href,
     tag: data.tag || 'hero-notification', data: { url: notificationUrl(data.url) }
   });
 }

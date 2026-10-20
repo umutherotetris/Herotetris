@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="260" viewBox="0 0 420 260" role="img" aria-labelledby="game-word-title">
+<title id="game-word-title">H E R O harflerinden oluşan cam sırlı üç boyutlu oyun taşları</title>
+<defs>
+  <linearGradient id="game-word-mint-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#D5FFF0"/><stop offset=".45" stop-color="#91E1BC"/><stop offset="1" stop-color="#4FAD8C"/></linearGradient>
+  <linearGradient id="game-word-mint-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#65B89B"/><stop offset="1" stop-color="#22574E"/></linearGradient>
+  <linearGradient id="game-word-mint-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3A8F78"/><stop offset="1" stop-color="#153B39"/></linearGradient>
+  <linearGradient id="game-word-lavender-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F0E7FF"/><stop offset=".5" stop-color="#B9A5E4"/><stop offset="1" stop-color="#8277B4"/></linearGradient>
+  <linearGradient id="game-word-lavender-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9B8AC2"/><stop offset="1" stop-color="#494264"/></linearGradient>
+  <linearGradient id="game-word-lavender-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#766A9B"/><stop offset="1" stop-color="#343044"/></linearGradient>
+  <linearGradient id="game-word-gold-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF3CE"/><stop offset=".45" stop-color="#D8B974"/><stop offset="1" stop-color="#AF8648"/></linearGradient>
+  <linearGradient id="game-word-gold-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#B99A63"/><stop offset="1" stop-color="#65502E"/></linearGradient>
+  <linearGradient id="game-word-gold-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#967340"/><stop offset="1" stop-color="#463A27"/></linearGradient>
+  <linearGradient id="game-word-ivory" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#FFFFF1"/><stop offset=".3" stop-color="#F1ECD8"/><stop offset=".62" stop-color="#CEBF99"/><stop offset=".85" stop-color="#F0E4C7"/><stop offset="1" stop-color="#A2916D"/></linearGradient>
+  <linearGradient id="game-word-ivory-side" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#74654D"/><stop offset=".5" stop-color="#B9A884"/><stop offset="1" stop-color="#66583F"/></linearGradient>
+  <linearGradient id="game-word-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#46515D"/><stop offset=".32" stop-color="#222A34"/><stop offset=".75" stop-color="#11161E"/><stop offset="1" stop-color="#303B47"/></linearGradient>
+  <linearGradient id="game-word-metal-edge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#35404B"/><stop offset=".22" stop-color="#121821"/><stop offset="1" stop-color="#080D13"/></linearGradient>
+  <linearGradient id="game-word-wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B18054"/><stop offset=".2" stop-color="#7E4D32"/><stop offset=".65" stop-color="#502E22"/><stop offset="1" stop-color="#A37045"/></linearGradient>
+  <linearGradient id="game-word-copper" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#F1C99A"/><stop offset=".28" stop-color="#B57D4C"/><stop offset=".65" stop-color="#68422C"/><stop offset="1" stop-color="#D2A06B"/></linearGradient>
+  <linearGradient id="game-word-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B08E56" stop-opacity=".08"/><stop offset=".3" stop-color="#F1D5A1" stop-opacity=".8"/><stop offset=".7" stop-color="#C8AB77" stop-opacity=".5"/><stop offset="1" stop-color="#A27E48" stop-opacity=".08"/></linearGradient>
+  <radialGradient id="game-word-halo"><stop stop-color="#80BAA8" stop-opacity=".2"/><stop offset=".5" stop-color="#7C9A95" stop-opacity=".06"/><stop offset="1" stop-color="#0E1118" stop-opacity="0"/></radialGradient>
+  <radialGradient id="game-word-floor"><stop stop-color="#00040B" stop-opacity=".8"/><stop offset="1" stop-color="#00040B" stop-opacity="0"/></radialGradient>
+  <filter id="game-word-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#05080C" flood-opacity=".48"/></filter>
+  <filter id="game-word-small-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#03060A" flood-opacity=".35"/></filter>
+</defs>
+<ellipse cx="214" cy="212" rx="162" ry="33" fill="url(#game-word-floor)"/>
+<ellipse cx="215" cy="140" rx="165" ry="104" fill="url(#game-word-halo)"/>
+<g transform="translate(66 93) rotate(-11 35 42)" filter="url(#game-word-small-shadow)">
+ <rect x="7" y="13" width="71" height="80" rx="13" fill="url(#game-word-mint-right)" stroke="#263A35"/>
+ <path d="M12 75 70 73 77 85 71 92H20L7 84Z" fill="url(#game-word-mint-left)"/>
+ <rect width="71" height="80" rx="13" fill="url(#game-word-mint-top)" stroke="#E9F4DF" stroke-opacity=".7"/>
+ <rect x="5" y="5" width="61" height="68" rx="10" fill="none" stroke="#FFFCE9" stroke-opacity=".3"/>
+ <text x="35.5" y="55" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="45" font-weight="700" fill="#183E36" fill-opacity=".95">H</text>
+ <path d="M13 4h44" stroke="#FFFEEC" stroke-width="2" stroke-opacity=".5" stroke-linecap="round"/>
+</g>
+<g transform="translate(140 69) rotate(-4 35 42)" filter="url(#game-word-small-shadow)">
+ <rect x="7" y="13" width="71" height="80" rx="13" fill="url(#game-word-lavender-right)" stroke="#263A35"/>
+ <path d="M12 75 70 73 77 85 71 92H20L7 84Z" fill="url(#game-word-lavender-left)"/>
+ <rect width="71" height="80" rx="13" fill="url(#game-word-lavender-top)" stroke="#E9F4DF" stroke-opacity=".7"/>
+ <rect x="5" y="5" width="61" height="68" rx="10" fill="none" stroke="#FFFCE9" stroke-opacity=".3"/>
+ <text x="35.5" y="55" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="45" font-weight="700" fill="#183E36" fill-opacity=".95">E</text>
+ <path d="M13 4h44" stroke="#FFFEEC" stroke-width="2" stroke-opacity=".5" stroke-linecap="round"/>
+</g>
+<g transform="translate(211 99) rotate(5 35 42)" filter="url(#game-word-small-shadow)">
+ <rect x="7" y="13" width="71" height="80" rx="13" fill="url(#game-word-mint-right)" stroke="#263A35"/>
+ <path d="M12 75 70 73 77 85 71 92H20L7 84Z" fill="url(#game-word-mint-left)"/>
+ <rect width="71" height="80" rx="13" fill="url(#game-word-mint-top)" stroke="#E9F4DF" stroke-opacity=".7"/>
+ <rect x="5" y="5" width="61" height="68" rx="10" fill="none" stroke="#FFFCE9" stroke-opacity=".3"/>
+ <text x="35.5" y="55" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="45" font-weight="700" fill="#183E36" fill-opacity=".95">R</text>
+ <path d="M13 4h44" stroke="#FFFEEC" stroke-width="2" stroke-opacity=".5" stroke-linecap="round"/>
+</g>
+<g transform="translate(282 77) rotate(12 35 42)" filter="url(#game-word-small-shadow)">
+ <rect x="7" y="13" width="71" height="80" rx="13" fill="url(#game-word-gold-right)" stroke="#263A35"/>
+ <path d="M12 75 70 73 77 85 71 92H20L7 84Z" fill="url(#game-word-gold-left)"/>
+ <rect width="71" height="80" rx="13" fill="url(#game-word-gold-top)" stroke="#E9F4DF" stroke-opacity=".7"/>
+ <rect x="5" y="5" width="61" height="68" rx="10" fill="none" stroke="#FFFCE9" stroke-opacity=".3"/>
+ <text x="35.5" y="55" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="45" font-weight="700" fill="#183E36" fill-opacity=".95">O</text>
+ <path d="M13 4h44" stroke="#FFFEEC" stroke-width="2" stroke-opacity=".5" stroke-linecap="round"/>
+</g>
+<path d="M101 207c62 24 155 21 213-8" fill="none" stroke="url(#game-word-orbit)" stroke-width="1.2"/>
+<circle cx="319" cy="195" r="2.5" fill="#DBC18A"/>
+</svg>

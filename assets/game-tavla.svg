@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="260" viewBox="0 0 420 260" role="img" aria-labelledby="game-tavla-title">
+<title id="game-tavla-title">Ceviz ve bakır kakmalı tavla tahtası ile fildişi zarlar</title>
+<defs>
+  <linearGradient id="game-tavla-mint-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#D5FFF0"/><stop offset=".45" stop-color="#91E1BC"/><stop offset="1" stop-color="#4FAD8C"/></linearGradient>
+  <linearGradient id="game-tavla-mint-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#65B89B"/><stop offset="1" stop-color="#22574E"/></linearGradient>
+  <linearGradient id="game-tavla-mint-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3A8F78"/><stop offset="1" stop-color="#153B39"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F0E7FF"/><stop offset=".5" stop-color="#B9A5E4"/><stop offset="1" stop-color="#8277B4"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9B8AC2"/><stop offset="1" stop-color="#494264"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#766A9B"/><stop offset="1" stop-color="#343044"/></linearGradient>
+  <linearGradient id="game-tavla-gold-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF3CE"/><stop offset=".45" stop-color="#D8B974"/><stop offset="1" stop-color="#AF8648"/></linearGradient>
+  <linearGradient id="game-tavla-gold-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#B99A63"/><stop offset="1" stop-color="#65502E"/></linearGradient>
+  <linearGradient id="game-tavla-gold-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#967340"/><stop offset="1" stop-color="#463A27"/></linearGradient>
+  <linearGradient id="game-tavla-ivory" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#FFFFF1"/><stop offset=".3" stop-color="#F1ECD8"/><stop offset=".62" stop-color="#CEBF99"/><stop offset=".85" stop-color="#F0E4C7"/><stop offset="1" stop-color="#A2916D"/></linearGradient>
+  <linearGradient id="game-tavla-ivory-side" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#74654D"/><stop offset=".5" stop-color="#B9A884"/><stop offset="1" stop-color="#66583F"/></linearGradient>
+  <linearGradient id="game-tavla-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#46515D"/><stop offset=".32" stop-color="#222A34"/><stop offset=".75" stop-color="#11161E"/><stop offset="1" stop-color="#303B47"/></linearGradient>
+  <linearGradient id="game-tavla-metal-edge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#35404B"/><stop offset=".22" stop-color="#121821"/><stop offset="1" stop-color="#080D13"/></linearGradient>
+  <linearGradient id="game-tavla-wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B18054"/><stop offset=".2" stop-color="#7E4D32"/><stop offset=".65" stop-color="#502E22"/><stop offset="1" stop-color="#A37045"/></linearGradient>
+  <linearGradient id="game-tavla-copper" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#F1C99A"/><stop offset=".28" stop-color="#B57D4C"/><stop offset=".65" stop-color="#68422C"/><stop offset="1" stop-color="#D2A06B"/></linearGradient>
+  <linearGradient id="game-tavla-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B08E56" stop-opacity=".08"/><stop offset=".3" stop-color="#F1D5A1" stop-opacity=".8"/><stop offset=".7" stop-color="#C8AB77" stop-opacity=".5"/><stop offset="1" stop-color="#A27E48" stop-opacity=".08"/></linearGradient>
+  <radialGradient id="game-tavla-halo"><stop stop-color="#80BAA8" stop-opacity=".2"/><stop offset=".5" stop-color="#7C9A95" stop-opacity=".06"/><stop offset="1" stop-color="#0E1118" stop-opacity="0"/></radialGradient>
+  <radialGradient id="game-tavla-floor"><stop stop-color="#00040B" stop-opacity=".8"/><stop offset="1" stop-color="#00040B" stop-opacity="0"/></radialGradient>
+  <filter id="game-tavla-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#05080C" flood-opacity=".48"/></filter>
+  <filter id="game-tavla-small-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#03060A" flood-opacity=".35"/></filter>
+</defs>
+<ellipse cx="219" cy="222" rx="169" ry="31" fill="url(#game-tavla-floor)"/>
+<polygon points="128.00,196.00 368.00,173.20 368.00,186.20 128.00,209.00" fill="#3C241E" stroke="#A17148" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="316.00,43.20 368.00,173.20 368.00,186.20 316.00,56.20" fill="#432A20" stroke="#AC7E50" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="76.00,66.00 316.00,43.20 368.00,173.20 128.00,196.00" fill="url(#game-tavla-wood)" stroke="#D0AB77" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="88.38,73.59 310.38,52.51 355.62,165.61 133.62,186.69" fill="#241E1B" stroke="#DCBB80" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="90.94,77.40 107.44,75.83 117.38,122.12" fill="#BD9C67" />
+<polygon points="133.32,183.35 149.82,181.78 123.36,137.07" fill="#855536" />
+<polygon points="109.44,75.64 125.94,74.08 135.88,120.36" fill="#734B34" />
+<polygon points="151.82,181.59 168.32,180.03 141.86,135.31" fill="#734B34" />
+<polygon points="127.94,73.88 144.44,72.32 154.38,118.60" fill="#BD9C67" />
+<polygon points="170.32,179.83 186.82,178.27 160.36,133.55" fill="#855536" />
+<polygon points="146.44,72.13 162.94,70.56 172.88,116.84" fill="#734B34" />
+<polygon points="188.82,178.08 205.32,176.51 178.86,131.79" fill="#734B34" />
+<polygon points="164.94,70.37 181.44,68.80 191.38,115.09" fill="#BD9C67" />
+<polygon points="207.32,176.32 223.82,174.75 197.36,130.04" fill="#855536" />
+<polygon points="183.44,68.61 199.94,67.05 209.88,113.33" fill="#734B34" />
+<polygon points="225.82,174.56 242.32,173.00 215.86,128.28" fill="#734B34" />
+<polygon points="201.94,66.85 218.44,65.29 228.38,111.57" fill="#BD9C67" />
+<polygon points="244.32,172.81 260.82,171.24 234.36,126.52" fill="#855536" />
+<polygon points="220.44,65.10 236.94,63.53 246.88,109.81" fill="#734B34" />
+<polygon points="262.82,171.05 279.32,169.48 252.86,124.76" fill="#734B34" />
+<polygon points="238.94,63.34 255.44,61.77 265.38,108.06" fill="#BD9C67" />
+<polygon points="281.32,169.29 297.82,167.72 271.36,123.01" fill="#855536" />
+<polygon points="257.44,61.58 273.94,60.02 283.88,106.30" fill="#734B34" />
+<polygon points="299.82,167.53 316.32,165.97 289.86,121.25" fill="#734B34" />
+<polygon points="275.94,59.83 292.44,58.26 302.38,104.54" fill="#BD9C67" />
+<polygon points="318.32,165.78 334.82,164.21 308.36,119.49" fill="#855536" />
+<polygon points="294.44,58.07 310.94,56.50 320.88,102.78" fill="#734B34" />
+<polygon points="336.82,164.02 353.32,162.45 326.86,117.73" fill="#734B34" />
+<polygon points="195.90,64.73 203.90,63.97 248.10,174.47 240.10,175.23" fill="url(#game-tavla-wood)" stroke="#CCAE78" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="136.78,62.25 148.78,61.25 147.22,57.35 135.22,58.35" fill="url(#game-tavla-copper)" stroke="#E9D3A8" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="256.78,50.85 268.78,49.85 267.22,45.95 255.22,46.95" fill="url(#game-tavla-copper)" stroke="#E9D3A8" stroke-width=".8" stroke-linejoin="round" />
+<path d="M145.12 164.88v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="154.12" cy="164.88" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="154.12" cy="164.88" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M140.7 153.83v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="149.7" cy="153.83" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="149.7" cy="153.83" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M136.28 142.78v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="145.28" cy="142.78" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="145.28" cy="142.78" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M288.36 66.25999999999999v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="297.36" cy="66.25999999999999" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="297.36" cy="66.25999999999999" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M292.78 77.31v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="301.78" cy="77.31" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="301.78" cy="77.31" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M297.2 88.36v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-ivory)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="306.2" cy="88.36" rx="9" ry="4.8" fill="url(#game-tavla-ivory)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="306.2" cy="88.36" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M170.36 77.47v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-copper)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="179.36" cy="77.47" rx="9" ry="4.8" fill="url(#game-tavla-copper)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="179.36" cy="77.47" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M174.78 88.52000000000001v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-copper)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="183.78" cy="88.52000000000001" rx="9" ry="4.8" fill="url(#game-tavla-copper)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="183.78" cy="88.52000000000001" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M282.6 150.47v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-copper)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="291.6" cy="150.47" rx="9" ry="4.8" fill="url(#game-tavla-copper)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="291.6" cy="150.47" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<path d="M278.18 139.42000000000002v4c0 6 18 6 18 0v-4Z" fill="url(#game-tavla-copper)" stroke="#5E4932" stroke-width=".6"/><ellipse cx="287.18" cy="139.42000000000002" rx="9" ry="4.8" fill="url(#game-tavla-copper)" stroke="#F2DFC0" stroke-opacity=".4"/><ellipse cx="287.18" cy="139.42000000000002" rx="6" ry="2.8" fill="none" stroke="#57432F" stroke-opacity=".3"/>
+<g transform="translate(230 133) rotate(-8) scale(0.8)" filter="url(#game-tavla-small-shadow)">
+  <path d="M-26-12 1-25 28-12 1 2Z" fill="#FFF8E4" stroke="#F5E8C7" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M-26-12 1 2V31L-26 17Z" fill="url(#game-tavla-ivory)" stroke="#BCAA86" stroke-linejoin="round"/>
+  <path d="M1 2 28-12V17L1 31Z" fill="url(#game-tavla-ivory-side)" stroke="#988363" stroke-linejoin="round"/>
+  <g fill="#4D4B41"><ellipse cx="-12" cy="-12" rx="3.2" ry="1.8"/><ellipse cx="1" cy="-18" rx="3.2" ry="1.8"/><ellipse cx="1" cy="-6" rx="3.2" ry="1.8"/><ellipse cx="14" cy="-12" rx="3.2" ry="1.8"/><ellipse cx="-16" cy="1" rx="2.7" ry="3.2" transform="rotate(-15 -16 1)"/><ellipse cx="-8" cy="15" rx="2.7" ry="3.2" transform="rotate(-15 -8 15)"/><ellipse cx="14" cy="8" rx="2.4" ry="3.2" transform="rotate(20 14 8)"/></g>
+  <path d="M-24-10 1 3 26-10M1 3V28" fill="none" stroke="#FFFAE7" stroke-opacity=".55"/>
+</g>
+<g transform="translate(270 160) rotate(13) scale(0.7)" filter="url(#game-tavla-small-shadow)">
+  <path d="M-26-12 1-25 28-12 1 2Z" fill="#FFF8E4" stroke="#F5E8C7" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M-26-12 1 2V31L-26 17Z" fill="url(#game-tavla-ivory)" stroke="#BCAA86" stroke-linejoin="round"/>
+  <path d="M1 2 28-12V17L1 31Z" fill="url(#game-tavla-ivory-side)" stroke="#988363" stroke-linejoin="round"/>
+  <g fill="#4D4B41"><ellipse cx="-12" cy="-12" rx="3.2" ry="1.8"/><ellipse cx="1" cy="-18" rx="3.2" ry="1.8"/><ellipse cx="1" cy="-6" rx="3.2" ry="1.8"/><ellipse cx="14" cy="-12" rx="3.2" ry="1.8"/><ellipse cx="-16" cy="1" rx="2.7" ry="3.2" transform="rotate(-15 -16 1)"/><ellipse cx="-8" cy="15" rx="2.7" ry="3.2" transform="rotate(-15 -8 15)"/><ellipse cx="14" cy="8" rx="2.4" ry="3.2" transform="rotate(20 14 8)"/></g>
+  <path d="M-24-10 1 3 26-10M1 3V28" fill="none" stroke="#FFFAE7" stroke-opacity=".55"/>
+</g>
+</svg>

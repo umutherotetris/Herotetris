@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="260" viewBox="0 0 420 260" role="img" aria-labelledby="game-tetris-title">
+<title id="game-tetris-title">Mint ve lavanta renkli üç boyutlu Tetris blokları</title>
+<defs>
+  <linearGradient id="game-tetris-mint-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#D5FFF0"/><stop offset=".45" stop-color="#91E1BC"/><stop offset="1" stop-color="#4FAD8C"/></linearGradient>
+  <linearGradient id="game-tetris-mint-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#65B89B"/><stop offset="1" stop-color="#22574E"/></linearGradient>
+  <linearGradient id="game-tetris-mint-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3A8F78"/><stop offset="1" stop-color="#153B39"/></linearGradient>
+  <linearGradient id="game-tetris-lavender-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F0E7FF"/><stop offset=".5" stop-color="#B9A5E4"/><stop offset="1" stop-color="#8277B4"/></linearGradient>
+  <linearGradient id="game-tetris-lavender-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9B8AC2"/><stop offset="1" stop-color="#494264"/></linearGradient>
+  <linearGradient id="game-tetris-lavender-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#766A9B"/><stop offset="1" stop-color="#343044"/></linearGradient>
+  <linearGradient id="game-tetris-gold-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF3CE"/><stop offset=".45" stop-color="#D8B974"/><stop offset="1" stop-color="#AF8648"/></linearGradient>
+  <linearGradient id="game-tetris-gold-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#B99A63"/><stop offset="1" stop-color="#65502E"/></linearGradient>
+  <linearGradient id="game-tetris-gold-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#967340"/><stop offset="1" stop-color="#463A27"/></linearGradient>
+  <linearGradient id="game-tetris-ivory" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#FFFFF1"/><stop offset=".3" stop-color="#F1ECD8"/><stop offset=".62" stop-color="#CEBF99"/><stop offset=".85" stop-color="#F0E4C7"/><stop offset="1" stop-color="#A2916D"/></linearGradient>
+  <linearGradient id="game-tetris-ivory-side" x1="0" y1="0" x2="1" y2=".3"><stop stop-color="#74654D"/><stop offset=".5" stop-color="#B9A884"/><stop offset="1" stop-color="#66583F"/></linearGradient>
+  <linearGradient id="game-tetris-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#46515D"/><stop offset=".32" stop-color="#222A34"/><stop offset=".75" stop-color="#11161E"/><stop offset="1" stop-color="#303B47"/></linearGradient>
+  <linearGradient id="game-tetris-metal-edge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#35404B"/><stop offset=".22" stop-color="#121821"/><stop offset="1" stop-color="#080D13"/></linearGradient>
+  <linearGradient id="game-tetris-wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B18054"/><stop offset=".2" stop-color="#7E4D32"/><stop offset=".65" stop-color="#502E22"/><stop offset="1" stop-color="#A37045"/></linearGradient>
+  <linearGradient id="game-tetris-copper" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#F1C99A"/><stop offset=".28" stop-color="#B57D4C"/><stop offset=".65" stop-color="#68422C"/><stop offset="1" stop-color="#D2A06B"/></linearGradient>
+  <linearGradient id="game-tetris-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B08E56" stop-opacity=".08"/><stop offset=".3" stop-color="#F1D5A1" stop-opacity=".8"/><stop offset=".7" stop-color="#C8AB77" stop-opacity=".5"/><stop offset="1" stop-color="#A27E48" stop-opacity=".08"/></linearGradient>
+  <radialGradient id="game-tetris-halo"><stop stop-color="#80BAA8" stop-opacity=".2"/><stop offset=".5" stop-color="#7C9A95" stop-opacity=".06"/><stop offset="1" stop-color="#0E1118" stop-opacity="0"/></radialGradient>
+  <radialGradient id="game-tetris-floor"><stop stop-color="#00040B" stop-opacity=".8"/><stop offset="1" stop-color="#00040B" stop-opacity="0"/></radialGradient>
+  <filter id="game-tetris-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#05080C" flood-opacity=".48"/></filter>
+  <filter id="game-tetris-small-shadow" x="-40%" y="-40%" width="180%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#03060A" flood-opacity=".35"/></filter>
+</defs>
+<ellipse cx="214" cy="219" rx="155" ry="35" fill="url(#game-tetris-floor)"/>
+<ellipse cx="214" cy="143" rx="165" ry="108" fill="url(#game-tetris-halo)"/>
+<g filter="url(#game-tetris-shadow)">
+<polygon points="103.00,149.00 228.00,211.50 228.00,221.50 103.00,159.00" fill="url(#game-tetris-metal-edge)" stroke="#3D454C" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="328.00,161.50 228.00,211.50 228.00,221.50 328.00,171.50" fill="#121822" stroke="#35404A" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="203.00,99.00 328.00,161.50 228.00,211.50 103.00,149.00" fill="url(#game-tetris-metal)" stroke="#667165" stroke-width=".8" stroke-linejoin="round" />
+<path d="M228 111.5L128 161.5" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M253 124.0L153 174.0" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M278 136.5L178 186.5" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M303 149.0L203 199.0" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M178 111.5L303 174.0" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M153 124.0L278 186.5" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M128 136.5L253 199.0" stroke="#92B5AC" stroke-opacity=".1"/>
+<path d="M103 151.0L228 213.5L328 163.5" fill="none" stroke="#D6BB7E" stroke-opacity=".4"/>
+<g>
+<polygon points="153.00,136.50 178.00,149.00 178.00,189.00 153.00,176.50" fill="url(#game-tetris-mint-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="178.00,149.00 203.00,136.50 203.00,176.50 178.00,189.00" fill="url(#game-tetris-mint-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="153.00,136.50 178.00,124.00 203.00,136.50 178.00,149.00" fill="url(#game-tetris-mint-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="158.00,136.50 178.00,127.00 198.00,136.50 178.00,146.00" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M154.00 137.50L178.00 150.00L202.00 137.50M178.00 150.00v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="253.00,93.50 278.00,106.00 278.00,146.00 253.00,133.50" fill="url(#game-tetris-lavender-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="278.00,106.00 303.00,93.50 303.00,133.50 278.00,146.00" fill="url(#game-tetris-lavender-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="253.00,93.50 278.00,81.00 303.00,93.50 278.00,106.00" fill="url(#game-tetris-lavender-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="258.00,93.50 278.00,84.00 298.00,93.50 278.00,103.00" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M254.00 94.50L278.00 107.00L302.00 94.50M278.00 107.00v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="178.00,149.00 203.00,161.50 203.00,201.50 178.00,189.00" fill="url(#game-tetris-mint-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="203.00,161.50 228.00,149.00 228.00,189.00 203.00,201.50" fill="url(#game-tetris-mint-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="178.00,149.00 203.00,136.50 228.00,149.00 203.00,161.50" fill="url(#game-tetris-mint-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="183.00,149.00 203.00,139.50 223.00,149.00 203.00,158.50" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M179.00 150.00L203.00 162.50L227.00 150.00M203.00 162.50v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="178.00,106.00 203.00,118.50 203.00,158.50 178.00,146.00" fill="url(#game-tetris-mint-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="203.00,118.50 228.00,106.00 228.00,146.00 203.00,158.50" fill="url(#game-tetris-mint-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="178.00,106.00 203.00,93.50 228.00,106.00 203.00,118.50" fill="url(#game-tetris-mint-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="183.00,106.00 203.00,96.50 223.00,106.00 203.00,115.50" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M179.00 107.00L203.00 119.50L227.00 107.00M203.00 119.50v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="278.00,106.00 303.00,118.50 303.00,158.50 278.00,146.00" fill="url(#game-tetris-lavender-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="303.00,118.50 328.00,106.00 328.00,146.00 303.00,158.50" fill="url(#game-tetris-lavender-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="278.00,106.00 303.00,93.50 328.00,106.00 303.00,118.50" fill="url(#game-tetris-lavender-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="283.00,106.00 303.00,96.50 323.00,106.00 303.00,115.50" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M279.00 107.00L303.00 119.50L327.00 107.00M303.00 119.50v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="203.00,161.50 228.00,174.00 228.00,214.00 203.00,201.50" fill="url(#game-tetris-mint-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="228.00,174.00 253.00,161.50 253.00,201.50 228.00,214.00" fill="url(#game-tetris-mint-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="203.00,161.50 228.00,149.00 253.00,161.50 228.00,174.00" fill="url(#game-tetris-mint-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="208.00,161.50 228.00,152.00 248.00,161.50 228.00,171.00" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M204.00 162.50L228.00 175.00L252.00 162.50M228.00 175.00v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="253.00,118.50 278.00,131.00 278.00,171.00 253.00,158.50" fill="url(#game-tetris-lavender-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="278.00,131.00 303.00,118.50 303.00,158.50 278.00,171.00" fill="url(#game-tetris-lavender-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="253.00,118.50 278.00,106.00 303.00,118.50 278.00,131.00" fill="url(#game-tetris-lavender-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="258.00,118.50 278.00,109.00 298.00,118.50 278.00,128.00" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M254.00 119.50L278.00 132.00L302.00 119.50M278.00 132.00v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+<g>
+<polygon points="278.00,131.00 303.00,143.50 303.00,183.50 278.00,171.00" fill="url(#game-tetris-lavender-left)" stroke="#081D1D" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="303.00,143.50 328.00,131.00 328.00,171.00 303.00,183.50" fill="url(#game-tetris-lavender-right)" stroke="#0B1820" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="278.00,131.00 303.00,118.50 328.00,131.00 303.00,143.50" fill="url(#game-tetris-lavender-top)" stroke="#CFDDC9" stroke-width=".8" stroke-linejoin="round" />
+<polygon points="283.00,131.00 303.00,121.50 323.00,131.00 303.00,140.50" fill="none" stroke="#FFFFFF" stroke-width=".8" stroke-linejoin="round" opacity=".16"/>
+<path d="M279.00 132.00L303.00 144.50L327.00 132.00M303.00 144.50v37" fill="none" stroke="#E7FFF1" stroke-opacity=".13" stroke-width="1.1"/>
+</g>
+</g>
+<path d="M96 184c-15 15 21 28 57 31M293 103c26 10 41 22 38 34" fill="none" stroke="url(#game-tetris-orbit)" stroke-width="1.1"/>
+<circle cx="327" cy="146" r="2.4" fill="#D6BA7A"/>
+</svg>

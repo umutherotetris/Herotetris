@@ -16,12 +16,22 @@ const fmt = (n) => { const v=Number(n); return (Number.isFinite(v)?v:0).toLocale
 const byId = (id) => document.getElementById(id);
 function defaultAvatar(uid){ if(!uid)return '⭐'; let h=0; for(let i=0;i<uid.length;i++)h=((h<<5)-h)+uid.charCodeAt(i); const A=['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈']; return A[Math.abs(h)%A.length]; }
 function setOn(key,def){ const v=localStorage.getItem(key); return v===null?def:v!=='0'; }
+function keyboardAction(element, action, label){
+  element.setAttribute('role', 'button');
+  element.tabIndex = 0;
+  if(label) element.setAttribute('aria-label', label);
+  element.addEventListener('click', action);
+  element.addEventListener('keydown', event => {
+    if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); element.click(); }
+  });
+}
 
 export function applyProfileBg(id){
   const scr=document.querySelector('[data-screen="profile"]'); if(!scr) return;
   scr.classList.remove('matrix-bg');
   [...scr.querySelectorAll('.prf-matrix-col')].forEach(e=>e.remove());
-  if(window._matrixAnim){clearInterval(window._matrixAnim);window._matrixAnim=null;}
+  if(window._matrixAnim){cancelAnimationFrame(window._matrixAnim);window._matrixAnim=null;}
+  if(id !== 'matrix') scr.querySelector('canvas.matrix-cv')?.remove();
   if(id==='matrix'){
     scr.style.background='#000800'; scr.classList.add('matrix-bg');
     // Canvas tabanlı matrix (Goodyedek bgMatrix birebir)
@@ -116,6 +126,7 @@ function _renderProfile(st){
   const rawPct=xp/need*100; const pct=Number.isFinite(rawPct)?Math.max(0,Math.min(100,Math.round(rawPct))):0;
   const curXPv=xp, needed=need;
   let photoDataUrl=null; try{ if(st.uid) photoDataUrl=localStorage.getItem('hero_photo_'+st.uid); }catch(e){}
+  if(photoDataUrl && !/^data:image\/(?:png|jpeg|gif|webp);base64,[a-z\d+/=\s]+$/i.test(photoDataUrl)) photoDataUrl = null;
   const avaHtml = photoDataUrl
     ? '<img src="'+photoDataUrl+'" alt="profil foto" style="width:100%;height:100%;object-fit:cover;border-radius:13px;position:absolute;inset:0">'
     : '<span style="font-size:28px">'+esc((st.profile&&st.profile.avatar)||defaultAvatar(st.uid))+'</span>';
@@ -155,7 +166,7 @@ function _renderProfile(st){
         +'</div>'
         +'<div class="prf-xp-footer">'
           +'<span class="prf-xp-cur">'+fmt(curXPv)+' XP</span>'
-          +'<span class="prf-xp-remain">'+fmt(needed-curXPv)+' XP kaldı</span>'
+          +'<span class="prf-xp-remain">'+fmt(Math.max(0, needed-curXPv))+' XP kaldı</span>'
           +'<span class="prf-xp-max">'+fmt(needed)+' XP</span>'
         +'</div>'
       +'</div>'
@@ -201,7 +212,7 @@ function _renderProfile(st){
   renderRecords(st);
   renderTrophies(st);
   const bgId=(st.profile&&st.profile.profileBg)||'default';
-  if(bgId&&bgId!=='default') applyProfileBg(bgId);
+  applyProfileBg(bgId);
 }
 
 // ── 📷 Fotoğraf / Avatar menüsü ───────────────────────────────
@@ -384,7 +395,7 @@ function openSettings(){
     +'<div class="set-theme-section"><div class="set-theme-lbl">🎨 TEMA & RENK</div><div class="set-theme-grid" id="themeGrid"></div></div>'
     +'<div class="set-scale-section"><div class="set-scale-lbl">🔍 Arayüz Boyutu <span id="scaleVal">'+Math.round(getUIScale()*100)+'%</span></div>'
       +'<div class="set-scale-row"><button class="scale-btn" id="scaleDown">A−</button>'
-      +'<input type="range" id="scaleSlider" min="80" max="130" step="5" value="'+Math.round(getUIScale()*100)+'" class="scale-slider">'
+      +'<input type="range" id="scaleSlider" aria-label="Arayüz boyutu" min="80" max="130" step="5" value="'+Math.round(getUIScale()*100)+'" class="scale-slider">'
       +'<button class="scale-btn" id="scaleUp">A+</button></div></div>'
     +'<div class="set-row"><span>💎 Yüzen butonlar (FAB)</span><button class="set-tgl'+(fabOn?' on':'')+'" id="stFab">'+(fabOn?'AÇIK':'KAPALI')+'</button></div>'
     +'<div class="set-row"><span>👥 Arkadaş listemi gizle <small style="opacity:.45;font-size:9px">(adminler görür)</small></span><button class="set-tgl'+(hfOn?' on':'')+'" id="stHF">'+(hfOn?'GİZLİ':'HERKES')+'</button></div>'
@@ -416,7 +427,7 @@ function openSettings(){
   }
   // 🎨 Tema seçici
   const THEMES=[
-    {key:'neon',    name:'Neon',    c1:'#00E5FF',c2:'#FF4081'},
+    {key:'neon',    name:'Hero',    c1:'#dfc299',c2:'#8ddfc8'},
     {key:'cosmic',  name:'Kozmik',  c1:'#c084fc',c2:'#22d3ee'},
     {key:'sunset',  name:'Gün Batımı',c1:'#FF9800',c2:'#FF4081'},
     {key:'emerald', name:'Zümrüt',  c1:'#69F0AE',c2:'#22d3ee'},
@@ -498,7 +509,13 @@ function openSettings(){
   const blkBtn=inner.querySelector('#stBlocked');
   if(blkBtn) blkBtn.addEventListener('click',async()=>{ ov.remove(); openBlockedList(); });
   inner.querySelector('#stCache').addEventListener('click',async()=>{
-    try{if(window.caches&&caches.keys){const ks=await caches.keys();for(const k of ks)await caches.delete(k);}}catch(e){}
+    try{
+      if(window.caches && caches.keys){
+        const prefix = 'hero-portal:' + new URL('../', import.meta.url).pathname + ':';
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(key => key.startsWith(prefix)).map(key => caches.delete(key)));
+      }
+    }catch(e){ console.warn('[Cache]', e); }
     location.reload();
   });
   const lo=inner.querySelector('#stLogout');
@@ -535,7 +552,7 @@ async function renderRecords(st){
   const rows=[];
   const names={tetris:'🧱 Tetris',chess:'♟️ Satranç',tavla:'🎲 Tavla',kelime:'🔤 Kelimecik'};
   for(const g of Object.keys(names)){if(best[g])rows.push('<div class="prf-rec"><span>'+names[g]+'</span><b>'+fmt(best[g])+'</b></div>');}
-  if(kr.best&&kr.best.text) rows.push('<div class="prf-rec"><span>🔤 En değerli kelime</span><b>'+esc(kr.best.text)+' ('+kr.best.score+')</b></div>');
+  if(kr.best&&kr.best.text) rows.push('<div class="prf-rec"><span>🔤 En değerli kelime</span><b>'+esc(kr.best.text)+' ('+fmt(kr.best.score)+')</b></div>');
   if(kr.longest&&kr.longest.text) rows.push('<div class="prf-rec"><span>🔤 En uzun kelime</span><b>'+esc(kr.longest.text)+'</b></div>');
   body.innerHTML=rows.length?rows.join(''):'<i>Henüz rekor yok — oynamaya başla! 🎮</i>';
 }
@@ -577,10 +594,16 @@ async function renderLeaderboard(){
   const box=byId('scrLB'); if(!box) return;
   box.innerHTML='<div class="prf-card"><div class="prf-lbl">🏆 KAJU LİDERLİĞİ</div><div class="prf-recbody" id="lbBody">Yükleniyor…</div></div>';
   const body=byId('lbBody'); if(!body) return;
+  const showMessage = message => {
+    const text = document.createElement('p'); text.textContent = message;
+    const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'prf-act-btn';
+    retry.textContent = 'Yeniden yükle'; retry.addEventListener('click', renderLeaderboard);
+    body.replaceChildren(text, retry);
+  };
   try{
     const snap=await fdb.get(fdb.query(fdb.ref(db,'leaderboard/kaju'),fdb.orderByChild('kaju'),fdb.limitToLast(20)));
-    if(!snap.exists()){body.innerHTML='<i>Henüz veri yok</i>';return;}
-    const rows=[];snap.forEach(ch=>{rows.push({uid:ch.key,...ch.val()});});
+    if(!snap.exists()){showMessage('Henüz liderlik kaydı yok.');return;}
+    const rows=[];snap.forEach(ch=>{rows.push({...ch.val(),uid:ch.key});});
     rows.sort((a,b)=>(b.kaju||0)-(a.kaju||0));
     const me=Auth.getState().uid;
     const out=await Promise.all(rows.map(async(r,i)=>{
@@ -591,10 +614,10 @@ async function renderLeaderboard(){
       return '<div class="prf-rec'+(mine?' me':'')+'" data-lbuid="'+esc(r.uid)+'" style="cursor:pointer"><span>'+medal+' '+esc(ava)+' '+esc(name||'Oyuncu')+'</span><b>🥜 '+fmt(r.kaju)+'</b></div>';
     }));
     body.innerHTML=out.join('');
-    body.querySelectorAll('[data-lbuid]').forEach(el=>el.addEventListener('click',async()=>{
+    body.querySelectorAll('[data-lbuid]').forEach(el=>keyboardAction(el,async()=>{
       try{const m=await import('./social.js');m.openPlayerCard(el.dataset.lbuid);}catch(e){}
-    }));
-  }catch(e){body.innerHTML='<i>Liderlik okunamadı</i>';}
+    }, 'Oyuncu profilini aç: ' + el.textContent));
+  }catch(e){showMessage('Liderlik yüklenemedi. Bağlantını kontrol edip yeniden dene.');}
 }
 
 // ── 👥 / 🔔 köprüleri ─────────────────────────────────────────
@@ -634,7 +657,7 @@ async function _renderNavFriends(){
     const uids=Object.keys(snap.val());
     const rows=await Promise.all(uids.map(async uid=>{
       let n='Arkadaş',a='👤',ol=false,lv=1,last=0;
-      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;lv=v.level||1;
+      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;lv=Math.max(1, Number(v.level)||1);
         // Avatar doğrula: emoji mi yoksa metin mi?
         const rawAv = v.avatar;
         const isValidAv = rawAv && typeof rawAv==='string' && (rawAv.length<=8) && /^\p{Emoji}/u.test(rawAv);
@@ -645,19 +668,19 @@ async function _renderNavFriends(){
     }));
     rows.sort((x,y)=>(y.ol-x.ol)||(y.last-x.last));
     const onlineCount=rows.filter(r=>r.ol).length;
-    const tAgoN=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
+    const tAgoN=(ts)=>{if(!Number(ts))return'Son görülme bilinmiyor';const d=Math.max(0,Date.now()-Number(ts));if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
     box.innerHTML='<div class="fr-list-header"><span class="fr-hdr-total">👥 '+rows.length+' Arkadaş</span>'
       +(onlineCount>0?'<span class="fr-hdr-online">🟢 '+onlineCount+' çevrimiçi</span>':'<span class="fr-hdr-offline">Kimse çevrimiçi değil</span>')+'</div>'
       +rows.map(r=>'<div class="fr-row'+(r.ol?' online':'')+'">'
         +'<div class="fr-ava" data-navpc="'+esc(r.uid)+'">'+esc(r.a)+(r.ol?'<span class="fr-dot"></span>':'')+'</div>'
         +'<div class="fr-info" data-navpc="'+esc(r.uid)+'"><div class="fr-name">'+esc(r.n)+' <span class="fr-lv">LV '+r.lv+'</span></div><div class="fr-status">'+(r.ol?'<span class="fr-on">● Çevrimiçi</span>':'<span class="fr-off">'+tAgoN(r.last)+'</span>')+'</div></div>'
-        +'<button class="fr-btn dm" data-navdm="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" title="Mesaj">✉️</button>'
-        +'<button class="fr-btn egg" data-navegg="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" title="Kozmo">🥚</button>'
+        +'<button class="fr-btn dm" data-navdm="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" aria-label="'+esc(r.n)+' adlı oyuncuya mesaj gönder" title="Mesaj">✉️</button>'
+        +'<button class="fr-btn egg" data-navegg="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" aria-label="'+esc(r.n)+' adlı oyuncunun Kozmo alanını aç" title="Kozmo">🥚</button>'
       +'</div>').join('');
-    box.querySelectorAll('[data-navpc]').forEach(el=>el.addEventListener('click',async e=>{
+    box.querySelectorAll('[data-navpc]').forEach(el=>keyboardAction(el,async e=>{
       if(e.target.closest('[data-navdm],[data-navegg]'))return;
       try{const m=await import('./social.js');m.openPlayerCard(el.dataset.navpc);}catch(e){}
-    }));
+    }, 'Oyuncu profilini aç: ' + el.textContent));
     box.querySelectorAll('[data-navdm]').forEach(b=>b.addEventListener('click',async e=>{
       e.stopPropagation();
       try{
@@ -694,10 +717,10 @@ async function _renderNavNotifs(){
     }
     const rows=[]; snap.forEach(ch=>{rows.push({key:ch.key,...ch.val()});});
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    const tAgoN=(ts)=>{const d=Date.now()-(ts||0);if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
+    const tAgoN=(ts)=>{if(!Number(ts))return'Son görülme bilinmiyor';const d=Math.max(0,Date.now()-Number(ts));if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
     box.innerHTML='<div class="fr-list-header"><span class="fr-hdr-total">🔔 '+rows.length+' Bildirim</span><button class="clan-btn" style="padding:4px 10px;font-size:9px;background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.25);color:#FF7043" id="navNotifClear">🗑 Temizle</button></div>'
       +rows.map(n=>{
-        const ico=n.icon||'🔔'; const txt=n.text||n.msg||'';
+        const ico=String(n.icon||'🔔'); const txt=String(n.text||n.msg||'');
         const isKick=ico==='🦵'||txt.includes('atıldın');
         const isBan=ico==='🚫'||txt.includes('banland');
         const isUnban=ico==='✅';

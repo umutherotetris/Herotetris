@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0c1015">
+<meta name="theme-color" content="#0c0e13">
 <!-- Legacy r820 worker rejects ordinary Hero HTML. ONLY this bridge carries its
      higher-build compatibility marker, so it can deliver this page from network
      and replace itself. This is not the Hero or Sukun application version. -->
 <meta name="sukun-build" content="r999999">
 <title>Hero Portal — Açılıyor</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c1015;color:#f3f6fa;font:16px/1.7 system-ui}main{max-width:420px;padding:32px}h1{color:#6ee7e0}button,a{display:inline-block;padding:12px 20px;margin-top:12px;background:#6ee7e0;color:#0c1015;border:0;border-radius:10px;text-decoration:none;font:700 16px system-ui}button{cursor:pointer}</style>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c0e13;color:#f3f6fa;font:16px/1.7 system-ui}main{max-width:420px;padding:32px}h1{color:#dfc299}button,a{display:inline-block;padding:12px 20px;margin-top:12px;background:#dfc299;color:#0c0e13;border:0;border-radius:10px;text-decoration:none;font:700 16px system-ui}button{cursor:pointer}</style>
 </head>
 <body><main><h1>Hero Portal</h1><p id="message" role="status">Oyun alanın açılıyor. Kısa bir süre bekle.</p><button id="retry" hidden type="button">Yeniden dene</button><noscript><p>Oyunları açmak için JavaScript'i etkinleştir.</p></noscript></main>
 <script>
 (async function(){
-  const home = new URL('index.html?hero=137', location.href);
+  const home = new URL('index.html?hero=138', location.href);
   const retry = document.getElementById('retry');
   retry.addEventListener('click', () => location.reload());
   if(!('serviceWorker' in navigator)){ location.replace(home.href); return; }
@@ -26,7 +26,7 @@
       channel.port1.onmessage = event => {
         clearTimeout(timeout);
         channel.port1.close();
-        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 137);
+        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 138);
       };
       try{ worker.postMessage({ type: 'HERO_PING' }, [channel.port2]); }
       catch(error){ clearTimeout(timeout); channel.port1.close(); resolve(false); }
@@ -65,7 +65,7 @@
         channel.port1.onmessage = event => {
           clearTimeout(closeTimer);
           channel.port1.close();
-          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 137) done();
+          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 138) done();
         };
         controller.postMessage({ type: 'HERO_PING' }, [channel.port2]);
       }

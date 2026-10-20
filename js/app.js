@@ -25,18 +25,23 @@ function toast(msg, isErr){
 }
 
 // Bir oyun modülünü dinamik yükle + aç. Hata olursa sadece o oyun etkilenir.
-async function launchGame(modulePath, exportName, label){
+const pendingGames = new Map();
+function launchGame(modulePath, exportName, label){
+  if(pendingGames.has(modulePath)) return pendingGames.get(modulePath);
+  const launch = (async () => {
   toast(label + ' açılıyor…', false);
   try{
     const mod = await import(modulePath);
     const fn = mod[exportName];
     if(typeof fn !== 'function') throw new Error(exportName + ' bulunamadı (' + modulePath + ')');
-    fn();
+    await fn();
   }catch(e){
-    const detail = (e && (e.message || e)) + '';
-    toast(label + ' AÇILAMADI:\n' + detail + '\n\nEksik dosya olabilir — tüm js/games/ klasörünü yükleyip ?v sayısını artır.', true);
+    toast(label + ' açılamadı. Bağlantını kontrol edip yeniden dene.', true);
     console.error('[' + label + ']', e);
   }
+  })();
+  pendingGames.set(modulePath, launch);
+  return launch.finally(() => pendingGames.delete(modulePath));
 }
 
 function bindEco(id, modulePath, exportName){
@@ -44,13 +49,16 @@ function bindEco(id, modulePath, exportName){
   if(!el || el.__bound) return;
   el.__bound = 1;
   el.addEventListener('click', async () => {
-    try{ const m = await import(modulePath); m[exportName](); }
+    if(el.disabled) return;
+    el.disabled = true;
+    el.setAttribute('aria-busy', 'true');
+    try{ const m = await import(modulePath); await m[exportName](); }
     catch(e){
       console.error('[Load]', modulePath, e);
-      const msg = (e.message||'').includes('<') || (e.message||'').includes('token')
-        ? 'Önbellek hatası — sayfayı yenileyin (Ayarlar → Önbellek Temizle)'
-        : 'Yüklenemedi: ' + (e.message||e);
-      toast(msg, true);
+      toast('Bu alan açılamadı. Bağlantını kontrol edip yeniden dene.', true);
+    }finally{
+      el.disabled = false;
+      el.removeAttribute('aria-busy');
     }
   });
 }
@@ -73,13 +81,13 @@ async function updateEcoBadges(){
 
 function bindCard(id, modulePath, exportName, label){
   const card = document.getElementById(id);
-  if(!card){ toast('HATA: ' + id + ' kartı yok (index.html güncel değil)', true); return; }
+  if(!card){ console.error('[Hero] Missing game card:', id); toast('Oyun alanı hazırlanamadı. Sayfayı yenileyebilirsin.', true); return; }
   card.addEventListener('click', () => launchGame(modulePath, exportName, label));
 }
 
 function start(){
   // Auth/UI/Nav her durumda çalışır (oyun modüllerinden bağımsız)
-  try{ initUI(); }catch(e){ console.error('[UI]', e); toast('Arayüz hatası: ' + (e && e.message || e), true); }
+  try{ initUI(); }catch(e){ console.error('[UI]', e); toast('Oyuncu alanı hazırlanamadı. Sayfayı yenileyebilirsin.', true); }
   try{ initNav(); }catch(e){ console.error('[Nav]', e); }
 
   // 💎 Sosyal Hub: index.html'de versiyonsuz import ediliyor (çift init önlendi)
@@ -119,8 +127,8 @@ function start(){
   setInterval(updateEcoBadges, 60000);
 
   // Yakalanmayan hataları ekrana bas
-  window.addEventListener('error', (e) => toast('HATA: ' + (e.message || '') + '\n' + (e.filename||'').split('/').pop() + ':' + (e.lineno||''), true));
-  window.addEventListener('unhandledrejection', (e) => toast('PROMISE HATASI:\n' + ((e.reason && (e.reason.stack || e.reason.message)) || e.reason), true));
+  window.addEventListener('error', (e) => { console.error('[Hero]', e.error || e.message); toast('Beklenmeyen bir sorun oluştu. İşlemi yeniden deneyebilirsin.', true); });
+  window.addEventListener('unhandledrejection', (e) => { console.error('[Hero]', e.reason); toast('İşlem tamamlanamadı. Bağlantını kontrol edip yeniden dene.', true); });
 
   console.info('[Hero] Stage 2 — Auth hazır, oyunlar dinamik yüklenecek.');
   window.Hero = {

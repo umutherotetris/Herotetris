@@ -158,7 +158,7 @@ function render(state){
     if(btn){
       btn.textContent = status === 'offline'
         ? '🔄 Yeniden Bağlan'
-        : 'Google ile Giriş Yap';
+        : 'Google ile devam et';
     }
     show(banner, status === 'anon');
   }
@@ -172,9 +172,15 @@ function bind(){
     const st = Auth.getState();
     if(st.status === 'google') return;
     if(st.status === 'offline'){ location.reload(); return; }
+    if(btn.disabled) return;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
     const msg = $('authMsg');
     if(msg){ msg.style.display='none'; }
-    const r = await loginGoogle();
+    let r;
+    try{ r = await loginGoogle(); }
+    catch(error){ console.error('[Login]', error); r = { ok: false }; }
+    finally{ btn.disabled = false; btn.removeAttribute('aria-busy'); }
     if(r.redirect){
       // Redirect başladı — sayfa birazdan yönlenecek
       if(msg){ msg.style.display='block'; msg.style.color='#90caf9'; msg.textContent='Google\'a yönlendiriliyorsun…'; }
@@ -188,7 +194,8 @@ function bind(){
           // A3: Firefox/Safari popup blok rehberi
           msg.innerHTML = '⚠️ Açılır pencere engellendi.<br><b>Çözüm:</b> Adres çubuğundaki 🛡️/🚫 simgesine tıkla → bu site için <b>açılır pencerelere ve çerezlere izin ver</b>, sonra tekrar dene.';
         } else {
-          msg.textContent = 'Giriş hatası: ' + (r.message || r.code || 'bilinmeyen');
+          console.error('[Login]', r.message || r.code || 'Login failed');
+          msg.textContent = 'Giriş tamamlanamadı. Bağlantını kontrol edip yeniden dene.';
         }
       }
     }
@@ -229,19 +236,26 @@ export function openNickModal(){
     setMsg('Kontrol ediliyor…', true); saveBtn.disabled = true;
     clearTimeout(checkT);
     checkT = setTimeout(async () => {
-      const r = await Auth.checkNick(v);
-      if(input.value.trim() !== v) return;
-      if(r.available){ setMsg('✓ Uygun', true); saveBtn.disabled = false; }
-      else { setMsg('✗ ' + (r.error || 'Alınmış'), false); saveBtn.disabled = true; }
+      try{
+        const r = await Auth.checkNick(v);
+        if(!ov.isConnected || input.value.trim() !== v) return;
+        if(r.available){ setMsg('✓ Uygun', true); saveBtn.disabled = false; }
+        else { setMsg('✗ ' + (r.error || 'Alınmış'), false); saveBtn.disabled = true; }
+      }catch(error){
+        if(ov.isConnected && input.value.trim() === v) setMsg('Nick kontrol edilemedi. Yeniden dene.', false);
+        console.error('[Nick]', error);
+      }
     }, 350);
   });
   ov.querySelector('[data-act="cancel"]').addEventListener('click', () => ov.remove());
   ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
   saveBtn.addEventListener('click', async () => {
     saveBtn.disabled = true; setMsg('Kaydediliyor…', true);
-    const r = await Auth.setNick(input.value.trim());
-    if(r.ok){ setMsg('✓ Kaydedildi', true); setTimeout(() => ov.remove(), 700); }
-    else { setMsg('✗ ' + (r.error || 'Olmadı'), false); saveBtn.disabled = false; }
+    try{
+      const r = await Auth.setNick(input.value.trim());
+      if(r.ok){ setMsg('✓ Kaydedildi', true); setTimeout(() => ov.remove(), 700); }
+      else { setMsg('✗ ' + (r.error || 'Olmadı'), false); saveBtn.disabled = false; }
+    }catch(error){ console.error('[Nick]', error); setMsg('Kaydedilemedi. Yeniden deneyebilirsin.', false); saveBtn.disabled = false; }
   });
   setTimeout(() => input.focus(), 50);
 }
@@ -285,10 +299,18 @@ export function openKajuModal(){
     clearTimeout(kjSugT);
     if(v.length < 2){ kjSug.style.display = 'none'; return; }
     kjSugT = setTimeout(async () => {
-      const list = (Auth.searchNicks ? await Auth.searchNicks(v, 6) : []);
-      if(nickIn.value.trim() !== v) return;
+      let list;
+      try{ list = Auth.searchNicks ? await Auth.searchNicks(v, 6) : []; }
+      catch(error){ console.error('[NickSearch]', error); if(nickIn.value.trim() === v) kjSug.style.display = 'none'; return; }
+      if(!ov.isConnected || nickIn.value.trim() !== v) return;
       if(!list.length){ kjSug.style.display = 'none'; return; }
-      kjSug.innerHTML = list.map(x => `<div class="adm-sug-it" data-uid="${String(x.uid).replace(/"/g,'')}" data-nick="${String(x.nick).replace(/"/g,'')}">👤 ${String(x.nick).replace(/</g,'&lt;')}</div>`).join('');
+      kjSug.replaceChildren(...list.map(x => {
+        const item = document.createElement('button');
+        item.type = 'button'; item.className = 'adm-sug-it';
+        item.dataset.uid = String(x.uid); item.dataset.nick = String(x.nick);
+        item.textContent = '👤 ' + x.nick;
+        return item;
+      }));
       kjSug.style.display = '';
       kjSug.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
         kjTarget = { uid: it.dataset.uid, nick: it.dataset.nick };
@@ -304,7 +326,8 @@ export function openKajuModal(){
       const v = nickIn.value.trim();
       if(v.length < 3){ setMsg('', true); return; }
       lookT = setTimeout(async () => {
-        const t = await Auth.resolveNick(v);
+        let t;
+        try{ t = await Auth.resolveNick(v); }catch(error){ if(nickIn.value.trim() === v) setMsg('Bakiye kontrol edilemedi.', false); return; }
         if(nickIn.value.trim() !== v) return;
         if(!t){ setMsg('✗ Nick bulunamadı', false); return; }
         try{
@@ -325,10 +348,12 @@ export function openKajuModal(){
     if(!Number.isFinite(amt) || amt === 0){ setMsg('Geçerli bir miktar gir', false); return; }
     if(amt < 0 && !isAdmin){ setMsg('Negatif miktar sadece admin', false); return; }
     sendBtn.disabled = true; setMsg('Alıcı aranıyor…', true);
+    try{
     let target = (kjTarget && kjTarget.nick === nick) ? kjTarget : await Auth.resolveNick(nick);
     if(!target && Auth.searchNicks){
       const cand = await Auth.searchNicks(nick, 2);   // harf duyarsız tam eşleşme dene
-      if(cand.length === 1) target = cand[0];
+      const exact = cand.filter(item => String(item.nick).toLowerCase() === nick.toLowerCase());
+      if(exact.length === 1) target = exact[0];
     }
     if(!target){ setMsg('✗ Bu nick bulunamadı — öneri listesinden seç', false); sendBtn.disabled = false; return; }
     let r;
@@ -342,6 +367,11 @@ export function openKajuModal(){
       if(r.ok){ setMsg(`✓ ${fmt(amt)} Kaju ${target.nick} adlı oyuncuya gönderildi`, true); setTimeout(() => ov.remove(), 1400); return; }
     }
     setMsg('✗ ' + (r.error || 'Olmadı'), false); sendBtn.disabled = false;
+    }catch(error){
+      console.error('[KajuTransfer]', error);
+      setMsg('Gönderim tamamlanamadı. Bakiyeni kontrol edip yeniden dene.', false);
+      sendBtn.disabled = false;
+    }
   });
   setTimeout(() => nickIn.focus(), 50);
 }
@@ -362,7 +392,10 @@ window.addEventListener('hero:kaju-claimed', (e) => {
   kajuToast(`🥜 +${fmt(d.total)} Kaju geldi!${who ? ' (' + who + ')' : ''}`);
 });
 
+let initialized = false;
 export function initUI(){
+  if(initialized) return;
+  initialized = true;
   bind();
   Auth.subscribe(render);        // kimlik + durum
   Store.subscribe(renderPlayer); // kaju + seviye (canlı, oyun sonrası güncellenir)

@@ -27,12 +27,28 @@ export function initNav(){
   document.querySelectorAll('[data-nav]').forEach(el => {
     el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.nav, true); });
   });
+  const showGames = () => {
+    go('home');
+    const games = document.getElementById('games');
+    if(!games) return;
+    games.focus({ preventScroll: true });
+    games.scrollIntoView({ block: 'start' });
+    try{ history.replaceState({ screen: 'home' }, '', '#games'); }catch(e){}
+  };
+  document.addEventListener('click', event => {
+    const link = event.target.closest('a[href="#games"]');
+    if(!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    showGames();
+  });
   // İlk ekran: hash varsa onu, yoksa home
   const hash = (location.hash || '').replace('#', '');
-  go(SCREENS.indexOf(hash) >= 0 ? hash : 'home');
+  if(hash === 'games') showGames();
+  else go(SCREENS.indexOf(hash) >= 0 ? hash : 'home');
   window.addEventListener('hashchange', () => {
     const screen = location.hash.slice(1);
-    if(SCREENS.includes(screen)) go(screen);
+    if(screen === 'games') showGames();
+    else if(SCREENS.includes(screen)) go(screen);
   });
 }
 

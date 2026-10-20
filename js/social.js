@@ -65,6 +65,7 @@ function _editLabel(m){
   return ' <span style="font-size:10px;color:#78909c;font-style:italic">\u270f\ufe0f d\u00fczenlendi'+ago+'</span>';
 }
 function _actBtns(key,m,myUid){
+  key = esc(key);
   const e=_canEdit(m,myUid),d=_canDel(m,myUid);
   if(!e&&!d) return '';
   const eB=e?'<button data-ekey="'+key+'" title="D\u00fczenle" style="background:none;border:none;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:5px;color:#4FC3F7;opacity:.75;line-height:1">\u270f\ufe0f</button>':'';
@@ -89,14 +90,20 @@ function _injectMsgCSS(){
 
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function clearHeroCaches(){
+  if(!('caches' in window)) return;
+  const prefix = 'hero-portal:' + new URL('../', import.meta.url).pathname + ':';
+  const names = await caches.keys();
+  await Promise.all(names.filter(name => name.startsWith(prefix)).map(name => caches.delete(name)));
+}
 
 // ════════════ ✨ KOZMETİK GÖSTERİM (nick efekti / renk / unvan) ════════════
 function _nickClass(cz){
-  if(!cz || !cz.nickEffect) return '';
+  if(!cz || !['flame', 'neon', 'rainbow', 'gold'].includes(cz.nickEffect)) return '';
   return 'cz-nick-' + cz.nickEffect;   // cz-nick-flame, cz-nick-neon, ...
 }
 function _nickStyle(cz){
-  if(cz && cz.nameColor && !cz.nickEffect) return 'color:'+cz.nameColor;
+  if(cz && /^#(?:[\da-f]{3}|[\da-f]{6})$/i.test(cz.nameColor || '') && !_nickClass(cz)) return 'color:'+cz.nameColor;
   return '';
 }
 function _titleBadge(cz){
@@ -802,10 +809,15 @@ export async function openPlayerCard(uid){
 function makeFabDraggable(fab, onMove){
   const st = { on:false, moved:false, sx:0, sy:0, sl:0, st:0 }, KEY = 'twFab_' + fab.id;
   const TOP_MIN = 8;
+  const maxTop = () => {
+    const nav = document.querySelector('.bottom-nav');
+    const bottom = Math.min(window.innerHeight, nav ? nav.getBoundingClientRect().top : window.innerHeight);
+    return Math.max(TOP_MIN, bottom - (fab.offsetHeight || 54) - 8);
+  };
   try{
     const p = JSON.parse(localStorage.getItem(KEY) || 'null');
     if(p && p.left != null){
-      const safeTop = Math.max(TOP_MIN, Math.min(window.innerHeight - 54, p.top));
+      const safeTop = Math.max(TOP_MIN, Math.min(maxTop(), p.top));
       const safeLeft = Math.max(4, Math.min(window.innerWidth - 54, p.left));
       fab.style.left = safeLeft+'px'; fab.style.top = safeTop+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
     }
@@ -820,11 +832,12 @@ function makeFabDraggable(fab, onMove){
     if(Math.abs(dx) > 5 || Math.abs(dy) > 5) st.moved = true;
     if(!st.moved) return;
     const l = Math.max(4, Math.min(window.innerWidth - 54, st.sl + dx));
-    const t = Math.max(TOP_MIN, Math.min(window.innerHeight - 54, st.st + dy));
+    const t = Math.max(TOP_MIN, Math.min(maxTop(), st.st + dy));
     fab.style.left = l+'px'; fab.style.top = t+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
     if(onMove) onMove(l, t);
   });
   fab.addEventListener('pointerup', () => { if(!st.on) return; st.on = false; const r = fab.getBoundingClientRect(); try{ localStorage.setItem(KEY, JSON.stringify({ left:r.left, top:r.top })); }catch(e){} });
+  fab.addEventListener('pointercancel', () => { st.on = false; });
   return () => st.moved;
 }
 function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth; fab.classList.add('tw-press'); }
@@ -912,20 +925,9 @@ function openHubSettings(){
 
   // Önbellek temizle (oturum korunur)
   byId('ghpSetClearCache').addEventListener('click', async () => {
-    if(!confirm('Önbellek ve yerel ayarlar temizlenecek. Oturumun korunur. Devam?')) return;
+    if(!confirm('Hero Portal önbelleği temizlenecek. Oturumun ve ayarların korunur. Devam?')) return;
     try{
-      // Firebase auth anahtarlarını koru
-      const keep = {};
-      for(let i=0;i<localStorage.length;i++){
-        const k = localStorage.key(i);
-        if(k && (k.startsWith('firebase:') || k.includes('firebaseLocalStorage'))) keep[k] = localStorage.getItem(k);
-      }
-      localStorage.clear();
-      Object.keys(keep).forEach(k => localStorage.setItem(k, keep[k]));
-      // Cache API temizle
-      if('caches' in window){ const names = await caches.keys(); await Promise.all(names.map(n => caches.delete(n))); }
-      // Service worker temizle
-      if('serviceWorker' in navigator){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
+      await clearHeroCaches();
       alert('✓ Önbellek temizlendi. Sayfa yenileniyor.');
       const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.href = u.toString();
     }catch(e){ alert('Hata: ' + (e.message||e)); }
@@ -933,13 +935,14 @@ function openHubSettings(){
 
   // Tam sıfırlama
   byId('ghpSetHardReset').addEventListener('click', async () => {
-    if(!confirm('TÜM yerel veriler silinecek ve çıkış yapılacak. Yeniden giriş gerekir. Emin misin?')) return;
+    if(!confirm('Hero Portal yerel ayarları sıfırlanacak ve hesaptan çıkılacak. Devam edilsin mi?')) return;
     try{
-      localStorage.clear();
-      try{ sessionStorage.clear(); }catch(e){}
-      if('caches' in window){ const names = await caches.keys(); await Promise.all(names.map(n => caches.delete(n))); }
-      if('serviceWorker' in navigator){ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }
-      if(window.indexedDB && indexedDB.databases){ const dbs = await indexedDB.databases(); await Promise.all(dbs.map(d => d.name && indexedDB.deleteDatabase(d.name))); }
+      const isHeroKey = key => key.startsWith('hero_') || key.startsWith('twFab_') || key.startsWith('hero-portal:');
+      for(const storage of [localStorage, sessionStorage]){
+        const keys = Array.from({length: storage.length}, (_, i) => storage.key(i));
+        keys.filter(key => key && isHeroKey(key)).forEach(key => storage.removeItem(key));
+      }
+      await clearHeroCaches();
       try{ const Auth = await import('./auth.js'); if(Auth.logout) await Auth.logout(); }catch(e){}
       alert('✓ Tam sıfırlama yapıldı. Sayfa yenileniyor.');
       location.href = location.origin + location.pathname;
@@ -967,21 +970,9 @@ export function applyFabSetting(){
 // Ekranlardan hub'ı belirli sekmede aç
 // Dışarıdan (profile.js, nav.js) DM açmak için — hub'ı gösterir + DM'e geçer
 export function dmOpenThreadExternal(uid, nick){
-  // Sosyal hub'ı göster (FAB'a basmadan direkt aç)
-  let panel = document.getElementById('ghpPanel');
-  if(!panel){
-    // Hub kapalıysa gem FAB'a programatik tıkla
-    const fab = document.getElementById('gemFloatBtn');
-    if(fab) fab.click();
-    // Kısa bekle sonra DM aç
-    setTimeout(() => {
-      try{ openHubTab('ozel'); dmOpenThread(uid, nick); }catch(e){}
-    }, 180);
-  } else {
-    // Hub zaten açık
-    openHubTab('ozel');
-    dmOpenThread(uid, nick);
-  }
+  if(!H) initSocial();
+  openHubTab('ozel');
+  dmOpenThread(uid, nick);
 }
 
 export function openHubTab(tab){
@@ -1146,6 +1137,7 @@ export function initSocial(){
 
   // Auth durumuna göre: admin FAB + dinleyiciler
   applyFabSetting();
+  let listenerIdentity = null;
   Auth.subscribe((st) => {
     const _fabHid = localStorage.getItem('hero_admfab_hidden') === '1';
     if(st.isAdmin === true){
@@ -1158,7 +1150,15 @@ export function initSocial(){
       adm.style.opacity = '';
       adm.style.transform = '';
     }
+    const identity = (st.uid || '') + ':' + st.status;
+    // Profile updates must not disconnect the conversation already on screen.
+    if(identity === listenerIdentity) return;
+    listenerIdentity = identity;
     teardownListeners();
+    _leaveChatRoom();
+    dmBack();
+    H.dmUnread = H.notifUnread = 0;
+    updateBadges();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
       listenChat(); listenNotifs(st.uid); listenBroadcasts(); watchDMThreads();
@@ -1192,14 +1192,18 @@ function position(){
   if(fr.top > 260){ panel.style.bottom = (vh - fr.top + 8) + 'px'; panel.style.top = 'auto'; }
   else { panel.style.top = (fr.bottom + 8) + 'px'; panel.style.bottom = 'auto'; }
 }
-function open(){ H.open = true; const p = byId('gemHubPanel'); p.classList.remove('ghp-closing'); position(); p.classList.add('ghp-open'); markTabSeen(H.tab); }
-function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); setTimeout(() => p.classList.remove('ghp-open','ghp-closing'), 260); _leaveChatRoom(); }
+let closeTimer = null;
+function open(){ clearTimeout(closeTimer); H.open = true; const p = byId('gemHubPanel'); p.classList.remove('ghp-closing'); position(); p.classList.add('ghp-open'); markTabSeen(H.tab); if(H.tab === 'chat') _joinChatRoom(); }
+function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); clearTimeout(closeTimer); closeTimer = setTimeout(() => { if(!H.open) p.classList.remove('ghp-open','ghp-closing'); }, 260); _leaveChatRoom(); }
 function toggle(){ H.open ? close() : open(); }
 function switchTab(tab){
+  if(!['chat', 'ozel', 'dost', 'lider', 'notif'].includes(tab)) tab = 'chat';
+  if(H.tab === 'chat' && tab !== 'chat') _leaveChatRoom();
   H.tab = tab;
   document.querySelectorAll('.ghp-tab').forEach(b => b.classList.toggle('active', b.dataset.ghptab === tab));
   document.querySelectorAll('.ghp-pane').forEach(p => p.classList.toggle('active', p.id === 'ghpPane-' + tab));
   markTabSeen(tab);
+  if(H.open && tab === 'chat') _joinChatRoom();
 }
 function markTabSeen(tab){
   if(tab === 'ozel'){ H.dmUnread = 0; }
@@ -1293,7 +1297,7 @@ function updateBadges(){
   const total = H.dmUnread + H.notifUnread, gb = byId('gemFabBadge');
   if(gb){ gb.textContent = total > 9 ? '9+' : total; gb.style.display = total > 0 ? 'grid' : 'none'; }
 }
-function loadSeen(){ try{ return JSON.parse(localStorage.getItem('hero_hub_seen') || '{}'); }catch(e){ return {}; } }
+function loadSeen(){ try{ const value=JSON.parse(localStorage.getItem('hero_hub_seen') || '{}'); return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }catch(e){ return {}; } }
 function saveSeen(){ try{ localStorage.setItem('hero_hub_seen', JSON.stringify(H.seen)); }catch(e){} }
 
 // Admin uid seti (/admins okunur — herkese açık okuma) → şaşalı nick
@@ -1437,10 +1441,12 @@ async function _modAction(act, uid, name){
 // Odaya giriş: sohbet sekmesi açılınca yazılır. Çıkış: hub kapanınca / bağlantı kesilince silinir.
 // Atılan (users/{uid}/kicked===true) kullanıcılar listeden filtrelenir.
 let _chatPresenceJoined = false;
+let _chatPresenceUid = null;
 async function _joinChatRoom(){
   const st = Auth.getState();
   if(!st.uid || _chatPresenceJoined) return;
   _chatPresenceJoined = true;
+  _chatPresenceUid = st.uid;
   try{
     const myRef = fdb.ref(db, 'chatPresence/' + st.uid);
     await fdb.set(myRef, { name: st.displayName || 'Oyuncu', avatar: (st.profile && st.profile.avatar) || '👤', joinedAt: Date.now() });
@@ -1449,10 +1455,10 @@ async function _joinChatRoom(){
   _startChatOnlineCounter();
 }
 function _leaveChatRoom(){
-  const st = Auth.getState();
-  if(!st.uid) return;
+  const uid = _chatPresenceUid;
+  _chatPresenceUid = null;
   _chatPresenceJoined = false;
-  try{ fdb.remove(fdb.ref(db, 'chatPresence/' + st.uid)); }catch(e){}
+  if(uid) try{ Promise.resolve(fdb.remove(fdb.ref(db, 'chatPresence/' + uid))).catch(()=>{}); }catch(e){}
   if(H.offChatPresence){ try{ H.offChatPresence(); }catch(e){} H.offChatPresence = null; }
 }
 // Canlı sayaç: "👥 N" rozeti güncellemesi
@@ -1496,13 +1502,13 @@ function _showChatOnlineList(){
 // ── 💬 GLOBAL CHAT ──────────────────────────────────────────────
 function listenChat(){
   _injectCosmeticCSS();
-  _joinChatRoom();   // odaya giriş kaydı (kim sohbette listesi için)
+  if(H.open && H.tab === 'chat') _joinChatRoom();
   const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
   H.offChat = fdb.onValue(ref, (snap) => {
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
-    const rows = []; snap.forEach(ch => { if(ch.val()) rows.push({...ch.val(),_key:ch.key}); });
+    const rows = []; snap.forEach(ch => { if(ch.val()) rows.push({...ch.val(),ts:Number(ch.val().ts)||0,editedAt:Number(ch.val().editedAt)||0,_key:ch.key}); });
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     const gcl = glowClass();
     const isAdm = Auth.getState().isAdmin === true;
@@ -1523,17 +1529,17 @@ function listenChat(){
              : `<span class="ghp-chat-name ${czCls}" style="${czStyle||('color:'+(isMine?'#00E5FF':'#A78BFA'))}">${esc(m.name||'Oyuncu')}</span>${czTitle}`;
       const txt=m.deleted?'<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>':esc(m.text);
       return `
-      <div class="ghp-chat-row${isMine?' mine':''}${adm?' ghp-adm':''}" data-ckey="${m._key}">
+      <div class="ghp-chat-row${isMine?' mine':''}${adm?' ghp-adm':''}" data-ckey="${esc(m._key)}">
         <div class="ghp-chat-avatar">${esc(m.avatar||(adm?'👑':defaultAvatar(m.uid)))}</div>
         <div class="ghp-chat-body">
           <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap"><span style="cursor:pointer" data-pcuid="${esc(m.uid||'')}">${nameHtml}</span>${_actBtns(m._key,m,me)}</div>
-          <div class="_ctxt" data-ckey="${m._key}" style="margin:2px 0 1px">${txt}</div>
+          <div class="_ctxt" data-ckey="${esc(m._key)}" style="margin:2px 0 1px">${txt}</div>
           <div class="ghp-chat-ts">${tAgo(m.ts||0)}${_editLabel(m)}</div>
         </div>
       </div>`;
     }).join('');
     list.querySelectorAll('[data-histbtn]').forEach(el=>el.onclick=()=>{const b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'':'none';});
-    list.querySelectorAll('[data-ekey]').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const key=btn.dataset.ekey,m=rows.find(r=>r._key===key),el=list.querySelector(`._ctxt[data-ckey="${key}"]`);if(!m||!el)return;_openEditBox(el,m.text,v=>_doEditChat(key,v,m));};});
+    list.querySelectorAll('[data-ekey]').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const key=btn.dataset.ekey,m=rows.find(r=>r._key===key),el=list.querySelector(`._ctxt[data-ckey="${CSS.escape(key)}"]`);if(!m||!el)return;_openEditBox(el,m.text,v=>_doEditChat(key,v,m));};});
     list.querySelectorAll('[data-dkey]').forEach(btn=>{btn.onclick=async e=>{e.stopPropagation();if(!confirm('Mesajı silmek istediğine emin misin?'))return;try{await _doDelChat(btn.dataset.dkey);}catch(err){alert('Silinemedi');}};});
     list.querySelectorAll('[data-pcuid]').forEach(el=>el.addEventListener('click',(e)=>{
       const targetUid = el.dataset.pcuid;
@@ -1555,7 +1561,9 @@ function listenChat(){
     list.scrollTop = list.scrollHeight;
   });
 }
+let chatSending = false;
 async function sendChat(){
+  if(chatSending) return;
   const st = Auth.getState();
   const inp = byId('ghpChatInput'); const text = inp.value.trim();
   if(!text) return;
@@ -1563,6 +1571,7 @@ async function sendChat(){
   const p = st.profile || {};
   if(p.muted === true && (!p.muteUntil || p.muteUntil > Date.now())){ alert('🔇 Susturulmuşsun' + (p.muteReason ? ': ' + p.muteReason : '')); return; }
   if(H.chatLocked && st.isAdmin !== true){ alert('🔒 Sohbet şu an yönetici tarafından kilitli'); return; }
+  chatSending = true;
   inp.value = '';
   try{
     const m = { uid: st.uid, name: st.displayName || 'Oyuncu', text: text.slice(0, 200), ts: Date.now() };
@@ -1576,12 +1585,15 @@ async function sendChat(){
       if(cz.title)      m.title      = cz.title;
     }catch(e){}
     await fdb.push(fdb.ref(db, 'globalChat'), m);
-  }catch(e){ alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '')); }
+  }catch(e){
+    if(!inp.value && Auth.getState().uid === st.uid) inp.value = text;
+    alert('Gönderilemedi' + (p.banned ? ' (banlısın)' : '. Mesajını yeniden gönderebilirsin.'));
+  }finally{ chatSending = false; }
 }
 
 // ── ✉️ ÖZEL MESAJLAR ────────────────────────────────────────────
 function pairKey(a, b){ return [a, b].sort().join('_'); }
-function loadThreads(){ try{ return JSON.parse(localStorage.getItem('hero_dm_threads') || '[]'); }catch(e){ return []; } }
+function loadThreads(){ try{ const value=JSON.parse(localStorage.getItem('hero_dm_threads') || '[]'); return Array.isArray(value) ? value.filter(t=>t && typeof t.uid === 'string') : []; }catch(e){ return []; } }
 function saveThreads(t){ try{ localStorage.setItem('hero_dm_threads', JSON.stringify(t.slice(0, 8))); }catch(e){} }
 function renderThreads(){
   const list = byId('ghpDMList'); if(!list) return;
@@ -1612,18 +1624,25 @@ async function dmOpenByNick(){
   dmOpenThread(t.uid, t.nick || nick);
 }
 function dmOpenThread(uid, nick){
-  H.dmThread = { uid, nick };
+  const meState = Auth.getState();
+  if(!uid || !meState.uid || meState.status !== 'google' || uid === meState.uid) return;
+  stopDMListeners();
+  const thread = { uid, nick };
+  H.dmThread = thread;
+  const isCurrent = () => H.dmThread === thread && Auth.getState().uid === meState.uid;
+  byId('ghpDMInput').value = '';
+  byId('ghpDMMsgs').textContent = 'Mesajlar yükleniyor…';
   byId('ghpDMList').style.display = 'none';
   byId('ghpDMList').previousElementSibling.style.display = 'none';   // nick arama satırı
   const th = byId('ghpDMThread'); th.style.display = 'flex';
   const tEl = byId('ghpDMTitle');
   // Karşı tarafın admin bilgisini çek
   fdb.get(fdb.ref(db, 'users/' + uid)).then(s => {
-    if(!s.exists()) return;
+    if(!isCurrent() || !s.exists()) return;
     const uv = s.val();
     const isAdmUser = uv.isAdmin === true || (H.admins && H.admins[uid]);
-    H.dmThread.isAdmin = isAdmUser;
-    H.dmThread.avatar = avatarOf(uv, uid);
+    thread.isAdmin = isAdmUser;
+    thread.avatar = avatarOf(uv, uid);
     if(isAdmUser){
       tEl.innerHTML = '✉️ <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span> ' + esc(uv.nick||uv.displayName||nick) + ' <span class="chat-admin-badge" style="font-size:10px;padding:1px 5px">👑</span>';
     } else {
@@ -1645,14 +1664,15 @@ function dmOpenThread(uid, nick){
   H._lastSeenWrite = 0;   // _seen yazma throttle
   // Sadece gerçek MESAJLARI dinle (alt _seen/_typing node'larını değil → feedback loop yok)
   H.offDM = fdb.onValue(fdb.query(fdb.ref(db, 'messages/' + pk), fdb.orderByChild('ts'), fdb.limitToLast(30)), (snap) => {
+    if(!isCurrent()) return;
     const box = byId('ghpDMMsgs'); if(!box) return;
     const rows = []; if(snap.exists()) snap.forEach(ch => {
       const k = ch.key; const v = ch.val();
       // _seen / _typing gibi meta node'ları atla
       if(k && (k.charAt(0)==='_')) return;
-      if(v && (v.text||v.deleted)) rows.push({...v,_key:k});
+      if(v && (v.text||v.deleted)) rows.push({...v,ts:Number(v.ts)||0,editedAt:Number(v.editedAt)||0,_key:k});
     });
-    if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; H.dmRows=[]; return; }
+    if(!rows.length){ box.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">✉️</div><div class="ghp-empty-text">İLK MESAJI YAZ</div></div>'; H.dmRows=[]; H._lastDmSig=''; return; }
     rows.sort((a,b) => (a.ts||0)-(b.ts||0));
     // İmza: mesaj sayısı + son ts → değişmediyse render etme (kasma önleme)
     const sig = rows.map(r=>`${r.ts||0}:${r.editedAt||0}:${r.deleted?1:0}`).join('|');
@@ -1666,11 +1686,16 @@ function dmOpenThread(uid, nick){
     const now = Date.now();
     if(now - H._lastSeenWrite > 3000){
       H._lastSeenWrite = now;
-      try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_seen/' + me), now); }catch(e){}
+      try{ Promise.resolve(fdb.set(fdb.ref(db, 'messages/' + pk + '/_seen/' + me), now)).catch(()=>{}); }catch(e){}
     }
+  }, error => {
+    if(!isCurrent()) return;
+    console.error('[DM]', error);
+    byId('ghpDMMsgs').textContent = 'Mesajlar yüklenemedi. Geri dönüp konuşmayı yeniden açabilirsin.';
   });
   // rakibin okundu zamanı → ✓✓ (sadece tick güncelle, TÜM listeyi yeniden render etme)
   H.offSeen = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_seen/' + uid), (snap) => {
+    if(!isCurrent()) return;
     const newSeen = snap.exists() ? (snap.val() || 0) : 0;
     if(newSeen === H.dmOppSeen) return;  // değişmediyse dokunma
     H.dmOppSeen = newSeen;
@@ -1679,21 +1704,23 @@ function dmOpenThread(uid, nick){
   });
   // ✍️ rakip yazıyor mu
   H.offTyping = fdb.onValue(fdb.ref(db, 'messages/' + pk + '/_typing/' + uid), (snap) => {
+    if(!isCurrent()) return;
     const t = snap.exists() ? (snap.val() || 0) : 0;
     const el = byId('ghpDMTitle');
     if(!el) return;
     const fresh = Date.now() - t < 4500;
     el.textContent = '✉️ ' + nick + (fresh ? ' · yazıyor…' : '');
-    if(fresh){ clearTimeout(H._typT); H._typT = setTimeout(() => { if(byId('ghpDMTitle')) byId('ghpDMTitle').textContent = '✉️ ' + nick; }, 4600); }
+    if(fresh){ clearTimeout(H._typT); H._typT = setTimeout(() => { if(isCurrent() && byId('ghpDMTitle')) byId('ghpDMTitle').textContent = '✉️ ' + nick; }, 4600); }
   });
   // kendi yazışını bildir (1.2 sn'de bir)
   const dmInp = byId('ghpDMInput');
   if(dmInp){
     dmInp.oninput = () => {
+      if(!isCurrent()) return;
       const now = Date.now();
       if(now - (H._typeSent || 0) < 1200) return;
       H._typeSent = now;
-      try{ fdb.set(fdb.ref(db, 'messages/' + pk + '/_typing/' + me), now); }catch(e){}
+      try{ Promise.resolve(fdb.set(fdb.ref(db, 'messages/' + pk + '/_typing/' + me), now)).catch(()=>{}); }catch(e){}
     };
   }
   // Hafif: sadece kendi mesajlarının ✓/✓✓ tikini güncelle (tüm DOM'u kurmaz)
@@ -1769,7 +1796,7 @@ function dmOpenThread(uid, nick){
       }
       const dtxt = m.deleted ? '<span style="color:#546e7a;font-style:italic">🗑 Silindi (admin)</span>' : esc(m.text);
       return `${dateSep}<div class="ghp-chat-row${isMine ? ' mine' : ''}" style="align-items:flex-end;gap:6px" data-dmrow="${esc(m._key||'')}">
-        ${!isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid ${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
+        ${!isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid ${isAdmMsg||threadIsAdmin?'rgba(255,215,64,.4)':'rgba(80,80,120,.4)'};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${esc(av)}</div>` : ''}
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;${isMine?'justify-content:flex-end;':''}flex-wrap:wrap;gap:2px">${nameHtml}${_actBtns(m._key,m,me)}</div>
           <div class="_dmtxt" data-dmkey="${esc(m._key||'')}" style="background:${bubbleBg};border:1px solid ${bubbleBdr};border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};padding:8px 11px;max-width:82%;word-break:break-word;${isMine?'margin-left:auto':''}">
@@ -1777,19 +1804,26 @@ function dmOpenThread(uid, nick){
           </div>
           <div class="ghp-chat-ts" data-msgts="${m.ts||0}" style="${isMine?'text-align:right':''}margin-top:2px">${tAgo(m.ts || 0)}${_editLabel(m)}${tickHtml}</div>
         </div>
-        ${isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${av}</div>` : ''}
+        ${isMine ? `<div style="width:28px;height:28px;border-radius:50%;background:rgba(30,30,60,.8);border:1px solid rgba(103,80,164,.4);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${esc(av)}</div>` : ''}
       </div>`;
     }).join('');
     box.querySelectorAll('[data-histbtn]').forEach(el=>el.onclick=()=>{const b=el.nextElementSibling;if(b)b.style.display=b.style.display==='none'?'':'none';});
-    box.querySelectorAll('[data-ekey]').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const key=btn.dataset.ekey,rowM=rows.find(r=>r._key===key),wrapEl=box.querySelector(`._dmtxt[data-dmkey="${key}"]`);if(!rowM||rowM.deleted||!wrapEl)return;_openEditBox(wrapEl,rowM.text,v=>_doEditDM(pk,key,v,rowM));};});
+    box.querySelectorAll('[data-ekey]').forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const key=btn.dataset.ekey,rowM=rows.find(r=>r._key===key),wrapEl=box.querySelector(`._dmtxt[data-dmkey="${CSS.escape(key)}"]`);if(!rowM||rowM.deleted||!wrapEl)return;_openEditBox(wrapEl,rowM.text,v=>_doEditDM(pk,key,v,rowM));};});
     box.querySelectorAll('[data-dkey]').forEach(btn=>{btn.onclick=async e=>{e.stopPropagation();if(!confirm('Mesajı silmek istediğine emin misin?'))return;try{await _doDelDM(pk,btn.dataset.dkey);}catch(err){alert('Silinemedi');}};});
     box.scrollTop = box.scrollHeight;
   }
 }
+function stopDMListeners(){
+  for(const key of ['offDM', 'offSeen', 'offTyping']){
+    if(H[key]){ try{ H[key](); }catch(e){} H[key] = null; }
+  }
+  clearTimeout(H._typT);
+  H._typeSent = 0;
+  const input = byId('ghpDMInput');
+  if(input) input.oninput = null;
+}
 function dmBack(){
-  if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
-  if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }
-  if(H.offTyping){ try{ H.offTyping(); }catch(e){} H.offTyping = null; }
+  stopDMListeners();
   H.dmThread = null;
   byId('ghpDMThread').style.display = 'none';
   byId('ghpDMList').style.display = '';
@@ -1798,33 +1832,42 @@ function dmBack(){
 }
 async function dmSend(){
   if(!H.dmThread) return;
+  const thread = H.dmThread;
+  if(thread.sending) return;
   const inp = byId('ghpDMInput'); const text = inp.value.trim();
   if(!text) return;
   const me = Auth.getState();
-  const pk = pairKey(me.uid, H.dmThread.uid);
+  if(!me.uid || me.status !== 'google') return;
+  const pk = pairKey(me.uid, thread.uid);
+  thread.sending = true;
   inp.value = '';
   try{
     const _dmAvatar = (me.profile && me.profile.avatar) ? me.profile.avatar : defaultAvatar(me.uid);
     const _dmMsg = { from: me.uid, fromName: me.displayName || 'Oyuncu', text: text.slice(0, 300), ts: Date.now(), fromAvatar: _dmAvatar };
     if(me.isAdmin === true) _dmMsg.isAdmin = true;
     await fdb.push(fdb.ref(db, 'messages/' + pk), _dmMsg);
+    if(Auth.getState().uid !== me.uid) return;
     // 📩 Alıcıya DM bildirimi (bildirimler sekmesinde uyarı olarak çıkar)
     try{
-      await fdb.push(fdb.ref(db, 'userNotifs/' + H.dmThread.uid), {
+      await fdb.push(fdb.ref(db, 'userNotifs/' + thread.uid), {
         type:'dm', icon:'✉️',
         text: (me.displayName || 'Biri') + ' sana mesaj gönderdi: "' + text.slice(0,40) + (text.length>40?'…':'') + '"',
         ts: Date.now(), fromUid: me.uid
       });
     }catch(e){}
     // konu listesini güncelle
-    const ts = loadThreads(); const i = ts.findIndex(x => x.uid === H.dmThread.uid);
-    const item = { uid: H.dmThread.uid, nick: H.dmThread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
+    if(Auth.getState().uid !== me.uid) return;
+    const ts = loadThreads(); const i = ts.findIndex(x => x.uid === thread.uid);
+    const item = { uid: thread.uid, nick: thread.nick, last: text.slice(0, 40), ts: Date.now(), unread: false };
     if(i >= 0) ts.splice(i, 1);
     ts.unshift(item); saveThreads(ts);
     // watchDMThreads() her mesajda çağrılmaz — ana dinleyici (offDM) zaten mesajı yakalar.
     // Sadece thread listesi rozetini hafifçe güncelle:
     updateDmThreadBadge();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){
+    if(H.dmThread === thread && !inp.value) inp.value = text;
+    alert('Gönderilemedi. Mesajın silinmedi; yeniden deneyebilirsin.');
+  }finally{ thread.sending = false; }
 }
 // Hafif: DM rozet sayısını güncelle (tüm dinleyicileri yeniden kurmadan)
 function updateDmThreadBadge(){

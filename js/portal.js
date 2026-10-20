@@ -1,14 +1,7 @@
 // The shell and navigation stay usable while account services load.
-import initNav, { go } from './nav.js';
+import initNav from './nav.js';
 
 initNav();
-document.querySelector('.skip-link').addEventListener('click', event => {
-  event.preventDefault();
-  go('home');
-  const games = document.getElementById('games');
-  games.focus({ preventScroll: true });
-  games.scrollIntoView({ block: 'start' });
-});
 
 const status = document.getElementById('portalStatus');
 const gameIds = ['gameTetris', 'gameChess', 'gameTavla', 'gameKelime'];
@@ -29,6 +22,7 @@ function showStatus(message, retry = false){
 
 gameIds.concat(['connectBtn', 'ecoWheelBtn', 'ecoQuestBtn', 'ecoHistBtn']).forEach(id => {
   const button = document.getElementById(id);
+  if(!button) return;
   button.addEventListener('click', event => {
     if(bootState === 'ready') return;
     event.stopImmediatePropagation();
@@ -42,13 +36,21 @@ gameIds.concat(['connectBtn', 'ecoWheelBtn', 'ecoQuestBtn', 'ecoHistBtn']).forEa
   }, { capture: true });
 });
 
-import('./app.js?v=136').then(() => {
+// A stalled connection must offer recovery even when an SDK request never rejects.
+const bootTimeout = setTimeout(() => {
+  bootState = 'error';
+  showStatus('Bağlantı beklenenden uzun sürüyor. İnternetini kontrol edip tekrar dene.', true);
+}, 15000);
+
+import('./app.js?v=138').then(() => {
+  clearTimeout(bootTimeout);
   bootState = 'ready';
   status.hidden = true;
   const msg = document.getElementById('authMsg');
   msg.textContent = '';
   msg.style.display = 'none';
 }).catch(error => {
+  clearTimeout(bootTimeout);
   bootState = 'error';
   console.error('[PortalBoot]', error);
   showStatus('Oyuncu hizmetine bağlanılamadı. Bağlantını kontrol edip tekrar dene.', true);
