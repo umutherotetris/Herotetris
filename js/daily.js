@@ -14,16 +14,19 @@ export const KAJU_GAME_LIMITS = {
 export const KAJU_TOTAL_DAILY_LIMIT = 1500;
 
 const TODAY = () => new Date().toISOString().slice(0,10);
+const dailyKey = () => 'htu_kaju_daily2_' + (Auth.getState().uid || 'guest');
 
 function loadDailyState(){
   try{
-    const d = JSON.parse(localStorage.getItem('htu_kaju_daily2')||'null');
-    if(d && d.date === TODAY()) return d.games||{};
+    const d = JSON.parse(localStorage.getItem(dailyKey())||'null');
+    if(d && d.date === TODAY() && d.games && typeof d.games === 'object'){
+      return Object.fromEntries(Object.entries(d.games).filter(([,n])=>Number.isSafeInteger(n)&&n>=0));
+    }
   }catch(e){}
   return {};
 }
 function saveDailyState(games){
-  try{ localStorage.setItem('htu_kaju_daily2', JSON.stringify({date:TODAY(), games})); }catch(e){}
+  try{ localStorage.setItem(dailyKey(), JSON.stringify({date:TODAY(), games})); }catch(e){}
 }
 export function dailyEarned(game){
   const g = loadDailyState();
@@ -31,18 +34,20 @@ export function dailyEarned(game){
   return Object.values(g).reduce((a,b)=>a+b, 0);
 }
 export function recordEarning(game, amount){
+  if(!Number.isSafeInteger(amount) || amount <= 0) return;
   const g = loadDailyState();
   g[game] = (g[game]||0) + amount;
   saveDailyState(g);
 }
 export function canEarn(game, amount){
+  if(!Number.isSafeInteger(amount) || amount <= 0) return false;
   const st = Auth.getState();
   if(st.isAdmin === true) return true; // Admin bypass
   const gameEarned = dailyEarned(game);
   const limit = KAJU_GAME_LIMITS[game]||200;
-  if(gameEarned >= limit) return false;
+  if(gameEarned + amount > limit) return false;
   const totalEarned = dailyEarned();
-  return totalEarned < KAJU_TOTAL_DAILY_LIMIT;
+  return totalEarned + amount <= KAJU_TOTAL_DAILY_LIMIT;
 }
 
 // ── Kaju coin sesi (Goodyedek kajuCoinSound) ─────────────────
@@ -79,22 +84,22 @@ const DAILY_REWARDS = [50,75,100,125,150,200,300]; // 7 günlük
 export async function checkDailyLogin(){
   const st = Auth.getState();
   if(!st.uid || st.status !== 'google') return;
-  const key = 'htu_daily_login_' + st.uid;
   try{
-    const snap = await fdb.get(fdb.ref(db,'users/'+st.uid+'/dailyLogin'));
-    const data = snap.exists() ? snap.val() : {streak:0, lastDate:''};
     const today = TODAY();
-    if(data.lastDate === today) return; // Zaten alındı
     const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-    const newStreak = data.lastDate === yesterday ? Math.min((data.streak||0)+1, 7) : 1;
-    const reward = DAILY_REWARDS[newStreak-1] || 50;
-    // Ödülü kaydet
-    await fdb.update(fdb.ref(db,'users/'+st.uid+'/dailyLogin'), {streak:newStreak, lastDate:today, lastReward:reward});
-    await Store.addKaju(reward, 'daily_login', 'Günlük giriş');
-    recordEarning('daily_login', reward);
-    kajuCoinSound('earn');
-    // Toast göster
-    showDailyToast(newStreak, reward);
+    const result = await Store.claimKajuOnce('daily_' + today, profile => {
+      const data = profile.dailyLogin || {};
+      if(data.lastDate === today) return null;
+      const prior = Number.isFinite(Number(data.streak)) ? Math.max(0, Math.floor(Number(data.streak))) : 0;
+      const streak = data.lastDate === yesterday ? Math.min(prior + 1, 7) : 1;
+      const reward = DAILY_REWARDS[streak-1];
+      return {amount:reward, fields:{dailyLogin:{streak, lastDate:today, lastReward:reward}}};
+    }, 'daily_login', 'Günlük giriş', st.uid);
+    if(result.claimed && Auth.getState().uid === st.uid){
+      recordEarning('daily_login', result.amount);
+      kajuCoinSound('earn');
+      showDailyToast(result.fields.dailyLogin.streak, result.amount);
+    }
   }catch(e){}
 }
 

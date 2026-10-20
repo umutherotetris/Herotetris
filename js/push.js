@@ -14,6 +14,10 @@ function _toast(msg, isErr){
 let _swReg = null;
 let _notifListener = null;
 let _lastNotifTs = 0;
+let _notifUid = null;
+let _listenerVersion = 0;
+let _pushStarted = false;
+let _promptTimer = null;
 
 // ── Bildirim tercihleri (localStorage) ───────────────────────
 // Genel açık/kapalı + tür bazlı (davet / mesaj / arkadaşlık / oyun)
@@ -111,18 +115,26 @@ export function showLocalNotif(title, body, icon, url){
 // userNotifs'e yeni bir şey gelince → push bildirim göster
 export function startNotifListener(){
   const st = Auth.getState();
-  if(!st.uid || st.status !== 'google') return;
-  if(notifPermission() !== 'granted') return;
-  if(!getNotifPrefs().enabled) return;   // kullanıcı tüm bildirimleri kapatmış
+  if(!st.uid || st.status !== 'google' || notifPermission() !== 'granted' || !getNotifPrefs().enabled){
+    stopNotifListener();
+    return;
+  }
+  if(_notifUid === st.uid && _notifListener) return;
   stopNotifListener();
+  _notifUid = st.uid;
+  const version = _listenerVersion;
   _lastNotifTs = Date.now();
+  const seen = new Set();
   const q = fdb.query(fdb.ref(db,'userNotifs/'+st.uid), fdb.limitToLast(1));
   _notifListener = fdb.onChildAdded(q, (snap) => {
+    if(version !== _listenerVersion || Auth.getState().uid !== st.uid) return;
     const n = snap.val();
-    if(!n || !n.ts) return;
+    if(!n || !Number.isFinite(Number(n.ts))) return;
     // Sadece dinleme başladıktan SONRA gelenleri göster (eskiler değil)
     if(n.ts <= _lastNotifTs) return;
-    _lastNotifTs = n.ts;
+    if(seen.has(snap.key)) return;
+    seen.add(snap.key);
+    if(seen.size > 100) seen.delete(seen.values().next().value);
     // Kullanıcı bu bildirim türünü kapatmışsa gösterme
     if(!_prefAllows(n)) return;
     // Sayfa görünürse bildirim gösterme (kullanıcı zaten içeride)
@@ -134,6 +146,8 @@ export function startNotifListener(){
 }
 
 export function stopNotifListener(){
+  _listenerVersion++;
+  _notifUid = null;
   if(_notifListener){
     try{ _notifListener(); }catch(e){}
     _notifListener = null;
@@ -142,23 +156,26 @@ export function stopNotifListener(){
 
 // ── Başlatma: SW kaydet + izin verildiyse dinlemeyi başlat ──
 export async function initPush(){
-  await registerSW();
-  // İzin zaten verilmişse otomatik dinlemeye başla
-  if(notifPermission() === 'granted'){
-    setTimeout(() => startNotifListener(), 2000);
-  } else {
-    // İzin verilmemişse banner öner
+  if(_pushStarted) return;
+  _pushStarted = true;
+  Auth.subscribe(() => {
+    startNotifListener();
+    clearTimeout(_promptTimer);
+    document.getElementById('notifPromptBanner')?.remove();
     maybeShowNotifPrompt();
-  }
+  });
+  await registerSW();
 }
 
 // ── İlk girişte bildirim izni öner (banner) ──────────────────
 export function maybeShowNotifPrompt(){
   if(notifPermission()!=='default') return; // zaten karar verilmiş
-  if(localStorage.getItem('hero_notif_prompted')==='1') return;
+  try{ if(localStorage.getItem('hero_notif_prompted')==='1') return; }catch(e){}
   const st=Auth.getState();
   if(!st.uid||st.status!=='google') return;
-  setTimeout(()=>{
+  clearTimeout(_promptTimer);
+  _promptTimer = setTimeout(()=>{
+    if(Auth.getState().uid !== st.uid || Auth.getState().status !== 'google' || notifPermission() !== 'default') return;
     if(document.getElementById('notifPromptBanner')) return;
     const b=document.createElement('div');
     b.id='notifPromptBanner';
@@ -173,12 +190,12 @@ export function maybeShowNotifPrompt(){
       +'</div>';
     document.body.appendChild(b);
     b.querySelector('#notifPromptYes').addEventListener('click',async()=>{
-      localStorage.setItem('hero_notif_prompted','1');
+      try{ localStorage.setItem('hero_notif_prompted','1'); }catch(e){}
       b.remove();
       await requestNotifPermission();
     });
     b.querySelector('#notifPromptNo').addEventListener('click',()=>{
-      localStorage.setItem('hero_notif_prompted','1');
+      try{ localStorage.setItem('hero_notif_prompted','1'); }catch(e){}
       b.remove();
     });
   }, 5000);
@@ -247,14 +264,14 @@ export function openNotifSettings(){
     rowsHtml += '<div class="np-row'+(r.master?' master':'')+'">'
       + '<div class="np-ic">'+r.ic+'</div>'
       + '<div class="np-info"><div class="np-nm">'+r.nm+'</div><div class="np-desc">'+r.desc+'</div></div>'
-      + '<button class="np-tog'+(on?' on':'')+'" data-pref="'+r.key+'"></button>'
+      + '<button class="np-tog'+(on?' on':'')+'" role="switch" aria-label="'+r.nm+'" aria-checked="'+!!on+'" data-pref="'+r.key+'"></button>'
       + '</div>';
   });
 
-  ov.innerHTML = '<div class="np-panel"><div class="np-head"><div class="np-title">🔔 Bildirim Ayarları</div><button class="np-x">✕</button></div>'
+  ov.innerHTML = '<div class="np-panel" role="dialog" aria-label="Bildirim Ayarları"><div class="np-head"><div class="np-title">🔔 Bildirim Ayarları</div><button class="np-x" aria-label="Kapat">✕</button></div>'
     + '<div class="np-sub">Hangi bildirimleri almak istediğini seç</div>'
     + permHtml + rowsHtml
-    + '<div class="np-sub2">💡 Bildirimler uygulama açık veya arka plandayken telefonuna gelir. Uygulama tamamen kapalıyken bildirim için uygulamayı ana ekrana ekle (PWA).</div></div>';
+    + '<div class="np-sub2">Bildirimler portal açıkken ve tarayıcı arka planda çalışmaya izin verdiğinde gelir. Portal tamamen kapalıyken bildirim teslimi desteklenmez.</div></div>';
   document.body.appendChild(ov);
   ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
   ov.querySelector('.np-x').addEventListener('click', ()=>ov.remove());
@@ -267,6 +284,7 @@ export function openNotifSettings(){
     const cur = getNotifPrefs()[key];
     setNotifPref(key, !cur);
     tog.classList.toggle('on', !cur);
+    tog.setAttribute('aria-checked', String(!cur));
     // Genel kapatılırsa dinlemeyi durdur, açılırsa başlat
     if(key === 'enabled'){
       if(!cur){ if(notifPermission()==='granted') startNotifListener(); }

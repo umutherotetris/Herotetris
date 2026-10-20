@@ -1,6 +1,6 @@
-/* Hero Portal 138: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 139: replace the legacy Sukun worker at its existing URL. */
 'use strict';
-const HERO_BUILD = '138';
+const HERO_BUILD = '139';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
@@ -9,7 +9,7 @@ const CORE_ASSETS = [
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=138',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=124',
   'css/tetris.css?v=124', 'css/themes.css?v=124', 'css/portal.css?v=138',
-  'js/portal-worker.js?v=138', 'js/portal.js?v=138', 'js/nav.js',
+  'js/portal-worker.js?v=139', 'js/portal.js?v=139', 'js/nav.js',
   'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=138',
   'assets/game-chess.svg?v=138', 'assets/game-tavla.svg?v=138', 'assets/game-word.svg?v=138',
   'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',

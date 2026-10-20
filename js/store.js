@@ -31,13 +31,16 @@ const TX_HOUR      = 10000;       // kullanıcı saatlik gönderim tavanı
 const TX_DAY       = 50000;       // kullanıcı günlük gönderim tavanı
 const TX_MONTH     = 500000;      // kullanıcı aylık gönderim tavanı
 
-const player = {
+const emptyPlayer = () => ({
   uid: null, ready: false,
   kaju: 0, level: 1, xp: 0, totalXP: 0,
   best: {},            // { tetris: 12345, ... }
   kajuToday: 0,        // bugün kazanılan (günlük limit için, local)
-  kajuSent: {}         // { hWin,hAmt, dWin,dAmt, mWin,mAmt } gönderim sayaçları
-};
+  kajuSent: {}, inventory:{}, boosts:{}, cosmetics:{}, purchasedOnce:{},
+  stats:{ games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 }, h2h:{}
+});
+const player = emptyPlayer();
+const finiteAmount = (value, fallback = 0) => Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : fallback;
 
 const subs = new Set();
 export function subscribe(fn){ subs.add(fn); try{ fn(snapshot()); }catch(e){} return () => subs.delete(fn); }
@@ -53,7 +56,7 @@ const KAJU_LOG_MAX = 200;
 // Kaju işlemini geçmişe kaydet (kazanç/harcama)
 export function logKaju(amount, type, game, reason){
   try{
-    const log = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    const log = getKajuLog('all');
     log.unshift({
       amount: Math.abs(Math.floor(amount||0)),
       type: type || (amount>=0?'earn':'spend'),  // 'earn' | 'spend'
@@ -68,7 +71,9 @@ export function logKaju(amount, type, game, reason){
 // Geçmişi oku (filtre: 'all' | 'earn' | 'spend')
 export function getKajuLog(filter){
   try{
-    const log = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    const raw = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    const log = (Array.isArray(raw) ? raw : []).filter(e => e && typeof e === 'object' && Number.isFinite(Number(e.amount)))
+      .map(e => ({...e, amount:finiteAmount(e.amount)}));
     if(filter === 'earn') return log.filter(e => e.type === 'earn');
     if(filter === 'spend') return log.filter(e => e.type === 'spend');
     return log;
@@ -83,19 +88,19 @@ export function getKajuSummary(){
 }
 
 // Günlük kaju takibi (tarih değişince sıfırlanır) — local
-function todayKey(){ return 'hero_kaju_' + new Date().toISOString().slice(0,10); }
-function loadKajuToday(){ try{ return Number(localStorage.getItem(todayKey()) || 0); }catch(e){ return 0; } }
-function saveKajuToday(v){ try{ localStorage.setItem(todayKey(), String(v)); }catch(e){} }
+function todayKey(uid = player.uid){ return 'hero_kaju_' + uid + '_' + new Date().toISOString().slice(0,10); }
+function loadKajuToday(uid){ try{ return finiteAmount(localStorage.getItem(todayKey(uid)) || 0); }catch(e){ return 0; } }
+function saveKajuToday(v, uid){ try{ localStorage.setItem(todayKey(uid), String(v)); }catch(e){} }
 
 // Auth değişince oyuncu verisini beslemek
 function hydrate(state){
-  if(!state.uid){ player.uid = null; player.ready = false; emit(); return; }
+  if(!state.uid){ Object.assign(player, emptyPlayer()); _statsCache = null; emit(); return; }
   player.uid = state.uid;
   const p = state.profile || {};
-  player.kaju    = Number(p.kaju || 0);
-  player.level   = Number(p.level || (p.xp && p.xp.level) || 1);
-  player.xp      = Number((p.xp && typeof p.xp === 'object' ? p.xp.xp : p.xp) ?? 0);
-  player.totalXP = Number((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
+  player.kaju    = Math.min(KAJU_MAX, finiteAmount(p.kaju));
+  player.level   = Math.max(1, finiteAmount(p.level || (p.xp && p.xp.level), 1));
+  player.xp      = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.xp : p.xp) ?? 0);
+  player.totalXP = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
   player.best    = p.bestScores || {};
   player.kajuSent = p.kajuSent || {};
   player.inventory = p.inventory || {};      // {itemId: adet}
@@ -147,14 +152,14 @@ async function _claimVipDaily(){
     if(!vip || !vip.until || Date.now() > vip.until) return;   // VIP süresi dolmuş
     const daily = Number(vip.daily) || 0;
     if(daily <= 0) return;
-    const todayKey = 'hero_vip_daily_' + new Date().toDateString();
-    if(localStorage.getItem(todayKey)) return;                 // bugün alındı
-    localStorage.setItem(todayKey, '1');
-    await addKaju(daily, 'vip', '👑 VIP günlük Kaju');
-    try{ if(window.Hero && window.Hero.toast) window.Hero.toast('👑 VIP günlük ' + daily + ' Kaju eklendi!'); }catch(e){}
+    const uid = player.uid;
+    const receipt = 'vip_' + new Date().toISOString().slice(0,10);
+    const result = await claimKajuOnce(receipt, Math.floor(daily), 'vip', 'VIP günlük Kaju', uid);
+    if(result.claimed && player.uid === uid){
+      try{ window.Hero?.toast('👑 VIP günlük ' + result.amount + ' Kaju eklendi!'); }catch(e){}
+    }
   }catch(e){ console.warn('[store] vip daily', e); }
 }
-Auth.subscribe(hydrate);
 
 // ── Görev takibi köprüsü (lazy import — döngüsel bağımlılık yok) ──
 let _Eco = null, _Trn = null;
@@ -337,35 +342,77 @@ function _applyKozmoBonus(n, type){
 }
 
 export async function addKaju(n, game, reason){
-  // Kaju kazanım sesi
-  if(n>0){try{import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});}catch(e){}}
-  if(n<0){try{import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{});}catch(e){}}
   n = Math.floor(n || 0);
+  if(!Number.isSafeInteger(n)) return 0;
   // Negatif → harcama olarak işle (geriye uyumluluk: shop.js addKaju(-price) çağırıyor)
-  if(n < 0){ const ok = await spendKaju(-n, game, reason); return ok ? n : 0; }
+  if(n < 0){
+    if(!await spendKaju(-n, game, reason)) throw new Error('Ödeme tamamlanamadı');
+    return n;
+  }
   if(n <= 0 || !player.uid) return 0;
   // ⚡ Aktif kozmo Kaju bonusu (varsa kazanımı çarpar)
   n = _applyKozmoBonus(n, 'kaju_boost');
   n = Math.round(n * getBoostMult('kaju'));    // satın alınan Kaju boost'u
+  if(!Number.isSafeInteger(n) || n <= 0) return 0;
+  const uid = player.uid;
   const isAdmin = Auth.getState().isAdmin === true;
   if(!isAdmin){
-    const remaining = KAJU_DAILY_LIMIT - player.kajuToday;
+    const remaining = KAJU_DAILY_LIMIT - loadKajuToday(uid);
     if(remaining <= 0) return 0;
     n = Math.min(n, remaining);
   }
-  player.kaju += n;
-  player.kajuToday += n;
+  let credited = 0;
+  const result = await runTransaction(ref(db, 'users/' + uid + '/kaju'), current => {
+    if(Auth.getState().uid !== uid) return;
+    const balance = finiteAmount(current);
+    credited = Math.min(n, Math.max(0, KAJU_MAX - balance));
+    return balance + credited;
+  });
+  if(!result.committed || !credited) return 0;
+  n = credited;
+  saveKajuToday(loadKajuToday(uid) + n, uid);
+  if(player.uid !== uid) return n;
+  player.kaju = finiteAmount(result.snapshot.val());
+  player.kajuToday = loadKajuToday(uid);
   // Görev takibi: Kaju kazanıldı (görev ödülü/transfer kendini saymasın)
   if(game !== 'quest' && game !== 'transfer' && game !== 'vip'){ _trackQuestSafe('kaju_earned', { amount: n }); }
-  saveKajuToday(player.kajuToday);
   // 🪙 Geçmişe kaydet
-  logKaju(n, 'earn', game || 'genel', _kajuReason(game, n));
+  logKaju(n, 'earn', game || 'genel', reason || _kajuReason(game, n));
   emit();
+  import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});
   try{
-    await update(ref(db, 'users/' + player.uid), { kaju: player.kaju });
-    await set(ref(db, 'leaderboard/kaju/' + player.uid), { uid: player.uid, kaju: player.kaju, ts: Date.now() });
+    await set(ref(db, 'leaderboard/kaju/' + uid), { uid, kaju: result.snapshot.val(), ts: Date.now() });
   }catch(e){ console.warn('[store] addKaju sync', e); }
   return n;
+}
+
+// A reward receipt and its balance change commit together, including across tabs.
+// The backend remains responsible for authorizing rewards; this prevents retries
+// from duplicating a legitimate claim or marking a failed credit as paid.
+export async function claimKajuOnce(receiptId, reward, game, reason, uid = player.uid){
+  if(!uid || Auth.getState().uid !== uid || !/^[\w-]{1,180}$/.test(receiptId)) return {claimed:false};
+  let amount = 0, fields = {};
+  const result = await runTransaction(ref(db, 'users/' + uid), profile => {
+    if(Auth.getState().uid !== uid) return;
+    profile = profile || {};
+    if(profile.heroRewardClaims?.[receiptId]) return;
+    const next = typeof reward === 'function' ? reward(profile) : {amount:reward};
+    amount = next?.amount;
+    fields = next?.fields || {};
+    const balance = finiteAmount(profile.kaju);
+    if(!Number.isSafeInteger(amount) || amount <= 0 || balance + amount > KAJU_MAX) return;
+    return {...profile, ...fields, kaju:balance + amount,
+      heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:{amount, ts:Date.now()}}};
+  });
+  if(!result.committed) return {claimed:false};
+  const balance = finiteAmount(result.snapshot.val().kaju);
+  if(player.uid === uid){
+    player.kaju = balance;
+    logKaju(amount, 'earn', game, reason);
+    emit();
+  }
+  try{ await set(ref(db, 'leaderboard/kaju/' + uid), {uid, kaju:balance, ts:Date.now()}); }catch(e){}
+  return {claimed:true, amount, balance, fields};
 }
 
 // İşlem açıklaması üret
@@ -384,15 +431,26 @@ export function logSpend(amount, game, reason){
 // ── Kaju harca (bakiyeden düş + Firebase + geçmiş) ──────────────
 export async function spendKaju(amount, game, reason){
   amount = Math.abs(Math.floor(amount||0));
-  if(amount <= 0 || !player.uid) return false;
+  if(!Number.isSafeInteger(amount) || amount <= 0 || !player.uid) return false;
   if(player.kaju < amount) return false;  // yetersiz bakiye
-  player.kaju -= amount;
+  const uid = player.uid;
+  let result;
+  try{
+    result = await runTransaction(ref(db, 'users/' + uid + '/kaju'), current => {
+      if(Auth.getState().uid !== uid) return;
+      const balance = finiteAmount(current);
+      if(balance < amount) return;
+      return balance - amount;
+    });
+  }catch(e){ console.warn('[store] spendKaju', e); return false; }
+  if(!result.committed) return false;
+  if(player.uid !== uid) return true;
+  player.kaju = finiteAmount(result.snapshot.val());
   logKaju(amount, 'spend', game||'shop', reason||'Harcama');
   try{ import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{}); }catch(e){}
   emit();
   try{
-    await update(ref(db, 'users/' + player.uid), { kaju: player.kaju });
-    await set(ref(db, 'leaderboard/kaju/' + player.uid), { uid: player.uid, kaju: player.kaju, ts: Date.now() });
+    await set(ref(db, 'leaderboard/kaju/' + uid), { uid, kaju: result.snapshot.val(), ts: Date.now() });
   }catch(e){ console.warn('[store] spendKaju sync', e); }
   return true;
 }
@@ -499,10 +557,11 @@ export function getCosmetics(){ return Object.assign({}, player.cosmetics||{}); 
 // ── XP ekle (seviye atlama dahil) ───────────────────────────────
 export async function addXP(n){
   n = Math.floor(n || 0);
-  if(n <= 0 || !player.uid) return false;
+  if(!Number.isSafeInteger(n) || n <= 0 || !player.uid) return false;
   // ⚡ Aktif kozmo XP bonusu
   n = _applyKozmoBonus(n, 'xp_boost');
   n = Math.round(n * getBoostMult('xp'));      // satın alınan XP boost'u
+  if(!Number.isSafeInteger(n) || !Number.isSafeInteger(player.xp + n) || !Number.isSafeInteger(player.totalXP + n)) return false;
   player.xp += n; player.totalXP += n;
   let leveled = false, needed = xpForLevel(player.level);
   while(player.xp >= needed){ player.xp -= needed; player.level++; needed = xpForLevel(player.level); leveled = true; }
@@ -519,6 +578,7 @@ export async function addXP(n){
 // ── Skor kaydet (yeni rekor ise liderliğe yaz) ──────────────────
 export async function addScore(game, score){
   score = Math.floor(score || 0);
+  if(!Number.isSafeInteger(score) || score < 0) return false;
   // Görev takibi: oyun oynandı + skor (oyun bittiğinde addScore çağrılır)
   _trackQuestSafe('game_played', { game });
   if(game === 'tetris') _trackQuestSafe('score_tetris', { score });
@@ -670,19 +730,21 @@ export async function claimPendingTransfers(){
       const t = all[txId] || {};
       const amt = Math.floor(Number(t.amount||0));
       const path = 'kajuTransfers/'+me.uid+'/'+txId;
-      if(amt <= 0){ try{ await set(ref(db, path), null); }catch(e){} continue; }
-      let nb = 0, ok = false;
+      if(!Number.isSafeInteger(amt) || amt <= 0){ try{ await set(ref(db, path), null); }catch(e){} continue; }
       try{
-        const res = await runTransaction(ref(db, 'users/'+me.uid+'/kaju'), cur => { cur = Number(cur||0); nb = Math.min(KAJU_MAX, cur + amt); ok = true; return nb; });
-        if(res.committed && ok){
-          total += amt; player.kaju = nb;
-          await set(ref(db, path), null);   // talep edildi → sil
-          logKaju(amt, 'earn', 'gift', (t.fromNick||'Biri')+' gönderdi');
-          claimed.push({ from: t.fromNick || 'Biri', amount: amt });
+        const result = await claimKajuOnce('transfer_' + txId, amt, 'gift', (t.fromNick||'Biri')+' gönderdi', me.uid);
+        // Existing receipt means the credit succeeded on a prior attempt; only
+        // retry cleanup. A failed credit never consumes the pending transfer.
+        if(result.claimed){
+          total += result.amount;
+          claimed.push({ from:t.fromNick||'Biri', amount:result.amount });
+        }
+        if(result.claimed || (await get(ref(db, 'users/'+me.uid+'/heroRewardClaims/transfer_'+txId))).exists()){
+          await set(ref(db, path), null);
         }
       }catch(e){ /* sonraki transfer */ }
     }
-    if(total > 0){
+    if(total > 0 && player.uid === me.uid){
       emit();
       try{ await set(ref(db, 'leaderboard/kaju/'+me.uid), { uid:me.uid, kaju:player.kaju, ts:Date.now() }); }catch(e){}
       try{ window.dispatchEvent(new CustomEvent('hero:kaju-claimed', { detail:{ total, claimed } })); }catch(e){}
@@ -691,5 +753,7 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
+export const Store = { subscribe, getState, addKaju, claimKajuOnce, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
 export default Store;
+// Immediate Auth callbacks need every Store binding to have been initialized.
+Auth.subscribe(hydrate);

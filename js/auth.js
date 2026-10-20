@@ -64,18 +64,35 @@ function deriveName(user, profile){
 }
 
 // Auth değişince TÜM türetilmiş durumu yeniden hesapla (tek yer)
+let hydrationVersion = 0;
 async function hydrate(user){
+  const version = ++hydrationVersion;
+  const changed = state.uid !== (user?.uid || null);
   state.user = user;
   state.uid  = user ? user.uid : null;
   state.status = statusOf(user);
+  if(changed){
+    stopPresence();
+    if(_kickOff){ _kickOff(); _kickOff = null; }
+    state.profile = null;
+    state.isAdmin = false;
+    state.displayName = deriveName(user, null);
+    _ipDone = false;
+    emit();
+  }
 
   if(user){
     // Admin: yalnızca /admins/{uid} (sunucu kontrollü, güvenli)
-    try { const a = await get(ref(db, 'admins/' + user.uid)); state.isAdmin = a.exists(); }
-    catch(e){ state.isAdmin = false; }
+    let isAdmin = false, profile = null;
+    try { const a = await get(ref(db, 'admins/' + user.uid)); isAdmin = a.exists(); }
+    catch(e){}
+    if(version !== hydrationVersion) return;
     // Profil
-    try { const p = await get(ref(db, 'users/' + user.uid)); state.profile = p.exists() ? p.val() : null; }
-    catch(e){ state.profile = null; }
+    try { const p = await get(ref(db, 'users/' + user.uid)); profile = p.exists() ? p.val() : null; }
+    catch(e){}
+    if(version !== hydrationVersion) return;
+    state.isAdmin = isAdmin;
+    state.profile = profile;
   } else {
     state.isAdmin = false;
     state.profile = null;
@@ -113,17 +130,18 @@ export function ipKey(ip){ return String(ip||'').replace(/[.:#$\[\]\/]/g,'-'); }
 let _ipDone = false;
 async function checkIPAndBan(){
   if(_ipDone || !state.uid) return; _ipDone = true;
+  const uid = state.uid;
   let ip = null;
   try{
     const r = await fetch('https://api.ipify.org?format=json', { cache:'no-store' });
     ip = (await r.json()).ip || null;
   }catch(e){}
-  if(!ip) return;
+  if(!ip || state.uid !== uid) return;
   state.lastIP = ip;
-  try{ await update(ref(db, 'users/' + state.uid), { lastIP: ip, lastIPAt: Date.now() }); }catch(e){}
+  try{ await update(ref(db, 'users/' + uid), { lastIP: ip, lastIPAt: Date.now() }); }catch(e){}
   try{
     const snap = await get(ref(db, 'ipBans/' + ipKey(ip)));
-    if(snap.exists()){
+    if(snap.exists() && state.uid === uid){
       const v = snap.val() || {};
       document.body.innerHTML = '<div style="position:fixed;inset:0;background:#0a0a14;color:#ff8fa0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:sans-serif;text-align:center;padding:24px"><div style="font-size:40px">🚫</div><b style="font-size:18px">IP adresin engellendi</b><div style="font-size:13px;color:#aab">' + String(v.reason||'').replace(/[<>]/g,'') + '</div></div>';
       try{ await signOut(auth); }catch(e){}
@@ -343,27 +361,35 @@ export async function checkNick(nick){
 // Nick al/değiştir — ATOMİK. { ok, nick } | { ok:false, error }
 export async function setNick(desired){
   if(!state.uid || state.status !== 'google') return { ok:false, error:'Nick için Google ile giriş gerekli' };
+  const uid = state.uid;
+  const changed = () => state.uid !== uid || state.status !== 'google';
+  const oldKey = state.profile?.nick ? nickKey(state.profile.nick) : null;
   const v = validateNick(desired); if(!v.ok) return v;
   const key = nickKey(v.clean);
   try{
     const nb = await get(ref(db, 'nickBans/' + key));
     if(nb.exists() && state.isAdmin !== true) return { ok:false, error:'Bu nick yasaklı' };
   }catch(e){}
+  if(changed()) return {ok:false, error:'Oturum değişti. Yeniden dene.'};
   const nref = ref(db, 'nicks/' + key);
   let claimed = false;
   try{
     const res = await runTransaction(nref, (cur) => {
-      if(cur === null){ claimed = true; return { uid: state.uid, nick: v.clean, ts: Date.now() }; }
-      if(cur.uid === state.uid){ claimed = true; return { uid: state.uid, nick: v.clean, ts: cur.ts || Date.now() }; }
+      if(changed()) return;
+      if(cur === null){ claimed = true; return { uid, nick: v.clean, ts: Date.now() }; }
+      if(cur.uid === uid){ claimed = true; return { uid, nick: v.clean, ts: cur.ts || Date.now() }; }
       return;   // dolu (başkasının) → iptal
     });
     if(!res.committed || !claimed) return { ok:false, error:'Bu nick alınmış' };
   }catch(e){ return { ok:false, error:'Nick alınamadı (bağlantı?)' }; }
   // users/{uid}/nick güncelle (name'i de eşitle: eski displayName tabanlı listeler için)
-  try{ await update(ref(db, 'users/' + state.uid), { nick: v.clean, name: v.clean }); }catch(e){}
+  if(changed()) return {ok:false, error:'Oturum değişti. Yeniden dene.'};
+  try{ await update(ref(db, 'users/' + uid), { nick: v.clean, name: v.clean }); }
+  catch(e){ return {ok:false, error:'İsim kaydedilemedi. Yeniden dene.'}; }
+  if(changed()) return {ok:false, error:'Oturum değişti. Yeniden dene.'};
   // Eski nick'i serbest bırak
-  const oldKey = (state.profile && state.profile.nick) ? nickKey(state.profile.nick) : null;
   if(oldKey && oldKey !== key){ try{ await set(ref(db, 'nicks/' + oldKey), null); }catch(e){} }
+  if(changed()) return {ok:false, error:'Oturum değişti. Yeniden dene.'};
   if(!state.profile) state.profile = {};
   state.profile.nick = v.clean; state.profile.name = v.clean;
   state.displayName = v.clean; emit();
@@ -400,6 +426,7 @@ export function getNick(){ return (state.profile && state.profile.nick) || ''; }
 let _ensuringNick = false;
 async function ensureNick(){
   if(_ensuringNick) return; _ensuringNick = true;
+  const uid = state.uid;
   try{
     if(!state.uid || state.status !== 'google') return;
     // Varsayılan avatar: yoksa UID'den deterministik seç ve yaz
@@ -409,6 +436,7 @@ async function ensureNick(){
         let h=0; for(let i=0;i<state.uid.length;i++) h=((h<<5)-h)+state.uid.charCodeAt(i);
         const av = A[Math.abs(h)%A.length];
         await update(ref(db,'users/'+state.uid), {avatar: av});
+        if(state.uid !== uid) return;
         if(state.profile) state.profile.avatar = av;
       }catch(e){}
     }
@@ -417,6 +445,7 @@ async function ensureNick(){
       try{
         const k = nickKey(state.profile.nick);
         const reg = await get(ref(db, 'nicks/' + k));
+        if(state.uid !== uid) return;
         if(!reg.exists()){ await setNick(state.profile.nick); }
       }catch(e){}
       return;
@@ -427,6 +456,7 @@ async function ensureNick(){
     base = base.replace(/\s+/g,'').replace(/[^A-Za-z0-9_ğüşıöçĞÜŞİÖÇ]/g,'').slice(0, NICK_MAX);
     if(base.length < NICK_MIN) base = 'Oyuncu';
     for(let i=0;i<30;i++){
+      if(state.uid !== uid) return;
       const cand = i === 0 ? base : (base.slice(0, NICK_MAX - String(i).length) + i);
       const r = await setNick(cand);
       if(r.ok) return;

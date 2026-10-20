@@ -46,6 +46,7 @@ const PRIZES = [
   { rank:6, kaju:500,  icon:'🎖️', upTo:10 },    // 6-10
 ];
 function prizeForRank(rank){
+  if(!Number.isSafeInteger(rank) || rank <= 0) return 0;
   if(rank===1) return 5000;
   if(rank===2) return 3000;
   if(rank===3) return 2000;
@@ -59,7 +60,7 @@ function prizeForRank(rank){
 // Her maç sonu: oyun bittiğinde puan. Galibiyet daha çok puan.
 export async function addTournamentPoints(pts, reason){
   const st = Auth.getState();
-  if(!st.uid || !pts) return;
+  if(!st.uid || !Number.isSafeInteger(pts) || pts <= 0) return;
   const wk = weekId();
   const name = st.displayName || (st.profile && st.profile.nick) || 'Oyuncu';
   try{
@@ -96,8 +97,9 @@ async function claimPrize(){
   const prize = prizeForRank(rank);
   if(prize <= 0){ _toast('Geçen hafta ödül sıralamasına giremedin (ilk 25)'); return; }
   try{
-    await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true);
-    await Store.addKaju(prize, 'tournament', '🏆 Turnuva ödülü (#'+rank+')');
+    const paid = await Store.claimKajuOnce('tournament_' + pwk, prize, 'tournament', 'Turnuva ödülü (#'+rank+')', st.uid);
+    if(!paid.claimed) return;
+    try{ await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true); }catch(e){}
     _toast('🏆 '+rank+'. oldun! '+fmt(prize)+' Kaju kazandın!');
     // İlk 3 → Sosyal Duvar'a yaz
     try{
@@ -120,6 +122,8 @@ export async function hasPendingPrize(){
   if(!st.uid) return false;
   const pwk = _prevWeekId();
   try{
+    const receipt = await fdb.get(fdb.ref(db, 'users/'+st.uid+'/heroRewardClaims/tournament_'+pwk));
+    if(receipt.exists()) return false;
     const cl = await fdb.get(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid));
     if(cl.exists() && cl.val()) return false;
     const lb = await fetchLeaderboard(pwk);
@@ -145,8 +149,9 @@ export async function autoClaimPrize(){
     const prize = prizeForRank(rank);
     if(prize <= 0) return { claimed:false };
     // Otomatik yatır
-    await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true);
-    await Store.addKaju(prize, 'tournament', '🏆 Turnuva ödülü (#'+rank+') — otomatik');
+    const paid = await Store.claimKajuOnce('tournament_' + pwk, prize, 'tournament', 'Turnuva ödülü (#'+rank+')', st.uid);
+    if(!paid.claimed) return {claimed:false};
+    try{ await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true); }catch(e){}
     // İlk 3 → Sosyal Duvar
     try{
       if(rank <= 3){
@@ -241,7 +246,7 @@ export async function openTournament(){
   const bounds = weekBounds();
   const timerEl = ov.querySelector('#trnTimer');
   const tick=()=>{
-    if(!document.body.contains(ov)) return;
+    if(!document.body.contains(ov)){ clearInterval(ti); return; }
     const rem = bounds.end - Date.now();
     const lastHour = rem <= 3600000 && rem > 0;   // son 1 saat
     timerEl.innerHTML = 'Bu hafta bitmesine: <b>'+_fmtRemain(rem)+'</b>' + (lastHour ? ' 🔥' : '');
@@ -291,7 +296,12 @@ export async function openTournament(){
 
   body.innerHTML=html;
   const cb=body.querySelector('#trnClaim');
-  if(cb) cb.addEventListener('click', ()=>{ cb.disabled=true; cb.textContent='…'; claimPrize(); });
+  if(cb) cb.addEventListener('click', async ()=>{
+    if(cb.disabled) return;
+    cb.disabled=true; cb.textContent='…';
+    try{ await claimPrize(); }
+    finally{ cb.disabled=false; cb.textContent='🎁 Geçen haftanın ödülünü şimdi al!'; }
+  });
 }
 
 // Global erişim

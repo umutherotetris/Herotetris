@@ -11,6 +11,7 @@ const _S = {
   addKaju: (n,g)=> (Store&&Store.addKaju?Store.addKaju(n,g):(_addKaju?_addKaju(n,g):Promise.resolve(0))),
   addXP: (n)=> (Store&&Store.addXP?Store.addXP(n):(_addXP?_addXP(n):Promise.resolve(false))),
   isVip: ()=> (Store&&Store.isVip?Store.isVip():false),
+  claimKajuOnce: (...args)=>Store.claimKajuOnce(...args),
 };
 
 // ── Toast yardımcısı ──
@@ -108,11 +109,12 @@ const WHEEL_SEGMENTS = [
   { type:'jackpot', amount:750, label:'750!',  color:'#FF5252', weight:2,  ico:'💎' },
 ];
 
-function spinKey(){ return 'hero_spin_' + new Date().toISOString().slice(0,10); }
+function spinKey(){ return 'hero_spin_' + (Auth.getState().uid || 'guest') + '_' + new Date().toISOString().slice(0,10); }
 export function canSpin(){
   try{ return localStorage.getItem(spinKey()) !== '1'; }catch(e){ return true; }
 }
-function markSpun(){ try{ localStorage.setItem(spinKey(), '1'); }catch(e){} }
+function markSpun(key){ try{ localStorage.setItem(key, '1'); }catch(e){} }
+const pendingSpins = new Set();
 
 export function openDailyWheel(){
   injectEconomyCSS();
@@ -140,7 +142,7 @@ export function openDailyWheel(){
     const rot = (i * segAngle) + segAngle/2;
     segs += `<text x="${lx}" y="${ly}" fill="#1a1020" font-size="13" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot},${lx},${ly})">${seg.label}</text>`;
   });
-  const already = !canSpin();
+  const already = !canSpin() || pendingSpins.has(st.uid);
   ov.innerHTML = `
     <div class="eco-box wheel-box">
       <div class="eco-head">
@@ -175,7 +177,9 @@ export function openDailyWheel(){
   let spinning = false;
   if(btn && !already){
     btn.addEventListener('click', async () => {
-      if(spinning || !canSpin()) return;
+      if(spinning || !canSpin() || pendingSpins.has(st.uid) || Auth.getState().uid !== st.uid) return;
+      const claimKey = spinKey();
+      pendingSpins.add(st.uid);
       spinning = true; btn.disabled = true; btn.textContent = '🌀 Dönüyor…';
       // Ağırlıklı rastgele seçim
       const total = WHEEL_SEGMENTS.reduce((a,s) => a+s.weight, 0);
@@ -192,7 +196,8 @@ export function openDailyWheel(){
       // Ses
       try{ wheelSpinSound(); }catch(e){}
       setTimeout(async () => {
-        markSpun();
+        try{
+        if(Auth.getState().uid !== st.uid){ _toast('Hesap değişti. Çarkı yeniden açabilirsin.'); return; }
         // 👑 VIP çark 2× bonusu
         let vipMult = 1;
         try{ if(_S.isVip && _S.isVip()) vipMult = 2; }catch(e){}
@@ -210,14 +215,20 @@ export function openDailyWheel(){
           _toast(`🥚 Kozmo Yumurtası + ${bonus}🥜 kazandın!${vipTag}`);
         } else {
           const amt = seg.amount * vipMult;
-          await _S.addKaju(amt, 'spin');
-          _toast(`🎉 ${amt} 🥜 kazandın!${vipTag}`);
+          const earned = await _S.addKaju(amt, 'spin');
+          if(!earned) throw new Error('Günlük kazanım sınırı');
+          _toast(`🎉 ${earned} 🥜 kazandın!${vipTag}`);
         }
+        markSpun(claimKey);
         try{ winSound(seg.type === 'jackpot'); }catch(e){}
         btn.textContent = seg.type === 'jackpot' ? '💰 JACKPOT!' : '✅ Kazandın!';
         // Görev ilerletme
         try{ progressQuest('spin'); }catch(e){}
-        setTimeout(() => { const o = document.getElementById('wheelOv'); if(o) o.remove(); }, 1800);
+        setTimeout(() => ov.remove(), 1800);
+        }catch(e){
+          _toast('Ödül alınamadı. Bağlantını ve günlük kazanım sınırını kontrol edip yeniden deneyebilirsin.', true);
+          btn.textContent = 'Yeniden dene'; btn.disabled = false; spinning = false;
+        }finally{ pendingSpins.delete(st.uid); }
       }, 4100);
     });
   }
@@ -263,18 +274,27 @@ const QUEST_DEFS = [
   { id:'spin1',   icon:'🎰', title:'Çarkı Çevir',       target:1,   reward:50,  track:'spin' },
 ];
 
-function questKey(){ return 'hero_quests_' + new Date().toISOString().slice(0,10); }
+function questKey(){ return 'hero_quests_' + (Auth.getState().uid || 'guest') + '_' + new Date().toISOString().slice(0,10); }
 function loadQuests(){
   try{
     const data = JSON.parse(localStorage.getItem(questKey()) || '{}');
-    return data;
+    if(!data || typeof data !== 'object' || Array.isArray(data)) return {};
+    const safe = {};
+    for(const q of QUEST_DEFS){
+      const entry = data[q.id];
+      if(!entry || typeof entry !== 'object') continue;
+      safe[q.id] = {progress:Number.isFinite(Number(entry.progress)) ? Math.max(0, Math.min(q.target, Number(entry.progress))) : 0,
+        claimed:entry.claimed === true, _notified:entry._notified === true};
+    }
+    return safe;
   }catch(e){ return {}; }
 }
 function saveQuests(data){ try{ localStorage.setItem(questKey(), JSON.stringify(data)); }catch(e){} }
 
 // Görev ilerlet (oyunlar/çark çağırır)
 export function progressQuest(track, amount){
-  amount = amount || 1;
+  amount = amount === undefined ? 1 : Number(amount);
+  if(!Number.isFinite(amount) || amount <= 0) return;
   const data = loadQuests();
   let changed = false;
   QUEST_DEFS.forEach(q => {
@@ -317,6 +337,7 @@ export function openQuests(){
 
 function renderQuests(){
   const list = document.getElementById('questList'); if(!list) return;
+  const owner = Auth.getState().uid;
   const data = loadQuests();
   list.innerHTML = QUEST_DEFS.map(q => {
     const cur = data[q.id] || { progress:0, claimed:false };
@@ -341,15 +362,25 @@ function renderQuests(){
   }).join('');
   // Ödül al butonları
   list.querySelectorAll('[data-claim]').forEach(b => b.addEventListener('click', async () => {
+    if(b.disabled || Auth.getState().uid !== owner) return;
     const qid = b.dataset.claim;
     const q = QUEST_DEFS.find(x => x.id === qid); if(!q) return;
     const data = loadQuests();
     const cur = data[qid] || { progress:0, claimed:false };
     if(cur.claimed || cur.progress < q.target) return;
-    cur.claimed = true; data[qid] = cur; saveQuests(data);
-    await _S.addKaju(q.reward, 'quest');
-    _toast(`🎉 +${q.reward} 🥜 görev ödülü!`);
-    renderQuests();
+    b.disabled = true;
+    const key = questKey();
+    try{
+      const receipt = 'quest_' + new Date().toISOString().slice(0,10) + '_' + qid;
+      const result = await _S.claimKajuOnce(receipt, q.reward, 'quest', q.title, owner);
+      if(Auth.getState().uid !== owner) return;
+      if(!result.claimed){ _toast('Ödül daha önce alındı veya şu an alınamıyor.'); return; }
+      cur.claimed = true; data[qid] = cur;
+      try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
+      _toast(`🎉 +${result.amount} 🥜 görev ödülü!`);
+      renderQuests();
+    }catch(e){ _toast('Ödül alınamadı. Yeniden deneyebilirsin.', true); }
+    finally{ b.disabled = false; }
   }));
 }
 

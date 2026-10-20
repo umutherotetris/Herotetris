@@ -1,3 +1,27 @@
+# Hero Portal 139 — oturum ve ödül regresyon taraması
+
+138 tasarımı korunur; üç alternatif görünüm sohbet içinde konsept mockup olarak sunulmuştur. Tasarım seçimi uygulanmamıştır.
+
+## 139 düzeltmeleri
+
+- Beklemiş hesap/profil/admin yanıtı yeni oturuma uygulanmaz. İsim güncellemesi doğru UID'ye bağlı kalır; kayıt hatası başarı gibi gösterilmez.
+- Store'un ilk eşzamanlı aboneliği bütün değişkenler başlatıldıktan sonra çalışır. Çıkış bakiye, rekor, envanter ve istatistikleri sıfırlar.
+- Kaju kazanç/harcaması sunucu işlemi tamamlanmadan yerel başarı yazmaz. Çakışan bakiye güncellemeleri transaction kullanır; başarısız eski mağaza ödeme çağrısı da durur. Geçersiz/sonsuz sayılar ve bozuk geçmiş güvenle reddedilir.
+- Günlük, VIP, görev, turnuva ve gelen transfer ödüllerinde `users/{uid}/heroRewardClaims` makbuzu ile bakiye aynı transaction içinde değişir. Tekrar deneme çift kredi vermez. Günlük seri bilgisi de aynı işlemde saklanır. Sabit ödüller oyun kazanım limitinden kesilmez; örneğin birincilik 5.000 Kaju'dur.
+- Transfer temizliği başarısız olsa bile aynı transfer ikinci kez kredilenmez. Eski turnuva `claimed` bayrağı geriye uyumlu tutulur.
+- Günlük yerel sayaçlar/görevler/çark hakkı UID bazında ayrılır; önceki global localStorage anahtarları silinmez. Eski global görev ilerlemesi hangi hesaba ait olduğu bilinmediği için yeni hesaba aktarılmaz.
+- Görev ödeme hatası tekrar denenebilir; çark aynı oturumda yeniden açılarak üst üste başlatılamaz ve hesap değişimi sonrası diğer hesaba ödül yazmaz.
+- Bildirim dinleyicisi çıkışta kapanır; eski callback yok sayılır. Aynı zaman damgalı farklı bildirimler korunur. Anahtarların erişilebilir adı ve durumu vardır. Portal kapalıyken bildirim teslim edildiği şeklindeki yanlış açıklama kaldırılmıştır.
+- Turnuva paneli kapanınca zamanlayıcı durur ve ödül düğmesi hata sonrası kilitli kalmaz.
+
+## 139 doğrulama
+
+`PORTAL_CHROMIUM=/tmp/chromium node QA/portal-state.cjs` gerçek Auth/Store/Daily/Push/Economy modüllerini bellek içi Firebase SDK ile sınar: başlangıç, çıkış, gecikmiş hesap yanıtları, sayısal sınırlar, bozuk geçmiş, çakışan harcamalar/krediler, başarısız ödeme, 5.000 Kaju ödülü, çift talep, günlük ödül tekrarı, transfer temizleme hatası, görev yeniden deneme, bildirim yaşam döngüsü ve erişilebilir anahtarlar. Önceki UI, sosyal, form ve gerçek service worker testleri de çalıştırılır.
+
+Üretim hesabına yazılmaz. Gerçek Google girişi, canlı Firebase kurallarının yeni makbuz alanına izin vermesi, fiziksel telefon ve oyuncular arası çevrimiçi maç test edilmemiştir. İstemci düzeltmeleri sunucu tarafında ödül yetkilendirmesinin yerine geçmez. Tüm portalın hatasız olduğu iddia edilmez.
+
+---
+
 # Hero Portal 138 — premium tasarım ve portal düzeltmeleri
 
 Ana sayfa koyu grafit, şampanya tonları ve Manrope tipografisiyle yeniden tasarlandı. Oyun koleksiyonu, oyuncu ilerlemesi ve beş portal sekmesi aynı görsel sistemi kullanır. Beş özgün SVG çizimi haricî medya olmadan çalışır. Türkçe karakterli Manrope fontları ve sürümü sabit PeerJS 1.5.4 yerel olarak sunulur; OFL ve MIT lisansları ilgili klasörlerdedir.
