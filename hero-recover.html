@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1015">
+<!-- Legacy r820 worker rejects ordinary Hero HTML. ONLY this bridge carries its
+     higher-build compatibility marker, so it can deliver this page from network
+     and replace itself. This is not the Hero or Sukun application version. -->
+<meta name="sukun-build" content="r999999">
+<title>Hero Portal — Açılıyor</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0c1015;color:#f3f6fa;font:16px/1.7 system-ui}main{max-width:420px;padding:32px}h1{color:#6ee7e0}button,a{display:inline-block;padding:12px 20px;margin-top:12px;background:#6ee7e0;color:#0c1015;border:0;border-radius:10px;text-decoration:none;font:700 16px system-ui}button{cursor:pointer}</style>
+</head>
+<body><main><h1>Hero Portal</h1><p id="message" role="status">Oyun alanın açılıyor. Kısa bir süre bekle.</p><button id="retry" hidden type="button">Yeniden dene</button><noscript><p>Oyunları açmak için JavaScript'i etkinleştir.</p></noscript></main>
+<script>
+(async function(){
+  const home = new URL('index.html?hero=137', location.href);
+  const retry = document.getElementById('retry');
+  retry.addEventListener('click', () => location.reload());
+  if(!('serviceWorker' in navigator)){ location.replace(home.href); return; }
+  function isHeroWorker(worker){
+    if(!worker) return Promise.resolve(false);
+    return new Promise(resolve => {
+      const channel = new MessageChannel();
+      const timeout = setTimeout(() => { channel.port1.close(); resolve(false); }, 1000);
+      channel.port1.onmessage = event => {
+        clearTimeout(timeout);
+        channel.port1.close();
+        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 137);
+      };
+      try{ worker.postMessage({ type: 'HERO_PING' }, [channel.port2]); }
+      catch(error){ clearTimeout(timeout); channel.port1.close(); resolve(false); }
+    });
+  }
+  try{
+    const scope = new URL('./', location.href).href;
+    const previous = await navigator.serviceWorker.getRegistration(scope);
+    // A replacement can remain waiting behind the legacy registration.
+    // Detach ONLY this project's legacy registration before creating a fresh one.
+    // Do not clear CacheStorage, player settings, IndexedDB, or a parent site's worker.
+    if(previous?.scope === scope && !await isHeroWorker(previous.active)){
+      await previous.unregister();
+    }
+    const registration = await navigator.serviceWorker.register(new URL('sw.js', location.href), {
+      scope, updateViaCache: 'none'
+    });
+    await new Promise((resolve, reject) => {
+      let finished = false;
+      const watched = new WeakSet();
+      const timer = setTimeout(() => done(new Error('Worker activation timed out')), 25000);
+      const inspection = setInterval(inspect, 500);
+      function done(error){
+        if(finished) return;
+        finished = true;
+        clearTimeout(timer);
+        clearInterval(inspection);
+        navigator.serviceWorker.removeEventListener('controllerchange', verify);
+        error ? reject(error) : resolve();
+      }
+      function verify(){
+        const controller = navigator.serviceWorker.controller;
+        if(!controller || finished || controller !== registration.active || registration.active.state !== 'activated') return;
+        const channel = new MessageChannel();
+        const closeTimer = setTimeout(() => channel.port1.close(), 2500);
+        channel.port1.onmessage = event => {
+          clearTimeout(closeTimer);
+          channel.port1.close();
+          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 137) done();
+        };
+        controller.postMessage({ type: 'HERO_PING' }, [channel.port2]);
+      }
+      function watch(worker){
+        if(!worker || watched.has(worker)) return;
+        watched.add(worker);
+        const changed = () => {
+          if(worker.state === 'installed') worker.postMessage({ type: 'SKIP_WAITING' });
+          if(worker.state === 'activated') verify();
+        };
+        worker.addEventListener('statechange', changed);
+        changed();
+      }
+      function inspect(){
+        if(finished) return;
+        watch(registration.installing);
+        watch(registration.waiting);
+        registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+        verify();
+      }
+      navigator.serviceWorker.addEventListener('controllerchange', verify);
+      registration.addEventListener('updatefound', inspect);
+      registration.update().then(inspect).catch(() => {});
+      inspect();
+    });
+    location.replace(home.href);
+  }catch(error){
+    document.getElementById('message').textContent = 'Bağlantı kurulamadı. İnternet bağlantını kontrol edip yeniden dene.';
+    retry.hidden = false;
+  }
+})();
+</script>
+</body>
+</html>

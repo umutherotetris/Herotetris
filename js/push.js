@@ -44,7 +44,8 @@ function _prefAllows(notif){
 export async function registerSW(){
   if(!('serviceWorker' in navigator)) return null;
   try{
-    _swReg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+    _swReg = await (window.__heroWorkerReady || navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' }));
+    if(!_swReg) return null;
     // Güncelleme kontrolü
     _swReg.addEventListener('updatefound', () => {
       const nw = _swReg.installing;
