@@ -1,0 +1,267 @@
+/* Hero Portal — home layout. Game and modal styles remain in components.css. */
+body.portal {
+  height: auto;
+  min-height: 100vh;
+  overflow-x: clip;
+  --portal-bg: #0c1015;
+  --portal-surface: #141a21;
+  --portal-border: #29323d;
+  --portal-ink: #f3f6fa;
+  --portal-muted: #a2adbb;
+  color: var(--portal-ink);
+  background: var(--portal-bg);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+.portal .portal-glow {
+  position: absolute;
+  width: min(900px, 100%);
+  height: 650px;
+  left: 50%; top: 0; transform: translateX(-50%);
+  background: radial-gradient(ellipse at 78% 12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 62%);
+  pointer-events: none;
+}
+.portal #app {
+  max-width: 1180px;
+  min-height: auto;
+  padding: 0 32px calc(112px + env(safe-area-inset-bottom, 0px));
+}
+.portal .portal-header {
+  position: relative; z-index: 2;
+  max-width: 1180px; margin: 0 auto; min-height: 104px;
+  padding: max(24px, env(safe-area-inset-top, 0px)) 32px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  border-bottom: 1px solid var(--portal-border);
+}
+.portal .portal-brand { display: inline-flex; align-items: center; gap: 11px; min-height: 44px; flex-shrink: 0; }
+.portal .brand-mark { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; background: var(--accent); border-radius: 11px; color: #071114; }
+.portal .brand-mark svg { width: 25px; height: 25px; }
+.portal .brand-mark { color: var(--accent); background: none; }
+.portal .brand-mark svg { width: 38px; height: 38px; }
+.portal .header-link svg, .portal .gpc-arrow svg { width: 16px; height: 16px; flex-shrink: 0; }
+.portal .portal-status { margin-top: 16px; padding: 14px; border: 1px solid var(--portal-border); border-radius: 10px; color: var(--portal-muted); font-size: 13px; }
+.portal .portal-retry { min-height: 44px; padding: 8px 12px; text-decoration: underline; color: var(--accent); }
+.portal .brand-name { display: block; font: 800 22px/1 var(--font-display); letter-spacing: -.6px; }
+.portal .brand-name em { font-style: normal; font-weight: 500; color: var(--portal-muted); }
+.portal .brand-name small { display: block; margin-top: 7px; font: 600 9px/1 var(--font-body); letter-spacing: 2px; color: var(--portal-muted); }
+.portal .header-note { font-size: 12px; color: #8995a4; }
+.portal .header-link { display: inline-flex; align-items: center; gap: 12px; padding: 11px 15px; border: 1px solid var(--portal-border); border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; background: #141a21; }
+.portal .header-link:hover { border-color: var(--accent); }
+.portal .home-intro { display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; gap: 60px; padding: 58px 0 62px; }
+.portal .eyebrow { display: flex; align-items: center; gap: 8px; font-size: 10px; line-height: 1.4; font-weight: 700; color: var(--portal-muted); letter-spacing: 1.7px; }
+.portal .intro-copy > .eyebrow { color: var(--accent); margin-bottom: 18px; }
+.portal .intro-copy > .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.portal .intro-copy h1 { font-size: clamp(36px, 4.6vw, 57px); line-height: 1.12; letter-spacing: -2.2px; font-weight: 760; }
+.portal .intro-copy h1 em { color: var(--accent); font-style: normal; }
+.portal .intro-description { color: var(--portal-muted); font-size: 14px; line-height: 1.75; max-width: 390px; margin-top: 21px; }
+.portal .intro-link { display: inline-flex; align-items: center; gap: 24px; min-height: 44px; margin-top: 18px; font-size: 13px; font-weight: 700; }
+.portal .intro-link svg { width: 17px; height: 17px; color: var(--accent); }
+.portal .intro-art { display: flex; align-items: center; justify-content: center; position: relative; padding: 4px 15px; }
+.portal .intro-art::before { content: ''; position: absolute; inset: 14% 0; background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 13%, transparent), transparent 65%); filter: blur(26px); }
+.portal .arcade-window { position: relative; width: 290px; padding: 15px 18px 12px; background: #141c24; border: 1px solid #35424e; border-radius: 17px; transform: rotate(5deg); box-shadow: 16px 22px 0 #0f151c, 16px 22px 0 1px #25303a, 0 30px 55px #0004; }
+.portal .arcade-topbar { display: flex; align-items: center; gap: 4px; margin-bottom: 14px; }
+.portal .arcade-topbar i { width: 5px; height: 5px; border-radius: 50%; background: #495767; }
+.portal .arcade-topbar i:first-child { background: var(--accent); }
+.portal .arcade-topbar span { margin-left: auto; font: 600 9px/1.5 monospace; letter-spacing: 2px; color: #a3b5c6; }
+.portal .arcade-board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 8px; background: #0a1118; border: 1px solid #263340; border-radius: 7px; }
+.portal .cell { display: block; aspect-ratio: 1; border: 1px solid #1b2731; border-radius: 3px; background: #0f1821; }
+.portal .cell.filled { background: #62e5c1; border-color: #b2f6e2; box-shadow: inset -3px -3px 0 #0002, inset 2px 2px 0 #fff3; }
+.portal .cell.purple { background: #a78bfa; border-color: #cfbaff; }
+.portal .cell.gold { background: #e8bd6d; border-color: #f9db9e; }
+.portal .arcade-caption { padding-top: 10px; text-align: center; font: 600 8px/1.5 monospace; color: #91a3b6; letter-spacing: 2.4px; }
+.portal #games { scroll-margin-top: 24px; }
+.portal .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 23px; }
+.portal .section-heading .eyebrow { font-size: 9px; letter-spacing: 1.6px; margin-bottom: 7px; }
+.portal .section-heading h2 { color: var(--portal-ink); font-size: 25px; line-height: 1.25; font-weight: 700; letter-spacing: -.8px; }
+.portal .section-count { color: #9ba8b6; font: 600 10px/1.5 monospace; letter-spacing: 1.4px; padding-bottom: 3px; }
+.portal .games-premium { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin: 0; }
+.portal .game-pc { display: flex; flex-direction: column; align-items: stretch; text-align: left; gap: 0; min-width: 0; padding: 20px; border: 1px solid var(--portal-border); border-radius: 17px; background: var(--portal-surface); color: var(--portal-ink); transition: border-color .18s ease, transform .18s ease, background .18s ease; }
+.portal .game-pc::before { width: 100%; height: 185px; top: 0; right: 0; opacity: .55; background: radial-gradient(ellipse at 50% 65%, color-mix(in srgb, var(--gc) 17%, transparent), transparent 68%); animation: none; }
+.portal .game-pc::after { display: none; }
+.portal .game-pc:hover { border-color: color-mix(in srgb, var(--gc) 55%, var(--portal-border)); transform: translateY(-4px); background: #18212a; }
+.portal .game-pc:active { transform: translateY(-1px); }
+.portal .game-pc-top { display: flex; justify-content: space-between; gap: 8px; position: relative; color: var(--portal-muted); font: 600 9px/1.4 var(--font-body); letter-spacing: 1.3px; }
+.portal .game-number { color: #778695; font-family: monospace; }
+.portal .game-pc-logo { position: relative; width: 100%; height: 123px; margin: 13px 0 12px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.portal .game-pc-logo::after { display: none; }
+.portal .game-pc-logo svg { width: 91px; height: 91px; animation: none !important; filter: drop-shadow(0 10px 14px #0003); }
+.portal .game-pc-logo svg * { animation: none !important; }
+.portal .game-pc-info { position: relative; display: block; flex: 1; }
+.portal .game-pc-name { display: block; color: var(--portal-ink); font: 700 19px/1.25 var(--font-display); letter-spacing: -.4px; text-shadow: none; }
+.portal .game-pc-modes { display: block; font-size: 12px; line-height: 1.65; color: var(--portal-muted); margin-top: 8px; min-height: 40px; }
+.portal .game-pc-footer { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 25px; padding-top: 16px; border-top: 1px solid #29333f; }
+.portal .game-tag { font-size: 10px; line-height: 1.4; color: #a6b3c2; }
+.portal .game-pc-play { display: inline-flex; align-items: center; justify-content: center; flex-direction: row; gap: 9px; padding: 7px 10px; min-height: 32px; background: color-mix(in srgb, var(--gc) 11%, transparent); border: 1px solid color-mix(in srgb, var(--gc) 17%, transparent); border-radius: 8px; color: var(--gc); font: 700 11px/1.2 var(--font-body); letter-spacing: 0; text-shadow: none; animation: none; }
+.portal .gpc-arrow { display: inline-flex; font-size: 14px; }
+.portal .player-section { margin-top: 54px; padding-top: 35px; border-top: 1px solid var(--portal-border); }
+.portal .player-section .section-heading { margin-bottom: 20px; }
+.portal .player-section .section-heading h2 { font-size: 22px; }
+.portal .player-section .section-heading p { font-size: 12px; color: var(--portal-muted); }
+.portal .player-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+.portal .auth-card { margin: 0; border-radius: 15px; border: 1px solid var(--portal-border); background: var(--portal-surface); }
+.portal .auth-guest { height: 100%; padding: 22px; text-align: left; align-items: flex-start; gap: 0; border: none; border-radius: 0; background: none; animation: none; }
+.portal .auth-guest-icon { display: none; }
+.portal .auth-guest-title { font: 700 17px/1.35 var(--font-body); color: var(--portal-ink); background: none; -webkit-text-fill-color: currentColor; letter-spacing: -.3px; margin-bottom: 8px; }
+.portal .auth-guest-sub { font-size: 12px; color: var(--portal-muted); line-height: 1.7; margin-bottom: 16px; max-width: 390px; }
+.portal .auth-google-btn { width: auto; min-width: 210px; max-width: 100%; min-height: 44px; border-radius: 9px; padding: 11px 18px; background: #e9eff5; border: 1px solid #e9eff5; color: #14202c; box-shadow: none; animation: none; font-size: 12px; }
+.portal .auth-google-btn:hover { background: #fff; }
+.portal .auth-guest #authMsg { font-size: 12px; line-height: 1.5; margin-top: 12px; }
+.portal .auth-user { height: 100%; min-height: 160px; background: none; border: none; border-radius: 0; padding: 24px; }
+.portal .auth-user::before { display: none; }
+.portal .auth-user .pc-avatar { animation: none; background: var(--portal-border); }
+.portal .auth-user .pc-name { font-size: 18px; overflow-wrap: anywhere; }
+.portal .auth-online-dot { animation: none; box-shadow: none; }
+.portal .auth-online-txt { font-size: 11px; letter-spacing: 0; }
+.portal .auth-kaju-val { font: 700 22px/1.3 var(--font-display); text-shadow: none; }
+.portal .auth-kaju-lbl { font-size: 10px; color: #c7b782; }
+.portal .auth-kaju-send { min-height: 44px; padding: 8px 12px; font-size: 12px; }
+.portal .progress-panel { min-width: 0; background: var(--portal-surface); border: 1px solid var(--portal-border); border-radius: 15px; padding: 20px; }
+.portal .stats-bar { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin: 0 0 17px; }
+.portal .stats-bar .stat { padding: 0 8px; border: 0; border-right: 1px solid var(--portal-border); border-radius: 0; background: none; text-align: left; }
+.portal .stats-bar .stat:first-child { padding-left: 0; }
+.portal .stats-bar .stat:last-child { border-right: 0; padding-right: 0; }
+.portal .stats-bar .stat::before { display: none; }
+.portal .stats-bar .stat-v { font: 700 19px/1.3 var(--font-display); letter-spacing: -.5px; color: var(--portal-ink); }
+.portal .stats-bar .stat-l { font-size: 11px; line-height: 1.5; color: var(--portal-muted); margin-top: 5px; letter-spacing: 0; }
+.portal .xp-bar-wrap { padding: 14px 0 0; margin: 0; border: none; border-top: 1px solid var(--portal-border); border-radius: 0; background: none; }
+.portal .xp-bar-header { gap: 8px; margin-bottom: 10px; }
+.portal .xp-lv-badge { padding: 0; color: var(--portal-ink); background: none; font: 700 10px/1.5 var(--font-body); border: none; border-radius: 0; }
+.portal .xp-label { font-size: 8px; letter-spacing: .8px; color: var(--portal-muted); }
+.portal .xp-next { font-size: 10px; color: var(--accent); }
+.portal .xp-bar-track { height: 5px; border: none; background: #2b3540; margin-bottom: 9px; overflow: hidden; }
+.portal .xp-bar-fill { background: var(--accent); box-shadow: none; border-radius: 5px; }
+.portal .xp-bar-fill::after, .portal .xp-bar-glow { display: none; }
+.portal .xp-cur, .portal .xp-pct, .portal .xp-max { font: 500 10px/1.5 var(--font-body); color: var(--portal-muted); }
+.portal .xp-pct { color: var(--portal-ink); }
+.portal .eco-quick-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; margin: 17px 0 0; }
+.portal .eco-quick-btn { min-width: 0; display: flex; flex-direction: row; align-items: center; gap: 13px; padding: 17px 20px; border-radius: 12px; border-color: var(--portal-border); background: #11171e; text-align: left; }
+.portal .eco-quick-btn:hover { border-color: #4a5867; background: #17212a; }
+.portal .eco-quick-ico { font-size: 22px; filter: none; }
+.portal .eco-quick-copy { display: block; min-width: 0; }
+.portal .eco-quick-lbl { display: block; text-align: left; font-size: 12px; letter-spacing: 0; color: var(--portal-ink); }
+.portal .eco-quick-desc { display: block; font-size: 10px; color: var(--portal-muted); margin-top: 3px; }
+.portal .eco-quick-badge { top: 11px; right: 11px; background: var(--accent); color: #071114; box-shadow: none; animation: none; }
+.portal .portal-footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 30px; color: #82909f; font-size: 10px; }
+.portal .portal-footer > :first-child { font: 600 11px/1.5 var(--font-display); letter-spacing: 1px; }
+.portal .bottom-nav { left: 50%; right: auto; bottom: 18px; width: min(620px, calc(100% - 40px)); transform: translateX(-50%); gap: 4px; padding: 7px; border: 1px solid #34424f; border-radius: 17px; background: #18212bed; box-shadow: 0 12px 35px #0006; backdrop-filter: blur(20px); }
+.portal .nav-item { min-height: 54px; padding: 8px 4px; gap: 4px; border-radius: 10px; color: #a1adba; transition: background .15s, color .15s; }
+.portal .nav-item .ni-ico { display: inline-flex; font-size: 0; }
+.portal .nav-item .ni-ico svg { width: 20px; height: 20px; }
+.portal .nav-item .ni-lbl { font-size: 9px; letter-spacing: 0; font-weight: 600; }
+.portal .nav-item.active { color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.portal .nav-item.active .ni-ico { filter: none; }
+.portal .nav-item:hover { background: #263440; color: #fff; }
+.portal :is(button,a,input,select,textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.portal .skip-link { position: fixed; z-index: 100000; top: 8px; left: 8px; padding: 12px 18px; background: var(--accent); color: #071114; border-radius: 8px; transform: translateY(-150%); font-weight: 700; }
+.portal .skip-link:focus { transform: none; }
+.portal .screen-heading { font-size: 28px; letter-spacing: -.8px; margin: 30px 0 18px; }
+.portal .scr-pad { max-width: 660px; margin: 0 auto; padding: 0 0 40px; }
+.portal .screen-description { color: var(--portal-muted); font-size: 13px; margin: -8px 0 20px; }
+.portal [data-screen].active { animation: none; }
+@media (min-width: 1280px) {
+  .portal .home-intro { gap: 90px; }
+}
+@media (max-width: 900px) {
+  .portal .home-intro { gap: 28px; }
+  .portal .intro-copy h1 { font-size: 43px; }
+  .portal .arcade-window { width: 250px; }
+  .portal .game-pc { padding: 16px; }
+  .portal .game-pc-name { font-size: 17px; }
+  .portal .game-pc-modes { font-size: 11px; }
+  .portal .game-tag { font-size: 9px; }
+  .portal .game-pc-footer { gap: 5px; }
+  .portal .game-pc-play { padding: 7px 8px; }
+  .portal .player-layout { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .portal .progress-panel { padding: 20px 16px; }
+  .portal .auth-guest { padding: 20px; }
+  .portal .stats-bar .stat-v { font-size: 17px; }
+}
+@media (max-width: 767px) {
+  .portal #app { padding-right: 24px; padding-left: 24px; }
+  .portal .portal-header { min-height: 88px; padding-right: 24px; padding-left: 24px; }
+  .portal .header-note { display: none; }
+  .portal .home-intro { padding: 42px 0 45px; gap: 24px; }
+  .portal .intro-copy h1 { font-size: 39px; letter-spacing: -1.6px; }
+  .portal .intro-description { font-size: 12px; }
+  .portal .arcade-window { width: 220px; padding: 12px; }
+  .portal .arcade-board { gap: 2px; padding: 5px; }
+  .portal .games-premium { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+  .portal .game-pc { padding: 20px; }
+  .portal .game-pc-name { font-size: 20px; }
+  .portal .game-pc-modes { font-size: 12px; min-height: 39px; }
+  .portal .game-pc-logo { height: 105px; margin: 8px 0 12px; }
+  .portal .game-pc-logo svg { width: 82px; height: 82px; }
+  .portal .game-pc-footer { margin-top: 20px; }
+  .portal .game-tag { font-size: 10px; }
+  .portal .player-layout { grid-template-columns: 1fr; }
+  .portal .auth-guest { padding: 23px; }
+  .portal .auth-guest-sub { max-width: none; }
+  .portal .progress-panel { padding: 22px; }
+  .portal .stats-bar .stat-v { font-size: 21px; }
+  .portal .eco-quick-btn { gap: 9px; padding: 15px 12px; }
+  .portal .eco-quick-desc { font-size: 9px; }
+  .portal .eco-quick-ico { font-size: 20px; }
+  .portal .player-section .section-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
+}
+@media (max-width: 600px) {
+  .portal .portal-header { min-height: 81px; padding: max(18px, env(safe-area-inset-top, 0px)) 20px 18px; }
+  .portal #app { padding: 0 20px calc(100px + env(safe-area-inset-bottom,0px)); }
+  .portal .brand-name { font-size: 20px; }
+  .portal .brand-mark { width: 34px; height: 34px; border-radius: 9px; }
+  .portal .header-link { font-size: 12px; padding: 10px 12px; gap: 8px; }
+  .portal .home-intro { display: block; padding: 30px 0 36px; }
+  .portal .intro-art { display: none; }
+  .portal .intro-copy > .eyebrow { margin-bottom: 15px; font-size: 9px; letter-spacing: 1.3px; }
+  .portal .intro-copy h1 { font-size: 38px; line-height: 1.14; letter-spacing: -1.5px; }
+  .portal .intro-description { max-width: 330px; font-size: 12px; margin-top: 15px; }
+  .portal .intro-link { margin-top: 9px; font-size: 12px; gap: 22px; }
+  .portal .section-heading { margin-bottom: 17px; gap: 10px; }
+  .portal .section-heading h2 { font-size: 22px; letter-spacing: -.6px; }
+  .portal .section-heading .eyebrow { font-size: 8px; letter-spacing: 1.4px; }
+  .portal .section-count { font-size: 8px; letter-spacing: 1px; padding-bottom: 4px; }
+  .portal .games-premium { gap: 11px; }
+  .portal .game-pc { padding: 15px; border-radius: 13px; }
+  .portal .game-pc-top { font-size: 8px; letter-spacing: .9px; }
+  .portal .game-pc-name { font-size: 17px; }
+.portal .game-pc-modes { font-size: 12px; margin-top: 7px; min-height: 40px; }
+  .portal .game-pc-logo { height: 83px; margin: 8px 0 10px; }
+  .portal .game-pc-logo svg { width: 67px; height: 67px; }
+  .portal .game-pc-footer { margin-top: 16px; padding-top: 12px; gap: 4px; flex-wrap: wrap; }
+  .portal .game-tag { font-size: 10px; }
+  .portal .game-pc-play { min-height: 30px; padding: 6px 8px; gap: 6px; font-size: 10px; }
+  .portal .gpc-arrow { font-size: 12px; }
+  .portal .player-section { margin-top: 34px; padding-top: 27px; }
+  .portal .player-section .section-heading h2 { font-size: 21px; }
+  .portal .player-section .section-heading p { font-size: 11px; }
+  .portal .eco-quick-row { gap: 9px; }
+  .portal .eco-quick-btn { flex-direction: column; align-items: flex-start; gap: 9px; padding: 14px 11px; min-height: 92px; }
+  .portal .eco-quick-lbl { font-size: 10px; }
+  .portal .eco-quick-desc { display: none; }
+  .portal .eco-quick-badge { top: 9px; right: 8px; }
+  .portal .portal-footer { font-size: 9px; padding-top: 25px; }
+  .portal .bottom-nav { bottom: 0; left: 0; width: 100%; transform: none; padding: 6px 8px calc(6px + env(safe-area-inset-bottom,0px)); border-radius: 15px 15px 0 0; border-bottom: 0; border-left: 0; border-right: 0; }
+  .portal .nav-item { min-height: 53px; padding: 8px 2px; }
+  .portal .nav-item .ni-lbl { font-size: 10px; }
+}
+@media (max-width: 379px) {
+  .portal #app { padding-right: 16px; padding-left: 16px; }
+  .portal .portal-header { padding-right: 16px; padding-left: 16px; gap: 10px; }
+  .portal .brand-name { font-size: 17px; }
+  .portal .brand-mark { width: 30px; height: 30px; }
+  .portal .header-link { padding: 10px; font-size: 11px; }
+  .portal .intro-copy h1 { font-size: 32px; }
+  .portal .section-heading h2 { font-size: 20px; }
+  .portal .game-pc { padding: 12px; }
+  .portal .game-pc-name { font-size: 14px; letter-spacing: -.3px; }
+  .portal .game-pc-modes { font-size: 12px; }
+  .portal .game-tag { font-size: 10px; }
+  .portal .game-pc-play { gap: 4px; padding: 6px; font-size: 9px; }
+  .portal .auth-guest { padding: 18px; }
+  .portal .progress-panel { padding: 18px; }
+  .portal .stats-bar .stat-v { font-size: 18px; }
+  .portal .stats-bar .stat-l { font-size: 10px; }
+  .portal .xp-label { font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal *, .portal *::before, .portal *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

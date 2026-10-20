@@ -114,8 +114,6 @@ function start(){
     // Giriş sonrası geçen haftanın turnuva ödülünü otomatik yatır (talep gerektirmez)
     if(m.autoClaimPrize) setTimeout(()=>m.autoClaimPrize().catch(()=>{}), 2500);
   }).catch(e => console.warn('[Tournament]', e));
-  // Günlük özet widget'ı (ana ekrana otomatik enjekte olur)
-  import('./dailysummary.js').catch(e => console.warn('[DailySummary]', e));
   // Badge güncelleme: 3sn sonra (önce kritik UI yüklensin)
   setTimeout(updateEcoBadges, 3000);
   setInterval(updateEcoBadges, 60000);

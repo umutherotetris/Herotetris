@@ -1,144 +1,48 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="neon">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#07070d">
-  <title>Hero Oyun Portalı</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#7C4DFF">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c1015">
+  <meta name="description" content="Hero Portal: Tetris, satranç, tavla ve Kelimecik. Oyununu seç, arkadaşlarına katıl ve kendi rekorunu aş.">
+  <title>Hero Portal — Sıradaki hamlen burada</title>
+  <link rel="icon" type="image/svg+xml" href="assets/hero-portal.svg">
+  <link rel="manifest" href="hero.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hero Portal">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('hero_theme')||'neon';}catch(e){}</script>
   <link rel="stylesheet" href="css/tokens.css?v=124">
   <link rel="stylesheet" href="css/base.css?v=124">
   <link rel="stylesheet" href="css/components.css?v=124">
   <link rel="stylesheet" href="css/tetris.css?v=124">
   <link rel="stylesheet" href="css/themes.css?v=124">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/portal.css?v=136">
 </head>
-<body>
-  <!-- Premium parçacık zemini -->
-  <div class="bg-particles" id="bgParticles"></div>
-  <div class="bg-glow-orb bg-orb1"></div>
-  <div class="bg-glow-orb bg-orb2"></div>
-  <div class="bg-glow-orb bg-orb3"></div>
-  <div id="app">
-
-    <!-- ══════════════ ANA EKRAN ══════════════ -->
-    <section data-screen="home" class="active">
-
-      <!-- Misafir banner (gizli - auth-guest içinde entegre) -->
-      <div id="guestBanner" style="display:none"></div>
-
-      <!-- Logo (premium sinematik) -->
-      <div class="hero-logo">
-        <div class="logo-main">
-          <span class="logo-hero-txt">HERO</span><span class="logo-x">✦</span><span class="logo-portal-txt">PORTAL</span>
-          <div class="logo-sweep"></div>
+<body class="portal">
+  <a class="skip-link" href="#games">Oyunlara geç</a>
+  <div class="portal-glow" aria-hidden="true"></div>
+  <header class="portal-header">
+    <a class="portal-brand" href="#home" data-nav="home" aria-label="Hero Portal ana sayfa"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="12" fill="currentColor"/><path d="M12 12v16m16-16v16M12 20h16" stroke="#0c1015" stroke-width="5"/><path d="M29 7v6m-3-3h6" stroke="#0c1015" stroke-width="2"/></svg></span><span class="brand-name">HERO <em>PORTAL</em></span></a>
+    <span class="header-note">Kısa bir mola, yeni bir rekor.</span>
+    <a class="header-link" href="#profile" data-nav="profile">Oyuncu alanın <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </header>
+  <main id="app">
+    <section data-screen="home" class="active home-screen" aria-labelledby="home-title" tabindex="-1">
+      <div class="home-intro">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> SENİN OYUN EVRENİN</p>
+          <h1 id="home-title">Sıradaki hamlen<br><em>burada başlıyor.</em></h1>
+          <p class="intro-description">Rekor peşinde bir tur. Dostlarla bir karşılaşma.<br>Biraz rekabet, bolca keyif. Oyununu seç.</p>
+          <a class="intro-link" href="#games">Oyununu seç <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
-        <div class="hero-sub">OYUN EVRENİ</div>
+        <div class="intro-art" aria-hidden="true"><div class="arcade-window"><div class="arcade-topbar"><i></i><i></i><i></i><span>HERO / PLAY</span></div><div class="arcade-board"><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell filled purple"></span><span class="cell filled purple"></span><span class="cell filled purple"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell filled purple"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell filled mint"></span><span class="cell filled mint"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell filled mint"></span><span class="cell filled mint"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span><span class="cell filled gold"></span><span class="cell filled gold"></span><span class="cell"></span><span class="cell"></span><span class="cell filled mint"></span><span class="cell filled mint"></span><span class="cell filled mint"></span><span class="cell filled mint"></span><span class="cell filled gold"></span><span class="cell filled gold"></span><span class="cell filled gold"></span><span class="cell filled gold"></span><span class="cell"></span><span class="cell"></span></div><div class="arcade-caption">BİR HAMLE DAHA. <span>↗</span></div></div></div>
       </div>
-
-      <!-- Auth Kartı (ui.js doldurur) -->
-      <div class="auth-card" id="profileCard" data-status="boot">
-
-        <!-- ── GİRİŞ YAPILMAMIŞ (anon/offline) → sinematik login ── -->
-        <div class="auth-guest" id="authGuest">
-          <div class="auth-guest-glow"></div>
-          <div class="auth-guest-icon">🔐</div>
-          <div class="auth-guest-title">HERO PORTAL'A HOŞGELDİN</div>
-          <div class="auth-guest-sub">İlerlemeni kaydet · Sıralamaya gir · Arkadaş ekle · Kozmo topla</div>
-          <button class="auth-google-btn" id="connectBtn">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.703-1.569 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-            Google ile Giriş Yap
-          </button>
-          <div id="authMsg" class="auth-err"></div>
-        </div>
-
-        <!-- ── GİRİŞ YAPILMIŞ → premium profil ── -->
-        <div class="auth-user" id="authUser" style="display:none">
-          <div class="auth-user-left">
-            <div class="pc-avatar"><div class="ph" id="pAvatar">🦸</div></div>
-            <div class="auth-user-info">
-              <div class="auth-user-namerow">
-                <span class="pc-name" id="pName">Yükleniyor…</span>
-                <span class="pc-admin" id="adminBadge">👑</span>
-              </div>
-              <div class="auth-user-meta">
-                <span class="auth-user-lv" id="pLevel">LV.1</span>
-                <span class="auth-online-dot"></span>
-                <span class="auth-online-txt">Çevrimiçi</span>
-              </div>
-            </div>
-          </div>
-          <div class="auth-user-right" id="pcKaju">
-            <div class="auth-kaju-val" id="pKaju">0</div>
-            <div class="auth-kaju-lbl">🥜 KAJU</div>
-            <button class="auth-kaju-send" id="pcKajuSend" style="display:none">Gönder</button>
-          </div>
-        </div>
-
-        <!-- Gizli eski elementler (ui.js uyumluluğu) -->
-        <span id="pStatusDot" style="display:none"></span>
-        <span id="pStatusText" style="display:none"></span>
-      </div>
-
-      <!-- İstatistik şeridi -->
-      <div class="stats-bar">
-        <div class="stat" style="--sc:#00E5FF"><div class="stat-v" id="statBest">2.8M</div><div class="stat-l">EN İYİ</div></div>
-        <div class="stat" style="--sc:#FFD740"><div class="stat-v" id="statLvl">LV.1</div><div class="stat-l">SEVİYE</div></div>
-        <div class="stat" style="--sc:#69F0AE"><div class="stat-v" id="statKaju">0</div><div class="stat-l">🥜 KAJU</div></div>
-        <div class="stat" style="--sc:#E040FB"><div class="stat-v" id="statRank">-</div><div class="stat-l">SIRA</div></div>
-      </div>
-      <!-- XP İlerleme Çubuğu -->
-      <div class="xp-bar-wrap" id="xpBarWrap">
-        <div class="xp-bar-header">
-          <span class="xp-lv-badge" id="xpLvBadge">LV.1</span>
-          <span class="xp-label">⚡ DENEYIM PUANI</span>
-          <span class="xp-next" id="xpNext">LV.2 →</span>
-        </div>
-        <div class="xp-bar-track">
-          <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
-          <div class="xp-bar-glow" id="xpBarGlow" style="left:0%"></div>
-        </div>
-        <div class="xp-bar-footer">
-          <span class="xp-cur" id="xpCur">0 XP</span>
-          <span class="xp-pct" id="xpPct">0%</span>
-          <span class="xp-max" id="xpMax">500 XP</span>
-        </div>
-      </div>
-
-      <!-- 💎 Ekonomi hızlı erişim -->
-      <div class="eco-quick-row">
-        <button class="eco-quick-btn" id="ecoWheelBtn">
-          <span class="eco-quick-ico">🎰</span>
-          <span class="eco-quick-lbl">Günlük Çark</span>
-          <span class="eco-quick-badge" id="wheelBadge">!</span>
-        </button>
-        <button class="eco-quick-btn" id="ecoQuestBtn">
-          <span class="eco-quick-ico">📋</span>
-          <span class="eco-quick-lbl">Görevler</span>
-          <span class="eco-quick-badge" id="questBadge" style="display:none">0</span>
-        </button>
-        <button class="eco-quick-btn" id="ecoHistBtn">
-          <span class="eco-quick-ico">🪙</span>
-          <span class="eco-quick-lbl">Kaju Geçmişi</span>
-        </button>
-      </div>
-
-      <!-- Oyunlar -->
-      <div class="sec-title">
-        <span class="sec-title-icon">🎮</span>
-        <span class="sec-title-txt">OYUNLAR</span>
-        <span class="sec-title-line"></span>
-      </div>
-
-      <div class="games-premium">
-        <!-- TETRIS -->
-        <div class="game-pc" id="gameTetris" role="button" style="--gc:#00E5FF;--gc-bg1:rgba(0,229,255,.08);--gc-bg2:rgba(0,229,255,.01);--gc-bd:rgba(0,229,255,.3)">
-          <div class="game-pc-logo">
-            <svg width="52" height="52" viewBox="0 0 52 52" style="animation:tetrisFall 2.5s ease-in-out infinite;overflow:visible">
+      <section class="game-library" id="games" aria-labelledby="games-title" tabindex="-1">
+        <div class="section-heading"><div><p class="eyebrow">MOLANI GÜZELLEŞTİR</p><h2 id="games-title">Bugün ne oynuyoruz?</h2></div><span class="section-count">04 / OYUN</span></div>
+        <div class="games-premium"><button type="button" class="game-pc" id="gameTetris" style="--gc:#6ee7e0" aria-label="HeroTetris oyna" aria-describedby="gameTetrisDesc">
+      <span class="game-pc-top"><span class="game-category">Arcade</span><span class="game-number">01</span></span>
+      <span class="game-pc-logo"><svg aria-hidden="true" focusable="false" width="52" height="52" viewBox="0 0 52 52">
               <defs>
                 <linearGradient id="tgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5f3fc"/><stop offset="50" stop-color="#22d3ee"/><stop offset="100" stop-color="#0e7490"/></linearGradient>
                 <linearGradient id="tgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset="100" stop-color="#0891b2"/></linearGradient>
@@ -154,31 +58,25 @@
                 <rect x="18" y="30" width="11" height="11" rx="2.5" fill="url(#tgC)"/><rect x="18" y="30" width="11" height="4" rx="2.5" fill="#fff" opacity=".3"/>
                 <rect x="30" y="30" width="11" height="11" rx="2.5" fill="url(#tgA)" opacity=".85"/><rect x="30" y="30" width="11" height="4" rx="2.5" fill="#fff" opacity=".3"/>
               </g>
-            </svg>
-          </div>
-          <div class="game-pc-info">
-            <div class="game-pc-name">HEROTETRIS</div>
-            <div class="game-pc-modes">Solo · Skor · Seviye · Liderlik</div>
-          </div>
-          <div class="game-pc-play"><span class="gpc-arrow">▶</span> OYNA</div>
-        </div>
-
-        <!-- SATRANÇ -->
-        <div class="game-pc" id="gameChess" role="button" style="--gc:#FFD740;--gc-bg1:rgba(255,215,64,.08);--gc-bg2:rgba(255,215,64,.01);--gc-bd:rgba(255,215,64,.3)">
-          <div class="game-pc-logo">
-            <svg width="52" height="52" viewBox="0 0 52 52" style="overflow:visible">
+            </svg></span>
+      <span class="game-pc-info"><strong class="game-pc-name">HEROTETRIS</strong><span class="game-pc-modes" id="gameTetrisDesc">Blokları yerleştir. Kendi rekorunu aş.</span></span>
+      <span class="game-pc-footer"><span class="game-tag">Tek oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
+    </button>
+<button type="button" class="game-pc" id="gameChess" style="--gc:#ebcd88" aria-label="Satranç oyna" aria-describedby="gameChessDesc">
+      <span class="game-pc-top"><span class="game-category">Strateji</span><span class="game-number">02</span></span>
+      <span class="game-pc-logo"><svg aria-hidden="true" focusable="false" width="52" height="52" viewBox="0 0 52 52">
               <defs>
                 <linearGradient id="cgA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffde7"/><stop offset="35" stop-color="#FFE57F"/><stop offset="75" stop-color="#FFD740"/><stop offset="100" stop-color="#B8860B"/></linearGradient>
                 <radialGradient id="cgGem" cx="40%" cy="35%"><stop offset="0" stop-color="#fff"/><stop offset="40" stop-color="#FF80DF"/><stop offset="100" stop-color="#C2185B"/></radialGradient>
                 <filter id="cGlow"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
               </defs>
-              <g style="animation:spinSlow 6s linear infinite;transform-origin:26px 26px">
+              <g>
                 <circle cx="26" cy="4" r="1.8" fill="#FFD740"/><circle cx="44" cy="14" r="1.4" fill="#FFE050"/>
                 <circle cx="44" cy="38" r="1.6" fill="#FFF176"/><circle cx="26" cy="48" r="1.4" fill="#FFE050"/>
                 <circle cx="8" cy="38" r="1.6" fill="#FFD740"/><circle cx="8" cy="14" r="1.4" fill="#FFF176"/>
               </g>
               <ellipse cx="26" cy="42" rx="16" ry="3" fill="#FFD740" opacity=".25" filter="url(#cGlow)"/>
-              <g filter="url(#cGlow)" style="animation:chessGlow 2.5s ease-in-out infinite;transform-origin:26px 26px">
+              <g filter="url(#cGlow)">
                 <path d="M14 18 L16 9 L20 15 L26 8 L32 15 L36 9 L38 18 Z" fill="url(#cgA)" stroke="#B8860B" stroke-width=".5"/>
                 <circle cx="16" cy="8.5" r="2" fill="url(#cgGem)"/><circle cx="26" cy="7.5" r="2.3" fill="url(#cgGem)"/><circle cx="36" cy="8.5" r="2" fill="url(#cgGem)"/>
                 <path d="M15 18 L37 18 L34 30 L18 30 Z" fill="url(#cgA)"/>
@@ -187,19 +85,13 @@
                 <rect x="20" y="19" width="4" height="14" rx="2" fill="#fff" opacity=".4"/>
                 <ellipse cx="26" cy="24" rx="3" ry="5" fill="#fff" opacity=".2"/>
               </g>
-            </svg>
-          </div>
-          <div class="game-pc-info">
-            <div class="game-pc-name">SATRANÇ</div>
-            <div class="game-pc-modes">2 Oyuncu · AI · Çevrimiçi · 8 Tema</div>
-          </div>
-          <div class="game-pc-play"><span class="gpc-arrow">▶</span> OYNA</div>
-        </div>
-
-        <!-- TAVLA -->
-        <div class="game-pc" id="gameTavla" role="button" style="--gc:#FF9800;--gc-bg1:rgba(255,152,0,.08);--gc-bg2:rgba(255,152,0,.01);--gc-bd:rgba(255,152,0,.3)">
-          <div class="game-pc-logo">
-            <svg width="52" height="52" viewBox="0 0 52 52" style="overflow:visible">
+            </svg></span>
+      <span class="game-pc-info"><strong class="game-pc-name">SATRANÇ</strong><span class="game-pc-modes" id="gameChessDesc">Bir sonraki hamleyi sen belirle.</span></span>
+      <span class="game-pc-footer"><span class="game-tag">AI · 2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
+    </button>
+<button type="button" class="game-pc" id="gameTavla" style="--gc:#eda57c" aria-label="Tavla oyna" aria-describedby="gameTavlaDesc">
+      <span class="game-pc-top"><span class="game-category">Klasik</span><span class="game-number">03</span></span>
+      <span class="game-pc-logo"><svg aria-hidden="true" focusable="false" width="52" height="52" viewBox="0 0 52 52">
               <defs>
                 <linearGradient id="bgBd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset="100" stop-color="#9a3412"/></linearGradient>
                 <linearGradient id="bgP1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fed7aa"/><stop offset="100" stop-color="#ea580c"/></linearGradient>
@@ -214,122 +106,86 @@
                 <circle cx="33" cy="15" r="4.5" fill="url(#bgDice)" stroke="#b45309" stroke-width=".5"/><circle cx="33" cy="15" r="2" fill="#fff" opacity=".5"/>
                 <circle cx="33" cy="37" r="4.5" fill="#fef3c7" stroke="#b45309" stroke-width=".5"/>
               </g>
-              <g style="animation:diceShake 3s ease-in-out infinite;transform-origin:38px 26px" filter="url(#bGlow)">
+              <g filter="url(#bGlow)">
                 <rect x="33" y="21" width="10" height="10" rx="2.5" fill="url(#bgDice)" stroke="#b45309" stroke-width=".8"/>
                 <circle cx="36" cy="24" r="1" fill="#7a3500"/><circle cx="40" cy="24" r="1" fill="#7a3500"/>
                 <circle cx="38" cy="26" r="1" fill="#7a3500"/>
                 <circle cx="36" cy="28" r="1" fill="#7a3500"/><circle cx="40" cy="28" r="1" fill="#7a3500"/>
               </g>
-            </svg>
-          </div>
-          <div class="game-pc-info">
-            <div class="game-pc-name">TAVLA</div>
-            <div class="game-pc-modes">2 Oyuncu · 6 Osmanlı Teması</div>
-          </div>
-          <div class="game-pc-play"><span class="gpc-arrow">▶</span> OYNA</div>
-        </div>
-
-        <!-- KELİMECİK -->
-        <div class="game-pc" id="gameKelime" role="button" style="--gc:#69F0AE;--gc-bg1:rgba(105,240,174,.08);--gc-bg2:rgba(105,240,174,.01);--gc-bd:rgba(105,240,174,.3)">
-          <div class="game-pc-logo">
-            <svg width="52" height="52" viewBox="0 0 52 52" style="overflow:visible">
+            </svg></span>
+      <span class="game-pc-info"><strong class="game-pc-name">TAVLA</strong><span class="game-pc-modes" id="gameTavlaDesc">Zarını at, taşlarını eve taşı.</span></span>
+      <span class="game-pc-footer"><span class="game-tag">2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
+    </button>
+<button type="button" class="game-pc" id="gameKelime" style="--gc:#a5d6a0" aria-label="Kelimecik oyna" aria-describedby="gameKelimeDesc">
+      <span class="game-pc-top"><span class="game-category">Kelime</span><span class="game-number">04</span></span>
+      <span class="game-pc-logo"><svg aria-hidden="true" focusable="false" width="52" height="52" viewBox="0 0 52 52">
               <defs>
                 <linearGradient id="wgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#86efac"/><stop offset="100" stop-color="#15803d"/></linearGradient>
                 <linearGradient id="wgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="100" stop-color="#0d9488"/></linearGradient>
                 <linearGradient id="wgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a7f3d0"/><stop offset="100" stop-color="#059669"/></linearGradient>
                 <filter id="wGlow"><feGaussianBlur stdDeviation="1.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
               </defs>
-              <g filter="url(#wGlow)" style="animation:letterPop 2s ease-in-out infinite;transform-origin:26px 26px">
+              <g filter="url(#wGlow)">
                 <rect x="5" y="13" width="12" height="12" rx="2.5" fill="url(#wgA)"/><rect x="5" y="13" width="12" height="4" rx="2.5" fill="#fff" opacity=".3"/><text x="11" y="22.5" font-family="Orbitron,sans-serif" font-size="8.5" font-weight="800" fill="#04200f" text-anchor="middle">H</text>
                 <rect x="18" y="13" width="12" height="12" rx="2.5" fill="url(#wgB)"/><rect x="18" y="13" width="12" height="4" rx="2.5" fill="#fff" opacity=".3"/><text x="24" y="22.5" font-family="Orbitron,sans-serif" font-size="8.5" font-weight="800" fill="#04200f" text-anchor="middle">E</text>
                 <rect x="31" y="13" width="12" height="12" rx="2.5" fill="url(#wgC)"/><rect x="31" y="13" width="12" height="4" rx="2.5" fill="#fff" opacity=".3"/><text x="37" y="22.5" font-family="Orbitron,sans-serif" font-size="8.5" font-weight="800" fill="#04200f" text-anchor="middle">R</text>
                 <rect x="11" y="26" width="12" height="12" rx="2.5" fill="url(#wgB)" opacity=".88"/><rect x="11" y="26" width="12" height="4" rx="2.5" fill="#fff" opacity=".25"/><text x="17" y="35.5" font-family="Orbitron,sans-serif" font-size="8.5" font-weight="800" fill="#04200f" text-anchor="middle">O</text>
                 <rect x="24" y="26" width="12" height="12" rx="2.5" fill="url(#wgA)" opacity=".88"/><rect x="24" y="26" width="12" height="4" rx="2.5" fill="#fff" opacity=".25"/><text x="30" y="35.5" font-family="Orbitron,sans-serif" font-size="9" font-weight="800" fill="#04200f" text-anchor="middle">!</text>
               </g>
-            </svg>
+            </svg></span>
+      <span class="game-pc-info"><strong class="game-pc-name">KELİMECİK</strong><span class="game-pc-modes" id="gameKelimeDesc">Harfleri birleştir. Kelimeleri keşfet.</span></span>
+      <span class="game-pc-footer"><span class="game-tag">2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
+    </button></div>
+        <p id="portalStatus" class="portal-status" role="status" aria-live="polite" hidden></p>
+        <noscript><p class="portal-status">Oyunları açmak için tarayıcında JavaScript'i etkinleştir.</p></noscript>
+      </section>
+      <section class="player-section" aria-labelledby="player-title">
+        <div class="section-heading"><div><p class="eyebrow">HER TURDA BİR ADIM İLERİ</p><h2 id="player-title">Senin oyun alanın</h2></div><p>Oyna. Geliş. İz bırak.</p></div>
+        <div class="player-layout">
+          <div class="auth-card" id="profileCard" data-status="boot">
+            <div id="guestBanner" hidden></div>
+            <div class="auth-guest" id="authGuest">
+              <div class="auth-guest-icon" aria-hidden="true">✦</div>
+              <div class="auth-guest-copy"><h3 class="auth-guest-title">Her rekorun bir hikâyesi var.</h3><p class="auth-guest-sub">Giriş yap; ilerlemeni kaydet, sıralamada yerini al ve arkadaşlarınla buluş.</p></div>
+              <button type="button" class="auth-google-btn" id="connectBtn">Google ile Giriş Yap</button>
+              <div id="authMsg" class="auth-err" role="status" aria-live="polite"></div>
+            </div>
+            <div class="auth-user" id="authUser" style="display:none">
+              <div class="auth-user-left"><div class="pc-avatar"><div class="ph" id="pAvatar">🦸</div></div><div class="auth-user-info"><div class="auth-user-namerow"><span class="pc-name" id="pName">Oyuncu</span><span class="pc-admin" id="adminBadge" aria-label="Yönetici">👑</span></div><div class="auth-user-meta"><span class="auth-user-lv" id="pLevel">LV.1</span><span class="auth-online-dot" aria-hidden="true"></span><span class="auth-online-txt">Çevrimiçi</span></div></div></div>
+              <div class="auth-user-right" id="pcKaju"><div class="auth-kaju-val" id="pKaju">0</div><div class="auth-kaju-lbl">🥜 KAJU</div><button type="button" class="auth-kaju-send" id="pcKajuSend" style="display:none">Gönder</button></div>
+            </div>
+            <span id="pStatusDot" hidden></span><span id="pStatusText" hidden></span>
           </div>
-          <div class="game-pc-info">
-            <div class="game-pc-name">KELİMECİK</div>
-            <div class="game-pc-modes">2 Oyuncu · 59.000 Kelime · Türkçe</div>
-          </div>
-          <div class="game-pc-play"><span class="gpc-arrow">▶</span> OYNA</div>
+          <aside class="progress-panel" aria-label="Oyun ilerlemen">
+            <div class="stats-bar">
+              <div class="stat" style="--sc:#6ee7e0"><div class="stat-v" id="statBest">0</div><div class="stat-l">En iyi skor</div></div>
+              <div class="stat" style="--sc:#ebcd88"><div class="stat-v" id="statLvl">LV.1</div><div class="stat-l">Seviye</div></div>
+              <div class="stat" style="--sc:#a5d6a0"><div class="stat-v" id="statKaju">0</div><div class="stat-l">Kaju</div></div>
+              <div class="stat" style="--sc:#c4a0ef"><div class="stat-v" id="statRank">—</div><div class="stat-l">Sıralama</div></div>
+            </div>
+            <div class="xp-bar-wrap" id="xpBarWrap">
+              <div class="xp-bar-header"><span class="xp-lv-badge" id="xpLvBadge">LV.1</span><span class="xp-label">Deneyim puanı</span><span class="xp-next" id="xpNext">LV.2 →</span></div>
+              <div class="xp-bar-track" role="progressbar" aria-label="Bir sonraki seviyeye ilerleme" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div><div class="xp-bar-glow" id="xpBarGlow" style="left:0%"></div></div>
+              <div class="xp-bar-footer"><span class="xp-cur" id="xpCur">0 XP</span><span class="xp-pct" id="xpPct">0%</span><span class="xp-max" id="xpMax">500 XP</span></div>
+            </div>
+          </aside>
         </div>
-      </div>
-
+        <div class="eco-quick-row">
+          <button type="button" class="eco-quick-btn" id="ecoWheelBtn"><span class="eco-quick-ico" aria-hidden="true">◉</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Günlük çark</span><small class="eco-quick-desc">Günün şansını dene</small></span><span class="eco-quick-badge" id="wheelBadge" aria-label="Çevirmeye hazır" style="display:none">!</span></button>
+          <button type="button" class="eco-quick-btn" id="ecoQuestBtn"><span class="eco-quick-ico" aria-hidden="true">✓</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Görevler</span><small class="eco-quick-desc">Tamamla, ödülünü al</small></span><span class="eco-quick-badge" id="questBadge" style="display:none">0</span></button>
+          <button type="button" class="eco-quick-btn" id="ecoHistBtn"><span class="eco-quick-ico" aria-hidden="true">◇</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Kaju geçmişi</span><small class="eco-quick-desc">Kazancını takip et</small></span></button>
+        </div>
+      </section>
+      <footer class="portal-footer"><span>HERO PORTAL</span><p>İyi oyunlar, iyi molalar.</p></footer>
     </section>
-
-    <!-- ══════════════ DİĞER EKRANLAR (yer tutucu) ══════════════ -->
-    <section data-screen="friends"><div id="scrFriends" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
-    <section data-screen="leaderboard"><div id="scrLB" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
-    <section data-screen="profile"><div id="scrProfile" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
-    <section data-screen="notifications"><div id="scrNotif" class="scr-pad"><div class="placeholder">⏳ Yükleniyor…</div></div></section>
-
-  </div>
-
-  <!-- ══════════════ ALT NAVİGASYON ══════════════ -->
-  <nav class="bottom-nav">
-    <a class="nav-item" data-nav="home"><span class="ni-ico">🏠</span><span class="ni-lbl">ANA</span></a>
-    <a class="nav-item" data-nav="friends"><span class="ni-ico">👥</span><span class="ni-lbl">ARKADAŞ</span></a>
-    <a class="nav-item" data-nav="leaderboard"><span class="ni-ico">🏆</span><span class="ni-lbl">LİDERLİK</span></a>
-    <a class="nav-item" data-nav="profile"><span class="ni-ico">👤</span><span class="ni-lbl">PROFİL</span></a>
-    <a class="nav-item" data-nav="notifications"><span class="ni-ico">🔔</span><span class="ni-lbl">BİLDİRİM</span></a>
-  </nav>
-
+    <section data-screen="friends" aria-labelledby="heading-friends" tabindex="-1"><h1 id="heading-friends" class="screen-heading">Arkadaşlar</h1><div id="scrFriends" class="scr-pad"><div class="placeholder" role="status">Oyuncu alanı hazırlanıyor…</div></div></section><section data-screen="leaderboard" aria-labelledby="heading-leaderboard" tabindex="-1"><h1 id="heading-leaderboard" class="screen-heading">Liderlik tablosu</h1><div id="scrLB" class="scr-pad"><div class="placeholder" role="status">Oyuncu alanı hazırlanıyor…</div></div></section><section data-screen="profile" aria-labelledby="heading-profile" tabindex="-1"><h1 id="heading-profile" class="screen-heading">Profilin</h1><div id="scrProfile" class="scr-pad"><div class="placeholder" role="status">Oyuncu alanı hazırlanıyor…</div></div></section><section data-screen="notifications" aria-labelledby="heading-notifications" tabindex="-1"><h1 id="heading-notifications" class="screen-heading">Bildirimler</h1><div id="scrNotif" class="scr-pad"><div class="placeholder" role="status">Oyuncu alanı hazırlanıyor…</div></div></section>
+  </main>
+  <nav class="bottom-nav" aria-label="Ana gezinme"><a class="nav-item active" data-nav="home" href="#home" aria-current="page"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span class="ni-lbl">Ana sayfa</span></a>
+<a class="nav-item" data-nav="friends" href="#friends"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m1-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5v1"/></svg></span><span class="ni-lbl">Arkadaşlar</span></a>
+<a class="nav-item" data-nav="leaderboard" href="#leaderboard"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v6a4 4 0 0 1-8 0V3zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 1v5m-4 3h8m-6-3h4v3"/></svg></span><span class="ni-lbl">Liderlik</span></a>
+<a class="nav-item" data-nav="profile" href="#profile"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span class="ni-lbl">Profil</span></a>
+<a class="nav-item" data-nav="notifications" href="#notifications"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9zm-8 12a2 2 0 0 0 4 0"/></svg></span><span class="ni-lbl">Bildirimler</span></a></nav>
   <script defer src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script>
-  /* Tema yükleme (ayarlardan kaydedilen) */
-  try{
-    const savedTheme = localStorage.getItem('hero_theme') || 'neon';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }catch(e){}
-  /* Premium parçacık zemini üret */
-  (function(){
-    try{
-      const c = document.getElementById('bgParticles');
-      if(!c) return;
-      const cs = getComputedStyle(document.documentElement);
-      const c1 = (cs.getPropertyValue('--logo-c1')||'#00E5FF').trim();
-      const c2 = (cs.getPropertyValue('--logo-c2')||'#FF4081').trim();
-      const cx = (cs.getPropertyValue('--logo-x')||'#FFD740').trim();
-      const colors = [c1, c2, cx, c1, c2];
-      for(let i=0; i<24; i++){
-        const p = document.createElement('div');
-        p.className = 'bg-particle';
-        const sz = 2 + Math.random()*4;
-        p.style.width = sz+'px'; p.style.height = sz+'px';
-        p.style.left = Math.random()*100+'%';
-        const col = colors[Math.floor(Math.random()*colors.length)];
-        p.style.background = col; p.style.color = col;
-        p.style.boxShadow = '0 0 '+(sz*2)+'px currentColor';
-        p.style.animationDuration = (8 + Math.random()*12)+'s';
-        p.style.animationDelay = (-Math.random()*15)+'s';
-        c.appendChild(p);
-      }
-    }catch(e){}
-  })();
-  /* PWA Service Worker kaydı (push bildirimleri + offline) */
-  /* FAB görünürlük sıfırlama */
-  try{ if(localStorage.getItem('hero_set_fabs') === '0') localStorage.removeItem('hero_set_fabs'); }catch(e){}
-  </script>
-  <!-- SW zorla güncelle + eski cache temizle (Unexpected token < / eski kod sorununu çözer) -->
-  <script>
-  (async function(){
-    try{
-      if('serviceWorker' in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        for(const r of regs){ try{ await r.update(); }catch(e){} }
-      }
-    }catch(e){}
-  })();
-  </script>
-  <script type="module" src="js/app.js?v=135"></script>
-  <script type="module">
-  /* Ekranlar + Sosyal Hub: versiyonsuz - her zaman güncel */
-  const err = (id, e) => { const el = document.getElementById(id); if(el) el.innerHTML = '<div class="placeholder">⚠️ Yüklenemedi: ' + ((e && e.message) || e) + '</div>'; };
-  import('./js/profile.js').then(m => m.initScreens()).catch(e => {
-    ['scrProfile','scrLB','scrFriends','scrNotif'].forEach(id => err(id, e));
-  });
-  import('./js/social.js').then(m => m.initSocial()).catch(e => console.error('[SocialBoot]', e));
-  </script>
+  <script type="module" src="js/portal.js?v=136"></script>
 </body>
 </html>

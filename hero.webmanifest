@@ -1,0 +1,14 @@
+{
+  "id": "./index.html",
+  "name": "Hero Oyun Portalı",
+  "short_name": "Hero Portal",
+  "description": "Tetris, satranç, tavla ve Kelimecik oyunlarını keşfet.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "lang": "tr",
+  "background_color": "#0c1015",
+  "theme_color": "#0c1015",
+  "categories": ["games", "entertainment"],
+  "icons": [{"src": "assets/hero-portal.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
+}

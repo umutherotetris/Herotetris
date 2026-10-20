@@ -42,8 +42,9 @@ function renderPlayer(p){
   setText('statLvl', 'LV.' + (p.level || 1));
   const _lvBadge = document.querySelector('.auth-user-lv');
   if(_lvBadge) _lvBadge.textContent = 'LV.' + (p.level || 1);
-  const best = p.bestScores && p.bestScores.tetris ? p.bestScores.tetris : 0;
-  if(best > 0){ const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best); setText('statBest', b); }
+  const best = Number(p.best?.tetris || p.bestScores?.tetris || 0);
+  const b = best >= 1e6 ? (best/1e6).toFixed(1)+'M' : best >= 1e3 ? (best/1e3).toFixed(1)+'K' : String(best);
+  setText('statBest', b);
   // ── XP İlerleme Çubuğu ──
   const lv = p.level || 1;
   const xp = p.xp || 0;
@@ -58,6 +59,8 @@ function renderPlayer(p){
   const glow = document.getElementById('xpBarGlow');
   if(fill) fill.style.width = pct + '%';
   if(glow) glow.style.left = Math.max(0, pct - 1) + '%';
+  const track = document.querySelector('.xp-bar-track[role="progressbar"]');
+  if(track) track.setAttribute('aria-valuenow', String(pct));
   const badge = document.getElementById('xpLvBadge');
   if(badge){
     const rank = lv >= 50 ? 'mythic' : lv >= 25 ? 'legend' : lv >= 10 ? 'epic' : lv >= 5 ? 'rare' : 'common';
