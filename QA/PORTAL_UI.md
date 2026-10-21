@@ -1,3 +1,9 @@
+# Release 150 — saved engine state, tile conservation and chronological results
+
+Fixes chess FEN counters/restored history, cancelled and stale Tavla gestures, atomic combined moves, Kelime preview racks/extra tiles/language/online exchange conservation, and Tetris saved phases, pause panels, power duration, chronological AI outcomes, exact Sprint time and Survival speed boundaries. Adds 43 regression groups across six Node suites and one actual-canvas suite. All 28 Node packages, 10 Chromium packages and 60 module syntax checks pass. Original jewels and portal presentation remain. Both online players should load v150. See [PORTAL_AUDIT_150.md](PORTAL_AUDIT_150.md) for evidence and limits.
+
+---
+
 # Release 149 — core engine rules, timing and word search
 
 Fixes power-induced Tetris cell loss, elapsed-time gravity/AI behavior, reachable adventure stars, chess side-specific mating material, terminal Tavla continuation and Kelimecik board scoring/multi-anchor AI search. New independent oracles and actual-canvas regressions complement the prior suites: 22 Node packages, 9 Chromium packages and all 60 module syntax checks pass. Original jewels and portal presentation remain. See [PORTAL_AUDIT_149.md](PORTAL_AUDIT_149.md) for findings, limits and the adventure star thresholds.

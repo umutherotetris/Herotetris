@@ -438,6 +438,7 @@ function saveKelimeResume(){
   try{
     Resume.saveSnapshot('kelime', {
       mode: G.seri ? 'seri' : 'ai',
+      lang: KL_LANG,
       difficulty: G.ai ? G.ai.difficulty : 'orta',
       turnTime: G.seri ? G.seri.turnTime : 0,
       board: G.state.board, bag: G.state.bag, racks: G.state.racks,
@@ -451,6 +452,7 @@ function saveKelimeResume(){
 }
 async function resumeKelime(snap){
   const session = G, setupToken = session._setupToken = {};
+  if(snap.lang === 'tr' || snap.lang === 'en') klSetLang(snap.lang);
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>↩️ Devam ediliyor…</h3><p>Oyun yükleniyor</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
@@ -720,6 +722,11 @@ function doAcceptInvite(inv){
   });
 }
 
+function syncOnlineBag(returnedTiles){
+  G.bagReturns = (Array.isArray(returnedTiles) ? returnedTiles : []).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
+  G.bag = buildBagSeeded(G.bagSeed).concat(G.bagReturns);
+}
+
 function startOnline(role, gameId, oppName, seed, opts){
   G._setupToken = {}; G._resigned = false;
   const _oppUid = (opts && opts.oppUid) || null;
@@ -728,7 +735,8 @@ function startOnline(role, gameId, oppName, seed, opts){
   try{ const rl = (opts.room && opts.room.lang) || opts.lang || KL_LANG; if(rl){ klSetLang(rl); } }catch(e){}
   G.online = true; G.ai = null; G.seri = null; stopTurnTimer(); G.role = role; G.gameId = gameId; G.oppName = oppName; G.oppUid = _oppUid; G._over = false; G.oppPresent = true;
   G.async = !!opts.async; G.turnHours = opts.turnHours || 0; G.deadline = opts.deadline || (opts.room && opts.room.deadline) || 0;
-  G.bag = buildBagSeeded(seed);
+  G.bagSeed = seed;
+  syncOnlineBag(opts.room && opts.room.bagReturns);
   if(opts.room){
     // ── SÜRDÜRME: oda durumundan yükle ──
     const room = opts.room;
@@ -812,6 +820,7 @@ function applyRemote(room){
   if(newCells.length) setLastMove(newCells);
   if(room.scores) G.state.scores = room.scores;
   if(room.turn) G.state.turn = room.turn;
+  if(G.bagSeed != null) syncOnlineBag(room.bagReturns);
   if(room.bagPointer != null) G.state.bagPointer = room.bagPointer;
   G.state.passStreak = room.passStreak || 0;
   if(room.deadline != null) G.deadline = room.deadline;
@@ -1190,7 +1199,7 @@ function renderScores(){
     starEl.textContent = starStr(starsFor(myScore));
   }
   if(G.online){
-    const remain = Math.max(0, 100 - (G.state.bagPointer||0));
+    const remain = Math.max(0, G.bag.length - (G.state.bagPointer||0));
     let dl = '';
     if(G.async && G.deadline){
       const left = G.deadline - Date.now();
@@ -1679,7 +1688,7 @@ function submitMove(){
   }
   // insan hamlesi bitti
   G.state.racks[who] = G.rackView.concat(drawFromBag(G.state.bag, need));
-  G.rackView = G.state.racks.A;     // AI modunda insanın rafı = A
+  G.rackView = G.state.racks.A.slice(); // Deneme taşları kalıcı rafı değiştirmesin.
   G.pending=[]; G.selected=null;
   G.state.passStreak = 0;
   renderAll();
@@ -1755,11 +1764,11 @@ function aiTurn(){
       if(i >= 0) G.state.racks.B.splice(i, 1);
     }
     // AI rafını doldur
-    const need = RACK_SIZE - G.state.racks.B.length;
+    const need = RACK_SIZE - G.state.racks.B.length + surp.extraTiles;
     G.state.racks.B = G.state.racks.B.concat(drawFromBag(G.state.bag, need));
     G.state.passStreak = 0;
     G.who = 'A'; G.aiThinking = false;
-    G.rackView = G.state.racks.A;
+    // İnsan AI düşünürken taş deneyebilir; mevcut deneme rafını koru.
     renderAll();
     celebrate(moveScore, !!(mv.words && mv.pending.length===RACK_SIZE), surp.hits);
     flashStatus('🤖 ' + mv.words.map(w=>w.text).join(', ') + ' (+' + moveScore + ')');
@@ -1769,7 +1778,6 @@ function aiTurn(){
     // AI hamle bulamadı → pas
     G.state.passStreak = (G.state.passStreak||0) + 1;
     G.who = 'A'; G.aiThinking = false;
-    G.rackView = G.state.racks.A;
     renderAll();
     flashStatus('🤖 Yapay zekâ pas geçti');
     if(!checkGameOver() && G.seri) startTurnTimer();
@@ -1927,13 +1935,16 @@ function performExchange(idxs){
     const fresh = G.bag.slice(G.state.bagPointer, G.state.bagPointer+need).map(t=>({letter:t.letter,points:t.points,joker:t.joker}));
     G.state.bagPointer += fresh.length;
     G.rackView = G.rackView.concat(fresh);
+    // Değiştirilen taşlar ortak torbanın sonuna döner; iki istemci aynı sırayı saklar.
+    G.bagReturns = (G.bagReturns || []).concat(removed.map(t=>({letter:t.letter,points:t.points,joker:t.joker})));
+    G.bag = G.bag.concat(removed);
     if(!G.state.racks) G.state.racks = {A:null,B:null};   // güvenlik: racks yoksa oluştur
     G.state.racks[G.role] = G.rackView.slice();
     G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
     G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
     const oppRole = G.role==='A'?'B':'A';
     G.state.turn = oppRole;
-    const patch = { turn: oppRole, bagPointer: G.state.bagPointer, passStreak: 0, lastMove: { who: G.role, ts: Date.now(), exchange: need } };
+    const patch = { turn: oppRole, bagPointer: G.state.bagPointer, bagReturns: G.bagReturns, passStreak: 0, lastMove: { who: G.role, ts: Date.now(), exchange: need } };
     if(G.async) patch['racks/'+G.role] = G.rackView;
     if(KO) KO.pushMove(patch);
     renderAll();
@@ -1950,7 +1961,7 @@ function performExchange(idxs){
   G.selected=null; G.exchangeMode=false; G.exchangeSel=null;
   G.state.passStreak=0; sndPick(); haptic(15); updateExchangeBtn();
   if(G.ai){
-    G.rackView = G.state.racks.A;
+    G.rackView = G.state.racks.A.slice();
     stopTurnTimer();
     G.who='B'; G.aiThinking=true; renderAll(); renderScores();
     flashStatus('🔄 '+removed.length+' harf değişti · 🤖 düşünüyor…');

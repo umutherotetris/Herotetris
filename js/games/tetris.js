@@ -61,6 +61,8 @@ function saveTetrisResume(){
       elapsed: G.elapsed, survStep: G.survStep,
       combo: G.combo, b2b: G.b2b, maxComboThisGame: G.maxComboThisGame,
       speedMult: G.speedMult, baseInterval: G.baseInterval, dropInterval: G.dropInterval,
+      dropAcc:G.dropAcc, lockTimer:G.lockTimer, lockResets:G.lockResets, lastMoveRotate:G.lastMoveRotate,
+      gravityDebt:G.gravityDebt, slowRemainingMs:G.slowRemainingMs,
       shieldUsed: G.shieldUsed, garbageRemainder:G.garbageRemainder,
       powersUsedCount:G.powersUsedCount, gemsUsedCount:G.gemsUsedCount
     });
@@ -104,6 +106,9 @@ function isValidTetrisSnapshot(d){
   }
   if(d.level!==undefined && d.level<1) return false;
   if(d.elapsed!==undefined && (!Number.isFinite(d.elapsed)||d.elapsed<0||d.elapsed>Number.MAX_SAFE_INTEGER)) return false;
+  for(const k of ['dropAcc','lockTimer','gravityDebt','slowRemainingMs']) if(d[k]!==undefined && (!Number.isFinite(d[k])||d[k]<0||d[k]>Number.MAX_SAFE_INTEGER)) return false;
+  if(d.lockResets!==undefined && (!Number.isInteger(d.lockResets)||d.lockResets<0||d.lockResets>LOCK_MAX_RESETS)) return false;
+  if(d.lastMoveRotate!==undefined && typeof d.lastMoveRotate!=='boolean') return false;
   for(const k of ['speedMult','baseInterval','dropInterval']) if(d[k]!==undefined && (!Number.isFinite(d[k])||d[k]<=0||d[k]>60000)) return false;
   return !matrixCells(d.cur.matrix).some(([x,y])=>d.cur.y+y>=0&&d.board[d.cur.y+y][d.cur.x+x]);
 }
@@ -657,7 +662,7 @@ function usePower(){
     board: G.board, COLS, ROWS,
     emptyRow: () => Array(COLS).fill(0),
     addScore: (n) => { G.score += Math.round(n || 0); },
-    slowTime: (ms) => { G.slowUntil = performance.now() + ms; },
+    slowTime: (ms) => { G.slowRemainingMs = ms; },
     clearFullest: (n) => {
       let total = 0;
       for(let k=0;k<n;k++){
@@ -932,6 +937,8 @@ function updateGemBtn(){
 // Gem envanter panelini aç
 function openGemSheet(){
   if(!G || G.over || !G.gems.length) return;
+  if(G.el.gemSheet.classList.contains('show')) return;
+  G.gemWasPaused = G.paused;
   G.paused = true;   // panel açıkken oyun durur
   const sheet = G.el.gemSheet, grid = sheet.querySelector('.gem-grid');
   const counts = {}; G.gems.forEach(g => counts[g.id] = (counts[g.id]||0)+1);
@@ -956,11 +963,12 @@ function openGemSheet(){
 }
 function closeGemSheet(){
   if(!G) return;
+  if(!G.el.gemSheet.classList.contains('show')) return;
   G.el.gemSheet.classList.remove('show');
-  G.paused = false; G.last = 0;
+  G.paused = !!G.gemWasPaused; G.gemWasPaused = false; G.last = 0;
 }
 function pickGem(idx){
-  if(!G) return;
+  if(!G || G.over) return;
   const gem = G.gems[idx];
   if(!gem){ closeGemSheet(); return; }
   G.gems.splice(idx, 1);   // gem'i envanterden çıkar
@@ -970,7 +978,7 @@ function pickGem(idx){
     board: G.board, COLS, ROWS,
     emptyRow: () => Array(COLS).fill(0),
     addScore: (n) => { G.score += Math.round(n || 0); },
-    slowTime: (ms) => { G.slowUntil = performance.now() + ms; }
+    slowTime: (ms) => { G.slowRemainingMs = ms; }
   };
   let msg = '';
   try{ msg = gem.run(api) || gem.nm; }catch(e){ console.warn('[tetris] gem', e); msg = gem.nm; }
@@ -1501,14 +1509,20 @@ function flash(text){
 }
 
 // ── Oyun döngüsü ────────────────────────────────────────────────
-function advanceGravity(dt,interval){
-  let remaining=dt+(G.gravityDebt||0);
+function advanceGravity(dt,interval,advanceClock=true){
+  const available=dt+(G.gravityDebt||0);
+  let remaining=available;
   G.gravityDebt=0;
   for(let steps=0;steps<256&&!G.over;steps++){
     if(collides(G.cur,0,1)){
       G.dropAcc=0;
       const wait=(G.lockResets||0)>=LOCK_MAX_RESETS?0:Math.max(0,LOCK_DELAY-(G.lockTimer||0));
-      if(remaining+1e-9<wait){G.lockTimer=(G.lockTimer||0)+remaining;return;}
+      if(remaining+1e-9<wait){
+        G.lockTimer=(G.lockTimer||0)+remaining;
+        if(advanceClock) G.elapsed=(G.elapsed||0)+remaining;
+        return available;
+      }
+      if(advanceClock) G.elapsed=(G.elapsed||0)+Math.min(remaining,wait);
       remaining=Math.max(0,remaining-wait);
       const previousRate=G.dropInterval;
       lock();G.lockTimer=0;G.lockResets=0;
@@ -1516,13 +1530,70 @@ function advanceGravity(dt,interval){
     }else{
       G.lockTimer=0;
       const wait=Math.max(0,interval-G.dropAcc);
-      if(remaining+1e-9<wait){G.dropAcc+=remaining;return;}
+      if(remaining+1e-9<wait){
+        G.dropAcc+=remaining;
+        if(advanceClock) G.elapsed=(G.elapsed||0)+remaining;
+        return available;
+      }
+      if(advanceClock) G.elapsed=(G.elapsed||0)+Math.min(remaining,wait);
       remaining=Math.max(0,remaining-wait);
       G.dropAcc=0;G.cur.y++;G.lastMoveRotate=false;
     }
-    if(remaining<=0 || G.over) return;
+    if(remaining<=0 || G.over) return available-remaining;
   }
   if(!G.over) G.gravityDebt=remaining;
+  return available-remaining;
+}
+
+// Güç süresini yalnız oynanan zamanda tüket; bitiş sınırını aynı karede işle.
+function advanceTimedGravity(dt,advanceClock=true){
+  let remaining=dt+(G.gravityDebt||0);
+  G.gravityDebt=0;
+  for(let steps=0;steps<512;steps++){
+    // Hayatta Kal hızını eşikte değiştir; eski süreyi yeni hızla oynatma.
+    if(advanceClock && G.mode==='survival'){
+      const step=Math.floor((G.elapsed||0)/30000);
+      if(step>(G.survStep||0)){
+        const crossed=step-(G.survStep||0);
+        G.survStep=step;
+        G.baseInterval=Math.max(120,G.baseInterval-90*crossed);
+        G.dropInterval=Math.max(80,Math.round(G.baseInterval*(G.speedMult||1)));
+        flash('⏱️ HIZLANIYOR!');
+      }
+    }
+    if(steps>0 && remaining<=0) return;
+    const slowed=G.slowRemainingMs>0;
+    const speedBoundary=advanceClock && G.mode==='survival'
+      ? Math.max(0,((G.survStep||0)+1)*30000-(G.elapsed||0)) : Infinity;
+    const segment=Math.min(remaining,slowed?G.slowRemainingMs:Infinity,speedBoundary);
+    const consumed=advanceGravity(segment,G.dropInterval*(slowed?4:1),advanceClock);
+    if(slowed) G.slowRemainingMs=Math.max(0,G.slowRemainingMs-consumed);
+    remaining=Math.max(0,remaining-consumed);
+    if(G.over) return;
+    if(G.gravityDebt>0){G.gravityDebt=remaining;return;}
+  }
+  G.gravityDebt=remaining;
+}
+
+function advanceAITime(dt){
+  let remaining=dt+(G.aiFrameDebt||0);
+  G.aiFrameDebt=0;
+  for(let steps=0;remaining>0&&steps<500;steps++){
+    const interval=G.dropInterval*(G.slowRemainingMs>0?4:1);
+    const playerWait=collides(G.cur,0,1)
+      ? ((G.lockResets||0)>=LOCK_MAX_RESETS?0:Math.max(0,LOCK_DELAY-(G.lockTimer||0)))
+      : Math.max(0,interval-G.dropAcc);
+    const moveWait=Math.max(0,(G.aiProfile?.moveMs||160)-(G.aiMoveAcc||0));
+    const dropWait=Math.max(0,(G.aiDropInterval||480)-(G.aiDropAcc||0));
+    const slice=Math.min(remaining,10,playerWait,moveWait,dropWait,G.slowRemainingMs>0?G.slowRemainingMs:Infinity);
+    // Eşzamanlı olaylarda AI önce işlenir; farklı zamanlardaki olaylar sıralarını korur.
+    G.elapsed=(G.elapsed||0)+slice;
+    if(slice>0) aiTick(slice); else aiStep(0);
+    if(G.over) return;
+    advanceTimedGravity(slice,false); if(G.over) return;
+    remaining=Math.max(0,remaining-slice);
+  }
+  G.aiFrameDebt=remaining;
 }
 
 function loop(ts){
@@ -1534,8 +1605,8 @@ function loop(ts){
     if(G.countdown > 0){
       G.countdownAcc += dt;
       drawBoard(); drawSide();
-      if(G.countdownAcc >= 800){
-        G.countdownAcc = 0;
+      while(G.countdown > 0 && G.countdownAcc >= 800){
+        G.countdownAcc -= 800;
         G.countdown--;
         if(G.countdown > 0){ showCountdownText(String(G.countdown)); Sound.move(); }
         else { showCountdownText('BAŞLA!'); Sound.level(); }
@@ -1543,31 +1614,21 @@ function loop(ts){
       G.raf = requestAnimationFrame(loop);
       return;
     }
-    G.elapsed += dt;
-    // Hayatta Kal: her 30 saniyede hızlan
-    if(G.mode === 'survival'){
-      const step = Math.floor(G.elapsed / 30000);
-      if(step > G.survStep){
-        const crossed=step-G.survStep;
-        G.survStep = step;
-        G.baseInterval = Math.max(120, G.baseInterval - 90*crossed);
-        G.dropInterval = Math.max(80, Math.round(G.baseInterval * (G.speedMult||1)));
-        flash('⏱️ HIZLANIYOR!');
-      }
-    }
-    updateModeUI();
     // Versus: saniyede bir skor senkronu
     if(G.versus && !G.ai){
       G.vsSyncAcc = (G.vsSyncAcc || 0) + dt;
       if(G.vsSyncAcc >= 1000){ G.vsSyncAcc = 0; sendVersusState(); }
     }
-    // AI rakip: botun ilerlemesini simüle et
-    if(G.ai){ aiTick(dt); if(G.over) return; drawAIBoard(); }
-    // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat
-    const slowed = (G.slowUntil && ts < G.slowUntil);
-    const interval = slowed ? G.dropInterval * 4 : G.dropInterval;
-    advanceGravity(dt,interval);
+    // Aynı zaman adımında iki tahtayı da ilerlet; geciken kare sonucu değiştirmesin.
+    if(G.ai){
+      advanceAITime(dt); if(G.over) return;
+      drawAIBoard();
+    }else{
+      // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat.
+      advanceTimedGravity(dt);
+    }
     if(G.over) return;
+    updateModeUI();
     // Yumuşak düşme: görsel Y'yi mantıksal Y'ye doğru kaydır
     if(G.cur){
       if(G.visualY === undefined) G.visualY = G.cur.y;
@@ -1677,6 +1738,7 @@ async function endGame(isWin){
   const session=G,round=G.round,uid=Auth.getState().uid;
   const current=()=>G===session && G.round===round && Auth.getState().uid===uid;
   G.over = true;
+  G.el.gemSheet?.classList.remove('show');
   try{ Resume.clearSnapshot('tetris'); }catch(e){}
   cancelAnimationFrame(G.raf);
   try{ Sound.stopMusic(); }catch(e){}
@@ -2128,6 +2190,7 @@ function bindTouchGestures(){
 
 function togglePause(on){
   if(!G || G.over) return;
+  closeGemSheet();
   G.paused = on;
   if(on){
     const st = G.root.querySelector('[data-el="pauseStats"]');
@@ -2141,7 +2204,7 @@ function startGame(){
   if(!G) return;
   G.round={};   // aynı DOM üzerinde yeniden başlatılan tur da ayrı bir oturumdur
   G.garbageRemainder=0;
-  G.gravityDebt=0;G.aiTimeDebt=0;
+  G.gravityDebt=0;G.aiTimeDebt=0;G.aiFrameDebt=0;
   G.controlStops?.forEach(stop=>stop());
   if(!RESUME_DATA && RESUMABLE_MODES.includes(SELECTED_MODE)) Resume.clearSnapshot('tetris');   // taze oyun → eski devam kaydını sil
   G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
@@ -2176,7 +2239,9 @@ function startGame(){
   G.power = G.hero.power;
   G.charge = 0;           // 0..POWER_CHARGE_LINES
   G.powerReady = false;
-  G.slowUntil = 0;        // Flash zaman yavaşlatma bitiş (ms timestamp)
+  G.slowRemainingMs = 0;  // Flash zaman yavaşlatma: kalan oynanış süresi
+  G.gemWasPaused = false;
+  G.el.gemSheet.classList.remove('show');
   updatePowerBtn();
 
   // ── Gem (S.Güç) envanteri ──
@@ -2251,6 +2316,8 @@ function startGame(){
       if(d.speedMult) G.speedMult = d.speedMult;
       if(d.baseInterval) G.baseInterval = d.baseInterval;
       G.dropInterval = d.dropInterval || Math.round(G.baseInterval * G.speedMult);
+      G.dropAcc=d.dropAcc||0;G.lockTimer=d.lockTimer||0;G.lockResets=d.lockResets||0;
+      G.lastMoveRotate=!!d.lastMoveRotate;G.gravityDebt=d.gravityDebt||0;G.slowRemainingMs=d.slowRemainingMs||0;
       G.shieldUsed = !!d.shieldUsed;
       G.powersUsedCount=d.powersUsedCount||0;G.gemsUsedCount=d.gemsUsedCount||0;
       G.garbageRemainder = Number.isFinite(d.garbageRemainder) ? Math.max(0,Math.min(.999999,d.garbageRemainder)) : 0;

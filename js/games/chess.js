@@ -607,8 +607,8 @@ function startGame(root, mode, opts){
   if(opts.restore){
     const r = opts.restore;
     try{
-      if(r.state) G.state = r.state;
       G.moveHistory = r.moveHistory || [];
+      if(r.state) G.state = { ...r.state, fullmove: r.state.fullmove || Math.floor(G.moveHistory.length / 2) + 1 };
       G.posHistory = r.posHistory || [ positionKey(G.state) ];
       G.captured = r.captured || { w:[], b:[] };
       G.lastMove = r.lastMove || null;
@@ -764,8 +764,7 @@ function startGame(root, mode, opts){
 
   // FEN Kopyala
   gameEl.querySelector('[data-act="copyFEN"]').addEventListener('click', (e) => {
-    const fullmove = Math.floor(G.moveHistory.length / 2) + 1;
-    const fen = toFEN(G.state, fullmove);
+    const fen = toFEN(G.state);
     const btn = e.currentTarget;
     const done = () => { const o = btn.textContent; btn.textContent = '✅ Kopyalandı'; setTimeout(() => { btn.textContent = o; }, 1600); };
     try{
@@ -804,7 +803,7 @@ function startGame(root, mode, opts){
     setupClock(G.timeControl);
     if(G._restoreClock){ G.clock = { w:G._restoreClock.w, b:G._restoreClock.b }; G._restoreClock=null; try{ updateClockDisplay(); }catch(e){} }
   }
-  if(opts.restore){ try{ updateCaptured(); draw(); }catch(e){} }
+  if(opts.restore){ try{ rebuildHistoryUI(); updateCaptured(); draw(); }catch(e){} }
 
   // AI beyazsa ilk hamleyi AI yapar
   maybeAIMove();
@@ -1378,6 +1377,7 @@ function sendFullSync(){
         enPassant: G.state.enPassant || null,
         clock: G.clock ? { ...G.clock } : null,
         halfmove: G.state.halfmove || 0,
+        fullmove: G.state.fullmove || Math.floor((G.moveHistory || []).length / 2) + 1,
         moveHistory: G.moveHistory || [],
         captured: G.captured || { w:[], b:[] },
         lastMove: G.lastMove || null,
@@ -1397,7 +1397,7 @@ function applyFullSync(s){
     if(!s.castling || !['w','b'].every(c=>s.castling[c]&&['k','q'].every(k=>typeof s.castling[c][k]==='boolean'))) return;
     const ep = s.enPassant ?? null;
     if(ep && !([2,5].includes(ep.r)&&Number.isInteger(ep.c)&&ep.c>=0&&ep.c<8)) return;
-    const state = fromFEN(toFEN({board:s.board,turn:s.turn,castling:s.castling,enPassant:ep,halfmove:s.halfmove}));
+    const state = fromFEN(toFEN({board:s.board,turn:s.turn,castling:s.castling,enPassant:ep,halfmove:s.halfmove,fullmove:s.fullmove ?? Math.floor((s.moveHistory || []).length / 2) + 1}));
     if(!state) return;
     G.state = state;
     G.anim = null; G.animating = false; G.aiThinking = false;

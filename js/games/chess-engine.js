@@ -188,7 +188,8 @@ export function applyMove(state, move){
     turn: color === 'w' ? 'b' : 'w',
     enPassant: newEnPassant,
     castling: newCastling,
-    halfmove: newHalfmove
+    halfmove: newHalfmove,
+    fullmove: (state.fullmove || 1) + (color === 'b' ? 1 : 0)
   };
 }
 
@@ -311,12 +312,13 @@ export function newGame(){
     turn: 'w',
     enPassant: null,
     castling: { w:{k:true,q:true}, b:{k:true,q:true} },
-    halfmove: 0
+    halfmove: 0,
+    fullmove: 1
   };
 }
 
 // ── FEN (Forsyth-Edwards Notation) ──
-// State → FEN string. fullmove opsiyonel (varsayılan 1).
+// State → FEN string. fullmove opsiyonel; verilmezse konumun sayacını kullanır.
 export function toFEN(state, fullmove){
   let fen = '';
   for(let r=0;r<8;r++){
@@ -346,7 +348,7 @@ export function toFEN(state, fullmove){
     fen += ' ' + files[state.enPassant.c] + (8 - state.enPassant.r);
   } else { fen += ' -'; }
   fen += ' ' + (state.halfmove || 0);
-  fen += ' ' + (fullmove || 1);
+  fen += ' ' + (fullmove || state.fullmove || 1);
   return fen;
 }
 
@@ -399,7 +401,7 @@ export function fromFEN(fen){
       if(p && p.t === 'k'){ p.c === 'w' ? wk++ : bk++; }
     }
     if(wk !== 1 || bk !== 1) return null;
-    return { board, turn, enPassant, castling, halfmove };
+    return { board, turn, enPassant, castling, halfmove, fullmove: parts[5] ? Number(parts[5]) : 1 };
   }catch(e){ return null; }
 }
 

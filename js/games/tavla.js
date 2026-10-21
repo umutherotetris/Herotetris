@@ -468,6 +468,8 @@ function restart(){
   const open = openingRoll();
   G.state.turn = open.first; G.openingDice = open.dice;
   G.selected = null; G.legalForSel = []; G.undoStack = []; G.gameEnded = false; G.rolled = true; G.aiThinking = false;
+  G.tapTarget = null; G.dragging = false; G.dragPos = null;
+  G.dragMoved = false; G.dragFrom = null; G.pointerDownPos = null;
   G._rewardClaimed = false;
   G.state.dice = open.dice.slice();
   if(G.mode === 'ai'){ G.flip = (G.playerColor === 'b'); }
@@ -1589,6 +1591,12 @@ function onPointerMove(e){
 
 function onPointerUp(e){
   if(!G){ return; }
+  // A browser/OS cancellation aborts the gesture, including a held tap target.
+  if(e.type === 'pointercancel'){
+    G.dragging = false; G.dragPos = null; G.dragMoved = false;
+    G.dragFrom = null; G.pointerDownPos = null; G.tapTarget = null;
+    draw(); return;
+  }
   if(!canInteract()){ G.dragging = false; G.dragPos = null; return; }
   const { x, y } = getPos(e);
   const hit = hitTest(x, y);
@@ -1632,6 +1640,20 @@ function hitTest(px, py){
 }
 
 function doMove(mv){
+  if(!G || G.breakState || G.gameEnded || !G.rolled || G.aiThinking) return;
+  if((G.mode === 'ai' && G.state.turn === G.aiColor) || (G.online && G.state.turn !== G.playerColor)) return;
+  // A held pointer can outlive undo/reset. Resolve every step against the current
+  // board before changing state or sending any part of a combined move.
+  const proposed = Array.isArray(mv?._combo) ? mv._combo : [mv];
+  if(!proposed.length) return;
+  let preview = G.state;
+  const steps = [];
+  for(const step of proposed){
+    const legal = resolveLegalMove(preview, step);
+    if(!legal) return;
+    steps.push(legal); preview = applyMove(preview, legal);
+  }
+  mv = steps.length === 1 ? steps[0] : { ...mv, _combo: steps };
   if(G.moveGraceActive) clearMoveGrace();
   if(!G.online){ G.undoStack.push({ state: G.state, selected: null }); }
   // KOMBİNE: iki zarı ardışık oyna (toplam pip)
@@ -2037,6 +2059,8 @@ function undoMove(){
   const snap = G.undoStack.pop();
   G.state = snap.state;
   G.selected = null; G.legalForSel = [];
+  G.tapTarget = null; G.dragging = false; G.dragPos = null;
+  G.dragMoved = false; G.dragFrom = null; G.pointerDownPos = null;
   G.gameEnded = false;
   // Invalidate the pending automatic end-turn from the undone last move.
   G._turnToken = {}; G.canPass = false; G._passBox = null;

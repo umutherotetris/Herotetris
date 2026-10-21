@@ -4,6 +4,7 @@
 //  Gizlilik: harf rafları DB'de TUTULMAZ. İki istemci paylaşılan
 //  tohumdan (seed) AYNI torbayı üretir; her oyuncu yalnız kendi
 //  taşlarını paylaşılan bagPointer'a göre çeker.
+//  bagReturns, değiştirilen taşların ortak torbaya dönüş sırasıdır.
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from '../auth.js';
 
