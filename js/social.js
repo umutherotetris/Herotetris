@@ -1005,14 +1005,14 @@ export function initSocial(){
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
   gem.setAttribute('aria-label', 'Sohbet alanını aç');
   gem.title = 'Sohbet';
-  gem.innerHTML = `<span class="tw-gem" aria-hidden="true"><img src="assets/hero-diamond.svg?v=142" alt="" width="54" height="54"></span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
+  gem.innerHTML = `<span class="tw-gem" aria-hidden="true">💎</span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
   document.body.appendChild(gem);
   // 👑 Admin FAB (yalnız adminde görünür)
   const adm = document.createElement('button');
   adm.id = 'adminFloatBtn'; adm.className = 'twin-fab';
   adm.setAttribute('aria-label', 'Yönetici alanını aç');
   adm.style.display = 'none';
-  adm.innerHTML = `<span class="tw-crown" aria-hidden="true"><img src="assets/hero-crown.svg?v=142" alt="" width="54" height="54"></span><i class="tw-spark tw-spark-gold-1"></i><i class="tw-spark tw-spark-gold-2"></i><i class="tw-spark tw-spark-gold-3"></i>`;
+  adm.innerHTML = `<span class="tw-crown" aria-hidden="true">👑</span><i class="tw-spark tw-spark-gold-1"></i><i class="tw-spark tw-spark-gold-2"></i><i class="tw-spark tw-spark-gold-3"></i>`;
   document.body.appendChild(adm);
   // Hub paneli
   const panel = document.createElement('div');

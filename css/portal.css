@@ -383,14 +383,6 @@ body.portal {
 @media (prefers-reduced-motion:reduce) {
   .portal *, .portal *::before, .portal *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
-/* Quiet social controls that fit the portal instead of covering it with neon. */
-.portal #gemFloatBtn.twin-fab, .portal #adminFloatBtn.twin-fab {
-  width: 40px !important; height: 40px !important; border-radius: 12px !important;
-  border: 1px solid #bfa07566; background: #24212bef;
-  box-shadow: 0 5px 22px #0006,inset 0 1px 0 #e4c99a12; animation: none;
-}
-.portal .tw-gem, .portal .tw-crown { filter: none; animation: none; }
-.portal .tw-spark { display: none; }
 .portal .ghp-title { color: #dfc299; }
 .portal .ghp-tab { min-height: 44px; }
 .portal .ghp-tab.active { color: #e3c8a0; background: #d4b98b12; border-color: #c3a47b55; }

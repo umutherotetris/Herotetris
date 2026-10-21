@@ -1,3 +1,11 @@
+# Release 144 — original sparkling jewels
+
+Restores the original diamond and crown emoji markup from commit 8d4faf9. Removes the replacement SVG markup and all jewel-specific portal/ivory/lobby/Aurora styling overrides, so the unchanged original components.css supplies the 34px controls, 14px symbols, cyan/magenta and gold glow, pulse, floating crown and three animated sparks per control. No new jewel artwork or effects are introduced. Draggable mounting, saved-position keys, UI scale setting and original social/admin actions remain intact. Reduced-motion preference continues to be respected.
+
+Validation: existing portal UI suite, including original symbols, dimensions and animation names, absence of replacement images, drag and saved-position persistence, social/admin panel actions and UI scale persistence. Backend/account calls use fixtures. Worker migration/offline checks cover the refreshed style URLs.
+
+---
+
 # Release 143 — restore draggable diamond and crown
 
 Both jewel controls mount on the document body again and always use the existing drag handler. Header docking and position overrides are removed. Their saved-position keys, social/admin actions, admin-only crown visibility and hide preferences remain unchanged. Aurora visuals remain; floating controls return to the pre-Aurora 40px size on desktop and mobile, with compact 22px artwork. Worker 143 refreshes the changed shell and styles.

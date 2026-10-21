@@ -221,8 +221,6 @@ html[data-theme="ivory"] .portal.lobby { --accent-on:#fffdf4; }
 .portal.lobby .auth-guest-sub { margin-bottom:0; }
 .portal.lobby .eco-quick-btn { flex-direction:row;align-items:center; }
 .portal.lobby .eco-quick-desc { display:block; }
-.portal.lobby :is(#gemFloatBtn,#adminFloatBtn).twin-fab { color:var(--portal-accent);background:var(--portal-surface);border-color:var(--portal-border);box-shadow:0 4px 16px #0002; }
-.portal.lobby .tw-gem { display:grid;place-items:center; }
 .portal.lobby .stage-switcher { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:5px;margin-bottom:12px;border:1px solid var(--portal-border);background:var(--portal-surface);border-radius:9px; }
 .portal.lobby .stage-switcher button { min-height:38px;min-width:0;border-radius:5px;font-size:11px;font-weight:600;color:var(--portal-muted); }
 .portal.lobby .stage-switcher button[aria-pressed="true"] { background:var(--portal-raised);color:var(--portal-accent); }

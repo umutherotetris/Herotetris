@@ -82,7 +82,7 @@ async function setup(page, fixtures=true){
   await page.locator('[data-guide="tavla"]').click();
   assert.equal(await page.locator('#guideTitle').textContent(),'Tavla');
   await page.keyboard.press('Escape');
-  assert.match(await page.locator('#gemFloatBtn img').getAttribute('src'),/hero-diamond/);
+  assert.equal(await page.locator('#gemFloatBtn .tw-gem').textContent(),'💎');
   assert.equal(await page.locator('#adminFloatBtn').isVisible(),false,'crown retains admin-only visibility');
   await page.locator('#gemFloatBtn').click();
   await page.locator('#gemHubPanel.ghp-open').waitFor({state:'visible'});
@@ -166,12 +166,12 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.evaluate(()=>window.__testAuth({status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}}));
   await page.locator('#adminFloatBtn').waitFor({state:'visible'});
-  assert.match(await page.locator('#adminFloatBtn img').getAttribute('src'),/hero-crown/);
+  assert.equal(await page.locator('#adminFloatBtn .tw-crown').textContent(),'👑');
   for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:900});
     await page.waitForTimeout(100);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`admin viewport overflow at ${width}`);
-    assert.equal(await page.locator('#adminFloatBtn').evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width===40;}),true,'crown keeps its pre-Aurora 40px size');
+    assert.equal(await page.locator('#adminFloatBtn').evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width===34;}),true,'crown keeps its original 34px size');
   }
   await page.locator('#adminFloatBtn').click();
   await page.locator('#adminPanel').waitFor({state:'visible'});
@@ -193,13 +193,21 @@ async function setup(page, fixtures=true){
   await setup(dragPage); await dragPage.goto(base); await dragPage.waitForFunction(()=>!!window.Hero);
   const adminState={status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}};
   await dragPage.evaluate(state=>window.__testAuth(state),adminState);
+  await dragPage.emulateMedia({reducedMotion:'no-preference'});
+  for(const [selector,animation] of [['#gemFloatBtn','twGemPulse'],['#adminFloatBtn','twAdminPulse'],['.tw-gem','twGemShine'],['.tw-crown','twCrownFloat'],['.tw-spark-cyan-1','twSparkCyan'],['.tw-spark-gold-1','twSparkGold']]){
+    const style=await dragPage.locator(selector).evaluate(el=>({animation:getComputedStyle(el).animationName,display:getComputedStyle(el).display}));
+    assert.equal(style.animation,animation,'original jewel animation');
+    assert.notEqual(style.display,'none','original spark is not suppressed');
+  }
+  assert.equal(await dragPage.locator('#gemFloatBtn img, #adminFloatBtn img').count(),0,'no replacement artwork');
+  await dragPage.emulateMedia({reducedMotion:'reduce'});
   const positions={};
   for(const [id,x,y] of [['gemFloatBtn',65,260],['adminFloatBtn',265,360]]){
     const fab=dragPage.locator('#'+id);
     assert.equal(await fab.evaluate(el=>el.parentElement===document.body&&getComputedStyle(el).position==='fixed'),true);
     const before=await fab.boundingBox();
-    assert.equal(before.width,40,id+' keeps its pre-Aurora size');
-    assert.equal(before.height,40);
+    assert.equal(before.width,34,id+' keeps its original size');
+    assert.equal(before.height,34);
     await dragPage.mouse.move(before.x+before.width/2,before.y+before.height/2);
     await dragPage.mouse.down();
     await dragPage.mouse.move(x+before.width/2,y+before.height/2,{steps:12});

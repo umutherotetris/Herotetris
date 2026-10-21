@@ -92,7 +92,6 @@ html[data-theme="ivory"] {
   .portal :is(.ghp-title,.ghp-tab,.ghp-chat-head-title,.ghp-online-nm) { color:#315940; }
   .portal .ghp-tab.active { color:#214d3c; background:#e7ecdd; border-color:#aab695; }
   .portal :is(.ghp-empty-text,.ghp-empty-sub) { color:#656858; }
-  .portal :is(#gemFloatBtn.twin-fab,#adminFloatBtn.twin-fab) { background:#244633; border-color:#a48b56; box-shadow:0 4px 15px #213b2e33; }
   .portal .bottom-nav { background:#fffcf3f5; border-color:#c5b99e; box-shadow:0 -2px 30px #65573b15; }
   .portal .nav-item { color:#666b5b; }
   .portal .nav-item.active { color:#193b2e; background:#e7ebdc; }
@@ -148,4 +147,3 @@ html[data-theme="ivory"] {
 }
 html[data-theme="ivory"] .portal .set-row { color:#315940; }
 html[data-theme="ivory"] .portal .set-row small { color:#64695e; opacity:1 !important; font-size:11px !important; }
-html[data-theme="ivory"] .portal :is(#gemFloatBtn,#adminFloatBtn) { color:#fffbed; }
