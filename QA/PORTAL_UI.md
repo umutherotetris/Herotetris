@@ -1,3 +1,15 @@
+# Release 141 — Hero Lounge / play-first UX
+
+Replaces the long editorial landing page with a functional player lobby. Desktop sidebar navigation, mobile bottom navigation, above-the-fold game switcher, contextual game stage, guide dialogs, Turkish-aware search, solo/together/favorites discovery, device-local favorites and last successfully opened game. Account/progress/rituals move into a side panel on desktop and follow the game collection on mobile. All four launch buttons still use the existing lazy-loaded engines and boot recovery. No fake live counts, fabricated history, or implied saved-game continuation.
+
+Navigation now adds history entries on user navigation and restores routes with browser Back/Forward. Search selection returns to the lobby with focus on the selected launch action. Native modal dialogs provide keyboard trapping, Escape and focus restoration. Removing a focused favorite restores focus to the filter. Social launcher moves into the header to avoid covering game filters; it has an explicit accessible label and an inline SVG icon. Admin drag bounds distinguish desktop side navigation from mobile bottom navigation. Hero Lounge is a tenth palette; existing non-ivory preferences survive migration and every palette uses the new structure.
+
+Higgsfield was explicitly requested. Two requested image generations were rejected before submission with `Requires basic plan or higher`. No Higgsfield image was generated or used. The release uses original code-native SVG geometry and the existing local game art. No new host, subscription, or AI integration was created.
+
+Validation (account writes mocked): portal-ui across 320/390/600/768/1024/1440 widths, five routes, ten themes, four real game entry modules, browser history, switcher, contextual help, search/empty results, favorites/persistence/focus, successful-open recents, score/XP, scale settings and failed-network recovery; forms and worker migration checks. Desktop/mobile/settings screenshots visually inspected. Live Google sign-in, Firebase rules and actual remote multiplayer require live-account/device testing; do not interpret the fixture suite as verification of those services.
+
+---
+
 # Hero Portal 140 — Fildişi Kulüp
 
 Seçilen 3. mockup uygulandı. Sıcak krem zemin, orman yeşili eylemler, bronz çizgiler ve serif başlıklar; ana sayfa, profil, liderlik, arkadaşlar, bildirimler ve ayarlar ortak açık tema kullanır. Oyun kartlarının özgün SVG çizimleri yeşil/fildişi paletine uyarlandı. Oyun motorlarının koyu kontrolleri kendi okunabilir renklerini korur.

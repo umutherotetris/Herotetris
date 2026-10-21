@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "lang": "tr",
-  "background_color": "#f5f1e8",
-  "theme_color": "#f5f1e8",
+  "background_color": "#101210",
+  "theme_color": "#101210",
   "categories": ["games", "entertainment"],
   "icons": [{"src": "assets/hero-portal.svg?v=140", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
 }

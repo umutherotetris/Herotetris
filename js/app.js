@@ -35,6 +35,7 @@ function launchGame(modulePath, exportName, label){
     const fn = mod[exportName];
     if(typeof fn !== 'function') throw new Error(exportName + ' bulunamadı (' + modulePath + ')');
     await fn();
+    document.dispatchEvent(new CustomEvent('hero:game-opened', {detail:{modulePath}}));
   }catch(e){
     toast(label + ' açılamadı. Bağlantını kontrol edip yeniden dene.', true);
     console.error('[' + label + ']', e);

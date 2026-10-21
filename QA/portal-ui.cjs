@@ -72,6 +72,57 @@ async function setup(page, fixtures=true){
     assert.equal(await page.evaluate(()=>document.activeElement.dataset.screen),screen);
   }
   await page.locator('.bottom-nav [data-nav="friends"]').click();
+  await page.locator('.bottom-nav [data-nav="profile"]').click();
+  await page.goBack();
+  await page.waitForFunction(()=>document.querySelector('[data-screen="friends"]').classList.contains('active'));
+  await page.goForward();
+  await page.waitForFunction(()=>document.querySelector('[data-screen="profile"]').classList.contains('active'));
+  await page.locator('.bottom-nav [data-nav="home"]').click();
+  await page.locator('[data-stage-select="tavla"]').click();
+  assert.equal(await page.locator('#stageTitle').textContent(),'Tavla');
+  assert.equal(await page.locator('[data-select="tavla"]').getAttribute('aria-pressed'),'true');
+  await page.locator('#lobbyChatSlot #gemFloatBtn').click();
+  await page.locator('#gemHubPanel.ghp-open').waitFor({state:'visible'});
+  await page.locator('#ghpCloseBtn').click();
+  await page.waitForFunction(()=>!document.getElementById('gemHubPanel').classList.contains('ghp-open'));
+  // Lobby discovery: filters, favorites, keyboard search, contextual help, persistent recents.
+  await page.locator('[data-filter="favorites"]').click();
+  assert.equal(await page.locator('#collectionEmpty').isVisible(),true);
+  await page.locator('#resetFilter').click();
+  await page.locator('[data-favorite="chess"]').click();
+  await page.locator('[data-filter="favorites"]').click();
+  assert.equal(await page.locator('[data-game-card]:visible').count(),1);
+  await page.locator('[data-favorite="chess"]').click();
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.filter),'favorites');
+  await page.locator('#resetFilter').click();
+  await page.locator('[data-filter="together"]').click();
+  assert.equal(await page.locator('[data-game-card]:visible').count(),3);
+  await page.locator('[data-filter="all"]').click();
+  await page.locator('[data-select="chess"]').click();
+  assert.equal(await page.locator('#stageTitle').textContent(),'Satranç');
+  await page.locator('#stageHelp').click();
+  assert.equal(await page.locator('#guideTitle').textContent(),'Satranç');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'stageHelp');
+  await page.locator('#searchTrigger').click();
+  await page.locator('#gameSearchInput').fill('SATRANÇ');
+  assert.equal(await page.locator('.search-result').count(),1);
+  await page.locator('#gameSearchInput').fill('zzzz');
+  assert.equal(await page.locator('.search-empty').isVisible(),true);
+  await page.locator('#gameSearchInput').fill('kelime');
+  await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#stageTitle').textContent(),'Kelimecik');
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'stagePlay');
+  await page.locator('#stageHelp').click();await page.locator('#guidePlay').click();
+  await page.locator('.kl-root').waitFor({state:'visible'});
+  assert.equal(await page.locator('#gameGuide').evaluate(d=>d.open),false);
+  await page.waitForFunction(()=>document.getElementById('recentName').textContent==='Kelimecik');
+  await page.reload();await page.waitForFunction(()=>!!window.Hero);
+  assert.equal(await page.locator('#stageTitle').textContent(),'Kelimecik');
+  await page.locator('[data-favorite="tetris"]').click();
+  await page.reload();await page.waitForFunction(()=>!!window.Hero);
+  assert.equal(await page.locator('[data-favorite="tetris"]').getAttribute('aria-pressed'),'true');
+  await page.locator('.bottom-nav [data-nav="friends"]').click();
   await page.locator('.skip-link').focus(); await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>document.activeElement.id),'games');
   assert.equal(await page.locator('[data-screen="home"]').evaluate(el=>el.classList.contains('active')),true);
@@ -92,7 +143,7 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.locator('.bottom-nav [data-nav="profile"]').click();
   await page.locator('[data-p="settings"]').click();
-  for(const theme of ['ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
+  for(const theme of ['lounge','ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
     await page.locator(`.theme-chip[data-theme="${theme}"]`).click();
     assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${theme} settings overflow`);
@@ -114,8 +165,10 @@ async function setup(page, fixtures=true){
   await page.evaluate(()=>localStorage.setItem('hero_theme','ivory'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   if(process.env.PORTAL_SCREENSHOTS){
+    await page.evaluate(()=>{localStorage.setItem('hero_theme','lounge');localStorage.removeItem('hero_lobby_recent');localStorage.removeItem('hero_lobby_favorites');});
+    await page.reload();await page.waitForFunction(()=>!!window.Hero);await page.evaluate(()=>document.fonts.ready);
     await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
-    await page.setViewportSize({width:1440,height:1000}); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-desktop.png'),fullPage:true});
+    await page.setViewportSize({width:1440,height:1000}); await page.waitForTimeout(200); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-desktop.png'),fullPage:true});
     await page.setViewportSize({width:390,height:844}); await page.waitForTimeout(200); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-mobile.png'),fullPage:true});
     await page.locator('.bottom-nav [data-nav="profile"]').click();
     await page.locator('[data-p="settings"]').click();
@@ -129,5 +182,5 @@ async function setup(page, fixtures=true){
   await offline.locator('.bottom-nav [data-nav="friends"]').click();
   assert.equal(await offline.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
   await browser.close();
-  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 9 themes/settings, reduced motion and connection recovery. Backend: in-memory fixtures.');
+  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 10 themes/settings, lobby search/filter/favorite/guide/recent flows, reduced motion and connection recovery. Backend: in-memory fixtures.');
 })().catch(error=>{console.error(error);process.exit(1)});

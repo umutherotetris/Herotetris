@@ -1,16 +1,17 @@
-/* Hero Portal 140: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 141: replace the legacy Sukun worker at its existing URL. */
 'use strict';
-const HERO_BUILD = '140';
+const HERO_BUILD = '141';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
 const CACHE_NAME = CACHE_PREFIX + HERO_BUILD;
 const CORE_ASSETS = [
+  'css/lobby.css?v=141', 'js/lobby.js', 'assets/lobby-tetris.svg?v=141',
   'css/ivory.css?v=140', 'assets/ivory-club-hero.webp?v=140',
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=124',
   'css/tetris.css?v=124', 'css/themes.css?v=124', 'css/portal.css?v=138',
-  'js/portal-worker.js?v=140', 'js/portal.js?v=140', 'js/nav.js',
+  'js/portal-worker.js?v=141', 'js/portal.js?v=141', 'js/nav.js',
   'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=140',
   'assets/game-chess.svg?v=140', 'assets/game-tavla.svg?v=140', 'assets/game-word.svg?v=140',
   'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',

@@ -427,6 +427,7 @@ function openSettings(){
   }
   // 🎨 Tema seçici
   const THEMES=[
+    {key:'lounge', name:'Hero Lounge', c1:'#101210',c2:'#d5f57a'},
     {key:'ivory', name:'Fildişi Kulüp', c1:'#f5f1e8',c2:'#214d3c'},
     {key:'neon',    name:'Hero',    c1:'#dfc299',c2:'#8ddfc8'},
     {key:'cosmic',  name:'Kozmik',  c1:'#c084fc',c2:'#22d3ee'},
