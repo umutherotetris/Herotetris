@@ -1469,14 +1469,11 @@ function drawPointHighlight(ctx, idx, color, alpha){
 // ════════════ TIKLAMA / SÜRÜKLEME / HAMLE ════════════
 function getPos(e){
   const rect = G.canvas.getBoundingClientRect();
-  // ZOOM telafisi: body zoom aktifken clientX ölçekli, getBoundingClientRect ölçeksiz gelir.
-  // clientX'i zoom'a bölerek rect ile aynı (ölçeksiz) uzaya getir.
-  const z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1;
-  const cx = e.clientX / z, cy = e.clientY / z;
-  // Ayrıca canvas görsel/mantıksal boyut oranı (CSS boyut farkı için)
+  // clientX/Y ve rect aynı viewport koordinatlarını kullanır. Bu oran hem
+  // CSS boyutunu hem body zoom ölçeğini karşılar; zoom'a tekrar bölme.
   const sx = rect.width  ? (G.W / rect.width)  : 1;
   const sy = rect.height ? (G.H / rect.height) : 1;
-  return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+  return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
 }
 function canInteract(){
   if(!G || G.gameEnded || !G.rolled || G.aiThinking) return false;

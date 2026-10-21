@@ -1,3 +1,11 @@
+# Release 146 — scaled Tavla input correction
+
+Fix canvas hit testing at non-default UI scales. Pointer client coordinates and getBoundingClientRect already share viewport units; removing the second zoom division maps touches and drags to the visible checker. The reported white 6–3 position now permits the home checker to move from point 5 to point 2 using 3, leaving 6 available.
+
+Regression: QA/tavla-input.cjs reconstructs the reported position and runs the real canvas/pointer handlers. Before the fix, selection fails at 85% scale. After the fix, touch selection and movement pass at 80%, 85%, 100% and 130%, in both board orientations; a scaled mouse drag also passes. Account/network calls are fixtures. Existing engine, remote-move and worker checks also pass. No artwork, jewel behavior or saved scale preference changes.
+
+---
+
 # Release 145 — parked jewels, personal profile and game-engine corrections
 
 Original 34px sparkling jewels start in header parking slots, remain draggable by mouse/touch, and can remember their last position by preference. Drag calculations use viewport coordinates consistently at non-default UI scales. Resize clamps floating controls to the viewport. The crown remains admin-only. A native personalization dialog provides per-account/device title, bio, avatar, accent, frame, background, favorite game and parking preferences. Profile frame IDs now resolve to their actual colors.
