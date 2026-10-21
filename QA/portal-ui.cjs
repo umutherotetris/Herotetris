@@ -84,7 +84,7 @@ async function setup(page, fixtures=true){
   await page.keyboard.press('Escape');
   assert.match(await page.locator('#gemFloatBtn img').getAttribute('src'),/hero-diamond/);
   assert.equal(await page.locator('#adminFloatBtn').isVisible(),false,'crown retains admin-only visibility');
-  await page.locator('#lobbyChatSlot #gemFloatBtn').click();
+  await page.locator('#gemFloatBtn').click();
   await page.locator('#gemHubPanel.ghp-open').waitFor({state:'visible'});
   await page.locator('#ghpCloseBtn').click();
   await page.waitForFunction(()=>!document.getElementById('gemHubPanel').classList.contains('ghp-open'));
@@ -165,13 +165,13 @@ async function setup(page, fixtures=true){
   await page.evaluate(()=>localStorage.setItem('hero_theme','ivory'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.evaluate(()=>window.__testAuth({status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}}));
-  await page.locator('#lobbyAdminSlot #adminFloatBtn').waitFor({state:'visible'});
+  await page.locator('#adminFloatBtn').waitFor({state:'visible'});
   assert.match(await page.locator('#adminFloatBtn img').getAttribute('src'),/hero-crown/);
   for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:900});
     await page.waitForTimeout(100);
-    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`admin header overflow at ${width}`);
-    assert.equal(await page.locator('#adminFloatBtn').evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width>=44;}),true,'crown is visible and touchable');
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`admin viewport overflow at ${width}`);
+    assert.equal(await page.locator('#adminFloatBtn').evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width===40;}),true,'crown keeps its pre-Aurora 40px size');
   }
   await page.locator('#adminFloatBtn').click();
   await page.locator('#adminPanel').waitFor({state:'visible'});
@@ -188,6 +188,45 @@ async function setup(page, fixtures=true){
     await page.locator('[data-p="settings"]').click();
     await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-settings.png')});
   }
+  // Floating jewels retain their original saved-position keys and panel actions.
+  const dragPage=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+  await setup(dragPage); await dragPage.goto(base); await dragPage.waitForFunction(()=>!!window.Hero);
+  const adminState={status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}};
+  await dragPage.evaluate(state=>window.__testAuth(state),adminState);
+  const positions={};
+  for(const [id,x,y] of [['gemFloatBtn',65,260],['adminFloatBtn',265,360]]){
+    const fab=dragPage.locator('#'+id);
+    assert.equal(await fab.evaluate(el=>el.parentElement===document.body&&getComputedStyle(el).position==='fixed'),true);
+    const before=await fab.boundingBox();
+    assert.equal(before.width,40,id+' keeps its pre-Aurora size');
+    assert.equal(before.height,40);
+    await dragPage.mouse.move(before.x+before.width/2,before.y+before.height/2);
+    await dragPage.mouse.down();
+    await dragPage.mouse.move(x+before.width/2,y+before.height/2,{steps:12});
+    await dragPage.mouse.up();
+    const after=await fab.boundingBox();
+    assert.ok(Math.abs(after.x-x)<2&&Math.abs(after.y-y)<2, id+' follows pointer');
+    positions[id]=await fab.evaluate(el=>JSON.parse(localStorage.getItem('twFab_'+el.id)));
+    assert.ok(Math.abs(positions[id].left-x)<2&&Math.abs(positions[id].top-y)<2,id+' saves position');
+  }
+  assert.equal(await dragPage.locator('#gemHubPanel').evaluate(el=>el.classList.contains('ghp-open')),false,'drag does not open social panel');
+  assert.equal(await dragPage.locator('#adminPanel').isVisible(),false,'drag does not open admin panel');
+  await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
+  await dragPage.evaluate(state=>window.__testAuth(state),adminState);
+  for(const id of Object.keys(positions)){
+    const r=await dragPage.locator('#'+id).boundingBox();
+    assert.ok(Math.abs(r.x-positions[id].left)<2&&Math.abs(r.y-positions[id].top)<2,id+' restores saved position');
+  }
+  await dragPage.locator('#gemFloatBtn').click();
+  await dragPage.locator('#gemHubPanel.ghp-open').waitFor({state:'visible'});
+  await dragPage.locator('#ghpCloseBtn').click();
+  await dragPage.locator('#adminFloatBtn').click();
+  await dragPage.locator('#adminPanel').waitFor({state:'visible'});
+  await dragPage.evaluate(()=>localStorage.setItem('hero_ui_scale','0.85'));
+  await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
+  assert.equal(await dragPage.evaluate(()=>localStorage.getItem('hero_ui_scale')),'0.85','saved UI scale survives');
+  await dragPage.waitForFunction(()=>window.__uiScale===0.85);
+  await dragPage.close();
   assert.deepEqual(pageErrors,[], 'unexpected browser error');
   const offline=await browser.newPage(); await setup(offline,false); await offline.goto(base);
   await offline.locator('.portal-retry').waitFor({state:'visible'});

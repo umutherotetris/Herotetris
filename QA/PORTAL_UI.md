@@ -1,3 +1,11 @@
+# Release 143 — restore draggable diamond and crown
+
+Both jewel controls mount on the document body again and always use the existing drag handler. Header docking and position overrides are removed. Their saved-position keys, social/admin actions, admin-only crown visibility and hide preferences remain unchanged. Aurora visuals remain; floating controls return to the pre-Aurora 40px size on desktop and mobile, with compact 22px artwork. Worker 143 refreshes the changed shell and styles.
+
+Validation: portal-ui includes pointer dragging both jewels, no accidental panel opening during a drag, saved positions restored after reload, both original panel actions, pre-Aurora control dimensions and persistence of the existing UI scale preference. Account/backend writes are mocked. Worker migration/offline checks also run.
+
+---
+
 # Release 142 — selected Aurora concept
 
 The user selected mockup 2 after reviewing the three-alternative PDF. Aurora uses the approved purple/cyan/magenta palette, dimensional illustrated game cards, glass surfaces and direct per-game play actions. The former large selected-game stage is removed; contextual guides are native dialogs opened from each game card. Search focuses the matching playable card and clears a conflicting collection filter. Favorites and successful-open recents remain device-local.

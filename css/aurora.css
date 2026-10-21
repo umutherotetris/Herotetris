@@ -80,11 +80,11 @@ html[data-theme="aurora"] body.portal { --portal-bg:#090f2a;--portal-surface:#10
 .portal.lobby.aurora-layout .together-banner { background:linear-gradient(120deg,#39216355,#123b6340);border-color:var(--portal-border);margin-top:20px; }
 .portal.lobby.aurora-layout .together-banner strong { color:var(--portal-ink); }
 .portal.lobby.aurora-layout .together-symbol { color:#bca5ff; }
-.portal.lobby.aurora-layout #lobbyChatSlot #gemFloatBtn,
-.portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { position:relative !important;inset:auto !important;margin:0;width:58px !important;height:58px !important;border-radius:13px !important;z-index:auto;background:linear-gradient(145deg,#4264b866,#17153b);border:1px solid #5e85ec;box-shadow:inset 0 1px 0 #c0d4ff66,0 0 20px #296bff2b; }
-.portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { border-color:#b68a58;background:linear-gradient(145deg,#74583d66,#24183e);box-shadow:inset 0 1px 0 #fff0b844,0 0 22px #e8a72f19; }
+.portal.lobby.aurora-layout #gemFloatBtn.twin-fab,
+.portal.lobby.aurora-layout #adminFloatBtn.twin-fab { position:fixed;margin:0;width:40px !important;height:40px !important;border-radius:12px !important;background:linear-gradient(145deg,#4264b866,#17153b);border:1px solid #5e85ec;box-shadow:inset 0 1px 0 #c0d4ff66,0 0 20px #296bff2b; }
+.portal.lobby.aurora-layout #adminFloatBtn.twin-fab { border-color:#b68a58;background:linear-gradient(145deg,#74583d66,#24183e);box-shadow:inset 0 1px 0 #fff0b844,0 0 22px #e8a72f19; }
 .portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) { display:grid;place-items:center;width:100%;height:100%;font-size:0; }
-.portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) img { display:block;width:48px;height:48px;object-fit:contain; }
+.portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) img { display:block;width:22px;height:22px;object-fit:contain; }
 html[data-theme="aurora"] .portal :is(.prf-card,.nick-modal,#gemHubPanel) { background:linear-gradient(145deg,#172244,#101730);border-color:#4c568c; }
 html[data-theme="aurora"] .portal :is(.screen-heading,.ghp-title,.prf-name) { color:#f1eaff; }
 html[data-theme="aurora"] .portal :is(.ghp-tab.active,.prf-tab.active) { background:linear-gradient(120deg,#8f4cdd44,#1494d62b);color:#e7dfff;border-color:#7974c5; }
@@ -124,9 +124,6 @@ html[data-theme="ivory"] .portal.aurora-layout { background-image:none; }
  .portal.lobby.aurora-layout .header-middle { flex:0;order:3; }
  .portal.lobby.aurora-layout .search-trigger { min-width:40px;width:40px;min-height:40px; }
  .portal.lobby.aurora-layout .header-link { order:4; }
- .portal.lobby.aurora-layout #lobbyChatSlot #gemFloatBtn,
- .portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { width:48px !important;height:48px !important;border-radius:11px !important; }
- .portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) img { width:41px;height:41px; }
  .portal.lobby.aurora-layout #app { padding:16px 16px calc(100px + env(safe-area-inset-bottom,0px)); }
  .portal.lobby.aurora-layout .lobby-heading { min-height:126px;padding:20px 18px;margin-bottom:20px;gap:12px;border-radius:14px; }
  .portal.lobby.aurora-layout .lobby-heading h1 { font-size:34px;letter-spacing:-1.4px; }

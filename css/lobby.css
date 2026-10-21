@@ -233,6 +233,5 @@ html[data-theme="ivory"] .portal.lobby { --accent-on:#fffdf4; }
 }
 
 .portal.lobby .lobby-chat-slot { display:flex;align-items:center;flex-shrink:0; }
-.portal.lobby #lobbyChatSlot #gemFloatBtn { position:relative !important;inset:auto !important;margin:0;z-index:auto; }
 html[data-theme="lounge"] .portal :is(.prf-card,.nick-modal,#gemHubPanel) { background:var(--portal-surface);border-color:var(--portal-border); }
 @media(max-width:767px) { .portal.lobby .portal-header { gap:10px; } }
