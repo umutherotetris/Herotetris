@@ -427,6 +427,7 @@ function openSettings(){
   }
   // 🎨 Tema seçici
   const THEMES=[
+    {key:'ivory', name:'Fildişi Kulüp', c1:'#f5f1e8',c2:'#214d3c'},
     {key:'neon',    name:'Hero',    c1:'#dfc299',c2:'#8ddfc8'},
     {key:'cosmic',  name:'Kozmik',  c1:'#c084fc',c2:'#22d3ee'},
     {key:'sunset',  name:'Gün Batımı',c1:'#FF9800',c2:'#FF4081'},
@@ -436,8 +437,8 @@ function openSettings(){
     {key:'ocean',   name:'Okyanus', c1:'#42A5F5',c2:'#26C6DA'},
     {key:'mono',    name:'Gümüş',   c1:'#E0E0FF',c2:'#B0B0D0'},
   ];
-  let curTheme='neon';
-  try{ curTheme=localStorage.getItem('hero_theme')||'neon'; }catch(e){}
+  let curTheme=document.documentElement.dataset.theme||'ivory';
+  try{ curTheme=localStorage.getItem('hero_theme')||'ivory'; }catch(e){}
   const tg=inner.querySelector('#themeGrid');
   if(tg){
     tg.innerHTML=THEMES.map(t=>

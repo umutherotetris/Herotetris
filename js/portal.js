@@ -42,7 +42,7 @@ const bootTimeout = setTimeout(() => {
   showStatus('Bağlantı beklenenden uzun sürüyor. İnternetini kontrol edip tekrar dene.', true);
 }, 15000);
 
-import('./app.js?v=139').then(() => {
+import('./app.js?v=140').then(() => {
   clearTimeout(bootTimeout);
   bootState = 'ready';
   status.hidden = true;

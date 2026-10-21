@@ -92,12 +92,14 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.locator('.bottom-nav [data-nav="profile"]').click();
   await page.locator('[data-p="settings"]').click();
-  for(const theme of ['neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
+  for(const theme of ['ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
     await page.locator(`.theme-chip[data-theme="${theme}"]`).click();
     assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${theme} settings overflow`);
   }
-  await page.locator('.theme-chip[data-theme="neon"]').click();
+  await page.locator('.theme-chip[data-theme="ivory"]').click();
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.set-row')).color==='rgb(49, 89, 64)',null,{timeout:2000});
+  assert.equal(await page.locator('.set-row').first().evaluate(el=>getComputedStyle(el).color),'rgb(49, 89, 64)','ivory settings labels remain readable on a light background');
   for(const scale of [80,130,100]){
     await page.locator('#scaleSlider').evaluate((slider,value)=>{slider.value=value;slider.dispatchEvent(new Event('input',{bubbles:true}));},String(scale));
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`UI scale ${scale} overflow`);
@@ -109,12 +111,15 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   assert.equal(await page.locator('html').getAttribute('data-theme'),'emerald');
   assert.equal(await page.locator('#gameTetris').evaluate(el=>getComputedStyle(el).animationName),'none');
-  await page.evaluate(()=>localStorage.setItem('hero_theme','neon'));
+  await page.evaluate(()=>localStorage.setItem('hero_theme','ivory'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   if(process.env.PORTAL_SCREENSHOTS){
     await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
     await page.setViewportSize({width:1440,height:1000}); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-desktop.png'),fullPage:true});
-    await page.setViewportSize({width:390,height:844}); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-mobile.png'),fullPage:true});
+    await page.setViewportSize({width:390,height:844}); await page.waitForTimeout(200); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-mobile.png'),fullPage:true});
+    await page.locator('.bottom-nav [data-nav="profile"]').click();
+    await page.locator('[data-p="settings"]').click();
+    await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-settings.png')});
   }
   assert.deepEqual(pageErrors,[], 'unexpected browser error');
   const offline=await browser.newPage(); await setup(offline,false); await offline.goto(base);
@@ -124,5 +129,5 @@ async function setup(page, fixtures=true){
   await offline.locator('.bottom-nav [data-nav="friends"]').click();
   assert.equal(await offline.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
   await browser.close();
-  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 8 themes/settings, reduced motion and connection recovery. Backend: in-memory fixtures.');
+  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 9 themes/settings, reduced motion and connection recovery. Backend: in-memory fixtures.');
 })().catch(error=>{console.error(error);process.exit(1)});

@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="neon">
+<html lang="tr" data-theme="ivory">
 <head>
   <meta charset="UTF-8">
-  <meta name="hero-build" content="139">
+  <meta name="hero-build" content="140">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0c0e13">
+  <meta name="theme-color" content="#f5f1e8">
   <meta name="description" content="Hero Portal: Tetris, satranç, tavla ve Kelimecik. Kendi oyununu bul, dostlarınla buluş ve bir sonraki rekoruna ulaş.">
   <title>Hero Portal — Oyunun bir üst seviyesi</title>
-  <script async src="js/portal-worker.js?v=139"></script>
-  <link rel="icon" type="image/svg+xml" href="assets/hero-portal.svg?v=138">
+  <script async src="js/portal-worker.js?v=140"></script>
+  <link rel="icon" type="image/svg+xml" href="assets/hero-portal.svg?v=140">
   <link rel="manifest" href="hero.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hero Portal">
-  <script>try{const t=localStorage.getItem('hero_theme');document.documentElement.dataset.theme=['neon','cosmic','sunset','emerald','golden','crimson','ocean','mono'].includes(t)?t:'neon';}catch(e){}</script>
+  <script>try{let t=localStorage.getItem('hero_theme');if(!localStorage.getItem('hero_theme_v140')){if(!t||t==='neon'){t='ivory';localStorage.setItem('hero_theme',t);}localStorage.setItem('hero_theme_v140','1');}document.documentElement.dataset.theme=['ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono'].includes(t)?t:'ivory';}catch(e){}</script>
   <link rel="stylesheet" href="css/tokens.css?v=138">
   <link rel="stylesheet" href="css/base.css?v=124">
   <link rel="stylesheet" href="css/components.css?v=124">
   <link rel="stylesheet" href="css/tetris.css?v=124">
   <link rel="stylesheet" href="css/themes.css?v=124">
   <link rel="stylesheet" href="css/portal.css?v=138">
+  <link rel="stylesheet" href="css/ivory.css?v=140">
 </head>
 <body class="portal">
   <a class="skip-link" href="#games">Oyunlara geç</a>
@@ -40,7 +41,7 @@
           <div class="intro-actions"><a class="intro-link" href="#games">Oyunları keşfet <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a><a class="intro-secondary" href="#friends" data-nav="friends">Birlikte oyna <span aria-hidden="true">↗</span></a></div>
           <div class="hero-details"><span><i aria-hidden="true"></i> Dört oyun, tek portal</span><span class="detail-divider" aria-hidden="true"></span><span>Mobilde de seninle</span></div>
         </div>
-        <div class="intro-art" aria-hidden="true"><img src="assets/portal-orbit.svg?v=138" alt="" width="720" height="660" fetchpriority="high"><div class="art-note"><span class="art-note-line"></span><span>BİR HAMLE DAHA.<small>HEROTETRIS · ARCADE</small></span></div></div>
+        <div class="intro-art" aria-hidden="true"><img src="assets/portal-orbit.svg?v=138" alt="" width="720" height="660" fetchpriority="high"><img class="ivory-art" src="assets/ivory-club-hero.webp?v=140" alt="" width="1536" height="1024" fetchpriority="high"><div class="art-note"><span class="art-note-line"></span><span>BİR HAMLE DAHA.<small>HEROTETRIS · ARCADE</small></span></div></div>
         <div class="hero-edition" aria-hidden="true"><span>HERO ORIGINALS</span><span>VOL. 01 — 04</span></div>
       </div>
       <section class="game-library" id="games" aria-labelledby="games-title" tabindex="-1">
@@ -48,25 +49,25 @@
         <div class="games-premium">
           <button type="button" class="game-pc" id="gameTetris" style="--gc:#8ddfc8" aria-label="HeroTetris oyna" aria-describedby="gameTetrisDesc">
             <span class="game-pc-top"><span class="game-category"><span aria-hidden="true"></span>Arcade</span><span class="game-number">01</span></span>
-            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-tetris.svg?v=138" alt="" width="420" height="260"></span>
+            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-tetris.svg?v=140" alt="" width="420" height="260"></span>
             <span class="game-pc-info"><strong class="game-pc-name">HeroTetris</strong><span class="game-pc-modes" id="gameTetrisDesc">Blokları yerleştir.<br>Yeni rekoruna yer aç.</span></span>
             <span class="game-pc-footer"><span class="game-tag"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 16v-1a5 5 0 0 1 10 0v1m0-12a2.5 2.5 0 0 1 0 5m2 3a4 4 0 0 1 2 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Tek oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
           </button>
           <button type="button" class="game-pc" id="gameChess" style="--gc:#e8d0aa" aria-label="Satranç oyna" aria-describedby="gameChessDesc">
             <span class="game-pc-top"><span class="game-category"><span aria-hidden="true"></span>Strateji</span><span class="game-number">02</span></span>
-            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-chess.svg?v=138" alt="" width="420" height="260"></span>
+            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-chess.svg?v=140" alt="" width="420" height="260"></span>
             <span class="game-pc-info"><strong class="game-pc-name">Satranç</strong><span class="game-pc-modes" id="gameChessDesc">Tahtaya hükmet.<br>Bir sonraki hamleyi düşün.</span></span>
             <span class="game-pc-footer"><span class="game-tag"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 16v-1a5 5 0 0 1 10 0v1m0-12a2.5 2.5 0 0 1 0 5m2 3a4 4 0 0 1 2 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>AI · 2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
           </button>
           <button type="button" class="game-pc" id="gameTavla" style="--gc:#dcad8f" aria-label="Tavla oyna" aria-describedby="gameTavlaDesc">
             <span class="game-pc-top"><span class="game-category"><span aria-hidden="true"></span>Klasik</span><span class="game-number">03</span></span>
-            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-tavla.svg?v=138" alt="" width="420" height="260"></span>
+            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-tavla.svg?v=140" alt="" width="420" height="260"></span>
             <span class="game-pc-info"><strong class="game-pc-name">Tavla</strong><span class="game-pc-modes" id="gameTavlaDesc">Zarını at.<br>Oyunun seyrini değiştir.</span></span>
             <span class="game-pc-footer"><span class="game-tag"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 16v-1a5 5 0 0 1 10 0v1m0-12a2.5 2.5 0 0 1 0 5m2 3a4 4 0 0 1 2 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
           </button>
           <button type="button" class="game-pc" id="gameKelime" style="--gc:#b9b0e9" aria-label="Kelimecik oyna" aria-describedby="gameKelimeDesc">
             <span class="game-pc-top"><span class="game-category"><span aria-hidden="true"></span>Kelime</span><span class="game-number">04</span></span>
-            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-word.svg?v=138" alt="" width="420" height="260"></span>
+            <span class="game-pc-logo" aria-hidden="true"><img class="game-art" src="assets/game-word.svg?v=140" alt="" width="420" height="260"></span>
             <span class="game-pc-info"><strong class="game-pc-name">Kelimecik</strong><span class="game-pc-modes" id="gameKelimeDesc">Harflerde kaybol.<br>Kelimelerde kendini bul.</span></span>
             <span class="game-pc-footer"><span class="game-tag"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 16v-1a5 5 0 0 1 10 0v1m0-12a2.5 2.5 0 0 1 0 5m2 3a4 4 0 0 1 2 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>2 oyuncu</span><span class="game-pc-play">Oyna <span class="gpc-arrow"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></span>
           </button>
@@ -124,6 +125,6 @@
 <a class="nav-item" data-nav="profile" href="#profile"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span class="ni-lbl">Profil</span></a>
 <a class="nav-item" data-nav="notifications" href="#notifications"><span class="ni-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9zm-8 12a2 2 0 0 0 4 0"/></svg></span><span class="ni-lbl">Bildirimler</span></a></nav>
   <script defer src="js/vendor/peerjs-1.5.4.min.js?v=138"></script>
-  <script type="module" src="js/portal.js?v=139"></script>
+  <script type="module" src="js/portal.js?v=140"></script>
 </body>
 </html>

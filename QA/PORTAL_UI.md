@@ -1,3 +1,19 @@
+# Hero Portal 140 — Fildişi Kulüp
+
+Seçilen 3. mockup uygulandı. Sıcak krem zemin, orman yeşili eylemler, bronz çizgiler ve serif başlıklar; ana sayfa, profil, liderlik, arkadaşlar, bildirimler ve ayarlar ortak açık tema kullanır. Oyun kartlarının özgün SVG çizimleri yeşil/fildişi paletine uyarlandı. Oyun motorlarının koyu kontrolleri kendi okunabilir renklerini korur.
+
+Varsayılan ve eski varsayılan Hero teması bir kez Fildişi Kulüp'e geçer. Önceden açıkça seçilmiş diğer temalar korunur. Ayarlardan 9 tema seçilebilir; sonradan seçilen Hero koyu teması da yeniden yüklemede korunur.
+
+`assets/ivory-club-hero.webp` 1536×1024, 115.878 bayttır. Yerel dosya ve `css/ivory.css` worker 140'ın çevrimdışı listesine eklendi. PWA simgesi, tema rengi ve kurtarma sayfası güncellendi.
+
+Doğrulama: 6 genişlikte 5 sekme, 9 tema, 4 gerçek oyun giriş modülü, %80/%130/%100 ölçek, klavye, azaltılmış hareket, bağlantı hatası, form ve önbellek koruma testleri; gerçek HTTP üzerinde eski worker geçişi ve çevrimdışı kabuk. Mobil/masaüstü ve ayarlar ekran görüntüleri gözle incelendi. Hesap/veritabanı testleri bellek içi verilerle yapılır; canlı Google/Firebase izinleri ve gerçek oyuncular arası maç doğrulanmış değildir.
+
+Görsel, yerleşik image_gen ile yeni üretildi; PNG çıktısı web yayını için WebP olarak sıkıştırıldı. Üretim istemi:
+
+> Create a premium website hero background illustration, landscape 3:2, no text, no letters, no logos, no UI. High-end photorealistic art direction for an ivory and forest green boutique games club. Warm sunlit ivory limestone room with a tall softly blurred arched window at right, gentle olive plant shadow, polished cream stone tabletop. RIGHT half composition: large beautifully sculpted ivory chess knight in foreground with small bronze inlay at base, one dark forest green glazed chess pawn behind, small walnut backgammon board edge and ivory dice on the tabletop, a compact subtle stack of green and beige stone Tetris blocks near lower right. Elegant architectural still life, warm bronze details, luxury club atmosphere, subtle film grain, tactile marble and ceramic, exquisite restrained editorial styling, realistic light and shadows, no gold glitter, no neon, no fantasy sparks. LEFT 45% is largely empty warm ivory plaster and softly lit tabletop with very low detail so dark green HTML heading can be overlaid legibly. Objects all concentrated right, room visible, no cropped knight, careful generous composition. Color palette ivory #f4efe4, forest green #173d31, warm bronze #987342.
+
+---
+
 # Hero Portal 139 — oturum ve ödül regresyon taraması
 
 138 tasarımı korunur; üç alternatif görünüm sohbet içinde konsept mockup olarak sunulmuştur. Tasarım seçimi uygulanmamıştır.

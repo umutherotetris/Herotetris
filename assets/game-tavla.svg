@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="420" height="260" viewBox="0 0 420 260" role="img" aria-labelledby="game-tavla-title">
 <title id="game-tavla-title">Ceviz ve bakır kakmalı tavla tahtası ile fildişi zarlar</title>
 <defs>
-  <linearGradient id="game-tavla-mint-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#D5FFF0"/><stop offset=".45" stop-color="#91E1BC"/><stop offset="1" stop-color="#4FAD8C"/></linearGradient>
-  <linearGradient id="game-tavla-mint-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#65B89B"/><stop offset="1" stop-color="#22574E"/></linearGradient>
-  <linearGradient id="game-tavla-mint-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3A8F78"/><stop offset="1" stop-color="#153B39"/></linearGradient>
-  <linearGradient id="game-tavla-lavender-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F0E7FF"/><stop offset=".5" stop-color="#B9A5E4"/><stop offset="1" stop-color="#8277B4"/></linearGradient>
-  <linearGradient id="game-tavla-lavender-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9B8AC2"/><stop offset="1" stop-color="#494264"/></linearGradient>
-  <linearGradient id="game-tavla-lavender-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#766A9B"/><stop offset="1" stop-color="#343044"/></linearGradient>
+  <linearGradient id="game-tavla-mint-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7e5c8"/><stop offset=".45" stop-color="#90b295"/><stop offset="1" stop-color="#48785a"/></linearGradient>
+  <linearGradient id="game-tavla-mint-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#639371"/><stop offset="1" stop-color="#234d38"/></linearGradient>
+  <linearGradient id="game-tavla-mint-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3b6c4f"/><stop offset="1" stop-color="#17382b"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8eed5"/><stop offset=".5" stop-color="#dcc8a0"/><stop offset="1" stop-color="#ae9264"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bca47a"/><stop offset="1" stop-color="#64563d"/></linearGradient>
+  <linearGradient id="game-tavla-lavender-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9b8157"/><stop offset="1" stop-color="#493e2b"/></linearGradient>
   <linearGradient id="game-tavla-gold-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF3CE"/><stop offset=".45" stop-color="#D8B974"/><stop offset="1" stop-color="#AF8648"/></linearGradient>
   <linearGradient id="game-tavla-gold-left" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#B99A63"/><stop offset="1" stop-color="#65502E"/></linearGradient>
   <linearGradient id="game-tavla-gold-right" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#967340"/><stop offset="1" stop-color="#463A27"/></linearGradient>

@@ -1,17 +1,18 @@
-/* Hero Portal 139: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 140: replace the legacy Sukun worker at its existing URL. */
 'use strict';
-const HERO_BUILD = '139';
+const HERO_BUILD = '140';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
 const CACHE_NAME = CACHE_PREFIX + HERO_BUILD;
 const CORE_ASSETS = [
-  'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=138',
+  'css/ivory.css?v=140', 'assets/ivory-club-hero.webp?v=140',
+  'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=124',
   'css/tetris.css?v=124', 'css/themes.css?v=124', 'css/portal.css?v=138',
-  'js/portal-worker.js?v=139', 'js/portal.js?v=139', 'js/nav.js',
-  'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=138',
-  'assets/game-chess.svg?v=138', 'assets/game-tavla.svg?v=138', 'assets/game-word.svg?v=138',
+  'js/portal-worker.js?v=140', 'js/portal.js?v=140', 'js/nav.js',
+  'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=140',
+  'assets/game-chess.svg?v=140', 'assets/game-tavla.svg?v=140', 'assets/game-word.svg?v=140',
   'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',
   'js/vendor/peerjs-1.5.4.min.js?v=138'
 ];
@@ -114,7 +115,7 @@ function notificationUrl(value){
 }
 function showNotification(data = {}){
   return self.registration.showNotification(data.title || 'Hero Portal', {
-    body: data.body || '', icon: new URL('assets/hero-portal.svg?v=138', SCOPE).href,
+    body: data.body || '', icon: new URL('assets/hero-portal.svg?v=140', SCOPE).href,
     tag: data.tag || 'hero-notification', data: { url: notificationUrl(data.url) }
   });
 }

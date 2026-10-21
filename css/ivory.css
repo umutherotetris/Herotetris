@@ -1,0 +1,151 @@
+/* Hero Portal 140 — Fildişi Kulüp. Scoped so the eight original themes remain available. */
+.portal .ivory-art { display:none; }
+html[data-theme="ivory"] {
+  color-scheme: light;
+  --accent:#214d3c; --accent2:#8d683f; --accent-soft:#214d3c16; --accent-border:#214d3c44;
+  body.portal {
+    --portal-bg:#f5f1e8; --portal-surface:#fffdf7; --portal-raised:#ece7db;
+    --portal-border:#d8d1c2; --portal-ink:#193b2e; --portal-muted:#64695e; --portal-accent:#214d3c;
+    --font-editorial:Georgia,'Times New Roman',serif;
+    --text:var(--portal-ink); --text-dim:#4b584c; --text-mute:var(--portal-muted); --text-faint:#696c62;
+    background:var(--portal-bg); color:var(--portal-ink);
+  }
+  .portal .portal-glow { background:radial-gradient(ellipse at 70% 0%,#e8dbc0,transparent 68%); }
+  .portal .portal-header { min-height:102px; }
+  .portal .brand-mark { color:#214d3c; border-color:#bba982; background:#ece6d8; border-radius:6px; }
+  .portal .brand-name { color:#193b2e; }
+  .portal :is(.header-note,.hero-details,.section-count,.game-number,.game-category) { color:#656858; }
+  .portal :is(.header-discover,.header-link) { color:#244633; }
+  .portal .header-link { background:#fffcf5; border-color:#cfc7b5; }
+  .portal .header-avatar { background:#e9e4d5; }
+  .portal .home-intro { min-height:530px; padding:64px 58px 74px; border-color:#d1c4a9; border-radius:20px; background:#eee5d4; box-shadow:0 18px 54px #655b3610; }
+  .portal .home-intro::before { z-index:0; background:linear-gradient(90deg,#f5efdfef 0%,#f5efdfdd 31%,#f5efdf55 52%,transparent 74%); }
+  .portal .hero-grid,.portal .art-note { display:none; }
+  .portal .intro-art { position:absolute; z-index:-1; inset:0; width:100%; height:100%; margin:0; opacity:1; }
+  .portal .intro-art > img { display:none; }
+  .portal .intro-art > .ivory-art { display:block; width:100%; height:100%; object-fit:cover; object-position:60% 55%; filter:none; }
+  .portal .hero-eyebrow { color:#795b30; font-size:9px; letter-spacing:2.1px; }
+  .portal .eyebrow-line { background:#94713c; }
+  .portal .intro-copy h1 { max-width:530px; color:#193b2e; font:400 clamp(43px,4.9vw,72px)/1.04 var(--font-editorial); letter-spacing:-2.2px; }
+  .portal .intro-copy h1 em { color:#193b2e; font-weight:400; font-style:normal; }
+  .portal .intro-description { color:#4a5645; max-width:370px; font-size:14px; }
+  .portal .intro-actions { gap:14px; }
+  .portal .intro-link { color:#fffbed; border-color:#315640; border-radius:99px; background:linear-gradient(150deg,#31563c,#153b2b); box-shadow:0 6px 14px #193b2e22,inset 0 1px #ffffff33; min-height:50px; padding-inline:24px; }
+  .portal .intro-link:hover { box-shadow:0 9px 22px #193b2e30; }
+  .portal .intro-secondary { color:#244633; padding:10px 18px; border:1px solid #a89978; border-radius:99px; background:#f8f2e7b3; }
+  .portal .hero-details { margin-top:24px; color:#4b594a; }
+  .portal .hero-details i { background:#356647; box-shadow:none; }
+  .portal .hero-edition { z-index:2; color:#655336; border-color:#97856455; left:58px; right:36px; }
+  .portal .section-heading .eyebrow { color:#82633d; }
+  .portal :is(.section-heading h2,.screen-heading) { font-family:var(--font-editorial); font-weight:400; letter-spacing:-.8px; }
+  .portal .section-heading h2 { font-size:36px; }
+  .portal .section-count b { color:#8a6739; }
+  .portal .game-pc { --gc:#315940 !important; background:linear-gradient(155deg,#fffdf7,#ede6d8); border-color:#d2c7b2; border-radius:15px; box-shadow:0 4px 15px #6d594309; }
+  .portal .game-pc::before { background:radial-gradient(ellipse at 50% 40%,#b8ab8733,transparent 68%); }
+  .portal .game-pc::after { background:linear-gradient(90deg,transparent,#ac8a54,transparent); }
+  .portal .game-pc:hover { border-color:#9a835a; box-shadow:0 13px 26px #60513c1c; }
+  .portal .game-pc-logo { background:radial-gradient(ellipse,#e1d9c5aa,transparent 72%); }
+  .portal .game-pc-name { color:#193b2e; font:400 28px/1.25 var(--font-editorial); letter-spacing:-.6px; }
+  .portal :is(.game-pc-modes,.game-tag) { color:#606557; }
+  .portal .game-pc-footer { border-color:#bbac8b55; }
+  .portal .gpc-arrow { background:#214d3c0a; border-color:#214d3c44; }
+  .portal .portal-status { background:#ebe1ca; color:#54432b; border-color:#bba476; }
+  .portal .player-section .section-heading p:not(.eyebrow) { color:#64695e; }
+  .portal :is(.auth-card,.progress-panel,.prf-card,.placeholder) { background:#fffcf5; border-color:#d8d1c2; box-shadow:0 4px 20px #6d594307; }
+  .portal .auth-guest-title { font:400 26px/1.2 var(--font-editorial); }
+  .portal .auth-guest-icon { color:#9b793c88; }
+  .portal :is(.auth-google-btn,.nm-save,.clan-btn.p) { color:#fffbed; background:#214d3c; border-color:#214d3c; }
+  .portal .auth-google-btn:hover { background:#16392a; }
+  .portal :is(.pc-name,.auth-kaju-val,.stats-bar .stat-v,.prf-stat b,.prf-rec b,.prf-name) { color:#214d3c; }
+  .portal :is(.auth-kaju-lbl,.stats-bar .stat-l,.xp-cur,.xp-pct,.xp-max,.prf-lbl,.prf-xp-title,.prf-xp-max,.prf-xp-remain,.prf-stat span) { color:#656858; }
+  .portal .auth-user .pc-avatar { background:#eee5d3; }
+  .portal :is(.auth-online-txt,.auth-user-lv) { color:#315940; }
+  .portal :is(.stats-bar .stat,.xp-bar-wrap) { border-color:#d8d1c2; }
+  .portal :is(.xp-bar-track,.prf-xp-track) { background:#ddd6c5; }
+  .portal :is(.xp-bar-fill,.prf-xp-fill-bar) { background:linear-gradient(90deg,#9b7a45,#315940); }
+  .portal .eco-quick-btn { background:#eee8db; border-color:#d4cbb8; }
+  .portal .eco-quick-btn:hover { background:#e6ddca; border-color:#9a835a; }
+  .portal .eco-quick-ico { color:#866336; background:#faf6eb; border-color:#caba9a; }
+  .portal .eco-quick-lbl { color:#284a38; }
+  .portal .eco-quick-desc { color:#666756; }
+  .portal .eco-quick-badge { background:#315940; color:#fffbed; }
+  .portal :is(.portal-footer,.footer-brand span) { color:#64695e; border-color:#d8d1c2; }
+  .portal :is(.footer-brand,.portal-footer > a:last-child) { color:#795b30; }
+  .portal .prf-ava { background:#e5dccb; }
+  .portal .prf-ava-edit { background:#c6b28c; }
+  .portal :is(.prf-stat,.prf-xp-premium,.prf-rec,.fr-row,.nav-notif-item,.badge-item,.pcp-stat,.pcp-bestitem) { background:#f4efe3; border-color:#d8d1c2; }
+  .portal :is(.prf-rec,.nav-notif-txt,.badge-name,.fr-hdr-total) { color:#254735; }
+  .portal :is(.prf-recbody i,.badge-loading,.fr-status,.fr-off,.fr-hdr-offline,.nav-notif-time,.fr-lv) { color:#64695e; }
+  .portal .prf-rec.me { border-color:#80927b; background:#e8eddf; }
+  .portal :is(.prf-act-btn,.prf-btn,.clan-btn,.nm-cancel) { color:#2c503c; background:#f0eadb; border-color:#d1c6ad; }
+  .portal .prf-act-primary { color:#214d3c; background:#e4eadb; border-color:#abb99b; }
+  .portal :is(.nick-modal,.clan-panel,.pcp-panel,.adm-panel,.eco-box,.trn-panel,.np-panel) { background:#fffaf0; color:#244633; border-color:#c6b791; box-shadow:0 20px 70px #1f332744; }
+  .portal :is(.nm-title,.eco-title,.trn-title,.np-title,.pcp-title) { color:#244633; font-family:var(--font-editorial); }
+  .portal :is(.nm-input,.pcp-ks-input,.ghp-input) { color:#244633; background:#f6f0e3; border-color:#b4aa91; }
+  .portal :is(.theme-name,.set-ver,.set-theme-lbl,.set-scale-lbl,.np-nm,.quest-title,.kaju-sum-val) { color:#4d5c4b; }
+  .portal :is(.theme-chip,.scale-btn,.set-scale-section,.set-tgl,.np-row,.quest-card) { background:#f0ebdf; border-color:#cfc5af; color:#315940; }
+  .portal :is(.set-tgl.on,.np-tog.on) { background:#315940; color:#fffbed; }
+  .portal :is(.np-sub,.np-desc,.np-sub2,.quest-sub,.quest-prog,.wheel-sub,.trn-timer,.trn-empty,.trn-info,.eco-empty,.kaju-sum-lbl) { color:#656858; }
+  .portal :is(.trn-me,.trn-row,.np-perm,.kaju-sum-item) { background:#eee8d8; color:#315940; border-color:#d0c3a7; }
+  .portal :is(.trn-nm,.trn-pts,.trn-me-pts,.trn-sect) { color:#315940; }
+  .portal #gemHubPanel { background:#fffaf2; border-color:#c1b28e; box-shadow:0 20px 60px #213b2e33; }
+  .portal :is(.ghp-title,.ghp-tab,.ghp-chat-head-title,.ghp-online-nm) { color:#315940; }
+  .portal .ghp-tab.active { color:#214d3c; background:#e7ecdd; border-color:#aab695; }
+  .portal :is(.ghp-empty-text,.ghp-empty-sub) { color:#656858; }
+  .portal :is(#gemFloatBtn.twin-fab,#adminFloatBtn.twin-fab) { background:#244633; border-color:#a48b56; box-shadow:0 4px 15px #213b2e33; }
+  .portal .bottom-nav { background:#fffcf3f5; border-color:#c5b99e; box-shadow:0 -2px 30px #65573b15; }
+  .portal .nav-item { color:#666b5b; }
+  .portal .nav-item.active { color:#193b2e; background:#e7ebdc; }
+  .portal .nav-item:hover { color:#193b2e; background:#ede7d7; }
+  .portal .skip-link { color:#fffbed; }
+  /* Legacy account panels contain inline dark-theme copy; constrain these overrides to portal UI. */
+  .portal :is(.prf-card,.nick-modal) [style*="color:#dfe7ff"],
+  .portal :is(.prf-card,.nick-modal) [style*="color:#9fb0d8"],
+  .portal :is(.prf-card,.nick-modal) [style*="color:#7d8ab8"] { color:#5a6555 !important; }
+  /* Dark game engines keep readable controls when launched from the light portal. */
+  .portal :is(.tetris-overlay,.hero-select-overlay,.chess-root,.tavla-root,.kl-root) {
+    color-scheme:dark; color:#e0e0ff; --text:#e0e0ff; --text-dim:#c0c0e0; --text-mute:#a3a3be; --text-faint:#9292ad;
+    --accent:#00e5ff; --accent2:#e040fb;
+  }
+  @media(max-width:1100px) {
+    .portal .home-intro { padding:48px 38px 68px; min-height:500px; }
+    .portal .intro-copy h1 { font-size:57px; }
+    .portal .hero-edition { left:38px; }
+  }
+  @media(max-width:800px) {
+    .portal .home-intro { min-height:470px; }
+    .portal .intro-copy h1 { font-size:50px; }
+    .portal .home-intro::before { background:linear-gradient(90deg,#f5efdf 0%,#f5efdfed 30%,#f5efdf88 58%,#f5efdf11 100%); }
+    .portal .intro-art > .ivory-art { object-position:63% 50%; }
+    .portal .game-pc-name { font-size:27px; }
+  }
+  @media(max-width:520px) {
+    .portal .portal-header { min-height:86px; }
+    .portal .home-intro { min-height:448px; padding:32px 23px 60px; border-radius:14px; }
+    .portal .intro-copy h1 { max-width:300px; font-size:45px; letter-spacing:-1.8px; }
+    .portal .intro-description { font-size:12px; max-width:240px; }
+    .portal .hero-eyebrow { font-size:7px; letter-spacing:1.4px; margin-bottom:23px; }
+    .portal .home-intro::before { background:linear-gradient(90deg,#f5efdfed 0%,#f5efdfdd 35%,#f5efdf99 65%,#f5efdf22 100%); }
+    .portal .intro-art > .ivory-art { object-position:61% 50%; }
+    .portal .intro-actions { gap:10px; margin-top:24px; }
+    .portal .intro-link { padding:11px 18px; min-height:46px; font-size:11px; }
+    .portal .intro-secondary { padding:8px 15px; min-height:44px; font-size:11px; }
+    .portal .hero-details { font-size:8px; gap:9px; margin-top:20px; }
+    .portal .hero-edition { left:23px; right:23px; bottom:18px; font-size:6px; }
+    .portal .section-heading h2 { font-size:29px; }
+    .portal .game-pc-name { font-size:24px; }
+    .portal .game-pc-modes { font-size:11px; }
+    .portal .game-pc-footer { margin-top:12px; }
+  }
+  @media(max-width:359px) {
+    .portal .home-intro { padding-inline:19px; }
+    .portal .intro-copy h1 { font-size:39px; }
+    .portal .game-pc-name { font-size:21px; }
+    .portal .intro-actions { gap:8px; }
+    .portal .intro-link { padding-inline:13px; }
+    .portal .intro-secondary { padding-inline:11px; }
+  }
+}
+html[data-theme="ivory"] .portal .set-row { color:#315940; }
+html[data-theme="ivory"] .portal .set-row small { color:#64695e; opacity:1 !important; font-size:11px !important; }
+html[data-theme="ivory"] .portal :is(#gemFloatBtn,#adminFloatBtn) { color:#fffbed; }
