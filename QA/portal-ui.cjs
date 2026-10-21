@@ -34,6 +34,7 @@ async function setup(page, fixtures=true){
     if(fixtures&&url.pathname==='/js/auth.js') return route.fulfill({contentType:'text/javascript',body:authFixture});
     if(fixtures&&url.pathname==='/js/store.js') return route.fulfill({contentType:'text/javascript',body:storeFixture});
     if(!fixtures&&url.pathname==='/js/auth.js') return route.abort();
+    if(url.pathname==='/js/games/tetris.js') return route.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'js/games/tetris.js'),'utf8')+'\nwindow.__tetrisQA={state:()=>G,score:animateScore,drop:hardDrop,close,launch:launchGame};'});
     const file=path.resolve(root,'.'+(url.pathname==='/'?'/index.html':url.pathname));
     if(!file.startsWith(root+path.sep)) return route.fulfill({status:403});
     if(!fs.existsSync(file)||!fs.statSync(file).isFile()) return route.fulfill({status:404,body:'Missing'});
@@ -189,7 +190,7 @@ async function setup(page, fixtures=true){
     await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-settings.png')});
   }
   // Floating jewels retain their original saved-position keys and panel actions.
-  const dragPage=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+  const dragPage=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce',hasTouch:true});
   await setup(dragPage); await dragPage.goto(base); await dragPage.waitForFunction(()=>!!window.Hero);
   const adminState={status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}};
   await dragPage.evaluate(state=>window.__testAuth(state),adminState);
@@ -204,7 +205,7 @@ async function setup(page, fixtures=true){
   const positions={};
   for(const [id,x,y] of [['gemFloatBtn',65,260],['adminFloatBtn',265,360]]){
     const fab=dragPage.locator('#'+id);
-    assert.equal(await fab.evaluate(el=>el.parentElement===document.body&&getComputedStyle(el).position==='fixed'),true);
+    assert.equal(await fab.evaluate(el=>el.parentElement.classList.contains('jewel-slot')&&el.dataset.parked==='true'),true);
     const before=await fab.boundingBox();
     assert.equal(before.width,34,id+' keeps its original size');
     assert.equal(before.height,34);
@@ -219,6 +220,7 @@ async function setup(page, fixtures=true){
   }
   assert.equal(await dragPage.locator('#gemHubPanel').evaluate(el=>el.classList.contains('ghp-open')),false,'drag does not open social panel');
   assert.equal(await dragPage.locator('#adminPanel').isVisible(),false,'drag does not open admin panel');
+  await dragPage.evaluate(()=>localStorage.setItem('hero_jewel_start','remember'));
   await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
   await dragPage.evaluate(state=>window.__testAuth(state),adminState);
   for(const id of Object.keys(positions)){
@@ -234,7 +236,73 @@ async function setup(page, fixtures=true){
   await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
   assert.equal(await dragPage.evaluate(()=>localStorage.getItem('hero_ui_scale')),'0.85','saved UI scale survives');
   await dragPage.waitForFunction(()=>window.__uiScale===0.85);
+  // Personalization: persistence, account isolation, safe text and park defaults.
+  await dragPage.evaluate(()=>{localStorage.setItem('hero_ui_scale','1');localStorage.removeItem('hero_jewel_start');});
+  await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
+  assert.equal(await dragPage.locator('#gemFloatBtn').getAttribute('data-parked'),'true','fresh start auto-parks');
+  await dragPage.locator('.bottom-nav [data-nav="profile"]').click();
+  await dragPage.locator('[data-p="personalize"]').click();
+  const editor=dragPage.locator('#profilePersonalize');
+  await editor.locator('[name="title"]').fill('Gece oyuncusu');
+  await editor.locator('[name="bio"]').fill('<img src=x onerror=alert(1)>');
+  await editor.locator('[name="avatar"]').selectOption('🐉');
+  await editor.locator('[name="game"]').selectOption('chess');
+  await editor.locator('[name="background"]').selectOption('ocean');
+  await editor.locator('[name="frame"]').check();
+  await editor.locator('[type="submit"]').click();
+  assert.equal(await dragPage.locator('.profile-intro img').count(),0,'bio is plain text');
+  assert.match(await dragPage.locator('.profile-intro').textContent(),/Gece oyuncusu/);
+  await dragPage.reload();await dragPage.waitForFunction(()=>!!window.Hero);
+  await dragPage.locator('.bottom-nav [data-nav="profile"]').click();
+  assert.match(await dragPage.locator('.profile-intro').textContent(),/Gece oyuncusu/);
+  await dragPage.evaluate(state=>window.__testAuth(state),adminState);
+  assert.doesNotMatch(await dragPage.locator('.profile-intro').textContent(),/Gece oyuncusu/,'another account has separate settings');
+  await dragPage.locator('[data-p="personalize"]').click();
+  await editor.locator('[data-park]').click();
+  await dragPage.keyboard.press('Escape');
+  assert.equal(await dragPage.locator('#adminFloatBtn').getAttribute('data-parked'),'true');
+  // Dragging at non-default UI scale follows the pointer without jumping.
+  await dragPage.evaluate(async()=>{document.body.style.zoom='0.85';window.__uiScale=.85;window.dispatchEvent(new Event('hero:scale'));});
+  const jewel=await dragPage.locator('#gemFloatBtn').boundingBox();
+  await dragPage.mouse.move(jewel.x+jewel.width/2,jewel.y+jewel.height/2);await dragPage.mouse.down();
+  await dragPage.mouse.move(90+jewel.width/2,250+jewel.height/2,{steps:10});await dragPage.mouse.up();
+  const dropped=await dragPage.locator('#gemFloatBtn').boundingBox();
+  assert.ok(Math.abs(dropped.x-90)<2&&Math.abs(dropped.y-250)<2,'scaled jewel follows pointer');
+  const cdp=await dragPage.context().newCDPSession(dragPage);
+  await dragPage.evaluate(()=>window.dispatchEvent(new Event('hero:park-jewels')));
+  const touchBox=await dragPage.locator('#gemFloatBtn').boundingBox();
+  const touchStart={x:touchBox.x+touchBox.width/2,y:touchBox.y+touchBox.height/2};
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[touchStart]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:120+touchBox.width/2,y:290+touchBox.height/2}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  const touchEnd=await dragPage.locator('#gemFloatBtn').boundingBox();
+  assert.ok(Math.abs(touchEnd.x-120)<2&&Math.abs(touchEnd.y-290)<2,'real touch input drags parked jewel');
+  await cdp.detach();
+  if(process.env.PORTAL_SCREENSHOTS){
+    await dragPage.evaluate(()=>{document.body.style.zoom='';window.__uiScale=1;window.dispatchEvent(new Event('hero:park-jewels'));});
+    await dragPage.locator('.bottom-nav [data-nav="home"]').click();
+    await dragPage.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-parked-admin.png'),fullPage:true});
+    await dragPage.locator('.bottom-nav [data-nav="profile"]').click();await dragPage.locator('[data-p="personalize"]').click();
+    await dragPage.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-personalize.png')});
+  }
   await dragPage.close();
+  // Exercise the real Tetris module; test hooks exist only in this route fixture.
+  const tPage=await browser.newPage({viewport:{width:390,height:844}});await setup(tPage);
+  const tErrors=[];tPage.on('pageerror',e=>tErrors.push(e.message));
+  await tPage.goto(base);await tPage.waitForFunction(()=>!!window.Hero);
+  await tPage.locator('#gameTetris').click();await tPage.locator('.hs-play').click();
+  await tPage.waitForFunction(()=>!!window.__tetrisQA?.state());
+  await tPage.evaluate(()=>{const q=window.__tetrisQA,s=q.state();s.countdown=0;s.paused=true;s.score=100;q.score();});
+  await tPage.waitForTimeout(30);
+  await tPage.evaluate(()=>{window.__tetrisQA.state().score=800;window.__tetrisQA.score();});
+  await tPage.waitForFunction(()=>window.__tetrisQA.state().displayScore===800);
+  await tPage.evaluate(()=>{const s=window.__tetrisQA.state();s.paused=false;s.countdown=0;window.__tetrisQA.drop();});
+  assert.ok(await tPage.evaluate(()=>window.__tetrisQA.state().board.flat().some(Boolean)),'hard drop locks real cells');
+  await tPage.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
+  assert.equal(await tPage.evaluate(()=>window.__tetrisQA.state().paused),true,'backgrounding pauses solo Tetris');
+  await tPage.evaluate(()=>{window.__tetrisQA.state().paused=false;document.querySelector('[data-ctrl="left"]').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));window.__tetrisQA.close();});
+  await tPage.waitForTimeout(200);assert.deepEqual(tErrors,[],'closing while control held leaves no timer errors');
+  await tPage.close();
   assert.deepEqual(pageErrors,[], 'unexpected browser error');
   const offline=await browser.newPage(); await setup(offline,false); await offline.goto(base);
   await offline.locator('.portal-retry').waitFor({state:'visible'});

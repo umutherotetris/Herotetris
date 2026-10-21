@@ -8,7 +8,7 @@ import Store from '../store.js';
 import Auth from '../auth.js';
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import {
-  newGame, allLegalMoves, legalMovesFrom, applyMove, remainingDice,
+  newGame, allLegalMoves, resolveLegalMove, legalMovesFrom, applyMove, remainingDice,
   turnComplete, gameStatus, winType, rollDice, openingRoll, pipCount, canBearOff
 } from './tavla-engine.js';
 import { chooseSequence } from './tavla-ai.js';
@@ -1835,6 +1835,9 @@ function onRemoteMessage(type, data){
   if(type !== 'message') return;
   const msg = data;
   if(!msg || !msg.type) return;
+  if(G.remoteMoving && ['move','endturn','dice','fullsync'].includes(msg.type)){
+    (G.remoteQueue ||= []).push(msg); return;
+  }
 
   // Reconnect senkron mesajları
   if(msg.type === 'resync_request'){ sendFullSync(); return; }
@@ -1848,6 +1851,7 @@ function onRemoteMessage(type, data){
     updateStatus(`Açılış: B${G.openingDice[0]}–S${G.openingDice[1]} · ` + (mine ? 'sen başla, zar at' : 'rakip başlıyor'));
     updateControls(); draw();
   } else if(msg.type === 'dice'){
+    if(G.gameEnded || G.state.turn===G.playerColor || G.rolled || !Array.isArray(msg.dice) || ![2,4].includes(msg.dice.length) || !msg.dice.every(d=>Number.isInteger(d)&&d>=1&&d<=6) || (msg.dice.length===4 ? !msg.dice.every(d=>d===msg.dice[0]) : msg.dice[0]===msg.dice[1])) return;
     if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
     G.state.dice = msg.dice || []; G.state.used = []; G.rolled = true;
     try{ Sound.dice(); }catch(e){}
@@ -1858,18 +1862,24 @@ function onRemoteMessage(type, data){
     });
   } else if(msg.type === 'move'){
     if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
-    const mv = { from: msg.from, to: msg.to, die: msg.die, dieIdx: msg.dieIdx };
+    if(G.gameEnded || G.state.turn===G.playerColor) return;
+    const mv = resolveLegalMove(G.state,msg);
+    if(!mv) return;
     let isHit = false;
     if(typeof mv.to === 'number'){
       const occ = G.state.points[mv.to]; const mover = G.state.turn;
       if((mover === 'w' && occ === -1) || (mover === 'b' && occ === 1)) isHit = true;
     }
+    const session=G;G.remoteMoving=true;
     animateMove(mv, () => {
+      if(G!==session)return;
       G.state = applyMove(G.state, mv);
       try{ isHit ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
       draw();
       const st = gameStatus(G.state);
       if(st !== 'playing'){ onWin(st); }
+      G.remoteMoving=false;
+      while(G===session && !G.remoteMoving && G.remoteQueue?.length) onRemoteMessage('message',G.remoteQueue.shift());
     });
   } else if(msg.type === 'endturn'){
     G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
@@ -2562,6 +2572,7 @@ function animateMove(mv, onDone){
     end = { x: pg.baseX, y: pg.y0 + pg.dir * (g.safe + g.checkerR) };   // k=0 zemini
   }
   if(!start || !end){ if(onDone) onDone(); return; }
+  const session=G;
   const dur = 280, t0 = performance.now();
   G.movingChecker = { color, x: start.x, y: start.y, r: G.geo.checkerR };
   // vurulan taş: noktadan bar'daki gerçek yuvasına uçar
@@ -2578,7 +2589,7 @@ function animateMove(mv, onDone){
   }
   function frame(now){
     // G veya hareket eden taş yoksa (yenile/reset olmuş) animasyonu güvenle durdur
-    if(!G || !G.movingChecker){ return; }
+    if(G!==session || !G.movingChecker){ return; }
     const p = Math.min(1, (now - t0) / dur);
     const e = easeOutCubic(p);
     G.movingChecker.x = start.x + (end.x - start.x) * e;

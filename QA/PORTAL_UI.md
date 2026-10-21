@@ -1,3 +1,13 @@
+# Release 145 — parked jewels, personal profile and game-engine corrections
+
+Original 34px sparkling jewels start in header parking slots, remain draggable by mouse/touch, and can remember their last position by preference. Drag calculations use viewport coordinates consistently at non-default UI scales. Resize clamps floating controls to the viewport. The crown remains admin-only. A native personalization dialog provides per-account/device title, bio, avatar, accent, frame, background, favorite game and parking preferences. Profile frame IDs now resolve to their actual colors.
+
+Chess: separate attacked-square logic from pawn movement; enforce same-color castling rook; expose all four promotions; validate remote moves against local legal moves; normalize repetition keys for uncapturable en passant. Tavla: correct oversized bearing-off rule, enforce maximum dice usage and higher-die rule, derive hit data locally, reject invalid remote moves/dice and sequence animation-bound remote moves before end-turn. Kelimecik: no dictionary bypass during EN loading, validate tile coordinates/points and preview input, prevent delayed callbacks affecting closed/replacement sessions. Tetris: follow the current score during animation, release held-control timers and score animation on close, pause solo play on backgrounding.
+
+Validation and limitations: see PORTAL_AUDIT_145.md. Original jewel artwork/effects are unchanged.
+
+---
+
 # Release 144 — original sparkling jewels
 
 Restores the original diamond and crown emoji markup from commit 8d4faf9. Removes the replacement SVG markup and all jewel-specific portal/ivory/lobby/Aurora styling overrides, so the unchanged original components.css supplies the 34px controls, 14px symbols, cyan/magenta and gold glow, pulse, floating crown and three animated sparks per control. No new jewel artwork or effects are introduced. Draggable mounting, saved-position keys, UI scale setting and original social/admin actions remain intact. Reduced-motion preference continues to be respected.

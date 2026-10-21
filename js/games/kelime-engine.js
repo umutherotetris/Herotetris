@@ -16,7 +16,7 @@ export async function loadEnglishDict(){
 function isWord(text){
   if(GAME_LANG === 'en'){
     if(_isWordEN) return _isWordEN(text);
-    return true;   // EN sözlük henüz yüklenmediyse engelleme (yüklenince devreye girer)
+    return false;   // Loading failure must never accept arbitrary words.
   }
   return isWordTR(text);
 }
@@ -152,24 +152,9 @@ export function buildSurprises(seed, count = 4){
 
 // Yerleştirmenin ANLIK puanını hesapla (geçerli olmasa bile) — canlı hesaplayıcı için
 export function previewPlacement(board, pending){
-  if(!pending || pending.length === 0) return { empty:true, score:0, valid:false, words:[] };
-  const rows = new Set(pending.map(p=>p.r)), cols = new Set(pending.map(p=>p.c));
-  const horizontal = rows.size === 1, vertical = cols.size === 1;
-  if(!horizontal && !vertical) return { score:0, valid:false, words:[], reason:'tek hat değil' };
-  let dr, dc;
-  if(horizontal && !vertical){ dr=0; dc=1; }
-  else if(vertical && !horizontal){ dr=1; dc=0; }
-  else { const p=pending[0]; const hasH = tileAt(board,pending,p.r,p.c-1)||tileAt(board,pending,p.r,p.c+1); dr=hasH?0:1; dc=hasH?1:0; }
-  const anchor = pending[0];
-  const words = [];
-  const main = collectWord(board, pending, anchor.r, anchor.c, dr, dc); if(main.length>=2) words.push(main);
-  for(const p of pending){ const cr = collectWord(board, pending, p.r, p.c, dc, dr); if(cr.length>=2) words.push(cr); }
-  const uniq=[]; const seen=new Set();
-  for(const w of words){ const k=w.map(t=>t.r+'.'+t.c).join('|'); if(!seen.has(k)){ seen.add(k); uniq.push(w); } }
-  let score=0; for(const w of uniq) score += scoreWord(w, pending);
-  if(pending.length === RACK_SIZE) score += BINGO_BONUS;
-  const v = validatePlacement(board, pending);
-  return { score, valid: v.ok, reason: v.error, words: uniq.map(w=>wordString(w)) };
+  if(!pending || pending.length===0) return {empty:true,score:0,valid:false,words:[]};
+  const result=validatePlacement(board,pending);
+  return {score:result.ok?result.score:0,valid:result.ok,reason:result.error,words:(result.words||[]).map(w=>w.text)};
 }
 export function drawFromBag(bag, n){
   const out = [];
@@ -236,7 +221,14 @@ function wordString(wordTiles){
 // pending: [{r,c,letter,points,joker,assigned?}]
 // dönüş: { ok, score, words:[{text,score}], error }
 export function validatePlacement(board, pending){
-  if(!pending || pending.length === 0) return { ok:false, error:'Tahtaya taş yerleştir' };
+  if(!Array.isArray(pending) || pending.length === 0) return { ok:false, error:'Tahtaya taş yerleştir' };
+  if(!Array.isArray(board)||board.length!==SIZE||board.some(row=>!Array.isArray(row)||row.length!==SIZE)) return {ok:false,error:'Tahta verisi geçersiz'};
+  for(const p of pending){
+    if(!p || !Number.isInteger(p.r)||!Number.isInteger(p.c)||p.r<0||p.c<0||p.r>=SIZE||p.c>=SIZE) return {ok:false,error:'Taş tahta sınırları dışında'};
+    const letter=p.joker?p.assigned:p.letter;
+    if(!Object.hasOwn(LETTERS,letter) || p.points!==(p.joker?0:letterPoints(letter))) return {ok:false,error:'Harf veya taş puanı geçersiz'};
+  }
+  if(GAME_LANG==='en'&&!_isWordEN) return {ok:false,error:'İngilizce sözlük hazırlanıyor. Birazdan tekrar dene.'};
 
   // tek hücreye iki taş?
   const seen = new Set();

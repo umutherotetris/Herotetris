@@ -5,6 +5,7 @@
 //  Veri katmanı temiz: Auth/fdb (globalChat, messages, userNotifs).
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
+import { makeFabDraggable } from './jewel-drag.js';
 
 /* ═══════════ SOSYALPLUS: DÜZENLEME / SİLME / QUICK BAR ═══════════ */
 const _EDIT_MS = 5 * 60 * 1000;
@@ -806,41 +807,6 @@ export async function openPlayerCard(uid){
 }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 
 // ── Sürüklenebilir FAB (monolitten) ─────────────────────────────
-function makeFabDraggable(fab, onMove){
-  const st = { on:false, moved:false, sx:0, sy:0, sl:0, st:0 }, KEY = 'twFab_' + fab.id;
-  const TOP_MIN = 8;
-  const maxTop = () => {
-    const nav = document.querySelector('.bottom-nav');
-    const navRect = nav?.getBoundingClientRect();
-    const bottom = navRect && navRect.width > window.innerWidth / 2 && navRect.top > window.innerHeight / 2 ? navRect.top : window.innerHeight;
-    return Math.max(TOP_MIN, bottom - (fab.offsetHeight || 54) - 8);
-  };
-  try{
-    const p = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if(p && p.left != null){
-      const safeTop = Math.max(TOP_MIN, Math.min(maxTop(), p.top));
-      const safeLeft = Math.max(4, Math.min(window.innerWidth - 54, p.left));
-      fab.style.left = safeLeft+'px'; fab.style.top = safeTop+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
-    }
-  }catch(e){}
-  fab.addEventListener('pointerdown', (e) => { st.on = true; st.moved = false; st.sx = e.clientX; st.sy = e.clientY; const r = fab.getBoundingClientRect(); st.sl = r.left; st.st = r.top; if(fab.setPointerCapture) fab.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
-  fab.addEventListener('pointermove', (e) => {
-    if(!st.on) return;
-    // ZOOM telafisi: Arayüz Boyutu (body zoom) aktifken clientX ölçekli, getBoundingClientRect ölçeksiz gelir.
-    // dx/dy'yi zoom faktörüne bölerek st.sl/st.st (ölçeksiz) ile aynı uzaya getir → FAB parmaktan kaymaz.
-    const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1;
-    const dx = (e.clientX - st.sx) / _z, dy = (e.clientY - st.sy) / _z;
-    if(Math.abs(dx) > 5 || Math.abs(dy) > 5) st.moved = true;
-    if(!st.moved) return;
-    const l = Math.max(4, Math.min(window.innerWidth - 54, st.sl + dx));
-    const t = Math.max(TOP_MIN, Math.min(maxTop(), st.st + dy));
-    fab.style.left = l+'px'; fab.style.top = t+'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
-    if(onMove) onMove(l, t);
-  });
-  fab.addEventListener('pointerup', () => { if(!st.on) return; st.on = false; const r = fab.getBoundingClientRect(); try{ localStorage.setItem(KEY, JSON.stringify({ left:r.left, top:r.top })); }catch(e){} });
-  fab.addEventListener('pointercancel', () => { st.on = false; });
-  return () => st.moved;
-}
 function pressAnim(fab){ fab.classList.remove('tw-press'); void fab.offsetWidth; fab.classList.add('tw-press'); }
 
 // ── Kurulum ─────────────────────────────────────────────────────

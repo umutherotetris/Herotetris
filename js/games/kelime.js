@@ -285,6 +285,10 @@ function _injectKelimeHUD(){
   }catch(e){ console.warn('[kelime hud]',e); }
 }
 
+function afterGame(callback,delay){
+  const session=G;
+  return setTimeout(()=>{if(session && G===session)callback();},delay);
+}
 function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
@@ -469,7 +473,7 @@ async function resumeKelime(snap){
   flashStatus('↩️ Kaldığın yerden devam');
   if(G.who === 'B'){           // sıra AI'daydı → oynat
     G.aiThinking = true; renderScores();
-    setTimeout(aiTurn, 700);
+    afterGame(aiTurn, 700);
   } else if(G.seri){ startTurnTimer(); }
 }
 
@@ -1287,6 +1291,7 @@ function onRackPointerUp(e){
   window.removeEventListener('pointercancel', onRackPointerUp);
   const d = _drag; _drag = null;
   if(!d) return;
+  if(!G){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
   const el = rackTileEl(d.i); if(el) el.classList.remove('dragging');
@@ -1397,9 +1402,10 @@ function onPendingPointerUp(e){
   window.removeEventListener('pointercancel', onPendingPointerUp);
   const d = _pdrag; _pdrag = null;
   if(!d) return;
+  if(!G){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
-  G._suppressNextCellTap = true; setTimeout(()=>{ G._suppressNextCellTap=false; }, 400);
+  G._suppressNextCellTap = true; afterGame(()=>{ G._suppressNextCellTap=false; }, 400);
   const idx = G.pending.findIndex(p=>p.r===d.r && p.c===d.c);
   if(idx<0){ renderAll(); return; }
   if(d.moved){
@@ -1658,7 +1664,7 @@ function submitMove(){
     G.who = 'B'; G.aiThinking = true; renderScores();
     flashStatus('🤖 Yapay zekâ düşünüyor…');
     saveKelimeResume();
-    setTimeout(aiTurn, 850);
+    afterGame(aiTurn, 850);
   } else {
     nextTurn();   // 2 oyuncu: sıra geçişi ekranı
   }
@@ -1839,7 +1845,7 @@ function passTurn(){
     stopTurnTimer();
     G.who='B'; G.aiThinking=true; renderScores();
     flashStatus('🤖 Yapay zekâ düşünüyor…');
-    setTimeout(aiTurn, 700);
+    afterGame(aiTurn, 700);
     return;
   }
   G.state.passStreak++;
@@ -1871,7 +1877,7 @@ function performExchange(idxs){
   // Çift tetikleme kilidi — buton hızlı/çoklu basımda harf birden fazla değişmesin
   if(G._exchanging) return;
   G._exchanging = true;
-  setTimeout(()=>{ G._exchanging = false; }, 1200);
+  afterGame(()=>{ G._exchanging = false; }, 1200);
   const removed = idxs.map(i=>G.rackView[i]);
   G.rackView = G.rackView.filter((_,i)=>!idxs.includes(i));
   if(G.online){
@@ -1907,7 +1913,7 @@ function performExchange(idxs){
     stopTurnTimer();
     G.who='B'; G.aiThinking=true; renderAll(); renderScores();
     flashStatus('🔄 '+removed.length+' harf değişti · 🤖 düşünüyor…');
-    setTimeout(aiTurn, 700);
+    afterGame(aiTurn, 700);
     return;
   }
   renderAll();

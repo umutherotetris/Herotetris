@@ -175,3 +175,39 @@ html[data-theme="ivory"] .portal.aurora-layout { background-image:none; }
  .portal.lobby.aurora-layout :is(.favorite-game,.game-guide-button) { min-width:44px;width:44px;min-height:44px; }
  .portal.lobby.aurora-layout .aurora-card-content>p { font-size:10px;min-height:30px; }
 }
+
+/* Parking controls layout only; original jewel size and effects are untouched. */
+.portal .jewel-parking { display:flex;align-items:center;gap:12px;margin-left:auto; }
+.portal .jewel-slot { display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:none; }
+.portal .jewel-slot[hidden] { display:none; }
+.portal .jewel-slot #gemFloatBtn[data-parked], .portal .jewel-slot #adminFloatBtn[data-parked] { position:relative;left:auto;right:auto;top:auto;bottom:auto; }
+@media(max-width:767px) {
+ .portal.lobby.aurora-layout .portal-header { gap:8px; }
+ .portal.lobby.aurora-layout .jewel-parking { order:2;gap:8px; }
+ .portal.lobby.aurora-layout .portal-brand { margin-right:0; }
+}
+
+.portal .personalized-card { border-top:2px solid var(--profile-accent); }
+.portal .profile-intro { padding:0 2px 16px;overflow-wrap:anywhere; }
+.portal .profile-intro:empty { display:none; }
+.portal .profile-intro strong { color:var(--profile-accent);font-size:14px; }
+.portal .profile-intro p { color:var(--portal-ink);font-size:13px;line-height:1.65;white-space:pre-wrap; }
+.portal .profile-favorite { display:inline-block;padding:6px 10px;border:1px solid var(--profile-accent);border-radius:20px;font-size:11px;color:var(--portal-ink); }
+.portal .personalize-dialog { max-height:88dvh;overflow:auto;width:min(520px,calc(100vw - 28px)); }
+.portal .personalize-dialog form { display:grid;gap:16px; }
+.portal .personalize-dialog label { display:grid;gap:7px;font-size:13px;color:var(--portal-ink); }
+.portal .personalize-dialog :is(input:not([type=radio]):not([type=checkbox]),textarea,select) { width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid var(--portal-border);border-radius:10px;background:var(--portal-surface);color:var(--portal-ink);font:inherit; }
+.portal .personalize-dialog option { background:var(--portal-surface);color:var(--portal-ink); }
+.portal .personalize-note { font-size:12px;line-height:1.5;color:var(--portal-muted);margin:0; }
+.portal .personalize-preview { display:flex;align-items:center;gap:14px;padding:18px;border:1px solid var(--profile-accent);border-radius:16px;background:var(--portal-surface);overflow-wrap:anywhere; }
+.portal .personalize-preview>span { font-size:32px; }
+.portal .personalize-preview strong { color:var(--profile-accent); }
+.portal .personalize-preview p { font-size:13px;white-space:pre-wrap; }
+.portal .personalize-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.portal .personalize-colors { display:flex;gap:12px;flex-wrap:wrap; }
+.portal .personalize-colors label { width:36px;height:36px;background:var(--swatch);border-radius:50%;place-items:center; }
+.portal .personalize-colors input { accent-color:#15152f; }
+.portal .personalize-dialog fieldset { border:1px solid var(--portal-border);border-radius:12px;padding:12px; }
+.portal .personalize-dialog legend { font-size:13px; }
+.portal .personalize-check { display:flex !important;align-items:center; }
+@media(max-width:360px){.portal .personalize-grid { grid-template-columns:1fr; }}

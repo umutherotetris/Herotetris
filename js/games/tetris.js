@@ -1394,8 +1394,10 @@ function animateScore(){
   const target = G.score;
   if(G.displayScore === undefined) G.displayScore = target;
   if(G.scoreRaf) return;   // zaten animasyon dönüyorsa tekrar başlatma
+  const session = G;
   const tick = () => {
-    if(!G || !G.el.score){ return; }
+    if(G !== session || !G.el.score){ return; }
+    const target = G.score;
     const diff = target - G.displayScore;
     if(Math.abs(diff) < 1){
       G.displayScore = target;
@@ -1855,7 +1857,9 @@ function fitCanvas(){
 }
 
 function bindControls(){
+  const session=G;G.controlStops=[];
   const press = (ctrl) => {
+    if(G!==session)return;
     if(ctrl==='left') move(-1);
     else if(ctrl==='right') move(1);
     else if(ctrl==='rotateR') rotate('cw');
@@ -1869,12 +1873,14 @@ function bindControls(){
     let timer = null;
     const start = (e) => {
       e.preventDefault();
+      stop();
       press(ctrl);
       if(ctrl==='left' || ctrl==='right' || ctrl==='down'){
         timer = setInterval(() => press(ctrl), 90);   // basılı tut → tekrar
       }
     };
     const stop = () => { if(timer){ clearInterval(timer); timer=null; } };
+    G.controlStops.push(stop);
     btn.addEventListener('pointerdown', start);
     btn.addEventListener('pointerup', stop);
     btn.addEventListener('pointercancel', stop);
@@ -2165,9 +2171,11 @@ function restart(){
 
 function close(){
   if(!G) return;
+  G.controlStops?.forEach(stop=>stop());
   try{ if(G._home) G._home.remove(); }catch(e){}
   try{ saveTetrisResume(); }catch(e){}
   cancelAnimationFrame(G.raf);
+  cancelAnimationFrame(G.scoreRaf);
   try{ Sound.stopMusic(); }catch(e){}
   window.removeEventListener('keydown', G.keyHandler);
   window.removeEventListener('resize', G.resizeHandler);
@@ -2207,7 +2215,15 @@ function launchGame(){
   };
   G.resizeHandler = () => { if(G){ fitCanvas(); drawBoard(); } };
   window.addEventListener('resize', G.resizeHandler);
-  G.vis = () => { if(document.hidden){ try{ saveTetrisResume(); }catch(e){} } };
+  G.vis = () => {
+    if(!G) return;
+    G.last = 0;
+    if(document.hidden){
+      G.controlStops?.forEach(stop=>stop());
+      if(!G.versus && !G.over) togglePause(true);
+      try{ saveTetrisResume(); }catch(e){}
+    }
+  };
   document.addEventListener('visibilitychange', G.vis);
   bindControls();
   Sound.resume();

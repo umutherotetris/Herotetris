@@ -3,6 +3,7 @@
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
+import { getProfileStyle, openPersonalize, decorateProfile } from './profile-personalize.js';
 
 
 // Hafif toast helper (alert yerine)
@@ -119,6 +120,7 @@ function _renderProfile(st){
   const pl=Store.getState?Store.getState():{};
   const isGoogle=st.status==='google';
   const nick=st.displayName||'Misafir Oyuncu';
+  const personal=getProfileStyle(st.uid);
   const lvl=Math.max(1,Number(pl.level)||1);
   const xpR=Number(pl.xp); const xp=Number.isFinite(xpR)?xpR:0;
   const txR=Number(pl.totalXP); const totalXPv=Number.isFinite(txR)?txR:xp;
@@ -127,10 +129,10 @@ function _renderProfile(st){
   const curXPv=xp, needed=need;
   let photoDataUrl=null; try{ if(st.uid) photoDataUrl=localStorage.getItem('hero_photo_'+st.uid); }catch(e){}
   if(photoDataUrl && !/^data:image\/(?:png|jpeg|gif|webp);base64,[a-z\d+/=\s]+$/i.test(photoDataUrl)) photoDataUrl = null;
-  const avaHtml = photoDataUrl
+  const avaHtml = photoDataUrl && !personal.avatar
     ? '<img src="'+photoDataUrl+'" alt="profil foto" style="width:100%;height:100%;object-fit:cover;border-radius:13px;position:absolute;inset:0">'
-    : '<span style="font-size:28px">'+esc((st.profile&&st.profile.avatar)||defaultAvatar(st.uid))+'</span>';
-  const frameColor=esc((st.profile&&st.profile.frame)||'transparent');
+    : '<span style="font-size:28px">'+esc(personal.avatar||(st.profile&&st.profile.avatar)||defaultAvatar(st.uid))+'</span>';
+  const frameColor=personal.frame?personal.accent:(FRAMES.find(f=>f.id===st.profile?.frame)?.color||'transparent');
   box.innerHTML = ''
     +'<div class="prf-card">'
       +'<div class="prf-top">'
@@ -171,6 +173,7 @@ function _renderProfile(st){
         +'</div>'
       +'</div>'
       +'<div class="prf-acts-grid">'
+        +'<button class="prf-act-btn prf-act-primary" data-p="personalize">🎨 Kişiselleştir</button>'
         +(isGoogle?'<button class="prf-act-btn prf-act-primary" data-p="kaju">🥜 Kaju Gönder</button>':'<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>')
         +(isGoogle?'<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>':'')
         +(isGoogle?'<button class="prf-act-btn" data-p="clan">🏰 Klan</button>':'')
@@ -186,6 +189,8 @@ function _renderProfile(st){
   // Buton dinleyicileri
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
+  q('personalize')?.addEventListener('click',()=>openPersonalize(()=>Auth.getState(),()=>_renderProfile(Auth.getState())));
+  decorateProfile(box,personal);
   if(q('dm')&&isGoogle) q('dm').addEventListener('click',async()=>{
     // Kendi profil ekranı → mesaj kutusunu (DM listesi) aç
     try{
@@ -211,7 +216,7 @@ function _renderProfile(st){
   renderBadgesAndRank(st);
   renderRecords(st);
   renderTrophies(st);
-  const bgId=(st.profile&&st.profile.profileBg)||'default';
+  const bgId=personal.background!=='default'?personal.background:((st.profile&&st.profile.profileBg)||'default');
   applyProfileBg(bgId);
 }
 
@@ -378,7 +383,7 @@ function applyUIScale(scale){
   // zoom'u desteklemeyen tarayıcı olursa font-size en azından metni ölçeklesin
   document.documentElement.style.fontSize = (16 * scale) + 'px';
   // Drag/koordinat kodları için ölçek faktörü (zoom aktifken kayma telafisi)
-  try{ window.__uiScale = scale; }catch(e){}
+  try{ window.__uiScale = scale; window.dispatchEvent(new Event('hero:scale')); }catch(e){}
 }
 // Açılışta uygula
 if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){} }

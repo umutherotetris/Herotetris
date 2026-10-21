@@ -1,0 +1,33 @@
+// Real message handler with deterministic transport/animation dependencies.
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import * as engine from '../js/games/tavla-engine.js';
+const source=fs.readFileSync(new URL('../js/games/tavla.js',import.meta.url),'utf8');
+const begin=source.indexOf('function onRemoteMessage('),end=source.indexOf('\nfunction ',begin+1);
+const pending=[],noop=()=>{};
+const state=engine.newGame();state.points=Array(24).fill(0);state.points[6]=1;state.points[4]=-1;state.off.w=14;state.off.b=14;state.dice=[2,1];
+const session={state,playerColor:'b',rolled:true,gameEnded:false};
+const context=vm.createContext({G:session,...engine,Sound:new Proxy({},{get:()=>noop}),animateMove:(_m,done)=>pending.push(done),draw:noop,updateTurn:noop,updateStatus:noop,updateControls:noop,startAutoRollTimer:noop,onWin:noop,clearMoveGrace:noop,startBearAnim:noop});
+vm.runInContext(source.slice(begin,end)+'\nthis.receive=onRemoteMessage;',context);
+context.receive('message',{type:'move',from:6,to:4,die:2,dieIdx:999});
+context.receive('message',{type:'move',from:4,to:3,die:1});
+context.receive('message',{type:'endturn'});
+assert.equal(pending.length,1,'remote moves animate sequentially');
+assert.equal(session.state.turn,'w','end-turn waits for moves');
+pending.shift()();assert.equal(session.state.bar.b,1,'remote hit preserved');
+assert.equal(pending.length,1);pending.shift()();
+assert.equal(session.state.points[3],1);assert.equal(session.state.points[4],0);assert.equal(session.state.turn,'b');
+const before=JSON.stringify(session.state);
+context.receive('message',{type:'move',from:3,to:2,die:1});
+assert.equal(JSON.stringify(session.state),before,'out-of-turn network move ignored');
+console.log('PASS tavla network: rapid moves/end-turn queue, canonical dice index, hit and turn synchronization.');
+
+const kelime=fs.readFileSync(new URL('../js/games/kelime.js',import.meta.url),'utf8');
+const a=kelime.indexOf('function afterGame('),b=kelime.indexOf('\nfunction ',a+1),callbacks=[];
+const k=vm.createContext({G:{id:'old'},setTimeout:fn=>callbacks.push(fn)});
+vm.runInContext(kelime.slice(a,b)+'\nthis.schedule=afterGame;',k);
+let ran=0;k.schedule(()=>ran++,1);k.G=null;callbacks.shift()();assert.equal(ran,0);
+k.G={id:'old'};k.schedule(()=>ran++,1);k.G={id:'new'};callbacks.shift()();assert.equal(ran,0);
+k.schedule(()=>ran++,1);callbacks.shift()();assert.equal(ran,1);
+console.log('PASS Kelimecik lifecycle: delayed callbacks cannot affect a closed or replacement game.');

@@ -107,10 +107,10 @@ function tryMove(state, color, from, die){
     if(exactExit) return { to:'off', type:'bearoff' };
     // zar, gereğinden büyük: sadece en uzaktaki puldan oynanabilir
     if(isWhite(color)){
-      for(let i = die; i < 6; i++){ if(pts[i] > 0) return null; }   // daha uzakta pul varsa olmaz
+      for(let i = from + 1; i < 6; i++){ if(pts[i] > 0) return null; }   // daha uzakta pul varsa olmaz
       return { to:'off', type:'bearoff' };
     } else {
-      for(let i = 24 - die - 1; i >= 18; i--){ if(pts[i] < 0) return null; }
+      for(let i = from - 1; i >= 18; i--){ if(pts[i] < 0) return null; }
       return { to:'off', type:'bearoff' };
     }
   }
@@ -136,7 +136,7 @@ export function remainingDice(state){
 }
 
 // Bir noktadan (veya bar) yapılabilecek tüm yasal hamleler (kalan zarlarla)
-export function legalMovesFrom(state, from){
+function rawMovesFrom(state, from){
   const color = state.turn;
   const moves = [];
   const seenDice = new Set();
@@ -150,20 +150,48 @@ export function legalMovesFrom(state, from){
 }
 
 // Tüm yasal hamleler (tüm noktalar + bar)
-export function allLegalMoves(state){
+function rawMoves(state){
   const color = state.turn;
   const all = [];
   // bar zorunlu
   if(state.bar[color] > 0){
-    return legalMovesFrom(state, 'bar');
+    return rawMovesFrom(state, 'bar');
   }
   for(let i = 0; i < 24; i++){
     const v = state.points[i];
     if((isWhite(color) && v > 0) || (!isWhite(color) && v < 0)){
-      all.push(...legalMovesFrom(state, i));
+      all.push(...rawMovesFrom(state, i));
     }
   }
   return all;
+}
+
+// Retain only moves that allow the maximum number of dice to be played.
+// If only one of two unequal dice can be used, the higher die is mandatory.
+function searchKey(s){return [s.turn,s.points.join(','),s.bar.w,s.bar.b,s.off.w,s.off.b,remainingDice(s).map(d=>d.die).sort().join(',')].join('|');}
+function maxPlayable(s,memo){
+  const rem=remainingDice(s).length;if(!rem)return 0;
+  const key=searchKey(s);if(memo.has(key))return memo.get(key);
+  let best=0;
+  for(const move of rawMoves(s)){
+    best=Math.max(best,1+maxPlayable(applyMove(s,move),memo));
+    if(best===rem)break;
+  }
+  memo.set(key,best);return best;
+}
+export function allLegalMoves(state){
+  const moves=rawMoves(state), memo=new Map();let best=0;
+  const ranked=moves.map(move=>{const count=1+maxPlayable(applyMove(state,move),memo);best=Math.max(best,count);return {move,count};});
+  let result=ranked.filter(r=>r.count===best).map(r=>r.move);
+  if(best===1 && remainingDice(state).length===2){
+    const high=Math.max(...result.map(m=>m.die));result=result.filter(m=>m.die===high);
+  }
+  return result;
+}
+export function legalMovesFrom(state,from){return allLegalMoves(state).filter(m=>m.from===from);}
+export function resolveLegalMove(state,candidate){
+  if(!candidate)return null;
+  return allLegalMoves(state).find(m=>m.from===candidate.from&&m.to===candidate.to&&m.die===candidate.die)||null;
 }
 
 // Hamleyi uygula → yeni state (zarı kullanılmış işaretler)
@@ -180,7 +208,7 @@ export function applyMove(state, move){
   if(move.to === 'off'){
     ns.off[color]++;
   } else {
-    if(move.type === 'hit'){
+    if(ns.points[move.to] === -s){
       // rakip blot'u bar'a gönder
       const opp = isWhite(color) ? 'b' : 'w';
       ns.points[move.to] = 0;       // tek rakip pulu kaldır

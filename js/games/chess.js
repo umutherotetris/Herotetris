@@ -7,7 +7,7 @@
 import Store from '../store.js';
 import Auth from '../auth.js';
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
-import { newGame, legalMoves, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, PIECE_NAMES } from './chess-engine.js';
+import { newGame, legalMoves, resolveLegalMove, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, PIECE_NAMES } from './chess-engine.js';
 import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
@@ -1420,7 +1420,9 @@ function onHello(d){
 function onRemoteMessage(data){
   if(!data || !G) return;
   if(data.type === 'move' && data.move){
-    const mv = data.move;
+    if(G.gameEnded || G.state.turn===G.playerColor) return;
+    const mv = resolveLegalMove(G.state,data.move);
+    if(!mv) return;
     // gelen hamlenin yeme bilgisini yerelde de kaydet
     const target = G.state.board[mv.to.r] && G.state.board[mv.to.r][mv.to.c];
     const mover = G.state.board[mv.from.r] && G.state.board[mv.from.r][mv.from.c];

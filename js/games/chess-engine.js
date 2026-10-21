@@ -42,7 +42,7 @@ function pseudoMoves(state, r, c){
   const add = (nr, nc, opts) => {
     if(!inBounds(nr, nc)) return false;
     const target = b[nr][nc];
-    if(target && target.c === piece.c) return false;   // kendi taşı
+    if(target && (target.c === piece.c || target.t === 'k')) return false;   // kendi taşı
     moves.push({ from:{r,c}, to:{r:nr,c:nc}, ...(opts||{}) });
     return !target;   // boşsa devam edilebilir
   };
@@ -62,9 +62,9 @@ function pseudoMoves(state, r, c){
       const nr = r+dir, nc = c+dc;
       if(!inBounds(nr,nc)) continue;
       const target = b[nr][nc];
-      if(target && target.c === enemy){ pawnAdd(moves, {r,c}, {r:nr,c:nc}, piece); }
+      if(target && target.c === enemy && target.t !== 'k'){ pawnAdd(moves, {r,c}, {r:nr,c:nc}, piece); }
       // en passant
-      if(state.enPassant && state.enPassant.r === nr && state.enPassant.c === nc){
+      if(state.enPassant && state.enPassant.r === nr && state.enPassant.c === nc && !target && b[r][nc]?.t === 'p' && b[r][nc]?.c === enemy){
         moves.push({ from:{r,c}, to:{r:nr,c:nc}, enPassant:true });
       }
     }
@@ -79,11 +79,11 @@ function pseudoMoves(state, r, c){
     const row = piece.c === 'w' ? 7 : 0;
     if(r === row && c === 4){
       // kısa rok
-      if(cast.k && !b[row][5] && !b[row][6] && b[row][7] && b[row][7].t==='r'){
+      if(cast.k && !b[row][5] && !b[row][6] && b[row][7] && b[row][7].t==='r' && b[row][7].c===piece.c){
         moves.push({ from:{r,c}, to:{r:row,c:6}, castle:'k' });
       }
       // uzun rok
-      if(cast.q && !b[row][3] && !b[row][2] && !b[row][1] && b[row][0] && b[row][0].t==='r'){
+      if(cast.q && !b[row][3] && !b[row][2] && !b[row][1] && b[row][0] && b[row][0].t==='r' && b[row][0].c===piece.c){
         moves.push({ from:{r,c}, to:{r:row,c:2}, castle:'q' });
       }
     }
@@ -105,7 +105,7 @@ function pseudoMoves(state, r, c){
 function pawnAdd(moves, from, to, piece){
   const lastRow = piece.c === 'w' ? 0 : 7;
   if(to.r === lastRow){
-    moves.push({ from, to, promotion: 'q' });   // varsayılan vezire terfi
+    for(const promotion of ['q','r','b','n']) moves.push({ from, to, promotion });
   } else {
     moves.push({ from, to });
   }
@@ -113,15 +113,18 @@ function pawnAdd(moves, from, to, piece){
 
 // Bir karenin saldırı altında olup olmadığı (renk: saldıran taraf)
 function isAttacked(board, r, c, byColor){
-  // tüm düşman taşlarını tara, pseudo hamlelerinde bu kareye vuran var mı
+  // Attacks differ from legal moves: pawns attack empty diagonals, never forwards.
   for(let i=0;i<8;i++) for(let j=0;j<8;j++){
-    const p = board[i][j];
-    if(p && p.c === byColor){
-      const ms = pseudoMoves({ board, turn:byColor, enPassant:null, castling:{w:{k:false,q:false},b:{k:false,q:false}} }, i, j);
-      for(const m of ms){
-        if(m.to.r === r && m.to.c === c && !m.castle) return true;
-      }
-    }
+    const p=board[i][j]; if(!p || p.c!==byColor) continue;
+    const dr=r-i, dc=c-j, ar=Math.abs(dr), ac=Math.abs(dc);
+    if(p.t==='p'){ if(dr===(byColor==='w'?-1:1)&&ac===1) return true; continue; }
+    if(p.t==='n'){ if(ar*ac===2) return true; continue; }
+    if(p.t==='k'){ if(Math.max(ar,ac)===1) return true; continue; }
+    const diagonal=ar===ac&&ar>0, straight=(dr===0)!==(dc===0);
+    if(!((p.t==='b'&&diagonal)||(p.t==='r'&&straight)||(p.t==='q'&&(diagonal||straight)))) continue;
+    const sr=Math.sign(dr),sc=Math.sign(dc);let rr=i+sr,cc=j+sc,blocked=false;
+    while(rr!==r||cc!==c){if(board[rr][cc]){blocked=true;break;}rr+=sr;cc+=sc;}
+    if(!blocked) return true;
   }
   return false;
 }
@@ -254,7 +257,8 @@ export function positionKey(state){
   }
   s += '|' + state.turn;
   s += '|' + (state.castling.w.k?'K':'') + (state.castling.w.q?'Q':'') + (state.castling.b.k?'k':'') + (state.castling.b.q?'q':'');
-  s += '|' + (state.enPassant ? state.enPassant.r + ',' + state.enPassant.c : '-');
+  const ep = state.enPassant && allLegalMoves(state).some(m=>m.enPassant);
+  s += '|' + (ep ? state.enPassant.r + ',' + state.enPassant.c : '-');
   return s;
 }
 
@@ -365,4 +369,10 @@ export function fromFEN(fen){
     if(wk !== 1 || bk !== 1) return null;
     return { board, turn, enPassant, castling, halfmove };
   }catch(e){ return null; }
+}
+
+// Network messages carry coordinates, not authority to invent special-move flags.
+export function resolveLegalMove(state, candidate){
+  if(!candidate || ![candidate.from?.r,candidate.from?.c,candidate.to?.r,candidate.to?.c].every(n=>Number.isInteger(n)&&n>=0&&n<8)) return null;
+  return legalMoves(state,candidate.from.r,candidate.from.c).find(m=>m.to.r===candidate.to.r&&m.to.c===candidate.to.c&&(!m.promotion ? !candidate.promotion : m.promotion===(candidate.promotion||'q'))) || null;
 }
