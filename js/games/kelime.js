@@ -41,7 +41,6 @@ let G = null;
 let stylesInjected = false;
 let KO = null;   // kelime-online.js (talep üzerine yüklenir)
 
-const LETTER_LIST = Object.keys(LETTERS);  // joker atama için
 
 // ── Ses motoru (Web Audio) ──
 let AC = null;
@@ -289,9 +288,10 @@ function afterGame(callback,delay){
   const session=G;
   return setTimeout(()=>{if(session && G===session)callback();},delay);
 }
-function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(G && G.online && KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
+  G._setupToken = {};
   const c = G.root.querySelector('[data-el="content"]');
   let recHtml = '';
   try{
@@ -372,6 +372,7 @@ function showAIDifficulty(){
 }
 
 function startLocal(){
+  G._over = false; G._setupToken = {};
   const st = newGame();
   G.state = st;
   G.who = 'A';
@@ -390,17 +391,19 @@ function startLocal(){
   buildGameDOM();
   renderAll();
   // HUD: DOM hazır olduktan sonra enjekte et
-  setTimeout(()=>{ _injectKelimeHUD(); }, 80);
+  afterGame(()=>{ _injectKelimeHUD(); }, 80);
   if(typeof window!=='undefined'){ window.__KL=()=>G; }
 }
 
 // ── YAPAY ZEKÂ ──
 let KA = null;   // kelime-ai.js (talep üzerine yüklenir)
 async function startAI(difficulty, turnTime){
+  const session = G, setupToken = session._setupToken = {};
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>🤖 ${KL_LANG==='en'?'Preparing…':'Hazırlanıyor…'}</h3><p>${KL_LANG==='en'?'Loading dictionary':'Sözlük yükleniyor'}</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
-  catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  catch(e){ if(G===session && session._setupToken===setupToken) flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  if(G!==session || session._setupToken!==setupToken) return;
   Resume.clearSnapshot('kelime');                // yeni oyun → eski devam kaydını sil
   const st = newGame();
   G.state = st;
@@ -445,10 +448,12 @@ function saveKelimeResume(){
   }catch(e){}
 }
 async function resumeKelime(snap){
+  const session = G, setupToken = session._setupToken = {};
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>↩️ Devam ediliyor…</h3><p>Oyun yükleniyor</p></div></div>`;
   try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
-  catch(e){ flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  catch(e){ if(G===session && session._setupToken===setupToken) flashStartError('Yapay zekâ yüklenemedi.'); return; }
+  if(G!==session || session._setupToken!==setupToken) return;
   G.state = {
     board: snap.board, bag: snap.bag, racks: snap.racks,
     scores: snap.scores, turn: snap.who, moveCount: 0,
@@ -505,6 +510,7 @@ function flashStartError(msg){
 
 // ── ÇEVRİMİÇİ: rastgele eşleşme ──
 async function startOnlineSearch(opts){
+  const session = G;
   opts = opts || {};
   const async = opts.mode === 'async';
   const c = G.root.querySelector('[data-el="content"]');
@@ -522,10 +528,11 @@ async function startOnlineSearch(opts){
   });
   try{ KO = await import('./kelime-online.js'); }
   catch(e){ flashCard('Çevrimiçi modül yüklenemedi', 'Bağlantını kontrol edip tekrar dene.'); return; }
+  if(cancelled || G!==session) return;
   KO.findMatch({
     onSearching: ()=>{},
-    onError: (msg)=>{ if(!cancelled) flashCard('Eşleşme hatası', msg); },
-    onMatched: (d)=>{ if(!cancelled) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours, oppUid:d.oppUid }); }
+    onError: (msg)=>{ if(!cancelled && G===session) flashCard('Eşleşme hatası', msg); },
+    onMatched: (d)=>{ if(!cancelled && G===session) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours, oppUid:d.oppUid }); }
   }, async ? { mode:'async', turnHours: opts.turnHours||72, lang: KL_LANG } : { lang: KL_LANG });
 }
 
@@ -765,7 +772,7 @@ function startOnlineHeartbeat(){
     if(KO && KO.heartbeat) KO.heartbeat();
     // Sessizlik eşiği 3 dakika — kelime oyununda uzun düşünme normaldir, kısa kopmalar oyunu bitirmesin
     if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){   // ~180 sn (3 dk) sessizlik → gerçekten ayrılmış
-      onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉');
+      onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉','Kazandın! 🎉','win');
     }
   }, 8000);
 }
@@ -773,6 +780,19 @@ function stopOnlineHeartbeat(){ if(G && G._hb){ clearInterval(G._hb); G._hb = nu
 
 function currentTurn(){ return G.online ? G.state.turn : G.who; }
 function isMyTurn(){ return G.online ? (G.state.turn === G.role) : true; }
+
+function onlineOutcome(room,role){
+  if(room.draw) return {message:'Anlaşmalı beraberlik',verdict:'Berabere 🤝',result:'draw'};
+  const winner=room.winnerByTimeout || (room.resignedBy==='A'?'B':room.resignedBy==='B'?'A':null);
+  if(winner==='A' || winner==='B'){
+    const won=winner===role;
+    const message=room.winnerByTimeout
+      ? (won?'Rakibin hamle süresi doldu':'Hamle süren doldu')
+      : (won?'Rakip pes etti':'Pes ettin');
+    return {message,verdict:won?'Kazandın! 🎉':'Kaybettin 😔',result:won?'win':'loss'};
+  }
+  return {message:room.overMsg || 'Oyun bitti',verdict:null,result:null};
+}
 
 function applyRemote(room){
   if(!G || !G.online) return;
@@ -795,7 +815,7 @@ function applyRemote(room){
   // Anlık oyunda rakibin "ayrıldı" kararı artık presence'a göre DEĞİL, lastSeen sessizliğine göre
   // (kısa kopmalar oyunu bitirmesin). Kalp atışı döngüsü sessizliği kontrol eder.
   if(!G.async && room.lastSeen && room.lastSeen[oppRole]){ G._oppLastSeen = room.lastSeen[oppRole]; }
-  if(room.status === 'over' && !G._over){ onlineGameOver(room.overMsg || 'Oyun bitti', room.draw ? 'Berabere 🤝' : null); return; }
+  if(room.status === 'over' && !G._over){ const outcome=onlineOutcome(room,G.role); onlineGameOver(outcome.message,outcome.verdict,outcome.result); return; }
   handleDrawOffer(room);
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
@@ -806,7 +826,7 @@ function applyRemote(room){
       // rakibin hamlesini kutla (görsel + ses)
       if(lm.score){ scorePopup('+'+lm.score); if(lm.bingo){ sndBingo(); confetti(); } else sndWord(lm.score); }
       if(lm.words && lm.words.length){ if(lm.words[0] && lm.words[0].score){ trackBest(lm.words, room.lastMove.who); } flashStatus('Rakip: '+lm.words.map(w=>w.text||w).join(', ')+' (+'+lm.score+')'); }
-      if(lm.surp && lm.surp.length){ setTimeout(()=>{ surpriseStrip(lm.surp.map(l=>({icon:'🎁',label:l}))); sndSurprise(); }, 300); }
+      if(lm.surp && lm.surp.length){ afterGame(()=>{ surpriseStrip(lm.surp.map(l=>({icon:'🎁',label:l}))); sndSurprise(); }, 300); }
     }
   }
   renderAll();
@@ -839,7 +859,7 @@ function resignGame(){
   if(!confirm('Pes etmek istediğine emin misin?' + (G.online?' Rakip kazanmış sayılacak.':''))) return;
   if(G.online){
     try{ if(KO) KO.pushMove({ status:'over', overMsg:'Rakip pes etti 🏳️ — kazandın! 🎉', resignedBy:G.role, drawOffer:null }); }catch(e){}
-    onlineGameOver('Pes ettin 🏳️', 'Kaybettin 😔');
+    onlineGameOver('Pes ettin 🏳️', 'Kaybettin 😔','loss');
   } else {
     G._resigned = true;
     endGameAI();
@@ -874,7 +894,7 @@ function handleDrawOffer(room){
     ov.querySelector('[data-x="acc"]').addEventListener('click', ()=>{
       ov.remove(); G._drawPrompt = false;
       try{ if(KO) KO.pushMove({ status:'over', overMsg:'🤝 Anlaşmalı beraberlik', draw:true, drawOffer:null }); }catch(e){}
-      onlineGameOver('🤝 Anlaşmalı beraberlik', 'Berabere 🤝');
+      onlineGameOver('🤝 Anlaşmalı beraberlik', 'Berabere 🤝','draw');
     });
     ov.querySelector('[data-x="dec"]').addEventListener('click', ()=>{
       ov.remove(); G._drawPrompt = false;
@@ -883,24 +903,24 @@ function handleDrawOffer(room){
   }
 }
 
-function onlineGameOver(msg, verdictOverride){
+function onlineGameOver(msg, verdictOverride,resultOverride){
   if(G._over) return; G._over = true;
   if(G._oppGrace){ clearTimeout(G._oppGrace); G._oppGrace = null; }
   stopOnlineHeartbeat();
   try{ if(KO && KO.markGameOver) KO.markGameOver(); else if(KO) KO.leaveRoom(); }catch(e){}
   const c = G.root.querySelector('[data-el="content"]');
   const mine = G.state.scores[G.role], opp = G.state.scores[G.role==='A'?'B':'A'];
+  const outcome=resultOverride || (mine>opp?'win':mine<opp?'loss':'draw');
   // Maç istatistiği + head-to-head (online rakip)
-  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = mine>opp?'win':(mine<opp?'loss':'draw'); _S.recordMatchResult('kelime', r, G.oppUid||null, G.oppName||null); } }catch(e){}
-  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(mine>opp) _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = outcome; _S.recordMatchResult('kelime', r, G.oppUid||null, G.oppName||null); } }catch(e){}
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(outcome==='win') _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
   const verdict = verdictOverride || (mine===opp?'Berabere':(mine>opp?'Kazandın! 🎉':'Kaybettin 😔'));
-  if(verdictOverride){ /* pes/anlaşma: skor sesi yerine nötr */ }
-  else if(mine>opp){ sndWin(); confetti(); } else if(mine<opp){ sndLose(); }
+  if(outcome==='win'){ sndWin(); confetti(); } else if(outcome==='loss'){ sndLose(); }
   const stars = starsFor(mine);
   saveRecordsIfBetter();
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';
-  ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3><p>${msg}</p>
+  ov.innerHTML=`<div class="kl-card"><h3>🏁 Oyun Bitti</h3><p>${esc(msg)}</p>
     <div style="font-size:30px;letter-spacing:4px;color:#ffd86b;margin:2px 0 6px">${starStr(stars)}</div>
     <p>Sen: ${mine} · Rakip: ${opp}</p>
     <p style="color:#ffd86b;font-weight:700">${verdict}</p>${bw}
@@ -1433,7 +1453,7 @@ function pickJokerLetter(cb){
   const ov = document.createElement('div');
   ov.className='kl-overlay';
   ov.innerHTML = `<div class="kl-card"><h3>Joker harfi</h3><p>Bu joker hangi harf olsun?</p>
-    <div class="kl-jokergrid">${LETTER_LIST.map(l=>`<button class="kl-jk" data-l="${l}">${l}</button>`).join('')}</div>
+    <div class="kl-jokergrid">${Object.keys(LETTERS).map(l=>`<button class="kl-jk" data-l="${l}">${l}</button>`).join('')}</div>
     <button class="kl-btn" style="margin-top:10px" data-x="iptal">İptal</button></div>`;
   c.appendChild(ov);
   ov.querySelectorAll('.kl-jk').forEach(b=>b.addEventListener('click',()=>{ ov.remove(); cb(b.dataset.l); }));
@@ -1443,7 +1463,7 @@ function pickJokerLetter(cb){
 function flashStatus(msg){
   const s = G.root.querySelector('[data-el="status"]'); if(!s) return;
   const prev = s.textContent; s.textContent = msg; s.style.color='#ffd86b';
-  setTimeout(()=>{ s.style.color=''; renderScores(); }, 1600);
+  afterGame(()=>{ s.style.color=''; renderScores(); }, 1600);
 }
 
 function recallAll(){
@@ -1617,10 +1637,11 @@ function celebrate(moveScore, bingo, hits){
   haptic(bingo ? [30,40,30,40,70] : 20);
   if(bingo){ sndBingo(); confetti(); }
   else { sndWord(moveScore); if(moveScore>=40) confetti(); }
-  if(hits && hits.length){ setTimeout(()=>{ surpriseStrip(hits); sndSurprise(); haptic([20,30,40]); }, 320); }
+  if(hits && hits.length){ afterGame(()=>{ surpriseStrip(hits); sndSurprise(); haptic([20,30,40]); }, 320); }
 }
 
 function submitMove(){
+  if(!G || G._over) return;
   if(G.online && !isMyTurn()){ sndErr(); flashStatus('⏳ Sıra sende değil — deneyebilirsin ama sıran gelince onayla'); return; }
   if(G.ai && (G.aiThinking || G.who!=='A')){ sndErr(); flashStatus('⏳ Yapay zekâ oynuyor — sıran gelince onayla'); return; }
   const res = validatePlacement(G.state.board, G.pending);
@@ -1666,6 +1687,7 @@ function submitMove(){
     saveKelimeResume();
     afterGame(aiTurn, 850);
   } else {
+    if(G.state.bag.length===0 && (G.state.racks.A.length===0 || G.state.racks.B.length===0)){ endGame(); return; }
     nextTurn();   // 2 oyuncu: sıra geçişi ekranı
   }
 }
@@ -1737,7 +1759,7 @@ function aiTurn(){
     renderAll();
     celebrate(moveScore, !!(mv.words && mv.pending.length===RACK_SIZE), surp.hits);
     flashStatus('🤖 ' + mv.words.map(w=>w.text).join(', ') + ' (+' + moveScore + ')');
-    setTimeout(()=>{ if(!checkGameOver() && G.seri) startTurnTimer(); }, 400);
+    afterGame(()=>{ if(!checkGameOver() && G.seri) startTurnTimer(); }, 400);
     saveKelimeResume();
   } else {
     // AI hamle bulamadı → pas
@@ -1764,12 +1786,14 @@ function checkGameOver(){
 }
 
 async function endGameAI(){
-  if(G._over) return; G._over = true;
+  if(!G || G._over) return;
+  const session = G; G._over = true;
   stopTurnTimer();
   Resume.clearSnapshot('kelime');
   const a0=G.state.scores.A, b0=G.state.scores.B;
   try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(a0>b0) _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
   try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = a0>b0?'win':(a0<b0?'loss':'draw'); await _S.recordMatchResult('kelime', r, null, null); } }catch(e){}
+  if(G!==session) return;
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const playerWon = a > b;
@@ -1778,12 +1802,14 @@ async function endGameAI(){
   if(!G._resigned){
     const klKaju = playerWon ? 70 : isDraw ? 30 : 10;
     const klXp   = playerWon ? 50 : isDraw ? 20 : 15;
-    try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
+    try{ await Store.addKaju(klKaju,'kelime'); if(G!==session) return; await Store.addXP(klXp); }catch(e){}
+    if(G!==session) return;
     if(playerWon){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
     saveRecordsIfBetter();
     // Merkezi ödül ekranı
     try{
       const Reward = await import('../reward.js');
+      if(G!==session) return;
       const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
       await Reward.showReward({
         won: playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
@@ -1824,6 +1850,7 @@ function showMoveResult(res, cb){
 }
 
 function passTurn(){
+  if(!G || G._over) return;
   if(G.online && !isMyTurn()){ flashStatus('Sıra rakipte, bekle'); return; }
   if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   if(G.pending.length>0){ flashStatus('Önce taşları geri al'); return; }
@@ -1854,6 +1881,7 @@ function passTurn(){
 }
 
 function toggleExchangeMode(){
+  if(!G || G._over) return;
   if(G.online && !isMyTurn()){ flashStatus('⏳ Sıra sende değil'); return; }
   if(G.ai && (G.aiThinking || G.who!=='A')){ flashStatus('Yapay zekâ oynuyor…'); return; }
   if(!G.exchangeMode){
@@ -1933,6 +1961,8 @@ function nextTurn(){
 }
 
 async function endGame(){
+  if(!G || G._over) return;
+  const session = G; G._over = true;
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
@@ -1943,10 +1973,12 @@ async function endGame(){
   const playerWon = myScore > oppScore;
   const klKaju = playerWon ? 70 : a===b ? 30 : 10;
   const klXp = playerWon ? 50 : a===b ? 20 : 15;
-  try{ await Store.addKaju(klKaju,'kelime'); await Store.addXP(klXp); }catch(e){}
+  try{ await Store.addKaju(klKaju,'kelime'); if(G!==session) return; await Store.addXP(klXp); }catch(e){}
+  if(G!==session) return;
   if(a!==b){ sndWin(); confetti(); } else sndLose();
   try{
     const Reward = await import('../reward.js');
+    if(G!==session) return;
     const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
     await Reward.showReward({
       won:playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,

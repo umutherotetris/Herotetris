@@ -4,7 +4,7 @@
 //  Saf mantık (DOM yok). chess-engine.js üzerine kurulu.
 //  Zorluk: 'easy' | 'medium' | 'hard'
 // ════════════════════════════════════════════════════════════════
-import { allLegalMoves, applyMove, inCheck, gameStatus } from './chess-engine.js';
+import { allLegalMoves, applyMove, inCheck, gameStatus, insufficientMaterial } from './chess-engine.js';
 
 // Taş materyal değerleri (centipawn)
 const VALUE = { p:100, n:320, b:330, r:500, q:900, k:20000 };
@@ -102,7 +102,6 @@ function orderMoves(state, moves){
 
 // Minimax + alpha-beta. maximizing = beyaz mı?
 function minimax(state, depth, alpha, beta, maximizing){
-  if(depth === 0){ return evaluate(state.board); }
   const moves = allLegalMoves(state, state.turn);
   if(moves.length === 0){
     // mat ya da pat
@@ -112,6 +111,8 @@ function minimax(state, depth, alpha, beta, maximizing){
     }
     return 0;   // pat = berabere
   }
+  if(insufficientMaterial(state.board) || (state.halfmove || 0) >= 100) return 0;
+  if(depth === 0) return evaluate(state.board);
   const ordered = orderMoves(state, moves);
   if(maximizing){
     let best = -Infinity;
@@ -145,6 +146,7 @@ const DIFFICULTY = {
 // difficulty: 'easy' | 'medium' | 'hard'
 export function chooseMove(state, difficulty){
   const cfg = DIFFICULTY[difficulty] || DIFFICULTY.medium;
+  if(['checkmate','stalemate','insufficient','fiftymove'].includes(gameStatus(state))) return null;
   const moves = allLegalMoves(state, state.turn);
   if(moves.length === 0) return null;
   if(moves.length === 1) return moves[0];
@@ -165,7 +167,7 @@ export function chooseMove(state, difficulty){
   const bestScore = scored[0].score;
 
   // Rastgelelik: zorluk düşükse bazen en iyi olmayan hamleyi seç
-  if(cfg.randomness > 0 && Math.random() < cfg.randomness){
+  if(bestScore < 90000 && cfg.randomness > 0 && Math.random() < cfg.randomness){
     // en iyiye yakın hamlelerden (bestScore - 120 centipawn içinde) rastgele
     const near = scored.filter(s => s.score >= bestScore - 120);
     const pick = near[Math.floor(Math.random() * near.length)];
@@ -173,7 +175,8 @@ export function chooseMove(state, difficulty){
   }
 
   // Eşit en iyiler arasında rastgele (çeşitlilik için)
-  const top = scored.filter(s => s.score >= bestScore - 5);
+  const tolerance = bestScore >= 90000 ? 0 : 5;
+  const top = scored.filter(s => s.score >= bestScore - tolerance);
   return top[Math.floor(Math.random() * top.length)].m;
 }
 

@@ -27,6 +27,7 @@ let joinCode = null;        // misafirin bağlandığı oda kodu
 let reconnecting = false;   // şu an tekrar bağlanma denemesi sürüyor mu
 let reconTries = 0;         // kaç deneme yapıldı
 let reconTimer = null;      // bir sonraki deneme zamanlayıcısı
+let sessionId = 0;
 let manualClose = false;    // kullanıcı bilerek kapattı mı (reconnect deneme)
 const RECON_MAX = 6;        // maksimum deneme (≈60 sn)
 const RECON_DELAY = 10000;  // denemeler arası bekleme (ms)
@@ -39,6 +40,23 @@ function genCode(){
 }
 
 function fire(type, data){ if(onEvent) try{ onEvent(type, data); }catch(e){ console.warn('[chess-mp]', e); } }
+
+// Peer events and connection timeouts belong to the room that created them.
+function listen(target, type, callback){
+  const session = sessionId;
+  target.on(type, (...args) => {
+    if(session !== sessionId || (target !== peer && target !== conn)){
+      if(type === 'connection') try{ args[0].close(); }catch(e){}
+      return;
+    }
+    callback(...args);
+  });
+}
+function later(callback, delay){
+  const session = sessionId, owner = peer;
+  return setTimeout(() => { if(session === sessionId && owner === peer && !manualClose) callback(); }, delay);
+}
+
 
 // ── Otomatik yeniden bağlanma ──
 function startReconnect(){
@@ -60,31 +78,29 @@ function attemptReconnect(){
   fire('reconnecting', { tries: reconTries, max: RECON_MAX });
   try{
     // Eski peer/conn'u temizle
-    try{ if(conn) conn.close(); }catch(e){}
-    try{ if(peer) peer.destroy(); }catch(e){}
+    const previousConn = conn, previousPeer = peer;
     conn = null; peer = null;
+    try{ if(previousConn) previousConn.close(); }catch(e){}
+    try{ if(previousPeer) previousPeer.destroy(); }catch(e){}
 
     if(isHost){
       // Host: aynı oda koduyla peer'i yeniden kur, misafiri bekle
       peer = new window.Peer(PREFIX + myCode, { debug: 1 });
-      peer.on('open', () => { fire('waiting'); });
-      peer.on('connection', (c) => {
+      listen(peer, 'open', () => { fire('waiting'); });
+      listen(peer, 'connection', (c) => {
         if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
         bindConn(c);
-        reconnecting = false; reconTries = 0;
-        fire('reconnected');
       });
-      peer.on('error', () => { scheduleNextRecon(); });
+      listen(peer, 'error', () => { scheduleNextRecon(); });
     } else {
       // Misafir: host koduna tekrar bağlan
       peer = new window.Peer({ debug: 1 });
-      peer.on('open', () => {
+      listen(peer, 'open', () => {
         const c = peer.connect(PREFIX + joinCode, { reliable: true });
         bindConn(c);
-        c.on('open', () => { reconnecting = false; reconTries = 0; fire('reconnected'); });
-        setTimeout(() => { if(!(conn && conn.open) && reconnecting) scheduleNextRecon(); }, 8000);
+        later(() => { if(!(conn && conn.open) && reconnecting) scheduleNextRecon(); }, 8000);
       });
-      peer.on('error', () => { scheduleNextRecon(); });
+      listen(peer, 'error', () => { scheduleNextRecon(); });
     }
   }catch(e){ scheduleNextRecon(); }
 }
@@ -92,7 +108,7 @@ function attemptReconnect(){
 function scheduleNextRecon(){
   if(manualClose || !reconnecting) return;
   if(reconTimer) clearTimeout(reconTimer);
-  reconTimer = setTimeout(attemptReconnect, RECON_DELAY);
+  reconTimer = later(attemptReconnect, RECON_DELAY);
 }
 
 function stopReconnect(){
@@ -102,17 +118,21 @@ function stopReconnect(){
 
 function bindConn(c){
   conn = c;
-  conn.on('open', () => { fire('connected'); });
-  conn.on('data', (raw) => {
+  listen(conn, 'open', () => {
+    const restored = reconnecting;
+    stopReconnect();
+    fire(restored ? 'reconnected' : 'connected');
+  });
+  listen(conn, 'data', (raw) => {
     let obj = raw;
     if(typeof raw === 'string'){ try{ obj = JSON.parse(raw); }catch(e){ obj = { type:'raw', raw }; } }
     fire('message', obj);
   });
-  conn.on('close', () => {
+  listen(conn, 'close', () => {
     fire('disconnected');
     if(!manualClose) startReconnect();   // kullanıcı kapatmadıysa tekrar bağlanmayı dene
   });
-  conn.on('error', (err) => {
+  listen(conn, 'error', (err) => {
     fire('error', (err && err.type) || 'bağlantı hatası');
     if(!manualClose) startReconnect();
   });
@@ -125,17 +145,18 @@ export const ChessMP = {
   get host(){ return isHost; },
 
   createRoom(cb, fixedCode){
+    this.close();
     onEvent = cb; isHost = true; manualClose = false; stopReconnect();
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return null; }
     myCode = fixedCode || genCode();
     try{ peer = new window.Peer(PREFIX + myCode, { debug: 1 }); }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
-    peer.on('open', () => { fire('code', myCode); fire('waiting'); });
-    peer.on('connection', (c) => {
+    listen(peer, 'open', () => { fire('code', myCode); fire('waiting'); });
+    listen(peer, 'connection', (c) => {
       if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
       bindConn(c);
     });
-    peer.on('error', (err) => {
+    listen(peer, 'error', (err) => {
       const t = (err && err.type) || '';
       if(t === 'unavailable-id'){ fire('error', 'kod meşgul, tekrar dene'); }
       else fire('error', t || 'bağlantı hatası');
@@ -144,6 +165,7 @@ export const ChessMP = {
   },
 
   joinRoom(code, cb){
+    this.close();
     onEvent = cb; isHost = false; manualClose = false; stopReconnect();
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return; }
     code = (code || '').toUpperCase().trim();
@@ -151,12 +173,12 @@ export const ChessMP = {
     joinCode = code;   // reconnect için sakla
     try{ peer = new window.Peer({ debug: 1 }); }
     catch(e){ fire('error', 'bağlanılamadı'); return; }
-    peer.on('open', () => {
+    listen(peer, 'open', () => {
       const c = peer.connect(PREFIX + code, { reliable: true });
       bindConn(c);
-      setTimeout(() => { if(!(conn && conn.open)) fire('error', 'oda bulunamadı'); }, 12000);
+      later(() => { if(!(conn && conn.open)) fire('error', 'oda bulunamadı'); }, 12000);
     });
-    peer.on('error', (err) => {
+    listen(peer, 'error', (err) => {
       const t = (err && err.type) || '';
       if(t === 'peer-unavailable'){ fire('error', 'oda bulunamadı'); }
       else fire('error', t || 'bağlantı hatası');
@@ -170,6 +192,7 @@ export const ChessMP = {
   },
 
   close(){
+    sessionId++; onEvent = null;
     manualClose = true; stopReconnect();
     try{ if(conn) conn.close(); }catch(e){}
     try{ if(peer) peer.destroy(); }catch(e){}

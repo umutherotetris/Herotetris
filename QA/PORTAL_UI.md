@@ -1,3 +1,9 @@
+# Release 147 — game rules and session lifecycle
+
+Scoped fixes across chess, Tavla, Tetris and Kelimecik, with deterministic regressions and seven passing Chromium suites. Preserves the original 34px sparkling jewels, parked draggable controls, scale preference and portal navigation. See [PORTAL_AUDIT_147.md](PORTAL_AUDIT_147.md) for concrete findings, changed behavior, validation and limits. Both players should load v147 before an online match.
+
+---
+
 # Release 146 — scaled Tavla input correction
 
 Fix canvas hit testing at non-default UI scales. Pointer client coordinates and getBoundingClientRect already share viewport units; removing the second zoom division maps touches and drags to the visible checker. The reported white 6–3 position now permits the home checker to move from point 5 to point 2 using 3, leaving 6 available.

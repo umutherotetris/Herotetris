@@ -31,6 +31,22 @@ export function newGame(){
   };
 }
 
+// Validate restored/network snapshots before they reach rule or canvas code.
+export function isValidState(s){
+  if(!s || !['w','b'].includes(s.turn) || !Array.isArray(s.points) || s.points.length !== 24 || !s.points.every(n=>Number.isInteger(n)&&Math.abs(n)<=15)) return false;
+  for(const field of ['bar','off']){
+    if(!s[field] || !['w','b'].every(c=>Number.isInteger(s[field][c])&&s[field][c]>=0&&s[field][c]<=15)) return false;
+  }
+  for(const c of ['w','b']){
+    const onBoard=s.points.reduce((sum,n)=>sum+(c==='w'?Math.max(0,n):Math.max(0,-n)),0);
+    if(onBoard+s.bar[c]+s.off[c] !== 15) return false;
+  }
+  if(!Array.isArray(s.dice) || ![0,2,4].includes(s.dice.length) || !s.dice.every(d=>Number.isInteger(d)&&d>=1&&d<=6)) return false;
+  if(s.dice.length===2 && s.dice[0]===s.dice[1]) return false;
+  if(s.dice.length===4 && !s.dice.every(d=>d===s.dice[0])) return false;
+  return Array.isArray(s.used) && new Set(s.used).size===s.used.length && s.used.every(i=>Number.isInteger(i)&&i>=0&&i<s.dice.length);
+}
+
 export function cloneState(s){
   return {
     points: s.points.slice(),

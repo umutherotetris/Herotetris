@@ -267,6 +267,7 @@ export function openChess(){
 // Çevrimiçi lobi: oda kur veya katıl
 // Davetle baslatilan online satranc (host/guest otomatik)
 function _startInviteChess(root, ctx){
+  const game = G;
   const isHost = ctx.role === 'host';
   // Bekleme ekrani goster
   const wait = document.createElement('div');
@@ -280,7 +281,7 @@ function _startInviteChess(root, ctx){
   wait.querySelector('#invCancel').addEventListener('click', () => { cancelled = true; try{ ChessMP.close(); }catch(e){} closeAll(); });
 
   const onEvt = (type, data) => {
-    if(cancelled) return;
+    if(cancelled || G !== game) return;
     if(type === 'connected'){
       if(isHost){ ChessMP.send({ type:'config', time: 0 }); }
       wait.remove();
@@ -296,7 +297,7 @@ function _startInviteChess(root, ctx){
     // Guest: host'un odasi hazir olana kadar birkac deneme
     let tries = 0;
     const tryJoin = () => {
-      if(cancelled) return;
+      if(cancelled || G !== game) return;
       tries++;
       ChessMP.joinRoom(ctx.code, (type, data) => {
         if(type === 'connected'){ onEvt('connected'); }
@@ -541,7 +542,8 @@ function closeAll(){
   try{ if(G && G._home) G._home.remove(); }catch(e){}
   try{ saveChessResume(); }catch(e){}
   try{ if(G && G.vis) document.removeEventListener('visibilitychange', G.vis); }catch(e){}
-  try{ if(G && G.online) ChessMP.close(); }catch(e){}
+  try{ ChessMP.close(); }catch(e){}
+  try{ if(G && G._hud) G._hud.destroy(); }catch(e){}
   try{ stopClockTick(); }catch(e){}
   if(G && G.root){ G.root.remove(); }
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -551,12 +553,13 @@ function closeAll(){
 // ════════════ OYUN BAŞLAT ════════════
 function startGame(root, mode, opts){
   opts = opts || {};
+  const game = G;
   root.querySelector('[data-el="modeSelect"]').style.display = 'none';
   const gameEl = root.querySelector('[data-el="game"]');
   gameEl.style.display = 'flex';
   // 🏠 Oyun içi ev butonu
   import('../game-home.js').then(m => {
-    if(!G) return;
+    if(G !== game) return;
     G._home = m.mountGameHome('chess',
       () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
       { sound: { get:()=>Sound.enabled, toggle:()=>Sound.toggle() } });
@@ -577,7 +580,7 @@ function startGame(root, mode, opts){
       root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
       oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ G._hud=h; }).catch(()=>{});
+    }).then(h=>{ if(G === game) G._hud=h; else h.destroy(); }).catch(()=>{});
   }catch(e){}
   G.selected = null;        // {r,c}
   G.legalForSelected = [];  // o taşın geçerli hamleleri
@@ -615,7 +618,7 @@ function startGame(root, mode, opts){
   if(mode === 'online'){
     G.online = true;
     G._helloSent = false;
-    setTimeout(() => { if(G && G.online){ G._helloSent = true; sendHello(); } }, 900);
+    setTimeout(() => { if(G === game && G.online){ G._helloSent = true; sendHello(); } }, 900);
     // Oyuncu panellerini göster (üst = rakip, alt = sen)
     const oppPanel = root.querySelector('[data-el="oppPanel"]');
     const mePanel = root.querySelector('[data-el="mePanel"]');
@@ -631,6 +634,7 @@ function startGame(root, mode, opts){
     root.querySelector('[data-el="oppDot"]').classList.add('online');
     setupChat(root);
     ChessMP.__setHandler((type, data) => {
+      if(G !== game) return;
       if(type === 'message'){
         if(data && data.type === 'hello'){ onHello(data); return; }
         if(data && data.type === 'fullsync'){ applyFullSync(data.state); return; }
@@ -655,9 +659,9 @@ function startGame(root, mode, opts){
         root.querySelector('[data-el="oppDot"]').classList.add('online');
         updatePanels();
         // Host güncel state'i gönderir; misafir state ister
-        if(G.playerColor === 'w'){ setTimeout(sendFullSync, 400); }
-        else { setTimeout(() => ChessMP.send({ type:'resync_request' }), 400); }
-        setTimeout(() => { if(!G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
+        if(G.playerColor === 'w'){ setTimeout(() => { if(G === game) sendFullSync(); }, 400); }
+        else { setTimeout(() => { if(G === game) ChessMP.send({ type:'resync_request' }); }, 400); }
+        setTimeout(() => { if(G === game && !G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
       }
       else if(type === 'reconnect_failed'){
         updateStatus('❌ Yeniden bağlanılamadı', 'lose');
@@ -670,7 +674,10 @@ function startGame(root, mode, opts){
   // Kontroller
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => {
+    if(!G || G.mode === 'online') return;
     G.state = newGame();
+    G.undoStack = []; G.anim = null; G.animating = false; G.hintSquares = null;
+    if(G.timeControl > 0) setupClock(G.timeControl);
   // Portal HUD enjekte et (her oyun modunda) — eski HUD hud.js içinde otomatik temizlenir
   try{ if(G.root){ G.root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove()); } }catch(e){}
   try{
@@ -680,7 +687,7 @@ function startGame(root, mode, opts){
       root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
       oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ G._hud=h; }).catch(()=>{});
+    }).then(h=>{ if(G === game) G._hud=h; else h.destroy(); }).catch(()=>{});
   }catch(e){} G.selected=null; G.legalForSelected=[]; G.lastMove=null;
     G.captured={w:[],b:[]}; G.aiThinking=false; G.gameEnded=false;
     G.moveHistory=[]; G.posHistory=[positionKey(G.state)];
@@ -699,6 +706,7 @@ function startGame(root, mode, opts){
     if(G.mode === 'online' && G.state.turn !== G.playerColor){ updateStatus('Sıra sende değil'); return; }
     const cnt = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
     if(cnt <= 0){ updateStatus('💡 İpucu hakkın yok — Mağazadan alabilirsin'); return; }
+    const game = G, state = G.state;
     hintBtn.disabled = true;
     try{
       // AI motoruyla en iyi hamleyi bul
@@ -706,16 +714,17 @@ function startGame(root, mode, opts){
       try{ mv = chooseMove(G.state, 'hard'); }catch(e){ try{ mv = chooseMove(G.state, 'medium'); }catch(e2){} }
       if(mv && mv.from && mv.to){
         await Store.useItem('item_hint');
+        if(G !== game || G.state !== state || G.gameEnded) return;
         // Kalkış + varış karelerini vurgula
         G.hintSquares = { from: mv.from, to: mv.to, until: Date.now() + 4000 };
         draw();
         const rem = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
         updateStatus('💡 İpucu kullanıldı · Kalan: ' + rem);
-        setTimeout(() => { if(G){ G.hintSquares = null; draw(); } }, 4000);
+        setTimeout(() => { if(G === game && G.state === state){ G.hintSquares = null; draw(); } }, 4000);
       } else {
         updateStatus('İpucu bulunamadı');
       }
-    }catch(e){ updateStatus('İpucu hatası'); }
+    }catch(e){ if(G === game) updateStatus('İpucu hatası'); }
     setTimeout(() => { if(hintBtn) hintBtn.disabled = false; }, 1500);
   });
 
@@ -762,6 +771,11 @@ function startGame(root, mode, opts){
       else fallbackCopy(fen, done);
     }catch(err){ fallbackCopy(fen, done); }
   });
+
+  if(mode === 'online'){
+    gameEl.querySelector('[data-act="restart"]').hidden = true;
+    gameEl.querySelector('[data-act="loadFEN"]').hidden = true;
+  }
 
   // FEN Yükle
   gameEl.querySelector('[data-act="loadFEN"]').addEventListener('click', () => showFENLoader());
@@ -817,25 +831,21 @@ function resumeChess(root, data){
 
 // AI'nın sırası mı? Öyleyse hamle yaptır (UI'yi bloklamadan)
 function maybeAIMove(){
-  if(!G || G.mode !== 'ai') return;
+  if(!G || G.mode !== 'ai' || G.gameEnded || G.aiThinking || G.animating) return;
   if(G.state.turn !== G.aiColor) return;
   const status = gameStatus(G.state);
-  if(status === 'checkmate' || status === 'stalemate') return;
+  if(['checkmate','stalemate','insufficient','fiftymove'].includes(status)) return;
 
+  const game = G, state = G.state;
   G.aiThinking = true;
   updateStatus('🤖 Düşünüyor…', 'thinking');
   // setTimeout ile ana thread'e nefes aldır (UI çizimi tamamlansın)
   setTimeout(() => {
-    if(!G || G.mode !== 'ai') return;
+    if(G !== game || G.state !== state || G.gameEnded || G.mode !== 'ai' || G.state.turn !== G.aiColor) return;
     let mv = null;
     try{ mv = chooseMove(G.state, G.aiDifficulty); }catch(e){ console.warn('[chess-ai]', e); }
     G.aiThinking = false;
     if(!mv){ return; }
-    // AI hamlesini uygula (yeme kaydı dahil)
-    const target = G.state.board[mv.to.r][mv.to.c];
-    const mover = G.state.board[mv.from.r][mv.from.c];
-    if(target){ G.captured[mover.c].push(target.t); }
-    if(mv.enPassant){ G.captured[mover.c].push('p'); }
     finishMove(mv);
   }, 260);
 }
@@ -1205,12 +1215,11 @@ function _canvasScale(rect){
   const s = (rect && rect.width && G.boardPx) ? (G.boardPx / rect.width) : 1;
   return s;
 }
-// ZOOM telafisi: body zoom aktifken clientX ölçekli gelir, rect ölçeksiz. clientX'i zoom'a böl.
-function _zc(v){ const z=(window.__uiScale&&window.__uiScale!==1)?window.__uiScale:1; return v/z; }
+// Client coordinates and canvas rect both use viewport pixels, including CSS zoom.
 function _eventCell(e){
   const rect = G.canvas.getBoundingClientRect();
   const s = _canvasScale(rect);
-  const px = (_zc(e.clientX) - rect.left) * s, py = (_zc(e.clientY) - rect.top) * s;
+  const px = (e.clientX - rect.left) * s, py = (e.clientY - rect.top) * s;
   return { sq: xyToCell(px, py), px, py };
 }
 
@@ -1242,8 +1251,8 @@ function onBoardPointerMove(e){
   if(e.pointerId !== G._drag.pointerId) return;
   const rect = G.canvas.getBoundingClientRect();
   const _s = _canvasScale(rect);
-  G._drag.px = (_zc(e.clientX) - rect.left) * _s;
-  G._drag.py = (_zc(e.clientY) - rect.top) * _s;
+  G._drag.px = (e.clientX - rect.left) * _s;
+  G._drag.py = (e.clientY - rect.top) * _s;
   // Belirgin hareket olduysa "sürükleniyor" say (basit tıklamadan ayır)
   G._drag.moved = true;
   draw();
@@ -1302,7 +1311,7 @@ function onBoardClick(e){
 
   const rect = G.canvas.getBoundingClientRect();
   const _s3 = _canvasScale(rect);
-  const px = (_zc(e.clientX) - rect.left) * _s3, py = (_zc(e.clientY) - rect.top) * _s3;
+  const px = (e.clientX - rect.left) * _s3, py = (e.clientY - rect.top) * _s3;
   const sq = xyToCell(px, py);
   if(!sq) return;
 
@@ -1329,15 +1338,13 @@ function onBoardClick(e){
 }
 
 function doMove(mv){
-  // yeme varsa kaydet
-  const target = G.state.board[mv.to.r][mv.to.c];
-  const mover = G.state.board[mv.from.r][mv.from.c];
-  if(target){ G.captured[mover.c].push(target.t); }
-  if(mv.enPassant){ G.captured[mover.c].push('p'); }
+  const game = G, state = G.state;
+  const mover = state.board[mv.from.r][mv.from.c];
 
   // terfi seçimi (piyade son sıraya gelince)
   if(mv.promotion){
     showPromotion(mover.c, (chosen) => {
+      if(G !== game || G.state !== state || G.gameEnded) return;
       const full = { ...mv, promotion: chosen };
       sendMoveOnline(full);
       finishMove(full);
@@ -1366,7 +1373,8 @@ function sendFullSync(){
         board: G.state.board,
         turn: G.state.turn,
         castling: G.state.castling || null,
-        ep: G.state.ep || null,
+        enPassant: G.state.enPassant || null,
+        clock: G.clock ? { ...G.clock } : null,
         halfmove: G.state.halfmove || 0,
         moveHistory: G.moveHistory || [],
         captured: G.captured || { w:[], b:[] },
@@ -1380,20 +1388,28 @@ function sendFullSync(){
 }
 
 function applyFullSync(s){
-  if(!G || !s) return;
+  // White hosts the authoritative reconnect snapshot; guests cannot rewrite it.
+  if(!G || G.mode !== 'online' || G.playerColor !== 'b' || !s) return;
   try{
-    if(s.board){ G.state.board = s.board; }
-    if(s.turn){ G.state.turn = s.turn; }
-    if(s.castling !== undefined) G.state.castling = s.castling;
-    if(s.ep !== undefined) G.state.ep = s.ep;
-    if(s.halfmove !== undefined) G.state.halfmove = s.halfmove;
+    if(!Array.isArray(s.board) || s.board.length !== 8 || !s.board.every(row=>Array.isArray(row)&&row.length===8&&row.every(p=>p===null||(p&&['p','n','b','r','q','k'].includes(p.t)&&['w','b'].includes(p.c)))) || !['w','b'].includes(s.turn)) return;
+    if(!s.castling || !['w','b'].every(c=>s.castling[c]&&['k','q'].every(k=>typeof s.castling[c][k]==='boolean'))) return;
+    const ep = s.enPassant ?? null;
+    if(ep && !([2,5].includes(ep.r)&&Number.isInteger(ep.c)&&ep.c>=0&&ep.c<8)) return;
+    const state = fromFEN(toFEN({board:s.board,turn:s.turn,castling:s.castling,enPassant:ep,halfmove:s.halfmove}));
+    if(!state) return;
+    G.state = state;
+    G.anim = null; G.animating = false; G.aiThinking = false;
+    G.gameEnded = !!s.gameEnded;
+    if(s.clock && ['w','b'].every(c=>Number.isFinite(s.clock[c])&&s.clock[c]>=0)) G.clock = {...s.clock};
     G.moveHistory = s.moveHistory || G.moveHistory || [];
     G.captured = s.captured || G.captured || { w:[], b:[] };
     G.lastMove = s.lastMove || null;
     G.posHistory = s.posHistory || G.posHistory || [];
     if(s.scores) G.scores = s.scores;
     G.selected = null; G.legalForSelected = [];
-    drawBoard();
+    rebuildHistoryUI(); updateTurn(); updateCaptured(); updateClockDisplay(); draw();
+    if(G.gameEnded) stopClockTick();
+    else if(G.clock) startClockTick();
     if(typeof updatePanels === 'function') updatePanels();
     if(!G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI");
   }catch(e){ console.warn('[chess] applyFullSync', e); }
@@ -1423,13 +1439,6 @@ function onRemoteMessage(data){
     if(G.gameEnded || G.state.turn===G.playerColor) return;
     const mv = resolveLegalMove(G.state,data.move);
     if(!mv) return;
-    // gelen hamlenin yeme bilgisini yerelde de kaydet
-    const target = G.state.board[mv.to.r] && G.state.board[mv.to.r][mv.to.c];
-    const mover = G.state.board[mv.from.r] && G.state.board[mv.from.r][mv.from.c];
-    if(mover){
-      if(target){ G.captured[mover.c].push(target.t); }
-      if(mv.enPassant){ G.captured[mover.c].push('p'); }
-    }
     G.applyingRemote = true;
     finishMove(mv);
     G.applyingRemote = false;
@@ -1457,6 +1466,7 @@ function onRemoteMessage(data){
 }
 
 function finishMove(mv){
+  const game = G, state = G.state;
   // Animasyon için: hareket eden taşı + yeme bilgisini hamleden ÖNCE yakala
   const movingPiece = G.state.board[mv.from.r][mv.from.c];
   const isCapture = !!G.state.board[mv.to.r][mv.to.c] || !!mv.enPassant;
@@ -1468,7 +1478,7 @@ function finishMove(mv){
   const DUR = 200;   // ms
 
   const step = (now) => {
-    if(!G || !G.anim) return;
+    if(G !== game || G.state !== state || !G.anim || G.gameEnded) return;
     G.anim.progress = Math.min(1, (now - start) / DUR);
     draw();
     if(G.anim.progress < 1){
@@ -1501,6 +1511,9 @@ function applyAndContinue(mv, isCapture){
   const notation = moveToNotation(G.state, mv);
   const moverColor = G.state.turn;
 
+  const target = G.state.board[mv.to.r][mv.to.c];
+  if(target) G.captured[moverColor].push(target.t);
+  if(mv.enPassant) G.captured[moverColor].push('p');
   G.state = applyMove(G.state, mv);
   G.lastMove = { from: mv.from, to: mv.to };
   G.selected = null; G.legalForSelected = [];
@@ -1734,6 +1747,8 @@ function onTimeout(color){
 
 // ════════════ FEN YÜKLEME ════════════
 function showFENLoader(){
+  if(!G || G.mode === 'online') return;
+  const game = G;
   const ov = document.createElement('div');
   ov.className = 'chess-confirm';
   ov.innerHTML = `<div class="ccf-box">
@@ -1751,12 +1766,14 @@ function showFENLoader(){
   setTimeout(() => { input.focus(); }, 50);
   ov.querySelector('.ccf-no').addEventListener('click', () => ov.remove());
   ov.querySelector('.ccf-yes').addEventListener('click', () => {
+    if(G !== game) return;
     const fen = input.value.trim();
     const parsed = fromFEN(fen);
     if(!parsed){ ov.querySelector('[data-el="fenErr"]').textContent = '❌ Geçersiz FEN'; return; }
     ov.remove();
     // Pozisyonu yükle (taze oyun gibi)
     G.state = parsed;
+    G.aiThinking = false; G.anim = null; G.animating = false;
     G.selected = null; G.legalForSelected = []; G.lastMove = null;
     G.captured = { w:[], b:[] };
     G.moveHistory = []; G.posHistory = [ positionKey(G.state) ];
@@ -1850,7 +1867,8 @@ function offerDraw(){
     G.drawOfferSent = true;
     ChessMP.send({ type:'drawOffer' });
     updateStatus('🤝 Beraberlik teklif edildi, rakip bekleniyor…', 'thinking');
-    setTimeout(() => { G.drawOfferSent = false; }, 3000);
+    const game = G;
+    setTimeout(() => { if(G === game) G.drawOfferSent = false; }, 3000);
   }
 }
 

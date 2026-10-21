@@ -89,6 +89,8 @@ async function animXPBar(container, fromXP, fromLv, xpGained){
 // opts: { won, game, score, lines, kaju, xp, isRecord, title, subtitle, extra }
 // ══════════════════════════════════════════════════════════════════
 export async function showReward(opts={}){
+  const current=()=>!opts.isCurrent || opts.isCurrent();
+  if(!current()) return 'close';
   const { won=false, game='', score=0, kaju=0, xp=0,
           isRecord=false, title='', subtitle='', extra='' } = opts;
 
@@ -108,10 +110,12 @@ export async function showReward(opts={}){
   // 📋 Görev ilerletme: oyun oynandı (+ galibiyet varsa)
   try{
     const eco = await import('./economy.js');
+    if(!current()) return 'close';
     eco.progressQuest('play');
     if(won) eco.progressQuest('win');
     if(kaju > 0) eco.progressQuest('earn', kaju);
   }catch(e){}
+  if(!current()) return 'close';
 
   // Başlık ve renk
   const displayTitle = title || (won ? '🏆 KAZANDIN!' : '💀 OYUN BİTTİ');

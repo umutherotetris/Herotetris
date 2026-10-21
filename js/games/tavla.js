@@ -8,7 +8,7 @@ import Store from '../store.js';
 import Auth from '../auth.js';
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import {
-  newGame, allLegalMoves, resolveLegalMove, legalMovesFrom, applyMove, remainingDice,
+  newGame, isValidState, allLegalMoves, resolveLegalMove, legalMovesFrom, applyMove, remainingDice,
   turnComplete, gameStatus, winType, rollDice, openingRoll, pipCount, canBearOff
 } from './tavla-engine.js';
 import { chooseSequence } from './tavla-ai.js';
@@ -77,6 +77,16 @@ let AUTO_ROLL = (function(){ try{ return localStorage.getItem('hero_tavla_autoro
 const AUTO_ROLL_MS = 5000;   // 5 sn içinde atılmazsa otomatik
 
 let G = null;
+
+// A delayed move belongs to one turn of one match. Restart reuses G, so an
+// object identity check alone does not prevent old AI/dice work from leaking.
+function sameTurn(session, token){
+  return !!session && G === session && G._turnToken === token && !G.gameEnded;
+}
+function afterTurn(fn, delay){
+  const session = G, token = G && G._turnToken;
+  return setTimeout(() => { if(sameTurn(session, token)) fn(); }, delay);
+}
 
 // ════════════ AÇILIŞ ════════════
 export function openTavla(){
@@ -201,6 +211,8 @@ export function openTavla(){
 
 // Davetle baslatilan online tavla (host/guest otomatik)
 async function _startInviteTavla(root, ctx){
+  const session = G;
+  const active = () => G === session && G && G.root === root;
   const isHost = ctx.role === 'host';
   const wait = document.createElement('div');
   wait.style.cssText = 'position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,8,14,.92);color:#c8a557;font-family:system-ui;gap:14px';
@@ -216,8 +228,9 @@ async function _startInviteTavla(root, ctx){
   try{ if(!TavlaMP) TavlaMP = (await import('./tavla-mp.js')).default; }
   catch(e){ wait.querySelector('#tinvMsg').textContent = 'Baglanti modulu yuklenemedi'; return; }
 
+  if(!active() || cancelled) return;
   const onConnected = () => {
-    if(cancelled) return;
+    if(cancelled || !active()) return;
     wait.remove();
     G && (G.oppName = ctx.oppNick);
     startGame(root, 'online', { isHost });
@@ -225,16 +238,17 @@ async function _startInviteTavla(root, ctx){
 
   if(isHost){
     TavlaMP.createRoom((type, data) => {
-      if(cancelled) return;
+      if(cancelled || !active()) return;
       if(type === 'connected'){ onConnected(); }
       else if(type === 'error'){ const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Hata: ' + data; }
     }, ctx.code);
   } else {
     let tries = 0;
     const tryJoin = () => {
-      if(cancelled) return;
+      if(cancelled || !active()) return;
       tries++;
       TavlaMP.joinRoom(ctx.code, (type, data) => {
+        if(cancelled || !active()) return;
         if(type === 'connected'){ onConnected(); }
         else if(type === 'error'){
           if(tries < 8){ setTimeout(tryJoin, 1500); }
@@ -247,14 +261,15 @@ async function _startInviteTavla(root, ctx){
 }
 
 function closeAll(){
-  try{ if(G && G._home) G._home.remove(); }catch(e){}
+  saveAIGame();
+  try{ if(G && G._home) G._home.remove(); if(G && G._hud) G._hud.destroy(); }catch(e){}
   clearAutoRollTimer();
   clearBreakTimers();
   if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G && G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
   if(G && G._rollHintRAF){ cancelAnimationFrame(G._rollHintRAF); G._rollHintRAF = null; }
   if(G){ if(G.moveGraceTimer){ clearTimeout(G.moveGraceTimer); } if(G.moveGraceInterval){ clearInterval(G.moveGraceInterval); } G.moveGraceActive = false; }
-  try{ if(G && G.online) TavlaMP.close(); }catch(e){}
+  try{ if(TavlaMP) TavlaMP.close(); }catch(e){}
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
   if(G && G.root){ G.root.remove(); }
   G = null;
@@ -263,12 +278,15 @@ function closeAll(){
 // ════════════ OYUN BAŞLAT ════════════
 function startGame(root, mode, opts){
   opts = opts || {};
+  const session = G;
+  if(!session || session.root !== root) return;
+  G._turnToken = {};
   root.querySelector('[data-el="modeSelect"]').style.display = 'none';
   const gameEl = root.querySelector('[data-el="game"]');
   gameEl.style.display = 'flex';
   // 🏠 Oyun içi ev butonu
   import('../game-home.js').then(m => {
-    if(!G) return;
+    if(G !== session) return;
     G._home = m.mountGameHome('tavla',
       () => { try{ closeAll(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
       {
@@ -312,7 +330,7 @@ function startGame(root, mode, opts){
   G.legalForSel = [];       // seçili noktanın hamleleri
   G.undoStack = [];
   G.gameEnded = false;
-  G.rolled = false;         // bu sırada zar atıldı mı
+  G.rolled = G._resuming ? !!G.rolled : false; // kayıtlı zarları yeniden attırma
   G.flip = false;           // tahta yönü
   G.aiThinking = false;
   G.oppLeft = false;
@@ -320,11 +338,12 @@ function startGame(root, mode, opts){
 
   if(G.online){
     TavlaMP.__setHandler((type, data) => {
+      if(G !== session) return;
       if(type === 'message' && data && data.type === 'hello'){ onHello(data); return; }
       onRemoteMessage(type, data);
     });
     G._helloSent = false;
-    setTimeout(() => { if(G && G.online){ G._helloSent = true; sendHello(); } }, 900);
+    afterTurn(() => { if(G.online){ G._helloSent = true; sendHello(); } }, 900);
   }
 
   // Açılış zarı — resume'da mevcut state korunur
@@ -332,10 +351,13 @@ function startGame(root, mode, opts){
     if(G.online && !G.isHost){
       G.openingDice = [1, 1];
       G.state.turn = 'w';
+      G._awaitingStart = true;
     } else {
       const open = openingRoll();
       G.state.turn = open.first;
       G.openingDice = open.dice;
+      // The starter plays these very two dice; no second opening roll.
+      G.state.dice = open.dice.slice(); G.state.used = []; G.rolled = true;
     }
   }
 
@@ -393,12 +415,12 @@ function startGame(root, mode, opts){
       root: gameEl, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
       oppUid: G.oppUid||null, oppNick:oppN, oppAvatar:oppA, oppLevel:oppL, oppXP:oppX,
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ G._hud=h; }).catch(()=>{});
+    }).then(h=>{ if(G === session) G._hud=h; else if(h && h.destroy) h.destroy(); }).catch(()=>{});
   }catch(e){ console.warn('[tavla hud]',e); }
   // Oyun ekranı yeni açıldı — board-wrap boyutu reflow sonrası kesinleşince
   // canvas ve taşların tam oturması için yeniden boyutlandır (özellikle flip=true)
-  requestAnimationFrame(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); });
-  setTimeout(() => { if(G && G.canvas && G.boardWrap) fitCanvas(); }, 60);
+  requestAnimationFrame(() => { if(G === session && G.canvas && G.boardWrap) fitCanvas(); });
+  afterTurn(() => { if(G.canvas && G.boardWrap) fitCanvas(); }, 60);
 
   if(G.online){
     setupChat();
@@ -406,7 +428,7 @@ function startGame(root, mode, opts){
       // host açılış zarını misafire bildir
       TavlaMP.send({ type:'start', openingDice: G.openingDice, first: G.state.turn });
       updateTurn();
-      updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
+      updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
     } else {
       updateTurn();
       updateStatus('Bağlandı — oyun başlıyor…');
@@ -422,7 +444,7 @@ function startGame(root, mode, opts){
     updateStatus(G.rolled ? 'Kaldığın yerden devam — pul seç' : 'Kaldığın yerden devam — zar at');
     if(window.Hero && window.Hero.toast) window.Hero.toast('♟️ Kaldığın yerden devam ediyorsun', false);
   } else {
-    updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
+    updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
   }
   updateControls();
   draw();
@@ -435,16 +457,21 @@ function startGame(root, mode, opts){
 function restart(){
   if(G.online) return;   // çevrimiçi oyunda tek taraflı sıfırlama yok
   clearAIGame();   // yeni oyun → kayıt sil
+  clearAutoRollTimer();
+  if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
+  G._turnToken = {};
+  G.diceAnim = null; G.canPass = false; G._passBox = null;
   // Devam eden animasyonları durdur (yenilemede frame çökmesini önler)
   G.movingChecker = null; G.hitChecker = null; G.hideAt = null;
   G.state = newGame();
   const open = openingRoll();
   G.state.turn = open.first; G.openingDice = open.dice;
-  G.selected = null; G.legalForSel = []; G.undoStack = []; G.gameEnded = false; G.rolled = false; G.aiThinking = false;
+  G.selected = null; G.legalForSel = []; G.undoStack = []; G.gameEnded = false; G.rolled = true; G.aiThinking = false;
+  G.state.dice = open.dice.slice();
   if(G.mode === 'ai'){ G.flip = (G.playerColor === 'b'); }
   else if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
   updateTurn();
-  updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar`);
+  updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
   updateControls(); draw();
   maybeAITurn();
   startAutoRollTimer();
@@ -469,6 +496,7 @@ function loadAIGame(){
     const raw = localStorage.getItem(TAVLA_SAVE_KEY);
     if(!raw) return null;
     const snap = JSON.parse(raw);
+    if(!isValidState(snap && snap.state)){ clearAIGame(); return null; }
     if(Date.now() - (snap.ts||0) > 12*3600*1000){ clearAIGame(); return null; }  // 12 saat
     return snap;
   }catch(e){ return null; }
@@ -476,7 +504,7 @@ function loadAIGame(){
 
 // ════════════ ZAR ATMA ════════════
 function rollAndShow(){
-  if(G.gameEnded || G.rolled || G.aiThinking) return;
+  if(!G || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking) return;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && G.state.turn !== G.playerColor) return;   // sıra rakipte
   clearAutoRollTimer();
@@ -484,6 +512,7 @@ function rollAndShow(){
   G.state.used = [];
   G.rolled = true;
   G.undoStack = [];
+  saveAIGame();
   try{ Sound.dice(); }catch(e){}
   if(G.online){ TavlaMP.send({ type:'dice', dice: G.state.dice }); }
   const moves = allLegalMoves(G.state);
@@ -499,7 +528,7 @@ function rollAndShow(){
       const _isOppTurn = (G.online && G.state.turn !== G.playerColor);
       if(!_isAIturn && !_isOppTurn){
         if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); }
-        G._autoPassTimer = setTimeout(() => {
+        G._autoPassTimer = afterTurn(() => {
           G._autoPassTimer = null;
           // Hâlâ aynı durumda mı? (oyuncu zar atmadı, hamle yok, sıra değişmedi)
           if(G && !G.gameEnded && G.rolled && G.canPass){
@@ -788,7 +817,7 @@ function drawPassHint(ctx, t){
 }
 
 function canInteractRoll(){
-  if(!G || G.gameEnded || G.rolled || G.aiThinking) return false;
+  if(!G || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking) return false;
   if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
   if(G.online && G.state.turn!==G.playerColor) return false;
   return true;
@@ -1615,7 +1644,7 @@ function doMove(mv){
     if(st0 !== 'playing'){ onWin(st0); return; }
     if(turnComplete(G.state)){
       updateStatus('Sıra tamamlandı — ' + (G.state.turn==='w'?'beyaz':'siyah') + ' bitti');
-      setTimeout(() => endTurn(), 600);
+      afterTurn(() => endTurn(), 600);
     } else {
       const rem0 = remainingDice(G.state).map(r=>r.die).join(', ');
       updateStatus(`Kalan zar: ${rem0} — devam et`);
@@ -1636,7 +1665,7 @@ function doMove(mv){
   // sıra bitti mi
   if(turnComplete(G.state)){
     updateStatus('Sıra tamamlandı — ' + (G.state.turn==='w'?'beyaz':'siyah') + ' bitti');
-    setTimeout(() => endTurn(), 600);
+    afterTurn(() => endTurn(), 600);
   } else {
     const rem = remainingDice(G.state).map(r=>r.die).join(', ');
     updateStatus(`Kalan zar: ${rem} — devam et`);
@@ -1647,7 +1676,9 @@ function doMove(mv){
 }
 
 function endTurn(){
-  if(G.gameEnded) return;
+  if(!G || G.gameEnded || !G.rolled || !turnComplete(G.state)) return;
+  if(G.online && G.state.turn !== G.playerColor) return;
+  G._turnToken = {};
   if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
   G._passBox = null;
@@ -1687,7 +1718,7 @@ function clearAutoRollTimer(){
 function startAutoRollTimer(){
   if(!G) return;
   clearAutoRollTimer();
-  if(!AUTO_ROLL || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
+  if(!AUTO_ROLL || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
   // AI sırasında gerekmez (AI kendi atar); online'da yalnızca kendi sıramda
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && G.state.turn !== G.playerColor) return;
@@ -1711,11 +1742,14 @@ function maybeAITurn(){
   G.aiThinking = true;
   updateControls();
   updateStatus('🤖 Yapay zekâ düşünüyor…', 'thinking');
-  setTimeout(() => {
-    if(!G || G.gameEnded) return;
-    G.state.dice = rollDice();
-    G.state.used = [];
-    G.rolled = true;
+  afterTurn(() => {
+    // A resumed game and the opening turn already have their legal dice.
+    if(!G.rolled){
+      G.state.dice = rollDice();
+      G.state.used = [];
+      G.rolled = true;
+      saveAIGame();
+    }
     const dd = G.state.dice;
     const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
     animateDiceRoll(() => {
@@ -1723,7 +1757,7 @@ function maybeAITurn(){
       draw();
       const seq = chooseSequence(G.state, G.difficulty);
       if(!seq || seq.length === 0){
-        setTimeout(() => { G.aiThinking = false; endTurn(); }, 700);
+        afterTurn(() => { G.aiThinking = false; endTurn(); }, 700);
         return;
       }
       playAISequence(seq, 0);
@@ -1737,17 +1771,18 @@ function playAISequence(seq, i){
     G.aiThinking = false;
     const status = gameStatus(G.state);
     if(status !== 'playing'){ onWin(status); return; }
-    setTimeout(() => endTurn(), 500);
+    afterTurn(() => endTurn(), 500);
     return;
   }
   const mv = seq[i];
   animateMove(mv, () => {
     G.state = applyMove(G.state, mv);
+    saveAIGame();
     try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
     draw();
     const status = gameStatus(G.state);
     if(status !== 'playing'){ G.aiThinking = false; onWin(status); return; }
-    setTimeout(() => playAISequence(seq, i + 1), 350);
+    afterTurn(() => playAISequence(seq, i + 1), 350);
   });
 }
 
@@ -1769,10 +1804,15 @@ function sendFullSync(){
 }
 
 function applyFullSync(s){
-  if(!G || !s) return;
+  if(!G || !G.online || G.isHost || !s || !isValidState(s.gameState)) return;
+  if(!!s.rolled !== (s.gameState.dice.length > 0)) return;
   try{
-    if(s.gameState){ G.state = s.gameState; }
+    G._turnToken = {};
+    G.diceAnim = null;
+    G.state = s.gameState;
     G.rolled = !!s.rolled;
+    G.gameEnded = !!s.gameEnded || gameStatus(G.state) !== 'playing';
+    G._awaitingStart = false;
     if(s.openingDice) G.openingDice = s.openingDice;
     G.selected = null; G.legalForSel = []; G.undoStack = [];
     G.flip = (G.online && G.playerColor === 'b');
@@ -1820,9 +1860,9 @@ function onRemoteMessage(type, data){
     G.oppLeft = false;
     updateStatus('✅ Yeniden bağlanıldı!');
     // Host güncel state'i gönderir; misafir ister
-    if(G.isHost){ setTimeout(sendFullSync, 400); }
-    else { setTimeout(() => TavlaMP.send({ type:'resync_request' }), 400); }
-    setTimeout(() => { if(!G.gameEnded) updateTurn(); }, 2000);
+    if(G.isHost){ afterTurn(sendFullSync, 400); }
+    else { afterTurn(() => TavlaMP.send({ type:'resync_request' }), 400); }
+    afterTurn(() => updateTurn(), 2000);
     return;
   }
   if(type === 'reconnect_failed'){
@@ -1841,11 +1881,16 @@ function onRemoteMessage(type, data){
   if(msg.type === 'fullsync'){ applyFullSync(msg.state); return; }
 
   if(msg.type === 'start'){
-    G.openingDice = msg.openingDice || [1,1];
-    G.state.turn = msg.first || 'w';
+    if(G.isHost || !G._awaitingStart || !Array.isArray(msg.openingDice) || msg.openingDice.length !== 2 || !msg.openingDice.every(d=>Number.isInteger(d)&&d>=1&&d<=6) || msg.openingDice[0] === msg.openingDice[1]) return;
+    const first = msg.openingDice[0] > msg.openingDice[1] ? 'w' : 'b';
+    if(msg.first !== first) return;
+    G._awaitingStart = false;
+    G.openingDice = msg.openingDice.slice();
+    G.state.turn = first;
+    G.state.dice = G.openingDice.slice(); G.state.used = []; G.rolled = true;
     updateTurn();
     const mine = (G.state.turn === G.playerColor);
-    updateStatus(`Açılış: B${G.openingDice[0]}–S${G.openingDice[1]} · ` + (mine ? 'sen başla, zar at' : 'rakip başlıyor'));
+    updateStatus(`Açılış: B${G.openingDice[0]}–S${G.openingDice[1]} · ` + (mine ? 'sen başla, pul seç' : 'rakip başlıyor'));
     updateControls(); draw();
   } else if(msg.type === 'dice'){
     if(G.gameEnded || G.state.turn===G.playerColor || G.rolled || !Array.isArray(msg.dice) || ![2,4].includes(msg.dice.length) || !msg.dice.every(d=>Number.isInteger(d)&&d>=1&&d<=6) || (msg.dice.length===4 ? !msg.dice.every(d=>d===msg.dice[0]) : msg.dice[0]===msg.dice[1])) return;
@@ -1879,6 +1924,8 @@ function onRemoteMessage(type, data){
       while(G===session && !G.remoteMoving && G.remoteQueue?.length) onRemoteMessage('message',G.remoteQueue.shift());
     });
   } else if(msg.type === 'endturn'){
+    if(G.gameEnded || G.state.turn === G.playerColor || !G.rolled || !turnComplete(G.state)) return;
+    G._turnToken = {}; G.diceAnim = null;
     G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
     G.state.dice = []; G.state.used = []; G.rolled = false; G.canPass = false;
     G.selected = null; G.legalForSel = [];
@@ -1986,6 +2033,9 @@ function undoMove(){
   G.state = snap.state;
   G.selected = null; G.legalForSel = [];
   G.gameEnded = false;
+  // Invalidate the pending automatic end-turn from the undone last move.
+  G._turnToken = {}; G.canPass = false; G._passBox = null;
+  if(G.mode === 'ai') saveAIGame();
   updateStatus('Hamle geri alındı');
   updateControls();
   draw();
@@ -2306,6 +2356,7 @@ function updateStatus(msg, kind){
 
 function updateControls(){
   if(!G || !G.root) return;
+  G.canPass = !!G.rolled && turnComplete(G.state);
   const rollBtn = G.root.querySelector('[data-el="rollBtn"]');
   const passBtn = G.root.querySelector('[data-el="passBtn"]');
   const undoBtn = G.root.querySelector('[data-el="undoBtn"]');
@@ -2332,7 +2383,7 @@ function updateControls(){
     const noMoves = allLegalMoves(G.state).length === 0;
     // noMoves (gele) → tahtadaki mini PAS gösterilir, alttaki gizli
     // turnComplete (tüm zarlar kullanıldı) → alttaki Pas (tahtada zar yok)
-    const showBottomPass = !noMoves && turnComplete(G.state);
+    const showBottomPass = remainingDice(G.state).length === 0;
     passBtn.style.display = showBottomPass ? 'block' : 'none';
   }
   undoBtn.style.display = (G.undoStack && G.undoStack.length > 0) ? 'block' : 'none';
@@ -2397,6 +2448,7 @@ function showAISetup(root){
 
 // ════════════ ÇEVRİMİÇİ LOBİ ════════════
 async function showOnlineLobby(root){
+  const session = G;
   // çevrimiçi modülü dinamik yükle (eksikse tavla yine de açılır)
   if(!TavlaMP){
     try{ TavlaMP = (await import('./tavla-mp.js')).default; }
@@ -2405,6 +2457,7 @@ async function showOnlineLobby(root){
       console.error('[tavla-mp]', e); return;
     }
   }
+  if(G !== session || !G || G.root !== root) return;
   const ov = document.createElement('div');
   ov.className = 'tavla-online-lobby';
   ov.innerHTML = `<div class="tol-box">
@@ -2453,6 +2506,7 @@ async function showOnlineLobby(root){
     showPanel('host');
     try{ Sound.resume(); }catch(e){}
     TavlaMP.createRoom((type, data) => {
+      if(G !== session || !ov.isConnected) return;
       if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; }
       else if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: true }); }
       else if(type === 'error'){ ov.querySelector('.tol-hint').innerHTML = '❌ ' + data + '<br>Tekrar dene.'; }
@@ -2477,6 +2531,7 @@ async function showOnlineLobby(root){
     ov.querySelector('[data-el="joinStatus"]').textContent = 'Bağlanıyor…';
     try{ Sound.resume(); }catch(e){}
     TavlaMP.joinRoom(code, (type, data) => {
+      if(G !== session || !ov.isConnected) return;
       if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: false }); }
       else if(type === 'error'){ ov.querySelector('[data-el="joinStatus"]').textContent = '❌ ' + data; }
     });
@@ -2527,11 +2582,12 @@ function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
 // Zar atma animasyonu: kısa süre rastgele yüzler, sonra gerçek değerde sabitlenir
 function animateDiceRoll(onDone){
   if(!G || !G.state.dice || G.state.dice.length === 0){ if(onDone) onDone(); return; }
+  const session = G, token = G._turnToken;
   const real = G.state.dice.slice();
   const dur = 450, t0 = performance.now();
   G.diceAnim = real.map(() => 1 + Math.floor(Math.random()*6));
   function frame(now){
-    if(!G){ return; }
+    if(!sameTurn(session, token)){ return; }
     const p = Math.min(1, (now - t0) / dur);
     if(p < 1){
       // her ~60ms yüzleri değiştir
@@ -2569,7 +2625,7 @@ function animateMove(mv, onDone){
     end = { x: pg.baseX, y: pg.y0 + pg.dir * (g.safe + g.checkerR) };   // k=0 zemini
   }
   if(!start || !end){ if(onDone) onDone(); return; }
-  const session=G;
+  const session=G, token=G._turnToken;
   const dur = 280, t0 = performance.now();
   G.movingChecker = { color, x: start.x, y: start.y, r: G.geo.checkerR };
   // vurulan taş: noktadan bar'daki gerçek yuvasına uçar
@@ -2586,7 +2642,7 @@ function animateMove(mv, onDone){
   }
   function frame(now){
     // G veya hareket eden taş yoksa (yenile/reset olmuş) animasyonu güvenle durdur
-    if(G!==session || !G.movingChecker){ return; }
+    if(!sameTurn(session, token) || !G.movingChecker){ return; }
     const p = Math.min(1, (now - t0) / dur);
     const e = easeOutCubic(p);
     G.movingChecker.x = start.x + (end.x - start.x) * e;

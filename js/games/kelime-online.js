@@ -12,6 +12,7 @@ const GPATH = 'kelimeGames';           // oyun odaları
 const FRESH_MS = 45000;                // bu süreden eski kuyruk kaydı bayat
 
 let S = null;  // aktif çevrimiçi oturum durumu
+let requestEpoch = 0;  // canceled async work must not recreate a session
 
 function rid(){ return Math.floor(Math.random() * 0x7fffffff); }
 
@@ -33,6 +34,7 @@ function emptyBoardStr(){
 const MYGAMES = 'kelimeMyGames';   // kullanıcı başına aktif async oyun indeksi
 
 export async function findMatch(cb, opts){
+  const epoch = ++requestEpoch;
   opts = opts || {};
   const async = opts.mode === 'async';
   const turnHours = opts.turnHours || 72;
@@ -40,6 +42,7 @@ export async function findMatch(cb, opts){
   const langSfx = '_' + lang;
   const QP = (async ? ('kelimeQueue/async' + turnHours) : QPATH) + langSfx;
   const st = await ensureAuth();
+  if(epoch !== requestEpoch) return;
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   const myUid = st.uid, myName = st.displayName || 'Oyuncu';
   cb.onSearching && cb.onSearching();
@@ -47,6 +50,8 @@ export async function findMatch(cb, opts){
   // Host olursam kullanacağım oda kimliği
   const myGameId = fdb.push(fdb.ref(db, GPATH)).key;
   const seed = rid();
+  const session = S = { gameId:myGameId, role:'A', roomRef:fdb.ref(db, `${GPATH}/${myGameId}`), myUid, waiting:true, async, turnHours:async?turnHours:0, queuePath:QP };
+  const active = () => epoch === requestEpoch && S === session;
   const now0 = Date.now();
   const baseRoom = {
     seed, boardStr: emptyBoardStr(),
@@ -59,8 +64,10 @@ export async function findMatch(cb, opts){
 
   // Host adayı odayı ÖNCE kur
   try{
-    await fdb.set(fdb.ref(db, `${GPATH}/${myGameId}`), baseRoom);
+    await fdb.set(session.roomRef, baseRoom);
+    if(!active()){ await fdb.remove(session.roomRef).catch(()=>{}); return; }
   }catch(e){
+    if(!active()) return;
     const denied = String(e && e.message||e).includes('PERMISSION_DENIED');
     cb.onError && cb.onError(denied ? 'Sunucu izni reddedildi. Çevrimiçi için Firebase kuralları güncellenmeli (yönetici).' : 'Sunucuya bağlanılamadı.');
     return;
@@ -82,7 +89,15 @@ export async function findMatch(cb, opts){
     });
   }catch(e){
     fdb.remove(fdb.ref(db, `${GPATH}/${myGameId}`)).catch(()=>{});
+    if(!active()) return;
     cb.onError && cb.onError('Eşleşme kuyruğuna erişilemedi (Firebase kuralları).');
+    return;
+  }
+
+  if(!active()){
+    if(claimed) await fdb.runTransaction(fdb.ref(db,QP),cur=>cur || claimed).catch(()=>{});
+    else await clearQueueIfMine(myUid,QP);
+    await fdb.remove(session.roomRef).catch(()=>{});
     return;
   }
 
@@ -92,15 +107,18 @@ export async function findMatch(cb, opts){
     const gameId = claimed.gameId;
     const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
     const snap = await waitForSeed(roomRef);
+    if(!active()){ await fdb.runTransaction(fdb.ref(db,QP),cur=>cur || claimed).catch(()=>{}); return; }
     if(!snap){ cb.onError && cb.onError('Oda bulunamadı, tekrar dene'); return; }
     const room = snap;
     const upd = { 'players/B':myUid, 'names/B':myName, 'presence/B':true, status:'active' };
     await fdb.update(roomRef, upd);
+    if(!active()){ await fdb.update(roomRef, {'presence/B':false}).catch(()=>{}); return; }
     const isAsync = room.mode === 'async';
     if(!isAsync){ try{ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/B`)).set(false); }catch(e){} }
     // Async VE canlı maçları indeksle (kaldığın yerden devam için)
     await indexBothGames(gameId, myUid, room.players.A, myName, room.names && room.names.A, room.mode || 'live', room.turnHours);
-    S = { gameId, role:'B', roomRef, myUid, oppUid: room.players.A, async:isAsync };
+    if(!active()) return;
+    Object.assign(session,{gameId, role:'B', roomRef, oppUid:room.players.A, async:isAsync, turnHours:room.turnHours || 0, waiting:false});
     cb.onMatched && cb.onMatched({ role:'B', gameId, oppName: room.names && room.names.A || 'Rakip', oppUid: room.players.A, seed: room.seed, async:isAsync, turnHours:room.turnHours });
   } else {
     // ── HOST (A) ──
@@ -110,18 +128,18 @@ export async function findMatch(cb, opts){
       if(!async){ fdb.onDisconnect(fdb.ref(db, `${GPATH}/${gameId}/presence/A`)).set(false); }
       fdb.onDisconnect(fdb.ref(db, QP)).remove();
     }catch(e){}
-    S = { gameId, role:'A', roomRef, myUid, waiting:true, async };
     const off = fdb.onValue(roomRef, (s) => {
       const room = s.val(); if(!room) return;
-      if(room.players && room.players.B && S && S.waiting){
-        S.waiting = false; S.oppUid = room.players.B;
+      if(room.players && room.players.B && active() && session.waiting){
+        session.waiting = false; session.oppUid = room.players.B;
         try{ off(); }catch(e){}
         clearQueueIfMine(myUid, QP);
+        try{ fdb.onDisconnect(fdb.ref(db,QP)).cancel().catch(()=>{}); }catch(e){}
         indexBothGames(gameId, myUid, room.players.B, myName, room.names && room.names.B, async?'async':'live', turnHours);
         cb.onMatched && cb.onMatched({ role:'A', gameId, oppName: room.names && room.names.B || 'Rakip', oppUid: room.players.B, seed: room.seed, async, turnHours });
       }
     });
-    S._offWait = off;
+    session._offWait = off;
   }
 }
 
@@ -144,7 +162,8 @@ export async function listMyGames(){
       const rs = await fdb.get(fdb.ref(db, `${GPATH}/${gameId}`));
       if(!rs.exists()){ fdb.remove(fdb.ref(db, `${MYGAMES}/${st.uid}/${gameId}`)).catch(()=>{}); continue; }
       const room = rs.val();
-      const myRole = (room.players && room.players.A === st.uid) ? 'A' : 'B';
+      const myRole = room.players && (room.players.A === st.uid ? 'A' : room.players.B === st.uid ? 'B' : null);
+      if(!myRole) continue;
       const over = room.status === 'over';
       // Bitmiş maçları indeksten temizle (listede gösterme)
       if(over){ fdb.remove(fdb.ref(db, `${MYGAMES}/${st.uid}/${gameId}`)).catch(()=>{}); continue; }
@@ -167,15 +186,20 @@ export async function listMyGames(){
 
 // Bir async oyunu sürdür
 export async function resumeGame(gameId, cb){
+  const epoch = ++requestEpoch;
   const st = await ensureAuth();
+  if(epoch !== requestEpoch) return;
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
   let room; try{ const s = await fdb.get(roomRef); if(!s.exists()){ cb.onError && cb.onError('Oyun bulunamadı'); return; } room = s.val(); }
   catch(e){ cb.onError && cb.onError('Oyun yüklenemedi'); return; }
-  const role = (room.players && room.players.A === st.uid) ? 'A' : 'B';
+  if(epoch !== requestEpoch) return;
+  const role = room.players && (room.players.A === st.uid ? 'A' : room.players.B === st.uid ? 'B' : null);
+  if(!role){ cb.onError && cb.onError('Bu oyunun oyuncusu değilsin'); return; }
+  if(room.status === 'over'){ cb.onError && cb.onError('Bu oyun sona ermiş'); return; }
   const oppUid = role==='A' ? (room.players.B) : (room.players.A);
   const isAsync = room.mode === 'async';
-  S = { gameId, role, roomRef, myUid: st.uid, oppUid, async:isAsync };
+  S = { gameId, role, roomRef, myUid: st.uid, oppUid, async:isAsync, turnHours:room.turnHours || 0 };
   // Canlı maç: presence'ı geri kur (geri döndüm) + disconnect izle
   if(!isAsync){
     try{ await fdb.update(roomRef, { ['presence/'+role]: true }); }catch(e){}
@@ -194,24 +218,34 @@ export async function claimTimeout(gameId, cb){
   const st = Auth.getState(); if(!st || !st.uid){ cb && cb.onError && cb.onError('Giriş gerekli'); return; }
   const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
   try{
-    const s = await fdb.get(roomRef); if(!s.exists()) return;
-    const room = s.val();
-    const myRole = room.players.A === st.uid ? 'A' : 'B';
-    if(room.turn === myRole){ cb && cb.onError && cb.onError('Sıra sende, süre dolmadı'); return; }
-    if(!room.deadline || Date.now() < room.deadline){ cb && cb.onError && cb.onError('Rakibin süresi henüz dolmadı'); return; }
-    await fdb.update(roomRef, { status:'over', overMsg:'Rakibin süresi doldu — kazandın! 🎉', winnerByTimeout:myRole });
+    let error = 'Oyun bulunamadı';
+    const result = await fdb.runTransaction(roomRef, room => {
+      if(!room || !room.players) return;
+      const myRole = room.players.A === st.uid ? 'A' : room.players.B === st.uid ? 'B' : null;
+      if(!myRole){ error='Bu oyunun oyuncusu değilsin'; return; }
+      if(room.status !== 'active' || room.mode !== 'async'){ error='Bu oyun için süre galibiyeti alınamaz'; return; }
+      if(room.turn === myRole){ error='Sıra sende, süre dolmadı'; return; }
+      if(!room.deadline || Date.now() < room.deadline){ error='Rakibin süresi henüz dolmadı'; return; }
+      return { ...room, status:'over', overMsg:'Hamle süresi doldu', winnerByTimeout:myRole };
+    });
+    if(!result.committed){ cb && cb.onError && cb.onError(error); return; }
     cb && cb.onDone && cb.onDone();
   }catch(e){ cb && cb.onError && cb.onError('İşlem başarısız'); }
 }
 
 function waitForSeed(roomRef){
   return new Promise((resolve) => {
-    let done = false;
-    const off = fdb.onValue(roomRef, (s) => {
-      const v = s.val();
-      if(v && v.seed != null && !done){ done = true; try{ off(); }catch(e){} resolve(v); }
-    });
-    setTimeout(() => { if(!done){ done = true; try{ off(); }catch(e){} resolve(null); } }, 8000);
+    let done = false, off = null, timer = null;
+    const finish = value => {
+      if(done) return;
+      done = true;
+      if(timer !== null) clearTimeout(timer);
+      try{ if(off) off(); }catch(e){}
+      resolve(value);
+    };
+    off = fdb.onValue(roomRef, s => { const room=s.val(); if(room && room.seed != null) finish(room); });
+    if(done){ try{ off(); }catch(e){} }
+    else timer = setTimeout(()=>finish(null),8000);
   });
 }
 
@@ -226,50 +260,73 @@ async function clearQueueIfMine(myUid, qp){
 
 // Arama iptali (host beklerken)
 export async function cancelSearch(){
-  if(!S) return;
-  try{ if(S._offWait) S._offWait(); }catch(e){}
-  try{ await clearQueueIfMine(S.myUid); }catch(e){}
-  if(S.role === 'A' && S.waiting){ try{ await fdb.remove(S.roomRef); }catch(e){} }
+  requestEpoch++;
+  const session = S;
+  if(!session) return;
   S = null;
+  try{ if(session._offWait) session._offWait(); }catch(e){}
+  try{ await clearQueueIfMine(session.myUid, session.queuePath); }catch(e){}
+  if(session.queuePath){ try{ await fdb.onDisconnect(fdb.ref(db,session.queuePath)).cancel(); }catch(e){} }
+  if(session.role === 'A' && session.waiting){ try{ await fdb.remove(session.roomRef); }catch(e){} }
 }
 
 // Oda durumunu dinle
 export function subscribeRoom(onState){
   if(!S) return () => {};
-  const off = fdb.onValue(S.roomRef, (s) => { const v = s.val(); if(v) onState(v); });
-  S._offRoom = off;
+  const session = S;
+  try{ if(session._offRoom) session._offRoom(); }catch(e){}
+  const off = fdb.onValue(session.roomRef, (s) => { const v = s.val(); if(S===session && v) onState(v); });
+  session._offRoom = off;
   return off;
 }
 
 // Hamleyi odaya yaz. Async ise deadline + oyunlarım indeksini güncelle.
 export async function pushMove(patch){
-  if(!S) return;
-  if(S.async){
+  const session = S;
+  if(!session) return;
+  patch = { ...patch };
+  if(session.async){
     const ts = Date.now();
-    if(S.turnHours) patch.deadline = ts + S.turnHours*3600000;
+    if(session.turnHours && patch.turn) patch.deadline = ts + session.turnHours*3600000;
     patch.lastMoveAt = ts;
-    // her iki oyuncunun indeks zaman damgasını güncelle (sıralama için)
-    try{ if(S.myUid) fdb.update(fdb.ref(db, `${MYGAMES}/${S.myUid}/${S.gameId}`), { ts }); }catch(e){}
-    try{ if(S.oppUid) fdb.update(fdb.ref(db, `${MYGAMES}/${S.oppUid}/${S.gameId}`), { ts }); }catch(e){}
+    // Update indexes only after the room accepted the move.
+    await fdb.update(session.roomRef, patch);
+    const jobs = [session.myUid,session.oppUid].filter(Boolean).map(uid =>
+      fdb.update(fdb.ref(db, `${MYGAMES}/${uid}/${session.gameId}`), { ts }).catch(()=>{}));
+    await Promise.all(jobs);
+    return;
   }
-  await fdb.update(S.roomRef, patch);
+  await fdb.update(session.roomRef, patch);
 }
 
 // Oyundan ayrıl (async'te presence düşürme — oyun sürer)
 export async function leaveRoom(){
-  if(!S) return;
-  try{ if(S._offRoom) S._offRoom(); }catch(e){}
-  if(!S.async){ try{ await fdb.update(S.roomRef, { ['presence/'+S.role]: false }); }catch(e){} }
+  requestEpoch++;
+  const session = S;
+  if(!session) return;
   S = null;
+  try{ if(session._offRoom) session._offRoom(); }catch(e){}
+  try{ if(session._offWait) session._offWait(); }catch(e){}
+  if(session.waiting){
+    if(session.queuePath){
+      try{ await clearQueueIfMine(session.myUid,session.queuePath); }catch(e){}
+      try{ await fdb.onDisconnect(fdb.ref(db,session.queuePath)).cancel(); }catch(e){}
+    }
+    if(session.invId && session.targetUid){ try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${session.targetUid}/${session.invId}`)); }catch(e){} }
+    if(session.role==='A'){ try{ await fdb.remove(session.roomRef); }catch(e){} }
+    return;
+  }
+  if(!session.async){ try{ await fdb.update(session.roomRef, { ['presence/'+session.role]: false }); }catch(e){} }
 }
 
 // Maç bitti — her iki oyuncunun MYGAMES indeksinden sil (devam listesinde görünmesin)
 export async function markGameOver(){
-  if(!S) return;
-  try{ if(S.myUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${S.myUid}/${S.gameId}`)); }catch(e){}
-  try{ if(S.oppUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${S.oppUid}/${S.gameId}`)); }catch(e){}
-  // Odayı da bitti olarak işaretle (karşı tarafın listMyGames'i de temizlesin)
-  try{ await fdb.update(S.roomRef, { status:'over' }); }catch(e){}
+  const session = S;
+  if(!session) return;
+  try{ if(session.myUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${session.myUid}/${session.gameId}`)); }catch(e){}
+  try{ if(session.oppUid) await fdb.remove(fdb.ref(db, `${MYGAMES}/${session.oppUid}/${session.gameId}`)); }catch(e){}
+  // All awaits stay bound to the room that actually ended.
+  try{ await fdb.update(session.roomRef, { status:'over' }); }catch(e){}
 }
 
 // Uygulama/sekme öne gelince varlığı (presence) yeniden yaz + onDisconnect'i tazele.

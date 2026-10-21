@@ -23,6 +23,8 @@ let joinCode = null;        // misafirin bağlandığı oda kodu
 let reconnecting = false;   // şu an tekrar bağlanma denemesi sürüyor mu
 let reconTries = 0;         // kaç deneme yapıldı
 let reconTimer = null;      // bir sonraki deneme zamanlayıcısı
+let roomGeneration = 0;    // stale Peer callbacks cannot own a replacement room
+let connectTimer = null;   // join/handshake deadline, canceled on success or close
 let manualClose = false;    // kullanıcı bilerek kapattı mı (reconnect deneme)
 const RECON_MAX = 6;        // maksimum deneme (≈60 sn)
 const RECON_DELAY = 10000;  // denemeler arası bekleme (ms)
@@ -36,81 +38,131 @@ function genCode(){
 
 function fire(type, data){ if(onEvent) try{ onEvent(type, data); }catch(e){ console.warn('[tavla-mp]', e); } }
 
+// Every callback belongs to its room and Peer, not mutable global `peer`.
+function currentPeer(p, generation){
+  return !manualClose && generation === roomGeneration && peer === p;
+}
+function currentConn(c, p, generation){
+  return currentPeer(p, generation) && conn === c;
+}
+function clearConnectTimer(){
+  if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
+}
+function disposeTransport(){
+  const oldConn = conn, oldPeer = peer;
+  conn = null; peer = null; // invalidate listeners before close/destroy emits
+  clearConnectTimer();
+  try{ if(oldConn) oldConn.close(); }catch(e){}
+  try{ if(oldPeer) oldPeer.destroy(); }catch(e){}
+}
+function closeRoom(){
+  manualClose = true;
+  roomGeneration++;
+  stopReconnect();
+  disposeTransport();
+  onEvent = null; isHost = false; myCode = null; joinCode = null;
+}
+function beginRoom(cb, host){
+  closeRoom();
+  onEvent = cb; isHost = host; manualClose = false;
+}
+
 // ── Otomatik yeniden bağlanma ──
 function startReconnect(){
   if(reconnecting || manualClose) return;
-  if(!myCode && !joinCode) return;       // bağlanılacak oda yok
+  if(!myCode && !joinCode) return;
   reconnecting = true; reconTries = 0;
+  const generation = roomGeneration;
   fire('reconnecting', { tries: 0, max: RECON_MAX });
-  attemptReconnect();
+  if(generation === roomGeneration && reconnecting) attemptReconnect();
 }
 
 function attemptReconnect(){
-  if(manualClose){ reconnecting = false; return; }
+  if(manualClose || !reconnecting) return;
+  reconTimer = null;
   reconTries++;
   if(reconTries > RECON_MAX){
-    reconnecting = false;
+    stopReconnect();
+    disposeTransport();
     fire('reconnect_failed');
     return;
   }
+  const generation = roomGeneration;
   fire('reconnecting', { tries: reconTries, max: RECON_MAX });
+  if(generation !== roomGeneration || manualClose || !reconnecting) return;
+  disposeTransport();
   try{
-    // Eski peer/conn'u temizle
-    try{ if(conn) conn.close(); }catch(e){}
-    try{ if(peer) peer.destroy(); }catch(e){}
-    conn = null; peer = null;
-
+    const p = isHost
+      ? new window.Peer(PREFIX + myCode, { debug: 1 })
+      : new window.Peer({ debug: 1 });
+    peer = p;
+    p.on('open', () => {
+      if(!currentPeer(p, generation)) return;
+      if(isHost){ fire('waiting'); }
+      else { bindConn(p.connect(PREFIX + joinCode, { reliable: true }), p, generation); }
+      // A signaling Peer can open while its data connection never does.
+      if(currentPeer(p, generation) && reconnecting){
+        connectTimer = setTimeout(() => {
+          if(!currentPeer(p, generation)) return;
+          connectTimer = null;
+          if(reconnecting && !(conn && conn.open)) scheduleNextRecon();
+        }, 8000);
+      }
+    });
     if(isHost){
-      // Host: aynı oda koduyla peer'i yeniden kur, misafiri bekle
-      peer = new window.Peer(PREFIX + myCode, { debug: 1 });
-      peer.on('open', () => { fire('waiting'); });
-      peer.on('connection', (c) => {
-        if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
-        bindConn(c);
-        reconnecting = false; reconTries = 0;
-        fire('reconnected');
+      p.on('connection', c => {
+        if(!currentPeer(p, generation) || conn){ try{ c.close(); }catch(e){} return; }
+        bindConn(c, p, generation);
       });
-      peer.on('error', () => { scheduleNextRecon(); });
-    } else {
-      // Misafir: host koduna tekrar bağlan
-      peer = new window.Peer({ debug: 1 });
-      peer.on('open', () => {
-        const c = peer.connect(PREFIX + joinCode, { reliable: true });
-        bindConn(c);
-        c.on('open', () => { reconnecting = false; reconTries = 0; fire('reconnected'); });
-        setTimeout(() => { if(!(conn && conn.open) && reconnecting) scheduleNextRecon(); }, 8000);
-      });
-      peer.on('error', () => { scheduleNextRecon(); });
     }
+    p.on('error', () => { if(currentPeer(p, generation)) scheduleNextRecon(); });
   }catch(e){ scheduleNextRecon(); }
 }
 
 function scheduleNextRecon(){
   if(manualClose || !reconnecting) return;
-  if(reconTimer) clearTimeout(reconTimer);
-  reconTimer = setTimeout(attemptReconnect, RECON_DELAY);
+  clearConnectTimer();
+  if(reconTimer !== null) clearTimeout(reconTimer);
+  const generation = roomGeneration;
+  reconTimer = setTimeout(() => {
+    if(generation !== roomGeneration || !reconnecting) return;
+    reconTimer = null;
+    attemptReconnect();
+  }, RECON_DELAY);
 }
 
 function stopReconnect(){
   reconnecting = false; reconTries = 0;
-  if(reconTimer){ clearTimeout(reconTimer); reconTimer = null; }
+  if(reconTimer !== null){ clearTimeout(reconTimer); reconTimer = null; }
 }
 
-function bindConn(c){
+function bindConn(c, p, generation){
+  if(!currentPeer(p, generation)){ try{ c.close(); }catch(e){} return; }
   conn = c;
-  conn.on('open', () => { fire('connected'); });
-  conn.on('data', (raw) => {
+  c.on('open', () => {
+    if(!currentConn(c, p, generation)) return;
+    const recovered = reconnecting;
+    stopReconnect(); clearConnectTimer();
+    fire('connected');
+    // The game may replace its event handler in `connected`; announce recovery
+    // only after the actual data channel opens, for both host and guest.
+    if(recovered && currentConn(c, p, generation)) fire('reconnected');
+  });
+  c.on('data', raw => {
+    if(!currentConn(c, p, generation)) return;
     let obj = raw;
     if(typeof raw === 'string'){ try{ obj = JSON.parse(raw); }catch(e){ obj = { type:'raw', raw }; } }
     fire('message', obj);
   });
-  conn.on('close', () => {
+  c.on('close', () => {
+    if(!currentConn(c, p, generation)) return;
     fire('disconnected');
-    if(!manualClose) startReconnect();   // kullanıcı kapatmadıysa tekrar bağlanmayı dene
+    if(currentConn(c, p, generation)) startReconnect();
   });
-  conn.on('error', (err) => {
+  c.on('error', err => {
+    if(!currentConn(c, p, generation)) return;
     fire('error', (err && err.type) || 'bağlantı hatası');
-    if(!manualClose) startReconnect();
+    if(currentConn(c, p, generation)) startReconnect();
   });
 }
 
@@ -121,41 +173,54 @@ export const TavlaMP = {
   get host(){ return isHost; },
 
   createRoom(cb, fixedCode){
-    onEvent = cb; isHost = true; manualClose = false; stopReconnect();
+    beginRoom(cb, true);
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return null; }
     myCode = fixedCode || genCode();
-    try{ peer = new window.Peer(PREFIX + myCode, { debug: 1 }); }
+    const generation = roomGeneration;
+    let p;
+    try{ p = new window.Peer(PREFIX + myCode, { debug: 1 }); peer = p; }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
-    peer.on('open', () => { fire('code', myCode); fire('waiting'); });
-    peer.on('connection', (c) => {
-      if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
-      bindConn(c);
+    p.on('open', () => {
+      if(!currentPeer(p, generation)) return;
+      fire('code', myCode);
+      if(currentPeer(p, generation)) fire('waiting');
     });
-    peer.on('error', (err) => {
+    p.on('connection', c => {
+      if(!currentPeer(p, generation) || conn){ try{ c.close(); }catch(e){} return; }
+      bindConn(c, p, generation);
+    });
+    p.on('error', err => {
+      if(!currentPeer(p, generation)) return;
       const t = (err && err.type) || '';
-      if(t === 'unavailable-id'){ fire('error', 'kod meşgul, tekrar dene'); }
-      else fire('error', t || 'bağlantı hatası');
+      fire('error', t === 'unavailable-id' ? 'kod meşgul, tekrar dene' : t || 'bağlantı hatası');
     });
     return myCode;
   },
 
   joinRoom(code, cb){
-    onEvent = cb; isHost = false; manualClose = false; stopReconnect();
+    beginRoom(cb, false);
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return; }
     code = (code || '').toUpperCase().trim();
     if(code.length !== 6){ fire('error', 'kod 6 haneli olmalı'); return; }
-    joinCode = code;   // reconnect için sakla
-    try{ peer = new window.Peer({ debug: 1 }); }
+    joinCode = code;
+    const generation = roomGeneration;
+    let p;
+    try{ p = new window.Peer({ debug: 1 }); peer = p; }
     catch(e){ fire('error', 'bağlanılamadı'); return; }
-    peer.on('open', () => {
-      const c = peer.connect(PREFIX + code, { reliable: true });
-      bindConn(c);
-      setTimeout(() => { if(!(conn && conn.open)) fire('error', 'oda bulunamadı'); }, 12000);
+    p.on('open', () => {
+      if(!currentPeer(p, generation)) return;
+      bindConn(p.connect(PREFIX + code, { reliable: true }), p, generation);
+      connectTimer = setTimeout(() => {
+        if(!currentPeer(p, generation)) return;
+        connectTimer = null;
+        if(!(conn && conn.open)) fire('error', 'oda bulunamadı');
+      }, 12000);
     });
-    peer.on('error', (err) => {
+    p.on('error', err => {
+      if(!currentPeer(p, generation)) return;
+      clearConnectTimer();
       const t = (err && err.type) || '';
-      if(t === 'peer-unavailable'){ fire('error', 'oda bulunamadı'); }
-      else fire('error', t || 'bağlantı hatası');
+      fire('error', t === 'peer-unavailable' ? 'oda bulunamadı' : t || 'bağlantı hatası');
     });
   },
 
@@ -165,12 +230,7 @@ export const TavlaMP = {
     if(conn && conn.open){ try{ conn.send(JSON.stringify(obj)); }catch(e){} }
   },
 
-  close(){
-    manualClose = true; stopReconnect();
-    try{ if(conn) conn.close(); }catch(e){}
-    try{ if(peer) peer.destroy(); }catch(e){}
-    conn = null; peer = null; onEvent = null; isHost = false; myCode = null; joinCode = null;
-  }
+  close(){ closeRoom(); }
 };
 
 export default TavlaMP;
