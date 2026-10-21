@@ -48,7 +48,8 @@ async function setup(page, fixtures=true){
   const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(e.message));
   await setup(page); await page.goto(base); await page.waitForFunction(()=>!!window.Hero);
   await page.evaluate(()=>document.fonts.ready);
-  await page.waitForFunction(()=>[...document.querySelectorAll('.game-art,.intro-art img')].every(img=>img.complete&&img.naturalWidth>0));
+  await page.evaluate(()=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>img.naturalWidth>0?resolve():reject(new Error('empty atlas'));img.onerror=()=>reject(new Error('missing atlas'));img.src='assets/aurora-games.webp?v=142';}));
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'aurora');
   assert.equal(await page.evaluate(()=>typeof window.Peer),'function','local multiplayer library loads without a CDN');
   assert.equal(await page.evaluate(()=>document.fonts.check('600 16px Manrope','Türkçe İstanbul')),true,'local font supports Turkish');
   await page.waitForFunction(()=>!!window.__testSetPlayer);
@@ -78,9 +79,11 @@ async function setup(page, fixtures=true){
   await page.goForward();
   await page.waitForFunction(()=>document.querySelector('[data-screen="profile"]').classList.contains('active'));
   await page.locator('.bottom-nav [data-nav="home"]').click();
-  await page.locator('[data-stage-select="tavla"]').click();
-  assert.equal(await page.locator('#stageTitle').textContent(),'Tavla');
-  assert.equal(await page.locator('[data-select="tavla"]').getAttribute('aria-pressed'),'true');
+  await page.locator('[data-guide="tavla"]').click();
+  assert.equal(await page.locator('#guideTitle').textContent(),'Tavla');
+  await page.keyboard.press('Escape');
+  assert.match(await page.locator('#gemFloatBtn img').getAttribute('src'),/hero-diamond/);
+  assert.equal(await page.locator('#adminFloatBtn').isVisible(),false,'crown retains admin-only visibility');
   await page.locator('#lobbyChatSlot #gemFloatBtn').click();
   await page.locator('#gemHubPanel.ghp-open').waitFor({state:'visible'});
   await page.locator('#ghpCloseBtn').click();
@@ -98,12 +101,10 @@ async function setup(page, fixtures=true){
   await page.locator('[data-filter="together"]').click();
   assert.equal(await page.locator('[data-game-card]:visible').count(),3);
   await page.locator('[data-filter="all"]').click();
-  await page.locator('[data-select="chess"]').click();
-  assert.equal(await page.locator('#stageTitle').textContent(),'Satranç');
-  await page.locator('#stageHelp').click();
+  await page.locator('[data-guide="chess"]').click();
   assert.equal(await page.locator('#guideTitle').textContent(),'Satranç');
   await page.keyboard.press('Escape');
-  assert.equal(await page.evaluate(()=>document.activeElement.id),'stageHelp');
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.guide),'chess');
   await page.locator('#searchTrigger').click();
   await page.locator('#gameSearchInput').fill('SATRANÇ');
   assert.equal(await page.locator('.search-result').count(),1);
@@ -111,14 +112,13 @@ async function setup(page, fixtures=true){
   assert.equal(await page.locator('.search-empty').isVisible(),true);
   await page.locator('#gameSearchInput').fill('kelime');
   await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
-  assert.equal(await page.locator('#stageTitle').textContent(),'Kelimecik');
-  assert.equal(await page.evaluate(()=>document.activeElement.id),'stagePlay');
-  await page.locator('#stageHelp').click();await page.locator('#guidePlay').click();
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'gameKelime');
+  await page.locator('[data-guide="kelime"]').click();await page.locator('#guidePlay').click();
   await page.locator('.kl-root').waitFor({state:'visible'});
   assert.equal(await page.locator('#gameGuide').evaluate(d=>d.open),false);
   await page.waitForFunction(()=>document.getElementById('recentName').textContent==='Kelimecik');
   await page.reload();await page.waitForFunction(()=>!!window.Hero);
-  assert.equal(await page.locator('#stageTitle').textContent(),'Kelimecik');
+  assert.equal(await page.locator('#recentName').textContent(),'Kelimecik');
   await page.locator('[data-favorite="tetris"]').click();
   await page.reload();await page.waitForFunction(()=>!!window.Hero);
   assert.equal(await page.locator('[data-favorite="tetris"]').getAttribute('aria-pressed'),'true');
@@ -126,7 +126,7 @@ async function setup(page, fixtures=true){
   await page.locator('.skip-link').focus(); await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>document.activeElement.id),'games');
   assert.equal(await page.locator('[data-screen="home"]').evaluate(el=>el.classList.contains('active')),true);
-  await page.locator('.intro-secondary').click();
+  await page.locator('.friends-open').click();
   assert.equal(await page.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
   await page.locator('.skip-link').focus(); await page.keyboard.press('Enter');
   await page.evaluate(()=>window.__testSetPlayer({level:2,xp:350,kaju:15,best:{tetris:12345}}));
@@ -143,7 +143,7 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.locator('.bottom-nav [data-nav="profile"]').click();
   await page.locator('[data-p="settings"]').click();
-  for(const theme of ['lounge','ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
+  for(const theme of ['aurora','lounge','ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
     await page.locator(`.theme-chip[data-theme="${theme}"]`).click();
     assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${theme} settings overflow`);
@@ -164,8 +164,22 @@ async function setup(page, fixtures=true){
   assert.equal(await page.locator('#gameTetris').evaluate(el=>getComputedStyle(el).animationName),'none');
   await page.evaluate(()=>localStorage.setItem('hero_theme','ivory'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
+  await page.evaluate(()=>window.__testAuth({status:'google',uid:'fixture-admin',isAdmin:true,displayName:'Test Oyuncusu',profile:{nick:'Test Oyuncusu'}}));
+  await page.locator('#lobbyAdminSlot #adminFloatBtn').waitFor({state:'visible'});
+  assert.match(await page.locator('#adminFloatBtn img').getAttribute('src'),/hero-crown/);
+  for(const width of [320,390,768,1440]){
+    await page.setViewportSize({width,height:900});
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`admin header overflow at ${width}`);
+    assert.equal(await page.locator('#adminFloatBtn').evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width>=44;}),true,'crown is visible and touchable');
+  }
+  await page.locator('#adminFloatBtn').click();
+  await page.locator('#adminPanel').waitFor({state:'visible'});
+  await page.locator('#adminPanel [data-a="close"]').click();
+  await page.evaluate(()=>window.__testAuth({status:'anon',uid:null,isAdmin:false,displayName:'Misafir Oyuncu',profile:null}));
+  assert.equal(await page.locator('#adminFloatBtn').isVisible(),false);
   if(process.env.PORTAL_SCREENSHOTS){
-    await page.evaluate(()=>{localStorage.setItem('hero_theme','lounge');localStorage.removeItem('hero_lobby_recent');localStorage.removeItem('hero_lobby_favorites');});
+    await page.evaluate(()=>{localStorage.setItem('hero_theme','aurora');localStorage.removeItem('hero_lobby_recent');localStorage.removeItem('hero_lobby_favorites');});
     await page.reload();await page.waitForFunction(()=>!!window.Hero);await page.evaluate(()=>document.fonts.ready);
     await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
     await page.setViewportSize({width:1440,height:1000}); await page.waitForTimeout(200); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-desktop.png'),fullPage:true});
@@ -182,5 +196,5 @@ async function setup(page, fixtures=true){
   await offline.locator('.bottom-nav [data-nav="friends"]').click();
   assert.equal(await offline.locator('[data-screen="friends"]').evaluate(el=>el.classList.contains('active')),true);
   await browser.close();
-  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 10 themes/settings, lobby search/filter/favorite/guide/recent flows, reduced motion and connection recovery. Backend: in-memory fixtures.');
+  console.log('PASS: 6 viewport widths across 5 routes, local Turkish font/art/PeerJS, keyboard/skip/hero actions, live score/XP, 4 real game entries, 11 themes/settings, lobby search/filter/favorite/guide/recent flows, reduced motion and connection recovery. Backend: in-memory fixtures.');
 })().catch(error=>{console.error(error);process.exit(1)});

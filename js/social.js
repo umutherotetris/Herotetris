@@ -1005,7 +1005,7 @@ export function initSocial(){
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
   gem.setAttribute('aria-label', 'Sohbet alanını aç');
   gem.title = 'Sohbet';
-  gem.innerHTML = `<span class="tw-gem" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 11a8 8 0 0 1-8 8H5l-3 3V11a9 9 0 0 1 18 0Z"/><path d="M6 9h10M6 13h7"/></svg></span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
+  gem.innerHTML = `<span class="tw-gem" aria-hidden="true"><img src="assets/hero-diamond.svg?v=142" alt="" width="54" height="54"></span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
   const lobbyChatSlot = document.getElementById('lobbyChatSlot');
   (lobbyChatSlot || document.body).appendChild(gem);
   // 👑 Admin FAB (yalnız adminde görünür)
@@ -1013,8 +1013,9 @@ export function initSocial(){
   adm.id = 'adminFloatBtn'; adm.className = 'twin-fab';
   adm.setAttribute('aria-label', 'Yönetici alanını aç');
   adm.style.display = 'none';
-  adm.innerHTML = `<span class="tw-crown">👑</span><i class="tw-spark tw-spark-gold-1"></i><i class="tw-spark tw-spark-gold-2"></i><i class="tw-spark tw-spark-gold-3"></i>`;
-  document.body.appendChild(adm);
+  adm.innerHTML = `<span class="tw-crown" aria-hidden="true"><img src="assets/hero-crown.svg?v=142" alt="" width="54" height="54"></span><i class="tw-spark tw-spark-gold-1"></i><i class="tw-spark tw-spark-gold-2"></i><i class="tw-spark tw-spark-gold-3"></i>`;
+  const lobbyAdminSlot = document.getElementById('lobbyAdminSlot');
+  (lobbyAdminSlot || document.body).appendChild(adm);
   // Hub paneli
   const panel = document.createElement('div');
   panel.id = 'gemHubPanel';
@@ -1084,7 +1085,7 @@ export function initSocial(){
   // FAB davranışları
   const gemMoved = lobbyChatSlot ? () => false : makeFabDraggable(gem, () => { if(H.open) position(); });
   gem.addEventListener('click', () => { if(gemMoved()) return; pressAnim(gem); toggle(); });
-  const admMoved = makeFabDraggable(adm);
+  const admMoved = lobbyAdminSlot ? () => false : makeFabDraggable(adm);
   adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => alert('Panel yüklenemedi')); });
   // Panel sürükleme + kapatma
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));

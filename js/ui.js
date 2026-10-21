@@ -71,6 +71,7 @@ function renderPlayer(p){
 // ── Tek render fonksiyonu ───────────────────────────────────────
 function render(state){
   const { status, profile, isAdmin, displayName } = state;
+  setText('headerPlayerName', status === 'google' ? (displayName || 'Oyuncu') : 'Hesabım');
   const card   = $('profileCard');
   const banner = $('guestBanner');
   if(card) card.dataset.status = status;

@@ -14,7 +14,7 @@
 <body><main><h1>Hero Portal</h1><p id="message" role="status">Oyun alanın açılıyor. Kısa bir süre bekle.</p><button id="retry" hidden type="button">Yeniden dene</button><noscript><p>Oyunları açmak için JavaScript'i etkinleştir.</p></noscript></main>
 <script>
 (async function(){
-  const home = new URL('index.html?hero=141', location.href);
+  const home = new URL('index.html?hero=142', location.href);
   const retry = document.getElementById('retry');
   retry.addEventListener('click', () => location.reload());
   if(!('serviceWorker' in navigator)){ location.replace(home.href); return; }
@@ -26,7 +26,7 @@
       channel.port1.onmessage = event => {
         clearTimeout(timeout);
         channel.port1.close();
-        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 141);
+        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 142);
       };
       try{ worker.postMessage({ type: 'HERO_PING' }, [channel.port2]); }
       catch(error){ clearTimeout(timeout); channel.port1.close(); resolve(false); }
@@ -65,7 +65,7 @@
         channel.port1.onmessage = event => {
           clearTimeout(closeTimer);
           channel.port1.close();
-          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 141) done();
+          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 142) done();
         };
         controller.postMessage({ type: 'HERO_PING' }, [channel.port2]);
       }

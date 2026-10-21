@@ -1,0 +1,185 @@
+/* 142 — Aurora: selected concept, direct game collection, preserved jewel controls. */
+html[data-theme="aurora"] { color-scheme:dark; --accent:#62dfff;--accent2:#dd6fff;--accent-soft:#8b70ff18;--accent-border:#7978fb55; }
+html[data-theme="aurora"] body.portal { --portal-bg:#090f2a;--portal-surface:#101a3c;--portal-raised:#1c2852;--portal-border:#36416f;--portal-ink:#f5f4ff;--portal-muted:#b6c3e6;--portal-accent:#68ddff;--text:#f5f4ff;--text-dim:#d5daf0;--text-mute:#b6c3e6;--text-faint:#a6b5d5;background:#090f2a; }
+.portal.lobby.aurora-layout { --rail:138px;background-image:radial-gradient(ellipse at 0% 0%,#c43cff24,transparent 38%),radial-gradient(ellipse at 100% 0%,#0078ff26,transparent 42%);background-attachment:fixed; }
+.portal.lobby.aurora-layout .portal-header { padding:16px 28px;min-height:90px;gap:16px;background:color-mix(in srgb,var(--portal-bg) 80%,transparent);border-bottom-color:var(--portal-border); }
+.portal.lobby.aurora-layout .portal-brand { left:20px;top:28px;gap:5px; }
+.portal.lobby.aurora-layout .brand-mark { color:#78e8ff; }
+.portal.lobby.aurora-layout .brand-name { font-size:18px;letter-spacing:1.5px; }
+.portal.lobby.aurora-layout .header-note { color:var(--portal-muted);font-size:8px; }
+.portal.lobby.aurora-layout .header-avatar { border:1px solid var(--portal-border);background:var(--portal-raised); }
+.portal.lobby.aurora-layout .header-link { max-width:180px; }
+.portal.lobby.aurora-layout #headerPlayerName { overflow:hidden;text-overflow:ellipsis;max-width:125px; }
+.portal.lobby.aurora-layout .search-trigger { border-color:var(--portal-border);background:var(--portal-surface);border-radius:20px; }
+.portal.lobby.aurora-layout #app { padding:24px 28px 30px; }
+.portal.lobby.aurora-layout .bottom-nav { padding:128px 12px 20px;background:color-mix(in srgb,var(--portal-bg) 90%,#332268); }
+.portal.lobby.aurora-layout .bottom-nav::after { font-size:8px;letter-spacing:.4px;padding-inline:4px; }
+.portal.lobby.aurora-layout .nav-item { min-height:72px;flex-direction:column;justify-content:center;gap:9px;padding:13px 7px;border:1px solid transparent;border-radius:12px; }
+.portal.lobby.aurora-layout .nav-item.active { background:linear-gradient(140deg,#964dfb35,#1bc8fe24);border-color:#677ffc65;color:var(--portal-ink);box-shadow:inset 0 0 24px #299bff18; }
+.portal.lobby.aurora-layout .nav-item.active .ni-ico { color:#65ddff;filter:drop-shadow(0 0 7px #38beffa0); }
+.portal.lobby.aurora-layout .ni-lbl { font-size:11px; }
+.portal.lobby.aurora-layout .lobby-heading { position:relative;isolation:isolate;min-height:150px;margin:0 0 20px;padding:20px 26px;border:1px solid var(--portal-border);border-radius:16px;overflow:hidden;background:linear-gradient(110deg,#161536,#0d275777 70%,#541e7855);color:#f5f4ff; }
+.portal.lobby.aurora-layout .lobby-heading::before { content:'';position:absolute;inset:-140px -50px -140px 30%;z-index:-1;opacity:.8;background:conic-gradient(from 200deg at 65% 50%,transparent 15deg,#e05dfb60 45deg,transparent 70deg,#22c6f44a 105deg,transparent 125deg,#5e7dfb60 185deg,transparent 230deg);filter:blur(14px);transform:rotate(-12deg); }
+.portal.lobby.aurora-layout .lobby-heading .eyebrow { color:#c5c7f0;font-size:8px;margin-bottom:10px; }
+.portal.lobby.aurora-layout .lobby-heading h1 { font:800 clamp(32px,3.8vw,55px)/1.1 var(--font-body);letter-spacing:-2px;color:#f5f4ff;background:linear-gradient(100deg,#ffddfa,#d8a6ff 40%,#a2eaff 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; }
+.portal.lobby.aurora-layout .lobby-heading h1>span { color:inherit; }
+.portal.lobby.aurora-layout .aurora-welcome { font-size:12px;line-height:1.7;color:#d4dcf4;margin-top:12px; }
+.portal.lobby.aurora-layout .recent-game { color:#f5f4ff;border-color:#8d98dc66; }
+.portal.lobby.aurora-layout .recent-game>span:first-child { color:#c4ccea; }
+.portal.lobby.aurora-layout .lobby-layout { grid-template-columns:minmax(0,1fr) 264px;gap:20px; }
+.portal.lobby.aurora-layout .game-library { padding-top:0; }
+.portal.lobby.aurora-layout .library-heading { margin:0 0 9px; }
+.portal.lobby.aurora-layout .library-heading h2 { font-size:16px; }
+.portal.lobby.aurora-layout .game-filters { gap:6px;margin-bottom:16px; }
+.portal.lobby.aurora-layout .game-filters button { border-radius:20px;min-height:38px;padding:6px 14px;font-size:11px; }
+.portal.lobby.aurora-layout .game-filters button[aria-pressed="true"] { background:linear-gradient(120deg,#9d53ff35,#278cfe26);border-color:#7876c788;color:var(--portal-ink); }
+.portal.lobby.aurora-layout .games-premium { grid-template-columns:repeat(2,minmax(0,1fr));gap:16px; }
+.portal.lobby.aurora-layout .game-pc { position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;min-height:350px;padding:18px;overflow:hidden;border-radius:18px;border:1px solid #6e5faf;background:#070c25;color:#fff;box-shadow:0 12px 30px #02031d44,inset 0 0 0 1px #ffffff08;transition:transform .2s,border-color .2s,box-shadow .2s; }
+.portal.lobby.aurora-layout .game-pc:nth-child(n+3) { min-height:300px; }
+.portal.lobby.aurora-layout .game-pc[data-game-card="chess"] { border-color:#8371ba; }
+.portal.lobby.aurora-layout .game-pc[data-game-card="tavla"] { border-color:#a473a2; }
+.portal.lobby.aurora-layout .game-pc[data-game-card="kelime"] { border-color:#338e9e; }
+.portal.lobby.aurora-layout .game-pc:hover { transform:translateY(-3px);border-color:#a9caff;box-shadow:0 15px 35px #120b3c66,0 0 24px #9553ff22; }
+.portal.lobby.aurora-layout .aurora-cover { position:absolute;z-index:-2;top:0;left:0;width:100%;aspect-ratio:1;background-image:url('../assets/aurora-games.webp?v=142');background-size:200% 200%;background-position:0 0;background-repeat:no-repeat; }
+.portal.lobby.aurora-layout [data-game-card="chess"] .aurora-cover { background-position:100% 0; }
+.portal.lobby.aurora-layout [data-game-card="tavla"] .aurora-cover { background-position:0 100%; }
+.portal.lobby.aurora-layout [data-game-card="kelime"] .aurora-cover { background-position:100% 100%; }
+.portal.lobby.aurora-layout .game-pc::after { content:'';display:block;position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#060a2610 0%,transparent 35%,#070b2580 65%,#070b25 98%); }
+.portal.lobby.aurora-layout .aurora-card-top { display:flex;justify-content:space-between;align-items:center;gap:8px; }
+.portal.lobby.aurora-layout .aurora-category { border:1px solid #b4c7ff50;border-radius:7px;background:#0d143ac9;padding:5px 9px;color:#edf2ff;font-size:9px;letter-spacing:1px;backdrop-filter:blur(8px); }
+.portal.lobby.aurora-layout .favorite-game { min-width:40px;min-height:40px;font-size:24px;border:1px solid #a8b0f04d;border-radius:50%;background:#0e1237b8;color:#fff;backdrop-filter:blur(8px); }
+.portal.lobby.aurora-layout .favorite-game[aria-pressed="true"] { color:#ffe38a;border-color:#ffd36e; }
+.portal.lobby.aurora-layout .aurora-card-content { margin-top:130px; }
+.portal.lobby.aurora-layout .aurora-card-content h3 { font-size:clamp(24px,2.3vw,34px);line-height:1.15;letter-spacing:-1px;color:#fff;text-shadow:0 2px 12px #02031c; }
+.portal.lobby.aurora-layout .aurora-card-content>p { font-size:12px;color:#d3e2ff;margin-top:8px;line-height:1.6; }
+.portal.lobby.aurora-layout .card-actions { display:flex;align-items:center;gap:10px;border:0;margin:16px 0 0; }
+.portal.lobby.aurora-layout :is(.card-play,.stage-play,.friends-open) { background:linear-gradient(105deg,#dc37fc 0%,#884cf5 40%,#187dff 75%,#31dcff 100%);border:1px solid #b1c4ffcc;box-shadow:inset 0 1px 0 #ffffff70,0 3px 17px #8b41f94d;border-radius:999px;color:#fff;text-shadow:0 1px 4px #39107c; }
+.portal.lobby.aurora-layout .card-play { min-height:46px;justify-content:center;gap:11px;padding:10px 16px;font-size:13px;font-weight:800;letter-spacing:.5px; }
+.portal.lobby.aurora-layout .card-play>span { color:#fff;font-size:11px; }
+.portal.lobby.aurora-layout .card-play .play-arrow { margin-left:auto;font-size:17px; }
+.portal.lobby.aurora-layout .game-guide-button { min-height:44px;min-width:44px;border:1px solid #8a94ca77;border-radius:50%;color:#dfe8ff;background:#0e173c;font-size:17px; }
+.portal.lobby.aurora-layout .player-section { display:block;padding:0;background:transparent;border:0; }
+.portal.lobby.aurora-layout .aurora-friends { padding:24px 20px;background:radial-gradient(ellipse at 80% 0,#8d44c935,transparent 65%),linear-gradient(135deg,#17214a,#131535);border:1px solid #60558d;border-radius:16px;margin-bottom:20px;color:#f0f2ff; }
+.portal.lobby.aurora-layout .aurora-friends .eyebrow { font-size:8px;letter-spacing:1.5px;color:#c8b7f8; }
+.portal.lobby.aurora-layout .aurora-friends h2 { font-size:25px;line-height:1.25;letter-spacing:-1px;margin:13px 0;color:#fff; }
+.portal.lobby.aurora-layout .aurora-friends>p:last-of-type { font-size:11px;line-height:1.8;color:#bfccee; }
+.portal.lobby.aurora-layout .friends-orbit { position:relative;height:64px;margin:20px 0;display:flex;justify-content:center;align-items:center;gap:10px; }
+.portal.lobby.aurora-layout .friends-orbit::before { content:'';position:absolute;inset:25px 0;border-top:1px solid #7372ba;transform:rotate(-12deg); }
+.portal.lobby.aurora-layout .friends-orbit span { display:grid;place-items:center;width:52px;height:52px;border:1px solid #9c8cfc;border-radius:50%;background:linear-gradient(140deg,#9263cf,#142043);color:#e9dfff;font-size:32px;z-index:1;box-shadow:0 0 24px #9a4bed30; }
+.portal.lobby.aurora-layout .friends-orbit span:nth-child(2) { width:62px;height:62px;color:#b8f6ff;border-color:#59cced;background:linear-gradient(140deg,#4d91bd,#192048); }
+.portal.lobby.aurora-layout .friends-open { display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:11px 15px;margin-top:22px;font-size:11px;font-weight:750; }
+.portal.lobby.aurora-layout .rail-heading { padding:0 4px;margin-bottom:10px; }
+.portal.lobby.aurora-layout .player-layout { background:var(--portal-surface);border:1px solid var(--portal-border);padding:20px 18px;border-radius:16px;gap:16px; }
+.portal.lobby.aurora-layout .auth-guest-icon { display:none; }
+.portal.lobby.aurora-layout .auth-guest-title { font-size:20px; }
+.portal.lobby.aurora-layout .auth-guest-sub { font-size:11px; }
+.portal.lobby.aurora-layout .auth-google-btn { border-color:#7470bc;background:linear-gradient(120deg,#543a9955,#185c9840);min-height:44px; }
+.portal.lobby.aurora-layout .ritual-heading { margin:22px 4px 6px;padding:0;border:0; }
+.portal.lobby.aurora-layout .eco-quick-row { background:var(--portal-surface);border:1px solid var(--portal-border);border-radius:14px;padding:4px 16px; }
+.portal.lobby.aurora-layout .eco-quick-ico { color:#b6acff;background:#8b6bfb1c; }
+.portal.lobby.aurora-layout .together-banner { background:linear-gradient(120deg,#39216355,#123b6340);border-color:var(--portal-border);margin-top:20px; }
+.portal.lobby.aurora-layout .together-banner strong { color:var(--portal-ink); }
+.portal.lobby.aurora-layout .together-symbol { color:#bca5ff; }
+.portal.lobby.aurora-layout #lobbyChatSlot #gemFloatBtn,
+.portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { position:relative !important;inset:auto !important;margin:0;width:58px !important;height:58px !important;border-radius:13px !important;z-index:auto;background:linear-gradient(145deg,#4264b866,#17153b);border:1px solid #5e85ec;box-shadow:inset 0 1px 0 #c0d4ff66,0 0 20px #296bff2b; }
+.portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { border-color:#b68a58;background:linear-gradient(145deg,#74583d66,#24183e);box-shadow:inset 0 1px 0 #fff0b844,0 0 22px #e8a72f19; }
+.portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) { display:grid;place-items:center;width:100%;height:100%;font-size:0; }
+.portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) img { display:block;width:48px;height:48px;object-fit:contain; }
+html[data-theme="aurora"] .portal :is(.prf-card,.nick-modal,#gemHubPanel) { background:linear-gradient(145deg,#172244,#101730);border-color:#4c568c; }
+html[data-theme="aurora"] .portal :is(.screen-heading,.ghp-title,.prf-name) { color:#f1eaff; }
+html[data-theme="aurora"] .portal :is(.ghp-tab.active,.prf-tab.active) { background:linear-gradient(120deg,#8f4cdd44,#1494d62b);color:#e7dfff;border-color:#7974c5; }
+html[data-theme="aurora"] .portal .lobby-dialog { background:linear-gradient(140deg,#1c254c,#121b38);border-color:#7470b8; }
+html[data-theme="ivory"] .portal.aurora-layout { background-image:none; }
+@media(min-width:1700px) { .portal.lobby.aurora-layout #app { padding-left:calc(var(--rail) + 28px); } .portal.lobby.aurora-layout .game-pc { min-height:410px; } }
+@media(max-width:1199px) {
+ .portal.lobby.aurora-layout { --rail:108px; }
+ .portal.lobby.aurora-layout .portal-brand { left:12px; }
+ .portal.lobby.aurora-layout .brand-name { font-size:14px; }
+ .portal.lobby.aurora-layout .brand-mark { width:25px; }
+ .portal.lobby.aurora-layout .brand-name>span { letter-spacing:2px; }
+ .portal.lobby.aurora-layout .header-note { display:none; }
+ .portal.lobby.aurora-layout .lobby-layout { grid-template-columns:minmax(0,1fr) 230px;gap:16px; }
+ .portal.lobby.aurora-layout .game-pc { padding:14px;min-height:310px; }
+ .portal.lobby.aurora-layout .game-pc:nth-child(n+3) { min-height:290px; }
+ .portal.lobby.aurora-layout .aurora-card-content { margin-top:100px; }
+ .portal.lobby.aurora-layout .aurora-card-content h3 { font-size:25px; }
+ .portal.lobby.aurora-layout .aurora-card-content>p { font-size:10px; }
+ .portal.lobby.aurora-layout .card-play { padding-inline:12px; }
+ .portal.lobby.aurora-layout .card-play .play-arrow { display:none; }
+ .portal.lobby.aurora-layout .player-layout { display:flex; }
+}
+@media(max-width:950px) {
+ .portal.lobby.aurora-layout .lobby-layout { grid-template-columns:minmax(0,1fr); }
+ .portal.lobby.aurora-layout .player-section { display:grid;grid-template-columns:1fr 1fr;gap:0 20px;align-items:start; }
+ .portal.lobby.aurora-layout .aurora-friends { grid-column:1;grid-row:1/5;margin-bottom:0; }
+ .portal.lobby.aurora-layout .rail-heading,.portal.lobby.aurora-layout .player-layout,.portal.lobby.aurora-layout .ritual-heading,.portal.lobby.aurora-layout .eco-quick-row { grid-column:2; }
+ .portal.lobby.aurora-layout .lobby-heading h1 { font-size:38px; }
+}
+@media(max-width:767px) {
+ .portal.lobby.aurora-layout { --rail:0px; }
+ .portal.lobby.aurora-layout .portal-header { min-height:82px;padding:14px 16px;gap:10px;flex-wrap:wrap; }
+ .portal.lobby.aurora-layout .portal-brand { position:static;margin-right:auto; }
+ .portal.lobby.aurora-layout .brand-name { font-size:18px; }
+ .portal.lobby.aurora-layout .brand-mark { width:28px; }
+ .portal.lobby.aurora-layout .header-middle { flex:0;order:3; }
+ .portal.lobby.aurora-layout .search-trigger { min-width:40px;width:40px;min-height:40px; }
+ .portal.lobby.aurora-layout .header-link { order:4; }
+ .portal.lobby.aurora-layout #lobbyChatSlot #gemFloatBtn,
+ .portal.lobby.aurora-layout #lobbyAdminSlot #adminFloatBtn { width:48px !important;height:48px !important;border-radius:11px !important; }
+ .portal.lobby.aurora-layout :is(.tw-gem,.tw-crown) img { width:41px;height:41px; }
+ .portal.lobby.aurora-layout #app { padding:16px 16px calc(100px + env(safe-area-inset-bottom,0px)); }
+ .portal.lobby.aurora-layout .lobby-heading { min-height:126px;padding:20px 18px;margin-bottom:20px;gap:12px;border-radius:14px; }
+ .portal.lobby.aurora-layout .lobby-heading h1 { font-size:34px;letter-spacing:-1.4px; }
+ .portal.lobby.aurora-layout .lobby-heading .eyebrow { font-size:7px;letter-spacing:1.2px; }
+ .portal.lobby.aurora-layout .aurora-welcome { font-size:10px;max-width:270px; }
+ .portal.lobby.aurora-layout .recent-game { flex-wrap:wrap;gap:7px; }
+ .portal.lobby.aurora-layout .library-heading h2 { font-size:14px; }
+ .portal.lobby.aurora-layout .game-filters { gap:2px;margin-bottom:12px; }
+ .portal.lobby.aurora-layout .game-filters button { padding-inline:10px;min-height:44px;font-size:10px; }
+ .portal.lobby.aurora-layout .games-premium { gap:12px; }
+ .portal.lobby.aurora-layout .game-pc,.portal.lobby.aurora-layout .game-pc:nth-child(n+3) { min-height:248px;padding:11px;border-radius:13px; }
+ .portal.lobby.aurora-layout .aurora-card-top { gap:4px; }
+ .portal.lobby.aurora-layout .aurora-category { font-size:7px;letter-spacing:.5px;padding:4px 5px; }
+ .portal.lobby.aurora-layout .favorite-game { min-width:32px;min-height:32px;width:32px;font-size:21px; }
+ .portal.lobby.aurora-layout .aurora-card-content { margin-top:95px; }
+ .portal.lobby.aurora-layout .aurora-card-content h3 { font-size:23px;letter-spacing:-.8px; }
+ .portal.lobby.aurora-layout .aurora-card-content>p { font-size:9px;line-height:1.5;margin-top:5px;min-height:27px; }
+ .portal.lobby.aurora-layout .card-actions { gap:6px;margin-top:11px; }
+ .portal.lobby.aurora-layout .card-play { min-height:44px;padding:9px 9px;gap:7px;font-size:11px;letter-spacing:0; }
+ .portal.lobby.aurora-layout .game-guide-button { min-width:32px;width:32px;min-height:44px;border-radius:9px;font-size:14px; }
+ .portal.lobby.aurora-layout .bottom-nav { padding:8px 8px calc(9px + env(safe-area-inset-bottom,0px));background:#0b1330f5;backdrop-filter:blur(14px);border-top:1px solid #5b599b; }
+ .portal.lobby.aurora-layout .nav-item { min-height:48px;gap:6px;padding:6px 2px;border-radius:9px; }
+ .portal.lobby.aurora-layout .ni-lbl { font-size:8px;color:#c5d1ed; }
+ .portal.lobby.aurora-layout .nav-item.active .ni-lbl { color:#a5ecff; }
+ .portal.lobby.aurora-layout .player-section { display:block; }
+ .portal.lobby.aurora-layout .aurora-friends { margin-bottom:22px;position:relative;overflow:hidden; }
+ .portal.lobby.aurora-layout .aurora-friends h2 { font-size:26px; }
+ .portal.lobby.aurora-layout .friends-orbit { position:absolute;right:18px;top:55px;width:120px;gap:4px; }
+ .portal.lobby.aurora-layout .friends-orbit span { width:34px;height:34px;font-size:23px; }
+ .portal.lobby.aurora-layout .friends-orbit span:nth-child(2) { width:42px;height:42px; }
+ .portal.lobby.aurora-layout .friends-open { max-width:230px; }
+ .portal.lobby.aurora-layout .player-layout { padding:22px; }
+ .portal.lobby.aurora-layout .together-banner { display:none; }
+ .portal.lobby.aurora-layout .portal-footer { margin-top:22px; }
+}
+@media(max-width:359px) {
+ .portal.lobby.aurora-layout .portal-header { padding-inline:12px;gap:6px; }
+ .portal.lobby.aurora-layout .brand-name { font-size:15px; }
+ .portal.lobby.aurora-layout .brand-mark { width:24px; }
+ .portal.lobby.aurora-layout #app { padding-inline:12px; }
+ .portal.lobby.aurora-layout .lobby-heading { padding-inline:15px; }
+ .portal.lobby.aurora-layout .lobby-heading h1 { font-size:29px; }
+ .portal.lobby.aurora-layout .games-premium { gap:9px; }
+ .portal.lobby.aurora-layout .game-pc { padding:9px; }
+ .portal.lobby.aurora-layout .aurora-card-content h3 { font-size:20px; }
+ .portal.lobby.aurora-layout .game-guide-button { min-width:28px;width:28px; }
+ .portal.lobby.aurora-layout .aurora-category { font-size:6px; }
+ .portal.lobby.aurora-layout .card-play { padding-inline:6px; }
+ .portal.lobby.aurora-layout .friends-orbit { opacity:.5;right:-8px; }
+}
+/* Full-card scrim overrides the legacy one-pixel decorative line. */
+.portal.lobby.aurora-layout .game-pc::after { width:100%;height:100%;opacity:1; }
+@media(max-width:767px) {
+ .portal.lobby.aurora-layout :is(.favorite-game,.game-guide-button) { min-width:44px;width:44px;min-height:44px; }
+ .portal.lobby.aurora-layout .aurora-card-content>p { font-size:10px;min-height:30px; }
+}

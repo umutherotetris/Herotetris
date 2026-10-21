@@ -1,3 +1,15 @@
+# Release 142 — selected Aurora concept
+
+The user selected mockup 2 after reviewing the three-alternative PDF. Aurora uses the approved purple/cyan/magenta palette, dimensional illustrated game cards, glass surfaces and direct per-game play actions. The former large selected-game stage is removed; contextual guides are native dialogs opened from each game card. Search focuses the matching playable card and clears a conflicting collection filter. Favorites and successful-open recents remain device-local.
+
+The diamond is restored as a blue faceted SVG and still opens the existing social hub. The gold crown is now also a local SVG in the header, retains admin-only visibility and opens the original admin panel. No account permission, wallet logic or admin gate is changed. Existing visibility preferences remain available. No mockup avatars, online labels or invented metrics were copied into production. The friends panel links to the real friends screen.
+
+Art is a newly generated four-quadrant illustration atlas, encoded as one 341,280-byte WebP without resizing or composition changes. CSS selects each quadrant. New imagery and both jewel icons are precached by worker 142. Aurora is the eleventh palette; the previous default Lounge migrates once, while explicitly selected alternate palettes remain.
+
+Validation: portal-ui across six widths and five routes; eleven themes; real game entry modules for all four games; modal focus/escape, search, favorites, recents, history, score/XP, connection failure; diamond opens social; crown absent for guest and present/touchable at 320/390/768/1440 for an admin fixture; crown opens admin panel and disappears again on logout. Account/backend writes remain mocked. Desktop and mobile screenshots checked, including contrast scrim and fixed-header icon placement. Live Google/Firebase account rules and real remote multiplayer sessions are not proven by these fixtures.
+
+---
+
 # Release 141 — Hero Lounge / play-first UX
 
 Replaces the long editorial landing page with a functional player lobby. Desktop sidebar navigation, mobile bottom navigation, above-the-fold game switcher, contextual game stage, guide dialogs, Turkish-aware search, solo/together/favorites discovery, device-local favorites and last successfully opened game. Account/progress/rituals move into a side panel on desktop and follow the game collection on mobile. All four launch buttons still use the existing lazy-loaded engines and boot recovery. No fake live counts, fabricated history, or implied saved-game continuation.

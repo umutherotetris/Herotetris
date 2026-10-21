@@ -22,18 +22,6 @@ export default function initLobby(){
     $('recentGame').hidden=!recent;
     if(recent) $('recentName').textContent=games[recent].name;
   }
-  function select(key){
-    if(!games[key]) return;
-    selected=key;const g=games[key], index=keys.indexOf(key)+1;
-    document.querySelector('.game-stage').dataset.game=key;
-    $('stageTitle').textContent=g.name;$('stageCategory').textContent=`0${index} / ${g.category}`;
-    $('stageLine').textContent=g.line;$('stageDescription').textContent=g.description;
-    $('stageArt').src='assets/'+g.art;
-    $('stageTags').replaceChildren(...g.tags.map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
-    $('stageIndex').textContent=`0${index} — 04`;
-    $('stagePlay').setAttribute('aria-label',g.name+' oyununu aç');
-    document.querySelectorAll('[data-select],[data-stage-select]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.select||b.dataset.stageSelect)===key)));
-  }
   function renderCollection(){
     let count=0;
     document.querySelectorAll('[data-game-card]').forEach(card=>{
@@ -47,7 +35,6 @@ export default function initLobby(){
       const key=b.dataset.favorite,on=favorites.has(key);b.textContent=on?'★':'☆';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',games[key].name+(on?' favorilerden çıkar':' favorilere ekle'));
     });
   }
-  document.querySelectorAll('[data-select],[data-stage-select]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.select||b.dataset.stageSelect)));
   document.querySelectorAll('[data-favorite]').forEach(b=>b.addEventListener('click',()=>{
     const key=b.dataset.favorite;favorites.has(key)?favorites.delete(key):favorites.add(key);write('hero_lobby_favorites',[...favorites]);renderCollection();
     // Removing the focused last favorite must not lose the keyboard position.
@@ -60,18 +47,22 @@ export default function initLobby(){
     $(games[key].id).click();
     const status=$('portalStatus');if(!status.hidden) status.scrollIntoView({block:'nearest'});
   }
-  $('stagePlay').addEventListener('click',()=>launch(selected));
-  $('recentGame').addEventListener('click',()=>{if(recent){select(recent);launch(recent);}});
+  $('recentGame').addEventListener('click',()=>{if(recent) launch(recent);});
   document.addEventListener('hero:game-opened',event=>{
     const key=keys.find(k=>event.detail?.modulePath===`./games/${k}.js`);
     if(key){recent=key;write('hero_lobby_recent',key);renderRecent();}
   });
   const guide=$('gameGuide'), search=$('gameSearch');
-  $('stageHelp').addEventListener('click',()=>{
+  function openGuide(key){
+    if(!games[key]) return;
+    selected=key;
     const g=games[selected];$('guideTitle').textContent=g.name;$('guideIntro').textContent=g.description;
     $('guideSteps').replaceChildren(...g.steps.map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));
-    $('guideNote').textContent=g.note;guide.showModal();
-  });
+    $('guideNote').textContent=g.note;
+    $('guidePlay').setAttribute('aria-label',g.name+' oyununu aç');
+    guide.showModal();
+  }
+  document.querySelectorAll('[data-guide]').forEach(button=>button.addEventListener('click',()=>openGuide(button.dataset.guide)));
   $('guidePlay').addEventListener('click',()=>{guide.close();launch(selected);});
   document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
   [guide,search].forEach(dialog=>dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}}));
@@ -83,7 +74,7 @@ export default function initLobby(){
     results.forEach(key=>{
       const g=games[key], b=document.createElement('button');b.type='button';b.className='search-result';
       const name=document.createElement('strong'),meta=document.createElement('span');name.textContent=g.name;meta.textContent=g.tags.join(' · ');b.append(name,meta);
-      b.addEventListener('click',()=>{search.close();go('home',false,'push');select(key);$('stagePlay').focus();});box.append(b);
+      b.addEventListener('click',()=>{search.close();go('home',false,'push');filter='all';renderCollection();$(games[key].id).focus();});box.append(b);
     });
   }
   function openSearch(){if(search.open||guide.open||document.querySelector('dialog[open],.tetris-overlay,.hero-select-overlay,.chess-root,.tavla-root,.kl-root,.nick-overlay'))return;$('gameSearchInput').value='';renderSearch();search.showModal();$('gameSearchInput').focus();}
@@ -92,5 +83,5 @@ export default function initLobby(){
   $('gameSearchInput').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();$('searchResults').querySelector('button')?.focus();}});
   document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.repeat&&!e.target.closest('input,textarea,select,[contenteditable="true"]')){e.preventDefault();openSearch();}});
   window.addEventListener('storage',e=>{if(e.key==='hero_lobby_favorites'){const value=read(e.key,[]);favorites=new Set(Array.isArray(value)?value.filter(k=>keys.includes(k)):[]);renderCollection();}});
-  select(recent||'tetris');renderCollection();renderRecent();
+  renderCollection();renderRecent();
 }
