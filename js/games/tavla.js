@@ -330,6 +330,7 @@ function startGame(root, mode, opts){
   G.legalForSel = [];       // seçili noktanın hamleleri
   G.undoStack = [];
   G.gameEnded = false;
+  G._rewardClaimed = false;
   G.rolled = G._resuming ? !!G.rolled : false; // kayıtlı zarları yeniden attırma
   G.flip = false;           // tahta yönü
   G.aiThinking = false;
@@ -467,6 +468,7 @@ function restart(){
   const open = openingRoll();
   G.state.turn = open.first; G.openingDice = open.dice;
   G.selected = null; G.legalForSel = []; G.undoStack = []; G.gameEnded = false; G.rolled = true; G.aiThinking = false;
+  G._rewardClaimed = false;
   G.state.dice = open.dice.slice();
   if(G.mode === 'ai'){ G.flip = (G.playerColor === 'b'); }
   else if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
@@ -504,7 +506,7 @@ function loadAIGame(){
 
 // ════════════ ZAR ATMA ════════════
 function rollAndShow(){
-  if(!G || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking) return;
+  if(!G || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking) return;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && G.state.turn !== G.playerColor) return;   // sıra rakipte
   clearAutoRollTimer();
@@ -766,7 +768,7 @@ function draw(){
 
 // Şu an pas geçebilir miyim? (insan, kendi sıram)
 function canPassNow(){
-  if(!G || G.gameEnded || !G.rolled || !G.canPass) return false;
+  if(!G || G.breakState || G.gameEnded || !G.rolled || !G.canPass) return false;
   if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
   if(G.online && G.state.turn!==G.playerColor) return false;
   return true;
@@ -817,7 +819,7 @@ function drawPassHint(ctx, t){
 }
 
 function canInteractRoll(){
-  if(!G || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking) return false;
+  if(!G || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking) return false;
   if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
   if(G.online && G.state.turn!==G.playerColor) return false;
   return true;
@@ -1505,7 +1507,7 @@ function getPos(e){
   return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
 }
 function canInteract(){
-  if(!G || G.gameEnded || !G.rolled || G.aiThinking) return false;
+  if(!G || G.breakState || G.gameEnded || !G.rolled || G.aiThinking) return false;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return false;
   if(G.online && G.state.turn !== G.playerColor) return false;
   if(turnComplete(G.state)) return false;
@@ -1650,12 +1652,13 @@ function doMove(mv){
       updateStatus(`Kalan zar: ${rem0} — devam et`);
     }
     updateControls(); draw();
+    if(G.mode === 'ai') saveAIGame();
     return;
   }
   if(G.online){ TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }); }
   G.state = applyMove(G.state, mv);
   G.selected = null; G.legalForSel = [];
-  try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
+  try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
 
   const status = gameStatus(G.state);
   if(status !== 'playing'){
@@ -1676,7 +1679,7 @@ function doMove(mv){
 }
 
 function endTurn(){
-  if(!G || G.gameEnded || !G.rolled || !turnComplete(G.state)) return;
+  if(!G || G.breakState || G.gameEnded || !G.rolled || !turnComplete(G.state)) return;
   if(G.online && G.state.turn !== G.playerColor) return;
   G._turnToken = {};
   if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
@@ -1718,7 +1721,7 @@ function clearAutoRollTimer(){
 function startAutoRollTimer(){
   if(!G) return;
   clearAutoRollTimer();
-  if(!AUTO_ROLL || G._awaitingStart || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
+  if(!AUTO_ROLL || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
   // AI sırasında gerekmez (AI kendi atar); online'da yalnızca kendi sıramda
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && G.state.turn !== G.playerColor) return;
@@ -1778,7 +1781,7 @@ function playAISequence(seq, i){
   animateMove(mv, () => {
     G.state = applyMove(G.state, mv);
     saveAIGame();
-    try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
+    try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
     draw();
     const status = gameStatus(G.state);
     if(status !== 'playing'){ G.aiThinking = false; onWin(status); return; }
@@ -1879,6 +1882,7 @@ function onRemoteMessage(type, data){
   // Reconnect senkron mesajları
   if(msg.type === 'resync_request'){ sendFullSync(); return; }
   if(msg.type === 'fullsync'){ applyFullSync(msg.state); return; }
+  if(G.gameEnded && msg.type !== 'chat') return;
 
   if(msg.type === 'start'){
     if(G.isHost || !G._awaitingStart || !Array.isArray(msg.openingDice) || msg.openingDice.length !== 2 || !msg.openingDice.every(d=>Number.isInteger(d)&&d>=1&&d<=6) || msg.openingDice[0] === msg.openingDice[1]) return;
@@ -1903,10 +1907,10 @@ function onRemoteMessage(type, data){
       draw();
     });
   } else if(msg.type === 'move'){
-    if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
     if(G.gameEnded || G.state.turn===G.playerColor) return;
     const mv = resolveLegalMove(G.state,msg);
     if(!mv) return;
+    if(G.moveGraceActive) clearMoveGrace();   // yalnız doğrulanmış hamle süreyi karşılar
     let isHit = false;
     if(typeof mv.to === 'number'){
       const occ = G.state.points[mv.to]; const mover = G.state.turn;
@@ -1916,7 +1920,7 @@ function onRemoteMessage(type, data){
     animateMove(mv, () => {
       if(G!==session)return;
       G.state = applyMove(G.state, mv);
-      try{ isHit ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(mv.color||(G.state.turn==='w'?'b':'w'))) : Sound.move()); }catch(e){}
+      try{ isHit ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
       draw();
       const st = gameStatus(G.state);
       if(st !== 'playing'){ onWin(st); }
@@ -1935,7 +1939,7 @@ function onRemoteMessage(type, data){
     updateControls(); draw();
     startAutoRollTimer();
   } else if(msg.type === 'chat'){
-    addChatMessage((msg.text || '').slice(0, 120), false);
+    if(typeof msg.text === 'string') addChatMessage(msg.text.slice(0, 120), false);
   } else if(msg.type === 'drawoffer'){
     showConfirm('🤝 Rakip beraberlik teklif etti. Kabul ediyor musun?', () => {
       if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'drawaccept' });
@@ -1949,7 +1953,8 @@ function onRemoteMessage(type, data){
     startBreak('resting');          // teklifim kabul edildi → ben dinleniyorum
   } else if(msg.type === 'break_decline'){
     G.breakState = null; G.breakRequester = null; hideBreakOverlay();
-    updateStatus('Mola reddedildi — oyun sürüyor'); startAutoRollTimer();
+    updateStatus('Mola reddedildi — oyun sürüyor');
+    if(G.rolled && turnComplete(G.state)) endTurn(); else startAutoRollTimer();
   } else if(msg.type === 'break_back'){
     endBreak();                     // rakip molasından döndü
   } else if(msg.type === 'break_extend'){
@@ -2106,7 +2111,9 @@ function resignGame(){
 }
 
 function endInDraw(){
+  if(!G || G.gameEnded) return;
   G.gameEnded = true; clearAutoRollTimer();
+  clearAIGame(); clearBreakTimers(); clearMoveGrace();
   updateStatus('🤝 Oyun berabere bitti', 'win');
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
@@ -2147,7 +2154,11 @@ function onBreakRequestReceived(){
   showConfirm('🛌 Rakip 5 dakika mola istiyor.<br>Kabul ediyor musun?',
     () => { TavlaMP.send({ type:'break_accept' }); startBreak('waiting'); },
     'Kabul Et',
-    () => { TavlaMP.send({ type:'break_decline' }); G.breakRequester = null; G.breakState = null; updateStatus('Mola reddedildi — oyun sürüyor'); startAutoRollTimer(); },
+    () => {
+      TavlaMP.send({ type:'break_decline' }); G.breakRequester = null; G.breakState = null;
+      updateStatus('Mola reddedildi — oyun sürüyor');
+      if(G.rolled && turnComplete(G.state)) endTurn(); else startAutoRollTimer();
+    },
     'Reddet'
   );
 }
@@ -2155,6 +2166,7 @@ function onBreakRequestReceived(){
 // 3) Molayı başlat. role: 'resting' (isteyen) | 'waiting' (bekleyen)
 function startBreak(role){
   clearBreakTimers();
+  clearAutoRollTimer();
   G.breakState = role;
   G.breakEndsAt = Date.now() + BREAK_MS;
   renderBreakByRole();
@@ -2192,7 +2204,8 @@ function endBreak(){
   hideBreakOverlay();
   updateStatus('Mola bitti — oyun devam ediyor');
   updateControls(); draw();
-  startAutoRollTimer();
+  if(G.rolled && turnComplete(G.state)) endTurn();
+  else startAutoRollTimer();
 }
 
 // 6) Oyunu sürdür (mola sonrası) — mola isteyen 3dk içinde oynamalı
@@ -2202,7 +2215,8 @@ function resumeAfterBreak(){
   hideBreakOverlay();
   updateStatus('Oyun devam ediyor — mola isteyen oynamalı');
   updateControls(); draw();
-  startMoveGrace();
+  if(G.rolled && turnComplete(G.state)) endTurn();
+  else { startAutoRollTimer(); startMoveGrace(); }
 }
 
 function startMoveGrace(){
@@ -2235,6 +2249,7 @@ function forfeitByTimeout(){
     try{ Sound.win(); }catch(e){}
   }
   updateControls(); draw();
+  awardSimple(G.breakRequester !== 'me', 'Mola sonrası hamle süresi doldu');
 }
 
 // ── Mola UI ──
@@ -2282,15 +2297,23 @@ function hideBreakOverlay(){
 
 // Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
 async function awardSimple(playerWon, reason){
+  if(!G || G._rewardClaimed) return;
+  G._rewardClaimed = true;
+  const session=G,token=G._turnToken,uid=Auth.getState().uid;
+  const current=()=>G===session && G._turnToken===token && Auth.getState().uid===uid;
+  clearAIGame(); clearBreakTimers(); clearMoveGrace();
   try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'tavla'}); if(playerWon) Store.trackQuestEvent('game_won',{game:'tavla'}); }catch(e){}
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('tavla', playerWon?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
+  if(!current()) return;
   const kaju = playerWon ? 50 : 15;
   const xp = playerWon ? 55 : 20;
-  try{ await Store.addKaju(kaju, 'tavla'); await Store.addXP(xp); }catch(e){}
+  try{ await Store.addKaju(kaju, 'tavla'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  if(!current()) return;
   try{
     const Reward = await import('../reward.js');
+    if(!current()) return;
     await Reward.showReward({
-      won: playerWon, game:'tavla', kaju, xp, writeReward:false,
+      won: playerWon, game:'tavla', kaju, xp, writeReward:false, isCurrent:current,
       title: playerWon ? '🎲 KAZANDIN!' : '🏳️ Kaybettin',
       subtitle: reason || 'Tavla oyunu tamamlandı',
     });
@@ -2298,10 +2321,15 @@ async function awardSimple(playerWon, reason){
 }
 
 async function onWin(status){
+  if(!G || G.gameEnded || G._rewardClaimed) return;
+  G._rewardClaimed = true;
+  const session=G,token=G._turnToken,uid=Auth.getState().uid;
+  const current=()=>G===session && G._turnToken===token && Auth.getState().uid===uid;
   G.gameEnded = true;
   G.aiThinking = false;
   clearAutoRollTimer();
   clearAIGame();
+  clearBreakTimers(); clearMoveGrace();
   const winner = status === 'white_wins' ? 'w' : 'b';
   const wt = winType(G.state, winner);
   const typeLabel = wt === 3 ? ' (Hin/Backgammon ×3)' : wt === 2 ? ' (Mars/Gammon ×2)' : '';
@@ -2327,11 +2355,15 @@ async function onWin(status){
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
   const tavlaKaju = 50 * wt; const tavlaXp = playerWon ? 55 : 20;
-  try{ await Store.addKaju(tavlaKaju, 'tavla'); await Store.addXP(tavlaXp); }catch(e){}
+  try{ if(Store.recordMatchResult) await Store.recordMatchResult('tavla', playerWon?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
+  if(!current()) return;
+  try{ await Store.addKaju(tavlaKaju, 'tavla'); if(!current()) return; await Store.addXP(tavlaXp); }catch(e){}
+  if(!current()) return;
   try{
     const Reward = await import('../reward.js');
+    if(!current()) return;
     await Reward.showReward({
-      won: playerWon, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false,
+      won: playerWon, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false, isCurrent:current,
       title: playerWon ? '🎲 KAZANDIN!' : '😔 Rakip kazandı',
       subtitle: 'Tavla oyunu tamamlandı',
     });

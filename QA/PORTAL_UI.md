@@ -1,3 +1,9 @@
+# Release 148 — outcomes, breaks, gestures and long sessions
+
+Second bug pass fixes duplicate/missing match outcomes, paused Tavla turn continuation, Kelimecik replay/jokers, Tetris overflow/shields/garbage passives, gesture reversal and slow drag, malformed saves and leaked delayed game controls. Original parked draggable jewels and portal presentation remain unchanged. See [PORTAL_AUDIT_148.md](PORTAL_AUDIT_148.md) for 52 new regression groups, extended browser stress coverage, the unchanged adventure star-design issue and verification limits. Both online players must use v148.
+
+---
+
 # Release 147 — game rules and session lifecycle
 
 Scoped fixes across chess, Tavla, Tetris and Kelimecik, with deterministic regressions and seven passing Chromium suites. Preserves the original 34px sparkling jewels, parked draggable controls, scale preference and portal navigation. See [PORTAL_AUDIT_147.md](PORTAL_AUDIT_147.md) for concrete findings, changed behavior, validation and limits. Both players should load v147 before an online match.

@@ -61,7 +61,8 @@ function saveTetrisResume(){
       elapsed: G.elapsed, survStep: G.survStep,
       combo: G.combo, b2b: G.b2b, maxComboThisGame: G.maxComboThisGame,
       speedMult: G.speedMult, baseInterval: G.baseInterval, dropInterval: G.dropInterval,
-      shieldUsed: G.shieldUsed
+      shieldUsed: G.shieldUsed, garbageRemainder:G.garbageRemainder,
+      powersUsedCount:G.powersUsedCount, gemsUsedCount:G.gemsUsedCount
     });
   }catch(e){}
 }
@@ -70,12 +71,41 @@ function resumeTetris(){
   const snap = Resume.loadSnapshot('tetris');
   if(!snap) return;
   const d = snap.data;
+  if(!isValidTetrisSnapshot(d)){
+    Resume.clearSnapshot('tetris');
+    RESUME_DATA=null;
+    launchGame();
+    return;
+  }
   SELECTED_MODE = d.mode || 'solo';
   if(d.heroKey) SELECTED_HERO = d.heroKey;
   if(d.theme) SELECTED_THEME = d.theme;
   ADVENTURE_WORLD = d.advWorld || null;
   RESUME_DATA = d;
   launchGame();
+}
+function isValidTetrisSnapshot(d){
+  if(!d || !RESUMABLE_MODES.includes(d.mode)) return false;
+  if(!Array.isArray(d.board) || d.board.length!==ROWS || !d.board.every(row=>Array.isArray(row)&&row.length===COLS&&row.every(c=>c===0||(typeof c==='string'&&c.length>0&&c.length<=64)))) return false;
+  const validPiece=p=>{
+    if(!p || typeof p.type!=='string' || !Object.hasOwn(PIECES,p.type) || !Number.isInteger(p.x) || !Number.isInteger(p.y) || p.x < -3 || p.x>=COLS || p.y < -3 || p.y>=ROWS) return false;
+    if(!Array.isArray(p.matrix) || p.matrix.length<2 || p.matrix.length>4 || !p.matrix.every(row=>Array.isArray(row)&&row.length===p.matrix.length&&row.every(v=>v===0||v===1))) return false;
+    const occupied=matrixCells(p.matrix);
+    if(occupied.length!==4 || occupied.some(([x,y])=>p.x+x<0||p.x+x>=COLS||p.y+y>=ROWS)) return false;
+    let expected=toMatrix(PIECES[p.type].cells);
+    for(let i=0;i<4;i++){if(JSON.stringify(expected)===JSON.stringify(p.matrix)) return true;expected=rotateCW(expected);}
+    return false;
+  };
+  if(!validPiece(d.cur) || !Array.isArray(d.queue) || d.queue.length<1 || d.queue.length>6 || !d.queue.every(validPiece)) return false;
+  if(!Array.isArray(d.bag) || d.bag.length>10 || !d.bag.every(t=>typeof t==='string'&&Object.hasOwn(PIECES,t))) return false;
+  if(d.holdType!=null && (typeof d.holdType!=='string'||!Object.hasOwn(PIECES,d.holdType))) return false;
+  for(const k of ['score','lines','level','tetrisCount','survStep','combo','maxComboThisGame','charge','powersUsedCount','gemsUsedCount']){
+    if(d[k]!==undefined && (!Number.isSafeInteger(d[k])||d[k]<0)) return false;
+  }
+  if(d.level!==undefined && d.level<1) return false;
+  if(d.elapsed!==undefined && (!Number.isFinite(d.elapsed)||d.elapsed<0||d.elapsed>Number.MAX_SAFE_INTEGER)) return false;
+  for(const k of ['speedMult','baseInterval','dropInterval']) if(d[k]!==undefined && (!Number.isFinite(d[k])||d[k]<=0||d[k]>60000)) return false;
+  return !matrixCells(d.cur.matrix).some(([x,y])=>d.cur.y+y>=0&&d.board[d.cur.y+y][d.cur.x+x]);
 }
 let AI_DIFFICULTY = 'normal'; // AI rakip zorluğu: easy/normal/hard
 const SPRINT_TARGET = 40;
@@ -178,7 +208,27 @@ function collides(piece, ox, oy, mat){
   return false;
 }
 
+function handleTopOut(){
+  if(!G) return false;
+  const practice=G.practiceMode;
+  if(!practice && !(G.nexusShield&&!G.shieldUsed)){gameOver();return false;}
+  if(!practice) G.shieldUsed=true;
+  const count=practice?Math.floor(ROWS/2):4;
+  for(let i=0;i<count;i++) G.board[i]=Array(COLS).fill(0);
+  G.cur.x=3;G.cur.y=0;G.visualY=0;
+  G.lockTimer=0;G.lockResets=0;G.lastMoveRotate=false;
+  if(collides(G.cur,0,0)){
+    if(practice) G.board=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+    else {gameOver();return false;}
+  }
+  flash(practice?'🛡️ YENİLMEZ':'🛡️ KALKAN!');
+  if(!practice){Sound.shield();screenShake(10);updateHeroBar();}
+  return true;
+}
+
 function lock(){
+  if(!G || G.over) return;
+  if(matrixCells(G.cur.matrix).some(([,cy])=>G.cur.y+cy<0)){ handleTopOut(); return; }
   Sound.lock();
   G.lockTimer = 0; G.lockResets = 0;
   const linesBefore = G.lines;
@@ -205,34 +255,11 @@ function lock(){
   if(G.versus && G.pendingGarbage > 0){
     applyGarbage(G.pendingGarbage);
     G.pendingGarbage = 0;
+    if(G.over) return;
   }
   G.cur = nextFromQueue();
   G.canHold = true;
-  if(collides(G.cur, 0, 0)){
-    // Admin antrenman modu: ölme, üst yarıyı temizle ve devam et
-    if(G.practiceMode){
-      const half = Math.floor(ROWS/2);
-      for(let i=0;i<half;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
-      G.cur.y = 0; G.cur.x = 3;
-      flash('🛡️ YENİLMEZ');
-      if(collides(G.cur, 0, 0)){ // hâlâ sığmıyorsa tahtayı tamamen temizle
-        G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
-      }
-      return;
-    }
-    // Nexus enerji kalkanı: ölümden 1 kez kurtul (üst 4 sırayı temizle)
-    if(G.nexusShield && !G.shieldUsed){
-      G.shieldUsed = true;
-      for(let i=0;i<4;i++){ G.board.shift(); G.board.push(Array(COLS).fill(0)); }
-      G.cur.y = 0; G.cur.x = 3;
-      flash('🛡️ KALKAN!');
-      Sound.shield(); screenShake(10);
-      updateHeroBar();
-      if(collides(G.cur, 0, 0)) gameOver();
-    } else {
-      gameOver();
-    }
-  }
+  if(collides(G.cur, 0, 0)) handleTopOut();
 }
 
 // Parça konunca gem düşür (kahraman gemMult çarpanıyla)
@@ -332,10 +359,10 @@ function clearLines(){
     // Versus/AI: rakibe çöp gönder (2 satır=1, 3=2, 4=4 çöp sırası)
     if(G.versus){
       const garbageMap = { 1:0, 2:1, 3:2, 4:4 };
-      const g = garbageMap[Math.min(cleared,4)] || 0;
+      const g = Math.min(8,(garbageMap[Math.min(cleared,4)] || 0)*(G.garbMult||1));
       if(G.ai){
         // AI'ya gerçek çöp gönder (tahtasına eklenir)
-        if(g > 0){ G.aiPendingGarbage += g; }
+        if(g > 0){ G.aiPendingGarbage = Math.min(ROWS,(G.aiPendingGarbage||0)+g); }
       } else if(MP.connected){
         if(g > 0) MP.send({ type:'garbage', rows:g });
         sendVersusState();
@@ -450,7 +477,7 @@ function hold(){
   G.lockTimer = 0; G.lockResets = 0; G.lastMoveRotate = false;
   Sound.hold();
   drawSide();
-  if(collides(G.cur, 0, 0)) gameOver();
+  if(collides(G.cur, 0, 0)) handleTopOut();
 }
 
 // ── Çizim ───────────────────────────────────────────────────────
@@ -1491,7 +1518,7 @@ function loop(ts){
       if(G.vsSyncAcc >= 1000){ G.vsSyncAcc = 0; sendVersusState(); }
     }
     // AI rakip: botun ilerlemesini simüle et
-    if(G.ai){ aiTick(dt); drawAIBoard(); }
+    if(G.ai){ aiTick(dt); if(G.over) return; drawAIBoard(); }
     G.dropAcc += dt;
     // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat
     const slowed = (G.slowUntil && ts < G.slowUntil);
@@ -1503,10 +1530,11 @@ function loop(ts){
       G.dropAcc = 0;
       if(G.lockTimer >= LOCK_DELAY || (G.lockResets || 0) >= LOCK_MAX_RESETS){
         lock(); G.lockTimer = 0; G.lockResets = 0;
+        if(G.over) return;
       }
     } else {
       // Havadayken normal düşüş, kilit sayacı sıfır
-      G.lockTimer = 0; G.lockResets = 0;
+      G.lockTimer = 0;
       if(G.dropAcc >= interval){ G.dropAcc = 0; G.cur.y++; G.lastMoveRotate = false; }
     }
     // Yumuşak düşme: görsel Y'yi mantıksal Y'ye doğru kaydır
@@ -1833,7 +1861,7 @@ function build(){
   document.body.appendChild(root);
   // 🏠 Oyun içi kontrol merkezi (ses/müzik/titreşim API'li)
   import('../game-home.js').then(m => {
-    if(!G) return;
+    if(!G || G.root!==root) return;
     G._home = m.mountGameHome('tetris',
       () => { try{ close(); }catch(e){} try{ import('../nav.js').then(n => n.go && n.go('home')); }catch(e){} },
       {
@@ -1975,28 +2003,29 @@ function bindControls(){
 
 // Tahta üzerinde dokunmatik jest kontrolleri (sürükle/dokun)
 function bindTouchGestures(){
+  const session=G;
   const wrap = G.root.querySelector('.tetris-board-wrap');
   if(!wrap) return;
   let active = false;
   let startX = 0, startY = 0, lastX = 0, lastY = 0;
   let startT = 0;
   let movedH = 0, movedV = 0;   // toplam hareket (jest tipini ayırmak için)
-  let didHardDrop = false;
-  let dragColumns = 0;          // sürüklemeyle yapılan yatay adım sayısı
+  let horizontal=0,downward=0,gestureRound=null;
   let gestureLock = null;       // 'vertical' → yukarı çekme jesti, yatay kilitli
 
   const onStart = (e) => {
-    if(!G || G.over || G.paused) return;
+    if(G!==session || !G || G.over || G.paused) return;
     const t = e.touches ? e.touches[0] : e;
     active = true;
     startX = lastX = t.clientX;
     startY = lastY = t.clientY;
     startT = Date.now();
-    movedH = movedV = 0; dragColumns = 0; didHardDrop = false; gestureLock = null;
+    movedH = movedV = horizontal = downward = 0; gestureLock = null; gestureRound=G.round;
   };
 
   const onMove = (e) => {
-    if(!active || !G || G.over || G.paused) return;
+    if(!active) return;
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused){active=false;return;}
     const t = e.touches ? e.touches[0] : e;
     const dx = t.clientX - lastX;
     const dy = t.clientY - lastY;
@@ -2013,15 +2042,18 @@ function bindTouchGestures(){
     // Yatay hareket — sadece dikey kilit YOKSA uygula
     if(gestureLock !== 'vertical'){
       const stepThresh = Math.max(18, cell * 0.7);
-      if(Math.abs(t.clientX - startX) >= stepThresh * (Math.abs(dragColumns) + 1) && Math.abs(dx) > 1){
-        if(dx > 0){ move(1); dragColumns++; } else { move(-1); dragColumns--; }
+      horizontal += dx;
+      for(let i=0;i<COLS&&Math.abs(horizontal)>=stepThresh;i++){
+        const direction=Math.sign(horizontal);
+        move(direction); horizontal-=direction*stepThresh;
         e.preventDefault();
       }
     }
     // Aşağı sürükleme: yumuşak düşür (yalnızca aşağı yönde, dikey kilitliyse de izin ver)
-    if(dy > Math.max(14, cell * 0.6)){
-      softDrop();
-      e.preventDefault();
+    downward=dy<0?0:downward+dy;
+    const downThreshold=Math.max(14,cell*.6);
+    for(let i=0;i<ROWS&&downward>=downThreshold;i++){
+      softDrop(); downward-=downThreshold; e.preventDefault();
     }
     // Konumu her zaman güncelle (yukarı swipe tespiti için onEnd'de gerekli)
     lastX = t.clientX;
@@ -2031,7 +2063,7 @@ function bindTouchGestures(){
   const onEnd = (e) => {
     if(!active) return;
     active = false;
-    if(!G || G.over || G.paused) return;
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused) return;
     const dt = Date.now() - startT;
     const totalUp = startY - lastY;   // yukarı = pozitif
     const cell = G.cellSize || 24;
@@ -2057,9 +2089,10 @@ function bindTouchGestures(){
   wrap.addEventListener('touchend', onEnd);
   wrap.addEventListener('touchcancel', () => { active = false; });
   // Fare ile de test edilebilsin (masaüstü)
-  wrap.addEventListener('pointerdown', (e) => { if(e.pointerType !== 'touch') onStart(e); });
+  wrap.addEventListener('pointerdown', (e) => { if(e.pointerType !== 'touch'){onStart(e);try{wrap.setPointerCapture(e.pointerId);}catch{}} });
   wrap.addEventListener('pointermove', (e) => { if(e.pointerType !== 'touch' && active) onMove(e); });
   wrap.addEventListener('pointerup', (e) => { if(e.pointerType !== 'touch') onEnd(e); });
+  wrap.addEventListener('pointercancel',()=>{active=false;});
 }
 
 function togglePause(on){
@@ -2076,6 +2109,7 @@ function togglePause(on){
 function startGame(){
   if(!G) return;
   G.round={};   // aynı DOM üzerinde yeniden başlatılan tur da ayrı bir oturumdur
+  G.garbageRemainder=0;
   G.controlStops?.forEach(stop=>stop());
   if(!RESUME_DATA && RESUMABLE_MODES.includes(SELECTED_MODE)) Resume.clearSnapshot('tetris');   // taze oyun → eski devam kaydını sil
   G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
@@ -2172,8 +2206,9 @@ function startGame(){
     try{
       if(d.board) G.board = d.board;
       if(d.bag) G.bag = d.bag;
-      if(d.queue) G.queue = d.queue;
-      if(d.cur) G.cur = d.cur;
+      if(d.queue) G.queue = d.queue.map(p=>({...p,color:PIECES[p.type].color}));
+      if(d.cur) G.cur = {...d.cur,color:PIECES[d.cur.type].color};
+      fillQueue();
       G.holdType = d.holdType || null; G.canHold = d.canHold !== false;
       G.score = d.score||0; G.level = d.level||1; G.lines = d.lines||0; G.tetrisCount = d.tetrisCount||0;
       G.charge = d.charge||0; G.powerReady = !!d.powerReady;
@@ -2185,6 +2220,8 @@ function startGame(){
       if(d.baseInterval) G.baseInterval = d.baseInterval;
       G.dropInterval = d.dropInterval || Math.round(G.baseInterval * G.speedMult);
       G.shieldUsed = !!d.shieldUsed;
+      G.powersUsedCount=d.powersUsedCount||0;G.gemsUsedCount=d.gemsUsedCount||0;
+      G.garbageRemainder = Number.isFinite(d.garbageRemainder) ? Math.max(0,Math.min(.999999,d.garbageRemainder)) : 0;
       G.displayScore = G.score; G.visualY = G.cur ? G.cur.y : 0;
       updateHUD(); drawSide(); updateHeroBar(); updatePowerBtn(); updateGemBtn(); updateModeUI();
     }catch(e){ console.warn('[tetris] resume override', e); }
@@ -2560,13 +2597,14 @@ function aiLock(){
     // Oyuncuya çöp gönder
     const garbageMap = { 1:0, 2:1, 3:2, 4:4 };
     const g = garbageMap[cleared] || 0;
-    if(g > 0){ G.pendingGarbage += g; flash('⚠️ AI ' + g + ' çöp gönderdi!'); Sound.garbage(); }
+    if(g > 0){ queueGarbage(g); flash('⚠️ AI ' + g + ' çöp gönderdi!'); Sound.garbage(); }
     updateVersusUI();
   }
   // Oyuncudan gelen çöbü AI tahtasına uygula
   if(G.aiPendingGarbage > 0){
     aiApplyGarbage(G.aiPendingGarbage);
     G.aiPendingGarbage = 0;
+    if(G.over || !G.oppAlive) return;
   }
   // yeni parça
   G.aiCur = aiSpawn();
@@ -2582,13 +2620,24 @@ function aiLock(){
 
 // AI tahtasına çöp uygula (oyuncunun saldırısı)
 function aiApplyGarbage(rows){
+  if(!G || !Number.isSafeInteger(rows) || rows<1) return;
+  rows=Math.min(ROWS,rows);
   for(let i=0;i<rows;i++){
+    if(G.aiBoard[0].some(Boolean)){
+      G.oppAlive=false; updateVersusUI(); if(!G.over) endGame(true); return;
+    }
     G.aiBoard.shift();
     const row = Array(COLS).fill('#5a5a6e');
     row[Math.floor(Math.random()*COLS)] = 0;
     G.aiBoard.push(row);
   }
-  if(G.aiCur && aiCollides(G.aiCur, 0, 0)){ G.aiCur.y = Math.max(0, G.aiCur.y - rows); }
+}
+
+function queueGarbage(rows){
+  const exact=rows*(G.garbReduce||1)*(G.dmgReduce||1)+(G.garbageRemainder||0);
+  const applied=Math.floor(exact+1e-9);
+  G.garbageRemainder=Math.max(0,exact-applied);
+  G.pendingGarbage=Math.min(ROWS,(G.pendingGarbage||0)+applied);
 }
 
 // ── Reconnect sonrası versus senkronu (skor + canlılık) ──
@@ -2634,8 +2683,8 @@ function handleVersusMessage(msg){
     G.oppScore = msg.score; G.oppLines = msg.lines; updateVersusUI();
   }
   else if(msg.type === 'garbage'){
-    if(!Number.isInteger(msg.rows) || msg.rows<1 || msg.rows>4) return;
-    G.pendingGarbage = Math.min(ROWS,(G.pendingGarbage||0)+msg.rows);
+    if(!Number.isInteger(msg.rows) || msg.rows<1 || msg.rows>8) return;
+    queueGarbage(msg.rows);
     flash('⚠️ ' + msg.rows + ' çöp geliyor!'); Sound.garbage(); updateVersusUI();
   }
   else if(msg.type === 'dead'){
@@ -2707,8 +2756,10 @@ function sendVersusState(){
 
 // Gelen çöp sıralarını tahtaya uygula (altta gri bloklar, 1 rastgele boşluk)
 function applyGarbage(rows){
-  if(!G || rows <= 0) return;
+  if(!G || !Number.isSafeInteger(rows) || rows<1) return;
+  rows=Math.min(ROWS,rows);
   for(let i=0;i<rows;i++){
+    if(G.board[0].some(Boolean) && !handleTopOut()) return;
     G.board.shift();   // üstten bir sıra at
     const row = Array(COLS).fill('#5a5a6e');   // gri çöp
     const hole = Math.floor(Math.random() * COLS);
@@ -2716,8 +2767,6 @@ function applyGarbage(rows){
     G.board.push(row);
   }
   screenShake(6);
-  // çöp eklenince mevcut parça çakışıyorsa yukarı it
-  if(G.cur && collides(G.cur, 0, 0)){ G.cur.y = Math.max(0, G.cur.y - rows); }
 }
 
 // Versus göstergesini güncelle (rakip skor/satır + çöp uyarısı)

@@ -17,7 +17,7 @@ function harness(extra={}){
 }
 {
  let ended=0;const c=harness({collides:()=>true,gameOver:()=>ended++});
- vm.runInContext(fn('hold')+'\nhold();',c);
+ vm.runInContext(fn('handleTopOut')+fn('hold')+'\nhold();',c);
  assert.equal(ended,1,'hold must end play if the swapped-in piece overlaps the board');
  assert.equal(c.G.lockTimer,0);assert.equal(c.G.lockResets,0);assert.equal(c.G.lastMoveRotate,false,'hold must not inherit a previous piece rotation');
  console.log('PASS blocked hold and fresh piece state.');

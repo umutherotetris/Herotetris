@@ -285,8 +285,8 @@ function _injectKelimeHUD(){
 }
 
 function afterGame(callback,delay){
-  const session=G;
-  return setTimeout(()=>{if(session && G===session)callback();},delay);
+  const session=G,round=session?._setupToken;
+  return setTimeout(()=>{if(session && G===session && session._setupToken===round)callback();},delay);
 }
 function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
@@ -373,6 +373,7 @@ function showAIDifficulty(){
 
 function startLocal(){
   G._over = false; G._setupToken = {};
+  G.online = false; G.role = 'A'; G._resigned = false; G.aiThinking = false;
   const st = newGame();
   G.state = st;
   G.who = 'A';
@@ -408,6 +409,7 @@ async function startAI(difficulty, turnTime){
   const st = newGame();
   G.state = st;
   G.who = 'A';                                   // insan = A
+  G.online = false; G.role = 'A'; G._resigned = false;
   G.ai = { difficulty, color:'B' };
   G.seri = turnTime ? { turnTime } : null;        // süreli seri mod
   const diffLbl = (KL_LANG==='en'?{kolay:'Easy',orta:'Medium',zor:'Hard'}:{kolay:'Kolay',orta:'Orta',zor:'Zor'})[difficulty];
@@ -454,6 +456,7 @@ async function resumeKelime(snap){
   try{ if(!KA) KA = await import('./kelime-ai.js'); await KA.aiReady(); }
   catch(e){ if(G===session && session._setupToken===setupToken) flashStartError('Yapay zekâ yüklenemedi.'); return; }
   if(G!==session || session._setupToken!==setupToken) return;
+  G.online = false; G.role = 'A'; G._resigned = false;
   G.state = {
     board: snap.board, bag: snap.bag, racks: snap.racks,
     scores: snap.scores, turn: snap.who, moveCount: 0,
@@ -718,6 +721,7 @@ function doAcceptInvite(inv){
 }
 
 function startOnline(role, gameId, oppName, seed, opts){
+  G._setupToken = {}; G._resigned = false;
   const _oppUid = (opts && opts.oppUid) || null;
   opts = opts || {};
   // Oda dilini uygula (eşleşen iki oyuncu aynı dilde olur)
@@ -1788,12 +1792,16 @@ function checkGameOver(){
 async function endGameAI(){
   if(!G || G._over) return;
   const session = G; G._over = true;
+  const round=G._setupToken;
+  const owner=()=>typeof window==='undefined'?null:window.Hero?.Auth?.getState?.()?.uid || null;
+  const uid=owner(),current=()=>G===session && session._setupToken===round && owner()===uid;
   stopTurnTimer();
   Resume.clearSnapshot('kelime');
   const a0=G.state.scores.A, b0=G.state.scores.B;
-  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(a0>b0) _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
-  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ const r = a0>b0?'win':(a0<b0?'loss':'draw'); await _S.recordMatchResult('kelime', r, null, null); } }catch(e){}
-  if(G!==session) return;
+  const result=G._resigned?'loss':a0>b0?'win':a0<b0?'loss':'draw';
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.trackQuestEvent){ _S.trackQuestEvent('game_played',{game:'kelime'}); if(result==='win') _S.trackQuestEvent('game_won',{game:'kelime'}); } }catch(e){}
+  try{ const _S=window.Hero&&window.Hero.Store; if(_S&&_S.recordMatchResult){ await _S.recordMatchResult('kelime', result, null, null); } }catch(e){}
+  if(!current()) return;
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const playerWon = a > b;
@@ -1802,23 +1810,28 @@ async function endGameAI(){
   if(!G._resigned){
     const klKaju = playerWon ? 70 : isDraw ? 30 : 10;
     const klXp   = playerWon ? 50 : isDraw ? 20 : 15;
-    try{ await Store.addKaju(klKaju,'kelime'); if(G!==session) return; await Store.addXP(klXp); }catch(e){}
-    if(G!==session) return;
+    try{ await Store.addKaju(klKaju,'kelime'); if(!current()) return; await Store.addXP(klXp); }catch(e){}
+    if(!current()) return;
     if(playerWon){ sndWin(); confetti(); } else if(a<b){ sndLose(); }
     saveRecordsIfBetter();
     // Merkezi ödül ekranı
     try{
       const Reward = await import('../reward.js');
-      if(G!==session) return;
+      if(!current()) return;
       const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
-      await Reward.showReward({
+      const action=await Reward.showReward({
         won: playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
+        isCurrent:current,
         title: playerWon ? '🔤 KAZANDIN!' : (isDraw?'🤝 BERABERLİK':'🤖 Yapay zekâ kazandı'),
         subtitle: G.names.A+': '+a+' · '+G.names.B+': '+b,
         extra: bwText,
       });
+      if(!current()) return;
+      if(action==='replay') startAI(G.ai.difficulty,G.seri?.turnTime);
+      else { G.ai=null; G.seri=null; showStart(); }
       return;
     }catch(e){ console.warn('[reward]',e); }
+    if(!current()) return;
   } else {
     saveRecordsIfBetter();
   }
@@ -1963,6 +1976,9 @@ function nextTurn(){
 async function endGame(){
   if(!G || G._over) return;
   const session = G; G._over = true;
+  const round=G._setupToken;
+  const owner=()=>typeof window==='undefined'?null:window.Hero?.Auth?.getState?.()?.uid || null;
+  const uid=owner(),current=()=>G===session && session._setupToken===round && owner()===uid;
   const c = G.root.querySelector('[data-el="content"]');
   const a=G.state.scores.A, b=G.state.scores.B;
   const win = a===b ? 'Berabere!' : (a>b? `${G.names.A} kazandı!` : `${G.names.B} kazandı!`);
@@ -1973,20 +1989,25 @@ async function endGame(){
   const playerWon = myScore > oppScore;
   const klKaju = playerWon ? 70 : a===b ? 30 : 10;
   const klXp = playerWon ? 50 : a===b ? 20 : 15;
-  try{ await Store.addKaju(klKaju,'kelime'); if(G!==session) return; await Store.addXP(klXp); }catch(e){}
-  if(G!==session) return;
+  try{ await Store.addKaju(klKaju,'kelime'); if(!current()) return; await Store.addXP(klXp); }catch(e){}
+  if(!current()) return;
   if(a!==b){ sndWin(); confetti(); } else sndLose();
   try{
     const Reward = await import('../reward.js');
-    if(G!==session) return;
+    if(!current()) return;
     const bwText = G.bestWord&&G.bestWord.score ? '🏆 En iyi kelime: <b>'+G.bestWord.text+'</b> ('+G.bestWord.score+' puan)' : '';
-    await Reward.showReward({
+    const action=await Reward.showReward({
       won:playerWon, game:'kelime', kaju:klKaju, xp:klXp, writeReward:false,
+      isCurrent:current,
       title: playerWon ? '🔤 KAZANDIN!' : (a===b?'🤝 BERABERLİK':'📚 Rakip kazandı'),
       subtitle: G.names.A+': '+a+' puan · '+G.names.B+': '+b+' puan',
       extra: bwText,
-    }); return;
+    });
+    if(!current()) return;
+    if(action==='replay') startLocal(); else showStart();
+    return;
   }catch(e){ console.warn('[reward]',e); }
+  if(!current()) return;
   const stars = starsFor(Math.max(a,b));
   const bw = G.bestWord && G.bestWord.score ? `<p style="color:#c9b8e8;font-size:12px">🏆 En iyi kelime: <b>${G.bestWord.text}</b> (${G.bestWord.score} puan)</p>` : '';
   const ov=document.createElement('div'); ov.className='kl-overlay';

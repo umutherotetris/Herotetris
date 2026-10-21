@@ -17,12 +17,20 @@ export const WORLDS = [
 ];
 
 const PROGRESS_KEY = 'hero_tetris_adventure';
+function validWorld(id){ return Number.isInteger(id) && WORLDS.some(w=>w.id===id); }
+function validStars(stars){ return Number.isInteger(stars) && stars>=1 && stars<=3; }
 
 // İlerlemeyi oku: { completed:[1,2], stars:{1:3,2:2} }
 export function getProgress(){
   try{
     const d = localStorage.getItem(PROGRESS_KEY);
-    if(d){ const p = JSON.parse(d); return { completed: p.completed||[], stars: p.stars||{} }; }
+    if(d){
+      const p=JSON.parse(d),completed=Array.isArray(p?.completed) ? [...new Set(p.completed.filter(validWorld))] : [],stars={};
+      if(p?.stars && typeof p.stars==='object' && !Array.isArray(p.stars)){
+        for(const w of WORLDS){ if(validStars(p.stars[w.id])) stars[w.id]=p.stars[w.id]; }
+      }
+      return {completed,stars};
+    }
   }catch(e){}
   return { completed: [], stars: {} };
 }
@@ -32,6 +40,7 @@ function saveProgress(p){
 
 // Dünya kilidi açık mı? (1. her zaman açık, sonrakiler önceki tamamlanınca)
 export function isWorldUnlocked(worldId){
+  if(!validWorld(worldId)) return false;
   if(worldId <= 1) return true;
   const p = getProgress();
   return p.completed.indexOf(worldId - 1) >= 0;
@@ -39,6 +48,7 @@ export function isWorldUnlocked(worldId){
 
 // Dünya tamamla + yıldız kaydet (1-3 yıldız)
 export function completeWorld(worldId, stars){
+  if(!validWorld(worldId) || !validStars(stars)) return;
   const p = getProgress();
   if(p.completed.indexOf(worldId) < 0) p.completed.push(worldId);
   if(!p.stars[worldId] || stars > p.stars[worldId]) p.stars[worldId] = stars;

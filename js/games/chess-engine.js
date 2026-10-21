@@ -275,8 +275,25 @@ export function insufficientMaterial(board){
   const total = w.length + b.length;
   if(total === 0) return true;
   if(total === 1) return true;
-  if(w.length === 1 && b.length === 1 && w[0].t==='b' && b[0].t==='b' && w[0].sq===b[0].sq) return true;
+  const minors=[...w,...b];
+  if(minors.every(p=>p.t==='b' && p.sq===minors[0].sq)) return true;
   return false;
+}
+
+// Flag fall is a draw when the other side cannot mate, even with assistance.
+// Two knights can mate with assistance; a single bishop/knight against a bare king cannot.
+export function hasMatingPotential(board, color){
+  const own=[],other=[];
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const p=board[r][c];
+    if(p && p.t!=='k') (p.c===color?own:other).push({t:p.t,sq:(r+c)%2});
+  }
+  if(!own.length) return false;
+  if(own.some(p=>['p','r','q'].includes(p.t))) return true;
+  if(own.length===1 && !other.length) return false;
+  const all=[...own,...other];
+  if(all.every(p=>p.t==='b' && p.sq===all[0].sq)) return false;
+  return true;
 }
 
 // Yeni oyun state'i
@@ -329,7 +346,7 @@ export function toFEN(state, fullmove){
 export function fromFEN(fen){
   try{
     const parts = fen.trim().split(/\s+/);
-    if(parts.length < 2) return null;
+    if(parts.length < 2 || parts.length > 6 || !['w','b'].includes(parts[1])) return null;
     const rows = parts[0].split('/');
     if(rows.length !== 8) return null;
     const board = Array.from({length:8}, () => Array(8).fill(null));
@@ -337,7 +354,7 @@ export function fromFEN(fen){
     for(let r=0;r<8;r++){
       let c = 0;
       for(const ch of rows[r]){
-        if(/\d/.test(ch)){ c += parseInt(ch, 10); }
+        if(/[1-8]/.test(ch)){ c += parseInt(ch, 10); }
         else if(valid.includes(ch)){
           if(c > 7) return null;
           board[r][c] = { t: ch.toLowerCase(), c: ch === ch.toUpperCase() ? 'w' : 'b' };
@@ -346,20 +363,27 @@ export function fromFEN(fen){
       }
       if(c !== 8) return null;
     }
-    const turn = parts[1] === 'b' ? 'b' : 'w';
+    const turn = parts[1];
     const cast = parts[2] || '-';
+    if(!/^(?:-|K?Q?k?q?)$/.test(cast)) return null;
     const castling = {
       w: { k: cast.includes('K'), q: cast.includes('Q') },
       b: { k: cast.includes('k'), q: cast.includes('q') }
     };
     let enPassant = null;
     if(parts[3] && parts[3] !== '-'){
+      if(!/^[a-h][36]$/.test(parts[3])) return null;
       const files = 'abcdefgh';
       const fc = files.indexOf(parts[3][0]);
       const fr = 8 - parseInt(parts[3][1], 10);
-      if(fc >= 0 && fr >= 0 && fr < 8) enPassant = { r: fr, c: fc };
+      const pawnRow=turn==='w'?3:4,originRow=turn==='w'?1:6,enemy=turn==='w'?'b':'w';
+      if(fr!==(turn==='w'?2:5) || board[fr][fc] || board[originRow][fc] || board[pawnRow][fc]?.t!=='p' || board[pawnRow][fc]?.c!==enemy) return null;
+      enPassant = { r: fr, c: fc };
     }
-    const halfmove = parts[4] ? parseInt(parts[4], 10) || 0 : 0;
+    if(parts[4] && !/^\d+$/.test(parts[4])) return null;
+    if(parts[5] && (!/^\d+$/.test(parts[5]) || !Number.isSafeInteger(Number(parts[5])) || Number(parts[5])<1)) return null;
+    const halfmove = parts[4] ? Number(parts[4]) : 0;
+    if(!Number.isSafeInteger(halfmove)) return null;
     // İki şah var mı (geçerlilik)
     let wk = 0, bk = 0;
     for(let r=0;r<8;r++) for(let c=0;c<8;c++){

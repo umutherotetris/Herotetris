@@ -7,7 +7,7 @@
 import Store from '../store.js';
 import Auth from '../auth.js';
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
-import { newGame, legalMoves, resolveLegalMove, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, PIECE_NAMES } from './chess-engine.js';
+import { newGame, legalMoves, resolveLegalMove, allLegalMoves, applyMove, inCheck, gameStatus, positionKey, toFEN, fromFEN, hasMatingPotential, PIECE_NAMES } from './chess-engine.js';
 import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
@@ -592,6 +592,8 @@ function startGame(root, mode, opts){
   G.moveHistory = [];       // cebirsel notasyon listesi
   G.posHistory = [ positionKey(G.state) ];   // 3 hamle tekrarı takibi
   G.gameEnded = false;
+  G.resultSettled = false;
+  G.drawOfferOpen = false;
   G.timeControl = opts.time || 0;   // saniye (0 = süresiz)
   G.clock = null;
   G.undoStack = [];                 // hamle geri alma için anlık görüntüler
@@ -689,7 +691,7 @@ function startGame(root, mode, opts){
       myScore: ()=>0, oppScore: ()=>0,
     }).then(h=>{ if(G === game) G._hud=h; else h.destroy(); }).catch(()=>{});
   }catch(e){} G.selected=null; G.legalForSelected=[]; G.lastMove=null;
-    G.captured={w:[],b:[]}; G.aiThinking=false; G.gameEnded=false;
+    G.captured={w:[],b:[]}; G.aiThinking=false; G.gameEnded=false; G.resultSettled=false; G.drawOfferOpen=false;
     G.moveHistory=[]; G.posHistory=[positionKey(G.state)];
     clearHistoryUI();
     G.flip = ((G.mode === 'ai' || G.mode === 'online') && G.playerColor === 'b');
@@ -1435,6 +1437,7 @@ function onHello(d){
 }
 function onRemoteMessage(data){
   if(!data || !G) return;
+  if(G.gameEnded && data.type !== 'chat') return;
   if(data.type === 'move' && data.move){
     if(G.gameEnded || G.state.turn===G.playerColor) return;
     const mv = resolveLegalMove(G.state,data.move);
@@ -1592,34 +1595,50 @@ function applyAndContinue(mv, isCapture){
   maybeAIMove();
 }
 
+function beginChessOutcome(){
+  if(!G || G.resultSettled) return null;
+  const game=G,state=G.state,uid=Auth.getState().uid;
+  G.resultSettled=true; G.gameEnded=true;
+  G.drawOfferOpen=false;
+  G.root?.querySelectorAll?.('.chess-confirm')?.forEach(el=>el.remove());
+  stopClockTick(); Resume.clearSnapshot('chess');
+  return ()=>G===game && G.state===state && Auth.getState().uid===uid;
+}
+
 async function onGameEndDraw(){
-  Resume.clearSnapshot('chess');
+  const current=beginChessOutcome(); if(!current) return;
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', 'draw', G.oppUid||null, G.oppName||null); }catch(e){}
+  if(!current()) return;
   const kaju = 40, xp = 30;
-  try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
+  try{ await Store.addKaju(kaju, 'chess'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  if(!current()) return;
   try{
     const Reward = await import('../reward.js');
+    if(!current()) return;
     await Reward.showReward({
-      won:false, draw:true, game:'chess', kaju, xp, writeReward:false,
+      won:false, draw:true, game:'chess', kaju, xp, writeReward:false, isCurrent:current,
       title: '🤝 BERABERE', subtitle: 'Satranç partisi berabere bitti',
     });
   }catch(e){ console.warn('[reward]',e); }
 }
 
 async function onGameEnd(playerWon){
-  Resume.clearSnapshot('chess');
+  const current=beginChessOutcome(); if(!current) return;
   const won = playerWon === true;
   // Görev takibi
   try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'chess'}); if(won) Store.trackQuestEvent('game_won',{game:'chess'}); }catch(e){}
   // Maç istatistiği (online maçlarda head-to-head dahil)
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', won?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
+  if(!current()) return;
   const kaju = won ? 80 : 20;
   const xp = won ? 60 : 25;
-  try{ await Store.addKaju(kaju, 'chess'); await Store.addXP(xp); }catch(e){}
+  try{ await Store.addKaju(kaju, 'chess'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  if(!current()) return;
   try{
     const Reward = await import('../reward.js');
+    if(!current()) return;
     await Reward.showReward({
-      won, game:'chess', kaju, xp, writeReward:false,
+      won, game:'chess', kaju, xp, writeReward:false, isCurrent:current,
       title: won ? '♛ KAZANDIN!' : '♟ Rakip kazandı',
       subtitle: 'Satranç partisi tamamlandı',
     });
@@ -1729,7 +1748,13 @@ function updateClockDisplay(){
 }
 
 function onTimeout(color){
-  stopClockTick();
+  if(!G || G.gameEnded) return;
+  const winner=color==='w'?'b':'w';
+  if(!hasMatingPotential(G.state.board,winner)){
+    updateStatus('⏰ BERABERE — Rakip mat edebilecek materyale sahip değil', 'draw');
+    try{ Sound.draw(); }catch(e){}
+    onGameEndDraw(); updateClockDisplay(); return;
+  }
   G.gameEnded = true;
   const loserIsW = color === 'w';
   let label = `⏰ SÜRE BİTTİ — ${loserIsW ? 'SİYAH' : 'BEYAZ'} KAZANDI`;
@@ -1742,6 +1767,7 @@ function onTimeout(color){
   }
   updateStatus(label, loserIsW ? 'draw' : 'win');
   try{ Sound.lose(); }catch(e){}
+  onGameEnd(G.mode === 'local' || color !== G.playerColor);
   updateClockDisplay();
 }
 
@@ -1777,7 +1803,7 @@ function showFENLoader(){
     G.selected = null; G.legalForSelected = []; G.lastMove = null;
     G.captured = { w:[], b:[] };
     G.moveHistory = []; G.posHistory = [ positionKey(G.state) ];
-    G.undoStack = []; G.gameEnded = false;
+    G.undoStack = []; G.gameEnded = false; G.resultSettled = false; G.drawOfferOpen = false;
     if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
     clearHistoryUI();
     updateTurn(); updateStatus(''); updateCaptured(); draw();
@@ -1811,6 +1837,7 @@ function undoMove(){
   // Geçmiş panelini yeniden kur
   rebuildHistoryUI();
   updateTurn(); updateStatus(''); updateCaptured(); updateClockDisplay(); draw();
+  if(G.clock) startClockTick();
 }
 
 // Geçmiş panelini moveHistory'den yeniden oluştur (undo sonrası)
@@ -1846,6 +1873,7 @@ function offerDraw(){
       G.gameEnded = true;
       updateStatus('🤝 BERABERE — Karşılıklı anlaşma', 'draw');
       try{ Sound.draw(); }catch(e){}
+      onGameEndDraw();
     });
   } else if(G.mode === 'ai'){
     // AI: materyal durumuna göre kabul/red
@@ -1857,6 +1885,7 @@ function offerDraw(){
       G.gameEnded = true;
       updateStatus('🤝 BERABERE — YZ kabul etti', 'draw');
       try{ Sound.draw(); }catch(e){}
+      onGameEndDraw();
     } else {
       updateStatus('🤖 YZ beraberliği reddetti', 'check');
       setTimeout(() => { if(G && !G.gameEnded) updateStatus(''); }, 2000);
@@ -1874,7 +1903,10 @@ function offerDraw(){
 
 // Online: rakipten beraberlik teklifi geldi
 function handleDrawOffer(){
+  if(!G || G.gameEnded || G.drawOfferOpen) return;
+  const game=G,state=G.state;
   const ov = document.createElement('div');
+  G.drawOfferOpen=ov;
   ov.className = 'chess-confirm';
   ov.innerHTML = `<div class="ccf-box">
     <div class="ccf-text">🤝 Rakip beraberlik teklif etti.<br>Kabul ediyor musun?</div>
@@ -1884,13 +1916,21 @@ function handleDrawOffer(){
     </div>
   </div>`;
   G.root.appendChild(ov);
-  ov.querySelector('.ccf-no').addEventListener('click', () => { ov.remove(); ChessMP.send({ type:'drawDecline' }); });
+  ov.querySelector('.ccf-no').addEventListener('click', () => {
+    ov.remove();
+    if(G===game && G.drawOfferOpen===ov) G.drawOfferOpen=false;
+    if(G!==game || G.state!==state || G.gameEnded) return;
+    ChessMP.send({ type:'drawDecline' });
+  });
   ov.querySelector('.ccf-yes').addEventListener('click', () => {
     ov.remove();
+    if(G===game && G.drawOfferOpen===ov) G.drawOfferOpen=false;
+    if(G!==game || G.state!==state || G.gameEnded) return;
     ChessMP.send({ type:'drawAccept' });
     G.gameEnded = true;
     updateStatus('🤝 BERABERE — Karşılıklı anlaşma', 'draw');
     try{ Sound.draw(); }catch(e){}
+    onGameEndDraw();
   });
 }
 

@@ -72,10 +72,9 @@ function evaluate(state, color){
         // blot (açık pul) — vurulma riski. Rakibe yakınlık riski artırır.
         score -= 10;
         // rakip pul bu blotu vurabilecek mesafede mi (kabaca)
-        const oppDir = isW ? 1 : -1;   // rakip (siyah) yönü beyazın tersi
         for(let d=1; d<=6; d++){
-          const from = i + oppDir * d * (isW ? 1 : 1);   // rakibin geleceği nokta
-          const fi = isW ? i + d : i - d;
+          // Black moves toward increasing indices, white toward decreasing ones.
+          const fi = isW ? i - d : i + d;
           if(fi >= 0 && fi <= 23){
             const ov = pts[fi];
             const oppThere = (isW && ov < 0) || (!isW && ov > 0);

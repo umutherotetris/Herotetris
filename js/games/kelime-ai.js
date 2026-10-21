@@ -70,7 +70,7 @@ function countOf(lettersArr){
 
 // Bir küçük kelimeyi, indeks i'deki harfi (r,c)'ye gelecek şekilde yatay/dikey yerleştir.
 // Dönüş: pending dizisi (yalnız boş hücrelere yeni taşlar) veya null (geçersiz hizalama).
-function buildPending(board, word, alignIdx, r, c, horizontal){
+function buildPending(board, word, alignIdx, r, c, horizontal, rack){
   const upper = upTR(word);
   const n = word.length;
   const pending = [];
@@ -88,7 +88,15 @@ function buildPending(board, word, alignIdx, r, c, horizontal){
       anyNew = true;
     }
   }
-  return anyNew ? pending : null;
+  if(!anyNew) return null;
+  const counts=countOf(rack.filter(t=>!t.joker).map(t=>t.letter));
+  let jokers=rack.filter(t=>t.joker).length;
+  for(const p of pending){
+    if(counts[p.letter]){ counts[p.letter]--; continue; }
+    if(!jokers) return null;
+    jokers--; p.assigned=p.letter; p.letter=''; p.points=0; p.joker=true;
+  }
+  return pending;
 }
 
 // Ana fonksiyon: en iyi (zorluğa göre) geçerli hamleyi bul. Yoksa null.
@@ -96,6 +104,24 @@ export function findBestMove(board, rack, difficulty){
   ensureIndex();
   const LM = _lowerMap();
   const rackLower = rack.filter(t=>!t.joker).map(t => LM[t.letter] || t.letter.toLowerCase());
+  const jokerCount=rack.filter(t=>t.joker).length;
+  const keyCache=new Map();
+  function availableKeys(pool){
+    const counts=countOf(pool);
+    if(!jokerCount) return subsetKeys(counts);
+    const cacheKey=pool.slice().sort().join('');
+    if(keyCache.has(cacheKey)) return keyCache.get(cacheKey);
+    // Scan each indexed multiset once per distinct anchor letter. This avoids
+    // enumerating every alphabet substitution for up to two blank tiles.
+    const keys=[];
+    for(const key of INDEX.keys()){
+      if(key.length>pool.length+jokerCount) continue;
+      const left={...counts}; let missing=0;
+      for(const ch of key){ if(left[ch]) left[ch]--; else missing++; }
+      if(missing<=jokerCount) keys.push(key);
+    }
+    keyCache.set(cacheKey,keys);return keys;
+  }
   const moves = [];           // {pending, score, words}
   const seen = new Set();     // aynı yerleşimi tekrar etme
   const MAX_EVAL = 6000;      // güvenlik bütçesi
@@ -103,7 +129,7 @@ export function findBestMove(board, rack, difficulty){
 
   function tryPending(pending){
     if(!pending || !pending.length) return;
-    const sig = pending.map(p=>p.r+'.'+p.c+p.letter).sort().join('|');
+    const sig = pending.map(p=>p.r+'.'+p.c+(p.assigned||p.letter)+(p.joker?'?':'')).sort().join('|');
     if(seen.has(sig)) return; seen.add(sig);
     if(evals++ > MAX_EVAL) return;
     const res = validatePlacement(board, pending);
@@ -112,14 +138,14 @@ export function findBestMove(board, rack, difficulty){
 
   if(isEmptyBoard(board)){
     // İlk hamle: raftan kelimeler, merkezden geçecek şekilde yerleştir
-    const keys = subsetKeys(countOf(rackLower));
+    const keys = availableKeys(rackLower);
     for(const key of keys){
       const words = INDEX.get(key); if(!words) continue;
       for(const w of words){
         const n = w.length;
         // kelimenin herhangi bir karesi merkeze gelsin (yatay)
         for(let i=0;i<n;i++){
-          tryPending(buildPending(board, w, i, CENTER.r, CENTER.c, true));
+          tryPending(buildPending(board, w, i, CENTER.r, CENTER.c, true, rack));
           if(evals > MAX_EVAL) break;
         }
         if(evals > MAX_EVAL) break;
@@ -133,7 +159,7 @@ export function findBestMove(board, rack, difficulty){
         const cell = board[r][c]; if(!cell) continue;
         const bl = LM[cell.letter] || cell.letter.toLowerCase();
         const pool = rackLower.concat([bl]);
-        const keys = subsetKeys(countOf(pool));
+        const keys = availableKeys(pool);
         for(const key of keys){
           if(!key.includes(bl)) continue;            // çapayı içeren kelimeler
           const words = INDEX.get(key); if(!words) continue;
@@ -141,8 +167,8 @@ export function findBestMove(board, rack, difficulty){
             // çapanın kelime içindeki her konumu için hizala (yatay + dikey)
             for(let i=0;i<w.length;i++){
               if(w[i] !== bl) continue;
-              tryPending(buildPending(board, w, i, r, c, true));
-              tryPending(buildPending(board, w, i, r, c, false));
+              tryPending(buildPending(board, w, i, r, c, true, rack));
+              tryPending(buildPending(board, w, i, r, c, false, rack));
             }
             if(evals > MAX_EVAL) break;
           }

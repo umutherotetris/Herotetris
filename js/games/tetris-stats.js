@@ -4,6 +4,7 @@
 //  localStorage'da oyuncu istatistiklerini tutar, oyun sonunda
 //  güncellenir. Başarımlar (rozetler) kilidini açar.
 // ════════════════════════════════════════════════════════════════
+import { HERO_KEYS } from './tetris-heroes.js';
 
 const STATS_KEY = 'hero_tetris_stats';
 const ACH_KEY   = 'hero_tetris_achievements';
@@ -55,32 +56,51 @@ function read(key, def){
 function write(key, val){
   try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
 }
+function record(value){ return value && typeof value==='object' && !Array.isArray(value) ? value : {}; }
+function count(value, fallback=0){ return Number.isSafeInteger(value) && value>=fallback ? value : fallback; }
+function add(s,key,value){ s[key]=Math.min(Number.MAX_SAFE_INTEGER,s[key]+count(value)); }
+function normalizeStats(value){
+  const raw=record(value),s=defaultStats();
+  for(const key of Object.keys(s)){
+    if(typeof s[key]==='number') s[key]=count(raw[key],s[key]);
+  }
+  const plays=record(raw.heroPlays);
+  for(const key of HERO_KEYS){
+    if(Object.hasOwn(plays,key) && Number.isSafeInteger(plays[key]) && plays[key]>=0) s.heroPlays[key]=plays[key];
+  }
+  if(HERO_KEYS.includes(raw.favoriteHero)) s.favoriteHero=raw.favoriteHero;
+  return s;
+}
 
 export const Stats = {
-  get(){ return Object.assign(defaultStats(), read(STATS_KEY, {})); },
+  get(){ return normalizeStats(read(STATS_KEY, {})); },
 
   // Açılmış başarım id listesi
-  getUnlocked(){ return read(ACH_KEY, []); },
+  getUnlocked(){
+    const raw=read(ACH_KEY, []);
+    return Array.isArray(raw) ? [...new Set(raw.filter(id=>ACHIEVEMENTS.some(a=>a.id===id)))] : [];
+  },
 
   // Oyun sonunda istatistikleri güncelle, yeni açılan başarımları döndür
   // data: { score, lines, tetrisCount, combo, level, hero, powersUsed, gemsUsed, mode, won }
   recordGame(data){
+    data=record(data);
     const s = this.get();
-    s.gamesPlayed++;
-    s.totalScore += data.score || 0;
-    s.totalLines += data.lines || 0;
-    s.totalTetris += data.tetrisCount || 0;
-    s.bestScore = Math.max(s.bestScore, data.score || 0);
-    s.bestCombo = Math.max(s.bestCombo, data.combo || 0);
-    s.maxLevel = Math.max(s.maxLevel, data.level || 1);
-    s.powersUsed += data.powersUsed || 0;
-    s.gemsUsed += data.gemsUsed || 0;
-    if(data.won && data.mode === 'ai') s.aiWins++;
-    if(data.won && data.mode === 'versus') s.vsWins++;
-    if(data.won && data.mode === 'adventure') s.bossesBeaten++;
+    add(s,'gamesPlayed',1);
+    add(s,'totalScore',data.score);
+    add(s,'totalLines',data.lines);
+    add(s,'totalTetris',data.tetrisCount);
+    s.bestScore = Math.max(s.bestScore, count(data.score));
+    s.bestCombo = Math.max(s.bestCombo, count(data.combo));
+    s.maxLevel = Math.max(s.maxLevel, count(data.level,1));
+    add(s,'powersUsed',data.powersUsed);
+    add(s,'gemsUsed',data.gemsUsed);
+    if(data.won===true && data.mode === 'ai') add(s,'aiWins',1);
+    if(data.won===true && data.mode === 'versus') add(s,'vsWins',1);
+    if(data.won===true && data.mode === 'adventure') add(s,'bossesBeaten',1);
     // Kahraman oynama sayısı
-    if(data.hero){
-      s.heroPlays[data.hero] = (s.heroPlays[data.hero] || 0) + 1;
+    if(HERO_KEYS.includes(data.hero)){
+      s.heroPlays[data.hero] = Math.min(Number.MAX_SAFE_INTEGER,(s.heroPlays[data.hero] || 0) + 1);
       let best = null, bestN = 0;
       for(const k in s.heroPlays){ if(s.heroPlays[k] > bestN){ bestN = s.heroPlays[k]; best = k; } }
       s.favoriteHero = best;
@@ -92,7 +112,7 @@ export const Stats = {
 
   // Stats'a göre yeni açılan başarımları bul + kaydet, yeni açılanları döndür
   checkAchievements(s){
-    s = s || this.get();
+    s = normalizeStats(s || this.get());
     const unlocked = this.getUnlocked();
     const newly = [];
     ACHIEVEMENTS.forEach(a => {
