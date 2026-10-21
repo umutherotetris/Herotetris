@@ -1,3 +1,9 @@
+# Release 149 — core engine rules, timing and word search
+
+Fixes power-induced Tetris cell loss, elapsed-time gravity/AI behavior, reachable adventure stars, chess side-specific mating material, terminal Tavla continuation and Kelimecik board scoring/multi-anchor AI search. New independent oracles and actual-canvas regressions complement the prior suites: 22 Node packages, 9 Chromium packages and all 60 module syntax checks pass. Original jewels and portal presentation remain. See [PORTAL_AUDIT_149.md](PORTAL_AUDIT_149.md) for findings, limits and the adventure star thresholds.
+
+---
+
 # Release 148 — outcomes, breaks, gestures and long sessions
 
 Second bug pass fixes duplicate/missing match outcomes, paused Tavla turn continuation, Kelimecik replay/jokers, Tetris overflow/shields/garbage passives, gesture reversal and slow drag, malformed saves and leaked delayed game controls. Original parked draggable jewels and portal presentation remain unchanged. See [PORTAL_AUDIT_148.md](PORTAL_AUDIT_148.md) for 52 new regression groups, extended browser stress coverage, the unchanged adventure star-design issue and verification limits. Both online players must use v148.

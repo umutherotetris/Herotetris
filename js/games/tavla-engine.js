@@ -196,6 +196,7 @@ function maxPlayable(s,memo){
   memo.set(key,best);return best;
 }
 export function allLegalMoves(state){
+  if(gameStatus(state)!=='playing') return [];
   const moves=rawMoves(state), memo=new Map();let best=0;
   const ranked=moves.map(move=>{const count=1+maxPlayable(applyMove(state,move),memo);best=Math.max(best,count);return {move,count};});
   let result=ranked.filter(r=>r.count===best).map(r=>r.move);
@@ -246,6 +247,7 @@ export function applyMove(state, move){
 
 // Sıra bu oyuncuda bitti mi (kullanılacak zar/hamle kalmadı mı)
 export function turnComplete(state){
+  if(gameStatus(state)!=='playing') return true;
   if(state.dice.length === 0) return false;
   if(state.used.length >= state.dice.length) return true;
   return allLegalMoves(state).length === 0;   // hamle yoksa sıra biter

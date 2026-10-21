@@ -55,12 +55,12 @@ export function completeWorld(worldId, stars){
   saveProgress(p);
 }
 
-// Performansa göre yıldız (hedefe göre fazladan satır)
+// A normal final clear can exceed the target by at most three rows.
 export function calcStars(worldId, linesCleared){
   const w = WORLDS.find(x => x.id === worldId);
-  if(!w) return 1;
-  if(linesCleared >= w.target * 1.5) return 3;
-  if(linesCleared >= w.target * 1.2) return 2;
+  if(!w || !Number.isSafeInteger(linesCleared) || linesCleared<w.target) return 0;
+  if(linesCleared >= w.target+2) return 3;
+  if(linesCleared >= w.target+1) return 2;
   return 1;
 }
 

@@ -30,7 +30,7 @@ const GUIDE = {
     ['🔤 Kelime kur', 'Harfleri sürükle, en az 2 harfli geçerli Türkçe kelime oluştur. İlk kelime ⭐ merkezden geçmeli.'],
     ['💰 Puan kareleri', 'Her harfin değeri var (alttaki rakam). Mavi H² harf puanını, koyu mavi H³ üçler. Turuncu K² kelimeyi 2×, kırmızı K³ kelimeyi 3× yapar.'],
     ['🎁 Sürpriz kutular', 'Üzerine taş koyduğunda açılır: ⭐+10 / 💎+15 / 💰+25 JACKPOT puan, 🎴 +1 ekstra harf, ✖️ o hamleyi 2× yapar. Her oyunda 4 tane rastgele yerleşir.'],
-    ['🎰 Bingo', 'Tek hamlede 7 harfin hepsini kullanırsan +50 bonus puan!'],
+    ['🎰 Bingo', 'Tek hamlede 7 harfin hepsini kullanırsan +30 bonus puan!'],
     ['🔄 Seçenekler', 'Harf Değiş: sıranı harcayıp harfleri yenile · Geç: pas · Geri Al: yerleştirmeyi bozar.'],
     ['🔍 Araçlar', 'Büyüteç ile kelime kontrol, dürbün ile tahtayı incele.'],
   ],

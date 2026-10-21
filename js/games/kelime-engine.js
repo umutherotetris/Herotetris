@@ -214,7 +214,16 @@ function scoreWord(wordTiles, pending){
 }
 
 function wordString(wordTiles){
-  return wordTiles.map(w => (w.tile.joker ? (w.tile.assigned||'?') : w.tile.letter)).join('');
+  return wordTiles.map(w => (w.tile.joker ? (w.tile.assigned||w.tile.letter||'?') : w.tile.letter)).join('');
+}
+
+function validTile(tile){
+  if(!tile || typeof tile!=='object' || Array.isArray(tile) || (tile.joker!==undefined&&typeof tile.joker!=='boolean')) return false;
+  const letter=tile.joker?(tile.assigned||tile.letter):tile.letter;
+  return typeof letter==='string' && Object.hasOwn(LETTERS,letter) && tile.points===(tile.joker?0:letterPoints(letter));
+}
+export function isValidBoard(board){
+  return Array.isArray(board)&&board.length===SIZE&&Array.from(board).every(row=>Array.isArray(row)&&row.length===SIZE&&Array.from(row).every(tile=>tile===null||tile===0||validTile(tile)));
 }
 
 // ── Ana doğrulama + puanlama ──
@@ -222,11 +231,10 @@ function wordString(wordTiles){
 // dönüş: { ok, score, words:[{text,score}], error }
 export function validatePlacement(board, pending){
   if(!Array.isArray(pending) || pending.length === 0) return { ok:false, error:'Tahtaya taş yerleştir' };
-  if(!Array.isArray(board)||board.length!==SIZE||board.some(row=>!Array.isArray(row)||row.length!==SIZE)) return {ok:false,error:'Tahta verisi geçersiz'};
+  if(!isValidBoard(board)) return {ok:false,error:'Tahta verisi geçersiz'};
   for(const p of pending){
     if(!p || !Number.isInteger(p.r)||!Number.isInteger(p.c)||p.r<0||p.c<0||p.r>=SIZE||p.c>=SIZE) return {ok:false,error:'Taş tahta sınırları dışında'};
-    const letter=p.joker?p.assigned:p.letter;
-    if(!Object.hasOwn(LETTERS,letter) || p.points!==(p.joker?0:letterPoints(letter))) return {ok:false,error:'Harf veya taş puanı geçersiz'};
+    if(!validTile(p) || (p.joker && typeof p.assigned!=='string')) return {ok:false,error:'Harf veya taş puanı geçersiz'};
   }
   if(GAME_LANG==='en'&&!_isWordEN) return {ok:false,error:'İngilizce sözlük hazırlanıyor. Birazdan tekrar dene.'};
 

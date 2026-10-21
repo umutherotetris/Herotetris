@@ -1,10 +1,10 @@
 // ════════════════════════════════════════════════════════════════
 //  KELİME DÜELLOSU — Yapay Zekâ Rakip
-//  Anagram indeksi + çapa-uzatma araması ile geçerli hamle üretir.
+//  Sözlük ağacı, mevcut tahta harfleri ve rafla geçerli hamle üretir.
 //  Zorluk: kolay (kısa/düşük puan), orta (rastgele iyi), zor (en yüksek).
 // ════════════════════════════════════════════════════════════════
 import DICT, { TR_LOWER } from './kelime-dict.js';
-import { SIZE, RACK_SIZE, validatePlacement, isEmptyBoard, letterPoints, CENTER, getLanguage } from './kelime-engine.js';
+import { SIZE, validatePlacement, isEmptyBoard, isValidBoard, letterPoints, CENTER, getLanguage } from './kelime-engine.js';
 
 // küçük→büyük Türkçe (TR_LOWER tersi)
 const TR_UPPER = {}; for(const up in TR_LOWER) TR_UPPER[TR_LOWER[up]] = up;
@@ -21,21 +21,25 @@ async function ensureEnDict(){
 
 // Aktif dile göre harf eşleme
 function _lang(){ try{ return getLanguage(); }catch(e){ return 'tr'; } }
-function _lowerMap(){ return _lang()==='en' ? (EN_LOWER||{}) : TR_LOWER; }
 function _upperMap(){ return _lang()==='en' ? (EN_UPPER||{}) : TR_UPPER; }
 function upTR(lowerWord){ const U=_upperMap(); let s=''; for(const ch of lowerWord) s += (U[ch]||ch.toUpperCase()); return s; }
 
 // Anagram indeksi: dile göre ayrı (TR ve EN)
-let INDEX = null, INDEX_LANG = null;
+let INDEX = null, INDEX_LANG = null, INDEX_SOURCE = null, TRIE = null, WORD_SET = null;
+const EMPTY_DICT = [];
 function ensureIndex(){
   const lang = _lang();
-  if(INDEX && INDEX_LANG === lang) return;   // doğru dilin indeksi hazır
-  INDEX = new Map();
-  INDEX_LANG = lang;
-  const src = (lang === 'en') ? (DICT_EN || []) : DICT;
+  const src = (lang === 'en') ? (DICT_EN || EMPTY_DICT) : DICT;
+  if(INDEX && INDEX_LANG === lang && INDEX_SOURCE === src) return;
+  INDEX = new Map(); INDEX_LANG = lang; INDEX_SOURCE = src;
+  TRIE = {next:new Map(),word:false}; WORD_SET = new Set();
   for(const w of src){
     const n = w.length;
-    if(n < 2 || n > 8) continue;
+    if(n < 2 || n > SIZE) continue;
+    const upper=upTR(w); WORD_SET.add(upper);
+    let node=TRIE;
+    for(const letter of upper){if(!node.next.has(letter))node.next.set(letter,{next:new Map(),word:false});node=node.next.get(letter);}
+    node.word=true;
     const key = Array.from(w).sort().join('');
     let arr = INDEX.get(key);
     if(!arr){ arr = []; INDEX.set(key, arr); }
@@ -43,138 +47,58 @@ function ensureIndex(){
   }
 }
 
-// Bir harf çoklu-kümesinin (sayım) tüm alt-kümelerinin sıralı anahtarlarını üret (boyut≥2)
-function subsetKeys(countMap){
-  const letters = Object.keys(countMap);
-  const keys = [];
-  const cur = [];
-  function rec(i){
-    if(i === letters.length){
-      if(cur.length >= 2) keys.push(cur.slice().sort().join(''));
-      return;
-    }
-    const L = letters[i], max = countMap[L];
-    for(let k=0;k<=max;k++){
-      for(let x=0;x<k;x++) cur.push(L);
-      rec(i+1);
-      for(let x=0;x<k;x++) cur.pop();
-    }
-  }
-  rec(0);
-  return keys;
-}
-
-function countOf(lettersArr){
-  const m = {}; for(const l of lettersArr) m[l] = (m[l]||0)+1; return m;
-}
-
-// Bir küçük kelimeyi, indeks i'deki harfi (r,c)'ye gelecek şekilde yatay/dikey yerleştir.
-// Dönüş: pending dizisi (yalnız boş hücrelere yeni taşlar) veya null (geçersiz hizalama).
-function buildPending(board, word, alignIdx, r, c, horizontal, rack){
-  const upper = upTR(word);
-  const n = word.length;
-  const pending = [];
-  let anyNew = false;
-  for(let j=0;j<n;j++){
-    const rr = horizontal ? r : (r - alignIdx + j);
-    const cc = horizontal ? (c - alignIdx + j) : c;
-    if(rr<0||rr>=SIZE||cc<0||cc>=SIZE) return null;
-    const want = upper[j];
-    const existing = board[rr][cc];
-    if(existing){
-      if(existing.letter !== want) return null;   // mevcut taşla çakışıyor
-    } else {
-      pending.push({ r:rr, c:cc, letter:want, points:letterPoints(want), joker:false });
-      anyNew = true;
-    }
-  }
-  if(!anyNew) return null;
-  const counts=countOf(rack.filter(t=>!t.joker).map(t=>t.letter));
-  let jokers=rack.filter(t=>t.joker).length;
-  for(const p of pending){
-    if(counts[p.letter]){ counts[p.letter]--; continue; }
-    if(!jokers) return null;
-    jokers--; p.assigned=p.letter; p.letter=''; p.points=0; p.joker=true;
-  }
-  return pending;
-}
-
 // Ana fonksiyon: en iyi (zorluğa göre) geçerli hamleyi bul. Yoksa null.
 export function findBestMove(board, rack, difficulty){
   ensureIndex();
-  const LM = _lowerMap();
-  const rackLower = rack.filter(t=>!t.joker).map(t => LM[t.letter] || t.letter.toLowerCase());
-  const jokerCount=rack.filter(t=>t.joker).length;
-  const keyCache=new Map();
-  function availableKeys(pool){
-    const counts=countOf(pool);
-    if(!jokerCount) return subsetKeys(counts);
-    const cacheKey=pool.slice().sort().join('');
-    if(keyCache.has(cacheKey)) return keyCache.get(cacheKey);
-    // Scan each indexed multiset once per distinct anchor letter. This avoids
-    // enumerating every alphabet substitution for up to two blank tiles.
-    const keys=[];
-    for(const key of INDEX.keys()){
-      if(key.length>pool.length+jokerCount) continue;
-      const left={...counts}; let missing=0;
-      for(const ch of key){ if(left[ch]) left[ch]--; else missing++; }
-      if(missing<=jokerCount) keys.push(key);
-    }
-    keyCache.set(cacheKey,keys);return keys;
-  }
-  const moves = [];           // {pending, score, words}
-  const seen = new Set();     // aynı yerleşimi tekrar etme
-  const MAX_EVAL = 6000;      // güvenlik bütçesi
-  let evals = 0;
-
+  if(!isValidBoard(board)||!Array.isArray(rack)||!rack.length||rack.length>SIZE||!Array.from(rack).every(t=>t&&(t.joker===undefined||typeof t.joker==='boolean')&&(!t.joker?(typeof t.letter==='string'&&letterPoints(t.letter)>0&&t.points===letterPoints(t.letter)):t.points===0))) return null;
+  const counts=new Map();let jokers=0;
+  for(const tile of rack){if(tile.joker)jokers++;else counts.set(tile.letter,(counts.get(tile.letter)||0)+1);}
+  const firstMove=isEmptyBoard(board),moves=[],seen=new Set(),crossCache=new Map();
+  const MAX_EVAL=6000,MAX_NODES=300000;let evals=0,nodes=0;
+  const letterOf=tile=>tile?.joker?(tile.assigned||tile.letter):tile?.letter;
+  const occupied=(r,c)=>r>=0&&r<SIZE&&c>=0&&c<SIZE&&board[r][c];
   function tryPending(pending){
-    if(!pending || !pending.length) return;
-    const sig = pending.map(p=>p.r+'.'+p.c+(p.assigned||p.letter)+(p.joker?'?':'')).sort().join('|');
-    if(seen.has(sig)) return; seen.add(sig);
-    if(evals++ > MAX_EVAL) return;
-    const res = validatePlacement(board, pending);
-    if(res.ok) moves.push({ pending, score:res.score, words:res.words });
+    if(evals>=MAX_EVAL)return;
+    const sig=pending.map(p=>p.r+'.'+p.c+(p.assigned||p.letter)+(p.joker?'?':'')).sort().join('|');
+    if(seen.has(sig))return;seen.add(sig);evals++;
+    const res=validatePlacement(board,pending);
+    if(res.ok)moves.push({pending:pending.map(p=>({...p})),score:res.score,words:res.words});
   }
-
-  if(isEmptyBoard(board)){
-    // İlk hamle: raftan kelimeler, merkezden geçecek şekilde yerleştir
-    const keys = availableKeys(rackLower);
-    for(const key of keys){
-      const words = INDEX.get(key); if(!words) continue;
-      for(const w of words){
-        const n = w.length;
-        // kelimenin herhangi bir karesi merkeze gelsin (yatay)
-        for(let i=0;i<n;i++){
-          tryPending(buildPending(board, w, i, CENTER.r, CENTER.c, true, rack));
-          if(evals > MAX_EVAL) break;
-        }
-        if(evals > MAX_EVAL) break;
-      }
-      if(evals > MAX_EVAL) break;
-    }
-  } else {
-    // Sonraki hamleler: her dolu hücreyi çapa al, rack+çapaharfi havuzundan kelime kur
-    for(let r=0;r<SIZE && evals<=MAX_EVAL;r++){
-      for(let c=0;c<SIZE && evals<=MAX_EVAL;c++){
-        const cell = board[r][c]; if(!cell) continue;
-        const bl = LM[cell.letter] || cell.letter.toLowerCase();
-        const pool = rackLower.concat([bl]);
-        const keys = availableKeys(pool);
-        for(const key of keys){
-          if(!key.includes(bl)) continue;            // çapayı içeren kelimeler
-          const words = INDEX.get(key); if(!words) continue;
-          for(const w of words){
-            // çapanın kelime içindeki her konumu için hizala (yatay + dikey)
-            for(let i=0;i<w.length;i++){
-              if(w[i] !== bl) continue;
-              tryPending(buildPending(board, w, i, r, c, true, rack));
-              tryPending(buildPending(board, w, i, r, c, false, rack));
-            }
-            if(evals > MAX_EVAL) break;
-          }
-          if(evals > MAX_EVAL) break;
+  function crossAt(r,c,dr,dc){
+    const key=r+','+c+','+dr; if(crossCache.has(key))return crossCache.get(key);
+    let before='',after='';
+    for(let rr=r-dc,cc=c-dr;occupied(rr,cc);rr-=dc,cc-=dr)before=letterOf(board[rr][cc])+before;
+    for(let rr=r+dc,cc=c+dr;occupied(rr,cc);rr+=dc,cc+=dr)after+=letterOf(board[rr][cc]);
+    const data={before,after,touches:!!(before||after)};crossCache.set(key,data);return data;
+  }
+  for(const [dr,dc] of [[0,1],[1,0]])for(let line=0;line<SIZE&&nodes<MAX_NODES&&evals<MAX_EVAL;line++){
+    const at=pos=>dr?[pos,line]:[line,pos];
+    const anchors=Array.from({length:SIZE},(_,pos)=>{const [r,c]=at(pos);return firstMove?r===CENTER.r&&c===CENTER.c:!!board[r][c]||crossAt(r,c,dr,dc).touches;});
+    if(!anchors.some(Boolean))continue;
+    for(let start=0;start<SIZE&&nodes<MAX_NODES&&evals<MAX_EVAL;start++){
+      const [sr,sc]=at(start);if(start&&occupied(sr-dr,sc-dc))continue;
+      let empty=0,reachable=false;
+      for(let pos=start;pos<SIZE;pos++){const [r,c]=at(pos);if(!board[r][c])empty++;if(empty>rack.length)break;if(anchors[pos]){reachable=true;break;}}
+      if(!reachable)continue;
+      const pending=[];
+      function search(node,pos,connected,remainingJokers){
+        if(nodes++>=MAX_NODES||evals>=MAX_EVAL)return;
+        const [r,c]=at(pos);
+        if(node.word&&pending.length&&connected&&(pos===SIZE||!board[r][c]))tryPending(pending);
+        if(pos===SIZE)return;
+        const cell=board[r][c];
+        if(cell){const next=node.next.get(letterOf(cell));if(next)search(next,pos+1,true,remainingJokers);return;}
+        if(pending.length>=rack.length)return;
+        const cross=crossAt(r,c,dr,dc);
+        for(const [letter,next]of node.next){
+          if(cross.touches&&!WORD_SET.has(cross.before+letter+cross.after))continue;
+          const joined=connected||anchors[pos],count=counts.get(letter)||0;
+          if(count){counts.set(letter,count-1);pending.push({r,c,letter,points:letterPoints(letter),joker:false});search(next,pos+1,joined,remainingJokers);pending.pop();counts.set(letter,count);}
+          if(remainingJokers){pending.push({r,c,letter:'',assigned:letter,points:0,joker:true});search(next,pos+1,joined,remainingJokers-1);pending.pop();}
+          if(nodes>=MAX_NODES||evals>=MAX_EVAL)break;
         }
       }
+      search(TRIE,start,false,jokers);
     }
   }
 

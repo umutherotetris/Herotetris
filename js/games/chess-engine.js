@@ -290,9 +290,17 @@ export function hasMatingPotential(board, color){
   }
   if(!own.length) return false;
   if(own.some(p=>['p','r','q'].includes(p.t))) return true;
-  if(own.length===1 && !other.length) return false;
-  const all=[...own,...other];
-  if(all.every(p=>p.t==='b' && p.sq===all[0].sq)) return false;
+  if(own.some(p=>p.t==='n')){
+    // A lone knight cannot mate a bare king or one helped only by queens.
+    // Enemy pawns/minors/rooks can obstruct escape squares and permit selfmate.
+    return own.length>1 || other.some(p=>p.t!=='q');
+  }
+  if(own.every(p=>p.t==='b')){
+    // Same-color bishops need an opposite-color bishop, pawn or knight to
+    // allow a mating construction; an enemy rook/queen alone cannot help.
+    const bishops=[...own,...other.filter(p=>p.t==='b')];
+    return bishops.some(p=>p.sq!==bishops[0].sq) || other.some(p=>p.t==='p'||p.t==='n');
+  }
   return true;
 }
 

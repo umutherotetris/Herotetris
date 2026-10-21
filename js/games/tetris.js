@@ -228,6 +228,7 @@ function handleTopOut(){
 
 function lock(){
   if(!G || G.over) return;
+  if(collides(G.cur,0,0)){handleTopOut();return;}
   if(matrixCells(G.cur.matrix).some(([,cy])=>G.cur.y+cy<0)){ handleTopOut(); return; }
   Sound.lock();
   G.lockTimer = 0; G.lockResets = 0;
@@ -694,6 +695,23 @@ function usePower(){
   powerFX(h); screenShake(10);
   spawnPowerParticles(h.color);   // kahramana özel patlama
   flash('⚡ ' + msg);
+  ensureActivePieceFits();
+}
+
+// Board-transforming powers must never let an active piece overwrite settled cells.
+function ensureActivePieceFits(){
+  if(!G || G.over || !G.cur || !collides(G.cur,0,0)) return;
+  const candidate={...G.cur};
+  const minimumY=-Math.min(...matrixCells(candidate.matrix).map(([,y])=>y));
+  while(candidate.y>minimumY){
+    candidate.y--;
+    if(!collides(candidate,0,0)){
+      G.cur.y=candidate.y;G.visualY=candidate.y;
+      G.dropAcc=0;G.lockTimer=0;G.lastMoveRotate=false;
+      return;
+    }
+  }
+  handleTopOut();
 }
 
 // Güç kullanınca kahraman renginde büyük parçacık patlaması
@@ -965,6 +983,7 @@ function pickGem(idx){
   spawnPowerParticles(gem.c || '#FFD740');   // gem rengine özel patlama
   flash((gem.ic ? gem.ic + ' ' : '💎 ') + msg);
   checkFusion();   // kullanım sonrası kalan gem'lerde fusion olabilir
+  ensureActivePieceFits();
 }
 
 // ── Karakter seçim ekranı ───────────────────────────────────────
@@ -1141,7 +1160,7 @@ function buildWorldSelect(onPick){
       <div class="hs-title" style="font-size:16px">🗺️ MACERA</div>
       <button class="t-icon" data-act="back">← GERİ</button>
     </div>
-    <div class="ws-progress">${doneCount} / 8 dünya tamamlandı</div>
+    <div class="ws-progress">${doneCount} / 8 dünya tamamlandı<br>★ Hedef · ★★ Hedef +1 satır · ★★★ Hedef +2 satır</div>
     <div class="ws-grid">${cardsHtml}</div>`;
   document.body.appendChild(ov);
   ov.querySelectorAll('.ws-card').forEach(card => {
@@ -1482,6 +1501,30 @@ function flash(text){
 }
 
 // ── Oyun döngüsü ────────────────────────────────────────────────
+function advanceGravity(dt,interval){
+  let remaining=dt+(G.gravityDebt||0);
+  G.gravityDebt=0;
+  for(let steps=0;steps<256&&!G.over;steps++){
+    if(collides(G.cur,0,1)){
+      G.dropAcc=0;
+      const wait=(G.lockResets||0)>=LOCK_MAX_RESETS?0:Math.max(0,LOCK_DELAY-(G.lockTimer||0));
+      if(remaining+1e-9<wait){G.lockTimer=(G.lockTimer||0)+remaining;return;}
+      remaining=Math.max(0,remaining-wait);
+      const previousRate=G.dropInterval;
+      lock();G.lockTimer=0;G.lockResets=0;
+      if(previousRate>0 && G.dropInterval>0) interval*=G.dropInterval/previousRate;
+    }else{
+      G.lockTimer=0;
+      const wait=Math.max(0,interval-G.dropAcc);
+      if(remaining+1e-9<wait){G.dropAcc+=remaining;return;}
+      remaining=Math.max(0,remaining-wait);
+      G.dropAcc=0;G.cur.y++;G.lastMoveRotate=false;
+    }
+    if(remaining<=0 || G.over) return;
+  }
+  if(!G.over) G.gravityDebt=remaining;
+}
+
 function loop(ts){
   if(!G || G.over) return;
   if(!G.last) G.last = ts;
@@ -1505,8 +1548,9 @@ function loop(ts){
     if(G.mode === 'survival'){
       const step = Math.floor(G.elapsed / 30000);
       if(step > G.survStep){
+        const crossed=step-G.survStep;
         G.survStep = step;
-        G.baseInterval = Math.max(120, G.baseInterval - 90);
+        G.baseInterval = Math.max(120, G.baseInterval - 90*crossed);
         G.dropInterval = Math.max(80, Math.round(G.baseInterval * (G.speedMult||1)));
         flash('⏱️ HIZLANIYOR!');
       }
@@ -1519,24 +1563,11 @@ function loop(ts){
     }
     // AI rakip: botun ilerlemesini simüle et
     if(G.ai){ aiTick(dt); if(G.over) return; drawAIBoard(); }
-    G.dropAcc += dt;
     // Flash "Zaman Yavaşlat" aktifse düşme aralığını 4x uzat
     const slowed = (G.slowUntil && ts < G.slowUntil);
     const interval = slowed ? G.dropInterval * 4 : G.dropInterval;
-    const onGround = collides(G.cur, 0, 1);
-    if(onGround){
-      // Lock delay: yere değince hemen kilitleme, kısa süre hareket/döndürme şansı ver
-      G.lockTimer = (G.lockTimer || 0) + dt;
-      G.dropAcc = 0;
-      if(G.lockTimer >= LOCK_DELAY || (G.lockResets || 0) >= LOCK_MAX_RESETS){
-        lock(); G.lockTimer = 0; G.lockResets = 0;
-        if(G.over) return;
-      }
-    } else {
-      // Havadayken normal düşüş, kilit sayacı sıfır
-      G.lockTimer = 0;
-      if(G.dropAcc >= interval){ G.dropAcc = 0; G.cur.y++; G.lastMoveRotate = false; }
-    }
+    advanceGravity(dt,interval);
+    if(G.over) return;
     // Yumuşak düşme: görsel Y'yi mantıksal Y'ye doğru kaydır
     if(G.cur){
       if(G.visualY === undefined) G.visualY = G.cur.y;
@@ -2110,6 +2141,7 @@ function startGame(){
   if(!G) return;
   G.round={};   // aynı DOM üzerinde yeniden başlatılan tur da ayrı bir oturumdur
   G.garbageRemainder=0;
+  G.gravityDebt=0;G.aiTimeDebt=0;
   G.controlStops?.forEach(stop=>stop());
   if(!RESUME_DATA && RESUMABLE_MODES.includes(SELECTED_MODE)) Resume.clearSnapshot('tetris');   // taze oyun → eski devam kaydını sil
   G.board = Array.from({length:ROWS}, () => Array(COLS).fill(0));
@@ -2484,6 +2516,16 @@ function aiSpawn(){
 // AI botunun bir adımı (loop'tan çağrılır) — gerçek tahtada oynar
 function aiTick(dt){
   if(!G || !G.ai || G.over || !G.oppAlive) return;
+  let remaining=dt+(G.aiTimeDebt||0);G.aiTimeDebt=0;
+  for(let steps=0;steps<200&&remaining>0&&!G.over&&G.oppAlive;steps++){
+    const slice=Math.min(10,remaining);
+    aiStep(slice);remaining-=slice;
+  }
+  if(!G.over && G.oppAlive) G.aiTimeDebt=remaining;
+}
+
+function aiStep(dt){
+  if(!G || !G.ai || G.over || !G.oppAlive) return;
   const prof = G.aiProfile;
 
   // Mevcut parça için plan yoksa hesapla (en iyi sütun + dönüş)
@@ -2494,7 +2536,7 @@ function aiTick(dt){
   // AI hareketi: plana doğru adım adım (insansı hız)
   G.aiMoveAcc += dt;
   if(G.aiPlan && G.aiMoveAcc >= (prof.moveMs || 160)){
-    G.aiMoveAcc = 0;
+    G.aiMoveAcc -= prof.moveMs || 160;
     const plan = G.aiPlan;
     // Önce hedef dönüşe ulaş
     if(plan.rot > 0){
@@ -2511,7 +2553,7 @@ function aiTick(dt){
   // AI parça düşürme
   G.aiDropAcc += dt;
   if(G.aiDropAcc >= G.aiDropInterval){
-    G.aiDropAcc = 0;
+    G.aiDropAcc -= G.aiDropInterval;
     if(!aiCollides(G.aiCur, 0, 1)){
       G.aiCur.y++;
     } else {
