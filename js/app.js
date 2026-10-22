@@ -26,12 +26,30 @@ function toast(msg, isErr){
 
 // Bir oyun modülünü dinamik yükle + aç. Hata olursa sadece o oyun etkilenir.
 const pendingGames = new Map();
+const gameRoots = {
+  './games/tetris.js': '.tetris-overlay, .hero-select-overlay',
+  './games/chess.js': '.chess-root',
+  './games/tavla.js': '.tavla-root',
+  './games/kelime.js': '.kl-root'
+};
+let latestGameRequest = null;
 function launchGame(modulePath, exportName, label){
-  if(pendingGames.has(modulePath)) return pendingGames.get(modulePath);
+  const active = Object.entries(gameRoots).find(([,selector])=>document.querySelector(selector));
+  if(active){
+    if(active[0]!==modulePath) toast('Önce açık oyundan ana menüye dön, ardından ' + label + ' seç.', false);
+    return Promise.resolve();
+  }
+  const request = {modulePath};
+  latestGameRequest = request;
+  const pending = pendingGames.get(modulePath);
+  if(pending){ pending.request=request; return pending.promise; }
+  const entry = {request};
   const launch = (async () => {
   toast(label + ' açılıyor…', false);
   try{
     const mod = await import(modulePath);
+    if(latestGameRequest!==entry.request) return;
+    if(Object.values(gameRoots).some(selector=>document.querySelector(selector))) return;
     const fn = mod[exportName];
     if(typeof fn !== 'function') throw new Error(exportName + ' bulunamadı (' + modulePath + ')');
     await fn();
@@ -41,8 +59,11 @@ function launchGame(modulePath, exportName, label){
     console.error('[' + label + ']', e);
   }
   })();
-  pendingGames.set(modulePath, launch);
-  return launch.finally(() => pendingGames.delete(modulePath));
+  entry.promise = launch.finally(() => {
+    if(pendingGames.get(modulePath)===entry) pendingGames.delete(modulePath);
+  });
+  pendingGames.set(modulePath, entry);
+  return entry.promise;
 }
 
 function bindEco(id, modulePath, exportName){

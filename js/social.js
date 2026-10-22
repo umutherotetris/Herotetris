@@ -398,11 +398,19 @@ function _showGameInvitePicker(targetUid, targetNick){
   ov.querySelectorAll('[data-gi]').forEach(btn => btn.addEventListener('click', async () => {
     const game = btn.dataset.gi;
     const g = GAMES[game]; if(!g) return;
+    if(_inviteGameBlocked()) return;
     // Kelimecik: önce dil seç (TR/EN)
     let klLang = '';
     if(game === 'kelime'){
       klLang = await _pickKelimeLang(ov);
       if(!klLang) return;   // vazgeçildi
+    }
+    if(_inviteGameBlocked()) return;
+    if(game==='kelime'){
+      try{localStorage.setItem('hero_invite_ctx',JSON.stringify({game,role:'host',targetUid,oppNick:targetNick,lang:klLang,ts:Date.now()}));}catch(e){}
+      ov.remove();try{close();}catch(e){}
+      _openGameModule(game);
+      return;
     }
     const me = Auth.getState();
     btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
@@ -438,38 +446,49 @@ function _genInviteCode(){
 
 // Davet eden tarafı: oyunu HOST olarak aç (bu kodla oda kur, rakibi bekle)
 function _launchGameAsInviteHost(game, code, oppNick){
+  if(_inviteGameBlocked()) return Promise.resolve(false);
   // localStorage'a davet bağlamı yaz → oyun açılınca okur
   try{
     localStorage.setItem('hero_invite_ctx', JSON.stringify({
       game, code, role:'host', oppNick: oppNick || 'Rakip', ts: Date.now()
     }));
   }catch(e){}
-  _openGameModule(game);
+  return _openGameModule(game);
 }
 
 // Davet edilen tarafı: bildirimden kabul → oyunu GUEST olarak aç
-function _acceptGameInvite(game, code, hostNick){
+function _acceptGameInvite(game, code, hostNick, invite, lang){
+  if(_inviteGameBlocked()) return Promise.resolve(false);
   try{
     localStorage.setItem('hero_invite_ctx', JSON.stringify({
-      game, code, role:'guest', oppNick: hostNick || 'Rakip', ts: Date.now()
+      game, code, role:'guest', oppNick: hostNick || 'Rakip', invite, lang, ts: Date.now()
     }));
   }catch(e){}
-  _openGameModule(game);
+  return _openGameModule(game);
+}
+
+function _inviteGameBlocked(){
+  if(!document.querySelector('.chess-root,.tavla-root,.kl-root,.tetris-overlay,.hero-select-overlay')) return false;
+  try{window.Hero?.toast?.('Davete katılmadan önce açık oyundan ana menüye dön.',false);}catch(e){}
+  return true;
 }
 
 // Oyun modülünü aç (export edilen open fonksiyonu)
 function _openGameModule(game){
   const map = {
-    chess:  ['../games/chess.js', 'openChess'],
-    tavla:  ['../games/tavla.js', 'openTavla'],
-    tetris: ['../games/tetris.js', 'openTetris'],
-    kelime: ['../games/kelime.js', 'openKelime'],
+    chess:  ['./games/chess.js', 'openChess'],
+    tavla:  ['./games/tavla.js', 'openTavla'],
+    tetris: ['./games/tetris.js', 'openTetris'],
+    kelime: ['./games/kelime.js', 'openKelime'],
   };
-  const entry = map[game]; if(!entry) return;
-  import(entry[0]).then(m => {
+  const entry = map[game]; if(!entry || _inviteGameBlocked()) return Promise.resolve(false);
+  if(typeof window.Hero?.[entry[1]]==='function') return Promise.resolve(window.Hero[entry[1]]()).then(()=>true);
+  return import(entry[0]).then(m => {
+    if(_inviteGameBlocked()) return false;
     const fn = m[entry[1]] || m.default;
-    if(typeof fn === 'function') fn();
-  }).catch(e => { console.warn('[invite] oyun açılamadı', game, e); });
+    if(typeof fn !== 'function') return false;
+    fn();return true;
+  }).catch(e => { console.warn('[invite] oyun açılamadı', game, e); return false; });
 }
 
 // ── Profil: arkadaş listesi bölümü (gizli değilse + admin hep görür) ──
@@ -1962,7 +1981,7 @@ function renderNotifCard(n){
   // Arkadaşlık isteği → Kabul / Red butonları
   const isFriendReq = (n.type === 'friendreq' && n.reqFrom);
   // Oyun daveti → Kabul butonu (inviteCode'lu satranç/tavla/tetris; kelime ayrı akış)
-  const isGameInvite = (n.type === 'challenge' && n.inviteCode && n.game);
+  const isGameInvite = n.type==='challenge' && ((['chess','tavla','tetris'].includes(n.game)&&n.inviteCode) || (n.game==='kelime'&&n.gameId&&n.gameInviteId));
   let reqBtns = '';
   if(isFriendReq){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
@@ -1971,7 +1990,7 @@ function renderNotifCard(n){
        </div>`;
   } else if(isGameInvite){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
-         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode)}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" data-giexp="${esc(n.expiresAt||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
+         <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode||'')}" data-gigameid="${esc(n.gameId||'')}" data-giinviteid="${esc(n.gameInviteId||'')}" data-gifrom="${esc(n.fromUid||'')}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" data-giexp="${esc(n.expiresAt||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
        </div>`;
   }
   return `<div class="ghp-notif-row" ${fromAttr}>
@@ -2026,6 +2045,7 @@ function renderNotifPane(){
   // Oyun daveti Kabul → oyunu guest olarak aç
   list.querySelectorAll('[data-giaccept]').forEach(el => el.addEventListener('click', async (e) => {
     e.stopPropagation();
+    if(_inviteGameBlocked()) return;
     const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey, lang = el.dataset.gilang;
     // Davet süresi dolmuş mu? (canlı davet 5 dk)
     const exp = parseInt(el.dataset.giexp||'0');
@@ -2043,7 +2063,8 @@ function renderNotifPane(){
     if(key && me.uid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null); }catch(e){} }
     // Hub'ı kapat, oyunu guest olarak aç
     try{ close(); }catch(e){}
-    _acceptGameInvite(game, code, nick);
+    const invite=game==='kelime'?{id:el.dataset.giinviteid,gameId:el.dataset.gigameid,fromUid:el.dataset.gifrom,fromName:nick}:undefined;
+    _acceptGameInvite(game, code, nick, invite, lang);
   }));
 }
 

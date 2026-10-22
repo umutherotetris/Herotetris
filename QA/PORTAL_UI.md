@@ -1,3 +1,9 @@
+# Release 151 — stronger AI, genuine friend invites and collision-free interactions
+
+Adds bounded tactical chess search, phase-aware Tavla racing, surprise-aware Kelime selection and reachable two-piece hard Tetris plans. Fixes stacked game launches/dialogs, stale actions, multi-pointer and duplicate checker rendering, chat/game keyboard conflicts, HUD races and broken friend-invite paths. Kelime notifications now join genuine shared rooms; three PeerJS lobbies support native room sharing with truthful clipboard fallback and narrow-screen reachability. Recovery updates its existing worker registration without unregistering a newly activated version. 37 Node suites, 16 Chromium suites and all 61 module syntax checks pass; 87 new test groups document the behavior. Both online players should load v151. Original sparkling jewels, parking, dragging, theme and scale remain. See [PORTAL_AUDIT_151.md](PORTAL_AUDIT_151.md) for measured examples and limits.
+
+---
+
 # Release 150 — saved engine state, tile conservation and chronological results
 
 Fixes chess FEN counters/restored history, cancelled and stale Tavla gestures, atomic combined moves, Kelime preview racks/extra tiles/language/online exchange conservation, and Tetris saved phases, pause panels, power duration, chronological AI outcomes, exact Sprint time and Survival speed boundaries. Adds 43 regression groups across six Node suites and one actual-canvas suite. All 28 Node packages, 10 Chromium packages and 60 module syntax checks pass. Original jewels and portal presentation remain. Both online players should load v150. See [PORTAL_AUDIT_150.md](PORTAL_AUDIT_150.md) for evidence and limits.

@@ -314,6 +314,7 @@ export async function leaveRoom(){
       try{ await fdb.onDisconnect(fdb.ref(db,session.queuePath)).cancel(); }catch(e){}
     }
     if(session.invId && session.targetUid){ try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${session.targetUid}/${session.invId}`)); }catch(e){} }
+    if(session.notifRef){try{await fdb.remove(session.notifRef);}catch(e){}}
     if(session.role==='A'){ try{ await fdb.remove(session.roomRef); }catch(e){} }
     return;
   }
@@ -409,39 +410,56 @@ export async function listFriends(){
 }
 
 // Davet gönder (hedef uid'e). cb: { onSent(), onAccepted({role,gameId,oppName,seed}), onError(msg) }
-export async function sendInvite(targetUid, targetName, cb){
+export async function sendInvite(targetUid, targetName, cb, opts={}){
+  const epoch=++requestEpoch;
   const st = await ensureAuth();
+  if(epoch!==requestEpoch) return;
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   if(targetUid === st.uid){ cb.onError && cb.onError('Kendine davet gönderemezsin'); return; }
   const myUid = st.uid, myName = st.displayName || 'Oyuncu';
   const gameId = fdb.push(fdb.ref(db, GPATH)).key;
   const seed = rid();
+  const lang=opts.lang==='en'?'en':'tr';
+  const roomRef=fdb.ref(db,`${GPATH}/${gameId}`);
+  const session=S={gameId,role:'A',roomRef,myUid,waiting:true,targetUid};
+  const active=()=>epoch===requestEpoch && S===session;
   try{
-    await fdb.set(fdb.ref(db, `${GPATH}/${gameId}`), {
+    await fdb.set(roomRef, {
       seed, boardStr: emptyBoardStr(), scores:{A:0,B:0}, turn:'A', bagPointer:14,
       players:{A:myUid}, names:{A:myName}, presence:{A:true}, status:'invited',
-      passStreak:0, createdAt:Date.now(), invited:targetUid
+      passStreak:0, createdAt:Date.now(), invited:targetUid, lang
     });
-  }catch(e){ cb.onError && cb.onError(permMsg(e)); return; }
+    if(!active()){await fdb.remove(roomRef).catch(()=>{});return;}
+  }catch(e){ if(active()){S=null;cb.onError && cb.onError(permMsg(e));} return; }
   const invId = fdb.push(fdb.ref(db, `${INVPATH}/${targetUid}`)).key;
+  session.invId=invId;
   try{
     await fdb.set(fdb.ref(db, `${INVPATH}/${targetUid}/${invId}`), {
-      fromUid:myUid, fromName:myName, game:'kelime', gameId, seed, ts:Date.now()
+      fromUid:myUid, fromName:myName, game:'kelime', gameId, seed, lang, ts:Date.now()
     });
-  }catch(e){ fdb.remove(fdb.ref(db,`${GPATH}/${gameId}`)).catch(()=>{}); cb.onError && cb.onError(permMsg(e)); return; }
-  const roomRef = fdb.ref(db, `${GPATH}/${gameId}`);
+    if(!active()){await fdb.remove(fdb.ref(db,`${INVPATH}/${targetUid}/${invId}`)).catch(()=>{});await fdb.remove(roomRef).catch(()=>{});return;}
+  }catch(e){ fdb.remove(roomRef).catch(()=>{}); if(active()){S=null;cb.onError && cb.onError(permMsg(e));} return; }
+  // Bildirim gerçek davet kaydına bağlanır; kabul yolu aynı oda ve dili kullanır.
+  try{
+    session.notifRef=fdb.push(fdb.ref(db,`userNotifs/${targetUid}`));
+    await fdb.set(session.notifRef,{
+      type:'challenge',icon:'⚔️',text:myName+' seni '+(lang==='en'?'Wordie':'Kelimecik')+' oynamaya davet ediyor!',
+      fromUid:myUid,fromName:myName,game:'kelime',gameId,gameInviteId:invId,lang,ts:Date.now(),expiresAt:Date.now()+300000
+    });
+    if(!active()){await fdb.remove(session.notifRef).catch(()=>{});return;}
+  }catch(e){} // Oyun içindeki gelen davet listesi bildirim izni olmadan da çalışır.
+  if(!active()) return;
   try{ fdb.onDisconnect(fdb.ref(db,`${GPATH}/${gameId}/presence/A`)).set(false); }catch(e){}
-  S = { gameId, role:'A', roomRef, myUid, waiting:true, invId, targetUid };
-  cb.onSent && cb.onSent();
+  cb.onSent && cb.onSent({gameId,inviteId:invId,lang});
   const off = fdb.onValue(roomRef, (s)=>{
     const room = s.val(); if(!room) return;
-    if(room.players && room.players.B && S && S.waiting){
-      S.waiting=false; try{off();}catch(e){}
+    if(room.players && room.players.B && active() && session.waiting){
+      session.waiting=false;session.oppUid=room.players.B;try{off();}catch(e){}
       fdb.remove(fdb.ref(db, `${INVPATH}/${targetUid}/${invId}`)).catch(()=>{});
-      cb.onAccepted && cb.onAccepted({ role:'A', gameId, oppName: room.names && room.names.B || targetName || 'Rakip', seed: room.seed });
+      cb.onAccepted && cb.onAccepted({ role:'A', gameId, oppName: room.names && room.names.B || targetName || 'Rakip', oppUid:room.players.B, seed: room.seed, lang:room.lang||lang });
     }
   });
-  S._offWait = off;
+  session._offWait = off;
 }
 
 // Gelen davetleri dinle. cb(list) → [{id, fromUid, fromName, gameId, seed, ts}]
@@ -460,17 +478,26 @@ export function listenInvites(cb){
 
 // Daveti kabul et. cb: { onMatched({role,gameId,oppName,seed}), onError(msg) }
 export async function acceptInvite(invite, cb){
+  const epoch=++requestEpoch;
   const st = await ensureAuth();
+  if(epoch!==requestEpoch) return;
   if(!st || !st.uid){ cb.onError && cb.onError('Önce giriş yapmalısın'); return; }
   const myUid=st.uid, myName=st.displayName||'Oyuncu';
   const roomRef = fdb.ref(db, `${GPATH}/${invite.gameId}`);
   const snap = await waitForSeed(roomRef);
+  if(epoch!==requestEpoch) return;
   if(!snap){ cb.onError && cb.onError('Oda bulunamadı (davet süresi dolmuş olabilir)'); fdb.remove(fdb.ref(db,`${INVPATH}/${myUid}/${invite.id}`)).catch(()=>{}); return; }
-  await fdb.update(roomRef, { 'players/B':myUid, 'names/B':myName, 'presence/B':true, status:'active' });
+  const accepted=await fdb.runTransaction(roomRef,room=>{
+    if(epoch!==requestEpoch || !room || room.status!=='invited' || room.invited!==myUid || (room.players?.B && room.players.B!==myUid)) return;
+    return {...room,players:{...room.players,B:myUid},names:{...room.names,B:myName},presence:{...room.presence,B:true},status:'active'};
+  });
+  if(epoch!==requestEpoch) return;
+  if(!accepted.committed){cb.onError && cb.onError('Davet artık geçerli değil veya başka bir oyuncuya ait.');return;}
+  const room=accepted.snapshot.val();
   try{ fdb.onDisconnect(fdb.ref(db,`${GPATH}/${invite.gameId}/presence/B`)).set(false); }catch(e){}
   fdb.remove(fdb.ref(db,`${INVPATH}/${myUid}/${invite.id}`)).catch(()=>{});
-  S = { gameId:invite.gameId, role:'B', roomRef, myUid };
-  cb.onMatched && cb.onMatched({ role:'B', gameId:invite.gameId, oppName: snap.names && snap.names.A || invite.fromName || 'Rakip', seed: snap.seed });
+  S = { gameId:invite.gameId, role:'B', roomRef, myUid,oppUid:room.players.A };
+  cb.onMatched && cb.onMatched({ role:'B', gameId:invite.gameId, oppName: room.names && room.names.A || invite.fromName || 'Rakip', oppUid:room.players.A, seed: room.seed, lang:room.lang||'tr' });
 }
 
 export async function declineInvite(invite){
@@ -480,9 +507,10 @@ export async function declineInvite(invite){
 
 // Gönderilen daveti iptal et (host bekliyorken)
 export async function cancelInvite(){
-  if(!S) return;
-  try{ if(S._offWait) S._offWait(); }catch(e){}
-  if(S.invId && S.targetUid){ try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${S.targetUid}/${S.invId}`)); }catch(e){} }
-  if(S.role==='A' && S.waiting){ try{ await fdb.remove(S.roomRef); }catch(e){} }
-  S=null;
+  requestEpoch++;
+  const session=S;if(!session)return;S=null;
+  try{ if(session._offWait) session._offWait(); }catch(e){}
+  if(session.invId && session.targetUid){ try{ await fdb.remove(fdb.ref(db,`${INVPATH}/${session.targetUid}/${session.invId}`)); }catch(e){} }
+  if(session.notifRef){try{await fdb.remove(session.notifRef);}catch(e){}}
+  if(session.role==='A' && session.waiting){ try{ await fdb.remove(session.roomRef); }catch(e){} }
 }

@@ -40,6 +40,8 @@ function generateSequences(state){
 // Pozisyonu AI rengi açısından değerlendir (yüksek = iyi)
 function evaluate(state, color){
   const opp = color === 'w' ? 'b' : 'w';
+  if(state.off[color]===15) return 1000000;
+  if(state.off[opp]===15) return -1000000;
   let score = 0;
 
   // pip farkı (düşük kendi pip = iyi)
@@ -56,6 +58,20 @@ function evaluate(state, color){
 
   const pts = state.points;
   const isW = color === 'w';
+  let lastWhite=-1,firstBlack=24;
+  for(let i=0;i<24;i++){
+    if(pts[i]>0) lastWhite=i;
+    else if(pts[i]<0) firstBlack=Math.min(firstBlack,i);
+  }
+  // Temas bittiyse açık pul/kapı güvenliği yerine toplama verimini değerlendir.
+  if(!state.bar.w && !state.bar.b && lastWhite<firstBlack){
+    for(let i=0;i<24;i++){
+      const mine=isW?Math.max(0,pts[i]):Math.max(0,-pts[i]);
+      const distance=isW?i+1:24-i;
+      score-=mine*distance*distance*.08;
+    }
+    return score;
+  }
   // home bölgeleri
   const myHomeLo = isW ? 0 : 18, myHomeHi = isW ? 5 : 23;
 

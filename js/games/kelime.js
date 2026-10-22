@@ -217,6 +217,8 @@ function injectStyles(){
 }
 
 export function openKelime(){
+  if(G?.root?.isConnected){ G.root.focus?.(); return; }
+  if(G) closeKelime();
   injectStyles();
   const root = document.createElement('div');
   root.className = 'kl-root';
@@ -248,10 +250,19 @@ export function openKelime(){
   };
   document.addEventListener('visibilitychange', G.vis);
   showStart();
+  try{
+    const invite=JSON.parse(localStorage.getItem('hero_invite_ctx')||'null');
+    if(invite?.game==='kelime'){
+      localStorage.removeItem('hero_invite_ctx');
+      if(Number.isFinite(invite.ts) && Date.now()-invite.ts>=0 && Date.now()-invite.ts<300000) startKelimeInviteContext(invite);
+    }
+  }catch(e){}
 }
 
 function _injectKelimeHUD(){
   if(!G||!G.root) return;
+  const session=G,root=G.root,round=G._setupToken;
+  const current=()=>G===session && G.root===root && G._setupToken===round;
   if(G.root.querySelector('#heroGameHud')) return; // zaten var
   try{
     const _as = window.Hero&&window.Hero.Auth&&window.Hero.Auth.getState&&window.Hero.Auth.getState();
@@ -260,25 +271,26 @@ function _injectKelimeHUD(){
     const _myAva  = (_as&&_as.profile&&_as.profile.avatar)||'👤';
     const _myLv   = (_ps&&_ps.level)||1;
     const _myXp   = (_ps&&_ps.xp)||0;
-    const _oppNick= (G.names&&G.names.B)||'Rakip';
+    const _oppNick= (G.names&&G.names[(G.role||'A')==='A'?'B':'A'])||'Rakip';
     const _oppUid = G.oppUid||null;
     // HUD'u kl-top'un hemen arkasına ekle
     const _kltop = G.root.querySelector('.kl-top');
     const _insertAfter = _kltop ? _kltop.nextSibling : null;
     import('../hud.js').then(H=>{
-      if(!G||!G.root||G.root.querySelector('#heroGameHud')) return;
+      if(!current() || root.querySelector('#heroGameHud')) return;
+      const myRole=session.role||'A',oppRole=myRole==='A'?'B':'A';
       const hudOpts = {
         game:'kelime', myAccent:'#69F0AE', oppAccent:'#c084fc',
-        oppUid:_oppUid, oppNick:_oppNick, oppAvatar:G.oppAvatar||'🤖',
-        oppLevel:G.oppLevel||1, oppXP:G.oppXP||0,
-        myScore: ()=>G&&G.state?G.state.scores.A:0,
-        oppScore:()=>G&&G.state?G.state.scores.B:0,
+        oppUid:_oppUid, oppNick:_oppNick, oppAvatar:session.oppAvatar||'🤖',
+        oppLevel:session.oppLevel||1, oppXP:session.oppXP||0,
+        myScore: ()=>current()?session.state?.scores?.[myRole]||0:0,
+        oppScore:()=>current()?session.state?.scores?.[oppRole]||0:0,
       };
       H.createVsHUD({ ...hudOpts, root:null }).then(h=>{
-        if(!G||!G.root) return;
-        if(_insertAfter){ G.root.insertBefore(h.el, _insertAfter); }
-        else { G.root.appendChild(h.el); }
-        G._hud = h;
+        if(!current() || root.querySelector('#heroGameHud')){h.destroy?.();return;}
+        if(_insertAfter && _insertAfter.parentNode===root){ root.insertBefore(h.el, _insertAfter); }
+        else { root.appendChild(h.el); }
+        session._hud = h;
       }).catch(()=>{});
     }).catch(()=>{});
   }catch(e){ console.warn('[kelime hud]',e); }
@@ -288,9 +300,10 @@ function afterGame(callback,delay){
   const session=G,round=session?._setupToken;
   return setTimeout(()=>{if(session && G===session && session._setupToken===round)callback();},delay);
 }
-function closeKelime(){ try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
+function closeKelime(){ cancelTileInteractions(); G?._hud?.destroy?.(); try{ if(G && G._home) G._home.remove(); }catch(e){} try{ saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 function showStart(){
+  G._hud?.destroy?.();G._hud=null;
   G._setupToken = {};
   const c = G.root.querySelector('[data-el="content"]');
   let recHtml = '';
@@ -636,11 +649,15 @@ function stopInviteListen(){ try{ if(_invOff) _invOff(); }catch(e){} _invOff=nul
 
 // ── ARKADAŞ / NİCK DAVETİ ──
 async function showInviteScreen(){
+  const session=G,round=G._setupToken={};
+  const current=()=>G===session && G._setupToken===round;
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>📨 Hazırlanıyor…</h3></div></div>`;
   try{ if(!KO) KO = await import('./kelime-online.js'); }
-  catch(e){ flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); return; }
+  catch(e){ if(current()) flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); return; }
+  if(!current()) return;
   let friends = []; try{ friends = await KO.listFriends(); }catch(e){}
+  if(!current()) return;
   const friendsHtml = friends.length
     ? `<div style="margin-top:10px"><div style="font-size:12px;color:#bba8df;margin-bottom:5px">👥 ${klT('invite')==='Invite a Friend'?'Your Friends':'Arkadaşların'}</div><div class="kl-friends-list">${friends.map(f=>`<div class="kl-mode kl-friend" data-fuid="${esc(f.uid)}" data-fname="${esc(f.name)}"><span class="kl-friend-ava">${esc(f.avatar||'🧑')}</span><div class="kl-friend-info"><div class="kl-friend-nm">${esc(f.name)}</div><div class="kl-friend-lv">LV ${f.level||1} · ${klT('invite')==='Invite a Friend'?'Challenge':'Meydan oku'}</div></div><span class="kl-friend-go">⚔️</span></div>`).join('')}</div></div>`
     : '';
@@ -663,6 +680,7 @@ async function showInviteScreen(){
     if(!nick) return;
     sendBtn.textContent='Aranıyor…';
     let u=null; try{ u = await KO.resolveNick(nick); }catch(e){}
+    if(!current()) return;
     sendBtn.textContent='Meydan Oku';
     if(!u){ flashCard('Bulunamadı', `"${esc(nick)}" bulunamadı. Nick birebir doğru olmalı ve rakip en az bir kez giriş yapmış olmalı.`); return; }
     doSendInvite(u.uid, u.name);
@@ -670,6 +688,7 @@ async function showInviteScreen(){
   card.querySelectorAll('[data-fuid]').forEach(el=>el.addEventListener('click', ()=>doSendInvite(el.dataset.fuid, el.dataset.fname)));
   stopInviteListen();
   _invOff = KO.listenInvites((list)=>{
+    if(!current()) return;
     const box = card.querySelector('[data-el="invites"]'); if(!box) return;
     const enLang = klT('invite')==='Invite a Friend';
     if(!list.length){ box.innerHTML = `<div style="font-size:12px;color:#8a7aae">📭 ${enLang?'No pending invites.':'Bekleyen davet yok.'}</div>`; return; }
@@ -696,7 +715,20 @@ async function showInviteScreen(){
   });
 }
 
+async function startKelimeInviteContext(invite){
+  const session=G,round=G._setupToken={};
+  if(invite.lang==='tr' || invite.lang==='en') klSetLang(invite.lang);
+  try{ if(!KO) KO=await import('./kelime-online.js'); }
+  catch(e){if(G===session && G._setupToken===round)flashCard('Davet açılamadı','Bağlantını kontrol edip tekrar dene.');return;}
+  if(G!==session || G._setupToken!==round) return;
+  if(invite.role==='host' && typeof invite.targetUid==='string' && invite.targetUid) doSendInvite(invite.targetUid,invite.oppNick||'Rakip');
+  else if(invite.role==='guest' && invite.invite?.id && invite.invite?.gameId) doAcceptInvite(invite.invite);
+  else showInviteScreen();
+}
+
 function doSendInvite(uid, name){
+  const session=G,round=G._setupToken={};
+  const current=()=>G===session && G._setupToken===round;
   const c = G.root.querySelector('[data-el="content"]');
   stopInviteListen();
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
@@ -705,20 +737,22 @@ function doSendInvite(uid, name){
     <div style="margin:6px auto 14px;width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:#ffd86b;border-radius:50%;animation:klspin 1s linear infinite"></div>
     <button class="kl-btn warn" data-x="cancel">İptal</button></div></div>`;
   let cancelled=false;
-  c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{ cancelled=true; try{ await KO.cancelInvite(); }catch(e){} showInviteScreen(); });
+  c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{ cancelled=true; try{ await KO.cancelInvite(); }catch(e){} if(current())showInviteScreen(); });
   KO.sendInvite(uid, name, {
     onSent: ()=>{},
-    onError: (msg)=>{ if(!cancelled) flashCard('Davet hatası', msg); },
-    onAccepted: ({role,gameId,oppName,oppUid,seed})=>{ if(!cancelled) startOnline(role,gameId,oppName,seed,{oppUid}); }
-  });
+    onError: (msg)=>{ if(!cancelled && current()) flashCard('Davet hatası', msg); },
+    onAccepted: ({role,gameId,oppName,oppUid,seed,lang})=>{ if(!cancelled && current()) startOnline(role,gameId,oppName,seed,{oppUid,lang}); }
+  },{lang:KL_LANG});
 }
 function doAcceptInvite(inv){
+  const session=G,round=G._setupToken={};
+  const current=()=>G===session && G._setupToken===round;
   const c = G.root.querySelector('[data-el="content"]');
   stopInviteListen();
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>⚔️ Katılıyorsun…</h3><p>${esc(inv.fromName||'Rakip')} ile oyun başlıyor</p></div></div>`;
   KO.acceptInvite(inv, {
-    onError: (msg)=>flashCard('Kabul hatası', msg),
-    onMatched: ({role,gameId,oppName,oppUid,seed})=>startOnline(role,gameId,oppName,seed,{oppUid})
+    onError: (msg)=>{if(current())flashCard('Kabul hatası', msg);},
+    onMatched: ({role,gameId,oppName,oppUid,seed,lang})=>{if(current())startOnline(role,gameId,oppName,seed,{oppUid,lang});}
   });
 }
 
@@ -942,7 +976,24 @@ function onlineGameOver(msg, verdictOverride,resultOverride){
   ov.querySelector('[data-x="menu"]').addEventListener('click', ()=>{ ov.remove(); G.online=false; G._over=false; showStart(); });
 }
 
+function cancelTileInteractions(){
+  for(const [move,up] of [[onRackPointerMove,onRackPointerUp],[onPendingPointerMove,onPendingPointerUp]]){
+    window.removeEventListener('pointermove',move);
+    window.removeEventListener('pointerup',up);
+    window.removeEventListener('pointercancel',up);
+  }
+  _drag?.ghost?.remove();_pdrag?.ghost?.remove();_drag=null;_pdrag=null;
+  if(G){
+    G._jokerPicker?.remove();G._jokerPicker=null;G._suppressNextCellTap=false;
+    G.root?.querySelectorAll('.kl-rtile.dragging').forEach(el=>el.classList.remove('dragging'));
+  }
+  clearDropHighlight();
+}
+
 function buildGameDOM(){
+  cancelTileInteractions();
+  G._hud?.destroy?.();G._hud=null;
+  G.exchangeMode=false;G.exchangeSel=null;G._exchanging=false;
   const c = G.root.querySelector('[data-el="content"]');
   let cells = '';
   for(let r=0;r<SIZE;r++) for(let cc=0;cc<SIZE;cc++){
@@ -1296,13 +1347,16 @@ function canPlayNow(){
 function rackTileEl(i){ const rack=G.root.querySelector('[data-el="rack"]'); return rack ? rack.querySelectorAll('.kl-rtile:not(.empty)')[i] : null; }
 function onRackPointerDown(e, i, tile){
   if(e.button!=null && e.button!==0) return;
-  _drag = { i, tile, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  if(!G || G._over || _drag || G._jokerPicker) return;
+  _drag = { i, tile, session:G, round:G._setupToken, pointerId:e.pointerId, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
   window.addEventListener('pointermove', onRackPointerMove);
   window.addEventListener('pointerup', onRackPointerUp);
   window.addEventListener('pointercancel', onRackPointerUp);
 }
 function onRackPointerMove(e){
   if(!_drag) return;
+  if(_drag.pointerId!=null && e.pointerId!=null && _drag.pointerId!==e.pointerId) return;
+  if(G!==_drag.session || G?._setupToken!==_drag.round || G._over){cancelTileInteractions();return;}
   const dx=e.clientX-_drag.x0, dy=e.clientY-_drag.y0;
   if(!_drag.moved){
     if(Math.hypot(dx,dy) < 8) return;
@@ -1319,15 +1373,17 @@ function onRackPointerMove(e){
   highlightDrop(e.clientX, e.clientY);
 }
 function onRackPointerUp(e){
+  if(_drag && _drag.pointerId!=null && e.pointerId!=null && _drag.pointerId!==e.pointerId) return;
   window.removeEventListener('pointermove', onRackPointerMove);
   window.removeEventListener('pointerup', onRackPointerUp);
   window.removeEventListener('pointercancel', onRackPointerUp);
   const d = _drag; _drag = null;
   if(!d) return;
-  if(!G){d.ghost?.remove();return;}
+  if(!G || G!==d.session || G._setupToken!==d.round){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
   const el = rackTileEl(d.i); if(el) el.classList.remove('dragging');
+  if(e.type==='pointercancel' || G._over || G.rackView[d.i]!==d.tile){renderAll();return;}
   if(d.moved){
     const cell = cellUnder(e.clientX, e.clientY);
     if(cell) dropTileOnCell(d.i, +cell.dataset.r, +cell.dataset.c);
@@ -1372,6 +1428,7 @@ function updateExchangeBtn(){
 function onCellTap(r, c){
   if(G._suppressNextCellTap){ G._suppressNextCellTap=false; return; }   // pending sürükleme tıklamayı yutar
   if(G._over) return;
+  if(G._jokerPicker) return;
   // Sıra sende olmasa da deneme amaçlı yerleştirebilirsin (onayla sıraya bağlı)
   // doluysa (kalıcı) — kelime anlamını göster
   if(G.state.board[r][c]){ showWordMeaning(r, c); return; }
@@ -1385,9 +1442,14 @@ function onCellTap(r, c){
   // rafta seçili taş yoksa uyar
   if(G.selected==null){ flashStatus('Önce rafta bir harf seç'); return; }
   const tile = G.rackView[G.selected];
+  if(!tile){G.selected=null;return;}
   if(tile.joker){
     // joker hangi harf? seçici aç
+    const session=G,round=G._setupToken;
     pickJokerLetter((chosen)=>{
+      if(G!==session || G._setupToken!==round || G._over || G.state.board[r][c] || G.pending.some(p=>p.r===r&&p.c===c)) return;
+      const index=G.rackView.indexOf(tile);if(index<0) return;
+      G.selected=index;
       placeTile(r,c,{ letter:'', points:0, joker:true, assigned:chosen });
     });
   } else {
@@ -1404,15 +1466,17 @@ function rawCellUnder(x,y){
 }
 function onPendingPointerDown(e, r, c){
   if(e.button!=null && e.button!==0) return;
-  if(G._over) return;   // sıra fark etmez; sadece oyun bitince taşıma yok
+  if(!G || G._over || _pdrag || G._jokerPicker) return;   // sıra fark etmez; sadece oyun bitince taşıma yok
   e.stopPropagation();
-  _pdrag = { r, c, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  _pdrag = { r, c, tile:G.pending.find(p=>p.r===r&&p.c===c), session:G, round:G._setupToken, pointerId:e.pointerId, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
   window.addEventListener('pointermove', onPendingPointerMove);
   window.addEventListener('pointerup', onPendingPointerUp);
   window.addEventListener('pointercancel', onPendingPointerUp);
 }
 function onPendingPointerMove(e){
   if(!_pdrag) return;
+  if(_pdrag.pointerId!=null && e.pointerId!=null && _pdrag.pointerId!==e.pointerId) return;
+  if(G!==_pdrag.session || G?._setupToken!==_pdrag.round || G._over){cancelTileInteractions();return;}
   const dx=e.clientX-_pdrag.x0, dy=e.clientY-_pdrag.y0;
   if(!_pdrag.moved){
     if(Math.hypot(dx,dy) < 8) return;
@@ -1430,16 +1494,18 @@ function onPendingPointerMove(e){
   highlightDrop(e.clientX, e.clientY);
 }
 function onPendingPointerUp(e){
+  if(_pdrag && _pdrag.pointerId!=null && e.pointerId!=null && _pdrag.pointerId!==e.pointerId) return;
   window.removeEventListener('pointermove', onPendingPointerMove);
   window.removeEventListener('pointerup', onPendingPointerUp);
   window.removeEventListener('pointercancel', onPendingPointerUp);
   const d = _pdrag; _pdrag = null;
   if(!d) return;
-  if(!G){d.ghost?.remove();return;}
+  if(!G || G!==d.session || G._setupToken!==d.round){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
+  if(e.type==='pointercancel' || G._over){renderAll();return;}
   G._suppressNextCellTap = true; afterGame(()=>{ G._suppressNextCellTap=false; }, 400);
-  const idx = G.pending.findIndex(p=>p.r===d.r && p.c===d.c);
+  const idx = G.pending.indexOf(d.tile);
   if(idx<0){ renderAll(); return; }
   if(d.moved){
     const rc = rawCellUnder(e.clientX, e.clientY);
@@ -1456,21 +1522,30 @@ function onPendingPointerUp(e){
 }
 
 function placeTile(r,c,tileData){
+  if(!G || G._over || !Number.isInteger(G.selected) || !G.rackView[G.selected] || G.state.board[r]?.[c] || G.pending.some(p=>p.r===r&&p.c===c)) return;
   G.rackView.splice(G.selected,1);
   G.pending.push({ r, c, ...tileData });
   G.selected=null; sndPlace(); haptic(12); renderAll();
 }
 
 function pickJokerLetter(cb){
+  const session=G,round=G._setupToken;
+  G._jokerPicker?.remove?.();
   const c = G.root.querySelector('[data-el="content"]');
   const ov = document.createElement('div');
   ov.className='kl-overlay';
+  G._jokerPicker=ov;
   ov.innerHTML = `<div class="kl-card"><h3>Joker harfi</h3><p>Bu joker hangi harf olsun?</p>
     <div class="kl-jokergrid">${Object.keys(LETTERS).map(l=>`<button class="kl-jk" data-l="${l}">${l}</button>`).join('')}</div>
     <button class="kl-btn" style="margin-top:10px" data-x="iptal">İptal</button></div>`;
   c.appendChild(ov);
-  ov.querySelectorAll('.kl-jk').forEach(b=>b.addEventListener('click',()=>{ ov.remove(); cb(b.dataset.l); }));
-  ov.querySelector('[data-x="iptal"]').addEventListener('click',()=>ov.remove());
+  const finish=chosen=>{
+    if(session._jokerPicker!==ov) return;
+    session._jokerPicker=null;ov.remove();
+    if(chosen && G===session && G._setupToken===round && !G._over) cb(chosen);
+  };
+  ov.querySelectorAll('.kl-jk').forEach(b=>b.addEventListener('click',()=>finish(b.dataset.l)));
+  ov.querySelector('[data-x="iptal"]').addEventListener('click',()=>finish(null));
 }
 
 function flashStatus(msg){
@@ -1708,7 +1783,7 @@ function submitMove(){
 // ── Süreli Seri mod sayacı ──
 function startTurnTimer(){
   stopTurnTimer();
-  if(!G || !G.seri || G._over) return;
+  if(!G || !G.seri || G._over || G.who!=='A' || G.aiThinking) return;
   G.timeLeft = G.seri.turnTime;
   updateTimerUI();
   G.timer = setInterval(()=>{
@@ -1749,7 +1824,7 @@ function aiTurn(){
   if(typeof window!=='undefined'){ window.__aiCalls=(window.__aiCalls||0)+1; }
   if(!G.ai || G._over) return;
   let mv = null;
-  try{ mv = KA.findBestMove(G.state.board, G.state.racks.B, G.ai.difficulty); }catch(e){ mv = null; }
+  try{ mv = KA.findBestMove(G.state.board, G.state.racks.B, G.ai.difficulty,{surprises:G.surprises}); }catch(e){ mv = null; }
   if(mv && mv.pending && mv.pending.length){
     const surp = applySurprises(mv.pending);
     const moveScore = mv.score * surp.doubleMul + surp.extraPoints;

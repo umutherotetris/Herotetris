@@ -18,6 +18,7 @@ import { THEMES, THEME_KEYS, DEFAULT_THEME, drawThemedCell } from './tetris-them
 import { heroAvatar } from './tetris-avatars.js';
 import { WORLDS, getProgress, isWorldUnlocked, completeWorld, calcStars, getWorld } from './tetris-adventure.js';
 import { MP } from './tetris-mp.js';
+import { shareRoomCode } from '../room-share.js';
 import { Stats, ACHIEVEMENTS } from './tetris-stats.js';
 
 // Avatar modülünün renkleri okuyabilmesi için kahraman renklerini global'e yaz
@@ -121,7 +122,7 @@ const LOCK_MAX_RESETS = 15;    // sonsuz oyalanmayı önle: en fazla bu kadar ta
 const AI_PROFILES = {
   easy:   { label:'KOLAY',  icon:'😊', color:'#69F0AE', dropMs:750, moveMs:260, tetrisChance:0.10, mult:0.7 },
   normal: { label:'NORMAL', icon:'🤖', color:'#7C4DFF', dropMs:480, moveMs:160, tetrisChance:0.20, mult:1.0 },
-  hard:   { label:'ZOR',    icon:'👹', color:'#F44336', dropMs:280, moveMs:90,  tetrisChance:0.32, mult:1.3 }
+  hard:   { label:'ZOR',    icon:'👹', color:'#F44336', dropMs:280, moveMs:90,  tetrisChance:0.32, mult:1.3, lookahead:2 }
 };
 
 // ── Tetromino tanımları (neon renkler) ──────────────────────────
@@ -1313,7 +1314,7 @@ function buildAISelect(onPick){
         <span class="ai-icon">${p.icon}</span>
         <div class="ai-info">
           <div class="ai-name">${p.label}</div>
-          <div class="ai-desc">${key==='easy'?'Yavaş rakip, rahat yarış':key==='normal'?'Dengeli rakip':'Hızlı ve acımasız rakip'}</div>
+        <div class="ai-desc">${key==='easy'?'Yavaş rakip, rahat yarış':key==='normal'?'Dengeli rakip':'İki taşı birlikte planlar'}</div>
         </div>
       </button>`;
   });
@@ -1404,12 +1405,26 @@ function buildVersusLobby(){
     if(type === 'code'){
       statusEl.innerHTML = '<div class="vl-codebig" data-el="codebig">' + data + '</div>' +
         '<button class="vl-copy" data-act="copycode">📋 KODU KOPYALA</button>' +
+        '<button class="vl-copy" data-act="sharecode">↗ KODU PAYLAŞ</button>' +
         '<div class="vl-codehint">Bu kodu arkadaşına gönder, rakip bekleniyor…</div>' +
         '<div class="vl-spinner"></div>';
       statusEl.className = 'vl-status code';
       const cp = statusEl.querySelector('[data-act="copycode"]');
       if(cp) cp.addEventListener('click', () => {
         copyText(data, () => { cp.textContent = '✅ KOPYALANDI'; setTimeout(() => { cp.textContent = '📋 KODU KOPYALA'; }, 1600); });
+      });
+      const share = statusEl.querySelector('[data-act="sharecode"]');
+      if(share) share.addEventListener('click', async () => {
+        if(share.disabled) return;
+        share.disabled=true;
+        try{
+          const result = await shareRoomCode('tetris', data);
+          if(!active || !share.isConnected) return;
+          if(result==='shared') share.textContent='✅ PAYLAŞILDI';
+          else if(result==='copied') share.textContent='✅ DAVET KOPYALANDI';
+          else if(result==='unsupported') share.textContent='KODU SEÇİP KOPYALA';
+        }catch(_){if(active && share.isConnected)share.textContent='TEKRAR PAYLAŞ';}
+        finally{share.disabled=false;}
       });
     } else if(type === 'waiting'){
       /* zaten kod gösteriliyor */
@@ -2080,7 +2095,10 @@ function bindControls(){
   // Klavye (masaüstü testte kolaylık)
   G.keyHandler = (e) => {
     if(!G) return;
+    const target=e.target;
+    if(e.isComposing || target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(target?.tagName||'') || target?.closest?.('[role="textbox"]')) return;
     const k = e.key;
+    if(e.repeat && !['ArrowLeft','ArrowRight','ArrowDown'].includes(k)) return;
     if(k==='ArrowLeft') move(-1);
     else if(k==='ArrowRight') move(1);
     else if(k==='ArrowUp'||k==='x'||k==='X') rotate('cw');
@@ -2521,7 +2539,10 @@ function launchVersusGame(){
       }
     }
     else if(type === 'reconnect_failed'){
-      if(G && G.versus && !G.over){ flash('🏆 Rakip yeniden bağlanamadı!'); G.oppAlive = false; }
+      if(G && G.versus && !G.over){
+        flash('🏆 Rakip yeniden bağlanamadı!'); G.oppAlive = false;
+        updateVersusUI(); endGame(true);
+      }
     }
   };
   // onEvent'i oyun handler'ına yönlendir (lobi handler'ı bitti)
@@ -2642,6 +2663,7 @@ function aiCollides(piece, dx, dy, matrix){
 
 // AI: parça için en iyi yerleşimi hesapla (basit sezgisel)
 function aiComputePlan(piece){
+  if(G.aiProfile?.lookahead===2 && PIECES[G.aiBag?.[0]]) return aiLookaheadPlan(piece);
   let best = null;
   const rotations = [0, 1, 2, 3];
   for(const rot of rotations){
@@ -2662,6 +2684,116 @@ function aiComputePlan(piece){
     }
   }
   return best || { x:piece.x, rot:0, score:0 };
+}
+
+// Hard plans use the same rotation/movement/drop order as the visible bot.
+// This rejects tempting destinations that it cannot reach before the piece locks.
+function aiSimulatePlan(board,piece,plan,moveAcc=0,dropAcc=0){
+  const prof=G.aiProfile,moveMs=prof.moveMs||160,dropMs=G.aiDropInterval||prof.dropMs||480;
+  const test={...piece,matrix:piece.matrix.map(row=>row.slice())};
+  let cells=matrixCells(test.matrix);
+  const blocked=(dx,dy,m)=>{
+    const shape=m?matrixCells(m):cells;
+    for(let i=0;i<shape.length;i++){
+      const x=test.x+dx+shape[i][0],y=test.y+dy+shape[i][1];
+      if(x<0||x>=COLS||y>=ROWS||(y>=0&&board[y][x])) return true;
+    }
+    return false;
+  };
+  if(blocked(0,0)) return null;
+  let rotations=plan.rot;
+  for(let step=0;step<512;step++){
+    const dt=Math.max(0,Math.min(moveMs-moveAcc,dropMs-dropAcc));
+    moveAcc+=dt;dropAcc+=dt;
+    if(moveAcc+1e-9>=moveMs){
+      moveAcc=Math.max(0,moveAcc-moveMs);
+      if(rotations>0){
+        const rotated=rotateCW(test.matrix);
+        if(!blocked(0,0,rotated)){test.matrix=rotated;cells=matrixCells(rotated);}
+        rotations--;
+      }else if(test.x!==plan.x){
+        const dx=Math.sign(plan.x-test.x);
+        if(!blocked(dx,0)) test.x+=dx;
+      }
+    }
+    if(dropAcc+1e-9>=dropMs){
+      dropAcc=Math.max(0,dropAcc-dropMs);
+      if(blocked(0,1)){
+        let expected=piece.matrix;for(let r=0;r<plan.rot;r++)expected=rotateCW(expected);
+        if(rotations>0||test.x!==plan.x||JSON.stringify(test.matrix)!==JSON.stringify(expected)) return null;
+        const temp=board.map(row=>row.slice());
+        for(const [cx,cy] of matrixCells(test.matrix)){
+          const y=test.y+cy;if(y<0)return null;
+          temp[y][test.x+cx]=piece.color;
+        }
+        let lines=0;
+        for(let y=ROWS-1;y>=0;y--)if(temp[y].every(Boolean)){temp.splice(y,1);temp.unshift(Array(COLS).fill(0));lines++;y++;}
+        return {board:temp,lines,moveAcc,dropAcc};
+      }
+      test.y++;
+    }
+  }
+  return null;
+}
+
+function aiBoardValue(board,lines){
+  let height=0,holes=0,bump=0,previous=0;
+  for(let x=0;x<COLS;x++){
+    let h=0,covered=false;
+    for(let y=0;y<ROWS;y++){
+      if(board[y][x]){if(!covered)h=ROWS-y;covered=true;}
+      else if(covered) holes++;
+    }
+    height+=h;if(x)bump+=Math.abs(h-previous);previous=h;
+  }
+  return lines*2-height*.4-holes*1.5-bump*.2;
+}
+
+function aiLandingPlans(board,piece){
+  const options=[];
+  let matrix=piece.matrix;
+  for(let rot=0;rot<4;rot++,matrix=rotateCW(matrix)){
+    const cells=matrixCells(matrix);
+    for(let x=-2;x<COLS;x++){
+      const blocked=y=>cells.some(([cx,cy])=>x+cx<0||x+cx>=COLS||y+cy>=ROWS||(y+cy>=0&&board[y+cy][x+cx]));
+      let y=piece.y;
+      if(blocked(y))continue;
+      while(!blocked(y+1))y++;
+      const temp=board.map(row=>row.slice());
+      for(const [cx,cy] of cells)if(y+cy>=0)temp[y+cy][x+cx]=piece.color;
+      let lines=0;
+      for(let r=ROWS-1;r>=0;r--)if(temp[r].every(Boolean)){temp.splice(r,1);temp.unshift(Array(COLS).fill(0));lines++;r++;}
+      options.push({x,rot,score:aiBoardValue(temp,lines)});
+    }
+  }
+  return options.sort((a,b)=>b.score-a.score);
+}
+
+function aiReachablePlans(board,piece,moveAcc=0,dropAcc=0,limit=6){
+  const reachable=[];
+  // Rank cheap geometric landings first, then replay only the promising paths.
+  for(const option of aiLandingPlans(board,piece)){
+    const result=aiSimulatePlan(board,piece,option,moveAcc,dropAcc);
+    if(!result)continue;
+    reachable.push({...option,...result,score:aiBoardValue(result.board,result.lines)});
+    if(reachable.length>=limit)break;
+  }
+  return reachable.sort((a,b)=>b.score-a.score);
+}
+
+function aiLookaheadPlan(piece){
+  // At most 48 first plans, then six candidates × 48 next plans; no random search.
+  const first=aiReachablePlans(G.aiBoard,piece,G.aiMoveAcc||0,G.aiDropAcc||0);
+  if(!first.length) return {x:piece.x,rot:0,score:0};
+  const type=G.aiBag[0],definition=PIECES[type];
+  const next={type,color:definition.color,matrix:toMatrix(definition.cells),x:3,y:0};
+  let best=null;
+  for(const candidate of first.slice(0,6)){
+    const follow=aiReachablePlans(candidate.board,next,candidate.moveAcc,candidate.dropAcc,1)[0];
+    const score=follow?candidate.score*.35+follow.score*.65:-10000+candidate.score;
+    if(!best||score>best.score) best={x:candidate.x,rot:candidate.rot,score};
+  }
+  return best;
 }
 
 // Yerleşim skoru: düşük yükseklik + az delik iyi
@@ -3137,7 +3269,8 @@ function injectCSS(){
 .ai-desc{ font-size: 9px; color: var(--text-mute); }
 .ws-card.shake{ animation: cardShake .4s ease; }
 /* Çok oyuncu lobisi */
-.vl-body{ flex: 1; display: flex; flex-direction: column; gap: 14px; padding-top: 10px; justify-content: center; }
+.vl-body{ flex: 1; min-height:0; overflow-y:auto; overscroll-behavior:contain; display: flex; flex-direction: column; gap: 14px; padding-top: 10px; justify-content: safe center; }
+.vl-body > *{ flex-shrink:0; }
 .vl-card{ background: linear-gradient(160deg, rgba(0,188,212,.1), rgba(255,255,255,.02)); border: 1.5px solid rgba(0,188,212,.35); border-radius: var(--r-lg); padding: 18px 16px; text-align: center; }
 .vl-card-title{ font-family: var(--font-display); font-weight: 700; font-size: 14px; letter-spacing: 1px; color: var(--cyan); margin-bottom: 5px; }
 .vl-card-desc{ font-size: 9px; color: var(--text-mute); margin-bottom: 12px; }

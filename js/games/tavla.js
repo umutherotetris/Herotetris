@@ -6,6 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
+import { shareRoomCode } from '../room-share.js';
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import {
   newGame, isValidState, allLegalMoves, resolveLegalMove, legalMovesFrom, applyMove, remainingDice,
@@ -90,6 +91,7 @@ function afterTurn(fn, delay){
 
 // ════════════ AÇILIŞ ════════════
 export function openTavla(){
+  if(G?.root?.isConnected) return;
   injectCSS();
   const root = document.createElement('div');
   root.className = 'tavla-root';
@@ -470,6 +472,7 @@ function restart(){
   G.selected = null; G.legalForSel = []; G.undoStack = []; G.gameEnded = false; G.rolled = true; G.aiThinking = false;
   G.tapTarget = null; G.dragging = false; G.dragPos = null;
   G.dragMoved = false; G.dragFrom = null; G.pointerDownPos = null;
+  G.activePointerId = null;
   G._rewardClaimed = false;
   G.state.dice = open.dice.slice();
   if(G.mode === 'ai'){ G.flip = (G.playerColor === 'b'); }
@@ -1249,7 +1252,9 @@ function drawCheckers(ctx, t){
     const v = G.state.points[i];
     if(v === 0) continue;
     const color = v > 0 ? 'w' : 'b';
-    const count = Math.abs(v);
+    const movingFrom=G.movingChecker?.from ?? (G.dragging?G.dragFrom:null);
+    const count = Math.abs(v) - (movingFrom===i?1:0);
+    if(count<=0) continue;
     const pg = pointGeometry(i);
     const vis = Math.min(count, maxVisible);
     const gap = stackGap(vis);
@@ -1333,7 +1338,10 @@ function drawBarCheckers(ctx, t){
   const cx = g.barX + g.barW / 2;     // tam bar ortası
   const R = g.checkerR, safe = g.safe;
   const gap = R * 2.05;
-  const wBar = G.state.bar.w, bBar = G.state.bar.b;
+  const movingFrom=G.movingChecker?.from ?? (G.dragging?G.dragFrom:null);
+  const movingColor=G.movingChecker?.color || G.state.turn;
+  const wBar = G.state.bar.w - (movingFrom==='bar'&&movingColor==='w'?1:0);
+  const bBar = G.state.bar.b - (movingFrom==='bar'&&movingColor==='b'?1:0);
   // beyaz: bir yarıda, siyah: diğer yarıda (flip'e göre yer değişir)
   const whiteTop = G.flip;            // flip=true → beyaz üstte
   for(let k=0;k<wBar;k++){
@@ -1522,6 +1530,7 @@ function isMyPoint(idx){
 }
 
 function onPointerDown(e){
+  if(G?.activePointerId!=null && G.activePointerId!==e.pointerId) return;
   // PAS mini butonuna basıldı mı? (zarların altında, hamle yokken)
   if(G && G._passBox && G.rolled && G.canPass && canPassNow()){
     const { x, y } = getPos(e);
@@ -1541,6 +1550,8 @@ function onPointerDown(e){
     if(canRoll){ e.preventDefault(); rollAndShow(); return; }
   }
   if(!canInteract()) return;
+  G.activePointerId = e.pointerId ?? null;
+  try{ G.canvas?.setPointerCapture?.(e.pointerId); }catch(e){}
   e.preventDefault();
   const { x, y } = getPos(e);
   const hit = hitTest(x, y);
@@ -1579,6 +1590,7 @@ function onPointerDown(e){
 
 function onPointerMove(e){
   if(!G || !G.dragging) return;
+  if(G.activePointerId!=null && G.activePointerId!==e.pointerId) return;
   e.preventDefault();
   const { x, y } = getPos(e);
   if(G.pointerDownPos){
@@ -1591,6 +1603,9 @@ function onPointerMove(e){
 
 function onPointerUp(e){
   if(!G){ return; }
+  if(G.activePointerId!=null && G.activePointerId!==e.pointerId) return;
+  G.activePointerId = null;
+  try{ G.canvas?.releasePointerCapture?.(e.pointerId); }catch(e){}
   // A browser/OS cancellation aborts the gesture, including a held tap target.
   if(e.type === 'pointercancel'){
     G.dragging = false; G.dragPos = null; G.dragMoved = false;
@@ -1615,6 +1630,7 @@ function onPointerUp(e){
   if(G.tapTarget){ const mv = G.tapTarget; G.tapTarget = null; doMove(mv); return; }
 
   // Tap ile kaynağa basıldıysa: seçim down'da yapıldı, dokunma
+  draw();
 }
 
 function onBoardClick(e){ /* artık pointer event'leri kullanılıyor */ }
@@ -2061,6 +2077,7 @@ function undoMove(){
   G.selected = null; G.legalForSel = [];
   G.tapTarget = null; G.dragging = false; G.dragPos = null;
   G.dragMoved = false; G.dragFrom = null; G.pointerDownPos = null;
+  G.activePointerId = null;
   G.gameEnded = false;
   // Invalidate the pending automatic end-turn from the undone last move.
   G._turnToken = {}; G.canPass = false; G._passBox = null;
@@ -2505,14 +2522,18 @@ function showAISetup(root){
 // ════════════ ÇEVRİMİÇİ LOBİ ════════════
 async function showOnlineLobby(root){
   const session = G;
+  if(!session || session.root!==root || session._lobbyOpening || root.querySelector?.('.tavla-online-lobby')) return;
+  session._lobbyOpening=true;
   // çevrimiçi modülü dinamik yükle (eksikse tavla yine de açılır)
   if(!TavlaMP){
     try{ TavlaMP = (await import('./tavla-mp.js')).default; }
     catch(e){
+      session._lobbyOpening=false;
       if(window.Hero && window.Hero.toast) window.Hero.toast('Çevrimiçi modül yüklenemedi (tavla-mp.js eksik olabilir)', true);
       console.error('[tavla-mp]', e); return;
     }
   }
+  session._lobbyOpening=false;
   if(G !== session || !G || G.root !== root) return;
   const ov = document.createElement('div');
   ov.className = 'tavla-online-lobby';
@@ -2535,6 +2556,7 @@ async function showOnlineLobby(root){
       <div class="tol-info">Oda kodun:</div>
       <div class="tol-code" data-el="code">······</div>
       <button class="tol-copy" data-act="copy">📋 KODU KOPYALA</button>
+      <button class="tol-copy" data-act="share">📤 PAYLAŞ</button>
       <div class="tol-hint">Bu kodu arkadaşınla paylaş.<br>Rakip bekleniyor…</div>
       <div class="tol-spinner"></div>
     </div>
@@ -2569,6 +2591,17 @@ async function showOnlineLobby(root){
     });
   });
   // Kodu kopyala
+  ov.querySelector('[data-act="share"]').addEventListener('click', async e => {
+    const btn=e.currentTarget,code=ov.querySelector('[data-el="code"]').textContent;
+    if(btn.disabled || !/^[A-Z0-9]{6}$/.test(code)) return;
+    btn.disabled=true;
+    try{
+      const result=await shareRoomCode('tavla',code);
+      if(!ov.isConnected || G!==session) return;
+      btn.textContent=result==='shared'?'✅ PAYLAŞILDI':result==='copied'?'✅ KOD KOPYALANDI':result==='unsupported'?'KODU ELLE PAYLAŞ':'📤 PAYLAŞ';
+    }catch(e){ if(ov.isConnected) btn.textContent='TEKRAR PAYLAŞ'; }
+    finally{btn.disabled=false;}
+  });
   ov.querySelector('[data-act="copy"]').addEventListener('click', (e) => {
     const code = ov.querySelector('[data-el="code"]').textContent;
     const btn = e.currentTarget;
@@ -2683,7 +2716,8 @@ function animateMove(mv, onDone){
   if(!start || !end){ if(onDone) onDone(); return; }
   const session=G, token=G._turnToken;
   const dur = 280, t0 = performance.now();
-  G.movingChecker = { color, x: start.x, y: start.y, r: G.geo.checkerR };
+  G.movingChecker = { color, from, x: start.x, y: start.y, r: G.geo.checkerR };
+  const animation=G.movingChecker;
   // vurulan taş: noktadan bar'daki gerçek yuvasına uçar
   if(hit && typeof to === 'number'){
     const g = G.geo, pg = pointGeometry(to);
@@ -2698,7 +2732,12 @@ function animateMove(mv, onDone){
   }
   function frame(now){
     // G veya hareket eden taş yoksa (yenile/reset olmuş) animasyonu güvenle durdur
-    if(!sameTurn(session, token) || !G.movingChecker){ return; }
+    if(!sameTurn(session, token) || G.movingChecker!==animation){
+      if(G===session && G.movingChecker===animation){
+        G.movingChecker=null;G.hitChecker=null;G.hideAt=null;draw();
+      }
+      return;
+    }
     const p = Math.min(1, (now - t0) / dur);
     const e = easeOutCubic(p);
     G.movingChecker.x = start.x + (end.x - start.x) * e;
@@ -2719,7 +2758,10 @@ function animateMove(mv, onDone){
 function checkerPixel(idx, color, side){
   const g = G.geo;
   if(idx === 'bar'){
-    return { x: g.barX + g.barW/2, y: g.innerY + g.innerH/2 };
+    const k=side==='from'?Math.max(0,G.state.bar[color]-1):G.state.bar[color];
+    const top=color==='w'?G.flip:!G.flip;
+    const inset=g.safe+g.checkerR+k*g.checkerR*2.05;
+    return { x: g.barX + g.barW/2, y: top?g.innerY+inset:g.innerY+g.innerH-inset };
   }
   if(idx === 'off'){
     const topOff = (color === 'w') ? !G.flip : G.flip;
@@ -2730,7 +2772,7 @@ function checkerPixel(idx, color, side){
   // drawCheckers ile AYNI dizilim formülü (sürüklenen/animasyonlu pul doğru oturur)
   const cnt = Math.abs(G.state.points[idx]) || 0;
   const k = side === 'from' ? Math.max(0, cnt - 1) : cnt;
-  const vis = Math.min(Math.max(cnt, 1), 5);
+  const vis = Math.min(Math.max(cnt+(side==='to'?1:0), 1), 5);
   const span = g.pointH - 2*safe - 2*R;
   const gap = Math.min(R * 2.05, vis > 1 ? span / (vis - 1) : 0);
   const cy = pg.y0 + pg.dir * (safe + R + Math.min(k, 4) * gap);

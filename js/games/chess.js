@@ -12,6 +12,7 @@ import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
 import { ChessMP } from './chess-mp.js';
+import { shareRoomCode } from '../room-share.js';
 
 // ── Temalar (referans görsellerden: Osmanlı lacivert default) ──
 const THEMES = {
@@ -109,6 +110,7 @@ let G = null;   // aktif oyun durumu (DOM + state)
 
 // ════════════ AÇILIŞ ════════════
 export function openChess(){
+  if(G?.root?.isConnected) return;
   injectCSS();
   const root = document.createElement('div');
   root.className = 'chess-root';
@@ -341,6 +343,7 @@ function showOnlineLobby(root){
         <div class="col-info">Oda kodun:</div>
         <div class="col-code" data-el="code">······</div>
         <button class="col-copy" data-act="copy">📋 KODU KOPYALA</button>
+        <button class="col-copy" data-act="share">↗ ODAYI PAYLAŞ</button>
         <div class="col-hint">Bu kodu arkadaşınla paylaş.<br>Rakip bekleniyor…</div>
         <div class="col-spinner"></div>
       </div>
@@ -413,6 +416,20 @@ function showOnlineLobby(root){
         navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done));
       } else { fallbackCopy(code, done); }
     }catch(err){ fallbackCopy(code, done); }
+  });
+
+  let shareFeedbackTimer=null;
+  ov.querySelector('[data-act="share"]').addEventListener('click', async (e) => {
+    const btn=e.currentTarget;if(btn.disabled) return;
+    const code=ov.querySelector('[data-el="code"]').textContent.trim();
+    if(!/^[A-Z0-9]{6}$/.test(code)){btn.textContent='Önce oda kodunu bekle';return;}
+    clearTimeout(shareFeedbackTimer);
+    btn.disabled=true;
+    try{
+      const result=await shareRoomCode('chess',code);
+      btn.textContent=({shared:'✅ PAYLAŞILDI',copied:'✅ KOD KOPYALANDI',cancelled:'↗ ODAYI PAYLAŞ',unsupported:'Kodu kopyalayıp paylaşabilirsin'})[result] || 'Kodu kopyalayıp paylaşabilirsin';
+    }catch(e){btn.textContent='Paylaşım açılamadı · Kodu kopyala';}
+    finally{btn.disabled=false;shareFeedbackTimer=setTimeout(()=>{if(ov.isConnected)btn.textContent='↗ ODAYI PAYLAŞ';},1800);}
   });
 
   // KODU YAPIŞTIR
@@ -679,6 +696,8 @@ function startGame(root, mode, opts){
     if(!G || G.mode === 'online') return;
     G.state = newGame();
     G.undoStack = []; G.anim = null; G.animating = false; G.hintSquares = null;
+    G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
+    G.root.querySelectorAll('.chess-promo, .chess-confirm').forEach(el=>el.remove());
     if(G.timeControl > 0) setupClock(G.timeControl);
   // Portal HUD enjekte et (her oyun modunda) — eski HUD hud.js içinde otomatik temizlenir
   try{ if(G.root){ G.root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove()); } }catch(e){}
@@ -1204,7 +1223,7 @@ function findKingPos(board, color){
 // ════════════ SÜRÜKLE-BIRAK (taşı kaldır-bırak) ════════════
 // Ortak: oynanabilir mi kontrolü
 function _canPlayNow(){
-  if(!G || G.animating || G.aiThinking || G.gameEnded) return false;
+  if(!G || G.animating || G.aiThinking || G.gameEnded || G.promotionPending || G.confirmPending || G.fenPending) return false;
   if(G.mode === 'ai' && G.state.turn !== G.playerColor) return false;
   if(G.mode === 'online'){ if(G.oppLeft) return false; if(G.state.turn !== G.playerColor) return false; }
   const status = gameStatus(G.state);
@@ -1339,14 +1358,21 @@ function onBoardClick(e){
 }
 
 function doMove(mv){
+  if(!G || G.gameEnded || G.animating || G.aiThinking || G.promotionPending || G.confirmPending || G.fenPending) return;
+  if((G.mode==='ai' || G.mode==='online') && G.state.turn!==G.playerColor) return;
+  mv=resolveLegalMove(G.state,mv);
+  if(!mv) return;
   const game = G, state = G.state;
   const mover = state.board[mv.from.r][mv.from.c];
 
   // terfi seçimi (piyade son sıraya gelince)
   if(mv.promotion){
+    const token={}; G.promotionPending=token;
     showPromotion(mover.c, (chosen) => {
-      if(G !== game || G.state !== state || G.gameEnded) return;
-      const full = { ...mv, promotion: chosen };
+      if(G !== game || G.state !== state || G.gameEnded || G.promotionPending!==token) return;
+      G.promotionPending=null;
+      const full = resolveLegalMove(state,{ ...mv, promotion: chosen });
+      if(!full) return;
       sendMoveOnline(full);
       finishMove(full);
     });
@@ -1401,6 +1427,8 @@ function applyFullSync(s){
     if(!state) return;
     G.state = state;
     G.anim = null; G.animating = false; G.aiThinking = false;
+    G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
+    G.root?.querySelectorAll?.('.chess-promo, .chess-confirm')?.forEach(el=>el.remove());
     G.gameEnded = !!s.gameEnded;
     if(s.clock && ['w','b'].every(c=>Number.isFinite(s.clock[c])&&s.clock[c]>=0)) G.clock = {...s.clock};
     G.moveHistory = s.moveHistory || G.moveHistory || [];
@@ -1469,6 +1497,9 @@ function onRemoteMessage(data){
 }
 
 function finishMove(mv){
+  if(!G || G.gameEnded || G.animating) return;
+  mv=resolveLegalMove(G.state,mv);
+  if(!mv) return;
   const game = G, state = G.state;
   // Animasyon için: hareket eden taşı + yeme bilgisini hamleden ÖNCE yakala
   const movingPiece = G.state.board[mv.from.r][mv.from.c];
@@ -1600,7 +1631,8 @@ function beginChessOutcome(){
   const game=G,state=G.state,uid=Auth.getState().uid;
   G.resultSettled=true; G.gameEnded=true;
   G.drawOfferOpen=false;
-  G.root?.querySelectorAll?.('.chess-confirm')?.forEach(el=>el.remove());
+  G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null;
+  G.root?.querySelectorAll?.('.chess-confirm, .chess-promo')?.forEach(el=>el.remove());
   stopClockTick(); Resume.clearSnapshot('chess');
   return ()=>G===game && G.state===state && Auth.getState().uid===uid;
 }
@@ -1773,9 +1805,10 @@ function onTimeout(color){
 
 // ════════════ FEN YÜKLEME ════════════
 function showFENLoader(){
-  if(!G || G.mode === 'online') return;
+  if(!G || G.mode === 'online' || G.fenPending || G.confirmPending || G.promotionPending) return;
   const game = G;
   const ov = document.createElement('div');
+  G.fenPending=ov;
   ov.className = 'chess-confirm';
   ov.innerHTML = `<div class="ccf-box">
     <div class="ccf-text">📥 FEN pozisyonu yapıştır:</div>
@@ -1790,9 +1823,9 @@ function showFENLoader(){
   const input = ov.querySelector('[data-el="fenInput"]');
   // pano yapıştırma kolaylığı
   setTimeout(() => { input.focus(); }, 50);
-  ov.querySelector('.ccf-no').addEventListener('click', () => ov.remove());
+  ov.querySelector('.ccf-no').addEventListener('click', () => {ov.remove();if(G===game && G.fenPending===ov)G.fenPending=null;});
   ov.querySelector('.ccf-yes').addEventListener('click', () => {
-    if(G !== game) return;
+    if(G !== game || G.fenPending!==ov) return;
     const fen = input.value.trim();
     const parsed = fromFEN(fen);
     if(!parsed){ ov.querySelector('[data-el="fenErr"]').textContent = '❌ Geçersiz FEN'; return; }
@@ -1800,6 +1833,8 @@ function showFENLoader(){
     // Pozisyonu yükle (taze oyun gibi)
     G.state = parsed;
     G.aiThinking = false; G.anim = null; G.animating = false;
+    G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
+    G.root.querySelectorAll('.chess-promo, .chess-confirm').forEach(el=>el.remove());
     G.selected = null; G.legalForSelected = []; G.lastMove = null;
     G.captured = { w:[], b:[] };
     G.moveHistory = []; G.posHistory = [ positionKey(G.state) ];
@@ -1851,7 +1886,11 @@ function rebuildHistoryUI(){
 
 // ════════════ ONAY DİYALOĞU ════════════
 function showConfirm(text, onYes){
+  if(!G || G.gameEnded || G.confirmPending || G.fenPending || G.promotionPending) return;
+  const game=G,state=G.state;
   const ov = document.createElement('div');
+  G.confirmPending=ov;
+  let answered=false;
   ov.className = 'chess-confirm';
   ov.innerHTML = `<div class="ccf-box">
     <div class="ccf-text">${text}</div>
@@ -1861,8 +1900,15 @@ function showConfirm(text, onYes){
     </div>
   </div>`;
   G.root.appendChild(ov);
-  ov.querySelector('.ccf-no').addEventListener('click', () => ov.remove());
-  ov.querySelector('.ccf-yes').addEventListener('click', () => { ov.remove(); onYes(); });
+  const answer=accept=>{
+    ov.remove();
+    if(answered) return; answered=true;
+    if(G!==game || G.confirmPending!==ov) return;
+    G.confirmPending=null;
+    if(accept && G.state===state && !G.gameEnded) onYes();
+  };
+  ov.querySelector('.ccf-no').addEventListener('click', () => answer(false));
+  ov.querySelector('.ccf-yes').addEventListener('click', () => answer(true));
 }
 
 // ════════════ BERABERLİK TEKLİFİ ════════════

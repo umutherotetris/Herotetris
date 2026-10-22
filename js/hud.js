@@ -5,6 +5,7 @@
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 import * as Store from './store.js';
+const hudRequests = new WeakMap();
 
 // ── CSS (bir kez enjekte) ──────────────────────────────────────
 let cssInjected = false;
@@ -36,7 +37,7 @@ function injectHudCSS(){
 .ghud-dm-btn:hover{ background:rgba(66,165,245,.3); }
 /* Solo HUD (tek oyuncu) */
 .ghud-solo{ display:flex; align-items:center; gap:10px; padding:8px 12px; background:linear-gradient(160deg,rgba(10,12,28,.95),rgba(4,5,14,.98)); border-bottom:1px solid rgba(0,229,255,.1); }
-.ghud-solo-info{ flex:1; display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 10px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid rgba(0,229,255,.15); transition:background .15s; }
+.ghud-solo-info{ flex:1; min-width:0; display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 10px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid rgba(0,229,255,.15); transition:background .15s; }
 .ghud-solo-info:hover{ background:rgba(0,229,255,.08); }
 .ghud-stats{ display:flex; gap:8px; flex-shrink:0; }
 .ghud-stat{ text-align:center; padding:4px 10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; }
@@ -101,7 +102,7 @@ function playerRowHTML(info, isMine, accentCss, score){
     </div>
     <div class="ghud-score">
       <div class="ghud-score-lbl">SKOR</div>
-      <div class="ghud-score-val" data-hud-score="${esc(info.uid||'me')}">${(score||0).toLocaleString('tr-TR')}</div>
+      <div class="ghud-score-val" data-hud-role="${isMine?'me':'opponent'}" data-hud-score="${esc(info.uid||'me')}">${(score||0).toLocaleString('tr-TR')}</div>
     </div>
   </div>`;
 }
@@ -115,6 +116,8 @@ function esc(t){ return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 //         myAccent, oppAccent, game }
 // ══════════════════════════════════════════════════════════════
 export async function createVsHUD(opts={}){
+  const root=opts.root, request={};
+  if(root) hudRequests.set(root,request);
   injectHudCSS();
   const st = Auth.getState();
   const me = {
@@ -156,8 +159,8 @@ export async function createVsHUD(opts={}){
     + playerRowHTML(opp, false, oppAcc, opts.oppScore ? opts.oppScore() : 0);
 
   // Enjekte et — önce eski HUD'u temizle (yenile/restart'ta yığılmasın)
-  const root = opts.root;
-  if(root){
+  const stale=root && hudRequests.get(root)!==request;
+  if(root && !stale){
     root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove());
     root.insertBefore(wrap, root.firstChild);
   }
@@ -184,11 +187,11 @@ export async function createVsHUD(opts={}){
   function tick(){
     if(!wrap.isConnected){ hudRaf=null; return; }
     if(opts.myScore){
-      const el=wrap.querySelector('[data-hud-score="'+me.uid+'"]');
+      const el=wrap.querySelector('[data-hud-role="me"]');
       if(el) el.textContent=(opts.myScore()||0).toLocaleString('tr-TR');
     }
     if(opts.oppScore){
-      const el=wrap.querySelector('[data-hud-score="'+(opp.uid||'me')+'"]');
+      const el=wrap.querySelector('[data-hud-role="opponent"]');
       if(el) el.textContent=(opts.oppScore()||0).toLocaleString('tr-TR');
     }
     // XP çubuğunu da güncelle (store'dan canlı)
@@ -199,12 +202,12 @@ export async function createVsHUD(opts={}){
     }
     hudRaf = setTimeout(tick,500);
   }
-  tick();
+  if(!stale) hudRaf=setTimeout(tick,0);
 
   return {
     el: wrap,
     destroy(){ wrap.remove(); if(hudRaf) clearTimeout(hudRaf); },
-    updateOppScore(s){ const el=wrap.querySelector('[data-hud-score="'+(opp.uid||'me')+'"]'); if(el) el.textContent=(s||0).toLocaleString('tr-TR'); },
+    updateOppScore(s){ const el=wrap.querySelector('[data-hud-role="opponent"]'); if(el) el.textContent=(s||0).toLocaleString('tr-TR'); },
     updateOppInfo(info){ /* genişletilebilir */ },
   };
 }
@@ -215,6 +218,8 @@ export async function createVsHUD(opts={}){
 //         level:()=>number, game, accentColor }
 // ══════════════════════════════════════════════════════════════
 export function createSoloHUD(opts={}){
+  const root=opts.root;
+  if(root) hudRequests.set(root,{});
   injectHudCSS();
   const st = Auth.getState();
   let _sp={level:1,xp:0}; try{ _sp=Store.getState(); }catch(e){ _sp=(window.Hero&&window.Hero.Store&&window.Hero.Store.getState())||{level:1,xp:0}; }
@@ -254,7 +259,6 @@ export function createSoloHUD(opts={}){
       ${opts.level!==undefined?`<div class="ghud-stat"><div class="ghud-stat-v" id="hudSoloLevel">1</div><div class="ghud-stat-l">SEVİYE</div></div>`:''}
     </div>`;
 
-  const root = opts.root;
   if(root){
     root.querySelectorAll('#heroGameHud, .ghud').forEach(el=>el.remove());
     root.insertBefore(wrap, root.firstChild);
@@ -270,14 +274,14 @@ export function createSoloHUD(opts={}){
   let hudTimer=null;
   function tick(){
     if(!wrap.isConnected){ hudTimer=null; return; }
-    if(opts.score){ const el=document.getElementById('hudSoloScore'); if(el) el.textContent=(opts.score()||0).toLocaleString('tr-TR'); }
-    if(opts.lines){ const el=document.getElementById('hudSoloLines'); if(el) el.textContent=(opts.lines()||0).toLocaleString('tr-TR'); }
-    if(opts.level){ const el=document.getElementById('hudSoloLevel'); if(el) el.textContent=opts.level()||1; }
-    const xpFill=document.getElementById('hudSoloXp');
+    if(opts.score){ const el=wrap.querySelector('#hudSoloScore'); if(el) el.textContent=(opts.score()||0).toLocaleString('tr-TR'); }
+    if(opts.lines){ const el=wrap.querySelector('#hudSoloLines'); if(el) el.textContent=(opts.lines()||0).toLocaleString('tr-TR'); }
+    if(opts.level){ const el=wrap.querySelector('#hudSoloLevel'); if(el) el.textContent=opts.level()||1; }
+    const xpFill=wrap.querySelector('#hudSoloXp');
     if(xpFill){ const p=Store.getState(); xpFill.style.width=xpPct(p.xp||0,p.level||1)+'%'; }
     hudTimer=setTimeout(tick,500);
   }
-  tick();
+  hudTimer=setTimeout(tick,0);
 
   return {
     el: wrap,

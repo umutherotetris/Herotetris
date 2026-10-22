@@ -4,7 +4,7 @@
 //  Zorluk: kolay (kısa/düşük puan), orta (rastgele iyi), zor (en yüksek).
 // ════════════════════════════════════════════════════════════════
 import DICT, { TR_LOWER } from './kelime-dict.js';
-import { SIZE, validatePlacement, isEmptyBoard, isValidBoard, letterPoints, CENTER, getLanguage } from './kelime-engine.js';
+import { SIZE, validatePlacement, isEmptyBoard, isValidBoard, letterPoints, CENTER, getLanguage, SURPRISE_INFO } from './kelime-engine.js';
 
 // küçük→büyük Türkçe (TR_LOWER tersi)
 const TR_UPPER = {}; for(const up in TR_LOWER) TR_UPPER[TR_LOWER[up]] = up;
@@ -48,7 +48,7 @@ function ensureIndex(){
 }
 
 // Ana fonksiyon: en iyi (zorluğa göre) geçerli hamleyi bul. Yoksa null.
-export function findBestMove(board, rack, difficulty){
+export function findBestMove(board, rack, difficulty, context){
   ensureIndex();
   if(!isValidBoard(board)||!Array.isArray(rack)||!rack.length||rack.length>SIZE||!Array.from(rack).every(t=>t&&(t.joker===undefined||typeof t.joker==='boolean')&&(!t.joker?(typeof t.letter==='string'&&letterPoints(t.letter)>0&&t.points===letterPoints(t.letter)):t.points===0))) return null;
   const counts=new Map();let jokers=0;
@@ -57,12 +57,36 @@ export function findBestMove(board, rack, difficulty){
   const MAX_EVAL=6000,MAX_NODES=300000;let evals=0,nodes=0;
   const letterOf=tile=>tile?.joker?(tile.assigned||tile.letter):tile?.letter;
   const occupied=(r,c)=>r>=0&&r<SIZE&&c>=0&&c<SIZE&&board[r][c];
+  const surprises=context?.surprises;
+  const vowels=new Set(_lang()==='en'?[...'AEIOU']:[...'AEIİOÖUÜ']);
+  function rankMove(pending,baseScore){
+    let extraPoints=0,doubleMul=1,jokersUsed=0;
+    const remaining=rack.slice();
+    for(const p of pending){
+      if(p.joker)jokersUsed++;
+      const index=remaining.findIndex(t=>p.joker?t.joker:!t.joker&&t.letter===p.letter);
+      if(index>=0)remaining.splice(index,1);
+      const surprise=surprises?.[p.r+','+p.c];
+      const info=surprise && SURPRISE_INFO[surprise.type];
+      if(info?.kind==='points')extraPoints+=info.points;
+      else if(info?.kind==='double')doubleMul=2;
+    }
+    let vowelCount=0,consonantCount=0,points=0,duplicates=0;const letters=new Set();
+    for(const t of remaining){
+      if(t.joker)continue;
+      if(vowels.has(t.letter))vowelCount++;else consonantCount++;
+      points+=t.points;
+      if(letters.has(t.letter))duplicates++;else letters.add(t.letter);
+    }
+    return {effectiveScore:baseScore*doubleMul+extraPoints,jokersUsed,
+      leaveQuality:-Math.abs(vowelCount-consonantCount)-duplicates*.25-points*.05};
+  }
   function tryPending(pending){
     if(evals>=MAX_EVAL)return;
     const sig=pending.map(p=>p.r+'.'+p.c+(p.assigned||p.letter)+(p.joker?'?':'')).sort().join('|');
     if(seen.has(sig))return;seen.add(sig);evals++;
     const res=validatePlacement(board,pending);
-    if(res.ok)moves.push({pending:pending.map(p=>({...p})),score:res.score,words:res.words});
+    if(res.ok)moves.push({pending:pending.map(p=>({...p})),score:res.score,words:res.words,...rankMove(pending,res.score)});
   }
   function crossAt(r,c,dr,dc){
     const key=r+','+c+','+dr; if(crossCache.has(key))return crossCache.get(key);
@@ -103,7 +127,7 @@ export function findBestMove(board, rack, difficulty){
   }
 
   if(!moves.length) return null;
-  moves.sort((a,b)=>b.score-a.score);
+  moves.sort((a,b)=>b.effectiveScore-a.effectiveScore||a.jokersUsed-b.jokersUsed||b.leaveQuality-a.leaveQuality);
 
   // Zorluğa göre seç
   let pick;
@@ -117,7 +141,9 @@ export function findBestMove(board, rack, difficulty){
     const top = moves.slice(0, Math.max(1, Math.floor(moves.length*0.35)));
     pick = top[Math.floor(Math.random()*top.length)];
   }
-  return pick || null;
+  if(!pick)return null;
+  const {jokersUsed,leaveQuality,...result}=pick;
+  return result;
 }
 
 export async function aiReady(){

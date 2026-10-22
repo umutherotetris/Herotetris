@@ -14,33 +14,14 @@
 <body><main><h1>Hero Portal</h1><p id="message" role="status">Oyun alanın açılıyor. Kısa bir süre bekle.</p><button id="retry" hidden type="button">Yeniden dene</button><noscript><p>Oyunları açmak için JavaScript'i etkinleştir.</p></noscript></main>
 <script>
 (async function(){
-  const home = new URL('index.html?hero=150', location.href);
+  const home = new URL('index.html?hero=151', location.href);
   const retry = document.getElementById('retry');
   retry.addEventListener('click', () => location.reload());
   if(!('serviceWorker' in navigator)){ location.replace(home.href); return; }
-  function isHeroWorker(worker){
-    if(!worker) return Promise.resolve(false);
-    return new Promise(resolve => {
-      const channel = new MessageChannel();
-      const timeout = setTimeout(() => { channel.port1.close(); resolve(false); }, 1000);
-      channel.port1.onmessage = event => {
-        clearTimeout(timeout);
-        channel.port1.close();
-        resolve(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 150);
-      };
-      try{ worker.postMessage({ type: 'HERO_PING' }, [channel.port2]); }
-      catch(error){ clearTimeout(timeout); channel.port1.close(); resolve(false); }
-    });
-  }
   try{
     const scope = new URL('./', location.href).href;
-    const previous = await navigator.serviceWorker.getRegistration(scope);
-    // A replacement can remain waiting behind the legacy registration.
-    // Detach ONLY this project's legacy registration before creating a fresh one.
-    // Do not clear CacheStorage, player settings, IndexedDB, or a parent site's worker.
-    if(previous?.scope === scope && !await isHeroWorker(previous.active)){
-      await previous.unregister();
-    }
+    // Güncellemeyi aynı kayıt üzerinde kur. unregister(), beklerken etkinleşen
+    // yeni worker'ı da kaldırabildiğinden kayıt/önbellek/oyuncu verisi silinmez.
     const registration = await navigator.serviceWorker.register(new URL('sw.js', location.href), {
       scope, updateViaCache: 'none'
     });
@@ -65,7 +46,7 @@
         channel.port1.onmessage = event => {
           clearTimeout(closeTimer);
           channel.port1.close();
-          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 150) done();
+          if(event.data?.type === 'HERO_PONG' && Number(event.data.build) >= 151) done();
         };
         controller.postMessage({ type: 'HERO_PING' }, [channel.port2]);
       }

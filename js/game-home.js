@@ -196,7 +196,9 @@ function inject(){
  *   music: { get():bool, toggle():bool }
  *   vibe:  { get():bool, toggle():bool }
  */
+let activeHome = null;
 export function mountGameHome(gameKey, onExit, api = {}){
+  activeHome?.remove();
   inject();
   applyA11y();
   const theme = THEME[gameKey] || THEME.default;
@@ -221,21 +223,34 @@ export function mountGameHome(gameKey, onExit, api = {}){
   document.body.appendChild(fab);
 
   // ── Sürükleme ──
+  let removed=false, guide=null, confirmation=null;
   let drag=false, moved=false, sx=0, sy=0, ox=0, oy=0;
-  const down = (e)=>{ const t=e.touches?e.touches[0]:e; drag=true; moved=false; sx=t.clientX; sy=t.clientY; ox=pos.left; oy=pos.top; fab.classList.add('dragging'); };
+  const down = (e)=>{ if(removed) return; const t=e.touches?e.touches[0]:e; drag=true; moved=false; sx=t.clientX; sy=t.clientY; ox=pos.left; oy=pos.top; fab.classList.add('dragging'); };
   const move = (e)=>{ if(!drag) return; const t=e.touches?e.touches[0]:e; const dx=t.clientX-sx, dy=t.clientY-sy;
     if(Math.abs(dx)+Math.abs(dy)>6) moved=true; pos.left=ox+dx; pos.top=oy+dy; clamp(); place(); if(e.cancelable) e.preventDefault(); };
   const up = ()=>{ if(!drag) return; drag=false; fab.classList.remove('dragging');
     if(moved){ try{ localStorage.setItem('hero_cc_pos_'+gameKey, JSON.stringify(pos)); }catch(e){} }
     else { togglePanel(); } };
+  const cancel = ()=>{ drag=false; moved=false; fab.classList.remove('dragging'); };
   fab.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
   fab.addEventListener('touchstart', down, {passive:false}); window.addEventListener('touchmove', move, {passive:false}); window.addEventListener('touchend', up);
+  window.addEventListener('touchcancel', cancel);
 
   // ── Panel ──
   let panel=null;
+  const onKey = e=>{
+    if(e.key!=='Escape') return;
+    if(guide?.isConnected) guide.remove();
+    else if(confirmation?.isConnected) confirmation.remove();
+    else if(panel) closePanel();
+    else return;
+    e.preventDefault(); e.stopImmediatePropagation();
+  };
+  window.addEventListener('keydown', onKey, true);
   function togglePanel(){ panel ? closePanel() : openPanel(); }
   function closePanel(){ panel?.remove(); panel=null; }
   function openPanel(){
+    if(removed) return;
     closePanel();
     panel = document.createElement('div');
     panel.className = 'ghp-cc-panel';
@@ -299,6 +314,7 @@ export function mountGameHome(gameKey, onExit, api = {}){
         const tab = tabMap[screen] || screen;
         try{
           const soc = await import('./social.js');
+          if(removed) return;
           if(soc.openHubTab) soc.openHubTab(tab);
         }catch(e){ console.warn('[cc] social', e); }
       }
@@ -352,7 +368,11 @@ export function mountGameHome(gameKey, onExit, api = {}){
   try{ const s=parseFloat(localStorage.getItem('hero_ui_scale')||'1'); if(s!==1) applyScale(s); }catch(e){}
 
   function showGuide(){
+    if(removed) return;
+    guide?.remove();
+    closePanel();
     const g = document.createElement('div');
+    guide=g;
     g.className='ghp-cc-guide'; g.style.setProperty('--cc-accent', theme.accent);
     g.innerHTML = `
       <div class="ghp-cc-guide-box">
@@ -369,8 +389,11 @@ export function mountGameHome(gameKey, onExit, api = {}){
   }
 
   function confirmExit(){
+    if(removed) return;
+    confirmation?.remove();
     closePanel();
     const c = document.createElement('div');
+    confirmation=c;
     c.className='ghp-cc-confirm'; c.style.setProperty('--cc-accent', theme.accent);
     c.innerHTML = `<div class="ghp-cc-confirm-box">
       <div class="ti">🏠</div><div class="tt">Ana menüye dön?</div>
@@ -384,17 +407,26 @@ export function mountGameHome(gameKey, onExit, api = {}){
   }
 
   function doExit(after){
+    if(removed) return;
     try{ remove(); }catch(_){}
     try{ onExit && onExit(); }catch(err){ console.warn('[cc] exit', err); }
     try{ after && after(); }catch(e){}
   }
 
-  function remove(){ fab.remove(); closePanel();
+  function remove(){
+    if(removed) return;
+    removed=true; drag=false;
+    fab.remove(); closePanel(); guide?.remove(); confirmation?.remove();
     window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up);
     window.removeEventListener('touchmove', move); window.removeEventListener('touchend', up);
+    window.removeEventListener('touchcancel', cancel);
+    window.removeEventListener('keydown', onKey, true);
+    if(activeHome===controller) activeHome=null;
   }
 
-  return { remove, open:openPanel, close:closePanel };
+  const controller={ remove, open:openPanel, close:closePanel };
+  activeHome=controller;
+  return controller;
 }
 
 export default mountGameHome;
