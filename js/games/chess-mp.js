@@ -58,6 +58,16 @@ function later(callback, delay){
   return setTimeout(() => { if(session === sessionId && owner === peer && !manualClose) callback(); }, delay);
 }
 
+function disposeTransport(){
+  // Invalidate callbacks before close/destroy can emit, including a late open
+  // after the initial join deadline has already reported failure.
+  const previousConn = conn, previousPeer = peer;
+  conn = null; peer = null;
+  if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
+  try{ if(previousConn) previousConn.close(); }catch(e){}
+  try{ if(previousPeer) previousPeer.destroy(); }catch(e){}
+}
+
 
 // ── Otomatik yeniden bağlanma ──
 function startReconnect(){
@@ -165,7 +175,13 @@ export const ChessMP = {
     myCode = fixedCode || genCode();
     try{ peer = new window.Peer(PREFIX + myCode, { debug: 1 }); }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
+    connectTimer = later(() => {
+      connectTimer = null;
+      disposeTransport();
+      fire('error', 'oda kurulamadı');
+    }, 12000);
     listen(peer, 'open', () => {
+      if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
       const owner = peer;
       fire('code', myCode);
       if(peer === owner && !manualClose) fire('waiting');
@@ -175,7 +191,9 @@ export const ChessMP = {
       bindConn(c);
     });
     listen(peer, 'error', (err) => {
-      if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
+      // Signaling errors do not sever an already-open P2P data channel.
+      if(conn && conn.open) return;
+      disposeTransport();
       const t = (err && err.type) || '';
       if(t === 'unavailable-id'){ fire('error', 'kod meşgul, tekrar dene'); }
       else fire('error', t || 'bağlantı hatası');
@@ -198,10 +216,14 @@ export const ChessMP = {
     });
     connectTimer = later(() => {
       connectTimer = null;
-      if(!(conn && conn.open)) fire('error', 'oda bulunamadı');
+      if(!(conn && conn.open)){
+        disposeTransport();
+        fire('error', 'oda bulunamadı');
+      }
     }, 12000);
     listen(peer, 'error', (err) => {
-      if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
+      if(conn && conn.open) return;
+      disposeTransport();
       const t = (err && err.type) || '';
       if(t === 'peer-unavailable'){ fire('error', 'oda bulunamadı'); }
       else fire('error', t || 'bağlantı hatası');

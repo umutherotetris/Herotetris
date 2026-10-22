@@ -1,7 +1,7 @@
 // ════════════════════════════════════════════════════════════════
 //  KELİME DÜELLOSU — Yapay Zekâ Rakip
 //  Sözlük ağacı, mevcut tahta harfleri ve rafla geçerli hamle üretir.
-//  Zorluk: kolay (kısa/düşük puan), orta (rastgele iyi), zor (en yüksek).
+//  Zorluk: kolay (kısa/düşük puan), orta (rastgele iyi), zor (bulunan en yüksek).
 // ════════════════════════════════════════════════════════════════
 import DICT, { TR_LOWER } from './kelime-dict.js';
 import { SIZE, validatePlacement, isEmptyBoard, isValidBoard, letterPoints, CENTER, getLanguage, SURPRISE_INFO } from './kelime-engine.js';
@@ -55,6 +55,11 @@ export function findBestMove(board, rack, difficulty, context){
   for(const tile of rack){if(tile.joker)jokers++;else counts.set(tile.letter,(counts.get(tile.letter)||0)+1);}
   const firstMove=isEmptyBoard(board),moves=[],seen=new Set(),crossCache=new Map();
   const MAX_EVAL=6000,MAX_NODES=300000;let evals=0,nodes=0;
+  // Logical caps alone can still block a slow mobile main thread for seconds.
+  // Keep the best legal candidates already found when this cooperative deadline expires.
+  const clock=typeof performance!=='undefined'&&typeof performance.now==='function'?()=>performance.now():()=>Date.now();
+  const deadline=clock()+(difficulty==='zor'?700:difficulty==='kolay'?100:250);
+  let timedOut=false;
   const letterOf=tile=>tile?.joker?(tile.assigned||tile.letter):tile?.letter;
   const occupied=(r,c)=>r>=0&&r<SIZE&&c>=0&&c<SIZE&&board[r][c];
   const surprises=context?.surprises;
@@ -82,7 +87,8 @@ export function findBestMove(board, rack, difficulty, context){
       leaveQuality:-Math.abs(vowelCount-consonantCount)-duplicates*.25-points*.05};
   }
   function tryPending(pending){
-    if(evals>=MAX_EVAL)return;
+    if(evals>=MAX_EVAL||timedOut)return;
+    if(clock()>=deadline){timedOut=true;return;}
     const sig=pending.map(p=>p.r+'.'+p.c+(p.assigned||p.letter)+(p.joker?'?':'')).sort().join('|');
     if(seen.has(sig))return;seen.add(sig);evals++;
     const res=validatePlacement(board,pending);
@@ -95,18 +101,19 @@ export function findBestMove(board, rack, difficulty, context){
     for(let rr=r+dc,cc=c+dr;occupied(rr,cc);rr+=dc,cc+=dr)after+=letterOf(board[rr][cc]);
     const data={before,after,touches:!!(before||after)};crossCache.set(key,data);return data;
   }
-  for(const [dr,dc] of [[0,1],[1,0]])for(let line=0;line<SIZE&&nodes<MAX_NODES&&evals<MAX_EVAL;line++){
+  for(const [dr,dc] of [[0,1],[1,0]])for(let line=0;line<SIZE&&!timedOut&&nodes<MAX_NODES&&evals<MAX_EVAL;line++){
     const at=pos=>dr?[pos,line]:[line,pos];
     const anchors=Array.from({length:SIZE},(_,pos)=>{const [r,c]=at(pos);return firstMove?r===CENTER.r&&c===CENTER.c:!!board[r][c]||crossAt(r,c,dr,dc).touches;});
     if(!anchors.some(Boolean))continue;
-    for(let start=0;start<SIZE&&nodes<MAX_NODES&&evals<MAX_EVAL;start++){
+    for(let start=0;start<SIZE&&!timedOut&&nodes<MAX_NODES&&evals<MAX_EVAL;start++){
       const [sr,sc]=at(start);if(start&&occupied(sr-dr,sc-dc))continue;
       let empty=0,reachable=false;
       for(let pos=start;pos<SIZE;pos++){const [r,c]=at(pos);if(!board[r][c])empty++;if(empty>rack.length)break;if(anchors[pos]){reachable=true;break;}}
       if(!reachable)continue;
       const pending=[];
       function search(node,pos,connected,remainingJokers){
-        if(nodes++>=MAX_NODES||evals>=MAX_EVAL)return;
+        if(timedOut||nodes++>=MAX_NODES||evals>=MAX_EVAL)return;
+        if((nodes&31)===0&&clock()>=deadline){timedOut=true;return;}
         const [r,c]=at(pos);
         if(node.word&&pending.length&&connected&&(pos===SIZE||!board[r][c]))tryPending(pending);
         if(pos===SIZE)return;
@@ -119,7 +126,7 @@ export function findBestMove(board, rack, difficulty, context){
           const joined=connected||anchors[pos],count=counts.get(letter)||0;
           if(count){counts.set(letter,count-1);pending.push({r,c,letter,points:letterPoints(letter),joker:false});search(next,pos+1,joined,remainingJokers);pending.pop();counts.set(letter,count);}
           if(remainingJokers){pending.push({r,c,letter:'',assigned:letter,points:0,joker:true});search(next,pos+1,joined,remainingJokers-1);pending.pop();}
-          if(nodes>=MAX_NODES||evals>=MAX_EVAL)break;
+          if(timedOut||nodes>=MAX_NODES||evals>=MAX_EVAL)break;
         }
       }
       search(TRIE,start,false,jokers);

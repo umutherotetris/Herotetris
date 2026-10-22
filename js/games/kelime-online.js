@@ -12,6 +12,7 @@ import { Auth, db, fdb } from '../auth.js';
 const QPATH = 'kelimeQueue/waiting';   // tek slotlu bekleme kuyruğu
 const GPATH = 'kelimeGames';           // oyun odaları
 const FRESH_MS = 45000;                // bu süreden eski kuyruk kaydı bayat
+const INVITE_TTL = 300000;             // canlı davetler portalda ve oyunda aynı beş dakika
 
 let S = null;  // aktif çevrimiçi oturum durumu
 let requestEpoch = 0;  // canceled async work must not recreate a session
@@ -316,7 +317,7 @@ export function subscribeRoom(onState){
 // Hamleyi odaya yaz. Async ise deadline + oyunlarım indeksini güncelle.
 export async function pushMove(patch){
   const session = S;
-  if(!session) return;
+  if(!session || Auth.getState()?.uid!==session.myUid) throw new Error('Çevrimiçi oturum artık geçerli değil');
   patch = { ...patch };
   const rack=patch['racks/'+session.role];
   if(!session.async) delete patch['racks/'+session.role];
@@ -463,6 +464,7 @@ export async function sendInvite(targetUid, targetName, cb, opts){
   const invId = fdb.push(fdb.ref(db, `${INVPATH}/${targetUid}`)).key;
   const inviteRef = fdb.ref(db, `${INVPATH}/${targetUid}/${invId}`);
   const seed = rid();
+  const createdAt=Date.now(),expiresAt=createdAt+INVITE_TTL;
   const session = S = { gameId, role:'A', roomRef, myUid, seed, waiting:true, invId, targetUid };
   const active = () => epoch === requestEpoch && S === session;
   const clean = async () => {
@@ -474,10 +476,10 @@ export async function sendInvite(targetUid, targetName, cb, opts){
     await fdb.set(roomRef, {
       seed, boardStr: emptyBoardStr(), scores:{A:0,B:0}, turn:'A', bagPointer:14,
       players:{A:myUid}, names:{A:myName}, presence:{A:true}, status:'invited',
-      passStreak:0, createdAt:Date.now(), invited:targetUid, lang
+      passStreak:0, createdAt, expiresAt, invited:targetUid, lang
     });
     if(!active()){ await clean(); return; }
-    await fdb.set(inviteRef, { fromUid:myUid, fromName:myName, game:'kelime', gameId, seed, ts:Date.now(), lang });
+    await fdb.set(inviteRef, { fromUid:myUid, fromName:myName, game:'kelime', gameId, seed, ts:createdAt, expiresAt, lang });
     if(!active()){ await clean(); return; }
   }catch(e){
     await clean();
@@ -490,7 +492,7 @@ export async function sendInvite(targetUid, targetName, cb, opts){
     session.notifRef=fdb.ref(db,`userNotifs/${targetUid}/${notifId}`);
     await fdb.set(session.notifRef,{
       type:'challenge',icon:'⚔️',text:myName+' seni '+(lang==='en'?'Wordie':'Kelimecik')+' oynamaya davet ediyor!',
-      fromUid:myUid,fromName:myName,game:'kelime',gameId,gameInviteId:invId,lang,ts:Date.now(),expiresAt:Date.now()+300000
+      fromUid:myUid,fromName:myName,game:'kelime',gameId,gameInviteId:invId,lang,ts:createdAt,expiresAt
     });
     if(!active()){ await clean(); return; }
   }catch(e){} // Native incoming invites work even if notifications are not permitted.
@@ -531,7 +533,10 @@ export function listenInvites(cb){
   const r = fdb.ref(db, `${INVPATH}/${st.uid}`);
   const off = fdb.onValue(r, (s)=>{
     const v = s.val()||{}; const list=[];
-    for(const id in v){ const inv=v[id]; if(inv && inv.game==='kelime' && inv.gameId) list.push({ id, ...inv }); }
+    for(const id in v){
+      const inv=v[id],now=Date.now();
+      if(inv && inv.game==='kelime' && inv.gameId && Number.isFinite(inv.ts) && inv.ts<=now && now<inv.ts+INVITE_TTL && (!Number.isFinite(inv.expiresAt) || now<inv.expiresAt)) list.push({ id, ...inv });
+    }
     list.sort((a,b)=>(b.ts||0)-(a.ts||0));
     cb(list);
   });
@@ -552,6 +557,8 @@ export async function acceptInvite(invite, cb){
     result = await fdb.runTransaction(roomRef, room => {
       if(epoch !== requestEpoch || !room || !room.players || room.players.A===myUid) return;
       if(room.invited!==myUid || room.players.B || room.status!=='invited') return;
+      const expiresAt=Number.isFinite(room.expiresAt)?room.expiresAt:Number.isFinite(room.createdAt)?room.createdAt+INVITE_TTL:null;
+      if(expiresAt!==null && Date.now()>=expiresAt) return;
       return { ...room, players:{...room.players,B:myUid}, names:{...room.names,B:myName}, presence:{...room.presence,B:true}, status:'active' };
     });
   }catch(e){ if(epoch===requestEpoch){ cb.onError && cb.onError(permMsg(e)); } return; }

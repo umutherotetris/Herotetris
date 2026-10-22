@@ -414,7 +414,8 @@ function startGame(root, mode, opts){
     const _myAva=(_st&&_st.profile&&_st.profile.avatar)||'👤';
     const _myLv=(_p&&_p.level)||1;
     const _myXp=(_p&&_p.xp)||0;
-    const oppN=G.oppName||'Rakip'; const oppA=G.oppAvatar||'🎲';
+    const oppN=G.oppName||(G.mode==='ai'?'Yapay Zekâ':'Rakip');
+    const oppA=G.oppAvatar||(G.mode==='ai'?'🤖':'🎲');
     const oppL=G.oppLevel||1; const oppX=G.oppXP||0;
     createVsHUD({
       root: gameEl, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
@@ -461,6 +462,7 @@ function startGame(root, mode, opts){
 
 function restart(){
   if(G.online) return;   // çevrimiçi oyunda tek taraflı sıfırlama yok
+  G.confirmPending?.remove(); G.confirmPending = null;
   clearAIGame();   // yeni oyun → kayıt sil
   clearAutoRollTimer();
   if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
@@ -1865,6 +1867,7 @@ function applyFullSync(s){
   if(!G || !G.online || G.isHost || !s || !isValidState(s.gameState)) return;
   if(!!s.rolled !== (s.gameState.dice.length > 0)) return;
   try{
+    G.confirmPending?.remove(); G.confirmPending = null;
     G._turnToken = {};
     G.diceAnim = null;
     G.state = s.gameState;
@@ -2116,8 +2119,12 @@ function undoMove(){
 
 // ════════════ BERABERLİK / PES ════════════
 function showConfirm(msg, onYes, yesLabel, onNo, noLabel){
-  if(!G || !G.root) return;
+  if(!G || !G.root || G.gameEnded) return;
+  const game = G, state = G.state, turn = G._turnToken;
+  G.confirmPending?.remove();
   const ov = document.createElement('div');
+  G.confirmPending = ov;
+  let answered = false;
   ov.className = 'tavla-confirm';
   ov.innerHTML = `<div class="tvcf-box">
     <div class="tvcf-msg">${msg}</div>
@@ -2127,8 +2134,17 @@ function showConfirm(msg, onYes, yesLabel, onNo, noLabel){
     </div>
   </div>`;
   G.root.appendChild(ov);
-  ov.querySelector('.tvcf-no').addEventListener('click', () => { ov.remove(); if(onNo) onNo(); });
-  ov.querySelector('.tvcf-yes').addEventListener('click', () => { ov.remove(); if(onYes) onYes(); });
+  const answer = accept => {
+    ov.remove();
+    if(answered) return; answered = true;
+    if(G !== game || G.confirmPending !== ov) return;
+    G.confirmPending = null;
+    if(G.state !== state || G._turnToken !== turn || G.gameEnded) return;
+    const callback = accept ? onYes : onNo;
+    if(callback) callback();
+  };
+  ov.querySelector('.tvcf-no').addEventListener('click', () => answer(false));
+  ov.querySelector('.tvcf-yes').addEventListener('click', () => answer(true));
 }
 
 function offerDraw(){
@@ -2180,6 +2196,7 @@ function resignGame(){
 
 function endInDraw(){
   if(!G || G.gameEnded) return;
+  G.confirmPending?.remove(); G.confirmPending = null;
   G.gameEnded = true; clearAutoRollTimer();
   clearAIGame(); clearBreakTimers(); clearMoveGrace();
   updateStatus('🤝 Oyun berabere bitti', 'win');
@@ -2366,6 +2383,7 @@ function hideBreakOverlay(){
 // Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
 async function awardSimple(playerWon, reason){
   if(!G || G._rewardClaimed) return;
+  G.confirmPending?.remove(); G.confirmPending = null;
   G._rewardClaimed = true;
   const session=G,token=G._turnToken,uid=Auth.getState().uid;
   const current=()=>G===session && G._turnToken===token && Auth.getState().uid===uid;
@@ -2390,6 +2408,7 @@ async function awardSimple(playerWon, reason){
 
 async function onWin(status){
   if(!G || G.gameEnded || G._rewardClaimed) return;
+  G.confirmPending?.remove(); G.confirmPending = null;
   G._rewardClaimed = true;
   const session=G,token=G._turnToken,uid=Auth.getState().uid;
   const current=()=>G===session && G._turnToken===token && Auth.getState().uid===uid;

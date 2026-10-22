@@ -127,6 +127,12 @@ export function chooseSequence(state, difficulty){
   if(seqs.length === 0) return [];
   if(seqs.length === 1) return seqs[0].moves;
 
+  // Difficulty may soften positional choices, never decline a completed win.
+  // Otherwise the suboptimal branch can deliberately leave the last checker on
+  // the board even though another legal sequence bears off all fifteen now.
+  const winning = seqs.find(sq => sq.state.off[color] === 15);
+  if(winning) return winning.moves;
+
   const scored = seqs.map(sq => {
     let sc = evaluate(sq.state, color);
     // daha çok zar kullanan diziyi hafifçe tercih et (zar yakmamak)

@@ -34,6 +34,7 @@ function fixture(){
  f.MP.joinRoom('ABC234',(type,data)=>oldEvents.push({type,data}));
  const oldPeer=f.peers[0];oldPeer.emit('open');const oldConn=oldPeer.calls[0].c;
  f.MP.createRoom((type,data)=>events.push({type,data}),'DEF567');const active=f.peers.at(-1);
+ active.emit('open');events.length=0;
  oldPeer.emit('open');oldPeer.emit('error',{type:'peer-unavailable'});oldConn.emit('data',{type:'stale'});oldConn.emit('close');
  f.advance(12000);
  assert.deepEqual(events,[],'late callbacks from old room cannot notify or reconnect the new room');
@@ -102,4 +103,33 @@ function fixture(){
  f.MP.__setHandler((type,data)=>game.push({type,data}));c.emit('data','{"type":"hello"}');
  assert.deepEqual(lobby,['connected']);assert.equal(game.length,1);assert.equal(game[0].type,'message');assert.equal(game[0].data.type,'hello');
  f.advance(12000);assert.equal(game.length,1);f.MP.close();console.log('PASS lobby-to-game handler transition retains active channel.');
+}
+
+// Initial signaling can fail silently, and timed-out resources must not later launch.
+{
+ const f=fixture(),events=[];f.MP.createRoom((type,data)=>events.push({type,data}),'ABC234');const p=f.peers[0];
+ f.advance(11999);assert.equal(events.length,0);f.advance(1);
+ assert.deepEqual(events,[{type:'error',data:'oda kurulamadı'}]);assert.equal(p.destroyed,true);assert.equal(f.jobs.size,0);
+ const late=new f.Connection();p.emit('open');p.emit('connection',late);late.emit('open');late.emit('data',{type:'late'});
+ assert.equal(late.closed,true);assert.equal(events.length,1);assert.equal(f.MP.connected,false);
+ f.MP.close();console.log('PASS silent initial host signaling has a deadline and ignores late opens.');
+}
+
+// A ready host can wait for a friend; the signaling deadline ends at its open event.
+{
+ const f=fixture(),events=[];f.MP.createRoom(type=>events.push(type),'ABC234');const p=f.peers[0];
+ f.advance(11000);p.emit('open');f.advance(60000);
+ assert.deepEqual(events,['code','waiting']);assert.equal(p.destroyed,false);assert.equal(f.jobs.size,0);
+ const c=new f.Connection();p.emit('connection',c);c.emit('open');assert.equal(events.at(-1),'connected');
+ f.MP.close();console.log('PASS initial host readiness clears only the signaling deadline, preserving friend wait.');
+}
+
+// An expired guest join must not later connect after the lobby has reported failure.
+{
+ const f=fixture(),events=[];f.MP.joinRoom('ABC234',(type,data)=>events.push({type,data}));const p=f.peers[0];
+ p.emit('open');const c=p.calls[0].c;f.advance(12000);
+ assert.deepEqual(events,[{type:'error',data:'oda bulunamadı'}]);assert.equal(p.destroyed,true);assert.equal(c.closed,true);
+ c.emit('open');c.emit('data',{type:'late'});p.emit('error',{type:'peer-unavailable'});f.advance(12000);
+ assert.equal(events.length,1);assert.equal(f.MP.connected,false);assert.equal(f.jobs.size,0);
+ f.MP.close();console.log('PASS expired initial guest joins release resources and reject delayed channel events.');
 }

@@ -609,11 +609,15 @@ function fmtRemain(ms){
 }
 
 async function showMyGames(){
+  const session=G,round=G._setupToken={};
+  const current=()=>G===session && G._setupToken===round;
   const c = G.root.querySelector('[data-el="content"]');
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>📂 Yükleniyor…</h3></div></div>`;
   try{ if(!KO) KO = await import('./kelime-online.js'); }
-  catch(e){ flashCard('Yüklenemedi','Bağlantını kontrol et.'); return; }
+  catch(e){ if(current()) flashCard('Yüklenemedi','Bağlantını kontrol et.'); return; }
+  if(!current()) return;
   let games=[]; try{ games = await KO.listMyGames(); }catch(e){}
+  if(!current()) return;
   const now = Date.now();
   const rows = games.length ? games.map((g,i)=>{
     const mine = g.scores[g.myRole], opp = g.scores[g.myRole==='A'?'B':'A'];
@@ -645,16 +649,22 @@ async function showMyGames(){
       <button class="kl-btn" style="margin-top:12px" data-x="back">← Geri</button>
     </div></div>`;
   const card = c.querySelector('.kl-card');
-  card.querySelector('[data-x="back"]').addEventListener('click', showOnlineOptions);
+  card.querySelector('[data-x="back"]').addEventListener('click', ()=>{
+    if(!current()) return;
+    G._setupToken={};
+    try{ if(KO) Promise.resolve(KO.leaveRoom()).catch(()=>{}); }catch(e){}
+    showOnlineOptions();
+  });
   card.querySelectorAll('[data-i]').forEach(el=>{
     const g = games[+el.dataset.i]; const act = el.dataset.act;
     el.addEventListener('click', ()=>{
+      if(!current()) return;
       if(act==='claim'){
-        KO.claimTimeout(g.gameId, { onDone:()=>{ flashCard('🎉 Kazandın!', 'Rakibin süresi dolduğu için oyunu kazandın.'); }, onError:(m)=>flashCard('Olmadı', m) });
+        KO.claimTimeout(g.gameId, { onDone:()=>{ if(current()) flashCard('🎉 Kazandın!', 'Rakibin süresi dolduğu için oyunu kazandın.'); }, onError:(m)=>{ if(current()) flashCard('Olmadı', m); } });
       } else {
         KO.resumeGame(g.gameId, {
-          onError:(m)=>flashCard('Açılamadı', m),
-          onResumed:(d)=>startOnline(d.role,d.gameId,d.oppName,d.seed,{async:d.async,turnHours:d.turnHours,room:d.room,oppUid:d.oppUid,lang:d.lang})
+          onError:(m)=>{ if(current()) flashCard('Açılamadı', m); },
+          onResumed:(d)=>{ if(current()) startOnline(d.role,d.gameId,d.oppName,d.seed,{async:d.async,turnHours:d.turnHours,room:d.room,oppUid:d.oppUid,lang:d.lang}); }
         });
       }
     });
@@ -786,7 +796,7 @@ function syncOnlineBag(returnedTiles){
 }
 
 function startOnline(role, gameId, oppName, seed, opts){
-  G._setupToken = {}; G._resigned = false;
+  G._setupToken = {}; G._resigned = false; G._onlineSending=false; G._pendingOnlineOver=null;
   const _oppUid = (opts && opts.oppUid) || null;
   opts = opts || {};
   // Oda dilini uygula (eşleşen iki oyuncu aynı dilde olur)
@@ -840,16 +850,61 @@ function startOnlineHeartbeat(){
     if(!G || !G.online || G._over){ stopOnlineHeartbeat(); return; }
     // Kalp atışını arka planda da yaz (mobilde ekran kilidi/sekme değişimi rakibi düşürmesin)
     if(KO && KO.heartbeat) KO.heartbeat();
-    // Sessizlik eşiği 3 dakika — kelime oyununda uzun düşünme normaldir, kısa kopmalar oyunu bitirmesin
-    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){   // ~180 sn (3 dk) sessizlik → gerçekten ayrılmış
-      onlineGameOver('Rakip oyundan ayrıldı. Kazandın! 🎉','Kazandın! 🎉','win');
+    // Silence alone cannot distinguish an absent opponent from our own network outage.
+    // Keep the shared room resumable and award neither player a local victory.
+    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){
+      onlineInterrupted();
     }
   }, 8000);
 }
 function stopOnlineHeartbeat(){ if(G && G._hb){ clearInterval(G._hb); G._hb = null; } }
 
+function onlineInterrupted(message){
+  if(!G || G._over) return;
+  const session=G,round=G._setupToken;
+  const current=()=>G===session && G._setupToken===round;
+  G._over=true;
+  stopOnlineHeartbeat();
+  try{ if(KO) Promise.resolve(KO.leaveRoom()).catch(()=>{}); }catch(e){}
+  const c=G.root.querySelector('[data-el="content"]');
+  const ov=document.createElement('div');ov.className='kl-overlay';
+  ov.innerHTML='<div class="kl-card"><h3>🌐 Maç kesintiye uğradı</h3><p>'+esc(message || 'Rakiple bağlantı doğrulanamadı.')+' Kazanan belirlenmedi; maçın kaydı korunuyor. Bağlantı geldiğinde devam eden oyunlarından yeniden açabilirsin.</p><button class="kl-btn primary" data-x="resume">Devam Eden Oyunlarım</button><button class="kl-btn" style="margin-top:8px" data-x="menu">Menüye Dön</button></div>';
+  c.appendChild(ov);
+  const finish=next=>{ if(!current()) return; ov.remove(); G.online=false; G._over=false; next(); };
+  ov.querySelector('[data-x="resume"]').addEventListener('click',()=>finish(showMyGames));
+  ov.querySelector('[data-x="menu"]').addEventListener('click',()=>finish(showStart));
+}
+
 function currentTurn(){ return G.online ? G.state.turn : G.who; }
-function isMyTurn(){ return G.online ? (G.state.turn === G.role) : true; }
+function isMyTurn(){ return G.online ? (!G._onlineSending && G.state.turn === G.role) : true; }
+
+// Firebase emits optimistic snapshots before its update promise is acknowledged.
+// A rejected write must not finalize a match or discard the last confirmed rack.
+function sendOnlinePatch(patch){
+  if(!G || !G.online || G._over || G._onlineSending) return Promise.resolve(false);
+  const session=G,round=G._setupToken;
+  const current=()=>G===session && G._setupToken===round && !G._over;
+  session._onlineSending=true;session._pendingOnlineOver=null;
+  const failed=()=>{
+    if(current()){
+      session._onlineSending=false;session._pendingOnlineOver=null;
+      onlineInterrupted('İşlem sunucuya kaydedilemedi.');
+    }
+    return false;
+  };
+  let pending;
+  try{ if(!KO) throw new Error('Online session unavailable'); pending=KO.pushMove(patch); }
+  catch(e){ return Promise.resolve(failed()); }
+  return Promise.resolve(pending).then(()=>{
+    if(!current()) return false;
+    session._onlineSending=false;
+    const over=session._pendingOnlineOver || (patch.status==='over'?patch:null);
+    session._pendingOnlineOver=null;
+    if(over){ const outcome=onlineOutcome(over,session.role);onlineGameOver(outcome.message,outcome.verdict,outcome.result); }
+    else renderAll();
+    return true;
+  },failed);
+}
 
 function onlineOutcome(room,role){
   if(room.draw) return {message:'Anlaşmalı beraberlik',verdict:'Berabere 🤝',result:'draw'};
@@ -886,7 +941,10 @@ function applyRemote(room){
   // Anlık oyunda rakibin "ayrıldı" kararı artık presence'a göre DEĞİL, lastSeen sessizliğine göre
   // (kısa kopmalar oyunu bitirmesin). Kalp atışı döngüsü sessizliği kontrol eder.
   if(!G.async && room.lastSeen && room.lastSeen[oppRole]){ G._oppLastSeen = room.lastSeen[oppRole]; }
-  if(room.status === 'over' && !G._over){ const outcome=onlineOutcome(room,G.role); onlineGameOver(outcome.message,outcome.verdict,outcome.result); return; }
+  if(room.status === 'over' && !G._over){
+    if(G._onlineSending){G._pendingOnlineOver=room;return;}
+    const outcome=onlineOutcome(room,G.role); onlineGameOver(outcome.message,outcome.verdict,outcome.result); return;
+  }
   handleDrawOffer(room);
   if(room.lastMove && room.lastMove.who && room.lastMove.who !== G.role && room.lastMove.ts !== G._lastSeenMove){
     G._lastSeenMove = room.lastMove.ts;
@@ -926,11 +984,10 @@ function openGameMenu(){
 }
 
 function resignGame(){
-  if(!G || G._over) return;
+  if(!G || G._over || G._onlineSending) return;
   if(!confirm('Pes etmek istediğine emin misin?' + (G.online?' Rakip kazanmış sayılacak.':''))) return;
   if(G.online){
-    try{ if(KO) KO.pushMove({ status:'over', overMsg:'Rakip pes etti 🏳️ — kazandın! 🎉', resignedBy:G.role, drawOffer:null }); }catch(e){}
-    onlineGameOver('Pes ettin 🏳️', 'Kaybettin 😔','loss');
+    sendOnlinePatch({ status:'over', overMsg:'Rakip pes etti 🏳️ — kazandın! 🎉', resignedBy:G.role, drawOffer:null });
   } else {
     G._resigned = true;
     endGameAI();
@@ -938,10 +995,10 @@ function resignGame(){
 }
 
 function offerDraw(){
-  if(!G || !G.online || G._over) return;
+  if(!G || !G.online || G._over || G._onlineSending) return;
   if(G._myDrawOffer){ flashStatus('Teklifin zaten bekliyor…'); return; }
   G._myDrawOffer = true;
-  try{ if(KO) KO.pushMove({ drawOffer: G.role }); }catch(e){}
+  sendOnlinePatch({ drawOffer: G.role });
   flashStatus('🤝 Beraberlik teklifi gönderildi — rakip bekleniyor');
 }
 
@@ -963,13 +1020,14 @@ function handleDrawOffer(room){
       </div></div>`;
     c.appendChild(ov);
     ov.querySelector('[data-x="acc"]').addEventListener('click', ()=>{
+      if(!G || G._over || G._onlineSending) return;
       ov.remove(); G._drawPrompt = false;
-      try{ if(KO) KO.pushMove({ status:'over', overMsg:'🤝 Anlaşmalı beraberlik', draw:true, drawOffer:null }); }catch(e){}
-      onlineGameOver('🤝 Anlaşmalı beraberlik', 'Berabere 🤝','draw');
+      sendOnlinePatch({ status:'over', overMsg:'🤝 Anlaşmalı beraberlik', draw:true, drawOffer:null });
     });
     ov.querySelector('[data-x="dec"]').addEventListener('click', ()=>{
+      if(!G || G._over || G._onlineSending) return;
       ov.remove(); G._drawPrompt = false;
-      try{ if(KO) KO.pushMove({ drawOffer: null }); }catch(e){}
+      sendOnlinePatch({ drawOffer: null });
     });
   }
 }
@@ -1780,9 +1838,9 @@ function submitMove(){
     G.state.racks[G.role] = G.rackView.slice();
     patch['racks/'+G.role] = G.rackView;   // taşıma katmanı canlı rafı yalnız cihazda tutar
     G.pending=[]; G.selected=null;
-    if(KO) KO.pushMove(patch);
+    const sending=sendOnlinePatch(patch);
     renderAll();
-    return;
+    return sending;
   }
   // insan hamlesi bitti
   G.state.racks[who] = G.rackView.concat(drawFromBag(G.state.bag, need));
@@ -1979,11 +2037,10 @@ function passTurn(){
     G.state.passStreak = ps; G.state.turn = nextRole;
     const patch = { turn:nextRole, passStreak:ps, lastMove:{ who:G.role, pass:true, ts:Date.now() } };
     if(ps>=4){ patch.status='over'; patch.overMsg='İki taraf da pas geçti — oyun bitti'; }
-    if(KO) KO.pushMove(patch);
+    const sending=sendOnlinePatch(patch);
     renderAll();
-    if(ps>=4) onlineGameOver('İki taraf da pas geçti — oyun bitti');
-    else flashStatus('Pas geçtin · rakip bekleniyor');
-    return;
+    if(ps<4) flashStatus('Pas geçtin · rakip bekleniyor');
+    return sending;
   }
   if(G.ai){
     G.state.passStreak = (G.state.passStreak||0)+1;
@@ -2022,7 +2079,8 @@ function exitExchangeMode(){ G.exchangeMode=false; G.exchangeSel=null; updateExc
 
 function performExchange(idxs){
   // Çift tetikleme kilidi — buton hızlı/çoklu basımda harf birden fazla değişmesin
-  if(G._exchanging) return;
+  if(!G || G._over || G._exchanging || (G.online && (G._onlineSending || G.state.turn!==G.role))) return;
+  if(!Array.isArray(idxs) || !idxs.length || new Set(idxs).size!==idxs.length || idxs.some(i=>!Number.isInteger(i) || !G.rackView[i])) return;
   G._exchanging = true;
   afterGame(()=>{ G._exchanging = false; }, 1200);
   const removed = idxs.map(i=>G.rackView[i]);
@@ -2044,10 +2102,10 @@ function performExchange(idxs){
     G.state.turn = oppRole;
     const patch = { turn: oppRole, bagPointer: G.state.bagPointer, bagReturns: G.bagReturns, passStreak: 0, lastMove: { who: G.role, ts: Date.now(), exchange: need } };
     patch['racks/'+G.role] = G.rackView;
-    if(KO) KO.pushMove(patch);
+    const sending=sendOnlinePatch(patch);
     renderAll();
     flashStatus('🔄 '+need+' harf degisti — sira rakipte');
-    return;
+    return sending;
   }
   const fresh = drawFromBag(G.state.bag, removed.length);
   G.rackView = G.rackView.concat(fresh);

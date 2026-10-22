@@ -1151,6 +1151,7 @@ export function initSocial(){
     H.dmUnread = H.notifUnread = 0;
     H.notifRows = []; H.kelimeInviteRows = []; H.bcastRows = [];
     renderNotifPane();
+    if(H.tab === 'dost') renderFriends();
     updateBadges();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
@@ -2168,6 +2169,7 @@ async function deleteBroadcast(key){
 }
 function listenNotifs(uid){
   H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
+    if(Auth.getState().uid !== uid) return;
     const rows = []; if(snap.exists()) snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
     H.notifRows = rows;
     renderNotifPane();
@@ -2196,13 +2198,17 @@ function listenBroadcasts(){
 }
 
 // ── 👥 ARKADAŞLAR ───────────────────────────────────────────────
+let _friendsRenderToken = 0;
 async function renderFriends(){
+  const token = ++_friendsRenderToken;
   const list = byId('ghpFrList'); if(!list) return;
   const me = Auth.getState();
+  const current = () => token === _friendsRenderToken && Auth.getState().uid === me.uid && byId('ghpFrList') === list;
   if(!me.uid || me.status !== 'google'){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">👥</div><div class="ghp-empty-text">ARKADAŞLAR İÇİN GİRİŞ YAP</div></div>'; return; }
   list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-text">YÜKLENİYOR…</div></div>';
   let frs = {};
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid)); frs = s.exists() ? s.val() : {}; }catch(e){}
+  if(!current()) return;
   const uids = Object.keys(frs).filter(k => frs[k] !== false);
   if(!uids.length){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">👥</div><div class="ghp-empty-text">NICK YAZIP ARKADAŞ EKLE</div></div>'; return; }
   // İsim + çevrimiçilik
@@ -2213,6 +2219,7 @@ async function renderFriends(){
     try{ const pr = await fdb.get(fdb.ref(db, 'presence/' + fu)); if(pr.exists()){ const v = pr.val(); last = v.lastSeen||0; online = v.online === true && (Date.now()-last) < 180000; if(!name) name = v.name; } }catch(e){}
     return { uid: fu, name: name || 'Arkadaş', online, last, ava, lvl };
   }));
+  if(!current()) return;
   rows.sort((a,b) => (b.online - a.online) || (b.last - a.last));
   list.innerHTML = rows.map(r => `
     <div class="ghp-dm-row" style="border-left-color:${r.online ? '#69F0AE' : '#546E7A'}">
@@ -2224,27 +2231,50 @@ async function renderFriends(){
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
+    if(!current()) return;
     if(!confirm('Arkadaşlıktan çıkarılsın mı?')) return;
     try{ await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + b.dataset.frm), null); }catch(e){}
+    if(!current()) return;
     try{ await fdb.set(fdb.ref(db, 'friends/' + b.dataset.frm + '/' + me.uid), null); }catch(e){}
     renderFriends();
   }));
+}
+// Shared nickname-request path uses the same record shape as player-card requests.
+async function sendFriendRequest(uid, senderUid){
+  const me = Auth.getState();
+  const current = () => me.uid === senderUid && Auth.getState().uid === senderUid;
+  if(!senderUid || me.status !== 'google' || !uid || uid === senderUid || !current()) return false;
+  const name = me.profile?.nick || me.displayName || 'Oyuncu';
+  await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + senderUid), {
+    from:senderUid, name, fromUid:senderUid, fromName:name,
+    fromAvatar:me.profile?.avatar || '👤', ts:Date.now()
+  });
+  if(!current()) return false;
+  await fdb.push(fdb.ref(db, 'userNotifs/' + uid), {
+    type:'friendreq', icon:'👥', text:name + ' sana arkadaşlık isteği gönderdi!',
+    ts:Date.now(), fromUid:senderUid, reqFrom:senderUid
+  });
+  return current();
 }
 async function addFriendByNick(){
   const inp = byId('ghpFrNick'); const nick = inp.value.trim();
   if(!nick) return;
   const me = Auth.getState();
+  const current = () => Auth.getState().uid === me.uid && byId('ghpFrNick') === inp;
   if(!me.uid || me.status !== 'google'){ alert('Arkadaş eklemek için Google ile giriş gerekli.'); return; }
-  const t = await Auth.resolveNick(nick);
-  if(!t){ alert('Nick bulunamadı: ' + nick); return; }
-  if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
-  try{ const fs = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid)); if(fs.exists() && fs.val() !== false){ alert('Zaten arkadaşsınız.'); return; } }catch(e){}
   try{
-    await sendFriendRequest(t.uid, t.nick);
-    inp.value = '';
+    const t = await Auth.resolveNick(nick);
+    if(!current()) return;
+    if(!t){ alert('Nick bulunamadı: ' + nick); return; }
+    if(t.uid === me.uid){ alert('Kendini ekleyemezsin 🙂'); return; }
+    const existing = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + t.uid));
+    if(!current()) return;
+    if(existing.exists() && existing.val() !== false){ alert('Zaten arkadaşsınız.'); return; }
+    if(!await sendFriendRequest(t.uid, me.uid) || !current()) return;
+    if(inp.value.trim() === nick) inp.value = '';
     alert('👋 Arkadaşlık isteği gönderildi: ' + t.nick);
     renderFriends();
-  }catch(e){ alert('Gönderilemedi'); }
+  }catch(e){ if(current()) alert('Gönderilemedi'); }
 }
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;

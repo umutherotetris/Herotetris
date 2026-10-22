@@ -69,11 +69,13 @@ if(failures)process.exitCode=1;
 
 // PeerJS transport fixture exercises actual chess-mp module, not the network.
 const {ChessMP}=await import('../js/games/chess-mp.js');
-const transportTimers=[],peers=[];
+const transportTimers=[],peers=[];let transportTimerId=0;
 class Emitter {constructor(){this.handlers={};this.open=false;}on(type,fn){(this.handlers[type]??=[]).push(fn);}emit(type,...args){for(const fn of this.handlers[type]||[])fn(...args);}close(){this.open=false;this.emit('close');}send(){} }
 class Peer extends Emitter {constructor(){super();peers.push(this);this.connections=[];}connect(code){this.connections.push(code);return new Emitter();}destroy(){this.destroyed=true;} }
 const originalWindow=globalThis.window,originalTimeout=globalThis.setTimeout,originalClear=globalThis.clearTimeout;
-globalThis.window={Peer};globalThis.setTimeout=(fn)=>{transportTimers.push(fn);return transportTimers.length;};globalThis.clearTimeout=noop;
+globalThis.window={Peer};
+globalThis.setTimeout=(fn)=>{const timer={id:++transportTimerId,fn,active:true};transportTimers.push(timer);return timer.id;};
+globalThis.clearTimeout=id=>{const timer=transportTimers.find(timer=>timer.id===id);if(timer)timer.active=false;};
 try{
  test('closed/replaced chess transport ignores old peers, data and room timeout',()=>{
   const firstEvents=[],secondEvents=[];ChessMP.createRoom((...e)=>firstEvents.push(e),'AAAAAA');const oldPeer=peers.at(-1),oldConn=new Emitter();oldPeer.emit('connection',oldConn);oldConn.open=true;oldConn.emit('open');
@@ -81,7 +83,13 @@ try{
   const ghost=new Emitter();ghost.open=true;oldPeer.emit('connection',ghost);oldPeer.emit('open');oldPeer.emit('error',{type:'stale'});oldConn.emit('data',{type:'resign'});
   assert.equal(ghost.open,false,'late connections closed');assert.deepEqual(secondEvents,[],'old callbacks do not reach replacement');
   ChessMP.close();ChessMP.joinRoom('CCCCCC',noop);const joinPeer=peers.at(-1);joinPeer.emit('open');assert.equal(transportTimers.length>0,true);
-  ChessMP.close();ChessMP.createRoom((...e)=>secondEvents.push(e),'DDDDDD');while(transportTimers.length)transportTimers.shift()();joinPeer.emit('open');assert.deepEqual(secondEvents,[],'old join timeout ignored');assert.deepEqual(peers.at(-1).connections,[],'stale open cannot connect replacement peer');
+  const staleJoinTimeout=transportTimers.at(-1).fn;
+  ChessMP.close();ChessMP.createRoom((...e)=>secondEvents.push(e),'DDDDDD');
+  const readyPeer=peers.at(-1);readyPeer.emit('open');assert.deepEqual(secondEvents,[['code','DDDDDD'],['waiting',undefined]]);secondEvents.length=0;
+  while(transportTimers.length){const timer=transportTimers.shift();if(timer.active)timer.fn();}
+  // Invoke the canceled callback explicitly as well: queued stale work must
+  // remain isolated even after the replacement host is fully ready.
+  staleJoinTimeout();joinPeer.emit('open');assert.deepEqual(secondEvents,[],'old join timeout ignored');assert.deepEqual(readyPeer.connections,[],'stale open cannot connect replacement peer');
  });
  test('host reconnect is ready only when its replacement connection opens',()=>{
   ChessMP.close();const events=[];ChessMP.createRoom((...e)=>events.push(e),'EEEEEE');const first=peers.at(-1),connection=new Emitter();first.emit('connection',connection);connection.open=true;connection.emit('open');connection.close();

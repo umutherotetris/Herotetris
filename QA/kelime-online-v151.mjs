@@ -115,7 +115,7 @@ await test('actual online controller persists changed live rack on exchange and 
  const c=vm.createContext({...engine,G:{root:{querySelector:()=>({})}},KO:p,KL_LANG:'en',klSetLang:engine.setLanguage,stopTurnTimer:noop,
   buildGameDOM:noop,renderAll:noop,renderScores:noop,setLastMove:noop,handleDrawOffer:noop,trackBest:noop,flashStatus:noop,scorePopup:noop,sndBingo:noop,confetti:noop,sndWord:noop,sndPick:noop,
   haptic:noop,updateExchangeBtn:noop,window:{},afterGame:noop,startOnlineHeartbeat:noop});
- vm.runInContext(['syncOnlineBag','startOnline','applyRemote','recallConflictingPending','performExchange'].map(fn).join('\n'),c);
+ vm.runInContext(['syncOnlineBag','startOnline','applyRemote','recallConflictingPending','performExchange','sendOnlinePatch'].map(fn).join('\n'),c);
  c.startOnline(restored.role,restored.gameId,restored.oppName,restored.seed,restored);await Promise.resolve();
  assert.deepEqual(clone(c.G.rackView),initial.slice(0,7));c.performExchange([0,1]);for(let i=0;i<6;i++)await Promise.resolve();
  const expected=clone(c.G.rackView);assert.notDeepEqual(expected,initial.slice(0,7));assert.equal(b.get('kelimeGames/r/racks'),null);
@@ -125,7 +125,7 @@ await test('last online tile ends exhausted-bag game in the same committed move'
  let patch;const tile={letter:'A',points:1,joker:false};
  const c=vm.createContext({...engine,G:{online:true,role:'A',state:{board:Array.from({length:15},()=>Array(15).fill(null)),scores:{A:0,B:0},racks:{},bagPointer:100},bag:Array(100).fill(tile),rackView:[],pending:[{r:7,c:7,...tile}],selected:null},
   isMyTurn:()=>true,validatePlacement:()=>({ok:true,score:2,words:[],bingo:false}),applySurprises:()=>({doubleMul:1,extraPoints:0,extraTiles:0,hits:[]}),
-  currentTurn:()=> 'A',commitMove:noop,trackBest:noop,trackRecords:noop,setLastMove:noop,celebrate:noop,renderAll:noop,KO:{pushMove:p=>patch=p}});
- vm.runInContext(fn('submitMove'),c);c.submitMove();assert.equal(patch.status,'over');assert.deepEqual(clone(patch['racks/A']),[]);assert.equal(c.G.pending.length,0);
+  currentTurn:()=> 'A',commitMove:noop,trackBest:noop,trackRecords:noop,setLastMove:noop,celebrate:noop,renderAll:noop,onlineGameOver:noop,KO:{pushMove:p=>patch=p}});
+ vm.runInContext(['submitMove','sendOnlinePatch','onlineOutcome'].map(fn).join('\n'),c);c.submitMove();assert.equal(patch.status,'over');assert.deepEqual(clone(patch['racks/A']),[]);assert.equal(c.G.pending.length,0);
 });
 engine.setLanguage('tr');console.log(`PASS ${groups} Kelime v151 online groups.`);

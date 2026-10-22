@@ -35,6 +35,7 @@ async function controller(mod){
     setLastMove:noop,handleDrawOffer:noop,trackBest:noop,flashStatus:noop,scorePopup:noop,sndBingo:noop,confetti:noop,sndWord:noop,sndPick:noop,
     haptic:noop,updateExchangeBtn:noop,window:{},afterGame:cb=>scheduled.push(cb)});
   const names=['startOnline','applyRemote','recallConflictingPending','performExchange'];if(source.includes('function syncOnlineBag('))names.unshift('syncOnlineBag');
+  if(source.includes('function sendOnlinePatch('))names.push('sendOnlinePatch');
   vm.runInContext(names.map(fn).join('\n'),c);
   c.startOnline(restored.role,restored.gameId,restored.oppName,restored.seed,restored);await Promise.resolve();
   c.flush=()=>{for(const cb of scheduled.splice(0))cb();};return c;
@@ -57,7 +58,7 @@ for(const lang of ['tr','en']){
   conserved(lang+' legacy hydration');
   for(let turn=0;turn<20;turn++){
     const role=turn%2?'B':'A',c=clients[role];assert.equal(c.G.state.turn,role);
-    c.performExchange([0,1,2,3,4]);await Promise.resolve();c.flush();conserved(lang+' exchange '+turn);
+    await c.performExchange([0,1,2,3,4]);c.flush();conserved(lang+' exchange '+turn);
     assert.equal(bus.room().racks[role].length,7,'async room keeps the exchanged rack for reconnect');
     if(turn===3||turn===18){
       const reconnect=turn===3?'A':'B',before=JSON.stringify(clients[reconnect].G.rackView);

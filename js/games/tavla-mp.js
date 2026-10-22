@@ -179,8 +179,15 @@ export const TavlaMP = {
     let p;
     try{ p = new window.Peer(PREFIX + myCode, { debug: 1 }); peer = p; }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
+    connectTimer = setTimeout(() => {
+      if(!currentPeer(p, generation)) return;
+      connectTimer = null;
+      disposeTransport();
+      fire('error', 'oda kurulamadı');
+    }, 12000);
     p.on('open', () => {
       if(!currentPeer(p, generation)) return;
+      clearConnectTimer();
       fire('code', myCode);
       if(currentPeer(p, generation)) fire('waiting');
     });
@@ -190,6 +197,9 @@ export const TavlaMP = {
     });
     p.on('error', err => {
       if(!currentPeer(p, generation)) return;
+      // The signaling service can fail while the P2P match remains healthy.
+      if(conn && conn.open) return;
+      disposeTransport();
       const t = (err && err.type) || '';
       fire('error', t === 'unavailable-id' ? 'kod meşgul, tekrar dene' : t || 'bağlantı hatası');
     });
@@ -220,7 +230,8 @@ export const TavlaMP = {
     });
     p.on('error', err => {
       if(!currentPeer(p, generation)) return;
-      clearConnectTimer();
+      if(conn && conn.open) return;
+      disposeTransport();
       const t = (err && err.type) || '';
       fire('error', t === 'peer-unavailable' ? 'oda bulunamadı' : t || 'bağlantı hatası');
     });

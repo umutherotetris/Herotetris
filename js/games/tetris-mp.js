@@ -72,7 +72,11 @@ function waitForConnection(p, session, delay, retry){
     connectTimer = null;
     if(!currentPeer(p, session) || (conn && conn.open)) return;
     if(retry) scheduleNextRecon();
-    else fire('error', 'oda bulunamadı');
+    else {
+      // Süresi dolan giriş artık kullanılamaz; geç 'open' oyunu başlatmamalı.
+      disposeTransport();
+      fire('error', 'oda bulunamadı');
+    }
   }, delay);
 }
 
@@ -166,7 +170,7 @@ function openPeer(retry){
   p.on('open', () => {
     if(!currentPeer(p, session)) return;
     if(isHost){
-      if(!retry){ fire('code', myCode); if(!currentPeer(p, session)) return; }
+      if(!retry){ clearConnectTimer(); fire('code', myCode); if(!currentPeer(p, session)) return; }
       fire('waiting');
     } else {
       try{
@@ -192,6 +196,17 @@ function openPeer(retry){
   });
   // Süre sınırı, sinyal sunucusu hiç 'open' üretmese de işler.
   if(retry || !isHost) waitForConnection(p, session, retry ? 8000 : 12000, retry);
+  else {
+    // İlk host da sinyal sunucusunun sessiz kalmasına karşı süreyle sınırlıdır.
+    // Kod hazır olunca bu sınır kalkar; rakip bekleme süresini sınırlamaz.
+    clearConnectTimer();
+    connectTimer = setTimeout(() => {
+      connectTimer = null;
+      if(!currentPeer(p, session) || hasConnected) return;
+      disposeTransport();
+      fire('error', 'oda kurulamadı');
+    }, 12000);
+  }
   return true;
 }
 
