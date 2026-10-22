@@ -99,7 +99,11 @@ function start(){
   // 💎 Ekonomi butonları (çark / görev / kaju geçmişi)
   bindEco('ecoWheelBtn',  './economy.js', 'openDailyWheel');
   bindEco('ecoQuestBtn',  './economy.js', 'openQuests');
-  bindEco('ecoHistBtn',   './economy.js', 'openKajuHistory');
+  bindEco('ecoHistBtn',   './wallet-center.js', 'openWalletCenter');
+  bindEco('portalPuzzleBtn','./daily-puzzle.js','openDailyPuzzle');
+  bindEco('portalReviewBtn','./game-review.js','openReviewLibrary');
+  bindEco('portalPrivateBtn','./private-tournaments.js','openPrivateTournaments');
+  import('./game-return.js').then(m=>m.initGameReturn()).catch(()=>{});
   // 🏆 Turnuva butonu (varsa)
   bindEco('ecoTrnBtn',    './tournament.js', 'openTournament');
   // 🔔 Bildirim ayarları butonu (varsa)

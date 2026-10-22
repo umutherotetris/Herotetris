@@ -7,6 +7,7 @@
 import { Auth, db, fdb } from './auth.js';
 import { makeFabDraggable } from './jewel-drag.js';
 import { canLaunchPortalGame, launchPortalGame } from './game-launcher.js';
+import { openPanel, element, button, ensureCenterStyles } from './portal-panels.js';
 
 /* ═══════════ SOSYALPLUS: DÜZENLEME / SİLME / QUICK BAR ═══════════ */
 const _EDIT_MS = 5 * 60 * 1000;
@@ -350,100 +351,72 @@ async function _loadProfileKozmos(ov, uid, p){
 
 // ── Profil: oyuna davet seçici (arkadaş listesinden / profilden) ──
 // Kelimecik daveti için dil seçimi (TR/EN) — promise döner ('tr'/'en' veya null)
-function _pickKelimeLang(parentOv){
-  return new Promise(resolve => {
-    const ov = document.createElement('div');
-    ov.className = 'pcp-ov'; ov.style.zIndex = '2147483647';
-    const myLang = (()=>{ try{ return localStorage.getItem('hero_kelime_lang')||'tr'; }catch(e){ return 'tr'; } })();
-    ov.innerHTML = `<div class="pcp-card" style="max-width:300px">
-      <div class="pcp-besttitle" style="margin-top:4px">🔤 Kelimecik — Dil Seç</div>
-      <div style="font-size:11px;color:#9fb0d8;margin:6px 0 12px;text-align:center">Hangi dilde oynamak istersin?</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
-        <button class="pcp-btn" data-lang="tr">🇹🇷 Türkçe${myLang==='tr'?' ✓':''}</button>
-        <button class="pcp-btn" data-lang="en">🇬🇧 English${myLang==='en'?' ✓':''}</button>
-      </div>
-      <button class="pcp-x">Vazgeç</button>
-    </div>`;
-    document.body.appendChild(ov);
-    const done = (val)=>{ ov.remove(); resolve(val); };
-    ov.addEventListener('click', e=>{ if(e.target===ov) done(null); });
-    ov.querySelector('.pcp-x').addEventListener('click', ()=>done(null));
-    ov.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click', ()=>done(b.dataset.lang)));
+function _pickKelimeLang(parentOv, isCurrent=()=>true){
+  return new Promise(resolve=>{
+    if(!isCurrent()){resolve(null);return;}
+    let settled=false,panel,off=()=>{};
+    const finish=value=>{if(settled)return;settled=true;off();resolve(isCurrent()?value:null);panel?.close();};
+    panel=openPanel({id:'inviteKelimeLanguage',title:'Kelimecik · Dil seç',subtitle:'Arkadaşınla aynı dilde bir oda açılır',uid:Auth.getState().uid,onClose:()=>finish(null)});
+    for(const [lang,label]of [['tr','🇹🇷 Türkçe'],['en','🇬🇧 English']])panel.body.append(button(label,()=>finish(lang),'pc-button primary'));
+    panel.body.append(button('Vazgeç',()=>finish(null)));
+    off=Auth.subscribe(()=>{if(!isCurrent())finish(null);});
   });
 }
 
-function _showGameInvitePicker(targetUid, targetNick){
-  const old = document.getElementById('giPick'); if(old) old.remove();
-  const ov = document.createElement('div');
-  ov.id = 'giPick'; ov.className = 'pcp-ov'; ov.style.zIndex = '2147483646';
-  ov.innerHTML = `<div class="pcp-card" style="max-width:300px">
-    <div class="pcp-besttitle" style="margin-top:4px">⚔️ ${esc(targetNick)} — Oyuna Davet</div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">
-      <button class="pcp-btn" data-gi="kelime">🔤 Kelimecik</button>
-      <button class="pcp-btn" data-gi="chess">♟️ Satranç</button>
-      <button class="pcp-btn" data-gi="tavla">🎲 Tavla</button>
-      <button class="pcp-btn" data-gi="tetris">🟦 Tetris Maçı</button>
-    </div>
-    <button class="pcp-x">Vazgeç</button>
-  </div>`;
-  document.body.appendChild(ov);
-  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
-  ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+const INVITE_GAMES={kelime:{name:'Kelimecik',icon:'🔤'},chess:{name:'Satranç',icon:'♟️'},tavla:{name:'Tavla',icon:'🎲'},tetris:{name:'Tetris Maçı',icon:'🟦'}};
+const validSocialUid=uid=>typeof uid==='string'&&/^[\w-]{1,128}$/.test(uid);
+const _inviteLocks=new Set();
+// Public invitation authority for friends, player cards and private tournaments.
+// A canceled language choice or an account change cannot notify/open for a new actor.
+export async function invitePlayerToGame(targetUid,targetNick,gameKey,options={}){
+  const me=Auth.getState(),uid=me.uid,g=Object.hasOwn(INVITE_GAMES,gameKey)?INVITE_GAMES[gameKey]:null;
+  const current=()=>Auth.getState().uid===uid&&Auth.getState().status==='google'&&(!options.isCurrent||options.isCurrent());
+  if(!validSocialUid(uid)||me.status!=='google'||!validSocialUid(targetUid)||uid===targetUid||!g||!current())return false;
+  if(_inviteLocks.has(uid)||!canLaunchPortalGame())return false;
+  _inviteLocks.add(uid);let notificationKey=null,launched=false;
+  try{
+    const target=await fdb.get(fdb.ref(db,'users/'+targetUid));
+    if(!current()||!target.exists())return false;
+    const nick=String(targetNick||target.val()?.nick||target.val()?.name||'Oyuncu').slice(0,60);
+    if(gameKey==='kelime'){
+      const lang=['tr','en'].includes(options.lang)?options.lang:await _pickKelimeLang(null,current);
+      if(!lang||!current())return false;
+      launched=await launchPortalGame(gameKey,{isCurrent:current,open:module=>current()?module.inviteKelimeFriend(targetUid,nick,lang):false});
+    }else{
+      const code=_genInviteCode();
+      launched=await _launchGameAsInviteHost(gameKey,code,nick,async()=>{
+        if(!current())return false;
+        const sent=await fdb.push(fdb.ref(db,'userNotifs/'+targetUid),{type:'challenge',icon:'⚔️',text:(me.displayName||'Biri')+' seni '+g.name+' oynamaya davet ediyor! Kabul etmek için dokun.',ts:Date.now(),fromUid:uid,fromName:me.profile?.nick||me.displayName||'Rakip',game:gameKey,inviteCode:code,expiresAt:Date.now()+300000});
+        notificationKey=sent?.key||null;return current();
+      },current);
+    }
+    if(!launched||!current())return false;
+    document.getElementById('pcPop')?.remove();if(H?.open)close();
+    window.Hero?.toast?.('⚔️ '+g.name+' daveti gönderildi · 5 dk geçerli');return true;
+  }catch(error){if(current())window.Hero?.toast?.('Oyun daveti gönderilemedi. Yeniden deneyebilirsin.',true);return false;}
+  finally{
+    if(!launched&&notificationKey&&current())await fdb.set(fdb.ref(db,'userNotifs/'+targetUid+'/'+notificationKey),null).catch(()=>{});
+    _inviteLocks.delete(uid);
+  }
+}
 
-  const GAMES = {
-    kelime: { name:'Kelimecik', icon:'🔤' },
-    chess:  { name:'Satranç',   icon:'♟️' },
-    tavla:  { name:'Tavla',     icon:'🎲' },
-    tetris: { name:'Tetris Maçı', icon:'🟦' },
-  };
-  let preparing = false;
-  ov.querySelectorAll('[data-gi]').forEach(btn => btn.addEventListener('click', async () => {
-    if(preparing || !canLaunchPortalGame()) return;
-    preparing = true;
-    const game = btn.dataset.gi;
-    const g = GAMES[game]; if(!g){ preparing = false; return; }
-    // Kelimecik: önce dil seç (TR/EN)
-    let klLang = '';
-    if(game === 'kelime'){
-      klLang = await _pickKelimeLang(ov);
-      if(!klLang){ preparing = false; return; }
+function _showGameInvitePicker(targetUid,targetNick){
+  const actor=Auth.getState();
+  if(actor.status!=='google'||!validSocialUid(targetUid)||targetUid===actor.uid)return Promise.resolve(false);
+  return new Promise(resolve=>{
+    let settled=false,panel,preparing=false;
+    const finish=value=>{if(settled)return;settled=true;resolve(value);panel?.close();};
+    panel=openPanel({id:'giPick',title:'Oyuna davet',subtitle:String(targetNick||'Oyuncu'),uid:actor.uid,onClose:()=>finish(false)});
+    const current=()=>panel.current()&&Auth.getState().status==='google';
+    for(const [game,g]of Object.entries(INVITE_GAMES)){
+      const choice=button(g.icon+' '+g.name,async()=>{
+        if(preparing||!current())return;preparing=true;choice.disabled=true;choice.textContent='Hazırlanıyor…';
+        const launched=await invitePlayerToGame(targetUid,targetNick,game,{isCurrent:current});
+        if(launched)finish(true);else if(current()){preparing=false;choice.disabled=false;choice.textContent=g.icon+' '+g.name;panel.message('Davet başlatılmadı. Açık oyunu ve bağlantını kontrol edip yeniden dene.',true);}
+      },'pc-button primary');choice.dataset.gi=game;panel.body.append(choice);
     }
-    const me = Auth.getState();
-    if(!ov.isConnected || !me.uid || me.status !== 'google' || !canLaunchPortalGame()){ preparing = false; return; }
-    btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
-    // Kelimecik needs its real Firebase invitation and shared, language-specific room.
-    if(game === 'kelime'){
-      const launched = await launchPortalGame(game, { isCurrent:()=>Auth.getState().uid === me.uid && ov.isConnected, open:module => {
-        if(Auth.getState().uid !== me.uid || !ov.isConnected) return false;
-        return module.inviteKelimeFriend(targetUid, targetNick, klLang);
-      } });
-      if(launched){ ov.remove(); document.getElementById('pcPop')?.remove(); if(H?.open) close(); }
-      else { preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; }
-      return;
-    }
-    // 6 haneli buluşma kodu üret (davet eden host, davet edilen guest)
-    const code = _genInviteCode();
-    try{
-      const INVITE_TTL = 5 * 60 * 1000;   // canlı davet 5 dakika geçerli (host bekler)
-      const launched = await _launchGameAsInviteHost(game, code, targetNick, async () => {
-        if(!ov.isConnected || Auth.getState().uid !== me.uid) return false;
-        const notification = await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
-          type:'challenge', icon:'⚔️',
-          text:(me.displayName || 'Biri') + ' seni ' + g.name + ' oynamaya davet ediyor! Kabul etmek için dokun.',
-          ts:Date.now(), fromUid:me.uid, fromName:me.profile?.nick || me.displayName || 'Rakip', game, inviteCode:code,
-          expiresAt:Date.now() + INVITE_TTL
-        });
-        if(!ov.isConnected || Auth.getState().uid !== me.uid){
-          if(notification?.key) await fdb.set(fdb.ref(db, 'userNotifs/' + targetUid + '/' + notification.key), null).catch(()=>{});
-          return false;
-        }
-      }, () => ov.isConnected && Auth.getState().uid === me.uid);
-      if(!launched){ preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
-      try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi · 5 dk geçerli'); }catch(e){}
-      btn.textContent = '✓ Davet gönderildi';
-    }catch(e){ preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
-    setTimeout(() => { if(ov.parentNode) ov.remove(); }, 900);
-  }));
+    panel.body.append(button('Vazgeç',()=>finish(false)));
+  });
 }
 
 // Davet için 6 haneli kod (PeerJS uyumlu: A-Z0-9)
@@ -631,21 +604,30 @@ function bindPlayerKajuSend(ov, ksBtn, ksBox, uid, nick, owner){
 }
 
 export async function openPlayerCard(uid){
-  if(!uid || document.getElementById('pcPop')) return;
+  if(!validSocialUid(uid) || document.getElementById('pcPop')) return;
+  const ownerUid=Auth.getState().uid;
   const ov = document.createElement('div');
   ov.id = 'pcPop'; ov.className = 'pcp-ov';
   ov.innerHTML = '<div class="pcp-card"><div class="pcp-load">⏳</div></div>';
   document.body.appendChild(ov);
+  const current=()=>ov.isConnected&&Auth.getState().uid===ownerUid;
+  let off=()=>{},observer=null;
+  const cleanup=()=>{off();observer?.disconnect();};
+  off=Auth.subscribe(()=>{if(!current()){ov.remove();cleanup();}});
+  if(typeof MutationObserver!=='undefined'){observer=new MutationObserver(()=>{if(!ov.isConnected)cleanup();});observer.observe(document.body,{childList:true,subtree:true});}
   ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
   let p = {}, pr = {};
   try{ const s = await fdb.get(fdb.ref(db, 'users/' + uid)); p = s.exists() ? s.val() : {}; }catch(e){}
+  if(!current())return;
   try{ const s = await fdb.get(fdb.ref(db, 'presence/' + uid)); pr = s.exists() ? s.val() : {}; }catch(e){}
+  if(!current())return;
   const me = Auth.getState();
   const online = pr.online === true && (Date.now() - (pr.lastSeen||0)) < 180000;
   const isAdm = (H && H.admins && H.admins[uid]) || p.isAdmin === true;
   const isOp = H && H.ops && H.ops[uid] === true;
   let isFriend = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friends/' + me.uid + '/' + uid)); isFriend = s.exists() && s.val() !== false; }catch(e){}
+  if(!current())return;
   // Bekleyen arkadaşlık isteği var mı? (ben → karşı taraf)
   let reqSent = false;
   try{ const s = await fdb.get(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid)); reqSent = s.exists(); }catch(e){}
@@ -670,6 +652,7 @@ export async function openPlayerCard(uid){
     }catch(e){}
   }
   const nick = p.nick || p.name || p.displayName || pr.name || 'Oyuncu';
+  if(!current())return;
   const self = uid === me.uid;
   _injectCosmeticCSS();
   const pcz = p.cosmetics || {};
@@ -744,20 +727,22 @@ export async function openPlayerCard(uid){
   // Dürt (arkadaş veya admin)
   const pokeB = ov.querySelector('[data-pc="poke"]');
   if(pokeB) pokeB.addEventListener('click', async () => {
-    pokeB.disabled = true; pokeB.textContent = '✓ Dürtüldü!';
+    if(pokeB.disabled||!current())return;
+    pokeB.disabled = true; pokeB.textContent = 'Gönderiliyor…';
     try{
       await fdb.push(fdb.ref(db, 'userNotifs/' + uid), {
         type:'poke', icon:'👋',
         text: (me.displayName || (me.profile && me.profile.nick) || 'Biri') + ' seni dürtüyor! 👋',
         ts: Date.now(), fromUid: me.uid
       });
+      if(!current())return;pokeB.textContent='✓ Dürtüldü!';
       try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('👋 Dürtüldü'); }catch(e){}
-    }catch(e){}
+    }catch(e){if(current()){pokeB.disabled=false;pokeB.textContent='Yeniden dene';}}
     setTimeout(() => { if(pokeB){ pokeB.disabled = false; pokeB.textContent = '👋 Dürt'; } }, 4000);
   });
   // Oyuna Davet (arkadaş veya admin) — oyun seçtir
   const invB = ov.querySelector('[data-pc="invite"]');
-  if(invB) invB.addEventListener('click', () => { _showGameInvitePicker(uid, nick); });
+  if(invB) invB.addEventListener('click', () => { if(current())_showGameInvitePicker(uid, nick); });
 
   // Kaju Gönder — mini paneli aç/kapat
   const ksBtn = ov.querySelector('[data-pc="kajusend"]');
@@ -767,11 +752,12 @@ export async function openPlayerCard(uid){
   // Kozmo (yumurta) Gönder — tek tıkla, onay sonrası doğrudan gönderir
   const kzBtn = ov.querySelector('[data-pc="kozmosend"]');
   if(kzBtn) kzBtn.addEventListener('click', async () => {
+    if(kzBtn.disabled||!current())return;
     if(!confirm(nick + ' kişisine kozmo yumurtası göndermek istiyor musun?')) return;
     kzBtn.disabled = true; const _origTxt = kzBtn.textContent; kzBtn.textContent = '⏳…';
     try{
       const K = await import('./kozmos.js');
-      if(K.sendEgg) await K.sendEgg(uid, nick);
+      if(current()&&K.sendEgg) await K.sendEgg(uid, nick);
     }catch(e){
       try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Gönderilemedi', true); }catch(_){}
     }
@@ -781,9 +767,11 @@ export async function openPlayerCard(uid){
   // Klana Davet
   const clanInvB = ov.querySelector('[data-pc="claninv"]');
   if(clanInvB) clanInvB.addEventListener('click', async () => {
+    if(clanInvB.disabled||!current())return;
     clanInvB.disabled = true; clanInvB.textContent = '⏳ Gönderiliyor…';
     try{
       const m = await import('./clan.js');
+      if(!current())return;
       if(m.inviteToClanByUid){ await m.inviteToClanByUid(uid, nick); }
       else if(m.sendClanInvite){ await m.sendClanInvite(uid, nick); }
       clanInvB.textContent = '✓ Davet edildi';
@@ -797,52 +785,37 @@ export async function openPlayerCard(uid){
   // ── Arkadaş listesi gizle/göster toggle (kendi profilim) ──
   const frHideBtn = ov.querySelector('[data-frhide]');
   if(frHideBtn) frHideBtn.addEventListener('click', async () => {
+    if(frHideBtn.disabled||!current())return;frHideBtn.disabled=true;
     const newHidden = frHideBtn.dataset.frhide === '1';
     try{
       await fdb.update(fdb.ref(db, 'users/' + me.uid), { hideFriends: newHidden });
+      if(!current())return;
       try{ if(window.Hero&&window.Hero.toast) window.Hero.toast(newHidden ? '🔒 Arkadaş listesi gizlendi' : '👁️ Arkadaş listesi herkese açık'); }catch(e){}
       frHideBtn.dataset.frhide = newHidden ? '0' : '1';
       frHideBtn.textContent = newHidden ? '🔒 Liste gizli — Göster' : '👁️ Listeyi gizle';
-    }catch(e){}
+    }catch(e){}finally{if(current())frHideBtn.disabled=false;}
   });
-  const frB = ov.querySelector('[data-pc="fr"]');
-  if(frB) frB.addEventListener('click', async () => {
-    if(me.status !== 'google'){ alert('Arkadaşlık için Google ile giriş gerekli.'); return; }
-    if(reqSent && !isFriend){ return; }   // zaten istek gönderilmiş
+  const frB=ov.querySelector('[data-pc="fr"]');
+  frB?.addEventListener('click',async()=>{
+    if(frB.disabled||!current())return;
+    if(me.status!=='google'){window.Hero?.toast?.('Arkadaşlık için hesabını bağla.',true);return;}
+    if(reqSent&&!isFriend)return;
+    frB.disabled=true;
     try{
       if(isFriend){
-        // Arkadaşlıktan çıkar (çift taraflı) + bekleyen istekleri de temizle
-        await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), null);
-        await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), null);
-        try{ await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), null); }catch(e){}
-        try{ await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid), null); }catch(e){}
-        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Arkadaşlıktan çıkarıldı'); }catch(e){}
-      } else {
-        // Önce: karşı taraftan bana bekleyen istek var mı? Varsa direkt arkadaş ol (karşılıklı)
-        let mutual = false;
-        try{ const inc = await fdb.get(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid)); mutual = inc.exists(); }catch(e){}
-        if(mutual){
-          // Çift taraflı arkadaşlık kur
-          await fdb.set(fdb.ref(db, 'friends/' + me.uid + '/' + uid), { name: nick, ts: Date.now() });
-          await fdb.set(fdb.ref(db, 'friends/' + uid + '/' + me.uid), { name: me.displayName || 'Oyuncu', ts: Date.now() });
-          try{ await fdb.set(fdb.ref(db, 'friendRequests/' + me.uid + '/' + uid), null); }catch(e){}
-          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('🎉 Artık arkadaşsınız!'); }catch(e){}
-        } else {
-          // Eski takılı isteği temizleyip yeni İSTEK gönder
-          try{ await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), null); }catch(e){}
-          await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + me.uid), {
-            from: me.uid, name: me.displayName || 'Oyuncu',
-            fromUid: me.uid, fromName: me.displayName || 'Oyuncu',
-            fromAvatar: (me.profile && me.profile.avatar) || '👤', ts: Date.now()
-          });
-          try{ await fdb.push(fdb.ref(db, 'userNotifs/' + uid), { type:'friendreq', icon:'👥', text: (me.displayName || 'Bir oyuncu') + ' sana arkadaşlık isteği gönderdi!', ts: Date.now(), fromUid: me.uid, reqFrom: me.uid }); }catch(e){}
-          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⏳ Arkadaşlık isteği gönderildi'); }catch(e){}
-        }
+        await fdb.update(fdb.ref(db),{['friends/'+me.uid+'/'+uid]:null,['friends/'+uid+'/'+me.uid]:null,['friendRequests/'+uid+'/'+me.uid]:null,['friendRequests/'+me.uid+'/'+uid]:null});
+      }else{
+        const incoming=await fdb.get(fdb.ref(db,'friendRequests/'+me.uid+'/'+uid));if(!current())return;
+        if(incoming.exists()){
+          await fdb.update(fdb.ref(db),{['friends/'+me.uid+'/'+uid]:{name:nick,ts:Date.now()},['friends/'+uid+'/'+me.uid]:{name:me.displayName||'Oyuncu',ts:Date.now()},['friendRequests/'+me.uid+'/'+uid]:null,['friendRequests/'+uid+'/'+me.uid]:null});
+        }else if(!await sendFriendRequest(uid,me.uid))throw new Error('İstek kaydedilemedi');
       }
-      ov.remove();
-      if(H && H.open && H.tab === 'dost') renderFriends();
-    }catch(e){ console.warn('[friend] action failed', e); alert('İşlem yapılamadı: ' + (e && e.message ? e.message : 'bilinmeyen hata')); }
+      if(!current())return;
+      window.Hero?.toast?.(isFriend?'Arkadaşlıktan çıkarıldı':'Arkadaşlık işlemi kaydedildi.');ov.remove();
+      if(H?.open&&H.tab==='dost')renderFriends();
+    }catch(error){if(current()){frB.disabled=false;window.Hero?.toast?.('Arkadaşlık işlemi kaydedilemedi. Yeniden deneyebilirsin.',true);}}
   });
+
 }   // { open, tab, dmUnread, notifUnread, dmThread, offChat, offDM, offNotif, dmWatch:{} }
 
 // ── Sürüklenebilir FAB (monolitten) ─────────────────────────────
@@ -1061,6 +1034,7 @@ export function initSocial(){
       <div class="ghp-pane" id="ghpPane-dost">
         <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(105,240,174,.12)">
           <input class="ghp-input" id="ghpFrNick" maxlength="16" placeholder="Nick ile arkadaş ekle…" autocomplete="off"><button class="ghp-send" id="ghpFrAdd" style="color:#69F0AE;border-color:rgba(105,240,174,.4);background:linear-gradient(135deg,rgba(105,240,174,.2),rgba(105,240,174,.07))">＋</button>
+          <button class="ghp-act" id="ghpFrSearch" aria-label="Nick ara ve arkadaş bul" title="Arkadaş bul">⌕</button>
         </div>
         <div class="ghp-list" id="ghpFrList"></div>
       </div>
@@ -1133,6 +1107,7 @@ export function initSocial(){
   panel.querySelectorAll('.ghp-lb-tab').forEach(b=>b.addEventListener('click',()=>renderLeaderboard(b.dataset.lb)));
   // Arkadaş ekle
   panel.querySelector('#ghpFrAdd').addEventListener('click', addFriendByNick);
+  panel.querySelector('#ghpFrSearch').addEventListener('click',()=>openFriendsCenter(panel.querySelector('#ghpFrNick').value));
   panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') addFriendByNick(); });
   panel.querySelector('#ghpFrNick').addEventListener('input', () => {
     const q = panel.querySelector('#ghpFrNick').value.trim().toLowerCase();
@@ -2244,9 +2219,11 @@ async function renderFriends(){
       <div class="ghp-dm-avatar" data-pcfr="${esc(r.uid)}" style="position:relative;cursor:pointer">${r.ava}${r.online ? '<span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#69F0AE;border:2px solid #0a0e1e;box-shadow:0 0 5px #69F0AE"></span>' : ''}</div>
       <div class="ghp-dm-info" data-pcfr="${esc(r.uid)}" style="cursor:pointer"><div class="ghp-dm-name" style="color:${r.online ? '#69F0AE' : '#90A4AE'}">${esc(r.name)} <small style="opacity:.65;font-weight:700">LV ${esc(r.lvl)}</small></div><div class="ghp-dm-text">${r.online ? 'Çevrimiçi' : (r.last ? tAgo(r.last) + ' önce' : 'Çevrimdışı')}</div></div>
       <button class="ghp-act" data-fdm="${esc(r.uid)}" data-fn="${esc(r.name)}">✉️</button>
+      <button class="ghp-act" data-finvite="${esc(r.uid)}" data-fn="${esc(r.name)}" aria-label="${esc(r.name)} adlı oyuncuyu oyuna davet et" title="Oyuna davet">⚔️</button>
       <button class="ghp-act" data-frm="${esc(r.uid)}" style="color:#ff7a8a">✕</button>
     </div>`).join('');
   list.querySelectorAll('[data-fdm]').forEach(b => b.addEventListener('click', () => { switchTab('ozel'); dmOpenThread(b.dataset.fdm, b.dataset.fn); }));
+  list.querySelectorAll('[data-finvite]').forEach(b=>b.addEventListener('click',()=>{if(current())_showGameInvitePicker(b.dataset.finvite,b.dataset.fn);}));
   list.querySelectorAll('[data-pcfr]').forEach(el => el.addEventListener('click', () => openPlayerCard(el.dataset.pcfr)));
   list.querySelectorAll('[data-frm]').forEach(b => b.addEventListener('click', async () => {
     if(!current()) return;
@@ -2257,23 +2234,106 @@ async function renderFriends(){
     renderFriends();
   }));
 }
-// Shared nickname-request path uses the same record shape as player-card requests.
-async function sendFriendRequest(uid, senderUid){
-  const me = Auth.getState();
-  const current = () => me.uid === senderUid && Auth.getState().uid === senderUid;
-  if(!senderUid || me.status !== 'google' || !uid || uid === senderUid || !current()) return false;
-  const name = me.profile?.nick || me.displayName || 'Oyuncu';
-  await fdb.set(fdb.ref(db, 'friendRequests/' + uid + '/' + senderUid), {
-    from:senderUid, name, fromUid:senderUid, fromName:name,
-    fromAvatar:me.profile?.avatar || '👤', ts:Date.now()
-  });
-  if(!current()) return false;
-  await fdb.push(fdb.ref(db, 'userNotifs/' + uid), {
-    type:'friendreq', icon:'👥', text:name + ' sana arkadaşlık isteği gönderdi!',
-    ts:Date.now(), fromUid:senderUid, reqFrom:senderUid
-  });
-  return current();
+
+// Nick registry prefix queries are bounded; no users collection is scanned.
+export async function searchFriendCandidates(query,expectedUid=Auth.getState().uid){
+  const text=String(query||'').trim().slice(0,16);
+  const current=()=>Auth.getState().uid===expectedUid&&Auth.getState().status==='google';
+  if(!validSocialUid(expectedUid)||!current()||text.length<2)return [];
+  const candidates=await Auth.searchNicks(text,8);
+  if(!current())return [];
+  const seen=new Set();return (Array.isArray(candidates)?candidates:[]).filter(row=>validSocialUid(row?.uid)&&row.uid!==expectedUid&&!seen.has(row.uid)&&seen.add(row.uid)).slice(0,8).map(row=>({uid:row.uid,nick:String(row.nick||'Oyuncu').slice(0,40)}));
 }
+function ensureSocialStyles(){
+  ensureCenterStyles();if(document.getElementById('socialPremiumCSS'))return;
+  const css=element('link');css.id='socialPremiumCSS';css.rel='stylesheet';css.href=new URL('../css/social-premium.css',import.meta.url).href;document.head.append(css);
+}
+export function mountFriendsCenter(host,options={}){
+  if(!host)return null;host.__heroFriendsDispose?.();ensureSocialStyles();
+  const actor=Auth.getState(),uid=actor.uid;
+  let alive=true,searchEpoch=0,renderEpoch=0,timer=null,offAuth=()=>{},offFriends=()=>{},observer=null;
+  const current=()=>alive&&host.isConnected&&Auth.getState().uid===uid&&Auth.getState().status==='google';
+  host.replaceChildren();host.classList.add('social-center');
+  if(actor.status!=='google'){host.append(element('p','pc-empty','Arkadaşlarını görmek için hesabını bağla.'));return {destroy(){}};}
+  const heading=element('div','pc-row'),searchBox=element('form','social-search'),input=element('input','pc-input'),searchButton=button('Ara',null,'pc-button primary'),searchResults=element('div','pc-list'),list=element('div','pc-list'),status=element('p','pc-muted');
+  input.placeholder='Nick ara · En az 2 harf';input.maxLength=16;input.autocomplete='off';input.setAttribute('aria-label','Arkadaş nicki ara');searchButton.type='submit';status.setAttribute('role','status');
+  heading.append(element('h3','','Arkadaşların'),button('Yenile',()=>loadFriends()));searchBox.append(input,searchButton);host.append(heading,searchBox,searchResults,status,list);
+  const message=(text,error=false)=>{if(current()){status.textContent=text;status.classList.toggle('pc-negative',error);}};
+  const openProfile=target=>{if(!current())return;options.beforeOpenProfile?.();openPlayerCard(target);};
+  const openMessages=(target,nick)=>{if(!current())return;options.beforeOpenMessages?.();dmOpenThreadExternal(target,nick);};
+  const invite=async(target,nick)=>{if(!current())return;const launched=await _showGameInvitePicker(target,nick);if(launched&&current())options.onLaunched?.();};
+  function person(row,friend){
+    const card=element('div','social-friend'),identity=button((row.ava||'👤')+' '+(row.name||row.nick),()=>openProfile(row.uid),'social-identity');
+    identity.append(element('small','pc-muted',friend?(row.online?'● Çevrimiçi':row.last?'Son görülme '+tAgo(row.last):'Çevrimdışı'):'Nick arama sonucu'));
+    const actions=element('div','social-actions');
+    if(friend){actions.append(button('✉ Mesaj',()=>openMessages(row.uid,row.name)),button('⚔ Davet',()=>invite(row.uid,row.name),'pc-button primary'));}
+    else{
+      const request=button('Arkadaş ekle',async()=>{
+        if(request.disabled||!current())return;request.disabled=true;request.textContent='Gönderiliyor…';
+        try{
+          const existing=await fdb.get(fdb.ref(db,'friends/'+uid+'/'+row.uid));if(!current())return;
+          if(existing.exists()&&existing.val()!==false){request.textContent='Zaten arkadaşsınız';return;}
+          const sent=await sendFriendRequest(row.uid,uid);if(!current())return;
+          if(!sent)throw new Error();request.textContent='İstek gönderildi';message(row.nick+' adlı oyuncuya arkadaşlık isteği gönderildi.');
+        }catch(_){if(current()){request.disabled=false;request.textContent='Yeniden dene';message('Arkadaşlık isteği gönderilemedi.',true);}}
+      });actions.append(request);
+    }
+    card.append(identity,actions);return card;
+  }
+  async function search(){
+    clearTimeout(timer);const token=++searchEpoch,q=input.value.trim();searchResults.replaceChildren();
+    if(q.length<2){message(q?'Aramak için en az iki harf gir.':'');return;}
+    searchButton.disabled=true;message('Nickler aranıyor…');
+    try{
+      const rows=await searchFriendCandidates(q,uid);if(!current()||token!==searchEpoch||input.value.trim()!==q)return;
+      searchResults.replaceChildren(...rows.map(row=>person(row,false)));message(rows.length?rows.length+' oyuncu bulundu.':'Sonuç bulunamadı. Nicki ve bağlantını kontrol edip yeniden dene.');
+    }catch(_){if(current()&&token===searchEpoch)message('Nick araması tamamlanamadı. Yeniden dene.',true);}
+    finally{if(current()&&token===searchEpoch)searchButton.disabled=false;}
+  }
+  searchBox.addEventListener('submit',event=>{event.preventDefault();search();});
+  input.addEventListener('input',()=>{searchEpoch++;clearTimeout(timer);searchButton.disabled=false;if(input.value.trim().length<2){searchResults.replaceChildren();message('');}else timer=setTimeout(search,280);});
+  async function loadFriends(snapshot){
+    if(!current())return;const token=++renderEpoch;
+    try{
+      const source=snapshot||await fdb.get(fdb.ref(db,'friends/'+uid));if(!current()||token!==renderEpoch)return;
+      const all=source.val()||{},ids=Object.keys(all).filter(id=>all[id]!==false&&validSocialUid(id)).slice(0,80);
+      const rows=await Promise.all(ids.map(async target=>{
+        let profile={},presence={};
+        const results=await Promise.allSettled([fdb.get(fdb.ref(db,'users/'+target)),fdb.get(fdb.ref(db,'presence/'+target))]);
+        if(results[0].status==='fulfilled')profile=results[0].value.val()||{};if(results[1].status==='fulfilled')presence=results[1].value.val()||{};
+        return {uid:target,name:String(profile.nick||profile.name||all[target]?.name||'Arkadaş').slice(0,40),ava:avatarOf(profile,target),last:Number(presence.lastSeen)||0,online:presence.online===true&&Date.now()-Number(presence.lastSeen)<180000};
+      }));
+      if(!current()||token!==renderEpoch)return;rows.sort((a,b)=>Number(b.online)-Number(a.online)||b.last-a.last);
+      list.replaceChildren(...rows.map(row=>person(row,true)));if(!rows.length)list.append(element('p','pc-empty','Henüz arkadaşın yok. Yukarıdan nick arayarak ilk arkadaşını ekle.'));
+    }catch(_){if(current()&&token===renderEpoch){list.replaceChildren(button('Arkadaşları yeniden yükle',()=>loadFriends()));message('Arkadaş listesi okunamadı.',true);}}
+  }
+  function destroy(){if(!alive)return;alive=false;searchEpoch++;renderEpoch++;clearTimeout(timer);offAuth();offFriends();observer?.disconnect();if(host.__heroFriendsDispose===destroy)delete host.__heroFriendsDispose;}
+  host.__heroFriendsDispose=destroy;
+  offAuth=Auth.subscribe(state=>{if(state.uid!==uid||state.status!=='google'){destroy();host.replaceChildren(element('p','pc-empty','Hesap değişti. Arkadaşlar sekmesini yeniden aç.'));}});
+  if(typeof MutationObserver!=='undefined'){observer=new MutationObserver(()=>{if(!host.isConnected)destroy();});observer.observe(document.body,{childList:true,subtree:true});}
+  try{offFriends=fdb.onValue(fdb.ref(db,'friends/'+uid),snapshot=>loadFriends(snapshot),()=>message('Canlı arkadaş listesi yüklenemedi. Yenile ile tekrar dene.',true));}catch(_){loadFriends();}
+  if(options.query){input.value=String(options.query).slice(0,16);search();}
+  return {destroy,refresh:()=>loadFriends(),search};
+}
+export function openFriendsCenter(query=''){
+  const panel=openPanel({id:'friendsCenter',title:'Arkadaşlar',subtitle:'Nick ara, arkadaş ekle ve doğrudan oyuna davet et',uid:Auth.getState().uid});
+  const friends=mountFriendsCenter(panel.body,{query,beforeOpenProfile:panel.close,beforeOpenMessages:panel.close,onLaunched:panel.close});panel.cleanup(()=>friends?.destroy());return panel;
+}
+// Shared nickname-request path uses the same record shape as player-card requests.
+const _friendRequestLocks=new Set();
+async function sendFriendRequest(uid,senderUid){
+  const me=Auth.getState(),lock=senderUid+':'+uid;
+  const current=()=>me.uid===senderUid&&Auth.getState().uid===senderUid&&Auth.getState().status==='google';
+  if(!validSocialUid(senderUid)||!validSocialUid(uid)||uid===senderUid||!current()||_friendRequestLocks.has(lock))return false;
+  _friendRequestLocks.add(lock);
+  const name=String(me.profile?.nick||me.displayName||'Oyuncu').slice(0,40),ts=Date.now();
+  try{
+    // Both records commit together and share a stable recipient-scoped key.
+    await fdb.update(fdb.ref(db),{['friendRequests/'+uid+'/'+senderUid]:{from:senderUid,name,fromUid:senderUid,fromName:name,fromAvatar:me.profile?.avatar||'👤',ts},['userNotifs/'+uid+'/friend_'+senderUid]:{type:'friendreq',icon:'👥',text:name+' sana arkadaşlık isteği gönderdi!',ts,fromUid:senderUid,reqFrom:senderUid}});
+    return current();
+  }finally{_friendRequestLocks.delete(lock);}
+}
+
 async function addFriendByNick(){
   const inp = byId('ghpFrNick'); const nick = inp.value.trim();
   if(!nick) return;

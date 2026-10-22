@@ -17,7 +17,7 @@ window.__resumeQA={
   G.visualY=18;G.dropAcc=75;G.lockTimer=350;G.lockResets=12;
   G.lastMoveRotate=true;G.slowRemainingMs=4000;G.gravityDebt=125;
  },
- saveClose:()=>{saveTetrisResume();close();return JSON.parse(localStorage.getItem('hero_resume_tetris'));},
+ saveClose:()=>{saveTetrisResume();close();return JSON.parse(localStorage.getItem('hero_resume_tetris:'+encodeURIComponent(window.Hero?.Auth?.getState?.()?.uid||'guest')));},
  phase:()=>({cur:G.cur,dropAcc:G.dropAcc,lockTimer:G.lockTimer,lockResets:G.lockResets,
   lastMoveRotate:G.lastMoveRotate,slowRemainingMs:G.slowRemainingMs,gravityDebt:G.gravityDebt}),
  prepareGem:()=>{qaFreeze();G.countdown=0;G.gems=[GEMS.find(g=>g.id==='time')];updateGemBtn();},

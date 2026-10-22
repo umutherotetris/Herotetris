@@ -13,6 +13,9 @@ import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
 import { ChessMP } from './chess-mp.js';
 import { shareRoomCode } from '../room-share.js';
+import { mountSessionStatus } from '../game-session-ui.js';
+import { recordGameReview } from '../game-review.js';
+export { renderReviewFrame, setPortalMinimized, closePortalGame };
 
 // ── Temalar (referans görsellerden: Osmanlı lacivert default) ──
 const THEMES = {
@@ -280,18 +283,21 @@ function _startInviteChess(root, ctx){
     + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + esc(ctx.code) + '</div>'
     + '<button id="invCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
   root.appendChild(wait);
+  if(typeof attachChessSession==='function')attachChessSession(wait,'connecting');
   let cancelled = false;
   wait.querySelector('#invCancel').addEventListener('click', () => { cancelled = true; try{ ChessMP.close(); }catch(e){} closeAll(); });
 
   const onEvt = (type, data) => {
     if(cancelled || G !== game) return;
-    if(type === 'connected'){
+    if(type === 'code'){if(typeof chessSessionPhase==='function')chessSessionPhase('waiting');}
+    else if(type === 'connected'){
       if(isHost){ ChessMP.send({ type:'config', time: 0 }); }
       wait.remove();
       G.oppName = ctx.oppNick;
       startGame(root, 'online', { playerColor: isHost ? 'w' : 'b', time: 0 });
     } else if(type === 'error'){
       wait.querySelector('div:nth-child(2)').textContent = 'Hata: ' + data;
+      if(typeof chessSessionPhase==='function')chessSessionPhase('failed');
     }
   };
 
@@ -315,6 +321,7 @@ function _startInviteChess(root, ctx){
 }
 
 function showOnlineLobby(root){
+  const session=G;
   const ov = document.createElement('div');
   ov.className = 'chess-online-lobby';
   ov.innerHTML = `<div class="col-box">
@@ -381,14 +388,16 @@ function showOnlineLobby(root){
   ov.querySelector('.col-create-go').addEventListener('click', () => {
     ov.querySelector('[data-el="hostTimeSel"]').style.display = 'none';
     ov.querySelector('[data-el="hostWait"]').style.display = 'flex';
+    if(typeof attachChessSession==='function') attachChessSession(ov.querySelector('.col-box'),'connecting');
     ChessMP.createRoom((type, data) => {
-      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; }
+      if(G!==session || !ov.isConnected) return;
+      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; if(typeof chessSessionPhase==='function') chessSessionPhase('waiting'); }
       else if(type === 'connected'){
         // misafire süreyi gönder, sonra oyunu başlat
         ChessMP.send({ type:'config', time: hostSel.time });
         ov.remove(); startGame(root, 'online', { playerColor: 'w', time: hostSel.time });
       }
-      else if(type === 'error'){ ov.querySelector('.col-hint').innerHTML = '❌ ' + data + '<br>Tekrar dene.'; }
+      else if(type === 'error'){ ov.querySelector('.col-hint').textContent = '❌ ' + String(data || 'Bağlantı hatası') + ' · Tekrar dene.'; if(typeof chessSessionPhase==='function') chessSessionPhase('failed'); }
     });
   });
 
@@ -401,9 +410,11 @@ function showOnlineLobby(root){
     const st = ov.querySelector('[data-el="joinStatus"]');
     if(code.length !== 6){ st.textContent = 'Kod 6 haneli olmalı'; return; }
     st.textContent = '⏳ Bağlanılıyor…';
+    if(typeof attachChessSession==='function') attachChessSession(ov.querySelector('.col-box'),'connecting');
     ChessMP.joinRoom(code, (type, data) => {
+      if(G!==session || !ov.isConnected) return;
       if(type === 'connected'){ ov.remove(); startGame(root, 'online', { playerColor: 'b' }); }
-      else if(type === 'error'){ st.textContent = '❌ ' + data; }
+      else if(type === 'error'){ st.textContent = '❌ ' + String(data || 'Bağlantı hatası'); if(typeof chessSessionPhase==='function') chessSessionPhase('failed'); }
     });
   });
 
@@ -549,19 +560,24 @@ function showAISetup(root){
     b.classList.add('active'); color = b.dataset.v;
   }));
   const backB=ov.querySelector('[data-act="back"]'); if(backB) backB.addEventListener('click',()=>ov.remove());
-  const closeB=ov.querySelector('[data-act="close"]'); if(closeB) closeB.addEventListener('click',()=>{ ov.remove(); if(root&&root.parentNode) root.remove(); });
+  const closeB=ov.querySelector('[data-act="close"]'); if(closeB) closeB.addEventListener('click',()=>{ ov.remove(); if(G?.root===root) closeAll(); });
   ov.querySelector('.cas-start').addEventListener('click', () => {
     ov.remove();
     startGame(root, 'ai', { difficulty: diff, playerColor: color, time: sel.time });
   });
 }
 
-function closeAll(){
+function closePortalGame(root){
+  if(!G || G.root!==root)return false;
+  closeAll(true);return true;
+}
+function closeAll(discard=false){
   try{ if(G && G._home) G._home.remove(); }catch(e){}
-  try{ saveChessResume(); }catch(e){}
+  try{ if(discard!==true)saveChessResume(); }catch(e){}
   try{ if(G && G.vis) document.removeEventListener('visibilitychange', G.vis); }catch(e){}
   try{ ChessMP.close(); }catch(e){}
   try{ if(G && G._hud) G._hud.destroy(); }catch(e){}
+  try{ G?._sessionUI?.destroy(); }catch(e){}
   try{ stopClockTick(); }catch(e){}
   if(G && G.root){ G.root.remove(); }
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -636,6 +652,9 @@ function startGame(root, mode, opts){
     }catch(e){}
   }
 
+  if(typeof resetChessReview==='function') resetChessReview(opts.restore?'Devam edilen konum':'Başlangıç konumu');
+  if(mode==='online' && typeof attachChessSession==='function') attachChessSession(gameEl,'playing');
+
   // Çevrimiçi mod: hamle senkronizasyonu
   if(mode === 'online'){
     G.online = true;
@@ -664,6 +683,7 @@ function startGame(root, mode, opts){
         onRemoteMessage(data);
       }
       else if(type === 'disconnected'){
+        if(typeof chessSessionPhase==='function') chessSessionPhase('reconnecting');
         updateStatus('🔌 Rakip ayrıldı — yeniden bağlanılıyor…', 'draw'); G.oppLeft = true;
         G._drag = null; G.selected = null; G.legalForSelected = [];
         root.querySelector('[data-el="oppStatus"]').textContent = 'bağlantı koptu';
@@ -671,11 +691,13 @@ function startGame(root, mode, opts){
         updatePanels();
       }
       else if(type === 'reconnecting'){
+        if(typeof chessSessionPhase==='function') chessSessionPhase('reconnecting');
         const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
         updateStatus(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`, 'draw');
         root.querySelector('[data-el="oppStatus"]').textContent = 'yeniden bağlanılıyor…';
       }
       else if(type === 'reconnected'){
+        if(typeof chessSessionPhase==='function') chessSessionPhase('reconnecting','Bağlantı kuruldu; tahta eşitleniyor.');
         // Keep both boards locked until the host has sent the reconnect snapshot.
         // Ordered data delivery then guarantees the guest applies it before moves.
         G.oppLeft = true; G.syncPending = true;
@@ -687,6 +709,7 @@ function startGame(root, mode, opts){
         if(G.playerColor === 'w'){ setTimeout(() => {
           if(G === game && ChessMP.connected && sendFullSync()){
             G.oppLeft = false; G.syncPending = false;
+            if(typeof chessSessionPhase==='function') chessSessionPhase(G.gameEnded?'ended':'playing');
             root.querySelector('[data-el="oppStatus"]').textContent = 'çevrimiçi';
             updatePanels();
           }
@@ -695,7 +718,8 @@ function startGame(root, mode, opts){
         setTimeout(() => { if(G === game && !G.gameEnded && !G.syncPending) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
       }
       else if(type === 'reconnect_failed'){
-        updateStatus('❌ Yeniden bağlanılamadı', 'lose');
+        if(typeof chessSessionPhase==='function') chessSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.');
+        updateStatus('Bağlantı kurulamadı — maç duraklatıldı', 'draw');
         root.querySelector('[data-el="oppStatus"]').textContent = 'ayrıldı';
         G.oppLeft = true; updatePanels();
       }
@@ -727,40 +751,14 @@ function startGame(root, mode, opts){
     G.moveHistory=[]; G.posHistory=[positionKey(G.state)];
     clearHistoryUI();
     G.flip = ((G.mode === 'ai' || G.mode === 'online') && G.playerColor === 'b');
+    if(typeof resetChessReview==='function') resetChessReview('Başlangıç konumu');
     updateTurn(); updateStatus(''); updateCaptured(); draw();
     maybeAIMove();
   });
 
   // İpucu (item_hint öğesi gerektirir) — en iyi hamleyi vurgular
   const hintBtn = gameEl.querySelector('[data-act="hint"]');
-  if(hintBtn) hintBtn.addEventListener('click', async () => {
-    if(!G || G.gameEnded || G.aiThinking || G.animating) return;
-    // Sadece kendi sıramda
-    if(G.mode === 'ai' && G.state.turn !== G.playerColor){ updateStatus('Sıra sende değil'); return; }
-    if(G.mode === 'online' && G.state.turn !== G.playerColor){ updateStatus('Sıra sende değil'); return; }
-    const cnt = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
-    if(cnt <= 0){ updateStatus('💡 İpucu hakkın yok — Mağazadan alabilirsin'); return; }
-    const game = G, state = G.state;
-    hintBtn.disabled = true;
-    try{
-      // AI motoruyla en iyi hamleyi bul
-      let mv = null;
-      try{ mv = chooseMove(G.state, 'hard'); }catch(e){ try{ mv = chooseMove(G.state, 'medium'); }catch(e2){} }
-      if(mv && mv.from && mv.to){
-        await Store.useItem('item_hint');
-        if(G !== game || G.state !== state || G.gameEnded) return;
-        // Kalkış + varış karelerini vurgula
-        G.hintSquares = { from: mv.from, to: mv.to, until: Date.now() + 4000 };
-        draw();
-        const rem = (Store.getItemCount && Store.getItemCount('item_hint')) || 0;
-        updateStatus('💡 İpucu kullanıldı · Kalan: ' + rem);
-        setTimeout(() => { if(G === game && G.state === state){ G.hintSquares = null; draw(); } }, 4000);
-      } else {
-        updateStatus('İpucu bulunamadı');
-      }
-    }catch(e){ if(G === game) updateStatus('İpucu hatası'); }
-    setTimeout(() => { if(hintBtn) hintBtn.disabled = false; }, 1500);
-  });
+  if(hintBtn) hintBtn.addEventListener('click', () => requestChessHint(hintBtn));
 
   // Pes Et
   gameEl.querySelector('[data-act="resign"]').addEventListener('click', () => {
@@ -844,6 +842,7 @@ function startGame(root, mode, opts){
 // ── Satranç: kaldığın yerden devam (yalnız AI modu) ──
 function saveChessResume(){
   if(!G || G.mode !== 'ai' || G.gameEnded || !G.state) return;
+  if(Object.hasOwn(G,'_reviewUid') && G._reviewUid!==Auth.getState().uid)return;
   try{
     Resume.saveSnapshot('chess', {
       aiDifficulty: G.aiDifficulty, playerColor: G.playerColor, timeControl: G.timeControl || 0,
@@ -1136,17 +1135,15 @@ function xyToCell(px, py){
 }
 
 function drawBorder(ctx, t, sz, m){
-  // dış altın bant
-  const grad = ctx.createLinearGradient(0, 0, sz, sz);
-  grad.addColorStop(0, t.border); grad.addColorStop(0.5, t.borderDark); grad.addColorStop(1, t.border);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, sz, sz);
-  // iç gölge (oyma hissi)
-  ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 2;
-  ctx.strokeRect(m - 3, m - 3, sz - 2*(m-3), sz - 2*(m-3));
-  // tahta arka zemini
-  ctx.fillStyle = t.bg;
-  ctx.fillRect(m, m, sz - 2*m, sz - 2*m);
+  const grad=ctx.createLinearGradient(0,0,sz,sz);
+  [[0,t.border],[.14,'#f1d799'],[.3,t.borderDark],[.7,t.borderDark],[.87,t.border],[1,'#5a431f']].forEach(([n,c])=>grad.addColorStop(n,c));
+  ctx.fillStyle=grad;ctx.fillRect(0,0,sz,sz);
+  ctx.strokeStyle='rgba(255,244,201,.65)';ctx.lineWidth=1;ctx.strokeRect(2.5,2.5,sz-5,sz-5);
+  ctx.strokeStyle='rgba(24,14,7,.7)';ctx.lineWidth=Math.max(1,m*.14);ctx.strokeRect(m-2,m-2,sz-2*m+4,sz-2*m+4);
+  ctx.fillStyle=t.bg;ctx.fillRect(m,m,sz-2*m,sz-2*m);
+  for(const [x,y] of [[m*.5,m*.5],[sz-m*.5,m*.5],[m*.5,sz-m*.5],[sz-m*.5,sz-m*.5]]){
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillStyle='#fff0bd';ctx.fillRect(-m*.12,-m*.12,m*.24,m*.24);ctx.restore();
+  }
 }
 
 
@@ -1157,64 +1154,44 @@ function drawPiece(ctx, r, c, piece, t){
 }
 
 // Premium figüratif taş çizimi — kabartmalı, altın kenarlı, gradyanlı (3D his)
+// Geometry is shared with the saved-match SVG renderer, independent of fonts.
+const CHESS_PIECE_PATHS = {
+  p:'M40 40 C30 34 31 15 44 13 C58 10 67 27 59 37 L55 41 L58 49 L55 53 C56 64 61 70 65 74 L35 74 C40 67 44 60 45 53 L41 49 Z',
+  r:'M28 15 H39 V27 H45 V15 H55 V27 H61 V15 H72 V38 L64 44 L61 69 L67 75 H33 L39 69 L36 44 L28 38 Z',
+  n:'M34 74 L34 65 C34 54 49 49 54 39 L41 43 L29 38 L31 29 L43 20 L44 12 L52 18 C69 19 73 34 69 49 L63 69 L68 75 Z',
+  b:'M50 10 C64 22 68 32 60 42 L54 47 L59 52 L55 57 C57 66 61 71 65 75 H35 C40 70 44 64 45 57 L41 52 L46 47 C27 37 37 22 50 10 Z',
+  q:'M28 25 L39 39 L43 19 L50 36 L57 19 L61 39 L72 25 L65 52 H35 Z M36 56 H64 L59 68 L66 75 H34 L41 68 Z',
+  k:'M46 11 H54 V20 H63 V28 H54 V37 L62 43 C66 50 60 56 56 58 L58 69 L66 75 H34 L42 69 L44 58 C31 51 37 42 46 37 V28 H37 V20 H46 Z'
+};
 function drawPieceAt(ctx, cx, cy, piece, t){
-  const isW = piece.c === 'w';
-  const s = G.cell;
-  // Hacim renkleri (üst açık → alt koyu) — beyaz: fildişi-altın, siyah: obsidyen
-  const top  = isW ? '#fdf8ec' : '#5a5a68';
-  const mid  = isW ? '#ece0c6' : '#2e2e3a';
-  const bot  = isW ? '#cdbb92' : '#0f0c16';
-  const edge = isW ? '#8a7142' : '#020208';
-  const glyph = GLYPH[piece.t];
-
+  const isW=piece.c==='w',s=G.cell;
   ctx.save();
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-
-  // zemin gölgesi (taşı tahtaya oturtur) — yumuşak çift katman
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,.22)';
-  ctx.filter = 'blur(1px)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.32, s*0.29, s*0.085, 0, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-  ctx.fillStyle = 'rgba(0,0,0,.28)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + s*0.31, s*0.24, s*0.065, 0, 0, Math.PI*2); ctx.fill();
-
-  const fs = Math.floor(s * 0.76);
-  ctx.font = `${fs}px "Segoe UI Symbol","Noto Sans Symbols2","Apple Symbols",serif`;
-  const yo = cy + s*0.015;   // optik merkez düzeltmesi
-
-  // 1) düşen gölge (derinlik)
-  ctx.fillStyle = 'rgba(0,0,0,.40)';
-  ctx.fillText(glyph, cx + s*0.028, yo + s*0.04);
-
-  // 2) kalın koyu/altın taban kenar (taşın silueti)
-  ctx.lineJoin = 'round'; ctx.lineWidth = s*0.085; ctx.strokeStyle = edge;
-  ctx.strokeText(glyph, cx, yo);
-
-  // 3) ana gövde — dikey gradyan (hacim)
-  const grad = ctx.createLinearGradient(cx, yo - fs*0.5, cx, yo + fs*0.5);
-  grad.addColorStop(0, top); grad.addColorStop(0.5, mid); grad.addColorStop(1, bot);
-  ctx.fillStyle = grad; ctx.fillText(glyph, cx, yo);
-
-  // 4) üst parlama (ışık) — üst kısma kırp
-  ctx.save();
-  ctx.beginPath(); ctx.rect(cx - s*0.5, yo - fs*0.62, s, fs*0.42); ctx.clip();
-  ctx.fillStyle = isW ? 'rgba(255,255,255,.50)' : 'rgba(255,255,255,.22)';
-  ctx.fillText(glyph, cx, yo);
-  ctx.restore();
-
-  // 5) ince keskin dış çizgi (altın vurgu)
-  ctx.lineWidth = Math.max(1, s*0.016);
-  ctx.strokeStyle = isW ? 'rgba(120,95,40,.55)' : 'rgba(200,170,90,.30)';
-  ctx.strokeText(glyph, cx, yo);
-
+  ctx.fillStyle='rgba(0,0,0,.30)';
+  ctx.beginPath();ctx.ellipse(cx+s*.025,cy+s*.34,s*.29,s*.075,0,0,Math.PI*2);ctx.fill();
+  if(typeof Path2D==='undefined'){
+    ctx.font=`${Math.floor(s*.77)}px "Segoe UI Symbol",serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.lineWidth=Math.max(1,s*.04);ctx.strokeStyle=isW?'#59452a':'#e8d3a3';ctx.strokeText(GLYPH[piece.t],cx,cy);ctx.fillStyle=isW?'#fff4d9':'#122e3b';ctx.fillText(GLYPH[piece.t],cx,cy);ctx.restore();return;
+  }
+  ctx.translate(cx-s*.42,cy-s*.44);ctx.scale(s*.0084,s*.0084);
+  const body=new Path2D(CHESS_PIECE_PATHS[piece.t]||CHESS_PIECE_PATHS.p);
+  const base=new Path2D('M32 75 Q50 71 68 75 L72 83 L71 88 Q50 93 29 88 L28 83 Z');
+  const metal=ctx.createLinearGradient(25,0,72,92);
+  metal.addColorStop(0,isW?'#fffdf2':'#597b89');metal.addColorStop(.35,isW?'#f4e9ca':'#244958');metal.addColorStop(.72,isW?'#d6c093':'#102b39');metal.addColorStop(1,isW?'#9b7d49':'#07121d');
+  ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle=isW?'#6a512b':'#e4c58b';ctx.fillStyle=metal;
+  ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowOffsetY=2;ctx.shadowBlur=2;ctx.fill(body);ctx.stroke(body);ctx.fill(base);ctx.stroke(base);ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.strokeStyle=isW?'rgba(255,255,255,.8)':'rgba(196,226,230,.55)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(34,82);ctx.quadraticCurveTo(50,79,66,82);ctx.stroke();
+  ctx.strokeStyle=isW?'#987943':'#dab778';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(36,76);ctx.lineTo(64,76);ctx.stroke();
+  if(piece.t==='b'){ctx.strokeStyle=isW?'#8c6c39':'#f1d79c';ctx.lineWidth=2.8;ctx.beginPath();ctx.moveTo(53,22);ctx.lineTo(44,34);ctx.stroke();}
+  if(piece.t==='n'){ctx.fillStyle=isW?'#55442d':'#ffde9a';ctx.beginPath();ctx.arc(48,28,2.3,0,Math.PI*2);ctx.fill();}
+  if(piece.t==='q'){ctx.fillStyle=isW?'#96723a':'#e9c77e';for(const [x,y] of [[28,23],[43,17],[57,17],[72,23]]){ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();}}
   ctx.restore();
 }
 
 function drawCoords(ctx, t, m, cell, sz){
   ctx.save();
-  ctx.fillStyle = 'rgba(255,255,255,.5)';
-  ctx.font = `${Math.floor(cell*0.18)}px system-ui`;
+  ctx.fillStyle = '#fff0ca';
+  ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 2;
+  ctx.font = `700 ${Math.max(8,Math.floor(cell*0.18))}px system-ui`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   const files = G.flip ? 'hgfedcba' : 'abcdefgh';
   const ranks = G.flip ? '12345678' : '87654321';
@@ -1440,6 +1417,7 @@ function sendFullSync(){
     if(sent === false) return false;
     if(G.playerColor === 'w' && G.syncPending){
       G.oppLeft = false; G.syncPending = false;
+    if(typeof chessSessionPhase==='function') chessSessionPhase(G.gameEnded?'ended':'playing');
       if(G.root){
         const status = G.root.querySelector('[data-el="oppStatus"]');
         if(status) status.textContent = 'çevrimiçi';
@@ -1475,6 +1453,7 @@ function applyFullSync(s){
     G.selected = null; G.legalForSelected = [];
     G._drag = null; G._dragJustEnded = false;
     G.oppLeft = false; G.syncPending = false;
+    if(typeof chessSessionPhase==='function') chessSessionPhase(G.gameEnded?'ended':'playing');
     if(G.root){
       const status = G.root.querySelector('[data-el="oppStatus"]');
       if(status) status.textContent = 'çevrimiçi';
@@ -1605,6 +1584,7 @@ function applyAndContinue(mv, isCapture){
 
   // 2 oyuncu modunda tahtayı çevir; AI modunda sabit
   if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
+  if(typeof captureChessFrame==='function') captureChessFrame(notation);
 
   updateTurn();
   updateCaptured();
@@ -1668,10 +1648,68 @@ function applyAndContinue(mv, isCapture){
   maybeAIMove();
 }
 
+function attachChessSession(host,phase){
+  if(!G || !host?.appendChild) return;
+  G._sessionUI?.destroy();
+  G._sessionUI=mountSessionStatus(host,{game:'chess',mode:'online',onLeave:closeAll,initial:{phase,canRetry:false}});
+  const board=host.querySelector?.('[data-el="boardWrap"]');
+  if(board)host.insertBefore(G._sessionUI.element,board);
+}
+function chessSessionPhase(phase,detail){ G?._sessionUI?.update({phase,detail,canRetry:false}); }
+async function requestChessHint(button){
+  if(!G || G.gameEnded || G.aiThinking || G.animating || G._hintPending) return;
+  if((G.mode==='ai'||G.mode==='online')&&G.state.turn!==G.playerColor){ updateStatus('Sıra sende değil');return; }
+  if((Store.getItemCount?.('item_hint')||0)<=0 && !G._hintOperationId){updateStatus('💡 İpucu hakkın yok — Mağazadan alabilirsin');return;}
+  const game=G,state=G.state,uid=Auth.getState().uid;
+  if(!uid || (G._reviewUid && G._reviewUid!==uid)) return;
+  const current=()=>G===game&&G.state===state&&!G.gameEnded&&Auth.getState().uid===uid;
+  game._hintPending=true;button.disabled=true;
+  try{
+    // The existing engine has a bounded node/time budget.
+    const mv=chooseMove(state,'hard');
+    if(!mv?.from || !mv?.to){if(current())updateStatus('İpucu bulunamadı');return;}
+    if(!current())return;
+    const consumed=await Store.useItem('item_hint',uid,game._hintOperationId||(game._hintOperationId='chess_hint_'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'_'+Math.random().toString(36).slice(2))));
+    if(!current())return;
+    if(consumed!==true){updateStatus('İpucu kullanımı onaylanamadı — yeniden deneyebilirsin');return;}
+    game._hintOperationId=null;
+    G.hintSquares={from:mv.from,to:mv.to,until:Date.now()+4000};draw();
+    updateStatus('💡 İpucu kullanıldı · Kalan: '+(Store.getItemCount?.('item_hint')||0));
+    setTimeout(()=>{if(current()){G.hintSquares=null;draw();}},4000);
+  }catch(_){if(current())updateStatus('İpucu kullanılamadı — yeniden deneyebilirsin');}
+  finally{game._hintPending=false;button.disabled=false;}
+}
+function resetChessReview(label){
+  if(!G?.state)return;
+  G._reviewUid=Auth.getState().uid;G._reviewFrames=[];G._reviewSaved=null;
+  captureChessFrame(label);
+}
+function captureChessFrame(label){
+  if(!G?.state || !Array.isArray(G._reviewFrames))return;
+  const frame={game:'chess',fen:toFEN(G.state),flip:!!G.flip,ply:G.moveHistory?.length||0,label:String(label||'Konum'),lastMove:G.lastMove?JSON.parse(JSON.stringify(G.lastMove)):null};
+  G._reviewFrames.push(frame);if(G._reviewFrames.length>100)G._reviewFrames.splice(1,1);
+}
+function finishChessReview(outcome){
+  if(!G || G._reviewUid!==Auth.getState().uid || !G._reviewUid)return null;
+  if(G._reviewSaved)return G._reviewSaved;
+  const frames=G._reviewFrames||[],notes=[];
+  notes.push((G.moveHistory?.length||0)+' yarım hamle oynandı. Görüntüler gerçek tahta konumlarından kaydedildi.');
+  const sample=frames.length>2?frames[Math.min(frames.length-2,Math.max(1,Math.floor(frames.length/2)))]:null;
+  if(sample){try{
+    const st=fromFEN(sample.fen),moves=allLegalMoves(st),candidate=chooseMove(st,'easy');
+    const sq=p=>'abcdefgh'[p.c]+(8-p.r);
+    if(candidate)notes.push(sample.ply+'. yarım hamleden sonraki konumda kısa aramanın bir adayı: '+sq(candidate.from)+'–'+sq(candidate.to)+'. '+moves.length+' yasal hamle vardı; bu sınırlı değerlendirme kesin en iyi hamle iddiası taşımaz.');
+  }catch(_){}}
+  if(G.state){const values={p:1,n:3,b:3,r:5,q:9,k:0},material={w:0,b:0};for(const row of G.state.board)for(const p of row)if(p)material[p.c]+=values[p.t]||0;notes.push('Son konumun taş değeri: Beyaz '+material.w+', Siyah '+material.b+' (piyon birimi). Şah güvenliği ve konum da sonucu etkiler.');}
+  try{G._reviewSaved=recordGameReview({uid:G._reviewUid,game:'chess',mode:G.mode,title:'Satranç · Maç incelemesi',outcome,insights:notes,frames});}catch(_){}
+  return G._reviewSaved;
+}
+
 function beginChessOutcome(){
-  if(!G || G.resultSettled) return null;
+  if(!G || G.resultSettled || (G._reviewUid && G._reviewUid!==Auth.getState().uid)) return null;
   const game=G,state=G.state,uid=Auth.getState().uid;
   G.resultSettled=true; G.gameEnded=true;
+  if(typeof chessSessionPhase==='function') chessSessionPhase('ended');
   G.drawOfferOpen=false;
   G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null;
   G.root?.querySelectorAll?.('.chess-confirm, .chess-promo')?.forEach(el=>el.remove());
@@ -1681,16 +1719,18 @@ function beginChessOutcome(){
 
 async function onGameEndDraw(){
   const current=beginChessOutcome(); if(!current) return;
+  const review=typeof finishChessReview==='function'?finishChessReview('Berabere'):null;
+  try{Store.trackQuestEvent?.('game_played',{game:'chess'});}catch(_){}
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', 'draw', G.oppUid||null, G.oppName||null); }catch(e){}
   if(!current()) return;
-  const kaju = 40, xp = 30;
-  try{ await Store.addKaju(kaju, 'chess'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  let kaju=0,xp=0;
+  try{ kaju=Number(await Store.addKaju(40,'chess'))||0;if(!current())return;const ack=Store.awardXP?await Store.awardXP(30,Auth.getState().uid):null;if(!Store.awardXP)await Store.addXP?.(30);xp=ack?.ok?ack.amount:0; }catch(e){}
   if(!current()) return;
   try{
     const Reward = await import('../reward.js');
     if(!current()) return;
     await Reward.showReward({
-      won:false, draw:true, game:'chess', kaju, xp, writeReward:false, isCurrent:current,
+      won:false, draw:true, game:'chess', kaju, xp, writeReward:false,questEventsHandled:true, isCurrent:current,review,insights:review?.insights||[],
       title: '🤝 BERABERE', subtitle: 'Satranç partisi berabere bitti',
     });
   }catch(e){ console.warn('[reward]',e); }
@@ -1699,20 +1739,20 @@ async function onGameEndDraw(){
 async function onGameEnd(playerWon){
   const current=beginChessOutcome(); if(!current) return;
   const won = playerWon === true;
+  const review=typeof finishChessReview==='function'?finishChessReview(won?'Kazandın':'Rakip kazandı'):null;
   // Görev takibi
   try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'chess'}); if(won) Store.trackQuestEvent('game_won',{game:'chess'}); }catch(e){}
   // Maç istatistiği (online maçlarda head-to-head dahil)
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('chess', won?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
   if(!current()) return;
-  const kaju = won ? 80 : 20;
-  const xp = won ? 60 : 25;
-  try{ await Store.addKaju(kaju, 'chess'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  let kaju=0,xp=0;
+  try{ kaju=Number(await Store.addKaju(won?80:20,'chess'))||0;if(!current())return;const ack=Store.awardXP?await Store.awardXP(won?60:25,Auth.getState().uid):null;if(!Store.awardXP)await Store.addXP?.(won?60:25);xp=ack?.ok?ack.amount:0; }catch(e){}
   if(!current()) return;
   try{
     const Reward = await import('../reward.js');
     if(!current()) return;
     await Reward.showReward({
-      won, game:'chess', kaju, xp, writeReward:false, isCurrent:current,
+      won, game:'chess', kaju, xp, writeReward:false,questEventsHandled:true, isCurrent:current,review,insights:review?.insights||[],
       title: won ? '♛ KAZANDIN!' : '♟ Rakip kazandı',
       subtitle: 'Satranç partisi tamamlandı',
     });
@@ -1883,6 +1923,7 @@ function showFENLoader(){
     G.moveHistory = []; G.posHistory = [ positionKey(G.state) ];
     G.undoStack = []; G.gameEnded = false; G.resultSettled = false; G.drawOfferOpen = false;
     if(G.mode === 'local' && G.autoFlip){ G.flip = (G.state.turn === 'b'); }
+    if(typeof resetChessReview==='function') resetChessReview('Yüklenen konum');
     clearHistoryUI();
     updateTurn(); updateStatus(''); updateCaptured(); draw();
     const st = gameStatus(G.state);
@@ -1909,6 +1950,7 @@ function undoMove(){
   G.lastMove = snap.lastMove;
   G.moveHistory.length = snap.historyLen;
   G.posHistory.length = snap.posLen;
+  if(G._reviewFrames) G._reviewFrames=G._reviewFrames.filter(f=>f.ply<=snap.historyLen);
   G.gameEnded = false;
   G.selected = null; G.legalForSelected = [];
   // 2 oyuncu modunda tahta yönünü düzelt
@@ -2188,7 +2230,29 @@ function showThemePicker(root){
 }
 
 // ════════════ CSS ════════════
+function setPortalMinimized(hidden){
+  if(!G?.root)return false;
+  G.portalMinimized=!!hidden;G.root.hidden=!!hidden;G.root.inert=!!hidden;
+  G.root.style.visibility=hidden?'hidden':'';G.root.style.pointerEvents=hidden?'none':'';
+  if(!hidden){fitCanvas();draw();}return true;
+}
+function renderReviewFrame(frame,host){
+  const state=fromFEN(frame?.fen);if(!state)throw new Error('Geçersiz satranç konumu');
+  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const size=50,margin=24,flip=!!frame.flip;
+  let body='<rect x="0" y="0" width="448" height="448" rx="10" fill="#ba9554"/><rect x="5" y="5" width="438" height="438" rx="7" fill="#14243a" stroke="#edd296"/>';
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    const x=margin+(flip?7-c:c)*size,y=margin+(flip?7-r:r)*size,p=state.board[r][c];
+    body+='<rect x="'+x+'" y="'+y+'" width="50" height="50" fill="'+((r+c)%2?'#28558b':'#eceddf')+'"/>';
+    if(frame.lastMove&&['from','to'].some(k=>frame.lastMove[k]?.r===r&&frame.lastMove[k]?.c===c))body+='<rect x="'+(x+2)+'" y="'+(y+2)+'" width="46" height="46" fill="#f0c967" fill-opacity=".32" stroke="#f8d891" stroke-width="2"/>';
+    if(p){const white=p.c==='w',fill=white?'url(#crWhite)':'url(#crBlack)',stroke=white?'#65502d':'#e5c78a';body+='<g transform="translate('+(x+4)+' '+(y+3)+') scale(.42)" fill="'+fill+'" stroke="'+stroke+'" stroke-width="3" stroke-linejoin="round"><path d="'+CHESS_PIECE_PATHS[p.t]+'"/><path d="M32 75 Q50 71 68 75 L72 83 L71 88 Q50 93 29 88 L28 83 Z"/>'+(p.t==='b'?'<path d="M53 22 L44 34" fill="none"/>':p.t==='n'?'<circle cx="48" cy="28" r="2.3" fill="'+stroke+'"/>':'')+'</g>';}
+  }
+  for(let i=0;i<8;i++){body+='<text x="'+(margin+i*size+25)+'" y="439" text-anchor="middle" fill="#fae7b9" font-size="11">'+(flip?'hgfedcba':'abcdefgh')[i]+'</text><text x="12" y="'+(margin+i*size+29)+'" text-anchor="middle" fill="#fae7b9" font-size="11">'+(flip?'12345678':'87654321')[i]+'</text>';}
+  host.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 448" role="img" aria-label="'+esc(frame.label||'Satranç maç konumu')+'" style="display:block;width:100%;max-width:560px;margin:auto"><defs><linearGradient id="crWhite" x2=".8" y2="1"><stop stop-color="#fffbed"/><stop offset="1" stop-color="#c7ad77"/></linearGradient><linearGradient id="crBlack" x2=".8" y2="1"><stop stop-color="#567988"/><stop offset="1" stop-color="#071724"/></linearGradient></defs>'+body+'</svg>';
+}
+
 function injectCSS(){
+  if(!document.getElementById('chess-premium-css')){ const link=document.createElement('link');link.id='chess-premium-css';link.rel='stylesheet';link.href=new URL('../../css/chess-premium.css',import.meta.url).href;document.head.appendChild(link); }
   if(document.getElementById('chess-css')) return;
   const s = document.createElement('style');
   s.id = 'chess-css';
@@ -2435,6 +2499,7 @@ function injectCSS(){
   border-radius:10px; color:#c8a557; font-weight:700; cursor:pointer; }
 `;
   document.head.appendChild(s);
+  const premium=document.getElementById('chess-premium-css');if(premium)document.head.appendChild(premium);
 }
 
 // Rakip adına dokun → oyuncu kartı (online kimlik el sıkışması)

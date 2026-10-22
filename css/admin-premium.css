@@ -1,0 +1,62 @@
+/* Admin only. The existing floating crown and social diamond keep their assets and sizes. */
+#adminPanel{z-index:2147483641;align-items:center;padding:24px;background:rgba(5,9,18,.78);backdrop-filter:blur(12px);color-scheme:dark}
+#adminPanel .adm-panel{width:min(920px,100%);max-width:920px;max-height:92dvh;border:1px solid #47536b;border-radius:24px;background:linear-gradient(145deg,#172336,#101724 65%);box-shadow:0 32px 120px #0009;overflow:hidden}
+#adminPanel .adm-head{padding:23px 26px 18px;border-bottom:0;gap:16px}
+#adminPanel .adm-eyebrow{font:700 10px/1.4 Manrope,sans-serif;letter-spacing:2px;color:#b6c6de;margin-bottom:6px}
+#adminPanel .adm-title{font-size:22px;letter-spacing:-.5px;color:#f2e8cc;font-weight:800}
+#adminPanel .adm-x{width:44px;height:44px;flex-shrink:0;border-color:#566078;background:#ffffff08;font-size:18px;cursor:pointer}
+#adminPanel .adm-selection{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 26px;border-block:1px solid #ffffff12;background:#0b142066;font-size:12px;line-height:1.6;color:#c3d1e4}
+#adminPanel [data-el="selected"]{overflow-wrap:anywhere;font-weight:700;min-width:0}
+#adminPanel .adm-busy{flex-shrink:0;display:inline-flex;gap:6px;align-items:center;border:1px solid #5c967c66;border-radius:99px;padding:3px 10px;background:#5fbd8a0d;color:#99d5b5;font-size:10px;white-space:nowrap}
+#adminPanel .adm-busy[data-busy="true"]{color:#f4d38d;background:#b38a1914;border-color:#a9955c66}
+#adminPanel .adm-body{padding:18px 24px 26px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;scrollbar-width:thin;scrollbar-color:#63758a #111d2d;overscroll-behavior:contain}
+#adminPanel .adm-body>.adm-row:first-child,#adminPanel .adm-body>.adm-msg,#adminPanel .adm-body>[data-el="result"],#adminPanel .adm-body>.adm-stats{grid-column:1/-1;margin:0}
+#adminPanel .adm-body>.adm-row:first-child{position:sticky!important;top:-18px;z-index:6;padding:10px 0;background:#142031}
+#adminPanel .adm-body>.adm-sec{margin:0;border:1px solid #ffffff13;border-radius:14px;padding:12px;background:#ffffff03;min-width:0}
+#adminPanel .adm-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin:0;padding:20px;border:1px solid #8b9dbb4a;border-radius:18px;background:#b4c8e707;min-width:0}
+#adminPanel .adm-card>.adm-prow,#adminPanel .adm-card>.adm-uid,#adminPanel .adm-card>.adm-prow+div:not(.adm-sec){grid-column:1/-1}
+#adminPanel .adm-card>.adm-prow:first-child{font-size:20px;color:#f3e9d2;font-weight:800}
+#adminPanel .adm-card>.adm-sec{margin:0;padding:13px 0 0;min-width:0;border-top:1px solid #ffffff15}
+#adminPanel .adm-card>.adm-sec:last-child{grid-column:1/-1;padding:16px!important;border:1px solid #c8726b55!important;background:#a7383010}
+#adminPanel .adm-lbl{font-size:10px;line-height:1.5;letter-spacing:1.1px;color:#b4c5de;margin-bottom:9px}
+#adminPanel .adm-row{gap:8px;min-width:0;flex-wrap:wrap;align-items:stretch}
+#adminPanel .adm-in{font:500 13px/1.4 Manrope,sans-serif;min-height:44px;min-width:80px;padding:11px 12px;background:#09131f88;border:1px solid #53637d75;color:#edf3ff;border-radius:10px}
+#adminPanel .adm-in::placeholder{color:#92a2bb;opacity:1}
+#adminPanel .adm-btn,#adminPanel .adm-acc{font:700 12px/1.45 Manrope,sans-serif;min-height:44px;border-radius:10px;cursor:pointer;letter-spacing:0;white-space:normal;overflow-wrap:anywhere}
+#adminPanel .adm-btn{padding:10px 14px;border:1px solid #ffffff1a}
+#adminPanel .adm-btn.p{background:#c0d1ed;color:#102035;border-color:#c0d1ed}
+#adminPanel .adm-btn.r{background:#713d46;color:#ffe9e8;border-color:#b17b81}
+#adminPanel .adm-btn.g{background:#244f44;color:#d0f1df;border-color:#517f6b}
+#adminPanel .adm-acc{background:#ffffff04;border-color:#ffffff13;padding:10px 12px;color:#d2deef;text-align:left}
+#adminPanel button:hover:not(:disabled){filter:brightness(1.13)}
+#adminPanel :is(button,input,select,[role="button"]):focus-visible{outline:2px solid #f2d498;outline-offset:3px}
+#adminPanel button:disabled,#adminPanel input:disabled,#adminPanel select:disabled{opacity:.52;cursor:wait}
+#adminPanel .adm-msg{font-size:12px;line-height:1.6;min-height:0;padding:0 2px;overflow-wrap:anywhere}
+#adminPanel .adm-msg:not(:empty){padding:10px 12px;border-radius:10px;background:#ffffff05;border:1px solid #ffffff12}
+#adminPanel .adm-msg.bad{color:#ffb7b0}
+#adminPanel .adm-msg.ok{color:#b0dec4}
+#adminPanel .adm-log{max-height:270px;scrollbar-width:thin;scrollbar-color:#63758a transparent;overscroll-behavior:contain}
+#adminPanel .adm-li{padding:11px 9px;line-height:1.6;gap:7px;font-size:12px;min-width:0;overflow-wrap:anywhere;border-color:#ffffff0c}
+#adminPanel .adm-li[role="button"]:hover{background:#bdd4ff0b}
+#adminPanel .adm-li b{min-width:0;overflow-wrap:anywhere}
+#adminPanel .adm-uid{font:10px/1.6 ui-monospace,monospace;letter-spacing:.2px;color:#a5b5ce}
+#adminPanel .adm-sug{background:#1b2a40;border-color:#627997;box-shadow:0 20px 45px #0008;max-height:250px}
+#adminPanel .adm-sug-it{display:block;width:100%;border:0;border-bottom:1px solid #ffffff12;background:transparent;color:#e5edfb;text-align:left;min-height:44px;cursor:pointer;font:700 13px Manrope,sans-serif}
+#adminPanel .adm-stats{border:1px solid #ffffff12;border-radius:12px;background:#ffffff03;color:#c5d0e3;padding:12px 14px}
+#adminPanel .adm-empty{padding:24px;text-align:center;color:#b7c6dc;font-size:13px;line-height:1.7}
+@media(max-width:640px){
+ #adminPanel{align-items:flex-end;padding:0}
+ #adminPanel .adm-panel{max-height:96dvh;border-radius:22px 22px 0 0;border-bottom:0}
+ #adminPanel .adm-head{padding:19px 18px 15px}
+ #adminPanel .adm-title{font-size:19px}
+ #adminPanel .adm-selection{padding:11px 18px;align-items:flex-start}
+ #adminPanel .adm-body{display:block;padding:10px 14px calc(22px + env(safe-area-inset-bottom,0px))}
+ #adminPanel .adm-body>.adm-sec,#adminPanel .adm-body>.adm-stats{margin-top:12px}
+ #adminPanel .adm-body>.adm-row:first-child{top:-10px;padding:9px 0}
+ #adminPanel .adm-card{display:block;padding:15px;margin-top:8px}
+ #adminPanel .adm-card>.adm-sec{margin-top:17px}
+ #adminPanel .adm-card>.adm-prow:first-child{font-size:18px}
+ #adminPanel .adm-in{font-size:16px}
+ #adminPanel .adm-log{max-height:240px}
+}
+@media(prefers-reduced-motion:reduce){#adminPanel *{scroll-behavior:auto!important;transition:none!important}}

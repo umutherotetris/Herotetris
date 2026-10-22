@@ -22,7 +22,7 @@ function showStatus(message, retry = false){
   }
 }
 
-gameIds.concat(['connectBtn', 'ecoWheelBtn', 'ecoQuestBtn', 'ecoHistBtn']).forEach(id => {
+gameIds.concat(['connectBtn', 'ecoWheelBtn', 'ecoQuestBtn', 'ecoHistBtn','portalPuzzleBtn','portalReviewBtn','portalPrivateBtn']).forEach(id => {
   const button = document.getElementById(id);
   if(!button) return;
   button.addEventListener('click', event => {
@@ -44,7 +44,7 @@ const bootTimeout = setTimeout(() => {
   showStatus('Bağlantı beklenenden uzun sürüyor. İnternetini kontrol edip tekrar dene.', true);
 }, 15000);
 
-import('./app.js?v=155').then(() => {
+import('./app.js?v=156').then(() => {
   clearTimeout(bootTimeout);
   bootState = 'ready';
   status.hidden = true;

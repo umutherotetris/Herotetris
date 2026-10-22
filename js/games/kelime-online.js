@@ -397,9 +397,27 @@ export async function saveRack(rack){
 }
 
 // Kişisel kelime rekorlarını profile yaz (yalnız giriş yapan kullanıcı)
-export async function saveKelimeRecords(upd){
-  const st = Auth.getState(); if(!st || !st.uid || !upd) return;
-  try{ await fdb.update(fdb.ref(db, `users/${st.uid}/kelimeRecords`), upd); }catch(e){}
+export async function saveKelimeRecords(upd, expectedUid){
+  const uid = expectedUid || Auth.getState()?.uid;
+  if(!uid || Auth.getState()?.uid!==uid || !upd) return {ok:false,reason:'identity'};
+  const word = value => typeof value==='string' && /^[A-ZÇĞİÖŞÜ]{2,15}$/i.test(value) ? value : null;
+  const bestWord=word(upd.bestWord), longestWord=word(upd.longestWord);
+  const best=bestWord && Number.isSafeInteger(upd.bestScore) && upd.bestScore>0 && upd.bestScore<=100000;
+  const longest=longestWord && Number.isSafeInteger(upd.longestLen) && upd.longestLen===Array.from(longestWord).length;
+  if(!best && !longest) return {ok:false,reason:'invalid'};
+  try{
+    // Compare on the server: another tab/device may already hold a better record.
+    const result=await fdb.runTransaction(fdb.ref(db, `users/${uid}/kelimeRecords`), previous=>{
+      if(Auth.getState()?.uid!==uid) return;
+      const next={...(previous && typeof previous==='object' ? previous : {})};
+      let changed=false;
+      if(best && upd.bestScore>(Number(next.bestScore)||0)){next.bestWord=bestWord;next.bestScore=upd.bestScore;changed=true;}
+      if(longest && upd.longestLen>(Number(next.longestLen)||0)){next.longestWord=longestWord;next.longestLen=upd.longestLen;changed=true;}
+      return changed ? next : undefined;
+    },{applyLocally:false});
+    if(Auth.getState()?.uid!==uid) return {ok:false,reason:'identity'};
+    return {ok:true,records:result.snapshot?.val?.() || {},changed:!!result.committed};
+  }catch(e){ return {ok:false,reason:'unavailable'}; }
 }
 
 // ════════════ NİCK / ARKADAŞ DAVETİ ════════════

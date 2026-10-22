@@ -2,12 +2,12 @@
 <html lang="tr" data-theme="aurora">
 <head>
   <meta charset="UTF-8">
-  <meta name="hero-build" content="155">
+  <meta name="hero-build" content="156">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090f2a">
   <meta name="description" content="Hero Portal: Tetris, satranç, tavla ve Kelimecik. Kendi oyununu bul, dostlarınla buluş ve bir sonraki rekoruna ulaş.">
   <title>Hero Portal — Senin oyun alanın</title>
-  <script async src="js/portal-worker.js?v=155"></script>
+  <script async src="js/portal-worker.js?v=156"></script>
   <link rel="icon" type="image/svg+xml" href="assets/hero-portal.svg?v=140">
   <link rel="manifest" href="hero.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,8 @@
   <link rel="stylesheet" href="css/tokens.css?v=138">
   <link rel="stylesheet" href="css/base.css?v=124">
   <link rel="stylesheet" href="css/components.css?v=124">
-  <link rel="stylesheet" href="css/tetris.css?v=124">
+  <link rel="stylesheet" href="css/tetris.css?v=156">
+  <link rel="stylesheet" href="css/portal-centers.css?v=156" id="portalCentersCSS">
   <link rel="stylesheet" href="css/themes.css?v=124">
   <link rel="stylesheet" href="css/portal.css?v=144">
   <link rel="stylesheet" href="css/ivory.css?v=144">
@@ -102,9 +103,14 @@
         <div class="ritual-heading"><span>Günlük ritüeller</span><span aria-hidden="true">✦</span></div><div class="eco-quick-row">
           <button type="button" class="eco-quick-btn" id="ecoWheelBtn"><span class="eco-quick-ico" aria-hidden="true">◉</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Günlük çark</span><small class="eco-quick-desc">Günün şansını dene</small></span><span class="eco-quick-badge" id="wheelBadge" aria-label="Çevirmeye hazır" style="display:none">!</span></button>
           <button type="button" class="eco-quick-btn" id="ecoQuestBtn"><span class="eco-quick-ico" aria-hidden="true">✓</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Görevler</span><small class="eco-quick-desc">Tamamla, ödülünü al</small></span><span class="eco-quick-badge" id="questBadge" style="display:none">0</span></button>
-          <button type="button" class="eco-quick-btn" id="ecoHistBtn"><span class="eco-quick-ico" aria-hidden="true">◇</span><span class="eco-quick-copy"><span class="eco-quick-lbl">Kaju geçmişi</span><small class="eco-quick-desc">Kazancını takip et</small></span></button>
+          <button type="button" class="eco-quick-btn" id="ecoHistBtn"><span class="eco-quick-ico" aria-hidden="true">◇</span><span class="eco-quick-copy"><span class="eco-quick-lbl">İşlem Merkezi</span><small class="eco-quick-desc">Bakiyen ve teslimatlar</small></span></button>
         </div>
       </aside></div>
+      <section class="portal-discover" aria-labelledby="portalDiscoverTitle"><div class="ritual-heading"><span id="portalDiscoverTitle">Yeni oyun alışkanlıkları</span><span aria-hidden="true">✦</span></div><div class="portal-discover-grid">
+        <button type="button" class="portal-discover-card" id="portalPuzzleBtn"><span aria-hidden="true">✦</span><b>Günün bulmacası</b><small>Herkese aynı soru. Doğru hamleyi bul.</small></button>
+        <button type="button" class="portal-discover-card" id="portalReviewBtn"><span aria-hidden="true">◉</span><b>Maç arşivin</b><small>Hamlelerini izle, bir sonraki turu geliştir.</small></button>
+        <button type="button" class="portal-discover-card" id="portalPrivateBtn"><span aria-hidden="true">♜</span><b>Özel mini turnuva</b><small>Arkadaşlarını topla, kendi liginizi kurun.</small></button>
+      </div></section>
       <footer class="portal-footer"><a class="footer-brand" href="#home" data-nav="home">HERO <span>PORTAL</span></a><p>İyi oyunlar. Güzel molalar.</p><a href="#games">Bir tur daha <span aria-hidden="true">↗</span></a></footer>
     </section>
     <section data-screen="friends" class="portal-subscreen" aria-labelledby="heading-friends" tabindex="-1"><div class="screen-intro"><p class="eyebrow">BİRLİKTE OYNA</p><h1 id="heading-friends" class="screen-heading">Dostlarla daha güzel.</h1><p class="screen-description">Arkadaşlarınla buluş, sohbet et ve yeni bir karşılaşmaya katıl.</p></div><div id="scrFriends" class="scr-pad"><div class="placeholder" role="status">Oyuncu alanı hazırlanıyor…</div></div></section>
@@ -120,6 +126,6 @@
   <dialog id="gameGuide" class="lobby-dialog" aria-labelledby="guideTitle"><div class="dialog-top"><p class="eyebrow">İLK HAMLEDEN ÖNCE</p><button type="button" data-close-dialog aria-label="Kapat">×</button></div><h2 id="guideTitle"></h2><p id="guideIntro"></p><ol id="guideSteps"></ol><p class="guide-note" id="guideNote"></p><button type="button" class="stage-play" id="guidePlay">Oyunu aç ↗</button></dialog>
   <dialog id="gameSearch" class="lobby-dialog search-dialog" aria-labelledby="searchTitle"><div class="dialog-top"><h2 id="searchTitle">Ne oynamak istersin?</h2><button type="button" data-close-dialog aria-label="Kapat">×</button></div><label class="search-field"><span aria-hidden="true">⌕</span><input id="gameSearchInput" type="search" placeholder="Oyun adı veya türü…" autocomplete="off" aria-label="Oyun ara"></label><div id="searchResults"></div><p class="search-hint">Oyunu seç, lobide keşfet. <kbd>Esc</kbd> ile kapat.</p></dialog>
   <script defer src="js/vendor/peerjs-1.5.4.min.js?v=138"></script>
-  <script type="module" src="js/portal.js?v=155"></script>
+  <script type="module" src="js/portal.js?v=156"></script>
 </body>
 </html>

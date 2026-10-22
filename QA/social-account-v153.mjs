@@ -6,7 +6,7 @@ const source=fs.readFileSync(new URL('../js/social.js',import.meta.url),'utf8');
 function fn(name){
  const start=source.indexOf(`function ${name}(`);assert.ok(start>=0,name);
  const before=source.slice(0,start).endsWith('async ')?start-6:start;
- const next=/\n(?:async )?function \w+\(/.exec(source.slice(start+1));
+ const next=/\n(?:export )?(?:async )?function \w+\(/.exec(source.slice(start+1));
  return source.slice(before,next?start+1+next.index:source.length);
 }
 function fixture(){
@@ -15,7 +15,8 @@ function fixture(){
  const input={value:'Friend'},list={innerHTML:'',querySelectorAll:()=>[]};
  const context=vm.createContext({
   console,Auth:{getState:()=>({uid,status:'google',displayName:uid,profile:{avatar:'🙂'}}),resolveNick:async()=>({uid:'friend',nick:'Friend'})},
-  fdb:{ref:(_db,path)=>path,query:x=>x,limitToLast:()=>20,get:ref=>getHook(ref),onValue:(ref,callback)=>{listeners.push({ref,callback});return()=>{};},set:async(path,value)=>writes.push({path,value}),push:async(path,value)=>{writes.push({path,value});return {key:'notif-1'};}},db:{},
+  fdb:{ref:(_db,path)=>path,query:x=>x,limitToLast:()=>20,get:ref=>getHook(ref),onValue:(ref,callback)=>{listeners.push({ref,callback});return()=>{};},set:async(path,value)=>writes.push({path,value}),update:async(path,value)=>{for(const [p,v]of Object.entries(value))writes.push({path:p,value:v});},push:async(path,value)=>{writes.push({path,value});return {key:'notif-1'};}},db:{},
+  validSocialUid:uid=>typeof uid==='string'&&/^[\w-]{1,128}$/.test(uid),_friendRequestLocks:new Set(),
   H:{notifRows:[],seen:{}},byId:id=>id==='ghpFrNick'?input:list,
   renderNotifPane:()=>{},renderFriends:()=>{},alert:x=>alerts.push(x),
   esc:x=>String(x??''),avatarOf:()=>'',tAgo:()=>'',
@@ -58,7 +59,7 @@ let groups=0;
  assert.equal(f.writes.length,2,'nickname-based add writes a real friend request and notification');
  assert.equal(f.writes[0].path,'friendRequests/friend/account-a');
  assert.equal(f.writes[0].value.fromUid,'account-a');assert.equal(f.writes[0].value.fromAvatar,'🙂');
- assert.equal(f.writes[1].path,'userNotifs/friend');assert.equal(f.writes[1].value.reqFrom,'account-a');
+ assert.equal(f.writes[1].path,'userNotifs/friend/friend_account-a');assert.equal(f.writes[1].value.reqFrom,'account-a');
  assert.equal(f.writes[1].value.type,'friendreq');assert.equal(f.input.value,'');
  assert.ok(f.alerts.some(message=>message.includes('gönderildi')));groups++;
 }
@@ -74,10 +75,10 @@ let groups=0;
 }
 {
  const f=fixture();let release;
- f.context.fdb.set=(path,value)=>{f.writes.push({path,value});return new Promise(resolve=>release=resolve);};
+ f.context.fdb.update=(path,value)=>{f.writes.push({path,value});return new Promise(resolve=>release=resolve);};
  vm.runInContext(fn('sendFriendRequest'),f.context);
  const pending=f.context.sendFriendRequest('friend','account-a');f.setUid('account-b');release();
- assert.equal(await pending,false);assert.equal(f.writes.length,1,'account switch after request write prevents a later notification under the new session');groups++;
+ assert.equal(await pending,false);assert.equal(f.writes.length,1,'account switch after one atomic request+notification write issues no later mutation under the new session');groups++;
 }
 {
  const f=fixture();let release;

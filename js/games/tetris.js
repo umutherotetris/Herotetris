@@ -20,6 +20,7 @@ import { WORLDS, getProgress, isWorldUnlocked, completeWorld, calcStars, getWorl
 import { MP } from './tetris-mp.js';
 import { shareRoomCode } from '../room-share.js';
 import { Stats, ACHIEVEMENTS } from './tetris-stats.js';
+import { mountSessionStatus } from '../game-session-ui.js';
 
 // Avatar modülünün renkleri okuyabilmesi için kahraman renklerini global'e yaz
 try{
@@ -52,8 +53,10 @@ const RESUMABLE_MODES = ['solo','survival','sprint','zen','adventure'];
 function saveTetrisResume(){
   if(!G || G.over || !G.board) return;
   if(!RESUMABLE_MODES.includes(G.mode)) return;
+  if(Object.hasOwn(G,'ownerUid') && G.ownerUid!==Auth.getState().uid) return;
   try{
     Resume.saveSnapshot('tetris', {
+      ownerUid:G.ownerUid??Auth.getState().uid??null,
       mode: G.mode, heroKey: SELECTED_HERO, theme: G.theme || SELECTED_THEME, advWorld: ADVENTURE_WORLD,
       board: G.board, bag: G.bag, queue: G.queue, cur: G.cur,
       holdType: G.holdType, canHold: G.canHold,
@@ -65,7 +68,8 @@ function saveTetrisResume(){
       dropAcc:G.dropAcc, lockTimer:G.lockTimer, lockResets:G.lockResets, lastMoveRotate:G.lastMoveRotate,
       gravityDebt:G.gravityDebt, slowRemainingMs:G.slowRemainingMs,
       shieldUsed: G.shieldUsed, garbageRemainder:G.garbageRemainder,
-      powersUsedCount:G.powersUsedCount, gemsUsedCount:G.gemsUsedCount
+      powersUsedCount:G.powersUsedCount, gemsUsedCount:G.gemsUsedCount,
+      practiceUsed:!!G.practiceUsed
     });
   }catch(e){}
 }
@@ -74,7 +78,7 @@ function resumeTetris(){
   const snap = Resume.loadSnapshot('tetris');
   if(!snap) return;
   const d = snap.data;
-  if(!isValidTetrisSnapshot(d)){
+  if(!isValidTetrisSnapshot(d) || (Object.hasOwn(d,'ownerUid') && d.ownerUid!==Auth.getState().uid)){
     Resume.clearSnapshot('tetris');
     RESUME_DATA=null;
     launchGame();
@@ -89,6 +93,8 @@ function resumeTetris(){
 }
 function isValidTetrisSnapshot(d){
   if(!d || !RESUMABLE_MODES.includes(d.mode)) return false;
+  if(d.ownerUid!==undefined && d.ownerUid!==null && (typeof d.ownerUid!=='string'||!d.ownerUid||d.ownerUid.length>200)) return false;
+  if(d.practiceUsed!==undefined && typeof d.practiceUsed!=='boolean') return false;
   if(!Array.isArray(d.board) || d.board.length!==ROWS || !d.board.every(row=>Array.isArray(row)&&row.length===COLS&&row.every(c=>c===0||(typeof c==='string'&&c.length>0&&c.length<=64)))) return false;
   const validPiece=p=>{
     if(!p || typeof p.type!=='string' || !Object.hasOwn(PIECES,p.type) || !Number.isInteger(p.x) || !Number.isInteger(p.y) || p.x < -3 || p.x>=COLS || p.y < -3 || p.y>=ROWS) return false;
@@ -245,6 +251,7 @@ function lock(){
     const x = G.cur.x + cx, y = G.cur.y + cy;
     if(y >= 0) G.board[y][x] = G.cur.color;
   });
+  if(Array.isArray(G.reviewFrames)) G.reviewTurn++;
   clearLines();
   if(G.over) return;   // sprint/macera hedefi oyunu bu temizlemede bitirmiş olabilir
   // Satır temizlemeyen T-spin (mini): clearLines içinde işlenmedi, burada ödüllendir
@@ -264,6 +271,7 @@ function lock(){
     G.pendingGarbage = 0;
     if(G.over) return;
   }
+  if(Array.isArray(G.reviewFrames)) captureTetrisReview(G);
   G.cur = nextFromQueue();
   G.canHold = true;
   if(collides(G.cur, 0, 0)) handleTopOut();
@@ -514,11 +522,14 @@ function drawCBSymbol(ctx, px, py, size, color){
 function drawBoard(){
   const ctx = G.ctx, s = G.cellSize;
   ctx.clearRect(0,0,G.canvas.width,G.canvas.height);
-  // ızgara zemin
-  ctx.fillStyle = 'rgba(255,255,255,.015)';
-  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
-    if((x+y)%2===0){ ctx.fillRect(x*s, y*s, s, s); }
-  }
+  const bed=ctx.createLinearGradient(0,0,COLS*s,ROWS*s);
+  bed.addColorStop(0,'#111c32');bed.addColorStop(.5,'#080f20');bed.addColorStop(1,'#121327');
+  ctx.fillStyle=bed;ctx.fillRect(0,0,COLS*s,ROWS*s);
+  ctx.strokeStyle='rgba(148,182,230,.075)';ctx.lineWidth=.5;
+  ctx.beginPath();
+  for(let x=1;x<COLS;x++){ctx.moveTo(x*s,0);ctx.lineTo(x*s,ROWS*s);}
+  for(let y=1;y<ROWS;y++){ctx.moveTo(0,y*s);ctx.lineTo(COLS*s,y*s);}
+  ctx.stroke();
   // yerleşmiş bloklar
   for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
     if(G.board[y][x]) cell(ctx, x, y, s, G.board[y][x]);
@@ -595,9 +606,7 @@ function drawMini(canvas, type){
   const ox = (canvas.width - w*s)/2, oy = (canvas.height - h*s)/2;
   cells.forEach(([x,y]) => {
     const dx = ox+(x-minX)*s, dy = oy+(y-minY)*s;
-    ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = 6;
-    ctx.fillRect(dx+1, dy+1, s-2, s-2); ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(dx+1, dy+1, s-2, Math.max(2,s*0.18));
+    cellF(ctx,dx,dy,s,p.color);
   });
 }
 // Birden fazla sonraki taşı dikey çiz (kahramanın önizleme sayısı kadar)
@@ -616,13 +625,11 @@ function drawNextQueue(canvas, count){
     const s = Math.floor(Math.min(canvas.width/(w+0.6), slotH/(h+0.4)));
     const ox = (canvas.width - w*s)/2;
     const oy = i*slotH + (slotH - h*s)/2;
-    const alpha = i === 0 ? 1 : 0.55;
+    const alpha = i === 0 ? 1 : 0.72;
     cells.forEach(([x,y]) => {
       const dx = ox+(x-minX)*s, dy = oy+(y-minY)*s;
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = i===0?6:3;
-      ctx.fillRect(dx+1, dy+1, s-2, s-2); ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(255,255,255,.22)'; ctx.fillRect(dx+1, dy+1, s-2, Math.max(2,s*0.18));
+      cellF(ctx,dx,dy,s,p.color);
     });
   }
   ctx.globalAlpha = 1;
@@ -1067,7 +1074,7 @@ function buildHeroSelect(onPick){
     <div class="hs-label">🎨 TAŞ TEMASI</div>
     <div class="hs-themes">${themeBtns}</div>
     <div class="hs-sub">Kahramanını seç — her birinin özel gücü var</div>
-    <div class="hero-grid">${cards}</div>
+    <div class="tetris-hero-grid">${cards}</div>
     <button class="hs-play" data-act="play">▶ OYNA</button>`;
   document.body.appendChild(ov);
 
@@ -1391,6 +1398,8 @@ function buildVersusLobby(){
   const statusEl = ov.querySelector('[data-el="status"]');
   const codeInput = ov.querySelector('[data-el="codeInput"]');
   let active=true,launching=false,launchTimer=null;
+  let sessionStatus=null;
+  try{sessionStatus=mountSessionStatus(ov.querySelector('.vl-body'),{game:'tetris',mode:'versus',initial:{phase:'waiting',detail:'Oda oluştur veya arkadaşının altı haneli koduyla katıl.'}});}catch(e){}
   function cancelLaunch(){
     clearTimeout(launchTimer); launchTimer=null; launching=false;
   }
@@ -1403,6 +1412,7 @@ function buildVersusLobby(){
   function handleEvent(type, data){
     if(!active) return;
     if(type === 'code'){
+      sessionStatus?.update({phase:'waiting',detail:'Oda hazır · kodu paylaşarak rakibini davet et.'});
       statusEl.innerHTML = '<div class="vl-codebig" data-el="codebig">' + data + '</div>' +
         '<button class="vl-copy" data-act="copycode">📋 KODU KOPYALA</button>' +
         '<button class="vl-copy" data-act="sharecode">↗ KODU PAYLAŞ</button>' +
@@ -1431,25 +1441,29 @@ function buildVersusLobby(){
     } else if(type === 'connected' || type === 'reconnected'){
       if(launching || !MP.connected) return;
       launching=true;
+      sessionStatus?.update({phase:'ready',detail:'Rakip bağlandı · maç başlıyor.'});
       setStatus('✅ Rakip bağlandı! Başlıyor…', 'ok');
       // el sıkışma: nick gönder
       MP.send({ type:'hello', nick: (window.__HERO_NICK || 'Rakip'), hero: SELECTED_HERO });
       launchTimer=setTimeout(() => {
         launchTimer=null;
         if(!active || !MP.connected){ launching=false; return; }
-        active=false; ov.remove(); launchVersusGame();
+        active=false; sessionStatus?.destroy(); ov.remove(); launchVersusGame();
       }, 800);
     } else if(type === 'disconnected'){
       cancelLaunch();
+      sessionStatus?.update({phase:'failed',detail:'Rakip bağlantısı kesildi. Odayı yeniden oluşturabilir veya bir koda katılabilirsin.'});
       setStatus('❌ Rakip ayrıldı', 'err');
     } else if(type === 'error'){
       cancelLaunch();
+      sessionStatus?.update({phase:'failed',detail:'Oda bağlantısı tamamlanamadı. Yeniden oda oluşturabilir veya kodu kontrol edebilirsin.'});
       setStatus('⚠️ ' + (data || 'bağlantı hatası'), 'err');
     }
   }
   ov.querySelector('[data-act="create"]').addEventListener('click', () => {
     cancelLaunch();
     setStatus('Oda kuruluyor…');
+    sessionStatus?.update({phase:'connecting',detail:'Oda oluşturuluyor.'});
     MP.createRoom(handleEvent);
   });
   ov.querySelector('[data-act="join"]').addEventListener('click', () => {
@@ -1457,6 +1471,7 @@ function buildVersusLobby(){
     if(code.length !== 6){ setStatus('⚠️ 6 haneli kod gir', 'err'); return; }
     cancelLaunch();
     setStatus('Bağlanıyor…');
+    sessionStatus?.update({phase:'connecting',detail:'Girilen odaya bağlanılıyor.'});
     MP.joinRoom(code, handleEvent);
   });
   const pasteBtn = ov.querySelector('[data-act="paste"]');
@@ -1470,6 +1485,7 @@ function buildVersusLobby(){
   });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => {
     active=false; cancelLaunch();
+    sessionStatus?.destroy();
     MP.close();
     ov.remove();
     buildHeroSelect(() => {
@@ -1690,9 +1706,85 @@ function updateModeUI(){
 
 async function gameOver(){ await endGame(false); }
 
+// Yalnız gerçekleşen tahta durumlarından hesaplanır; hamle tahmini değildir.
+function tetrisBoardMetrics(board){
+  const heights=Array(COLS).fill(0);
+  let holes=0,filled=0;
+  for(let x=0;x<COLS;x++){
+    let covered=false;
+    for(let y=0;y<ROWS;y++){
+      if(board[y]?.[x]){filled++;if(!covered)heights[x]=ROWS-y;covered=true;}
+      else if(covered)holes++;
+    }
+  }
+  return {holes,filled,height:Math.max(...heights),bumpiness:heights.slice(1).reduce((n,h,i)=>n+Math.abs(h-heights[i]),0)};
+}
+
+function captureTetrisReview(session){
+  if(!Array.isArray(session.reviewFrames) || !session.board) return;
+  const metrics=tetrisBoardMetrics(session.board);
+  const frame={turn:session.reviewTurn||0,board:session.board.map(row=>row.slice()),
+    score:session.score||0,lines:session.lines||0,level:session.level||1,
+    elapsed:Math.round(session.elapsed||0),...metrics};
+  frame.label=`Taş ${frame.turn} · ${frame.lines} satır · ${frame.score} puan`;
+  const last=session.reviewFrames.at(-1);
+  if(last?.turn===frame.turn) session.reviewFrames[session.reviewFrames.length-1]=frame;
+  else session.reviewFrames.push(frame);
+  if(session.reviewFrames.length>80) session.reviewFrames.splice(0,session.reviewFrames.length-80);
+  session.reviewStats ||= {peakHeight:0,maxHoles:0};
+  session.reviewStats.peakHeight=Math.max(session.reviewStats.peakHeight,metrics.height);
+  session.reviewStats.maxHoles=Math.max(session.reviewStats.maxHoles,metrics.holes);
+}
+
+function tetrisLearningSummary(session){
+  const m=tetrisBoardMetrics(session.board),turns=session.reviewTurn||0;
+  const facts=[`${turns} taş yerleşti · ${session.lines||0} satır temizlendi.`,
+    `Son tahta: ${m.holes} kapalı boşluk · ${m.height}/20 sıra yükseklik.`];
+  if(m.holes>0) facts.push('Üstü dolu boşlukları açmaya çalış; kapalı boşlukların üzerini daha fazla yükseltme.');
+  else if(m.bumpiness>8) facts.push('Sütunlar arasındaki yükseklik farkını azalt; düz bir yüzey sonraki taşlara alan açar.');
+  else facts.push('Kapalı boşluk bırakmadın. Uzun taş için açık bir sütun koruyarak çoklu satır temizlemeyi dene.');
+  if(session.reviewStats?.peakHeight>=16)facts.push(`Bu tur tahta ${session.reviewStats.peakHeight}/20 sıraya yükseldi; tepeye yaklaşırken tekli satır temizlemek de alan kazandırır.`);
+  return facts;
+}
+
+function showTetrisLearning(session){
+  const host=session.el.gameover.querySelector('.go-learning');
+  if(!host) return;
+  host.replaceChildren();
+  for(const fact of tetrisLearningSummary(session)){
+    const p=document.createElement('p');p.textContent=fact;host.appendChild(p);
+  }
+  const button=session.el.gameover.querySelector('[data-act="review"]');
+  if(button){button.hidden=!session.review;button.onclick=()=>{
+    const review=session.review;
+    import('../game-review.js').then(m=>{if(G===session && session.over)m.openGameReview(review,{renderFrame:renderReviewFrame});}).catch(e=>console.warn('[tetris] tekrar',e));
+  };}
+}
+
+async function saveTetrisReview(session,uid,outcome){
+  if(!uid || !session.reviewFrames?.length) return null;
+  const round=session.round;
+  try{
+    const review=await import('../game-review.js');
+    if(G!==session || G.round!==round || Auth.getState().uid!==uid) return null;
+    return review.recordGameReview({uid,game:'tetris',mode:session.mode||'solo',title:'HeroTetris · '+(MODES[session.mode]?.label||'Solo'),
+      outcome:outcome==='practice'?'Antrenman tamamlandı':outcome==='win'?'Kazandın':session.versus?'Mağlubiyet':'Oyun tamamlandı',
+      insights:tetrisLearningSummary(session),frames:session.reviewFrames});
+  }catch(e){console.warn('[tetris] tekrar kaydı',e);return null;}
+}
+
+// Profildeki tekrar görünümü canlı oyuna veya seçili temaya dokunmaz.
+export function renderReviewFrame(frame,host){
+  if(!host || !Array.isArray(frame?.board)) return;
+  const palette=new Set(['#00E5FF','#FFD740','#E040FB','#69F0AE','#FF5252','#42A5F5','#FF9800','#5a5a6e']);
+  const blocks=frame.board.slice(0,ROWS).flatMap((row,y)=>(Array.isArray(row)?row:[]).slice(0,COLS).flatMap((color,x)=>color?
+    [`<rect x="${x*20+1}" y="${y*20+1}" width="18" height="18" rx="2" fill="${palette.has(color)?color:'#8c9dbb'}"/><path d="M${x*20+2} ${y*20+17}V${y*20+2}H${x*20+17}" fill="none" stroke="#fff" stroke-opacity=".4"/>`]:[])).join('');
+  host.innerHTML=`<svg viewBox="0 0 200 400" role="img" aria-label="Tetris kayıtlı tahta" style="display:block;max-height:54vh;width:100%;background:#0b1325;border:1px solid #35496b;border-radius:10px"><defs><pattern id="tetris-review-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#8eaace" stroke-opacity=".12"/></pattern></defs><rect width="200" height="400" fill="url(#tetris-review-grid)"/>${blocks}</svg>`;
+}
+
 // Oyun sonu istatistik kaydı + açılan başarımları göster
 function recordGameStats(won){
-  if(!G) return;
+  if(!G || G.practiceUsed || G.practiceMode) return;
   try{
     const newly = Stats.recordGame({
       score: G.score, lines: G.lines, tetrisCount: G.tetrisCount || 0,
@@ -1728,8 +1820,9 @@ function showAchievements(list){
 
 // Admin antrenman modu aç/kapat
 function togglePractice(){
-  if(!G || !G.isAdmin) return;
+  if(!G || !G.isAdmin || Auth.getState().isAdmin!==true || G.over || G.versus) return;
   G.practiceMode = !G.practiceMode;
+  if(G.practiceMode) G.practiceUsed=true;
   if(G.el.practiceBtn){
     G.el.practiceBtn.classList.toggle('on', G.practiceMode);
     G.el.practiceBtn.textContent = '🎯 ANTRENMAN: ' + (G.practiceMode ? 'AÇIK' : 'KAPALI');
@@ -1742,7 +1835,7 @@ async function adventureWin(){
   // Dünyayı tamamla + yıldız hesapla
   if(G.advWorld){
     const stars = calcStars(G.advWorld.id, G.lines);
-    completeWorld(G.advWorld.id, stars);
+    if(!G.practiceUsed && !G.practiceMode) completeWorld(G.advWorld.id, stars);
     G.advStars = stars;
   }
   await endGame(true);
@@ -1753,10 +1846,29 @@ async function endGame(isWin, { interrupted = false } = {}){
   const session=G,round=G.round,uid=Auth.getState().uid;
   const current=()=>G===session && G.round===round && Auth.getState().uid===uid;
   G.over = true;
+  G._sessionStatus?.update({phase:interrupted?'failed':'ended',canRetry:false});
+  if(Array.isArray(G.reviewFrames)) captureTetrisReview(G);
   G.el.gemSheet?.classList.remove('show');
-  try{ Resume.clearSnapshot('tetris'); }catch(e){}
+  const ownerChanged=Object.hasOwn(session,'ownerUid') && session.ownerUid!==uid;
+  if(!ownerChanged){try{ Resume.clearSnapshot('tetris'); }catch(e){}}
   cancelAnimationFrame(G.raf);
   try{ Sound.stopMusic(); }catch(e){}
+  // Hesap değişiminden önce oynanmış tur yeni hesaba puan/ödül yazamaz.
+  if(ownerChanged || G.practiceUsed || G.practiceMode){
+    const practice=!!(G.practiceUsed||G.practiceMode),ov=G.el.gameover;
+    ov.querySelector('.go-title').textContent=practice?'🎯 ANTRENMAN TAMAMLANDI':'OTURUM DEĞİŞTİ';
+    ov.querySelector('.go-score').textContent=G.score.toLocaleString('tr-TR');
+    ov.querySelector('.go-lines').textContent=G.lines+' satır';
+    ov.querySelector('.go-reward').textContent=practice?'Antrenman turu · sıralama ve ödül kaydı yapılmaz':'Bu tur önceki hesaba aitti · sonuç kaydedilmedi';
+    ov.querySelector('.go-record').style.display='none';
+    if(practice && !ownerChanged && Array.isArray(session.reviewFrames)){
+      session.review=await saveTetrisReview(session,uid,'practice');
+      if(!current())return;
+      showTetrisLearning(session);
+    }
+    ov.classList.add('show');
+    return;
+  }
   // Versus/AI: rakibe öldüğünü bildir
   if(G.versus){
     if(interrupted){
@@ -1779,15 +1891,24 @@ async function endGame(isWin, { interrupted = false } = {}){
     ov.querySelector('.go-title').textContent = won ? '🏆 KAZANDIN!' : '💀 ELENDİN';
     ov.querySelector('.go-score').textContent = G.score.toLocaleString('tr-TR');
     ov.querySelector('.go-lines').textContent = 'Sen: ' + G.lines + ' satır  ·  ' + (G.oppNick||'Rakip') + ': ' + (G.oppLines||0) + ' satır';
-    ov.querySelector('.go-reward').textContent = won ? '🥜 +100 zafer ödülü' : '';
+    ov.querySelector('.go-reward').textContent = won ? 'Ödül kaydediliyor…' : '';
     ov.querySelector('.go-record').style.display = 'none';
     recordGameStats(won);
+    if(G.score<=0)Store.trackQuestEvent?.('game_played',{game:'tetris'});
+    if(won)Store.trackQuestEvent?.('game_won',{game:'tetris'});
+    let paid=0,rewardFailed=false;
     try{
-      if(won) await Store.addKaju(100, G.ai ? 'tetris-ai' : 'tetris-vs');
-      if(!current()) return;
       await Store.addScore('tetris', G.score);
-    }catch(e){}
+      if(!current()) return;
+      if(won) paid=Number(await Store.addKaju(100, G.ai ? 'tetris-ai' : 'tetris-vs'))||0;
+    }catch(e){rewardFailed=true;}
     if(!current()) return;
+    ov.querySelector('.go-reward').textContent=paid>0?'🥜 +'+paid+' zafer ödülü':won?(rewardFailed?'Ödül kaydı tamamlanamadı':'Günlük ödül sınırı · Kaju eklenmedi'):'';
+    if(Array.isArray(session.reviewFrames)){
+      session.review=await saveTetrisReview(session,uid,won?'win':'loss');
+      if(!current())return;
+      showTetrisLearning(session);
+    }
     ov.classList.add('show');
     if(!G.ai){ setTimeout(() => { if(current()){ try{ MP.close(); }catch(e){} } }, 500); }
     return;
@@ -1801,18 +1922,31 @@ async function endGame(isWin, { interrupted = false } = {}){
     score += timeBonus;
     G.score = score;
   }
-  const kaju = Math.min(Math.floor(score / 200), 200);
-  const xp   = Math.floor(score / 50);
+  const requestedKaju = Math.min(Math.floor(score / 200), 200);
+  const requestedXP = Math.floor(score / 50);
+  let kaju=0,xp=0,payoutIssue=false;
+  if(Array.isArray(G.reviewFrames)) captureTetrisReview(G);
   recordGameStats(isWin);
   let isRecord = false;
   try{
     isRecord = await Store.addScore('tetris', score);
     if(!current()) return;
-    if(kaju > 0) await Store.addKaju(kaju, 'tetris');
+    if(requestedKaju > 0) kaju=Number(await Store.addKaju(requestedKaju, 'tetris'))||0;
     if(!current()) return;
-    if(xp > 0)   await Store.addXP(xp);
-  }catch(e){ console.warn('[tetris] ödül', e); }
+    if(requestedXP > 0 && typeof Store.awardXP==='function'){
+      const receipt=await Store.awardXP(requestedXP,uid);
+      xp=receipt?.ok?Math.max(0,receipt.amount||0):0;
+      if(!receipt?.ok)payoutIssue=true;
+    }else if(requestedXP > 0){
+      const result=await Store.addXP(requestedXP);
+      xp=Number.isSafeInteger(result)&&result>0?result:0;
+    }
+  }catch(e){payoutIssue=true;console.warn('[tetris] ödül', e);}
   if(!current()) return;
+  if(Array.isArray(session.reviewFrames)){
+    session.review=await saveTetrisReview(session,uid,isWin?'win':'loss');
+    if(!current())return;
+  }
 
   // Premium ödül ekranı
   try{
@@ -1830,10 +1964,12 @@ async function endGame(isWin, { interrupted = false } = {}){
     }
     const action = await Reward.showReward({
       won: isWin, game:'tetris', score, kaju, xp,
-      isRecord, writeReward:false,
+      isRecord, writeReward:false,payoutIssue,playEventHandled:score>0,
       isCurrent:current,
       title: bossTxt || (isWin?'🏆 KAZANDIN!':'💀 OYUN BİTTİ'),
       subtitle: advExtra.subtitle || extraLine,
+      insights:Array.isArray(session.reviewFrames)?tetrisLearningSummary(session):[],
+      review:session.review||null,
     });
     if(!current()) return;
     // ── Macera akışı: boss geçilince sonraki dünyaya ilerle ──
@@ -1877,6 +2013,7 @@ async function endGame(isWin, { interrupted = false } = {}){
   }
   ov.querySelector('.go-reward').textContent = (kaju>0?('+'+kaju+' 🥜'):'') + (xp>0?('  +'+xp+' XP'):'');
   ov.querySelector('.go-record').style.display = isRecord ? 'block' : 'none';
+  if(Array.isArray(session.reviewFrames)) showTetrisLearning(session);
   // Macera boss zaferinde TEKRAR butonunu sonraki dünyaya göre uyarla
   const restartBtn = ov.querySelector('[data-act="restart"]');
   if(restartBtn){
@@ -1904,18 +2041,18 @@ function build(){
   root.className = 'tetris-overlay';
   root.innerHTML = `
     <div class="tetris-topbar">
-      <button class="t-icon" data-act="exit">✕</button>
+      <button class="t-icon" data-act="exit" aria-label="Oyundan çık">✕</button>
       <div class="t-title">Herotetris <span class="t-herobadge"></span><span class="t-shielddot" style="display:none">🛡️</span></div>
       <button class="t-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="t-chat-badge" data-el="chatBadge" style="display:none"></span></button>
-      <button class="t-icon" data-act="pause">⏸</button>
+      <button class="t-icon" data-act="pause" aria-label="Oyunu duraklat">⏸</button>
     </div>
     <button class="t-practice" data-act="practice" style="display:none">🎯 ANTRENMAN: KAPALI</button>
     <div class="t-modebar" style="display:none"></div>
     <div class="t-hidden-vals" style="display:none"><span class="t-score">0</span><span class="t-level">1</span><span class="t-lines">0</span></div>
     <div class="tetris-stage">
       <div class="tetris-side">
-        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="52" height="96"></canvas></div>
-        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="52" height="46"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">SONRAKİ</div><canvas class="t-next" width="52" height="96" aria-label="Sonraki taşlar"></canvas></div>
+        <div class="t-panel"><div class="t-plabel">TUT</div><canvas class="t-hold" width="52" height="46" aria-label="Tutulan taş"></canvas></div>
       </div>
       <div class="tetris-board-wrap">
         <canvas class="tetris-canvas" style="position:relative;z-index:1"></canvas>
@@ -1929,6 +2066,8 @@ function build(){
           <div class="go-row">Skor: <b class="go-score">0</b></div>
           <div class="go-row">Satır: <b class="go-lines">0</b></div>
           <div class="go-reward-lbl"><span class="go-reward"></span></div>
+          <div class="go-learning" aria-label="Tur değerlendirmesi"></div>
+          <button class="go-btn" data-act="review" hidden>↺ TURU İNCELE</button>
           <div class="go-btns">
             <button class="go-btn primary" data-act="restart">🔄 TEKRAR</button>
             <button class="go-btn" data-act="exit">🏠 MENÜ</button>
@@ -1956,11 +2095,11 @@ function build(){
       </div>
     </div>
     <div class="tetris-controls">
-      <button class="t-ctrl" data-ctrl="rotateL">↺</button>
-      <button class="t-ctrl" data-ctrl="left">◀</button>
-      <button class="t-ctrl" data-ctrl="down">▼</button>
-      <button class="t-ctrl" data-ctrl="right">▶</button>
-      <button class="t-ctrl" data-ctrl="rotateR">↻</button>
+      <button class="t-ctrl" data-ctrl="rotateL" aria-label="Sola döndür">↺</button>
+      <button class="t-ctrl" data-ctrl="left" aria-label="Sola taşı">◀</button>
+      <button class="t-ctrl" data-ctrl="down" aria-label="Yavaş bırak">▼</button>
+      <button class="t-ctrl" data-ctrl="right" aria-label="Sağa taşı">▶</button>
+      <button class="t-ctrl" data-ctrl="rotateR" aria-label="Sağa döndür">↻</button>
     </div>
     <div class="tetris-controls tetris-controls-2">
       <button class="t-ctrl t-ctrl-wide" data-ctrl="hold">⇄ TUT</button>
@@ -2053,7 +2192,7 @@ function fitCanvas(){
 function bindControls(){
   const session=G;G.controlStops=[];
   const press = (ctrl) => {
-    if(G!==session)return;
+    if(G!==session || G.portalMinimized)return;
     if(ctrl==='left') move(-1);
     else if(ctrl==='right') move(1);
     else if(ctrl==='rotateR') rotate('cw');
@@ -2106,7 +2245,7 @@ function bindControls(){
 
   // Klavye (masaüstü testte kolaylık)
   G.keyHandler = (e) => {
-    if(!G) return;
+    if(!G || G.portalMinimized) return;
     const target=e.target;
     if(e.isComposing || target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(target?.tagName||'') || target?.closest?.('[role="textbox"]')) return;
     const k = e.key;
@@ -2137,7 +2276,7 @@ function bindTouchGestures(){
   let gestureLock = null;       // 'vertical' → yukarı çekme jesti, yatay kilitli
 
   const onStart = (e) => {
-    if(G!==session || !G || G.over || G.paused) return;
+    if(G!==session || !G || G.over || G.paused || G.portalMinimized) return;
     const t = e.touches ? e.touches[0] : e;
     active = true;
     startX = lastX = t.clientX;
@@ -2148,7 +2287,7 @@ function bindTouchGestures(){
 
   const onMove = (e) => {
     if(!active) return;
-    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused){active=false;return;}
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.portalMinimized){active=false;return;}
     const t = e.touches ? e.touches[0] : e;
     const dx = t.clientX - lastX;
     const dy = t.clientY - lastY;
@@ -2186,7 +2325,7 @@ function bindTouchGestures(){
   const onEnd = (e) => {
     if(!active) return;
     active = false;
-    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused) return;
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.portalMinimized) return;
     const dt = Date.now() - startT;
     const totalUp = startY - lastY;   // yukarı = pozitif
     const cell = G.cellSize || 24;
@@ -2230,9 +2369,34 @@ function togglePause(on){
   G.last = 0;
 }
 
+// The portal owns visibility/inert. Offline play resumes only if this hook
+// paused this exact round; an existing manual/inventory pause is preserved.
+export function setPortalMinimized(hidden){
+  if(!G) return false;
+  hidden=!!hidden;
+  if(!!G.portalMinimized===hidden) return true;
+  G.portalMinimized=hidden;
+  if(hidden){
+    G.controlStops?.forEach(stop=>stop());
+    G.portalMinimizeRound=G.round;
+    G.portalResumeAfterMinimize=!(G.versus&&!G.ai)&&!G.over&&!G.paused;
+    if(G.portalResumeAfterMinimize)togglePause(true);
+  }else{
+    const resume=G.portalResumeAfterMinimize&&G.portalMinimizeRound===G.round;
+    G.portalResumeAfterMinimize=false;G.portalMinimizeRound=null;
+    if(resume&&!(G.versus&&!G.ai)&&!G.over)togglePause(false);
+    const session=G;
+    requestAnimationFrame(()=>{if(G===session&&!G.portalMinimized){fitCanvas();drawBoard();}});
+  }
+  return true;
+}
+
 function startGame(){
   if(!G) return;
   G.round={};   // aynı DOM üzerinde yeniden başlatılan tur da ayrı bir oturumdur
+  G.ownerUid=Auth.getState().uid;
+  G.reviewFrames=[];G.reviewTurn=0;G.reviewStats={peakHeight:0,maxHoles:0};
+  G.practiceUsed=false;
   G.garbageRemainder=0;
   G.gravityDebt=0;G.aiTimeDebt=0;G.aiFrameDebt=0;
   G.controlStops?.forEach(stop=>stop());
@@ -2350,12 +2514,14 @@ function startGame(){
       G.lastMoveRotate=!!d.lastMoveRotate;G.gravityDebt=d.gravityDebt||0;G.slowRemainingMs=d.slowRemainingMs||0;
       G.shieldUsed = !!d.shieldUsed;
       G.powersUsedCount=d.powersUsedCount||0;G.gemsUsedCount=d.gemsUsedCount||0;
+      G.practiceUsed=!!d.practiceUsed;
       G.garbageRemainder = Number.isFinite(d.garbageRemainder) ? Math.max(0,Math.min(.999999,d.garbageRemainder)) : 0;
       G.displayScore = G.score; G.visualY = G.cur ? G.cur.y : 0;
       updateHUD(); drawSide(); updateHeroBar(); updatePowerBtn(); updateGemBtn(); updateModeUI();
     }catch(e){ console.warn('[tetris] resume override', e); }
   }
 
+  captureTetrisReview(G);
   try{ Sound.startMusic(); }catch(e){}
   startCountdown();
   G.raf = requestAnimationFrame(loop);
@@ -2388,12 +2554,17 @@ function restart(){
   startGame();
 }
 
-function close(){
+export function closePortalGame(root){
+  if(!G || G.root!==root)return false;
+  close(true);return true;
+}
+function close(discard=false){
   if(!G) return;
   G.controlStops?.forEach(stop=>stop());
   try{ G._hud?.destroy(); }catch(e){}
+  try{ G._sessionStatus?.destroy(); }catch(e){}
   try{ if(G._home) G._home.remove(); }catch(e){}
-  try{ saveTetrisResume(); }catch(e){}
+  try{ if(discard!==true)saveTetrisResume(); }catch(e){}
   cancelAnimationFrame(G.raf);
   cancelAnimationFrame(G.scoreRaf);
   try{ Sound.stopMusic(); }catch(e){}
@@ -2479,11 +2650,14 @@ function _startInviteTetris(ctx){
   wait.querySelector('#xinvCode').textContent = 'Davet kodu: ' + ctx.code;
   document.body.appendChild(wait);
   let cancelled = false;
-  wait.querySelector('#xinvCancel').addEventListener('click', () => { cancelled = true; try{ MP.close(); }catch(e){} wait.remove(); });
+  let sessionStatus=null;
+  try{sessionStatus=mountSessionStatus(wait,{game:'tetris',mode:'versus',initial:{phase:isHost?'waiting':'connecting',detail:isHost?'Davet edilen rakip bekleniyor.':'Davet odasına bağlanılıyor.'}});}catch(e){}
+  wait.querySelector('#xinvCancel').addEventListener('click', () => { cancelled = true; sessionStatus?.destroy(); try{ MP.close(); }catch(e){} wait.remove(); });
 
   const onConnected = () => {
     if(cancelled) return;
     cancelled=true;
+    sessionStatus?.destroy();
     MP.send({ type:'hello', nick:(window.__HERO_NICK||'Rakip'), hero:SELECTED_HERO });
     wait.remove();
     launchVersusGame(oppNick);
@@ -2495,6 +2669,7 @@ function _startInviteTetris(ctx){
     else if(type === 'error'){
       const m = wait.querySelector('#xinvMsg');
       if(isHost){ if(m) m.textContent = 'Hata: ' + data; }
+      if(isHost)sessionStatus?.update({phase:'failed',detail:'Davet odası oluşturulamadı. Geri dönüp yeniden deneyebilirsin.'});
       // guest tarafi retry handler icinde
     }
   };
@@ -2509,8 +2684,8 @@ function _startInviteTetris(ctx){
       MP.joinRoom(ctx.code, (type, data) => {
         if(type === 'connected'){ onConnected(); }
         else if(type === 'error'){
-          if(tries < 8){ setTimeout(tryJoin, 1500); }
-          else { const m = wait.querySelector('#xinvMsg'); if(m) m.textContent = 'Baglanilamadi (host hazir degil)'; }
+          if(tries < 8){sessionStatus?.update({phase:'reconnecting',detail:`Davet odası yeniden aranıyor · ${tries}/8`,canRetry:false});setTimeout(tryJoin, 1500);}
+          else {sessionStatus?.update({phase:'failed',detail:'Davet odasına ulaşılamadı. Davet süresini ve oda sahibinin bağlantısını kontrol et.'}); const m = wait.querySelector('#xinvMsg'); if(m) m.textContent = 'Bağlanılamadı (oda sahibi hazır değil)'; }
         }
       });
     };
@@ -2527,6 +2702,12 @@ function launchVersusGame(oppNick){
   G.versus = true;
   G.oppScore = 0; G.oppLines = 0; G.oppNick = oppNick || 'Rakip'; G.oppAlive = true;
   G.pendingGarbage = 0;   // gelen çöp sıraları (sonraki kilitlemede uygulanır)
+  if(G.el.practiceBtn) G.el.practiceBtn.style.display='none';
+  try{
+    G._sessionStatus=mountSessionStatus(G.root,{game:'tetris',mode:'versus',
+      initial:{phase:'playing',detail:'Oda bağlı · rakibinle aynı maçtasın.'},
+      onLeave:()=>{close();buildVersusLobby();}});
+  }catch(e){}
   // Handler yalnız bu maça aittir; kapanmış maçın geç olayı yeni oyunu etkileyemez.
   const session=G,round=G.round;
   MP._gameHandler = (type, data) => {
@@ -2537,14 +2718,17 @@ function launchVersusGame(oppNick){
       handleVersusMessage(data);
     }
     else if(type === 'disconnected'){
+      G._sessionStatus?.update({phase:'reconnecting',detail:'Rakiple bağlantı kesildi. Sonuç henüz kesinleşmedi.',canRetry:false});
       // Hemen kazanma — reconnect denenecek
       if(G && G.versus && !G.over){ flash('🔌 Rakip koptu — yeniden bağlanılıyor…'); }
     }
     else if(type === 'reconnecting'){
       const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
+      G._sessionStatus?.update({phase:'reconnecting',detail:`Yeniden bağlanılıyor · ${tries}/${max}`,canRetry:false});
       if(G && G.versus && !G.over) flash(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`);
     }
     else if(type === 'reconnected'){
+      G._sessionStatus?.update({phase:'playing',detail:'Bağlantı yenilendi · maç durumu eşitleniyor.'});
       if(G && G.versus && !G.over){
         flash('✅ Yeniden bağlanıldı!');
         G.oppAlive = true;
@@ -2586,6 +2770,7 @@ function launchAIGame(){
   const prof = AI_PROFILES[AI_DIFFICULTY] || AI_PROFILES.normal;
   G.ai = true;
   G.versus = true;           // versus altyapısını kullan (çöp, skor, UI)
+  if(G.el.practiceBtn) G.el.practiceBtn.style.display='none';
   G.aiProfile = prof;
   G.oppScore = 0; G.oppLines = 0; G.oppNick = prof.icon + ' AI (' + prof.label + ')'; G.oppAlive = true;
   G.pendingGarbage = 0;
@@ -3305,7 +3490,7 @@ function injectCSS(){
 .vl-status.code{ color: var(--gold); }
 .vl-codebig{ font-family: var(--font-display); font-size: 36px; font-weight: 700; letter-spacing: 8px; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,64,.5); margin: 8px 0; }
 .vl-codehint{ font-size: 9px; color: var(--text-mute); letter-spacing: .5px; }
-.hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
+.tetris-hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
 .hero-card{
   position: relative; overflow: hidden;
   background:

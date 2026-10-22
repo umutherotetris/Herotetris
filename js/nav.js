@@ -5,9 +5,13 @@
 // ════════════════════════════════════════════════════════════════
 const SCREENS = ['home', 'friends', 'leaderboard', 'profile', 'notifications'];
 let initialized = false;
+const positions=new Map();
+let activeScreen=null,restoreGeneration=0;
 
 export function go(screen, focus = false, historyMode = 'replace'){
   if(SCREENS.indexOf(screen) < 0) screen = 'home';
+  if(activeScreen)positions.set(activeScreen,Math.max(0,window.scrollY||0));
+  const destination=positions.get(screen)||0;activeScreen=screen;const generation=++restoreGeneration;
   document.querySelectorAll('[data-screen]').forEach(el => {
     el.classList.toggle('active', el.dataset.screen === screen);
   });
@@ -17,7 +21,9 @@ export function go(screen, focus = false, historyMode = 'replace'){
     else el.removeAttribute('aria-current');
   });
   try { if(historyMode !== 'none' && location.hash !== '#' + screen) history[historyMode === 'push' ? 'pushState' : 'replaceState']({ screen }, '', '#' + screen); } catch(e){}
-  window.scrollTo(0, 0);
+  window.scrollTo(0,destination);
+  requestAnimationFrame(()=>{if(generation===restoreGeneration)window.scrollTo(0,destination);});
+  document.dispatchEvent(new CustomEvent('hero:screen-changed',{detail:{screen}}));
   if(focus) document.querySelector('[data-screen="' + screen + '"]')?.focus({ preventScroll: true });
 }
 
@@ -29,6 +35,7 @@ export function initNav(){
   });
   const showGames = (historyMode = 'push') => {
     go('home', false, 'none');
+    restoreGeneration++; // The explicit game anchor wins over tab restoration.
     const games = document.getElementById('games');
     if(!games) return;
     games.focus({ preventScroll: true });

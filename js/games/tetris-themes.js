@@ -73,23 +73,39 @@ function shade(hex, amt){
 
 // Tek hücre çiz — temaya göre
 export function drawThemedCell(ctx, x, y, size, color, themeKey, ghost){
+  if(!Number.isFinite(size) || size < 4) return;
+  // Old/local snapshots can contain an invalid CSS color. Gradients reject
+  // those values, so keep the renderer alive with a neutral block material.
+  if(typeof color!=='string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(color)) color='#8c9dbb';
+  ctx.save();
+  try{
   const px = x*size, py = y*size, g = 1, w = size - 2*g, h = size - 2*g;
   if(ghost){
-    // Hafif dolgu + parlayan çerçeve (düşüş yeri net görünür)
-    ctx.fillStyle = color; ctx.globalAlpha = 0.12;
-    ctx.fillRect(px+g+1, py+g+1, w-2, h-2);
-    ctx.globalAlpha = 0.5; ctx.strokeStyle = color; ctx.lineWidth = 2;
-    ctx.shadowColor = color; ctx.shadowBlur = 6;
-    ctx.strokeRect(px+g+1.5, py+g+1.5, w-3, h-3);
-    ctx.shadowBlur = 0; ctx.globalAlpha = 1; return;
+    // İniş izi dolu bloktan farklıdır; küçük tahtada da kenarı okunur.
+    const opacity=ctx.globalAlpha;
+    ctx.fillStyle = color; ctx.globalAlpha = opacity * 0.10;
+    ctx.fillRect(px+g, py+g, w, h);
+    ctx.globalAlpha = opacity * 0.74; ctx.strokeStyle = color; ctx.lineWidth = 1;
+    ctx.shadowColor = color; ctx.shadowBlur = 3;
+    ctx.strokeRect(px+g+.5, py+g+.5, w-1, h-1);
+    ctx.shadowBlur = 0;
+    if(size>=12){ ctx.globalAlpha=opacity*.5; ctx.fillRect(px+size/2-1,py+size/2-1,2,2); }
+    return;
   }
   const theme = themeKey || 'neon';
 
   if(theme === 'neon'){
-    ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 8;
-    ctx.fillRect(px+g, py+g, w, h); ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,255,255,.22)';
-    ctx.fillRect(px+g, py+g, w, Math.max(2, size*0.18));
+    const grd=ctx.createLinearGradient(px,py,px+size*.35,py+size);
+    grd.addColorStop(0,shade(color,48)); grd.addColorStop(.42,color); grd.addColorStop(1,shade(color,-62));
+    ctx.fillStyle=grd; ctx.shadowColor=color; ctx.shadowBlur=4;
+    ctx.fillRect(px+g,py+g,w,h); ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(255,255,255,.52)'; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px+g+.5,py+size-g-1);ctx.lineTo(px+g+.5,py+g+.5);ctx.lineTo(px+size-g-1,py+g+.5);ctx.stroke();
+    ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(px+g+1,py+size-g-2,Math.max(0,w-1),2);
+    if(size>=12){
+      ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(px+g+2,py+g+2,Math.max(0,w-4),Math.max(1,size*.18));
+      ctx.strokeStyle='rgba(255,255,255,.13)';ctx.strokeRect(px+g+2.5,py+g+2.5,Math.max(0,w-5),Math.max(0,h-5));
+    }
   }
   else if(theme === 'crystal'){
     // Şeffaf, köşegen parıltı
@@ -175,4 +191,5 @@ export function drawThemedCell(ctx, x, y, size, color, themeKey, ghost){
     // varsayılan neon
     ctx.fillStyle = color; ctx.fillRect(px+g, py+g, w, h);
   }
+  }finally{ ctx.restore(); }
 }

@@ -90,7 +90,7 @@
 .hs-top{ display: flex; align-items: center; justify-content: space-between; }
 .hs-title{ font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 2px; color: var(--cyan); text-shadow: var(--glow-cyan); }
 .hs-sub{ text-align: center; font-size: 9px; letter-spacing: 2px; color: var(--text-mute); margin: 4px 0 12px; }
-.hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
+.tetris-hero-grid{ flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; align-content: start; padding-bottom: 8px; }
 .hero-card{
   background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r-md);
   padding: 11px 7px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
@@ -111,3 +111,83 @@
 /* Oyun içi kahraman rozeti */
 .t-herobadge{ display: inline-block; font-size: 15px; margin-left: 4px; padding: 0 4px; border-left: 2px solid var(--cyan); }
 .t-shielddot{ font-size: 12px; margin-left: 2px; }
+
+/* The game module also supplies legacy styles. These scoped rules keep the
+   board, previews and touch controls in one compact material system. */
+body .tetris-overlay{
+  box-sizing:border-box;overflow:hidden;min-height:0;
+  background:radial-gradient(ellipse at 15% 0%,#24446b38,transparent 55%),radial-gradient(ellipse at 100% 100%,#6c427d25,transparent 50%),#080d18;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 12px calc(10px + env(safe-area-inset-bottom,0px));
+}
+.tetris-overlay .tetris-topbar{width:min(100%,760px);align-self:center;gap:8px;margin-bottom:7px;flex-shrink:0}
+.tetris-overlay .tetris-topbar .t-title{font-size:15px;letter-spacing:2px;color:#d9edfa;text-shadow:0 2px 18px #88d4ff33}
+.tetris-overlay .t-icon{min-width:40px;width:40px;height:40px;border-radius:12px;background:linear-gradient(145deg,#26344a,#111b2c);border-color:#8cacc32e;box-shadow:inset 0 1px #ffffff10;color:#c2dbea}
+.tetris-overlay .tetris-stage{width:min(100%,760px);margin-inline:auto;gap:9px;min-height:0}
+.tetris-overlay .tetris-side{width:62px;gap:10px;padding-top:1px}
+.tetris-overlay .t-panel{background:linear-gradient(145deg,#1a273b,#0d1525);border:1px solid #8da5c52e;border-radius:13px;padding:10px 4px;box-shadow:inset 0 1px #ffffff0c,0 5px 18px #0003}
+.tetris-overlay .t-plabel{font-size:8px;color:#c2d1e2;letter-spacing:1px;line-height:1.6}
+.tetris-overlay .t-next,.tetris-overlay .t-hold{max-width:100%;filter:drop-shadow(0 2px 3px #0004)}
+.tetris-overlay .tetris-board-wrap{isolation:isolate;min-height:0}
+.tetris-overlay .tetris-canvas{border-radius:11px;border-color:#a7ccf54d;box-shadow:0 0 0 3px #101b2d,inset 0 0 24px #20385533,0 10px 35px #0007;background:#0b1325;box-sizing:content-box}
+.tetris-overlay .tetris-gameover,.tetris-overlay .tetris-pause{z-index:20;overflow-y:auto;overscroll-behavior:contain;justify-content:flex-start;padding:20px 12px;background:#091222ed;backdrop-filter:blur(12px);border:1px solid #9bb7d24d;border-radius:14px}
+.tetris-overlay .go-title,.tetris-overlay .pause-title{font-size:clamp(16px,4vw,23px);letter-spacing:1px;color:#f1e4c9;text-shadow:0 2px 15px #d5b66b22;flex-shrink:0}
+.tetris-overlay .go-learning{max-width:360px;text-align:left;font-size:11px;color:#bdcfe1;line-height:1.55}
+.tetris-overlay .go-learning p{margin:6px 0}
+.tetris-overlay .go-btn{min-height:40px;border-radius:11px;flex-shrink:0}
+.tetris-overlay .go-btn[hidden]{display:none}
+.tetris-overlay .go-btns{flex-wrap:wrap;justify-content:center;gap:6px}
+.tetris-overlay .t-power-row,.tetris-overlay .tetris-controls{width:min(100%,760px);align-self:center;flex-shrink:0}
+.tetris-overlay .t-power-row{margin-top:9px;gap:8px}
+.tetris-overlay .tetris-controls{margin-top:7px;gap:7px;grid-template-columns:repeat(5,minmax(0,1fr))}
+.tetris-overlay .tetris-controls-2{grid-template-columns:1fr 1.4fr}
+.tetris-overlay .t-ctrl{min-width:0;height:48px;border:1px solid #90c1dd42;border-radius:12px;background:linear-gradient(155deg,#26374e,#111b2c);box-shadow:inset 0 1px #ffffff16,0 3px 7px #0003;color:#d3efff;font-size:23px}
+.tetris-overlay .tetris-controls-2 .t-ctrl{height:44px;font-size:12px;letter-spacing:.6px}
+.tetris-overlay .t-ctrl-drop{background:linear-gradient(125deg,#263b53,#28304c);color:#f0d9ab;border-color:#ddc48a55}
+.tetris-overlay .t-ctrl:active{background:#2e4e69;transform:translateY(1px);box-shadow:inset 0 2px 8px #0004}
+.tetris-overlay button:focus-visible{outline:2px solid #dbebff;outline-offset:2px}
+.tetris-overlay .t-modebar{width:min(100%,760px);align-self:center;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere;font-size:11px;padding:5px 8px;border-radius:8px}
+.tetris-overlay .ghud-solo{width:min(100%,760px);align-self:center;box-sizing:border-box;min-width:0;border-color:#b5c9e32b;background:linear-gradient(120deg,#152239,#101a2a);border-radius:13px;box-shadow:inset 0 1px #ffffff0a}
+.tetris-overlay .ghud-solo-info,.tetris-overlay .ghud-info{min-width:0}
+.tetris-overlay .ghud-stats{gap:10px}
+.tetris-overlay .ghud-stat-v{font-size:16px!important;color:#e0edff!important;text-shadow:none!important}
+.tetris-overlay .ghud-stat-l{font-size:7px;letter-spacing:.6px}
+.tetris-overlay>.hero-session-status{width:min(100%,760px);align-self:center;flex-shrink:0;margin:7px 0 0;padding:7px 10px}
+.tetris-overlay>.hero-session-status[data-phase=playing] .hero-session-detail{display:none}
+.tetris-overlay>.hero-session-status[data-phase=playing] .hero-session-game{display:none}
+@media(max-width:380px){
+  body .tetris-overlay{padding-inline:8px}
+  .tetris-overlay .tetris-side{width:56px;gap:7px}
+  .tetris-overlay .tetris-stage{gap:6px}
+  .tetris-overlay .t-panel{padding:7px 1px;border-radius:11px}
+  .tetris-overlay .tetris-controls{gap:5px}
+  .tetris-overlay .tetris-topbar .t-title{font-size:13px;letter-spacing:1px}
+  .tetris-overlay .ghud-stats{gap:7px}
+  .tetris-overlay .ghud-stat-v{font-size:14px!important}
+  .tetris-overlay>.hero-session-status{flex-direction:row;align-items:center}
+}
+@media(max-height:680px){
+  .tetris-overlay .t-ctrl{height:44px}
+  .tetris-overlay .tetris-controls-2 .t-ctrl{height:40px}
+  .tetris-overlay .t-panel{padding-block:6px}
+  .tetris-overlay .t-power-row{margin-top:6px}
+}
+@media(orientation:landscape) and (max-height:520px) and (min-width:540px){
+  body .tetris-overlay{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.9fr);grid-template-rows:auto auto auto minmax(0,1fr) auto auto;gap:5px 14px;padding:6px 12px}
+  .tetris-overlay>.tetris-topbar{grid-column:1;grid-row:1;margin:0}
+  .tetris-overlay>.ghud-solo{grid-column:2;grid-row:1;margin:0;padding:7px 9px}
+  .tetris-overlay>.tetris-stage{grid-column:1;grid-row:2/7;height:100%;width:100%;min-height:0}
+  .tetris-overlay>.t-modebar{grid-column:2;grid-row:2;margin:0}
+  .tetris-overlay>.t-practice,.tetris-overlay>.hero-session-status{grid-column:2;grid-row:3;margin:0}
+  .tetris-overlay>.t-power-row{grid-column:2;grid-row:4;align-self:end;margin:0}
+  .tetris-overlay>.tetris-controls{grid-column:2;grid-row:5;margin:0}
+  .tetris-overlay>.tetris-controls-2{grid-row:6}
+  .tetris-overlay .tetris-side{width:54px;gap:6px}
+  .tetris-overlay .t-panel{padding:5px 0}
+  .tetris-overlay .t-icon{height:34px;min-width:34px;width:34px}
+  .tetris-overlay .t-ctrl{height:44px}
+  .tetris-overlay .tetris-controls-2 .t-ctrl{height:40px}
+  .tetris-overlay .ghud-ava{width:30px;height:30px;font-size:20px}
+  .tetris-overlay .ghud-nick{font-size:11px}
+  .tetris-overlay .ghud-stats{gap:7px}
+}
+@media(prefers-reduced-motion:reduce){.tetris-overlay,.tetris-overlay .t-ctrl,.tetris-overlay .t-countdown{animation:none!important;transition:none!important}}

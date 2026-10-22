@@ -27,7 +27,9 @@ function keyboardAction(element, action, label){
   });
 }
 
+let stopMatrixEffects=()=>{};
 export function applyProfileBg(id){
+  stopMatrixEffects();stopMatrixEffects=()=>{};
   const scr=document.querySelector('[data-screen="profile"]'); if(!scr) return;
   scr.classList.remove('matrix-bg');
   [...scr.querySelectorAll('.prf-matrix-col')].forEach(e=>e.remove());
@@ -42,9 +44,11 @@ export function applyProfileBg(id){
     const ctx=cv.getContext('2d');
     const cols=Math.floor(cv.width/13);
     const bgS=Array.from({length:cols},(_,i)=>({ y:Math.random()*cv.height*1.4, sp:Math.random()*.8+.3 }));
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
     if(window._matrixAnim) cancelAnimationFrame(window._matrixAnim);
     function matrixFrame(){
       if(!scr.classList.contains('matrix-bg')){ ctx.clearRect(0,0,cv.width,cv.height); return; }
+      if(document.hidden||!scr.classList.contains('active')||reduced?.matches){window._matrixAnim=null;return;}
       const t=Date.now()/1000;
       ctx.fillStyle='rgba(0,8,4,0.22)'; ctx.fillRect(0,0,cv.width,cv.height);
       ctx.globalAlpha=0.04; ctx.strokeStyle='#00ff44'; ctx.lineWidth=0.5;
@@ -81,7 +85,10 @@ export function applyProfileBg(id){
       ctx.globalAlpha=1; ctx.fillStyle=vg; ctx.fillRect(0,0,cv.width,cv.height);
       window._matrixAnim=requestAnimationFrame(matrixFrame);
     }
-    matrixFrame();
+    const wake=()=>{if(!window._matrixAnim&&!document.hidden&&scr.classList.contains('active')&&!reduced?.matches)matrixFrame();};
+    document.addEventListener('visibilitychange',wake);document.addEventListener('hero:screen-changed',wake);reduced?.addEventListener?.('change',wake);
+    stopMatrixEffects=()=>{document.removeEventListener('visibilitychange',wake);document.removeEventListener('hero:screen-changed',wake);reduced?.removeEventListener?.('change',wake);if(window._matrixAnim){cancelAnimationFrame(window._matrixAnim);window._matrixAnim=null;}};
+    wake();
     return;
   }
   const BG={'ocean':'linear-gradient(160deg,#0d1b4b 0%,#0a3060 50%,#062040 100%)','space':'radial-gradient(ellipse at top,#1a1040 0%,#0a0a1e 100%)','forest':'linear-gradient(160deg,#0d2b1a 0%,#1a3a20 50%,#0a1e12 100%)','sunset':'linear-gradient(160deg,#3a0a20 0%,#6b1a2a 40%,#2a0a40 100%)','ice':'linear-gradient(160deg,#0d2040 0%,#1a3060 50%,#0a1830 100%)'};
@@ -174,6 +181,11 @@ function _renderProfile(st){
       +'</div>'
       +'<div class="prf-acts-grid">'
         +'<button class="prf-act-btn prf-act-primary" data-p="personalize">🎨 Kişiselleştir</button>'
+        +'<button class="prf-act-btn" data-p="wallet">◇ İşlem Merkezi</button>'
+        +'<button class="prf-act-btn" data-p="reviews">◉ Maç Arşivi</button>'
+        +'<button class="prf-act-btn" data-p="puzzle">✦ Günün Bulmacası</button>'
+        +'<button class="prf-act-btn" data-p="private">♜ Özel Turnuva</button>'
+        +'<button class="prf-act-btn" data-p="showcase">🏅 Başarı Vitrini</button>'
         +(isGoogle?'<button class="prf-act-btn prf-act-primary" data-p="kaju">🥜 Kaju Gönder</button>':'<button class="prf-act-btn prf-act-primary" data-p="login">🔗 Hesabı Bağla</button>')
         +(isGoogle?'<button class="prf-act-btn" data-p="mycard">🪪 Kartım</button>':'')
         +(isGoogle?'<button class="prf-act-btn" data-p="clan">🏰 Klan</button>':'')
@@ -189,6 +201,7 @@ function _renderProfile(st){
   // Buton dinleyicileri
   const q=(sel)=>box.querySelector('[data-p="'+sel+'"]');
   q('settings')&&q('settings').addEventListener('click',openSettings);
+  for(const [action,path,fn]of [['wallet','./wallet-center.js','openWalletCenter'],['reviews','./game-review.js','openReviewLibrary'],['puzzle','./daily-puzzle.js','openDailyPuzzle'],['private','./private-tournaments.js','openPrivateTournaments'],['showcase','./profile-showcase.js','openBadgeShowcase']]){q(action)?.addEventListener('click',async()=>{try{const module=await import(path);if(Auth.getState().uid===st.uid)module[fn](()=>_renderProfile(Auth.getState()));}catch(_){_toast('Bu alan açılamadı. Yeniden deneyebilirsin.',true);}});}
   q('personalize')?.addEventListener('click',()=>openPersonalize(()=>Auth.getState(),()=>_renderProfile(Auth.getState())));
   decorateProfile(box,personal);
   if(q('dm')&&isGoogle) q('dm').addEventListener('click',async()=>{
@@ -572,7 +585,9 @@ async function renderTrophies(st){
   body.innerHTML='<div class="badge-loading">⏳ Rozetler yükleniyor…</div>';
   try{
     const bm=await import('./badges.js');
-    const badges=await bm.getUserBadges(st.uid, st.profile);
+    const profile=(await fdb.get(fdb.ref(db,'users/'+st.uid))).val()||st.profile||{};
+    const badges=await bm.getUserBadges(st.uid, profile);
+    if(!body.isConnected||Auth.getState().uid!==st.uid)return;
     const RAR=bm.BADGE_RARITY;
     const earned=badges.filter(b=>b.earned);
     const locked=badges.filter(b=>!b.earned);
@@ -587,7 +602,8 @@ async function renderTrophies(st){
         +'<div class="badge-rar" style="color:'+r.color+'">'+r.label+'</div>'
       +'</div>';
     };
-    body.innerHTML='<div class="badge-summary">'
+    const selected=(Array.isArray(profile.badgeShowcase)?profile.badgeShowcase:[]).slice(0,3).map(id=>earned.find(b=>b.key===id)).filter(Boolean);
+    body.innerHTML=(selected.length?'<div class="badge-grid prf-selected-badges">'+selected.map(b=>renderBadge(b,false)).join('')+'</div>':'')+'<div class="badge-summary">'
         +'<span class="badge-count">🏅 '+earned.length+'/'+badges.length+' Rozet</span>'
       +'</div>'
       +'<div class="badge-grid">'
@@ -653,53 +669,10 @@ async function _buildFriendsBridge(){
 }
 
 async function _renderNavFriends(){
-  const box=byId('navFrContent'); if(!box) return;
-  const st=Auth.getState();
-  try{
-    const snap=await fdb.get(fdb.ref(db,'friends/'+st.uid));
-    if(!snap.exists()||!Object.keys(snap.val()||{}).length){
-      box.innerHTML='<div class="prf-lbl">👥 ARKADAŞLAR</div><div style="text-align:center;padding:20px;color:#7d8ab8;font-size:12px">Henüz arkadaşın yok.<br><br>Sohbette birinin adına tıklayıp <b>👥 Arkadaş Ekle</b> diyebilirsin.</div><button class="clan-btn p" style="width:100%;margin-top:8px" data-gohub="dost">💎 Sosyal Hub\'a Git</button>';
-      const gh=box.querySelector('[data-gohub]'); if(gh) gh.addEventListener('click',async()=>{try{const m=await import('./social.js');m.applyFabSetting();m.openHubTab('dost');}catch(e){}});
-      return;
-    }
-    const uids=Object.keys(snap.val());
-    const rows=await Promise.all(uids.map(async uid=>{
-      let n='Arkadaş',a='👤',ol=false,lv=1,last=0;
-      try{const u=await fdb.get(fdb.ref(db,'users/'+uid));if(u.exists()){const v=u.val();n=v.nick||v.name||n;lv=Math.max(1, Number(v.level)||1);
-        // Avatar doğrula: emoji mi yoksa metin mi?
-        const rawAv = v.avatar;
-        const isValidAv = rawAv && typeof rawAv==='string' && (rawAv.length<=8) && /^\p{Emoji}/u.test(rawAv);
-        a = isValidAv ? rawAv : '👤';
-      }}catch(e){}
-      try{const pr=await fdb.get(fdb.ref(db,'presence/'+uid));if(pr.exists()){const pv=pr.val();last=pv.lastSeen||0;ol=pv.online===true&&(Date.now()-last)<180000;}}catch(e){}
-      return {uid,n,a,ol,lv,last};
-    }));
-    rows.sort((x,y)=>(y.ol-x.ol)||(y.last-x.last));
-    const onlineCount=rows.filter(r=>r.ol).length;
-    const tAgoN=(ts)=>{if(!Number(ts))return'Son görülme bilinmiyor';const d=Math.max(0,Date.now()-Number(ts));if(d<60e3)return'az önce';if(d<3600e3)return Math.floor(d/60e3)+' dk önce';if(d<86400e3)return Math.floor(d/3600e3)+' sa önce';return Math.floor(d/86400e3)+' gün önce';};
-    box.innerHTML='<div class="fr-list-header"><span class="fr-hdr-total">👥 '+rows.length+' Arkadaş</span>'
-      +(onlineCount>0?'<span class="fr-hdr-online">🟢 '+onlineCount+' çevrimiçi</span>':'<span class="fr-hdr-offline">Kimse çevrimiçi değil</span>')+'</div>'
-      +rows.map(r=>'<div class="fr-row'+(r.ol?' online':'')+'">'
-        +'<div class="fr-ava" data-navpc="'+esc(r.uid)+'">'+esc(r.a)+(r.ol?'<span class="fr-dot"></span>':'')+'</div>'
-        +'<div class="fr-info" data-navpc="'+esc(r.uid)+'"><div class="fr-name">'+esc(r.n)+' <span class="fr-lv">LV '+r.lv+'</span></div><div class="fr-status">'+(r.ol?'<span class="fr-on">● Çevrimiçi</span>':'<span class="fr-off">'+tAgoN(r.last)+'</span>')+'</div></div>'
-        +'<button class="fr-btn dm" data-navdm="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" aria-label="'+esc(r.n)+' adlı oyuncuya mesaj gönder" title="Mesaj">✉️</button>'
-        +'<button class="fr-btn egg" data-navegg="'+esc(r.uid)+'" data-navnm="'+esc(r.n)+'" aria-label="'+esc(r.n)+' adlı oyuncunun Kozmo alanını aç" title="Kozmo">🥚</button>'
-      +'</div>').join('');
-    box.querySelectorAll('[data-navpc]').forEach(el=>keyboardAction(el,async e=>{
-      if(e.target.closest('[data-navdm],[data-navegg]'))return;
-      try{const m=await import('./social.js');m.openPlayerCard(el.dataset.navpc);}catch(e){}
-    }, 'Oyuncu profilini aç: ' + el.textContent));
-    box.querySelectorAll('[data-navdm]').forEach(b=>b.addEventListener('click',async e=>{
-      e.stopPropagation();
-      try{
-        const m=await import('./social.js');
-        m.dmOpenThreadExternal(b.dataset.navdm, b.dataset.navnm);
-      }catch(err){ console.warn('[navDM]',err); }
-    }));
-    box.querySelectorAll('[data-navegg]').forEach(b=>b.addEventListener('click',async e=>{
-      e.stopPropagation();try{const m=await import('./kozmos.js');await m.sendEgg(b.dataset.navegg,b.dataset.navnm);}catch(err){}
-    }));
-  }catch(e){ box.innerHTML='<div class="prf-lbl">👥 ARKADAŞLAR</div><i style="color:#7d8ab8">Yüklenemedi</i>'; }
+  const box=byId('navFrContent'); if(!box)return;
+  const uid=Auth.getState().uid;
+  try{const social=await import('./social.js');if(box.isConnected&&Auth.getState().uid===uid)await social.mountFriendsCenter(box);}
+  catch(_){if(box.isConnected&&Auth.getState().uid===uid)box.textContent='Arkadaşlar yüklenemedi. Sekmeye tekrar dokunarak deneyebilirsin.';}
 }
 async function _buildNotifBridge(){
   const nt=byId('scrNotif'); if(!nt) return;

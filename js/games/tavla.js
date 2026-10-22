@@ -7,6 +7,9 @@
 import Store from '../store.js';
 import Auth from '../auth.js';
 import { shareRoomCode } from '../room-share.js';
+import { mountSessionStatus } from '../game-session-ui.js';
+import { recordGameReview } from '../game-review.js';
+export { renderReviewFrame, setPortalMinimized, closePortalGame };
 import { createVsHUD, getPortalNick, getPortalAvatar } from '../hud.js';
 import {
   newGame, isValidState, allLegalMoves, resolveLegalMove, legalMovesFrom, applyMove, remainingDice,
@@ -137,6 +140,10 @@ export function openTavla(){
         </div>
       </div>
       <div class="tg-status" data-el="status"></div>
+      <div class="tv-premium-score" data-el="premiumScore" aria-label="Pul ve mesafe durumu">
+        <div data-side="w"><i></i><span>Beyaz</span><strong data-el="pipW">167 pip</strong><small data-el="offW">0 / 15</small></div>
+        <div data-side="b"><i></i><span>Siyah</span><strong data-el="pipB">167 pip</strong><small data-el="offB">0 / 15</small></div>
+      </div>
       <div class="tg-board-wrap" data-el="boardWrap">
         <canvas data-el="canvas"></canvas>
       </div>
@@ -224,12 +231,13 @@ async function _startInviteTavla(root, ctx){
     + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + esc(ctx.code) + '</div>'
     + '<button id="tinvCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
   root.appendChild(wait);
+  if(typeof attachTavlaSession==='function')attachTavlaSession(wait,'connecting');
   let cancelled = false;
   wait.querySelector('#tinvCancel').addEventListener('click', () => { cancelled = true; try{ if(TavlaMP) TavlaMP.close(); }catch(e){} closeAll(); });
 
   // TavlaMP yukle
   try{ if(!TavlaMP) TavlaMP = (await import('./tavla-mp.js')).default; }
-  catch(e){ wait.querySelector('#tinvMsg').textContent = 'Baglanti modulu yuklenemedi'; return; }
+  catch(e){ wait.querySelector('#tinvMsg').textContent = 'Bağlantı modülü yüklenemedi';if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed');return; }
 
   if(!active() || cancelled) return;
   const onConnected = () => {
@@ -242,7 +250,8 @@ async function _startInviteTavla(root, ctx){
   if(isHost){
     TavlaMP.createRoom((type, data) => {
       if(cancelled || !active()) return;
-      if(type === 'connected'){ onConnected(); }
+      if(type === 'code'){if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('waiting');}
+      else if(type === 'connected'){ onConnected(); }
       else if(type === 'error'){ const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Hata: ' + data; }
     }, ctx.code);
   } else {
@@ -263,9 +272,14 @@ async function _startInviteTavla(root, ctx){
   }
 }
 
-function closeAll(){
-  saveAIGame();
+function closePortalGame(root){
+  if(!G || G.root!==root)return false;
+  closeAll(true);return true;
+}
+function closeAll(discard=false){
+  if(discard!==true)saveAIGame();
   try{ if(G && G._home) G._home.remove(); if(G && G._hud) G._hud.destroy(); }catch(e){}
+  try{G?._sessionUI?.destroy();}catch(e){}
   clearAutoRollTimer();
   clearBreakTimers();
   if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
@@ -366,6 +380,8 @@ function startGame(root, mode, opts){
     }
   }
 
+  if(mode==='online' && typeof attachTavlaSession==='function')attachTavlaSession(gameEl,G._awaitingStart?'ready':'playing');
+
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => restart());
   const gAR = gameEl.querySelector('[data-el="gameAutoRollBtn"]');
@@ -404,6 +420,7 @@ function startGame(root, mode, opts){
   if(G._resuming && G._savedFlip !== undefined){ G.flip = G._savedFlip; }
   else if(mode === 'ai' || mode === 'online'){ G.flip = (G.playerColor === 'b'); }
   else if(mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(typeof resetTavlaReview==='function')resetTavlaReview(G._resuming?'Devam edilen konum':'Açılış zarı');
 
   fitCanvas();
   // Portal HUD enjekte et
@@ -481,6 +498,7 @@ function restart(){
   G.state.dice = open.dice.slice();
   if(G.mode === 'ai'){ G.flip = (G.playerColor === 'b'); }
   else if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(typeof resetTavlaReview==='function')resetTavlaReview('Açılış zarı');
   updateTurn();
   updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
   updateControls(); draw();
@@ -492,25 +510,29 @@ function restart(){
 // ════════════ AI OYUN KAYIT / YÜKLEME (kaldığın yerden devam) ════════════
 const TAVLA_SAVE_KEY = 'hero_tavla_ai_save';
 function saveAIGame(){
-  if(!G || G.mode !== 'ai' || G.gameEnded) return;
+  if(!G || G.mode!=='ai' || G.gameEnded)return;
+  const owner=typeof Auth==='undefined'?'guest':Auth.getState().uid||'guest';
+  if(Object.hasOwn(G,'_reviewUid') && (G._reviewUid||'guest')!==owner)return;
   try{
-    localStorage.setItem(TAVLA_SAVE_KEY, JSON.stringify({
-      state: G.state, playerColor: G.playerColor, aiColor: G.aiColor,
-      difficulty: G.difficulty, rolled: G.rolled, openingDice: G.openingDice,
-      flip: G.flip, theme: SELECTED_THEME, ts: Date.now()
+    localStorage.setItem(TAVLA_SAVE_KEY+':'+encodeURIComponent(owner),JSON.stringify({
+      owner,v:2,state:G.state,playerColor:G.playerColor,aiColor:G.aiColor,
+      difficulty:G.difficulty,rolled:G.rolled,openingDice:G.openingDice,
+      flip:G.flip,theme:SELECTED_THEME,ts:Date.now()
     }));
-  }catch(e){}
+  }catch(_){}
 }
-function clearAIGame(){ try{ localStorage.removeItem(TAVLA_SAVE_KEY); }catch(e){} }
+function clearAIGame(){
+  const owner=typeof Auth==='undefined'?'guest':Auth.getState().uid||'guest';
+  try{localStorage.removeItem(TAVLA_SAVE_KEY+':'+encodeURIComponent(owner));}catch(_){}
+}
 function loadAIGame(){
+  const owner=typeof Auth==='undefined'?'guest':Auth.getState().uid||'guest';
   try{
-    const raw = localStorage.getItem(TAVLA_SAVE_KEY);
-    if(!raw) return null;
-    const snap = JSON.parse(raw);
-    if(!isValidState(snap && snap.state)){ clearAIGame(); return null; }
-    if(Date.now() - (snap.ts||0) > 12*3600*1000){ clearAIGame(); return null; }  // 12 saat
+    const raw=localStorage.getItem(TAVLA_SAVE_KEY+':'+encodeURIComponent(owner));if(!raw)return null;
+    const snap=JSON.parse(raw),age=Date.now()-snap?.ts;
+    if(!isValidState(snap?.state) || snap.v!==2 || snap.owner!==owner || !Number.isFinite(snap.ts) || snap.ts<0 || !Number.isFinite(age) || age<0 || age>12*3600*1000){clearAIGame();return null;}
     return snap;
-  }catch(e){ return null; }
+  }catch(_){return null;}
 }
 
 // ════════════ ZAR ATMA ════════════
@@ -529,6 +551,7 @@ function rollAndShow(){
     G.state.dice = []; G.state.used = []; G.rolled = false;
     updateControls(); draw(); return;
   }
+  if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'Zarlar atıldı');
   const moves = allLegalMoves(G.state);
   const dd = G.state.dice;
   const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
@@ -671,6 +694,7 @@ function pointGeometry(idx){
 function draw(){
   if(!G || !G.ctx) return;
   const ctx = G.ctx, t = THEMES[SELECTED_THEME], g = G.geo, W = G.W, H = G.H;
+  if(typeof updateTavlaMetrics==='function')updateTavlaMetrics();
   ctx.clearRect(0, 0, W, H);
 
   // dış zemin (koyu radyal vinyet)
@@ -696,6 +720,10 @@ function draw(){
   ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 2; ctx.stroke();
   _roundRect(ctx, g.innerX-4, g.innerY-4, g.innerW+8, g.innerH+8, 6);
   ctx.strokeStyle = _shade(t.frame, 1.3); ctx.lineWidth = 1; ctx.stroke();
+
+  for(const [x,y] of [[g.innerX*.48,g.innerY*.5],[W-g.innerX*.48,g.innerY*.5],[g.innerX*.48,H-g.innerY*.5],[W-g.innerX*.48,H-g.innerY*.5]]){
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillStyle='rgba(255,242,199,.8)';const r=Math.max(1.5,g.innerX*.12);ctx.fillRect(-r,-r,r*2,r*2);ctx.restore();
+  }
 
   // ── İÇ KEÇE (kadife dokusu: gradyan + ince vinyet) ──
   const feltGrad = ctx.createLinearGradient(g.innerX, g.innerY, g.innerX, g.innerY + g.innerH);
@@ -1325,6 +1353,10 @@ function drawChecker(ctx, cx, cy, R, color, t){
   ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = Math.max(1, R*0.03);
   ctx.beginPath(); ctx.arc(cx, cy, R*0.52, 0, Math.PI*2); ctx.stroke();
 
+  ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=isW?'rgba(139,101,48,.58)':'rgba(255,219,144,.72)';ctx.lineWidth=Math.max(.6,R*.035);
+  ctx.beginPath();for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2,rr=R*(i%2?.17:.37);const x=Math.cos(a)*rr,y=Math.sin(a)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.closePath();ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,R*.84,0,Math.PI*2);ctx.stroke();ctx.restore();
+
   // ── Üst parlama (specular highlight, sol-üst) ──
   const hl = ctx.createRadialGradient(cx - R*0.30, cy - R*0.34, R*0.02, cx - R*0.30, cy - R*0.34, R*0.55);
   hl.addColorStop(0, 'rgba(255,255,255,'+(isW?0.55:0.30)+')');
@@ -1678,12 +1710,13 @@ function doMove(mv){
   }
   mv = steps.length === 1 ? steps[0] : { ...mv, _combo: steps };
   if(G.moveGraceActive) clearMoveGrace();
-  if(!G.online){ G.undoStack.push({ state: G.state, selected: null }); }
+  if(!G.online){ G.undoStack.push({ state: G.state, selected: null, reviewStep:G._reviewStep }); }
   // KOMBİNE: iki zarı ardışık oyna (toplam pip)
   if(mv._combo && Array.isArray(mv._combo)){
     for(const step of mv._combo){
       if(G.online && TavlaMP.send({ type:'move', from: step.from, to: step.to, die: step.die, dieIdx: step.dieIdx }) === false){ updateControls(); draw(); return; }
       G.state = applyMove(G.state, step);
+      if(typeof captureTavlaFrame==='function')captureTavlaFrame(step);
       try{ step.type === 'hit' ? Sound.hit() : Sound.move(); }catch(e){}
     }
     G.selected = null; G.legalForSel = [];
@@ -1702,6 +1735,7 @@ function doMove(mv){
   }
   if(G.online && TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }) === false) return;
   G.state = applyMove(G.state, mv);
+  if(typeof captureTavlaFrame==='function')captureTavlaFrame(mv);
   G.selected = null; G.legalForSel = [];
   try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
 
@@ -1737,6 +1771,7 @@ function endTurn(){
   G.rolled = false; G.canPass = false;
   G.selected = null; G.legalForSel = []; G.undoStack = [];
   if(G.mode === 'local'){ G.flip = (G.state.turn === 'b'); }
+  if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'Sıra değişti');
   updateTurn();
   if(G.online){
     const mine = (G.state.turn === G.playerColor);
@@ -1796,6 +1831,7 @@ function maybeAITurn(){
       G.state.dice = rollDice();
       G.state.used = [];
       G.rolled = true;
+      if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'YZ zarları');
       saveAIGame();
     }
     const dd = G.state.dice;
@@ -1825,6 +1861,7 @@ function playAISequence(seq, i){
   const mv = seq[i];
   animateMove(mv, () => {
     G.state = applyMove(G.state, mv);
+    if(typeof captureTavlaFrame==='function')captureTavlaFrame(mv);
     saveAIGame();
     try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
     draw();
@@ -1857,6 +1894,7 @@ function sendFullSync(){
     });
     if(sent !== false && G.isHost && G._syncPending){
       G._syncPending = false;
+      if(typeof tavlaSessionPhase==='function')tavlaSessionPhase(G.gameEnded?'ended':'playing');
       updateControls();
       if(G.rolled && turnComplete(G.state)) endTurn(); else startAutoRollTimer();
     }
@@ -1874,6 +1912,7 @@ function applyFullSync(s){
     G.rolled = !!s.rolled;
     G.gameEnded = !!s.gameEnded || gameStatus(G.state) !== 'playing';
     G.oppLeft = false; G._syncPending = false;
+    if(typeof tavlaSessionPhase==='function')tavlaSessionPhase(G.gameEnded?'ended':'playing');
     G._awaitingStart = false;
     if(s.openingDice) G.openingDice = s.openingDice;
     G.selected = null; G.legalForSel = []; G.undoStack = [];
@@ -1911,6 +1950,7 @@ function onHello(d){
 function onRemoteMessage(type, data){
   if(!G) return;
   if(type === 'disconnected'){
+    if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('reconnecting');
     // Oyunu HEMEN bitirme — reconnect denenecek
     G.oppLeft = true; G._syncPending = true;
     clearAutoRollTimer();
@@ -1922,11 +1962,13 @@ function onRemoteMessage(type, data){
     return;
   }
   if(type === 'reconnecting'){
+    if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('reconnecting');
     const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
     updateStatus(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`);
     return;
   }
   if(type === 'reconnected'){
+    if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('reconnecting','Bağlantı kuruldu; tahta eşitleniyor.');
     G.oppLeft = false;
     G._syncPending = true;
     updateStatus('🔄 Bağlandı — oyun eşitleniyor…');
@@ -1937,7 +1979,7 @@ function onRemoteMessage(type, data){
     return;
   }
   if(type === 'reconnect_failed'){
-    if(!G.gameEnded){ G.oppLeft = true; G.gameEnded = true; updateStatus('❌ Rakip yeniden bağlanamadı', 'win'); updateControls(); }
+    if(!G.gameEnded){ G.oppLeft=true;G._syncPending=true;clearAutoRollTimer();if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.');updateStatus('Bağlantı kurulamadı — maç duraklatıldı');updateControls(); }
     return;
   }
   if(type !== 'message') return;
@@ -1957,9 +1999,11 @@ function onRemoteMessage(type, data){
     const first = msg.openingDice[0] > msg.openingDice[1] ? 'w' : 'b';
     if(msg.first !== first) return;
     G._awaitingStart = false;
+    if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('playing');
     G.openingDice = msg.openingDice.slice();
     G.state.turn = first;
     G.state.dice = G.openingDice.slice(); G.state.used = []; G.rolled = true;
+    if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'Zarlar atıldı');
     updateTurn();
     const mine = (G.state.turn === G.playerColor);
     updateStatus(`Açılış: B${G.openingDice[0]}–S${G.openingDice[1]} · ` + (mine ? 'sen başla, pul seç' : 'rakip başlıyor'));
@@ -1968,6 +2012,7 @@ function onRemoteMessage(type, data){
     if(G.gameEnded || G.state.turn===G.playerColor || G.rolled || !Array.isArray(msg.dice) || ![2,4].includes(msg.dice.length) || !msg.dice.every(d=>Number.isInteger(d)&&d>=1&&d<=6) || (msg.dice.length===4 ? !msg.dice.every(d=>d===msg.dice[0]) : msg.dice[0]===msg.dice[1])) return;
     if(G.moveGraceActive) clearMoveGrace();   // rakip mola sonrası oynadı
     G.state.dice = msg.dice || []; G.state.used = []; G.rolled = true;
+    if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'Zarlar atıldı');
     try{ Sound.dice(); }catch(e){}
     animateDiceRoll(() => {
       const dd = G.state.dice;
@@ -1988,6 +2033,7 @@ function onRemoteMessage(type, data){
     animateMove(mv, () => {
       if(G!==session)return;
       G.state = applyMove(G.state, mv);
+      if(typeof captureTavlaFrame==='function')captureTavlaFrame(mv);
       try{ isHit ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
       draw();
       const st = gameStatus(G.state);
@@ -2000,6 +2046,7 @@ function onRemoteMessage(type, data){
     G._turnToken = {}; G.diceAnim = null;
     G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
     G.state.dice = []; G.state.used = []; G.rolled = false; G.canPass = false;
+    if(typeof captureTavlaFrame==='function')captureTavlaFrame(null,'Sıra değişti');
     G.selected = null; G.legalForSel = [];
     updateTurn();
     const mine = (G.state.turn === G.playerColor);
@@ -2104,6 +2151,7 @@ function undoMove(){
   if(!G.undoStack || G.undoStack.length === 0) return;
   const snap = G.undoStack.pop();
   G.state = snap.state;
+  if(G._reviewFrames && Number.isInteger(snap.reviewStep)){G._reviewFrames=G._reviewFrames.filter(f=>f.step<snap.reviewStep);G._reviewStep=snap.reviewStep;}
   G.selected = null; G.legalForSel = [];
   G.tapTarget = null; G.dragging = false; G.dragPos = null;
   G.dragMoved = false; G.dragFrom = null; G.pointerDownPos = null;
@@ -2199,7 +2247,9 @@ function endInDraw(){
   G.confirmPending?.remove(); G.confirmPending = null;
   G.gameEnded = true; clearAutoRollTimer();
   clearAIGame(); clearBreakTimers(); clearMoveGrace();
-  updateStatus('🤝 Oyun berabere bitti', 'win');
+  updateStatus('🤝 Oyun berabere bitti');
+  if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('ended');
+  if(typeof finishTavlaDraw==='function')finishTavlaDraw();
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
 }
@@ -2380,26 +2430,83 @@ function hideBreakOverlay(){
   if(ov) ov.remove();
 }
 
+function attachTavlaSession(host,phase){
+  if(!G || !host?.appendChild)return;
+  G._sessionUI?.destroy();
+  G._sessionUI=mountSessionStatus(host,{game:'tavla',mode:'online',onLeave:closeAll,initial:{phase,canRetry:false}});
+  const board=host.querySelector?.('[data-el="boardWrap"]');if(board)host.insertBefore(G._sessionUI.element,board);
+}
+function tavlaSessionPhase(phase,detail){ G?._sessionUI?.update({phase,detail,canRetry:false}); }
+function updateTavlaMetrics(){
+  if(!G?.root||!G.state)return;
+  for(const color of ['w','b']){
+    const pip=G.root.querySelector('[data-el="pip'+color.toUpperCase()+'"]'),off=G.root.querySelector('[data-el="off'+color.toUpperCase()+'"]');
+    if(pip)pip.textContent=pipCount(G.state,color)+' pip';if(off)off.textContent=G.state.off[color]+' / 15';
+    const card=G.root.querySelector('[data-side="'+color+'"]');if(card)card.classList.toggle('active',G.state.turn===color&&!G.gameEnded);
+  }
+}
+function resetTavlaReview(label){
+  if(!G?.state)return;
+  G._reviewUid=Auth.getState().uid;G._reviewFrames=[];G._reviewSaved=null;G._reviewStep=0;
+  captureTavlaFrame(null,label);
+}
+function captureTavlaFrame(move,label){
+  if(!G?.state||!Array.isArray(G._reviewFrames))return;
+  const point=p=>p==='bar'?'bar':p==='off'?'toplama':String(p+1);
+  const frame={game:'tavla',state:JSON.parse(JSON.stringify(G.state)),flip:!!G.flip,theme:SELECTED_THEME,step:G._reviewStep++,label:String(label||(move?point(move.from)+' → '+point(move.to)+' · zar '+move.die:'Konum')),move:move?{from:move.from,to:move.to,die:move.die}:null};
+  G._reviewFrames.push(frame);if(G._reviewFrames.length>100)G._reviewFrames.splice(1,1);
+}
+function finishTavlaReview(outcome){
+  if(!G||!G._reviewUid||G._reviewUid!==Auth.getState().uid)return null;
+  if(G._reviewSaved)return G._reviewSaved;
+  const frames=G._reviewFrames||[],notes=[];
+  notes.push('Son mesafe: Beyaz '+pipCount(G.state,'w')+' pip, Siyah '+pipCount(G.state,'b')+' pip. Toplanan pul: '+G.state.off.w+'–'+G.state.off.b+'.');
+  const sample=frames.find((f,i)=>i>0&&f.state.dice?.length&&allLegalMoves(f.state).length>1);
+  if(sample){try{
+    const legal=allLegalMoves(sample.state).slice(0,24),color=sample.state.turn,opp=color==='w'?'b':'w';let best=null;
+    // A bounded one-step comparison using real engine-legal candidates.
+    for(const move of legal){const next=applyMove(sample.state,move),blots=next.points.filter(n=>n===(color==='w'?1:-1)).length,score=(pipCount(sample.state,color)-pipCount(next,color))+next.off[color]*4+next.bar[opp]*6-blots*2;if(!best||score>best.score)best={move,score};}
+    if(best){const p=n=>n==='bar'?'bar':n==='off'?'toplama':n+1;notes.push('“'+sample.label+'” konumundaki '+legal.length+' yasal adayın kısa karşılaştırmasında '+p(best.move.from)+' → '+p(best.move.to)+' (zar '+best.move.die+') öne çıktı. Ölçüt: pip ilerlemesi, kırma ve açık pul sayısı; gelecek zarları veya tüm sıra dizilerini çözmez.');}
+  }catch(_){}}
+  notes.push('Tek pul bırakmak kırılma riskini artırır; aynı noktada iki pul kapı oluşturur. Tekrar oynatmada açık pullarını ve bar girişlerini incele.');
+  try{G._reviewSaved=recordGameReview({uid:G._reviewUid,game:'tavla',mode:G.mode,title:'Tavla · Maç incelemesi',outcome,insights:notes,frames});}catch(_){}
+  return G._reviewSaved;
+}
+
+async function finishTavlaDraw(){
+  if(!G||G._rewardClaimed)return;
+  const session=G,token=G._turnToken,uid=Auth.getState().uid;
+  if(G._reviewUid&&G._reviewUid!==uid)return;
+  G._rewardClaimed=true;
+  const current=()=>G===session&&G._turnToken===token&&Auth.getState().uid===uid&&G.gameEnded;
+  const review=finishTavlaReview('Berabere');
+  try{Store.trackQuestEvent?.('game_played',{game:'tavla'});await Store.recordMatchResult?.('tavla','draw',G.oppUid||null,G.oppName||null);}catch(_){}
+  if(!current())return;
+  try{const Reward=await import('../reward.js');if(current())await Reward.showReward({won:false,draw:true,game:'tavla',kaju:0,xp:0,writeReward:false,questEventsHandled:true,isCurrent:current,review,insights:review?.insights||[],title:'🤝 BERABERE',subtitle:'Tavla oyunu berabere bitti'});}catch(_){}
+}
+
 // Pes/forfeit/bağlantı kopması için sade ödül (winType yok, normal kazanç)
 async function awardSimple(playerWon, reason){
   if(!G || G._rewardClaimed) return;
   G.confirmPending?.remove(); G.confirmPending = null;
   G._rewardClaimed = true;
   const session=G,token=G._turnToken,uid=Auth.getState().uid;
+  if(G._reviewUid && G._reviewUid!==uid)return;
   const current=()=>G===session && G._turnToken===token && Auth.getState().uid===uid;
   clearAIGame(); clearBreakTimers(); clearMoveGrace();
+  if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('ended');
+  const review=typeof finishTavlaReview==='function'?finishTavlaReview(playerWon?'Kazandın':'Rakip kazandı'):null;
   try{ Store.trackQuestEvent && Store.trackQuestEvent('game_played',{game:'tavla'}); if(playerWon) Store.trackQuestEvent('game_won',{game:'tavla'}); }catch(e){}
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('tavla', playerWon?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
   if(!current()) return;
-  const kaju = playerWon ? 50 : 15;
-  const xp = playerWon ? 55 : 20;
-  try{ await Store.addKaju(kaju, 'tavla'); if(!current()) return; await Store.addXP(xp); }catch(e){}
+  let kaju=0,xp=0;
+  try{kaju=Number(await Store.addKaju(playerWon?50:15,'tavla'))||0;if(!current())return;const ack=Store.awardXP?await Store.awardXP(playerWon?55:20,uid):null;if(!Store.awardXP)await Store.addXP?.(playerWon?55:20);xp=ack?.ok?ack.amount:0;}catch(e){}
   if(!current()) return;
   try{
     const Reward = await import('../reward.js');
     if(!current()) return;
     await Reward.showReward({
-      won: playerWon, game:'tavla', kaju, xp, writeReward:false, isCurrent:current,
+      won:playerWon,game:'tavla',kaju,xp,writeReward:false,questEventsHandled:true,isCurrent:current,review,insights:review?.insights||[],
       title: playerWon ? '🎲 KAZANDIN!' : '🏳️ Kaybettin',
       subtitle: reason || 'Tavla oyunu tamamlandı',
     });
@@ -2441,16 +2548,20 @@ async function onWin(status){
   updateStatus(label, 'win');
   G.selected = null; G.legalForSel = [];
   updateControls(); draw();
-  const tavlaKaju = 50 * wt; const tavlaXp = playerWon ? 55 : 20;
+  if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('ended');
+  const review=typeof finishTavlaReview==='function'?finishTavlaReview(playerWon?'Kazandın'+typeLabel:'Rakip kazandı'+typeLabel):null;
+  if(G._reviewUid && G._reviewUid!==uid)return;
+  try{Store.trackQuestEvent?.('game_played',{game:'tavla'});if(playerWon)Store.trackQuestEvent?.('game_won',{game:'tavla'});}catch(_){}
+  let tavlaKaju=0,tavlaXp=0;
   try{ if(Store.recordMatchResult) await Store.recordMatchResult('tavla', playerWon?'win':'loss', G.oppUid||null, G.oppName||null); }catch(e){}
   if(!current()) return;
-  try{ await Store.addKaju(tavlaKaju, 'tavla'); if(!current()) return; await Store.addXP(tavlaXp); }catch(e){}
+  try{tavlaKaju=Number(await Store.addKaju(playerWon?50*wt:15,'tavla'))||0;if(!current())return;const ack=Store.awardXP?await Store.awardXP(playerWon?55:20,uid):null;if(!Store.awardXP)await Store.addXP?.(playerWon?55:20);tavlaXp=ack?.ok?ack.amount:0;}catch(e){}
   if(!current()) return;
   try{
     const Reward = await import('../reward.js');
     if(!current()) return;
     await Reward.showReward({
-      won: playerWon, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false, isCurrent:current,
+      won: playerWon, game:'tavla', kaju:tavlaKaju, xp:tavlaXp, writeReward:false,questEventsHandled:true, isCurrent:current,review,insights:review?.insights||[],
       title: playerWon ? '🎲 KAZANDIN!' : '😔 Rakip kazandı',
       subtitle: 'Tavla oyunu tamamlandı',
     });
@@ -2561,7 +2672,7 @@ function showAISetup(root){
   ov.querySelector('[data-act="close"]').addEventListener('click', () => {
     ov.remove();
     // Ana menüye dön (tavla root'u kapat)
-    if(G && G.root) G.root.remove(); G=null;
+    if(G?.root===root) closeAll();
   });
 }
 
@@ -2629,11 +2740,12 @@ async function showOnlineLobby(root){
   ov.querySelector('[data-act="create"]').addEventListener('click', () => {
     showPanel('host');
     try{ Sound.resume(); }catch(e){}
+    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting');
     TavlaMP.createRoom((type, data) => {
       if(G !== session || !ov.isConnected) return;
-      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; }
+      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('waiting'); }
       else if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: true }); }
-      else if(type === 'error'){ ov.querySelector('.tol-hint').innerHTML = '❌ ' + data + '<br>Tekrar dene.'; }
+      else if(type === 'error'){ ov.querySelector('.tol-hint').textContent = '❌ ' + String(data || 'Bağlantı hatası') + ' · Tekrar dene.'; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
     });
   });
   // Kodu kopyala
@@ -2665,10 +2777,11 @@ async function showOnlineLobby(root){
     if(code.length !== 6){ ov.querySelector('[data-el="joinStatus"]').textContent = '⚠️ 6 haneli kod gir'; return; }
     ov.querySelector('[data-el="joinStatus"]').textContent = 'Bağlanıyor…';
     try{ Sound.resume(); }catch(e){}
+    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting');
     TavlaMP.joinRoom(code, (type, data) => {
       if(G !== session || !ov.isConnected) return;
       if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: false }); }
-      else if(type === 'error'){ ov.querySelector('[data-el="joinStatus"]').textContent = '❌ ' + data; }
+      else if(type === 'error'){ ov.querySelector('[data-el="joinStatus"]').textContent = '❌ ' + String(data||'Bağlantı hatası');if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
     });
   });
 }
@@ -2847,7 +2960,36 @@ function star(ctx, cx, cy, spikes, outer, inner){
 }
 
 // ════════════ CSS ════════════
+function setPortalMinimized(hidden){
+  if(!G?.root)return false;
+  G.portalMinimized=!!hidden;G.root.hidden=!!hidden;G.root.inert=!!hidden;
+  G.root.style.visibility=hidden?'hidden':'';G.root.style.pointerEvents=hidden?'none':'';
+  if(!hidden){fitCanvas();draw();}return true;
+}
+function renderReviewFrame(frame,host){
+  const state=frame?.state;if(!isValidState(state))throw new Error('Geçersiz tavla konumu');
+  const theme=THEMES[frame.theme]||THEMES.kizil,flip=!!frame.flip;
+  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const left=24,right=316,col=40,bar=264,top=29,bottom=591;
+  let body='<rect x="2" y="2" width="596" height="616" rx="14" fill="'+theme.frame+'"/><rect x="10" y="10" width="580" height="600" rx="9" fill="'+theme.bg+'"/><rect x="24" y="29" width="552" height="562" fill="'+theme.felt+'"/><rect x="264" y="29" width="52" height="562" fill="'+theme.bar+'" stroke="'+theme.frame+'"/>';
+  const checker=(x,y,color,count)=>'<g><circle cx="'+x+'" cy="'+(y+2)+'" r="16.8" fill="#000" fill-opacity=".35"/><circle cx="'+x+'" cy="'+y+'" r="16" fill="'+(color==='w'?(theme.wTop||'#f2e4c1'):(theme.bBot||'#6c283b'))+'" stroke="'+(color==='w'?'#9d814c':'#e1bd7c')+'" stroke-width="2"/><circle cx="'+x+'" cy="'+y+'" r="11.5" fill="none" stroke="'+(color==='w'?'#b79b61':'#d8ad6a')+'" stroke-width="1"/>'+(count?'<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" fill="'+(color==='w'?'#38291a':'#fff0d0')+'" font-size="12" font-weight="700">'+count+'</text>':'')+'</g>';
+  for(let i=0;i<24;i++){
+    let isBottom=i<12,slot=i<6?11-i:i<12?11-i:i-12,x=(slot<6?left:right)+(slot%6+.5)*col;
+    if(flip){x=580-x;isBottom=!isBottom;}
+    const y=isBottom?bottom:top,dir=isBottom?-1:1;
+    body+='<path d="M'+(x-19)+' '+y+' L'+x+' '+(y+dir*226)+' L'+(x+19)+' '+y+' Z" fill="'+(i%2?theme.pointA:theme.pointB)+'" stroke="'+theme.frame+'" stroke-opacity=".4"/>';
+    body+='<text x="'+x+'" y="'+(isBottom?606:23)+'" text-anchor="middle" fill="#f8e8bc" font-size="10">'+(i+1)+'</text>';
+    const n=Math.abs(state.points[i]),color=state.points[i]>0?'w':'b';for(let k=0;k<Math.min(5,n);k++)body+=checker(x,y+dir*(20+k*34),color,k===4&&n>5?n:'');
+  }
+  for(const [color,y,dir] of (flip?[['w',top+22,1],['b',bottom-22,-1]]:[['w',bottom-22,-1],['b',top+22,1]])){for(let i=0;i<Math.min(5,state.bar[color]);i++)body+=checker(bar+26,y+dir*i*34,color,i===4&&state.bar[color]>5?state.bar[color]:'');}
+  body+='<rect x="558" y="29" width="18" height="562" fill="'+theme.bar+'" stroke="'+theme.frame+'"/>';
+  body+='<text x="566" y="272" text-anchor="middle" fill="#f4e4bd" font-size="11">'+state.off.w+'</text><text x="566" y="354" text-anchor="middle" fill="#f4e4bd" font-size="11">'+state.off.b+'</text>';
+  state.dice.forEach((die,i)=>{const x=210+i*45,used=state.used.includes(i);body+='<rect x="'+x+'" y="290" width="34" height="34" rx="7" fill="'+(used?'#76634d':'#f8edcf')+'" stroke="#aa864b"/><text x="'+(x+17)+'" y="313" text-anchor="middle" font-size="23" font-weight="700" fill="#30251c">'+die+'</text>';});
+  host.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 620" role="img" aria-label="'+esc(frame.label||'Tavla maç konumu')+'" style="display:block;width:100%;max-width:580px;margin:auto">'+body+'</svg>';
+}
+
 function injectCSS(){
+  if(!document.getElementById('tavla-premium-css')){const link=document.createElement('link');link.id='tavla-premium-css';link.rel='stylesheet';link.href=new URL('../../css/tavla-premium.css',import.meta.url).href;document.head.appendChild(link);}
   if(document.getElementById('tavla-css')) return;
   const s = document.createElement('style');
   s.id = 'tavla-css';
@@ -2981,6 +3123,7 @@ function injectCSS(){
 .tvc-send:active{ transform:scale(.94); }
 `;
   document.head.appendChild(s);
+  const premium=document.getElementById('tavla-premium-css');if(premium)document.head.appendChild(premium);
 }
 
 // Rakip adına dokun → oyuncu kartı (online kimlik el sıkışması)
