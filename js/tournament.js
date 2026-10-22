@@ -61,72 +61,112 @@ function prizeForRank(rank){
 export async function addTournamentPoints(pts, reason){
   const st = Auth.getState();
   if(!st.uid || !Number.isSafeInteger(pts) || pts <= 0) return;
+  const current = () => Auth.getState().uid === st.uid;
   const wk = weekId();
   const name = st.displayName || (st.profile && st.profile.nick) || 'Oyuncu';
   try{
-    await fdb.runTransaction(fdb.ref(db, 'tournaments/'+wk+'/scores/'+st.uid+'/pts'), c => (c||0) + pts);
+    const result = await fdb.runTransaction(fdb.ref(db, 'tournaments/'+wk+'/scores/'+st.uid+'/pts'), c => {
+      if(!current()) return;
+      const prior = c === null ? 0 : Number(c);
+      if(!Number.isSafeInteger(prior) || prior < 0 || !Number.isSafeInteger(prior + pts)) return;
+      return prior + pts;
+    }, {applyLocally:false});
+    if(!result.committed || !current()) return;
     await fdb.update(fdb.ref(db, 'tournaments/'+wk+'/scores/'+st.uid), { name, ts: Date.now() });
   }catch(e){ console.warn('[tournament] addPoints', e); }
 }
 
 // ── Sıralamayı çek ──
-async function fetchLeaderboard(wk){
+async function fetchLeaderboard(wk, strict = false){
   try{
     const snap = await fdb.get(fdb.ref(db, 'tournaments/'+wk+'/scores'));
     if(!snap.exists()) return [];
     const v = snap.val() || {};
-    const arr = Object.keys(v).map(uid => ({ uid, name: v[uid].name||'Oyuncu', pts: v[uid].pts||0 }));
-    arr.sort((a,b)=> b.pts - a.pts);
+    const arr = Object.keys(v).flatMap(uid => {
+      const entry = v[uid], pts = Number(entry?.pts);
+      if(!entry || !Number.isSafeInteger(pts) || pts <= 0) return [];
+      return [{uid, name:entry.name || 'Oyuncu', pts}];
+    });
+    // Equal scores must award the same rank regardless of snapshot key order.
+    arr.sort((a,b)=> b.pts - a.pts || (a.uid < b.uid ? -1 : a.uid > b.uid ? 1 : 0));
     return arr;
-  }catch(e){ return []; }
+  }catch(e){ if(strict) throw e; return []; }
 }
 
-// ── Geçen haftanın ödülünü talep et ──
-async function claimPrize(){
-  const st = Auth.getState();
-  if(!st.uid) return;
-  const pwk = _prevWeekId();
-  // Zaten alındı mı?
+const _pendingPrizeClaims = new Set();
+async function claimTournamentReward(st, pwk){
+  const current = () => !!st.uid && Auth.getState().uid === st.uid;
+  if(!current()) return {claimed:false, reason:'identity'};
+  const key = st.uid + ':' + pwk;
+  if(_pendingPrizeClaims.has(key)) return {claimed:false, pending:true};
+  _pendingPrizeClaims.add(key);
   try{
     const cl = await fdb.get(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid));
-    if(cl.exists() && cl.val()) { _toast('Bu haftanın ödülünü zaten aldın'); return; }
-  }catch(e){}
-  const lb = await fetchLeaderboard(pwk);
-  const rank = lb.findIndex(x=>x.uid===st.uid) + 1;
-  if(rank === 0){ _toast('Geçen hafta turnuvaya katılmadın'); return; }
-  const prize = prizeForRank(rank);
-  if(prize <= 0){ _toast('Geçen hafta ödül sıralamasına giremedin (ilk 25)'); return; }
-  try{
+    if(!current()) return {claimed:false, reason:'identity'};
+    // Preserve historical claimed flags: old releases may have paid without a receipt.
+    if(cl.exists() && cl.val()) return {claimed:false, alreadyClaimed:true, legacy:true};
+    const lb = await fetchLeaderboard(pwk, true);
+    if(!current()) return {claimed:false, reason:'identity'};
+    const rank = lb.findIndex(x=>x.uid===st.uid) + 1;
+    if(rank === 0) return {claimed:false, reason:'not-participant'};
+    const prize = prizeForRank(rank);
+    if(prize <= 0) return {claimed:false, reason:'outside-prizes'};
     const paid = await Store.claimKajuOnce('tournament_' + pwk, prize, 'tournament', 'Turnuva ödülü (#'+rank+')', st.uid);
-    if(!paid.claimed) return;
+    if(!current()) return {claimed:false, reason:'identity'};
+    if(!paid || (!paid.claimed && !paid.alreadyClaimed)) return {claimed:false, reason:paid?.reason || 'unavailable'};
+    if(!Number.isSafeInteger(paid.amount) || paid.amount <= 0) return {claimed:false, reason:'unavailable'};
+    // Confirmed duplicate receipts repair secondary markers, never repay the prize.
     try{ await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true); }catch(e){}
-    _toast('🏆 '+rank+'. oldun! '+fmt(prize)+' Kaju kazandın!');
-    // İlk 3 → Sosyal Duvar'a yaz
+    if(!current()) return {claimed:false, reason:'identity'};
     try{
-      if(rank <= 3){
+      if(rank <= 3 && paid.amount === prize){
         const medal = rank===1?'🥇':rank===2?'🥈':'🥉';
-        await fdb.push(fdb.ref(db, 'achWall'), {
+        const wallKey = 'trn_' + pwk + '_' + Array.from(st.uid, ch=>ch.codePointAt(0).toString(16)).join('-');
+        await fdb.set(fdb.ref(db, 'achWall/' + wallKey), {
           uid: st.uid, userName: st.displayName||'Oyuncu',
           achId: 'trn_'+pwk+'_'+rank, achName: medal+' Haftalık turnuvada '+rank+'. oldu!',
           icon: medal, isAdmin:false, ts: Date.now()
         });
       }
     }catch(e){}
-    if(window.Hero && window.Hero.openTournament) setTimeout(()=>openTournament(), 600);
-  }catch(e){ _toast('Ödül alınamadı', true); }
+    if(!current()) return {claimed:false, reason:'identity'};
+    return {claimed:paid.claimed === true, alreadyClaimed:paid.alreadyClaimed === true, rank, prize:paid.amount};
+  }catch(error){ return {claimed:false, reason:'unavailable', error}; }
+  finally{ _pendingPrizeClaims.delete(key); }
+}
+
+// ── Geçen haftanın ödülünü talep et ──
+async function claimPrize(){
+  const st = Auth.getState(), panel = document.getElementById('trnOv');
+  if(!st.uid) return;
+  const result = await claimTournamentReward(st, _prevWeekId());
+  if(Auth.getState().uid !== st.uid) return;
+  if(result.claimed){
+    _toast('🏆 '+result.rank+'. oldun! '+fmt(result.prize)+' Kaju kazandın!');
+    if(panel && document.getElementById('trnOv') === panel) setTimeout(()=>{
+      if(Auth.getState().uid === st.uid && document.getElementById('trnOv') === panel) openTournament();
+    },600);
+  } else if(result.alreadyClaimed) _toast('Bu turnuva ödülü hesabına zaten kaydedilmiş.');
+  else if(result.reason === 'not-participant') _toast('Geçen hafta turnuvaya katılmadın');
+  else if(result.reason === 'outside-prizes') _toast('Geçen hafta ödül sıralamasına giremedin (ilk 25)');
+  else if(!result.pending) _toast('Ödül alınamadı. Yeniden deneyebilirsin.',true);
 }
 
 // Geçen hafta ödül hak edildi mi (rozet için)
 export async function hasPendingPrize(){
   const st = Auth.getState();
   if(!st.uid) return false;
+  const current = () => Auth.getState().uid === st.uid;
   const pwk = _prevWeekId();
   try{
     const receipt = await fdb.get(fdb.ref(db, 'users/'+st.uid+'/heroRewardClaims/tournament_'+pwk));
+    if(!current()) return false;
     if(receipt.exists()) return false;
     const cl = await fdb.get(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid));
+    if(!current()) return false;
     if(cl.exists() && cl.val()) return false;
-    const lb = await fetchLeaderboard(pwk);
+    const lb = await fetchLeaderboard(pwk,true);
+    if(!current()) return false;
     const rank = lb.findIndex(x=>x.uid===st.uid) + 1;
     return rank > 0 && prizeForRank(rank) > 0;
   }catch(e){ return false; }
@@ -137,36 +177,10 @@ export async function hasPendingPrize(){
 export async function autoClaimPrize(){
   const st = Auth.getState();
   if(!st.uid) return { claimed:false };
-  const pwk = _prevWeekId();
-  try{
-    // Zaten alındı mı?
-    const cl = await fdb.get(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid));
-    if(cl.exists() && cl.val()) return { claimed:false };
-    // Sıralamada mı?
-    const lb = await fetchLeaderboard(pwk);
-    const rank = lb.findIndex(x=>x.uid===st.uid) + 1;
-    if(rank === 0) return { claimed:false };
-    const prize = prizeForRank(rank);
-    if(prize <= 0) return { claimed:false };
-    // Otomatik yatır
-    const paid = await Store.claimKajuOnce('tournament_' + pwk, prize, 'tournament', 'Turnuva ödülü (#'+rank+')', st.uid);
-    if(!paid.claimed) return {claimed:false};
-    try{ await fdb.set(fdb.ref(db, 'tournaments/'+pwk+'/meta/claimed/'+st.uid), true); }catch(e){}
-    // İlk 3 → Sosyal Duvar
-    try{
-      if(rank <= 3){
-        const medal = rank===1?'🥇':rank===2?'🥈':'🥉';
-        await fdb.push(fdb.ref(db, 'achWall'), {
-          uid: st.uid, userName: st.displayName||'Oyuncu',
-          achId: 'trn_'+pwk+'_'+rank, achName: medal+' Haftalık turnuvada '+rank+'. oldu!',
-          icon: medal, isAdmin:false, ts: Date.now()
-        });
-      }
-    }catch(e){}
-    // Kutlama bildirimi
-    _showPrizeWon(rank, prize);
-    return { claimed:true, rank, prize };
-  }catch(e){ return { claimed:false }; }
+  const result = await claimTournamentReward(st,_prevWeekId());
+  if(Auth.getState().uid !== st.uid) return {claimed:false, reason:'identity'};
+  if(result.claimed) _showPrizeWon(result.rank,result.prize);
+  return result;
 }
 
 // Ödül kazanma kutlaması (otomatik yatırınca)
@@ -260,13 +274,18 @@ export async function openTournament(){
 
   const body=ov.querySelector('#trnBody');
   const st=Auth.getState();
+  const current=()=>Auth.getState().uid === st.uid && document.getElementById('trnOv') === ov;
   const wk=weekId();
-  const lb=await fetchLeaderboard(wk);
+  let lb;
+  try{ lb=await fetchLeaderboard(wk,true); }
+  catch(error){ if(current()) body.innerHTML='<div class="trn-empty">Sıralama yüklenemedi. Bağlantını kontrol edip yeniden açabilirsin.</div>'; return; }
+  if(!current()) return;
   const myRank=lb.findIndex(x=>x.uid===st.uid)+1;
   const myPts=(lb.find(x=>x.uid===st.uid)||{}).pts||0;
 
   // Geçen hafta ödül var mı
   const pending = await hasPendingPrize();
+  if(!current()) return;
 
   let html='';
   if(pending){
@@ -297,7 +316,7 @@ export async function openTournament(){
   body.innerHTML=html;
   const cb=body.querySelector('#trnClaim');
   if(cb) cb.addEventListener('click', async ()=>{
-    if(cb.disabled) return;
+    if(cb.disabled || !current()) return;
     cb.disabled=true; cb.textContent='…';
     try{ await claimPrize(); }
     finally{ cb.disabled=false; cb.textContent='🎁 Geçen haftanın ödülünü şimdi al!'; }

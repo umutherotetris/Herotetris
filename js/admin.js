@@ -957,45 +957,63 @@ function _deleteNodes(uid){
 }
 
 async function doResetProgress(){
-  const { uid, profile: p } = P.target;
+  const panel=P, target=panel?.target, actor=Auth.getState();
+  const current=()=>P===panel&&Auth.getState().uid===actor.uid&&Auth.getState().status==='google'&&Auth.getState().isAdmin===true;
+  if(!target||!actor.uid||!current()||panel._resetBusy)return;
+  const { uid, profile: p } = target;
   if(p.isAdmin){ msg('✗ Admin hesabının ilerlemesi sıfırlanamaz', false); return; }
+  if(panel._resetCompletedUid===uid){msg('✓ Bu sıfırlama tamamlandı',true);return;}
   const nick = p.nick || p.name || p.displayName || uid.slice(0,8);
-  if(!confirm(`"${nick}" kullanıcısının İLERLEMESİ sıfırlanacak:\n\n• Kaju: 0\n• Level: 1 / XP: 0\n• Kaju geçmişi silinir\n• Oyun liderliği silinir\n• Sezon puanları silinir\n\nProfil ve nick KORUNUR. GERİ ALINAMAZ!`)) return;
+  if(!panel._resetAttempt||panel._resetAttempt.uid!==uid){
+    panel._resetAttempt={uid,id:'reset_'+actor.uid+'_'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'_'+Math.random().toString(36).slice(2))};
+    panel._resetUncertain=false;
+  }
+  const operationId=panel._resetAttempt.id;
+  if(!panel._resetUncertain&&!confirm(`"${nick}" kullanıcısının İLERLEMESİ sıfırlanacak:\n\n• Kaju: 0\n• Level: 1 / XP: 0\n• Kaju geçmişi silinir\n• Oyun liderliği silinir\n• Sezon puanları silinir\n\nProfil ve nick KORUNUR. GERİ ALINAMAZ!`)) return;
+  panel._resetBusy=true;
   msg('Sıfırlanıyor…', true);
   try{
-    // users/{uid} içindeki ilerleme alanlarını sıfırla
-    await fdb.update(fdb.ref(db, 'users/' + uid), {
-      kaju: 0, kajuUpdAt: null, kajuSent: null,
-      level: 1, xp: { level:1, xp:0, totalXP:0 },
-      bestScores: null, kelimeRecords: null,
-      lastSeen: null
-    });
-    // kaju_history sil
-    await fdb.set(fdb.ref(db, 'users/' + uid + '/kaju_history'), null);
-    // Liderlik kayıtları sil
-    const lbNodes = [
-      'leaderboard/kaju/' + uid,
-      'leaderboard/games/' + uid,
-      'gameLB/' + uid,
-      'gameLeaderboard/all/' + uid,
-    ];
-    await Promise.all(lbNodes.map(n => fdb.set(fdb.ref(db, n), null).catch(()=>{})));
-    // Sezon puanları sil (tüm sezonlar)
+    let result;
+    try{
+      // Preserve reward receipts, reserved donations, transfer outboxes and spend
+      // counters. Resetting them would replay paid rewards or bypass send limits.
+      result=await fdb.runTransaction(fdb.ref(db,'users/'+uid),profile=>{
+        if(!current()||!profile||profile.isAdmin||profile.heroProgressResets?.[operationId])return;
+        const revision=(Number.isSafeInteger(profile.heroWalletRevision)&&profile.heroWalletRevision>=0?profile.heroWalletRevision:0)+1;
+        return {...profile,kaju:0,heroWalletRevision:revision,
+          level:1,xp:{level:1,xp:0,totalXP:0},bestScores:null,kelimeRecords:null,lastSeen:null,kaju_history:null,
+          heroProgressResets:{...profile.heroProgressResets,[operationId]:{actorUid:actor.uid,ts:Date.now()}}};
+      },{applyLocally:false});
+    }catch(e){panel._resetUncertain=true;}
+    if(!current())return;
+    let profile;
+    try{profile=result?.committed?result.snapshot.val():(await fdb.get(fdb.ref(db,'users/'+uid))).val();}
+    catch(e){panel._resetUncertain=true;throw new Error('Sıfırlamanın sonucu doğrulanamadı; aynı işlemle yeniden kontrol et');}
+    if(!current())return;
+    if(profile?.heroProgressResets?.[operationId]?.actorUid!==actor.uid){
+      throw new Error('Sıfırlama onaylanmadı');
+    }
+    panel._resetUncertain=false;
+    // Leaderboard cleanup is safe to repeat after a lost acknowledgement.
+    const lbNodes = ['leaderboard/kaju/'+uid,'leaderboard/games/'+uid,'gameLB/'+uid,'gameLeaderboard/all/'+uid];
+    await Promise.all(lbNodes.map(n => current()?fdb.set(fdb.ref(db,n),null).catch(()=>{}):undefined));
+    if(!current())return;
     try{
       const seasons = await fdb.get(fdb.ref(db, 'seasons'));
+      if(!current())return;
       if(seasons.exists()){
-        const dels = [];
-        seasons.forEach(s => { dels.push(fdb.set(fdb.ref(db, 'seasons/' + s.key + '/' + uid), null)); });
-        await Promise.all(dels.map(d => d.catch(()=>{})));
+        const dels=[];
+        seasons.forEach(season=>{if(current())dels.push(fdb.set(fdb.ref(db,'seasons/'+season.key+'/'+uid),null));});
+        await Promise.all(dels.map(d=>d.catch(()=>{})));
       }
     }catch(e){}
-    P.target.profile.kaju = 0;
-    P.target.profile.level = 1;
-    P.target.profile.xp = { level:1, xp:0, totalXP:0 };
-    msg(`✓ "${nick}" ilerlemesi sıfırlandı`, true);
-    logAdmin('ilerleme-sifirla', uid, nick);
-    renderTarget();
-  }catch(e){ msg('✗ Sıfırlanamadı: ' + (e.message||e), false); }
+    if(!current())return;
+    panel._resetCompletedUid=uid;
+    Object.assign(target.profile,{kaju:profile.kaju||0,level:profile.level||1,xp:profile.xp||{level:1,xp:0,totalXP:0}});
+    logAdmin('ilerleme-sifirla',uid,nick);
+    if(panel.target===target){msg(`✓ "${nick}" ilerlemesi sıfırlandı`,true);renderTarget();}
+  }catch(e){if(current()&&panel.target===target)msg('✗ '+(e.message||e),false);}
+  finally{panel._resetBusy=false;}
 }
 
 async function doDeleteUser(){
@@ -1078,30 +1096,49 @@ async function sendUserNotif(){
 
 // ── Kaju ± ──────────────────────────────────────────────────────
 async function doKaju(){
-  const v = Math.floor(Number($(P.root,'[data-el="kAmt"]').value.trim()));
-  if(!Number.isFinite(v) || v === 0){ msg('Geçerli miktar gir (örn. 500 veya -500)', false); return; }
+  const panel = P, target = P?.target, me = Auth.getState();
+  if(!panel || !target || panel._kajuBusy || !panel.root?.isConnected || !me.uid || me.status !== 'google' || me.isAdmin !== true) return;
+  const current = () => P === panel && panel.root.isConnected && Auth.getState().uid === me.uid && Auth.getState().isAdmin === true;
+  const visible = () => current() && panel.target === target;
+  const input = $(panel.root,'[data-el="kAmt"]'), button = $(panel.root,'[data-a="kaju"]');
+  const raw = input.value.trim(), v = Number(raw);
+  if(!Number.isSafeInteger(v) || v === 0){ msg('Geçerli bir tam sayı gir (örn. 500 veya -500)', false); return; }
+  panel._kajuBusy = true; if(button) button.disabled = true;
+  if(panel._kajuAttempt?.uid !== target.uid || panel._kajuAttempt?.delta !== v) panel._kajuAttempt = {uid:target.uid, delta:v, id:'admin_ui_' + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + '_' + Math.random().toString(36).slice(2))};
   msg('Uygulanıyor…', true);
-  const r = await Store.adminAdjustKaju(P.target.uid, v, 'admin-panel');
-  if(!r.ok){ msg('✗ ' + r.error, false); return; }
-  P.target.profile.kaju = r.newBalance;
-  $(P.root,'[data-el="kaju"]').textContent = fmt(r.newBalance);
-  msg(`✓ Yeni bakiye: ${fmt(r.newBalance)}`, true);
-  logAdmin(v > 0 ? 'kaju-ekle' : 'kaju-eksilt', P.target.uid, v + ' → ' + r.newBalance);
+  try{
+    const r = await Store.adminAdjustKaju(target.uid, v, 'admin-panel', panel._kajuAttempt.id);
+    if(!current()) return;
+    if(!r.ok){ if(visible()) msg('✗ ' + r.error, false); return; }
+    // The result and audit entry belong to the target captured before the await.
+    if(target.profile) target.profile.kaju = r.newBalance;
+    if(visible()){
+      $(panel.root,'[data-el="kaju"]').textContent = fmt(r.newBalance);
+      if(input.value.trim() === raw) input.value = '';
+      msg(`✓ Uygulanan: ${fmt(r.appliedDelta)} Kaju · yeni bakiye: ${fmt(r.newBalance)}`, true);
+    }
+    logAdmin(r.appliedDelta > 0 ? 'kaju-ekle' : 'kaju-eksilt', target.uid, r.appliedDelta + ' → ' + r.newBalance);
+  }catch(error){ if(visible()) msg('✗ İşlem doğrulanamadı. Bakiyeyi yenileyip kontrol et.', false); }
+  finally{ panel._kajuBusy = false; if(button?.isConnected) button.disabled = false; }
 }
 
 async function toggleKHist(){
-  const box = $(P.root,'[data-el="khist"]');
+  const panel = P, target = P?.target, owner = Auth.getState().uid;
+  if(!panel || !target || Auth.getState().isAdmin !== true) return;
+  const box = $(panel.root,'[data-el="khist"]');
+  const current = () => P === panel && panel.target === target && panel.root.isConnected && Auth.getState().uid === owner && Auth.getState().isAdmin === true && $(panel.root,'[data-el="khist"]') === box;
   if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
   box.style.display = ''; box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.query(fdb.ref(db, 'users/' + P.target.uid + '/kaju_history'), fdb.limitToLast(15)));
+    const snap = await fdb.get(fdb.query(fdb.ref(db, 'users/' + target.uid + '/kaju_history'), fdb.limitToLast(15)));
+    if(!current()) return;
     if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
     const rows = []; snap.forEach(ch => { const v = ch.val(); rows.push(v); });
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
     box.innerHTML = rows.map(v =>
       `<div class="adm-li"><span>${new Date(v.ts).toLocaleString('tr-TR')}</span> <b class="${v.amount>=0?'ok':'bad'}">${v.amount>=0?'+':''}${fmt(v.amount)}</b> <span>${esc(v.type||'')} · ${esc(v.reason||'')}</span></div>`
     ).join('');
-  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+  }catch(e){ if(current()) box.innerHTML = '<i>Okunamadı</i>'; }
 }
 
 // ── Nick zorla değiştir ─────────────────────────────────────────

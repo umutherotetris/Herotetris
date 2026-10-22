@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../js/kozmo-active.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
+const data=new Map();let uid='alice',status='google';
+const context=vm.createContext({Auth:{getState:()=>({uid,status})},localStorage:{getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)}});
+vm.runInContext(source+'\nthis.api={getActiveKozmo,activateKozmo,reconcileActiveKozmo};',context);
+const a=context.api;let groups=0;
+data.set('hero_active_kozmo',JSON.stringify({id:'legacy',bonus:{kaju:1}}));
+assert.equal(a.getActiveKozmo(),null);groups++;
+assert.equal(a.activateKozmo('alice','cat',{name:'Nebula Kedi'},{power:'Yıldız Tozu Saçar',bonus:{xp:.05}}),true);
+assert.equal(a.getActiveKozmo().ownerUid,'alice');assert.equal(a.getActiveKozmo().bonus.xp,.05);groups++;
+uid='bob';assert.equal(a.getActiveKozmo(),null);assert.equal(a.getActiveKozmo('alice'),null);assert.equal(a.activateKozmo('alice','cat',{}),false);groups++;
+assert.equal(a.activateKozmo('bob','gem',{bonus:{kaju:.1}}),true);assert.equal(a.getActiveKozmo().bonus.kaju,.1);
+uid='alice';assert.equal(a.getActiveKozmo().id,'cat');groups++;
+assert.equal(a.reconcileActiveKozmo('alice',null).id,'cat');assert.equal(a.reconcileActiveKozmo('alice',{cat:{}}).id,'cat');
+assert.equal(a.reconcileActiveKozmo('alice',{}),null);assert.equal(a.getActiveKozmo(),null);groups++;
+for(const bad of ['0.5',Infinity,-.1,NaN,2]){
+ a.activateKozmo('alice','bad',{bonus:{xp:bad,kaju:bad,score:bad,all:bad}});
+ assert.equal(Object.keys(a.getActiveKozmo().bonus).length,0);
+}groups++;
+status='anon';assert.equal(a.activateKozmo('alice','cat',{}),false);assert.equal(a.getActiveKozmo(),null);groups++;
+console.log(`PASS active Kozmo: ${groups} account, type bonus, invalid input and consumed-companion groups`);

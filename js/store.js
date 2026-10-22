@@ -15,7 +15,7 @@ import { firebaseConfig, FIREBASE_SDK } from './firebase-config.js';
 // FIREBASE_SDK eksik/undefined olsa bile sabit bir sürümle çalışır (çökmez).
 const SDK_VER = (typeof FIREBASE_SDK === 'string' && FIREBASE_SDK) ? FIREBASE_SDK : '10.12.0';
 const BASE = `https://www.gstatic.com/firebasejs/${SDK_VER}`;
-const { getDatabase, ref, get, set, update, push, runTransaction } = await import(`${BASE}/firebase-database.js`);
+const { getDatabase, ref, get, set, update, push, runTransaction, onValue } = await import(`${BASE}/firebase-database.js`);
 const { getApp, getApps, initializeApp } = await import(`${BASE}/firebase-app.js`);
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -41,6 +41,8 @@ const emptyPlayer = () => ({
 });
 const player = emptyPlayer();
 const finiteAmount = (value, fallback = 0) => Number.isFinite(Number(value)) ? Math.max(0, Math.floor(Number(value))) : fallback;
+let walletObservation = 0, liveWalletUid = null, liveWalletOff = null, liveTransfersOff = null, liveKozmosOff = null;
+let lastHydratedProfile = null, walletListenEpoch = 0;
 
 const subs = new Set();
 export function subscribe(fn){ subs.add(fn); try{ fn(snapshot()); }catch(e){} return () => subs.delete(fn); }
@@ -53,25 +55,30 @@ export function xpForLevel(lv){ return 300 + lv * 200; }
 // ════════════════ 🪙 KAJU İŞLEM GEÇMİŞİ ════════════════════════
 const KAJU_LOG_KEY = 'hero_kaju_log';
 const KAJU_LOG_MAX = 200;
+function kajuLogKey(uid = player.uid){ return uid ? KAJU_LOG_KEY + ':' + uid : null; }
 // Kaju işlemini geçmişe kaydet (kazanç/harcama)
 export function logKaju(amount, type, game, reason){
   try{
+    const key = kajuLogKey(); if(!key) return;
+    const value = Math.abs(Number(amount)); if(!Number.isSafeInteger(value) || value <= 0) return;
     const log = getKajuLog('all');
     log.unshift({
-      amount: Math.abs(Math.floor(amount||0)),
+      amount: value,
       type: type || (amount>=0?'earn':'spend'),  // 'earn' | 'spend'
       game: game || 'genel',
       reason: reason || '',
       ts: Date.now()
     });
     const trimmed = log.length > KAJU_LOG_MAX ? log.slice(0, KAJU_LOG_MAX) : log;
-    localStorage.setItem(KAJU_LOG_KEY, JSON.stringify(trimmed));
+    localStorage.setItem(key, JSON.stringify(trimmed));
   }catch(e){ console.warn('[store] logKaju', e); }
 }
 // Geçmişi oku (filtre: 'all' | 'earn' | 'spend')
-export function getKajuLog(filter){
+export function getKajuLog(filter, uid = player.uid){
   try{
-    const raw = JSON.parse(localStorage.getItem(KAJU_LOG_KEY) || '[]');
+    const key = kajuLogKey(uid); if(!key) return [];
+    // The old unscoped log has no reliable owner; never attribute it to the next login.
+    const raw = JSON.parse(localStorage.getItem(key) || '[]');
     const log = (Array.isArray(raw) ? raw : []).filter(e => e && typeof e === 'object' && Number.isFinite(Number(e.amount)))
       .map(e => ({...e, amount:finiteAmount(e.amount)}));
     if(filter === 'earn') return log.filter(e => e.type === 'earn');
@@ -94,28 +101,39 @@ function saveKajuToday(v, uid){ try{ localStorage.setItem(todayKey(uid), String(
 
 // Auth değişince oyuncu verisini beslemek
 function hydrate(state){
+  const changed = player.uid !== state.uid;
+  if(changed){
+    walletListenEpoch++; liveWalletOff?.(); liveTransfersOff?.(); liveKozmosOff?.();
+    liveWalletOff = liveTransfersOff = liveKozmosOff = null; liveWalletUid = null;
+    lastHydratedProfile = null; walletObservation++;
+  }
   if(!state.uid){ Object.assign(player, emptyPlayer()); _statsCache = null; emit(); return; }
   player.uid = state.uid;
   const p = state.profile || {};
-  player.kaju    = Math.min(KAJU_MAX, finiteAmount(p.kaju));
-  player.level   = Math.max(1, finiteAmount(p.level || (p.xp && p.xp.level), 1));
-  player.xp      = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.xp : p.xp) ?? 0);
-  player.totalXP = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
-  player.best    = p.bestScores || {};
-  player.kajuSent = p.kajuSent || {};
-  player.inventory = p.inventory || {};      // {itemId: adet}
-  player.boosts = p.boosts || {};            // {boostKey: {until:ts, mult:val}}
-  player.cosmetics = p.cosmetics || {};      // {nickEffect, chatTheme, nameColor, title...}
-  player.purchasedOnce = p.purchasedOnce || {};   // tek seferlik paketler { bundleId: true }
-  player.stats = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
-  player.h2h = p.h2h || {};   // head-to-head { oppUid: {w,l,d,oppName} }
-  _statsCache = null;
+  if(changed || state.profile !== lastHydratedProfile){
+    player.kaju = Math.min(KAJU_MAX, finiteAmount(p.kaju));
+    player.kajuSent = p.kajuSent || {};
+    player.level   = Math.max(1, finiteAmount(p.level || (p.xp && p.xp.level), 1));
+    player.xp      = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.xp : p.xp) ?? 0);
+    player.totalXP = finiteAmount((p.xp && typeof p.xp === 'object' ? p.xp.totalXP : p.totalXP) ?? 0);
+    player.best    = p.bestScores || {};
+    player.inventory = p.inventory || {};
+    player.boosts = p.boosts || {};
+    player.cosmetics = p.cosmetics || {};
+    player.purchasedOnce = p.purchasedOnce || {};
+    player.stats = p.stats || { games:{}, totalW:0, totalL:0, totalD:0, streak:0, bestStreak:0 };
+    player.h2h = p.h2h || {};
+    _statsCache = null;
+  }
+  lastHydratedProfile = state.profile;
   player.kajuToday = loadKajuToday();
   player.ready   = true;
   _pruneExpiredBoosts();
   emit();
+  if(changed || !liveWalletUid) startWalletListeners(state.uid);
   // Bekleyen transferleri talep et (alıcıya gelen Kaju'lar)
   claimPendingTransfers();
+  retryPendingTransfers();
   // 👑 VIP günlük Kaju (oturum açılınca, günde 1 kez)
   _claimVipDaily();
 }
@@ -164,10 +182,13 @@ async function _claimVipDaily(){
 // ── Görev takibi köprüsü (lazy import — döngüsel bağımlılık yok) ──
 let _Eco = null, _Trn = null;
 async function _trackQuestSafe(eventType, data){
+  const uid = player.uid, current = () => !!uid && player.uid === uid && Auth.getState().uid === uid;
+  if(!current()) return;
   data = data || {};
   // Görev ilerlemesi → economy.js (tek görev sistemi). track: play/win/earn/spin
   try{
     if(!_Eco){ _Eco = await import('./economy.js'); }
+    if(!current()) return;
     if(_Eco && _Eco.progressQuest){
       if(eventType === 'game_played') _Eco.progressQuest('play', 1);
       else if(eventType === 'game_won') _Eco.progressQuest('win', 1);
@@ -178,6 +199,7 @@ async function _trackQuestSafe(eventType, data){
   // Turnuva puanı (maç oynama + galibiyet + yüksek skor)
   try{
     if(!_Trn){ _Trn = await import('./tournament.js'); }
+    if(!current()) return;
     if(_Trn && _Trn.addTournamentPoints){
       // Dengeli puan: katılım ödüllü ama galibiyet öne çıkar, beraberlik de değerli
       if(eventType === 'game_played') _Trn.addTournamentPoints(10, 'maç');          // her maç (katılım)
@@ -302,17 +324,19 @@ export async function getMatchHistory(limit){
 // ⚡ Aktif kozmo bonus çarpanı (localStorage'dan senkron okur — import gecikmesi yok)
 function _kozmoMult(type){
   try{
-    const raw = localStorage.getItem('hero_active_kozmo');
+    if(!player.uid || Auth.getState().uid !== player.uid) return 1;
+    const raw = localStorage.getItem('hero_active_kozmo:'+player.uid);
     if(!raw) return 1;
     const a = JSON.parse(raw);
-    if(!a) return 1;
+    if(!a || a.ownerUid !== player.uid) return 1;
     // Yeni değerli taşlar: doğrudan bonus objesi {xp/score/kaju/all}
     if(a.bonus && typeof a.bonus === 'object'){
       const b = a.bonus;
-      if(type==='xp_boost'    && b.xp)    return 1 + b.xp;
-      if(type==='score_boost' && b.score) return 1 + b.score;
-      if(type==='kaju_boost'  && b.kaju)  return 1 + b.kaju;
-      if(b.all && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + b.all;
+      const bonus = key => typeof b[key] === 'number' && Number.isFinite(b[key]) && b[key] >= 0 && b[key] <= 1 ? b[key] : 0;
+      if(type==='xp_boost'    && bonus('xp'))    return 1 + bonus('xp');
+      if(type==='score_boost' && bonus('score')) return 1 + bonus('score');
+      if(type==='kaju_boost'  && bonus('kaju'))  return 1 + bonus('kaju');
+      if(bonus('all') && (type==='xp_boost'||type==='score_boost'||type==='kaju_boost')) return 1 + bonus('all');
       // bonus var ama bu tipe uymuyorsa power tablosuna düşmesin
       if(!a.power) return 1;
     }
@@ -342,7 +366,7 @@ function _applyKozmoBonus(n, type){
 }
 
 export async function addKaju(n, game, reason){
-  n = Math.floor(n || 0);
+  n = Number(n);
   if(!Number.isSafeInteger(n)) return 0;
   // Negatif → harcama olarak işle (geriye uyumluluk: shop.js addKaju(-price) çağırıyor)
   if(n < 0){
@@ -355,34 +379,38 @@ export async function addKaju(n, game, reason){
   n = Math.round(n * getBoostMult('kaju'));    // satın alınan Kaju boost'u
   if(!Number.isSafeInteger(n) || n <= 0) return 0;
   const uid = player.uid;
-  const isAdmin = Auth.getState().isAdmin === true;
-  if(!isAdmin){
-    const remaining = KAJU_DAILY_LIMIT - loadKajuToday(uid);
-    if(remaining <= 0) return 0;
-    n = Math.min(n, remaining);
-  }
+  if(Auth.getState().uid !== uid) return 0;
+  const day = new Date().toISOString().slice(0,10), legacyToday = loadKajuToday(uid);
+  const earnId = walletOperationId('earn'), observed = walletObserved();
   let credited = 0;
-  const result = await runTransaction(ref(db, 'users/' + uid + '/kaju'), current => {
+  const result = await runTransaction(ref(db, 'users/' + uid), profile => {
     if(Auth.getState().uid !== uid) return;
-    const balance = finiteAmount(current);
-    credited = Math.min(n, Math.max(0, KAJU_MAX - balance));
-    return balance + credited;
-  });
-  if(!result.committed || !credited) return 0;
-  n = credited;
-  saveKajuToday(loadKajuToday(uid) + n, uid);
-  if(player.uid !== uid) return n;
-  player.kaju = finiteAmount(result.snapshot.val());
-  player.kajuToday = loadKajuToday(uid);
+    profile = profile || {};
+    const balance = walletBalance(profile.kaju); if(balance === null) return;
+    const saved = profile.heroKajuDaily;
+    const today = saved?.day === day ? safeCounter(saved.amount) : legacyToday;
+    if(today === null) return;
+    const remaining = Auth.getState().isAdmin === true ? n : Math.max(0, KAJU_DAILY_LIMIT - today);
+    credited = Math.min(n, remaining, KAJU_MAX - balance);
+    if(credited <= 0) return;
+    return {...profile, kaju:balance + credited, heroWalletRevision:nextWalletRevision(profile),
+      heroKajuDaily:{day,amount:today + credited,lastEarn:{id:earnId,amount:credited}}};
+  }, {applyLocally:false});
+  if(!result.committed) return 0;
+  const profile = result.snapshot.val() || {}, earned = profile.heroKajuDaily?.lastEarn;
+  if(earned?.id !== earnId || !Number.isSafeInteger(earned.amount) || earned.amount <= 0) throw new Error('Kazanç onayı geçersiz');
+  n = earned.amount;
+  saveKajuToday(profile.heroKajuDaily.amount, uid);
+  void mirrorWallet(uid, profile, uid);
+  if(Auth.getState().uid !== uid || player.uid !== uid) return n;
+  applyWalletSnapshot(uid, profile, observed);
+  player.kajuToday = profile.heroKajuDaily.amount;
   // Görev takibi: Kaju kazanıldı (görev ödülü/transfer kendini saymasın)
   if(game !== 'quest' && game !== 'transfer' && game !== 'vip'){ _trackQuestSafe('kaju_earned', { amount: n }); }
   // 🪙 Geçmişe kaydet
   logKaju(n, 'earn', game || 'genel', reason || _kajuReason(game, n));
   emit();
   import('./daily.js').then(m=>m.kajuCoinSound('earn')).catch(()=>{});
-  try{
-    await set(ref(db, 'leaderboard/kaju/' + uid), { uid, kaju: result.snapshot.val(), ts: Date.now() });
-  }catch(e){ console.warn('[store] addKaju sync', e); }
   return n;
 }
 
@@ -392,6 +420,7 @@ export async function addKaju(n, game, reason){
 export async function claimKajuOnce(receiptId, reward, game, reason, uid = player.uid){
   if(!uid || Auth.getState().uid !== uid || !/^[\w-]{1,180}$/.test(receiptId)) return {claimed:false, reason:'identity'};
   let amount = 0, fields = {}, rejected = 'unavailable';
+  const observed = walletObserved();
   const result = await runTransaction(ref(db, 'users/' + uid), profile => {
     if(Auth.getState().uid !== uid){ rejected = 'identity'; return; }
     profile = profile || {};
@@ -399,10 +428,11 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
     const next = typeof reward === 'function' ? reward(profile) : {amount:reward};
     amount = next?.amount;
     fields = next?.fields || {};
-    const balance = finiteAmount(profile.kaju);
+    const balance = walletBalance(profile.kaju);
+    if(balance === null){ rejected = 'invalid-profile'; return; }
     if(!Number.isSafeInteger(amount) || amount <= 0){ rejected = 'ineligible'; return; }
     if(balance + amount > KAJU_MAX){ rejected = 'balance-limit'; return; }
-    return {...profile, ...fields, kaju:balance + amount,
+    return {...profile, ...fields, kaju:balance + amount, heroWalletRevision:nextWalletRevision(profile),
       heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:{amount, ts:Date.now()}}};
   }, {applyLocally:false});
   if(Auth.getState().uid !== uid) return {claimed:false, reason:'identity'};
@@ -416,7 +446,7 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
     // A confirmed receipt lets a reopened panel repair its local marker without
     // replaying a credit. A rejected write never reaches this successful receipt path.
     if(receipt && Number.isSafeInteger(receipt.amount) && receipt.amount > 0){
-      if(player.uid === uid){ player.kaju = balance; emit(); }
+      if(player.uid === uid){ applyWalletSnapshot(uid, profile, observed); emit(); }
       return {claimed:false, alreadyClaimed:true, amount:receipt.amount, balance, receipt, reason:'already-claimed'};
     }
     return {claimed:false, alreadyClaimed:false, reason:rejected};
@@ -425,11 +455,11 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
   if(!Number.isSafeInteger(amount) || amount <= 0) throw new Error('Ödül onayı geçersiz');
   fields = Object.fromEntries(Object.keys(fields).map(key => [key, profile[key]]));
   if(player.uid === uid){
-    player.kaju = balance;
+    applyWalletSnapshot(uid, profile, observed);
     logKaju(amount, 'earn', game, reason);
     emit();
   }
-  try{ await set(ref(db, 'leaderboard/kaju/' + uid), {uid, kaju:balance, ts:Date.now()}); }catch(e){}
+  void mirrorWallet(uid, profile, uid);
   return {claimed:true, alreadyClaimed:false, amount, balance, fields, receipt};
 }
 
@@ -446,7 +476,7 @@ export async function claimWheelReward(day, segment, uid = player.uid){
     : type === 'xp' ? [40,100].includes(requested)
     : type === 'jackpot' ? requested === 750 : type === 'egg' && requested === 1;
   if(!valid) return {claimed:false, complete:false, reason:'invalid-reward'};
-  const receiptId = 'spin_' + day;
+  const receiptId = 'spin_' + day, observed = walletObserved();
   let rejected = 'unavailable';
   const result = await runTransaction(ref(db, 'users/' + uid), profile => {
     if(!current()){ rejected='identity'; return; }
@@ -472,12 +502,13 @@ export async function claimWheelReward(day, segment, uid = player.uid){
       }
       fields.level = level; fields.xp = {level, xp, totalXP};
     } else {
-      const balance = finiteAmount(profile.kaju);
+      const balance = walletBalance(profile.kaju);
+      if(balance === null){ rejected='invalid-profile'; return; }
       if(balance + amount > KAJU_MAX){ rejected='balance-limit'; return; }
       fields.kaju = balance + amount;
       if(type === 'egg') receipt.eggId = 'daily_spin_' + day;
     }
-    return {...profile, ...fields, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
+    return {...profile, ...fields, heroWalletRevision:nextWalletRevision(profile), heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
   }, {applyLocally:false});
   if(!current()) return {claimed:false, complete:false, reason:'identity'};
   const confirmed = result.committed ? result.snapshot : await get(ref(db, 'users/' + uid));
@@ -487,7 +518,7 @@ export async function claimWheelReward(day, segment, uid = player.uid){
   if(!receipt || receipt.kind !== 'wheel' || !Number.isSafeInteger(receipt.amount) || receipt.amount <= 0 || !['kaju','jackpot','xp','egg'].includes(receipt.type)) return {claimed:false, complete:false, reason:rejected};
   const balance = finiteAmount(profile.kaju);
   if(player.uid === uid){
-    player.kaju = balance;
+    applyWalletSnapshot(uid, profile, observed);
     if(receipt.type === 'xp'){
       player.level = Math.max(1, finiteAmount(profile.level,1));
       player.xp = finiteAmount(profile.xp?.xp);
@@ -496,10 +527,41 @@ export async function claimWheelReward(day, segment, uid = player.uid){
     emit();
   }
   if(result.committed && receipt.type !== 'xp'){
-    try{ await set(ref(db,'leaderboard/kaju/'+uid),{uid,kaju:balance,ts:Date.now()}); }catch(e){}
+    void mirrorWallet(uid, profile, uid);
     if(current()) _trackQuestSafe('kaju_earned',{amount:receipt.amount});
   }
   return {claimed:result.committed, alreadyClaimed:!result.committed, receipt, amount:receipt.amount, balance, complete:receipt.type !== 'egg'};
+}
+
+function walletObserved(){ return typeof walletObservation === 'number' ? walletObservation : 0; }
+function nextWalletRevision(profile){ return (Number.isSafeInteger(profile?.heroWalletRevision) && profile.heroWalletRevision >= 0 ? profile.heroWalletRevision : 0) + 1; }
+function applyWalletSnapshot(uid, profile, observed){
+  if(player.uid !== uid || Auth.getState().uid !== uid) return;
+  if(observed !== undefined && walletObserved() !== observed) return;
+  player.kaju = Math.min(KAJU_MAX, finiteAmount(profile?.kaju));
+  if(profile?.kajuSent) player.kajuSent = profile.kajuSent;
+}
+async function mirrorWallet(uid, profile, actorUid){
+  const balance = walletBalance(profile?.kaju), revision = nextWalletRevision(profile) - 1;
+  if(balance === null) return;
+  try{
+    await runTransaction(ref(db, 'leaderboard/kaju/' + uid), current => {
+      if(Auth.getState().uid !== actorUid) return;
+      if(Number.isSafeInteger(current?.revision) && current.revision > revision) return;
+      return {uid,kaju:balance,revision,ts:Date.now()};
+    }, {applyLocally:false});
+  }catch(e){ console.warn('[store] wallet mirror', e?.code || 'sync_failed'); }
+}
+function walletBalance(value){
+  if(value === null || value === undefined) return 0;
+  const n = typeof value === 'number' || typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : NaN;
+  return Number.isSafeInteger(n) && n >= 0 && n <= KAJU_MAX ? n : null;
+}
+function safeCounter(value){ const n = Number(value); return Number.isSafeInteger(n) && n >= 0 ? n : null; }
+let walletOperationSequence = 0;
+function walletOperationId(prefix){
+  const random = globalThis.crypto?.randomUUID?.().replace(/-/g,'') || Math.random().toString(36).slice(2,14);
+  return prefix + '_' + Date.now().toString(36) + '_' + random + '_' + (++walletOperationSequence).toString(36);
 }
 
 // İşlem açıklaması üret
@@ -517,28 +579,29 @@ export function logSpend(amount, game, reason){
 
 // ── Kaju harca (bakiyeden düş + Firebase + geçmiş) ──────────────
 export async function spendKaju(amount, game, reason){
-  amount = Math.abs(Math.floor(amount||0));
+  amount = Number(amount);
   if(!Number.isSafeInteger(amount) || amount <= 0 || !player.uid) return false;
-  if(player.kaju < amount) return false;  // yetersiz bakiye
   const uid = player.uid;
+  if(Auth.getState().uid !== uid) return false;
+  const observed = walletObserved();
   let result;
   try{
-    result = await runTransaction(ref(db, 'users/' + uid + '/kaju'), current => {
+    result = await runTransaction(ref(db, 'users/' + uid), profile => {
       if(Auth.getState().uid !== uid) return;
-      const balance = finiteAmount(current);
-      if(balance < amount) return;
-      return balance - amount;
-    });
+      profile = profile || {};
+      const balance = walletBalance(profile.kaju);
+      if(balance === null || balance < amount) return;
+      return {...profile,kaju:balance - amount,heroWalletRevision:nextWalletRevision(profile)};
+    }, {applyLocally:false});
   }catch(e){ console.warn('[store] spendKaju', e); return false; }
   if(!result.committed) return false;
-  if(player.uid !== uid) return true;
-  player.kaju = finiteAmount(result.snapshot.val());
+  const profile = result.snapshot.val() || {};
+  void mirrorWallet(uid, profile, uid);
+  if(player.uid !== uid || Auth.getState().uid !== uid) return true;
+  applyWalletSnapshot(uid, profile, observed);
   logKaju(amount, 'spend', game||'shop', reason||'Harcama');
   try{ import('./daily.js').then(m=>m.kajuCoinSound('spend')).catch(()=>{}); }catch(e){}
   emit();
-  try{
-    await set(ref(db, 'leaderboard/kaju/' + uid), { uid, kaju: result.snapshot.val(), ts: Date.now() });
-  }catch(e){ console.warn('[store] spendKaju sync', e); }
   return true;
 }
 
@@ -689,158 +752,326 @@ export async function addScore(game, score){
 //  Not: Cloud Functions olmadan sunucu-taraflı atomiklik sınırlıdır; limitler + denetim
 //  kaydı (kaju_history) hile riskini sınırlar. Tam koruma için Cloud Functions önerilir.
 // ════════════════════════════════════════════════════════════════
-function winKeys(){ const iso = new Date().toISOString(); return { h: iso.slice(0,13), d: iso.slice(0,10), m: iso.slice(0,7) }; }
-function curSent(){
-  const w = winKeys(), s = player.kajuSent || {};
-  return {
-    h: (s.hWin === w.h ? Number(s.hAmt||0) : 0),
-    d: (s.dWin === w.d ? Number(s.dAmt||0) : 0),
-    m: (s.mWin === w.m ? Number(s.mAmt||0) : 0),
-    w
-  };
+function winKeys(){ const iso = new Date().toISOString(); return { h:iso.slice(0,13), d:iso.slice(0,10), m:iso.slice(0,7) }; }
+function validWalletKey(value, max = 128){ return typeof value === 'string' && value.length > 0 && value.length <= max && !/[.#$\[\]\/\u0000-\u001f\u007f]/.test(value); }
+function strictWalletInteger(value){
+  if(typeof value !== 'number' && (typeof value !== 'string' || !/^[+-]?\d+$/.test(value.trim()))) return null;
+  const n = Number(value); return Number.isSafeInteger(n) ? n : null;
 }
-function checkLimits(amount){
-  const c = curSent();
-  if(c.h + amount > TX_HOUR)  return { ok:false, error:`Saatlik limit aşılır (${TX_HOUR}). Kalan: ${Math.max(0,TX_HOUR-c.h)}` };
-  if(c.d + amount > TX_DAY)   return { ok:false, error:`Günlük limit aşılır (${TX_DAY}). Kalan: ${Math.max(0,TX_DAY-c.d)}` };
-  if(c.m + amount > TX_MONTH) return { ok:false, error:`Aylık limit aşılır (${TX_MONTH}). Kalan: ${Math.max(0,TX_MONTH-c.m)}` };
-  return { ok:true };
+function sentAmounts(sent = {}, w = winKeys()){
+  const amount = (windowKey, value, key) => windowKey === key ? safeCounter(value === undefined ? 0 : value) : 0;
+  return {h:amount(sent.hWin,sent.hAmt,w.h),d:amount(sent.dWin,sent.dAmt,w.d),m:amount(sent.mWin,sent.mAmt,w.m),w};
 }
-async function bumpLimits(amount){
-  const c = curSent();
-  player.kajuSent = { hWin:c.w.h, hAmt:c.h+amount, dWin:c.w.d, dAmt:c.d+amount, mWin:c.w.m, mAmt:c.m+amount };
-  try{ await update(ref(db, 'users/'+player.uid), { kajuSent: player.kajuSent }); }catch(e){}
+function curSent(){ return sentAmounts(player.kajuSent || {}); }
+function checkLimits(amount, c = curSent()){
+  if(c.h === null || c.d === null || c.m === null) return {ok:false,error:'Gönderim sayacı doğrulanamadı'};
+  if(c.h + amount > TX_HOUR) return {ok:false,error:`Saatlik limit aşılır (${TX_HOUR}). Kalan: ${Math.max(0,TX_HOUR-c.h)}`};
+  if(c.d + amount > TX_DAY) return {ok:false,error:`Günlük limit aşılır (${TX_DAY}). Kalan: ${Math.max(0,TX_DAY-c.d)}`};
+  if(c.m + amount > TX_MONTH) return {ok:false,error:`Aylık limit aşılır (${TX_MONTH}). Kalan: ${Math.max(0,TX_MONTH-c.m)}`};
+  return {ok:true};
 }
 export function transferRemaining(){
   const c = curSent();
-  return { perTx:TX_PER, min:TX_MIN, hour:Math.max(0,TX_HOUR-c.h), day:Math.max(0,TX_DAY-c.d), month:Math.max(0,TX_MONTH-c.m) };
+  return {perTx:TX_PER,min:TX_MIN,hour:c.h === null ? 0 : Math.max(0,TX_HOUR-c.h),day:c.d === null ? 0 : Math.max(0,TX_DAY-c.d),month:c.m === null ? 0 : Math.max(0,TX_MONTH-c.m)};
 }
-// Başka bir kullanıcının kaju geçmişine yaz (admin/hediye işlemleri için)
-function logKajuFor(uid, amount, type, reason){
+function walletError(error, fallback){
+  const code = String(error?.code || error?.message || '').toLowerCase();
+  return code.includes('permission') || code.includes('denied') ? 'Sunucu bu işleme izin vermedi' : fallback;
+}
+async function targetExists(uid){
+  const snap = await get(ref(db,'users/'+uid));
+  const value = snap.val(); return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+function adminResult(profile, operationId){
+  const receipt = profile?.heroAdminKajuOps?.[operationId];
+  if(!receipt || !Number.isSafeInteger(receipt.appliedDelta) || !receipt.appliedDelta || Math.abs(receipt.appliedDelta) > ADMIN_OP_CAP || walletBalance(receipt.newBalance) === null) return null;
+  return {ok:true,amount:Math.abs(receipt.appliedDelta),appliedDelta:receipt.appliedDelta,newBalance:receipt.newBalance,
+    requestedDelta:receipt.requestedDelta,clipped:receipt.appliedDelta !== receipt.requestedDelta,operationId};
+}
+
+// An admin operation, its actual delta and target history commit together.
+async function adminCredit(toUid, delta, reason, requestedId){
+  const me = Auth.getState(), current = () => Auth.getState().uid === me.uid && Auth.getState().status === 'google' && Auth.getState().isAdmin === true;
+  if(!me.uid || me.status !== 'google' || me.isAdmin !== true) return {ok:false,error:'Yetki yok'};
+  if(!validWalletKey(toUid)) return {ok:false,error:'Geçerli hedef gerekli'};
+  const operationId = requestedId || walletOperationId('admin');
+  if(!validWalletKey(operationId,160) || !/^[\w-]+$/.test(operationId)) return {ok:false,error:'İşlem kimliği geçersiz'};
+  const observed = walletObserved();
+  let rejection = 'İşlem yapılamadı', result;
   try{
-    const k = 'h' + Date.now() + '_' + Math.floor(Math.random()*100000);
-    set(ref(db, 'users/'+uid+'/kaju_history/'+k), { amount: Math.floor(amount), type, game:'kaju', reason: reason||'', ts: Date.now() });
-  }catch(e){}
-}
-
-// Admin: hedefin bakiyesini doğrudan ayarla (delta + veya −; 0 altına düşmez)
-async function adminCredit(toUid, delta, reason){
-  const me = Auth.getState();
-  if(me.isAdmin !== true) return { ok:false, error:'Yetki yok' };
-  if(!toUid) return { ok:false, error:'Hedef yok' };
-  let nb = 0, ok = false;
-  try{
-    const res = await runTransaction(ref(db, 'users/'+toUid+'/kaju'), cur => {
-      cur = Number(cur||0);
-      nb = Math.max(0, Math.min(KAJU_MAX, cur + delta));   // 0 altına düşmez, tavanı aşmaz
-      ok = true; return nb;
-    });
-    if(!res.committed || !ok) return { ok:false, error:'İşlem yapılamadı' };
-  }catch(e){ return { ok:false, error:'İşlem hatası (bağlantı?)' }; }
-  if(toUid === me.uid){ player.kaju = nb; emit(); }
-  logKajuFor(toUid, delta, delta>=0 ? 'admin-add' : 'admin-sub', reason || 'admin');
-  try{ await set(ref(db, 'leaderboard/kaju/'+toUid), { uid:toUid, kaju:nb, ts:Date.now() }); }catch(e){}
-  return { ok:true, newBalance: nb };
-}
-
-// Admin paneli/oyuncu arayüzü: +artır / −azalt
-export async function adminAdjustKaju(targetUid, delta, reason){
-  delta = Math.floor(delta || 0);
-  if(Auth.getState().isAdmin !== true) return { ok:false, error:'Yetki yok' };
-  if(!delta) return { ok:false, error:'Miktar 0 olamaz' };
-  if(Math.abs(delta) > ADMIN_OP_CAP) return { ok:false, error:`Tek seferde en fazla ${ADMIN_OP_CAP}` };
-  return adminCredit(targetUid, delta, reason || 'admin-adjust');
-}
-
-// Kaju gönder. Admin → doğrudan kredi (sınırsız, per-op tavanı). Kullanıcı → limitli pending.
-export async function transferKaju(toUid, toNick, amount){
-  amount = Math.floor(amount || 0);
-  const me = Auth.getState();
-  if(!me.uid || me.status !== 'google') return { ok:false, error:'Göndermek için Google ile giriş gerekli' };
-  if(!toUid) return { ok:false, error:'Alıcı bulunamadı' };
-  if(amount < TX_MIN) return { ok:false, error:`En az ${TX_MIN} Kaju gönderilebilir` };
-
-  // ADMIN: kaynak yaratır, doğrudan alıcıya ekler (kendine de olabilir)
-  if(me.isAdmin === true){
-    if(amount > ADMIN_OP_CAP) return { ok:false, error:`Tek seferde en fazla ${ADMIN_OP_CAP}` };
-    const r = await adminCredit(toUid, amount, 'admin-gift → '+(toNick||toUid));
-    return r.ok ? { ok:true, amount, admin:true } : r;
+    if(!await targetExists(toUid)) return {ok:false,error:'Alıcı hesabı bulunamadı'};
+    if(!current()) return {ok:false,error:'Hesap veya yetki değişti',operationId};
+    result = await runTransaction(ref(db,'users/'+toUid), profile => {
+      if(!current()){ rejection='Hesap veya yetki değişti'; return; }
+      if(!profile || typeof profile !== 'object' || Array.isArray(profile)){ rejection='Alıcı hesabı bulunamadı'; return; }
+      const previous = profile.heroAdminKajuOps?.[operationId];
+      if(previous){
+        if(previous.actorUid !== me.uid || previous.requestedDelta !== delta) rejection='İşlem kimliği başka bir işleme ait';
+        return;
+      }
+      const balance = walletBalance(profile.kaju);
+      if(balance === null){ rejection='Hedef bakiyesi doğrulanamadı'; return; }
+      const newBalance = Math.max(0,Math.min(KAJU_MAX,balance + delta)), appliedDelta = newBalance - balance;
+      if(!appliedDelta){ rejection='Bakiye sınırı nedeniyle değişiklik yapılmadı'; return; }
+      const receipt = {actorUid:me.uid,requestedDelta:delta,appliedDelta,newBalance,ts:Date.now()};
+      return {...profile,kaju:newBalance,heroWalletRevision:nextWalletRevision(profile),
+        heroAdminKajuOps:{...profile.heroAdminKajuOps,[operationId]:receipt},
+        kaju_history:{...profile.kaju_history,[operationId]:{amount:Math.abs(appliedDelta),type:appliedDelta>0?'admin-add':'admin-sub',game:'kaju',reason:String(reason || 'admin'),actorUid:me.uid,ts:receipt.ts}}};
+    }, {applyLocally:false});
+  }catch(error){
+    // A missing acknowledgement is not evidence that the credit did not commit.
+    if(current()){
+      try{
+        const profile = (await get(ref(db,'users/'+toUid))).val();
+        if(!current()) return {ok:false,error:'Hesap veya yetki değişti; işlem kaydı korunuyor',uncertain:true,operationId};
+        const recovered = adminResult(profile,operationId);
+        if(recovered && profile.heroAdminKajuOps[operationId].actorUid === me.uid && profile.heroAdminKajuOps[operationId].requestedDelta === delta){
+          applyWalletSnapshot(toUid,profile,observed); void mirrorWallet(toUid,profile,me.uid); return recovered;
+        }
+      }catch(e){}
+    }
+    return {ok:false,error:walletError(error,'İşlemin sonucu doğrulanamadı; aynı işlemi yeniden kontrol edebilirsin'),uncertain:!String(error?.code || error?.message || '').toLowerCase().includes('permission'),operationId};
   }
+  if(!current()) return {ok:false,error:'Hesap veya yetki değişti; işlem kaydı korunuyor',uncertain:!!result?.committed,operationId};
+  let profile;
+  try{ profile = result.committed ? result.snapshot.val() : (await get(ref(db,'users/'+toUid))).val(); }
+  catch(error){ return {ok:false,error:walletError(error,'İşlemin sonucu doğrulanamadı'),uncertain:true,operationId}; }
+  if(!current()) return {ok:false,error:'Hesap veya yetki değişti; işlem kaydı korunuyor',uncertain:true,operationId};
+  const receipt = profile?.heroAdminKajuOps?.[operationId], answer = adminResult(profile,operationId);
+  if(!answer || receipt.actorUid !== me.uid || receipt.requestedDelta !== delta) return {ok:false,error:rejection,operationId};
+  applyWalletSnapshot(toUid,profile,observed);
+  if(toUid === me.uid && current()){ if(result.committed) logKaju(answer.amount,answer.appliedDelta>0?'earn':'spend','admin',reason || 'Admin işlemi'); emit(); }
+  void mirrorWallet(toUid,profile,me.uid);
+  return {...answer,alreadyApplied:!result.committed};
+}
+export async function adminAdjustKaju(targetUid, delta, reason, operationId){
+  delta = strictWalletInteger(delta);
+  if(Auth.getState().isAdmin !== true) return {ok:false,error:'Yetki yok'};
+  if(delta === null || delta === 0) return {ok:false,error:'Sıfırdan farklı tam sayı gerekli'};
+  if(Math.abs(delta) > ADMIN_OP_CAP) return {ok:false,error:`Tek seferde en fazla ${ADMIN_OP_CAP}`};
+  return adminCredit(targetUid,delta,reason || 'admin-adjust',operationId);
+}
 
-  // KULLANICI
-  if(toUid === me.uid) return { ok:false, error:'Kendine gönderemezsin' };
-  if(amount > TX_PER) return { ok:false, error:`Tek transferde en fazla ${TX_PER} Kaju` };
-  const lim = checkLimits(amount); if(!lim.ok) return lim;
-  if(player.kaju < amount) return { ok:false, error:'Yetersiz bakiye' };
-
-  // 1) kendi bakiyemden ATOMİK düş
-  const dref = ref(db, 'users/'+me.uid+'/kaju');
-  let okDed = false;
-  try{
-    const res = await runTransaction(dref, cur => { cur = Number(cur||0); if(cur < amount) return; okDed = true; return cur - amount; });
-    if(!res.committed || !okDed) return { ok:false, error:'Yetersiz bakiye' };
-  }catch(e){ return { ok:false, error:'Gönderilemedi (bağlantı?)' }; }
-  player.kaju = Math.max(0, player.kaju - amount); emit();
-
-  // 2) pending transfer yaz (alıcı talep edecek)
-  const txId = me.uid.slice(0,6) + '_' + Date.now() + '_' + Math.floor(Math.random()*1000000);
-  try{
-    await set(ref(db, 'kajuTransfers/'+toUid+'/'+txId), { txId, fromUid: me.uid, fromNick: me.displayName || 'Oyuncu', toUid, amount, ts: Date.now() });
-  }catch(e){
-    // yazılamadı → parayı geri ver
-    try{ await runTransaction(dref, cur => Number(cur||0) + amount); }catch(_){}
-    player.kaju += amount; emit();
-    return { ok:false, error:'Transfer kaydı yazılamadı' };
-  }
-  // 3) sayaç + geçmiş + liderlik
-  await bumpLimits(amount);
-  logKaju(amount, 'spend', 'gift', 'Gönderildi → '+(toNick||toUid));
-  try{ await set(ref(db, 'leaderboard/kaju/'+me.uid), { uid:me.uid, kaju:player.kaju, ts:Date.now() }); }catch(e){}
-  // 🎁 Alıcıya bildirim gönder
+const outgoingFlushes = new Map(), incomingClaims = new Map(), outgoingDirty = new Set(), incomingDirty = new Set();
+function validTransfer(txId, transfer, recipient){
+  return validWalletKey(txId,160) && /^[\w-]+$/.test(txId) && transfer && typeof transfer === 'object' && !Array.isArray(transfer)
+    && validWalletKey(recipient) && transfer.txId === txId && transfer.toUid === recipient && validWalletKey(transfer.fromUid) && transfer.fromUid !== recipient
+    && Number.isSafeInteger(transfer.amount) && transfer.amount >= TX_MIN && transfer.amount <= TX_PER;
+}
+async function publishOutbox(uid, txId, transfer){
+  const current = () => Auth.getState().uid === uid && Auth.getState().status === 'google';
+  if(!current() || !validTransfer(txId,transfer,transfer.toUid) || transfer.fromUid !== uid) return false;
+  // Republish exactly the same transfer ID. An already-credited receiver's receipt
+  // survives pending-record deletion, so replay cannot credit that transfer twice.
+  await set(ref(db,'kajuTransfers/'+transfer.toUid+'/'+txId), {
+    v:155,txId,fromUid:uid,fromNick:transfer.fromNick || 'Oyuncu',toUid:transfer.toUid,amount:transfer.amount,ts:transfer.ts
+  });
+  if(!current()) return false;
+  await runTransaction(ref(db,'users/'+uid), profile => {
+    if(!current() || !profile) return;
+    const entry = profile.kajuOutbox?.[txId];
+    if(!entry || entry.amount !== transfer.amount || entry.toUid !== transfer.toUid || entry.state === 'published') return;
+    return {...profile,kajuOutbox:{...profile.kajuOutbox,[txId]:{...entry,state:'published',publishedAt:Date.now()}}};
+  }, {applyLocally:false});
+  if(!current()) return true;
   try{
     const N = await import('./notify.js');
-    await N.notifyKajuGift(toUid, amount, me.displayName || 'Bir oyuncu');
+    if(current()) await N.notifyKajuGift(transfer.toUid,transfer.amount,transfer.fromNick || 'Bir oyuncu',uid,txId);
   }catch(e){}
-  return { ok:true, amount };
+  return true;
 }
-
-// Alıcı: bekleyen transferleri kendi bakiyesine ekle (talep) → { total, claimed[] }
-export async function claimPendingTransfers(){
+export function retryPendingTransfers(txId){
   const me = Auth.getState();
-  if(!me.uid) return { total:0, claimed:[] };
-  let total = 0; const claimed = [];
-  try{
-    const snap = await get(ref(db, 'kajuTransfers/'+me.uid));
-    if(!snap.exists()) return { total:0, claimed:[] };
-    const all = snap.val();
-    for(const txId of Object.keys(all)){
-      const t = all[txId] || {};
-      const amt = Math.floor(Number(t.amount||0));
-      const path = 'kajuTransfers/'+me.uid+'/'+txId;
-      if(!Number.isSafeInteger(amt) || amt <= 0){ try{ await set(ref(db, path), null); }catch(e){} continue; }
-      try{
-        const result = await claimKajuOnce('transfer_' + txId, amt, 'gift', (t.fromNick||'Biri')+' gönderdi', me.uid);
-        // Existing receipt means the credit succeeded on a prior attempt; only
-        // retry cleanup. A failed credit never consumes the pending transfer.
-        if(result.claimed){
-          total += result.amount;
-          claimed.push({ from:t.fromNick||'Biri', amount:result.amount });
-        }
-        if(result.claimed || (await get(ref(db, 'users/'+me.uid+'/heroRewardClaims/transfer_'+txId))).exists()){
-          await set(ref(db, path), null);
-        }
-      }catch(e){ /* sonraki transfer */ }
-    }
-    if(total > 0 && player.uid === me.uid){
-      emit();
-      try{ await set(ref(db, 'leaderboard/kaju/'+me.uid), { uid:me.uid, kaju:player.kaju, ts:Date.now() }); }catch(e){}
-      try{ window.dispatchEvent(new CustomEvent('hero:kaju-claimed', { detail:{ total, claimed } })); }catch(e){}
-    }
-  }catch(e){ console.warn('[store] claimPending', e); }
-  return { total, claimed };
+  if(!me.uid || me.status !== 'google') return Promise.resolve({ok:false,published:0,queued:0,publishedIds:[],confirmedIds:[],queuedIds:[],error:'Google ile giriş gerekli'});
+  if(outgoingFlushes.has(me.uid)){ outgoingDirty.add(me.uid); return outgoingFlushes.get(me.uid); }
+  const uid = me.uid, current = () => Auth.getState().uid === uid && Auth.getState().status === 'google';
+  const task = (async()=>{
+    let published = 0, queued = 0, ok = true, error;
+    const publishedIds = [], confirmedIds = [], queuedIds = [];
+    try{
+      const profile = (await get(ref(db,'users/'+uid))).val() || {};
+      if(!current()) return {ok:false,published,queued,publishedIds,confirmedIds,queuedIds,error:'Hesap değişti'};
+      for(const [txId,transfer] of Object.entries(profile.kajuOutbox || {})){
+        if(!current()) break;
+        if(!validTransfer(txId,transfer,transfer?.toUid) || transfer.fromUid !== uid){ queued++; queuedIds.push(txId); continue; }
+        if(transfer.state === 'published'){ confirmedIds.push(txId); continue; }
+        try{
+          if(await publishOutbox(uid,txId,transfer)){ published++; publishedIds.push(txId); confirmedIds.push(txId); }
+          else {queued++;queuedIds.push(txId);}
+        }catch(cause){ queued++;queuedIds.push(txId);error=walletError(cause,'Bazı gönderimler bağlantı geldiğinde tamamlanacak'); }
+      }
+    }catch(cause){ ok=false;error=walletError(cause,'Bekleyen gönderimler okunamadı'); }
+    return {ok:ok && current(),published,queued,publishedIds,confirmedIds,queuedIds,...(error?{error}:{})};
+  })();
+  outgoingFlushes.set(uid,task);
+  void task.finally(()=>{
+    if(outgoingFlushes.get(uid) === task) outgoingFlushes.delete(uid);
+    if(outgoingDirty.delete(uid) && current()) void retryPendingTransfers();
+  });
+  return task;
 }
 
-export const Store = { subscribe, getState, addKaju, claimKajuOnce, claimWheelReward, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
+// Debit, rolling limits and durable outbox are one own-profile transaction.
+// Failed delivery is queued; an uncertain publish is never refunded locally.
+async function canonicalTransferId(uid, operationId){
+  if(!globalThis.crypto?.subtle?.digest) throw new Error('secure-crypto-unavailable');
+  const digest = await globalThis.crypto.subtle.digest('SHA-256',new TextEncoder().encode(uid+'\0'+operationId));
+  return 'tx_'+Array.from(new Uint8Array(digest),value=>value.toString(16).padStart(2,'0')).join('');
+}
+export async function transferKaju(toUid, toNick, amount, options = {}){
+  amount = strictWalletInteger(amount);
+  const me = Auth.getState(), uid = me.uid;
+  const current = () => Auth.getState().uid === uid && Auth.getState().status === 'google';
+  if(!uid || me.status !== 'google') return {ok:false,error:'Göndermek için Google ile giriş gerekli'};
+  if(!validWalletKey(toUid)) return {ok:false,error:'Alıcı bulunamadı'};
+  if(amount === null || amount < 1) return {ok:false,error:'Pozitif tam sayı gerekli'};
+  if(me.isAdmin === true){
+    if(amount > ADMIN_OP_CAP) return {ok:false,error:`Tek seferde en fazla ${ADMIN_OP_CAP}`};
+    const result = await adminCredit(toUid,amount,'admin-gift → '+String(toNick || toUid),options?.txId);
+    return result.ok ? {...result,admin:true,queued:false,pending:false,txId:result.operationId} : result;
+  }
+  if(amount < TX_MIN) return {ok:false,error:`En az ${TX_MIN} Kaju, tam sayı olarak girilmeli`};
+  if(toUid === uid) return {ok:false,error:'Kendine gönderemezsin'};
+  if(amount > TX_PER) return {ok:false,error:`Tek transferde en fazla ${TX_PER} Kaju`};
+  const operationId = options?.txId || walletOperationId('tx');
+  if(!validWalletKey(operationId,160) || !/^[\w-]+$/.test(operationId)) return {ok:false,error:'İşlem kimliği geçersiz'};
+  let txId;
+  try{ txId = await canonicalTransferId(uid,operationId); }
+  catch(error){ return {ok:false,error:'Güvenli işlem kimliği oluşturulamadı; güncel tarayıcıda HTTPS bağlantısını kullan',operationId}; }
+  if(!current()) return {ok:false,error:'Hesap değişti',txId,operationId};
+  const observed = walletObserved(), w = winKeys();
+  let rejection = 'Gönderilemedi', result;
+  try{
+    if(!await targetExists(toUid)) return {ok:false,error:'Alıcı hesabı bulunamadı'};
+    if(!current()) return {ok:false,error:'Hesap değişti',txId};
+    result = await runTransaction(ref(db,'users/'+uid), profile => {
+      if(!current()){ rejection='Hesap değişti'; return; }
+      if(!profile || typeof profile !== 'object' || Array.isArray(profile)){ rejection='Gönderen hesabı bulunamadı'; return; }
+      const previous = profile.kajuOutbox?.[txId];
+      if(previous){ rejection=previous.amount === amount && previous.toUid === toUid ? 'existing' : 'İşlem kimliği başka bir işleme ait'; return; }
+      const balance = walletBalance(profile.kaju);
+      if(balance === null){ rejection='Bakiye doğrulanamadı'; return; }
+      const counters = sentAmounts(profile.kajuSent || {},w), limits = checkLimits(amount,counters);
+      if(!limits.ok){ rejection=limits.error; return; }
+      if(balance < amount){ rejection='Yetersiz bakiye'; return; }
+      if(Object.values(profile.kajuOutbox || {}).filter(t=>t?.state !== 'published').length >= 100){ rejection='Bekleyen gönderimler tamamlanmadan yeni gönderim yapılamıyor'; return; }
+      const transfer = {v:155,txId,operationId,fromUid:uid,fromNick:String(me.displayName || 'Oyuncu'),toUid,toNick:String(toNick || 'Oyuncu'),amount,ts:Date.now(),state:'queued'};
+      return {...profile,kaju:balance-amount,heroWalletRevision:nextWalletRevision(profile),
+        kajuSent:{hWin:w.h,hAmt:counters.h+amount,dWin:w.d,dAmt:counters.d+amount,mWin:w.m,mAmt:counters.m+amount},
+        kajuOutbox:{...profile.kajuOutbox,[txId]:transfer}};
+    }, {applyLocally:false});
+  }catch(error){
+    // Recovery reads the stable reservation; no second debit or speculative refund.
+    if(current()){
+      try{
+        const profile = (await get(ref(db,'users/'+uid))).val(), entry = profile?.kajuOutbox?.[txId];
+        if(!current()) return {ok:false,error:'Hesap değişti; gönderim kaydı korunuyor',uncertain:true,txId};
+        if(entry && entry.fromUid === uid && entry.toUid === toUid && entry.amount === amount){
+          applyWalletSnapshot(uid,profile,observed); emit(); void mirrorWallet(uid,profile,uid); void retryPendingTransfers();
+          return {ok:true,amount,queued:entry.state !== 'published',pending:entry.state !== 'published',txId,recovered:true};
+        }
+      }catch(e){}
+    }
+    return {ok:false,error:walletError(error,'Gönderim sonucu doğrulanamadı; aynı işlem kimliğiyle yeniden kontrol edebilirsin'),uncertain:!String(error?.code || error?.message || '').toLowerCase().includes('permission'),txId};
+  }
+  if(!current()) return {ok:false,error:'Hesap değişti; kaydedilmiş gönderim hesabına dönünce tamamlanacak',uncertain:!!result?.committed,txId};
+  let profile;
+  try{ profile = result.committed ? result.snapshot.val() : (await get(ref(db,'users/'+uid))).val(); }
+  catch(error){ return {ok:false,error:walletError(error,'Gönderim sonucu doğrulanamadı'),uncertain:true,txId}; }
+  if(!current()) return {ok:false,error:'Hesap değişti; gönderim kaydı korunuyor',uncertain:true,txId};
+  const entry = profile?.kajuOutbox?.[txId];
+  if(!entry || entry.toUid !== toUid || entry.amount !== amount || entry.fromUid !== uid) return {ok:false,error:rejection,txId};
+  applyWalletSnapshot(uid,profile,observed);
+  if(result.committed && current()) logKaju(amount,'spend','gift','Gönderim kaydedildi → '+String(toNick || toUid));
+  emit(); void mirrorWallet(uid,profile,uid);
+  if(entry.state === 'published') return {ok:true,amount,queued:false,pending:false,txId,alreadyApplied:true};
+  let published = false;
+  try{ published = await publishOutbox(uid,txId,entry); }catch(error){}
+  return {ok:true,amount,queued:!published,pending:!published,txId};
+}
+
+export function claimPendingTransfers(){
+  const me = Auth.getState();
+  if(!me.uid || me.status !== 'google') return Promise.resolve({total:0,claimed:[],invalid:0});
+  if(incomingClaims.has(me.uid)){ incomingDirty.add(me.uid); return incomingClaims.get(me.uid); }
+  const uid = me.uid, current = () => Auth.getState().uid === uid && Auth.getState().status === 'google';
+  const task = (async()=>{
+    let total = 0, invalid = 0; const claimed = [];
+    try{
+      const snap = await get(ref(db,'kajuTransfers/'+uid));
+      if(!current() || !snap.exists()) return {total,claimed,invalid};
+      const all = snap.val();
+      if(!all || typeof all !== 'object' || Array.isArray(all)) return {total,claimed,invalid:1};
+      for(const [txId,transfer] of Object.entries(all)){
+        if(!current()) break;
+        // Old legitimate v154 entries already carry these identity/amount fields.
+        // Malformed entries remain for inspection; never erase evidence or round credit.
+        if(!validTransfer(txId,transfer,uid)){ invalid++; continue; }
+        try{
+          const result = await claimKajuOnce('transfer_'+txId,transfer.amount,'gift',String(transfer.fromNick || 'Biri')+' gönderdi',uid);
+          if(!current()) break;
+          if((result.claimed || result.alreadyClaimed) && result.amount === transfer.amount){
+            if(result.claimed){ total += result.amount; claimed.push({from:transfer.fromNick || 'Biri',amount:result.amount,txId}); }
+            await set(ref(db,'kajuTransfers/'+uid+'/'+txId),null);
+          }
+        }catch(error){}
+      }
+      if(total > 0 && current()){
+        emit();
+        try{ window.dispatchEvent(new CustomEvent('hero:kaju-claimed',{detail:{uid,total,claimed}})); }catch(e){}
+      }
+    }catch(error){ console.warn('[store] claimPending',error?.code || 'read_failed'); }
+    return {total,claimed,invalid};
+  })();
+  incomingClaims.set(uid,task);
+  void task.finally(()=>{
+    if(incomingClaims.get(uid) === task) incomingClaims.delete(uid);
+    if(incomingDirty.delete(uid) && current()) void claimPendingTransfers();
+  });
+  return task;
+}
+
+function startWalletListeners(uid){
+  const epoch = ++walletListenEpoch;
+  liveWalletUid = uid;
+  const current = () => epoch === walletListenEpoch && Auth.getState().uid === uid && player.uid === uid;
+  let mirrored = '';
+  try{
+    liveWalletOff = onValue(ref(db,'users/'+uid), snap => {
+      if(!current()) return;
+      const profile = snap.val(); if(!profile || typeof profile !== 'object' || Array.isArray(profile)) return;
+      walletObservation++; applyWalletSnapshot(uid,profile);
+      player.inventory = profile.inventory || {}; player.boosts = profile.boosts || {};
+      player.cosmetics = profile.cosmetics || {}; player.purchasedOnce = profile.purchasedOnce || {};
+      player.level = Math.max(1,finiteAmount(profile.level || profile.xp?.level,1));
+      player.xp = finiteAmount(profile.xp && typeof profile.xp === 'object' ? profile.xp.xp : profile.xp);
+      player.totalXP = finiteAmount(profile.xp && typeof profile.xp === 'object' ? profile.xp.totalXP : profile.totalXP);
+      emit();
+      const marker = String(profile.heroWalletRevision || 0)+':'+String(profile.kaju || 0);
+      if(marker !== mirrored){ mirrored=marker; void mirrorWallet(uid,profile,uid); }
+      if(Object.values(profile.kajuOutbox || {}).some(t=>t?.state !== 'published')) void retryPendingTransfers();
+    }, error => { if(current()) console.warn('[store] wallet listener',error?.code || 'read_failed'); });
+    liveTransfersOff = onValue(ref(db,'kajuTransfers/'+uid), snap => {
+      if(current() && snap.exists()) void claimPendingTransfers();
+    }, error => { if(current()) console.warn('[store] transfer listener',error?.code || 'read_failed'); });
+    liveKozmosOff = onValue(ref(db,'kozmos/'+uid+'/creatures'), snap => {
+      if(!current()) return;
+      const creatures = snap.val();
+      if(creatures !== null && (typeof creatures !== 'object' || Array.isArray(creatures))) return;
+      try{
+        const key = 'hero_active_kozmo:'+uid, active = JSON.parse(localStorage.getItem(key) || 'null');
+        if(active?.ownerUid === uid && (typeof active.id !== 'string' || !active.id || !Object.prototype.hasOwnProperty.call(creatures || {},active.id))){
+          localStorage.removeItem(key);
+        }
+      }catch(error){}
+    }, error => { if(current()) console.warn('[store] kozmo listener',error?.code || 'read_failed'); });
+  }catch(error){ console.warn('[store] wallet listeners',error?.code || 'unavailable'); }
+}
+if(typeof window !== 'undefined') window.addEventListener?.('online',()=>{
+  if(Auth.getState().status === 'google'){ void retryPendingTransfers(); void claimPendingTransfers(); }
+});
+
+export const Store = { subscribe, getState, addKaju, claimKajuOnce, claimWheelReward, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, retryPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
 export default Store;
 // Immediate Auth callbacks need every Store binding to have been initialized.
 Auth.subscribe(hydrate);

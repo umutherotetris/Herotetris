@@ -7,8 +7,8 @@ const grant=source.slice(source.indexOf('export async function grantEgg(')).repl
 const clone=x=>x===undefined?null:structuredClone(x);
 function fixture(){
  let uid='alice',profile={creatures:{keep:{name:'Keep'}}},fail=false,defer=false,release;
- const writes=[],reads=[],options=[],calls=[];let queue=Promise.resolve();
- const context=vm.createContext({Auth:{getState:()=>({uid})},db:{},console:{warn:()=>{}},randomType:()=> 'fixture-type',
+ const writes=[],reads=[],options=[],calls=[],rarities=[];let queue=Promise.resolve();
+ const context=vm.createContext({Auth:{getState:()=>({uid})},db:{},console:{warn:()=>{}},randomType:(_seed,min)=>{rarities.push(min);return 'fixture-type';},
   fdb:{ref:(_db,path)=>path,
    runTransaction:(path,fn,opts)=>{
     calls.push(path);options.push(opts);
@@ -24,7 +24,7 @@ function fixture(){
    set:async(path,value)=>{if(fail)throw Object.assign(Error('Fixture denied'),{code:'PERMISSION_DENIED'});writes.push({path,value:clone(value)});}
   }
  });vm.runInContext(grant+'\nthis.grant=grantEgg;',context);
- return {context,writes,reads,options,calls,profile:()=>profile,setUid:value=>uid=value,setFail:value=>fail=value,setDefer:value=>defer=value,release:()=>release(),deleteEgg:id=>delete profile.eggs[id]};
+ return {context,writes,reads,options,calls,rarities,profile:()=>profile,setUid:value=>uid=value,setFail:value=>fail=value,setDefer:value=>defer=value,release:()=>release(),deleteEgg:id=>delete profile.eggs[id]};
 }
 let groups=0;
 {
@@ -57,4 +57,14 @@ let groups=0;
 {
  const f=fixture();f.setDefer(true);const pending=f.context.grant('alice','daily_spin_2026-10-22');await new Promise(resolve=>setImmediate(resolve));f.setUid('bob');f.release();assert.equal(await pending,false);assert.equal(f.writes.length,0);groups++;
 }
-console.log(`PASS stable egg reward: ${groups} acknowledgment, cold duplicate, tombstone, rejection and owner groups`);
+{
+ const f=fixture();assert.equal(await f.context.grant('alice','shop_paid_1','epic'),true);
+ assert.equal(f.rarities[0],'epic','paid reward passes validated rarity to the existing filtered type picker');
+ assert.equal(f.profile().eggs.shop_paid_1.minRarity,'epic');assert.equal(f.profile().rewardEggClaims.shop_paid_1.source,'shop');
+ assert.ok(Number.isInteger(f.profile().eggs.shop_paid_1.seed),'hatching uses the persisted seed and rarity');groups++;
+}
+{
+ const f=fixture();assert.equal(await f.context.grant('epik'),false,'rarity cannot substitute for account authorization');
+ assert.equal(await f.context.grant('alice','shop_paid_1','epik'),false,'only canonical supported rarities are accepted');assert.equal(f.calls.length,0);groups++;
+}
+console.log(`PASS stable egg reward: ${groups} acknowledgment, cold duplicate, tombstone, rejection, owner and paid-rarity groups`);

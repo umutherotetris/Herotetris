@@ -3,6 +3,7 @@
 //  Klan adı değiştir · Kick/Ban/Unban nedenli · Davet sistemi
 // ═══════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
+import { donateClanKaju, retryClanDonations, supportClanKaju, clanOperationId, closeClanTreasury } from './clan-economy.js';
 
 
 // Hafif toast helper (alert yerine)
@@ -65,9 +66,13 @@ export async function openClan(){
   const panel=document.createElement('div'); panel.className='clan-panel';
   panel.innerHTML='<div class="clan-head"><div class="clan-title">🏰 KLANLAR</div><button class="clan-x" id="clanClose">✕</button></div><div class="clan-body" id="clanBody"><div class="clan-load">⏳ Yükleniyor…</div></div>';
   ov.appendChild(panel); document.body.appendChild(ov);
-  C={ov,panel,myClanId:null,myRole:null,off:[]};
+  C={ov,panel,ownerUid:st.uid,myClanId:null,myRole:null,off:[]};
   panel.querySelector('#clanClose').addEventListener('click',closeClan);
   ov.addEventListener('click',e=>{if(e.target===ov)closeClan();});
+  const context=C;
+  const recovery=await retryClanDonations();
+  if(C!==context||Auth.getState().uid!==st.uid)return;
+  context.pendingDonation=recovery.queuedIds?.[0]||null;
   await loadMyClan();
 }
 
@@ -80,9 +85,14 @@ function closeClan(){
 function body(){return document.getElementById('clanBody');}
 
 async function loadMyClan(){
-  const st=Auth.getState();
-  try{const s=await fdb.get(fdb.ref(db,'users/'+st.uid+'/clanId'));C.myClanId=s.exists()?s.val():null;}catch(e){C.myClanId=null;}
-  if(C.myClanId) await renderMyClan();
+  const st=Auth.getState(), context=C;
+  const current=()=>!!context&&C===context&&context.ownerUid===st.uid&&Auth.getState().uid===st.uid;
+  try{
+    const s=await fdb.get(fdb.ref(db,'users/'+st.uid+'/clanId'));
+    if(!current())return;
+    context.myClanId=s.exists()?s.val():null;
+  }catch(e){if(!current())return;context.myClanId=null;}
+  if(context.myClanId) await renderMyClan();
   else renderNoClan();
 }
 
@@ -93,6 +103,14 @@ function renderNoClan(){
   const emptyCard=document.createElement('div'); emptyCard.className='clan-card';
   emptyCard.innerHTML='<div class="clan-empty-ico">🏰</div><div class="clan-empty-txt">Henüz bir klana üye değilsin</div>';
   b.appendChild(emptyCard);
+  if(C?.pendingDonation){
+    const context=C, retry=document.createElement('button');
+    retry.id='clanPendingRetry';retry.className='clan-btn p';retry.style.cssText='width:100%;margin-bottom:10px';
+    retry.textContent='⏳ Kaydedilen bağışı veya iadeyi yeniden kontrol et';
+    retry.disabled=!!context.treasuryBusy;
+    retry.addEventListener('click',()=>retryClanDonation(context,null));
+    b.appendChild(retry);
+  }
   // Arama
   const srchCard=document.createElement('div'); srchCard.className='clan-card';
   srchCard.innerHTML='<div class="clan-lbl">🔍 KLAN ARA</div>'
@@ -154,7 +172,7 @@ async function searchClans(){
   try{
     const snap=await fdb.get(fdb.ref(db,'clans'));
     if(!snap.exists()){res.innerHTML='<div class="clan-msg bad">Sonuç yok</div>';return;}
-    const hits=[];snap.forEach(ch=>{const v=ch.val();if(!v)return;if((v.name||'').toLowerCase().includes(q)||(v.tag||'').toLowerCase().includes(q))hits.push({id:ch.key,...v});});
+    const hits=[];snap.forEach(ch=>{const v=ch.val();if(!v||v.closed)return;if((v.name||'').toLowerCase().includes(q)||(v.tag||'').toLowerCase().includes(q))hits.push({id:ch.key,...v});});
     if(!hits.length){res.innerHTML='<div class="clan-msg bad">Sonuç yok</div>';return;}
     res.innerHTML='';
     hits.slice(0,8).forEach(c=>{
@@ -197,11 +215,14 @@ async function joinClan(clanId){
 
 // ── Klanım ────────────────────────────────────────────────────
 async function renderMyClan(){
-  const b=body(); if(!b)return;
+  const context=C, uid=Auth.getState().uid, clanId=context?.myClanId;
+  const current=()=>!!context&&C===context&&context.ownerUid===uid&&Auth.getState().uid===uid&&context.myClanId===clanId;
+  const b=body(); if(!b||!current())return;
   b.innerHTML='<div class="clan-load">Yükleniyor…</div>';
   try{
-    const snap=await fdb.get(fdb.ref(db,'clans/'+C.myClanId));
-    if(!snap.exists()){await leaveClanClean();return;}
+    const snap=await fdb.get(fdb.ref(db,'clans/'+clanId));
+    if(!current())return;
+    if(!snap.exists()||snap.val()?.closed){await leaveClanClean();return;}
     _clan=snap.val()||{};
     const st=Auth.getState();
     C.myRole=_clan.leader===st.uid?'leader':(_clan.viceLeaders&&_clan.viceLeaders[st.uid])?'vice':'member';
@@ -233,7 +254,7 @@ async function renderMyClan(){
     tabsEl.firstChild.classList.add('active');
     loadTab('members');
     listenMembers();
-  }catch(e){b.innerHTML='<div class="clan-msg bad">Klan yüklenemedi</div>';}
+  }catch(e){if(current())b.innerHTML='<div class="clan-msg bad">Klan yüklenemedi</div>';}
 }
 
 function loadTab(t){
@@ -337,15 +358,16 @@ async function renderClanWar(){
 }
 
 async function renderTreasury(){
-  const body=document.getElementById('clanTabBody'); if(!body||!_clan) return;
-  const st=Auth.getState();
+  const context=C, st=Auth.getState(), clanId=context?.myClanId;
+  const current=()=>!!context&&C===context&&context.ownerUid===st.uid&&Auth.getState().uid===st.uid&&context.myClanId===clanId&&document.getElementById('clanTabBody')===body;
+  const body=document.getElementById('clanTabBody'); if(!body||!_clan||!current()) return;
   const isAdmin = st.isAdmin === true;
   const pool=_clan.kaju||0;
   const myKaju=(window.Hero&&window.Hero.Store&&window.Hero.Store.getState&&window.Hero.Store.getState().kaju)||0;
   // Bağış geçmişi (son katkılar)
   let donors='';
   try{
-    const snap=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/donations'));
+    const snap=await fdb.get(fdb.ref(db,'clans/'+clanId+'/donations'));
     if(snap.exists()){
       const v=snap.val()||{};
       const arr=Object.keys(v).map(k=>v[k]).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,10);
@@ -355,7 +377,7 @@ async function renderTreasury(){
   // En çok bağış yapanlar (toplam)
   let topDonors='';
   try{
-    const snap=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals'));
+    const snap=await fdb.get(fdb.ref(db,'clans/'+clanId+'/donorTotals'));
     if(snap.exists()){
       const v=snap.val()||{};
       const arr=Object.keys(v).map(uid=>({uid,...v[uid]})).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,3);
@@ -363,12 +385,14 @@ async function renderTreasury(){
     }
   }catch(e){}
 
+  if(!current())return;
   body.innerHTML=''
     +'<div class="clan-treasury-hero">'
       +'<div class="clan-treasury-lbl">💰 Klan Kasası</div>'
       +'<div class="clan-treasury-amt">🥜 '+fmt(pool)+'</div>'
       +'<div class="clan-treasury-sub">Üyelerin ortak ödül havuzu</div>'
     +'</div>'
+    +(context.pendingDonation?'<button class="clan-btn p" id="clanPendingRetry" style="width:100%;margin-bottom:10px">⏳ Kaydedilen bağışı yeniden kontrol et</button>':'')
     +'<div class="clan-donate-box">'
       +'<div style="font-size:11px;color:#bba8df;margin-bottom:7px">Kasaya bağış yap (senin Kaju: '+fmt(myKaju)+')</div>'
       +'<div class="clan-donate-row">'
@@ -380,7 +404,7 @@ async function renderTreasury(){
     +(isAdmin ? (
         '<div class="clan-admin-box">'
         +'<div class="clan-admin-title">👑 Admin Kaju Desteği</div>'
-        +'<div class="clan-admin-sub">Kasaya sınırsız destek — Kaju\'ndan düşmez</div>'
+        +'<div class="clan-admin-sub">İşlem başına en fazla 1 milyar — Kaju\'ndan düşmez</div>'
         +'<div class="clan-donate-row">'
           +'<button class="clan-adm-amt" data-adm="100000">100.000</button>'
           +'<button class="clan-adm-amt" data-adm="500000">500.000</button>'
@@ -396,91 +420,102 @@ async function renderTreasury(){
     +(donors?'<div class="clan-sect">📜 Son Bağışlar</div>'+donors:'')
     +'<div class="clan-treasury-info">💡 Klan kasası, klan turnuvalarında ödül olarak dağıtılır ve klan seviyesini yükseltir. Cömert üyeler liderlik tablosunda öne çıkar!</div>';
 
-  body.querySelectorAll('[data-don]').forEach(btn=>btn.addEventListener('click',()=>donateToClan(parseInt(btn.dataset.don))));
+  body.querySelectorAll('[data-don]').forEach(btn=>btn.addEventListener('click',()=>donateToClan(Number(btn.dataset.don),context,clanId)));
   // Admin destek butonları (sınırsız, Kaju'dan düşmez)
-  body.querySelectorAll('[data-adm]').forEach(btn=>btn.addEventListener('click',()=>adminDonateToClan(parseInt(btn.dataset.adm))));
+  body.querySelectorAll('[data-adm]').forEach(btn=>btn.addEventListener('click',()=>adminDonateToClan(Number(btn.dataset.adm),context,clanId)));
   const admGo=body.querySelector('#clanAdmGo');
   if(admGo) admGo.addEventListener('click',()=>{
     const inp=body.querySelector('#clanAdmCustom');
-    const amt=parseInt(inp&&inp.value||'0');
-    if(!amt||amt<1){ _toast('Geçerli bir miktar gir',true); return; }
-    adminDonateToClan(amt);
+    const amt=Number(inp&&inp.value||'0');
+    if(!Number.isSafeInteger(amt)||amt<1){ _toast('Geçerli bir miktar gir',true); return; }
+    adminDonateToClan(amt,context,clanId);
   });
+  body.querySelector('#clanPendingRetry')?.addEventListener('click',()=>retryClanDonation(context,clanId));
+  setTreasuryBusy(context,!!context.treasuryBusy);
 }
 
-// ── Admin Kaju desteği — sınırsız, admin'in Kaju'sundan DÜŞMEZ ──
-async function adminDonateToClan(amount){
+function treasuryCurrent(context, clanId, admin=false){
   const st=Auth.getState();
-  if(!st.uid||!C||!C.myClanId) return;
-  if(st.isAdmin !== true){ _toast('Bu işlem yalnızca admin içindir',true); return; }
-  if(!amount||amount<1){ _toast('Geçersiz miktar',true); return; }
-  // Üst sınır: Kaju veri tipi güvenliği (çok büyük sayı taşmasın)
-  const MAX = 1000000000;   // 1 milyar tavan (güvenlik)
-  if(amount>MAX){ _toast('En fazla '+fmt(MAX)+' destek verilebilir',true); return; }
-  if(!confirm('👑 Admin desteği: Klan kasasına '+fmt(amount)+' Kaju eklensin mi?\n(Senin Kaju\'ndan düşmez)')) return;
+  return !!context&&C===context&&context.ownerUid===st.uid&&st.status==='google'
+    &&context.myClanId===clanId&&(!admin||st.isAdmin===true);
+}
+function setTreasuryBusy(context, busy){
+  if(C!==context)return;
+  context.treasuryBusy=busy;
+  document.getElementById('clanTabBody')?.querySelectorAll('[data-don],[data-adm],#clanAdmGo,#clanPendingRetry').forEach(btn=>{btn.disabled=busy;});
+  const pending=document.getElementById('clanPendingRetry');if(pending)pending.disabled=busy;
+}
+async function retryClanDonation(context=C, clanId=context?.myClanId){
+  if(!treasuryCurrent(context,clanId)||context.treasuryBusy||!context.pendingDonation)return;
+  const operationId=context.pendingDonation;
+  setTreasuryBusy(context,true);
   try{
-    // Klan kasasına ekle (admin'den düşmeden)
-    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/kaju'),c=>(c||0)+amount);
-    // Bağış kaydı (admin desteği olarak işaretli)
-    const name='👑 '+(st.displayName||'Admin')+' (Destek)';
-    await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/donations'),{uid:st.uid,name,amount,ts:Date.now(),adminGift:true});
-    // Yerel güncelle
-    _clan.kaju=(_clan.kaju||0)+amount;
-    // 💬 Klan sohbetine sistem mesajı (her destekte)
-    try{
-      await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/chat'),{
-        uid:'system', name:'👑 Sistem', avatar:'💰', isSystem:true, isAdmin:true,
-        text:'👑 '+(st.displayName||'Admin')+' klan kasasına '+fmt(amount)+' Kaju destek verdi! 🎉',
-        ts:Date.now()
-      });
-    }catch(e){}
-    // 🔔 Büyük destek (100.000+) → tüm klan üyelerine push bildirimi
-    if(amount >= 100000){
+    const result=await retryClanDonations(operationId);
+    if(!treasuryCurrent(context,clanId))return;
+    if(result.ok&&(result.confirmedIds?.includes(operationId)||result.refundedIds?.includes(operationId))){
+      context.pendingDonation=null;context.treasuryAttempt=null;context.treasuryUncertain=false;
+      _toast(result.refundedIds?.includes(operationId)?'💰 Bağışın Kaju bakiyene iade edildi':'💰 Kaydedilen bağış klan kasasına aktarıldı');
+      if(context.myClanId)await renderMyClan();else renderNoClan();
+    }else _toast('Bağış kaydı korunuyor; kasaya aktarım henüz doğrulanamadı',true);
+  }catch(e){if(treasuryCurrent(context,clanId))_toast('Bağış kaydı korunuyor; bağlantı geldiğinde yeniden kontrol et',true);}
+  finally{setTreasuryBusy(context,false);}
+}
+async function runClanDonation(amount, adminGift, context=C, clanId=context?.myClanId){
+  if(!treasuryCurrent(context,clanId,adminGift)||context.treasuryBusy)return;
+  if(!Number.isSafeInteger(amount)||amount<=0||amount>(adminGift?1000000000:999999999)){
+    _toast('Geçerli bir tam Kaju miktarı gir',true);return;
+  }
+  if(context.pendingDonation){_toast('Önce kaydedilen bağışı yeniden kontrol et',true);return;}
+  const signature=(adminGift?'admin:':'donate:')+amount;
+  if(context.treasuryUncertain&&context.treasuryAttempt?.signature!==signature){
+    _toast('Önce aynı miktarla önceki işlemin sonucunu kontrol et',true);return;
+  }
+  if(!context.treasuryAttempt||context.treasuryAttempt.signature!==signature){
+    context.treasuryAttempt={signature,id:clanOperationId()};
+  }
+  if(!context.treasuryUncertain&&!confirm((adminGift?'👑 Admin desteği: ':'💰 ')+fmt(amount)+' Kaju klan kasasına eklensin mi?'+(adminGift?"\n(Senin Kaju'ndan düşmez)":'')))return;
+  setTreasuryBusy(context,true);
+  try{
+    const result=await (adminGift?supportClanKaju:donateClanKaju)(clanId,amount,context.treasuryAttempt.id);
+    if(!treasuryCurrent(context,clanId,adminGift))return;
+    context.treasuryUncertain=!!result.uncertain;
+    if(result.pending){
+      context.pendingDonation=result.operationId;
+      _toast('Bağış kaydedildi; kasaya aktarılması bekleniyor');
+      await renderTreasury();return;
+    }
+    if(result.refunded){
+      context.treasuryAttempt=null;context.treasuryUncertain=false;
+      _toast(result.error||'Bağışın Kaju bakiyene iade edildi');
+      await renderMyClan();return;
+    }
+    if(!result.ok){_toast(result.error||'İşlem tamamlanamadı',true);return;}
+    context.treasuryAttempt=null;context.treasuryUncertain=false;
+    if(_clan&&Number.isSafeInteger(result.newBalance))_clan.kaju=result.newBalance;
+    _toast((adminGift?'👑 Admin desteği: ':'💰 ')+fmt(result.amount)+' Kaju kasaya eklendi!');
+    if(adminGift&&result.amount>=100000&&!result.alreadyApplied){
+      // Deterministic notification IDs let an acknowledgement retry reuse the same card.
       try{
-        const memSnap = await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members'));
-        const members = memSnap.exists() ? memSnap.val() : {};
-        const clanName = _clan.name || 'Klanın';
-        const notifText = '💰 '+clanName+' kasasına '+fmt(amount)+' Kaju destek geldi! 🎉';
-        await Promise.all(Object.keys(members).map(async muid=>{
-          if(muid === st.uid) return;   // kendine bildirim gönderme
-          try{
-            await fdb.push(fdb.ref(db,'userNotifs/'+muid),{
-              type:'clan', icon:'💰', text:notifText, ts:Date.now(), fromUid:st.uid
-            });
-          }catch(e){}
+        const snap=await fdb.get(fdb.ref(db,'clans/'+clanId+'/members'));
+        if(!treasuryCurrent(context,clanId,true))return;
+        const clanName=_clan?.name||'Klanın';
+        await Promise.all(Object.keys(snap.val()||{}).filter(uid=>uid!==context.ownerUid).map(uid=>{
+          if(!treasuryCurrent(context,clanId,true))return;
+          return fdb.set(fdb.ref(db,'userNotifs/'+uid+'/clan_'+clanId.length+'_'+clanId+'_'+result.operationId),{
+            type:'clan',icon:'💰',text:'💰 '+clanName+' kasasına '+fmt(result.amount)+' Kaju destek geldi! 🎉',ts:Date.now(),fromUid:context.ownerUid
+          }).catch(()=>{});
         }));
       }catch(e){}
     }
-    _toast('👑 Admin desteği: '+fmt(amount)+' Kaju kasaya eklendi!'+(amount>=100000?' · Üyelere bildirildi':''));
-    renderTreasury();
-    renderMyClan();
-  }catch(e){ _toast('Destek başarısız',true); }
+    if(treasuryCurrent(context,clanId,adminGift))await renderMyClan();
+  }catch(e){if(treasuryCurrent(context,clanId,adminGift)){context.treasuryUncertain=true;_toast('İşlemin sonucu doğrulanamadı; aynı miktarla yeniden kontrol et',true);}}
+  finally{setTreasuryBusy(context,false);}
 }
-
-async function donateToClan(amount){
-  const st=Auth.getState();
-  if(!st.uid||!C||!C.myClanId) return;
-  const Store=(window.Hero&&window.Hero.Store);
-  const myKaju=(Store&&Store.getState&&Store.getState().kaju)||0;
-  if(myKaju<amount){ _toast('Yetersiz Kaju (gerekli: '+fmt(amount)+')',true); return; }
-  if(!confirm('💰 Klan kasasına '+fmt(amount)+' Kaju bağışla?')) return;
-  try{
-    // Kaju'yu oyuncudan düş
-    if(Store&&Store.addKaju) await Store.addKaju(-amount,'clan','💰 Klan kasası bağışı');
-    // Klan kasasına ekle
-    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/kaju'),c=>(c||0)+amount);
-    // Bağış kaydı + toplam
-    const name=st.displayName||'Üye';
-    await fdb.push(fdb.ref(db,'clans/'+C.myClanId+'/donations'),{uid:st.uid,name,amount,ts:Date.now()});
-    await fdb.runTransaction(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals/'+st.uid+'/total'),c=>(c||0)+amount);
-    await fdb.update(fdb.ref(db,'clans/'+C.myClanId+'/donorTotals/'+st.uid),{name});
-    // Yerel güncelle
-    _clan.kaju=(_clan.kaju||0)+amount;
-    _toast('💰 '+fmt(amount)+' Kaju kasaya eklendi! Teşekkürler 🙏');
-    renderTreasury();
-    const meta=document.querySelector('.clan-banner-meta'); // banner kasa rakamını güncelle
-    renderMyClan();
-  }catch(e){ _toast('Bağış başarısız',true); }
+async function adminDonateToClan(amount, context=C, clanId=context?.myClanId){
+  return runClanDonation(amount,true,context,clanId);
+}
+async function donateToClan(amount, context=C, clanId=context?.myClanId){
+  return runClanDonation(amount,false,context,clanId);
 }
 
 // ── Üyeler ────────────────────────────────────────────────────
@@ -708,7 +743,7 @@ async function renderLeader(){
   try{
     const snap=await fdb.get(fdb.query(fdb.ref(db,'clans'),fdb.orderByChild('kaju'),fdb.limitToLast(20)));
     if(!snap.exists()){box.innerHTML='<div class="clan-card"><i>Henüz klan yok</i></div>';return;}
-    const rows=[];snap.forEach(ch=>{rows.push({id:ch.key,...ch.val()});});
+    const rows=[];snap.forEach(ch=>{const v=ch.val();if(v&&!v.closed)rows.push({id:ch.key,...v});});
     rows.sort((a,b)=>(b.kaju||0)-(a.kaju||0));
     box.innerHTML='';
     const card=document.createElement('div'); card.className='clan-card';
@@ -842,11 +877,21 @@ async function renderManage(){
       if(!confirm('Klan KALICI OLARAK silinecek!'))return;
       const cn=prompt('Onaylamak için klan adını yaz: "'+(_clan.name||'')+'"');
       if(cn!==(_clan.name||'')){_toast('Klan adı eşleşmedi');return;}
+      const context=C, actor=Auth.getState().uid, clanId=context?.myClanId;
+      const current=()=>C===context&&context?.ownerUid===actor&&Auth.getState().uid===actor&&context.myClanId===clanId;
+      if(!current())return;
       try{
-        for(const uid of Object.keys(mems))await fdb.set(fdb.ref(db,'users/'+uid+'/clanId'),null).catch(()=>{});
-        await fdb.set(fdb.ref(db,'clans/'+C.myClanId),null);
-        C.myClanId=null;_clan=null;renderNoClan();
-      }catch(e){_toast('Yapılamadı');}
+        if(!await closeClanTreasury(clanId,actor))throw new Error('Klan kapatılamadı');
+        if(!current())return;
+        for(const uid of Object.keys(mems)){
+          if(!current())return;
+          await fdb.runTransaction(fdb.ref(db,'users/'+uid),profile=>{
+            if(!current()||!profile||profile.clanId!==clanId)return;
+            return {...profile,clanId:null};
+          },{applyLocally:false}).catch(()=>{});
+        }
+        if(current()){context.myClanId=null;_clan=null;renderNoClan();}
+      }catch(e){if(current())_toast('Yapılamadı');}
     });
   }
 }
@@ -857,16 +902,20 @@ async function leaveClan(){
   await leaveClanClean();
 }
 async function leaveClanClean(){
-  const st=Auth.getState();
+  const st=Auth.getState(), context=C, clanId=context?.myClanId;
+  const current=()=>!!context&&C===context&&context.ownerUid===st.uid&&Auth.getState().uid===st.uid&&context.myClanId===clanId;
+  if(!current())return;
   try{
-    await fdb.set(fdb.ref(db,'clans/'+C.myClanId+'/members/'+st.uid),null);
-    await fdb.set(fdb.ref(db,'users/'+st.uid+'/clanId'),null);
-    if(C.myRole==='leader'){
-      const s=await fdb.get(fdb.ref(db,'clans/'+C.myClanId+'/members'));
-      if(!s.exists())await fdb.set(fdb.ref(db,'clans/'+C.myClanId),null);
-    }
+    await fdb.set(fdb.ref(db,'clans/'+clanId+'/members/'+st.uid),null);
+    if(!current())return;
+    await fdb.runTransaction(fdb.ref(db,'users/'+st.uid),profile=>{
+      if(!current()||!profile||profile.clanId!==clanId)return;
+      return {...profile,clanId:null};
+    },{applyLocally:false});
+    if(!current())return;
+    if(context.myRole==='leader')await closeClanTreasury(clanId,st.uid,true);
   }catch(e){}
-  C.myClanId=null;_clan=null;renderNoClan();
+  if(current()){context.myClanId=null;_clan=null;renderNoClan();}
 }
 
 export default openClan;

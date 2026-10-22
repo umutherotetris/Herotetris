@@ -577,6 +577,59 @@ function _renderProfileKozmos(p, uid){
   return '<div class="pcp-kzsec" data-pckozmos="'+esc(uid)+'"><div class="pcp-besttitle">🌌 KOZMOLAR</div><div class="pcp-nobest" data-kzload>⏳ Yükleniyor…</div></div>';
 }
 
+function bindPlayerKajuSend(ov, ksBtn, ksBox, uid, nick, owner){
+  if(!ksBtn || !ksBox) return;
+  const current = () => ov.isConnected && document.getElementById('pcPop') === ov && !!owner.uid && Auth.getState().uid === owner.uid && Auth.getState().status === 'google' && (Auth.getState().isAdmin === true) === (owner.isAdmin === true);
+  const toast = (text, error = false) => { if(current()) window.Hero?.toast?.(text, error); };
+  let sending = false, finished = false, pendingTx = null, attempt = null;
+  ksBtn.addEventListener('click', () => {
+    if(!current()) return;
+    const showing = ksBox.style.display !== 'none';
+    ksBox.style.display = showing ? 'none' : 'block';
+    if(!showing) ksBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  const inp = ksBox.querySelector('[data-el="kajuAmtInput"]');
+  const quick = ksBox.querySelectorAll('[data-amt]');
+  quick.forEach(button => button.addEventListener('click', () => {
+    if(current() && !sending && !finished && !pendingTx && inp) inp.value = button.dataset.amt;
+  }));
+  const goBtn = ksBox.querySelector('[data-pc="kajusendgo"]');
+  if(!goBtn) return;
+  goBtn.addEventListener('click', async () => {
+    if(sending || finished || goBtn.disabled || !current()) return;
+    const amount = Number(inp?.value);
+    if(!pendingTx && (!Number.isSafeInteger(amount) || amount < 10)){ toast('En az 10 Kaju olacak şekilde tam sayı girmelisin', true); return; }
+    sending = true; goBtn.disabled = true; goBtn.textContent = '⏳…';
+    try{
+      const S = await import('./store.js');
+      if(!current()) return;
+      if(pendingTx){
+        const r = await S.retryPendingTransfers(pendingTx);
+        if(!current()) return;
+        if(r?.ok && Array.isArray(r.confirmedIds) && r.confirmedIds.includes(pendingTx)){
+          finished = true; pendingTx = null; toast('✓ Bekleyen gönderim alıcıya iletildi.'); ksBox.style.display = 'none';
+        } else { toast('Gönderim kaydı korunuyor; alıcıya iletildiği henüz doğrulanamadı.', true); }
+        return;
+      }
+      if(Number(inp?.value) !== amount) return;
+      if(attempt?.amount !== amount) attempt = {amount,id:'social_' + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + '_' + Math.random().toString(36).slice(2))};
+      const r = await S.transferKaju(uid, nick, amount, {txId:attempt.id});
+      if(!current()) return;
+      if(!r?.ok){ toast(r?.error || 'Gönderilemedi', true); return; }
+      if(r.pending || r.queued){
+        pendingTx = r.txId; if(inp) inp.disabled = true;
+        quick.forEach(button => button.disabled = true);
+        toast('💰 ' + Number(r.amount).toLocaleString('tr-TR') + ' Kaju gönderimi kaydedildi; alıcıya iletilmesi bekleniyor.');
+      } else {
+        finished = true;
+        toast('💰 ' + Number(r.amount).toLocaleString('tr-TR') + (r.admin ? ' Kaju bakiyeye eklendi.' : ' Kaju gönderimi kaydedildi. Alıcı hesabında onaylandığında bakiyeye geçer.'));
+        ksBox.style.display = 'none'; if(inp && Number(inp.value) === amount) inp.value = '';
+      }
+    }catch(error){ toast('Gönderim doğrulanamadı. Bakiyeni kontrol edip aynı işlemi yeniden deneyebilirsin.', true); }
+    finally{ sending = false; if(current()){ goBtn.disabled = finished; goBtn.textContent = pendingTx ? 'Teslimi yeniden dene' : 'Gönder'; } }
+  });
+}
+
 export async function openPlayerCard(uid){
   if(!uid || document.getElementById('pcPop')) return;
   const ov = document.createElement('div');
@@ -709,42 +762,7 @@ export async function openPlayerCard(uid){
   // Kaju Gönder — mini paneli aç/kapat
   const ksBtn = ov.querySelector('[data-pc="kajusend"]');
   const ksBox = ov.querySelector('[data-el="kajuSendBox"]');
-  if(ksBtn && ksBox){
-    ksBtn.addEventListener('click', () => {
-      const showing = ksBox.style.display !== 'none';
-      ksBox.style.display = showing ? 'none' : 'block';
-      if(!showing) ksBox.scrollIntoView({ behavior:'smooth', block:'nearest' });
-    });
-    // Hızlı miktar butonları → input'a yaz
-    ksBox.querySelectorAll('[data-amt]').forEach(b=>{
-      b.addEventListener('click', () => {
-        const inp = ksBox.querySelector('[data-el="kajuAmtInput"]');
-        if(inp) inp.value = b.dataset.amt;
-      });
-    });
-    // Gönder
-    const goBtn = ksBox.querySelector('[data-pc="kajusendgo"]');
-    if(goBtn) goBtn.addEventListener('click', async () => {
-      const inp = ksBox.querySelector('[data-el="kajuAmtInput"]');
-      const amount = Math.floor(Number(inp && inp.value) || 0);
-      if(amount < 10){ try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('En az 10 Kaju girmelisin', true); }catch(e){} return; }
-      goBtn.disabled = true; goBtn.textContent = '⏳…';
-      try{
-        const S = await import('./store.js');
-        const r = await S.transferKaju(uid, nick, amount);
-        if(r && r.ok){
-          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('💰 '+amount.toLocaleString('tr-TR')+' Kaju gönderildi!'); }catch(e){}
-          ksBox.style.display = 'none';
-          if(inp) inp.value = '';
-        } else {
-          try{ if(window.Hero&&window.Hero.toast) window.Hero.toast(r&&r.error ? r.error : 'Gönderilemedi', true); }catch(e){}
-        }
-      }catch(e){
-        try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('Gönderilemedi', true); }catch(_){}
-      }
-      goBtn.disabled = false; goBtn.textContent = 'Gönder';
-    });
-  }
+  bindPlayerKajuSend(ov, ksBtn, ksBox, uid, nick, me);
 
   // Kozmo (yumurta) Gönder — tek tıkla, onay sonrası doğrudan gönderir
   const kzBtn = ov.querySelector('[data-pc="kozmosend"]');

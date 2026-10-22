@@ -1,0 +1,84 @@
+/* Scoped habitat: portal jewel, crown, dragging and collection assets stay intact. */
+#kozmosPanel .kozmo-premium-panel{border-color:#d8c8f138;background:linear-gradient(155deg,#191627,#0d0c18);box-shadow:0 -18px 70px #0008}
+#kozmosPanel .clan-head{padding:18px 20px 15px;align-items:center}
+.kozmo-panel-subtitle{margin-top:5px;font-size:10px;line-height:1.5;color:#aaa2bd;letter-spacing:.1px}
+#kozmosPanel .clan-body{padding:14px 16px 24px}
+#kozmosPanel [data-companion-id]{cursor:pointer;transition:border-color .2s,box-shadow .2s}
+#kozmosPanel [data-companion-id][aria-pressed=true]{border-color:#e3ce9b!important;box-shadow:0 0 0 1px #e3ce9b55,inset 0 0 22px #e4c8930b}
+#kozmosPanel [data-companion-id]:focus-visible{outline:2px solid #f1d8a5;outline-offset:3px}
+.kozmo-stage{--kozmo-accent:#c2a4ff;--kozmo-sky-accent:#c2b5ff;position:relative;isolation:isolate;overflow:hidden;margin:0 0 20px;border:1px solid rgba(208,199,255,.21);border-radius:24px;color:#f6f2ff;background:linear-gradient(160deg,#19172d,#0d0c19 62%,#121123);box-shadow:0 18px 45px #0005,inset 0 1px #ffffff10;font-family:inherit;text-align:left}
+.kozmo-stage *{box-sizing:border-box}
+.kozmo-stage [hidden]{display:none!important}
+.kozmo-stage-top{position:absolute;z-index:5;inset:0 0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:17px 17px 0;pointer-events:none}
+.kozmo-stage-caption{display:grid;gap:5px;min-width:0}
+.kozmo-stage-eyebrow{font-size:8px;font-weight:800;letter-spacing:1.8px;color:#c0bbd8}
+.kozmo-stage-habitat{font-size:12px;line-height:1.4;font-weight:650;color:#e9e4fb}
+.kozmo-stage-sound{pointer-events:auto;flex:0 0 auto;min-height:31px;padding:6px 10px;border:1px solid #eee8ff22;border-radius:99px;background:#171727b8;color:#d0c9e9;font:inherit;font-weight:600;font-size:10px;line-height:1.2;cursor:pointer;backdrop-filter:blur(12px)}
+.kozmo-stage-sound[aria-pressed=true]{color:#fcdfa5;border-color:#edcc8c55;background:#57452a55}
+.kozmo-stage button:focus-visible{outline:2px solid #f6dfa8;outline-offset:4px}
+.kozmo-stage-scene{position:relative;height:310px;overflow:hidden;background:radial-gradient(ellipse at 50% 61%,#46356355,transparent 47%),linear-gradient(180deg,#0c0c1c,#141129 80%,#19152c);perspective:650px}
+.kozmo-stage-sky{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.kozmo-stage-sky:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 45% 105%,var(--kozmo-sky-accent),transparent 58%);opacity:.17}
+.kozmo-stage-sky:after{content:"";position:absolute;inset:0;background:linear-gradient(176deg,transparent 65%,#151323b3);z-index:2}
+.kozmo-stage-nebula{position:absolute;width:320px;height:110px;border-radius:50%;filter:blur(25px);opacity:.24;transform:rotate(-26deg);animation:kozmoNebula 14s ease-in-out infinite alternate}
+.kozmo-stage .nebula-one{top:40px;left:-65px;background:linear-gradient(90deg,#767cb4,var(--kozmo-sky-accent),transparent)}
+.kozmo-stage .nebula-two{top:98px;right:-190px;background:linear-gradient(90deg,#ce8e91,#776bba,transparent);animation-delay:-7s;opacity:.19}
+.kozmo-stage-moon{position:absolute;right:36px;top:78px;width:51px;height:51px;border:1px solid #f7efda44;border-radius:50%;box-shadow:inset 12px -10px 15px #f2e6c41f,0 0 40px #ede7cc12;background:radial-gradient(circle at 27% 34%,#ffffff1a 0 6%,transparent 7%),radial-gradient(circle at 62% 56%,#ffffff08 0 9%,transparent 10%),linear-gradient(130deg,#efe3cf44,#9693ba0a)}
+.kozmo-stage-moon:after{content:"";position:absolute;left:-13px;top:27px;width:80px;height:12px;border:1px solid #e0d6b34d;border-top-color:transparent;border-radius:50%;transform:rotate(-22deg)}
+.kozmo-stage-orbit{position:absolute;border:1px solid #cfc5ff1a;border-radius:50%;width:320px;height:210px;left:50%;top:62px;transform:translateX(-50%) rotate(-25deg);pointer-events:none}
+.kozmo-stage .orbit-back:before,.kozmo-stage .orbit-front:before{content:"";position:absolute;width:4px;height:4px;border-radius:50%;background:#f1d8ac;box-shadow:0 0 13px #ffdfa6;left:21%;top:5%;animation:kozmoMote 4s ease-in-out infinite}
+.kozmo-stage .orbit-front{width:245px;height:220px;top:53px;border-color:#d8cbff10;transform:translateX(-50%) rotate(42deg)}
+.kozmo-stage .orbit-front:before{left:auto;right:8%;top:18%;background:#c8bcff;animation-delay:-2s}
+.kozmo-stage-mote{position:absolute;left:var(--mx);top:var(--my);height:3px;width:3px;border-radius:50%;background:#f9f1db;box-shadow:0 0 8px #ece2ff;opacity:.55;animation:kozmoMote 4.8s ease-in-out var(--md) infinite;transform:scale(var(--ms))}
+.kozmo-stage-mote:nth-of-type(3n){background:var(--kozmo-sky-accent);height:2px;width:2px}
+.kozmo-stage-floor{position:absolute;inset:0;pointer-events:none}
+.kozmo-stage-island{position:absolute;bottom:17px;left:50%;width:285px;height:72px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at 50% 14%,#ada5c41a,transparent 67%),linear-gradient(180deg,#454052,#262130 40%,#181523 85%);border:1px solid #a49cb333;box-shadow:0 18px 9px #0004,inset 0 -16px 20px #08061080}
+.kozmo-stage-island:before{content:"";position:absolute;inset:0 2px 18px;border:1px solid #e9dcab66;border-radius:50%;box-shadow:0 0 14px #d2b77c15,inset 0 0 18px #e4c4960a;background:radial-gradient(ellipse,transparent 20%,#bba9ed0a 60%,transparent 70%)}
+.kozmo-stage-island:after{content:"";position:absolute;inset:8px 25px 25px;border:1px dashed #cac0db22;border-radius:50%}
+.kozmo-stage-floor-ring{position:absolute;left:50%;bottom:42px;border:1px solid var(--kozmo-accent);border-radius:50%;transform:translateX(-50%) rotateX(67deg);opacity:.3;box-shadow:0 0 18px var(--kozmo-accent);animation:kozmoFloorBreath 4.5s ease-in-out infinite}
+.kozmo-stage .ring-one{width:150px;height:120px;bottom:0}
+.kozmo-stage .ring-two{width:230px;height:155px;bottom:-16px;opacity:.08;animation-delay:-2s}
+.kozmo-stage-shadow{position:absolute;width:112px;height:22px;left:50%;bottom:48px;border-radius:50%;background:#03020c99;filter:blur(5px);transform:translateX(-50%);animation:kozmoShadow 4s ease-in-out infinite}
+.kozmo-stage-actor{position:absolute;z-index:3;top:70px;left:50%;width:210px;height:210px;display:grid;place-items:center;transform:translateX(-50%);border:0;padding:0;background:none;color:var(--kozmo-accent);font:inherit;font-size:100px;line-height:1;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;perspective:500px}
+.kozmo-stage-actor:before{content:"";position:absolute;inset:25px;border-radius:50%;background:var(--kozmo-accent);filter:blur(39px);opacity:.16;animation:kozmoAura 4s ease-in-out infinite;pointer-events:none}
+.kozmo-stage-actor-body{display:grid;place-items:center;position:relative;width:100%;height:100%;transform:rotateY(var(--look-x,0deg)) rotateX(var(--look-y,0deg));transition:transform .22s ease-out;filter:drop-shadow(0 8px 10px #0004) drop-shadow(0 0 18px #ffffff08);will-change:transform}
+.kozmo-stage-actor-body>svg{width:196px;height:196px;max-width:100%;overflow:visible;flex:none}
+.kozmo-stage-touch-hint{position:absolute;z-index:4;bottom:8px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.35px;white-space:nowrap;color:#aaa3be;pointer-events:none}
+.kozmo-stage-speech{position:absolute;z-index:6;left:50%;top:56px;transform:translate(-50%,7px);margin:0;max-width:88%;width:max-content;padding:9px 13px;border:1px solid #e9e1ff33;border-radius:12px 12px 12px 3px;color:#f9f4ff;background:#252036ed;box-shadow:0 8px 22px #0004;font-size:11px;line-height:1.4;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;text-align:center}
+.kozmo-stage-speech.is-visible{opacity:1;transform:translate(-50%,0)}
+.kozmo-stage-burst{position:absolute;z-index:5;left:50%;top:50%;pointer-events:none}
+.kozmo-stage-spark{position:absolute;left:0;top:0;color:#f7d6d9;font-size:20px;opacity:0;text-shadow:0 0 14px #fac9ff88;animation:kozmoBurst 1.15s ease-out var(--bd) both}
+.kozmo-stage[data-reaction=play] .kozmo-stage-spark{color:#ffe7af}
+.kozmo-stage[data-reaction=pet] .kozmo-stage-actor-body{animation:kozmoPet .8s ease-in-out 2}
+.kozmo-stage[data-reaction=play] .kozmo-stage-actor-body{animation:kozmoPlay .85s cubic-bezier(.2,.7,.3,1) 2}
+.kozmo-stage[data-reaction=feed] .kozmo-stage-actor-body{animation:kozmoPet .65s ease-in-out 2}
+.kozmo-stage[data-reaction=listen] .kozmo-stage-actor:before,.kozmo-stage[data-reaction=activate] .kozmo-stage-actor:before{animation:kozmoVoice .8s ease-out 3}
+.kozmo-stage-info{position:relative;z-index:3;padding:13px 20px 0;text-align:center;background:linear-gradient(180deg,#151323,#15132300)}
+.kozmo-stage-name{font-size:23px;line-height:1.2;font-weight:750;letter-spacing:-.7px;margin:0 0 9px;color:#faf4ff;overflow-wrap:anywhere}
+.kozmo-stage-badges{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;font-size:9px;font-weight:650;line-height:1.5}
+.kozmo-stage-badges>span{padding:3px 8px;border:1px solid #eee7ff13;border-radius:99px;background:#ffffff04;color:#c4bdd7}
+.kozmo-stage-badges .kozmo-stage-rarity{color:#efd49a;border-color:#e1c59138;background:#e1c5910a}
+.kozmo-stage-description{margin:10px 0 0;color:#aaa4bb;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.kozmo-stage-actions{position:relative;display:flex;gap:7px;padding:17px 17px 18px}
+.kozmo-stage-action{flex:1;min-width:0;min-height:39px;border:1px solid #e2d6ff22;border-radius:12px;padding:9px 8px;background:linear-gradient(180deg,#ffffff0b,#ffffff03);font:inherit;font-weight:650;font-size:11px;line-height:1.3;color:#eee7ff;cursor:pointer;transition:background .18s,transform .18s,border-color .18s}
+.kozmo-stage-action:hover{background:#ffffff10;border-color:#e3d0ff55;transform:translateY(-1px)}
+.kozmo-stage-action:active{transform:scale(.96)}
+.kozmo-stage-details{flex:.95;color:#bdb6ce;background:transparent}
+.kozmo-stage-extra{display:flex;gap:8px;padding:0 17px 17px;margin-top:-4px}
+.kozmo-stage-activate{flex:1;min-height:38px;border:1px solid #d0b57d50;border-radius:12px;padding:10px 12px;background:linear-gradient(110deg,#e9c99318,#c4a1f512);color:#edd8ad;font:inherit;font-weight:650;font-size:11px;line-height:1.3;cursor:pointer}
+.kozmo-stage-activate[aria-pressed=true]{border-color:#9dd8bf40;background:#92dfbf0b;color:#b3e7cf}
+.kozmo-stage button:disabled{cursor:wait;opacity:.6}
+.kozmo-stage-feed{flex:.6}
+.kozmo-stage.is-paused *,.kozmo-stage.is-reduced *{animation-play-state:paused!important}
+.kozmo-stage.is-reduced .kozmo-stage-actor-body{will-change:auto;transition:none;transform:none}
+@keyframes kozmoNebula{from{transform:translate(-5px,0) rotate(-26deg)}to{transform:translate(30px,15px) rotate(-19deg)}}
+@keyframes kozmoMote{0%,100%{opacity:.18}45%{opacity:.85;filter:brightness(1.5)}}
+@keyframes kozmoFloorBreath{0%,100%{opacity:.15}50%{opacity:.4}}
+@keyframes kozmoShadow{0%,100%{transform:translateX(-50%) scale(.88);opacity:.45}50%{transform:translateX(-50%) scale(1.07);opacity:.7}}
+@keyframes kozmoAura{0%,100%{opacity:.12;transform:scale(.85)}50%{opacity:.23;transform:scale(1.08)}}
+@keyframes kozmoPet{0%,100%{transform:scale(1)}22%{transform:translateY(4px) scale(1.08,.92) rotate(-4deg)}55%{transform:translateY(-5px) scale(.97,1.05) rotate(4deg)}80%{transform:scale(1.02,.98)}}
+@keyframes kozmoPlay{0%,100%{transform:translate(0,0) rotate(0)}20%{transform:translate(-17px,-22px) rotate(-9deg)}45%{transform:translate(10px,-38px) rotate(8deg)}70%{transform:translate(14px,2px) scale(1.07,.93)}86%{transform:translate(0,-8px)}}
+@keyframes kozmoBurst{0%{opacity:0;transform:translate(0,0) scale(.2)}15%{opacity:1}100%{opacity:0;transform:translate(var(--bx),var(--by)) rotate(var(--br)) scale(.8)}}
+@keyframes kozmoVoice{0%,100%{opacity:.12;transform:scale(.8)}40%{opacity:.35;transform:scale(1.35)}}
+@media(max-width:360px){.kozmo-stage-top{padding:15px 12px 0}.kozmo-stage-scene{height:285px}.kozmo-stage-actor{top:61px;width:198px;height:198px}.kozmo-stage-actor-body>svg{width:184px;height:184px}.kozmo-stage-island{width:250px;bottom:14px}.kozmo-stage-name{font-size:21px}.kozmo-stage-info{padding-left:14px;padding-right:14px}.kozmo-stage-actions{padding:15px 12px;gap:6px}.kozmo-stage-extra{padding:0 12px 15px}.kozmo-stage-sound{font-size:9px;padding:6px 8px}.kozmo-stage-moon{right:22px}}
+@media(prefers-reduced-motion:reduce){.kozmo-stage *{animation:none!important;transition:none!important;scroll-behavior:auto!important}.kozmo-stage-actor-body{will-change:auto;transform:none!important}.kozmo-stage-nebula{transform:rotate(-26deg)}}

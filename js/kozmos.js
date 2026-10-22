@@ -3,6 +3,9 @@
 // ═══════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
+import { mountKozmoStage, ensureKozmoStageStyles } from './kozmo-stage.js';
+import { getActiveKozmo, activateKozmo, reconcileActiveKozmo } from './kozmo-active.js';
+import { feedKozmo, fuseKozmos, retryKozmoCare } from './kozmo-care.js';
 
 
 // Hafif toast helper (alert yerine)
@@ -27,8 +30,10 @@ const esc=(s)=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;
 // ── 🔊 Ses sistemi (WebAudio) ─────────────────────────────────
 let _ac=null;
 function getAC(){
+  try{if(localStorage.getItem('hero_kozmo_sound')!=='1')return null;}catch(_){return null;}
+  if(document.hidden||(!document.getElementById('kozmosPanel')&&!document.querySelector('.koz-detail')&&!document.querySelector('.koz-fusion-ov')))return null;
   if(!_ac){ try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){} }
-  if(_ac&&_ac.state==='suspended') try{_ac.resume();}catch(e){}
+  if(_ac&&_ac.state==='suspended') try{_ac.resume().catch(()=>{});}catch(e){}
   return _ac;
 }
 function tone(freq,type,dur,vol,delay){
@@ -187,12 +192,12 @@ const FUSION_TYPES=[
 function getMergeResult(key1,key2,useStone){
   const combo=key1+'+'+key2;
   const direct=MERGE_TABLE[combo];
-  if(direct&&TYPES[direct]) return {key:direct,...TYPES[direct]};
   // Birlestirme Tasi: legendary fusion garantisi
   if(useStone){
     const legends=FUSION_TYPES.filter(f=>f.r==='legendary');
     if(legends.length){ const lf=legends[Math.floor(Math.random()*legends.length)]; return {...lf}; }
   }
+  if(direct&&TYPES[direct]) return {key:direct,...TYPES[direct]};
   // Bilinmeyen → rastgele fusion (epic+)
   const roll=Math.floor(Math.random()*100);
   if(roll===0){
@@ -564,6 +569,8 @@ const UNIQUE_FALLBACK = {
 };
 
 function showCreatureDetail(c,t,rc){
+  const owner=Auth.getState().uid;
+  c={...c,power:c.power||t.power,bonus:c.bonus||t.bonus};
   // Eski özel kozmolarda element/power eksikse, isimden/türden geri doldur
   if(c.unique && (!c.power || !c.element)){
     const guess = UNIQUE_FALLBACK[c.uniqueId] || UNIQUE_FALLBACK[c.kind];
@@ -597,20 +604,19 @@ function showCreatureDetail(c,t,rc){
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   inn.querySelector('#kozDetClose').addEventListener('click',()=>ov.remove());
   inn.querySelector('#kozPlaySound').addEventListener('click',()=>creatureSound(t.sound));
-  // ⚡ Aktif Et — bonusu hero_active_kozmo'ya yaz (oyunlarda etki eder)
+  // The selected companion and bonus belong to this captured account.
   const actBtn = inn.querySelector('#kozActivate');
   if(actBtn){
     // Mevcut aktif mi?
     try{
-      const cur = JSON.parse(localStorage.getItem('hero_active_kozmo')||'null');
+      const cur = getActiveKozmo(owner);
       if(cur && cur.id === (c._id||c.uniqueId)){ actBtn.textContent='✓ Aktif'; actBtn.classList.add('active'); }
     }catch(e){}
     actBtn.addEventListener('click',()=>{
       try{
-        localStorage.setItem('hero_active_kozmo', JSON.stringify({
-          id: c._id||c.uniqueId||c.name, name: c.name, power: c.power||(t&&t.power)||null, bonus: c.bonus||null
-        }));
+        if(!activateKozmo(owner,c._id||c.uniqueId,c,t))return;
         actBtn.textContent='✓ Aktif'; actBtn.classList.add('active');
+        _kozmoStage?.update({active:true});
         creatureSound(t.sound);
         _toast('⚡ '+(c.name||'Kozmo')+' aktif! Bonusu artık oyunlarda geçerli.');
       }catch(e){ _toast('Aktif edilemedi'); }
@@ -629,61 +635,261 @@ function lighten(hex){
 
 
 // ── Yumurta gönder (arkadaş profilinden) ─────────────────────
+// The debit/free-day reservation and delivery intent live in the sender's
+// profile. An inbox tombstone survives accept/reject, so replaying an uncertain
+// delivery never recreates a gift the recipient has already consumed.
+const _eggGiftActive = new Map();
+const _eggGiftOwner = uid => !!uid && Auth.getState().uid === uid && Auth.getState().status === 'google';
+const _eggGiftUid = uid => typeof uid === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(uid);
+const _eggGiftId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,200}$/.test(id);
+const _eggGiftDay = () => new Date().toISOString().slice(0,10);
+function _validEggGift(gift){
+  return gift && _eggGiftId(gift.id) && _eggGiftUid(gift.fromUid) && _eggGiftUid(gift.toUid)
+    && Number.isSafeInteger(gift.sentAt) && gift.sentAt > 0 && Number.isSafeInteger(gift.seed) && gift.seed >= 0
+    && [0,50].includes(gift.amount) && ['pending','complete'].includes(gift.status);
+}
+function _eggGiftFailure(error){
+  const code=String(error?.code||error?.message||'').toLowerCase();
+  return code.includes('permission')||code.includes('denied')
+    ? 'Yumurta teslimi için sunucu izni alınamadı. Kayıt korunuyor; yeniden deneyebilirsin.'
+    : 'Teslim onayı alınamadı. Aynı kişiye yeniden deneyince kayıt tamamlanır; tekrar ücret alınmaz.';
+}
+async function _readEggGift(uid,id){
+  if(!_eggGiftOwner(uid))return null;
+  const snapshot=await fdb.get(fdb.ref(db,'users/'+uid+'/heroEggGifts/'+id));
+  return _eggGiftOwner(uid)?snapshot.val():null;
+}
+async function _deliverEggGift(uid,gift){
+  if(!_eggGiftOwner(uid)||!_validEggGift(gift)||gift.fromUid!==uid)return {ok:false,error:'Hediye kaydı geçersiz'};
+  let delivered=false;
+  try{
+    const pending=_noUndef({giftId:gift.id,fromUid:gift.fromUid,fromName:gift.fromName||'Oyuncu',fromAvatar:gift.fromAvatar||'👤',
+      toUid:gift.toUid,toName:gift.toName||'Oyuncu',sentAt:gift.sentAt,seed:gift.seed,status:'pending',source:'gift'});
+    const result=await fdb.runTransaction(fdb.ref(db,'kozmoPending/'+gift.toUid),inbox=>{
+      if(!_eggGiftOwner(uid))return;
+      inbox=inbox&&typeof inbox==='object'&&!Array.isArray(inbox)?inbox:{};
+      if(inbox._deliveryClaims?.[gift.id])return;
+      return {...inbox,[gift.id]:pending,_deliveryClaims:{...inbox._deliveryClaims,[gift.id]:{ts:Date.now(),fromUid:uid}}};
+    },{applyLocally:false});
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti; hediye kaydı korunuyor'};
+    let marker=result.committed?result.snapshot.val()?._deliveryClaims?.[gift.id]:null;
+    if(!marker){const snapshot=await fdb.get(fdb.ref(db,'kozmoPending/'+gift.toUid+'/_deliveryClaims/'+gift.id));marker=snapshot.val();}
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti; hediye kaydı korunuyor'};
+    if(marker?.fromUid!==uid)throw new Error('Teslim doğrulanamadı');
+    delivered=true;
+    // A stable notification key also makes an acknowledgement retry harmless.
+    try{await fdb.set(fdb.ref(db,'userNotifs/'+gift.toUid+'/'+gift.id),{type:'gift_kozmo',icon:'🥚',text:(gift.fromName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi! Kozmos panelinden kabul et.',ts:gift.sentAt,fromUid:uid});}catch(_){}
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,deliveryConfirmed:true,error:'Hesap değişti; hediye kaydı korunuyor'};
+    const marked=await fdb.runTransaction(fdb.ref(db,'users/'+uid+'/heroEggGifts/'+gift.id),saved=>{
+      if(!_eggGiftOwner(uid)||!_validEggGift(saved)||saved.toUid!==gift.toUid)return;
+      return {...saved,status:'complete',completedAt:Date.now()};
+    },{applyLocally:false});
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,deliveryConfirmed:true,error:'Hesap değişti; hediye kaydı korunuyor'};
+    const saved=marked.committed?marked.snapshot.val():await _readEggGift(uid,gift.id);
+    if(saved?.status!=='complete')throw new Error('Durum onayı alınamadı');
+    return {ok:true,gift:saved,amount:saved.amount,deliveryConfirmed:true};
+  }catch(error){return {ok:delivered,pending:true,deliveryConfirmed:delivered,gift,error:_eggGiftFailure(error)};}
+}
+export async function retryEggGifts(uid=Auth.getState().uid){
+  if(!_eggGiftOwner(uid))return [];
+  const snapshot=await fdb.get(fdb.ref(db,'users/'+uid+'/heroEggGifts'));
+  if(!_eggGiftOwner(uid))return [];
+  const results=[];
+  for(const gift of Object.values(snapshot.val()||{})){
+    if(!_eggGiftOwner(uid))break;
+    if(_validEggGift(gift)&&gift.status==='pending')results.push(await _deliverEggGift(uid,gift));
+  }
+  return results;
+}
+async function _sendEggGift(toUid,toName,st){
+  const uid=st.uid,day=_eggGiftDay();let proposed,chosen,committed=false;
+  try{
+    const [profileSnap,targetSnap]=await Promise.all([fdb.get(fdb.ref(db,'users/'+uid)),fdb.get(fdb.ref(db,'users/'+toUid))]);
+    if(!_eggGiftOwner(uid))return {ok:false,error:'Hesap değişti'};
+    if(!targetSnap.exists())return {ok:false,error:'Alıcı bulunamadı'};
+    const profile=profileSnap.val()||{};
+    const existing=Object.values(profile.heroEggGifts||{}).find(gift=>_validEggGift(gift)&&gift.status==='pending'&&gift.toUid===toUid);
+    if(existing)return _deliverEggGift(uid,existing);
+    const price=profile.heroEggGiftFreeDay===day?50:0;
+    if(price&&!confirm('Günlük ücretsiz hakkın kullanıldı. 50 Kaju ile yumurta gönderilsin mi?'))return {ok:false,cancelled:true};
+    if(!_eggGiftOwner(uid))return {ok:false,error:'Hesap değişti'};
+    const id='g_'+fdb.push(fdb.ref(db,'users/'+uid+'/heroEggGifts')).key;
+    if(!_eggGiftId(id))return {ok:false,error:'Hediye kaydı oluşturulamadı'};
+    proposed={id,fromUid:uid,fromName:st.displayName||'Oyuncu',fromAvatar:st.profile?.avatar||'👤',toUid,toName:toName||'Oyuncu',
+      sentAt:Date.now(),seed:Math.floor(Math.random()*0x7fffffff),amount:price,day,status:'pending'};
+    chosen=id;let rejection='Hediye kaydedilemedi';
+    const result=await fdb.runTransaction(fdb.ref(db,'users/'+uid),current=>{
+      if(!_eggGiftOwner(uid)){rejection='Hesap değişti';return;}
+      current=current||{};
+      const entries=current.heroEggGifts||{};
+      const pending=Object.values(entries).find(gift=>_validEggGift(gift)&&gift.status==='pending'&&gift.toUid===toUid);
+      if(pending){chosen=pending.id;return;}
+      if((current.heroEggGiftFreeDay===day?50:0)!==price){rejection='Ücretsiz günlük hak başka işlemde kullanıldı. Ücretli göndermeyi yeniden onaylayabilirsin.';return;}
+      const fields={heroEggGifts:{...entries,[id]:proposed}};
+      if(price){
+        const balance=current.kaju;
+        if(!Number.isSafeInteger(balance)||balance<price||balance>999999999){rejection='Yetersiz Kaju';return;}
+        const revision=Number.isSafeInteger(current.heroWalletRevision)&&current.heroWalletRevision>=0?current.heroWalletRevision:0;
+        if(!Number.isSafeInteger(revision+1)){rejection='Bakiye kaydı geçersiz';return;}
+        fields.kaju=balance-price;fields.heroWalletRevision=revision+1;
+      }else fields.heroEggGiftFreeDay=day;
+      return {...current,...fields};
+    },{applyLocally:false});
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti; hediye kaydı korunuyor'};
+    committed=result.committed;
+    const gift=result.committed?result.snapshot.val()?.heroEggGifts?.[chosen]:await _readEggGift(uid,chosen);
+    if(!_validEggGift(gift))return {ok:false,error:rejection};
+    if(committed&&gift.amount&&_eggGiftOwner(uid))Store.logSpend?.(gift.amount,'kozmo','Yumurta gönderimi');
+    return _deliverEggGift(uid,gift);
+  }catch(error){
+    if(_eggGiftOwner(uid)&&proposed){
+      try{const saved=await _readEggGift(uid,chosen||proposed.id);if(_validEggGift(saved))return _deliverEggGift(uid,saved);}catch(_){}
+    }
+    return {ok:false,pending:!!proposed,error:proposed?_eggGiftFailure(error):'Hediye hazırlığı tamamlanamadı. Bağlantını kontrol edebilirsin.'};
+  }
+}
 export async function sendEgg(toUid,toName){
   const st=Auth.getState();
-  if(!st.uid||st.status!=='google'){_toast('Yumurta için giriş gerekli');return;}
-  const todayKey='htu_kozmo_'+new Date().toDateString();
-  const sentToday=parseInt(localStorage.getItem(todayKey)||'0');
-  if(sentToday>=1){
-    const pl=Store.getState?Store.getState():{};
-    if((pl.kaju||0)<50){_toast('Günlük limit doldu! 50 Kaju ile 1 daha gönderebilirsin.');return;}
-    if(!confirm('Günlük limit doldu. 50 Kaju ile gönder?'))return;
-    try{await Store.addKaju(-50,'kozmo','egg_send');}catch(e){return;}
-  }
+  if(!st.uid||st.status!=='google'){_toast('Yumurta için giriş gerekli');return {ok:false};}
+  if(!_eggGiftUid(toUid)||toUid===st.uid){_toast('Hediye için başka bir oyuncu seçmelisin.');return {ok:false};}
+  const key=st.uid+':'+toUid;
+  if(_eggGiftActive.has(key))return _eggGiftActive.get(key);
+  const pending=_sendEggGift(toUid,toName,st);
+  _eggGiftActive.set(key,pending);
   try{
-    await fdb.set(fdb.ref(db,'kozmoPending/'+toUid+'/'+st.uid),_noUndef({
-      fromUid:st.uid,fromName:st.displayName||'Oyuncu',
-      fromAvatar:(st.profile&&st.profile.avatar)||'👤',
-      toUid,toName:toName||'Oyuncu',
-      sentAt:Date.now(),seed:Math.floor(Date.now()/1000)%997,status:'pending'
-    }));
-    try{localStorage.setItem(todayKey,String(sentToday+1));}catch(e){}
-    // Alıcıya bildirim
-    try{await fdb.push(fdb.ref(db,'userNotifs/'+toUid),{type:'gift_kozmo',icon:'🥚',text:(st.displayName||'Bir oyuncu')+' sana kozmo yumurtası gönderdi! Kozmos panelinden kabul et.',ts:Date.now(),fromUid:st.uid});}catch(e){}
-    _toast('🥚 Yumurta gönderildi → '+toName+'!');
-  }catch(e){_toast('Gönderilemedi: '+(e.message||e));}
+    const result=await pending;
+    if(!_eggGiftOwner(st.uid))return result;
+    if(result.ok){
+      _toast(result.pending?'🥚 Yumurta alıcıya kaydedildi; durum onayı bekleniyor.':'🥚 Yumurta gönderildi → '+(toName||'Oyuncu')+'!');
+    }else if(!result.cancelled)_toast(result.error||'Hediye tamamlanamadı',true);
+    return result;
+  }finally{if(_eggGiftActive.get(key)===pending)_eggGiftActive.delete(key);}
+}
+
+// A legacy sender key can be reused for a later gift. Include its immutable
+// sentAt/seed in the receipt so a new legacy gift does not reuse an old claim.
+function _incomingEggToken(key,gift){return 'gift_'+key+'_'+gift.sentAt+'_'+gift.seed;}
+function _sameIncomingEgg(a,b){return a&&b&&a.fromUid===b.fromUid&&a.toUid===b.toUid&&a.sentAt===b.sentAt&&a.seed===b.seed;}
+export async function acceptEggGift(key,gift,uid=Auth.getState().uid){
+  if(!_eggGiftOwner(uid)||!_eggGiftId(key)||!gift||gift.status!=='pending'||!_eggGiftUid(gift.fromUid)
+    ||(gift.toUid&&gift.toUid!==uid)||!Number.isSafeInteger(gift.sentAt)||gift.sentAt<=0||!Number.isSafeInteger(gift.seed)||gift.seed<0)return {ok:false,error:'Yumurta kaydı geçersiz'};
+  const token=_incomingEggToken(key,gift),eggId='egg_'+token;
+  try{
+    const pendingRef=fdb.ref(db,'kozmoPending/'+uid+'/'+key);
+    const actual=await fdb.get(pendingRef);
+    if(!_eggGiftOwner(uid))return {ok:false,error:'Hesap değişti'};
+    if(!_sameIncomingEgg(actual.val(),gift)||actual.val()?.status!=='pending')return {ok:false,error:'Hediye kaydı değişti. Paneli yeniden açabilirsin.'};
+    const incoming=actual.val();
+    const result=await fdb.runTransaction(fdb.ref(db,'kozmos/'+uid),data=>{
+      if(!_eggGiftOwner(uid))return;
+      data=data||{};
+      if(data.giftAcceptanceClaims?.[token])return;
+      return {...data,eggs:{...data.eggs,[eggId]:data.eggs?.[eggId]||_noUndef({...incoming,id:eggId,acceptedAt:Date.now(),feedCount:0,ownerId:uid})},
+        giftAcceptanceClaims:{...data.giftAcceptanceClaims,[token]:{ts:Date.now(),eggId,sourceKey:key,fromUid:gift.fromUid,sentAt:gift.sentAt,seed:gift.seed}}};
+    },{applyLocally:false});
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti'};
+    let receipt=result.committed?result.snapshot.val()?.giftAcceptanceClaims?.[token]:null;
+    if(!receipt){const confirmed=await fdb.get(fdb.ref(db,'kozmos/'+uid+'/giftAcceptanceClaims/'+token));receipt=confirmed.val();}
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti'};
+    if(receipt?.eggId!==eggId)throw new Error('Yumurta onaylanamadı');
+    try{
+      await fdb.runTransaction(pendingRef,current=>{
+        if(!_eggGiftOwner(uid)||!_sameIncomingEgg(current,gift))return;
+        return null;
+      },{applyLocally:false});
+    }catch(_){return {ok:true,pendingCleanup:true,eggId};}
+    return {ok:true,eggId};
+  }catch(error){return {ok:false,pending:true,error:'Yumurta kabul onayı alınamadı. Yeniden kabul ederek aynı kaydı tamamlayabilirsin.'};}
+}
+async function _rejectEggGift(key,gift,uid){
+  if(!_eggGiftOwner(uid)||!_eggGiftId(key))return false;
+  const result=await fdb.runTransaction(fdb.ref(db,'kozmoPending/'+uid+'/'+key),current=>{
+    if(!_eggGiftOwner(uid)||!_sameIncomingEgg(current,gift))return;
+    return null;
+  },{applyLocally:false});
+  return _eggGiftOwner(uid)&&result.committed;
 }
 
 // ── Kozmos Paneli ─────────────────────────────────────────────
+let _kozmoStage=null,_kozmoViewOwner=null,_kozmoRenderId=0;
+function closeKozmos(){
+  _kozmoRenderId++;_kozmoStage?.destroy();_kozmoStage=null;_kozmoViewOwner=null;
+  document.getElementById('kozmosPanel')?.remove();
+  if(_ac?.state==='running')try{_ac.suspend().catch(()=>{});}catch(_){}
+}
+function companionType(creature){
+  const type=TYPES[creature.typeKey]||FUSION_TYPES.find(t=>t.key===creature.typeKey)||{};
+  const fallback=creature.unique?(UNIQUE_FALLBACK[creature.uniqueId]||UNIQUE_FALLBACK[creature.kind]||{}):{};
+  return {...type,n:creature.name||type.n||type.name||'Kozmo',c:creature.color||type.c||'#c084fc',
+    r:creature.rarity||type.r||'common',element:creature.element||type.element||fallback.element,
+    power:creature.power||type.power||fallback.power,bonus:creature.bonus||type.bonus||fallback.bonus,
+    sound:type.sound||(creature.unique?'crystal':'soft'),particle:type.particle||(creature.unique?'prism':'stars')};
+}
 export async function openKozmos(){
   if(document.getElementById('kozmosPanel'))return;
   const st=Auth.getState();
   if(!st.uid||st.status!=='google'){_toast('Kozmos için giriş gerekli');return;}
+  ensureKozmoStageStyles();
+  _kozmoViewOwner=st.uid;
   const ov=document.createElement('div'); ov.id='kozmosPanel'; ov.className='clan-ov';
-  const panel=document.createElement('div'); panel.className='clan-panel';
+  const panel=document.createElement('div'); panel.className='clan-panel kozmo-premium-panel';
   panel.style.cssText='border-color:rgba(192,132,252,.35);background:linear-gradient(170deg,#110826,#0a0416)';
   panel.innerHTML=''
     +'<div class="clan-head" style="border-color:rgba(192,132,252,.15)">'
-      +'<div class="clan-title" style="background:linear-gradient(90deg,#E040FB,#7C4DFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🥚 KOZMOS</div>'
-      +'<button class="clan-x" id="kozClose">✕</button>'
+      +'<div><div class="clan-title" style="background:linear-gradient(90deg,#f1ddb6,#c8b8f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent">✦ KOZMOS</div><div class="kozmo-panel-subtitle">Küçük evrenin, kozmik yoldaşların.</div></div>'
+      +'<button class="clan-x" id="kozClose" aria-label="Kozmos panelini kapat">✕</button>'
     +'</div>'
     +'<div class="clan-body" id="kozBody"><div class="clan-load">⏳ Yükleniyor…</div></div>';
   ov.appendChild(panel); document.body.appendChild(ov);
-  panel.querySelector('#kozClose').addEventListener('click',()=>ov.remove());
-  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  panel.querySelector('#kozClose').addEventListener('click',closeKozmos);
+  ov.addEventListener('click',e=>{if(e.target===ov)closeKozmos();});
+  try{ await retryEggGifts(st.uid); }catch(_){}
+  if(!_eggGiftOwner(st.uid)||!ov.isConnected)return;
+  try{ await retryKozmoCare(st.uid); }catch(_){}
+  if(!_eggGiftOwner(st.uid)||!ov.isConnected)return;
   await renderKozmos(st,panel.querySelector('#kozBody'));
 }
 
 async function renderKozmos(st,box){
-  if(!box)return;
+  if(!box||!_eggGiftOwner(st.uid)||box.isConnected===false)return;
+  const rendering=++_kozmoRenderId;
   let pending={},eggs={},creatures={};
+  let collectionRead=false;
   try{const s=await fdb.get(fdb.ref(db,'kozmoPending/'+st.uid));pending=s.exists()?s.val():{};}catch(e){}
   try{const s=await fdb.get(fdb.ref(db,'kozmos/'+st.uid+'/eggs'));eggs=s.exists()?s.val():{};}catch(e){}
-  try{const s=await fdb.get(fdb.ref(db,'kozmos/'+st.uid+'/creatures'));creatures=s.exists()?s.val():{};}catch(e){}
+  try{const s=await fdb.get(fdb.ref(db,'kozmos/'+st.uid+'/creatures'));creatures=s.exists()?s.val():{};collectionRead=true;}catch(e){}
+  if(rendering!==_kozmoRenderId||!_eggGiftOwner(st.uid)||box.isConnected===false)return;
   const pendList=Object.entries(pending).filter(([,v])=>v&&v.status==='pending');
   const eggList=Object.entries(eggs);
   const creList=Object.entries(creatures);
+  _kozmoStage?.destroy();_kozmoStage=null;
   box.innerHTML='';
+  const active=collectionRead?reconcileActiveKozmo(st.uid,creatures):getActiveKozmo(st.uid);
+  let selectedId=null;
+  const selectCompanion=(id,creature)=>{
+    if(!_eggGiftOwner(st.uid)||rendering!==_kozmoRenderId)return;
+    selectedId=id;const type=companionType(creature),selected={...creature,_id:id};
+    const model={creature:selected,type,active:getActiveKozmo(st.uid)?.id===id,
+      renderVisual:({size})=>creatureSVG(creature.typeKey,size,creature.unique?{unique:true,kind:creature.kind,color:creature.color}:{}),
+      onDetails:()=>{if(_eggGiftOwner(st.uid))showCreatureDetail(selected,type,RARITY_COLOR[type.r]||'#c2a4ff');},
+      onActivate:()=>{
+        if(rendering!==_kozmoRenderId||!activateKozmo(st.uid,id,creature,type))return false;
+        _toast('✦ '+type.n+' artık aktif yoldaşın.');return true;
+      }};
+    if(_kozmoStage)_kozmoStage.update(model);
+    else{const host=document.createElement('div');box.prepend(host);_kozmoStage=mountKozmoStage(host,model);}
+    box.querySelectorAll('[data-companion-id]').forEach(card=>card.setAttribute('aria-pressed',String(card.dataset.companionId===selectedId)));
+  };
+  if(creList.length){const first=creList.find(([id])=>id===active?.id)||creList[0];selectCompanion(...first);}
+  else if(eggList.length){
+    const [id,egg]=eggList[0],phase=kozmoGetPhase(egg.sentAt||egg.acceptedAt||0,egg.feedCount||0);
+    const info=PHASE_INFO[phase]||PHASE_INFO[0],host=document.createElement('div');box.prepend(host);
+    _kozmoStage=mountKozmoStage(host,{creature:{name:'Gizemli yoldaşın',power:info.desc},
+      type:{element:'Kuluçka',sound:'cute',particle:'stars'},rarityLabel:'Kuluçkada',levelLabel:'Faz '+phase+' / 11',
+      renderVisual:({size})=>kozmoEggSVG(phase,size),
+      onDetails:()=>{if(_eggGiftOwner(st.uid))showEggModal(id,egg,phase,st,box);},
+      onFeed:()=>rendering===_kozmoRenderId?_feedEggWithCare(id,st,box):false});
+  }
 
   // ── Gelen Yumurtalar
   if(pendList.length){
@@ -701,17 +907,18 @@ async function renderKozmos(st,box){
           +'<button class="koz-btn-rej" data-rej="'+uid+'">✕ Reddet</button>'
         +'</div>';
       row.querySelector('[data-acc]').addEventListener('click',async(ev)=>{
-        if(ev.target.disabled) return;
-        ev.target.disabled=true; ev.target.textContent='⏳';
-        const id='egg_'+Date.now()+'_'+uid.slice(0,6);
-        try{
-          await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+id),_noUndef({...e,acceptedAt:Date.now(),feedCount:0,ownerId:st.uid}));
-          await fdb.set(fdb.ref(db,'kozmoPending/'+st.uid+'/'+uid),null);
-          feedAnim(); await renderKozmos(st,box);
-        }catch(err){_toast('Kabul edilemedi');}
+        if(ev.target.disabled||!_eggGiftOwner(st.uid))return;
+        ev.target.disabled=true;ev.target.textContent='⏳';
+        const result=await acceptEggGift(uid,e,st.uid);
+        if(!_eggGiftOwner(st.uid)||box.isConnected===false)return;
+        if(result.ok){feedAnim();await renderKozmos(st,box);if(result.pendingCleanup)_toast('Yumurta eklendi; bekleyen kayıt daha sonra temizlenecek.');}
+        else{ev.target.disabled=false;ev.target.textContent='✅ Kabul';_toast(result.error||'Kabul edilemedi',true);}
       });
-      row.querySelector('[data-rej]').addEventListener('click',async()=>{
-        try{await fdb.set(fdb.ref(db,'kozmoPending/'+st.uid+'/'+uid),null); await renderKozmos(st,box);}catch(e){}
+      row.querySelector('[data-rej]').addEventListener('click',async(ev)=>{
+        if(ev.target.disabled||!_eggGiftOwner(st.uid))return;
+        ev.target.disabled=true;
+        try{await _rejectEggGift(uid,e,st.uid);if(_eggGiftOwner(st.uid)&&box.isConnected!==false)await renderKozmos(st,box);}
+        catch(_){if(_eggGiftOwner(st.uid)){ev.target.disabled=false;_toast('Hediye kaldırılamadı. Yeniden deneyebilirsin.',true);}}
       });
       sec.appendChild(row);
     });
@@ -751,26 +958,7 @@ async function renderKozmos(st,box){
         +(phase>=11?'<button class="koz-hatch-btn" data-hatch="'+k+'">🎊 Çıkar!</button>':'');
       card.querySelector('[data-feed]').addEventListener('click',async e=>{
         e.stopPropagation();
-        const todayKey='htu_feed_'+k+'_'+new Date().toDateString();
-        const fedToday=parseInt(localStorage.getItem(todayKey)||'0');
-        const feedLimit=(Store.isVip&&Store.isVip())?5:3;   // VIP: +2 ekstra besleme
-        // Gunluk besleme dolduysa: Besin Paketi ogesi varsa onunla besle
-        let usedItem=false;
-        if(fedToday>=feedLimit){
-          const foodCount=(Store.getItemCount&&(Store.getItemCount('item_food10')+Store.getItemCount('item_food50')))||0;
-          if(foodCount<=0){_toast('Bugun '+feedLimit+' kez besledin. Magazadan 🍎 Besin alarak devam edebilirsin!');return;}
-          // Besin ogesini kullan (once 10luk, yoksa 50lik)
-          if(Store.getItemCount('item_food10')>0){ await Store.useItem('item_food10'); }
-          else if(Store.getItemCount('item_food50')>0){ await Store.useItem('item_food50'); }
-          usedItem=true;
-        }
-        try{
-          await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+k+'/feedCount'),c=>(c||0)+1);
-          if(!usedItem) localStorage.setItem(todayKey,String(fedToday+1));
-          sfxFeed(); feedAnim();
-          if(usedItem){ const rem=(Store.getItemCount('item_food10')+Store.getItemCount('item_food50')); _toast('🍎 Besin kullanildi! Kalan: '+rem); }
-          await renderKozmos(st,box);
-        }catch(err){_toast('Beslenemedi');}
+        await _feedEggWithCare(k,st,box,e.currentTarget);
       });
       const hb=card.querySelector('[data-hatch]');
       if(hb) hb.addEventListener('click',async e=>{e.stopPropagation();await hatchEgg(k,egg,st,box);});
@@ -822,8 +1010,12 @@ async function renderKozmos(st,box){
         });
         card.appendChild(mergeBtn);
       }
-      // Karta tıkla → detay modalı (yetenek + ses çal)
-      card.addEventListener('click',()=>{ c._id=k; creatureSound(t.sound); showCreatureDetail(c,t,rc); });
+      card.dataset.companionId=k;card.tabIndex=0;card.setAttribute('role','button');
+      card.setAttribute('aria-label',(c.name||t.n||'Kozmo')+' yaşam alanında göster');
+      card.setAttribute('aria-pressed',String(selectedId===k));
+      const select=()=>{selectCompanion(k,c);_kozmoStage?.element.scrollIntoView({block:'nearest',behavior:'auto'});};
+      card.addEventListener('click',select);
+      card.addEventListener('keydown',event=>{if(event.target===card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();select();}});
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -838,41 +1030,109 @@ async function renderKozmos(st,box){
   }
 }
 
-let _hatchLock=false;
-async function hatchEgg(eggId,egg,st,box){
-  if(_hatchLock){ return; }  // çift tıklama koruması
-  if(!confirm('🎊 Yumurta çıkarılsın mı?'))return;
-  _hatchLock=true;
-  setTimeout(()=>{_hatchLock=false;},2000);
-  sfxCrack(); setTimeout(()=>sfxCrack(),180); setTimeout(()=>sfxHatch(),350);
+// Hatch consumes an authoritative egg and creates its creature/receipt in one
+// transaction. The receipt survives creature deletion/fusion and lost replies.
+const _hatchActive=new Map(),_hatchUiActive=new Set();
+const _hatchId=id=>typeof id==='string'&&/^[A-Za-z0-9_-]{1,600}$/.test(id);
+function _hatchType(egg,eggId){
+  const stored=typeof egg.type==='string'?egg.type:egg.type?.key;
+  if(stored&&TYPES[stored])return {key:stored,...TYPES[stored]};
+  let seed=Number.isSafeInteger(egg.seed)&&egg.seed>=0?egg.seed:0;
+  if(!Number.isSafeInteger(egg.seed)||egg.seed<0){
+    for(const char of eggId+'_'+(egg.sentAt||egg.acceptedAt||''))seed=(Math.imul(seed,31)+char.charCodeAt(0))&0x7fffffff;
+  }
+  // randomType's historical zero fallback is time-dependent; 997 has the same
+  // modulo value as zero and keeps this hatch deterministic across retries.
+  return randomType(seed||997,egg.minRarity);
+}
+async function _commitKozmoHatch(eggId,uid){
+  const creId='cre_hatch_'+eggId;let rejection='Yumurta bulunamadı';
+  const readReceipt=async()=>{
+    if(!_eggGiftOwner(uid))return null;
+    const saved=await fdb.get(fdb.ref(db,'kozmos/'+uid+'/hatchClaims/'+eggId));
+    return _eggGiftOwner(uid)?saved.val():null;
+  };
   try{
-    const t=randomType(egg.seed||0,egg.minRarity);
-    const creId='cre_'+Date.now()+'_'+eggId.slice(0,6);
-    // Firebase undefined kabul etmez — tüm alanları güvene al (mağaza/çark yumurtalarında fromUid/sentAt olmayabilir)
-    const creature = {
-      typeKey: t.key || 'unknown',
-      name: t.n || 'Kozmo',
-      fromUid: egg.fromUid || st.uid,        // gönderen yoksa sahibi
-      fromName: egg.fromName || 'Mağaza',
-      bornAt: Date.now(),
-      sentAt: egg.sentAt || egg.acceptedAt || Date.now(),
-      level: 1, xp: 0,
-    };
-    // Benzersiz/değerli yumurta alanlarını da taşı (varsa)
-    if(egg.unique) creature.unique = true;
-    if(egg.kind) creature.kind = egg.kind;
-    if(egg.uniqueId) creature.uniqueId = egg.uniqueId;
-    if(t.r) creature.rarity = t.r;
-    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId), _noUndef(creature));
-    await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId),null);
-    feedAnim(); sfxChirp();
+    await fdb.get(fdb.ref(db,'kozmos/'+uid));
+    if(!_eggGiftOwner(uid))return {ok:false,error:'Hesap değişti'};
+    const result=await fdb.runTransaction(fdb.ref(db,'kozmos/'+uid),data=>{
+      if(!_eggGiftOwner(uid))return;
+      data=data||{};
+      if(data.hatchClaims?.[eggId])return;
+      const egg=data.eggs?.[eggId];
+      if(!egg||typeof egg!=='object'||(egg.ownerId&&egg.ownerId!==uid))return;
+      const started=egg.sentAt||egg.acceptedAt,feedCount=egg.feedCount||0;
+      if(!Number.isSafeInteger(started)||started<=0||!Number.isSafeInteger(feedCount)||feedCount<0){rejection='Yumurta kaydı geçersiz';return;}
+      if(kozmoGetPhase(started,feedCount)<11){rejection='Yumurta henüz hazır değil';return;}
+      const t=_hatchType(egg,eggId),bornAt=Date.now();
+      const creature=_noUndef({typeKey:t.key||'unknown',name:t.n||'Kozmo',fromUid:egg.fromUid||uid,fromName:egg.fromName||'Mağaza',
+        bornAt,sentAt:started,level:1,xp:0,rarity:t.r,element:t.element,power:t.power,bonus:t.bonus,sourceEggId:eggId,
+        ...(egg.unique?{unique:true}:{}),...(egg.kind?{kind:egg.kind}:{}),...(egg.uniqueId?{uniqueId:egg.uniqueId}:{})});
+      const eggs={...data.eggs};delete eggs[eggId];
+      return {...data,eggs,creatures:{...data.creatures,[creId]:data.creatures?.[creId]||creature},
+        hatchClaims:{...data.hatchClaims,[eggId]:_noUndef({ts:bornAt,creatureId:creId,typeKey:creature.typeKey,name:creature.name,rarity:t.r,icon:t.e})}};
+    },{applyLocally:false});
+    if(!_eggGiftOwner(uid))return {ok:false,pending:true,error:'Hesap değişti'};
+    const receipt=result.committed?result.snapshot.val()?.hatchClaims?.[eggId]:await readReceipt();
+    if(receipt?.creatureId!==creId)return {ok:false,error:rejection};
+    return {ok:true,alreadyHatched:!result.committed,creatureId:creId,receipt};
+  }catch(error){
+    try{const receipt=await readReceipt();if(receipt?.creatureId===creId)return {ok:true,alreadyHatched:true,creatureId:creId,receipt};}catch(_){}
+    return {ok:false,pending:true,error:'Çıkarma onayı alınamadı. Yeniden deneyerek aynı yumurtanın kaydını kontrol edebilirsin.'};
+  }
+}
+export async function hatchKozmoEgg(eggId,uid=Auth.getState().uid){
+  if(!_eggGiftOwner(uid)||!_hatchId(eggId))return {ok:false,error:'Yumurta kaydı geçersiz'};
+  const key=uid+':'+eggId;
+  if(_hatchActive.has(key))return _hatchActive.get(key);
+  const pending=_commitKozmoHatch(eggId,uid);_hatchActive.set(key,pending);
+  try{return await pending;}finally{if(_hatchActive.get(key)===pending)_hatchActive.delete(key);}
+}
+async function hatchEgg(eggId,egg,st,box){
+  const uid=st.uid,key=uid+':'+eggId;
+  if(!_eggGiftOwner(uid)||_hatchUiActive.has(key))return;
+  _hatchUiActive.add(key);
+  try{
+    if(!confirm('🎊 Yumurta çıkarılsın mı?'))return;
+    const result=await hatchKozmoEgg(eggId,uid);
+    if(!_eggGiftOwner(uid)||box.isConnected===false)return;
+    if(!result.ok){_toast(result.error||'Çıkarılamadı',true);return;}
+    if(!result.alreadyHatched){
+      sfxCrack();setTimeout(()=>{if(_eggGiftOwner(uid))sfxHatch();},180);feedAnim();sfxChirp();
+    }
     await renderKozmos(st,box);
-    _toast('🎊 '+t.e+' '+t.n+' doğdu! ('+esc((RARITY_LABEL[t.r]||t.r))+')');
-  }catch(e){_toast('Çıkarılamadı: '+(e.message||e));}
+    if(!_eggGiftOwner(uid))return;
+    const receipt=result.receipt;
+    _toast(result.alreadyHatched?'🥚 Bu yumurtanın çıkarma kaydı tamamlandı.':'🎊 '+(receipt.icon||'✨')+' '+receipt.name+' doğdu! ('+(RARITY_LABEL[receipt.rarity]||receipt.rarity||'Kozmo')+')');
+  }finally{_hatchUiActive.delete(key);}
+}
+
+function _careUiOwner(uid){return Auth.getState().uid===uid&&Auth.getState().status==='google';}
+const _feedingCare=new Set(),_mergingCare=new Set();
+async function _feedEggWithCare(eggId,st,box,button,onSuccess){
+  const uid=st.uid,key=uid+':'+eggId;
+  if(!_careUiOwner(uid)||button?.isConnected===false||_feedingCare.has(key))return false;
+  _feedingCare.add(key);if(button)button.disabled=true;
+  try{
+    const todayKey='htu_feed_'+eggId+'_'+new Date().toDateString();
+    let legacyFreeUsed=0;
+    try{legacyFreeUsed=Math.min(5,Math.max(0,parseInt(localStorage.getItem(todayKey)||'0')||0));}catch(_){}
+    const result=await feedKozmo(eggId,uid,legacyFreeUsed);
+    if(!_careUiOwner(uid))return false;
+    if(!result.ok){_toast(result.error||'Beslenemedi',true);if(result.cancelled&&box?.isConnected!==false)await renderKozmos(st,box);return false;}
+    if(result.intent.resource.kind==='free')try{localStorage.setItem(todayKey,String(result.intent.freeUsed));}catch(_){}
+    sfxFeed();feedAnim();
+    if(result.intent.resource.kind==='item')_toast('🍎 Besin kullanıldı!');
+    if(onSuccess)onSuccess();
+    if(box?.isConnected!==false)await renderKozmos(st,box);
+    return true;
+  }catch(_){if(_careUiOwner(uid))_toast('Besleme kontrol edilemedi. Aynı yumurtadan yeniden deneyebilirsin.',true);return false;}
+  finally{_feedingCare.delete(key);if(button)button.disabled=false;}
 }
 
 // ── 💥 Birleştirme Seçici ────────────────────────────────────────
 function openMergeSelector(srcId,src,allCreatures,st,box){
+  if(!_careUiOwner(st.uid)||src.unique||box?.isConnected===false)return;
   const others=Object.entries(allCreatures).filter(([k,c])=>k!==srcId&&!c.unique);
   if(!others.length){_toast('Birleştirmek için en az 2 kozmo gerekli!');return;}
   const srcType=TYPES[src.typeKey]||{n:src.name||'?',e:'✨',c:'#c084fc',r:'common'};
@@ -895,22 +1155,23 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
   const list=inn.querySelector('#mergeTargetList');
   const stoneChk=inn.querySelector('#useStoneChk');
   const _useStone=()=>!!(stoneChk&&stoneChk.checked);
+  let busy=false;
   const _renderRows=()=>{
+  const usingStone=_useStone();
   list.innerHTML='';
   others.forEach(([k2,c2])=>{
     const t2=TYPES[c2.typeKey]||{n:c2.name||'?',e:'✨',c:'#c084fc',r:'common'};
-    const result=getMergeResult(src.typeKey||'',c2.typeKey||'',_useStone());
+    const result=getMergeResult(src.typeKey||'',c2.typeKey||'',usingStone);
     const rc=RARITY_COLOR[result.r]||'#aaa';
     const row=document.createElement('button'); row.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid rgba(192,132,252,.2);background:rgba(192,132,252,.06);cursor:pointer;font-family:inherit;width:100%;text-align:left';
     row.innerHTML='<div style="flex-shrink:0">'+(c2.unique?( c2.kind?creatureSVG(c2.typeKey,36,{unique:true,kind:c2.kind,color:c2.color}):'<span style="font-size:24px">'+(c2.icon||t2.e)+'</span>' ):creatureSVG(c2.typeKey,36))+'</div>'
       +'<div style="flex:1"><div style="font-size:10px;font-weight:800;color:'+t2.c+'">'+esc(c2.name||t2.n)+'</div><div style="font-size:8px;color:#5d6890">LV '+(c2.level||1)+' · '+esc(t2.element||'')+'</div></div>'
       +'<div style="text-align:right"><div style="font-size:9px;color:#c084fc">→ '+esc(result.name||result.n||'?')+'</div><div style="font-size:8px;font-weight:800;color:'+rc+'">'+esc(RARITY_LABEL[result.r]||result.r)+'</div></div>';
     row.addEventListener('click',async()=>{
-      const usingStone=_useStone();
-      ov.remove();
-      src._id=srcId; c2._id=k2;
-      if(usingStone && Store.getItemCount('item_fusion')>0){ await Store.useItem('item_fusion'); }
-      await doMerge(srcId,src,k2,c2,result,st,box);
+      if(busy||!_careUiOwner(st.uid)||!row.isConnected)return;
+      busy=true;row.disabled=true;if(stoneChk)stoneChk.disabled=true;
+      try{if(await doMerge(srcId,src,k2,c2,result,st,box,usingStone))ov.remove();}
+      finally{busy=false;row.disabled=false;if(stoneChk)stoneChk.disabled=false;}
     });
     list.appendChild(row);
   });
@@ -919,13 +1180,22 @@ function openMergeSelector(srcId,src,allCreatures,st,box){
   if(stoneChk) stoneChk.addEventListener('change',_renderRows);
 }
 
-async function doMerge(id1,c1,id2,c2,resultType,st,box){
-  if(!confirm('Birleştirme: '+esc(c1.name||'?')+' + '+esc(c2.name||'?')+' → '+esc(resultType.name||resultType.n||'?')+'\n\nBu işlem geri alınamaz!'))return;
-  // ID'leri güvenceye al
-  c1._id=c1._id||id1; c2._id=c2._id||id2;
+async function doMerge(id1,c1,id2,c2,resultType,st,box,useStone=false){
+  const uid=st.uid,key=uid+':'+[id1,id2].sort().join(':');
+  if(!_careUiOwner(uid)||box?.isConnected===false||_mergingCare.has(key))return false;
+  if(!confirm('Birleştirme: '+(c1.name||'?')+' + '+(c2.name||'?')+' → '+(resultType.name||resultType.n||'?')+'\n\nBu işlem geri alınamaz!'))return false;
+  _mergingCare.add(key);
   try{
-    showFusionAnimation(c1,c2,resultType,st,box);
-  }catch(e){_toast('Birleştirme hatası: '+(e.message||e));}
+    const result={typeKey:resultType.key||'fusion_cosmic',name:resultType.name||resultType.n||'Fusion',rarity:resultType.r||'epic',color:resultType.c||'#c084fc'};
+    const response=await fuseKozmos({firstId:id1,secondId:id2,firstType:c1.typeKey,secondType:c2.typeKey,result,useStone},uid);
+    if(!_careUiOwner(uid))return false;
+    if(!response.ok){_toast(response.error||'Birleştirilemedi',true);if(response.cancelled&&box?.isConnected!==false)await renderKozmos(st,box);return false;}
+    const saved=response.intent.result;
+    const type=TYPES[saved.typeKey]||FUSION_TYPES.find(item=>item.key===saved.typeKey)||{};
+    if(box?.isConnected!==false)await showFusionAnimation(c1,c2,{...type,key:saved.typeKey,name:saved.name,n:saved.name,r:saved.rarity,c:saved.color},st,box);
+    return true;
+  }catch(_){if(_careUiOwner(uid))_toast('Birleştirme kontrol edilemedi. Aynı çiftten yeniden deneyebilirsin.',true);return false;}
+  finally{_mergingCare.delete(key);}
 }
 async function showFusionAnimation(c1,c2,resultType,st,box){
   const ov=document.createElement('div'); ov.className='koz-fusion-ov';
@@ -952,30 +1222,19 @@ async function showFusionAnimation(c1,c2,resultType,st,box){
   sfxCrack(); setTimeout(()=>sfxCrack(),600);
   // 1.8s: sonucu göster + premium ses
   setTimeout(()=>{
+    if(!_careUiOwner(st.uid)){ov.remove();return;}
     const res=ov.querySelector('#fusionResult');
     const lbl=ov.querySelector('#fusionLabel');
     if(res) res.classList.add('show');
     if(lbl) lbl.textContent='✨ YENİ KOZMO DOĞDU!';
     sfxHatch(); creatureSound(resultType.sound||'magical');
   },1800);
-  // 3.5s: kapat + Firebase
+  // The result is already confirmed. This timer only closes the animation.
   setTimeout(async()=>{
     ov.remove();
-    const creId='cre_fusion_'+Date.now();
-    const newCre={
-      typeKey:resultType.key||'fusion_cosmic', name:resultType.name||resultType.n||'Fusion',
-      rarity:resultType.r||'epic', color:resultType.c||'#c084fc',
-      fromUid:st.uid, fromName:'Birleştirme', bornAt:Date.now(), level:Math.max(c1.level||1,c2.level||1),
-      xp:0, parents:[c1.typeKey,c2.typeKey], isFusion:true,
-    };
-    try{
-      // Önce ebeveynleri sil, sonra yeni yaratığı ekle (atomik benzeri)
-      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c1._id),null);
-      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+c2._id),null);
-      await fdb.set(fdb.ref(db,'kozmos/'+st.uid+'/creatures/'+creId),_noUndef(newCre));
-    }catch(e){ console.warn('[fusion]',e); }
+    if(!_careUiOwner(st.uid)||box?.isConnected===false)return;
     feedAnim();
-    await renderKozmos(st,box);
+    try{await renderKozmos(st,box);}catch(_){}
   },3500);
 }
 
@@ -996,11 +1255,7 @@ function showEggModal(eggId,egg,phase,st,box){
   const acts=inn.querySelector('.nm-actions');
   const bFeed=document.createElement('button'); bFeed.className='nm-btn nm-ok'; bFeed.textContent='🍎 Besle (+8sa)';
   bFeed.addEventListener('click',async()=>{
-    const tk='htu_feed_'+eggId+'_'+new Date().toDateString();
-    const fd=parseInt(localStorage.getItem(tk)||'0');
-    const fLim=(Store.isVip&&Store.isVip())?5:3;
-    if(fd>=fLim){_toast('Bugün '+fLim+' kez besledin!'+((Store.isVip&&Store.isVip())?'':' 👑 VIP ile +2 hak!'));return;}
-    try{await fdb.runTransaction(fdb.ref(db,'kozmos/'+st.uid+'/eggs/'+eggId+'/feedCount'),c=>(c||0)+1);localStorage.setItem(tk,String(fd+1));feedAnim();ov.remove();await renderKozmos(st,box);}catch(e){}
+    await _feedEggWithCare(eggId,st,box,bFeed,()=>ov.remove());
   });
   acts.appendChild(bFeed);
   if(phase>=11){
@@ -1022,20 +1277,32 @@ function mkCard(parent,title,color){
 function feedAnim(){['⭐','🌟','✨','💫'].forEach((s,i)=>setTimeout(()=>{const e=document.createElement('div');e.textContent=s;e.style.cssText='position:fixed;z-index:9999;font-size:22px;pointer-events:none;left:'+(25+Math.random()*50)+'%;bottom:30%;animation:kozmoConfetti .9s ease-out forwards';document.body.appendChild(e);setTimeout(()=>e.remove(),950);},i*130));}
 function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return r+','+g+','+b;}
 
+Auth.subscribe(state=>{
+  if(_kozmoViewOwner&&(state.uid!==_kozmoViewOwner||state.status!=='google')){
+    closeKozmos();
+    document.querySelectorAll('.koz-detail').forEach(panel=>panel.closest('.nick-modal-ov')?.remove());
+  }
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&_ac?.state==='running')try{_ac.suspend().catch(()=>{});}catch(_){}
+});
+
 export default openKozmos;
 
 
 // ── 🥚 Kozmo yumurtası ver (çark/ödül kullanır) ──
-export async function grantEgg(expectedUid, stableId){
+export async function grantEgg(expectedUid, stableId, minRarity){
   const st = Auth.getState();
   const uid = expectedUid || st?.uid;
   if(!uid || st?.uid !== uid) return false;
   if(stableId !== undefined && !/^[A-Za-z0-9_-]{1,120}$/.test(stableId)) return false;
+  if(minRarity !== undefined && !['common','rare','epic','legendary','mythical'].includes(minRarity)) return false;
   try{
     const id = stableId || 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
     const seed = (Math.random()*0x7fffffff)|0;
-    const type = randomType(seed);
-    const egg = { id, type, acceptedAt:Date.now(), feedCount:0, ownerId:uid, source:'spin' };
+    const type = randomType(seed,minRarity);
+    const source=stableId?.startsWith('shop_')?'shop':'spin';
+    const egg = { id, type, seed, minRarity:minRarity || 'common', acceptedAt:Date.now(), feedCount:0, ownerId:uid, source };
     if(stableId){
       // Keep delivery evidence after an egg is hatched/deleted, so a retry of
       // the original wheel receipt cannot create another copy of the egg.
@@ -1044,7 +1311,7 @@ export async function grantEgg(expectedUid, stableId){
         data = data || {};
         if(data.rewardEggClaims?.[id]) return;
         return {...data, eggs:{...data.eggs,[id]:data.eggs?.[id] || egg},
-          rewardEggClaims:{...data.rewardEggClaims,[id]:{ts:Date.now(),source:'spin'}}};
+          rewardEggClaims:{...data.rewardEggClaims,[id]:{ts:Date.now(),source}}};
       }, {applyLocally:false});
       if(result.committed) return true;
       // An aborted transaction may have an empty local snapshot on a cold tab.

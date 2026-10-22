@@ -264,7 +264,7 @@ export function openNickModal(){
 // ── Kaju gönderme modalı (nick'e gönder; admin: ± ayarlama da) ──
 export function openKajuModal(){
   const st = Auth.getState();
-  if(st.status !== 'google'){ _toast('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
+  if(!st.uid || st.status !== 'google'){ _toast('Kaju göndermek için Google ile giriş yapmalısın.'); return; }
   if(document.getElementById('kajuModal')) return;
   const isAdmin = st.isAdmin === true;
   const rem = Store.transferRemaining ? Store.transferRemaining() : { min:10, perTx:5000, hour:0, day:0, month:0 };
@@ -274,7 +274,7 @@ export function openKajuModal(){
     <div class="nick-modal">
       <div class="nm-title">🥜 Kaju Gönder</div>
       <div class="nm-sub">${isAdmin
-        ? 'Admin: sınırsız gönderim + bakiye ayarlama (− ile eksilt)'
+        ? 'Admin: işlem başına en fazla 10.000.000 Kaju · − ile eksilt'
         : `Tek seferde ${rem.min}–${rem.perTx} · Kalan: saat ${fmt(rem.hour)} / gün ${fmt(rem.day)} / ay ${fmt(rem.month)}`}</div>
       <div style="position:relative">
         <input id="kjNick" class="nm-input" maxlength="16" placeholder="Alıcının nick'i" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -288,13 +288,15 @@ export function openKajuModal(){
       </div>
     </div>`;
   document.body.appendChild(ov);
+  const current = () => ov.isConnected && document.getElementById('kajuModal') === ov && Auth.getState().uid === st.uid && Auth.getState().status === 'google' && (Auth.getState().isAdmin === true) === isAdmin;
   const nickIn = ov.querySelector('#kjNick'), amtIn = ov.querySelector('#kjAmt');
   const msg = ov.querySelector('#kjMsg'), sendBtn = ov.querySelector('[data-act="send"]');
   const setMsg = (t, ok) => { msg.textContent = t; msg.className = 'nm-msg ' + (ok ? 'ok' : 'bad'); };
   // Canlı öneri (harf duyarsız) — seçilen alıcının uid'si saklanır
-  let kjTarget = null, kjSugT = null;
+  let kjTarget = null, kjSugT = null, kjVersion = 0, sending = false, finished = false, pendingTx = null, attempt = null;
   const kjSug = ov.querySelector('#kjSug');
   nickIn.addEventListener('input', () => {
+    kjVersion++;
     kjTarget = null;
     const v = nickIn.value.trim();
     clearTimeout(kjSugT);
@@ -302,8 +304,8 @@ export function openKajuModal(){
     kjSugT = setTimeout(async () => {
       let list;
       try{ list = Auth.searchNicks ? await Auth.searchNicks(v, 6) : []; }
-      catch(error){ console.error('[NickSearch]', error); if(nickIn.value.trim() === v) kjSug.style.display = 'none'; return; }
-      if(!ov.isConnected || nickIn.value.trim() !== v) return;
+      catch(error){ console.error('[NickSearch]', error); if(current() && nickIn.value.trim() === v) kjSug.style.display = 'none'; return; }
+      if(!current() || nickIn.value.trim() !== v) return;
       if(!list.length){ kjSug.style.display = 'none'; return; }
       kjSug.replaceChildren(...list.map(x => {
         const item = document.createElement('button');
@@ -314,6 +316,8 @@ export function openKajuModal(){
       }));
       kjSug.style.display = '';
       kjSug.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
+        if(!current() || sending || pendingTx) return;
+        kjVersion++;
         kjTarget = { uid: it.dataset.uid, nick: it.dataset.nick };
         nickIn.value = it.dataset.nick; kjSug.style.display = 'none';
       }));
@@ -327,52 +331,89 @@ export function openKajuModal(){
       const v = nickIn.value.trim();
       if(v.length < 3){ setMsg('', true); return; }
       lookT = setTimeout(async () => {
+        const version = kjVersion;
+        const valid = () => current() && Auth.getState().isAdmin === true && !sending && kjVersion === version && nickIn.value.trim() === v;
+        if(!valid()) return;
         let t;
-        try{ t = await Auth.resolveNick(v); }catch(error){ if(nickIn.value.trim() === v) setMsg('Bakiye kontrol edilemedi.', false); return; }
-        if(nickIn.value.trim() !== v) return;
+        try{ t = await Auth.resolveNick(v); }catch(error){ if(valid()) setMsg('Bakiye kontrol edilemedi.', false); return; }
+        if(!valid()) return;
         if(!t){ setMsg('✗ Nick bulunamadı', false); return; }
         try{
           const cfg = await import('./firebase-config.js');
           const fdb = await import(`https://www.gstatic.com/firebasejs/${cfg.FIREBASE_SDK}/firebase-database.js`);
+          if(!valid()) return;
           const snap = await fdb.get(fdb.ref(fdb.getDatabase(), 'users/' + t.uid + '/kaju'));
+          if(!valid()) return;
           setMsg(`${t.nick} · bakiye: ${fmt(Number(snap.val() || 0))}`, true);
-        }catch(e){ setMsg(t.nick + ' bulundu', true); }
+        }catch(e){ if(valid()) setMsg(t.nick + ' bulundu', true); }
       }, 400);
     });
   }
   ov.querySelector('[data-act="cancel"]').addEventListener('click', () => ov.remove());
   ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
   sendBtn.addEventListener('click', async () => {
+    if(sending || finished || sendBtn.disabled || !current()) return;
+    if(pendingTx){
+      sending = true; sendBtn.disabled = true; setMsg('Bekleyen gönderim yeniden iletiliyor…', true);
+      try{
+        const r = await Store.retryPendingTransfers(pendingTx);
+        if(!current()) return;
+        if(r?.ok && Array.isArray(r.confirmedIds) && r.confirmedIds.includes(pendingTx)){
+          pendingTx = null; finished = true; setMsg('✓ Bekleyen gönderim alıcıya iletildi.', true); setTimeout(() => { if(current()) ov.remove(); }, 1400);
+        } else { setMsg('Gönderim kaydı korunuyor; alıcıya iletildiği henüz doğrulanamadı.', false); }
+      }catch(error){ if(current()) setMsg('Gönderim kaydı korunuyor. Bağlantı geldiğinde tekrar deneyebilirsin.', false); }
+      finally{ sending = false; if(current()){ sendBtn.disabled = finished; sendBtn.textContent = pendingTx ? 'Teslimi yeniden dene' : 'Gönder'; } }
+      return;
+    }
     const nick = nickIn.value.trim();
-    const amt = Math.floor(Number(amtIn.value.trim()));
+    const amt = Number(amtIn.value.trim());
     if(!nick){ setMsg('Nick gir', false); return; }
-    if(!Number.isFinite(amt) || amt === 0){ setMsg('Geçerli bir miktar gir', false); return; }
-    if(amt < 0 && !isAdmin){ setMsg('Negatif miktar sadece admin', false); return; }
-    sendBtn.disabled = true; setMsg('Alıcı aranıyor…', true);
+    if(!Number.isSafeInteger(amt) || amt === 0){ setMsg('Geçerli bir tam sayı gir', false); return; }
+    if(amt < 0 && Auth.getState().isAdmin !== true){ setMsg('Negatif miktar sadece admin', false); return; }
+    const version = ++kjVersion; // Any outstanding balance preview predates this send.
+    const valid = () => current() && kjVersion === version && nickIn.value.trim() === nick && Number(amtIn.value.trim()) === amt;
+    sending = true; sendBtn.disabled = true; setMsg('Alıcı aranıyor…', true);
     try{
     let target = (kjTarget && kjTarget.nick === nick) ? kjTarget : await Auth.resolveNick(nick);
+    if(!valid()) return;
     if(!target && Auth.searchNicks){
       const cand = await Auth.searchNicks(nick, 2);   // harf duyarsız tam eşleşme dene
+      if(!valid()) return;
       const exact = cand.filter(item => String(item.nick).toLowerCase() === nick.toLowerCase());
       if(exact.length === 1) target = exact[0];
     }
     if(!target){ setMsg('✗ Bu nick bulunamadı — öneri listesinden seç', false); sendBtn.disabled = false; return; }
+    const signature = JSON.stringify([target.uid, amt]);
+    if(attempt?.signature !== signature) attempt = {signature, id:'wallet_' + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + '_' + Math.random().toString(36).slice(2))};
     let r;
     if(amt < 0){
       setMsg('Bakiye ayarlanıyor…', true);
-      r = await Store.adminAdjustKaju(target.uid, amt, 'admin-eksiltme');
-      if(r.ok){ setMsg(`✓ ${target.nick}: yeni bakiye ${fmt(r.newBalance)}`, true); setTimeout(() => ov.remove(), 1400); return; }
+      r = await Store.adminAdjustKaju(target.uid, amt, 'admin-eksiltme', attempt.id);
+      if(!current()) return;
+      if(r.ok){ finished = true; setMsg(`✓ ${target.nick}: ${fmt(r.appliedDelta)} Kaju · yeni bakiye ${fmt(r.newBalance)}`, true); setTimeout(() => { if(current()) ov.remove(); }, 1400); return; }
     } else {
       setMsg('Gönderiliyor…', true);
-      r = await Store.transferKaju(target.uid, target.nick, amt);
-      if(r.ok){ setMsg(`✓ ${fmt(amt)} Kaju ${target.nick} adlı oyuncuya gönderildi`, true); setTimeout(() => ov.remove(), 1400); return; }
+      r = await Store.transferKaju(target.uid, target.nick, amt, {txId:attempt.id});
+      if(!current()) return;
+      if(r.ok){
+        const actual = r.amount;
+        if(r.pending || r.queued){
+          pendingTx = r.txId; nickIn.disabled = amtIn.disabled = true;
+          sendBtn.textContent = 'Teslimi yeniden dene';
+          setMsg(`✓ ${fmt(actual)} Kaju gönderimi kaydedildi; alıcıya iletilmesi bekleniyor.`, true);
+        } else {
+          finished = true;
+          setMsg(r.admin ? `✓ ${fmt(actual)} Kaju ${target.nick} adlı oyuncunun bakiyesine eklendi` : `✓ ${fmt(actual)} Kaju gönderimi ${target.nick} için kaydedildi. Alıcı hesabında onaylandığında bakiyeye geçer.`, true);
+          setTimeout(() => { if(current()) ov.remove(); }, 1400);
+        }
+        return;
+      }
     }
     setMsg('✗ ' + (r.error || 'Olmadı'), false); sendBtn.disabled = false;
     }catch(error){
       console.error('[KajuTransfer]', error);
-      setMsg('Gönderim tamamlanamadı. Bakiyeni kontrol edip yeniden dene.', false);
-      sendBtn.disabled = false;
-    }
+      if(current()) setMsg('Gönderim tamamlanamadı. Bakiyeni kontrol edip yeniden dene.', false);
+    }finally{ sending = false; if(current()) sendBtn.disabled = finished; }
   });
   setTimeout(() => nickIn.focus(), 50);
 }
@@ -386,12 +427,15 @@ function kajuToast(text){
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 4200);
 }
 // Store açılışta claim ediyor; sonuç olayla gelir → toast
-window.addEventListener('hero:kaju-claimed', (e) => {
+function onKajuClaimed(e){
   const d = e.detail || {};
-  if(!d.total) return;
-  const who = (d.claimed || []).map(c => c.from).filter((v,i,a)=>a.indexOf(v)===i).slice(0,3).join(', ');
+  const owner = d.uid || d.ownerUid;
+  if(owner && owner !== Auth.getState().uid) return;
+  if(!Number.isSafeInteger(d.total) || d.total <= 0) return;
+  const who = (Array.isArray(d.claimed) ? d.claimed : []).map(c => typeof c?.from === 'string' ? c.from : '').filter((v,i,a)=>v && a.indexOf(v)===i).slice(0,3).join(', ');
   kajuToast(`🥜 +${fmt(d.total)} Kaju geldi!${who ? ' (' + who + ')' : ''}`);
-});
+}
+window.addEventListener('hero:kaju-claimed', onKajuClaimed);
 
 let initialized = false;
 export function initUI(){

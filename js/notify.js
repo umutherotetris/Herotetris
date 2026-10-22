@@ -112,10 +112,25 @@ export async function broadcast(type, text, extra){
 }
 
 // ── KAJU HEDİYESİ bildirimi (özel) ──
-export async function notifyKajuGift(toUid, amount, fromName){
-  await notifyUser(toUid, 'gift_kaju',
-    (fromName || 'Bir oyuncu') + ' sana ' + amount + ' 🥜 Kaju hediye etti!',
-    { amount });
+export async function notifyKajuGift(toUid, amount, fromName, expectedSenderUid, txId){
+  const me = _me(), senderUid = expectedSenderUid === undefined ? me.uid : expectedSenderUid;
+  const validUid = uid => typeof uid === 'string' && /^[^.#$\[\]\/\u0000-\u001F\u007F]{1,128}$/.test(uid);
+  if(!validUid(toUid) || !validUid(senderUid) || me.uid !== senderUid || me.status !== 'google') return false;
+  if(!Number.isSafeInteger(amount) || amount <= 0) return false;
+  if(txId !== undefined && (typeof txId !== 'string' || !/^[A-Za-z0-9_-]{1,180}$/.test(txId))) return false;
+  const name = String(fromName || me.displayName || 'Bir oyuncu').slice(0,80);
+  const payload = {
+    type:'gift_kaju', icon:NOTIF_TYPES.gift_kaju.icon,
+    text:name + ' sana ' + amount + ' 🥜 Kaju hediye etti!',
+    ts:Date.now(), fromUid:senderUid, fromName:name, amount
+  };
+  try{
+    // A recovered transfer republishes the same notification instead of adding
+    // another card. Capture the actor before waiting for acknowledgement.
+    if(txId !== undefined) await fdb.set(fdb.ref(db, 'userNotifs/' + toUid + '/kaju_' + txId), {...payload, txId});
+    else await fdb.push(fdb.ref(db, 'userNotifs/' + toUid), payload);
+    return true;
+  }catch(e){ console.warn('[notify] Kaju gift', e?.code || 'delivery_failed'); return false; }
 }
 
 // ── SOHBET GİRİŞ/ÇIKIŞ bildirimleri (durum) ──
