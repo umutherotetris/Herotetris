@@ -27,6 +27,7 @@ let joinCode = null;        // misafirin bağlandığı oda kodu
 let reconnecting = false;   // şu an tekrar bağlanma denemesi sürüyor mu
 let reconTries = 0;         // kaç deneme yapıldı
 let reconTimer = null;      // bir sonraki deneme zamanlayıcısı
+let connectTimer = null;    // covers signaling open and data-channel handshake
 let sessionId = 0;
 let manualClose = false;    // kullanıcı bilerek kapattı mı (reconnect deneme)
 const RECON_MAX = 6;        // maksimum deneme (≈60 sn)
@@ -63,19 +64,26 @@ function startReconnect(){
   if(reconnecting || manualClose) return;
   if(!myCode && !joinCode) return;       // bağlanılacak oda yok
   reconnecting = true; reconTries = 0;
+  const session = sessionId;
   fire('reconnecting', { tries: 0, max: RECON_MAX });
-  attemptReconnect();
+  if(session === sessionId && reconnecting) attemptReconnect();
 }
 
 function attemptReconnect(){
-  if(manualClose){ reconnecting = false; return; }
+  if(manualClose || !reconnecting) return;
   reconTries++;
   if(reconTries > RECON_MAX){
-    reconnecting = false;
+    stopReconnect();
+    const oldConn = conn, oldPeer = peer;
+    conn = null; peer = null;
+    try{ if(oldConn) oldConn.close(); }catch(e){}
+    try{ if(oldPeer) oldPeer.destroy(); }catch(e){}
     fire('reconnect_failed');
     return;
   }
+  const session = sessionId;
   fire('reconnecting', { tries: reconTries, max: RECON_MAX });
+  if(session !== sessionId || manualClose || !reconnecting) return;
   try{
     // Eski peer/conn'u temizle
     const previousConn = conn, previousPeer = peer;
@@ -88,7 +96,7 @@ function attemptReconnect(){
       peer = new window.Peer(PREFIX + myCode, { debug: 1 });
       listen(peer, 'open', () => { fire('waiting'); });
       listen(peer, 'connection', (c) => {
-        if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
+        if(conn){ try{ c.close(); }catch(e){} return; }
         bindConn(c);
       });
       listen(peer, 'error', () => { scheduleNextRecon(); });
@@ -98,21 +106,27 @@ function attemptReconnect(){
       listen(peer, 'open', () => {
         const c = peer.connect(PREFIX + joinCode, { reliable: true });
         bindConn(c);
-        later(() => { if(!(conn && conn.open) && reconnecting) scheduleNextRecon(); }, 8000);
       });
       listen(peer, 'error', () => { scheduleNextRecon(); });
     }
+    // Begin before Peer.open: a stalled signaling connection must also time out.
+    connectTimer = later(() => {
+      connectTimer = null;
+      if(!(conn && conn.open) && reconnecting) scheduleNextRecon();
+    }, 8000);
   }catch(e){ scheduleNextRecon(); }
 }
 
 function scheduleNextRecon(){
   if(manualClose || !reconnecting) return;
+  if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
   if(reconTimer) clearTimeout(reconTimer);
-  reconTimer = later(attemptReconnect, RECON_DELAY);
+  reconTimer = later(() => { if(reconnecting) attemptReconnect(); }, RECON_DELAY);
 }
 
 function stopReconnect(){
   reconnecting = false; reconTries = 0;
+  if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
   if(reconTimer){ clearTimeout(reconTimer); reconTimer = null; }
 }
 
@@ -130,11 +144,11 @@ function bindConn(c){
   });
   listen(conn, 'close', () => {
     fire('disconnected');
-    if(!manualClose) startReconnect();   // kullanıcı kapatmadıysa tekrar bağlanmayı dene
+    if(conn === c && !manualClose) startReconnect();   // callback may have replaced the room
   });
   listen(conn, 'error', (err) => {
     fire('error', (err && err.type) || 'bağlantı hatası');
-    if(!manualClose) startReconnect();
+    if(conn === c && !manualClose) startReconnect();
   });
 }
 
@@ -151,12 +165,17 @@ export const ChessMP = {
     myCode = fixedCode || genCode();
     try{ peer = new window.Peer(PREFIX + myCode, { debug: 1 }); }
     catch(e){ fire('error', 'oda kurulamadı'); return null; }
-    listen(peer, 'open', () => { fire('code', myCode); fire('waiting'); });
+    listen(peer, 'open', () => {
+      const owner = peer;
+      fire('code', myCode);
+      if(peer === owner && !manualClose) fire('waiting');
+    });
     listen(peer, 'connection', (c) => {
-      if(conn && conn.open){ try{ c.close(); }catch(e){} return; }
+      if(conn){ try{ c.close(); }catch(e){} return; }
       bindConn(c);
     });
     listen(peer, 'error', (err) => {
+      if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
       const t = (err && err.type) || '';
       if(t === 'unavailable-id'){ fire('error', 'kod meşgul, tekrar dene'); }
       else fire('error', t || 'bağlantı hatası');
@@ -176,9 +195,13 @@ export const ChessMP = {
     listen(peer, 'open', () => {
       const c = peer.connect(PREFIX + code, { reliable: true });
       bindConn(c);
-      later(() => { if(!(conn && conn.open)) fire('error', 'oda bulunamadı'); }, 12000);
     });
+    connectTimer = later(() => {
+      connectTimer = null;
+      if(!(conn && conn.open)) fire('error', 'oda bulunamadı');
+    }, 12000);
     listen(peer, 'error', (err) => {
+      if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
       const t = (err && err.type) || '';
       if(t === 'peer-unavailable'){ fire('error', 'oda bulunamadı'); }
       else fire('error', t || 'bağlantı hatası');
@@ -188,7 +211,15 @@ export const ChessMP = {
   __setHandler(cb){ onEvent = cb; },
 
   send(obj){
-    if(conn && conn.open){ try{ conn.send(JSON.stringify(obj)); }catch(e){} }
+    if(conn && conn.open){
+      const owner = conn;
+      try{ conn.send(JSON.stringify(obj)); return true; }
+      catch(e){
+        fire('disconnected');
+        if(conn === owner && !manualClose) startReconnect();
+      }
+    }
+    return false;
   },
 
   close(){

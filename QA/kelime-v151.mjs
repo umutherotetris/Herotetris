@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import * as engine from '../js/games/kelime-engine.js';
 const raw=process.env.KELIME_V151_SOURCE_REF?execFileSync('git',['show',process.env.KELIME_V151_SOURCE_REF+':js/games/kelime.js'],{encoding:'utf8'}):fs.readFileSync(new URL('../js/games/kelime.js',import.meta.url),'utf8');
-const source=raw.replace(/^import[\s\S]*?;\r?\n/gm,'').replace(/^export function /gm,'function ');
+const source=raw.replace(/^import[\s\S]*?;\r?\n/gm,'').replace(/^export (?=(?:async )?function )/gm,'');
 const noop=()=>{},tile=letter=>({letter,points:engine.letterPoints(letter),joker:false});
 function el(){
  const classes=new Set(),children=new Map(),events={};

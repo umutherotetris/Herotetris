@@ -240,11 +240,12 @@ export function openChess(){
     const raw = localStorage.getItem('hero_invite_ctx');
     if(raw){
       const ctx = JSON.parse(raw);
-      if(ctx && ctx.game === 'chess' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+      const age = ctx && Date.now() - ctx.ts;
+      if(ctx && ctx.game === 'chess' && typeof ctx.code === 'string' && /^[A-Z2-9]{6}$/.test(ctx.code) && ['host','guest'].includes(ctx.role) && Number.isFinite(age) && age >= 0 && age < 300000){
         localStorage.removeItem('hero_invite_ctx');
         _startInviteChess(root, ctx);
         return;
-      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+      } else if(ctx && (ctx.game === 'chess' || age >= 300000)){
         localStorage.removeItem('hero_invite_ctx');
       }
     }
@@ -618,6 +619,8 @@ function startGame(root, mode, opts){
   // AI modunda tahta sabit (insan rengine göre), 2 oyuncu modunda (autoFlip açıksa) döner
   G.flip = ((mode === 'ai' || mode === 'online') && G.playerColor === 'b');
   G.animating = false;
+  G._drag = null; G._dragJustEnded = false;
+  G.oppLeft = false; G.syncPending = false;
 
   if(mode === 'ai' && !opts.restore) Resume.clearSnapshot('chess');   // taze AI oyunu → eski devam kaydını sil
   // ── Kaldığın yerden devam: durumu geri yükle ──
@@ -662,6 +665,7 @@ function startGame(root, mode, opts){
       }
       else if(type === 'disconnected'){
         updateStatus('🔌 Rakip ayrıldı — yeniden bağlanılıyor…', 'draw'); G.oppLeft = true;
+        G._drag = null; G.selected = null; G.legalForSelected = [];
         root.querySelector('[data-el="oppStatus"]').textContent = 'bağlantı koptu';
         root.querySelector('[data-el="oppDot"]').classList.remove('online');
         updatePanels();
@@ -672,15 +676,23 @@ function startGame(root, mode, opts){
         root.querySelector('[data-el="oppStatus"]').textContent = 'yeniden bağlanılıyor…';
       }
       else if(type === 'reconnected'){
-        G.oppLeft = false;
-        updateStatus('✅ Yeniden bağlanıldı!', 'win');
-        root.querySelector('[data-el="oppStatus"]').textContent = 'çevrimiçi';
+        // Keep both boards locked until the host has sent the reconnect snapshot.
+        // Ordered data delivery then guarantees the guest applies it before moves.
+        G.oppLeft = true; G.syncPending = true;
+        updateStatus('🔄 Bağlantı kuruldu — tahta eşitleniyor…', 'thinking');
+        root.querySelector('[data-el="oppStatus"]').textContent = 'tahta eşitleniyor…';
         root.querySelector('[data-el="oppDot"]').classList.add('online');
         updatePanels();
         // Host güncel state'i gönderir; misafir state ister
-        if(G.playerColor === 'w'){ setTimeout(() => { if(G === game) sendFullSync(); }, 400); }
+        if(G.playerColor === 'w'){ setTimeout(() => {
+          if(G === game && ChessMP.connected && sendFullSync()){
+            G.oppLeft = false; G.syncPending = false;
+            root.querySelector('[data-el="oppStatus"]').textContent = 'çevrimiçi';
+            updatePanels();
+          }
+        }, 400); }
         else { setTimeout(() => { if(G === game) ChessMP.send({ type:'resync_request' }); }, 400); }
-        setTimeout(() => { if(G === game && !G.gameEnded) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
+        setTimeout(() => { if(G === game && !G.gameEnded && !G.syncPending) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
       }
       else if(type === 'reconnect_failed'){
         updateStatus('❌ Yeniden bağlanılamadı', 'lose');
@@ -695,6 +707,7 @@ function startGame(root, mode, opts){
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => {
     if(!G || G.mode === 'online') return;
     G.state = newGame();
+    G._drag = null; G._dragJustEnded = false;
     G.undoStack = []; G.anim = null; G.animating = false; G.hintSquares = null;
     G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
     G.root.querySelectorAll('.chess-promo, .chess-confirm').forEach(el=>el.remove());
@@ -1225,7 +1238,7 @@ function findKingPos(board, color){
 function _canPlayNow(){
   if(!G || G.animating || G.aiThinking || G.gameEnded || G.promotionPending || G.confirmPending || G.fenPending) return false;
   if(G.mode === 'ai' && G.state.turn !== G.playerColor) return false;
-  if(G.mode === 'online'){ if(G.oppLeft) return false; if(G.state.turn !== G.playerColor) return false; }
+  if(G.mode === 'online'){ if(G.oppLeft || G.syncPending || !ChessMP.connected) return false; if(G.state.turn !== G.playerColor) return false; }
   const status = gameStatus(G.state);
   if(status === 'checkmate' || status === 'stalemate') return false;
   return true;
@@ -1256,6 +1269,7 @@ function onBoardPointerDown(e){
       px, py,
       moved: false,
       pointerId: e.pointerId,
+      state: G.state,
     };
     // Taşı seç + geçerli hamleleri hesapla (vurgu için)
     G.selected = { r: sq.r, c: sq.c };
@@ -1284,6 +1298,9 @@ function onBoardPointerUp(e){
   const drag = G._drag;
   G._drag = null;
   try{ G.canvas.releasePointerCapture(e.pointerId); }catch(_){}
+  if(drag.state !== G.state || !_canPlayNow()){
+    G.selected = null; G.legalForSelected = []; draw(); return;
+  }
 
   const { sq } = _eventCell(e);
   // Sürüklenmediyse (sadece bastı-bıraktı, aynı kare) → tıklama mantığına bırak (tap-tap seçim)
@@ -1293,7 +1310,8 @@ function onBoardPointerUp(e){
   }
   // Sürükleme oldu → eşlik eden click event'ini yok saymak için işaretle
   G._dragJustEnded = true;
-  setTimeout(() => { if(G) G._dragJustEnded = false; }, 50);
+  const game = G, state = G.state;
+  setTimeout(() => { if(G === game && G.state === state) G._dragJustEnded = false; }, 50);
   // Sürüklenip bir kareye bırakıldı
   if(sq){
     // Aynı kareye bırakıldıysa → seçili kalsın (tap-tap'e devam)
@@ -1323,7 +1341,7 @@ function onBoardClick(e){
   if(G.mode === 'ai' && G.state.turn !== G.playerColor) return;
   // Çevrimiçi modda sadece kendi rengini, kendi sıranda oyna
   if(G.mode === 'online'){
-    if(G.oppLeft) return;
+    if(G.oppLeft || G.syncPending || !ChessMP.connected) return;
     if(G.state.turn !== G.playerColor) return;
   }
   const status = gameStatus(G.state);
@@ -1359,8 +1377,9 @@ function onBoardClick(e){
 
 function doMove(mv){
   if(!G || G.gameEnded || G.animating || G.aiThinking || G.promotionPending || G.confirmPending || G.fenPending) return;
-  if((G.mode==='ai' || G.mode==='online') && G.state.turn!==G.playerColor) return;
-  mv=resolveLegalMove(G.state,mv);
+  if(G.mode === 'ai' && G.state.turn !== G.playerColor) return;
+  if(G.mode === 'online' && (G.oppLeft || G.syncPending || !ChessMP.connected || G.state.turn !== G.playerColor)) return;
+  mv = resolveLegalMove(G.state, mv);
   if(!mv) return;
   const game = G, state = G.state;
   const mover = state.board[mv.from.r][mv.from.c];
@@ -1369,32 +1388,38 @@ function doMove(mv){
   if(mv.promotion){
     const token={}; G.promotionPending=token;
     showPromotion(mover.c, (chosen) => {
-      if(G !== game || G.state !== state || G.gameEnded || G.promotionPending!==token) return;
-      G.promotionPending=null;
-      const full = resolveLegalMove(state,{ ...mv, promotion: chosen });
-      if(!full) return;
-      sendMoveOnline(full);
+      if(G !== game || G.state !== state || G.gameEnded || G.promotionPending !== token) return;
+      G.promotionPending = null;
+      if(G.mode === 'online' && (G.oppLeft || G.syncPending || !ChessMP.connected)) return;
+      const full = resolveLegalMove(state, { ...mv, promotion: chosen });
+      if(!full || sendMoveOnline(full) === false) return;
       finishMove(full);
     });
     return;
   }
-  sendMoveOnline(mv);
+  if(sendMoveOnline(mv) === false) return;
   finishMove(mv);
 }
 
 // Çevrimiçi modda yerel hamleyi rakibe gönder
 function sendMoveOnline(mv){
   if(G.mode === 'online' && !G.applyingRemote){
-    ChessMP.send({ type:'move', move: { from: mv.from, to: mv.to, promotion: mv.promotion, castle: mv.castle, double: mv.double, enPassant: mv.enPassant } });
+    return ChessMP.send({ type:'move', move: { from: mv.from, to: mv.to, promotion: mv.promotion, castle: mv.castle, double: mv.double, enPassant: mv.enPassant } }) !== false;
   }
+  return true;
 }
 
 // Rakipten gelen mesaj
 // ── Reconnect sonrası tam state senkronizasyonu ──
 function sendFullSync(){
-  if(!G || !ChessMP.connected) return;
+  if(!G || !ChessMP.connected) return false;
+  if(G.animating){
+    const game = G;
+    setTimeout(() => { if(G === game && G.syncPending) sendFullSync(); }, 100);
+    return false;
+  }
   try{
-    ChessMP.send({
+    const sent = ChessMP.send({
       type: 'fullsync',
       state: {
         board: G.state.board,
@@ -1412,7 +1437,18 @@ function sendFullSync(){
         gameEnded: !!G.gameEnded,
       }
     });
+    if(sent === false) return false;
+    if(G.playerColor === 'w' && G.syncPending){
+      G.oppLeft = false; G.syncPending = false;
+      if(G.root){
+        const status = G.root.querySelector('[data-el="oppStatus"]');
+        if(status) status.textContent = 'çevrimiçi';
+      }
+      if(typeof updatePanels === 'function') updatePanels();
+    }
+    return true;
   }catch(e){ console.warn('[chess] sendFullSync', e); }
+  return false;
 }
 
 function applyFullSync(s){
@@ -1437,6 +1473,12 @@ function applyFullSync(s){
     G.posHistory = s.posHistory || G.posHistory || [];
     if(s.scores) G.scores = s.scores;
     G.selected = null; G.legalForSelected = [];
+    G._drag = null; G._dragJustEnded = false;
+    G.oppLeft = false; G.syncPending = false;
+    if(G.root){
+      const status = G.root.querySelector('[data-el="oppStatus"]');
+      if(status) status.textContent = 'çevrimiçi';
+    }
     rebuildHistoryUI(); updateTurn(); updateCaptured(); updateClockDisplay(); draw();
     if(G.gameEnded) stopClockTick();
     else if(G.clock) startClockTick();
@@ -1467,7 +1509,7 @@ function onRemoteMessage(data){
   if(!data || !G) return;
   if(G.gameEnded && data.type !== 'chat') return;
   if(data.type === 'move' && data.move){
-    if(G.gameEnded || G.state.turn===G.playerColor) return;
+    if(G.gameEnded || G.syncPending || G.animating || G.state.turn===G.playerColor) return;
     const mv = resolveLegalMove(G.state,data.move);
     if(!mv) return;
     G.applyingRemote = true;
@@ -1832,6 +1874,7 @@ function showFENLoader(){
     ov.remove();
     // Pozisyonu yükle (taze oyun gibi)
     G.state = parsed;
+    G._drag = null; G._dragJustEnded = false;
     G.aiThinking = false; G.anim = null; G.animating = false;
     G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
     G.root.querySelectorAll('.chess-promo, .chess-confirm').forEach(el=>el.remove());
@@ -1861,6 +1904,7 @@ function undoMove(){
   if(!snap) return;
   // Durumu geri yükle
   G.state = snap.state;
+  G._drag = null; G._dragJustEnded = false;
   G.captured.w = snap.captured.w; G.captured.b = snap.captured.b;
   G.lastMove = snap.lastMove;
   G.moveHistory.length = snap.historyLen;
@@ -1887,7 +1931,7 @@ function rebuildHistoryUI(){
 // ════════════ ONAY DİYALOĞU ════════════
 function showConfirm(text, onYes){
   if(!G || G.gameEnded || G.confirmPending || G.fenPending || G.promotionPending) return;
-  const game=G,state=G.state;
+  const game = G, state = G.state;
   const ov = document.createElement('div');
   G.confirmPending=ov;
   let answered=false;

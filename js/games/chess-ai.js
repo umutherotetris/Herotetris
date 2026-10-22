@@ -197,6 +197,12 @@ export function chooseMove(state, difficulty){
 
   const maximizing = state.turn === 'w';
   const ordered = orderMoves(state, moves);
+  // An immediate mate is conclusive even when a busy/slow device exhausts the
+  // deeper search before its first full iteration. Check only checking moves.
+  for(const m of ordered){
+    const next = applyMove(state, m);
+    if(inCheck(next, next.turn) && allLegalMoves(next, next.turn).length === 0) return m;
+  }
   let scored=[];
   const now=()=>typeof performance!=='undefined'?performance.now():Date.now();
   const search={nodes:0,maxNodes:cfg.maxNodes,qDepth:cfg.qDepth,now,deadline:now()+cfg.timeMs};

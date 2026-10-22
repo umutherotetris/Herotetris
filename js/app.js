@@ -8,6 +8,7 @@ import Auth from './auth.js';
 import initUI from './ui.js';
 import initNav from './nav.js';
 import Store from './store.js';
+import { launchPortalGame } from './game-launcher.js';
 
 // Mobilde hata görmek için: ekranın üstüne kısa bir uyarı bas
 function toast(msg, isErr){
@@ -25,45 +26,9 @@ function toast(msg, isErr){
 }
 
 // Bir oyun modülünü dinamik yükle + aç. Hata olursa sadece o oyun etkilenir.
-const pendingGames = new Map();
-const gameRoots = {
-  './games/tetris.js': '.tetris-overlay, .hero-select-overlay',
-  './games/chess.js': '.chess-root',
-  './games/tavla.js': '.tavla-root',
-  './games/kelime.js': '.kl-root'
-};
-let latestGameRequest = null;
 function launchGame(modulePath, exportName, label){
-  const active = Object.entries(gameRoots).find(([,selector])=>document.querySelector(selector));
-  if(active){
-    if(active[0]!==modulePath) toast('Önce açık oyundan ana menüye dön, ardından ' + label + ' seç.', false);
-    return Promise.resolve();
-  }
-  const request = {modulePath};
-  latestGameRequest = request;
-  const pending = pendingGames.get(modulePath);
-  if(pending){ pending.request=request; return pending.promise; }
-  const entry = {request};
-  const launch = (async () => {
-  toast(label + ' açılıyor…', false);
-  try{
-    const mod = await import(modulePath);
-    if(latestGameRequest!==entry.request) return;
-    if(Object.values(gameRoots).some(selector=>document.querySelector(selector))) return;
-    const fn = mod[exportName];
-    if(typeof fn !== 'function') throw new Error(exportName + ' bulunamadı (' + modulePath + ')');
-    await fn();
-    document.dispatchEvent(new CustomEvent('hero:game-opened', {detail:{modulePath}}));
-  }catch(e){
-    toast(label + ' açılamadı. Bağlantını kontrol edip yeniden dene.', true);
-    console.error('[' + label + ']', e);
-  }
-  })();
-  entry.promise = launch.finally(() => {
-    if(pendingGames.get(modulePath)===entry) pendingGames.delete(modulePath);
-  });
-  pendingGames.set(modulePath, entry);
-  return entry.promise;
+  const key = modulePath.match(/\/([a-z]+)\.js$/)?.[1];
+  return launchPortalGame(key);
 }
 
 function bindEco(id, modulePath, exportName){

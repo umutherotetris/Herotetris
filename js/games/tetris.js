@@ -1748,7 +1748,7 @@ async function adventureWin(){
   await endGame(true);
 }
 
-async function endGame(isWin){
+async function endGame(isWin, { interrupted = false } = {}){
   if(!G || G.over) return;
   const session=G,round=G.round,uid=Auth.getState().uid;
   const current=()=>G===session && G.round===round && Auth.getState().uid===uid;
@@ -1759,6 +1759,18 @@ async function endGame(isWin){
   try{ Sound.stopMusic(); }catch(e){}
   // Versus/AI: rakibe öldüğünü bildir
   if(G.versus){
+    if(interrupted){
+      // Yerel ağ kaybı rakibin yenildiğini kanıtlamaz: iki tarafa da zafer yazma.
+      const ov=G.el.gameover;
+      ov.querySelector('.go-title').textContent='🔌 BAĞLANTI KESİLDİ';
+      ov.querySelector('.go-score').textContent=G.score.toLocaleString('tr-TR');
+      ov.querySelector('.go-lines').textContent='Sen: '+G.lines+' satır · '+(G.oppNick||'Rakip')+': '+(G.oppLines||0)+' satır';
+      ov.querySelector('.go-reward').textContent='Maç tamamlanamadı · sonuç kaydedilmedi';
+      ov.querySelector('.go-record').style.display='none';
+      ov.classList.add('show');
+      try{ MP.close(); }catch(e){}
+      return;
+    }
     if(!isWin && !G.ai && MP.connected) MP.send({ type:'dead' });
     Sound.gameover();
     const ov = G.el.gameover;
@@ -2459,9 +2471,12 @@ function _startInviteTetris(ctx){
   wait.className = 'hero-select-overlay';
   wait.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,10,24,.95);color:#00E5FF;font-family:system-ui;gap:14px';
   wait.innerHTML = '<div style="font-size:42px">' + (isHost?'\u23f3':'\u2694\ufe0f') + '</div>'
-    + '<div id="xinvMsg" style="font-size:16px;font-weight:800">' + (isHost ? (ctx.oppNick+' bekleniyor...') : (ctx.oppNick+'\'e baglaniliyor...')) + '</div>'
-    + '<div style="font-size:11px;color:#9fb0d8">Davet kodu: ' + ctx.code + '</div>'
+    + '<div id="xinvMsg" style="font-size:16px;font-weight:800"></div>'
+    + '<div id="xinvCode" style="font-size:11px;color:#9fb0d8"></div>'
     + '<button id="xinvCancel" style="margin-top:8px;padding:8px 18px;border-radius:10px;border:1px solid rgba(255,82,82,.4);background:rgba(255,82,82,.1);color:#ff8a80;font-weight:800;cursor:pointer">Vazgec</button>';
+  const oppNick = typeof ctx.oppNick === 'string' ? ctx.oppNick.slice(0,40) : 'Rakip';
+  wait.querySelector('#xinvMsg').textContent = isHost ? oppNick + ' bekleniyor...' : oppNick + '\'e bağlanılıyor...';
+  wait.querySelector('#xinvCode').textContent = 'Davet kodu: ' + ctx.code;
   document.body.appendChild(wait);
   let cancelled = false;
   wait.querySelector('#xinvCancel').addEventListener('click', () => { cancelled = true; try{ MP.close(); }catch(e){} wait.remove(); });
@@ -2471,8 +2486,7 @@ function _startInviteTetris(ctx){
     cancelled=true;
     MP.send({ type:'hello', nick:(window.__HERO_NICK||'Rakip'), hero:SELECTED_HERO });
     wait.remove();
-    window.__HERO_OPP_NICK = ctx.oppNick;
-    launchVersusGame();
+    launchVersusGame(oppNick);
   };
 
   const handler = (type, data) => {
@@ -2504,18 +2518,19 @@ function _startInviteTetris(ctx){
   }
 }
 
-function launchVersusGame(){
+function launchVersusGame(oppNick){
   if(G) return;
   SELECTED_MODE = 'versus';
   ADVENTURE_WORLD = null;
   launchGame();
   if(!G) return;
   G.versus = true;
-  G.oppScore = 0; G.oppLines = 0; G.oppNick = 'Rakip'; G.oppAlive = true;
+  G.oppScore = 0; G.oppLines = 0; G.oppNick = oppNick || 'Rakip'; G.oppAlive = true;
   G.pendingGarbage = 0;   // gelen çöp sıraları (sonraki kilitlemede uygulanır)
-  // Rakip mesajlarını dinle
-  MP.send({ type:'hello', nick:(window.__HERO_NICK||'Sen'), hero:SELECTED_HERO });
+  // Handler yalnız bu maça aittir; kapanmış maçın geç olayı yeni oyunu etkileyemez.
+  const session=G,round=G.round;
   MP._gameHandler = (type, data) => {
+    if(G!==session || G.round!==round) return;
     if(type === 'message'){
       if(data && data.type === 'vsync'){ applyVersusSync(data); return; }
       if(data && data.type === 'vsync_request'){ sendVersusSync(); return; }
@@ -2533,20 +2548,21 @@ function launchVersusGame(){
       if(G && G.versus && !G.over){
         flash('✅ Yeniden bağlanıldı!');
         G.oppAlive = true;
-        // Skor/durum senkronu: host gönderir, misafir ister
-        if(MP.host){ afterRound(sendVersusSync, 400); }
-        else { afterRound(() => MP.send({ type:'vsync_request' }), 400); }
+        // İki taraf da kendi durumunu gönderir ve rakibin durumunu ister.
+        // Hostun yalnız göndermesi, misafirin skorunu hostta eski bırakıyordu.
+        afterRound(() => { sendVersusSync(); MP.send({ type:'vsync_request' }); }, 400);
       }
     }
     else if(type === 'reconnect_failed'){
       if(G && G.versus && !G.over){
-        flash('🏆 Rakip yeniden bağlanamadı!'); G.oppAlive = false;
-        updateVersusUI(); endGame(true);
+        flash('🔌 Yeniden bağlantı kurulamadı.');
+        endGame(false, { interrupted:true });
       }
     }
   };
   // onEvent'i oyun handler'ına yönlendir (lobi handler'ı bitti)
   rebindMPHandler();
+  MP.send({ type:'hello', nick:(window.__HERO_NICK||'Sen'), hero:SELECTED_HERO });
   setupTetrisChat();   // çok oyuncu sohbetini aç
   updateVersusUI();
 }
@@ -2902,8 +2918,6 @@ function applyVersusSync(d){
   G.oppLines = d.lines || 0;
   if(typeof d.nick==='string' && d.nick) G.oppNick = d.nick.slice(0,40);
   G.oppAlive = (d.alive !== false);
-  // Karşılık ver (misafir ister, host gönderir; çift yönlü garanti)
-  if(MP.host){ /* host zaten gönderdi */ }
   updateVersusUI();
   if(!G.oppAlive && !G.over) endGame(true);
 }
@@ -2918,6 +2932,9 @@ function handleVersusMessage(msg){
   if(msg.type === 'hello'){
     if(typeof msg.nick!=='string') return;
     G.oppNick = msg.nick.slice(0,40) || 'Rakip'; updateVersusUI();
+    // İlk oyuncunun hello'su öteki hâlâ lobideyken gelmiş olabilir.
+    // Durum cevabı iki tarafın da adını/skorunu almasını sağlar; sync cevap üretmez.
+    sendVersusSync();
   }
   else if(msg.type === 'state'){
     if(!Number.isSafeInteger(msg.score) || msg.score<0 || !Number.isSafeInteger(msg.lines) || msg.lines<0) return;
@@ -3603,11 +3620,11 @@ export function openTetris(){
     const raw = localStorage.getItem('hero_invite_ctx');
     if(raw){
       const ctx = JSON.parse(raw);
-      if(ctx && ctx.game === 'tetris' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+      if(ctx && ctx.game === 'tetris' && ctx.code && (Date.now() - (ctx.ts||0)) < 300000){
         localStorage.removeItem('hero_invite_ctx');
         _startInviteTetris(ctx);
         return;
-      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 300000){
         localStorage.removeItem('hero_invite_ctx');
       }
     }

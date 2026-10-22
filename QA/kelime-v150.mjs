@@ -23,7 +23,7 @@ function game(){return {
   who:'B',ai:{difficulty:'orta'},seri:null,pending:[],rackView:[tile('B'),tile('C')],surprises:{},bestWord:{score:0},names:{A:'Me',B:'AI'},lastMoveCells:new Set()
 };}
 function ctx(G,extra={}){
-  return vm.createContext({G,KA:{findBestMove:()=>null},RACK_SIZE:engine.RACK_SIZE,SURPRISE_INFO:engine.SURPRISE_INFO,
+  return vm.createContext({G,KA:{findBestMove:()=>null},SIZE:engine.SIZE,RACK_SIZE:engine.RACK_SIZE,SURPRISE_INFO:engine.SURPRISE_INFO,
     commitMove:engine.commitMove,drawFromBag:engine.drawFromBag,validatePlacement:engine.validatePlacement,currentTurn:()=>G.who,
     renderAll:noop,renderScores:noop,celebrate:noop,flashStatus:noop,saveKelimeResume:noop,afterGame:noop,aiTurn:noop,
     stopTurnTimer:noop,startTurnTimer:noop,trackBest:noop,trackRecords:noop,setLastMove:noop,

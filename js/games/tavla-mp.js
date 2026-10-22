@@ -96,18 +96,17 @@ function attemptReconnect(){
       ? new window.Peer(PREFIX + myCode, { debug: 1 })
       : new window.Peer({ debug: 1 });
     peer = p;
+    // Include signaling in the deadline: a Peer may never emit `open` after
+    // a network outage, so starting this timer inside `open` can hang forever.
+    connectTimer = setTimeout(() => {
+      if(!currentPeer(p, generation)) return;
+      connectTimer = null;
+      if(reconnecting && !(conn && conn.open)) scheduleNextRecon();
+    }, 8000);
     p.on('open', () => {
       if(!currentPeer(p, generation)) return;
       if(isHost){ fire('waiting'); }
       else { bindConn(p.connect(PREFIX + joinCode, { reliable: true }), p, generation); }
-      // A signaling Peer can open while its data connection never does.
-      if(currentPeer(p, generation) && reconnecting){
-        connectTimer = setTimeout(() => {
-          if(!currentPeer(p, generation)) return;
-          connectTimer = null;
-          if(reconnecting && !(conn && conn.open)) scheduleNextRecon();
-        }, 8000);
-      }
     });
     if(isHost){
       p.on('connection', c => {
@@ -207,14 +206,17 @@ export const TavlaMP = {
     let p;
     try{ p = new window.Peer({ debug: 1 }); peer = p; }
     catch(e){ fire('error', 'bağlanılamadı'); return; }
+    connectTimer = setTimeout(() => {
+      if(!currentPeer(p, generation)) return;
+      connectTimer = null;
+      if(!(conn && conn.open)){
+        disposeTransport();
+        fire('error', 'oda bulunamadı');
+      }
+    }, 12000);
     p.on('open', () => {
       if(!currentPeer(p, generation)) return;
       bindConn(p.connect(PREFIX + code, { reliable: true }), p, generation);
-      connectTimer = setTimeout(() => {
-        if(!currentPeer(p, generation)) return;
-        connectTimer = null;
-        if(!(conn && conn.open)) fire('error', 'oda bulunamadı');
-      }, 12000);
     });
     p.on('error', err => {
       if(!currentPeer(p, generation)) return;
@@ -227,7 +229,16 @@ export const TavlaMP = {
   __setHandler(cb){ onEvent = cb; },
 
   send(obj){
-    if(conn && conn.open){ try{ conn.send(JSON.stringify(obj)); }catch(e){} }
+    if(!(conn && conn.open)) return false;
+    const c = conn, p = peer, generation = roomGeneration;
+    try{ c.send(JSON.stringify(obj)); return true; }
+    catch(e){
+      if(currentConn(c, p, generation)){
+        fire('disconnected');
+        if(currentConn(c, p, generation)) startReconnect();
+      }
+      return false;
+    }
   },
 
   close(){ closeRoom(); }

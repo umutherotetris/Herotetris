@@ -200,11 +200,12 @@ export function openTavla(){
     const raw = localStorage.getItem('hero_invite_ctx');
     if(raw){
       const ctx = JSON.parse(raw);
-      if(ctx && ctx.game === 'tavla' && ctx.code && (Date.now() - (ctx.ts||0)) < 120000){
+      const age = Date.now() - (ctx && ctx.ts || 0);
+      if(ctx && ctx.game === 'tavla' && typeof ctx.code === 'string' && /^[A-Z0-9]{6}$/.test(ctx.code) && ['host','guest'].includes(ctx.role) && Number.isFinite(ctx.ts) && age >= 0 && age < 300000){
         localStorage.removeItem('hero_invite_ctx');
         _startInviteTavla(root, ctx);
         return;
-      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 120000){
+      } else if(ctx && (ctx.game === 'tavla' || age >= 300000)){
         localStorage.removeItem('hero_invite_ctx');
       }
     }
@@ -337,6 +338,7 @@ function startGame(root, mode, opts){
   G.flip = false;           // tahta yönü
   G.aiThinking = false;
   G.oppLeft = false;
+  G._syncPending = false;
   G.unreadChat = 0; G.chatOpen = false;
 
   if(G.online){
@@ -513,7 +515,7 @@ function loadAIGame(){
 function rollAndShow(){
   if(!G || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking) return;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
-  if(G.online && G.state.turn !== G.playerColor) return;   // sıra rakipte
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)) return;
   clearAutoRollTimer();
   G.state.dice = rollDice();
   G.state.used = [];
@@ -521,7 +523,10 @@ function rollAndShow(){
   G.undoStack = [];
   saveAIGame();
   try{ Sound.dice(); }catch(e){}
-  if(G.online){ TavlaMP.send({ type:'dice', dice: G.state.dice }); }
+  if(G.online && TavlaMP.send({ type:'dice', dice: G.state.dice }) === false){
+    G.state.dice = []; G.state.used = []; G.rolled = false;
+    updateControls(); draw(); return;
+  }
   const moves = allLegalMoves(G.state);
   const dd = G.state.dice;
   const diceStr = dd.length === 4 ? `${dd[0]}-${dd[0]} (çift!)` : `${dd[0]}-${dd[1]}`;
@@ -775,7 +780,7 @@ function draw(){
 function canPassNow(){
   if(!G || G.breakState || G.gameEnded || !G.rolled || !G.canPass) return false;
   if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
-  if(G.online && G.state.turn!==G.playerColor) return false;
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn!==G.playerColor)) return false;
   return true;
 }
 
@@ -826,7 +831,7 @@ function drawPassHint(ctx, t){
 function canInteractRoll(){
   if(!G || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking) return false;
   if(G.mode==='ai' && G.state.turn===G.aiColor) return false;
-  if(G.online && G.state.turn!==G.playerColor) return false;
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn!==G.playerColor)) return false;
   return true;
 }
 
@@ -1519,7 +1524,7 @@ function getPos(e){
 function canInteract(){
   if(!G || G.breakState || G.gameEnded || !G.rolled || G.aiThinking) return false;
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return false;
-  if(G.online && G.state.turn !== G.playerColor) return false;
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)) return false;
   if(turnComplete(G.state)) return false;
   return true;
 }
@@ -1657,7 +1662,7 @@ function hitTest(px, py){
 
 function doMove(mv){
   if(!G || G.breakState || G.gameEnded || !G.rolled || G.aiThinking) return;
-  if((G.mode === 'ai' && G.state.turn === G.aiColor) || (G.online && G.state.turn !== G.playerColor)) return;
+  if((G.mode === 'ai' && G.state.turn === G.aiColor) || (G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor))) return;
   // A held pointer can outlive undo/reset. Resolve every step against the current
   // board before changing state or sending any part of a combined move.
   const proposed = Array.isArray(mv?._combo) ? mv._combo : [mv];
@@ -1675,7 +1680,7 @@ function doMove(mv){
   // KOMBİNE: iki zarı ardışık oyna (toplam pip)
   if(mv._combo && Array.isArray(mv._combo)){
     for(const step of mv._combo){
-      if(G.online){ TavlaMP.send({ type:'move', from: step.from, to: step.to, die: step.die, dieIdx: step.dieIdx }); }
+      if(G.online && TavlaMP.send({ type:'move', from: step.from, to: step.to, die: step.die, dieIdx: step.dieIdx }) === false){ updateControls(); draw(); return; }
       G.state = applyMove(G.state, step);
       try{ step.type === 'hit' ? Sound.hit() : Sound.move(); }catch(e){}
     }
@@ -1693,7 +1698,7 @@ function doMove(mv){
     if(G.mode === 'ai') saveAIGame();
     return;
   }
-  if(G.online){ TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }); }
+  if(G.online && TavlaMP.send({ type:'move', from: mv.from, to: mv.to, die: mv.die, dieIdx: mv.dieIdx }) === false) return;
   G.state = applyMove(G.state, mv);
   G.selected = null; G.legalForSel = [];
   try{ mv.type === 'hit' ? Sound.hit() : (mv.to === 'off' ? (Sound.bearoff(G.state.off.w+G.state.off.b), startBearAnim(G.state.turn)) : Sound.move()); }catch(e){}
@@ -1718,12 +1723,12 @@ function doMove(mv){
 
 function endTurn(){
   if(!G || G.breakState || G.gameEnded || !G.rolled || !turnComplete(G.state)) return;
-  if(G.online && G.state.turn !== G.playerColor) return;
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)) return;
+  if(G.online && TavlaMP.send({ type:'endturn' }) === false) return;
   G._turnToken = {};
   if(G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
   if(G._passRAF){ cancelAnimationFrame(G._passRAF); G._passRAF = null; }
   G._passBox = null;
-  if(G.online){ TavlaMP.send({ type:'endturn' }); }
   // sırayı değiştir, zarları temizle
   G.state.turn = G.state.turn === 'w' ? 'b' : 'w';
   G.state.dice = []; G.state.used = [];
@@ -1762,7 +1767,7 @@ function startAutoRollTimer(){
   if(!AUTO_ROLL || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
   // AI sırasında gerekmez (AI kendi atar); online'da yalnızca kendi sıramda
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
-  if(G.online && G.state.turn !== G.playerColor) return;
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)) return;
   let left = Math.ceil(AUTO_ROLL_MS / 1000);
   // küçük geri sayım göstergesi
   G.autoRollCountdown = setInterval(() => {
@@ -1831,8 +1836,15 @@ function playAISequence(seq, i){
 // ── Reconnect sonrası tam state senkronizasyonu ──
 function sendFullSync(){
   if(!G || !G.online || !TavlaMP || !TavlaMP.connected) return;
+  // A received move is applied after its animation. Never publish a snapshot
+  // between that move and its queued continuation (including a combined move).
+  if(G.remoteMoving){
+    const session = G;
+    setTimeout(() => { if(G === session) sendFullSync(); }, 100);
+    return;
+  }
   try{
-    TavlaMP.send({
+    const sent = TavlaMP.send({
       type: 'fullsync',
       state: {
         gameState: G.state,           // points, bar, off, turn, dice, used
@@ -1841,6 +1853,11 @@ function sendFullSync(){
         gameEnded: !!G.gameEnded,
       }
     });
+    if(sent !== false && G.isHost && G._syncPending){
+      G._syncPending = false;
+      updateControls();
+      if(G.rolled && turnComplete(G.state)) endTurn(); else startAutoRollTimer();
+    }
   }catch(e){ console.warn('[tavla] sendFullSync', e); }
 }
 
@@ -1853,13 +1870,16 @@ function applyFullSync(s){
     G.state = s.gameState;
     G.rolled = !!s.rolled;
     G.gameEnded = !!s.gameEnded || gameStatus(G.state) !== 'playing';
+    G.oppLeft = false; G._syncPending = false;
     G._awaitingStart = false;
     if(s.openingDice) G.openingDice = s.openingDice;
     G.selected = null; G.legalForSel = []; G.undoStack = [];
     G.flip = (G.online && G.playerColor === 'b');
     updateTurn();
+    updateStatus(G.gameEnded ? 'Oyun tamamlandı' : (G.state.turn === G.playerColor ? (G.rolled ? 'Senin sıran — pul seç' : 'Senin sıran — zar at') : 'Rakip oynuyor…'));
     updateControls();
     draw();
+    if(G.rolled && turnComplete(G.state)) endTurn(); else startAutoRollTimer();
   }catch(e){ console.warn('[tavla] applyFullSync', e); }
 }
 
@@ -1889,7 +1909,13 @@ function onRemoteMessage(type, data){
   if(!G) return;
   if(type === 'disconnected'){
     // Oyunu HEMEN bitirme — reconnect denenecek
-    if(!G.gameEnded){ G.oppLeft = true; updateStatus('🔌 Rakip bağlantısı koptu — yeniden bağlanılıyor…'); updateControls(); }
+    G.oppLeft = true; G._syncPending = true;
+    clearAutoRollTimer();
+    try{ if(G.activePointerId != null) G.canvas?.releasePointerCapture?.(G.activePointerId); }catch(e){}
+    G.activePointerId = null; G.dragFrom = null; G.pointerDownPos = null;
+    G.tapTarget = null; G.dragging = false; G.dragMoved = false; G.dragPos = null;
+    G.selected = null; G.legalForSel = [];
+    if(!G.gameEnded){ updateStatus('🔌 Rakip bağlantısı koptu — yeniden bağlanılıyor…'); updateControls(); }
     return;
   }
   if(type === 'reconnecting'){
@@ -1899,11 +1925,12 @@ function onRemoteMessage(type, data){
   }
   if(type === 'reconnected'){
     G.oppLeft = false;
-    updateStatus('✅ Yeniden bağlanıldı!');
+    G._syncPending = true;
+    updateStatus('🔄 Bağlandı — oyun eşitleniyor…');
+    updateControls();
     // Host güncel state'i gönderir; misafir ister
-    if(G.isHost){ afterTurn(sendFullSync, 400); }
-    else { afterTurn(() => TavlaMP.send({ type:'resync_request' }), 400); }
-    afterTurn(() => updateTurn(), 2000);
+    if(G.isHost){ sendFullSync(); }
+    else { TavlaMP.send({ type:'resync_request' }); }
     return;
   }
   if(type === 'reconnect_failed'){
@@ -2445,7 +2472,7 @@ function updateControls(){
     return;
   }
   // Online'da sıra rakipteyse kontrol gösterme
-  if(G.online && G.state.turn !== G.playerColor){
+  if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)){
     rollBtn.style.display = 'none'; passBtn.style.display = 'none'; undoBtn.style.display = 'none';
     return;
   }

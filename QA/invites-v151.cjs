@@ -78,11 +78,13 @@ async function test(name,run){try{await run();console.log('PASS',name);}catch(e)
     }finally{await page.close();}
    });
   }
-  await test('invitation routing uses the portal launch guard when available',async()=>{
+  await test('invitation routing and collection cards share one active-game guard',async()=>{
    const {page,errors,missing}=await setup(true);try{
-    await page.evaluate(()=>{window.__routed=0;const original=window.Hero.openTavla;window.Hero.openTavla=()=>{window.__routed++;return original();};window.__invites.open('tavla');});
+    await page.evaluate(()=>window.__invites.open('tavla'));
     await expectRoot(page,'.tavla-root',missing);
-    assert.equal(await page.evaluate(()=>window.__routed),1,'invite opening must share portal single-game launch handling');
+    await page.evaluate(()=>window.Hero.openChess());
+    assert.equal(await page.locator('.tavla-root').count(),1,'collection tap preserves invited game');
+    assert.equal(await page.locator('.chess-root').count(),0,'collection tap cannot stack a second engine');
     assert.deepEqual(errors,[]);
    }finally{await page.close();}
   });

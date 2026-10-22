@@ -6,6 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import { Auth, db, fdb } from './auth.js';
 import { makeFabDraggable } from './jewel-drag.js';
+import { canLaunchPortalGame, launchPortalGame } from './game-launcher.js';
 
 /* ═══════════ SOSYALPLUS: DÜZENLEME / SİLME / QUICK BAR ═══════════ */
 const _EDIT_MS = 5 * 60 * 1000;
@@ -395,44 +396,52 @@ function _showGameInvitePicker(targetUid, targetNick){
     tavla:  { name:'Tavla',     icon:'🎲' },
     tetris: { name:'Tetris Maçı', icon:'🟦' },
   };
+  let preparing = false;
   ov.querySelectorAll('[data-gi]').forEach(btn => btn.addEventListener('click', async () => {
+    if(preparing || !canLaunchPortalGame()) return;
+    preparing = true;
     const game = btn.dataset.gi;
-    const g = GAMES[game]; if(!g) return;
-    if(_inviteGameBlocked()) return;
+    const g = GAMES[game]; if(!g){ preparing = false; return; }
     // Kelimecik: önce dil seç (TR/EN)
     let klLang = '';
     if(game === 'kelime'){
       klLang = await _pickKelimeLang(ov);
-      if(!klLang) return;   // vazgeçildi
-    }
-    if(_inviteGameBlocked()) return;
-    if(game==='kelime'){
-      try{localStorage.setItem('hero_invite_ctx',JSON.stringify({game,role:'host',targetUid,oppNick:targetNick,lang:klLang,ts:Date.now()}));}catch(e){}
-      ov.remove();try{close();}catch(e){}
-      _openGameModule(game);
-      return;
+      if(!klLang){ preparing = false; return; }
     }
     const me = Auth.getState();
+    if(!ov.isConnected || !me.uid || me.status !== 'google' || !canLaunchPortalGame()){ preparing = false; return; }
     btn.disabled = true; btn.textContent = '⏳ Hazırlanıyor…';
+    // Kelimecik needs its real Firebase invitation and shared, language-specific room.
+    if(game === 'kelime'){
+      const launched = await launchPortalGame(game, { isCurrent:()=>Auth.getState().uid === me.uid && ov.isConnected, open:module => {
+        if(Auth.getState().uid !== me.uid || !ov.isConnected) return false;
+        return module.inviteKelimeFriend(targetUid, targetNick, klLang);
+      } });
+      if(launched){ ov.remove(); document.getElementById('pcPop')?.remove(); if(H?.open) close(); }
+      else { preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; }
+      return;
+    }
     // 6 haneli buluşma kodu üret (davet eden host, davet edilen guest)
     const code = _genInviteCode();
-    const langTag = (game==='kelime') ? (klLang==='en' ? ' 🇬🇧 (English)' : ' 🇹🇷 (Türkçe)') : '';
     try{
       const INVITE_TTL = 5 * 60 * 1000;   // canlı davet 5 dakika geçerli (host bekler)
-      await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
-        type:'challenge', icon:'⚔️',
-        text: (me.displayName || 'Biri') + ' seni ' + g.name + langTag + ' oynamaya davet ediyor! Kabul etmek için dokun.',
-        ts: Date.now(), fromUid: me.uid, game, inviteCode: code, lang: klLang,
-        expiresAt: Date.now() + INVITE_TTL
-      });
+      const launched = await _launchGameAsInviteHost(game, code, targetNick, async () => {
+        if(!ov.isConnected || Auth.getState().uid !== me.uid) return false;
+        const notification = await fdb.push(fdb.ref(db, 'userNotifs/' + targetUid), {
+          type:'challenge', icon:'⚔️',
+          text:(me.displayName || 'Biri') + ' seni ' + g.name + ' oynamaya davet ediyor! Kabul etmek için dokun.',
+          ts:Date.now(), fromUid:me.uid, fromName:me.profile?.nick || me.displayName || 'Rakip', game, inviteCode:code,
+          expiresAt:Date.now() + INVITE_TTL
+        });
+        if(!ov.isConnected || Auth.getState().uid !== me.uid){
+          if(notification?.key) await fdb.set(fdb.ref(db, 'userNotifs/' + targetUid + '/' + notification.key), null).catch(()=>{});
+          return false;
+        }
+      }, () => ov.isConnected && Auth.getState().uid === me.uid);
+      if(!launched){ preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
       try{ if(window.Hero&&window.Hero.toast) window.Hero.toast('⚔️ '+g.name+' daveti gönderildi · 5 dk geçerli'); }catch(e){}
       btn.textContent = '✓ Davet gönderildi';
-      // Kelimecik kendi davet sistemini kullanır; diğerleri host olarak oyunu açar
-      if(game !== 'kelime'){
-        // Davet eden HOST olarak oyunu bu kodla açar
-        _launchGameAsInviteHost(game, code, targetNick);
-      }
-    }catch(e){ btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
+    }catch(e){ preparing = false; btn.disabled = false; btn.textContent = g.icon + ' ' + g.name; return; }
     setTimeout(() => { if(ov.parentNode) ov.remove(); }, 900);
   }));
 }
@@ -445,50 +454,43 @@ function _genInviteCode(){
 }
 
 // Davet eden tarafı: oyunu HOST olarak aç (bu kodla oda kur, rakibi bekle)
-function _launchGameAsInviteHost(game, code, oppNick){
-  if(_inviteGameBlocked()) return Promise.resolve(false);
-  // localStorage'a davet bağlamı yaz → oyun açılınca okur
-  try{
-    localStorage.setItem('hero_invite_ctx', JSON.stringify({
-      game, code, role:'host', oppNick: oppNick || 'Rakip', ts: Date.now()
-    }));
-  }catch(e){}
-  return _openGameModule(game);
+function _launchGameAsInviteHost(game, code, oppNick, beforeOpen, isCurrent){
+  return _openGameModule(game, { game, code, role:'host', oppNick:oppNick || 'Rakip', ts:Date.now() }, beforeOpen, isCurrent);
 }
 
 // Davet edilen tarafı: bildirimden kabul → oyunu GUEST olarak aç
 function _acceptGameInvite(game, code, hostNick, invite, lang){
-  if(_inviteGameBlocked()) return Promise.resolve(false);
-  try{
-    localStorage.setItem('hero_invite_ctx', JSON.stringify({
-      game, code, role:'guest', oppNick: hostNick || 'Rakip', invite, lang, ts: Date.now()
-    }));
-  }catch(e){}
-  return _openGameModule(game);
-}
-
-function _inviteGameBlocked(){
-  if(!document.querySelector('.chess-root,.tavla-root,.kl-root,.tetris-overlay,.hero-select-overlay')) return false;
-  try{window.Hero?.toast?.('Davete katılmadan önce açık oyundan ana menüye dön.',false);}catch(e){}
-  return true;
+  if(game === 'kelime'){
+    const uid = Auth.getState().uid;
+    return launchPortalGame(game, { isCurrent:()=>Auth.getState().uid === uid, open:module => {
+      if(!uid || Auth.getState().uid !== uid) return false;
+      return module.acceptKelimeFriend({ ...invite, lang });
+    } });
+  }
+  return _openGameModule(game, { game, code, role:'guest', oppNick:hostNick || 'Rakip', ts:Date.now() });
 }
 
 // Oyun modülünü aç (export edilen open fonksiyonu)
-function _openGameModule(game){
-  const map = {
-    chess:  ['./games/chess.js', 'openChess'],
-    tavla:  ['./games/tavla.js', 'openTavla'],
-    tetris: ['./games/tetris.js', 'openTetris'],
-    kelime: ['./games/kelime.js', 'openKelime'],
-  };
-  const entry = map[game]; if(!entry || _inviteGameBlocked()) return Promise.resolve(false);
-  if(typeof window.Hero?.[entry[1]]==='function') return Promise.resolve(window.Hero[entry[1]]()).then(()=>true);
-  return import(entry[0]).then(m => {
-    if(_inviteGameBlocked()) return false;
-    const fn = m[entry[1]] || m.default;
-    if(typeof fn !== 'function') return false;
-    fn();return true;
-  }).catch(e => { console.warn('[invite] oyun açılamadı', game, e); return false; });
+function _openGameModule(game, context, beforeOpen, isCurrent){
+  if(!context) return launchPortalGame(game);
+  const names = { chess:'openChess', tavla:'openTavla', tetris:'openTetris' };
+  if(!Object.hasOwn(names, game)) return Promise.resolve(false);
+  const uid = Auth.getState().uid;
+  const current = () => !!uid && Auth.getState().uid === uid && (!isCurrent || isCurrent());
+  return launchPortalGame(game, { isCurrent:current, open:async module => {
+    if(!current()) return false;
+    if(beforeOpen && await beforeOpen() === false) return false;
+    if(!current()) return false;
+    // Write only after acquiring the launch slot, so an unrelated open game
+    // cannot leave an invitation behind for a later collection-card tap.
+    localStorage.setItem('hero_invite_ctx', JSON.stringify(context));
+    try{
+      const opened = await module[names[game]]();
+      if(opened !== false){ document.getElementById?.('pcPop')?.remove(); if(H?.open) close(); }
+      return opened;
+    }
+    catch(error){ localStorage.removeItem('hero_invite_ctx'); throw error; }
+  } });
 }
 
 // ── Profil: arkadaş listesi bölümü (gizli değilse + admin hep görür) ──
@@ -1147,10 +1149,12 @@ export function initSocial(){
     _leaveChatRoom();
     dmBack();
     H.dmUnread = H.notifUnread = 0;
+    H.notifRows = []; H.kelimeInviteRows = []; H.bcastRows = [];
+    renderNotifPane();
     updateBadges();
     if(st.uid){
       loadAdminsSet(); listenChatLock();
-      listenChat(); listenNotifs(st.uid); listenBroadcasts(); watchDMThreads();
+      listenChat(); listenNotifs(st.uid); listenKelimeInvites(st.uid); listenBroadcasts(); watchDMThreads();
     }
   });
 }
@@ -1981,13 +1985,15 @@ function renderNotifCard(n){
   // Arkadaşlık isteği → Kabul / Red butonları
   const isFriendReq = (n.type === 'friendreq' && n.reqFrom);
   // Oyun daveti → Kabul butonu (inviteCode'lu satranç/tavla/tetris; kelime ayrı akış)
-  const isGameInvite = n.type==='challenge' && ((['chess','tavla','tetris'].includes(n.game)&&n.inviteCode) || (n.game==='kelime'&&n.gameId&&n.gameInviteId));
+  const isGameInvite = n.type === 'challenge' && n.game && (n.inviteCode || n.game === 'kelime' && n.gameId && n.gameInviteId);
   let reqBtns = '';
   if(isFriendReq){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
          <button data-fraccept="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" data-frname="${esc(n.fromName||'Oyuncu')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#04130b;background:linear-gradient(135deg,#69F0AE,#34d399)">✓ Kabul Et</button>
          <button data-frreject="${esc(n.reqFrom)}" data-frkey="${esc(n.key||'')}" style="flex:1;padding:7px;border-radius:9px;border:1px solid rgba(255,82,82,.4);cursor:pointer;font-size:11px;font-weight:900;color:#ff8a80;background:rgba(255,82,82,.1)">✕ Reddet</button>
        </div>`;
+  } else if(n.nativeKelimeId){
+    reqBtns = `<div style="display:flex;gap:6px;margin-top:7px"><button class="pcp-btn" data-klaccept="${esc(n.nativeKelimeId)}">⚔️ Kabul Et & Oyna</button><button class="pcp-btn" data-klreject="${esc(n.nativeKelimeId)}">Kaldır</button></div>`;
   } else if(isGameInvite){
     reqBtns = `<div style="display:flex;gap:6px;margin-top:7px">
          <button data-giaccept="${esc(n.game)}" data-gicode="${esc(n.inviteCode||'')}" data-gigameid="${esc(n.gameId||'')}" data-giinviteid="${esc(n.gameInviteId||'')}" data-gifrom="${esc(n.fromUid||'')}" data-ginick="${esc(n.fromName||'Rakip')}" data-gikey="${esc(n.key||'')}" data-gilang="${esc(n.lang||'')}" data-giexp="${esc(n.expiresAt||'')}" style="flex:1;padding:7px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:900;color:#1a1208;background:linear-gradient(135deg,#FFD740,#f0a500)">⚔️ Kabul Et & Oyna</button>
@@ -2008,7 +2014,8 @@ function renderNotifPane(){
   const list = byId('ghpNotifList'); if(!list) return;
   const all = [
     ...(H.bcastRows || []).map(n => ({ ...n, _bc: true })),
-    ...(H.notifRows || [])
+    ...(H.notifRows || []),
+    ...(H.kelimeInviteRows || []).filter(n => Date.now() - n.ts < 300000 && !(H.notifRows || []).some(row => row.game === 'kelime' && row.gameInviteId === n.nativeKelimeId))
   ].sort((a,b) => (b.ts||0)-(a.ts||0));
   const seen = H.seen.notif || 0;
   H.notifUnread = (H.open && H.tab === 'notif') ? 0 : all.filter(r => (r.ts||0) > seen).length;
@@ -2043,10 +2050,42 @@ function renderNotifPane(){
     e.stopPropagation(); rejectFriendReq(el.dataset.frreject, el.dataset.frkey);
   }));
   // Oyun daveti Kabul → oyunu guest olarak aç
+  list.querySelectorAll('[data-klreject]').forEach(el => el.addEventListener('click', async e => {
+    e.stopPropagation();
+    const uid = Auth.getState().uid;
+    if(!uid || el.disabled) return;
+    el.disabled = true;
+    try{
+      await fdb.set(fdb.ref(db, 'gameInvites/' + uid + '/' + el.dataset.klreject), null);
+      if(Auth.getState().uid === uid){
+        H.kelimeInviteRows = (H.kelimeInviteRows || []).filter(n => n.nativeKelimeId !== el.dataset.klreject);
+        renderNotifPane();
+      }
+    }catch(error){ el.disabled = false; window.Hero?.toast('Davet kaldırılamadı. Yeniden deneyebilirsin.', true); }
+  }));
+  list.querySelectorAll('[data-klaccept]').forEach(el => el.addEventListener('click', async e => {
+    e.stopPropagation();
+    if(el.disabled) return;
+    const uid = Auth.getState().uid;
+    const invite = (H.kelimeInviteRows || []).find(n => n.nativeKelimeId === el.dataset.klaccept);
+    if(!invite || Date.now() - invite.ts >= 300000){ renderNotifPane(); return; }
+    el.disabled = true;
+    const launched = await launchPortalGame('kelime', { open:module => {
+      if(!uid || Auth.getState().uid !== uid) return false;
+      return module.acceptKelimeFriend(invite.invite);
+    } });
+    if(launched) close(); else el.disabled = false;
+  }));
   list.querySelectorAll('[data-giaccept]').forEach(el => el.addEventListener('click', async (e) => {
     e.stopPropagation();
-    if(_inviteGameBlocked()) return;
+    if(el.disabled || !canLaunchPortalGame()) return;
+    const recipientUid = Auth.getState().uid;
+    if(!recipientUid) return;
     const game = el.dataset.giaccept, code = el.dataset.gicode, nick = el.dataset.ginick, key = el.dataset.gikey, lang = el.dataset.gilang;
+    if(game === 'kelime' && (!el.dataset.gigameid || !el.dataset.giinviteid || !el.dataset.gifrom)){
+      window.Hero?.toast('Bu eski Kelimecik daveti kullanılamıyor. Rakibinden yeni bir davet iste.', true);
+      return;
+    }
     // Davet süresi dolmuş mu? (canlı davet 5 dk)
     const exp = parseInt(el.dataset.giexp||'0');
     if(exp && Date.now() > exp){
@@ -2056,15 +2095,14 @@ function renderNotifPane(){
       try{ renderNotifs && renderNotifs(); }catch(e){}
       return;
     }
-    // Kelimecik: davet edenin dilini uygula (TR/EN aynı olmalı)
-    if(game === 'kelime' && lang){ try{ localStorage.setItem('hero_kelime_lang', lang); }catch(e){} }
-    // Bildirimi sil
-    const me = Auth.getState();
-    if(key && me.uid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null); }catch(e){} }
+    el.disabled = true;
+    const invite = game === 'kelime' ? { id:el.dataset.giinviteid, gameId:el.dataset.gigameid, fromUid:el.dataset.gifrom, fromName:nick } : undefined;
+    const launched = await _acceptGameInvite(game, code, nick, invite, lang);
+    if(!launched){ el.disabled = false; return; }
+    // Keep the invitation available when loading fails or another game is active.
+    if(key && Auth.getState().uid === recipientUid){ try{ await fdb.set(fdb.ref(db, 'userNotifs/' + recipientUid + '/' + key), null); }catch(e){} }
     // Hub'ı kapat, oyunu guest olarak aç
     try{ close(); }catch(e){}
-    const invite=game==='kelime'?{id:el.dataset.giinviteid,gameId:el.dataset.gigameid,fromUid:el.dataset.gifrom,fromName:nick}:undefined;
-    _acceptGameInvite(game, code, nick, invite, lang);
   }));
 }
 
@@ -2106,8 +2144,13 @@ async function rejectFriendReq(fromUid, notifKey){
 async function deleteNotif(key){
   const me = Auth.getState();
   if(!me.uid || !key) return;
+  const notification = (H.notifRows || []).find(row => row.key === key);
   try{
+    if(notification?.game === 'kelime' && notification.gameInviteId){
+      await fdb.set(fdb.ref(db, 'gameInvites/' + me.uid + '/' + notification.gameInviteId), null);
+    }
     await fdb.set(fdb.ref(db, 'userNotifs/' + me.uid + '/' + key), null);
+    if(Auth.getState().uid !== me.uid) return;
     H.notifRows = (H.notifRows || []).filter(r => r.key !== key);
     renderNotifPane();
   }catch(e){ console.warn('[notif] sil', e); }
@@ -2127,6 +2170,20 @@ function listenNotifs(uid){
   H.offNotif = fdb.onValue(fdb.query(fdb.ref(db, 'userNotifs/' + uid), fdb.limitToLast(20)), (snap) => {
     const rows = []; if(snap.exists()) snap.forEach(ch => { rows.push({ key: ch.key, ...ch.val() }); });
     H.notifRows = rows;
+    renderNotifPane();
+  });
+}
+function listenKelimeInvites(uid){
+  H.offKelimeInvites = fdb.onValue(fdb.query(fdb.ref(db, 'gameInvites/' + uid), fdb.limitToLast(20)), snap => {
+    if(Auth.getState().uid !== uid) return;
+    const rows = [];
+    if(snap.exists()) snap.forEach(child => {
+      const invite = { ...child.val(), id:child.key };
+      if(invite.game !== 'kelime' || !invite.gameId || !invite.fromUid || !Number.isFinite(invite.ts) || Date.now() - invite.ts >= 300000) return;
+      rows.push({ type:'challenge', nativeKelimeId:child.key, invite, fromUid:invite.fromUid,
+        fromName:invite.fromName, ts:invite.ts, text:(invite.fromName || 'Bir oyuncu') + ' seni Kelimecik oynamaya davet ediyor! ' + (invite.lang === 'en' ? '🇬🇧 English' : '🇹🇷 Türkçe') });
+    });
+    H.kelimeInviteRows = rows;
     renderNotifPane();
   });
 }
@@ -2192,6 +2249,8 @@ async function addFriendByNick(){
 async function clearNotifs(){
   const uid = Auth.getState().uid; if(!uid) return;
   try{ await fdb.set(fdb.ref(db, 'userNotifs/' + uid), null); }catch(e){}
+  try{ await fdb.set(fdb.ref(db, 'gameInvites/' + uid), null); }catch(e){}
+  if(Auth.getState().uid !== uid) return;
   H.notifUnread = 0; H.seen.notif = Date.now(); saveSeen(); updateBadges();
 }
 
@@ -2209,6 +2268,7 @@ function teardownListeners(){
   if(H.offChat){ try{ H.offChat(); }catch(e){} H.offChat = null; }
   if(H.offDM){ try{ H.offDM(); }catch(e){} H.offDM = null; }
   if(H.offNotif){ try{ H.offNotif(); }catch(e){} H.offNotif = null; }
+  if(H.offKelimeInvites){ try{ H.offKelimeInvites(); }catch(e){} H.offKelimeInvites = null; }
   if(H.offBcast){ try{ H.offBcast(); }catch(e){} H.offBcast = null; }
   if(H.offLock){ try{ H.offLock(); }catch(e){} H.offLock = null; }
   if(H.offSeen){ try{ H.offSeen(); }catch(e){} H.offSeen = null; }

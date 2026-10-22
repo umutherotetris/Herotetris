@@ -29,7 +29,7 @@ function harness(){
  const root=element(),state={root,round:{},board:empty(),cur:{type:'O',color:'#active',matrix:[[0,1,1],[0,1,1],[0,0,0]],x:3,y:0},bag:['I','T','S','J','L','Z'],queue:Array.from({length:4},()=>({type:'O',color:'#next',matrix:[[0,1,1],[0,1,1],[0,0,0]],x:3,y:0})),previewCount:3,
   hero:HEROES.vor,charge:8,powerReady:true,score:0,lines:0,level:1,mode:'solo',paused:false,over:false,countdown:0,canHold:true,holdType:null,lockTimer:0,lockResets:0,dropAcc:0,gems:[],clearFlash:[],el:{gemSheet:element()}};
  for(const name of ['drawSide','updateHUD','updatePowerBtn','updateGemBtn','updateHeroBar','flash','screenShake','powerFX','spawnPowerParticles','bindTouchGestures','updateVersusUI','setupTetrisChat'])c[name]=noop;
- c.endGame=won=>{if(state.over)return;state.over=true;wins.push(won);};
+ c.endGame=(won,options={})=>{if(state.over)return;state.over=true;wins.push({won,interrupted:options.interrupted===true});};
  c.qa.set(state);c.qa.bindControls();
  const key=(key,patch={})=>state.keyHandler({key,target:{tagName:'DIV'},preventDefault:noop,...patch});
  const advance=ms=>{const until=now+ms;let guard=0;while(true){let first;for(const [id,j]of jobs)if(j.at<=until&&(!first||j.at<first[1].at))first=[id,j];if(!first)break;assert.ok(++guard<1000);jobs.delete(first[0]);now=first[1].at;first[1].fn();}now=until;};
@@ -54,10 +54,10 @@ test('held hard-drop and pause keys perform one action while movement repeats',(
  h.key('p');for(let i=0;i<5;i++)h.key('p',{repeat:true});assert.equal(h.state.paused,true,'held P must keep the round paused');
  h.key('p');h.key('ArrowLeft');h.key('ArrowLeft',{repeat:true});assert.equal(h.state.cur.x,1,'left/right/down retain repeat controls');
 });
-test('actual transport retry exhaustion settles a surviving versus round exactly once',()=>{
+test('actual transport retry exhaustion interrupts a versus round exactly once without a declared winner',()=>{
  const h=harness(),conn=h.startOnline();conn.close();h.advance(200000);
- assert.equal(h.state.oppAlive,false);assert.equal(h.state.over,true,'retry exhaustion finishes the match rather than showing a win while play continues');
- assert.deepEqual(h.wins,[true]);h.c.MP._gameHandler('reconnect_failed');assert.deepEqual(h.wins,[true]);
+ assert.equal(h.state.oppAlive,true,'local transport failure is not evidence that the opponent lost');assert.equal(h.state.over,true,'retry exhaustion stops play with an interrupted result');
+ assert.deepEqual(h.wins,[{won:false,interrupted:true}]);h.c.MP._gameHandler('reconnect_failed');assert.deepEqual(h.wins,[{won:false,interrupted:true}]);
 });
 test('manual transport close cancels exhausted-retry results for a replacement game',()=>{
  const h=harness(),conn=h.startOnline();conn.close();h.c.MP.close();h.state.versus=false;h.advance(200000);

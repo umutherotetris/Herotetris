@@ -259,6 +259,30 @@ export function openKelime(){
   }catch(e){}
 }
 
+// Social launches use the same authenticated room handshake as the game menu.
+export async function inviteKelimeFriend(uid, name, lang){
+  if(G) closeKelime();
+  if(lang) klSetLang(lang);
+  openKelime();
+  const session=G;
+  try{ KO = await import('./kelime-online.js'); }
+  catch(e){ if(G===session) flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); throw e; }
+  if(G!==session) return false;
+  doSendInvite(uid,name).catch(()=>{ if(G===session) flashCard('Davet hatası','Bağlantını kontrol edip tekrar dene.'); });
+  return !!session.root.isConnected;
+}
+
+export async function acceptKelimeFriend(invite){
+  if(G) closeKelime();
+  openKelime();
+  const session=G;
+  try{ KO = await import('./kelime-online.js'); }
+  catch(e){ if(G===session) flashCard('Çevrimiçi modül yüklenemedi','Bağlantını kontrol et.'); throw e; }
+  if(G!==session) return false;
+  doAcceptInvite(invite).catch(()=>{ if(G===session) flashCard('Kabul hatası','Bağlantını kontrol edip tekrar dene.'); });
+  return !!session.root.isConnected;
+}
+
 function _injectKelimeHUD(){
   if(!G||!G.root) return;
   const session=G,root=G.root,round=G._setupToken;
@@ -738,7 +762,7 @@ function doSendInvite(uid, name){
     <button class="kl-btn warn" data-x="cancel">İptal</button></div></div>`;
   let cancelled=false;
   c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{ cancelled=true; try{ await KO.cancelInvite(); }catch(e){} if(current())showInviteScreen(); });
-  KO.sendInvite(uid, name, {
+  return KO.sendInvite(uid, name, {
     onSent: ()=>{},
     onError: (msg)=>{ if(!cancelled && current()) flashCard('Davet hatası', msg); },
     onAccepted: ({role,gameId,oppName,oppUid,seed,lang})=>{ if(!cancelled && current()) startOnline(role,gameId,oppName,seed,{oppUid,lang}); }
@@ -750,9 +774,9 @@ function doAcceptInvite(inv){
   const c = G.root.querySelector('[data-el="content"]');
   stopInviteListen();
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>⚔️ Katılıyorsun…</h3><p>${esc(inv.fromName||'Rakip')} ile oyun başlıyor</p></div></div>`;
-  KO.acceptInvite(inv, {
+  return KO.acceptInvite(inv, {
     onError: (msg)=>{if(current())flashCard('Kabul hatası', msg);},
-    onMatched: ({role,gameId,oppName,oppUid,seed,lang})=>{if(current())startOnline(role,gameId,oppName,seed,{oppUid,lang});}
+    onMatched: ({role,gameId,oppName,oppUid,seed,lang,room})=>{if(current())startOnline(role,gameId,oppName,seed,{oppUid,lang,room});}
   });
 }
 
@@ -787,8 +811,8 @@ function startOnline(role, gameId, oppName, seed, opts){
     G.rackView = G.bag.slice(start, start+RACK_SIZE).map(t=>({letter:t.letter, points:t.points, joker:t.joker}));
     G.state = { board: Array.from({length:SIZE}, ()=>Array(SIZE).fill(null)), scores:{A:0,B:0}, turn:'A', bagPointer:14, passStreak:0, racks:{A:null,B:null} };
     G.state.racks[role] = G.rackView.slice();
-    if(G.async && KO && KO.saveRack) KO.saveRack(G.rackView);   // sürdürme için rafımı kaydet
   }
+  if(KO && KO.saveRack) KO.saveRack(G.rackView);   // canlı: cihazda; süreli: odada da saklanır
   G.who = role;
   G.names = { A: role==='A'?'Sen':oppName, B: role==='B'?'Sen':oppName };
   G.pending = []; G.selected = null;
@@ -1347,16 +1371,15 @@ function canPlayNow(){
 function rackTileEl(i){ const rack=G.root.querySelector('[data-el="rack"]'); return rack ? rack.querySelectorAll('.kl-rtile:not(.empty)')[i] : null; }
 function onRackPointerDown(e, i, tile){
   if(e.button!=null && e.button!==0) return;
-  if(!G || G._over || _drag || G._jokerPicker) return;
-  _drag = { i, tile, session:G, round:G._setupToken, pointerId:e.pointerId, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  if(!G || G._over || _drag || _pdrag || G._jokerPicker || G.rackView[i]!==tile) return;
+  _drag = { i, tile, session:G, round:G._setupToken, pointerId:e.pointerId, el:rackTileEl(i), x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
   window.addEventListener('pointermove', onRackPointerMove);
   window.addEventListener('pointerup', onRackPointerUp);
   window.addEventListener('pointercancel', onRackPointerUp);
 }
 function onRackPointerMove(e){
-  if(!_drag) return;
-  if(_drag.pointerId!=null && e.pointerId!=null && _drag.pointerId!==e.pointerId) return;
-  if(G!==_drag.session || G?._setupToken!==_drag.round || G._over){cancelTileInteractions();return;}
+  if(!_drag || e.pointerId!==_drag.pointerId) return;
+  if(G!==_drag.session || G?._setupToken!==_drag.round || G._over || G.rackView[_drag.i]!==_drag.tile){ onRackPointerUp({pointerId:e.pointerId,type:'pointercancel'}); return; }
   const dx=e.clientX-_drag.x0, dy=e.clientY-_drag.y0;
   if(!_drag.moved){
     if(Math.hypot(dx,dy) < 8) return;
@@ -1365,7 +1388,7 @@ function onRackPointerMove(e){
     const g = document.createElement('div'); g.className='kl-drag-ghost';
     g.textContent = _drag.tile.joker ? '★' : _drag.tile.letter;
     G.root.appendChild(g); _drag.ghost = g;
-    const el = rackTileEl(_drag.i); if(el) el.classList.add('dragging');
+    if(_drag.el) _drag.el.classList.add('dragging');
   }
   if(!_drag.moved) return;
   e.preventDefault();
@@ -1373,17 +1396,15 @@ function onRackPointerMove(e){
   highlightDrop(e.clientX, e.clientY);
 }
 function onRackPointerUp(e){
-  if(_drag && _drag.pointerId!=null && e.pointerId!=null && _drag.pointerId!==e.pointerId) return;
+  if(!_drag || e.pointerId!==_drag.pointerId) return;
   window.removeEventListener('pointermove', onRackPointerMove);
   window.removeEventListener('pointerup', onRackPointerUp);
   window.removeEventListener('pointercancel', onRackPointerUp);
   const d = _drag; _drag = null;
-  if(!d) return;
-  if(!G || G!==d.session || G._setupToken!==d.round){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
-  const el = rackTileEl(d.i); if(el) el.classList.remove('dragging');
-  if(e.type==='pointercancel' || G._over || G.rackView[d.i]!==d.tile){renderAll();return;}
+  if(d.el) d.el.classList.remove('dragging');
+  if(e.type==='pointercancel' || G!==d.session || G?._setupToken!==d.round || G._over || G.rackView[d.i]!==d.tile) return;
   if(d.moved){
     const cell = cellUnder(e.clientX, e.clientY);
     if(cell) dropTileOnCell(d.i, +cell.dataset.r, +cell.dataset.c);
@@ -1426,6 +1447,7 @@ function updateExchangeBtn(){
 }
 
 function onCellTap(r, c){
+  if(!G || !G.state || !G.state.board[r] || !Number.isInteger(c) || c<0 || c>=SIZE) return;
   if(G._suppressNextCellTap){ G._suppressNextCellTap=false; return; }   // pending sürükleme tıklamayı yutar
   if(G._over) return;
   if(G._jokerPicker) return;
@@ -1445,11 +1467,9 @@ function onCellTap(r, c){
   if(!tile){G.selected=null;return;}
   if(tile.joker){
     // joker hangi harf? seçici aç
-    const session=G,round=G._setupToken;
+    const session=G, round=G._setupToken, selected=G.selected;
     pickJokerLetter((chosen)=>{
-      if(G!==session || G._setupToken!==round || G._over || G.state.board[r][c] || G.pending.some(p=>p.r===r&&p.c===c)) return;
-      const index=G.rackView.indexOf(tile);if(index<0) return;
-      G.selected=index;
+      if(G!==session || G?._setupToken!==round || G._over || G.selected!==selected || G.rackView[selected]!==tile) return;
       placeTile(r,c,{ letter:'', points:0, joker:true, assigned:chosen });
     });
   } else {
@@ -1466,17 +1486,18 @@ function rawCellUnder(x,y){
 }
 function onPendingPointerDown(e, r, c){
   if(e.button!=null && e.button!==0) return;
-  if(!G || G._over || _pdrag || G._jokerPicker) return;   // sıra fark etmez; sadece oyun bitince taşıma yok
+  if(!G || G._over || _drag || _pdrag || G._jokerPicker) return;   // sıra fark etmez; sadece oyun bitince taşıma yok
+  const tile=G.pending.find(p=>p.r===r && p.c===c);
+  if(!tile) return;
   e.stopPropagation();
-  _pdrag = { r, c, tile:G.pending.find(p=>p.r===r&&p.c===c), session:G, round:G._setupToken, pointerId:e.pointerId, x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
+  _pdrag = { r, c, tile, session:G, round:G._setupToken, pointerId:e.pointerId, el:G.root.querySelector(`.kl-cell[data-r="${r}"][data-c="${c}"] .kl-tile`), x0:e.clientX, y0:e.clientY, moved:false, ghost:null };
   window.addEventListener('pointermove', onPendingPointerMove);
   window.addEventListener('pointerup', onPendingPointerUp);
   window.addEventListener('pointercancel', onPendingPointerUp);
 }
 function onPendingPointerMove(e){
-  if(!_pdrag) return;
-  if(_pdrag.pointerId!=null && e.pointerId!=null && _pdrag.pointerId!==e.pointerId) return;
-  if(G!==_pdrag.session || G?._setupToken!==_pdrag.round || G._over){cancelTileInteractions();return;}
+  if(!_pdrag || e.pointerId!==_pdrag.pointerId) return;
+  if(G!==_pdrag.session || G?._setupToken!==_pdrag.round || G._over || !G.pending.includes(_pdrag.tile)){ onPendingPointerUp({pointerId:e.pointerId,type:'pointercancel'}); return; }
   const dx=e.clientX-_pdrag.x0, dy=e.clientY-_pdrag.y0;
   if(!_pdrag.moved){
     if(Math.hypot(dx,dy) < 8) return;
@@ -1485,8 +1506,7 @@ function onPendingPointerMove(e){
     const g = document.createElement('div'); g.className='kl-drag-ghost';
     g.textContent = p ? (p.joker ? (p.assigned||'★') : p.letter) : '';
     G.root.appendChild(g); _pdrag.ghost = g;
-    const tEl = G.root.querySelector(`.kl-cell[data-r="${_pdrag.r}"][data-c="${_pdrag.c}"] .kl-tile`);
-    if(tEl) tEl.style.opacity='0.3';
+    if(_pdrag.el) _pdrag.el.style.opacity='0.3';
   }
   if(!_pdrag.moved) return;
   e.preventDefault();
@@ -1494,16 +1514,15 @@ function onPendingPointerMove(e){
   highlightDrop(e.clientX, e.clientY);
 }
 function onPendingPointerUp(e){
-  if(_pdrag && _pdrag.pointerId!=null && e.pointerId!=null && _pdrag.pointerId!==e.pointerId) return;
+  if(!_pdrag || e.pointerId!==_pdrag.pointerId) return;
   window.removeEventListener('pointermove', onPendingPointerMove);
   window.removeEventListener('pointerup', onPendingPointerUp);
   window.removeEventListener('pointercancel', onPendingPointerUp);
   const d = _pdrag; _pdrag = null;
-  if(!d) return;
-  if(!G || G!==d.session || G._setupToken!==d.round){d.ghost?.remove();return;}
   if(d.ghost) d.ghost.remove();
   clearDropHighlight();
-  if(e.type==='pointercancel' || G._over){renderAll();return;}
+  if(d.el) d.el.style.opacity='';
+  if(e.type==='pointercancel' || G!==d.session || G?._setupToken!==d.round || G._over || !G.pending.includes(d.tile)) return;
   G._suppressNextCellTap = true; afterGame(()=>{ G._suppressNextCellTap=false; }, 400);
   const idx = G.pending.indexOf(d.tile);
   if(idx<0){ renderAll(); return; }
@@ -1522,7 +1541,7 @@ function onPendingPointerUp(e){
 }
 
 function placeTile(r,c,tileData){
-  if(!G || G._over || !Number.isInteger(G.selected) || !G.rackView[G.selected] || G.state.board[r]?.[c] || G.pending.some(p=>p.r===r&&p.c===c)) return;
+  if(!G || G._over || !Number.isInteger(G.selected) || !G.rackView[G.selected] || !G.state.board[r] || !Number.isInteger(c) || c<0 || c>=SIZE || G.state.board[r][c] || G.pending.some(p=>p.r===r && p.c===c)) return;
   G.rackView.splice(G.selected,1);
   G.pending.push({ r, c, ...tileData });
   G.selected=null; sndPlace(); haptic(12); renderAll();
@@ -1755,7 +1774,11 @@ function submitMove(){
       bagPointer: G.state.bagPointer, passStreak:0,
       lastMove: { who:G.role, words:res.words, score:moveScore, bingo:!!res.bingo, surp:surp.hits.map(h=>h.label), ts:Date.now() }
     };
-    if(G.async) patch['racks/'+G.role] = G.rackView;   // sürdürme için rafımı kaydet
+    if(G.rackView.length===0 && G.state.bagPointer>=G.bag.length){
+      patch.status='over'; patch.overMsg='Torba ve oyuncunun harfleri bitti — oyun tamamlandı';
+    }
+    G.state.racks[G.role] = G.rackView.slice();
+    patch['racks/'+G.role] = G.rackView;   // taşıma katmanı canlı rafı yalnız cihazda tutar
     G.pending=[]; G.selected=null;
     if(KO) KO.pushMove(patch);
     renderAll();
@@ -2020,7 +2043,7 @@ function performExchange(idxs){
     const oppRole = G.role==='A'?'B':'A';
     G.state.turn = oppRole;
     const patch = { turn: oppRole, bagPointer: G.state.bagPointer, bagReturns: G.bagReturns, passStreak: 0, lastMove: { who: G.role, ts: Date.now(), exchange: need } };
-    if(G.async) patch['racks/'+G.role] = G.rackView;
+    patch['racks/'+G.role] = G.rackView;
     if(KO) KO.pushMove(patch);
     renderAll();
     flashStatus('🔄 '+need+' harf degisti — sira rakipte');
