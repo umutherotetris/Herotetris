@@ -1026,17 +1026,37 @@ export default openKozmos;
 
 
 // ── 🥚 Kozmo yumurtası ver (çark/ödül kullanır) ──
-export async function grantEgg(){
-  const st = (window.Hero && window.Hero.Auth && window.Hero.Auth.getState) ? window.Hero.Auth.getState() : null;
-  if(!st || !st.uid) return false;
+export async function grantEgg(expectedUid, stableId){
+  const st = Auth.getState();
+  const uid = expectedUid || st?.uid;
+  if(!uid || st?.uid !== uid) return false;
+  if(stableId !== undefined && !/^[A-Za-z0-9_-]{1,120}$/.test(stableId)) return false;
   try{
-    const id = 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    const id = stableId || 'egg_' + Date.now() + '_' + Math.floor(Math.random()*100000);
     const seed = (Math.random()*0x7fffffff)|0;
     const type = randomType(seed);
-    await fdb.set(fdb.ref(db, 'kozmos/'+st.uid+'/eggs/'+id), {
-      id, type, acceptedAt: Date.now(), feedCount: 0, ownerId: st.uid,
-      source: 'spin'
-    });
+    const egg = { id, type, acceptedAt:Date.now(), feedCount:0, ownerId:uid, source:'spin' };
+    if(stableId){
+      // Keep delivery evidence after an egg is hatched/deleted, so a retry of
+      // the original wheel receipt cannot create another copy of the egg.
+      const result = await fdb.runTransaction(fdb.ref(db, 'kozmos/'+uid), data => {
+        if(Auth.getState().uid !== uid) return;
+        data = data || {};
+        if(data.rewardEggClaims?.[id]) return;
+        return {...data, eggs:{...data.eggs,[id]:data.eggs?.[id] || egg},
+          rewardEggClaims:{...data.rewardEggClaims,[id]:{ts:Date.now(),source:'spin'}}};
+      }, {applyLocally:false});
+      if(result.committed) return true;
+      // An aborted transaction may have an empty local snapshot on a cold tab.
+      if(Auth.getState().uid !== uid) return false;
+      const delivered = await fdb.get(fdb.ref(db, 'kozmos/'+uid+'/rewardEggClaims/'+id));
+      return Auth.getState().uid === uid && delivered.exists();
+    }
+    if(Auth.getState().uid !== uid) return false;
+    await fdb.set(fdb.ref(db, 'kozmos/'+uid+'/eggs/'+id), egg);
     return true;
-  }catch(e){ console.warn('[kozmo] grantEgg', e); return false; }
+  }catch(e){
+    if(stableId) throw e;
+    console.warn('[kozmo] grantEgg', e?.code || 'delivery_failed'); return false;
+  }
 }

@@ -12,6 +12,7 @@ const _S = {
   addXP: (n)=> (Store&&Store.addXP?Store.addXP(n):(_addXP?_addXP(n):Promise.resolve(false))),
   isVip: ()=> (Store&&Store.isVip?Store.isVip():false),
   claimKajuOnce: (...args)=>Store.claimKajuOnce(...args),
+  claimWheelReward: (...args)=>Store.claimWheelReward(...args),
 };
 
 // ── Toast yardımcısı ──
@@ -109,12 +110,34 @@ const WHEEL_SEGMENTS = [
   { type:'jackpot', amount:750, label:'750!',  color:'#FF5252', weight:2,  ico:'💎' },
 ];
 
-function spinKey(){ return 'hero_spin_' + (Auth.getState().uid || 'guest') + '_' + new Date().toISOString().slice(0,10); }
+function rewardDay(){ return new Date().toISOString().slice(0,10); }
+function spinKey(uid = Auth.getState().uid || 'guest', day = rewardDay()){ return 'hero_spin_' + uid + '_' + day; }
 export function canSpin(){
   try{ return localStorage.getItem(spinKey()) !== '1'; }catch(e){ return true; }
 }
 function markSpun(key){ try{ localStorage.setItem(key, '1'); }catch(e){} }
 const pendingSpins = new Set();
+const spinChoices = new Map();
+const pendingQuestClaims = new Set();
+
+// The same acknowledged egg delivery is safe to retry after a partial reward.
+async function grantWheelEgg(owner, eggId){
+  const kz = await import('./kozmos.js');
+  if(!kz.grantEgg || !await kz.grantEgg(owner, eggId)) throw new Error('Yumurta teslim edilemedi');
+}
+function showRewardError(error){
+  const code = String(error?.code || error?.message || '').toLowerCase();
+  if(code.includes('permission') || code.includes('denied')) return 'Sunucu ödülün kaydına izin vermedi; hakkın korunuyor. Daha sonra yeniden deneyebilirsin.';
+  if(code.includes('network') || code.includes('offline') || code.includes('disconnected') || code.includes('unavailable')) return 'Bağlantı kurulamadı. Hakkın korunuyor; bağlantın geldiğinde yeniden deneyebilirsin.';
+  return 'Ödül tamamlanamadı. Aynı ödülü almak için yeniden deneyebilirsin.';
+}
+function updateWheelResult(key, label, disabled){
+  const current = document.getElementById('wheelOv');
+  if(!current || current.dataset.spinKey !== key) return;
+  const button = current.querySelector('#wheelSpinBtn');
+  if(button){ button.textContent = label; button.disabled = disabled; }
+}
+
 
 export function openDailyWheel(){
   injectEconomyCSS();
@@ -123,6 +146,8 @@ export function openDailyWheel(){
   const ex = document.getElementById('wheelOv'); if(ex) ex.remove();
   const ov = document.createElement('div');
   ov.id = 'wheelOv'; ov.className = 'eco-ov';
+  const day = rewardDay(), claimKey = spinKey(st.uid, day);
+  ov.dataset.spinKey = claimKey;
   const segCount = WHEEL_SEGMENTS.length;
   const segAngle = 360 / segCount;
   // SVG çark dilimleri
@@ -142,14 +167,15 @@ export function openDailyWheel(){
     const rot = (i * segAngle) + segAngle/2;
     segs += `<text x="${lx}" y="${ly}" fill="#1a1020" font-size="13" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${rot},${lx},${ly})">${seg.label}</text>`;
   });
-  const already = !canSpin() || pendingSpins.has(st.uid);
+  const used = !canSpin(), waiting = pendingSpins.has(claimKey);
+  const already = used || waiting;
   ov.innerHTML = `
     <div class="eco-box wheel-box">
       <div class="eco-head">
         <span class="eco-title">🎰 Günlük Çark</span>
         <button class="eco-close" data-close>✕</button>
       </div>
-      <div class="wheel-sub">${already ? 'Bugünkü hakkını kullandın · Yarın tekrar gel!' : 'Günde bir kez çevir, ödülü kap!'}${(_S.isVip&&_S.isVip())?' <b style="color:#ffd54f">👑 VIP ×2 ödül!</b>':''}</div>
+      <div class="wheel-sub">${waiting ? 'Ödülün tamamlanıyor…' : used ? 'Bugünkü hakkını kullandın · Yarın tekrar gel!' : 'Günde bir kez çevir, ödülü kap!'}${(_S.isVip&&_S.isVip())?' <b style="color:#ffd54f">👑 VIP ×2 ödül!</b>':''}</div>
       <div class="wheel-prizes">
         <span class="wheel-prize-chip">🥜 Kaju</span>
         <span class="wheel-prize-chip">⚡ XP</span>
@@ -166,7 +192,7 @@ export function openDailyWheel(){
           <text x="130" y="130" fill="#FFD740" font-size="16" text-anchor="middle" dominant-baseline="middle">🥜</text>
         </svg>
       </div>
-      <button class="wheel-spin-btn" id="wheelSpinBtn" ${already?'disabled':''}>${already?'⏳ Yarın Tekrar':'🎰 ÇEVİR'}</button>
+      <button class="wheel-spin-btn" id="wheelSpinBtn" ${already?'disabled':''}>${waiting?'⏳ Ödül tamamlanıyor…':used?'⏳ Yarın Tekrar':'🎰 ÇEVİR'}</button>
     </div>`;
   document.body.appendChild(ov);
   ov.querySelector('[data-close]').addEventListener('click', () => ov.remove());
@@ -175,60 +201,73 @@ export function openDailyWheel(){
   const btn = ov.querySelector('#wheelSpinBtn');
   const rotor = ov.querySelector('#wheelRotor');
   let spinning = false;
-  if(btn && !already){
+  if(btn && !used){
     btn.addEventListener('click', async () => {
-      if(spinning || !canSpin() || pendingSpins.has(st.uid) || Auth.getState().uid !== st.uid) return;
-      const claimKey = spinKey();
-      pendingSpins.add(st.uid);
+      if(spinning || !canSpin() || pendingSpins.has(claimKey) || Auth.getState().uid !== st.uid || Auth.getState().status !== 'google') return;
+      if(rewardDay() !== day){ _toast('Gün değişti. Bugünün çarkını yeniden açabilirsin.'); openDailyWheel(); return; }
+      pendingSpins.add(claimKey);
       spinning = true; btn.disabled = true; btn.textContent = '🌀 Dönüyor…';
-      // Ağırlıklı rastgele seçim
-      const total = WHEEL_SEGMENTS.reduce((a,s) => a+s.weight, 0);
-      let rnd = Math.random() * total, idx = 0;
-      for(let i=0; i<WHEEL_SEGMENTS.length; i++){ rnd -= WHEEL_SEGMENTS[i].weight; if(rnd <= 0){ idx = i; break; } }
-      const seg = WHEEL_SEGMENTS[idx];
-      // Hedef açı: dilim üstte (pointer'da) dursun
+      // A rejected or partially delivered reward keeps the original choice.
+      let seg = spinChoices.get(claimKey);
+      if(!seg){
+        const total = WHEEL_SEGMENTS.reduce((a,s) => a+s.weight, 0);
+        let rnd = Math.random() * total;
+        seg = WHEEL_SEGMENTS[0];
+        for(const candidate of WHEEL_SEGMENTS){ rnd -= candidate.weight; if(rnd <= 0){ seg = candidate; break; } }
+        spinChoices.set(claimKey, seg);
+      }
+      const idx = WHEEL_SEGMENTS.indexOf(seg);
       const segAngle = 360 / WHEEL_SEGMENTS.length;
-      const targetMid = idx * segAngle + segAngle/2;
-      const spins = 5; // tam tur
-      const finalRot = spins * 360 + (360 - targetMid);
+      const finalRot = 5 * 360 + (360 - (idx * segAngle + segAngle/2));
       rotor.style.transition = 'transform 4s cubic-bezier(.17,.67,.2,1)';
       rotor.style.transform = `rotate(${finalRot}deg)`;
-      // Ses
       try{ wheelSpinSound(); }catch(e){}
       setTimeout(async () => {
+        let pendingNotice;
         try{
-        if(Auth.getState().uid !== st.uid){ _toast('Hesap değişti. Çarkı yeniden açabilirsin.'); return; }
-        // 👑 VIP çark 2× bonusu
-        let vipMult = 1;
-        try{ if(_S.isVip && _S.isVip()) vipMult = 2; }catch(e){}
-        const vipTag = vipMult>1 ? ' 👑×2' : '';
-        // Ödülü ver
-        if(seg.type === 'xp'){
-          const amt = seg.amount * vipMult;
-          await _S.addXP(amt);
-          _toast(`🎉 ${amt} XP kazandın!${vipTag}`);
-        } else if(seg.type === 'egg'){
-          // Kozmo yumurtası ver
-          try{ const kz = await import('./kozmos.js'); if(kz.grantEgg) await kz.grantEgg(); }catch(e){}
-          const bonus = 50 * vipMult;
-          await _S.addKaju(bonus, 'spin');  // bonus kaju da
-          _toast(`🥚 Kozmo Yumurtası + ${bonus}🥜 kazandın!${vipTag}`);
-        } else {
-          const amt = seg.amount * vipMult;
-          const earned = await _S.addKaju(amt, 'spin');
-          if(!earned) throw new Error('Günlük kazanım sınırı');
-          _toast(`🎉 ${earned} 🥜 kazandın!${vipTag}`);
-        }
-        markSpun(claimKey);
-        try{ winSound(seg.type === 'jackpot'); }catch(e){}
-        btn.textContent = seg.type === 'jackpot' ? '💰 JACKPOT!' : '✅ Kazandın!';
-        // Görev ilerletme
-        try{ progressQuest('spin'); }catch(e){}
-        setTimeout(() => ov.remove(), 1800);
-        }catch(e){
-          _toast('Ödül alınamadı. Bağlantını ve günlük kazanım sınırını kontrol edip yeniden deneyebilirsin.', true);
-          btn.textContent = 'Yeniden dene'; btn.disabled = false; spinning = false;
-        }finally{ pendingSpins.delete(st.uid); }
+          if(Auth.getState().uid !== st.uid || Auth.getState().status !== 'google') throw new Error('Hesap değişti');
+          updateWheelResult(claimKey, '⏳ Ödül kaydediliyor…', true);
+          pendingNotice = setTimeout(() => {
+            if(Auth.getState().uid === st.uid){
+              updateWheelResult(claimKey, '⏳ Bağlantı bekleniyor…', true);
+              _toast('Ödülün sunucu onayı bekleniyor. Hakkın korunuyor; bağlantın geldiğinde işlem tamamlanacak.');
+            }
+          }, 10000);
+          const result = await _S.claimWheelReward(day, seg, st.uid);
+          if(!result || (!result.claimed && !result.alreadyClaimed) || !result.receipt) throw new Error('Ödül doğrulanamadı');
+          const receipt = result.receipt;
+          if(receipt.type === 'egg') await grantWheelEgg(st.uid, receipt.eggId);
+          // A recovered receipt may belong to a different segment than this tab requested.
+          const actualIndex = WHEEL_SEGMENTS.findIndex(candidate => candidate.type === receipt.type &&
+            (candidate.type === 'egg' || candidate.amount * (receipt.vipMult || 1) === receipt.amount));
+          const currentRotor = document.getElementById('wheelOv')?.dataset.spinKey === claimKey
+            ? document.getElementById('wheelOv').querySelector('#wheelRotor') : null;
+          if(currentRotor && actualIndex >= 0){
+            currentRotor.style.transition = 'transform .3s ease';
+            currentRotor.style.transform = `rotate(${5*360 + 360 - (actualIndex*segAngle + segAngle/2)}deg)`;
+          }
+          // Bookkeeping belongs to the account/day that initiated this spin.
+          markSpun(claimKey);
+          spinChoices.delete(claimKey);
+          progressQuestAt('spin', 1, questKey(st.uid, day), Auth.getState().uid === st.uid && rewardDay() === day);
+          if(Auth.getState().uid !== st.uid) return;
+          const vipTag = receipt.vipMult > 1 ? ' 👑×2' : '';
+          const label = receipt.type === 'xp' ? `${receipt.amount} XP`
+            : receipt.type === 'egg' ? `Kozmo Yumurtası + ${receipt.amount}🥜` : `${receipt.amount} 🥜`;
+          _toast(result.alreadyClaimed ? `✅ Bugünkü çark ödülün kayıtlı: ${label}` : `🎉 ${label} kazandın!${vipTag}`);
+          try{ winSound(receipt.type === 'jackpot'); }catch(e){}
+          updateWheelResult(claimKey, receipt.type === 'jackpot' ? '💰 JACKPOT!' : '✅ Ödül kaydedildi', true);
+          setTimeout(() => {
+            const current = document.getElementById('wheelOv');
+            if(current?.dataset.spinKey === claimKey) current.remove();
+          }, 1800);
+        }catch(error){
+          if(Auth.getState().uid === st.uid){
+            _toast(showRewardError(error), true);
+            updateWheelResult(claimKey, 'Yeniden dene', false);
+          }
+          spinning = false;
+        }finally{ if(pendingNotice) clearTimeout(pendingNotice); pendingSpins.delete(claimKey); }
       }, 4100);
     });
   }
@@ -274,10 +313,10 @@ const QUEST_DEFS = [
   { id:'spin1',   icon:'🎰', title:'Çarkı Çevir',       target:1,   reward:50,  track:'spin' },
 ];
 
-function questKey(){ return 'hero_quests_' + (Auth.getState().uid || 'guest') + '_' + new Date().toISOString().slice(0,10); }
-function loadQuests(){
+function questKey(uid = Auth.getState().uid || 'guest', day = rewardDay()){ return 'hero_quests_' + uid + '_' + day; }
+function loadQuests(key = questKey()){
   try{
-    const data = JSON.parse(localStorage.getItem(questKey()) || '{}');
+    const data = JSON.parse(localStorage.getItem(key) || '{}');
     if(!data || typeof data !== 'object' || Array.isArray(data)) return {};
     const safe = {};
     for(const q of QUEST_DEFS){
@@ -289,13 +328,16 @@ function loadQuests(){
     return safe;
   }catch(e){ return {}; }
 }
-function saveQuests(data){ try{ localStorage.setItem(questKey(), JSON.stringify(data)); }catch(e){} }
+function saveQuests(data, key = questKey()){ try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){} }
 
 // Görev ilerlet (oyunlar/çark çağırır)
 export function progressQuest(track, amount){
+  return progressQuestAt(track, amount, questKey(), true);
+}
+function progressQuestAt(track, amount, key, notify){
   amount = amount === undefined ? 1 : Number(amount);
   if(!Number.isFinite(amount) || amount <= 0) return;
-  const data = loadQuests();
+  const data = loadQuests(key);
   let changed = false;
   QUEST_DEFS.forEach(q => {
     if(q.track !== track) return;
@@ -307,10 +349,10 @@ export function progressQuest(track, amount){
     // Tamamlandıysa bildir
     if(cur.progress >= q.target && !cur._notified){
       cur._notified = true;
-      _toast(`✅ Görev tamam: ${q.title} · Ödülü al!`);
+      if(notify) _toast(`✅ Görev tamam: ${q.title} · Ödülü al!`);
     }
   });
-  if(changed) saveQuests(data);
+  if(changed) saveQuests(data, key);
 }
 
 export function openQuests(){
@@ -337,8 +379,8 @@ export function openQuests(){
 
 function renderQuests(){
   const list = document.getElementById('questList'); if(!list) return;
-  const owner = Auth.getState().uid;
-  const data = loadQuests();
+  const owner = Auth.getState().uid, day = rewardDay(), key = questKey(owner, day);
+  const data = loadQuests(key);
   list.innerHTML = QUEST_DEFS.map(q => {
     const cur = data[q.id] || { progress:0, claimed:false };
     const pct = Math.min(100, Math.round((cur.progress / q.target) * 100));
@@ -355,7 +397,7 @@ function renderQuests(){
         ${claimed
           ? '<span class="quest-claimed">✓ Alındı</span>'
           : done
-            ? `<button class="quest-claim-btn" data-claim="${q.id}">+${q.reward}🥜</button>`
+            ? `<button class="quest-claim-btn" data-claim="${q.id}" ${pendingQuestClaims.has(key+':'+q.id)?'disabled':''}>${pendingQuestClaims.has(key+':'+q.id)?'⏳ Kaydediliyor…':'+'+q.reward+'🥜'}</button>`
             : `<span class="quest-reward-val">+${q.reward}🥜</span>`}
       </div>
     </div>`;
@@ -363,24 +405,36 @@ function renderQuests(){
   // Ödül al butonları
   list.querySelectorAll('[data-claim]').forEach(b => b.addEventListener('click', async () => {
     if(b.disabled || Auth.getState().uid !== owner) return;
+    if(rewardDay() !== day){ renderQuests(); _toast('Görevler yeni gün için yenilendi.'); return; }
     const qid = b.dataset.claim;
     const q = QUEST_DEFS.find(x => x.id === qid); if(!q) return;
-    const data = loadQuests();
+    const claimKey = key + ':' + qid;
+    if(pendingQuestClaims.has(claimKey)) return;
+    const data = loadQuests(key);
     const cur = data[qid] || { progress:0, claimed:false };
     if(cur.claimed || cur.progress < q.target) return;
-    b.disabled = true;
-    const key = questKey();
+    b.disabled = true; b.textContent = '⏳ Kaydediliyor…'; pendingQuestClaims.add(claimKey);
+    const pendingNotice = setTimeout(() => {
+      if(Auth.getState().uid === owner && document.getElementById('questList') === list){
+        b.textContent = '⏳ Onay bekleniyor…';
+        _toast('Ödülün sunucu onayı bekleniyor. Hakkın korunuyor; bağlantın geldiğinde işlem tamamlanacak.');
+      }
+    }, 10000);
     try{
-      const receipt = 'quest_' + new Date().toISOString().slice(0,10) + '_' + qid;
+      const receipt = 'quest_' + day + '_' + qid;
       const result = await _S.claimKajuOnce(receipt, q.reward, 'quest', q.title, owner);
-      if(Auth.getState().uid !== owner) return;
-      if(!result.claimed){ _toast('Ödül daha önce alındı veya şu an alınamıyor.'); return; }
-      cur.claimed = true; data[qid] = cur;
-      try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
-      _toast(`🎉 +${result.amount} 🥜 görev ödülü!`);
-      renderQuests();
-    }catch(e){ _toast('Ödül alınamadı. Yeniden deneyebilirsin.', true); }
-    finally{ b.disabled = false; }
+      if(!result || (!result.claimed && !result.alreadyClaimed)) throw new Error('Ödül doğrulanamadı');
+      // Merge current progress; another task may have advanced during the write.
+      const latest = loadQuests(key);
+      latest[qid] = {...(latest[qid] || cur), claimed:true};
+      saveQuests(latest, key);
+      if(Auth.getState().uid !== owner || rewardDay() !== day) return;
+      _toast(result.alreadyClaimed ? '✅ Bu görev ödülü zaten hesabına kaydedilmiş.' : `🎉 +${result.amount} 🥜 görev ödülü!`);
+    }catch(error){ if(Auth.getState().uid === owner) _toast(showRewardError(error), true); }
+    finally{
+      clearTimeout(pendingNotice); pendingQuestClaims.delete(claimKey); b.disabled = false;
+      if(Auth.getState().uid === owner && rewardDay() === day && document.getElementById('questList')) renderQuests();
+    }
   }));
 }
 

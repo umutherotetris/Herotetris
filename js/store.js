@@ -390,29 +390,116 @@ export async function addKaju(n, game, reason){
 // The backend remains responsible for authorizing rewards; this prevents retries
 // from duplicating a legitimate claim or marking a failed credit as paid.
 export async function claimKajuOnce(receiptId, reward, game, reason, uid = player.uid){
-  if(!uid || Auth.getState().uid !== uid || !/^[\w-]{1,180}$/.test(receiptId)) return {claimed:false};
-  let amount = 0, fields = {};
+  if(!uid || Auth.getState().uid !== uid || !/^[\w-]{1,180}$/.test(receiptId)) return {claimed:false, reason:'identity'};
+  let amount = 0, fields = {}, rejected = 'unavailable';
   const result = await runTransaction(ref(db, 'users/' + uid), profile => {
-    if(Auth.getState().uid !== uid) return;
+    if(Auth.getState().uid !== uid){ rejected = 'identity'; return; }
     profile = profile || {};
     if(profile.heroRewardClaims?.[receiptId]) return;
     const next = typeof reward === 'function' ? reward(profile) : {amount:reward};
     amount = next?.amount;
     fields = next?.fields || {};
     const balance = finiteAmount(profile.kaju);
-    if(!Number.isSafeInteger(amount) || amount <= 0 || balance + amount > KAJU_MAX) return;
+    if(!Number.isSafeInteger(amount) || amount <= 0){ rejected = 'ineligible'; return; }
+    if(balance + amount > KAJU_MAX){ rejected = 'balance-limit'; return; }
     return {...profile, ...fields, kaju:balance + amount,
       heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:{amount, ts:Date.now()}}};
-  });
-  if(!result.committed) return {claimed:false};
-  const balance = finiteAmount(result.snapshot.val().kaju);
+  }, {applyLocally:false});
+  if(Auth.getState().uid !== uid) return {claimed:false, reason:'identity'};
+  // An abort can carry a cached snapshot; reconcile only after a fresh SDK get.
+  const confirmed = result.committed ? result.snapshot : await get(ref(db, 'users/' + uid));
+  if(Auth.getState().uid !== uid) return {claimed:false, reason:'identity'};
+  const profile = confirmed.val() || {};
+  const balance = finiteAmount(profile.kaju);
+  const receipt = profile.heroRewardClaims?.[receiptId];
+  if(!result.committed){
+    // A confirmed receipt lets a reopened panel repair its local marker without
+    // replaying a credit. A rejected write never reaches this successful receipt path.
+    if(receipt && Number.isSafeInteger(receipt.amount) && receipt.amount > 0){
+      if(player.uid === uid){ player.kaju = balance; emit(); }
+      return {claimed:false, alreadyClaimed:true, amount:receipt.amount, balance, receipt, reason:'already-claimed'};
+    }
+    return {claimed:false, alreadyClaimed:false, reason:rejected};
+  }
+  amount = receipt?.amount;
+  if(!Number.isSafeInteger(amount) || amount <= 0) throw new Error('Ödül onayı geçersiz');
+  fields = Object.fromEntries(Object.keys(fields).map(key => [key, profile[key]]));
   if(player.uid === uid){
     player.kaju = balance;
     logKaju(amount, 'earn', game, reason);
     emit();
   }
   try{ await set(ref(db, 'leaderboard/kaju/' + uid), {uid, kaju:balance, ts:Date.now()}); }catch(e){}
-  return {claimed:true, amount, balance, fields};
+  return {claimed:true, alreadyClaimed:false, amount, balance, fields, receipt};
+}
+
+// All wheel sectors share one daily receipt. The selected outcome and its
+// Kaju/XP credit commit together, so retrying cannot reroll or change sectors.
+// Egg delivery is a recoverable second step keyed by receipt.eggId in Kozmos.
+export async function claimWheelReward(day, segment, uid = player.uid){
+  const current = () => !!uid && Auth.getState().uid === uid && Auth.getState().status === 'google';
+  if(!current()) return {claimed:false, complete:false, reason:'identity'};
+  const dayTime = typeof day === 'string' ? Date.parse(day+'T00:00:00Z') : NaN;
+  if(typeof day !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(dayTime) || new Date(dayTime).toISOString().slice(0,10) !== day) return {claimed:false, complete:false, reason:'invalid-reward'};
+  const type = segment?.type, requested = segment?.amount;
+  const valid = type === 'kaju' ? [30,50,120,300].includes(requested)
+    : type === 'xp' ? [40,100].includes(requested)
+    : type === 'jackpot' ? requested === 750 : type === 'egg' && requested === 1;
+  if(!valid) return {claimed:false, complete:false, reason:'invalid-reward'};
+  const receiptId = 'spin_' + day;
+  let rejected = 'unavailable';
+  const result = await runTransaction(ref(db, 'users/' + uid), profile => {
+    if(!current()){ rejected='identity'; return; }
+    profile = profile || {};
+    if(profile.heroRewardClaims?.[receiptId]) return;
+    let vip = profile.cosmetics?.vip;
+    try{ if(typeof vip === 'string') vip = JSON.parse(vip); }catch(e){ vip = null; }
+    const vipMult = vip?.until && Number(vip.until) > Date.now() ? 2 : 1;
+    const amount = (type === 'egg' ? 50 : requested) * vipMult;
+    const receipt = {kind:'wheel', type, amount, vipMult, ts:Date.now()};
+    const fields = {};
+    if(type === 'xp'){
+      const stored = profile.xp && typeof profile.xp === 'object' ? profile.xp : {};
+      let level = Math.max(1, finiteAmount(profile.level || stored.level, 1));
+      let xp = finiteAmount(stored.xp ?? profile.xp), totalXP = finiteAmount(stored.totalXP ?? profile.totalXP);
+      if(!Number.isSafeInteger(level) || !Number.isSafeInteger(xp + amount) || !Number.isSafeInteger(totalXP + amount)){ rejected='invalid-profile'; return; }
+      xp += amount; totalXP += amount;
+      // Corrupt legacy XP must not make a reward callback loop indefinitely.
+      let advances = 0;
+      while(xp >= xpForLevel(level)){
+        if(advances++ >= 10000){ rejected='invalid-profile'; return; }
+        xp -= xpForLevel(level); level++;
+      }
+      fields.level = level; fields.xp = {level, xp, totalXP};
+    } else {
+      const balance = finiteAmount(profile.kaju);
+      if(balance + amount > KAJU_MAX){ rejected='balance-limit'; return; }
+      fields.kaju = balance + amount;
+      if(type === 'egg') receipt.eggId = 'daily_spin_' + day;
+    }
+    return {...profile, ...fields, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
+  }, {applyLocally:false});
+  if(!current()) return {claimed:false, complete:false, reason:'identity'};
+  const confirmed = result.committed ? result.snapshot : await get(ref(db, 'users/' + uid));
+  if(!current()) return {claimed:false, complete:false, reason:'identity'};
+  const profile = confirmed.val() || {};
+  const receipt = profile.heroRewardClaims?.[receiptId];
+  if(!receipt || receipt.kind !== 'wheel' || !Number.isSafeInteger(receipt.amount) || receipt.amount <= 0 || !['kaju','jackpot','xp','egg'].includes(receipt.type)) return {claimed:false, complete:false, reason:rejected};
+  const balance = finiteAmount(profile.kaju);
+  if(player.uid === uid){
+    player.kaju = balance;
+    if(receipt.type === 'xp'){
+      player.level = Math.max(1, finiteAmount(profile.level,1));
+      player.xp = finiteAmount(profile.xp?.xp);
+      player.totalXP = finiteAmount(profile.xp?.totalXP);
+    } else if(result.committed) logKaju(receipt.amount,'earn','spin','Günlük çark');
+    emit();
+  }
+  if(result.committed && receipt.type !== 'xp'){
+    try{ await set(ref(db,'leaderboard/kaju/'+uid),{uid,kaju:balance,ts:Date.now()}); }catch(e){}
+    if(current()) _trackQuestSafe('kaju_earned',{amount:receipt.amount});
+  }
+  return {claimed:result.committed, alreadyClaimed:!result.committed, receipt, amount:receipt.amount, balance, complete:receipt.type !== 'egg'};
 }
 
 // İşlem açıklaması üret
@@ -753,7 +840,7 @@ export async function claimPendingTransfers(){
   return { total, claimed };
 }
 
-export const Store = { subscribe, getState, addKaju, claimKajuOnce, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
+export const Store = { subscribe, getState, addKaju, claimKajuOnce, claimWheelReward, addXP, addScore, xpForLevel, transferKaju, adminAdjustKaju, claimPendingTransfers, transferRemaining, logKaju, getKajuLog, getKajuSummary, logSpend, spendKaju, getBoostMult, activateBoost, getActiveBoosts, addItem, useItem, getItemCount, getInventory, setCosmetic, getCosmetic, getCosmetics, trackQuestEvent, markPurchasedOnce, hasPurchasedOnce, isVip, vipDaysLeft, vipPrice, VIP_DISCOUNT, recordMatchResult, getStats, getH2H, getMatchHistory };
 export default Store;
 // Immediate Auth callbacks need every Store binding to have been initialized.
 Auth.subscribe(hydrate);
