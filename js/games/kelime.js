@@ -695,7 +695,8 @@ function flashStartError(msg){
 
 // ── ÇEVRİMİÇİ: rastgele eşleşme ──
 async function startOnlineSearch(opts){
-  const session = G;
+  const session=G,round=G._setupToken={};
+  const current=()=>G===session && G._setupToken===round;
   opts = opts || {};
   const async = opts.mode === 'async';
   const c = G.root.querySelector('[data-el="content"]');
@@ -710,16 +711,19 @@ async function startOnlineSearch(opts){
   let cancelled = false;
   G._sessionStatus?.destroy();
   G._sessionStatus=mountSessionStatus(c.querySelector('.kl-card'),{game:'kelime',mode:async?'async':'online',initial:{phase:'waiting',detail:'Eşleşme kuyruğunda rakip bekleniyor.'}});
-  c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{
-    cancelled = true; try{ if(KO) await KO.cancelSearch(); }catch(e){} showStart();
+  c.querySelector('[data-x="cancel"]').addEventListener('click', ()=>{
+    if(!current())return;
+    cancelled=true;
+    try{if(KO)Promise.resolve(KO.cancelSearch()).catch(()=>{});}catch(e){}
+    showStart();
   });
   try{ KO = await import('./kelime-online.js'); }
-  catch(e){ flashCard('Çevrimiçi modül yüklenemedi', 'Bağlantını kontrol edip tekrar dene.'); return; }
-  if(cancelled || G!==session) return;
+  catch(e){ if(current())flashCard('Çevrimiçi modül yüklenemedi', 'Bağlantını kontrol edip tekrar dene.'); return; }
+  if(cancelled || !current()) return;
   KO.findMatch({
-    onSearching: ()=>{},
-    onError: (msg)=>{ if(!cancelled && G===session){ kelimeSessionStatus('failed',msg); flashCard('Eşleşme hatası', msg); } },
-    onMatched: (d)=>{ if(!cancelled && G===session) startOnline(d.role, d.gameId, d.oppName, d.seed, { async:!!d.async, turnHours:d.turnHours, oppUid:d.oppUid }); }
+    onConnection: connected=>{if(!cancelled && current())kelimeSessionStatus(connected?'waiting':'reconnecting',connected?'Eşleşme kuyruğunda rakip bekleniyor.':'Ağ bağlantısının dönmesi bekleniyor. İstersen aramayı iptal edebilirsin.');},
+    onError: msg=>{if(!cancelled && current()){kelimeSessionStatus('failed',msg);flashCard('Eşleşme hatası',msg);}},
+    onMatched: d=>{if(!cancelled && current())startOnline(d.role,d.gameId,d.oppName,d.seed,d);}
   }, async ? { mode:'async', turnHours: opts.turnHours||72, lang: KL_LANG } : { lang: KL_LANG });
 }
 
@@ -818,7 +822,7 @@ async function showMyGames(){
 
 function flashCard(title, msg){
   const c = G.root.querySelector('[data-el="content"]');
-  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>${title}</h3><p>${msg}</p><button class="kl-btn primary" data-x="back">Menüye Dön</button></div></div>`;
+  c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card"><h3>${esc(title)}</h3><p>${esc(msg)}</p><button class="kl-btn primary" data-x="back">Menüye Dön</button></div></div>`;
   c.querySelector('[data-x="back"]').addEventListener('click', showStart);
 }
 
@@ -861,7 +865,7 @@ async function showInviteScreen(){
     let u=null; try{ u = await KO.resolveNick(nick); }catch(e){}
     if(!current()) return;
     sendBtn.textContent='Meydan Oku';
-    if(!u){ flashCard('Bulunamadı', `"${esc(nick)}" bulunamadı. Nick birebir doğru olmalı ve rakip en az bir kez giriş yapmış olmalı.`); return; }
+    if(!u){ flashCard('Bulunamadı', `"${nick}" bulunamadı. Nick birebir doğru olmalı ve rakip en az bir kez giriş yapmış olmalı.`); return; }
     doSendInvite(u.uid, u.name);
   });
   card.querySelectorAll('[data-fuid]').forEach(el=>el.addEventListener('click', ()=>doSendInvite(el.dataset.fuid, el.dataset.fname)));
@@ -912,15 +916,20 @@ function doSendInvite(uid, name){
   stopInviteListen();
   c.innerHTML = `<div class="kl-overlay" style="position:relative;background:transparent"><div class="kl-card">
     <h3>⚔️ ${esc(name)}</h3>
-    <p>Davet gönderildi. Rakibin kabul etmesi bekleniyor…</p>
+    <p data-el="inviteStatus" role="status">Davet gönderiliyor…</p>
     <div style="margin:6px auto 14px;width:34px;height:34px;border:3px solid rgba(255,255,255,.2);border-top-color:#ffd86b;border-radius:50%;animation:klspin 1s linear infinite"></div>
     <button class="kl-btn warn" data-x="cancel">İptal</button></div></div>`;
   let cancelled=false;
-  c.querySelector('[data-x="cancel"]').addEventListener('click', async ()=>{ cancelled=true; try{ await KO.cancelInvite(); }catch(e){} if(current())showInviteScreen(); });
+  c.querySelector('[data-x="cancel"]').addEventListener('click', ()=>{
+    if(!current())return;
+    cancelled=true;
+    try{Promise.resolve(KO.cancelInvite()).catch(()=>{});}catch(e){}
+    showInviteScreen();
+  });
   return KO.sendInvite(uid, name, {
-    onSent: ()=>{},
+    onSent: ()=>{if(!cancelled && current())c.querySelector('[data-el="inviteStatus"]').textContent='Davet gönderildi. Rakibin kabul etmesi bekleniyor…';},
     onError: (msg)=>{ if(!cancelled && current()) flashCard('Davet hatası', msg); },
-    onAccepted: ({role,gameId,oppName,oppUid,seed,lang})=>{ if(!cancelled && current()) startOnline(role,gameId,oppName,seed,{oppUid,lang}); }
+    onAccepted: d=>{if(!cancelled && current())startOnline(d.role,d.gameId,d.oppName,d.seed,d);}
   },{lang:KL_LANG});
 }
 function doAcceptInvite(inv){
@@ -941,8 +950,8 @@ function syncOnlineBag(returnedTiles){
 }
 
 function startOnline(role, gameId, oppName, seed, opts){
-  G._setupToken = {}; G._resigned = false; G._onlineSending=false; G._pendingOnlineOver=null;
-  G._myDrawOffer=false;G._drawPrompt=false;G._lastSeenMove=null;
+  G._setupToken = {}; G._resigned = false; G._onlineSending=false; G._pendingOnlineOver=null;G._pendingOnlineOverConfirmed=false;G._onlineConnection=null;
+  G._myDrawOffer=false;G._drawPrompt=false;G._lastSeenMove=null;G._oppHeartbeatStamp=null;
   const _oppUid = (opts && opts.oppUid) || null;
   opts = opts || {};
   // Oda dilini uygula (eşleşen iki oyuncu aynı dilde olur)
@@ -981,7 +990,16 @@ function startOnline(role, gameId, oppName, seed, opts){
   renderAll();
   if(typeof window!=='undefined'){ window.__KL=()=>G; }
   if(typeof window!=='undefined'){ window.__KL=()=>G; }
-  if(KO) KO.subscribeRoom(applyRemote);
+  const session=G,round=G._setupToken;
+  const current=()=>G===session && G._setupToken===round && !G._over;
+  if(KO) KO.subscribeRoom((room,confirmed)=>{if(current())applyRemote(room,confirmed);},message=>{if(current())onlineInterrupted(message);});
+  KO?.subscribeConnection?.(connected=>{
+    if(!current())return;
+    const wasOffline=G._onlineConnection===false;
+    G._onlineConnection=connected;
+    if(connected && wasOffline && !G.async)G._oppLastSeen=Date.now();
+    if(typeof kelimeSessionStatus==='function')kelimeSessionStatus(!connected?'reconnecting':G._onlineSending?'connecting':'playing',!connected?'Bağlantı bekleniyor. Hamleler sunucuya bağlanınca açılır.':'');
+  });
   if(!G.async){
     G._oppLastSeen = Date.now();          // başlangıçta rakip burada say
     if(KO && KO.heartbeat) KO.heartbeat();
@@ -999,7 +1017,7 @@ function startOnlineHeartbeat(){
     if(KO && KO.heartbeat) KO.heartbeat();
     // Silence alone cannot distinguish an absent opponent from our own network outage.
     // Keep the shared room resumable and award neither player a local victory.
-    if(G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){
+    if(G._onlineConnection!==false && G._oppLastSeen && (Date.now() - G._oppLastSeen > 180000)){
       onlineInterrupted();
     }
   }, 8000);
@@ -1024,20 +1042,25 @@ function onlineInterrupted(message){
 }
 
 function currentTurn(){ return G.online ? G.state.turn : G.who; }
-function isMyTurn(){ return G.online ? (!G._onlineSending && G.state.turn === G.role) : true; }
+function isMyTurn(){ return G.online ? (G._onlineConnection!==false && !G._onlineSending && G.state.turn === G.role) : true; }
 
 // Firebase emits optimistic snapshots before its update promise is acknowledged.
 // A rejected write must not finalize a match or discard the last confirmed rack.
 function sendOnlinePatch(patch){
-  if(!G || !G.online || G._over || G._onlineSending) return Promise.resolve(false);
+  if(!G || !G.online || G._over || G._onlineSending || G._onlineConnection===false) return Promise.resolve(false);
   const session=G,round=G._setupToken;
   const current=()=>G===session && G._setupToken===round && !G._over;
-  session._onlineSending=true;session._pendingOnlineOver=null;
+  session._onlineSending=true;session._pendingOnlineOver=null;session._pendingOnlineOverConfirmed=false;
   if(typeof kelimeSessionStatus==='function') kelimeSessionStatus('connecting','Hamlenin sunucu onayı bekleniyor.');
   const failed=()=>{
     if(current()){
+      const confirmedOver=session._pendingOnlineOverConfirmed && session._pendingOnlineOver;
       session._onlineSending=false;session._pendingOnlineOver=null;
-      onlineInterrupted('İşlem sunucuya kaydedilemedi.');
+      session._pendingOnlineOverConfirmed=false;
+      if(confirmedOver){
+        const outcome=onlineOutcome(confirmedOver,session.role);
+        onlineGameOver(outcome.message,outcome.verdict,outcome.result);
+      }else onlineInterrupted('İşlem sunucuya kaydedilemedi.');
     }
     return false;
   };
@@ -1051,9 +1074,9 @@ function sendOnlinePatch(patch){
       session._reviewOnlineMove=patch.lastMove.ts;
       recordKelimeFrame(patch.lastMove.pass?'Pas':patch.lastMove.exchange?'Harf değişimi':'Onaylanan hamle',{word:(patch.lastMove.words||[]).map(w=>w.text).join(', '),score:patch.lastMove.score||0,cells:patch.lastMove.words?.length ? Array.from(session.lastMoveCells||[]).map(key=>{const [r,c]=key.split(',').map(Number);return {r,c};}) : []});
     }
-    if(typeof kelimeSessionStatus==='function') kelimeSessionStatus('playing','');
+    if(typeof kelimeSessionStatus==='function')kelimeSessionStatus(session._onlineConnection===false?'reconnecting':'playing');
     const over=session._pendingOnlineOver || (patch.status==='over'?patch:null);
-    session._pendingOnlineOver=null;
+    session._pendingOnlineOver=null;session._pendingOnlineOverConfirmed=false;
     if(over){ const outcome=onlineOutcome(over,session.role);onlineGameOver(outcome.message,outcome.verdict,outcome.result); }
     else renderAll();
     return true;
@@ -1073,7 +1096,7 @@ function onlineOutcome(room,role){
   return {message:room.overMsg || 'Oyun bitti',verdict:null,result:null};
 }
 
-function applyRemote(room){
+function applyRemote(room,confirmed){
   if(!G || !G.online) return;
   let newCells = [];
   try{
@@ -1094,15 +1117,20 @@ function applyRemote(room){
   const oppRole = G.role==='A'?'B':'A';
   // Anlık oyunda rakibin "ayrıldı" kararı artık presence'a göre DEĞİL, lastSeen sessizliğine göre
   // (kısa kopmalar oyunu bitirmesin). Kalp atışı döngüsü sessizliği kontrol eder.
-  if(!G.async && room.lastSeen && room.lastSeen[oppRole]){ G._oppLastSeen = room.lastSeen[oppRole]; }
+  const beat=room.lastSeen?.[oppRole];
+  if(!G.async && Number.isFinite(beat) && beat!==G._oppHeartbeatStamp){
+    // Measure observed silence with this device's own clock, not the other
+    // phone's wall clock. Own-heartbeat snapshots repeat the same stamp.
+    G._oppHeartbeatStamp=beat;G._oppLastSeen=Date.now();
+  }
   if(!G._onlineSending && room.lastMove && room.lastMove.ts!==G._reviewOnlineMove && typeof recordKelimeFrame==='function'){
     G._reviewOnlineMove=room.lastMove.ts;
     recordKelimeFrame(room.lastMove.pass?'Pas':room.lastMove.exchange?'Harf değişimi':'Rakip hamlesi',{word:(room.lastMove.words||[]).map(w=>w.text).join(', '),score:room.lastMove.score||0,cells:newCells});
   }
-  if(typeof kelimeSessionStatus==='function') kelimeSessionStatus(G._onlineSending?'connecting':'playing','');
+  if(typeof kelimeSessionStatus==='function' && G._onlineConnection!==false)kelimeSessionStatus(G._onlineSending?'connecting':'playing','');
   if(room.lastMove?.who!==G.role && Array.isArray(room.lastMove?.words)) trackBest(room.lastMove.words.filter(w=>w && typeof w.text==='string'),room.lastMove.who);
   if(room.status === 'over' && !G._over){
-    if(G._onlineSending){G._pendingOnlineOver=room;return;}
+    if(G._onlineSending){G._pendingOnlineOver=room;G._pendingOnlineOverConfirmed=confirmed===true;return;}
     const outcome=onlineOutcome(room,G.role); onlineGameOver(outcome.message,outcome.verdict,outcome.result); return;
   }
   handleDrawOffer(room);
@@ -1144,7 +1172,7 @@ function openGameMenu(){
 }
 
 function resignGame(){
-  if(!G || G._over || G._onlineSending) return;
+  if(!G || G._over || G._onlineSending || (G.online && G._onlineConnection===false)) return;
   if(!confirm('Pes etmek istediğine emin misin?' + (G.online?' Rakip kazanmış sayılacak.':''))) return;
   if(G.online){
     sendOnlinePatch({ status:'over', overMsg:'Rakip pes etti 🏳️ — kazandın! 🎉', resignedBy:G.role, drawOffer:null });
@@ -1155,16 +1183,20 @@ function resignGame(){
 }
 
 function offerDraw(){
-  if(!G || !G.online || G._over || G._onlineSending) return;
+  if(!G || !G.online || G._over || G._onlineSending || G._onlineConnection===false) return;
   if(G._myDrawOffer){ flashStatus('Teklifin zaten bekliyor…'); return; }
-  G._myDrawOffer = true;
-  sendOnlinePatch({ drawOffer: G.role });
-  flashStatus('🤝 Beraberlik teklifi gönderildi — rakip bekleniyor');
+  const session=G,round=G._setupToken;
+  sendOnlinePatch({drawOffer:G.role}).then(ok=>{
+    if(!ok || G!==session || G._setupToken!==round || G._over)return;
+    G._myDrawOffer=G._roomDrawOffer===G.role;
+    if(G._myDrawOffer)flashStatus('🤝 Beraberlik teklifi gönderildi — rakip bekleniyor');
+  });
 }
 
 function handleDrawOffer(room){
   if(!G || !G.online || G._over) return;
   const offer = room.drawOffer || null;
+  G._roomDrawOffer=offer;
   // Benim teklifim reddedildi (alan silindi)
   if(G._myDrawOffer && !offer){ G._myDrawOffer = false; flashStatus('Rakip beraberlik teklifini reddetti'); return; }
   // Rakipten teklif geldi → sor
@@ -2289,7 +2321,7 @@ function exitExchangeMode(){ G.exchangeMode=false; G.exchangeSel=null; updateExc
 
 function performExchange(idxs){
   // Çift tetikleme kilidi — buton hızlı/çoklu basımda harf birden fazla değişmesin
-  if(!G || G._over || G._exchanging || (G.online && (G._onlineSending || G.state.turn!==G.role))) return;
+  if(!G || G._over || G._exchanging || (G.online && (G._onlineConnection===false || G._onlineSending || G.state.turn!==G.role))) return;
   if(!Array.isArray(idxs) || !idxs.length || new Set(idxs).size!==idxs.length || idxs.some(i=>!Number.isInteger(i) || !G.rackView[i])) return;
   G._exchanging = true;
   afterGame(()=>{ G._exchanging = false; }, 1200);

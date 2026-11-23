@@ -6,7 +6,7 @@
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
-import { shareRoomCode } from '../room-share.js';
+import { shareRoomCode, normalizeRoomCode } from '../room-share.js';
 import { mountSessionStatus } from '../game-session-ui.js';
 import { recordGameReview } from '../game-review.js';
 export { renderReviewFrame, setPortalMinimized, closePortalGame };
@@ -252,7 +252,7 @@ async function _startInviteTavla(root, ctx){
       if(cancelled || !active()) return;
       if(type === 'code'){if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('waiting');}
       else if(type === 'connected'){ onConnected(); }
-      else if(type === 'error'){ const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Hata: ' + data; }
+      else if(type === 'error'){ const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Hata: ' + data; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
     }, ctx.code);
   } else {
     let tries = 0;
@@ -264,7 +264,7 @@ async function _startInviteTavla(root, ctx){
         if(type === 'connected'){ onConnected(); }
         else if(type === 'error'){
           if(tries < 8){ setTimeout(tryJoin, 1500); }
-          else { const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Baglanilamadi (host hazir degil)'; }
+          else { const m=wait.querySelector('#tinvMsg'); if(m) m.textContent = 'Odaya bağlanılamadı. Davet sahibinden kodu kontrol etmesini iste.'; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
         }
       });
     };
@@ -280,6 +280,7 @@ function closeAll(discard=false){
   if(discard!==true)saveAIGame();
   try{ if(G && G._home) G._home.remove(); if(G && G._hud) G._hud.destroy(); }catch(e){}
   try{G?._sessionUI?.destroy();}catch(e){}
+  G?._boardResizeObserver?.disconnect();
   clearAutoRollTimer();
   clearBreakTimers();
   if(G && G._autoPassTimer){ clearTimeout(G._autoPassTimer); G._autoPassTimer = null; }
@@ -352,7 +353,7 @@ function startGame(root, mode, opts){
   G.flip = false;           // tahta yönü
   G.aiThinking = false;
   G.oppLeft = false;
-  G._syncPending = false;
+  G._syncPending = false; G.remoteQueue=[]; G.remoteMoving=false; G._drawOffered=false;
   G.unreadChat = 0; G.chatOpen = false;
 
   if(G.online){
@@ -380,7 +381,7 @@ function startGame(root, mode, opts){
     }
   }
 
-  if(mode==='online' && typeof attachTavlaSession==='function')attachTavlaSession(gameEl,G._awaitingStart?'ready':'playing');
+  if(mode==='online' && typeof attachTavlaSession==='function')attachTavlaSession(gameEl,G._awaitingStart?'ready':'playing',()=>TavlaMP.connected ? requestTavlaSync() : TavlaMP.retryConnection());
 
   gameEl.querySelector('[data-act="exit"]').addEventListener('click', closeAll);
   gameEl.querySelector('[data-act="restart"]').addEventListener('click', () => restart());
@@ -414,6 +415,11 @@ function startGame(root, mode, opts){
 
   G.resizeHandler = () => fitCanvas();
   window.addEventListener('resize', G.resizeHandler);
+  if(typeof ResizeObserver==='function'){
+    G._boardResizeObserver?.disconnect();
+    G._boardResizeObserver=new ResizeObserver(()=>{if(G===session)fitCanvas();});
+    G._boardResizeObserver.observe(G.boardWrap);
+  }
 
   // Tahta yönü ÖNCE belirlensin ki fitCanvas doğru yönle çizsin
   // AI/online'da insan rengine göre sabit; 2 oyuncuda döner
@@ -438,7 +444,7 @@ function startGame(root, mode, opts){
       root: gameEl, game:'tavla', myAccent:'#FF9800', oppAccent:'#42A5F5',
       oppUid: G.oppUid||null, oppNick:oppN, oppAvatar:oppA, oppLevel:oppL, oppXP:oppX,
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ if(G === session) G._hud=h; else if(h && h.destroy) h.destroy(); }).catch(()=>{});
+    }).then(h=>{ if(G === session){G._hud=h;fitCanvas();}else if(h && h.destroy) h.destroy(); }).catch(()=>{});
   }catch(e){ console.warn('[tavla hud]',e); }
   // Oyun ekranı yeni açıldı — board-wrap boyutu reflow sonrası kesinleşince
   // canvas ve taşların tam oturması için yeniden boyutlandır (özellikle flip=true)
@@ -449,12 +455,13 @@ function startGame(root, mode, opts){
     setupChat();
     if(G.isHost){
       // host açılış zarını misafire bildir
-      TavlaMP.send({ type:'start', openingDice: G.openingDice, first: G.state.turn });
+      const sent=TavlaMP.send({type:'start',openingDice:G.openingDice,first:G.state.turn});
       updateTurn();
-      updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
+      if(sent!==false)updateStatus(`Açılış: Beyaz ${G.openingDice[0]} – Siyah ${G.openingDice[1]} · ${G.state.turn==='w'?'Beyaz':'Siyah'} başlar — pul seç`);
     } else {
       updateTurn();
       updateStatus('Bağlandı — oyun başlıyor…');
+      if(typeof requestTavlaSync==='function')afterTurn(()=>requestTavlaSync(),1500);
     }
     updateControls();
     draw();
@@ -588,8 +595,14 @@ function fitCanvas(){
   const wrap = G.boardWrap;
   // wrap (.tg-board-wrap) flex:1 ile kalan alanı zaten alıyor →
   // clientWidth/clientHeight DOM'dan direkt okunur, manuel rezerv hesabı YOK.
-  const availW = wrap.clientWidth  || (window.innerWidth  - 16);
-  const availH = wrap.clientHeight || (window.innerHeight - 160);
+  if(!wrap?.clientWidth||!wrap.clientHeight)return;
+  const availW = wrap.clientWidth;
+  const rect=wrap.getBoundingClientRect?.(),rootRect=G.root?.getBoundingClientRect?.();
+  const availH=rect?.height>0&&rootRect
+    ? wrap.clientHeight*Math.min(1,Math.max(0,rootRect.bottom-rect.top)/rect.height)
+    : wrap.clientHeight;
+  if(availH<10)return;
+  if(wrap.style)wrap.style.alignItems=availH<wrap.clientHeight-1?'flex-start':'';
   // Tavla oranı ~1.40 (dikey-uzun). 1.30–1.50 arasına sabitle.
   let ratio = availH / availW;
   ratio = Math.max(1.30, Math.min(ratio, 1.50));
@@ -1709,6 +1722,7 @@ function doMove(mv){
     steps.push(legal); preview = applyMove(preview, legal);
   }
   mv = steps.length === 1 ? steps[0] : { ...mv, _combo: steps };
+  G._drawOffered=false;
   if(G.moveGraceActive) clearMoveGrace();
   if(!G.online){ G.undoStack.push({ state: G.state, selected: null, reviewStep:G._reviewStep }); }
   // KOMBİNE: iki zarı ardışık oyna (toplam pip)
@@ -1873,8 +1887,25 @@ function playAISequence(seq, i){
 
 // ════════════ ÇEVRİMİÇİ MESAJ ════════════
 // ── Reconnect sonrası tam state senkronizasyonu ──
+function requestTavlaSync(){
+  if(!G || G.isHost || !(G._syncPending||G._awaitingStart) || !TavlaMP?.connected)return false;
+  const game=G,attempt={};game._syncAttempt=attempt;
+  const current=()=>G===game&&game._syncAttempt===attempt&&(game._syncPending||game._awaitingStart)&&TavlaMP.connected;
+  const ask=remaining=>{
+    if(!current())return;
+    if(!remaining){
+      tavlaSessionPhase('failed','Tahta henüz eşitlenemedi. Yeniden isteyebilirsin.',true);
+      return;
+    }
+    if(TavlaMP.send({type:'resync_request'})===false)return;
+    setTimeout(()=>ask(remaining-1),3000);
+  };
+  tavlaSessionPhase('reconnecting','Rakibin tahta durumu bekleniyor.');
+  ask(3);return true;
+}
+
 function sendFullSync(){
-  if(!G || !G.online || !TavlaMP || !TavlaMP.connected) return;
+  if(!G || !G.online || !G.isHost || !TavlaMP || !TavlaMP.connected) return;
   // A received move is applied after its animation. Never publish a snapshot
   // between that move and its queued continuation (including a combined move).
   if(G.remoteMoving){
@@ -1902,7 +1933,7 @@ function sendFullSync(){
 }
 
 function applyFullSync(s){
-  if(!G || !G.online || G.isHost || !s || !isValidState(s.gameState)) return;
+  if(!G || !G.online || G.isHost || !s || !isValidState(s.gameState) || (G.gameEnded&&!s.gameEnded)) return;
   if(!!s.rolled !== (s.gameState.dice.length > 0)) return;
   try{
     G.confirmPending?.remove(); G.confirmPending = null;
@@ -1926,8 +1957,10 @@ function applyFullSync(s){
 }
 
 function sendHello(){
+  const game=G;
   try{
     import('../auth.js').then(m => {
+      if(!game||G!==game||!game.online||!TavlaMP?.connected)return;
       const st = m.Auth.getState();
       TavlaMP.send({ type:'hello', uid: st.uid || null, name: getPortalNick(st) });
     });
@@ -1954,6 +1987,12 @@ function onRemoteMessage(type, data){
     // Oyunu HEMEN bitirme — reconnect denenecek
     G.oppLeft = true; G._syncPending = true;
     clearAutoRollTimer();
+    // A pause negotiated on a replaced connection cannot award a timeout.
+    if(typeof clearBreakTimers==='function')clearBreakTimers();
+    if(typeof clearMoveGrace==='function')clearMoveGrace();
+    if(typeof hideBreakOverlay==='function')hideBreakOverlay();
+    G.confirmPending?.remove();G.confirmPending=null;
+    G.breakState=null;G.breakRequester=null;G._drawOffered=false;G._syncAttempt=null;
     try{ if(G.activePointerId != null) G.canvas?.releasePointerCapture?.(G.activePointerId); }catch(e){}
     G.activePointerId = null; G.dragFrom = null; G.pointerDownPos = null;
     G.tapTarget = null; G.dragging = false; G.dragMoved = false; G.dragPos = null;
@@ -1975,18 +2014,18 @@ function onRemoteMessage(type, data){
     updateControls();
     // Host güncel state'i gönderir; misafir ister
     if(G.isHost){ sendFullSync(); }
-    else { TavlaMP.send({ type:'resync_request' }); }
+    else { if(typeof requestTavlaSync==='function')requestTavlaSync();else TavlaMP.send({type:'resync_request'}); }
     return;
   }
   if(type === 'reconnect_failed'){
-    if(!G.gameEnded){ G.oppLeft=true;G._syncPending=true;clearAutoRollTimer();if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.');updateStatus('Bağlantı kurulamadı — maç duraklatıldı');updateControls(); }
+    if(!G.gameEnded){ G.oppLeft=true;G._syncPending=true;clearAutoRollTimer();if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.',true);updateStatus('Bağlantı kurulamadı — maç duraklatıldı');updateControls(); }
     return;
   }
   if(type !== 'message') return;
   const msg = data;
   if(!msg || !msg.type) return;
   if(G.remoteMoving && ['move','endturn','dice','fullsync'].includes(msg.type)){
-    (G.remoteQueue ||= []).push(msg); return;
+    if((G.remoteQueue ||= []).length<12)G.remoteQueue.push(msg); return;
   }
 
   // Reconnect senkron mesajları
@@ -2023,6 +2062,7 @@ function onRemoteMessage(type, data){
     if(G.gameEnded || G.state.turn===G.playerColor) return;
     const mv = resolveLegalMove(G.state,msg);
     if(!mv) return;
+    G._drawOffered=false;
     if(G.moveGraceActive) clearMoveGrace();   // yalnız doğrulanmış hamle süreyi karşılar
     let isHit = false;
     if(typeof mv.to === 'number'){
@@ -2056,12 +2096,18 @@ function onRemoteMessage(type, data){
   } else if(msg.type === 'chat'){
     if(typeof msg.text === 'string') addChatMessage(msg.text.slice(0, 120), false);
   } else if(msg.type === 'drawoffer'){
+    if(G.oppLeft || G._syncPending || G._awaitingStart)return;
     showConfirm('🤝 Rakip beraberlik teklif etti. Kabul ediyor musun?', () => {
-      if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'drawaccept' });
+      if(G.oppLeft || G._syncPending || !TavlaMP?.connected || TavlaMP.send({type:'drawaccept'})===false){
+        updateStatus('Onay iletilemedi. Maç sürüyor.');return;
+      }
       endInDraw();
-    }, 'Kabul Et');
+    }, 'Kabul Et',()=>{if(TavlaMP?.connected)TavlaMP.send({type:'drawdecline'});},'Reddet');
   } else if(msg.type === 'drawaccept'){
-    endInDraw();
+    if(!G._drawOffered || G._syncPending)return;
+    G._drawOffered=false;endInDraw();
+  } else if(msg.type === 'drawdecline'){
+    if(G._drawOffered){G._drawOffered=false;updateStatus('Rakip beraberliği reddetti.');}
   } else if(msg.type === 'break_request'){
     onBreakRequestReceived();
   } else if(msg.type === 'break_accept'){
@@ -2117,16 +2163,16 @@ function setupChat(){
   const sendBtn = G.root.querySelector('[data-act="chatSend"]');
   const inp = G.root.querySelector('[data-el="chatInput"]');
   if(sendBtn && inp){
-    sendBtn.addEventListener('click', () => { const t = inp.value.trim(); if(t){ sendChat(t); inp.value=''; } });
-    inp.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ const t = e.target.value.trim(); if(t){ sendChat(t); e.target.value=''; } } });
+    sendBtn.addEventListener('click', () => { const t = inp.value.trim(); if(t && sendChat(t))inp.value=''; });
+    inp.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ const t = e.target.value.trim(); if(t && !e.isComposing && sendChat(t))e.target.value=''; } });
   }
 }
 
 function sendChat(text){
   if(!G || !TavlaMP.connected) return;
   text = (text || '').slice(0, 120);
-  TavlaMP.send({ type:'chat', text });
-  addChatMessage(text, true);
+  if(TavlaMP.send({type:'chat',text})===false)return false;
+  addChatMessage(text,true);return true;
 }
 
 function addChatMessage(text, mine){
@@ -2209,8 +2255,9 @@ function offerDraw(){
       updateStatus('🤖 Yapay zekâ beraberliği reddetti — oyun sürüyor');
     }
   } else if(G.online){
-    if(!TavlaMP || !TavlaMP.connected) return;
-    TavlaMP.send({ type:'drawoffer' });
+    if(!TavlaMP?.connected || G.oppLeft || G._syncPending || G._awaitingStart || G._drawOffered) return;
+    if(TavlaMP.send({type:'drawoffer'})===false){updateStatus('Teklif gönderilemedi. Bağlantıyı kontrol et.');return;}
+    G._drawOffered=true;
     updateStatus('🤝 Beraberlik teklifi gönderildi — yanıt bekleniyor…');
   }
 }
@@ -2219,7 +2266,9 @@ function resignGame(){
   if(!G || G.gameEnded) return;
   showConfirm('Pes etmek istediğine emin misin?', () => {
     if(G.online){
-      if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'resign' });
+      if(G.oppLeft || G._syncPending || G._awaitingStart || !TavlaMP?.connected || TavlaMP.send({type:'resign'})===false){
+        updateStatus('Pes etme iletilemedi. Bağlantı gelince yeniden dene.');return;
+      }
       G.gameEnded = true; clearAutoRollTimer();
       updateStatus('🏳️ Pes ettin — rakip kazandı', 'win');
       try{ Sound.lose(); }catch(e){}
@@ -2275,8 +2324,8 @@ function fmt(ms){ const s = Math.max(0, Math.ceil(ms/1000)); return Math.floor(s
 function requestBreak(){
   if(!G || !G.online || G.gameEnded || G.breakState) return;
   if(!TavlaMP || !TavlaMP.connected){ if(window.Hero) window.Hero.toast('Bağlantı yok', true); return; }
+  if(G.oppLeft || G._syncPending || G._awaitingStart || TavlaMP.send({type:'break_request'})===false)return;
   clearAutoRollTimer();
-  TavlaMP.send({ type:'break_request' });
   G.breakState = 'requesting'; G.breakRequester = 'me';
   showBreakOverlay('🛌 Mola talebi gönderildi', 'Rakibin yanıtı bekleniyor…', null);
 }
@@ -2287,7 +2336,7 @@ function onBreakRequestReceived(){
   G.breakRequester = 'them';
   clearAutoRollTimer();
   showConfirm('🛌 Rakip 5 dakika mola istiyor.<br>Kabul ediyor musun?',
-    () => { TavlaMP.send({ type:'break_accept' }); startBreak('waiting'); },
+    () => { if(TavlaMP.send({type:'break_accept'})!==false)startBreak('waiting'); },
     'Kabul Et',
     () => {
       TavlaMP.send({ type:'break_decline' }); G.breakRequester = null; G.breakState = null;
@@ -2373,10 +2422,10 @@ function startMoveGrace(){
 
 function forfeitByTimeout(){
   clearMoveGrace();
-  if(!G || G.gameEnded) return;
+  if(!G || G.gameEnded || !['me','them'].includes(G.breakRequester) || G.oppLeft || G._syncPending || (G.online && !TavlaMP?.connected)) return;
+  if(G.breakRequester==='me' && G.online && TavlaMP.send({type:'forfeit'})===false)return;
   G.gameEnded = true; clearAutoRollTimer();
   if(G.breakRequester === 'me'){
-    if(TavlaMP && TavlaMP.connected) TavlaMP.send({ type:'forfeit' });
     updateStatus('⏳ Süre doldu — hükmen yenildin', 'win');
     try{ Sound.lose(); }catch(e){}
   } else {
@@ -2405,7 +2454,7 @@ function showBreakOverlay(title, sub, button){
     ${btnHTML}
   </div>`;
   const bb = ov.querySelector('[data-act="breakBack"]');
-  if(bb) bb.addEventListener('click', () => { TavlaMP.send({ type:'break_back' }); endBreak(); });
+  if(bb) bb.addEventListener('click', () => { if(TavlaMP.send({type:'break_back'})!==false)endBreak(); });
 }
 function showBreakDecision(){
   if(!G || !G.root) return;
@@ -2421,8 +2470,8 @@ function showBreakDecision(){
     </div>
     <div class="tvbk-note">Oyunu başlatırsan rakip 3 dk içinde oynamazsa hükmen yenilir.</div>
   </div>`;
-  ov.querySelector('[data-act="extend"]').addEventListener('click', () => { TavlaMP.send({ type:'break_extend' }); startBreak('waiting'); });
-  ov.querySelector('[data-act="resume"]').addEventListener('click', () => { TavlaMP.send({ type:'break_resume' }); resumeAfterBreak(); });
+  ov.querySelector('[data-act="extend"]').addEventListener('click', () => { if(TavlaMP.send({type:'break_extend'})!==false)startBreak('waiting'); });
+  ov.querySelector('[data-act="resume"]').addEventListener('click', () => { if(TavlaMP.send({type:'break_resume'})!==false)resumeAfterBreak(); });
 }
 function hideBreakOverlay(){
   if(!G || !G.root) return;
@@ -2430,13 +2479,13 @@ function hideBreakOverlay(){
   if(ov) ov.remove();
 }
 
-function attachTavlaSession(host,phase){
+function attachTavlaSession(host,phase,retry){
   if(!G || !host?.appendChild)return;
   G._sessionUI?.destroy();
-  G._sessionUI=mountSessionStatus(host,{game:'tavla',mode:'online',onLeave:closeAll,initial:{phase,canRetry:false}});
+  G._sessionUI=mountSessionStatus(host,{game:'tavla',mode:'online',onLeave:closeAll,onRetry:retry,initial:{phase,canRetry:false}});
   const board=host.querySelector?.('[data-el="boardWrap"]');if(board)host.insertBefore(G._sessionUI.element,board);
 }
-function tavlaSessionPhase(phase,detail){ G?._sessionUI?.update({phase,detail,canRetry:false}); }
+function tavlaSessionPhase(phase,detail,canRetry=false){ G?._sessionUI?.update({phase,detail,canRetry}); }
 function updateTavlaMetrics(){
   if(!G?.root||!G.state)return;
   for(const color of ['w','b']){
@@ -2712,15 +2761,15 @@ async function showOnlineLobby(root){
     <div class="tol-panel" data-panel="host" style="display:none">
       <div class="tol-info">Oda kodun:</div>
       <div class="tol-code" data-el="code">······</div>
-      <button class="tol-copy" data-act="copy">📋 KODU KOPYALA</button>
-      <button class="tol-copy" data-act="share">📤 PAYLAŞ</button>
+      <button class="tol-copy" data-act="copy" disabled>📋 KODU KOPYALA</button>
+      <button class="tol-copy" data-act="share" disabled>📤 PAYLAŞ</button>
       <div class="tol-hint">Bu kodu arkadaşınla paylaş.<br>Rakip bekleniyor…</div>
       <div class="tol-spinner"></div>
     </div>
     <div class="tol-panel" data-panel="joinp" style="display:none">
       <div class="tol-info">Oda kodunu gir:</div>
       <div class="tol-input-row">
-        <input class="tol-input" data-el="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters">
+        <input class="tol-input" data-el="codeInput" placeholder="ABC234" aria-label="Tavla oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <button class="tol-paste" data-act="paste" title="Yapıştır">📋</button>
       </div>
       <button class="tol-connect" data-act="connect">BAĞLAN</button>
@@ -2736,18 +2785,36 @@ async function showOnlineLobby(root){
 
   ov.querySelector('[data-act="back"]').addEventListener('click', () => { try{ TavlaMP.close(); }catch(e){} ov.remove(); });
 
-  // ODA KUR
-  ov.querySelector('[data-act="create"]').addEventListener('click', () => {
-    showPanel('host');
-    try{ Sound.resume(); }catch(e){}
-    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting');
-    TavlaMP.createRoom((type, data) => {
-      if(G !== session || !ov.isConnected) return;
-      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('waiting'); }
-      else if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: true }); }
-      else if(type === 'error'){ ov.querySelector('.tol-hint').textContent = '❌ ' + String(data || 'Bağlantı hatası') + ' · Tekrar dene.'; if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
+  const codeLabel=ov.querySelector('[data-el="code"]');
+  const codeButtons=ov.querySelectorAll('[data-act="copy"],[data-act="share"]');
+  const codeInput=ov.querySelector('[data-el="codeInput"]');
+  const joinStatus=ov.querySelector('[data-el="joinStatus"]');
+  const connectButton=ov.querySelector('[data-act="connect"]');
+  let busy=false;
+  const current=()=>G===session&&ov.isConnected;
+  const setBusy=value=>{busy=value;connectButton.disabled=value;codeInput.readOnly=value;};
+  const hostRoom=()=>{
+    if(!current() || busy)return;
+    showPanel('host');setBusy(true);
+    codeLabel.textContent='······';codeButtons.forEach(button=>button.disabled=true);
+    ov.querySelector('.tol-hint').textContent='Oda hazırlanıyor…';
+    try{Sound.resume();}catch(_){}
+    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting',hostRoom);
+    TavlaMP.createRoom((type,data)=>{
+      if(!current())return;
+      if(type==='code'){
+        codeLabel.textContent=data;codeButtons.forEach(button=>button.disabled=false);
+        ov.querySelector('.tol-hint').textContent='Kodu paylaş; rakip katıldığında oyun başlayacak.';
+        if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('waiting');
+      }else if(type==='connected'){ov.remove();startGame(root,'online',{isHost:true});}
+      else if(type==='error'){
+        setBusy(false);codeButtons.forEach(button=>button.disabled=true);
+        const message=String(data||'Oda kurulamadı');ov.querySelector('.tol-hint').textContent='❌ '+message;
+        if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed',message,true);
+      }
     });
-  });
+  };
+  ov.querySelector('[data-act="create"]').addEventListener('click',hostRoom);
   // Kodu kopyala
   ov.querySelector('[data-act="share"]').addEventListener('click', async e => {
     const btn=e.currentTarget,code=ov.querySelector('[data-el="code"]').textContent;
@@ -2761,29 +2828,42 @@ async function showOnlineLobby(root){
     finally{btn.disabled=false;}
   });
   ov.querySelector('[data-act="copy"]').addEventListener('click', (e) => {
-    const code = ov.querySelector('[data-el="code"]').textContent;
+    const code=normalizeRoomCode(codeLabel.textContent);if(!code||!current())return;
     const btn = e.currentTarget;
     copyTextTavla(code, () => { btn.textContent = '✅ KOPYALANDI'; setTimeout(() => { btn.textContent = '📋 KODU KOPYALA'; }, 1600); });
   });
 
-  // ODAYA KATIL
-  ov.querySelector('[data-act="join"]').addEventListener('click', () => showPanel('joinp'));
-  const codeInput = ov.querySelector('[data-el="codeInput"]');
-  ov.querySelector('[data-act="paste"]').addEventListener('click', async () => {
-    try{ if(navigator.clipboard && navigator.clipboard.readText){ const t = await navigator.clipboard.readText(); codeInput.value = (t||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6); } }catch(e){}
+  ov.querySelector('[data-act="join"]').addEventListener('click',()=>{showPanel('joinp');codeInput.focus();});
+  codeInput.addEventListener('input',()=>{if(codeInput.value.length>80)codeInput.value=codeInput.value.slice(0,80);});
+  ov.querySelector('[data-act="paste"]').addEventListener('click',async()=>{
+    try{
+      if(!navigator.clipboard?.readText)throw new Error();
+      const text=await navigator.clipboard.readText();
+      if(!current() || busy)return;
+      const code=normalizeRoomCode(text);
+      if(code){codeInput.value=code;codeInput.focus();}
+      else joinStatus.textContent='Panoda geçerli oda kodu bulunamadı.';
+    }catch(_){if(current()){joinStatus.textContent='Pano açılamadı; kodu elle girebilirsin.';codeInput.focus();}}
   });
-  ov.querySelector('[data-act="connect"]').addEventListener('click', () => {
-    const code = codeInput.value.trim().toUpperCase();
-    if(code.length !== 6){ ov.querySelector('[data-el="joinStatus"]').textContent = '⚠️ 6 haneli kod gir'; return; }
-    ov.querySelector('[data-el="joinStatus"]').textContent = 'Bağlanıyor…';
-    try{ Sound.resume(); }catch(e){}
-    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting');
-    TavlaMP.joinRoom(code, (type, data) => {
-      if(G !== session || !ov.isConnected) return;
-      if(type === 'connected'){ ov.remove(); startGame(root, 'online', { isHost: false }); }
-      else if(type === 'error'){ ov.querySelector('[data-el="joinStatus"]').textContent = '❌ ' + String(data||'Bağlantı hatası');if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed'); }
+  const joinRoom=()=>{
+    if(!current() || busy)return;
+    const code=normalizeRoomCode(codeInput.value);
+    if(!code){joinStatus.textContent='Geçerli 6 karakterli oda kodu gir.';codeInput.focus();return;}
+    codeInput.value=code;setBusy(true);joinStatus.textContent='Bağlanıyor…';
+    try{Sound.resume();}catch(_){}
+    if(typeof attachTavlaSession==='function')attachTavlaSession(ov.querySelector('.tol-box'),'connecting',joinRoom);
+    TavlaMP.joinRoom(code,(type,data)=>{
+      if(!current())return;
+      if(type==='connected'){ov.remove();startGame(root,'online',{isHost:false});}
+      else if(type==='error'){
+        setBusy(false);const message=String(data||'Bağlantı hatası');joinStatus.textContent='❌ '+message;
+        if(typeof tavlaSessionPhase==='function')tavlaSessionPhase('failed',message,true);
+      }
     });
-  });
+  };
+  connectButton.addEventListener('click',joinRoom);
+  codeInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();joinRoom();}});
+
 }
 
 function copyTextTavla(text, onDone){
@@ -2989,7 +3069,7 @@ function renderReviewFrame(frame,host){
 }
 
 function injectCSS(){
-  if(!document.getElementById('tavla-premium-css')){const link=document.createElement('link');link.id='tavla-premium-css';link.rel='stylesheet';link.href=new URL('../../css/tavla-premium.css',import.meta.url).href;document.head.appendChild(link);}
+  if(!document.getElementById('tavla-premium-css')){const link=document.createElement('link');link.id='tavla-premium-css';link.rel='stylesheet';link.href=new URL('../../css/tavla-premium.css?v=157',import.meta.url).href;document.head.appendChild(link);}
   if(document.getElementById('tavla-css')) return;
   const s = document.createElement('style');
   s.id = 'tavla-css';

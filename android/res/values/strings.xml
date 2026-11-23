@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hero Portal</string>
+    <string name="browser_needed">Hero Portal’ı açmak için Chrome, Samsung Internet veya başka bir web tarayıcısı gerekiyor.</string>
+    <string name="open_portal">Portalı aç</string>
+    <style name="PortalTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#090F2A</item>
+        <item name="android:colorAccent">#EBCE93</item>
+        <item name="android:statusBarColor">#090F2A</item>
+        <item name="android:navigationBarColor">#090F2A</item>
+    </style>
+</resources>

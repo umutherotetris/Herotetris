@@ -1,8 +1,17 @@
 // Oda davetini telefonun paylaşım menüsüyle gönder; destek yoksa panoya kopyala.
 const names={chess:'Satranç',tavla:'Tavla',tetris:'Tetris',kelime:'Kelimecik'};
+// Accept the exact text our share/copy controls generate as well as a bare
+// code. Never truncate arbitrary prose or a longer invalid code to six letters.
+export function normalizeRoomCode(value){
+  if(typeof value!=='string'||value.length>4096)return '';
+  const text=value.trim().toUpperCase();
+  if(/^[A-Z2-9]{6}$/.test(text))return text;
+  const labels=[...text.matchAll(/(?:^|[\s])ODA[ \t]+KODU[ \t]*:[ \t]*([A-Z2-9]{6})(?=$|[\s.,;!?])/g)];
+  return labels.length===1?labels[0][1]:'';
+}
 export async function shareRoomCode(game,code){
-  const room=String(code||'').trim();
-  if(!room || room.length>80) return 'unsupported';
+  const room=normalizeRoomCode(code);
+  if(!room) return 'unsupported';
   const name=names[game]||'Oyun';
   const url=new URL('./',location.href).href;
   const text=`${name} oynamaya davetlisin.\nOda kodu: ${room}\nOyunu aç, çevrimiçi oda bölümüne bu kodla katıl.`;

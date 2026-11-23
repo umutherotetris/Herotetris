@@ -15,8 +15,10 @@ function backend(initial){
   const get=path=>path.split('/').filter(Boolean).reduce((o,k)=>o?.[k],data)??null;
   function set(path,value){const keys=path.split('/').filter(Boolean);let at=data;for(const k of keys.slice(0,-1))at=at[k]??={};at[keys.at(-1)]=clone(value);}
   const snap=value=>({exists:()=>value!==null,val:()=>clone(value)});
+  const notify=path=>{for(const[p,cbs]of listeners)if(path===p||path.startsWith(p+'/'))for(const cb of cbs)cb(snap(get(p)));};
   const fdb={ref:(_db,path)=>path,get:async path=>snap(get(path)),
-    update:async(path,patch)=>{for(const[k,v]of Object.entries(patch))set(path+'/'+k,v);for(const[p,cbs]of listeners)if(path===p||path.startsWith(p+'/'))for(const cb of cbs)cb(snap(get(p)));},
+    update:async(path,patch)=>{for(const[k,v]of Object.entries(patch))set(path+'/'+k,v);notify(path);},
+    runTransaction:async(path,fn)=>{const value=fn(clone(get(path))); if(value===undefined)return {committed:false,snapshot:snap(get(path))};set(path,value);notify(path);return {committed:true,snapshot:snap(get(path))};},
     onValue:(path,cb)=>{if(!listeners.has(path))listeners.set(path,new Set());listeners.get(path).add(cb);queueMicrotask(()=>{if(listeners.get(path)?.has(cb))cb(snap(get(path)));});return()=>listeners.get(path)?.delete(cb);},
     onDisconnect:()=>({set:async()=>{},cancel:async()=>{}})
   };

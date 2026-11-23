@@ -100,7 +100,7 @@ async function setup(page, fixtures=true){
   assert.equal(await page.evaluate(()=>document.activeElement.dataset.filter),'favorites');
   await page.locator('#resetFilter').click();
   await page.locator('[data-filter="together"]').click();
-  assert.equal(await page.locator('[data-game-card]:visible').count(),3);
+  assert.equal(await page.locator('[data-game-card]:visible').count(),4);
   await page.locator('[data-filter="all"]').click();
   await page.locator('[data-guide="chess"]').click();
   assert.equal(await page.locator('#guideTitle').textContent(),'Satranç');

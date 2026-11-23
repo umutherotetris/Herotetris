@@ -1,7 +1,7 @@
 // Discovery stays independent of account services. Only successful launches enter recents.
 import { go } from './nav.js';
 const games = {
-  tetris: { name:'HeroTetris', id:'gameTetris', category:'ARCADE', line:'Ritmini bul.\nRekorunu kır.', description:'Bloklar düşer, dünya yavaşlar. Sıradaki rekorun bir hamle uzağında.', tags:['Tek oyuncu','Refleks & ritim'], art:'lobby-tetris.svg?v=141', search:'tetris blok arcade refleks tek', solo:true, together:false, steps:['Oyun ekranından istediğin modu seç.','Düşen blokları hareket ettir ve döndür. Boşluk bırakmadan yatay sıraları doldur.','Tamamlanan sıralar silinir. Bloklar tepeye ulaşmadan skorunu yükselt.'], note:'Klavye ve dokunmatik kontroller oyun ekranında gösterilir.' },
+  tetris: { name:'HeroTetris', id:'gameTetris', category:'ARCADE', line:'Ritmini bul.\nRekorunu kır.', description:'Bloklar düşer, dünya yavaşlar. Sıradaki rekorun bir hamle uzağında.', tags:['Tek oyuncu','Çevrimiçi düello'], art:'lobby-tetris.svg?v=141', search:'tetris blok arcade refleks tek çok oyunculu düello arkadaş', solo:true, together:true, steps:['Oyun ekranından istediğin modu seç.','Düşen blokları hareket ettir ve döndür. Boşluk bırakmadan yatay sıraları doldur.','Tamamlanan sıralar silinir. Bloklar tepeye ulaşmadan skorunu yükselt.'], note:'Tek başına oyna veya Çok Oyuncu modunda oda koduyla arkadaşına katıl.' },
   chess: { name:'Satranç', id:'gameChess', category:'STRATEJİ', line:'Bir hamle önde.\nBir dünya ihtimal.', description:'Tahtayı oku, planını kur. Her hamlede yeni bir ihtimal keşfet.', tags:['AI & 2 oyuncu','Strateji & odak'], art:'game-chess.svg?v=140', search:'satranç chess strateji zeka yapay ai arkadaş', solo:true, together:true, steps:['Oyun ekranından rakip ve oyun türünü seç.','Bir taşa dokun, ardından geçerli hedef kareyi seç.','Kendi şahını korurken rakibin şahını mat etmeye çalış.'], note:'Oyun türü ve süre ayarlarını satranç ekranında seçebilirsin.' },
   tavla: { name:'Tavla', id:'gameTavla', category:'KLASİK', line:'Şansın başlasın.\nTaktiğin konuşsun.', description:'Zarın sürprizini doğru hamleyle buluştur. Klasik rekabet, yeni bir tur.', tags:['AI & 2 oyuncu','Şans & taktik'], art:'game-tavla.svg?v=140', search:'tavla backgammon zar taktik arkadaş', solo:true, together:true, steps:['Tavla ekranında oyun türünü seç.','Zarları at ve pullarını gelen sayılara göre hareket ettir.','Tüm pullarını kendi evine getir, sonra rakibinden önce topla.'], note:'Rakip seçimi ve bağlantı seçenekleri oyun içinde açılır.' },
   kelime: { name:'Kelimecik', id:'gameKelime', category:'KELİME', line:'Harfler senin.\nHikâye senin.', description:'Bir avuç harften yeni yollar aç. En iyi kelimen henüz oynanmadı.', tags:['AI & 2 oyuncu','Harfler & keşif'], art:'game-word.svg?v=140', search:'kelimecik kelime harf sözcük zeka ai arkadaş', solo:true, together:true, steps:['Yerel, yapay zekâ veya diğer oyun seçeneklerinden birini seç.','Elindeki harfleri tahtaya yerleştirerek kelimeler oluştur.','Tahtadaki kelimelerden yararlan, puanını büyüt ve sıranı tamamla.'], note:'Aynı cihazda iki kişi sırayla oynayabilir; AI modunda tek başına başlayabilirsin.' }
@@ -68,20 +68,29 @@ export default function initLobby(){
   [guide,search].forEach(dialog=>dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}}));
   const normalize=text=>text.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i');
   function renderSearch(){
-    const q=normalize($('gameSearchInput').value.trim()), results=keys.filter(k=>normalize(games[k].name+' '+games[k].search).includes(q));
+    const q=normalize($('gameSearchInput').value.trim()), results=keys.filter(k=>normalize([games[k].name,games[k].search, ...games[k].tags, games[k].together?'çevrimiçi online multiplayer':''].join(' ')).includes(q));
     const box=$('searchResults');box.replaceChildren();
     if(!results.length){const p=document.createElement('p');p.className='search-empty';p.textContent='Oyun bulunamadı. Başka bir ad veya tür dene.';box.append(p);return;}
     results.forEach(key=>{
       const g=games[key], b=document.createElement('button');b.type='button';b.className='search-result';
       const name=document.createElement('strong'),meta=document.createElement('span');name.textContent=g.name;meta.textContent=g.tags.join(' · ');b.append(name,meta);
-      b.addEventListener('click',()=>{search.close();go('home',false,'push');filter='all';renderCollection();$(games[key].id).focus();});box.append(b);
+      b.addEventListener('click',()=>{
+        search.close();go('home',false,'push');filter='all';renderCollection();
+        const target=$(games[key].id);target.focus({preventScroll:true});
+        // The screen's next-frame scroll restoration must run before this reveal.
+        requestAnimationFrame(()=>{if(document.activeElement===target)target.scrollIntoView({block:'nearest'});});
+      });box.append(b);
     });
   }
-  function openSearch(){if(search.open||guide.open||document.querySelector('dialog[open],.tetris-overlay,.hero-select-overlay,.chess-root,.tavla-root,.kl-root,.nick-overlay'))return;$('gameSearchInput').value='';renderSearch();search.showModal();$('gameSearchInput').focus();}
+  function openSearch(){
+    const game=':is(.tetris-overlay,.hero-select-overlay,.chess-root,.tavla-root,.kl-root):not([hidden]):not([data-portal-minimized="true"])';
+    if(search.open||guide.open||document.querySelector('dialog[open],.nick-overlay,'+game))return;
+    $('gameSearchInput').value='';renderSearch();search.showModal();$('gameSearchInput').focus();
+  }
   $('searchTrigger').addEventListener('click',openSearch);
   $('gameSearchInput').addEventListener('input',renderSearch);
   $('gameSearchInput').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();$('searchResults').querySelector('button')?.focus();}});
-  document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.repeat&&!e.target.closest('input,textarea,select,[contenteditable="true"]')){e.preventDefault();openSearch();}});
+  document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.isComposing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.repeat&&!e.target.closest?.('input,textarea,select,[contenteditable]')){e.preventDefault();openSearch();}});
   window.addEventListener('storage',e=>{if(e.key==='hero_lobby_favorites'){const value=read(e.key,[]);favorites=new Set(Array.isArray(value)?value.filter(k=>keys.includes(k)):[]);renderCollection();}});
   renderCollection();renderRecent();
 }

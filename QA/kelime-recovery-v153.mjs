@@ -106,7 +106,7 @@ for(const final of ['pass','resign','draw','last-tile'])for(const accept of [fal
  const b=backend('alice'),room={seed:7,status:'active',players:{A:'alice',B:'bob'},turn:'A',bagPointer:14};
  b.rows.set('kelimeGames/live',room);await b.context.resumeGame('live',{});
  const original=[{letter:'A',points:1,joker:false}],changed=[{letter:'Z',points:10,joker:false}];
- await b.context.saveRack(original);b.context.fdb.update=async()=>{throw new Error('Rejected write');};
+ await b.context.saveRack(original);b.context.fdb.runTransaction=async()=>{throw new Error('Rejected write');};
  await assert.rejects(b.context.pushMove({turn:'B','racks/A':changed}));
  await b.context.leaveRoom();b.context.fdb.update=async()=>{};let restored;
  await b.context.resumeGame('live',{onResumed:x=>restored=x});

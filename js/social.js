@@ -982,6 +982,8 @@ export function initSocial(){
   const gem = document.createElement('button');
   gem.id = 'gemFloatBtn'; gem.className = 'twin-fab';
   gem.setAttribute('aria-label', 'Sohbet alanını aç');
+  gem.setAttribute('aria-controls', 'gemHubPanel');
+  gem.setAttribute('aria-expanded', 'false');
   gem.title = 'Sohbet';
   gem.innerHTML = `<span class="tw-gem" aria-hidden="true">💎</span><i class="tw-spark tw-spark-cyan-1"></i><i class="tw-spark tw-spark-cyan-2"></i><i class="tw-spark tw-spark-cyan-3"></i><i class="tw-badge" id="gemFabBadge">0</i>`;
   document.body.appendChild(gem);
@@ -995,17 +997,19 @@ export function initSocial(){
   // Hub paneli
   const panel = document.createElement('div');
   panel.id = 'gemHubPanel';
+  panel.setAttribute('role', 'region');
+  panel.setAttribute('aria-label', 'Sosyal Hub');
   panel.innerHTML = `
     <div class="ghp-drag" id="ghpDragHandle">
       <div class="ghp-title"><span class="ghp-title-gem">💎</span> SOSYAL HUB</div>
-      <div class="ghp-acts"><button class="ghp-act" id="ghpSettingsBtn" title="Ayarlar">⚙️</button><button class="ghp-act" id="ghpSizeBtn" title="Boyut: mini / midi / full">⤢</button><button class="ghp-act" id="ghpCloseBtn">✕</button></div>
+      <div class="ghp-acts"><button class="ghp-act" id="ghpSettingsBtn" title="Ayarlar" aria-label="Sohbet ayarları">⚙️</button><button class="ghp-act" id="ghpSizeBtn" title="Sohbet boyutu" aria-label="Sohbet boyutunu değiştir">⤢</button><button class="ghp-act" id="ghpCloseBtn" aria-label="Sohbeti kapat">✕</button></div>
     </div>
-    <div class="ghp-tabs">
-      <button class="ghp-tab active" data-ghptab="chat">💬 CHAT</button>
-      <button class="ghp-tab" data-ghptab="ozel">✉️<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
-      <button class="ghp-tab" data-ghptab="dost">👥</button>
-      <button class="ghp-tab" data-ghptab="lider">🏆</button>
-      <button class="ghp-tab" data-ghptab="notif">🔔<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
+    <div class="ghp-tabs" role="group" aria-label="Sosyal Hub bölümleri">
+      <button class="ghp-tab active" data-ghptab="chat" aria-label="Genel sohbet" aria-pressed="true">💬 CHAT</button>
+      <button class="ghp-tab" data-ghptab="ozel" aria-label="Özel mesajlar" aria-pressed="false">✉️<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
+      <button class="ghp-tab" data-ghptab="dost" aria-label="Arkadaşlar" aria-pressed="false">👥</button>
+      <button class="ghp-tab" data-ghptab="lider" aria-label="Liderlik" aria-pressed="false">🏆</button>
+      <button class="ghp-tab" data-ghptab="notif" aria-label="Bildirimler" aria-pressed="false">🔔<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
     </div>
     <div class="ghp-body">
       <div class="ghp-pane active" id="ghpPane-chat">
@@ -1015,25 +1019,25 @@ export function initSocial(){
         </div>
         <div class="ghp-list" id="ghpChatList"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">SOHBET YÜKLENİYOR…</div></div></div>
         <div class="ghp-quick-bar" id="ghpChatQuick"><button class="ghp-qb" data-q="😂">😂</button><button class="ghp-qb" data-q="❤️">❤️</button><button class="ghp-qb" data-q="👍">👍</button><button class="ghp-qb" data-q="🔥">🔥</button><button class="ghp-qb" data-q="😮">😮</button><button class="ghp-qb" data-q="😢">😢</button><button class="ghp-qb" data-q="🎉">🎉</button><button class="ghp-qb" data-q="💪">💪</button><span class="ghp-qb-sep"></span><button class="ghp-qb ghp-qb-text" data-q="GG">GG</button><button class="ghp-qb ghp-qb-text" data-q="Merhaba! 👋">Mrb</button><button class="ghp-qb ghp-qb-text" data-q="Tebrikler! 🎉">Tebrik</button><button class="ghp-qb ghp-qb-text" data-q="İyi oyunlar! ⚔️">İyi oyun</button></div>
-        <div class="ghp-input-row"><input class="ghp-input" id="ghpChatInput" maxlength="200" placeholder="Mesaj yaz…" autocomplete="off"><button class="ghp-send" id="ghpChatSend">➤</button></div>
+        <div class="ghp-input-row"><input class="ghp-input" id="ghpChatInput" maxlength="200" placeholder="Mesaj yaz…" aria-label="Genel sohbet mesajı" autocomplete="off"><button class="ghp-send" id="ghpChatSend" aria-label="Genel sohbete gönder">➤</button></div>
       </div>
       <div class="ghp-pane" id="ghpPane-ozel">
         <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(66,165,245,.12)">
-          <input class="ghp-input" id="ghpDMNick" maxlength="16" placeholder="Nick ile yeni sohbet…" autocomplete="off"><button class="ghp-send" id="ghpDMOpen" style="color:#42A5F5;border-color:rgba(66,165,245,.4);background:linear-gradient(135deg,rgba(66,165,245,.22),rgba(66,165,245,.08))">＋</button>
+          <input class="ghp-input" id="ghpDMNick" maxlength="16" placeholder="Nick ile yeni sohbet…" aria-label="Yeni sohbet için oyuncu nicki" autocomplete="off"><button class="ghp-send" id="ghpDMOpen" aria-label="Özel sohbeti aç" style="color:#42A5F5;border-color:rgba(66,165,245,.4);background:linear-gradient(135deg,rgba(66,165,245,.22),rgba(66,165,245,.08))">＋</button>
         </div>
         <div class="ghp-list" id="ghpDMList"></div>
-        <div id="ghpDMThread" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+        <div id="ghpDMThread" style="display:none">
           <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(66,165,245,.12)">
-            <button class="ghp-act" id="ghpDMBack">←</button><div class="ghp-dm-name" id="ghpDMTitle" style="font-size:12px;flex:1"></div>
+            <button class="ghp-act" id="ghpDMBack" aria-label="Sohbet listesine dön">←</button><div class="ghp-dm-name" id="ghpDMTitle" style="font-size:12px;flex:1"></div>
           </div>
           <div class="ghp-list" id="ghpDMMsgs"></div>
           <div class="ghp-quick-bar" id="ghpDMQuick"><button class="ghp-qb" data-dq="😂">😂</button><button class="ghp-qb" data-dq="❤️">❤️</button><button class="ghp-qb" data-dq="👍">👍</button><button class="ghp-qb" data-dq="🔥">🔥</button><button class="ghp-qb" data-dq="😮">😮</button><button class="ghp-qb" data-dq="😢">😢</button><button class="ghp-qb" data-dq="🎉">🎉</button><button class="ghp-qb" data-dq="💪">💪</button><span class="ghp-qb-sep"></span><button class="ghp-qb ghp-qb-text" data-dq="GG">GG</button><button class="ghp-qb ghp-qb-text" data-dq="Merhaba! 👋">Mrb</button><button class="ghp-qb ghp-qb-poke" id="ghpDMPoke">👋 Dürt</button></div>
-          <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" autocomplete="off"><button class="ghp-send" id="ghpDMSend" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
+          <div class="ghp-input-row"><input class="ghp-input" id="ghpDMInput" maxlength="300" placeholder="Mesaj…" aria-label="Özel mesaj" autocomplete="off"><button class="ghp-send" id="ghpDMSend" aria-label="Özel mesajı gönder" style="color:#42A5F5;border-color:rgba(66,165,245,.4)">➤</button></div>
         </div>
       </div>
       <div class="ghp-pane" id="ghpPane-dost">
         <div class="ghp-input-row" style="border-top:none;border-bottom:1px solid rgba(105,240,174,.12)">
-          <input class="ghp-input" id="ghpFrNick" maxlength="16" placeholder="Nick ile arkadaş ekle…" autocomplete="off"><button class="ghp-send" id="ghpFrAdd" style="color:#69F0AE;border-color:rgba(105,240,174,.4);background:linear-gradient(135deg,rgba(105,240,174,.2),rgba(105,240,174,.07))">＋</button>
+          <input class="ghp-input" id="ghpFrNick" maxlength="16" placeholder="Nick ile arkadaş ekle…" aria-label="Eklenecek arkadaşın nicki" autocomplete="off"><button class="ghp-send" id="ghpFrAdd" aria-label="Arkadaşlık isteği gönder" style="color:#69F0AE;border-color:rgba(105,240,174,.4);background:linear-gradient(135deg,rgba(105,240,174,.2),rgba(105,240,174,.07))">＋</button>
           <button class="ghp-act" id="ghpFrSearch" aria-label="Nick ara ve arkadaş bul" title="Arkadaş bul">⌕</button>
         </div>
         <div class="ghp-list" id="ghpFrList"></div>
@@ -1060,12 +1064,22 @@ export function initSocial(){
   H = { open:false, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
 
   // FAB davranışları
-  const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(); });
-  gem.addEventListener('click', () => { if(gemMoved()) return; pressAnim(gem); toggle(); });
+  const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(true); });
+  gem.addEventListener('click', event => { if(gemMoved()) return; pressAnim(gem); toggle(event.detail === 0); });
   const admMoved = makeFabDraggable(adm);
   adm.addEventListener('click', () => { if(admMoved()) return; pressAnim(adm); import('./admin.js').then(m => m.openAdminPanel()).catch(() => alert('Panel yüklenemedi')); });
   // Panel sürükleme + kapatma
   makePanelDrag(panel, panel.querySelector('#ghpDragHandle'));
+  window.addEventListener('resize', scheduleHubLayout);
+  window.addEventListener('scroll', scheduleHubLayout, { passive:true });
+  window.addEventListener('hero:scale', scheduleHubLayout);
+  window.visualViewport?.addEventListener('resize', scheduleHubLayout);
+  window.visualViewport?.addEventListener('scroll', scheduleHubLayout);
+  if(typeof ResizeObserver === 'function') new ResizeObserver(scheduleHubLayout).observe(panel);
+  panel.addEventListener('keydown', event => {
+    if(event.key !== 'Escape' || event.isComposing || !H.open) return;
+    event.preventDefault();event.stopPropagation();close();
+  });
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
   panel.querySelector('#ghpSizeBtn').addEventListener('click', cycleSize);
   const _cob = panel.querySelector('#ghpChatOnline'); if(_cob) _cob.addEventListener('click', _showChatOnlineList);
@@ -1081,13 +1095,13 @@ export function initSocial(){
     const n = e.target.closest('[data-pcuid]');
     if(n) openPlayerCard(n.dataset.pcuid);
   });
-  panel.querySelector('#ghpChatInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChat(); });
+  panel.querySelector('#ghpChatInput').addEventListener('keydown', (e) => { if(hubSubmitKey(e)) sendChat(); });
   // DM
   panel.querySelector('#ghpDMOpen').addEventListener('click', dmOpenByNick);
-  panel.querySelector('#ghpDMNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmOpenByNick(); });
+  panel.querySelector('#ghpDMNick').addEventListener('keydown', (e) => { if(hubSubmitKey(e)) dmOpenByNick(); });
   panel.querySelector('#ghpDMBack').addEventListener('click', dmBack);
   panel.querySelector('#ghpDMSend').addEventListener('click', dmSend);
-  panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') dmSend(); });
+  panel.querySelector('#ghpDMInput').addEventListener('keydown', (e) => { if(hubSubmitKey(e)) dmSend(); });
   // Bildirim temizle
   panel.querySelector('#ghpNotifClear').addEventListener('click', clearNotifs);
   // SosyalPlus: Chat quick emoji/kalıp
@@ -1108,7 +1122,7 @@ export function initSocial(){
   // Arkadaş ekle
   panel.querySelector('#ghpFrAdd').addEventListener('click', addFriendByNick);
   panel.querySelector('#ghpFrSearch').addEventListener('click',()=>openFriendsCenter(panel.querySelector('#ghpFrNick').value));
-  panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(e.key === 'Enter') addFriendByNick(); });
+  panel.querySelector('#ghpFrNick').addEventListener('keydown', (e) => { if(hubSubmitKey(e)) addFriendByNick(); });
   panel.querySelector('#ghpFrNick').addEventListener('input', () => {
     const q = panel.querySelector('#ghpFrNick').value.trim().toLowerCase();
     const rows = byId('ghpFrList') ? byId('ghpFrList').querySelectorAll('.ghp-dm-row') : [];
@@ -1156,38 +1170,99 @@ export function initSocial(){
 // ── Panel aç/kapa/konum ─────────────────────────────────────────
 function byId(id){ return document.getElementById(id); }
 const SIZES = ['midi','mini','full'];
-function curSize(){ const v = localStorage.getItem('hero_hub_size'); return SIZES.includes(v) ? v : 'midi'; }
+function curSize(){
+  try{ const v=localStorage.getItem('hero_hub_size');if(SIZES.includes(v))return v; }catch(e){}
+  return 'midi';
+}
 function applySize(){
   const p = byId('gemHubPanel'); if(!p) return;
   const sz = curSize();
   p.classList.toggle('ghp-mini', sz === 'mini');
   p.classList.toggle('ghp-full', sz === 'full');
   const btn = byId('ghpSizeBtn'); if(btn) btn.textContent = sz === 'full' ? '⤡' : (sz === 'mini' ? '▣' : '⤢');
-  if(H && H.open) position();
+  if(H && H.open) position(true);
 }
 function cycleSize(){
   const next = SIZES[(SIZES.indexOf(curSize()) + 1) % SIZES.length];
   try{ localStorage.setItem('hero_hub_size', next); }catch(e){}
   applySize();
 }
-function position(){
-  if(curSize() === 'full'){ const p = byId('gemHubPanel'); p.style.left = p.style.top = p.style.right = p.style.bottom = ''; return; }
-  const panel = byId('gemHubPanel'), fab = byId('gemFloatBtn');
-  const fr = fab.getBoundingClientRect(), pw = panel.offsetWidth || 316, vw = window.innerWidth, vh = window.innerHeight;
-  const l = Math.max(8, Math.min(vw - pw - 8, fr.left + fr.width/2 - pw/2));
-  panel.style.left = l + 'px'; panel.style.right = 'auto';
-  if(fr.top > 260){ panel.style.bottom = (vh - fr.top + 8) + 'px'; panel.style.top = 'auto'; }
-  else { panel.style.top = (fr.bottom + 8) + 'px'; panel.style.bottom = 'auto'; }
+// All measurements are visual CSS pixels; divide by body zoom only when writing position.
+export function hubPanelPosition(view,width,height,anchor,dragged){
+  const gap=8;
+  const minX=view.left+gap,minY=view.top+gap;
+  const maxX=Math.max(minX,view.left+view.width-gap-width);
+  const maxY=Math.max(minY,view.top+view.height-gap-height);
+  const below=anchor.bottom+gap, above=anchor.top-gap-height;
+  const belowSpace=view.top+view.height-gap-below, aboveSpace=anchor.top-gap-minY;
+  const desiredTop=belowSpace>=height||belowSpace>=aboveSpace?below:above;
+  return {
+    left:Math.max(minX,Math.min(maxX,dragged?.left??anchor.left+(anchor.width-width)/2)),
+    top:Math.max(minY,Math.min(maxY,dragged?.top??desiredTop)),
+  };
+}
+export function hubSubmitKey(event){
+  return event.key==='Enter' && !event.isComposing && event.keyCode!==229;
+}
+function hubViewport(){
+  const viewport=window.visualViewport;
+  return {
+    left:viewport?.offsetLeft||0,top:viewport?.offsetTop||0,
+    width:viewport?.width||window.innerWidth,height:viewport?.height||window.innerHeight,
+  };
+}
+let hubDragged=null,hubFrame=0;
+function scheduleHubLayout(){
+  if(!H?.open||hubFrame)return;
+  hubFrame=requestAnimationFrame(()=>{hubFrame=0;if(H?.open)position();});
+}
+function position(resetDrag=false){
+  if(resetDrag)hubDragged=null;
+  const panel=byId('gemHubPanel'),fab=byId('gemFloatBtn');
+  if(!panel||!fab)return;
+  const view=hubViewport(),zoom=Number(window.__uiScale)||1,size=curSize();
+  panel.classList.toggle('ghp-compact-height',view.height/zoom<390);
+  panel.style.right=panel.style.bottom='auto';
+  if(size==='full'){
+    panel.style.left=(view.left/zoom)+'px';panel.style.top=(view.top/zoom)+'px';
+    panel.style.width=(view.width/zoom)+'px';panel.style.height=(view.height/zoom)+'px';
+    panel.style.maxHeight='';
+    return;
+  }
+  const width=Math.max(1,Math.min(size==='mini'?272*zoom:330*zoom,view.width*(size==='mini'?.82:.92),view.width-16));
+  const maxHeight=Math.max(1,Math.min(view.height-16,Math.max(310*zoom,view.height*.74)));
+  panel.style.width=(width/zoom)+'px';panel.style.height='';panel.style.maxHeight=(maxHeight/zoom)+'px';
+  const {left,top}=hubPanelPosition(view,width,panel.offsetHeight*zoom,fab.getBoundingClientRect(),hubDragged);
+  panel.style.left=(left/zoom)+'px';panel.style.top=(top/zoom)+'px';
 }
 let closeTimer = null;
-function open(){ clearTimeout(closeTimer); H.open = true; const p = byId('gemHubPanel'); p.classList.remove('ghp-closing'); position(); p.classList.add('ghp-open'); markTabSeen(H.tab); if(H.tab === 'chat') _joinChatRoom(); }
-function close(){ H.open = false; const p = byId('gemHubPanel'); p.classList.add('ghp-closing'); clearTimeout(closeTimer); closeTimer = setTimeout(() => { if(!H.open) p.classList.remove('ghp-open','ghp-closing'); }, 260); _leaveChatRoom(); }
-function toggle(){ H.open ? close() : open(); }
+function open(keyboard=false){
+  clearTimeout(closeTimer);H.open=true;
+  const panel=byId('gemHubPanel');
+  panel.inert=false;panel.classList.remove('ghp-closing');panel.classList.add('ghp-open');
+  byId('gemFloatBtn').setAttribute('aria-expanded','true');
+  position(true);markTabSeen(H.tab);
+  if(keyboard)byId('ghpCloseBtn')?.focus({preventScroll:true});
+  if(H.tab==='chat')_joinChatRoom();
+}
+function close(){
+  if(!H?.open)return;
+  H.open=false;
+  const panel=byId('gemHubPanel'),fab=byId('gemFloatBtn');
+  if(panel.contains(document.activeElement))fab?.focus({preventScroll:true});
+  panel.inert=true;panel.classList.add('ghp-closing');fab?.setAttribute('aria-expanded','false');
+  clearTimeout(closeTimer);closeTimer=setTimeout(()=>{if(!H.open)panel.classList.remove('ghp-open','ghp-closing');},260);
+  _leaveChatRoom();
+}
+function toggle(keyboard){H.open?close():open(keyboard);}
 function switchTab(tab){
   if(!['chat', 'ozel', 'dost', 'lider', 'notif'].includes(tab)) tab = 'chat';
   if(H.tab === 'chat' && tab !== 'chat') _leaveChatRoom();
   H.tab = tab;
-  document.querySelectorAll('.ghp-tab').forEach(b => b.classList.toggle('active', b.dataset.ghptab === tab));
+  document.querySelectorAll('.ghp-tab').forEach(b => {
+    const active=b.dataset.ghptab===tab;b.classList.toggle('active',active);
+    b.setAttribute('aria-pressed',String(active));
+  });
   document.querySelectorAll('.ghp-pane').forEach(p => p.classList.toggle('active', p.id === 'ghpPane-' + tab));
   markTabSeen(tab);
   if(H.open && tab === 'chat') _joinChatRoom();
@@ -2364,11 +2439,20 @@ async function clearNotifs(){
 
 // ── Panel sürükleme ─────────────────────────────────────────────
 function makePanelDrag(panel, handle){
-  const st = { on:false, sx:0, sy:0, pl:0, pt:0 };
-  handle.addEventListener('pointerdown', (e) => { if(e.target.closest('button')) return; if(curSize() === 'full') return; st.on = true; st.sx = e.clientX; st.sy = e.clientY; const r = panel.getBoundingClientRect(); st.pl = r.left; st.pt = r.top; if(handle.setPointerCapture) handle.setPointerCapture(e.pointerId); e.preventDefault(); }, { passive:false });
-  handle.addEventListener('pointermove', (e) => { if(!st.on) return; const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1; const l = Math.max(8, Math.min(window.innerWidth - panel.offsetWidth - 8, st.pl + (e.clientX - st.sx)/_z)); const t = Math.max(8, Math.min(window.innerHeight - 120, st.pt + (e.clientY - st.sy)/_z)); panel.style.left = l+'px'; panel.style.right = 'auto'; panel.style.top = t+'px'; panel.style.bottom = 'auto'; });
-  handle.addEventListener('pointerup', () => { st.on = false; });
-  handle.addEventListener('pointercancel', () => { st.on = false; });
+  let drag=null;
+  handle.addEventListener('pointerdown', event=>{
+    if(drag||event.button!==0||event.target.closest('button')||curSize()==='full')return;
+    const rect=panel.getBoundingClientRect();
+    drag={id:event.pointerId,x:event.clientX-rect.left,y:event.clientY-rect.top};
+    handle.setPointerCapture?.(event.pointerId);event.preventDefault();
+  },{passive:false});
+  handle.addEventListener('pointermove',event=>{
+    if(drag?.id!==event.pointerId||!H?.open||curSize()==='full')return;
+    hubDragged={left:event.clientX-drag.x,top:event.clientY-drag.y};
+    position();
+  });
+  const stop=event=>{if(drag?.id===event.pointerId)drag=null;};
+  for(const kind of ['pointerup','pointercancel','lostpointercapture'])handle.addEventListener(kind,stop);
 }
 
 function teardownListeners(){

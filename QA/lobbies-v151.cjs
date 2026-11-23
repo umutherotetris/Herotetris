@@ -6,7 +6,7 @@ const root=path.resolve(__dirname,'..'),base='http://127.0.0.1:8765';
 const auth=`const state={status:'anon',uid:null,profile:null,isAdmin:false,displayName:'Fixture'};const empty={exists:()=>false,val:()=>null,forEach:()=>{}};export const db={};export const fdb=new Proxy({},{get:(_,k)=>k==='get'?async()=>empty:k==='onValue'?()=>()=>{}:()=>({})});export const Auth={getState:()=>state,subscribe:fn=>{fn(state);return()=>{};},ready:Promise.resolve()};export default Auth;`;
 const names=[...fs.readFileSync(path.join(root,'js/store.js'),'utf8').matchAll(/export\s+(?:async\s+)?function\s+(\w+)/g)].map(m=>m[1]);
 const store=`const state={kaju:0,level:1,xp:0,totalXP:0,best:{}};export const Store=new Proxy({getState:()=>state,subscribe:fn=>{fn(state);return()=>{};}},{get:(o,k)=>o[k]||(()=>0)});${names.map(n=>`export const ${n}=(...a)=>Store.${n}(...a);`).join('\n')}export const VIP_DISCOUNT=.1;export default Store;`;
-const share=`export async function shareRoomCode(game,code){window.__shares.push({game,code});if(window.__holdShare)return new Promise(resolve=>window.__resolveShare=resolve);return 'shared';}`;
+const share=`export const normalizeRoomCode=v=>/^[A-Z2-9]{6}$/.test(String(v).trim().toUpperCase())?String(v).trim().toUpperCase():''; export async function shareRoomCode(game,code){window.__shares.push({game,code});if(window.__holdShare)return new Promise(resolve=>window.__resolveShare=resolve);return 'shared';}`;
 const hooks={
  chess:'\nwindow.__lobby={open:()=>{openChess();showOnlineLobby(G.root);}};',
  tavla:'\nwindow.__lobby={open:async()=>{openTavla();await showOnlineLobby(G.root);}};',

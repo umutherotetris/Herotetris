@@ -18,7 +18,7 @@ import { THEMES, THEME_KEYS, DEFAULT_THEME, drawThemedCell } from './tetris-them
 import { heroAvatar } from './tetris-avatars.js';
 import { WORLDS, getProgress, isWorldUnlocked, completeWorld, calcStars, getWorld } from './tetris-adventure.js';
 import { MP } from './tetris-mp.js';
-import { shareRoomCode } from '../room-share.js';
+import { normalizeRoomCode, shareRoomCode } from '../room-share.js';
 import { Stats, ACHIEVEMENTS } from './tetris-stats.js';
 import { mountSessionStatus } from '../game-session-ui.js';
 
@@ -378,8 +378,11 @@ function clearLines(){
       if(G.ai){
         // AI'ya gerçek çöp gönder (tahtasına eklenir)
         if(g > 0){ G.aiPendingGarbage = Math.min(ROWS,(G.aiPendingGarbage||0)+g); }
-      } else if(MP.connected){
-        if(g > 0) MP.send({ type:'garbage', rows:g });
+      } else {
+        if(g > 0){
+          G.vsAttackOut = (G.vsAttackOut||0) + g;
+          if(MP.connected) MP.send({ type:'garbage', rows:g, attackTotal:G.vsAttackOut });
+        }
         sendVersusState();
       }
     }
@@ -414,16 +417,16 @@ function clearLines(){
 }
 
 // ── Hamleler ────────────────────────────────────────────────────
-function move(dir){ if(!G.cur || G.over || G.paused || G.countdown > 0) return; if(!collides(G.cur, dir, 0)){ G.cur.x += dir; G.lastMoveRotate = false; Sound.move(); resetLockDelay(); } }
+function move(dir){ if(!G.cur || G.over || G.paused || G.networkHold || G.countdown > 0) return; if(!collides(G.cur, dir, 0)){ G.cur.x += dir; G.lastMoveRotate = false; Sound.move(); resetLockDelay(); } }
 function softDrop(){
-  if(!G.cur || G.over || G.paused || G.countdown > 0) return;
+  if(!G.cur || G.over || G.paused || G.networkHold || G.countdown > 0) return;
   const step = G.softSpeedMult > 1 ? 2 : 1;   // Flash: 2 hücre
   let moved = false;
   for(let i=0;i<step;i++){ if(!collides(G.cur, 0, 1)){ G.cur.y++; moved = true; } else break; }
   if(moved){ G.score += (G.softBonus ? 2 : 1); Sound.soft(); updateHUD(); G.dropAcc = 0; }
 }
 function hardDrop(){
-  if(!G.cur || G.over || G.paused || G.countdown > 0) return;
+  if(!G.cur || G.over || G.paused || G.networkHold || G.countdown > 0) return;
   let d = 0; while(!collides(G.cur, 0, 1)){ G.cur.y++; d++; }
   G.visualY = G.cur.y;   // anında otur (yumuşak gecikme yok)
   G.score += d * 2 + (G.hardDropBonus || 0); Sound.hard(); updateHUD(); lock(); G.dropAcc = 0;
@@ -457,7 +460,7 @@ function resetLockDelay(){
 }
 
 function rotate(dir){
-  if(!G.cur || G.over || G.paused || G.countdown > 0) return;
+  if(!G.cur || G.over || G.paused || G.networkHold || G.countdown > 0) return;
   if(G.cur.type==='O') return;   // kare taşın dönüşü konumunu değiştirmez
   const r = (dir === 'ccw') ? rotateCCW(G.cur.matrix) : rotateCW(G.cur.matrix);
   // SRS tarzı duvar tekmesi: yatay + dikey kaydırma denemeleri
@@ -478,7 +481,7 @@ function rotate(dir){
   }
 }
 function hold(){
-  if(!G.cur || G.over || G.paused || !G.canHold || G.countdown > 0) return;
+  if(!G.cur || G.over || G.paused || G.networkHold || !G.canHold || G.countdown > 0) return;
   const curType = G.cur.type;
   if(G.holdType){
     const p = PIECES[G.holdType];
@@ -664,7 +667,7 @@ function updatePowerBtn(){
 
 // Gücü kullan
 function usePower(){
-  if(!G || G.over || G.paused || !G.powerReady || G.countdown > 0) return;
+  if(!G || G.over || G.paused || G.networkHold || !G.powerReady || G.countdown > 0) return;
   const h = G.hero;
   const api = {
     board: G.board, COLS, ROWS,
@@ -944,10 +947,10 @@ function updateGemBtn(){
 
 // Gem envanter panelini aç
 function openGemSheet(){
-  if(!G || G.over || !G.gems.length) return;
+  if(!G || G.over || G.networkHold || !G.gems.length) return;
   if(G.el.gemSheet.classList.contains('show')) return;
   G.gemWasPaused = G.paused;
-  G.paused = true;   // panel açıkken oyun durur
+  if(!G.versus || G.ai) G.paused = true;   // Çevrimiçi rakibin maçı devam eder.
   const sheet = G.el.gemSheet, grid = sheet.querySelector('.gem-grid');
   const counts = {}; G.gems.forEach(g => counts[g.id] = (counts[g.id]||0)+1);
   grid.innerHTML = '';
@@ -976,7 +979,7 @@ function closeGemSheet(){
   G.paused = !!G.gemWasPaused; G.gemWasPaused = false; G.last = 0;
 }
 function pickGem(idx){
-  if(!G || G.over) return;
+  if(!G || G.over || G.networkHold) return;
   const gem = G.gems[idx];
   if(!gem){ closeGemSheet(); return; }
   G.gems.splice(idx, 1);   // gem'i envanterden çıkar
@@ -1387,16 +1390,18 @@ function buildVersusLobby(){
         <div class="vl-card-title">🔑 ODAYA KATIL</div>
         <div class="vl-card-desc">Arkadaşının kodunu gir</div>
         <div class="vl-input-row">
-          <input class="vl-input" data-el="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters">
-          <button class="vl-paste" data-act="paste" title="Yapıştır">📋</button>
+          <input class="vl-input" data-el="codeInput" maxlength="6" placeholder="ABC234" aria-label="Tetris oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button class="vl-paste" data-act="paste" aria-label="Oda kodunu yapıştır" title="Yapıştır">📋</button>
         </div>
         <button class="vl-btn vl-join" data-act="join">KATIL</button>
       </div>
-      <div class="vl-status" data-el="status"></div>
+      <div class="vl-status" data-el="status" role="status"></div>
     </div>`;
   document.body.appendChild(ov);
   const statusEl = ov.querySelector('[data-el="status"]');
   const codeInput = ov.querySelector('[data-el="codeInput"]');
+  const owner=Auth.getState().uid;
+  let stopIdentity=null;
   let active=true,launching=false,launchTimer=null;
   let sessionStatus=null;
   try{sessionStatus=mountSessionStatus(ov.querySelector('.vl-body'),{game:'tetris',mode:'versus',initial:{phase:'waiting',detail:'Oda oluştur veya arkadaşının altı haneli koduyla katıl.'}});}catch(e){}
@@ -1404,6 +1409,14 @@ function buildVersusLobby(){
     clearTimeout(launchTimer); launchTimer=null; launching=false;
   }
   codeInput.addEventListener('input', () => { codeInput.value = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+  codeInput.addEventListener('paste', event=>{
+    const raw=event.clipboardData?.getData('text/plain');
+    if(!raw) return;
+    event.preventDefault();
+    const code=normalizeRoomCode(raw);
+    if(code) codeInput.value=code;
+    else setStatus('Geçerli bir oda kodu bulunamadı.', 'err');
+  });
 
   function setStatus(msg, type){
     statusEl.textContent = msg;
@@ -1448,12 +1461,18 @@ function buildVersusLobby(){
       launchTimer=setTimeout(() => {
         launchTimer=null;
         if(!active || !MP.connected){ launching=false; return; }
-        active=false; sessionStatus?.destroy(); ov.remove(); launchVersusGame();
+        active=false; stopIdentity?.(); sessionStatus?.destroy(); ov.remove(); launchVersusGame();
       }, 800);
     } else if(type === 'disconnected'){
       cancelLaunch();
-      sessionStatus?.update({phase:'failed',detail:'Rakip bağlantısı kesildi. Odayı yeniden oluşturabilir veya bir koda katılabilirsin.'});
-      setStatus('❌ Rakip ayrıldı', 'err');
+      sessionStatus?.update({phase:'reconnecting',detail:'Rakip bağlantısı kesildi. Aynı oda yeniden aranıyor.'});
+      setStatus('Bağlantı kesildi · yeniden deneniyor…');
+    } else if(type === 'reconnecting'){
+      sessionStatus?.update({phase:'reconnecting',detail:`Oda bağlantısı yenileniyor · ${data?.tries||0}/${data?.max||6}`});
+    } else if(type === 'reconnect_failed'){
+      cancelLaunch();
+      sessionStatus?.update({phase:'failed',detail:'Odaya yeniden ulaşılamadı. Yeni oda oluşturabilir veya bir koda katılabilirsin.'});
+      setStatus('Yeniden bağlantı kurulamadı.', 'err');
     } else if(type === 'error'){
       cancelLaunch();
       sessionStatus?.update({phase:'failed',detail:'Oda bağlantısı tamamlanamadı. Yeniden oda oluşturabilir veya kodu kontrol edebilirsin.'});
@@ -1466,25 +1485,35 @@ function buildVersusLobby(){
     sessionStatus?.update({phase:'connecting',detail:'Oda oluşturuluyor.'});
     MP.createRoom(handleEvent);
   });
-  ov.querySelector('[data-act="join"]').addEventListener('click', () => {
-    const code = codeInput.value.trim();
-    if(code.length !== 6){ setStatus('⚠️ 6 haneli kod gir', 'err'); return; }
+  const joinRoom=()=>{
+    const code = normalizeRoomCode(codeInput.value);
+    if(!code){ setStatus('⚠️ Geçerli altı haneli oda kodu gir', 'err'); return; }
+    codeInput.value=code;
     cancelLaunch();
     setStatus('Bağlanıyor…');
     sessionStatus?.update({phase:'connecting',detail:'Girilen odaya bağlanılıyor.'});
     MP.joinRoom(code, handleEvent);
+  };
+  ov.querySelector('[data-act="join"]').addEventListener('click',joinRoom);
+  codeInput.addEventListener('keydown',event=>{
+    if(event.key==='Enter'&&!event.isComposing){ event.preventDefault(); joinRoom(); }
   });
   const pasteBtn = ov.querySelector('[data-act="paste"]');
   if(pasteBtn) pasteBtn.addEventListener('click', async () => {
     try{
       if(navigator.clipboard && navigator.clipboard.readText){
         const txt = await navigator.clipboard.readText();
-        codeInput.value = (txt || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+        if(!active) return;
+        const code=normalizeRoomCode(txt);
+        if(code) codeInput.value=code;
+        else setStatus('Panoda geçerli bir oda kodu bulunamadı.', 'err');
       }
-    }catch(e){}
+      else setStatus('Kodu oda alanına yapıştırabilirsin.');
+    }catch(e){if(active)setStatus('Pano okunamadı. Kodu oda alanına yapıştırabilirsin.');}
   });
   ov.querySelector('[data-act="back"]').addEventListener('click', () => {
     active=false; cancelLaunch();
+    stopIdentity?.();
     sessionStatus?.destroy();
     MP.close();
     ov.remove();
@@ -1493,6 +1522,10 @@ function buildVersusLobby(){
       else if(SELECTED_MODE === 'versus'){ buildVersusLobby(); }
       else { ADVENTURE_WORLD = null; launchGame(); }
     });
+  });
+  stopIdentity=Auth.subscribe?.(state=>{
+    if(!active || state.uid===owner) return;
+    active=false; cancelLaunch(); stopIdentity?.(); sessionStatus?.destroy(); MP.close(); ov.remove();
   });
   return ov;
 }
@@ -1631,7 +1664,7 @@ function loop(ts){
   if(!G || G.over) return;
   if(!G.last) G.last = ts;
   const dt = ts - G.last; G.last = ts;
-  if(!G.paused){
+  if(!G.paused && !G.networkHold){
     // Oyun başı geri sayım: countdown bitene kadar taş düşmez
     if(G.countdown > 0){
       G.countdownAcc += dt;
@@ -1846,6 +1879,7 @@ async function endGame(isWin, { interrupted = false } = {}){
   const session=G,round=G.round,uid=Auth.getState().uid;
   const current=()=>G===session && G.round===round && Auth.getState().uid===uid;
   G.over = true;
+  if(G.onlineSyncTimer!=null){clearTimeout(G.onlineSyncTimer);G.onlineSyncTimer=null;}
   G._sessionStatus?.update({phase:interrupted?'failed':'ended',canRetry:false});
   if(Array.isArray(G.reviewFrames)) captureTetrisReview(G);
   G.el.gemSheet?.classList.remove('show');
@@ -1873,6 +1907,7 @@ async function endGame(isWin, { interrupted = false } = {}){
   if(G.versus){
     if(interrupted){
       // Yerel ağ kaybı rakibin yenildiğini kanıtlamaz: iki tarafa da zafer yazma.
+      if(G.onlineSyncRetryTimer!=null)clearTimeout(G.onlineSyncRetryTimer);
       const ov=G.el.gameover;
       ov.querySelector('.go-title').textContent='🔌 BAĞLANTI KESİLDİ';
       ov.querySelector('.go-score').textContent=G.score.toLocaleString('tr-TR');
@@ -1883,7 +1918,13 @@ async function endGame(isWin, { interrupted = false } = {}){
       try{ MP.close(); }catch(e){}
       return;
     }
-    if(!isWin && !G.ai && MP.connected) MP.send({ type:'dead' });
+    if(!G.ai){
+      G.onlineEliminated = !isWin;
+      if(G.onlineEliminated && MP.connected) MP.send({ type:'dead' });
+      // Not an economy callback: a slow score/reward write must never keep an old room alive.
+      // The eliminated side retains a short window to announce its result after a link drop.
+      G.onlineCloseTimer=setTimeout(()=>{ if(current()) MP.close(); }, G.onlineEliminated ? 28000 : 500);
+    }
     Sound.gameover();
     const ov = G.el.gameover;
     // Rakip zaten elendiyse sen kazandın; yoksa sen elendin
@@ -1893,6 +1934,7 @@ async function endGame(isWin, { interrupted = false } = {}){
     ov.querySelector('.go-lines').textContent = 'Sen: ' + G.lines + ' satır  ·  ' + (G.oppNick||'Rakip') + ': ' + (G.oppLines||0) + ' satır';
     ov.querySelector('.go-reward').textContent = won ? 'Ödül kaydediliyor…' : '';
     ov.querySelector('.go-record').style.display = 'none';
+    ov.classList.add('show');
     recordGameStats(won);
     if(G.score<=0)Store.trackQuestEvent?.('game_played',{game:'tetris'});
     if(won)Store.trackQuestEvent?.('game_won',{game:'tetris'});
@@ -1909,8 +1951,6 @@ async function endGame(isWin, { interrupted = false } = {}){
       if(!current())return;
       showTetrisLearning(session);
     }
-    ov.classList.add('show');
-    if(!G.ai){ setTimeout(() => { if(current()){ try{ MP.close(); }catch(e){} } }, 500); }
     return;
   }
   if(isWin) Sound.win(); else Sound.gameover();
@@ -2192,7 +2232,7 @@ function fitCanvas(){
 function bindControls(){
   const session=G;G.controlStops=[];
   const press = (ctrl) => {
-    if(G!==session || G.portalMinimized)return;
+    if(G!==session || G.portalMinimized || G.networkHold)return;
     if(ctrl==='left') move(-1);
     else if(ctrl==='right') move(1);
     else if(ctrl==='rotateR') rotate('cw');
@@ -2207,6 +2247,7 @@ function bindControls(){
     const start = (e) => {
       e.preventDefault();
       stop();
+      if(G!==session || G.portalMinimized || G.networkHold) return;
       press(ctrl);
       if(ctrl==='left' || ctrl==='right' || ctrl==='down'){
         timer = setInterval(() => press(ctrl), 90);   // basılı tut → tekrar
@@ -2245,7 +2286,7 @@ function bindControls(){
 
   // Klavye (masaüstü testte kolaylık)
   G.keyHandler = (e) => {
-    if(!G || G.portalMinimized) return;
+    if(!G || G.portalMinimized || G.networkHold) return;
     const target=e.target;
     if(e.isComposing || target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(target?.tagName||'') || target?.closest?.('[role="textbox"]')) return;
     const k = e.key;
@@ -2273,10 +2314,11 @@ function bindTouchGestures(){
   let startT = 0;
   let movedH = 0, movedV = 0;   // toplam hareket (jest tipini ayırmak için)
   let horizontal=0,downward=0,gestureRound=null;
+  G.controlStops?.push(()=>{active=false;});
   let gestureLock = null;       // 'vertical' → yukarı çekme jesti, yatay kilitli
 
   const onStart = (e) => {
-    if(G!==session || !G || G.over || G.paused || G.portalMinimized) return;
+    if(G!==session || !G || G.over || G.paused || G.networkHold || G.portalMinimized) return;
     const t = e.touches ? e.touches[0] : e;
     active = true;
     startX = lastX = t.clientX;
@@ -2287,7 +2329,7 @@ function bindTouchGestures(){
 
   const onMove = (e) => {
     if(!active) return;
-    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.portalMinimized){active=false;return;}
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.networkHold || G.portalMinimized){active=false;return;}
     const t = e.touches ? e.touches[0] : e;
     const dx = t.clientX - lastX;
     const dy = t.clientY - lastY;
@@ -2325,7 +2367,7 @@ function bindTouchGestures(){
   const onEnd = (e) => {
     if(!active) return;
     active = false;
-    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.portalMinimized) return;
+    if(G!==session || !G || G.round!==gestureRound || G.over || G.paused || G.networkHold || G.portalMinimized) return;
     const dt = Date.now() - startT;
     const totalUp = startY - lastY;   // yukarı = pozitif
     const cell = G.cellSize || 24;
@@ -2358,7 +2400,7 @@ function bindTouchGestures(){
 }
 
 function togglePause(on){
-  if(!G || G.over) return;
+  if(!G || G.over || (G.versus && !G.ai)) return;
   closeGemSheet();
   G.paused = on;
   if(on){
@@ -2560,6 +2602,9 @@ export function closePortalGame(root){
 }
 function close(discard=false){
   if(!G) return;
+  clearTimeout(G.onlineCloseTimer);
+  clearTimeout(G.onlineSyncTimer);
+  clearTimeout(G.onlineSyncRetryTimer);
   G.controlStops?.forEach(stop=>stop());
   try{ G._hud?.destroy(); }catch(e){}
   try{ G._sessionStatus?.destroy(); }catch(e){}
@@ -2614,6 +2659,9 @@ function launchGame(){
       if(!G.versus && !G.over) togglePause(true);
       try{ saveTetrisResume(); }catch(e){}
     }
+    else if(G.versus && !G.ai && !G.over && MP.connected){
+      sendVersusSync(); MP.send({type:'vsync_request'});
+    }
   };
   document.addEventListener('visibilitychange', G.vis);
   bindControls();
@@ -2649,14 +2697,20 @@ function _startInviteTetris(ctx){
   wait.querySelector('#xinvMsg').textContent = isHost ? oppNick + ' bekleniyor...' : oppNick + '\'e bağlanılıyor...';
   wait.querySelector('#xinvCode').textContent = 'Davet kodu: ' + ctx.code;
   document.body.appendChild(wait);
-  let cancelled = false;
+  const owner=Auth.getState().uid;
+  let stopIdentity=null;
+  let cancelled = false, retryTimer=null;
   let sessionStatus=null;
   try{sessionStatus=mountSessionStatus(wait,{game:'tetris',mode:'versus',initial:{phase:isHost?'waiting':'connecting',detail:isHost?'Davet edilen rakip bekleniyor.':'Davet odasına bağlanılıyor.'}});}catch(e){}
-  wait.querySelector('#xinvCancel').addEventListener('click', () => { cancelled = true; sessionStatus?.destroy(); try{ MP.close(); }catch(e){} wait.remove(); });
+  const cancel = () => { if(cancelled) return; cancelled = true; clearTimeout(retryTimer); stopIdentity?.(); sessionStatus?.destroy(); MP.close(); wait.remove(); };
+  wait.querySelector('#xinvCancel').addEventListener('click', cancel);
+  stopIdentity=Auth.subscribe?.(state=>{ if(state.uid!==owner) cancel(); });
 
   const onConnected = () => {
     if(cancelled) return;
     cancelled=true;
+    stopIdentity?.();
+    clearTimeout(retryTimer);
     sessionStatus?.destroy();
     MP.send({ type:'hello', nick:(window.__HERO_NICK||'Rakip'), hero:SELECTED_HERO });
     wait.remove();
@@ -2684,12 +2738,12 @@ function _startInviteTetris(ctx){
       MP.joinRoom(ctx.code, (type, data) => {
         if(type === 'connected'){ onConnected(); }
         else if(type === 'error'){
-          if(tries < 8){sessionStatus?.update({phase:'reconnecting',detail:`Davet odası yeniden aranıyor · ${tries}/8`,canRetry:false});setTimeout(tryJoin, 1500);}
+          if(tries < 8){sessionStatus?.update({phase:'reconnecting',detail:`Davet odası yeniden aranıyor · ${tries}/8`,canRetry:false});retryTimer=setTimeout(tryJoin, 1500);}
           else {sessionStatus?.update({phase:'failed',detail:'Davet odasına ulaşılamadı. Davet süresini ve oda sahibinin bağlantısını kontrol et.'}); const m = wait.querySelector('#xinvMsg'); if(m) m.textContent = 'Bağlanılamadı (oda sahibi hazır değil)'; }
         }
       });
     };
-    setTimeout(tryJoin, 800);
+    retryTimer=setTimeout(tryJoin, 800);
   }
 }
 
@@ -2702,40 +2756,57 @@ function launchVersusGame(oppNick){
   G.versus = true;
   G.oppScore = 0; G.oppLines = 0; G.oppNick = oppNick || 'Rakip'; G.oppAlive = true;
   G.pendingGarbage = 0;   // gelen çöp sıraları (sonraki kilitlemede uygulanır)
+  G.vsAttackOut = 0; G.vsAttackIn = 0;
+  G.onlineEliminated = false;
   if(G.el.practiceBtn) G.el.practiceBtn.style.display='none';
+  const pause=G.root.querySelector('[data-act="pause"]');
+  if(pause) pause.hidden=true;
   try{
     G._sessionStatus=mountSessionStatus(G.root,{game:'tetris',mode:'versus',
-      initial:{phase:'playing',detail:'Oda bağlı · rakibinle aynı maçtasın.'},
+      initial:{phase:'ready',detail:'Rakibin maç ekranı bekleniyor.'},
       onLeave:()=>{close();buildVersusLobby();}});
   }catch(e){}
   // Handler yalnız bu maça aittir; kapanmış maçın geç olayı yeni oyunu etkileyemez.
   const session=G,round=G.round;
+  const awaitPeerSync=()=>{
+    G.networkHold=true; G.last=0;
+    G.onlineSyncTimer ??= afterRound(()=>{
+      G.onlineSyncTimer=null;
+      if(G.versus && !G.ai && G.networkHold && !G.over) endGame(false,{interrupted:true});
+    },12000);
+  };
+  const exchangeSync=()=>{sendVersusSync();MP.send({type:'vsync_request'});};
   MP._gameHandler = (type, data) => {
     if(G!==session || G.round!==round) return;
     if(type === 'message'){
       if(data && data.type === 'vsync'){ applyVersusSync(data); return; }
       if(data && data.type === 'vsync_request'){ sendVersusSync(); return; }
+      if(data?.type==='dead_ack'){
+        if(G.onlineEliminated){ clearTimeout(G.onlineCloseTimer); MP.close(); }
+        return;
+      }
       handleVersusMessage(data);
     }
-    else if(type === 'disconnected'){
-      G._sessionStatus?.update({phase:'reconnecting',detail:'Rakiple bağlantı kesildi. Sonuç henüz kesinleşmedi.',canRetry:false});
-      // Hemen kazanma — reconnect denenecek
-      if(G && G.versus && !G.over){ flash('🔌 Rakip koptu — yeniden bağlanılıyor…'); }
-    }
-    else if(type === 'reconnecting'){
+    else if(type === 'disconnected' || type === 'reconnecting'){
+      if(G.over) return;
+      G.networkHold = true; G.last = 0;
+      G.controlStops?.forEach(stop=>stop());
       const tries = (data && data.tries) || 0, max = (data && data.max) || 6;
-      G._sessionStatus?.update({phase:'reconnecting',detail:`Yeniden bağlanılıyor · ${tries}/${max}`,canRetry:false});
-      if(G && G.versus && !G.over) flash(`🔄 Yeniden bağlanılıyor… (${tries}/${max})`);
+      const detail=type==='disconnected'?'Bağlantı kesildi · oyun bekletiliyor.':`Oyun bekletiliyor · yeniden bağlanılıyor ${tries}/${max}`;
+      G._sessionStatus?.update({phase:'reconnecting',detail,canRetry:false});
+      flash(detail);
     }
     else if(type === 'reconnected'){
-      G._sessionStatus?.update({phase:'playing',detail:'Bağlantı yenilendi · maç durumu eşitleniyor.'});
-      if(G && G.versus && !G.over){
-        flash('✅ Yeniden bağlanıldı!');
-        G.oppAlive = true;
-        // İki taraf da kendi durumunu gönderir ve rakibin durumunu ister.
-        // Hostun yalnız göndermesi, misafirin skorunu hostta eski bırakıyordu.
-        afterRound(() => { sendVersusSync(); MP.send({ type:'vsync_request' }); }, 400);
+      if(G.over && !G.onlineEliminated) return;
+      if(!G.over){
+        awaitPeerSync();
+        G._sessionStatus?.update({phase:'reconnecting',detail:'Bağlantı yenilendi · rakibin maç durumu bekleniyor.',canRetry:false});
       }
+      // Aynı taşı bırakmadan önce yalnız yeni kanalın durumunu doğrula.
+      exchangeSync();
+      // Diğer PeerJS kanalının open olayı biraz sonra gelebilir.
+      clearTimeout(G.onlineSyncRetryTimer);
+      G.onlineSyncRetryTimer=afterRound(exchangeSync, 400);
     }
     else if(type === 'reconnect_failed'){
       if(G && G.versus && !G.over){
@@ -2745,8 +2816,10 @@ function launchVersusGame(oppNick){
     }
   };
   // onEvent'i oyun handler'ına yönlendir (lobi handler'ı bitti)
+  awaitPeerSync();
   rebindMPHandler();
   MP.send({ type:'hello', nick:(window.__HERO_NICK||'Sen'), hero:SELECTED_HERO });
+  exchangeSync();
   setupTetrisChat();   // çok oyuncu sohbetini aç
   updateVersusUI();
 }
@@ -3091,20 +3164,23 @@ function sendVersusSync(){
       score: G.score || 0,
       lines: G.lines || 0,
       nick: (window.__HERO_NICK || 'Rakip'),
-      alive: !G.over,
+      alive: !G.onlineEliminated,
+      attackTotal: G.vsAttackOut || 0,
     });
   }catch(e){ console.warn('[tetris] sendVersusSync', e); }
 }
 function applyVersusSync(d){
-  if(!G || !G.versus || !d) return;
+  if(!G || !G.versus || G.over || !d) return;
   if(!Number.isSafeInteger(d.score) || d.score<0 || !Number.isSafeInteger(d.lines) || d.lines<0 || typeof d.alive!=='boolean') return;
-  // Rakibin güncel skoru/durumu
-  G.oppScore = d.score || 0;
-  G.oppLines = d.lines || 0;
+  handleVersusMessage({...d,type:'state'});
   if(typeof d.nick==='string' && d.nick) G.oppNick = d.nick.slice(0,40);
-  G.oppAlive = (d.alive !== false);
+  if(G.networkHold){
+    clearTimeout(G.onlineSyncTimer); G.onlineSyncTimer=null;
+    G.networkHold=false; G.last=0;
+    G._sessionStatus?.update({phase:'playing',detail:'Maç durumu eşitlendi. Oyuna devam edebilirsin.'});
+  }
   updateVersusUI();
-  if(!G.oppAlive && !G.over) endGame(true);
+  if(!d.alive) handleVersusMessage({type:'dead'});
 }
 
 function handleVersusMessage(msg){
@@ -3123,15 +3199,25 @@ function handleVersusMessage(msg){
   }
   else if(msg.type === 'state'){
     if(!Number.isSafeInteger(msg.score) || msg.score<0 || !Number.isSafeInteger(msg.lines) || msg.lines<0) return;
+    if(Number.isSafeInteger(msg.attackTotal) && msg.attackTotal>(G.vsAttackIn||0)){
+      const rows=msg.attackTotal-(G.vsAttackIn||0);
+      G.vsAttackIn=msg.attackTotal; queueGarbage(rows);
+    }
     G.oppScore = msg.score; G.oppLines = msg.lines; updateVersusUI();
   }
   else if(msg.type === 'garbage'){
     if(!Number.isInteger(msg.rows) || msg.rows<1 || msg.rows>8) return;
-    queueGarbage(msg.rows);
-    flash('⚠️ ' + msg.rows + ' çöp geliyor!'); Sound.garbage(); updateVersusUI();
+    let rows=msg.rows;
+    if(msg.attackTotal!==undefined){
+      if(!Number.isSafeInteger(msg.attackTotal) || msg.attackTotal<= (G.vsAttackIn||0)) return;
+      rows=msg.attackTotal-(G.vsAttackIn||0); G.vsAttackIn=msg.attackTotal;
+    }
+    queueGarbage(rows);
+    flash('⚠️ ' + Math.min(rows,20) + ' çöp geliyor!'); Sound.garbage(); updateVersusUI();
   }
   else if(msg.type === 'dead'){
     if(G.oppAlive===false) return;
+    if(MP.connected) MP.send({type:'dead_ack'});
     G.oppAlive = false; flash('🏆 Rakip elendi!'); updateVersusUI(); endGame(true);
   }
 }
@@ -3161,16 +3247,18 @@ function setupTetrisChat(){
   const sendBtn = G.root.querySelector('[data-act="chatSend"]');
   const inp = G.root.querySelector('[data-el="chatInput"]');
   if(sendBtn && inp){
-    sendBtn.addEventListener('click', () => { const t = inp.value.trim(); if(t){ sendTetrisChat(t); inp.value=''; } });
-    inp.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ const t = e.target.value.trim(); if(t){ sendTetrisChat(t); e.target.value=''; } } });
+    const send=()=>{const t=inp.value.trim();if(t && sendTetrisChat(t))inp.value='';};
+    sendBtn.addEventListener('click', send);
+    inp.addEventListener('keydown', (e) => { if(e.key==='Enter'&&!e.isComposing){ e.preventDefault(); send(); } });
   }
 }
 
 function sendTetrisChat(text){
-  if(!G || !MP.connected) return;
+  if(!G || !MP.connected) return false;
   text = (text||'').slice(0,120);
-  MP.send({ type:'chat', text });
+  if(MP.send({ type:'chat', text })===false){flash('Mesaj iletilemedi. Bağlantı gelince yeniden dene.');return false;}
   addTetrisChatMessage(text, true);
+  return true;
 }
 
 function addTetrisChatMessage(text, mine){
@@ -3194,7 +3282,7 @@ function updateTetrisChatBadge(){
 
 // Rakibe durum gönder (skor/satır)
 function sendVersusState(){
-  if(G && G.versus && MP.connected){ MP.send({ type:'state', score:G.score, lines:G.lines }); }
+  if(G && G.versus && MP.connected){ MP.send({ type:'state', score:G.score, lines:G.lines, attackTotal:G.vsAttackOut||0 }); }
 }
 
 // Gelen çöp sıralarını tahtaya uygula (altta gri bloklar, 1 rastgele boşluk)
@@ -3805,11 +3893,12 @@ export function openTetris(){
     const raw = localStorage.getItem('hero_invite_ctx');
     if(raw){
       const ctx = JSON.parse(raw);
-      if(ctx && ctx.game === 'tetris' && ctx.code && (Date.now() - (ctx.ts||0)) < 300000){
+      const age=ctx?Date.now()-ctx.ts:Infinity;
+      if(ctx?.game==='tetris' && /^[A-Z2-9]{6}$/.test(ctx.code||'') && ['host','guest'].includes(ctx.role) && age>=0 && age<300000){
         localStorage.removeItem('hero_invite_ctx');
         _startInviteTetris(ctx);
         return;
-      } else if(ctx && (Date.now() - (ctx.ts||0)) >= 300000){
+      } else if(ctx && (ctx.game==='tetris' || !Number.isFinite(age) || age<0 || age>=300000)){
         localStorage.removeItem('hero_invite_ctx');
       }
     }

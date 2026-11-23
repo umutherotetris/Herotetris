@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import { normalizeRoomCode } from '../js/room-share.js';
 const source=fs.readFileSync(new URL('../js/games/tetris.js',import.meta.url),'utf8');
 const start=source.indexOf('function buildVersusLobby('),end=source.indexOf('\nfunction updateHUD(',start);
 const transport=fs.readFileSync(new URL('../js/games/tetris-mp.js',import.meta.url),'utf8')
@@ -34,7 +35,9 @@ function fixture(){
       remove(){this.removed=true;}};
   }
   const overlay=element();
+  let owner='test',identity=null;
   const context=vm.createContext({console,Math,JSON,window:{Peer},navigator:{},SELECTED_HERO:'vor',SELECTED_MODE:'versus',
+    normalizeRoomCode,Auth:{getState:()=>({uid:owner}),subscribe:cb=>{identity=cb;return ()=>{identity=null;};}},
     document:{createElement:()=>overlay,body:{appendChild(){}}},
     setTimeout(fn,delay){const id=++next;jobs.set(id,{fn,at:now+delay});return id;},clearTimeout:id=>jobs.delete(id),
     launchVersusGame(){launched++;},buildHeroSelect(){backs++;}});
@@ -42,7 +45,7 @@ function fixture(){
   const press=selector=>overlay.querySelector(`[data-act="${selector}"]`).listeners.get('click')();
   const connect=()=>{const p=peers.at(-1);p.emit('open');const c=new Connection();p.emit('connection',c);c.emit('open');return c;};
   const advance=ms=>{const until=now+ms;let guard=0;while(true){let first;for(const [id,j]of jobs)if(j.at<=until&&(!first||j.at<first[1].at))first=[id,j];if(!first)break;assert.ok(++guard<1000);jobs.delete(first[0]);now=first[1].at;first[1].fn();}now=until;};
-  return {MP:context.MP,peers,overlay,press,connect,advance,get launched(){return launched;},get backs(){return backs;}};
+  return {MP:context.MP,peers,overlay,press,connect,advance,switchAccount(uid){owner=uid;identity?.({uid});},get launched(){return launched;},get backs(){return backs;}};
 }
 let failures=0;
 function test(name,run){try{run();console.log('PASS',name);}catch(error){failures++;console.error('FAIL',name,'\n',error.message);}}
@@ -76,6 +79,20 @@ test('channel error cancels launch even without a separate disconnected event',(
 test('back cancels launch and old room callbacks cannot reopen the game',()=>{
  const f=fixture();f.press('create');const c=f.connect();f.advance(200);f.press('back');
  c.emit('open');f.advance(20000);assert.equal(f.launched,0);assert.equal(f.backs,1);assert.equal(f.overlay.removed,true);f.MP.close();
+});
+
+test('Enter after pasting the full invite joins its actual code, not the message prefix',()=>{
+ const f=fixture(),input=f.overlay.querySelector('[data-el="codeInput"]');
+ input.listeners.get('paste')({clipboardData:{getData:()=> 'Tetris oynamaya davetlisin.\nOda kodu: DEF567\nOdaya katıl.'},preventDefault(){}});
+ assert.equal(input.value,'DEF567');
+ input.listeners.get('keydown')({key:'Enter',preventDefault(){}});
+ const p=f.peers.at(-1);p.emit('open');p.calls[0].emit('open');f.advance(800);assert.equal(f.launched,1);f.MP.close();
+});
+
+test('account switch cancels an in-flight lobby launch and tears down its transport',()=>{
+ const f=fixture();f.press('create');const c=f.connect();f.advance(200);f.switchAccount('replacement');
+ assert.equal(f.overlay.removed,true);assert.equal(c.closed,true);
+ f.advance(12000);assert.equal(f.launched,0);assert.equal(f.MP.connected,false);
 });
 
 if(failures)process.exitCode=1;

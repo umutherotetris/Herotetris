@@ -1,0 +1,7 @@
+*.apk
+*.idsig
+*.jks
+*.keystore
+*.p12
+*.pass
+*.pem

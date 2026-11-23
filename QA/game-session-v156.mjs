@@ -29,6 +29,8 @@ class Element{
   replaceChildren(...children){for(const child of this.children)child.parentNode=null;this.children=[];this._text='';this.append(...children);}
   setAttribute(key,value){this.attributes[key]=String(value);if(key==='id')this.id=String(value);}
   getAttribute(key){return this.attributes[key]??null;}
+  hasAttribute(key){return Object.hasOwn(this.attributes,key);}
+  contains(node){return node===this||this.children.some(child=>child.contains(node));}
   removeAttribute(key){delete this.attributes[key];}
   addEventListener(type,handler){if(!this.listeners.has(type))this.listeners.set(type,new Set());this.listeners.get(type).add(handler);}
   removeEventListener(type,handler){this.listeners.get(type)?.delete(handler);}
@@ -50,6 +52,7 @@ function fixture(){
   let state={uid:'alice',status:'google'};const observers=new Set(),subscribers=new Set(),calls=[],loads=[],closes=[];
   const doc={activeElement:null,events:new Map(),
     createElement:tag=>new Element(tag,doc),querySelector:selector=>doc.body.querySelector(selector)||doc.head.querySelector(selector),
+    querySelectorAll:selector=>[...doc.body.querySelectorAll(selector),...doc.head.querySelectorAll(selector)],
     getElementById:id=>doc.querySelector('#'+id),
     addEventListener(type,fn){if(!this.events.has(type))this.events.set(type,new Set());this.events.get(type).add(fn);},
     removeEventListener(type,fn){this.events.get(type)?.delete(fn);},
@@ -108,6 +111,15 @@ await test('detaching a host releases the status observer/listeners and later up
 await test('game return initialization is idempotent and no-game portal has no active dock',async()=>{
   const f=await returnFixture();f.module.initGameReturn();f.module.initGameReturn();await settle();
   assert.equal(f.doc.body.querySelectorAll('.portal-resume').length,1);assert.equal(f.doc.body.querySelector('.portal-resume').hidden,true);assert.equal(f.loads.length,0);assert.equal(f.subscribers.size,1);f.dispose();
+});
+await test('game focuses its overlay and isolates portal controls until minimize or close',async()=>{
+  const f=await returnFixture(),shell=f.doc.createElement('main'),nav=f.doc.createElement('nav'),opener=f.doc.createElement('button');
+  shell.id='app';nav.className='bottom-nav';nav.inert=true;shell.append(opener);f.doc.body.append(shell,nav);opener.focus();
+  f.module.initGameReturn();await settle();const {root,header}=f.game('chess');await settle();
+  assert.equal(shell.inert,true);assert.equal(f.doc.activeElement,root);
+  await header.querySelector('.portal-minimize').fire();assert.equal(shell.inert,false);assert.equal(nav.inert,true);
+  const dock=f.doc.body.querySelector('.portal-resume');await dock.fire();assert.equal(shell.inert,true);
+  root.remove();f.doc.body.focus();await settle();assert.equal(shell.inert,false);assert.equal(nav.inert,true);f.dispose();
 });
 await test('minimize/restore preserves root visibility, inert state, scroll lock and original focus control',async()=>{
   const f=await returnFixture(),{root,header}=f.game();f.doc.body.style.overflow='hidden';f.module.initGameReturn();await settle();

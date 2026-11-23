@@ -386,7 +386,7 @@
 /* ── Hub boyutları: mini / midi / full ── */
 #gemHubPanel.ghp-mini{ width:min(82vw,272px); }
 #gemHubPanel.ghp-mini .ghp-list{ max-height:170px; min-height:84px; }
-#gemHubPanel.ghp-full{ left:0 !important; right:0 !important; top:0 !important; bottom:0 !important; width:auto; height:100dvh; max-height:none; border-radius:0; border:none; transform-origin:center; z-index:9990; }
+#gemHubPanel.ghp-full{ inset:0; width:auto; height:100dvh; max-height:none; border-radius:0; border:none; transform-origin:center; z-index:9990; }
 #gemHubPanel.ghp-full .ghp-drag{ cursor:default; padding-top:max(11px, env(safe-area-inset-top)); }
 #gemHubPanel.ghp-full .ghp-tab{ font-size:12px; padding:11px 4px; }
 #gemHubPanel.ghp-full .ghp-input{ font-size:15px; padding:12px 14px; }
@@ -1136,3 +1136,35 @@ canvas.matrix-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events
 .scale-slider{ flex:1; height:6px; -webkit-appearance:none; appearance:none; background:rgba(255,255,255,.1); border-radius:6px; outline:none; }
 .scale-slider::-webkit-slider-thumb{ -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#00E5FF,#0091EA); cursor:pointer; box-shadow:0 2px 8px rgba(0,229,255,.5); }
 .scale-slider::-moz-range-thumb{ width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#00E5FF,#0091EA); cursor:pointer; border:none; box-shadow:0 2px 8px rgba(0,229,255,.5); }
+
+/* Keep the composer inside the visible viewport, including with a soft keyboard. */
+#gemHubPanel.ghp-closing{pointer-events:none}
+#gemHubPanel :is(.ghp-body,.ghp-pane,#ghpDMThread,.ghp-list){min-height:0}
+#gemHubPanel #ghpDMThread{flex:1;flex-direction:column;overflow:hidden}
+#gemHubPanel .ghp-list{overscroll-behavior:contain}
+#gemHubPanel .ghp-list>:not(.ghp-empty){flex-shrink:0}
+#gemHubPanel .ghp-input{font-size:16px;min-height:44px}
+#gemHubPanel .ghp-act{min-width:36px;min-height:36px;padding-inline:7px}
+#gemHubPanel .ghp-send{min-width:44px;min-height:44px}
+#gemHubPanel .ghp-tab{min-width:0;min-height:42px;letter-spacing:0}
+#gemHubPanel .ghp-title{font-size:11px;letter-spacing:1px;min-width:0}
+#gemHubPanel .ghp-acts{flex-shrink:0}
+#gemHubPanel.ghp-full .ghp-input-row{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+#gemHubPanel.ghp-full:not(.ghp-compact-height) .ghp-pane.active>.ghp-input-row:last-child,
+#gemHubPanel.ghp-full:not(.ghp-compact-height) #ghpDMThread>.ghp-input-row:last-child{padding-bottom:max(8px,env(safe-area-inset-bottom,0px))}
+#gemHubPanel.ghp-compact-height .ghp-body{overflow-y:auto}
+#gemHubPanel.ghp-compact-height :is(.ghp-pane.active,#ghpDMThread){flex:none;overflow:visible}
+#gemHubPanel.ghp-compact-height .ghp-list{min-height:58px;max-height:150px}
+#gemHubPanel.ghp-compact-height .ghp-drag{padding-block:5px}
+#gemHubPanel.ghp-compact-height .ghp-tabs{padding-top:3px}
+#gemHubPanel.ghp-compact-height .ghp-tab{min-height:36px;padding-block:6px}
+#gemHubPanel.ghp-compact-height .ghp-input-row{padding-block:4px}
+@media(max-width:640px){
+  #gemHubPanel .ghp-qb{min-height:32px}
+  .pcp-card{max-height:calc(100dvh - max(16px,env(safe-area-inset-top,0px)) - max(16px,env(safe-area-inset-bottom,0px)));overscroll-behavior:contain}
+  .igdm-box{max-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)));padding-bottom:max(14px,env(safe-area-inset-bottom,0px))}
+  .igdm-input{min-width:0;font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  #gemHubPanel.ghp-open,#gemHubPanel.ghp-closing,#gemHubPanel .ghp-pane.active{animation:none}
+}

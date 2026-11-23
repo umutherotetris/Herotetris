@@ -36,12 +36,16 @@ function room(extra={}){return {seed:7,players:{A:'me',B:'opponent'},names:{A:'M
   await h.mod.cancelSearch();
   assert.equal(h.get('kelimeQueue/waiting_en'),null,'cancel clears the actual language queue');
   assert.equal(h.get('kelimeGames/room1'),null,'cancel removes the waiting room');
-  assert.ok(h.disconnects.some(([op,p])=>op==='cancel'&&p==='kelimeQueue/waiting_en'));
+  assert.ok(!h.disconnects.some(([,p])=>p==='kelimeQueue/waiting_en'),'no unconditional disconnect hook may change the shared slot');
 }
 {
   const h=await harness();await h.mod.findMatch({}, {mode:'async',turnHours:12,lang:'tr'});
   assert.equal(h.mod.getSession().turnHours,12,'new host retains per-turn deadline duration');
   assert.equal(h.mod.getSession().queuePath,'kelimeQueue/async12_tr');
+  await assert.rejects(h.mod.pushMove({turn:'B'}),'a waiting room cannot be played');
+  await h.mod.cancelSearch();assert.equal(h.get('kelimeQueue/async12_tr'),null);
+  h.set('kelimeGames/room1',room({deadline:Date.now()+60000}));
+  await h.mod.resumeGame('room1',{});
   const before=Date.now();await h.mod.pushMove({turn:'B'});
   assert.ok(h.get('kelimeGames/room1/deadline')>=before+12*3600000,'successful move renews opponent deadline');
   const deadline=h.get('kelimeGames/room1/deadline');await h.mod.pushMove({drawOffer:'A'});
@@ -71,6 +75,7 @@ function room(extra={}){return {seed:7,players:{A:'me',B:'opponent'},names:{A:'M
 {
   const h=await harness();h.set('kelimeGames/old',room());h.set('kelimeGames/new',room());await h.mod.resumeGame('old',{});
   const gate=deferred();let blocked=false;h.hooks.remove=async()=>{if(!blocked){blocked=true;await gate.promise;}};
+  h.set('kelimeGames/old/status','over');
   const ending=h.mod.markGameOver();await Promise.resolve();await h.mod.resumeGame('new',{});gate.resolve();await ending;
   assert.equal(h.get('kelimeGames/old/status'),'over');assert.equal(h.get('kelimeGames/new/status'),'active','late old cleanup cannot end new room');
   assert.equal(h.mod.getSession().gameId,'new');

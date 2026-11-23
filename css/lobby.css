@@ -233,3 +233,20 @@ html[data-theme="ivory"] .portal.lobby { --accent-on:#fffdf4; }
 .portal.lobby .lobby-chat-slot { display:flex;align-items:center;flex-shrink:0; }
 html[data-theme="lounge"] .portal :is(.prf-card,.nick-modal,#gemHubPanel) { background:var(--portal-surface);border-color:var(--portal-border); }
 @media(max-width:767px) { .portal.lobby .portal-header { gap:10px; } }
+
+.portal.lobby .lobby-dialog{
+  max-width:calc(100vw - max(8px,env(safe-area-inset-left,0px)) - max(8px,env(safe-area-inset-right,0px)));
+  max-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));
+  overscroll-behavior:contain;overflow-wrap:anywhere;
+}
+.portal.lobby .dialog-top h2{min-width:0}
+.portal.lobby .dialog-top button{flex-shrink:0}
+@media(max-width:767px){
+  .portal.lobby .lobby-dialog{padding:18px}
+  .portal.lobby .search-field input{font-size:16px}
+  .portal.lobby .header-link{min-height:44px;min-width:44px;justify-content:center}
+}
+/* A fixed desktop rail still needs reachable tabs on a short landscape screen. */
+@media(min-width:768px) and (max-height:640px){
+  .portal.lobby .bottom-nav{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}

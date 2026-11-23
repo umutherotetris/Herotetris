@@ -83,7 +83,7 @@ await test('accept rechecks cancellation inside atomic transaction',async()=>{
 });
 await test('cancel racing accepted match preserves active room for resume',async()=>{
  const b=bus(),p=await b.peer('alice');await p.sendInvite('bob','Bob',{});const gate=deferred();let entered=false;
- b.hooks.remove=async p=>{if(p==='gameInvites/bob/id2'){entered=true;await gate.promise;}};
+ b.hooks.transaction=async p=>{if(p==='kelimeGames/id1'){entered=true;await gate.promise;}};
  const pending=p.cancelInvite();while(!entered)await Promise.resolve();b.put('kelimeGames/id1/players/B','bob');b.put('kelimeGames/id1/status','active');gate.resolve();await pending;
  assert.equal(b.get('kelimeGames/id1/status'),'active');assert.equal(b.get('kelimeGames/id1/players/B'),'bob');assert.equal(b.get('kelimeGames/id1/presence/A'),false);
 });

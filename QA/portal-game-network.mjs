@@ -24,7 +24,8 @@ assert.equal(JSON.stringify(session.state),before,'out-of-turn network move igno
 console.log('PASS tavla network: rapid moves/end-turn queue, canonical dice index, hit and turn synchronization.');
 
 const kelime=fs.readFileSync(new URL('../js/games/kelime.js',import.meta.url),'utf8');
-const a=kelime.indexOf('function afterGame('),b=kelime.indexOf('\nfunction ',a+1),callbacks=[];
+const a=kelime.indexOf('function afterGame('),b=kelime.indexOf('\nexport function closePortalGame(',a+1),callbacks=[];
+assert.ok(a>=0&&b>a,'extract the lifecycle helper without the following module export');
 const k=vm.createContext({G:{id:'old'},setTimeout:fn=>callbacks.push(fn)});
 vm.runInContext(kelime.slice(a,b)+'\nthis.schedule=afterGame;',k);
 let ran=0;k.schedule(()=>ran++,1);k.G=null;callbacks.shift()();assert.equal(ran,0);

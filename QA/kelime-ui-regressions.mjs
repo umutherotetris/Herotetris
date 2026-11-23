@@ -5,7 +5,7 @@ import { LETTERS_EN, LETTERS_TR } from '../js/games/kelime-engine.js';
 const source=fs.readFileSync(new URL('../js/games/kelime.js',import.meta.url),'utf8');
 function fn(name){
   const start=source.search(new RegExp(`(?:async )?function ${name}\\(`));assert.ok(start>=0,name);
-  const tail=source.slice(start),match=/\n(?:async )?function \w+\(/.exec(tail);
+  const tail=source.slice(start),match=/\n(?:export )?(?:async )?function \w+\(/.exec(tail);
   return tail.slice(0,match?match.index:undefined);
 }
 function defer(){let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};}

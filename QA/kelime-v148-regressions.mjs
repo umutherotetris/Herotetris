@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import * as engine from '../js/games/kelime-engine.js';
 import * as ai from '../js/games/kelime-ai.js';
 const source=process.env.KELIME_V148_SOURCE_REF ? execFileSync('git',['show',`${process.env.KELIME_V148_SOURCE_REF}:js/games/kelime.js`],{encoding:'utf8'}) : fs.readFileSync(new URL('../js/games/kelime.js',import.meta.url),'utf8');
-function fn(name){const start=source.search(new RegExp(`^(?:async )?function ${name}\\(`,'m'));assert.ok(start>=0,name);const s=source.slice(start),next=/\n(?:async )?function \w+\(/.exec(s);return next?s.slice(0,next.index):s;}
+function fn(name){const start=source.search(new RegExp(`^(?:async )?function ${name}\\(`,'m'));assert.ok(start>=0,name);const s=source.slice(start),next=/\n(?:export )?(?:async )?function \w+\(/.exec(s);return next?s.slice(0,next.index):s;}
 const noop=()=>{};
 {
  const callbacks=[],ctx=vm.createContext({G:{_setupToken:{}},setTimeout:cb=>callbacks.push(cb)});

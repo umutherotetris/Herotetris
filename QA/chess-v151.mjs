@@ -127,10 +127,10 @@ try{
  const h=harness(),calls=[];let release;
  h.c.shareRoomCode=(...args)=>{calls.push(args);return new Promise(r=>release=r);};
  h.showOnlineLobby(h.root);const ov=h.overlays[0],btn=ov.querySelector('[data-act="share"]');
- ov.querySelector('[data-el="code"]').textContent='ABC123';
+ ov.querySelector('[data-el="code"]').textContent='ABC234';
  const first=btn.click({currentTarget:btn});await btn.click({currentTarget:btn});
  assert.equal(calls.length,1,'native share cannot be opened twice while pending');assert.equal(btn.disabled,true);
- assert.deepEqual(Array.from(calls[0]),['chess','ABC123']);release('copied');await first;
+ assert.deepEqual(Array.from(calls[0]),['chess','ABC234']);release('copied');await first;
  assert.equal(btn.textContent,'✅ KOD KOPYALANDI');assert.equal(btn.disabled,false);
  const reset=h.timers.at(-1),second=btn.click({currentTarget:btn});
  assert.equal(h.timers.includes(reset),false,'a previous feedback timer cannot reset a new pending share');

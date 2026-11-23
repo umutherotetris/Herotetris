@@ -20,6 +20,7 @@
 // ════════════════════════════════════════════════════════════════
 
 const PREFIX = 'herotetris-mp-';   // peer id öneki (çakışmayı önler)
+const GUEST_PREFIX = 'herotetris-guest-';
 
 let peer = null;
 let conn = null;
@@ -28,12 +29,14 @@ let isHost = false;
 let myCode = null;
 // ── Yeniden bağlanma (reconnect) durumu ──
 let joinCode = null;        // misafirin bağlandığı oda kodu
+let guestId = null, returningGuest = null;
 let reconnecting = false;   // şu an tekrar bağlanma denemesi sürüyor mu
 let reconTries = 0;         // kaç deneme yapıldı
 let reconTimer = null;      // bir sonraki deneme zamanlayıcısı
 let manualClose = false;    // kullanıcı bilerek kapattı mı (reconnect deneme)
 let generation = 0;         // kapanan/değişen odanın geç olaylarını yalıt
 let connectTimer = null;    // yalnız aktif bağlantının açılma süresi
+let reservationTimer = null;
 let hasConnected = false;
 const RECON_MAX = 6;        // maksimum yeniden bağlanma denemesi
 const RECON_DELAY = 10000;  // denemeler arası bekleme (ms)
@@ -58,12 +61,24 @@ function clearConnectTimer(){
   if(connectTimer !== null){ clearTimeout(connectTimer); connectTimer = null; }
 }
 
+function clearReservationTimer(){
+  if(reservationTimer !== null){ clearTimeout(reservationTimer); reservationTimer = null; }
+}
+
 function disposeTransport(){
+  clearReservationTimer();
   // Önce kimlikleri bırak; close()/destroy() eşzamanlı olay da üretebilir.
   const oldConn = conn, oldPeer = peer;
   conn = null; peer = null;
   try{ if(oldConn) oldConn.close(); }catch(e){}
   try{ if(oldPeer) oldPeer.destroy(); }catch(e){}
+}
+
+function failInitial(p, session, message){
+  if(!currentPeer(p, session)) return;
+  clearConnectTimer();
+  disposeTransport();
+  fire('error', message);
 }
 
 function waitForConnection(p, session, delay, retry){
@@ -74,8 +89,7 @@ function waitForConnection(p, session, delay, retry){
     if(retry) scheduleNextRecon();
     else {
       // Süresi dolan giriş artık kullanılamaz; geç 'open' oyunu başlatmamalı.
-      disposeTransport();
-      fire('error', 'oda bulunamadı');
+      failInitial(p, session, 'oda bulunamadı');
     }
   }, delay);
 }
@@ -103,7 +117,7 @@ function attemptReconnect(){
   if(!manualClose && reconnecting) openPeer(true);
 }
 
-function scheduleNextRecon(){
+function scheduleNextRecon(delay=RECON_DELAY){
   if(manualClose || !reconnecting) return;
   clearConnectTimer();
   if(reconTimer !== null) clearTimeout(reconTimer);
@@ -111,7 +125,7 @@ function scheduleNextRecon(){
   reconTimer = setTimeout(() => {
     reconTimer = null;
     if(generation === session && reconnecting && !manualClose) attemptReconnect();
-  }, RECON_DELAY);
+  }, delay);
 }
 
 function stopReconnect(){
@@ -121,64 +135,81 @@ function stopReconnect(){
 }
 
 function bindConn(c, p, session){
-  if(!currentPeer(p, session) || conn){ try{ c.close(); }catch(e){} return; }
+  if(!currentPeer(p, session) || conn || (isHost && returningGuest && c.peer!==returningGuest)){
+    try{ c.close(); }catch(e){} return;
+  }
   conn = c; // Açılmayı bekleyen ilk kanal da odayı rezerve eder.
+  let opened = false;
   const current = () => currentPeer(p, session) && conn === c;
-  c.on('open', () => {
-    if(!current()) return;
+  const openedChannel = () => {
+    if(!current() || opened) return;
+    opened = true;
+    clearReservationTimer();
     const resumed = reconnecting && hasConnected;
     stopReconnect();
     hasConnected = true;
+    // Guests from this release use one signaling ID for the whole round.
+    // An unrelated player entering the same code cannot take their seat on reconnect.
+    if(isHost && typeof c.peer==='string' && c.peer.startsWith(GUEST_PREFIX)) returningGuest=c.peer;
     fire(resumed ? 'reconnected' : 'connected');
-  });
+  };
+  c.on('open', openedChannel);
   c.on('data', (raw) => {
     if(!current() || !c.open) return;
     let obj = raw;
     if(typeof raw === 'string'){ try{ obj = JSON.parse(raw); }catch(e){ obj = { type:'raw', raw }; } }
     fire('message', obj);
   });
-  c.on('close', () => {
+  const lostChannel = () => {
     if(!current()) return;
+    clearReservationTimer();
     conn = null;
+    try{ c.close(); }catch(e){}
+    if(!opened){
+      // Bir misafirin yarım kalan el sıkışması hostun oda kodunu bozmaz.
+      if(isHost && !hasConnected){ fire('waiting'); return; }
+      if(!reconnecting && !hasConnected){ failInitial(p, session, 'oda bağlantısı tamamlanamadı'); return; }
+      if(reconnecting){ scheduleNextRecon(); return; }
+    }
     fire('disconnected');
     if(currentPeer(p, session)){
       if(reconnecting) scheduleNextRecon();
       else startReconnect();
     }
-  });
-  c.on('error', (err) => {
-    if(!current()) return;
-    fire('error', (err && err.type) || 'bağlantı hatası');
-    if(currentPeer(p, session)){
-      if(reconnecting) scheduleNextRecon();
-      else startReconnect();
-    }
-  });
+  };
+  c.on('close', lostChannel);
+  c.on('error', lostChannel);
+  if(c.open) openedChannel();
+  else if(isHost) reservationTimer = setTimeout(lostChannel, 12000);
 }
 
 function openPeer(retry){
   const session = generation;
   let p;
   try{
-    p = isHost ? new window.Peer(PREFIX + myCode, { debug: 1 }) : new window.Peer({ debug: 1 });
+    p = new window.Peer(isHost ? PREFIX + myCode : guestId, { debug: 1 });
   }catch(e){
     if(retry) scheduleNextRecon();
     else fire('error', isHost ? 'oda kurulamadı' : 'bağlanılamadı');
     return false;
   }
   peer = p;
+  let signalingOpened = false;
   p.on('open', () => {
     if(!currentPeer(p, session)) return;
+    const firstOpen = !signalingOpened;
+    signalingOpened = true;
     if(isHost){
-      if(!retry){ clearConnectTimer(); fire('code', myCode); if(!currentPeer(p, session)) return; }
-      fire('waiting');
+      if(!hasConnected){ stopReconnect(); fire('code', myCode); if(currentPeer(p, session)) fire('waiting'); }
+      else if(reconnecting && !conn?.open) fire('waiting');
     } else {
+      if(!firstOpen || conn) return;
       try{
         const c = p.connect(PREFIX + joinCode, { reliable: true });
         bindConn(c, p, session);
       }catch(e){
         if(retry) scheduleNextRecon();
-        else fire('error', 'bağlanılamadı');
+        else failInitial(p, session, 'bağlanılamadı');
       }
     }
   });
@@ -188,11 +219,29 @@ function openPeer(retry){
   });
   p.on('error', (err) => {
     if(!currentPeer(p, session)) return;
-    if(reconnecting){ scheduleNextRecon(); return; }
-    clearConnectTimer();
+    // PeerServer sinyali ve veri kanalı ayrı: çalışan maçı kapatma.
+    if(conn?.open) return;
     const t = (err && err.type) || '';
-    fire('error', t === 'unavailable-id' ? 'kod meşgul, tekrar dene' :
+    if(reconnecting){
+      // Misafirin ilk araması host aynı kodu yeniden açmadan önce ulaşabilir.
+      scheduleNextRecon(!isHost && t==='peer-unavailable' && reconTries===1 ? 600 : RECON_DELAY);
+      return;
+    }
+    failInitial(p, session, t === 'unavailable-id' ? 'kod meşgul, tekrar dene' :
       t === 'peer-unavailable' ? 'oda bulunamadı' : t || 'bağlantı hatası');
+  });
+  p.on('disconnected', () => {
+    if(!currentPeer(p, session)) return;
+    if(conn?.open){ try{ p.reconnect?.(); }catch(e){} return; }
+    if(reconnecting) scheduleNextRecon();
+    else if((signalingOpened && isHost) || hasConnected) startReconnect();
+    else failInitial(p, session, 'sinyal bağlantısı kesildi');
+  });
+  p.on('close', () => {
+    if(!currentPeer(p, session)) return;
+    if(reconnecting) scheduleNextRecon();
+    else if((signalingOpened && isHost) || hasConnected) startReconnect();
+    else failInitial(p, session, 'sinyal bağlantısı kapandı');
   });
   // Süre sınırı, sinyal sunucusu hiç 'open' üretmese de işler.
   if(retry || !isHost) waitForConnection(p, session, retry ? 8000 : 12000, retry);
@@ -203,8 +252,7 @@ function openPeer(retry){
     connectTimer = setTimeout(() => {
       connectTimer = null;
       if(!currentPeer(p, session) || hasConnected) return;
-      disposeTransport();
-      fire('error', 'oda kurulamadı');
+      failInitial(p, session, 'oda kurulamadı');
     }, 12000);
   }
   return true;
@@ -221,6 +269,7 @@ export const MP = {
     MP.close();
     onEvent = cb; isHost = true; manualClose = false;
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return null; }
+    if(fixedCode != null && (typeof fixedCode !== 'string' || !/^[A-Z2-9]{6}$/.test(fixedCode))){ fire('error', 'oda kodu geçersiz'); return null; }
     myCode = fixedCode || genCode();
     return openPeer(false) ? myCode : null;
   },
@@ -231,8 +280,9 @@ export const MP = {
     onEvent = cb; isHost = false; manualClose = false;
     if(typeof window.Peer === 'undefined'){ fire('error', 'PeerJS yüklenemedi'); return; }
     code = typeof code === 'string' ? code.toUpperCase().trim() : '';
-    if(code.length !== 6){ fire('error', 'kod 6 haneli olmalı'); return; }
+    if(!/^[A-Z2-9]{6}$/.test(code)){ fire('error', 'oda kodu 6 geçerli karakter içermeli'); return; }
     joinCode = code;
+    guestId = GUEST_PREFIX + (globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`);
     openPeer(false);
   },
 
@@ -241,9 +291,8 @@ export const MP = {
 
   // Rakibe mesaj gönder
   send(obj){
-    if(conn && conn.open){
-      try{ conn.send(JSON.stringify(obj)); }catch(e){}
-    }
+    if(!conn?.open) return false;
+    try{ conn.send(JSON.stringify(obj)); return true; }catch(e){ return false; }
   },
 
   // Bağlantıyı tamamen kapat
@@ -251,7 +300,7 @@ export const MP = {
     manualClose = true; generation++;
     stopReconnect();
     disposeTransport();
-    onEvent = null; isHost = false; myCode = null; joinCode = null; hasConnected = false;
+    onEvent = null; isHost = false; myCode = null; joinCode = null; guestId = null; returningGuest = null; hasConnected = false;
   }
 };
 

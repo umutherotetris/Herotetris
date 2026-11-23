@@ -12,7 +12,7 @@ import * as Resume from './resume.js';
 import { chooseMove } from './chess-ai.js';
 import { ChessSound as Sound } from './chess-audio.js';
 import { ChessMP } from './chess-mp.js';
-import { shareRoomCode } from '../room-share.js';
+import { shareRoomCode, normalizeRoomCode } from '../room-share.js';
 import { mountSessionStatus } from '../game-session-ui.js';
 import { recordGameReview } from '../game-review.js';
 export { renderReviewFrame, setPortalMinimized, closePortalGame };
@@ -291,7 +291,10 @@ function _startInviteChess(root, ctx){
     if(cancelled || G !== game) return;
     if(type === 'code'){if(typeof chessSessionPhase==='function')chessSessionPhase('waiting');}
     else if(type === 'connected'){
-      if(isHost){ ChessMP.send({ type:'config', time: 0 }); }
+      if(isHost && ChessMP.send({type:'config',time:0})===false){
+        ChessMP.close();wait.querySelector('div:nth-child(2)').textContent='Bağlantı tamamlanamadı. Daveti yeniden başlat.';
+        if(typeof chessSessionPhase==='function')chessSessionPhase('failed');return;
+      }
       wait.remove();
       G.oppName = ctx.oppNick;
       startGame(root, 'online', { playerColor: isHost ? 'w' : 'b', time: 0 });
@@ -312,7 +315,7 @@ function _startInviteChess(root, ctx){
         if(type === 'connected'){ onEvt('connected'); }
         else if(type === 'error'){
           if(tries < 8){ setTimeout(tryJoin, 1500); }
-          else { wait.querySelector('div:nth-child(2)').textContent = 'Baglanilamadi (host hazir degil)'; }
+          else { wait.querySelector('div:nth-child(2)').textContent = 'Odaya bağlanılamadı. Davet sahibinden kodu kontrol etmesini iste.'; if(typeof chessSessionPhase==='function')chessSessionPhase('failed'); }
         }
       });
     };
@@ -322,6 +325,7 @@ function _startInviteChess(root, ctx){
 
 function showOnlineLobby(root){
   const session=G;
+  if(!session || session.root!==root || root.querySelector('.chess-online-lobby')?.isConnected) return;
   const ov = document.createElement('div');
   ov.className = 'chess-online-lobby';
   ov.innerHTML = `<div class="col-box">
@@ -350,8 +354,8 @@ function showOnlineLobby(root){
       <div class="col-host-wait" data-el="hostWait" style="display:none">
         <div class="col-info">Oda kodun:</div>
         <div class="col-code" data-el="code">······</div>
-        <button class="col-copy" data-act="copy">📋 KODU KOPYALA</button>
-        <button class="col-copy" data-act="share">↗ ODAYI PAYLAŞ</button>
+        <button class="col-copy" data-act="copy" disabled>📋 KODU KOPYALA</button>
+        <button class="col-copy" data-act="share" disabled>↗ ODAYI PAYLAŞ</button>
         <div class="col-hint">Bu kodu arkadaşınla paylaş.<br>Rakip bekleniyor…</div>
         <div class="col-spinner"></div>
       </div>
@@ -359,7 +363,7 @@ function showOnlineLobby(root){
     <div class="col-panel" data-panel="join" style="display:none">
       <div class="col-info">Arkadaşının oda kodunu gir:</div>
       <div class="col-input-row">
-        <input class="col-input" data-el="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters">
+        <input class="col-input" data-el="codeInput" placeholder="ABC234" aria-label="Satranç oda kodu" autocomplete="off" autocapitalize="characters" spellcheck="false">
         <button class="col-paste" data-act="paste" title="Yapıştır">📋</button>
       </div>
       <button class="col-connect" data-act="connect">BAĞLAN</button>
@@ -384,43 +388,68 @@ function showOnlineLobby(root){
     ov.querySelectorAll('[data-group="hosttime"] .cas-opt').forEach(x => x.classList.remove('active'));
     b.classList.add('active'); hostSel.time = parseInt(b.dataset.v, 10);
   }));
-  // ODAYI KUR (süre seçildikten sonra)
-  ov.querySelector('.col-create-go').addEventListener('click', () => {
-    ov.querySelector('[data-el="hostTimeSel"]').style.display = 'none';
-    ov.querySelector('[data-el="hostWait"]').style.display = 'flex';
-    if(typeof attachChessSession==='function') attachChessSession(ov.querySelector('.col-box'),'connecting');
-    ChessMP.createRoom((type, data) => {
-      if(G!==session || !ov.isConnected) return;
-      if(type === 'code'){ ov.querySelector('[data-el="code"]').textContent = data; if(typeof chessSessionPhase==='function') chessSessionPhase('waiting'); }
-      else if(type === 'connected'){
-        // misafire süreyi gönder, sonra oyunu başlat
-        ChessMP.send({ type:'config', time: hostSel.time });
-        ov.remove(); startGame(root, 'online', { playerColor: 'w', time: hostSel.time });
-      }
-      else if(type === 'error'){ ov.querySelector('.col-hint').textContent = '❌ ' + String(data || 'Bağlantı hatası') + ' · Tekrar dene.'; if(typeof chessSessionPhase==='function') chessSessionPhase('failed'); }
+  const connectButton=ov.querySelector('[data-act="connect"]');
+  const codeLabel=ov.querySelector('[data-el="code"]');
+  const codeButtons=ov.querySelectorAll('[data-act="copy"],[data-act="share"]');
+  const joinStatus=ov.querySelector('[data-el="joinStatus"]');
+  const input=ov.querySelector('[data-el="codeInput"]');
+  let busy=false;
+  const current=()=>G===session && ov.isConnected;
+  const setBusy=value=>{busy=value;connectButton.disabled=value;input.readOnly=value;};
+  // Keep hosting and joining in one owned attempt. Disabling the inputs avoids
+  // consecutive taps replacing a connection that is still opening.
+  const hostRoom=()=>{
+    if(!current() || busy) return;
+    setBusy(true);
+    codeLabel.textContent='······';codeButtons.forEach(button=>button.disabled=true);
+    ov.querySelector('[data-el="hostTimeSel"]').style.display='none';
+    ov.querySelector('[data-el="hostWait"]').style.display='flex';
+    ov.querySelector('.col-hint').textContent='Oda hazırlanıyor…';
+    if(typeof attachChessSession==='function')attachChessSession(ov.querySelector('.col-box'),'connecting',hostRoom);
+    const recover=message=>{
+      ChessMP.close();setBusy(false);
+      codeButtons.forEach(button=>button.disabled=true);
+      ov.querySelector('.col-hint').textContent='❌ '+message;
+      if(typeof chessSessionPhase==='function')chessSessionPhase('failed',message,true);
+    };
+    ChessMP.createRoom((type,data)=>{
+      if(!current())return;
+      if(type==='code'){
+        codeLabel.textContent=data;codeButtons.forEach(button=>button.disabled=false);
+        ov.querySelector('.col-hint').textContent='Kodu paylaş; rakip katıldığında oyun başlayacak.';
+        if(typeof chessSessionPhase==='function')chessSessionPhase('waiting');
+      }else if(type==='connected'){
+        if(ChessMP.send({type:'config',time:hostSel.time})===false){recover('Süre ayarı iletilemedi. Odayı yeniden kur.');return;}
+        ov.remove();startGame(root,'online',{playerColor:'w',time:hostSel.time});
+      }else if(type==='error')recover(String(data||'Oda kurulamadı'));
     });
-  });
+  };
+  ov.querySelector('.col-create-go').addEventListener('click',hostRoom);
 
-  // ODAYA KATIL
-  ov.querySelector('[data-act="join"]').addEventListener('click', () => { showPanel('join'); });
-  const input = ov.querySelector('[data-el="codeInput"]');
-  input.addEventListener('input', () => { input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
-  ov.querySelector('[data-act="connect"]').addEventListener('click', () => {
-    const code = input.value.trim();
-    const st = ov.querySelector('[data-el="joinStatus"]');
-    if(code.length !== 6){ st.textContent = 'Kod 6 haneli olmalı'; return; }
-    st.textContent = '⏳ Bağlanılıyor…';
-    if(typeof attachChessSession==='function') attachChessSession(ov.querySelector('.col-box'),'connecting');
-    ChessMP.joinRoom(code, (type, data) => {
-      if(G!==session || !ov.isConnected) return;
-      if(type === 'connected'){ ov.remove(); startGame(root, 'online', { playerColor: 'b' }); }
-      else if(type === 'error'){ st.textContent = '❌ ' + String(data || 'Bağlantı hatası'); if(typeof chessSessionPhase==='function') chessSessionPhase('failed'); }
+  ov.querySelector('[data-act="join"]').addEventListener('click',()=>{showPanel('join');input.focus();});
+  input.addEventListener('input',()=>{if(input.value.length>80)input.value=input.value.slice(0,80);});
+  const joinRoom=()=>{
+    if(!current() || busy)return;
+    const code=normalizeRoomCode(input.value);
+    if(!code){joinStatus.textContent='Geçerli 6 karakterli oda kodu gir.';input.focus();return;}
+    input.value=code;setBusy(true);joinStatus.textContent='⏳ Bağlanılıyor…';
+    if(typeof attachChessSession==='function')attachChessSession(ov.querySelector('.col-box'),'connecting',joinRoom);
+    ChessMP.joinRoom(code,(type,data)=>{
+      if(!current())return;
+      if(type==='connected'){ov.remove();startGame(root,'online',{playerColor:'b'});}
+      else if(type==='error'){
+        setBusy(false);joinStatus.textContent='❌ '+String(data||'Bağlantı hatası');
+        if(typeof chessSessionPhase==='function')chessSessionPhase('failed',String(data||'Bağlantı hatası'),true);
+      }
     });
-  });
+  };
+  connectButton.addEventListener('click',joinRoom);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();joinRoom();}});
 
   // KODU KOPYALA
   ov.querySelector('[data-act="copy"]').addEventListener('click', (e) => {
-    const code = ov.querySelector('[data-el="code"]').textContent.trim();
+    const code=normalizeRoomCode(codeLabel.textContent);
+    if(!code || !current()) return;
     const btn = e.currentTarget;
     const done = () => { btn.textContent = '✅ KOPYALANDI'; setTimeout(() => { btn.textContent = '📋 KODU KOPYALA'; }, 1800); };
     try{
@@ -449,9 +478,12 @@ function showOnlineLobby(root){
     try{
       if(navigator.clipboard && navigator.clipboard.readText){
         const txt = await navigator.clipboard.readText();
-        input.value = (txt || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+        if(!current() || busy)return;
+        const code=normalizeRoomCode(txt);
+        if(code){input.value=code;input.focus();}
+        else joinStatus.textContent='Panoda geçerli oda kodu bulunamadı.';
       }
-    }catch(err){ /* izin yoksa sessizce geç */ }
+    }catch(err){ if(current()){joinStatus.textContent='Pano açılamadı; kodu elle girebilirsin.';input.focus();} }
   });
 }
 
@@ -578,6 +610,7 @@ function closeAll(discard=false){
   try{ ChessMP.close(); }catch(e){}
   try{ if(G && G._hud) G._hud.destroy(); }catch(e){}
   try{ G?._sessionUI?.destroy(); }catch(e){}
+  G?._boardResizeObserver?.disconnect();
   try{ stopClockTick(); }catch(e){}
   if(G && G.root){ G.root.remove(); }
   if(G && G.resizeHandler) window.removeEventListener('resize', G.resizeHandler);
@@ -614,7 +647,7 @@ function startGame(root, mode, opts){
       root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
       oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ if(G === game) G._hud=h; else h.destroy(); }).catch(()=>{});
+    }).then(h=>{ if(G === game){G._hud=h;fitCanvas();}else h.destroy(); }).catch(()=>{});
   }catch(e){}
   G.selected = null;        // {r,c}
   G.legalForSelected = [];  // o taşın geçerli hamleleri
@@ -627,7 +660,7 @@ function startGame(root, mode, opts){
   G.posHistory = [ positionKey(G.state) ];   // 3 hamle tekrarı takibi
   G.gameEnded = false;
   G.resultSettled = false;
-  G.drawOfferOpen = false;
+  G.drawOfferOpen = false; G.drawOfferSent=false;
   G.timeControl = opts.time || 0;   // saniye (0 = süresiz)
   G.clock = null;
   G.undoStack = [];                 // hamle geri alma için anlık görüntüler
@@ -636,7 +669,7 @@ function startGame(root, mode, opts){
   G.flip = ((mode === 'ai' || mode === 'online') && G.playerColor === 'b');
   G.animating = false;
   G._drag = null; G._dragJustEnded = false;
-  G.oppLeft = false; G.syncPending = false;
+  G.oppLeft = false; G.syncPending = false; G._queuedOnlineMove = null; G._clockConfigured=false;
 
   if(mode === 'ai' && !opts.restore) Resume.clearSnapshot('chess');   // taze AI oyunu → eski devam kaydını sil
   // ── Kaldığın yerden devam: durumu geri yükle ──
@@ -653,7 +686,7 @@ function startGame(root, mode, opts){
   }
 
   if(typeof resetChessReview==='function') resetChessReview(opts.restore?'Devam edilen konum':'Başlangıç konumu');
-  if(mode==='online' && typeof attachChessSession==='function') attachChessSession(gameEl,'playing');
+  if(mode==='online' && typeof attachChessSession==='function') attachChessSession(gameEl,'playing',()=>ChessMP.connected ? requestChessSync() : ChessMP.retryConnection());
 
   // Çevrimiçi mod: hamle senkronizasyonu
   if(mode === 'online'){
@@ -679,13 +712,14 @@ function startGame(root, mode, opts){
       if(type === 'message'){
         if(data && data.type === 'hello'){ onHello(data); return; }
         if(data && data.type === 'fullsync'){ applyFullSync(data.state); return; }
-        if(data && data.type === 'resync_request'){ sendFullSync(); return; }
+        if(data && data.type === 'resync_request'){ if(G.playerColor==='w')sendFullSync(); return; }
         onRemoteMessage(data);
       }
       else if(type === 'disconnected'){
         if(typeof chessSessionPhase==='function') chessSessionPhase('reconnecting');
         updateStatus('🔌 Rakip ayrıldı — yeniden bağlanılıyor…', 'draw'); G.oppLeft = true;
         G._drag = null; G.selected = null; G.legalForSelected = [];
+        G.drawOfferOpen?.remove?.(); G.drawOfferOpen=false; G.drawOfferSent=false; G._syncAttempt=null;
         root.querySelector('[data-el="oppStatus"]').textContent = 'bağlantı koptu';
         root.querySelector('[data-el="oppDot"]').classList.remove('online');
         updatePanels();
@@ -714,11 +748,11 @@ function startGame(root, mode, opts){
             updatePanels();
           }
         }, 400); }
-        else { setTimeout(() => { if(G === game) ChessMP.send({ type:'resync_request' }); }, 400); }
+        else { setTimeout(() => { if(G === game && G.syncPending){ if(typeof requestChessSync==='function')requestChessSync();else ChessMP.send({type:'resync_request'}); } },400); }
         setTimeout(() => { if(G === game && !G.gameEnded && !G.syncPending) updateStatus((G.state.turn==='w'?'BEYAZ':'SİYAH')+"'IN SIRASI"); }, 2200);
       }
       else if(type === 'reconnect_failed'){
-        if(typeof chessSessionPhase==='function') chessSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.');
+        if(typeof chessSessionPhase==='function') chessSessionPhase('failed','Tahta korunuyor. Bağlantı doğrulanana kadar hamleler duraklatıldı.',true);
         updateStatus('Bağlantı kurulamadı — maç duraklatıldı', 'draw');
         root.querySelector('[data-el="oppStatus"]').textContent = 'ayrıldı';
         G.oppLeft = true; updatePanels();
@@ -745,7 +779,7 @@ function startGame(root, mode, opts){
       root: G.root, game:'chess', myAccent:'#FFD740', oppAccent:'#4A90D9',
       oppUid, oppNick: oppNm, oppAvatar: G.oppAvatar||'🤖',
       myScore: ()=>0, oppScore: ()=>0,
-    }).then(h=>{ if(G === game) G._hud=h; else h.destroy(); }).catch(()=>{});
+    }).then(h=>{ if(G === game){G._hud=h;fitCanvas();}else h.destroy(); }).catch(()=>{});
   }catch(e){} G.selected=null; G.legalForSelected=[]; G.lastMove=null;
     G.captured={w:[],b:[]}; G.aiThinking=false; G.gameEnded=false; G.resultSettled=false; G.drawOfferOpen=false;
     G.moveHistory=[]; G.posHistory=[positionKey(G.state)];
@@ -764,8 +798,10 @@ function startGame(root, mode, opts){
   gameEl.querySelector('[data-act="resign"]').addEventListener('click', () => {
     if(G.gameEnded) return;
     showConfirm('Pes etmek istediğine emin misin?', () => {
+      if(G.mode==='online' && (G.oppLeft || G.syncPending || ChessMP.send({type:'resign'})===false)){
+        updateStatus('Pes etme iletilemedi. Bağlantı gelince yeniden dene.','draw');return;
+      }
       G.gameEnded = true;
-      if(G.mode === 'online'){ ChessMP.send({ type:'resign' }); }
       updateStatus('🏳️ Pes ettin — Rakip kazandı', 'draw');
       try{ Sound.lose(); }catch(e){}
       onGameEnd(false);   // pes eden kaybeder → kaybetme ödülü
@@ -822,6 +858,11 @@ function startGame(root, mode, opts){
   // Boyutlandırma
   G.resizeHandler = () => fitCanvas();
   window.addEventListener('resize', G.resizeHandler);
+  if(typeof ResizeObserver==='function'){
+    G._boardResizeObserver?.disconnect();
+    G._boardResizeObserver=new ResizeObserver(()=>{if(G===game)fitCanvas();});
+    G._boardResizeObserver.observe(G.boardWrap);
+  }
 
   fitCanvas();
   updateTurn();
@@ -886,7 +927,15 @@ function maybeAIMove(){
 function fitCanvas(){
   if(!G || !G.canvas) return;
   const wrap = G.boardWrap;
-  const size = Math.min(wrap.clientWidth, wrap.clientHeight) || Math.min(window.innerWidth - 24, 440);
+  if(!wrap?.clientWidth||!wrap.clientHeight)return;
+  const rect=wrap.getBoundingClientRect?.(),rootRect=G.root?.getBoundingClientRect?.();
+  // The HUD can appear later; use the visible part even during the next layout pass.
+  const visibleHeight=rect?.height>0&&rootRect
+    ? wrap.clientHeight*Math.min(1,Math.max(0,rootRect.bottom-rect.top)/rect.height)
+    : wrap.clientHeight;
+  const size=Math.floor(Math.min(wrap.clientWidth,visibleHeight));
+  if(size<10)return;
+  if(wrap.style)wrap.style.alignItems=visibleHeight<wrap.clientHeight-1?'flex-start':'';
   const dpr = window.devicePixelRatio || 1;
   G.boardPx = size;
   G.cell = Math.floor((size - 2 * boardMargin(size)) / 8);
@@ -1388,6 +1437,24 @@ function sendMoveOnline(mv){
 
 // Rakipten gelen mesaj
 // ── Reconnect sonrası tam state senkronizasyonu ──
+// Retry state acquisition separately from the physical RTC connection.
+function requestChessSync(){
+  if(!G || G.playerColor!=='b' || !G.syncPending || !ChessMP.connected)return false;
+  const game=G,attempt={};game._syncAttempt=attempt;
+  const current=()=>G===game&&game._syncAttempt===attempt&&game.syncPending&&ChessMP.connected;
+  const ask=remaining=>{
+    if(!current())return;
+    if(!remaining){
+      chessSessionPhase('failed','Tahta henüz eşitlenemedi. Yeniden isteyebilirsin.',true);
+      return;
+    }
+    if(ChessMP.send({type:'resync_request'})===false)return;
+    setTimeout(()=>ask(remaining-1),3000);
+  };
+  chessSessionPhase('reconnecting','Rakibin tahta durumu bekleniyor.');
+  ask(3);return true;
+}
+
 function sendFullSync(){
   if(!G || !ChessMP.connected) return false;
   if(G.animating){
@@ -1404,6 +1471,7 @@ function sendFullSync(){
         castling: G.state.castling || null,
         enPassant: G.state.enPassant || null,
         clock: G.clock ? { ...G.clock } : null,
+        timeControl: G.timeControl || 0,
         halfmove: G.state.halfmove || 0,
         fullmove: G.state.fullmove || Math.floor((G.moveHistory || []).length / 2) + 1,
         moveHistory: G.moveHistory || [],
@@ -1431,7 +1499,7 @@ function sendFullSync(){
 
 function applyFullSync(s){
   // White hosts the authoritative reconnect snapshot; guests cannot rewrite it.
-  if(!G || G.mode !== 'online' || G.playerColor !== 'b' || !s) return;
+  if(!G || G.mode !== 'online' || G.playerColor !== 'b' || !s || (G.gameEnded&&!s.gameEnded)) return;
   try{
     if(!Array.isArray(s.board) || s.board.length !== 8 || !s.board.every(row=>Array.isArray(row)&&row.length===8&&row.every(p=>p===null||(p&&['p','n','b','r','q','k'].includes(p.t)&&['w','b'].includes(p.c)))) || !['w','b'].includes(s.turn)) return;
     if(!s.castling || !['w','b'].every(c=>s.castling[c]&&['k','q'].every(k=>typeof s.castling[c][k]==='boolean'))) return;
@@ -1440,11 +1508,14 @@ function applyFullSync(s){
     const state = fromFEN(toFEN({board:s.board,turn:s.turn,castling:s.castling,enPassant:ep,halfmove:s.halfmove,fullmove:s.fullmove ?? Math.floor((s.moveHistory || []).length / 2) + 1}));
     if(!state) return;
     G.state = state;
-    G.anim = null; G.animating = false; G.aiThinking = false;
+    G.anim = null; G.animating = false; G.aiThinking = false; G._queuedOnlineMove=null;
     G.promotionPending=null; G.confirmPending=null; G.fenPending=null; G._drag=null; G._dragJustEnded=false;
     G.root?.querySelectorAll?.('.chess-promo, .chess-confirm')?.forEach(el=>el.remove());
     G.gameEnded = !!s.gameEnded;
-    if(s.clock && ['w','b'].every(c=>Number.isFinite(s.clock[c])&&s.clock[c]>=0)) G.clock = {...s.clock};
+    if(s.clock && ['w','b'].every(c=>Number.isInteger(s.clock[c])&&s.clock[c]>=0&&s.clock[c]<=600)){
+      if(!G.clock && [60,180,300,600].includes(s.timeControl) && typeof setupClock==='function')setupClock(s.timeControl);
+      G._clockConfigured=true;G.clock={...s.clock};
+    }
     G.moveHistory = s.moveHistory || G.moveHistory || [];
     G.captured = s.captured || G.captured || { w:[], b:[] };
     G.lastMove = s.lastMove || null;
@@ -1467,8 +1538,10 @@ function applyFullSync(s){
 }
 
 function sendHello(){
+  const game=G;
   try{
     import('../auth.js').then(m => {
+      if(!game||G!==game||!game.online||!ChessMP.connected)return;
       const st = m.Auth.getState();
       ChessMP.send({ type:'hello', uid: st.uid || null, name: getPortalNick(st) });
     });
@@ -1482,13 +1555,23 @@ function onHello(d){
     if(d.name) el.textContent = d.name;
     if(G.oppUid){ el.dataset.opc = G.oppUid; el.style.cursor = 'pointer'; el.style.textDecoration = 'underline dotted'; }
   }
+  if(G.playerColor==='w' && G.timeControl>0 && !G._configRepeated){
+    G._configRepeated=true;ChessMP.send({type:'config',time:G.timeControl});
+  }
   if(!G._helloSent){ G._helloSent = true; sendHello(); }   // karşılık ver (1 kez)
 }
 function onRemoteMessage(data){
   if(!data || !G) return;
   if(G.gameEnded && data.type !== 'chat') return;
   if(data.type === 'move' && data.move){
-    if(G.gameEnded || G.syncPending || G.animating || G.state.turn===G.playerColor) return;
+    if(G.gameEnded || G.syncPending) return;
+    if(G.animating){
+      // A fast reply can arrive before our outgoing move's visual animation ends.
+      // Resolve it against the resulting position, not this old board.
+      if(G.state.turn===G.playerColor && !G._queuedOnlineMove)G._queuedOnlineMove=data;
+      return;
+    }
+    if(G.state.turn===G.playerColor)return;
     const mv = resolveLegalMove(G.state,data.move);
     if(!mv) return;
     G.applyingRemote = true;
@@ -1502,18 +1585,26 @@ function onRemoteMessage(data){
   } else if(data.type === 'drawOffer'){
     handleDrawOffer();
   } else if(data.type === 'drawAccept'){
-    G.gameEnded = true;
+    if(!G.drawOfferSent || G.syncPending)return;
+    G.drawOfferSent=false;G.gameEnded = true;
     updateStatus('🤝 BERABERE — Karşılıklı anlaşma', 'draw');
     try{ Sound.draw(); }catch(e){}
     onGameEndDraw();   // beraberlik ödülü
   } else if(data.type === 'drawDecline'){
+    if(!G.drawOfferSent)return;
+    G.drawOfferSent=false;
     updateStatus('Rakip beraberliği reddetti', 'check');
     setTimeout(() => { if(G && !G.gameEnded) updateStatus(''); }, 2000);
   } else if(data.type === 'config'){
-    // host süreyi belirledi → misafir saatini kur
-    if(data.time && data.time > 0){ setupClock(data.time); }
+    if(G.playerColor==='b' && !G._clockConfigured && [60,180,300,600].includes(data.time)){
+      G._clockConfigured=true;setupClock(data.time);
+    }
+  } else if(data.type === 'clockTimeout'){
+    if(G.playerColor==='b' && G.clock && !G.oppLeft && !G.syncPending && ['w','b'].includes(data.color) && typeof data.draw==='boolean'){
+      G.clock[data.color]=0;onTimeout(data.color,data.draw);
+    }
   } else if(data.type === 'chat'){
-    addChatMessage((data.text || '').slice(0, 120), false);
+    if(typeof data.text==='string')addChatMessage(data.text.slice(0,120),false);
   }
 }
 
@@ -1543,6 +1634,10 @@ function finishMove(mv){
       G.anim = null;
       G.animating = false;
       applyAndContinue(mv, isCapture);
+      if(G===game && G._queuedOnlineMove){
+        const queued=G._queuedOnlineMove;G._queuedOnlineMove=null;
+        if(!G.gameEnded && typeof onRemoteMessage==='function')onRemoteMessage(queued);
+      }
     }
   };
   requestAnimationFrame(step);
@@ -1562,6 +1657,7 @@ function applyAndContinue(mv, isCapture){
     if(G.undoStack.length > 100) G.undoStack.shift();
   }
 
+  G.drawOfferSent=false;
   // Notasyonu hamleden ÖNCE (mevcut state ile) üret
   const notation = moveToNotation(G.state, mv);
   const moverColor = G.state.turn;
@@ -1648,14 +1744,14 @@ function applyAndContinue(mv, isCapture){
   maybeAIMove();
 }
 
-function attachChessSession(host,phase){
+function attachChessSession(host,phase,retry){
   if(!G || !host?.appendChild) return;
   G._sessionUI?.destroy();
-  G._sessionUI=mountSessionStatus(host,{game:'chess',mode:'online',onLeave:closeAll,initial:{phase,canRetry:false}});
+  G._sessionUI=mountSessionStatus(host,{game:'chess',mode:'online',onLeave:closeAll,onRetry:retry,initial:{phase,canRetry:false}});
   const board=host.querySelector?.('[data-el="boardWrap"]');
   if(board)host.insertBefore(G._sessionUI.element,board);
 }
-function chessSessionPhase(phase,detail){ G?._sessionUI?.update({phase,detail,canRetry:false}); }
+function chessSessionPhase(phase,detail,canRetry=false){ G?._sessionUI?.update({phase,detail,canRetry}); }
 async function requestChessHint(button){
   if(!G || G.gameEnded || G.aiThinking || G.animating || G._hintPending) return;
   if((G.mode==='ai'||G.mode==='online')&&G.state.turn!==G.playerColor){ updateStatus('Sıra sende değil');return; }
@@ -1830,12 +1926,24 @@ function setupClock(seconds){
 function startClockTick(){
   stopClockTick();
   if(!G || !G.clock) return;
+  const game=G;
   G.clockTimer = setInterval(() => {
-    if(!G || !G.clock || G.gameEnded){ stopClockTick(); return; }
+    if(G!==game)return;
+    if(!G.clock || G.gameEnded){ stopClockTick(); return; }
+    if(G.mode==='online' && (G.oppLeft || G.syncPending || !ChessMP.connected || G.animating)) return;
     const turn = G.state.turn;
     G.clock[turn] = Math.max(0, G.clock[turn] - 1);
     updateClockDisplay();
-    if(G.clock[turn] <= 0){ onTimeout(turn); }
+    if(G.clock[turn] <= 0){
+      if(G.mode==='online'){
+        // The host decides the timeout. The guest's displayed clock is advisory,
+        // so throttling or a temporary disconnect cannot create a second winner.
+        if(G.playerColor!=='w')return;
+        const draw=!hasMatingPotential(G.state.board,turn==='w'?'b':'w');
+        if(ChessMP.send({type:'clockTimeout',color:turn,draw})===false)return;
+      }
+      onTimeout(turn);
+    }
   }, 1000);
 }
 
@@ -1861,10 +1969,10 @@ function updateClockDisplay(){
   if(botEl){ botEl.classList.toggle('active', activeTurn === G.clockBotColor && !G.gameEnded); botEl.classList.toggle('low', G.clock[G.clockBotColor] <= 15); }
 }
 
-function onTimeout(color){
+function onTimeout(color, agreedDraw){
   if(!G || G.gameEnded) return;
   const winner=color==='w'?'b':'w';
-  if(!hasMatingPotential(G.state.board,winner)){
+  if(agreedDraw ?? !hasMatingPotential(G.state.board,winner)){
     updateStatus('⏰ BERABERE — Rakip mat edebilecek materyale sahip değil', 'draw');
     try{ Sound.draw(); }catch(e){}
     onGameEndDraw(); updateClockDisplay(); return;
@@ -2024,12 +2132,11 @@ function offerDraw(){
     }
   } else if(G.mode === 'online'){
     // Online: rakibe teklif gönder
-    if(G.drawOfferSent){ return; }
+    if(G.drawOfferSent || G.oppLeft || G.syncPending){ return; }
+    if(ChessMP.send({type:'drawOffer'})===false){updateStatus('Teklif gönderilemedi. Bağlantıyı kontrol et.','draw');return;}
     G.drawOfferSent = true;
-    ChessMP.send({ type:'drawOffer' });
     updateStatus('🤝 Beraberlik teklif edildi, rakip bekleniyor…', 'thinking');
-    const game = G;
-    setTimeout(() => { if(G === game) G.drawOfferSent = false; }, 3000);
+
   }
 }
 
@@ -2058,7 +2165,7 @@ function handleDrawOffer(){
     ov.remove();
     if(G===game && G.drawOfferOpen===ov) G.drawOfferOpen=false;
     if(G!==game || G.state!==state || G.gameEnded) return;
-    ChessMP.send({ type:'drawAccept' });
+    if(G.oppLeft || G.syncPending || ChessMP.send({type:'drawAccept'})===false){updateStatus('Onay iletilemedi. Maç sürüyor.','draw');return;}
     G.gameEnded = true;
     updateStatus('🤝 BERABERE — Karşılıklı anlaşma', 'draw');
     try{ Sound.draw(); }catch(e){}
@@ -2097,12 +2204,12 @@ function setupChat(root){
   root.querySelector('[data-act="chatSend"]').addEventListener('click', () => {
     const inp = root.querySelector('[data-el="chatInput"]');
     const txt = inp.value.trim();
-    if(txt){ sendChat(txt); inp.value = ''; }
+    if(txt && sendChat(txt)) inp.value='';
   });
   root.querySelector('[data-el="chatInput"]').addEventListener('keydown', (e) => {
     if(e.key === 'Enter'){
       const txt = e.target.value.trim();
-      if(txt){ sendChat(txt); e.target.value = ''; }
+      if(txt && !e.isComposing && sendChat(txt)) e.target.value='';
     }
   });
 }
@@ -2110,8 +2217,8 @@ function setupChat(root){
 function sendChat(text){
   if(!G || !G.online) return;
   text = (text || '').slice(0, 120);
-  ChessMP.send({ type:'chat', text });
-  addChatMessage(text, true);
+  if(ChessMP.send({type:'chat',text})===false)return false;
+  addChatMessage(text,true);return true;
 }
 
 function addChatMessage(text, mine){
@@ -2252,7 +2359,7 @@ function renderReviewFrame(frame,host){
 }
 
 function injectCSS(){
-  if(!document.getElementById('chess-premium-css')){ const link=document.createElement('link');link.id='chess-premium-css';link.rel='stylesheet';link.href=new URL('../../css/chess-premium.css',import.meta.url).href;document.head.appendChild(link); }
+  if(!document.getElementById('chess-premium-css')){ const link=document.createElement('link');link.id='chess-premium-css';link.rel='stylesheet';link.href=new URL('../../css/chess-premium.css?v=157',import.meta.url).href;document.head.appendChild(link); }
   if(document.getElementById('chess-css')) return;
   const s = document.createElement('style');
   s.id = 'chess-css';
