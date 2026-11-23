@@ -223,7 +223,7 @@ export function openDailyWheel(){
       rotor.style.transform = `rotate(${finalRot}deg)`;
       try{ wheelSpinSound(); }catch(e){}
       setTimeout(async () => {
-        let pendingNotice;
+        let pendingNotice, awaitingEgg = false;
         try{
           if(Auth.getState().uid !== st.uid || Auth.getState().status !== 'google') throw new Error('Hesap değişti');
           updateWheelResult(claimKey, '⏳ Ödül kaydediliyor…', true);
@@ -236,7 +236,12 @@ export function openDailyWheel(){
           const result = await _S.claimWheelReward(day, seg, st.uid);
           if(!result || (!result.claimed && !result.alreadyClaimed) || !result.receipt) throw new Error('Ödül doğrulanamadı');
           const receipt = result.receipt;
-          if(receipt.type === 'egg') await grantWheelEgg(st.uid, receipt.eggId);
+          if(receipt.type === 'egg'){
+            awaitingEgg = true;
+            updateWheelResult(claimKey, '⏳ Yumurta teslim ediliyor…', true);
+            await grantWheelEgg(st.uid, receipt.eggId);
+            awaitingEgg = false;
+          }
           // A recovered receipt may belong to a different segment than this tab requested.
           const actualIndex = WHEEL_SEGMENTS.findIndex(candidate => candidate.type === receipt.type &&
             (candidate.type === 'egg' || candidate.amount * (receipt.vipMult || 1) === receipt.amount));
@@ -263,8 +268,10 @@ export function openDailyWheel(){
           }, 1800);
         }catch(error){
           if(Auth.getState().uid === st.uid){
-            _toast(showRewardError(error), true);
-            updateWheelResult(claimKey, 'Yeniden dene', false);
+            _toast(awaitingEgg
+              ? 'Kaju ödülün kayıtlı. Kozmo yumurtası teslim edilemedi; yeniden denemek Kaju ödülünü tekrarlamaz.'
+              : showRewardError(error), true);
+            updateWheelResult(claimKey, awaitingEgg ? 'Yumurtayı yeniden al' : 'Yeniden dene', false);
           }
           spinning = false;
         }finally{ if(pendingNotice) clearTimeout(pendingNotice); pendingSpins.delete(claimKey); }

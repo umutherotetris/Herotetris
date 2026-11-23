@@ -469,21 +469,32 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
 // All wheel sectors share one daily receipt. The selected outcome and its
 // Kaju/XP credit commit together, so retrying cannot reroll or change sectors.
 // Egg delivery is a recoverable second step keyed by receipt.eggId in Kozmos.
+function isWheelReward(type, amount){
+  return type === 'kaju' ? [30,50,120,300].includes(amount)
+    : type === 'xp' ? [40,100].includes(amount)
+    : type === 'jackpot' ? amount === 750 : type === 'egg' && amount === 1;
+}
+function wheelReceipt(value, day){
+  if(value?.kind !== 'wheel' || ![1,2].includes(value.vipMult) || !Number.isSafeInteger(value.amount)) return null;
+  if(value.type === 'egg') return value.eggId === 'daily_spin_' + day && value.amount === 50 * value.vipMult ? value : null;
+  return isWheelReward(value.type, value.amount / value.vipMult) ? value : null;
+}
 export async function claimWheelReward(day, segment, uid = player.uid){
   const current = () => !!uid && Auth.getState().uid === uid && Auth.getState().status === 'google';
-  if(!current()) return {claimed:false, complete:false, reason:'identity'};
+  const wrongAccount = () => ({claimed:false, complete:false, reason:'identity'});
+  if(!current()) return wrongAccount();
   const dayTime = typeof day === 'string' ? Date.parse(day+'T00:00:00Z') : NaN;
   if(typeof day !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(dayTime) || new Date(dayTime).toISOString().slice(0,10) !== day) return {claimed:false, complete:false, reason:'invalid-reward'};
   const type = segment?.type, requested = segment?.amount;
-  const valid = type === 'kaju' ? [30,50,120,300].includes(requested)
-    : type === 'xp' ? [40,100].includes(requested)
-    : type === 'jackpot' ? requested === 750 : type === 'egg' && requested === 1;
-  if(!valid) return {claimed:false, complete:false, reason:'invalid-reward'};
+  if(!isWheelReward(type, requested)) return {claimed:false, complete:false, reason:'invalid-reward'};
   const receiptId = 'spin_' + day, observed = walletObserved();
-  let rejected = 'unavailable';
-  const result = await runTransaction(ref(db, 'users/' + uid), profile => {
+  const profileRef = ref(db, 'users/' + uid);
+  let rejected = 'unavailable', cold = false, sawProfile = false;
+  const attempt = () => runTransaction(profileRef, profile => {
     if(!current()){ rejected='identity'; return; }
+    if(profile == null && !sawProfile) cold = true;
     if(!profile || profile.deleted || typeof profile!=='object' || Array.isArray(profile))return;
+    sawProfile = true;
     if(profile.heroRewardClaims?.[receiptId]) return;
     let vip = profile.cosmetics?.vip;
     try{ if(typeof vip === 'string') vip = JSON.parse(vip); }catch(e){ vip = null; }
@@ -509,16 +520,38 @@ export async function claimWheelReward(day, segment, uid = player.uid){
       if(balance === null){ rejected='invalid-profile'; return; }
       if(balance + amount > KAJU_MAX){ rejected='balance-limit'; return; }
       fields.kaju = balance + amount;
+      fields.heroWalletRevision = nextWalletRevision(profile);
       if(type === 'egg') receipt.eggId = 'daily_spin_' + day;
     }
-    return {...profile, ...fields, heroWalletRevision:nextWalletRevision(profile), heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
+    return {...profile, ...fields, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
   }, {applyLocally:false});
-  if(!current()) return {claimed:false, complete:false, reason:'identity'};
-  const confirmed = result.committed ? result.snapshot : await get(ref(db, 'users/' + uid));
-  if(!current()) return {claimed:false, complete:false, reason:'identity'};
-  const profile = confirmed.val() || {};
-  const receipt = profile.heroRewardClaims?.[receiptId];
-  if(!receipt || receipt.kind !== 'wheel' || !Number.isSafeInteger(receipt.amount) || receipt.amount <= 0 || !['kaju','jackpot','xp','egg'].includes(receipt.type)) return {claimed:false, complete:false, reason:rejected};
+  let result, profile;
+  try{
+    result = await attempt();
+    if(!current()) return wrongAccount();
+    profile = (result.committed ? result.snapshot : await get(profileRef)).val();
+    if(!current()) return wrongAccount();
+    // On a cold SDK cache the first callback can see null and abort even though
+    // the profile exists. Warm it once and retry only the same atomic claim.
+    if(!result.committed && cold && !sawProfile && profile && !profile.deleted && !profile.heroRewardClaims?.[receiptId]){
+      result = await attempt();
+      if(!current()) return wrongAccount();
+      profile = (result.committed ? result.snapshot : await get(profileRef)).val();
+    }
+  }catch(error){
+    if(!current()) return wrongAccount();
+    // A lost acknowledgement is not a reason to write again. Reconcile only
+    // the exact existing receipt; an actual permission denial stays a denial.
+    let receipt;
+    try{ receipt = wheelReceipt((await get(ref(db, 'users/' + uid + '/heroRewardClaims/' + receiptId))).val(), day); }
+    catch(readError){}
+    if(!current()) return wrongAccount();
+    if(!receipt) throw error;
+    return {claimed:false, alreadyClaimed:true, receipt, amount:receipt.amount, complete:receipt.type !== 'egg'};
+  }
+  if(!current()) return wrongAccount();
+  const receipt = wheelReceipt(profile?.heroRewardClaims?.[receiptId], day);
+  if(!receipt) return {claimed:false, complete:false, reason:rejected};
   const balance = finiteAmount(profile.kaju);
   if(player.uid === uid){
     applyWalletSnapshot(uid, profile, observed);

@@ -53,9 +53,11 @@ for(const [roll,type,amount]of [[.01,'kaju',50],[.24,'xp',40],[.46,'kaju',120],[
  assert.equal(f.storage.get(spinKey()),undefined);assert.equal(f.doc.getElementById('wheelSpinBtn').disabled,false);assert.ok(!f.toasts.some(t=>t.message.includes('kazandın')),'nonlevelup-style false result is not a reward acknowledgment');groups++;
 }
 {
- const f=fixture();f.setRoll(.94);let attempts=0,deliveries=[];f.setEgg(async(uid,id)=>{deliveries.push([uid,id]);return ++attempts>1;});
+ const f=fixture();f.setRoll(.94);let attempts=0,deliveries=[];f.setEgg(async(uid,id)=>{deliveries.push([uid,id]);if(++attempts===1)throw Object.assign(Error('denied'),{code:'PERMISSION_DENIED'});return true;});
  f.setClaim(async()=>({claimed:attempts===0,alreadyClaimed:attempts>0,receipt:{type:'egg',amount:50,vipMult:1,eggId:'daily_spin_2026-10-22'}}));
  await start(f);assert.equal(f.storage.get(spinKey()),undefined);assert.ok(!f.toasts.some(t=>t.message.includes('kazandın')));
+ assert.equal(f.doc.getElementById('wheelSpinBtn').textContent,'Yumurtayı yeniden al');
+ assert.ok(f.toasts.some(t=>t.error&&t.message.includes('Kaju ödülün kayıtlı')));
  await f.doc.getElementById('wheelSpinBtn').click();await f.fire(4100);assert.equal(f.storage.get(spinKey()),'1');assert.deepEqual(deliveries,[['alice','daily_spin_2026-10-22'],['alice','daily_spin_2026-10-22']]);groups++;
 }
 {

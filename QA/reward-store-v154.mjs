@@ -11,8 +11,8 @@ const clone=value=>value==null?null:JSON.parse(JSON.stringify(value));
 const snapshot=value=>({val:()=>clone(value),exists:()=>value!=null});
 function fixture(profile={kaju:100,level:1,xp:{level:1,xp:10,totalXP:10}}){
  let uid='alice',queue=Promise.resolve();
- const records=new Map([['users/alice',clone(profile)]]),writes=[],logs=[],events=[],options=[];
- const hooks={reject:false,before:null,after:null,nullFirst:false,abortSnapshot:null,getReject:false};
+ const records=new Map([['users/alice',clone(profile)]]),writes=[],logs=[],events=[],options=[],reads=[];
+ const hooks={reject:false,before:null,after:null,nullFirst:false,coldAbort:false,abortSnapshot:null,getReject:false,beforeGet:null};
  const context=vm.createContext({
   console,Date,Number,Object,Array,Math,Promise,KAJU_MAX:999999999,
   Auth:{getState:()=>({uid,status:uid?'google':'offline'})},db:{},
@@ -25,6 +25,11 @@ function fixture(profile={kaju:100,level:1,xp:{level:1,xp:10,totalXP:10}}){
    const task=queue.then(async()=>{
     if(hooks.before)await hooks.before();
     if(hooks.reject){const error=new Error('PERMISSION_DENIED');error.code='PERMISSION_DENIED';throw error;}
+    if(hooks.coldAbort){
+     hooks.coldAbort=false;
+     assert.equal(update(null),undefined);
+     return {committed:false,snapshot:snapshot(null)};
+    }
     if(hooks.nullFirst)update(null);
     const next=update(clone(records.get(path)));
     if(next===undefined)return {committed:false,snapshot:snapshot(hooks.abortSnapshot??records.get(path))};
@@ -33,12 +38,18 @@ function fixture(profile={kaju:100,level:1,xp:{level:1,xp:10,totalXP:10}}){
     return {committed:true,snapshot:snapshot(records.get(path))};
    });queue=task.catch(()=>{});return task;
   },
-  get:async path=>{if(hooks.getReject)throw new Error('Read denied');return snapshot(records.get(path));},
+  get:async path=>{
+   reads.push(path);
+   if(hooks.beforeGet)await hooks.beforeGet(path);
+   if(hooks.getReject)throw new Error('Read denied');
+   const [parent,value]=[...records].find(([key])=>path===key||path.startsWith(key+'/')) || [];
+   return snapshot(parent && path===parent ? value : parent && path.slice(parent.length+1).split('/').reduce((at,key)=>at?.[key],value));
+  },
   set:async(path,value)=>{records.set(path,clone(value));writes.push(path);},
   logKaju:(...args)=>logs.push(args),emit:()=>events.push('emit'),_trackQuestSafe:(...args)=>events.push(args)
  });
  vm.runInContext(code,context);
- return {context,records,writes,logs,events,hooks,options,setUid:value=>{uid=value;}};
+ return {context,records,writes,logs,events,hooks,options,reads,setUid:value=>{uid=value;}};
 }
 let groups=0;
 {
@@ -95,7 +106,44 @@ let groups=0;
  const f=fixture();f.hooks.reject=true;
  await assert.rejects(f.context.claimWheelReward('2026-10-22',{type:'xp',amount:40},'alice'),e=>e.code==='PERMISSION_DENIED');
  assert.equal(f.context.player.xp,10);assert.equal(f.records.get('users/alice').heroRewardClaims,undefined);
+ assert.equal(f.options.length,1,'denied write is not repeated or bypassed');
+ assert.deepEqual(f.reads,['users/alice/heroRewardClaims/spin_2026-10-22']);
  f.hooks.reject=false;const r=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:120},'alice');assert.equal(r.claimed,true);assert.equal(r.amount,120);groups++;
+}
+{
+ const f=fixture({kaju:100,level:1,xp:{level:1,xp:10,totalXP:10},heroWalletRevision:7});
+ f.hooks.coldAbort=true;
+ const r=await f.context.claimWheelReward('2026-10-22',{type:'xp',amount:40},'alice');
+ assert.equal(r.claimed,true);
+ assert.equal(f.options.length,2,'cold null abort retries after a confirmed profile read');
+ assert.equal(f.writes.length,1);
+ assert.equal(f.records.get('users/alice').heroWalletRevision,7,'an XP prize does not touch the Kaju revision');
+ groups++;
+}
+{
+ const f=fixture();f.hooks.after=()=>{throw Object.assign(Error('Connection stopped before acknowledgement'),{code:'DISCONNECTED'});};
+ const r=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:120},'alice');
+ assert.equal(r.alreadyClaimed,true);
+ assert.equal(r.receipt.amount,120);
+ assert.equal(f.writes.length,1);
+ assert.equal(f.options.length,1,'a lost acknowledgement is reconciled, not replayed');
+ assert.equal(f.records.get('users/alice').kaju,220);
+ groups++;
+}
+{
+ const f=fixture({kaju:100,heroRewardClaims:{'spin_2026-10-22':{kind:'wheel',type:'egg',amount:50,vipMult:1,eggId:'wrong-day'}}});
+ f.hooks.reject=true;
+ await assert.rejects(f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice'),e=>e.code==='PERMISSION_DENIED');
+ assert.equal(f.writes.length,0,'malformed receipt does not recover or consume a claim');
+ groups++;
+}
+{
+ const f=fixture({kaju:150,heroRewardClaims:{'spin_2026-10-22':{kind:'wheel',type:'kaju',amount:50,vipMult:1}}});
+ f.hooks.reject=true;f.hooks.beforeGet=()=>f.setUid('bob');
+ const r=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:120},'alice');
+ assert.equal(r.reason,'identity');
+ assert.equal(f.writes.length,0);
+ groups++;
 }
 {
  const f=fixture({kaju:999999990});
