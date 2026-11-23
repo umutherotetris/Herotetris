@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Hero Portal</title>
+  <defs>
+    <linearGradient id="hero-sapphire" x1="46" y1="13" x2="465" y2="526" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4A71FF"/>
+      <stop offset=".46" stop-color="#2455F2"/>
+      <stop offset="1" stop-color="#142EAA"/>
+    </linearGradient>
+    <linearGradient id="hero-prism" x1="178" y1="273" x2="335" y2="228" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B4FAFF"/>
+      <stop offset="1" stop-color="#60DCFF"/>
+    </linearGradient>
+    <linearGradient id="hero-ivory" x1="256" y1="124" x2="256" y2="389" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E8F1FF"/>
+    </linearGradient>
+    <radialGradient id="hero-glow" cx="155" cy="54" r="397" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A3DCFF" stop-opacity=".37"/>
+      <stop offset="1" stop-color="#7FC8FF" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="hero-tile-mask"><rect width="512" height="512" rx="120"/></clipPath>
+  </defs>
+  <g clip-path="url(#hero-tile-mask)">
+    <rect width="512" height="512" fill="url(#hero-sapphire)"/>
+    <rect width="512" height="512" fill="url(#hero-glow)"/>
+    <path d="M0 368 474 0h38v97L0 487Z" fill="#C5EDFF" opacity=".065"/>
+    <rect x="3" y="3" width="506" height="506" rx="117" fill="none" stroke="#D1E5FF" stroke-opacity=".36" stroke-width="6"/>
+    <g fill="#102379" opacity=".25" transform="translate(0 7)">
+      <rect x="128" y="126" width="73" height="260" rx="32"/>
+      <rect x="311" y="126" width="73" height="260" rx="32"/>
+      <path d="M177 244 333 214v54l-156 30Z"/>
+    </g>
+    <path d="M177 244 333 214v54l-156 30Z" fill="url(#hero-prism)"/>
+    <g fill="url(#hero-ivory)">
+      <rect x="128" y="126" width="73" height="260" rx="32"/>
+      <rect x="311" y="126" width="73" height="260" rx="32"/>
+    </g>
+  </g>
+</svg>

@@ -4,7 +4,7 @@ umask 077
 
 android_src=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo=$(dirname "$android_src")
-apk_out="${1:-$(dirname "$repo")/Hero-Portal-v157.apk}"
+apk_out="${1:-$(dirname "$repo")/Hero-Portal-v158.apk}"
 sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 sdk_jar="${ANDROID_JAR:-$sdk/platforms/android-36/android.jar}"
 tools="${ANDROID_BUILD_TOOLS:-$sdk/build-tools/36.0.0}"
@@ -17,17 +17,9 @@ for tool in aapt2 d8 zipalign apksigner; do test -x "$tools/$tool"; done
 
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
-mkdir -p "$work/generated" "$work/classes" "$work/dex" "$work/res/drawable-xxxhdpi"
+mkdir -p "$work/generated" "$work/classes" "$work/dex" "$work/res/mipmap-xxxhdpi"
 cp -R -- "$android_src/res/." "$work/res/"
-symbol="$work/res/drawable-xxxhdpi/hero_portal.png"
-if command -v inkscape >/dev/null; then
-    inkscape "$repo/assets/hero-portal.svg" --export-width=192 --export-height=192 \
-        --export-filename="$symbol"
-elif command -v magick >/dev/null; then
-    magick -background none "$repo/assets/hero-portal.svg" -resize 192x192 -strip "PNG32:$symbol"
-else
-    convert -background none "$repo/assets/hero-portal.svg" -resize 192x192 -strip "PNG32:$symbol"
-fi
+cp -- "$repo/assets/hero-icon-192-v158.png" "$work/res/mipmap-xxxhdpi/hero_portal.png"
 
 "$tools/aapt2" compile --dir "$work/res" -o "$work/resources.zip"
 "$tools/aapt2" link -o "$work/unsigned.apk" --manifest "$android_src/AndroidManifest.xml" \

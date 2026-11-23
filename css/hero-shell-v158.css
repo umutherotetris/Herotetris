@@ -1,0 +1,215 @@
+/* Porcelain surfaces, sapphire actions, and distinct game illustrations.
+   Shell-specific tokens leave the four in-game palettes and jewels intact. */
+body.portal.lobby.hero-shell {
+  --hp-ink:#14234c; --hp-muted:#576583; --hp-accent:#2452e7;
+  --hp-line:#dbe4f4; --hp-canvas:#f3f7ff; --hp-surface:#fff;
+  --hp-soft:#eaf0ff; --hp-shadow:0 10px 30px #23417512;
+  --hp-width:1264px; --hp-gutter:clamp(16px,3.2vw,42px);
+  color:var(--hp-ink); background:#f3f7ff; background-image:none;
+  min-height:100dvh; height:auto; overflow-x:clip;
+}
+.hero-shell :is(#app,.portal-header) {
+  --portal-bg:var(--hp-canvas); --portal-ink:var(--hp-ink);
+  --portal-muted:var(--hp-muted); --portal-surface:var(--hp-surface);
+  --portal-raised:var(--hp-soft); --portal-border:var(--hp-line);
+  --portal-accent:var(--hp-accent); --accent-on:#fff;
+  color-scheme:light; min-width:0;
+}
+.portal.lobby.hero-shell > .portal-header {
+  max-width:none; width:100%; margin:0; padding:max(15px,env(safe-area-inset-top)) max(var(--hp-gutter),calc((100vw - var(--hp-width))/2 + var(--hp-gutter))) 15px;
+  min-height:77px; display:flex; align-items:center; justify-content:flex-start; gap:clamp(12px,1.7vw,25px);
+  border:0; border-bottom:1px solid var(--hp-line); background:#fff;
+}
+.portal.lobby.hero-shell .portal-brand {
+  position:static; margin:0; display:flex; align-items:center; gap:10px;
+  flex-shrink:0; min-height:44px;
+}
+.portal.lobby.hero-shell .brand-mark { width:42px; height:42px; background:none; border:0; border-radius:12px; flex:none; }
+.hero-shell .brand-mark img { display:block; width:100%; height:100%; }
+.portal.lobby.hero-shell .brand-name { display:flex; flex-direction:row; align-items:baseline; gap:.2em; font:850 20px/1 var(--font-body); letter-spacing:-.06em; color:var(--hp-ink); }
+.portal.lobby.hero-shell .brand-name > span { font:inherit; letter-spacing:inherit; color:var(--hp-accent); }
+.portal.lobby.hero-shell .header-middle { flex:0 0 auto; order:3; }
+.portal.lobby.hero-shell .search-trigger { gap:8px; min-width:0; min-height:44px; border:1px solid var(--hp-line); padding:0 10px; border-radius:12px; background:#f6f8fd; color:var(--hp-muted); font-size:13px; font-weight:700; }
+.hero-shell .search-trigger > svg { width:19px; height:19px; flex:none; }
+.portal.lobby.hero-shell .search-trigger .search-label { font:inherit; white-space:nowrap; }
+.portal.lobby.hero-shell .search-trigger > kbd { color:var(--hp-muted); border-color:var(--hp-line); background:#fff; margin:0 0 0 6px; }
+.portal.lobby.hero-shell .header-link { order:4; flex:0 1 auto; margin:0; min-width:44px; min-height:44px; color:var(--hp-ink); font-weight:750; }
+.portal.lobby.hero-shell .header-avatar { width:38px; height:38px; flex:none; background:#edf2ff; color:#254acb; }
+.hero-shell #headerPlayerName { overflow:hidden; text-overflow:ellipsis; max-width:9ch; }
+/* Parking slots still use the original 34px dimensions declared in aurora.css. */
+.portal.lobby.hero-shell .jewel-parking { margin-left:auto; order:2; gap:8px; min-width:0; }
+.portal.lobby.hero-shell .bottom-nav { position:static; width:auto; height:auto; inset:auto; transform:none; flex-direction:row; justify-content:flex-start; gap:3px; padding:0; border:0; background:none; box-shadow:none; z-index:10; }
+.portal.lobby.hero-shell .bottom-nav::after { content:none; }
+.portal.lobby.hero-shell .nav-item { width:auto; min-height:44px; gap:7px; padding:7px 10px; border-radius:11px; border:0; color:var(--hp-muted); transition:background .16s,color .16s; }
+.portal.lobby.hero-shell .nav-item::before { content:none; }
+.portal.lobby.hero-shell .nav-item:hover,.portal.lobby.hero-shell .nav-item.active { background:#eaf0ff; color:#193ebd; }
+.portal.lobby.hero-shell .ni-ico,.portal.lobby.hero-shell .ni-ico svg { width:18px; height:18px; }
+.portal.lobby.hero-shell .ni-lbl { font-size:12px; font-weight:750; color:inherit; line-height:1.2; }
+.portal.lobby.hero-shell > #app { width:100%; max-width:var(--hp-width); padding:28px var(--hp-gutter) 24px; margin:0 auto; min-height:calc(100vh - 77px); }
+.hero-shell .studio-hero {
+  position:relative; isolation:isolate; overflow:hidden; display:grid; grid-template-columns:1fr 1fr; align-items:center;
+  min-height:350px; border:1px solid #cddaf6; border-radius:26px;
+  background:linear-gradient(110deg,#f8fcff 0%,#e9f2ff 56%,#c8e1fc 100%);
+  box-shadow:0 15px 42px #2e5ca718;
+}
+.hero-shell .studio-hero-art { position:absolute; top:0; right:0; bottom:0; width:64%; pointer-events:none; }
+.hero-shell .studio-hero-art img { width:100%; height:100%; object-fit:cover; object-position:54% 57%; display:block; mask-image:linear-gradient(to right,transparent,#000 29%); }
+.hero-shell .studio-hero-copy { position:relative; padding:34px clamp(26px,4vw,52px); z-index:1; }
+.hero-shell :is(.studio-kicker,.studio-section-tag) { color:#38568d; font:850 11px/1.3 var(--font-body); letter-spacing:.135em; }
+.hero-shell .studio-kicker { display:inline-flex; align-items:center; gap:7px; background:#e5eeff; border:1px solid #d6e2fa; border-radius:999px; padding:7px 10px; margin-bottom:15px; }
+.hero-shell .studio-kicker span { color:var(--hp-accent); font-size:15px; line-height:1; }
+.hero-shell .studio-hero h1 { font:850 clamp(44px,5.05vw,74px)/.99 var(--font-body); letter-spacing:-.068em; margin:0 0 17px; color:#102044; }
+.hero-shell .studio-hero h1 span { color:#2a51cf; }
+.hero-shell .studio-hero-copy > p:not(.studio-kicker) { max-width:41ch; color:#4a5d82; font:560 15px/1.6 var(--font-body); }
+.hero-shell .studio-hero-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:23px; }
+.hero-shell .studio-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid transparent; border-radius:12px; min-height:46px; padding:0 15px; font:800 13px/1.3 var(--font-body); white-space:nowrap; }
+.hero-shell .studio-button svg { width:15px; height:15px; }
+.hero-shell .studio-button.primary { background:#244ddc; color:#fff; box-shadow:0 6px 13px #224ed239; }
+.hero-shell .studio-button.primary:hover { background:#1c3bae; }
+.hero-shell .studio-button.quiet { background:#ffffffb0; border-color:#cbd9f3; color:#254479; }
+.hero-shell .studio-button.quiet:hover { background:#fff; }
+.portal.lobby.hero-shell .lobby-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(240px,265px); gap:27px; align-items:start; margin-top:31px; }
+.portal.lobby.hero-shell .play-column,.portal.lobby.hero-shell .player-section { min-width:0; padding:0; margin:0; display:block; }
+.portal.lobby.hero-shell .game-library { padding:0; scroll-margin-top:18px; }
+.portal.lobby.hero-shell .library-heading,.portal.lobby.hero-shell .rail-heading { margin:0 0 14px; display:flex; gap:12px; align-items:end; justify-content:space-between; padding:0; border:0; }
+.portal.lobby.hero-shell :is(.library-heading,.rail-heading,.studio-discover-heading) h2 { font:850 27px/1.18 var(--font-body); letter-spacing:-.052em; color:var(--hp-ink); margin-top:4px; }
+.hero-shell #gameCount { color:var(--hp-muted); background:#e9effb; padding:5px 9px; border-radius:100px; font-size:12px; white-space:nowrap; letter-spacing:0; }
+.portal.lobby.hero-shell .game-filters { display:flex; flex-wrap:wrap; gap:5px; border:0; padding:0; margin:0 0 14px; }
+.portal.lobby.hero-shell .game-filters button { min-height:40px; padding:7px 12px; border:1px solid transparent; border-radius:10px; color:var(--hp-muted); background:none; font:750 13px/1.15 var(--font-body); white-space:nowrap; }
+.portal.lobby.hero-shell .game-filters button:is([aria-pressed=true],:hover) { background:#fff; color:#2344bd; border-color:var(--hp-line); box-shadow:0 2px 5px #2949890e; }
+.portal.lobby.hero-shell .games-premium { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; padding:0; margin:0; }
+.portal.lobby.hero-shell .game-pc { display:flex; flex-direction:column; align-items:stretch; padding:0; margin:0; min-width:0; min-height:0; border:1px solid var(--hp-line); border-radius:18px; background:#fff; color:var(--hp-ink); box-shadow:var(--hp-shadow); overflow:visible; isolation:isolate; }
+.portal.lobby.hero-shell .game-pc::before,.portal.lobby.hero-shell .game-pc::after { content:none; }
+.portal.lobby.hero-shell .game-pc:hover { border-color:#b5c5ea; box-shadow:0 14px 30px #284e9c20; transform:translateY(-3px); }
+.hero-shell .game-pc[data-game-card=tetris] { --hp-art1:#e5edff; --hp-art2:#bbcdfb; --hp-game:#1c4ac6; }
+.hero-shell .game-pc[data-game-card=chess] { --hp-art1:#e9e6ff; --hp-art2:#c8bef2; --hp-game:#5a3daf; }
+.hero-shell .game-pc[data-game-card=tavla] { --hp-art1:#e6f6f4; --hp-art2:#b9e3dc; --hp-game:#166452; }
+.hero-shell .game-pc[data-game-card=kelime] { --hp-art1:#fff3e7; --hp-art2:#f4d3b3; --hp-game:#87431f; }
+.hero-shell .studio-game-art { display:grid; place-items:center; min-width:0; height:145px; overflow:hidden; border-radius:17px 17px 0 0; background:radial-gradient(ellipse at 46% 8%,#fff9,transparent 72%),linear-gradient(145deg,var(--hp-art1),var(--hp-art2)); }
+.hero-shell .studio-game-art svg { display:block; width:min(100%,240px); height:100%; }
+.hero-shell .aurora-card-top { position:absolute; inset:8px 7px auto 8px; z-index:1; display:flex; justify-content:space-between; gap:2px; align-items:flex-start; }
+.hero-shell .aurora-category { display:inline-flex; align-items:center; justify-content:center; min-height:26px; padding:3px 7px; border:1px solid #fff9; background:#ffffffd8; border-radius:7px; color:var(--hp-game); font:850 10px/1.15 var(--font-body); }
+.portal.lobby.hero-shell .favorite-game { display:grid; place-items:center; width:39px; height:39px; min-width:39px; min-height:39px; padding:0; font-size:25px; line-height:1; color:#43557d; border:1px solid #ffffffa3; border-radius:11px; background:#ffffffe8; box-shadow:0 2px 8px #243a7116; }
+.portal.lobby.hero-shell .favorite-game[aria-pressed=true] { color:#874711; background:#fff0d1; border-color:#f1ce88; }
+.hero-shell .aurora-card-content { display:flex; flex:1; flex-direction:column; padding:13px 12px 12px; margin:0; }
+.hero-shell .aurora-card-content h3 { color:var(--hp-ink); font:850 20px/1.16 var(--font-body); letter-spacing:-.045em; overflow-wrap:anywhere; }
+.hero-shell .aurora-card-content > p { color:var(--hp-muted); font:600 12px/1.47 var(--font-body); margin:5px 0 10px; }
+.portal.lobby.hero-shell .card-actions { display:flex; align-items:center; margin:auto 0 0; gap:6px; border:0; }
+.portal.lobby.hero-shell .card-play,.portal.lobby.hero-shell .game-guide-button { display:flex; align-items:center; justify-content:center; min-height:42px; padding:6px 8px; gap:6px; border:1px solid var(--hp-line); border-radius:10px; font:850 13px/1.2 var(--font-body); box-shadow:none; color:#284cc6; background:#edf2ff; }
+.portal.lobby.hero-shell .card-play { flex:1; background:#edf2ff; color:#2443ae; border-color:#e4eafc; text-transform:none; }
+.portal.lobby.hero-shell .card-play span { font-size:9px; }
+.portal.lobby.hero-shell .game-guide-button { flex:none; width:42px; background:white; color:#57698c; }
+.portal.lobby.hero-shell .card-play:hover,.portal.lobby.hero-shell .card-play:focus-visible { background:#254cd5; color:#fff; }
+.portal.lobby.hero-shell .game-guide-button:hover { background:#edf2ff; color:#2443ae; }
+.portal.lobby.hero-shell .recent-game { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1px 12px; align-items:center; width:100%; margin:15px 0 0; padding:12px 16px; border:1px solid var(--hp-line); border-radius:14px; background:#fff; min-height:60px; }
+.portal.lobby.hero-shell .recent-game > span:first-child { font:700 11px/1.35 var(--font-body); color:var(--hp-muted); }
+.portal.lobby.hero-shell .recent-game strong { grid-column:1; font:850 15px/1.25 var(--font-body); color:var(--hp-ink); }
+.portal.lobby.hero-shell .recent-game .studio-recent-play { grid-area:1/2/3/3; display:grid; place-items:center; color:var(--hp-accent); background:#edf2ff; width:34px; height:34px; border-radius:10px; font-size:12px; }
+.portal.lobby.hero-shell .collection-empty,.portal.lobby.hero-shell .portal-status { color:var(--hp-ink); background:#fff; border-color:var(--hp-line); }
+.portal.lobby.hero-shell .player-layout { display:grid; grid-template-columns:1fr; gap:10px; border:1px solid var(--hp-line); background:#fff; box-shadow:var(--hp-shadow); padding:12px; border-radius:18px; }
+.portal.lobby.hero-shell :is(.auth-card,.progress-panel) { background:none; border:0; box-shadow:none; padding:0; color:var(--hp-ink); }
+.portal.lobby.hero-shell .auth-guest { padding:4px 4px 2px; display:grid; grid-template-columns:34px minmax(0,1fr); gap:8px; align-items:center; }
+.portal.lobby.hero-shell .auth-guest-icon { grid-column:1; grid-row:1; width:34px; height:34px; display:grid; place-items:center; margin:0; font-size:18px; border-radius:10px; background:#e9efff; color:#2d55cf; border:0; box-shadow:none; }
+.hero-shell .auth-guest-copy { min-width:0; }
+.portal.lobby.hero-shell .auth-guest-title { margin:0; font:850 15px/1.2 var(--font-body); color:var(--hp-ink); }
+.portal.lobby.hero-shell .auth-guest-sub { margin:3px 0 0; font:650 11px/1.45 var(--font-body); color:var(--hp-muted); }
+.portal.lobby.hero-shell .auth-google-btn { grid-column:1/-1; width:100%; min-height:44px; background:#244ddc; color:#fff; border:0; border-radius:10px; font-size:12px; font-weight:800; box-shadow:none; }
+.portal.lobby.hero-shell .auth-err { grid-column:1/-1; color:#9b3026; }
+.portal.lobby.hero-shell .player-layout #authUser { flex-wrap:wrap; min-height:0; height:auto; padding:4px 3px 7px; gap:8px; }
+.portal.lobby.hero-shell :is(.pc-name,.auth-kaju-val) { color:var(--hp-ink); }
+.portal.lobby.hero-shell :is(.auth-user-lv,.auth-online-txt,.auth-kaju-lbl) { color:var(--hp-muted); }
+.portal.lobby.hero-shell .auth-kaju-send { color:#2443ae; border:1px solid #d5e0fc; background:#eaf0ff; min-height:32px; }
+.portal.lobby.hero-shell .stats-bar { display:grid; grid-template-columns:1fr 1fr; gap:5px; grid-auto-rows:auto; padding:0; margin:0; background:none; border:0; box-shadow:none; }
+.portal.lobby.hero-shell .stats-bar .stat { padding:7px 5px; min-width:0; background:#f5f7fc; border:1px solid #eaf0fb; border-radius:9px; text-align:center; }
+.portal.lobby.hero-shell .stat-v { color:#294488; font:850 14px/1.1 var(--font-body); }
+.portal.lobby.hero-shell .stat-l { color:var(--hp-muted); font:700 9px/1.35 var(--font-body); letter-spacing:0; text-transform:none; margin-top:3px; }
+.portal.lobby.hero-shell .xp-bar-wrap { color:var(--hp-ink); border:0; background:none; padding:0; margin:8px 0 0; box-shadow:none; }
+.portal.lobby.hero-shell .xp-bar-track { background:#e6ecfa; border:0; box-shadow:none; }
+.portal.lobby.hero-shell .xp-bar-fill { background:linear-gradient(90deg,#4370f6,#14b7d7); box-shadow:none; }
+.portal.lobby.hero-shell :is(.xp-lv-badge,.xp-label,.xp-next,.xp-cur,.xp-pct,.xp-max) { color:#425786; font-size:9px; }
+.portal.lobby.hero-shell .xp-lv-badge { background:#edf2ff; border-color:#d8e3fc; }
+.hero-shell .ritual-heading { display:flex; justify-content:space-between; margin:14px 0 6px; color:var(--hp-ink); font:850 13px/1.3 var(--font-body); letter-spacing:0; text-transform:none; }
+.hero-shell .ritual-heading > span:last-child { color:var(--hp-accent); }
+.portal.lobby.hero-shell .eco-quick-row { display:grid; grid-template-columns:1fr; margin:0; padding:0; gap:5px; min-width:0; }
+.portal.lobby.hero-shell .eco-quick-btn { display:flex; gap:8px; min-height:48px; justify-content:flex-start; text-align:left; padding:6px 8px; background:#fff; border:1px solid var(--hp-line); color:var(--hp-ink); border-radius:11px; }
+.portal.lobby.hero-shell .eco-quick-btn:hover { background:#edf2ff; }
+.hero-shell .eco-quick-ico { display:grid; place-items:center; width:29px; height:29px; flex:none; background:#edf2ff; border:0; border-radius:9px; color:#2c55d0; font-size:17px; }
+.hero-shell .eco-quick-copy { min-width:0; display:grid; gap:2px; }
+.hero-shell .eco-quick-lbl { font:800 12px/1.2 var(--font-body); color:var(--hp-ink); white-space:normal; }
+.hero-shell .eco-quick-desc { display:block; color:var(--hp-muted); font:650 10px/1.25 var(--font-body); white-space:normal; }
+.hero-shell .eco-quick-badge { background:#194bce; color:white; box-shadow:none; }
+.portal.lobby.hero-shell .portal-discover { margin:31px 0 0; padding:0; }
+.hero-shell .studio-discover-heading { margin-bottom:12px; }
+.portal.lobby.hero-shell .portal-discover-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.portal.lobby.hero-shell .portal-discover-card { display:grid; grid-template-columns:44px minmax(0,1fr); gap:3px 12px; padding:16px; align-content:center; border:1px solid var(--hp-line); background:#fff; color:var(--hp-ink); border-radius:15px; box-shadow:var(--hp-shadow); }
+.portal.lobby.hero-shell .portal-discover-card > span { grid-row:1/3; align-self:center; display:grid; place-items:center; width:44px; height:44px; border-radius:11px; background:#eef3ff; color:#2e56d0; font-size:21px; }
+.portal.lobby.hero-shell .portal-discover-card b,.portal.lobby.hero-shell .portal-discover-card small { grid-column:2; line-height:1.45; }
+.portal.lobby.hero-shell .portal-discover-card small { color:var(--hp-muted); }
+.portal.lobby.hero-shell .portal-discover-card:hover { background:#f9fbff; border-color:#b9cdf8; }
+.portal.lobby.hero-shell .portal-footer { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-top:32px; padding:18px 0 0; border-top:1px solid var(--hp-line); color:var(--hp-muted); font:650 12px/1.4 var(--font-body); }
+.portal.lobby.hero-shell .footer-brand { display:inline-flex; align-items:center; gap:8px; font:850 13px/1 var(--font-body); color:var(--hp-ink); letter-spacing:-.025em; }
+.portal.lobby.hero-shell .footer-brand img { display:block; }
+.portal.lobby.hero-shell .portal-footer a:last-child { color:#234abf; letter-spacing:0; font-weight:800; }
+.portal.lobby.hero-shell :is(button,a,input):focus-visible { outline:2px solid #2558e6; outline-offset:3px; }
+.hero-shell .skip-link:focus { z-index:1000; }
+@media (max-width:1100px) {
+  .portal.lobby.hero-shell .bottom-nav { position:fixed; inset:auto 0 0; width:100%; min-height:0; height:auto; justify-content:center; gap:2px; padding:5px max(6px,env(safe-area-inset-left)) calc(5px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right)); background:#fffffffa; backdrop-filter:blur(12px); border-top:1px solid var(--hp-line); box-shadow:0 -4px 22px #1f3c760d; }
+  .portal.lobby.hero-shell .nav-item { flex:1 1 0; max-width:116px; min-width:0; min-height:50px; align-items:center; justify-content:center; flex-direction:column; gap:4px; padding:5px 0; border-radius:10px; }
+  .portal.lobby.hero-shell .ni-lbl { font-size:11px; white-space:nowrap; }
+  .portal.lobby.hero-shell > #app { padding-bottom:calc(82px + env(safe-area-inset-bottom)); }
+}
+@media (max-width:960px) {
+  .portal.lobby.hero-shell .lobby-layout { grid-template-columns:minmax(0,1fr) 225px; gap:18px; }
+  .portal.lobby.hero-shell .games-premium { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero-shell .studio-hero { min-height:300px; }
+  .hero-shell .studio-hero-copy { padding:28px; }
+}
+@media (max-width:680px) {
+  .portal.lobby.hero-shell > .portal-header { min-height:62px; gap:8px; padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left)); }
+  .portal.lobby.hero-shell .portal-brand { gap:6px; }
+  .portal.lobby.hero-shell .brand-mark { width:34px; height:34px; border-radius:9px; }
+  .portal.lobby.hero-shell .brand-name { gap:0; flex-direction:column; font-size:15px; }
+  .portal.lobby.hero-shell .brand-name > span { font-size:11px; letter-spacing:-.025em; }
+  .portal.lobby.hero-shell .search-trigger { display:grid; place-items:center; width:44px; padding:0; }
+  .portal.lobby.hero-shell .search-trigger :is(kbd,.search-label),.portal.lobby.hero-shell #headerPlayerName { display:none; }
+  .portal.lobby.hero-shell .header-link { display:grid; place-items:center; width:44px; padding:0; }
+  .portal.lobby.hero-shell .header-avatar { width:36px; height:36px; }
+  .portal.lobby.hero-shell > #app { padding-top:14px; }
+  .hero-shell .studio-hero { grid-template-columns:1fr; grid-template-rows:auto clamp(142px,44vw,185px); min-height:0; border-radius:19px; }
+  .hero-shell .studio-hero-copy { grid-row:1; padding:18px 16px 12px; }
+  .hero-shell .studio-hero h1 { font-size:clamp(37px,10vw,54px); line-height:.99; margin-bottom:10px; }
+  .hero-shell .studio-kicker { margin-bottom:9px; font-size:9px; padding:4px 8px; }
+  .hero-shell .studio-hero-copy > p:not(.studio-kicker) { max-width:39ch; font-size:13px; line-height:1.52; }
+  .hero-shell .studio-hero-actions { margin-top:14px; gap:7px; }
+  .hero-shell .studio-button { min-height:43px; padding:0 9px; gap:5px; font-size:12px; }
+  .hero-shell .studio-button svg { width:13px; height:13px; }
+  .hero-shell .studio-hero-art { position:relative; grid-row:2; width:100%; height:100%; }
+  .hero-shell .studio-hero-art img { object-position:54% 56%; mask-image:linear-gradient(to bottom,transparent,#000 14%); }
+  .portal.lobby.hero-shell .lobby-layout { grid-template-columns:minmax(0,1fr); margin-top:23px; gap:21px; }
+  .portal.lobby.hero-shell :is(.library-heading,.rail-heading,.studio-discover-heading) h2 { font-size:24px; }
+  .portal.lobby.hero-shell .library-heading,.portal.lobby.hero-shell .rail-heading { margin-bottom:8px; }
+  .portal.lobby.hero-shell .game-filters { gap:3px; margin-bottom:10px; }
+  .portal.lobby.hero-shell .game-filters button { min-height:44px; padding:5px 8px; font-size:12px; }
+  .portal.lobby.hero-shell .games-premium { gap:8px; }
+  .portal.lobby.hero-shell .game-pc { border-radius:14px; }
+  .hero-shell .studio-game-art { height:112px; border-radius:13px 13px 0 0; }
+  .hero-shell .aurora-card-top { inset:5px 5px auto 5px; }
+  .hero-shell .aurora-category { padding-inline:4px; font-size:9px; min-height:24px; }
+  .portal.lobby.hero-shell .favorite-game { width:44px; height:44px; min-width:44px; min-height:44px; }
+  .hero-shell .aurora-card-content { padding:8px; }
+  .hero-shell .aurora-card-content h3 { font-size:clamp(15px,4.6vw,21px); }
+  .hero-shell .aurora-card-content > p { font-size:11px; margin-bottom:7px; }
+  .portal.lobby.hero-shell .game-guide-button { width:44px; min-height:44px; }
+  .portal.lobby.hero-shell .card-play { min-height:44px; padding:5px; gap:4px; }
+  .portal.lobby.hero-shell .portal-discover-grid { grid-template-columns:1fr; gap:8px; }
+  .portal.lobby.hero-shell .portal-footer { row-gap:8px; }
+  .portal.lobby.hero-shell .portal-footer p { order:3; width:100%; }
+}
+@media (max-width:350px) {
+  .portal.lobby.hero-shell .bottom-nav { padding-inline:3px; }
+  .portal.lobby.hero-shell .ni-lbl { font-size:9.5px; }
+  .portal.lobby.hero-shell .game-filters button { padding-inline:7px; font-size:11px; }
+}
+@media (hover:none),(prefers-reduced-motion:reduce) {
+  .portal.lobby.hero-shell .game-pc:hover { transform:none; }
+}

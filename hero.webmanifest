@@ -7,8 +7,13 @@
   "scope": "./",
   "display": "standalone",
   "lang": "tr",
-  "background_color": "#090f2a",
-  "theme_color": "#090f2a",
+  "background_color": "#f3f7ff",
+  "theme_color": "#f3f7ff",
   "categories": ["games", "entertainment"],
-  "icons": [{"src": "assets/hero-portal.svg?v=140", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
+  "icons": [
+    {"src": "assets/hero-brand-v158.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "assets/hero-icon-192-v158.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "assets/hero-icon-512-v158.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "assets/hero-maskable-512-v158.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
 }

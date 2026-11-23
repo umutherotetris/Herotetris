@@ -1,0 +1,368 @@
+/* Hero Portal: shared surface and control treatments for secondary screens. */
+body.portal.hero-shell {
+  --hp-panel-tint: #f4f7ff;
+  --hp-panel-blue: #edf2ff;
+  --hp-panel-blue-line: #c8d6fb;
+  --hp-panel-green: #e8f7f1;
+  --hp-panel-green-line: #baddcf;
+  --hp-panel-green-ink: #126754;
+  --hp-panel-gold: #fff6e1;
+  --hp-panel-gold-line: #f0d39c;
+  --hp-panel-gold-ink: #79500f;
+  --hp-panel-red: #fff0f2;
+  --hp-panel-red-line: #f0cad2;
+  --hp-panel-red-ink: #a32c43;
+  --hp-panel-shadow: 0 8px 24px #253b7310;
+  --hp-dialog-shadow: 0 28px 76px #15275638, 0 4px 16px #15275617;
+}
+body.portal.hero-shell :is(.pc-dialog, .lobby-dialog, .nick-modal, .dm-edit-box, .dm-msgmenu, .eco-box, .trn-panel, .np-panel, .pcp-card, .portal-subscreen) {
+  color-scheme: light;
+  color: var(--hp-ink);
+}
+body.portal.hero-shell :is(.pc-dialog, .lobby-dialog, .nick-modal, .dm-edit-box, .dm-msgmenu, .eco-box, .trn-panel, .np-panel, .pcp-card) {
+  background: var(--hp-surface);
+  border-color: var(--hp-line);
+  box-shadow: var(--hp-dialog-shadow);
+}
+/* Aurora's older grouped selector has ID specificity even for nickname dialogs. */
+body.portal.hero-shell :is(.nick-modal, #gemHubPanel) { background: var(--hp-surface); border-color: var(--hp-line); }
+body.portal.hero-shell :is(.pc-dialog, .lobby-dialog)::backdrop,
+body.portal.hero-shell :is(.nick-modal-ov, .dm-edit-ov, .dm-msgmenu-ov, .clan-ov, .eco-ov, .trn-ov, .np-ov, .pcp-ov) {
+  background: #13214785;
+  backdrop-filter: blur(7px);
+}
+body.portal.hero-shell :is(.pc-dialog, .lobby-dialog, .nick-modal, .dm-edit-box, .dm-msgmenu, .portal-subscreen, .eco-box, .trn-panel, .np-panel, #pcPop, #gemHubPanel, #adminPanel, #shopPanel, #kozmosPanel)
+  :is(button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--hp-accent);
+  outline-offset: 3px;
+}
+
+/* Keep the optional player background visible and anchor text on porcelain. */
+body.portal.hero-shell .portal-subscreen .screen-intro {
+  margin-bottom: 14px;
+  padding: clamp(18px, 3vw, 30px);
+  background: linear-gradient(125deg, var(--hp-surface) 55%, var(--hp-panel-blue));
+  border: 1px solid var(--hp-line);
+  border-radius: 22px;
+  box-shadow: var(--hp-panel-shadow);
+}
+body.portal.hero-shell .portal-subscreen :is(.screen-heading, .prf-name, .prf-stat b, .prf-rec b, .fr-name) {
+  color: var(--hp-ink);
+}
+body.portal.hero-shell .portal-subscreen .screen-heading { text-shadow: none; }
+body.portal.hero-shell .portal-subscreen .screen-intro .eyebrow { color: var(--hp-accent); }
+body.portal.hero-shell .portal-subscreen :is(.screen-description, .prf-mini, .prf-sub, .prf-lbl, .prf-stat span, .prf-recbody i, .prf-bridge p, .fr-status, .fr-lv, .clan-load, .nav-notif-time, .prf-xp-title, .prf-xp-remain, .badge-rar, .screen-empty) {
+  color: var(--hp-muted);
+}
+body.portal.hero-shell #app .portal-subscreen .prf-card {
+  background: var(--hp-surface);
+  border: 1px solid var(--hp-line);
+  border-radius: 20px;
+  box-shadow: var(--hp-panel-shadow);
+  padding: clamp(15px, 2.5vw, 23px);
+}
+body.portal.hero-shell #app .portal-subscreen .personalized-card { border-top: 3px solid var(--profile-accent, var(--hp-accent)); }
+body.portal.hero-shell .portal-subscreen :is(.prf-stat, .prf-rec, .prf-xp-premium, .social-identity, .fr-row, .fr-req, .fr-reqbox) {
+  background: var(--hp-panel-tint);
+  color: var(--hp-ink);
+  border-color: var(--hp-line);
+}
+body.portal.hero-shell .portal-subscreen :is(.prf-rec.me, .fr-row.online) {
+  background: var(--hp-panel-green);
+  border-color: var(--hp-panel-green-line);
+}
+body.portal.hero-shell .portal-subscreen :is(.prf-rec[data-lbuid], .fr-row):hover {
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+}
+body.portal.hero-shell .portal-subscreen :is(.prf-rec, .fr-row, .nav-notif-item) { min-height: 48px; }
+body.portal.hero-shell .portal-subscreen :is(.prf-name, .prf-rec span, .fr-name, .nav-notif-txt, .profile-intro p) { overflow-wrap: anywhere; }
+body.portal.hero-shell .portal-subscreen .prf-top > :not(.prf-ava) { min-width: 0; }
+body.portal.hero-shell .portal-subscreen :is(.prf-rec b, .fr-hdr-total, .prf-xp-mid, .prf-xp-max, .badge-name) { color: var(--hp-ink); }
+body.portal.hero-shell .portal-subscreen :is(.prf-ava, .prf-ava-edit, .prf-xp-lv-badge, .prf-xp-next-lv, .profile-favorite) {
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+  color: var(--hp-accent);
+}
+body.portal.hero-shell .portal-subscreen :is(.prf-xp-track, .prf-xpbar) { background: #dce7f9; border-color: var(--hp-line); }
+body.portal.hero-shell .portal-subscreen :is(.prf-act-btn, .prf-btn, .fr-btn) {
+  color: var(--hp-accent);
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+  min-height: 40px;
+}
+body.portal.hero-shell .portal-subscreen :is(.prf-act-primary, .prf-btn.primary) {
+  color: #fff;
+  background: var(--hp-accent);
+  border-color: var(--hp-accent);
+}
+body.portal.hero-shell .portal-subscreen :is(.fr-hdr-online, .fr-on, .fr-acc) { color: var(--hp-panel-green-ink); }
+body.portal.hero-shell .portal-subscreen :is(.fr-hdr-offline, .fr-off) { color: var(--hp-muted); }
+body.portal.hero-shell .portal-subscreen :is(.fr-rej, #navNotifClear) {
+  color: var(--hp-panel-red-ink) !important;
+  background: var(--hp-panel-red) !important;
+  border-color: var(--hp-panel-red-line) !important;
+}
+body.portal.hero-shell .portal-subscreen #navNotifClear { min-height: 36px; font-size: 12px !important; }
+body.portal.hero-shell .portal-subscreen .nav-notif-txt { color: var(--hp-ink); font-size: 13px; }
+body.portal.hero-shell .portal-subscreen .nav-notif-time { font-size: 11px; }
+body.portal.hero-shell .portal-subscreen .prf-card [style*="color:#dfe7ff"] { color: var(--hp-ink) !important; }
+body.portal.hero-shell .portal-subscreen .prf-card [style*="color:#9fb0d8"] { color: var(--hp-muted) !important; }
+body.portal.hero-shell .portal-subscreen .prf-card [style*="color:#7d8ab8"] { color: var(--hp-muted) !important; }
+body.portal.hero-shell .portal-subscreen .prf-xp-pct { color: var(--hp-accent) !important; }
+body.portal.hero-shell .portal-subscreen .profile-intro strong {
+  color: var(--hp-ink);
+  border-inline-start: 3px solid var(--profile-accent, var(--hp-panel-blue-line));
+  padding-inline-start: 8px;
+}
+
+/* Native dialogs are in the top layer. Leave every open/hidden rule intact. */
+body.portal.hero-shell .pc-dialog { background: var(--hp-panel-tint); }
+body.portal.hero-shell .pc-head { color: var(--hp-ink); background: var(--hp-surface); border-color: var(--hp-line); }
+body.portal.hero-shell :is(.pc-muted, .pc-empty, .pc-entry small, .pc-insights, .pc-head p, .guide-note, .search-result span, .search-hint, .search-empty) { color: var(--hp-muted); }
+body.portal.hero-shell :is(.pc-card, .pc-entry, .pc-input, .pc-button, .pc-close, .search-field) { border-color: var(--hp-line); }
+body.portal.hero-shell :is(.pc-card, .pc-input, .pc-button) { color: var(--hp-ink); background: var(--hp-surface); }
+body.portal.hero-shell :is(.pc-close, .dialog-top button, .search-field) { background: var(--hp-panel-tint); color: var(--hp-ink); }
+body.portal.hero-shell :is(.pc-button:hover, .search-result:hover) {
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+  color: var(--hp-ink);
+}
+body.portal.hero-shell :is(.pc-button.primary, #guidePlay) {
+  background: var(--hp-accent);
+  border-color: var(--hp-accent);
+  color: #fff;
+}
+body.portal.hero-shell :is(.pc-button.primary:hover, #guidePlay:hover) { background: #1b41c7; }
+body.portal.hero-shell .pc-metric { color: var(--hp-ink); }
+body.portal.hero-shell :is(.pc-chip, .pc-tabs button[aria-pressed="true"], .pc-showcase .pc-button[aria-pressed="true"]) {
+  color: var(--hp-accent);
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+}
+body.portal.hero-shell .pc-chip.pending { color: var(--hp-panel-gold-ink); background: var(--hp-panel-gold); border-color: var(--hp-panel-gold-line); }
+body.portal.hero-shell .pc-chip.complete { color: var(--hp-panel-green-ink); background: var(--hp-panel-green); border-color: var(--hp-panel-green-line); }
+body.portal.hero-shell .pc-positive { color: var(--hp-panel-green-ink); }
+body.portal.hero-shell .pc-negative { color: var(--hp-panel-red-ink); }
+body.portal.hero-shell .pc-status { color: var(--hp-ink); background: #edf4ff; border-color: var(--hp-line); }
+body.portal.hero-shell .pc-status.is-error { color: var(--hp-panel-red-ink); background: var(--hp-panel-red); border-color: var(--hp-panel-red-line); }
+body.portal.hero-shell .pc-puzzle-board { background: #172746; border-radius: 19px; padding: 8px; }
+body.portal.hero-shell .pc-review-controls input { accent-color: var(--hp-accent); }
+body.portal.hero-shell .lobby-dialog h2,
+body.portal.hero-shell .lobby-dialog .search-field input,
+body.portal.hero-shell .lobby-dialog .search-result strong { color: var(--hp-ink); }
+body.portal.hero-shell .lobby-dialog .search-field:focus-within { border-color: var(--hp-accent); }
+
+/* The daily reward, mission cards and balance history use legacy dialogs. */
+body.portal.hero-shell :is(.eco-box, .trn-panel, .np-panel) {
+  max-height: calc(100dvh - 36px);
+  overscroll-behavior: contain;
+}
+body.portal.hero-shell .eco-box.wheel-box { overflow-y: auto; }
+body.portal.hero-shell :is(.eco-title, .trn-title, .np-title) {
+  font-family: var(--font-body);
+  color: var(--hp-ink);
+  font-size: 19px;
+  letter-spacing: -.3px;
+}
+body.portal.hero-shell :is(.eco-close, .trn-x, .np-x) {
+  min-width: 44px;
+  min-height: 44px;
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+  color: var(--hp-ink);
+}
+body.portal.hero-shell :is(.eco-empty, .wheel-sub, .quest-sub, .quest-prog, .kaju-row-time, .kaju-sum-lbl, .trn-info, .trn-empty, .trn-timer, .trn-me-lbl, .np-sub, .np-sub2, .np-desc) {
+  color: var(--hp-muted);
+}
+body.portal.hero-shell :is(.kaju-row, .kaju-sum-item, .kaju-filter, .quest-card, .trn-row, .np-row) {
+  color: var(--hp-ink);
+  background: var(--hp-panel-tint);
+  border-color: var(--hp-line);
+}
+body.portal.hero-shell :is(.kaju-sum-val, .kaju-row-reason, .quest-title, .trn-nm, .trn-sect, .np-nm) { color: var(--hp-ink); }
+body.portal.hero-shell :is(.kaju-row-time, .kaju-sum-lbl, .quest-prog, .wheel-prize-chip) { font-size: 10px; }
+body.portal.hero-shell :is(.kaju-sum-item.earn .kaju-sum-val, .kaju-row-amt.earn, .quest-claimed) { color: var(--hp-panel-green-ink); }
+body.portal.hero-shell :is(.kaju-sum-item.spend .kaju-sum-val, .kaju-row-amt.spend) { color: var(--hp-panel-red-ink); }
+body.portal.hero-shell :is(.kaju-filter.active, .trn-me, .np-row.master) {
+  color: var(--hp-accent);
+  background: var(--hp-panel-blue);
+  border-color: var(--hp-panel-blue-line);
+}
+body.portal.hero-shell :is(.trn-pts, .trn-me-pts, .np-perm-btn) { color: var(--hp-accent); }
+body.portal.hero-shell :is(.trn-prize, .quest-reward-val) { color: var(--hp-panel-gold-ink); }
+body.portal.hero-shell :is(.wheel-prize-chip, .quest-card.done, .np-perm.no) {
+  color: var(--hp-panel-gold-ink);
+  background: var(--hp-panel-gold);
+  border-color: var(--hp-panel-gold-line);
+}
+body.portal.hero-shell :is(.quest-card.claimed, .np-perm.ok) {
+  opacity: 1;
+  color: var(--hp-panel-green-ink);
+  background: var(--hp-panel-green);
+  border-color: var(--hp-panel-green-line);
+}
+body.portal.hero-shell :is(.quest-bar, .np-tog) { background: #dee7f8; }
+body.portal.hero-shell .np-tog.on { background: var(--hp-accent); }
+body.portal.hero-shell .wheel-spin-btn:disabled { background: var(--hp-panel-blue); color: var(--hp-muted); opacity: 1; }
+body.portal.hero-shell :is(.kaju-filter, .quest-claim-btn) { min-height: 40px; }
+
+/* Settings, nickname and Kaju transfers share the same modal controls. */
+body.portal.hero-shell :is(.nm-title, .dm-edit-title, .set-row, .set-theme-lbl, .set-scale-lbl) { color: var(--hp-ink); }
+body.portal.hero-shell :is(.nm-sub, .set-ver, .theme-name) { color: var(--hp-muted); }
+body.portal.hero-shell :is(.nm-input, .dm-edit-input) { background: var(--hp-panel-tint); color: var(--hp-ink); border-color: var(--hp-line); }
+body.portal.hero-shell :is(.nm-input, .dm-edit-input):focus { border-color: var(--hp-accent); box-shadow: 0 0 0 3px #2452e71a; }
+body.portal.hero-shell :is(.nm-save, .dm-edit-save) { background: var(--hp-accent); color: #fff; border-color: var(--hp-accent); }
+body.portal.hero-shell :is(.nm-cancel, .dm-edit-cancel, .scale-btn, .set-tgl, .dm-menu-act) {
+  background: var(--hp-panel-blue);
+  color: var(--hp-accent);
+  border-color: var(--hp-panel-blue-line);
+}
+body.portal.hero-shell :is(.set-theme-section, .set-scale-section, .theme-chip) { background: var(--hp-panel-tint); border-color: var(--hp-line); }
+body.portal.hero-shell .set-row { border-color: var(--hp-line); gap: 8px; }
+body.portal.hero-shell .set-row small { color: var(--hp-muted); opacity: 1 !important; font-size: 11px !important; }
+body.portal.hero-shell :is(.theme-chip, .scale-btn, .set-tgl, .nm-btn) { min-height: 40px; }
+body.portal.hero-shell .theme-chip.active { background: var(--hp-panel-blue); border-color: var(--hp-accent); box-shadow: none; }
+body.portal.hero-shell .theme-chip.active .theme-name { color: var(--hp-accent); }
+body.portal.hero-shell .theme-name { font-size: 11px; }
+body.portal.hero-shell .set-scale-row input { accent-color: var(--hp-accent); }
+body.portal.hero-shell :is(.nm-msg.ok, .set-tgl.on) { color: var(--hp-panel-green-ink); }
+body.portal.hero-shell .set-tgl.on { background: var(--hp-panel-green); border-color: var(--hp-panel-green-line); }
+body.portal.hero-shell :is(.nm-msg.bad, .set-tgl.warn, .set-admin-row span, .dm-menu-act.danger) { color: var(--hp-panel-red-ink) !important; }
+body.portal.hero-shell .set-tgl.warn { background: var(--hp-panel-red); border-color: var(--hp-panel-red-line); }
+body.portal.hero-shell #kajuModal :is(.adm-sug, .adm-sug-it) {
+  background: var(--hp-surface);
+  border-color: var(--hp-line);
+  color: var(--hp-ink);
+}
+
+/* Social message surfaces only; launcher jewels and animation stay untouched. */
+body.portal.hero-shell #gemHubPanel {
+  background: var(--hp-surface);
+  border-color: var(--hp-line);
+  box-shadow: var(--hp-dialog-shadow);
+  color-scheme: light;
+  color: var(--hp-ink);
+}
+body.portal.hero-shell #gemHubPanel.ghp-full { border-color: transparent; }
+body.portal.hero-shell #gemHubPanel :is(.ghp-drag, .ghp-body) { background: var(--hp-panel-tint); border-color: var(--hp-line); }
+body.portal.hero-shell #gemHubPanel .ghp-title { color: var(--hp-ink); background: none; -webkit-text-fill-color: currentColor; }
+body.portal.hero-shell #gemHubPanel .dm-title-nick { color: var(--hp-ink); }
+body.portal.hero-shell #gemHubPanel :is(.ghp-act, .ghp-tab, .ghp-input, .ghp-chat-row, .ghp-dm-row, .dm-row-v2, .dm-quick-chip, .ghp-qb) {
+  background: var(--hp-surface);
+  color: var(--hp-ink);
+  border-color: var(--hp-line);
+}
+body.portal.hero-shell #gemHubPanel :is(.ghp-tab.active, .ghp-chat-row.mine, .dm-row-v2.mine) {
+  background: var(--hp-panel-blue);
+  color: var(--hp-accent);
+  border-color: var(--hp-panel-blue-line);
+}
+body.portal.hero-shell #gemHubPanel .ghp-tab.active { border-bottom-color: var(--hp-accent); }
+body.portal.hero-shell #gemHubPanel :is(.ghp-chat-name, .ghp-dm-name, .ghp-chat-text, .ghp-notif-text) { color: var(--hp-ink); }
+body.portal.hero-shell #gemHubPanel .ghp-chat-name:is([style="color:#00E5FF"], [style="color:#A78BFA"]) { color: var(--hp-accent) !important; }
+body.portal.hero-shell #gemHubPanel .ghp-chat-name[style="color:#FFD740"] { color: var(--hp-panel-gold-ink) !important; }
+body.portal.hero-shell #gemHubPanel .ghp-chat-name[style="color:#CE93D8"] { color: #703184 !important; }
+body.portal.hero-shell #gemHubPanel :is(.ghp-dm-text, .ghp-empty-text, .ghp-empty-sub, .ghp-chat-ts, .ghp-dm-ts, .dm-title-status, .dm-edited) { color: var(--hp-muted); }
+body.portal.hero-shell #gemHubPanel :is(.ghp-chat-ts, .ghp-dm-ts) { font-size: 10px; }
+body.portal.hero-shell #gemHubPanel .ghp-input-row { border-color: var(--hp-line); }
+body.portal.hero-shell #gemHubPanel .ghp-send { background: var(--hp-accent); border-color: var(--hp-accent); color: #fff; }
+body.portal.hero-shell #gemHubPanel .ghp-chat-row.ghp-adm { background: var(--hp-panel-gold); border-color: var(--hp-panel-gold-line); box-shadow: none; }
+body.portal.hero-shell #gemHubPanel :is(.ghp-dm-avatar, .dm-emoji-panel) { background: var(--hp-panel-blue); border-color: var(--hp-panel-blue-line); }
+body.portal.hero-shell #pcPop :is(.pcp-name, .pcp-stat b, .pcp-stat-v, .pcp-besttitle, .pcp-bestname, .pcp-gstat-nm) { color: var(--hp-ink); }
+body.portal.hero-shell #pcPop :is(.pcp-stat-l, .pcp-stat span, .pcp-sub, .pcp-nobest, .pcp-gstat-rec) { color: var(--hp-muted); }
+body.portal.hero-shell #pcPop :is(.pcp-stat, .pcp-bestitem, .pcp-gstat, .pcp-h2h, .pcp-frcard, .pcp-friends-box, .pcp-ks-amt, .pcp-ks-input, .pcp-x, .pcp-btn) {
+  color: var(--hp-ink);
+  background: var(--hp-panel-tint);
+  border-color: var(--hp-line);
+}
+body.portal.hero-shell #pcPop :is(.pcp-kajusend-box, .pcp-ks-send) {
+  color: var(--hp-panel-gold-ink);
+  background: var(--hp-panel-gold);
+  border-color: var(--hp-panel-gold-line);
+}
+body.portal.hero-shell #pcPop :is(.pcp-ks-lbl, .pcp-bestval, .pcp-name[style="color:#FFD740"]) { color: var(--hp-panel-gold-ink) !important; }
+body.portal.hero-shell #pcPop :is(.pcp-sub b, .pcp-stat-v)[style="color:#69F0AE"] { color: var(--hp-panel-green-ink) !important; }
+body.portal.hero-shell #pcPop .pcp-stat-v[style="color:#ff8a80"] { color: var(--hp-panel-red-ink) !important; }
+body.portal.hero-shell #pcPop .pcp-stat-v:is([style="color:#a5b4fc"], [style="color:#FFD740"], [style="color:#ff9800"]) { color: var(--hp-ink) !important; }
+
+/* Shop and Kozmos surfaces; product previews and Kozmo stage keep their art. */
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) > .clan-panel {
+  background: var(--hp-surface);
+  color: var(--hp-ink);
+  color-scheme: light;
+  border-color: var(--hp-line) !important;
+  box-shadow: var(--hp-dialog-shadow);
+}
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) .clan-head {
+  background: var(--hp-surface);
+  border-color: var(--hp-line) !important;
+}
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) .clan-title {
+  color: var(--hp-ink) !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) .clan-body { background: var(--hp-panel-tint); }
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) :is(.clan-x, .clan-card, .shop-card, .shop-item, .koz-egg) {
+  background: var(--hp-surface);
+  border-color: var(--hp-line);
+  color: var(--hp-ink);
+}
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) .clan-x { width: 44px; height: 44px; }
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) :is(.clan-lbl, .shop-name, .shop-item-name, .koz-stat-val) { color: var(--hp-ink) !important; }
+body.portal.hero-shell :is(#shopPanel, #kozmosPanel) :is(.clan-load, .kozmo-panel-subtitle, .clan-empty-txt, .shop-desc, .shop-egg-desc, .koz-egg-from) { color: var(--hp-muted); }
+body.portal.hero-shell #shopPanel :is(.shop-card, .shop-item).active,
+body.portal.hero-shell #shopPanel :is(.shop-btn-use, .shop-btn.use) { background: var(--hp-panel-blue); color: var(--hp-accent); border-color: var(--hp-panel-blue-line); box-shadow: none; }
+/* Shop injects !important tab paint on open. Override only the color properties. */
+body.portal.hero-shell #shopPanel .shop-panel .shop-tabs { border-color: var(--hp-line) !important; }
+body.portal.hero-shell #shopPanel .shop-panel .shop-tab-btn { background: var(--hp-panel-tint) !important; color: var(--hp-muted) !important; border-color: var(--hp-line) !important; min-height: 38px; }
+body.portal.hero-shell #shopPanel .shop-panel .shop-tab-btn.active { background: var(--hp-panel-blue) !important; color: var(--hp-accent) !important; border-color: var(--hp-panel-blue-line) !important; box-shadow: none !important; }
+body.portal.hero-shell #shopPanel .shop-egg-info { background: var(--hp-panel-blue); border-color: var(--hp-panel-blue-line); }
+body.portal.hero-shell #shopPanel .shop-egg-info [style*="color:#9fb0d8"] { color: var(--hp-muted) !important; }
+body.portal.hero-shell #shopPanel :is(.shop-kaju-badge, .shop-btn-buy, .shop-btn.buy, .shop-buy-btn) { background: var(--hp-panel-gold); border-color: var(--hp-panel-gold-line); color: var(--hp-panel-gold-ink); }
+body.portal.hero-shell #shopPanel :is(.shop-card, .shop-item).owned:not(.active) { border-color: var(--hp-panel-green-line); }
+body.portal.hero-shell #kozmosPanel :is(.koz-egg-from, .koz-bar-txt, .koz-phase-desc, .koz-cre-lv) { color: #b7bdd6; font-size: 10px; }
+body.portal.hero-shell #kozmosPanel .koz-pend-row { border-color: var(--hp-line); }
+body.portal.hero-shell #kozmosPanel .koz-pend-info [style*="color:#CE93D8"] { color: #703184 !important; }
+body.portal.hero-shell #kozmosPanel .clan-body :is([style*="color:#7d8ab8"], [style*="color:#4a5078"]) { color: var(--hp-muted) !important; }
+body.portal.hero-shell #kozmosPanel .koz-egg-del { color: var(--hp-panel-red-ink); border-color: var(--hp-panel-red-line); background: var(--hp-panel-red); min-height: 32px; }
+body.portal.hero-shell .koz-detail :is(.koz-stat, .koz-detail-hero) { background: var(--hp-panel-tint); border-color: var(--hp-line); border-radius: 14px; }
+body.portal.hero-shell .koz-detail :is(.koz-detail-desc, .koz-stat-lbl) { color: var(--hp-muted); }
+body.portal.hero-shell .koz-detail :is(.koz-detail-name, .koz-detail-rar, .koz-stat-val) { color: var(--hp-ink) !important; }
+
+/* Admin keeps all sticky regions and busy mechanics from admin-premium.css. */
+body.portal.hero-shell #adminPanel { background: #13214785; }
+body.portal.hero-shell #adminPanel .adm-panel {
+  background: var(--hp-panel-tint);
+  color: var(--hp-ink);
+  border-color: var(--hp-line);
+  box-shadow: var(--hp-dialog-shadow);
+  color-scheme: light;
+}
+body.portal.hero-shell #adminPanel :is(.adm-head, .adm-card, .adm-selection, .adm-body > .adm-row:first-child, .adm-sug) {
+  background: var(--hp-surface);
+  border-color: var(--hp-line);
+}
+body.portal.hero-shell #adminPanel :is(.adm-title, .adm-lbl, .adm-li b, .adm-sug-it b) {
+  color: var(--hp-ink) !important;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+body.portal.hero-shell #adminPanel :is(.adm-eyebrow, .adm-empty, .adm-uid, .adm-log, .adm-li small, .adm-sug-it small) { color: var(--hp-muted); }
+body.portal.hero-shell #adminPanel :is(.adm-sec, .adm-li, .adm-in, .adm-btn, .adm-acc, .adm-x, .adm-sug-it) {
+  background: var(--hp-panel-tint);
+  border-color: var(--hp-line);
+  color: var(--hp-ink);
+}
+body.portal.hero-shell #adminPanel :is(.adm-in, .adm-sug-it):focus { border-color: var(--hp-accent); }
+body.portal.hero-shell #adminPanel :is(.adm-btn.p, .adm-busy[data-busy]) { color: #fff; background: var(--hp-accent); border-color: var(--hp-accent); }
+body.portal.hero-shell #adminPanel :is(.adm-btn.g, .adm-msg.ok) { color: var(--hp-panel-green-ink); background: var(--hp-panel-green); border-color: var(--hp-panel-green-line); }
+body.portal.hero-shell #adminPanel :is(.adm-btn.r, .adm-msg.bad) { color: var(--hp-panel-red-ink); background: var(--hp-panel-red); border-color: var(--hp-panel-red-line); }
+body.portal.hero-shell #adminPanel :is([data-el="oncount"], [data-el="ucount"]) { color: var(--hp-panel-green-ink) !important; }
+
+@media (max-width: 390px) {
+  body.portal.hero-shell .portal-subscreen .screen-intro { padding: 18px; border-radius: 18px; }
+  body.portal.hero-shell #app .portal-subscreen .prf-card { padding: 13px; }
+  body.portal.hero-shell .nick-modal .set-theme-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

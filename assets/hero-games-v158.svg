@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" fill="none">
+  <title>Hero Portal oyun kapakları</title>
+  <defs>
+    <radialGradient id="sprite-shadow">
+      <stop stop-color="#29396C" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#29396C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tet-face" x2=".8" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#668AFF"/><stop offset="1" stop-color="#2B53E5"/>
+    </linearGradient>
+    <linearGradient id="tet-ice" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#A6F1FF"/><stop offset="1" stop-color="#4FB3EF"/>
+    </linearGradient>
+    <linearGradient id="chess-stone" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FDF9FF"/><stop offset=".55" stop-color="#DDC9FF"/><stop offset="1" stop-color="#9D7CE5"/>
+    </linearGradient>
+    <linearGradient id="chess-rim" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop stop-color="#A684E5"/><stop offset=".55" stop-color="#CDC0F3"/><stop offset="1" stop-color="#7860BD"/>
+    </linearGradient>
+    <linearGradient id="tavla-frame" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#6ECBA7"/><stop offset="1" stop-color="#2A8F77"/>
+    </linearGradient>
+    <linearGradient id="tavla-felt" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FAFFF3"/><stop offset="1" stop-color="#C6F0D7"/>
+    </linearGradient>
+    <linearGradient id="dice-face" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#D0E7E2"/>
+    </linearGradient>
+    <linearGradient id="tile-ceramic" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FFF9EE"/><stop offset=".55" stop-color="#FFE6CF"/><stop offset="1" stop-color="#FFC393"/>
+    </linearGradient>
+    <linearGradient id="tile-peach" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FFE4C9"/><stop offset="1" stop-color="#F6A578"/>
+    </linearGradient>
+    <g id="tet-blue-cube">
+      <path d="M0 0 8-7h26v26l-8 8H0z" fill="#3456D3"/>
+      <path d="M0 0 8-7h26l-8 7z" fill="#A6BBFF"/>
+      <path d="m26 0 8-7v26l-8 8z" fill="#2444BB"/>
+      <rect width="26" height="27" rx="2.8" fill="url(#tet-face)"/>
+      <path d="M4 23V5q0-1 1-1h17" stroke="#A4BEFF" stroke-opacity=".65" stroke-linecap="round"/>
+      <path d="M5 23h16q1 0 1-1V6" stroke="#284CCD" stroke-opacity=".65" stroke-linecap="round"/>
+    </g>
+    <g id="tet-cyan-cube">
+      <path d="M0 0 6-6h24v24l-6 7H0z" fill="#4BA6DB"/>
+      <path d="M0 0 6-6h24l-6 6z" fill="#D5F8FF"/>
+      <path d="m24 0 6-6v24l-6 7z" fill="#3B91D2"/>
+      <rect width="24" height="25" rx="2.7" fill="url(#tet-ice)"/>
+      <path d="M4 21V5q0-1 1-1h15" stroke="#E4FFFF" stroke-opacity=".84" stroke-linecap="round"/>
+    </g>
+    <g id="tavla-points">
+      <path d="M0 0h9l-4.5 25zM18 0h9l-4.5 25zM36 0h9l-4.5 25z" fill="#3A8E79"/>
+      <path d="M9 0h9l-4.5 23zM27 0h9l-4.5 23zM45 0h9l-4.5 23z" fill="#88CCAC"/>
+    </g>
+    <g id="tile-base">
+      <rect width="51" height="54" y="4" rx="10" fill="#CD7D59"/>
+      <rect width="51" height="53" rx="10" fill="url(#tile-ceramic)"/>
+      <rect width="44" height="46" x="3.5" y="3.5" rx="7" stroke="#FFFFFF" stroke-opacity=".69"/>
+      <path d="M8 10q0-2 3-2h29" stroke="#FFFFFF" stroke-opacity=".83" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <symbol id="tetris" viewBox="0 0 220 140">
+    <ellipse cx="112" cy="119" rx="84" ry="17" fill="url(#sprite-shadow)"/>
+    <g transform="translate(126 37) rotate(13 24 24)">
+      <use href="#tet-cyan-cube" x="25" y="0"/><use href="#tet-cyan-cube" x="0" y="0"/>
+      <use href="#tet-cyan-cube" x="25" y="26"/><use href="#tet-cyan-cube" x="50" y="26"/>
+    </g>
+    <g transform="translate(37 51) rotate(-13 40 28)">
+      <use href="#tet-blue-cube" x="28" y="0"/><use href="#tet-blue-cube" x="56" y="29"/>
+      <use href="#tet-blue-cube" x="28" y="29"/><use href="#tet-blue-cube" x="0" y="29"/>
+    </g>
+    <path d="M37 33h10m-5-5v10M185 97h12m-6-6v12" stroke="#5487F6" stroke-opacity=".55" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="chess" viewBox="0 0 220 140">
+    <ellipse cx="110" cy="124" rx="88" ry="13" fill="url(#sprite-shadow)"/>
+    <path d="m32 99 82-22 74 22v10l-75 21-81-21Z" fill="url(#chess-rim)"/>
+    <path d="m32 99 82-22 74 22-75 21Z" fill="#F1E6FF" stroke="#BAA4E9" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="m50 94 20-5 20 5-20 6Zm40 0 20-6 19 6-20 6Zm39 0 19-5 20 5-19 6Zm-59 6 20-6 19 6-19 5Zm39 0 20-6 20 6-19 5Zm-19 5 19-5 21 5-20 6Zm40 0 19-5 18 5-18 5Zm-20 6 20-6 19 5-19 5Z" fill="#CAB3F7"/>
+    <ellipse cx="111" cy="103" rx="33" ry="7" fill="#7B57C4" opacity=".22"/>
+    <path d="M82 97c0-4 4-7 9-7h42c5 0 9 3 9 7v7c0 5-60 5-60 0z" fill="url(#chess-rim)"/>
+    <path d="M86 94c2-25 17-29 28-44-3 4-10 8-15 8l-8-2-8 8-9-6c-3-2-2-5 0-8l16-22 14-9 2-12 10 9 6-9 7 13c13 7 21 22 18 37l-6 37z" fill="#9170CC"/>
+    <path d="M82 92c3-23 16-26 27-41l-9 5c-3 2-8 0-12-1l-8 8-10-6c-3-2-2-6 0-8l16-22 14-9 2-11 10 8 5-8 7 12c13 7 21 22 18 37l-5 36z" fill="url(#chess-stone)" stroke="#9D7ED5" stroke-width="1.15" stroke-linejoin="round"/>
+    <path d="M126 26c13 11 14 24 10 39l-5 22m-46 1c5-12 13-18 19-22" stroke="#FFFFFF" stroke-opacity=".52" stroke-width="2" stroke-linecap="round"/>
+    <path d="m91 35 6 1m-20 15 3 1" stroke="#7655B0" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M83 93c5 3 48 3 55 0" stroke="#F7F0FF" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M161 33h12m-6-6v12" stroke="#9F7BDD" stroke-opacity=".63" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="tavla" viewBox="0 0 220 140">
+    <ellipse cx="117" cy="116" rx="93" ry="18" fill="url(#sprite-shadow)"/>
+    <g transform="matrix(1 .20 -.37 .84 55 18)">
+      <rect width="145" height="84" y="7" rx="8" fill="#1D6859"/>
+      <rect width="145" height="84" rx="8" fill="url(#tavla-frame)" stroke="#217E69" stroke-width="1.3"/>
+      <rect width="63" height="70" x="7" y="7" rx="3" fill="url(#tavla-felt)" stroke="#257B69"/>
+      <rect width="63" height="70" x="75" y="7" rx="3" fill="url(#tavla-felt)" stroke="#257B69"/>
+      <use href="#tavla-points" x="11" y="11"/><use href="#tavla-points" x="79" y="11"/>
+      <use href="#tavla-points" transform="translate(65 73) scale(-1 -1)"/><use href="#tavla-points" transform="translate(133 73) scale(-1 -1)"/>
+      <path d="M72 7v70" stroke="#115A50" stroke-width="2" stroke-linecap="round"/>
+      <g fill="#FCFFF9" stroke="#6EA99B" stroke-width="1.15">
+        <circle cx="15.5" cy="16" r="4.3"/><circle cx="15.5" cy="25" r="4.3"/><circle cx="15.5" cy="34" r="4.3"/>
+        <circle cx="92.5" cy="68" r="4.3"/><circle cx="92.5" cy="59" r="4.3"/>
+      </g>
+      <g fill="#206C5E" stroke="#A0DEC4" stroke-width=".7">
+        <circle cx="127.5" cy="16" r="4.3"/><circle cx="127.5" cy="25" r="4.3"/>
+        <circle cx="51.5" cy="68" r="4.3"/><circle cx="51.5" cy="59" r="4.3"/>
+      </g>
+    </g>
+    <g transform="translate(146 87) rotate(-17 13 13)">
+      <rect y="4" width="26" height="26" rx="5.8" fill="#83B8AB"/>
+      <rect width="26" height="26" rx="5.8" fill="url(#dice-face)" stroke="#B6D8CD"/>
+      <path d="M5 8q0-3 3-3h11" stroke="white" stroke-opacity=".82" stroke-linecap="round"/>
+      <g fill="#206B64"><circle cx="8" cy="8" r="1.8"/><circle cx="13" cy="13" r="1.8"/><circle cx="18" cy="18" r="1.8"/></g>
+    </g>
+    <g transform="translate(175 101) rotate(13 11 11)">
+      <rect y="3" width="22" height="22" rx="4.8" fill="#74AA9F"/>
+      <rect width="22" height="22" rx="4.8" fill="url(#dice-face)" stroke="#B6D8CD"/>
+      <g fill="#206B64"><circle cx="7" cy="7" r="1.55"/><circle cx="15" cy="7" r="1.55"/><circle cx="11" cy="11" r="1.55"/><circle cx="7" cy="15" r="1.55"/><circle cx="15" cy="15" r="1.55"/></g>
+    </g>
+  </symbol>
+
+  <symbol id="kelime" viewBox="0 0 220 140">
+    <ellipse cx="111" cy="116" rx="87" ry="15" fill="url(#sprite-shadow)"/>
+    <g transform="translate(134 56) rotate(14 25 26)">
+      <use href="#tile-base"/>
+      <path d="M19 17v22h15" stroke="#A95534" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(85 42) rotate(-2 25 26)">
+      <rect width="51" height="54" y="4" rx="10" fill="#BC6F4B"/>
+      <rect width="51" height="53" rx="10" fill="url(#tile-peach)"/>
+      <rect width="44" height="46" x="3.5" y="3.5" rx="7" stroke="#FFF5E6" stroke-opacity=".63"/>
+      <path d="M33 17H19v22h14M19 28h12" stroke="#924426" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(36 54) rotate(-15 25 26)">
+      <use href="#tile-base"/>
+      <path d="M18 17v22m2-10 13-12m-12 12 13 10" stroke="#A95534" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <path d="M37 37h10m-5-5v10m136-7h11m-5.5-5.5v11" stroke="#DA9060" stroke-opacity=".62" stroke-width="1.65" stroke-linecap="round"/>
+  </symbol>
+</svg>

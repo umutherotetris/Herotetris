@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Insets;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,13 +15,15 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 public final class PortalActivity extends Activity {
     private static final Uri PORTAL_HOME = Uri.parse("https://umutherotetris.github.io/Herotetris/");
-    private static final int PORTAL_COLOR = 0xff090f2a;
+    private static final int PORTAL_COLOR = 0xfff5f8ff;
+    private static final int INK_COLOR = 0xff12224a;
     private static final String CUSTOM_TABS_SERVICE = "android.support.customtabs.action.CustomTabsService";
 
     @Override
@@ -68,12 +71,16 @@ public final class PortalActivity extends Activity {
         }
     }
 
+    private int dp(int units) {
+        return Math.round(units * getResources().getDisplayMetrics().density);
+    }
+
     @SuppressWarnings("deprecation")
     private void showBrowserFallback() {
         ScrollView screen = new ScrollView(this);
         screen.setFillViewport(true);
         screen.setBackgroundColor(PORTAL_COLOR);
-        int pad = Math.round(24 * getResources().getDisplayMetrics().density);
+        int pad = dp(24);
         screen.setPadding(pad, pad, pad, pad);
         screen.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
             @Override
@@ -91,23 +98,38 @@ public final class PortalActivity extends Activity {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER);
 
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(R.mipmap.hero_portal);
+        icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        LinearLayout.LayoutParams iconLayout = new LinearLayout.LayoutParams(dp(84), dp(84));
+        iconLayout.bottomMargin = dp(22);
+        content.addView(icon, iconLayout);
+
         TextView title = new TextView(this);
         title.setText(R.string.app_name);
-        title.setTextSize(26);
-        title.setTextColor(0xffebce93);
+        title.setTextSize(29);
+        title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        title.setTextColor(INK_COLOR);
         title.setGravity(Gravity.CENTER);
         content.addView(title);
 
         TextView help = new TextView(this);
         help.setText(R.string.browser_needed);
         help.setTextSize(16);
-        help.setTextColor(0xffeeeeff);
+        help.setTextColor(0xff435579);
+        help.setMaxWidth(dp(380));
+        help.setLineSpacing(dp(4), 1f);
         help.setGravity(Gravity.CENTER);
         help.setPadding(0, pad, 0, pad);
         content.addView(help);
 
         Button retry = new Button(this);
         retry.setText(R.string.open_portal);
+        retry.setAllCaps(false);
+        retry.setTextColor(0xffffffff);
+        retry.setBackgroundResource(R.drawable.portal_button);
+        retry.setPadding(dp(24), dp(10), dp(24), dp(10));
+        retry.setMinHeight(dp(48));
         retry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) { openPortal(); }

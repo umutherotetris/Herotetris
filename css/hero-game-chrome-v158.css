@@ -1,0 +1,675 @@
+/* Hero Portal / game rooms. Keep boards, pieces, and game themes in their own style sheets. */
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root){
+  --gc-ink:var(--hp-ink,#14234c);
+  --gc-muted:var(--hp-muted,#576583);
+  --gc-blue:#2049ca;
+  --gc-border:var(--hp-line,#dbe4f4);
+  --gc-white:var(--hp-surface,#fff);
+  --gc-soft:#f3f7ff;
+  --gc-tint:#e8efff;
+  --gc-face:linear-gradient(154deg,#fff 36%,#f5f8fe 100%);
+  --gc-accent:linear-gradient(135deg,#3966f6,#2146c7 78%);
+  --gc-ambient:radial-gradient(ellipse at 5% 0%,#e6eeff,transparent 60%),radial-gradient(ellipse at 100% 90%,#e5f5fa,transparent 50%),var(--hp-canvas,#f2f6fd);
+  --gc-shadow:0 1px 2px #17357708,0 6px 18px #1735770d;
+  --gc-lift:0 16px 50px #192d7040;
+  --gc-btn-shadow:0 2px 4px #17357712,inset 0 1px #ffffffa1;
+  --gc-focus:#2452e7;
+  background:var(--gc-ambient);
+  color:var(--gc-ink);
+  color-scheme:light;
+}
+
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) button:focus-visible{
+  outline:2px solid var(--gc-focus);
+  outline-offset:2px;
+}
+
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.t-icon,.c-icon,.tv-icon,.kl-icon,.portal-minimize){
+  background:var(--gc-face);
+  border:1px solid var(--gc-border);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-btn-shadow);
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.t-icon,.c-icon,.tv-icon,.kl-icon,.portal-minimize):active{
+  background:var(--gc-tint);
+  color:var(--gc-blue);
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hs-title,.t-title,.cm-title,.tvm-title,.kl-title){
+  color:var(--gc-ink);
+  -webkit-text-fill-color:currentColor;
+  background:none;
+  text-shadow:none;
+  font-weight:850;
+  letter-spacing:.015em;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hs-sub,.cm-sub,.tvm-sub,.kl-sub){
+  color:var(--gc-muted);
+  letter-spacing:.025em;
+  text-shadow:none;
+}
+
+/* Two board-game menus share a cover header, icon tiles, and one scan-friendly list. */
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-head,.tvm-head){
+  padding:16px 13px 18px;
+  margin-bottom:6px;
+  border:1px solid var(--gc-border);
+  border-radius:18px;
+  background:linear-gradient(122deg,#fff,#eaf1ff);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.chess-modes,.tv-modes){
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-cards,.tvm-cards){
+  gap:8px;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-card,.tvm-card){
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  align-items:center;
+  column-gap:12px;
+  row-gap:2px;
+  min-height:58px;
+  padding:9px 12px;
+  border:1px solid var(--gc-border);
+  border-radius:14px;
+  background:var(--gc-face);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-shadow);
+  text-align:left;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-ic,.tvm-ic){
+  display:grid;
+  place-items:center;
+  grid-row:span 2;
+  width:38px;
+  height:38px;
+  padding:0;
+  border:1px solid #d9e4fb;
+  border-radius:11px;
+  background:var(--gc-tint);
+  font-size:20px;
+  line-height:1;
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-name,.tvm-name){
+  min-width:0;
+  color:var(--gc-ink);
+  font-weight:800;
+  letter-spacing:.015em;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-desc,.tvm-desc){
+  min-width:0;
+  color:var(--gc-muted);
+  font-size:11px;
+  line-height:1.4;
+}
+
+/* Setup, lobby, and confirmation cards. The promotion controls contrast with pale glyphs. */
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.chess-ai-setup,.chess-theme-picker,.chess-online-lobby,.chess-confirm,.chess-promo,.tavla-theme-picker,.tavla-online-lobby,.tavla-confirm,.tavla-break){
+  background:#18295182;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cas-box,.ctp-box,.col-box,.ccf-box,.cp-box,.ttp-box,.tol-box,.tvcf-box,.tvbk-box){
+  background:var(--gc-face);
+  color:var(--gc-ink);
+  border:1px solid var(--gc-border);
+  border-radius:18px;
+  box-shadow:var(--gc-lift);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cas-title,.ctp-title,.col-title,.cp-title,.ttp-title,.tol-title,.tvbk-title,.ccf-text,.tvcf-msg,.col-bname,.tol-bname){
+  color:var(--gc-ink);
+  text-shadow:none;
+  letter-spacing:.02em;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cas-label,.tas-label,.col-bdesc,.col-hint,.tol-bdesc,.tol-hint,.tvbk-sub,.tvbk-note){
+  color:var(--gc-muted);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cas-opt,.cas-back,.cas-close,.ctp-card,.ctp-close,.ttp-card,.ttp-back-btn,.ttp-close-btn,.ttp-close,.tas-opt,.col-big,.col-back,.col-copy,.col-paste,.tol-big,.tol-back,.tol-copy,.tol-paste,.ccf-no,.tvcf-no,.tvbk-btn.alt){
+  border:1px solid var(--gc-border);
+  background:var(--gc-white);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-btn-shadow);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cas-opt.active,.ctp-card.active,.ttp-card.active,.tas-opt.active){
+  border-color:#7695f6;
+  background:var(--gc-tint);
+  color:var(--gc-blue);
+  box-shadow:inset 0 0 0 1px #9ab0f5;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.ctp-name,.ttp-name,.col-status,.tol-status){
+  color:var(--gc-blue);
+}
+body.portal.hero-shell .chess-root .cp-box{
+  box-sizing:border-box;
+  width:min(100%,360px);
+  padding:clamp(10px,4vw,20px);
+}
+body.portal.hero-shell .chess-root .cp-pieces{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(4px,1.5vw,10px);
+}
+body.portal.hero-shell .chess-root .cp-btn{
+  width:100%;
+  padding-inline:2px;
+  background:#273963;
+  border-color:#526a9f;
+  color:#fff;
+  font-size:clamp(22px,8vw,30px);
+}
+body.portal.hero-shell .chess-root .cp-btn span{
+  max-width:100%;
+  overflow-wrap:anywhere;
+  color:#d7e4ff;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.col-info,.tol-info){
+  background:var(--gc-soft);
+  border-color:var(--gc-border);
+  color:var(--gc-muted);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.col-code,.tol-code){
+  max-width:100%;
+  overflow-wrap:anywhere;
+  color:var(--gc-blue);
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.chess-root,.tavla-root,.kl-root) :is(.vl-input,.col-input,.tol-input,.cgc-input,.tvc-input,.fen-input){
+  min-width:0;
+  background:var(--gc-white);
+  color:var(--gc-ink);
+  border:1px solid #adbedf;
+  caret-color:var(--gc-focus);
+}
+body.portal.hero-shell :is(.hero-select-overlay,.chess-root,.tavla-root,.kl-root) :is(.vl-input,.col-input,.tol-input,.cgc-input,.tvc-input,.fen-input)::placeholder{
+  color:var(--gc-muted);
+}
+body.portal.hero-shell :is(.hero-select-overlay,.chess-root,.tavla-root,.kl-root) :is(.vl-input,.col-input,.tol-input,.cgc-input,.tvc-input,.fen-input):focus-visible{
+  outline:2px solid var(--gc-focus);
+  outline-offset:1px;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.chess-root,.tavla-root) :is(.vl-spinner,.col-spinner,.tol-spinner){
+  border-color:#cedbf7;
+  border-top-color:var(--gc-blue);
+}
+body.portal.hero-shell .chess-root .fen-err{
+  color:#982639;
+}
+
+/* Header and status chrome leaves board fit, clocks, and turn logic intact. */
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root,.tetris-overlay) :is(.cg-top,.tg-top,.kl-top,.tetris-topbar){
+  background:var(--gc-face);
+  border:1px solid var(--gc-border);
+  border-radius:13px;
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cg-player,.cg-clock,.cg-captured,.tv-premium-score>div,.kl-score){
+  background:var(--gc-face);
+  border-color:var(--gc-border);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cg-player.your-turn,.cg-clock.active,.tv-premium-score>div.active,.kl-score.active){
+  background:var(--gc-tint);
+  border-color:#7998ef;
+  box-shadow:inset 0 0 0 1px #a2b6f4;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cgp-name,.cgk-time,.tv-premium-score strong,.kl-score .nm,.kl-score .pt){
+  background:none;
+  color:var(--gc-ink);
+  -webkit-text-fill-color:currentColor;
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cgp-sub,.cgk-label,.tv-premium-score span,.tv-premium-score small,.kl-lv,.kl-status){
+  color:var(--gc-muted);
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cg-turn.white,.tg-turn.white,.kl-turn.opp){
+  background:var(--gc-tint);
+  border-color:#b5c6ed;
+  color:var(--gc-blue);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cg-turn.black,.tg-turn.black){
+  background:#273963;
+  border-color:#273963;
+  color:#fff;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.cgp-turn-badge.active,.kl-status .kl-turn.me){
+  background:#d9ebff;
+  border-color:#aecbf3;
+  color:#173b91;
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cg-status.show,.tg-status.show){
+  border-color:#b6cbf1;
+  background:var(--gc-tint);
+  color:#24428e;
+  text-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cg-status.show.win,.tg-status.show.win){
+  border-color:#a7d5bc;
+  background:#e8f8ed;
+  color:#16663c;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cg-status.show.check,.cg-clock.low){
+  border-color:#e9b9bf;
+  background:#fff0f0;
+  color:#982639;
+}
+body.portal.hero-shell .chess-root .cg-clock.low .cgk-time{
+  color:#982639;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root,.tetris-overlay) :is(.cg-act-btn,.tg-act-btn,.tg-btn,.kl-btn,.kl-flagbtn,.kl-shuffle,.kl-zbtn,.go-btn){
+  background:var(--gc-face);
+  border:1px solid var(--gc-border);
+  color:var(--gc-ink);
+  text-shadow:none;
+  box-shadow:var(--gc-btn-shadow);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root,.kl-root) :is(.tg-act-btn.danger,.kl-btn.warn,.ccf-yes,.tvcf-yes){
+  background:#fff0f2;
+  border:1px solid #efc6cc;
+  color:#9b2134;
+  box-shadow:none;
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cg-chat,.cg-history,.tv-chat){
+  background:var(--gc-white);
+  color:var(--gc-ink);
+  border-color:var(--gc-border);
+  box-shadow:var(--gc-lift);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cgc-head,.cgh-row,.tvc-head,.cgc-quick,.tvc-quick){
+  background:var(--gc-soft);
+  color:var(--gc-ink);
+  border-color:var(--gc-border);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cgc-q,.cgc-close,.cgh-fen-btn,.tvc-q,.tvc-close){
+  background:var(--gc-tint);
+  border-color:#c6d5f6;
+  color:var(--gc-blue);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cgc-msg.mine,.tvc-msg.mine){
+  background:#e6edff;
+  color:var(--gc-ink);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cgc-msg.theirs,.tvc-msg.theirs){
+  background:#f0f4fa;
+  color:var(--gc-ink);
+}
+body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cgh-empty,.cgh-num,.cgh-w,.cgh-b,.cgh-fen){
+  color:var(--gc-muted);
+}
+
+/* Tetris: selection and room menus; preview canvases and actual pieces retain their themes. */
+body.portal.hero-shell .hero-select-overlay{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+body.portal.hero-shell .hero-select-overlay :is(.hs-top,.hs-modes,.hs-modedesc,.hs-label,.hs-themes,.hs-sub,.tetris-hero-grid,.hs-play,.hs-resume,.ws-progress,.ws-grid,.ai-grid,.st-body,.tut-body,.vl-body){
+  box-sizing:border-box;
+  width:min(100%,860px);
+  margin-inline:auto;
+}
+body.portal.hero-shell .hero-select-overlay :is(.hs-top,.hs-modes,.hs-modedesc,.hs-label,.hs-themes,.hs-sub,.hs-play,.hs-resume){
+  flex-shrink:0;
+}
+body.portal.hero-shell .hero-select-overlay .hs-top{
+  gap:8px;
+  padding:5px 6px;
+  margin-bottom:9px;
+  background:var(--gc-face);
+  border:1px solid var(--gc-border);
+  border-radius:13px;
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell .hero-select-overlay .hs-top-right{
+  gap:4px;
+}
+body.portal.hero-shell .hero-select-overlay .hs-title{
+  font-size:clamp(15px,4vw,22px);
+  overflow-wrap:anywhere;
+}
+body.portal.hero-shell .hero-select-overlay :is(.hs-label,.hs-sub){
+  color:var(--gc-muted);
+  font-weight:750;
+}
+body.portal.hero-shell .hero-select-overlay .tetris-hero-grid{
+  min-height:110px;
+}
+body.portal.hero-shell .hero-select-overlay :is(.hs-resume,.mode-card,.theme-card,.hero-card,.ws-card,.st-row,.ach-card,.tut-section,.ai-card,.vl-card){
+  border-color:var(--gc-border);
+  background:var(--gc-face);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell .hero-select-overlay :is(.mode-card,.theme-card){
+  min-height:44px;
+  min-width:0;
+}
+body.portal.hero-shell .hero-select-overlay .theme-card{
+  min-width:54px;
+}
+body.portal.hero-shell .hero-select-overlay :is(.mode-card.selected,.theme-card.selected,.hero-card.selected){
+  border-color:#7d9af2;
+  background:linear-gradient(145deg,#fff,#e9f0ff);
+  box-shadow:inset 0 0 0 1px #b2c4f9,var(--gc-shadow);
+}
+body.portal.hero-shell .hero-select-overlay .hero-card.locked{
+  background:#f3f6fc;
+  border-color:#c1cee5;
+  box-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay .hc-prev{
+  background:#e9effb;
+  color:#304977;
+}
+body.portal.hero-shell .hero-select-overlay .hc-q{
+  color:#7a8ba9;
+  text-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay :is(.mode-nm,.theme-nm,.hc-name,.ws-name,.st-val,.st-ach-head,.ach-card-name,.tut-head,.tut-row b,.ai-name,.vl-card-title,.hs-resume){
+  color:var(--gc-ink);
+  -webkit-text-fill-color:currentColor;
+  text-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay :is(.hs-resume small,.hs-modedesc,.hc-passive,.hc-unlock,.ws-progress,.ws-desc,.ws-target,.st-label,.ach-card-desc,.tut-section p,.tut-row,.ai-desc,.vl-card-desc,.vl-or,.vl-codehint){
+  color:var(--gc-muted);
+  text-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay :is(.vl-codebig,.vl-status){
+  color:var(--gc-blue);
+  text-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay :is(.ws-star.on,.ach-card.unlocked .ach-card-name){
+  color:#825608;
+  text-shadow:none;
+}
+body.portal.hero-shell .hero-select-overlay .ws-boss{
+  color:#992740;
+}
+body.portal.hero-shell .hero-select-overlay .st-grid{
+  background:var(--gc-border);
+}
+body.portal.hero-shell .hero-select-overlay :is(.vl-paste,.vl-copy,.vl-join){
+  background:var(--gc-white);
+  border:1px solid #b6c9ef;
+  color:var(--gc-blue);
+  box-shadow:var(--gc-btn-shadow);
+}
+body.portal.hero-shell .tetris-overlay .tetris-topbar{
+  padding-inline:3px;
+}
+body.portal.hero-shell .tetris-overlay .t-panel{
+  background:var(--gc-face);
+  border-color:var(--gc-border);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell .tetris-overlay .t-panel:has(:is(.t-next,.t-hold)){
+  background:linear-gradient(145deg,#202e50,#14223d);
+  border-color:#2c4268;
+}
+body.portal.hero-shell .tetris-overlay .t-panel:has(:is(.t-next,.t-hold)) .t-plabel{
+  color:#d7e4ff;
+}
+body.portal.hero-shell .tetris-overlay .t-plabel{
+  color:var(--gc-muted);
+}
+body.portal.hero-shell .tetris-overlay .t-modebar{
+  /* The module supplies neon mode colors inline, some with low contrast. */
+  background:#1c2b4a;
+  color:#e3edff!important;
+}
+body.portal.hero-shell .tetris-overlay .t-pval{
+  color:var(--gc-ink);
+  text-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay .t-score{
+  color:var(--gc-blue);
+}
+body.portal.hero-shell .tetris-overlay .t-ctrl{
+  background:var(--gc-face);
+  border:1px solid #b7c8e8;
+  color:var(--gc-ink);
+  box-shadow:var(--gc-btn-shadow);
+  text-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay .t-ctrl:is([data-ctrl="hold"],[data-ctrl="rotate"],[data-ctrl="ccw"],[data-ctrl="cw"]){
+  background:var(--gc-tint);
+  color:#2b429d;
+}
+body.portal.hero-shell .tetris-overlay .t-ctrl:is([data-ctrl="drop"],.t-ctrl-drop){
+  background:var(--gc-accent);
+  color:#fff;
+  border-color:#244bcb;
+}
+body.portal.hero-shell .tetris-overlay .t-ctrl:active{
+  box-shadow:inset 0 2px 5px #122e6740;
+}
+body.portal.hero-shell .tetris-overlay .t-power-row{
+  border-radius:var(--r-lg,14px);
+  background:#1c2b4a;
+}
+body.portal.hero-shell .tetris-overlay .t-power{
+  background:#283b60;
+  border-color:#566c9b;
+  color:#dce8ff;
+}
+body.portal.hero-shell .tetris-overlay .t-power.ready{
+  border-color:var(--pcol);
+  color:#fff;
+}
+body.portal.hero-shell .tetris-overlay .t-practice{
+  background:#fff4dc;
+  border-color:#d8b875;
+  color:#79551a;
+}
+body.portal.hero-shell .tetris-overlay .t-practice.on{
+  background:#e9f0ff;
+  border-color:#9eb7f4;
+  color:#24428e;
+  box-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay :is(.tetris-gameover,.tetris-pause){
+  overflow:auto;
+  background:#f3f7ffee;
+  color:var(--gc-ink);
+}
+body.portal.hero-shell .tetris-overlay :is(.go-title,.pause-title,.go-row b){
+  color:var(--gc-ink);
+  text-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay :is(.go-row,.go-learning,.go-reward-lbl,.pause-stats){
+  color:var(--gc-muted);
+}
+body.portal.hero-shell .tetris-overlay .go-record{
+  color:#855809;
+  text-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay .go-reward{
+  color:#16663c;
+}
+
+/* Word game keeps the engraved wooden rack and letter tiles. */
+body.portal.hero-shell .kl-root :is(.kl-card,.kl-gamemenu,.kl-review-menu){
+  background:var(--gc-face);
+  color:var(--gc-ink);
+  border:1px solid var(--gc-border);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell .kl-root :is(.kl-mode,.kl-langbtn,.kl-acc-head){
+  background:var(--gc-white);
+  border-color:var(--gc-border);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-btn-shadow);
+}
+body.portal.hero-shell .kl-root :is(.kl-card h3,.kl-acc-title,.kl-friend-nm,.kl-mode div){
+  color:var(--gc-ink);
+  text-shadow:none;
+}
+body.portal.hero-shell .kl-root .kl-card h3{
+  background:none;
+  -webkit-text-fill-color:currentColor;
+}
+body.portal.hero-shell .kl-root :is(.kl-card p,.kl-langlbl,.kl-mode small,.kl-friend-lv,.kl-acc-arrow){
+  color:var(--gc-muted);
+}
+body.portal.hero-shell .kl-root :is(.kl-langbtn.active,.kl-acc-badge,.kl-mode .e){
+  background:var(--gc-tint);
+  border-color:#afc3f1;
+  color:var(--gc-blue);
+}
+body.portal.hero-shell .kl-root .kl-mode .e{
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  width:34px;
+  height:34px;
+  flex-shrink:0;
+}
+body.portal.hero-shell .kl-root .kl-mode:focus-visible{
+  outline:2px solid var(--gc-focus);
+  outline-offset:2px;
+}
+body.portal.hero-shell .kl-root :is(.kl-lt,.kl-zoomdock){
+  background:var(--gc-tint);
+  border-color:#c3d3f6;
+}
+body.portal.hero-shell .kl-root :is(.ltl,.ltn){
+  color:var(--gc-ink);
+}
+body.portal.hero-shell .kl-root .ltp{
+  color:var(--gc-muted);
+}
+body.portal.hero-shell .kl-root .kl-ztip{
+  background:#273963;
+  border-color:#526a9f;
+  color:#eaf1ff;
+}
+body.portal.hero-shell .kl-root .kl-card [data-el="nickin"]{
+  border-color:#adbedf!important;
+  background:var(--gc-white)!important;
+  color:var(--gc-ink)!important;
+}
+body.portal.hero-shell .kl-root .kl-card [data-el="nickin"]::placeholder{
+  color:var(--gc-muted);
+}
+/* Earlier word dialogs put a few semantic text colors in inline markup. */
+body.portal.hero-shell .kl-root :is(.kl-card,.kl-status) :is([style*="color:#bba8df"],[style*="color:#c9b8e8"],[style*="color:#d9caf2"],[style*="color:#8a7aae"]){
+  color:var(--gc-muted)!important;
+}
+body.portal.hero-shell .kl-root :is(.kl-card,.kl-status) :is([style*="color:#ffe9b8"],[style*="color:#ffd86b"],[style*="color:#ffe08a"]){
+  color:#79530d!important;
+}
+body.portal.hero-shell .kl-root .kl-card [style*="color:#6cff9a"]{
+  color:#176145!important;
+}
+body.portal.hero-shell .kl-root .kl-card :is([style*="color:#ff8fae"],.kl-btn[data-x="resign"]){
+  color:#982639!important;
+}
+body.portal.hero-shell .kl-root .kl-card [style*="animation:klspin"]{
+  border-color:#cedbf7!important;
+  border-top-color:var(--gc-blue)!important;
+}
+body.portal.hero-shell .kl-root :is(.kl-starbar,.kl-words){
+  color:var(--gc-muted);
+}
+body.portal.hero-shell .kl-root .kl-xpbar{
+  background:#dce6f8;
+}
+body.portal.hero-shell .kl-root .kl-xpfill{
+  background:var(--gc-accent);
+}
+
+/* Primary actions and state, shared by the four game rooms. */
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hs-play,.tut-ok,.vl-create,.cas-start,.tas-start,.col-connect,.tol-connect,.cgc-send,.tvc-send,.tg-roll,.tvbk-btn:not(.alt),.go-btn.primary,.kl-btn.primary){
+  background:var(--gc-accent);
+  border:1px solid #254bc9;
+  color:#fff;
+  text-shadow:none;
+  box-shadow:0 4px 9px #2449c637,inset 0 1px #ffffff40;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hs-play,.tut-ok,.vl-create,.cas-start,.tas-start,.col-connect,.tol-connect,.cgc-send,.tvc-send,.tg-roll,.tvbk-btn:not(.alt),.go-btn.primary,.kl-btn.primary):active{
+  background:#2043b6;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hs-play,.vl-create,.vl-join,.cas-start,.tas-start,.col-connect,.tol-connect,.tg-roll,.go-btn,.kl-btn):disabled{
+  background:#e8eef9;
+  color:#5b6886;
+  border-color:#cbd6ea;
+  box-shadow:none;
+  opacity:1;
+}
+
+@media(hover:hover){
+  body.portal.hero-shell :is(.hero-select-overlay,.chess-root,.tavla-root,.kl-root) :is(.mode-card,.theme-card,.cm-card,.tvm-card,.kl-mode,.kl-langbtn,.col-big,.tol-big):hover{
+    background:#edf3ff;
+    border-color:#a5bbf2;
+  }
+}
+
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) .hero-session-status{
+  background:#e9f0ff;
+  border-color:#b9cbf8;
+  color:#203973;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.hero-session-game,.hero-session-detail){
+  color:var(--gc-muted);
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) .hero-session-actions button{
+  border-color:#b2c3ee;
+  background:var(--gc-white);
+  color:var(--gc-blue);
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) .hero-session-status:is([data-phase=connecting],[data-phase=reconnecting]){
+  background:#fff5df;
+  border-color:#e7cb8b;
+  color:#725016;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) .hero-session-status[data-phase=ready]{
+  background:#eaf8ef;
+  border-color:#afdec3;
+  color:#1a5e3e;
+}
+body.portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) .hero-session-status[data-phase=failed]{
+  background:#fff0f2;
+  border-color:#edb8c0;
+  color:#922b3d;
+}
+body.portal.hero-shell :is(.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.ghud-solo,.ghud-player){
+  background:var(--gc-face);
+  border-color:var(--gc-border);
+  color:var(--gc-ink);
+  box-shadow:var(--gc-shadow);
+}
+body.portal.hero-shell :is(.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.ghud-nick,.ghud-score-val,.ghud-stat-v,.ghud-vs-txt){
+  color:var(--gc-ink);
+  text-shadow:none;
+}
+body.portal.hero-shell .tetris-overlay .ghud-stat-v{
+  color:var(--gc-ink)!important;
+}
+body.portal.hero-shell :is(.tetris-overlay,.chess-root,.tavla-root,.kl-root) :is(.ghud-lv,.ghud-score-lbl,.ghud-stat-l){
+  color:var(--gc-muted);
+}
+
+@media(max-width:380px){
+  body.portal.hero-shell .hero-select-overlay .hs-top{gap:5px;padding-inline:4px}
+  body.portal.hero-shell .hero-select-overlay .hs-top-right{gap:3px}
+  body.portal.hero-shell .hero-select-overlay .hs-top .t-icon{width:32px;height:39px;flex:0 0 32px;padding-inline:0}
+}
+@media(max-width:340px){
+  body.portal.hero-shell .hero-select-overlay{padding-inline:9px}
+  body.portal.hero-shell .hero-select-overlay .hs-top:has(.hs-top-right) .hs-title{font-size:13px}
+  body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-head,.tvm-head){padding-inline:8px;gap:6px}
+  body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-title,.tvm-title){font-size:16px}
+}
+@media(max-height:480px) and (orientation:landscape){
+  body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-head,.tvm-head){padding-block:10px}
+  body.portal.hero-shell :is(.chess-root,.tavla-root) :is(.cm-card,.tvm-card){min-height:50px;padding-block:5px}
+  body.portal.hero-shell .hero-select-overlay .tetris-hero-grid{flex:none;overflow:visible}
+  body.portal.hero-shell .tetris-overlay :is(.tetris-gameover,.tetris-pause){justify-content:safe center;padding:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.portal.hero-shell .tetris-overlay :is(.t-power.ready,.t-practice.on){animation:none}
+}
