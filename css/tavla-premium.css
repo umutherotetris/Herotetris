@@ -28,3 +28,136 @@
 .tavla-root .tvc-input{min-width:0;font-size:16px}
 .tavla-root .tvc-close{min-width:40px;min-height:36px}
 @media(prefers-reduced-motion:reduce){.tavla-root *{scroll-behavior:auto;transition:none!important}}
+
+/* Tavla material studio. The pattern stays behind the UI and tracks the board finish. */
+.tavla-root[data-tv-theme] {
+  --tv-page-hi:#1d334a;--tv-page-lo:#07101d;--tv-card-hi:#193049;--tv-card-lo:#0c192b;
+  --tv-brass:#d4b471;--tv-ink:#fff0ce;--tv-rim:#b48a484f;--tv-contrast:#a1e8ff;
+  background:
+    repeating-linear-gradient(59deg,transparent 0 3px,#f8dcc704 4px,#100a070d 5px,transparent 6px 9px),
+    radial-gradient(ellipse at 53% 28%,var(--tv-page-hi),var(--tv-page-lo) 74%);
+  color:var(--tv-ink);
+}
+.tavla-root[data-tv-theme="ceviz"]{--tv-page-hi:#482617;--tv-page-lo:#1a0d08;--tv-card-hi:#42291c;--tv-card-lo:#20110a;--tv-brass:#e5af63;--tv-rim:#df9e5759;--tv-contrast:#8cecd7}
+.tavla-root[data-tv-theme="iznik"]{--tv-page-hi:#174c58;--tv-page-lo:#061522;--tv-card-hi:#15384c;--tv-card-lo:#0c1b32;--tv-contrast:#9cfaff}
+.tavla-root[data-tv-theme="kizil"]{--tv-page-hi:#431b28;--tv-page-lo:#14090d;--tv-card-hi:#411923;--tv-card-lo:#250d18;--tv-brass:#e8bb82;--tv-contrast:#ffc5ae}
+.tavla-root[data-tv-theme="zumrut"]{--tv-page-hi:#174b3e;--tv-page-lo:#071c19;--tv-card-hi:#174138;--tv-card-lo:#0b2620;--tv-contrast:#a1ffcf}
+.tavla-root[data-tv-theme="buz"]{--tv-page-hi:#29435a;--tv-page-lo:#101b2a;--tv-card-hi:#29435b;--tv-card-lo:#16293a;--tv-brass:#b8dce8;--tv-ink:#effdff;--tv-rim:#b9dfed51}
+.tavla-root[data-tv-theme] .tv-icon,
+.tavla-root[data-tv-theme] .tg-act-btn,
+.tavla-root[data-tv-theme] .tg-status.show,
+.tavla-root[data-tv-theme] .tv-premium-score>div,
+.tavla-root[data-tv-theme] .tvm-card{
+  background:linear-gradient(146deg,var(--tv-card-hi),var(--tv-card-lo));border-color:var(--tv-rim);color:var(--tv-ink);
+}
+.tavla-root[data-tv-theme] .tv-premium-score>div.active {
+  border-color:var(--tv-brass);box-shadow:inset 0 1px #fff2,0 0 0 1px var(--tv-rim);
+}
+.tavla-root[data-tv-theme] .tv-premium-score [data-side="b"] i {background:radial-gradient(circle at 34% 29%,var(--tv-card-hi),var(--tv-card-lo));border-color:var(--tv-brass)}
+.tavla-root[data-tv-theme] .tg-turn {color:var(--tv-ink);background:linear-gradient(160deg,var(--tv-card-hi),var(--tv-card-lo));border:1px solid var(--tv-brass)}
+.tavla-root[data-tv-theme] .tg-act-btn.danger {color:#ffd1d1}
+.tavla-root[data-tv-theme] .tg-roll {
+  border-color:#ffdc9d;color:#271506;
+  background:linear-gradient(169deg,#ffe8b9 8%,#edaf57 51%,#ffc36c 71%,#c48237 100%);
+  box-shadow:inset 0 1px #fff4da,0 3px 0 #694126,0 7px 16px #0006;min-height:42px;
+}
+.tavla-root[data-tv-theme] .tv-icon[data-act="gameTheme"] {font-size:19px;color:var(--tv-brass)}
+.tavla-root .tg-toolset{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.tavla-root .tavla-material-name{display:inline-block;color:var(--tv-ink);margin-inline-start:7px;padding:3px 8px;border-radius:999px;border:1px solid var(--tv-rim);background:var(--tv-card-lo);font-size:.84em}
+.tavla-root[data-tv-theme] .tg-board-wrap canvas{
+  border-radius:11px;box-shadow:0 14px 30px #0009,0 0 0 1px var(--tv-rim);
+}
+.tavla-root .tg-board-wrap canvas:focus-visible{outline:2px solid var(--tv-contrast);outline-offset:-3px}
+.tavla-root .tv-sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.tavla-root .tg-materials{display:none;gap:6px;flex-shrink:0}
+.tavla-root .tg-materials button {
+  display:flex;align-items:center;justify-content:center;gap:6px;min-height:39px;
+  background:linear-gradient(142deg,var(--tv-card-hi),var(--tv-card-lo));border:1px solid var(--tv-rim);
+  border-radius:10px;color:var(--tv-ink);padding:4px;min-width:0;font-size:11px;font-weight:740;cursor:pointer;
+}
+.tavla-root .tg-materials i {
+  font-size:16px;font-style:normal;line-height:19px;width:19px;text-align:center;
+  color:#f1dbad;border-radius:5px;border:1px solid #dbb57866;
+  background:#613a27;
+}
+.tavla-root .tg-materials [data-quick-theme="iznik"] i{background:#126579;color:#d9f7ff}
+.tavla-root .tg-materials [data-quick-theme="lacivert"] i{background:#152e51;color:#e8c67c}
+.tavla-root .tg-materials [aria-pressed="true"] {border-color:var(--tv-brass);box-shadow:inset 0 0 0 1px var(--tv-rim)}
+@media (min-height:725px) and (orientation:portrait){.tavla-root .tg-materials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:384px){.tavla-root .tg-toolset{gap:6px}}
+.tavla-root .tavla-theme-dialog {
+  margin:auto;padding:16px;width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;
+  overflow:auto;overscroll-behavior:contain;border:1px solid var(--tv-brass);border-radius:17px;
+  background:linear-gradient(152deg,var(--tv-card-hi),var(--tv-card-lo) 62%);color:var(--tv-ink);
+  box-shadow:0 24px 64px #000c,inset 0 1px #fff2;
+}
+.tavla-root .tavla-theme-dialog::backdrop{background:#06070cbd}
+.tavla-root .tv-material-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.tavla-root .tv-material-head span{color:var(--tv-brass);font-size:10px;letter-spacing:.13em;font-weight:800}
+.tavla-root .tv-material-head h2{margin:3px 0 0;font:700 clamp(22px,5.7vw,32px)/1.12 Georgia,serif;color:var(--tv-ink)}
+.tavla-root .tavla-theme-dialog>p{margin:8px 0 14px;font-size:12px;color:#e0d6cd}
+.tavla-root .tv-material-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.tavla-root .tv-material-card{
+  position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:5px 3px 7px;
+  border:1px solid var(--tv-rim);border-radius:10px;background:#0b131c95;color:var(--tv-ink);text-align:center;cursor:pointer;
+}
+.tavla-root .tv-material-card span{font-size:clamp(10px,2.8vw,13px);font-weight:750;line-height:1.15}
+.tavla-root .tv-material-card small{color:#d7cbbd;font-size:10px;font-weight:500;line-height:1.17}
+.tavla-root .tv-material-card canvas{display:block;max-width:100%;width:106px;height:auto;aspect-ratio:100/139;border-radius:6px}
+.tavla-root .tv-material-card[aria-pressed="true"]{border-color:var(--tv-brass);background:var(--tv-card-hi);box-shadow:inset 0 0 0 1px var(--tv-rim)}
+.tavla-root .tv-material-card[aria-pressed="true"]::after {
+  position:absolute;top:7px;right:6px;content:"✓";font-size:11px;font-weight:850;line-height:16px;width:16px;border-radius:50%;
+  color:#271506;background:#ffd898;border:1px solid #40290f;
+}
+@media (max-width:335px){.tavla-root .tavla-theme-dialog{padding:12px}.tavla-root .tv-material-gallery{gap:5px}.tavla-root .tv-material-card small{font-size:9px}}
+
+/* Room chrome follows the active finish even when the portal itself is Pearl or Sea. */
+html body.portal.hero-shell .tavla-root[data-tv-theme] {
+  --gc-ink:var(--tv-ink);--gc-muted:#e2d0bc;--gc-blue:var(--tv-contrast);
+  --gc-border:var(--tv-rim);--gc-white:var(--tv-card-lo);--gc-soft:var(--tv-card-hi);
+  --gc-tint:color-mix(in srgb,var(--tv-card-hi) 85%,var(--tv-brass));--gc-face:linear-gradient(148deg,var(--tv-card-hi),var(--tv-card-lo));
+  --gc-ambient:repeating-linear-gradient(59deg,transparent 0 3px,#f8dcc707 4px,#100a0712 5px,transparent 6px 9px),radial-gradient(ellipse at 53% 22%,var(--tv-page-hi),var(--tv-page-lo) 78%);
+  --gc-accent:linear-gradient(150deg,#ffe4aa,#e6a554);--gc-shadow:inset 0 1px #fff1,0 5px 12px #0003;
+  --gc-btn-shadow:inset 0 1px #fff1,0 3px 8px #0005;--gc-focus:var(--tv-contrast);
+  background:var(--gc-ambient);color:var(--gc-ink);color-scheme:dark;
+}
+html body.portal.hero-shell .tavla-root[data-tv-theme] :is(.tvm-head,.tg-top) {background:var(--gc-face);border-color:var(--gc-border)}
+body.portal.hero-shell .tavla-root[data-tv-theme] :is(.tg-turn.white,.tg-turn.black,.tg-status.show) {
+  background:var(--gc-face);border-color:var(--tv-rim);color:var(--tv-ink);
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tg-status.show.win {color:#fff0aa;border-color:var(--tv-brass)}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tg-turn.white {border-color:var(--tv-brass)}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tg-turn.black {border-color:var(--tv-contrast)}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score>div.active {
+  border-color:var(--tv-brass);box-shadow:inset 0 1px #fff2;
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tg-act-btn.danger {
+  background:linear-gradient(140deg,#492324,#2a1517);color:#ffceca;border-color:#b67b7477;
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] .ghud {
+  padding:0 1px;background:transparent;border:0;
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] .ghud-player {padding:3px 6px}
+body.portal.hero-shell .tavla-root[data-tv-theme] .ghud :is(.ghud-nick,.ghud-score-val,.admin-nick-glow) {
+  color:var(--tv-ink);background:none;-webkit-text-fill-color:var(--tv-ink);text-shadow:none;
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] .ghud-nick .admin-nick-glow {color:#ffd284;-webkit-text-fill-color:#ffd284}
+body.portal.hero-shell .tavla-root[data-tv-theme] .ghud-ava {width:30px;height:30px}
+body.portal.hero-shell .tavla-root[data-tv-theme] .hero-session-status[data-phase="playing"] {
+  background:var(--gc-face);border-color:var(--gc-border);color:var(--tv-ink);
+}
+body.portal.hero-shell .tavla-root[data-tv-theme] :is(.tvc-msg.mine,.tvc-msg.theirs) {background:var(--gc-tint);color:var(--tv-ink)}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tv-icon[data-act="gameTheme"] {color:var(--tv-brass)}
+body.portal.hero-shell .tavla-root[data-tv-theme] .tg-top .portal-tool {background:var(--gc-face);color:var(--tv-ink);border-color:var(--gc-border)}
+@media(orientation:portrait) and (max-height:725px) {
+  body.portal.hero-shell .tavla-root[data-tv-theme] {--room-gap:4px}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score > div {
+    grid-template-columns:10px minmax(0,1fr) auto auto;gap:4px;padding:5px 6px;
+  }
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score :is(span,strong,small,i) {grid-column:auto;grid-row:1}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score span {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score strong {font-size:11px}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tv-premium-score small {font-size:10px}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tg-top {padding:3px}
+  body.portal.hero-shell .tavla-root[data-tv-theme] .tg-status.show {padding:5px 6px;min-height:0}
+}

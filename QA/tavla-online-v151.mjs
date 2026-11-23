@@ -99,7 +99,7 @@ test('Tavla open is idempotent and invitations remain valid for five minutes',()
  const make=ctx=>{
   let created=0,invites=0;const data=new Map([['hero_invite_ctx',JSON.stringify(ctx)]]);
   const node={style:{},addEventListener:noop};const root={querySelector:()=>node,querySelectorAll:()=>[]};
-  const c=vm.createContext({G:null,AUTO_ROLL:false,Sound:{},Date:{now:()=>1000000},document:{createElement:()=>{created++;return root;},body:{appendChild:n=>{n.isConnected=true;}}},injectCSS:noop,closeAll:noop,
+  const c=vm.createContext({G:null,AUTO_ROLL:false,Sound:{},Date:{now:()=>1000000},document:{createElement:()=>{created++;return root;},body:{appendChild:n=>{n.isConnected=true;}}},injectCSS:noop,closeAll:noop,setTavlaAppearance:noop,
     localStorage:{getItem:k=>data.get(k)||null,removeItem:k=>data.delete(k)},_startInviteTavla:()=>invites++});
   vm.runInContext(fn('openTavla'),c);return {c,data,counts:()=>({created,invites})};
  };

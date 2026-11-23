@@ -5,6 +5,12 @@ import { openPanel, element, button } from './portal-panels.js';
 const integer=value=>Number.isSafeInteger(Number(value))?Math.max(0,Number(value)):0;
 const format=value=>integer(value).toLocaleString('tr-TR');
 const time=value=>Number.isFinite(Number(value))?new Date(Number(value)).toLocaleString('tr-TR'):'Tarih yok';
+function archivedKajuCount(archive){
+  if(!archive||typeof archive!=='object'||Array.isArray(archive))return 0;
+  return Object.entries(archive).filter(([key,entry])=>/^entry_\d+$/.test(key)&&entry&&typeof entry==='object'&&!Array.isArray(entry)
+    &&Object.hasOwn(entry,'original')&&entry.original!=null
+    &&(entry.kind==='collection'||entry.kind==='row'&&typeof entry.logId==='string'&&entry.logId.length>0)).length;
+}
 export function walletDeliveries(profile={}){
   const rows=[];
   const add=(kind,id,value,label,state,amount,ts)=>rows.push({kind,id,label,state,amount:integer(amount),ts:integer(ts),detail:String(value?.toNick||value?.toName||value?.sku||value?.reason||'').slice(0,160)});
@@ -46,6 +52,8 @@ export function openWalletCenter(){
         entry.append(element('span','',row.reason||row.game||'Kaju işlemi'),element('strong',earn?'pc-positive':'pc-negative',(earn?'+':'−')+format(amt)),element('small','',time(row.ts)+(row.id?' · '+row.id:'')));list.append(entry);
       }
       if(!source.length)list.append(element('p','pc-empty',tab==='flow'?'Bu cihazda henüz Kaju geçmişi yok.':'Henüz ayrı hesap işlem kaydı yok.'));
+      const archived=tab==='server'?archivedKajuCount(profile.heroKajuHistoryArchive):0;
+      if(archived)list.append(element('p','pc-muted',`İnceleme arşivi: ${archived} öğe. Eski kayıtlar korundu; doğrulanmış işlem olarak listelenmiyor.`));
       list.append(element('small','pc-muted',tab==='flow'?'Bu hesap için bu cihazda tutulan kazanç ve harcama kayıtları.':'Sunucudaki işlem makbuzları. Cihaz geçmişiyle aynı işlemi içerebilir.'));
     }
   }

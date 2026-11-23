@@ -1,6 +1,6 @@
 # Hero Portal Android
 
-`tr.heroyun.portal` · sürüm 1.59 (kod 159) · Android 6.0 ve üzeri.
+`tr.heroyun.portal` · sürüm 1.62 (kod 162) · Android 6.0 ve üzeri.
 
 Bu APK, Hero Portal'ın canlı HTTPS sürümünü Android'den açar. Varsayılan
 tarayıcı destekliyorsa özel sekme, desteklemiyorsa normal tarayıcı kullanılır.
@@ -21,7 +21,7 @@ anahtarını kullanın; bir güncelleme için yeni anahtar üretmeyin.
 export ANDROID_HOME="/path/to/android-sdk"
 export HERO_KEYSTORE="/private/path/hero-portal.p12"
 export HERO_KEYPASS_FILE="/private/path/hero-portal.pass"
-bash android/build-apk.sh ../Hero-Portal-v159.apk
+bash android/build-apk.sh ../Hero-Portal-v162.apk
 ```
 
 `ANDROID_JAR` ve `ANDROID_BUILD_TOOLS` ile ayrı SDK konumları

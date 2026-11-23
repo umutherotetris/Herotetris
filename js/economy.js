@@ -126,7 +126,9 @@ async function grantWheelEgg(owner, eggId){
   if(!kz.grantEgg || !await kz.grantEgg(owner, eggId)) throw new Error('Yumurta teslim edilemedi');
 }
 function showRewardError(error){
-  if(error?.code === 'legacy-profile') return 'Kaju verilerinde doğrulanamayan eski bir kayıt var. Ödül hakkın korunuyor; destek için yöneticiye haber ver.';
+  if(error?.code === 'legacy-balance') return 'Kaju bakiyesi doğrulanamadı. Ödül hakkın korunuyor; destek için yöneticiye haber ver.';
+  if(error?.code === 'legacy-profile') return 'Eski Kaju kayıtları güvenle ayrıştırılamadı. Ödül hakkın korunuyor; destek için yöneticiye haber ver.';
+  if(error?.code === 'balance-limit') return 'Bu ödül Kaju bakiye sınırını aşıyor. Çark hakkın kullanılmadı.';
   const code = String(error?.code || error?.message || '').toLowerCase();
   if(code.includes('permission') || code.includes('denied')) return 'Sunucu ödülün kaydına izin vermedi; hakkın korunuyor. Daha sonra yeniden deneyebilirsin.';
   if(code.includes('network') || code.includes('offline') || code.includes('disconnected') || code.includes('unavailable')) return 'Bağlantı kurulamadı. Hakkın korunuyor; bağlantın geldiğinde yeniden deneyebilirsin.';

@@ -1373,15 +1373,27 @@ async function toggleKHist(){
   if(!toggleDisclosure(panel,'khist',box))return;
   box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.query(fdb.ref(db, 'users/' + target.uid + '/kaju_history'), fdb.limitToLast(15)));
+    const profilePath = 'users/' + target.uid;
+    const [history,archived] = await Promise.allSettled([
+      fdb.get(fdb.query(fdb.ref(db, profilePath + '/kaju_history'), fdb.limitToLast(15))),
+      fdb.get(fdb.ref(db, profilePath + '/heroKajuHistoryArchive')),
+    ]);
     if(!current()) return;
-    if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
-    const rows = []; snap.forEach(ch => { const v = ch.val(); rows.push(v); });
+    const rows = [];
+    if(history.status==='fulfilled'&&history.value.exists())history.value.forEach(ch=>{const v=ch.val();if(v&&Number.isFinite(Number(v.amount)))rows.push(v);});
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
-    box.innerHTML = rows.filter(v=>v&&Number.isFinite(Number(v.amount))).map(v=>{
+    let content = rows.map(v=>{
       const negative=Number(v.amount)<0||['spend','admin-sub'].includes(v.type);
       return `<div class="adm-li"><span>${new Date(v.ts).toLocaleString('tr-TR')}</span> <b class="${negative?'bad':'ok'}">${negative?'−':'+'}${fmt(Math.abs(Number(v.amount)))}</b> <span>${esc(v.type||'')} · ${esc(v.reason||'')}</span></div>`;
-    }).join('');
+    }).join('') || (history.status==='fulfilled'?'<i>Kayıt yok</i>':'<i>İşlemler okunamadı</i>');
+    if(archived.status==='fulfilled'){
+      const archive=archived.value.val();
+      const count=archive&&typeof archive==='object'&&!Array.isArray(archive)?Object.entries(archive).filter(([key,entry])=>/^entry_\d+$/.test(key)&&entry&&typeof entry==='object'&&!Array.isArray(entry)
+        &&Object.hasOwn(entry,'original')&&entry.original!=null
+        &&(entry.kind==='collection'||entry.kind==='row'&&typeof entry.logId==='string'&&entry.logId.length>0)).length:0;
+      if(count)content+=`<div class="adm-li">İnceleme arşivi: ${count} öğe. Eski kayıtlar korundu; doğrulanmış işlem olarak listelenmiyor.</div>`;
+    }else content+='<div class="adm-li">İnceleme arşivi okunamadı.</div>';
+    box.innerHTML=content;
   }catch(e){ if(current()) box.innerHTML = '<i>Okunamadı</i>'; }
 }
 

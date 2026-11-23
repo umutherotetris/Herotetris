@@ -431,11 +431,11 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
     const next = typeof reward === 'function' ? reward(profile) : {amount:reward};
     amount = next?.amount;
     fields = next?.fields || {};
-    const balance = walletBalance(profile.kaju);
-    if(balance === null){ rejected = 'invalid-profile'; return; }
+    const balance = rewardBalance(profile.kaju);
+    if(balance === null){ rejected = 'legacy-balance'; return; }
     if(!Number.isSafeInteger(amount) || amount <= 0){ rejected = 'ineligible'; return; }
     if(balance + amount > KAJU_MAX){ rejected = 'balance-limit'; return; }
-    const history = rewardHistoryPatch(profile.kaju_history);
+    const history = rewardHistoryPatch(profile);
     if(!history){ rejected = 'legacy-profile'; return; }
     return {...profile, ...fields, ...history, kaju:balance + amount, heroWalletRevision:nextWalletRevision(profile),
       heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:{amount, ts:Date.now()}}};
@@ -468,12 +468,34 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
   return {claimed:true, alreadyClaimed:false, amount, balance, fields, receipt};
 }
 
-// Whole-profile transactions also validate existing Kaju history. Preserve
-// every row and extension field; normalize only lossless legacy representations.
-// Never invent an amount, a date or the direction of an unknown transaction.
-function rewardHistoryPatch(history){
+// Exact legacy decimal text can be converted without rounding or inferring a
+// balance. Strip only zero fractional digits, including in scientific notation.
+function rewardBalance(value){
+  const direct = walletBalance(value);
+  if(direct !== null || typeof value !== 'string' || value.length > 128) return direct;
+  const parts = /^\+?(\d+)(?:\.(\d+))?(?:e([+-]?\d{1,3}))?$/i.exec(value.trim());
+  if(!parts) return null;
+  const fraction = parts[2] ?? '';
+  let digits = (parts[1] + fraction).replace(/^0+/, '');
+  if(!digits) return 0;
+  const scale = Number(parts[3] ?? 0) - fraction.length;
+  if(scale < 0){
+    const whole = digits.length + scale;
+    if(whole <= 0 || /[1-9]/.test(digits.slice(whole))) return null;
+    digits = digits.slice(0,whole);
+  }else{
+    if(digits.length + scale > 9) return null;
+    digits += '0'.repeat(scale);
+  }
+  return walletBalance(digits);
+}
+
+// Whole-profile transactions validate the active history. Keep any unrepairable
+// originals in the same profile, outside the list of confirmed Kaju entries.
+// Preservation, active-list cleanup, reward and receipt share a single commit.
+function rewardHistoryPatch(profile){
+  const history = profile.kaju_history;
   if(history == null) return {};
-  if(typeof history !== 'object') return null;
   const asNumber = value => {
     if(typeof value === 'number' && Number.isFinite(value)) return value;
     if(typeof value === 'string' && /^-?\d+$/.test(value)){
@@ -482,18 +504,38 @@ function rewardHistoryPatch(history){
     }
     return null;
   };
-  let changed = null;
-  for(const [id,row] of Object.entries(history)){
+  let changed = null, clear = false;
+  const retained = [];
+  if(typeof history !== 'object'){
+    retained.push({kind:'collection',original:history});
+    clear = true;
+  }
+  for(const [id,row] of (clear ? [] : Object.entries(history))){
     if(row == null) continue; // Numeric keys can produce holes in SDK arrays.
-    if(typeof row !== 'object' || Array.isArray(row) || row.type == null) return null;
-    const amount = asNumber(row.amount), ts = asNumber(row.ts);
-    if(amount === null || ts === null) return null;
-    if(amount !== row.amount || ts !== row.ts || row.game == null || row.reason == null){
-      changed ??= {...history};
-      changed[id] = {...row, amount, ts, game:row.game ?? 'kaju', reason:row.reason ?? 'Eski işlem kaydı'};
+    const amount = asNumber(row?.amount), ts = asNumber(row?.ts);
+    if(typeof row !== 'object' || Array.isArray(row) || row.type == null || amount === null || ts === null){
+      retained.push({kind:'row',logId:id,original:row});
+      changed ??= new Map(Object.entries(history));
+      changed.delete(id);
+    }else if(amount !== row.amount || ts !== row.ts || row.game == null || row.reason == null){
+      changed ??= new Map(Object.entries(history));
+      changed.set(id,{...row,amount,ts,game:row.game ?? 'kaju',reason:row.reason ?? 'Eski işlem kaydı'});
     }
   }
-  return changed ? {kaju_history:changed} : {};
+  const active = changed && [...changed].filter(([,row]) => row != null);
+  const patch = clear || changed ? {kaju_history:active?.length ? Object.fromEntries(active) : null} : {};
+  if(!retained.length) return patch;
+  const existing = profile.heroKajuHistoryArchive;
+  // A pre-existing value with another schema is left intact for review.
+  if(existing != null && (typeof existing !== 'object' || Array.isArray(existing))) return null;
+  const archive = {...existing};
+  let slot = 0;
+  for(const record of retained){
+    let key;
+    do{key = 'entry_' + (++slot);}while(Object.hasOwn(archive,key));
+    archive[key] = record;
+  }
+  return {...patch,heroKajuHistoryArchive:archive};
 }
 
 // All wheel sectors share one daily receipt. The selected outcome and its
@@ -551,11 +593,11 @@ export async function claimWheelReward(day, segment, uid = player.uid){
       // Old accounts may store the same intact balance as text. XP must not
       // replay that invalid shape on a full-profile write or credit any Kaju.
       if(profile.kaju != null && typeof profile.kaju !== 'number'){
-        const balance = walletBalance(profile.kaju);
-        if(balance === null){ rejected='legacy-profile'; return; }
+        const balance = rewardBalance(profile.kaju);
+        if(balance === null){ rejected='legacy-balance'; return; }
         fields.kaju = balance;
       }else if(typeof profile.kaju === 'number' && (!Number.isFinite(profile.kaju) || profile.kaju < 0 || profile.kaju > KAJU_MAX)){
-        rejected='legacy-profile'; return;
+        rejected='legacy-balance'; return;
       }
       const stored = profile.xp && typeof profile.xp === 'object' ? profile.xp : {};
       let level = Math.max(1, finiteAmount(profile.level || stored.level, 1));
@@ -570,14 +612,14 @@ export async function claimWheelReward(day, segment, uid = player.uid){
       }
       fields.level = level; fields.xp = {level, xp, totalXP}; fields.heroXPRevision = nextXPRevision(profile);
     } else {
-      const balance = walletBalance(profile.kaju);
-      if(balance === null){ rejected='invalid-profile'; return; }
+      const balance = rewardBalance(profile.kaju);
+      if(balance === null){ rejected='legacy-balance'; return; }
       if(balance + amount > KAJU_MAX){ rejected='balance-limit'; return; }
       fields.kaju = balance + amount;
       fields.heroWalletRevision = nextWalletRevision(profile);
       if(type === 'egg') receipt.eggId = 'daily_spin_' + day;
     }
-    const history = rewardHistoryPatch(profile.kaju_history);
+    const history = rewardHistoryPatch(profile);
     if(!history){ rejected='legacy-profile'; return; }
     return {...profile, ...fields, ...history, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
   }, {applyLocally:false});

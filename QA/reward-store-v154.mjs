@@ -147,12 +147,51 @@ let groups=0;
  assert.equal(saved.kaju,200);assert.deepEqual(f.writes.filter(path=>path==='users/alice'),['users/alice']);groups++;
 }
 {
- const original={kaju:100,kaju_history:{old:{amount:'bilinmiyor',ts:'1600000000000',type:'spend'}}};
+ const raw={amount:'bilinmiyor',ts:'1600000000000',type:'spend',extensions:{from:'legacy'}};
+ const active={amount:10,ts:1730000000000,type:'earn',game:'spin',reason:'Test'};
+ const previous={kind:'row',logId:'older',original:['old']};
+ const original={kaju:100,kaju_history:{old:raw,active},heroKajuHistoryArchive:{entry_1:previous}};
  const f=fixture(original);
- const result=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice');
- assert.equal(result.reason,'legacy-profile');
- assert.deepEqual(f.records.get('users/alice'),original);
- assert.equal(f.writes.length,0);groups++;
+ const [a,b]=await Promise.all([
+   f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice'),
+   f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice')
+ ]);
+ assert.equal(Number(a.claimed)+Number(b.claimed),1);
+ assert.equal(Number(a.alreadyClaimed)+Number(b.alreadyClaimed),1);
+ const saved=f.records.get('users/alice');
+ assert.equal(saved.kaju,150);
+ assert.deepEqual(saved.kaju_history,{active});
+ assert.deepEqual(saved.heroKajuHistoryArchive,{entry_1:previous,entry_2:{kind:'row',logId:'old',original:raw}});
+ assert.deepEqual(f.writes.filter(path=>path==='users/alice'),['users/alice']);groups++;
+}
+{
+ const f=fixture({kaju:100,kaju_history:false});
+ const result=await f.context.claimKajuOnce('daily_day',50,'daily','daily login','alice');
+ assert.equal(result.claimed,true);
+ const saved=f.records.get('users/alice');
+ assert.equal(saved.kaju_history,null);
+ assert.deepEqual(saved.heroKajuHistoryArchive,{entry_1:{kind:'collection',original:false}});groups++;
+}
+{
+ const profile={kaju:100,kaju_history:{old:{amount:'unknown'}},heroKajuHistoryArchive:'non-schema data'};
+ const f=fixture(profile);
+ assert.equal((await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice')).reason,'legacy-profile');
+ assert.deepEqual(f.records.get('users/alice'),profile);assert.equal(f.writes.length,0);groups++;
+}
+{
+ const f=fixture({kaju:' 9.99268287e8 ',level:1,xp:{level:1,xp:10,totalXP:10}});
+ const r=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice');
+ assert.equal(r.claimed,true);assert.equal(f.records.get('users/alice').kaju,999268337);
+ const g=fixture({kaju:'999268287.00000000001',level:1,xp:{level:1,xp:10,totalXP:10}});
+ assert.equal((await g.context.claimWheelReward('2026-10-22',{type:'xp',amount:40},'alice')).reason,'legacy-balance');
+ assert.equal(g.records.get('users/alice').kaju,'999268287.00000000001');
+ assert.equal(g.writes.length,0);groups++;
+}
+{
+ const profile={kaju:100,kaju_history:{old:{amount:'unknown'}}};
+ const f=fixture(profile);f.hooks.reject=true;
+ await assert.rejects(f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice'),e=>e.code==='PERMISSION_DENIED');
+ assert.deepEqual(f.records.get('users/alice'),profile);assert.equal(f.writes.length,0);groups++;
 }
 {
  const f=fixture();f.hooks.after=()=>{throw Object.assign(Error('Connection stopped before acknowledgement'),{code:'DISCONNECTED'});};

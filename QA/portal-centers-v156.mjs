@@ -211,6 +211,17 @@ await test('wallet server admin additions render as incoming and deductions rend
   const entries=panel.body.querySelectorAll('.pc-entry');assert.equal(entries.length,2);assert.match(entries[0].textContent,/\+50/);assert.match(entries[1].textContent,/−20/);
   panel.close();assert.equal(f.live.size,0);assert.equal(f.subscribers.size,0);
 });
+await test('wallet keeps archived legacy history separate from verified rows and balance',async()=>{
+  const f=await centerFixture(),m=await module('wallet-center.js',f);
+  const profile=f.dbData.users.alice;
+  profile.kaju_history={confirmed:{amount:50,type:'earn',ts:2}};
+  profile.heroKajuHistoryArchive={entry_1:{kind:'row',logId:'unverified',original:{amount:87654,reason:'raw archive'}},entry_2:{kind:'collection',original:'raw legacy collection'},entry_3:{kind:'row',original:{amount:11}},invalid:{kind:'collection',original:'ignored'}};
+  const panel=m.openWalletCenter();await settle();await click(byText(panel.body,'Hesap kayıtları'));
+  const entries=panel.body.querySelectorAll('.pc-entry');assert.equal(entries.length,1);assert.match(entries[0].textContent,/\+50/);
+  assert.equal(panel.body.querySelector('.pc-metric').textContent,'100 Kaju');assert.match(panel.body.textContent,/İnceleme arşivi: 2 öğe/);
+  assert.doesNotMatch(panel.body.textContent,/87654|raw archive|raw legacy collection/);
+  assert.equal(f.writes.length,0);panel.close();
+});
 await test('wallet cannot regress a newer confirmed live balance when an earlier read completes late',async()=>{
   const f=await centerFixture(),m=await module('wallet-center.js',f);let release;
   f.hooks.get=()=>new Promise(r=>release=r);const panel=m.openWalletCenter();await settle();

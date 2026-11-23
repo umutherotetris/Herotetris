@@ -1,6 +1,6 @@
-/* Hero Portal 160: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 162: scoped game and portal cache. */
 'use strict';
-const HERO_BUILD = '160';
+const HERO_BUILD = '162';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
@@ -16,11 +16,14 @@ const CORE_ASSETS = [
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=157',
   'css/tetris.css?v=157', 'css/portal-centers.css?v=157', 'css/themes.css?v=124', 'css/portal.css?v=144',
-  'js/portal-worker.js?v=160', 'js/portal.js?v=160', 'js/app.js?v=160', 'js/nav.js',
-  'js/economy.js', 'js/store.js',
+  'js/portal-worker.js?v=162', 'js/portal.js?v=162', 'js/app.js?v=162', 'js/nav.js',
+  'js/economy.js', 'js/store.js', 'js/wallet-center.js',
   'js/game-return.js', 'js/game-launcher.js', 'js/game-home.js', 'js/game-social.js',
+  'js/games/chess.js', 'js/games/chess-engine.js', 'js/games/chess-board-art.js', 'js/games/chess-figure-atlas.js', 'css/chess-premium.css?v=162',
+  'js/games/chess-ottoman.js', 'assets/ottoman-figures-v162.webp', 'assets/chess-ottoman-3d-v162.webp',
+  'js/games/tavla.js', 'js/games/tavla-engine.js', 'css/tavla-premium.css?v=162',
   'js/portal-palette.js', 'js/profile.js', 'js/social.js',
-  'css/hero-game-layout-v159.css', 'css/game-return-v159.css', 'css/game-social.css', 'css/hero-theme-v159.css',
+  'css/hero-game-layout-v159.css', 'css/game-return-v159.css', 'css/game-social.css', 'css/hero-theme-v159.css', 'css/hero-home-motion-v161.css',
   'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=140',
   'assets/game-chess.svg?v=140', 'assets/game-tavla.svg?v=140', 'assets/game-word.svg?v=140',
   'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',

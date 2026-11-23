@@ -181,6 +181,12 @@ await test('history distinguishes positive stored spend amounts from income',asy
  const f=fixture();f.data.users.old.kaju_history={spend:{type:'spend',amount:50,ts:1},sub:{type:'admin-sub',amount:25,ts:2},earn:{type:'earn',amount:100,ts:3}};
  await f.A.toggleKHist();const html=f.node('[data-el="khist"]').innerHTML;assert.match(html,/class="bad">−50/);assert.match(html,/class="bad">−25/);assert.match(html,/class="ok">\+100/);
 });
+await test('history shows the archive summary with no verified rows but never the raw values',async()=>{
+ const f=fixture();f.data.users.old.heroKajuHistoryArchive={entry_0:{kind:'row',logId:'unverified',original:{amount:87654,reason:'raw archive'}},entry_1:{kind:'collection',original:false},entry_2:{kind:'row',original:'missing key'}};
+ await f.A.toggleKHist();const html=f.node('[data-el="khist"]').innerHTML;
+ assert.match(html,/İnceleme arşivi: 2 öğe/);assert.doesNotMatch(html,/87654|raw archive|missing key/);
+ assert.equal(f.writes.length,0);
+});
 await test('live role revocation closes panel, removes listeners and restores opener focus',async()=>{
  const f=fixture();f.A.closePanel();f.A.openAdminPanel();await settle();const panel=f.A.getPanel();assert.ok(panel);assert.equal(panel.root.attributes.role,'dialog');
  f.emitRole(null);assert.equal(f.A.getPanel(),null);assert.equal(panel.root.isConnected,false);assert.ok(f.listeners.every(listener=>!listener.active));assert.equal(f.opener.focused,true);

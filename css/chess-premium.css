@@ -39,3 +39,151 @@
 @media(prefers-reduced-motion:reduce){.chess-root *{scroll-behavior:auto;transition:none!important}}
 
 .chess-root .cg-player{padding:6px 9px;margin:0;min-width:0;flex-shrink:0}.chess-root .cgp-avatar{width:32px;height:32px;font-size:23px;border-radius:10px}.chess-root .cgp-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chess-root .cgp-sub{font-size:10px}.chess-root .cgp-cap{max-width:90px;font-size:13px}
+
+/* İznik studio: dark material around the board, bright inlaid controls. */
+.chess-root{
+  --chess-brass:#c59961;
+  --chess-ivory:#f6e6cb;
+  --chess-satin:linear-gradient(150deg,#1c3548 0,#101f2e 45%,#071421 100%);
+  --chess-layer:linear-gradient(160deg,#1a3348,#0b1725 64%,#0a1422);
+  --chess-inlay:inset 0 1px #f6d2a75e,inset 0 -1px #c697573d,0 3px 7px #0007;
+  --chess-ambient:
+    radial-gradient(ellipse at 44% 14%,#29457577,transparent 49%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Cpath d='M0 35Q12 18 35 0Q57 17 70 35Q58 53 35 70Q13 52 0 35ZM8 35q12-4 27-27q7 19 27 27q-20 7-27 27q-8-20-27-27ZM22 35l13-13l13 13l-13 13Z' fill='none' stroke='%2375a8c8' stroke-opacity='.085' stroke-width='.65'/%3E%3C/svg%3E"),
+    linear-gradient(165deg,#101f34 0%,#0a182b 58%,#060f1d 100%);
+  background:var(--chess-ambient);
+}
+/* This selected game surface takes precedence over light portal presets. */
+body.portal.hero-shell .chess-root[data-chess-skin]{
+  --gc-ambient:var(--chess-ambient);
+  --gc-ink:var(--chess-ivory);
+  --gc-muted:#c7d3dd;
+  --gc-blue:#b9e1f3;
+  --gc-border:#b78e5b9e;
+  --gc-white:#0c1a29;
+  --gc-soft:#14263a;
+  --gc-tint:#213649;
+  --gc-face:var(--chess-satin);
+  --gc-accent:linear-gradient(145deg,#246078,#10344c);
+  --gc-shadow:0 1px 5px #0006;
+  --gc-lift:0 14px 45px #0009;
+  --gc-btn-shadow:var(--chess-inlay);
+  --gc-focus:#85daf4;
+  color-scheme:dark;
+}
+.chess-root[data-chess-skin="kizil"]{--chess-brass:#d59970;--chess-satin:linear-gradient(145deg,#542b35,#1a1725 64%,#100f1c)}
+.chess-root[data-chess-skin="bursa"]{--chess-brass:#c6ae73;--chess-satin:linear-gradient(145deg,#234b41,#112723 62%,#0a171a)}
+.chess-root[data-chess-skin="sinan"]{--chess-brass:#b8cedd;--chess-satin:linear-gradient(145deg,#324b64,#162632 60%,#0d1722)}
+.chess-root:is([data-chess-skin="safranbolu"],[data-chess-skin="kapadokya"]){--chess-brass:#d9ad76;--chess-satin:linear-gradient(145deg,#513a2b,#241b17 62%,#14131b)}
+.chess-root[data-chess-skin="sedef"]{--chess-brass:#c5a9dc;--chess-satin:linear-gradient(145deg,#382d55,#151c36 63%,#101426)}
+.chess-root .cm-head,body.portal.hero-shell .chess-root[data-chess-skin] .cm-head{
+  background:var(--chess-layer);border-color:#b484485e;
+}
+.chess-root :is(.cg-game-title,.cm-title){font:700 clamp(17px,4.7vw,25px)/1.12 Georgia,serif;color:var(--chess-ivory);text-shadow:0 2px 3px #060911}
+.chess-root .cg-turn-cell{min-width:0;flex:1 1 78px;display:grid;gap:2px;padding-inline:8px;border-inline-start:1px solid #cca06566}
+.chess-root .cg-turn-cell .cg-turn,body.portal.hero-shell .chess-root .cg-turn-cell .cg-turn{
+  text-align:start;justify-self:start;min-width:0;padding:0;font-size:clamp(9px,2.3vw,11px);letter-spacing:.06em;border:0;background:none;box-shadow:none;border-radius:0;overflow-wrap:normal;
+}
+.chess-root .cg-turn-cell .cg-turn.white{color:#f1d294}.chess-root .cg-turn-cell .cg-turn.black{color:#a9deee}
+.chess-root .cg-top{border-block-end:1px solid #d4a66553}
+.chess-root :is(.c-icon,.cg-act-btn,.cg-studio button){background:var(--chess-satin);border:1px solid var(--chess-brass);color:var(--chess-ivory);box-shadow:var(--chess-inlay);border-radius:11px}
+.chess-root .c-icon[data-act="exit"]{font:700 30px/1 Georgia,serif;padding-bottom:4px}
+.chess-root .cm-head .cm-theme-btn,body.portal.hero-shell .chess-root .cm-head .cm-theme-btn{width:auto;min-width:44px;flex:none;gap:4px;padding-inline:9px;font-size:12px}
+.chess-root .cg-player{background:var(--chess-layer);border:1px solid #c4995b7d;box-shadow:inset 0 1px #ffe4aa26,0 1px 6px #0005}
+.chess-root .cg-player.your-turn{box-shadow:inset 0 1px #ffe4aa52,0 1px 9px #d9a65a28}
+.chess-root .cgp-avatar{border:1px solid var(--chess-brass);box-shadow:0 0 0 2px #081321,0 0 0 3px #be965963;border-radius:50%}
+.chess-root .cgp-name{font:700 15px/1.2 Georgia,serif;color:var(--chess-ivory)}
+.chess-root .cg-board-wrap canvas{border-radius:clamp(6px,2.2vw,14px);box-shadow:0 12px 32px #0008,0 0 0 1px #b98645b4}
+.chess-root .cg-clock{background:var(--chess-layer);border:1px solid var(--chess-brass);box-shadow:var(--chess-inlay);padding:4px 10px}
+.chess-root .cg-clock.active{background:linear-gradient(145deg,#634421,#241b1b 73%);border-color:#f4c984}
+.chess-root .cgk-time{font:700 clamp(17px,4.4vw,23px)/1.2 Georgia,serif;color:var(--chess-ivory);font-variant-numeric:tabular-nums}
+.chess-root .cgk-label{color:#ced9e6;font-size:11px}
+.chess-root .cg-captured{flex-direction:row;flex-wrap:wrap;padding:0;gap:3px}
+.chess-root .cg-captured[hidden]{display:none}
+.chess-root .cap-row{min-height:20px;padding:4px 6px;gap:4px;flex:1 1 110px;min-width:0}
+.chess-root .cap-row b{font-size:10px;color:#c4d0dd}
+.chess-root .cg-studio{grid-column:1/-1;flex:1 0 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:0}
+.chess-root .cg-studio button{display:flex;align-items:center;gap:clamp(4px,1.8vw,9px);min-width:0;min-height:40px;padding:5px 8px;text-align:start;cursor:pointer}
+.chess-root .cg-studio button>span:first-child{flex:none;color:#f0c778;font-size:15px}
+.chess-root .cg-studio-label{min-width:0;flex:1;display:grid;gap:1px}
+.chess-root .cg-studio-label small{font:700 9px/1.05 system-ui;letter-spacing:.06em;color:#a5c5d4;text-transform:uppercase}
+.chess-root .cg-studio-label strong{font:700 12px/1.14 system-ui;overflow-wrap:anywhere;white-space:normal;color:var(--chess-ivory)}
+.chess-root .cg-studio-more{color:#e0bc85;flex:none}
+
+.chess-root .chess-theme-picker{background:#060d18df;backdrop-filter:blur(5px)}
+.chess-root .ctp-box{width:min(100%,540px);max-width:540px;min-width:0;background:var(--chess-layer);border:1px solid var(--chess-brass);padding:clamp(12px,3vw,20px);scrollbar-width:thin}
+.chess-root .ctp-heading{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:0 0 4px}
+.chess-root .ctp-kicker{margin:0 0 3px;font-size:9px;font-weight:800;color:#d5af79;letter-spacing:.17em}
+.chess-root .ctp-title{margin:0;color:var(--chess-ivory);text-align:start;font:700 clamp(23px,6vw,31px)/1.12 Georgia,serif;letter-spacing:0}
+.chess-root .ctp-dismiss{border:1px solid #c9975c80;border-radius:10px;color:var(--chess-ivory);background:var(--chess-satin);min-width:39px;min-height:39px;cursor:pointer}
+.chess-root .ctp-intro{margin:0 0 12px;color:#c5d4e0;font-size:12px;line-height:1.4}
+.chess-root .ctp-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;margin-bottom:10px;background:#091421;border-radius:11px;border:1px solid #c6975c55}
+.chess-root .ctp-tabs button{border:1px solid transparent;border-radius:8px;padding:7px;min-height:38px;color:#c9d7e4;font-weight:700;font-size:13px;background:transparent;cursor:pointer}
+.chess-root .ctp-tabs button[aria-pressed="true"]{background:var(--chess-satin);border-color:#c6975ca8;color:var(--chess-ivory);box-shadow:var(--chess-inlay)}
+.chess-root [data-ctp-panel][hidden]{display:none}
+.chess-root .ctp-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.chess-root .ctp-card{min-width:0;background:#0b1726;border:1px solid #a7805199;padding:6px 4px;display:flex;flex-direction:column;align-items:center;transition:none}
+.chess-root .ctp-card[aria-pressed="true"],.chess-root .ctp-piece-card[aria-pressed="true"]{border-color:#f4cc86;background:#233447;box-shadow:inset 0 0 0 1px #f4cc86}
+.chess-root .ctp-preview{display:block;width:min(100%,87px);height:auto;aspect-ratio:1;margin:0 auto 6px;border-radius:5px;border:0;background:#152032}
+.chess-root .ctp-name{font:700 12px/1.18 Georgia,serif;color:var(--chess-ivory)}
+.chess-root .ctp-desc{display:block;margin-top:3px;text-align:inherit;color:#c3d0dd;font:400 10px/1.28 system-ui;overflow-wrap:anywhere}
+.chess-root .ctp-more{margin-top:8px;border-top:1px solid #b1855550}
+.chess-root .ctp-more summary{min-height:34px;padding:8px 4px;color:#e8cc99;font-size:12px;cursor:pointer}
+.chess-root .ctp-more summary:focus-visible{outline:2px solid #9ee7ff;outline-offset:1px;border-radius:5px}
+.chess-root .ctp-piece-list{display:grid;gap:7px}
+.chess-root .ctp-piece-card{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;padding:7px;text-align:left;border:1px solid #a7805199;border-radius:12px;background:#0b1726;color:var(--chess-ivory);min-height:54px;cursor:pointer}
+.chess-root .ctp-piece-card strong{font:700 16px/1.2 Georgia,serif}
+.chess-root .ctp-piece-card .ctp-desc{font-size:11px}
+.chess-root .ctp-piece-sample{display:flex;gap:2px}
+.chess-root .ctp-piece-sample span{display:grid;place-items:center;width:clamp(29px,9vw,46px);height:auto;aspect-ratio:1;font-size:23px;color:#fff0c7;background-color:#1d3d64;border-radius:5px 0 0 5px}
+.chess-root .ctp-piece-sample span:last-child{border-radius:0 5px 5px 0;color:#1c304a;background-color:#e0cdab;text-shadow:0 0 1px #94744a}
+.chess-root .ctp-piece-card:is([data-ctp-piece="ottoman3d"],[data-ctp-piece="ottomanSculpt"]) .ctp-piece-sample span{
+  font-size:0;background-repeat:no-repeat;background-size:600% 200%;background-position:20% 0;
+}
+.chess-root .ctp-piece-card[data-ctp-piece="ottoman3d"] .ctp-piece-sample span{background-image:url('../assets/ottoman-figures-v162.webp')}
+.chess-root .ctp-piece-card[data-ctp-piece="ottomanSculpt"] .ctp-piece-sample span{background-image:url('../assets/chess-ottoman-3d-v162.webp')}
+.chess-root .ctp-piece-card:is([data-ctp-piece="ottoman3d"],[data-ctp-piece="ottomanSculpt"]) .ctp-piece-sample span:last-child{background-position:20% 100%}
+.chess-root .ctp-close{margin-top:9px;min-height:40px;border-color:var(--chess-brass);background:var(--chess-satin);color:var(--chess-ivory);box-shadow:var(--chess-inlay)}
+
+/* Replace shared chrome's fixed light fill only within the selected chess game. */
+body.portal.hero-shell .chess-root[data-chess-skin] :is(.c-icon,.cg-act-btn,.cg-studio button,.portal-minimize){
+  background:var(--chess-satin);border-color:var(--chess-brass);color:var(--chess-ivory);box-shadow:var(--chess-inlay);
+}
+body.portal.hero-shell .chess-root[data-chess-skin] :is(.cg-player,.cg-clock,.cg-top){
+  background:var(--chess-layer);border-color:#b78e5b9e;box-shadow:var(--chess-inlay);
+}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-clock.active{background:linear-gradient(145deg,#634421,#241b1b 73%);border-color:#f4c984}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-clock.low{background:#522629;border-color:#e48b82}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-clock.low .cgk-time{color:#ffcec4}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-status.show{background:#142a3c;color:#d6ecf7;border-color:#6d96ad}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-status.show.win{background:#153629;color:#c7e9d5;border-color:#63927c}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-status.show.check{background:#4a292e;color:#ffddd5;border-color:#bc776a}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-turn-cell .cg-turn.white{color:#f1d294}
+body.portal.hero-shell .chess-root[data-chess-skin] .cg-turn-cell .cg-turn.black{color:#a9deee}
+body.portal.hero-shell .chess-root[data-chess-skin] .chess-theme-picker{background:#060d18e6}
+body.portal.hero-shell .chess-root[data-chess-skin] .ctp-box{background:var(--chess-layer);border-color:var(--chess-brass)}
+body.portal.hero-shell .chess-root[data-chess-skin] .ctp-card{background:#0b1726;border-color:#a7805199}
+body.portal.hero-shell .chess-root[data-chess-skin] .ctp-card[aria-pressed="true"]{background:#233447;border-color:#f4cc86}
+body.portal.hero-shell .chess-root[data-chess-skin] .ctp-name{color:var(--chess-ivory)}
+body.portal.hero-shell .chess-root[data-chess-skin] .cgc-msg.mine{background:#244462;color:#f2e4cc}
+body.portal.hero-shell .chess-root[data-chess-skin] .cgc-msg.theirs{background:#182d3e;color:#f2e4cc}
+body.portal.hero-shell .chess-root[data-chess-skin] .col-code{color:#f2cb88}
+body.portal.hero-shell .chess-root[data-chess-skin] .hero-session-status{background:#102333;color:#cfe7f0;border-color:#66869b}
+body.portal.hero-shell .chess-root[data-chess-skin] .hero-session-status:is([data-phase="connecting"],[data-phase="reconnecting"]){background:#412e20;color:#f7dfac;border-color:#b88c56}
+body.portal.hero-shell .chess-root[data-chess-skin] .hero-session-status[data-phase="failed"]{background:#48262a;color:#ffd9d1;border-color:#bb7d72}
+@media(hover:hover){
+  body.portal.hero-shell .chess-root[data-chess-skin] :is(.cm-card,.col-big):hover{background:#233c52;border-color:#e1b573}
+}
+@media(max-width:355px){
+  .chess-root .ctp-card .ctp-desc{font-size:9px}
+  .chess-root .cg-studio button{padding-inline:5px}
+  .chess-root .cg-studio-label strong{font-size:11px}
+  .chess-root .cg-studio-more{display:none}
+}
+@media(max-height:460px) and (min-width:520px){
+  .chess-root .cg-studio button{min-height:36px;padding-block:3px}
+  .chess-root .ctp-preview{width:min(100%,65px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .chess-root :is(.cgp-turn-badge,.cg-clock){animation:none!important}
+}

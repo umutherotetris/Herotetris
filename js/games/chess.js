@@ -15,30 +15,31 @@ import { ChessMP } from './chess-mp.js';
 import { shareRoomCode, normalizeRoomCode } from '../room-share.js';
 import { mountSessionStatus } from '../game-session-ui.js';
 import { recordGameReview } from '../game-review.js';
+import { CHESS_BOARD_ART, paintChessBoard, paintChessCoords } from './chess-board-art.js';
 export { renderReviewFrame, setPortalMinimized, closePortalGame };
 
 // ── Temalar (referans görsellerden: Osmanlı lacivert default) ──
 const THEMES = {
   iznikmavi: {
-    name: 'İznik Mavi',
-    desc: 'Lapis lacivert ve beyaz çini, altın işleme.',
-    light:'#edf0ec', dark:'#1e4fa0', lightTile:'#f4f6f2', darkTile:'#2a5eb2',
+    name: 'İznik Ultra',
+    desc: 'Kobalt sır, fildişi çini ve lale işlemeli çerçeve.',
+    light:'#e7d8be', dark:'#112c66', lightTile:'#fcf4e3', darkTile:'#215198',
     border:'#c8a557', borderDark:'#8a6d2f', bg:'#0a1838',
     wTop:'#f8faf8', wBot:'#dbe4f0', bTop:'#0d7d92', bBot:'#064a58',
     wPiece:'#1e4fa0', bPiece:'#f2ead2', glow:'#3fa0ff'
   },
   sinan: {
-    name: 'Mimar Sinan Mermer',
-    desc: 'Beyaz mermer ve duman grisi, ince altın çizgiler.',
-    light:'#ece6da', dark:'#6e6862', lightTile:'#f4efe6', darkTile:'#7e7872',
+    name: 'Göktürk Bozkurt',
+    desc: 'Gümüş inley ve damarlı, serin taş yüzey.',
+    light:'#d2dce1', dark:'#29455d', lightTile:'#f0f3ed', darkTile:'#52718c',
     border:'#c8a557', borderDark:'#8a6d2f', bg:'#1a1815',
     wTop:'#f8f4ec', wBot:'#dcd4c6', bTop:'#4a4640', bBot:'#2a2622',
     wPiece:'#4a4640', bPiece:'#f4efe6', glow:'#d4af37'
   },
   bursa: {
-    name: 'Bursa Yeşil',
-    desc: 'Zümrüt yeşili ve krem, ince çini detayları.',
-    light:'#e8dcc0', dark:'#15543c', lightTile:'#f0e6cc', darkTile:'#1a6448',
+    name: 'Osmanlı Sarayı',
+    desc: 'Zümrüt çini, krem ve pirinç kakma.',
+    light:'#dfcba4', dark:'#123b32', lightTile:'#f4e6c7', darkTile:'#205c46',
     border:'#c8a557', borderDark:'#8a6d2f', bg:'#06241a',
     wTop:'#f5efe0', wBot:'#d8cba8', bTop:'#2a2824', bBot:'#16140f',
     wPiece:'#15543c', bPiece:'#f0e6cc', glow:'#3fe0a0'
@@ -60,17 +61,17 @@ const THEMES = {
     wPiece:'#5a3e26', bPiece:'#f0e2c8', glow:'#d8a860'
   },
   sedef: {
-    name: 'Sedef Gece',
-    desc: 'Sedef beyazı, siyah inci ve menekşe-mavi yansımalar.',
-    light:'#e6e0ec', dark:'#3a3a5c', lightTile:'#efeaf4', darkTile:'#46466e',
+    name: 'Ebru Gece',
+    desc: 'Sedef, menekşe ve su mavisi ebru damarları.',
+    light:'#cfc9df', dark:'#171b39', lightTile:'#e8e0ea', darkTile:'#2a3658',
     border:'#b0a0d0', borderDark:'#7868a0', bg:'#15152a',
     wTop:'#f4f0fa', wBot:'#dcd4e8', bTop:'#262236', bBot:'#16121f',
     wPiece:'#3a3a5c', bPiece:'#f4f0fa', glow:'#9080d0'
   },
   kizil: {
-    name: 'Kızıl Sancak',
-    desc: 'Bordo ve fildişi, zarif bordo dokular.',
-    light:'#f0e8d8', dark:'#8a1c2c', lightTile:'#f5eede', darkTile:'#9a2434',
+    name: 'Ay Yıldız',
+    desc: 'Bordo sırlı yüzey, motifli fildişi ve altın.',
+    light:'#e9d7b9', dark:'#691323', lightTile:'#fbebd1', darkTile:'#a72939',
     border:'#d4af37', borderDark:'#9a7d27', bg:'#2a0a10',
     wTop:'#f8f0e0', wBot:'#e0d4bc', bTop:'#2a2420', bBot:'#160f0c',
     wPiece:'#8a1c2c', bPiece:'#f5eede', glow:'#ff6048'
@@ -84,14 +85,16 @@ const THEMES = {
     wPiece:'#1a2a5c', bPiece:'#f0e4c8', glow:'#d4af37'
   },
   safranbolu: {
-    name: 'Safranbolu Ahşap',
-    desc: 'Açık ve koyu ceviz, klasik ahşap işçilik.',
-    light:'#d8b888', dark:'#6b4226', lightTile:'#e0c498', darkTile:'#7d4e2e',
+    name: 'Anadolu Ceviz',
+    desc: 'Doğal damarlı ceviz ile sıcak ahşap kakma.',
+    light:'#d3ac74', dark:'#5a321e', lightTile:'#efd0a0', darkTile:'#8a532f',
     border:'#c8a557', borderDark:'#8a6d2f', bg:'#1a0e06',
     wTop:'#f0e0c0', wBot:'#d0b890', bTop:'#3a2414', bBot:'#22140a',
     wPiece:'#6b4226', bPiece:'#f0e0c0', glow:'#e0a860'
   }
 };
+const FEATURED_BOARDS = ['iznikmavi','kizil','bursa','sinan','safranbolu','sedef'];
+const CLASSIC_BOARDS = ['canakkale','kapadokya','otag'];
 
 // Hex rengi alpha ile rgba'ya çevirir: _hexA('#3fa0ff', .5) → 'rgba(63,160,255,.5)'
 function _hexA(hex, a){
@@ -104,17 +107,50 @@ function _hexA(hex, a){
   return 'rgba('+r+','+g+','+b+','+a+')';
 }
 
-let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return (t && THEMES[t]) ? t : 'iznikmavi'; }catch(e){ return 'iznikmavi'; } })();
+let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_chess_theme'); return Object.hasOwn(THEMES,t) ? t : 'iznikmavi'; }catch(e){ return 'iznikmavi'; } })();
 
 // Unicode satranç sembolleri (dolu figürler — 2.5D stilize edilecek)
 const GLYPH = { k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
 
 let G = null;   // aktif oyun durumu (DOM + state)
 
+// Appearance is local to this device. It never enters a move, FEN or room message.
+const PIECE_STYLE_KEY = 'hero_chess_piece_style';
+const PIECE_PACKS = new Map([
+  ['ottoman3d', () => import('./chess-figure-atlas.js')],
+  ['ottomanSculpt', () => import('./chess-ottoman.js')]
+]);
+let SELECTED_PIECE_STYLE = 'classic';
+try{
+  const savedStyle = localStorage.getItem(PIECE_STYLE_KEY);
+  if(PIECE_PACKS.has(savedStyle)) SELECTED_PIECE_STYLE = savedStyle;
+}catch(error){}
+const loadedPiecePacks = new Map(), loadingPiecePacks = new Set();
+function prepareOttomanPieces(){
+  const style = SELECTED_PIECE_STYLE, pack = PIECE_PACKS.get(style);
+  if(!pack || loadedPiecePacks.has(style) || loadingPiecePacks.has(style)) return;
+  loadingPiecePacks.add(style);
+  pack().then(async module => {
+    if(!await module.loadOttomanPieces()) return;
+    loadedPiecePacks.set(style,module);
+    if(SELECTED_PIECE_STYLE === style && G?.ctx && G.root?.isConnected) draw();
+  }).catch(() => { /* The standard set remains available without the atlas. */ })
+    .finally(() => { loadingPiecePacks.delete(style); });
+}
+function setPieceStyle(key){
+  if(key !== 'classic' && !PIECE_PACKS.has(key)) return false;
+  SELECTED_PIECE_STYLE = key;
+  try{ localStorage.setItem(PIECE_STYLE_KEY, key); }catch(error){}
+  prepareOttomanPieces();
+  if(G?.ctx) draw();
+  return true;
+}
+
 // ════════════ AÇILIŞ ════════════
 export function openChess(){
   if(G?.root?.isConnected) return;
   injectCSS();
+  prepareOttomanPieces();
   const root = document.createElement('div');
   root.className = 'chess-root';
   root.innerHTML = `
@@ -124,7 +160,7 @@ export function openChess(){
         <div class="cm-title">♛ SATRANÇ</div>
         <div style="display:flex;gap:6px">
           <button class="c-icon" data-act="sound" title="Ses">🔊</button>
-          <button class="c-icon" data-act="theme" title="Tema">🎨</button>
+          <button class="c-icon cm-theme-btn" data-act="theme" title="Tema stüdyosu">🎨 <span>Temalar</span></button>
         </div>
       </div>
       <div class="cm-sub">Bir oyun modu seç</div>
@@ -149,8 +185,8 @@ export function openChess(){
 
     <div class="chess-game" data-el="game" style="display:none">
       <div class="cg-top">
-        <button class="c-icon" data-act="exit">✕</button>
-        <div class="cg-turn" data-el="turn">BEYAZ'IN SIRASI</div>
+        <button class="c-icon" data-act="exit" aria-label="Satrançtan çık">‹</button>
+        <div class="cg-turn-cell"><span class="cg-game-title">Satranç</span><div class="cg-turn" data-el="turn">BEYAZ'IN SIRASI</div></div>
         <button class="c-icon" data-act="chat" title="Sohbet" data-el="chatBtn" style="display:none">💬<span class="chat-badge" data-el="chatBadge" style="display:none"></span></button>
         <button class="c-icon" data-act="restart" title="Yeniden">🔄</button>
       </div>
@@ -173,10 +209,14 @@ export function openChess(){
         <button class="cg-act-btn" data-act="hint" data-el="hintBtn">💡 İpucu</button>
         <button class="cg-act-btn" data-act="resign">🏳️ Pes Et</button>
         <button class="cg-act-btn" data-act="offerDraw">🤝 Beraberlik</button>
-        <button class="cg-act-btn" data-act="history">📜 Geçmiş</button>
+        <button class="cg-act-btn" data-act="history">📜 Hamleler</button>
+        <div class="cg-studio" aria-label="Maç görünümü">
+          <button type="button" data-studio-section="board" aria-haspopup="dialog"><span aria-hidden="true">▦</span><span class="cg-studio-label"><small>Tahta</small><strong data-studio-board-name></strong></span><span class="cg-studio-more" aria-hidden="true">⌄</span></button>
+          <button type="button" data-studio-section="piece" aria-haspopup="dialog"><span aria-hidden="true">♟</span><span class="cg-studio-label"><small>Taş</small><strong data-studio-piece-name></strong></span><span class="cg-studio-more" aria-hidden="true">⌄</span></button>
+        </div>
       </div>
       <div class="cg-board-wrap" data-el="boardWrap">
-        <canvas data-el="canvas"></canvas>
+        <canvas data-el="canvas" aria-label="8 × 8 satranç tahtası"></canvas>
       </div>
       <div class="cg-player cg-me" data-el="mePanel" style="display:none">
         <div class="cgp-avatar" data-el="meAvatar">♔</div>
@@ -217,7 +257,9 @@ export function openChess(){
 
   // Mod seçim
   root.querySelector('[data-act="close"]').addEventListener('click', closeAll);
-  root.querySelector('[data-act="theme"]').addEventListener('click', () => showThemePicker(root));
+  root.querySelector('[data-act="theme"]').addEventListener('click', e => showThemePicker(root,e.currentTarget));
+  root.querySelectorAll('[data-studio-section]').forEach(button => button.addEventListener('click',()=>showThemePicker(root,button,button.dataset.studioSection)));
+  refreshChessStudioLabels(root);
   const soundBtn = root.querySelector('[data-act="sound"]');
   soundBtn.textContent = Sound.enabled ? '🔊' : '🔇';
   soundBtn.addEventListener('click', () => {
@@ -939,7 +981,7 @@ function fitCanvas(){
   const dpr = window.devicePixelRatio || 1;
   G.boardPx = size;
   G.cell = Math.floor((size - 2 * boardMargin(size)) / 8);
-  G.margin = boardMargin(size);
+  G.margin = (size - 8 * G.cell) / 2;  // center the inner grid after integer cell rounding
   G.canvas.width = size * dpr;
   G.canvas.height = size * dpr;
   G.canvas.style.width = size + 'px';
@@ -947,49 +989,32 @@ function fitCanvas(){
   G.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   draw();
 }
-function boardMargin(size){ return Math.round(size * 0.04); }   // altın çerçeve payı
+function boardMargin(size){ return Math.round(size * 0.055); }
+
+function drawBoardSurface(ctx,t,sz,m,cell){
+  const skin=CHESS_BOARD_ART[SELECTED_THEME];
+  const {width,height,ownerDocument}=G.canvas;
+  const key=`${SELECTED_THEME}/${sz}/${width}/${height}`;
+  if(G._boardArt?.key!==key){
+    const img=G._boardArt?.img || ownerDocument?.createElement('canvas');
+    if(!img){paintChessBoard(ctx,t,skin,sz,m,cell);return;}
+    img.width=width;img.height=height;
+    const off=img.getContext('2d');
+    if(!off){paintChessBoard(ctx,t,skin,sz,m,cell);return;}
+    off.setTransform(width/sz,0,0,height/sz,0,0);
+    paintChessBoard(off,t,skin,sz,m,cell);
+    G._boardArt={img,key};
+  }
+  ctx.drawImage(G._boardArt.img,0,0,sz,sz);
+}
 
 // ════════════ ÇİZİM ════════════
 function draw(){
   if(!G || !G.ctx) return;
   const ctx = G.ctx, t = THEMES[SELECTED_THEME], m = G.margin, cell = G.cell, sz = G.boardPx;
+  if(!cell||!sz)return;
   ctx.clearRect(0, 0, sz, sz);
-
-  // Arka plan
-  ctx.fillStyle = t.bg;
-  ctx.fillRect(0, 0, sz, sz);
-
-  // Altın çerçeve
-  drawBorder(ctx, t, sz, m);
-
-  // Kareler — premium: yumuşak köşegen gradyan + ince iç kenar parlaması
-  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
-    const { x, y } = cellXY(r, c);
-    const isLight = (r + c) % 2 === 0;
-    const base = isLight ? t.light : t.dark;
-    const tile = isLight ? t.lightTile : t.darkTile;
-    // Köşegen gradyan (üst-sol açık → alt-sağ koyu) — derinlik hissi
-    const g = ctx.createLinearGradient(x, y, x + cell, y + cell);
-    g.addColorStop(0, tile);
-    g.addColorStop(1, base);
-    ctx.fillStyle = g;
-    ctx.fillRect(x, y, cell, cell);
-    // Üst kenar ince parlama (ışık üstten gelir)
-    ctx.fillStyle = 'rgba(255,255,255,.05)';
-    ctx.fillRect(x, y, cell, Math.max(1, cell*0.03));
-    // Alt kenar ince gölge
-    ctx.fillStyle = 'rgba(0,0,0,.08)';
-    ctx.fillRect(x, y + cell - Math.max(1, cell*0.03), cell, Math.max(1, cell*0.03));
-  }
-  // Kareler arası ince ızgara çizgisi (premium ayrım)
-  ctx.strokeStyle = 'rgba(0,0,0,.10)';
-  ctx.lineWidth = 1;
-  for(let i=0;i<=8;i++){
-    const p = cellXY(0,0).x + i*cell;
-    const py = cellXY(0,0).y + i*cell;
-    ctx.beginPath(); ctx.moveTo(p, cellXY(0,0).y); ctx.lineTo(p, cellXY(0,0).y + cell*8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cellXY(0,0).x, py); ctx.lineTo(cellXY(0,0).x + cell*8, py); ctx.stroke();
-  }
+  drawBoardSurface(ctx,t,sz,m,cell);
 
   // İpucu kareleri (item_hint) — yeşil parlak vurgu
   if(G.hintSquares && (!G.hintSquares.until || G.hintSquares.until > Date.now())){
@@ -1039,23 +1064,22 @@ function draw(){
     sg.addColorStop(1, _hexA(t.glow, .18));
     ctx.fillStyle = sg;
     ctx.fillRect(x, y, cell, cell);
-    ctx.strokeStyle = _hexA(t.glow, .7); ctx.lineWidth = Math.max(1.5, cell*0.03);
-    ctx.strokeRect(x + ctx.lineWidth/2, y + ctx.lineWidth/2, cell - ctx.lineWidth, cell - ctx.lineWidth);
+    const inset=Math.max(2, cell*.065);
+    ctx.strokeStyle = '#14212f'; ctx.lineWidth = inset*1.23;
+    ctx.strokeRect(x + inset, y + inset, cell - inset*2, cell - inset*2);
+    ctx.strokeStyle = '#fff1bc'; ctx.lineWidth = inset*.63;
+    ctx.strokeRect(x + inset, y + inset, cell - inset*2, cell - inset*2);
     for(const mv of G.legalForSelected){
       const cc = cellXY(mv.to.r, mv.to.c);
       const target = G.state.board[mv.to.r][mv.to.c];
       ctx.save();
-      if(target){
-        // yeme: kalın tema halkası + hafif iç parlama
-        ctx.strokeStyle = _hexA(t.glow, .85); ctx.lineWidth = Math.max(2.5, cell*0.055);
-        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.40, 0, Math.PI*2); ctx.stroke();
+      if(target||mv.enPassant){
+        ctx.beginPath();ctx.arc(cc.x+cell/2,cc.y+cell/2,cell*.434,0,Math.PI*2);
+        ctx.strokeStyle='#14212f';ctx.lineWidth=Math.max(3,cell*.087);ctx.stroke();
+        ctx.strokeStyle='#fff1bc';ctx.lineWidth=Math.max(1.4,cell*.046);ctx.stroke();
       } else {
-        // boş: yumuşak nokta + halo
-        const dg = ctx.createRadialGradient(cc.x+cell/2, cc.y+cell/2, 0, cc.x+cell/2, cc.y+cell/2, cell*0.20);
-        dg.addColorStop(0, _hexA(t.glow, .65));
-        dg.addColorStop(1, _hexA(t.glow, .15));
-        ctx.fillStyle = dg;
-        ctx.beginPath(); ctx.arc(cc.x+cell/2, cc.y+cell/2, cell*0.18, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath();ctx.arc(cc.x+cell/2,cc.y+cell/2,cell*.123,0,Math.PI*2);
+        ctx.fillStyle='#fff1bc';ctx.fill();ctx.strokeStyle='#14324f';ctx.lineWidth=Math.max(1.4,cell*.039);ctx.stroke();
       }
       ctx.restore();
     }
@@ -1086,7 +1110,7 @@ function draw(){
   }
 
   // Kenar koordinatları (a-h, 1-8)
-  drawCoords(ctx, t, m, cell, sz);
+  paintChessCoords(ctx, CHESS_BOARD_ART[SELECTED_THEME], m, cell, sz, G.flip);
 
   // ── Sürüklenen taş (parmağı/imleci takip eder, büyütülmüş + gölgeli) ──
   if(G._drag && G._drag.moved){
@@ -1183,19 +1207,6 @@ function xyToCell(px, py){
   return { r, c };
 }
 
-function drawBorder(ctx, t, sz, m){
-  const grad=ctx.createLinearGradient(0,0,sz,sz);
-  [[0,t.border],[.14,'#f1d799'],[.3,t.borderDark],[.7,t.borderDark],[.87,t.border],[1,'#5a431f']].forEach(([n,c])=>grad.addColorStop(n,c));
-  ctx.fillStyle=grad;ctx.fillRect(0,0,sz,sz);
-  ctx.strokeStyle='rgba(255,244,201,.65)';ctx.lineWidth=1;ctx.strokeRect(2.5,2.5,sz-5,sz-5);
-  ctx.strokeStyle='rgba(24,14,7,.7)';ctx.lineWidth=Math.max(1,m*.14);ctx.strokeRect(m-2,m-2,sz-2*m+4,sz-2*m+4);
-  ctx.fillStyle=t.bg;ctx.fillRect(m,m,sz-2*m,sz-2*m);
-  for(const [x,y] of [[m*.5,m*.5],[sz-m*.5,m*.5],[m*.5,sz-m*.5],[sz-m*.5,sz-m*.5]]){
-    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillStyle='#fff0bd';ctx.fillRect(-m*.12,-m*.12,m*.24,m*.24);ctx.restore();
-  }
-}
-
-
 // 2.5D taş: gölgeli yuvarlak taban + sembol (kare konumunda)
 function drawPiece(ctx, r, c, piece, t){
   const { x, y } = cellXY(r, c);
@@ -1214,6 +1225,7 @@ const CHESS_PIECE_PATHS = {
 };
 function drawPieceAt(ctx, cx, cy, piece, t){
   const isW=piece.c==='w',s=G.cell;
+  if(loadedPiecePacks.get(SELECTED_PIECE_STYLE)?.drawOttomanPiece(ctx,cx,cy,s,piece)) return;
   ctx.save();
   ctx.fillStyle='rgba(0,0,0,.30)';
   ctx.beginPath();ctx.ellipse(cx+s*.025,cy+s*.34,s*.29,s*.075,0,0,Math.PI*2);ctx.fill();
@@ -1233,21 +1245,6 @@ function drawPieceAt(ctx, cx, cy, piece, t){
   if(piece.t==='b'){ctx.strokeStyle=isW?'#8c6c39':'#f1d79c';ctx.lineWidth=2.8;ctx.beginPath();ctx.moveTo(53,22);ctx.lineTo(44,34);ctx.stroke();}
   if(piece.t==='n'){ctx.fillStyle=isW?'#55442d':'#ffde9a';ctx.beginPath();ctx.arc(48,28,2.3,0,Math.PI*2);ctx.fill();}
   if(piece.t==='q'){ctx.fillStyle=isW?'#96723a':'#e9c77e';for(const [x,y] of [[28,23],[43,17],[57,17],[72,23]]){ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();}}
-  ctx.restore();
-}
-
-function drawCoords(ctx, t, m, cell, sz){
-  ctx.save();
-  ctx.fillStyle = '#fff0ca';
-  ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 2;
-  ctx.font = `700 ${Math.max(8,Math.floor(cell*0.18))}px system-ui`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const files = G.flip ? 'hgfedcba' : 'abcdefgh';
-  const ranks = G.flip ? '12345678' : '87654321';
-  for(let i=0;i<8;i++){
-    ctx.fillText(files[i], m + i*cell + cell/2, sz - m*0.5);   // alt: dosyalar
-    ctx.fillText(ranks[i], m*0.5, m + i*cell + cell/2);        // sol: sıralar
-  }
   ctx.restore();
 }
 
@@ -2247,6 +2244,7 @@ function updateCaptured(){
   if(!el) return;
   const wCap = G.captured.w.map(t => GLYPH[t]).join('');   // beyazın yediği (siyah taşlar)
   const bCap = G.captured.b.map(t => GLYPH[t]).join('');
+  el.hidden = !wCap && !bCap;
   const adv = materialAdvantage();
   const wAdv = adv.w > 0 ? `<span class="cap-adv">+${adv.w}</span>` : '';
   const bAdv = adv.b > 0 ? `<span class="cap-adv">+${adv.b}</span>` : '';
@@ -2308,33 +2306,99 @@ function showPromotion(color, cb){
 }
 
 // ════════════ TEMA SEÇİCİ ════════════
-function showThemePicker(root){
+const CHESS_STUDIO_PIECES = {
+  classic: {name:'Klasik', description:'Fildişi ve koyu metal, tanıdık silüetler.', icon:'♜'},
+  ottoman3d: {name:'Osmanlı 3B', description:'Aynı figürler, fildişi ve koyu obsidyen. Atlı, fil, yeniçeri ve saray taşları.', icon:'♞'},
+  ottomanSculpt: {name:'Osmanlı Minyatür', description:'3B heykellerden işlenen yalın, hacimli figürler.', icon:'♟'}
+};
+
+function refreshChessStudioLabels(root){
+  const board=root.querySelector('[data-studio-board-name]');
+  const pieces=root.querySelector('[data-studio-piece-name]');
+  if(board)board.textContent=THEMES[SELECTED_THEME].name;
+  if(pieces)pieces.textContent=(CHESS_STUDIO_PIECES[SELECTED_PIECE_STYLE]||CHESS_STUDIO_PIECES.classic).name;
+  root.dataset.chessSkin=SELECTED_THEME;
+}
+
+function drawChessStudioPreviews(ov){
+  for(const canvas of ov.querySelectorAll('[data-ctp-preview]')){
+    const key=canvas.dataset.ctpPreview, ctx=canvas.getContext('2d');
+    if(!ctx)continue;
+    const sz=128, cell=14, m=8;
+    paintChessBoard(ctx,THEMES[key],CHESS_BOARD_ART[key],sz,m,cell);
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='12px "Segoe UI Symbol",serif';ctx.lineWidth=1.1;
+    for(const [file,rank,t,white] of [[2,0,'r',false],[4,0,'k',false],[6,1,'p',false],[1,6,'p',true],[4,7,'q',true],[6,7,'n',true]]){
+      const x=m+(file+.5)*cell,y=m+(rank+.54)*cell;
+      ctx.strokeStyle=white?'#624b2a':'#ecd19a';ctx.fillStyle=white?'#fff6d8':'#10212d';
+      ctx.strokeText(GLYPH[t],x,y);ctx.fillText(GLYPH[t],x,y);
+    }
+  }
+}
+
+function showThemePicker(root,trigger,activeSection='board'){
+  if(root.querySelector('.chess-theme-picker'))return;
   const ov = document.createElement('div');
   ov.className = 'chess-theme-picker';
-  ov.innerHTML = `<div class="ctp-box">
-    <div class="ctp-title">🎨 TAHTA TEMASI</div>
-    <div class="ctp-grid">
-      ${Object.entries(THEMES).map(([key, th]) => `
-        <button class="ctp-card ${key===SELECTED_THEME?'active':''}" data-theme="${key}">
-          <div class="ctp-preview">
-            <span style="background:${th.light}"></span><span style="background:${th.dark}"></span>
-            <span style="background:${th.dark}"></span><span style="background:${th.light}"></span>
-          </div>
-          <div class="ctp-name">${th.name}</div>
-        </button>`).join('')}
+  const boardCard=key=>`<button type="button" class="ctp-card" data-ctp-board="${key}" aria-pressed="${key===SELECTED_THEME}">
+    <canvas class="ctp-preview" width="128" height="128" data-ctp-preview="${key}" aria-hidden="true"></canvas>
+    <span class="ctp-name">${THEMES[key].name}</span><span class="ctp-desc">${THEMES[key].desc}</span></button>`;
+  ov.innerHTML = `<div class="ctp-box" role="dialog" aria-modal="true" aria-labelledby="chessStudioTitle">
+    <header class="ctp-heading"><div><p class="ctp-kicker">SATRANÇ · ATÖLYE</p><h2 id="chessStudioTitle" class="ctp-title">Tema stüdyosu</h2></div>
+    <button type="button" class="ctp-dismiss" aria-label="Tema stüdyosunu kapat">✕</button></header>
+    <p class="ctp-intro">Tahta ve taşları ayrı seçebilirsin. Maçın ve varsa süresi devam eder.</p>
+    <div class="ctp-tabs" aria-label="Görünüm bölümü">
+      <button type="button" data-ctp-tab="board">▦ Tahta</button><button type="button" data-ctp-tab="piece">♟ Taş</button>
     </div>
-    <button class="ctp-close">KAPAT</button>
+    <section data-ctp-panel="board" aria-label="Tahta temaları">
+      <div class="ctp-grid">${FEATURED_BOARDS.map(boardCard).join('')}</div>
+      <details class="ctp-more${CLASSIC_BOARDS.includes(SELECTED_THEME)?' active':''}" ${CLASSIC_BOARDS.includes(SELECTED_THEME)?'open':''}>
+        <summary>Önceki temalar</summary><div class="ctp-grid">${CLASSIC_BOARDS.map(boardCard).join('')}</div>
+      </details>
+    </section>
+    <section class="ctp-piece-list" data-ctp-panel="piece" aria-label="Taş setleri" hidden>
+      ${Object.entries(CHESS_STUDIO_PIECES).map(([key, set])=>`<button type="button" class="ctp-piece-card" data-ctp-piece="${key}" aria-pressed="${key===SELECTED_PIECE_STYLE}">
+        <span class="ctp-piece-sample" aria-hidden="true"><span>${set.icon}</span><span>${set.icon}</span></span>
+        <span><strong>${set.name}</strong><span class="ctp-desc">${set.description}</span></span></button>`).join('')}
+    </section>
+    <button type="button" class="ctp-close">Tamam</button>
   </div>`;
-  root.appendChild(ov);
-  ov.querySelectorAll('.ctp-card').forEach(card => {
-    card.addEventListener('click', () => {
-      SELECTED_THEME = card.dataset.theme;
-      try{ localStorage.setItem('hero_chess_theme', SELECTED_THEME); }catch(e){}
-      if(G && G.ctx) draw();
-      ov.remove();
-    });
+  const triggerBefore=trigger||document.activeElement;
+  const dialog=ov.querySelector('.ctp-box');
+  const close=()=>{ov.remove();if(triggerBefore?.isConnected)triggerBefore.focus({preventScroll:true});};
+  const sections=ov.querySelectorAll('[data-ctp-panel]'), tabs=ov.querySelectorAll('[data-ctp-tab]');
+  const openSection=name=>{
+    for(const s of sections)s.hidden=s.dataset.ctpPanel!==name;
+    for(const tab of tabs)tab.setAttribute('aria-pressed',String(tab.dataset.ctpTab===name));
+  };
+  for(const tab of tabs)tab.addEventListener('click',()=>openSection(tab.dataset.ctpTab));
+  const boardOptions=ov.querySelectorAll('[data-ctp-board]');
+  for(const option of boardOptions)option.addEventListener('click',()=>{
+    SELECTED_THEME=option.dataset.ctpBoard;
+    try{localStorage.setItem('hero_chess_theme',SELECTED_THEME);}catch(e){}
+    for(const card of boardOptions)card.setAttribute('aria-pressed',String(card===option));
+    refreshChessStudioLabels(root);
+    if(G?.root===root&&G.ctx)draw();
   });
-  ov.querySelector('.ctp-close').addEventListener('click', () => ov.remove());
+  const pieceOptions=ov.querySelectorAll('[data-ctp-piece]');
+  for(const option of pieceOptions)option.addEventListener('click',()=>{
+    setPieceStyle(option.dataset.ctpPiece);
+    for(const card of pieceOptions)card.setAttribute('aria-pressed',String(card.dataset.ctpPiece===SELECTED_PIECE_STYLE));
+    refreshChessStudioLabels(root);
+  });
+  for(const btn of ov.querySelectorAll('.ctp-dismiss,.ctp-close'))btn.addEventListener('click',close);
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}
+    if(e.key!=='Tab')return;
+    const interactive=[...dialog.querySelectorAll('button, summary')].filter(el=>el.getClientRects().length);
+    const first=interactive[0],last=interactive.at(-1);
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+  });
+  root.appendChild(ov);
+  openSection(activeSection);
+  drawChessStudioPreviews(ov);
+  ov.querySelector(`[data-ctp-tab="${activeSection}"]`)?.focus({preventScroll:true});
 }
 
 // ════════════ CSS ════════════
@@ -2360,7 +2424,7 @@ function renderReviewFrame(frame,host){
 }
 
 function injectCSS(){
-  if(!document.getElementById('chess-premium-css')){ const link=document.createElement('link');link.id='chess-premium-css';link.rel='stylesheet';link.href=new URL('../../css/chess-premium.css?v=157',import.meta.url).href;document.head.appendChild(link); }
+  if(!document.getElementById('chess-premium-css')){ const link=document.createElement('link');link.id='chess-premium-css';link.rel='stylesheet';link.href=new URL('../../css/chess-premium.css?v=162',import.meta.url).href;document.head.appendChild(link); }
   if(document.getElementById('chess-css')) return;
   const s = document.createElement('style');
   s.id = 'chess-css';

@@ -104,9 +104,21 @@ await test('chess hit centers map to every logical square at mobile, desktop and
 });
 await test('tavla hit centers preserve 24 points, bar and collection gutter on narrow and landscape boards, both flips',()=>{
  for(const [width,height] of [[308,440],[348,500],[696,730],[300,230]])for(const flip of [false,true]){
-  const c=context('tavla',['fitCanvas','computeLayout','pointGeometry','hitTest'],{window:{innerWidth:width,innerHeight:height,devicePixelRatio:2}});c.G.boardWrap={clientWidth:width,clientHeight:height};c.G.canvas={style:{}};c.G.ctx={setTransform:noop};c.G.flip=flip;c.api.fitCanvas();assert.ok(c.G.W<=width&&c.G.H<=height);const g=c.G.geo;
+  const c=context('tavla',['fitCanvas','computeLayout','makeTavlaGeometry','pointGeometry','hitTest'],{window:{innerWidth:width,innerHeight:height,devicePixelRatio:2}});c.G.boardWrap={clientWidth:width,clientHeight:height};c.G.canvas={style:{}};c.G.ctx={setTransform:noop};c.G.flip=flip;c.api.fitCanvas();assert.ok(c.G.W<=width&&c.G.H<=height);const g=c.G.geo;
   for(let i=0;i<24;i++){const p=c.api.pointGeometry(i),y=p.top?g.innerY+g.innerH*.1:g.innerY+g.innerH*.9;assert.equal(c.api.hitTest(p.baseX,y),i);assert.ok(p.baseX-g.checkerR>=g.innerX-1&&p.baseX+g.checkerR<=g.bearX+1);}assert.equal(c.api.hitTest(g.barX+g.barW/2,height/2),'bar');assert.equal(c.api.hitTest(g.bearX+g.bearW/2,height/2),'off');
  }
+});
+await test('tavla appearance selection updates only local appearance during a live match',()=>{
+ const writes=[],sent=[];let redraws=0;
+ const label={},quick={dataset:{quickTheme:'iznik'},setAttribute(key,value){this[key]=value;}},entry={};
+ const root={dataset:{},querySelector:()=>label,querySelectorAll:selector=>selector.includes('data-quick-theme')?[quick]:[entry]};
+ const c=context('tavla',['setTavlaAppearance','chooseTavlaAppearance'],{THEMES:{kizil:{name:'Kırmızı'},iznik:{name:'İznik Premium'}},draw:()=>redraws++,localStorage:{setItem:(...a)=>writes.push(a)},TavlaMP:{send:(...a)=>sent.push(a)}});
+ c.G.root=root;c.G.ctx={};c.G.online=true;c.G.rolled=true;c.G.state.dice=[6,3];c.G.state.used=[0];
+ const state=c.G.state,before=clone(state),token=c.G._turnToken={};
+ c.api.chooseTavlaAppearance(root,'iznik');c.api.chooseTavlaAppearance(root,'constructor');
+ assert.equal(c.G.state,state);assert.deepEqual(clone(c.G.state),before);assert.equal(c.G._turnToken,token);assert.deepEqual(sent,[]);
+ assert.equal(root.dataset.tvTheme,'iznik');assert.equal(label.textContent,'İznik Premium');assert.equal(quick['aria-pressed'],'true');assert.match(entry.title,/İznik/);
+ assert.equal(redraws,1);assert.deepEqual(writes,[['hero_tavla_theme','iznik']]);
 });
 await test('portal minimization preserves board and clock objects and restores measured canvas without ending either match',()=>{
  for(const game of ['chess','tavla']){let fitted=0,drawn=0;const c=context(game,['setPortalMinimized'],{fitCanvas:()=>fitted++,draw:()=>drawn++});c.G.root={style:{}};c.G.clock={w:60,b:60};const state=c.G.state,clock=c.G.clock;c.api.setPortalMinimized(true);assert.equal(c.G.root.inert,true);assert.equal(c.G.root.hidden,true);assert.equal(c.G.state,state);assert.equal(c.G.clock,clock);assert.notEqual(c.G.gameEnded,true);c.api.setPortalMinimized(false);assert.equal(c.G.root.inert,false);assert.equal(c.G.root.hidden,false);assert.equal(fitted,1);assert.equal(drawn,1);}

@@ -24,7 +24,7 @@ function fixture(names,extra={}){
   requestAnimationFrame:cb=>{frames.push(cb);return frames.length;},performance:{now:()=>0},
   createVsHUD:()=>Promise.resolve({}),fitCanvas:noop,updateTurn:noop,updateStatus:noop,updateControls:noop,draw:noop,
   maybeAITurn:noop,startAutoRollTimer:noop,clearAutoRollTimer:noop,clearAIGame:noop,loadAIGame:()=>null,
-  closeAll:noop,saveAIGame:noop,setupChat:noop,onPointerDown:noop,onPointerMove:noop,onPointerUp:noop,
+  closeAll:noop,saveAIGame:noop,setupChat:noop,onPointerDown:noop,onPointerMove:noop,onPointerUp:noop,onTavlaBoardKey:noop,
   clearMoveGrace:noop,sendHello:noop,onWin:noop,...extra});
  vm.runInContext(names.map(fn).join('\n'),ctx);
  return {ctx,timers,frames,s,root,sent};

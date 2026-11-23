@@ -92,7 +92,7 @@ for(const invalidate of [f=>{f.nick.value='Different';f.nick.fire('input');},f=>
  f.amount.value='-100';await f.context.doKaju();assert.equal(f.calls.length,3);assert.notEqual(f.calls[1][3],f.calls[2][3],'an explicitly resubmitted, already confirmed delta must have a new receipt');groups++;
 }
 {
- const f=panel();const box=f.root.querySelector('[data-el="khist"]');box.style.display='none';let release;f.fdb.get=()=>new Promise(r=>release=r);const p=f.context.toggleKHist();f.panel.target={uid:'new',profile:{}};box.innerHTML='New target';release({exists:()=>false});await p;assert.equal(box.innerHTML,'New target');groups++;
+ const f=panel();const box=f.root.querySelector('[data-el="khist"]');box.style.display='none';let release;f.fdb.get=path=>path.endsWith('/kaju_history')?new Promise(r=>release=r):Promise.resolve({val:()=>({entry_1:{kind:'collection',original:'old'}})});const p=f.context.toggleKHist();f.panel.target={uid:'new',profile:{}};box.innerHTML='New target';release({exists:()=>false});await p;assert.equal(box.innerHTML,'New target');groups++;
 }
 {
  const f=card();let release,loads=0;f.setLoad(()=>{loads++;return new Promise(r=>release=r);});const a=f.send.fire(),b=f.send.fire();await b;assert.equal(loads,1);f.setUid('other');release(f.store);await a;assert.equal(f.calls.length,0);groups++;

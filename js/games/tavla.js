@@ -2,7 +2,7 @@
 //  TAVLA — UI / RENDER KATMANI (Canvas 2.5D)
 //
 //  tavla-engine.js üzerine kurulu. Osmanlı temalı, dokunmatik.
-//  Bu sürüm: 6 tema + aynı cihazda 2 oyuncu. (AI/online sonra.)
+//  Aynı cihazda, yapay zekâ ve çevrimiçi oyun.
 // ════════════════════════════════════════════════════════════════
 import Store from '../store.js';
 import Auth from '../auth.js';
@@ -23,60 +23,59 @@ let TavlaMP = null;   // çevrimiçi modül — sadece online moda girince dinam
 const THEMES = {
   iznik: {
     name: 'İznik Premium',
-    bg:'#0a1838', felt:'#16407a', frame:'#c8a557', frameDark:'#8a6d2f',
-    pointA:'#2a6cb8', pointB:'#dbe4f0',           // üçgen renkleri (açık/koyu sıra)
-    bar:'#0d2a55', barMotif:'#c8a557',
+    detail:'Turkuaz çini · sedef pul', motif:'flower', grain:'glaze',
+    bg:'#081d31', felt:'#146e80', frame:'#d5b774', frameDark:'#81552e',
+    pointA:'#153b61', pointB:'#eee3c4', bar:'#10334f',
     wTop:'#f4f8fc', wBot:'#cdd8e8', wEdge:'#9fb0c8',   // beyaz pul
     bTop:'#1a4a86', bBot:'#0d2f5c', bEdge:'#3a6cb0',   // koyu (mavi) pul
-    glow:'#3fa0ff'
+    glow:'#8ef2ff'
   },
   kizil: {
     name: 'Ay Yıldız Kırmızı',
+    detail:'Kızıl lake · fildişi pul', motif:'crescent', grain:'lacquer',
     bg:'#2a0a10', felt:'#7a1420', frame:'#d4af37', frameDark:'#9a7d27',
-    pointA:'#a81c2c', pointB:'#f0e0c0',
-    bar:'#5c0c14', barMotif:'#f0e0c0',
+    pointA:'#501226', pointB:'#f0e0c0', bar:'#5c0c14',
     wTop:'#f8f0e0', wBot:'#e0d0b0', wEdge:'#c0a880',
     bTop:'#b02232', bBot:'#7a1420', bEdge:'#d04050',
-    glow:'#ff6048'
+    glow:'#ffc5a7'
   },
   lacivert: {
     name: 'Osmanlı Lacivert',
+    detail:'Gece mavisi · pirinç kakma', motif:'star8', grain:'silk',
     bg:'#0a1024', felt:'#16294a', frame:'#c8a557', frameDark:'#8a6d2f',
-    pointA:'#1e3a6e', pointB:'#d8c4a0',
-    bar:'#0d1a38', barMotif:'#c8a557',
+    pointA:'#10224a', pointB:'#eed4a7', bar:'#0d1a38',
     wTop:'#f0e4c8', wBot:'#d4c098', wEdge:'#b09868',
     bTop:'#1a3060', bBot:'#0d1f44', bEdge:'#3a5894',
-    glow:'#d4af37'
+    glow:'#ffe19a'
   },
   zumrut: {
     name: 'Selçuklu Zümrüt',
+    detail:'Zümrüt mine · geçme yıldız', motif:'seljuk', grain:'silk',
     bg:'#04201a', felt:'#0f5a3c', frame:'#c8a557', frameDark:'#8a6d2f',
-    pointA:'#147048', pointB:'#e8dcc0',
-    bar:'#063828', barMotif:'#c8a557',
+    pointA:'#0b3828', pointB:'#e8dcc0', bar:'#063828',
     wTop:'#f5efe0', wBot:'#d8cba8', wEdge:'#b8a880',
     bTop:'#0d6648', bBot:'#064030', bEdge:'#2a8a64',
-    glow:'#3fe0a0'
+    glow:'#8affca'
   },
   ceviz: {
-    name: 'Topkapı Altın',
-    bg:'#1a0d08', felt:'#5e1a1a', frame:'#d4af37', frameDark:'#9a7d27',
-    pointA:'#7a1e1e', pointB:'#d9b86a',
-    bar:'#4a1414', barMotif:'#d4af37',
-    wTop:'#f5ecd2', wBot:'#e0cca0', wEdge:'#c0a870',
-    bTop:'#9a2424', bBot:'#5e1414', bEdge:'#c04040',
-    glow:'#e0b850'
+    name: 'Anadolu Ceviz',
+    detail:'Ceviz damarı · ahşap pul', motif:'diamond', grain:'wood',
+    bg:'#29150b', felt:'#75441f', frame:'#d8a663', frameDark:'#70401e',
+    pointA:'#4a2a18', pointB:'#e0b87f', bar:'#512c17',
+    wTop:'#f7d7a1', wBot:'#c99451', wEdge:'#a96c36',
+    bTop:'#875329', bBot:'#392015', bEdge:'#ac7749', glow:'#8cf0d6'
   },
   buz: {
     name: 'Buzlu Deniz',
+    detail:'Buzlu mine · gümüş kakma', motif:'snow', grain:'frost',
     bg:'#0a1820', felt:'#3a5d7c', frame:'#a8c0d4', frameDark:'#7898b0',
-    pointA:'#5a7d9c', pointB:'#e8f0f6',
-    bar:'#243c52', barMotif:'#c8d8e8',
+    pointA:'#263f57', pointB:'#e8f0f6', bar:'#243c52',
     wTop:'#f8fbfd', wBot:'#dce8f0', wEdge:'#b8ccdc',
     bTop:'#4a6d8c', bBot:'#243c52', bEdge:'#6a8dac',
-    glow:'#80c0e0'
+    glow:'#b9f4ff'
   }
 };
-let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_tavla_theme'); return (t && THEMES[t]) ? t : 'kizil'; }catch(e){ return 'kizil'; } })();
+let SELECTED_THEME = (function(){ try{ const t = localStorage.getItem('hero_tavla_theme'); return Object.hasOwn(THEMES,t) ? t : 'ceviz'; }catch(e){ return 'ceviz'; } })();
 let AUTO_ROLL = (function(){ try{ return localStorage.getItem('hero_tavla_autoroll') === 'on'; }catch(e){ return false; } })();
 const AUTO_ROLL_MS = 5000;   // 5 sn içinde atılmazsa otomatik
 
@@ -106,10 +105,10 @@ export function openTavla(){
         <div style="display:flex;gap:6px">
           <button class="tv-icon" data-act="autoroll" data-el="autoRollBtn" title="Otomatik zar">⏱️</button>
           <button class="tv-icon" data-act="sound" data-el="soundBtn" title="Ses">🔊</button>
-          <button class="tv-icon" data-act="theme" title="Tema">🎨</button>
+          <button class="tv-icon" data-act="theme" aria-label="Tema stüdyosu" aria-haspopup="dialog">◈</button>
         </div>
       </div>
-      <div class="tvm-sub">Bir oyun modu seç</div>
+      <div class="tvm-sub">Bir oyun modu seç <span class="tavla-material-name" data-el="materialName"></span></div>
       <div class="tvm-cards">
         <button class="tvm-card" data-mode="local">
           <span class="tvm-ic">👥</span>
@@ -133,9 +132,10 @@ export function openTavla(){
       <div class="tg-top">
         <button class="tv-icon" data-act="exit">✕</button>
         <div class="tg-turn" data-el="turn">BEYAZ'IN SIRASI</div>
-        <div style="display:flex;gap:6px">
+        <div class="tg-toolset">
           <button class="tv-icon" data-act="gameAutoRoll" data-el="gameAutoRollBtn" title="Otomatik zar">⏱️</button>
           <button class="tv-icon" data-act="chat" data-el="chatBtn" title="Sohbet" style="display:none">💬<span class="tg-chat-badge" data-el="chatBadge" style="display:none"></span></button>
+          <button class="tv-icon" data-act="gameTheme" aria-label="Tema stüdyosu" aria-haspopup="dialog">◈</button>
           <button class="tv-icon" data-act="restart" title="Yeniden">🔄</button>
         </div>
       </div>
@@ -145,7 +145,9 @@ export function openTavla(){
         <div data-side="b"><i></i><span>Siyah</span><strong data-el="pipB">167 pip</strong><small data-el="offB">0 / 15</small></div>
       </div>
       <div class="tg-board-wrap" data-el="boardWrap">
-        <canvas data-el="canvas"></canvas>
+        <canvas data-el="canvas" tabindex="0" role="application" aria-label="Tavla tahtası" aria-describedby="tavla-board-keys"></canvas>
+        <span class="tv-sr-only" id="tavla-board-keys">Oklarla haneleri gez, Enter ile pul seç veya oyna. Home orta barı, End pul toplama oluğunu seçer. Escape seçimi kaldırır.</span>
+        <span class="tv-sr-only" data-el="boardAnnouncement" aria-live="polite"></span>
       </div>
       <div class="tg-controls">
         <button class="tg-btn tg-roll" data-act="roll" data-el="rollBtn" style="display:none">🎲 ZAR AT</button>
@@ -156,6 +158,11 @@ export function openTavla(){
         <button class="tg-act-btn" data-act="draw">🤝 Beraberlik</button>
         <button class="tg-act-btn" data-act="break" data-el="breakBtn" style="display:none">🛌 Mola</button>
         <button class="tg-act-btn danger" data-act="resign">🏳️ Pes Et</button>
+      </div>
+      <div class="tg-materials" aria-label="Tavla hızlı temalar">
+        <button type="button" data-quick-theme="iznik"><i aria-hidden="true">❖</i> İznik</button>
+        <button type="button" data-quick-theme="ceviz"><i aria-hidden="true">✧</i> Ceviz</button>
+        <button type="button" data-quick-theme="lacivert"><i aria-hidden="true">✦</i> Lacivert</button>
       </div>
       <div class="tv-chat" data-el="chatPanel" style="display:none">
         <div class="tvc-head">
@@ -171,10 +178,16 @@ export function openTavla(){
       </div>
     </div>
   `;
+  setTavlaAppearance(root);
   document.body.appendChild(root);
 
   root.querySelector('[data-act="close"]').addEventListener('click', closeAll);
-  root.querySelector('[data-act="theme"]').addEventListener('click', () => showThemePicker(root));
+  for(const button of root.querySelectorAll('[data-act="theme"], [data-act="gameTheme"]')){
+    button.addEventListener('click', () => showThemePicker(root, button));
+  }
+  for(const button of root.querySelectorAll('[data-quick-theme]')){
+    button.addEventListener('click', () => chooseTavlaAppearance(root, button.dataset.quickTheme));
+  }
   const soundBtn = root.querySelector('[data-el="soundBtn"]');
   if(soundBtn){
     soundBtn.textContent = Sound.enabled ? '🔊' : '🔇';
@@ -335,7 +348,6 @@ function startGame(root, mode, opts){
       G.difficulty = saved.difficulty || G.difficulty;
       G.rolled = saved.rolled || false;
       G.openingDice = saved.openingDice || [1,1];
-      if(saved.theme && THEMES[saved.theme]) SELECTED_THEME = saved.theme;
       G._resuming = true;
       G._savedFlip = saved.flip;
     }
@@ -412,6 +424,8 @@ function startGame(root, mode, opts){
   G.canvas.addEventListener('pointermove', onPointerMove);
   G.canvas.addEventListener('pointerup', onPointerUp);
   G.canvas.addEventListener('pointercancel', onPointerUp);
+  G.canvas.addEventListener('keydown', onTavlaBoardKey);
+  G.canvas.addEventListener('blur',()=>{ if(G===session){G.keyboardPoint=null;draw();} });
 
   G.resizeHandler = () => fitCanvas();
   window.addEventListener('resize', G.resizeHandler);
@@ -603,19 +617,22 @@ function fitCanvas(){
     : wrap.clientHeight;
   if(availH<10)return;
   if(wrap.style)wrap.style.alignItems=availH<wrap.clientHeight-1?'flex-start':'';
-  // Tavla oranı ~1.40 (dikey-uzun). 1.30–1.50 arasına sabitle.
+  // Dikey tahta, dar ve kısa ekranlarda kontrol satırlarını itmeden ölçülür.
   let ratio = availH / availW;
-  ratio = Math.max(1.30, Math.min(ratio, 1.50));
+  ratio = Math.max(1.32, Math.min(ratio, 1.50));
   let w = availW, h = w * ratio;
   // Yükseklik taşarsa genişlikten kıs (ama en-boy korunur)
   if(h > availH){ h = availH; w = h / ratio; }
   // Genişlik taşarsa yükseklikten kıs
   if(w > availW){ w = availW; h = w * ratio; }
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(2.5, window.devicePixelRatio || 1);
   G.W = Math.floor(w); G.H = Math.floor(h);
-  G.canvas.width = G.W * dpr; G.canvas.height = G.H * dpr;
+  if(G.W<8||G.H<8)return;
+  const backW=Math.round(G.W*dpr),backH=Math.round(G.H*dpr);
+  if(G.canvas.width!==backW)G.canvas.width=backW;
+  if(G.canvas.height!==backH)G.canvas.height=backH;
   G.canvas.style.width = G.W + 'px'; G.canvas.style.height = G.H + 'px';
-  G.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  G.ctx.setTransform(backW/G.W, 0, 0, backH/G.H, 0, 0);
   computeLayout();
   draw();
 }
@@ -623,7 +640,9 @@ function fitCanvas(){
 // Tahta geometrisi — TAMAMEN ORANSAL (sabit piksel YOK).
 // Bölgeler: [sol oyun yarısı | orta bar | sağ oyun yarısı | toplama oluğu]
 function computeLayout(){
-  const W = G.W, H = G.H;
+  G.geo = makeTavlaGeometry(G.W,G.H);
+}
+function makeTavlaGeometry(W,H){
   // iç kenar boşluğu (altın çerçeve ile keçe arası) — oransal
   const pad = Math.round(Math.min(W, H) * 0.045);
   const innerX = pad, innerY = pad;
@@ -637,7 +656,7 @@ function computeLayout(){
   const checkerR = colW * 0.42;                 // pul yarıçapı (sütuna güvenli sığar)
   const pointH = innerH * 0.42;                 // üçgen yüksekliği
   const safe = Math.max(2, checkerR * 0.40);    // kenarlardan güvenli boşluk (oransal)
-  G.geo = {
+  return {
     pad, innerX, innerY, innerW, innerH,
     barW, bearW, playW, halfW, colW, checkerR, pointH, safe,
     leftX:  innerX,                       // sol yarı başlangıcı
@@ -651,9 +670,7 @@ function computeLayout(){
 // Yerleşim (flip=false, beyaz altta mantığı): 
 //   alt sıra: idx 0..11 sağdan sola (sağ alt köşe idx0)
 //   üst sıra: idx 12..23 soldan sağa (sol üst idx12)
-function pointGeometry(idx){
-  const g = G.geo;
-  const flip = G.flip;
+function pointGeometry(idx,g=G.geo,flip=G.flip){
   let i = idx;
   // flip: tahtayı 180° döndür → idx eşlemesi
   // Standart tavla görseli: alt-sağ çeyrek 0..5, alt-sol 6..11, üst-sol 12..17, üst-sağ 18..23
@@ -705,84 +722,24 @@ function pointGeometry(idx){
 
 // ════════════ ÇİZİM ════════════
 function draw(){
-  if(!G || !G.ctx) return;
-  const ctx = G.ctx, t = THEMES[SELECTED_THEME], g = G.geo, W = G.W, H = G.H;
+  if(!G?.ctx||!G.geo)return;
+  const ctx=G.ctx,t=THEMES[SELECTED_THEME],g=G.geo,W=G.W,H=G.H;
   if(typeof updateTavlaMetrics==='function')updateTavlaMetrics();
-  ctx.clearRect(0, 0, W, H);
-
-  // dış zemin (koyu radyal vinyet)
-  const bgGrad = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.2, W/2, H/2, Math.max(W,H)*0.7);
-  bgGrad.addColorStop(0, _shade(t.bg, 1.25));
-  bgGrad.addColorStop(1, t.bg);
-  ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-
-  // ── ALTIN ÇERÇEVE (çok katmanlı metalik) ──
-  _roundRect(ctx, 2, 2, W-4, H-4, 12);
-  const fg = ctx.createLinearGradient(0, 0, W, H);
-  fg.addColorStop(0, _shade(t.frame, 1.25));
-  fg.addColorStop(0.25, t.frame);
-  fg.addColorStop(0.5, t.frameDark);
-  fg.addColorStop(0.75, t.frame);
-  fg.addColorStop(1, _shade(t.frame, 1.15));
-  ctx.fillStyle = fg; ctx.fill();
-  // çerçeve üst parlama
-  _roundRect(ctx, 2, 2, W-4, H-4, 12);
-  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5; ctx.stroke();
-  // çerçeve iç oyma çizgisi (altın detay)
-  _roundRect(ctx, g.innerX-6, g.innerY-6, g.innerW+12, g.innerH+12, 8);
-  ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 2; ctx.stroke();
-  _roundRect(ctx, g.innerX-4, g.innerY-4, g.innerW+8, g.innerH+8, 6);
-  ctx.strokeStyle = _shade(t.frame, 1.3); ctx.lineWidth = 1; ctx.stroke();
-
-  for(const [x,y] of [[g.innerX*.48,g.innerY*.5],[W-g.innerX*.48,g.innerY*.5],[g.innerX*.48,H-g.innerY*.5],[W-g.innerX*.48,H-g.innerY*.5]]){
-    ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillStyle='rgba(255,242,199,.8)';const r=Math.max(1.5,g.innerX*.12);ctx.fillRect(-r,-r,r*2,r*2);ctx.restore();
+  ctx.clearRect(0,0,W,H);
+  const key=[SELECTED_THEME,W,H,G.canvas.width,G.canvas.height,!!G.flip].join(':');
+  if(G._surface?.key!==key){
+    // The expensive inlay and grain never repeat during dice and move animations.
+    const layer=document.createElement('canvas');
+    layer.width=G.canvas.width;layer.height=G.canvas.height;
+    const paint=layer.getContext('2d');
+    if(paint){
+      paint.setTransform(layer.width/W,0,0,layer.height/H,0,0);
+      drawTavlaSurface(paint,W,H,g,t,!!G.flip);
+      G._surface={key,layer};
+    }
   }
-
-  // ── İÇ KEÇE (kadife dokusu: gradyan + ince vinyet) ──
-  const feltGrad = ctx.createLinearGradient(g.innerX, g.innerY, g.innerX, g.innerY + g.innerH);
-  feltGrad.addColorStop(0, _shade(t.felt, 1.15));
-  feltGrad.addColorStop(0.5, t.felt);
-  feltGrad.addColorStop(1, _shade(t.felt, 0.85));
-  ctx.fillStyle = feltGrad;
-  ctx.fillRect(g.innerX, g.innerY, g.innerW, g.innerH);
-  // keçe vinyet (kenarlar koyu)
-  const fv = ctx.createRadialGradient(
-    g.innerX + g.innerW/2, g.innerY + g.innerH/2, Math.min(g.innerW,g.innerH)*0.15,
-    g.innerX + g.innerW/2, g.innerY + g.innerH/2, Math.max(g.innerW,g.innerH)*0.6);
-  fv.addColorStop(0, 'rgba(0,0,0,0)');
-  fv.addColorStop(1, 'rgba(0,0,0,.32)');
-  ctx.fillStyle = fv;
-  ctx.fillRect(g.innerX, g.innerY, g.innerW, g.innerH);
-  // ince kadife doku (hafif noise çizgileri)
-  _drawFeltTexture(ctx, g.innerX, g.innerY, g.innerW, g.innerH);
-
-  // üçgen noktalar
-  for(let i=0;i<24;i++){ drawPoint(ctx, i, t); }
-
-  // orta bar — kadife gradyan
-  const barGrad = ctx.createLinearGradient(g.barX, 0, g.barX + g.barW, 0);
-  barGrad.addColorStop(0, _shade(t.bar, 0.75));
-  barGrad.addColorStop(0.5, _shade(t.bar, 1.12));
-  barGrad.addColorStop(1, _shade(t.bar, 0.75));
-  ctx.fillStyle = barGrad;
-  ctx.fillRect(g.barX, g.innerY, g.barW, g.innerH);
-  _drawFeltTexture(ctx, g.barX, g.innerY, g.barW, g.innerH);
-  drawBarMotif(ctx, t);
-  // bar altın kenar şeritleri
-  ctx.fillStyle = _shade(t.frame, 1.1);
-  ctx.fillRect(g.barX - 2, g.innerY, 2, g.innerH);
-  ctx.fillRect(g.barX + g.barW, g.innerY, 2, g.innerH);
-
-  // bear-off oluğu — kadife gradyan + altın kenar
-  const bearGrad = ctx.createLinearGradient(g.bearX, 0, g.bearX + g.bearW, 0);
-  bearGrad.addColorStop(0, _shade(t.bar, 0.7));
-  bearGrad.addColorStop(0.5, _shade(t.bar, 1.05));
-  bearGrad.addColorStop(1, _shade(t.bar, 0.7));
-  ctx.fillStyle = bearGrad;
-  ctx.fillRect(g.bearX, g.innerY, g.bearW, g.innerH);
-  _drawFeltTexture(ctx, g.bearX, g.innerY, g.bearW, g.innerH);
-  ctx.fillStyle = _shade(t.frame, 1.1);
-  ctx.fillRect(g.bearX - 2, g.innerY, 2, g.innerH);
+  if(G._surface?.key===key)ctx.drawImage(G._surface.layer,0,0,W,H);
+  else drawTavlaSurface(ctx,W,H,g,t,!!G.flip);
   // toplanan pul göstergesi
   drawBearOff(ctx, t);
 
@@ -796,6 +753,8 @@ function draw(){
 
   // bar'daki pullar
   drawBarCheckers(ctx, t);
+
+  if(G.keyboardPoint!=null)drawKeyboardPoint(ctx,t);
 
   // zarlar
   drawDice(ctx, t);
@@ -924,243 +883,203 @@ function drawRollHint(ctx, t){
   }
 }
 
-function drawPoint(ctx, idx, t){
-  const pg = pointGeometry(idx);
-  const g = G.geo;
-  const half = pg.colW * 0.5;
-  const tipY = pg.y0 + pg.dir * g.pointH;
-  const isA = (idx % 2 === 0);
-  const baseCol = isA ? t.pointA : t.pointB;
-  const x0 = pg.baseX - half*0.86, x1 = pg.baseX + half*0.86;
+function lineGradient(ctx,x0,y0,x1,y1,stops){
+  const g=ctx.createLinearGradient(x0,y0,x1,y1);
+  for(const [offset,color] of stops)g.addColorStop(offset,color);
+  return g;
+}
 
+function drawTavlaSurface(ctx,W,H,g,t,flip){
+  const p=g.pad,r=p*.8, edge=Math.max(.55,W*.002), X=g.innerX,Y=g.innerY,B=Y+g.innerH;
   ctx.save();
-  // Üçgen yolu
-  const tri = () => { ctx.beginPath(); ctx.moveTo(x0, pg.y0); ctx.lineTo(x1, pg.y0); ctx.lineTo(pg.baseX, tipY); ctx.closePath(); };
+  _roundRect(ctx,0,0,W,H,r);ctx.clip();
+  const wood=t.grain==='wood';
+  const woodRail=wood?'#945126':_shade(t.bg,1.52);
+  ctx.fillStyle=lineGradient(ctx,0,0,W,H,[
+    [0,_shade(t.frameDark,.65)],[.11,woodRail],[.30,t.bg],[.61,woodRail],[.86,t.bg],[1,_shade(t.frameDark,1.12)]
+  ]);
+  ctx.fillRect(0,0,W,H);
+  textureTavla(ctx,0,0,W,H,t.grain,wood?1:.6);
+  for(const [off,col,lw] of [
+    [p*.09,t.frameDark,edge*1.4],[p*.22,t.frame,edge],[p*.35,'#160d09',edge*.82],
+    [p*.71,t.frameDark,edge*2],[p*.84,'rgba(0,0,0,.62)',edge*1.8],
+    [p*.94,t.frame,edge]
+  ]){
+    _roundRect(ctx,off,off,W-off*2,H-off*2,Math.max(2,r-off*.53));
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke();
+  }
+  // A continuous fine engraving on the rails, plus the corner hardware.
+  const pitch=p*1.88,rr=p*.17;
+  for(let x=p*2;x<W-p;x+=pitch){
+    ornamentTavla(ctx,x,p*.51,rr,t.motif,t.frame,.53);
+    ornamentTavla(ctx,x,H-p*.51,rr,t.motif,t.frame,.53);
+  }
+  for(let y=p*2;y<H-p;y+=pitch){
+    ornamentTavla(ctx,p*.51,y,rr,t.motif,t.frame,.52);
+    ornamentTavla(ctx,W-p*.51,y,rr,t.motif,t.frame,.52);
+  }
+  for(const [x,y,sx,sy] of [[p*.22,p*.22,1,1],[W-p*.22,p*.22,-1,1],[p*.22,H-p*.22,1,-1],[W-p*.22,H-p*.22,-1,-1]]){
+    ctx.save();ctx.translate(x,y);ctx.scale(sx,sy);
+    ctx.beginPath();ctx.moveTo(0,p*1.46);ctx.quadraticCurveTo(p*.09,p*.12,p*.14,p*.11);
+    ctx.quadraticCurveTo(p*.67,0,p*1.47,0);
+    ctx.quadraticCurveTo(p*.81,p*.37,0,p*1.46);ctx.closePath();
+    ctx.fillStyle=lineGradient(ctx,0,0,p,p,[[0,t.frame],[.55,t.frameDark],[1,t.frame]]);ctx.fill();
+    ctx.strokeStyle=t.frame;ctx.lineWidth=edge*.8;ctx.stroke();
+    ornamentTavla(ctx,p*.43,p*.41,p*.30,t.motif,wood?'#fff0bd':'#efdfb9',.85);
+    ctx.restore();
+  }
 
-  // ── Ana gövde: tabandan uca gradyan (parlak taban → koyu uç) ──
-  const grad = ctx.createLinearGradient(pg.baseX, pg.y0, pg.baseX, tipY);
-  grad.addColorStop(0, _shade(baseCol, isA ? 1.18 : 1.10));   // taban: aydınlık
-  grad.addColorStop(0.55, baseCol);
-  grad.addColorStop(1, _shade(baseCol, 0.62));                // uç: koyu
-  tri(); ctx.fillStyle = grad; ctx.fill();
+  // The two usable fields, center bar and bear-off tray keep their original coordinates.
+  for(const [x,w,tint] of [[g.leftX,g.halfW,t.felt],[g.rightX,g.halfW,_shade(t.felt,.9)]]){
+    ctx.save();
+    _roundRect(ctx,x,Y,w,g.innerH,p*.41);ctx.clip();
+    ctx.fillStyle=lineGradient(ctx,x,Y,x+w,B,[[0,_shade(tint,.65)],[.24,tint],[.51,_shade(tint,1.15)],[.83,tint],[1,_shade(tint,.72)]]);
+    ctx.fillRect(x,Y,w,g.innerH);
+    textureTavla(ctx,x,Y,w,g.innerH,t.grain,wood?.98:.7);
+    const highlight=ctx.createRadialGradient(x+w*.48,Y+g.innerH*.46,0,x+w*.48,Y+g.innerH*.46,g.innerH*.62);
+    highlight.addColorStop(0,'rgba(255,229,183,.08)');highlight.addColorStop(.68,'rgba(255,218,142,0)');highlight.addColorStop(1,'rgba(0,0,0,.58)');
+    ctx.fillStyle=highlight;ctx.fillRect(x,Y,w,g.innerH);
+    const cx=x+w*.48,cy=Y+g.innerH*.5,mr=Math.min(w*.21,g.innerH*.055);
+    ornamentTavla(ctx,cx,cy+edge,mr,t.motif,'#0a0807',.58,true);
+    ornamentTavla(ctx,cx,cy,mr,t.motif,t.frame,wood?.73:.53,true);
+    ctx.restore();
+  }
 
-  // ── Sol kenar boyunca ışık şeridi (3B hacim) ──
-  const lg = ctx.createLinearGradient(x0, 0, pg.baseX, 0);
-  lg.addColorStop(0, 'rgba(255,255,255,.16)');
-  lg.addColorStop(0.5, 'rgba(255,255,255,0)');
-  lg.addColorStop(1, 'rgba(0,0,0,.10)');
-  tri(); ctx.fillStyle = lg; ctx.fill();
+  for(let i=0;i<24;i++)drawPoint(ctx,i,t,g,flip);
+  for(const [x,w] of [[g.leftX,g.halfW],[g.rightX,g.halfW]]){
+    _roundRect(ctx,x,Y,w,g.innerH,p*.38);ctx.strokeStyle='rgba(0,0,0,.56)';ctx.lineWidth=edge*1.9;ctx.stroke();
+    _roundRect(ctx,x+edge,Y+edge,w-edge*2,g.innerH-edge*2,p*.32);ctx.strokeStyle=t.frame;ctx.lineWidth=edge*.69;ctx.stroke();
+  }
 
-  // ── Uç gölgesi (sivri uca doğru koyulaşma, derinlik) ──
-  const tg = ctx.createLinearGradient(pg.baseX, tipY - g.pointH*0.4, pg.baseX, tipY);
-  tg.addColorStop(0, 'rgba(0,0,0,0)');
-  tg.addColorStop(1, 'rgba(0,0,0,.28)');
-  tri(); ctx.fillStyle = tg; ctx.fill();
-
-  // ── Kenar çizgileri (taban parlak, yanlar koyu) ──
-  tri();
-  ctx.strokeStyle = 'rgba(0,0,0,.30)'; ctx.lineWidth = 1.2; ctx.stroke();
-  // taban üst ince altın çizgi
-  ctx.beginPath(); ctx.moveTo(x0, pg.y0); ctx.lineTo(x1, pg.y0);
-  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; ctx.stroke();
-
+  const barX=g.barX,pinW=Math.min(g.barW*.37,p*.62);
+  ctx.fillStyle=lineGradient(ctx,barX,0,barX+g.barW,0,[[0,_shade(t.bar,.59)],[.14,t.frameDark],[.27,t.bar],[.51,_shade(t.bar,1.29)],[.87,t.bar],[1,_shade(t.bar,.56)]]);
+  ctx.fillRect(barX,Y,g.barW,g.innerH);textureTavla(ctx,barX,Y,g.barW,g.innerH,t.grain,.8);
+  ctx.fillStyle=t.frame;ctx.fillRect(barX+edge,Y,edge*.75,g.innerH);ctx.fillRect(barX+g.barW-edge*1.6,Y,edge*.75,g.innerH);
+  const mx=barX+g.barW/2;
+  for(let i=0;i<7;i++){
+    const cy=Y+g.innerH*(.25+i/12);
+    ornamentTavla(ctx,mx,cy,g.barW*(i%2?.13:.31),i%2?'spark':t.motif,t.frame,.88,!(i%2));
+  }
+  for(const y of [Y+g.innerH*.094,Y+g.innerH*.906]){
+    const h=g.innerH*.073;
+    _roundRect(ctx,mx-pinW/2,y-h/2,pinW,h,pinW*.4);
+    ctx.fillStyle=lineGradient(ctx,mx-pinW/2,0,mx+pinW/2,0,[[0,'#24160c'],[.28,t.frameDark],[.46,t.frame],[.62,t.frame],[1,t.frameDark]]);
+    ctx.fill();
+    for(const offset of [-.29,.29]){ctx.fillStyle='rgba(10,5,0,.57)';ctx.fillRect(mx-pinW/2,y+h*offset,pinW,edge);}
+  }
+  const bx=g.bearX;
+  ctx.fillStyle=lineGradient(ctx,bx,0,bx+g.bearW,0,[[0,_shade(t.bar,.65)],[.53,t.bar],[1,_shade(t.bar,.74)]]);
+  ctx.fillRect(bx,Y,g.bearW,g.innerH);textureTavla(ctx,bx,Y,g.bearW,g.innerH,t.grain,.52);
+  ctx.fillStyle=t.frame;ctx.fillRect(bx,Y,edge*.72,g.innerH);
   ctx.restore();
 }
 
-// Keçe/kadife dokusu — ince çapraz tarama (performanslı, bir kez hesaplanır)
-let _feltPattern = null;
-function _drawFeltTexture(ctx, x, y, w, h){
-  try{
-    if(!_feltPattern){
-      const pc = document.createElement('canvas'); pc.width = 64; pc.height = 64;
-      const pctx = pc.getContext('2d');
-      // hafif noise noktaları
-      for(let i=0;i<260;i++){
-        const px = Math.random()*64, py = Math.random()*64;
-        const a = Math.random()*0.04;
-        pctx.fillStyle = Math.random()>0.5 ? 'rgba(255,255,255,'+a+')' : 'rgba(0,0,0,'+a+')';
-        pctx.fillRect(px, py, 1, 1);
-      }
-      _feltPattern = ctx.createPattern(pc, 'repeat');
+function drawPoint(ctx,idx,t,g,flip){
+  const pg=pointGeometry(idx,g,flip),half=pg.colW*.46,tipY=pg.y0+pg.dir*g.pointH;
+  const pale=idx%2===1,base=pale?t.pointB:t.pointA;
+  const x0=pg.baseX-half,x1=pg.baseX+half;
+  const tri=()=>{ctx.beginPath();ctx.moveTo(x0,pg.y0);ctx.lineTo(x1,pg.y0);ctx.lineTo(pg.baseX,tipY);ctx.closePath();};
+  ctx.save();
+  tri();ctx.clip();
+  ctx.fillStyle=lineGradient(ctx,pg.baseX,pg.y0,pg.baseX,tipY,[[0,_shade(base,1.04)],[.39,base],[.76,_shade(base,pale?.89:.81)],[1,_shade(base,.72)]]);
+  ctx.fillRect(x0,Math.min(pg.y0,tipY),half*2,g.pointH);
+  textureTavla(ctx,x0,Math.min(pg.y0,tipY),half*2,g.pointH,t.grain,pale?.55:.82);
+  ctx.fillStyle=lineGradient(ctx,x0,0,x1,0,[[0,'rgba(0,0,0,.22)'],[.45,'rgba(255,223,168,.18)'],[.62,'rgba(255,223,168,.04)'],[1,'rgba(0,0,0,.25)']]);
+  ctx.fillRect(x0,Math.min(pg.y0,tipY),half*2,g.pointH);
+  ctx.restore();
+  ctx.save();
+  tri();ctx.strokeStyle='rgba(25,12,8,.82)';ctx.lineWidth=Math.max(.64,pg.colW*.075);ctx.stroke();
+  ctx.strokeStyle=pale?_shade(t.frame,1.18):t.frame;ctx.lineWidth=Math.max(.40,pg.colW*.039);ctx.stroke();
+  ctx.restore();
+}
+
+// Monochrome microtextures are generated once. Walnut curves include two shallow knots
+// and follow the long axis of the field; the other finishes hue through their own base.
+const tavlaGrainTiles=new Map();
+function tavlaGrainTile(kind){
+  if(tavlaGrainTiles.has(kind))return tavlaGrainTiles.get(kind);
+  const c=document.createElement('canvas'),W=kind==='wood'?256:96,H=kind==='wood'?512:96;
+  c.width=W;c.height=H;
+  const p=c.getContext('2d');
+  if(!p)return null;
+  const ink=p.createImageData(W,H),a=ink.data;
+  let seed=kind==='wood'?19640:22312;
+  const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const n=rand()-.5;
+    let v=n*.14;
+    if(kind==='wood'){
+      const bend=(cx,cy,sz)=>{const dx=(x-cx)/42,dy=(y-cy)/sz;return dx*Math.exp(-dx*dx-dy*dy)*22;};
+      const grain=x+Math.sin(y*.021+x*.032)*5.5+Math.sin(y*.005+x*.073)*3.2+bend(74,137,66)-bend(201,348,85);
+      v=(Math.sin(grain*.25)*.11+Math.sin(grain*.74)*.082+Math.sin(grain*2.5)*.038+Math.sin(grain*.1)*.105+n*.09);
+      v+=Math.min(0,(Math.sin(grain*1.38)+.5)*.09);
+    }else if(kind==='silk'){
+      v+=((x%3===0?-.045:.02)+(y%2===0?.044:-.045));
+    }else if(kind==='glaze'){
+      v+=Math.cos(x*.36+y*.12)*.038+Math.cos(x*.18-y*.18)*.039;
+    }else if(kind==='frost'){
+      v+=Math.sin((x+y)*.34)*.044+Math.cos((x-y)*.62)*.039;
+    }else{
+      v+=(Math.sin(y*.54)*.044+Math.sin(y*1.55)*.026);
     }
-    if(_feltPattern){
-      ctx.save();
-      ctx.fillStyle = _feltPattern;
-      ctx.fillRect(x, y, w, h);
-      ctx.restore();
+    const at=(y*W+x)*4;
+    a[at]=v>0?255:22;a[at+1]=v>0?220:9;a[at+2]=v>0?165:5;
+    a[at+3]=Math.min(160,Math.round(Math.abs(v)*255));
+  }
+  p.putImageData(ink,0,0);tavlaGrainTiles.set(kind,c);return c;
+}
+function textureTavla(ctx,x,y,w,h,kind,strength){
+  try{
+    const tile=tavlaGrainTile(kind),pattern=tile&&ctx.createPattern(tile,'repeat');
+    if(pattern){ctx.save();ctx.globalAlpha*=strength;ctx.fillStyle=pattern;ctx.fillRect(x,y,w,h);ctx.restore();}
+  }catch{/* Solid materials remain playable if the renderer cannot allocate a texture tile. */}
+}
+function _shade(hex,factor){
+  let h=(hex||'#888').replace('#','');
+  if(h.length===3)h=h.split('').map(x=>x+x).join('');
+  const source=h.startsWith('rgb(')?h.match(/\d+/g).map(Number):[0,2,4].map(i=>parseInt(h.slice(i,i+2),16));
+  const color=source.map(v=>Math.max(0,Math.min(255,Math.round(v*factor))));
+  return 'rgb('+color.join(',')+')';
+}
+
+// Fine vector engraving; all textures and ornaments are drawn on the playable surface.
+function ornamentTavla(ctx,x,y,r,motif,ink,alpha=1,seal=false){
+  if(r<.7)return;
+  ctx.save();ctx.translate(x,y);ctx.scale(r,r);
+  ctx.globalAlpha*=alpha;ctx.strokeStyle=ink;ctx.fillStyle=ink;
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=seal?.048:.13;
+  const polygon=(n,out,inset,angle=-Math.PI/2)=>{
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const a=angle+2*Math.PI*i/n,z=i%2?inset:out;
+      i===0?ctx.moveTo(Math.cos(a)*z,Math.sin(a)*z):ctx.lineTo(Math.cos(a)*z,Math.sin(a)*z);
     }
-  }catch(e){}
-}
-
-// Renk tonu açma/koyma (factor>1 açar, <1 koyar)
-function _shade(hex, factor){
-  let h = (hex||'#888').replace('#','');
-  if(h.length===3) h = h.split('').map(x=>x+x).join('');
-  let r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
-  r = Math.max(0, Math.min(255, Math.round(r*factor)));
-  g = Math.max(0, Math.min(255, Math.round(g*factor)));
-  b = Math.max(0, Math.min(255, Math.round(b*factor)));
-  return 'rgb('+r+','+g+','+b+')';
-}
-
-// Her temanın kendine özgü motifi (tasarım kuralı: motif yalnızca orta bar'da)
-const THEME_MOTIF = { iznik:'flower', kizil:'crescent', lacivert:'star8', zumrut:'seljuk', ceviz:'diamond', buz:'snow' };
-
-// Orta bar — TEMİZ (dekoratif sembol/hayalet ikon YOK), yalnızca ince kenar gölgesi
-function drawBarMotif(ctx, t){
-  const g = G.geo;
-  ctx.save();
-  // bar kenarlarında hafif iç gölge (3B his)
-  const grad = ctx.createLinearGradient(g.barX, 0, g.barX + g.barW, 0);
-  grad.addColorStop(0,    'rgba(0,0,0,.28)');
-  grad.addColorStop(0.5,  'rgba(0,0,0,0)');
-  grad.addColorStop(1,    'rgba(0,0,0,.28)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(g.barX, g.innerY, g.barW, g.innerH);
-
-  // ── ⚜️ SARAY AY-YILDIZ MOTİFİ (bar üst & alt) — önbellekli ──
-  const cx = g.barX + g.barW * 0.5;
-  const r = Math.min(g.barW * 0.32, g.innerH * 0.045, 20);
-  const yTop = g.innerY + g.innerH * 0.16;
-  const yBot = g.innerY + g.innerH * 0.84;
-  const sprite = _getCrescentSprite(r, t.frame, t.barMotif || t.frame);
-  if(sprite){
-    const dw = sprite.width, dh = sprite.height;
-    ctx.globalAlpha = 0.55;
-    ctx.drawImage(sprite, cx - dw/2, yTop - dh/2);
-    ctx.drawImage(sprite, cx - dw/2, yBot - dh/2);
-    ctx.globalAlpha = 1;
-  }
-  ctx.restore();
-}
-
-// Ay-yıldız motifini bir kez render edip önbelleğe al (FPS korunur)
-let _crescentCache = {};
-function _getCrescentSprite(r, goldMain, goldLight){
-  const key = Math.round(r) + '|' + goldMain + '|' + goldLight;
-  if(_crescentCache[key]) return _crescentCache[key];
-  try{
-    const pad = Math.ceil(r * 0.6);
-    const W = Math.ceil(r * 2.5 + pad*2), H = Math.ceil(r * 2.4 + pad*2);
-    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    const cc = cv.getContext('2d');
-    drawCrescentStarLux(cc, W*0.42, H/2, r, goldMain, goldLight, 1.0);
-    _crescentCache[key] = cv;
-    return cv;
-  }catch(e){ return null; }
-}
-
-// ⚜️ Premium Saray Ay-Yıldız (çift katman altın hilal + kabartmalı yıldız + gölge + ışıltı)
-function drawCrescentStarLux(ctx, cx, cy, r, goldMain, goldLight, alpha){
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  const gD = _shade(goldMain, 0.7);     // koyu altın
-  const gL = _shade(goldLight, 1.35);   // açık altın (parlama)
-
-  // ── Hilal gölgesi (derinlik) ──
-  ctx.save();
-  ctx.translate(1.5, 2);
-  ctx.globalAlpha = alpha * 0.4;
-  ctx.fillStyle = '#000';
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
-  ctx.globalCompositeOperation = 'destination-out';
-  ctx.beginPath(); ctx.arc(cx + r*0.42, cy - r*0.05, r*0.82, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
-
-  // ── Hilal gövdesi (altın gradyan dolgu — offscreen ile temiz kesim) ──
-  try{
-    const sz = Math.ceil(r*3);
-    const tmp = document.createElement('canvas'); tmp.width = sz; tmp.height = sz;
-    const tc = tmp.getContext('2d');
-    const ox = sz/2, oy = sz/2;
-    tc.fillStyle = '#fff';
-    tc.beginPath(); tc.arc(ox, oy, r, 0, Math.PI*2); tc.fill();
-    tc.globalCompositeOperation = 'destination-out';
-    tc.beginPath(); tc.arc(ox + r*0.42, oy - r*0.05, r*0.82, 0, Math.PI*2); tc.fill();
-    tc.globalCompositeOperation = 'source-in';
-    const gg = tc.createLinearGradient(0, 0, sz, sz);
-    gg.addColorStop(0, gL); gg.addColorStop(0.5, goldMain); gg.addColorStop(1, gD);
-    tc.fillStyle = gg; tc.fillRect(0, 0, sz, sz);
-    ctx.drawImage(tmp, cx - ox, cy - oy);
-  }catch(e){
-    // Fallback: düz dolgu
-    ctx.fillStyle = goldMain;
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath(); ctx.arc(cx + r*0.42, cy - r*0.05, r*0.82, 0, Math.PI*2); ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-  }
-
-  // ── Hilal iç kenar parlaması ──
-  ctx.strokeStyle = gL; ctx.lineWidth = Math.max(1, r*0.06); ctx.globalAlpha = alpha * 0.75;
-  ctx.beginPath(); ctx.arc(cx, cy, r-1, -0.7, 1.0); ctx.stroke();
-  ctx.globalAlpha = alpha;
-
-  // ── Yıldız (kabartmalı, gölge + gradyan + parlama) ──
-  const sx = cx + r*0.66, sy = cy, R = r*0.5;
-  // gölge
-  ctx.save(); ctx.translate(1.2, 1.8); ctx.globalAlpha = alpha*0.4;
-  ctx.fillStyle = '#000'; _star5path(ctx, sx, sy, R); ctx.fill();
-  ctx.restore();
-  // gövde
-  const sg = ctx.createRadialGradient(sx - R*0.3, sy - R*0.3, R*0.1, sx, sy, R);
-  sg.addColorStop(0, gL); sg.addColorStop(0.5, goldMain); sg.addColorStop(1, gD);
-  ctx.fillStyle = sg; _star5path(ctx, sx, sy, R); ctx.fill();
-  ctx.strokeStyle = gL; ctx.lineWidth = Math.max(0.8, R*0.08); _star5path(ctx, sx, sy, R); ctx.stroke();
-
-  ctx.restore();
-}
-function _star5path(ctx, cx, cy, R){
-  ctx.beginPath();
-  for(let i=0;i<5;i++){
-    const a = -Math.PI/2 + i*2*Math.PI/5;
-    const a2 = a + Math.PI/5;
-    ctx.lineTo(cx + Math.cos(a)*R, cy + Math.sin(a)*R);
-    ctx.lineTo(cx + Math.cos(a2)*R*0.42, cy + Math.sin(a2)*R*0.42);
-  }
-  ctx.closePath();
-}
-
-// Tek bir tema sembolü çiz
-function drawMotifSymbol(ctx, cx, cy, r, motif, t){
-  ctx.save();
-  if(motif === 'diamond'){
-    ctx.beginPath(); ctx.moveTo(cx, cy-r); ctx.lineTo(cx+r*0.72, cy); ctx.lineTo(cx, cy+r); ctx.lineTo(cx-r*0.72, cy); ctx.closePath(); ctx.fill();
-  } else if(motif === 'star8'){
-    star(ctx, cx, cy, 8, r, r*0.45);
-  } else if(motif === 'crescent'){
-    // hilal + küçük yıldız
-    ctx.beginPath(); ctx.arc(cx, cy, r*0.92, Math.PI*0.32, Math.PI*1.68); ctx.fill();
-    ctx.save(); ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath(); ctx.arc(cx + r*0.34, cy, r*0.74, 0, Math.PI*2); ctx.fill(); ctx.restore();
-    star(ctx, cx + r*0.5, cy, 5, r*0.34, r*0.15);
-  } else if(motif === 'flower'){
-    // 6 yapraklı çiçek (İznik)
+    ctx.closePath();ctx.stroke();
+  };
+  if(motif==='crescent'){
+    ctx.beginPath();ctx.moveTo(.25,-.79);ctx.bezierCurveTo(-.98,-1.13,-1.2,.97,.25,.79);
+    ctx.bezierCurveTo(-.48,.55,-.55,-.57,.25,-.79);ctx.fill();
+    ctx.save();ctx.translate(.48,-.03);ctx.scale(.39,.39);polygon(10,1,.42);ctx.fill();ctx.restore();
+  }else if(motif==='snow'){
     for(let i=0;i<6;i++){
-      const a = (Math.PI/3)*i;
-      ctx.beginPath();
-      ctx.ellipse(cx + Math.cos(a)*r*0.5, cy + Math.sin(a)*r*0.5, r*0.34, r*0.18, a, 0, Math.PI*2);
-      ctx.fill();
+      ctx.save();ctx.rotate(i*Math.PI/3);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-.93);
+      ctx.moveTo(-.20,-.68);ctx.lineTo(0,-.46);ctx.lineTo(.20,-.68);ctx.stroke();ctx.restore();
     }
-    ctx.beginPath(); ctx.arc(cx, cy, r*0.26, 0, Math.PI*2); ctx.fill();
-  } else if(motif === 'seljuk'){
-    // Selçuklu yıldızı: iki çakışık kare
-    ctx.beginPath(); ctx.moveTo(cx, cy-r); ctx.lineTo(cx+r, cy); ctx.lineTo(cx, cy+r); ctx.lineTo(cx-r, cy); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.rect(cx-r*0.62, cy-r*0.62, r*1.24, r*1.24); ctx.fill();
-  } else if(motif === 'snow'){
-    // kar tanesi: 6 kol
-    ctx.lineWidth = Math.max(1, r*0.16); ctx.lineCap = 'round';
+  }else if(motif==='flower'){
     for(let i=0;i<6;i++){
-      const a = (Math.PI/3)*i;
-      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r); ctx.stroke();
-      // küçük çapraz dallar
-      const mx = cx+Math.cos(a)*r*0.6, my = cy+Math.sin(a)*r*0.6;
-      ctx.beginPath();
-      ctx.moveTo(mx, my); ctx.lineTo(mx+Math.cos(a+0.6)*r*0.28, my+Math.sin(a+0.6)*r*0.28);
-      ctx.moveTo(mx, my); ctx.lineTo(mx+Math.cos(a-0.6)*r*0.28, my+Math.sin(a-0.6)*r*0.28);
-      ctx.stroke();
+      ctx.save();ctx.rotate(i*Math.PI/3);ctx.beginPath();
+      ctx.moveTo(0,-.13);ctx.quadraticCurveTo(-.42,-.55,0,-.89);ctx.quadraticCurveTo(.42,-.55,0,-.13);ctx.stroke();ctx.restore();
     }
+  }else if(motif==='spark'){
+    polygon(8,1,.28);
+  }else{
+    polygon(16,1,motif==='diamond'?.62:.57);
+    if(seal){
+      polygon(16,.75,.48,0);polygon(16,.44,.24);
+      if(motif==='seljuk'){polygon(4,.75,.75);polygon(4,.75,.75,Math.PI/4);}
+    }else polygon(8,.53,.25,Math.PI/4);
   }
+  if(motif!=='crescent'&&motif!=='spark'){ctx.beginPath();ctx.arc(0,0,.12,0,Math.PI*2);ctx.fill();}
   ctx.restore();
 }
 
@@ -1330,9 +1249,9 @@ function drawChecker(ctx, cx, cy, R, color, t){
 
   // ── Zemin gölgesi (yumuşak, taşı tahtaya oturtur) ──
   ctx.save();
-  ctx.filter = 'blur(2px)';
-  ctx.fillStyle = 'rgba(0,0,0,.38)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + R*0.22, R*0.96, R*0.82, 0, 0, Math.PI*2); ctx.fill();
+  const shadow=ctx.createRadialGradient(cx+R*.09,cy+R*.2,R*.30,cx+R*.09,cy+R*.2,R*1.14);
+  shadow.addColorStop(0,'rgba(0,0,0,.68)');shadow.addColorStop(.72,'rgba(0,0,0,.52)');shadow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=shadow;ctx.fillRect(cx-R*1.12,cy-R,2.27*R,2.4*R);
   ctx.restore();
 
   // ── Dış disk kenarı (metalik/koyu pah) ──
@@ -1366,9 +1285,9 @@ function drawChecker(ctx, cx, cy, R, color, t){
   ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = Math.max(1, R*0.03);
   ctx.beginPath(); ctx.arc(cx, cy, R*0.52, 0, Math.PI*2); ctx.stroke();
 
-  ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=isW?'rgba(139,101,48,.58)':'rgba(255,219,144,.72)';ctx.lineWidth=Math.max(.6,R*.035);
-  ctx.beginPath();for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2,rr=R*(i%2?.17:.37);const x=Math.cos(a)*rr,y=Math.sin(a)*rr;i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.closePath();ctx.stroke();
-  ctx.beginPath();ctx.arc(0,0,R*.84,0,Math.PI*2);ctx.stroke();ctx.restore();
+  ctx.strokeStyle=isW?'rgba(117,70,21,.62)':t.frame;ctx.lineWidth=Math.max(.57,R*.045);
+  ctx.beginPath();ctx.arc(cx,cy,R*.84,0,Math.PI*2);ctx.stroke();
+  ornamentTavla(ctx,cx,cy,R*.44,t.motif,isW?'#875128':t.frame,isW?.86:.94,R>12);
 
   // ── Üst parlama (specular highlight, sol-üst) ──
   const hl = ctx.createRadialGradient(cx - R*0.30, cy - R*0.34, R*0.02, cx - R*0.30, cy - R*0.34, R*0.55);
@@ -1423,7 +1342,7 @@ function drawDice(ctx, t){
     dice.forEach((d, i) => {
       const used = G.diceAnim ? false : G.state.used.includes(i);
       const dx = halfCx + (i - (n - 1) / 2) * spacing;
-      drawDie(ctx, dx, cy, sz, d, used);
+      drawDie(ctx, dx, cy, sz, d, used,t,i);
     });
   } else {
     // çift zar (4 adet) → 2x2 ızgara (taşmaz)
@@ -1432,13 +1351,18 @@ function drawDice(ctx, t){
       const col = i % 2, row = Math.floor(i / 2);
       const dx = halfCx + (col - 0.5) * spacing;
       const dyy = cy + (row - 0.5) * spacing;
-      drawDie(ctx, dx, dyy, sz, d, used);
+      drawDie(ctx, dx, dyy, sz, d, used,t,i);
     });
   }
 }
 
-function drawDie(ctx, cx, cy, sz, val, used){
+function drawDie(ctx,cx,cy,sz,val,used,t=THEMES[SELECTED_THEME],index=0){
   ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(index%2?.125:-.105);
+  const dark=index%2===1,hi=dark?t.bTop:t.wTop,lo=dark?t.bBot:t.wBot;
+  cx=0;cy=0;
+  if(used)ctx.globalAlpha*=.48;
   const x = cx - sz/2, y = cy - sz/2;
   const rad = sz*0.20;
   // 1) Yere düşen gölge
@@ -1446,12 +1370,11 @@ function drawDie(ctx, cx, cy, sz, val, used){
   ctx.shadowColor = 'rgba(0,0,0,.45)';
   ctx.shadowBlur = sz*0.22; ctx.shadowOffsetX = sz*0.05; ctx.shadowOffsetY = sz*0.10;
   _roundRect(ctx, x, y, sz, sz, rad);
-  ctx.fillStyle = used ? '#9a9a92' : '#f5f1e8'; ctx.fill();
+  ctx.fillStyle = dark?t.bEdge:t.wEdge;ctx.fill();
   ctx.restore();
   // 2) Gövde — köşegen gradient
   const grad = ctx.createLinearGradient(x, y, x+sz, y+sz);
-  if(used){ grad.addColorStop(0,'#b8b8ae'); grad.addColorStop(0.5,'#9a9a90'); grad.addColorStop(1,'#7e7e74'); }
-  else { grad.addColorStop(0,'#fffefb'); grad.addColorStop(0.45,'#f3eee2'); grad.addColorStop(1,'#ddd5c4'); }
+  grad.addColorStop(0,_shade(hi,1.2));grad.addColorStop(.45,hi);grad.addColorStop(1,lo);
   _roundRect(ctx, x, y, sz, sz, rad); ctx.fillStyle = grad; ctx.fill();
   // 3) Üst parlama
   ctx.save();
@@ -1462,7 +1385,7 @@ function drawDie(ctx, cx, cy, sz, val, used){
   ctx.restore();
   // 4) İnce kenar
   _roundRect(ctx, x+0.5, y+0.5, sz-1, sz-1, rad);
-  ctx.strokeStyle = used ? 'rgba(0,0,0,.25)' : 'rgba(150,130,90,.45)';
+  ctx.strokeStyle = dark?t.frame:'rgba(117,77,35,.58)';
   ctx.lineWidth = Math.max(1, sz*0.012); ctx.stroke();
   // 5) Kabartma noktalar
   const r = sz*0.085, C=0.5, L=0.27, R=0.73;
@@ -1471,8 +1394,8 @@ function drawDie(ctx, cx, cy, sz, val, used){
     ctx.beginPath(); ctx.arc(px+r*0.18, py+r*0.18, r, 0, Math.PI*2);
     ctx.fillStyle = used ? 'rgba(40,40,40,.5)' : 'rgba(20,15,5,.35)'; ctx.fill();
     const dg = ctx.createRadialGradient(px-r*0.3, py-r*0.3, r*0.1, px, py, r);
-    if(used){ dg.addColorStop(0,'#444'); dg.addColorStop(1,'#222'); }
-    else { dg.addColorStop(0,'#3a2a18'); dg.addColorStop(0.7,'#1a120a'); dg.addColorStop(1,'#0a0704'); }
+    if(dark){dg.addColorStop(0,'#fff4dc');dg.addColorStop(1,t.frame);}
+    else{dg.addColorStop(0,'#3a2a18');dg.addColorStop(1,'#0a0704');}
     ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle = dg; ctx.fill();
     ctx.beginPath(); ctx.arc(px-r*0.35, py-r*0.35, r*0.28, 0, Math.PI*2);
     ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fill();
@@ -1581,6 +1504,67 @@ function isMyPoint(idx){
   return (c === 'w' && v > 0) || (c === 'b' && v < 0);
 }
 
+function drawKeyboardPoint(ctx,t){
+  const g=G.geo,k=G.keyboardPoint;
+  ctx.save();ctx.strokeStyle='#fbf6f0';ctx.lineWidth=1.35;
+  ctx.setLineDash([3,3]);
+  if(k==='bar'||k==='off'){
+    const bar=k==='bar',x=bar?g.barX:g.bearX,w=bar?g.barW:g.bearW;
+    ctx.strokeRect(x+2,g.innerY+2,w-4,g.innerH-4);
+  }else{
+    const p=pointGeometry(k);
+    const target=p.y0+p.dir*g.pointH*.73;
+    ctx.beginPath();ctx.arc(p.baseX,target,Math.max(3,g.colW*.22),0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);ctx.strokeStyle=t.glow;
+    ctx.beginPath();ctx.arc(p.baseX,target,Math.max(2,g.colW*.13),0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function announceTavlaPoint(k){
+  const el=G.root?.querySelector('[data-el="boardAnnouncement"]');
+  if(!el)return;
+  if(k==='bar'){el.textContent='Orta bar, '+G.state.bar[G.state.turn]+' pul';return;}
+  if(k==='off'){el.textContent='Pul toplama oluğu';return;}
+  const v=G.state.points[k];
+  el.textContent=(k+1)+'. hane, '+(!v?'boş':Math.abs(v)+' '+(v>0?'açık':'koyu')+' pul');
+}
+
+function onTavlaBoardKey(e){
+  if(!G?.geo||G.activePointerId!=null||e.altKey||e.ctrlKey||e.metaKey)return;
+  const key=e.key;
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Enter',' ','Escape'].includes(key))return;
+  e.preventDefault();
+  if(key==='Escape'){G.selected=null;G.legalForSel=[];G.keyboardPoint=null;draw();return;}
+  if(key==='Enter'||key===' '){
+    if(e.repeat)return;
+    if(canInteractRoll()){rollAndShow();return;}
+    if(G.rolled&&G.canPass&&canPassNow()){endTurn();return;}
+    if(!canInteract())return;
+    const k=G.keyboardPoint??(G.state.bar[G.state.turn]>0?'bar':allLegalMoves(G.state)[0]?.from);
+    if(k==null)return;
+    const move=G.legalForSel.find(m=>m.to===k);
+    if(move){doMove(move);return;}
+    const from=G.state.bar[G.state.turn]>0?'bar':k;
+    if(from!=='bar'&&(typeof from!=='number'||!isMyPoint(from)))return;
+    const moves=getCombinedMoves(G.state,from);
+    if(moves.length>0){G.keyboardPoint=from;G.selected=from;G.legalForSel=moves;announceTavlaPoint(from);draw();}
+    return;
+  }
+  if(key==='Home')G.keyboardPoint='bar';
+  else if(key==='End')G.keyboardPoint='off';
+  else{
+    const entries=Array.from({length:24},(_,i)=>({i,...pointGeometry(i)}));
+    const k=Number.isInteger(G.keyboardPoint)?G.keyboardPoint:(G.state.turn==='w'?0:23);
+    const current=entries[k],horizontal=key==='ArrowLeft'||key==='ArrowRight';
+    const direction=key==='ArrowLeft'?-1:1;
+    const choices=entries.filter(p=>horizontal?p.top===current.top&&(p.baseX-current.baseX)*direction>0:p.top===(key==='ArrowUp'));
+    choices.sort((a,b)=>Math.abs(a.baseX-current.baseX)-Math.abs(b.baseX-current.baseX));
+    G.keyboardPoint=choices[0]?.i??k;
+  }
+  announceTavlaPoint(G.keyboardPoint);draw();
+}
+
 function onPointerDown(e){
   if(G?.activePointerId!=null && G.activePointerId!==e.pointerId) return;
   // PAS mini butonuna basıldı mı? (zarların altında, hamle yokken)
@@ -1602,6 +1586,7 @@ function onPointerDown(e){
     if(canRoll){ e.preventDefault(); rollAndShow(); return; }
   }
   if(!canInteract()) return;
+  G.keyboardPoint=null;
   G.activePointerId = e.pointerId ?? null;
   try{ G.canvas?.setPointerCapture?.(e.pointerId); }catch(e){}
   e.preventDefault();
@@ -2877,31 +2862,66 @@ function fbCopy(text, done){
 }
 
 // ════════════ TEMA SEÇİCİ ════════════
-function showThemePicker(root){
-  const ov = document.createElement('div');
-  ov.className = 'tavla-theme-picker';
-  ov.innerHTML = `<div class="ttp-box">
-    <div class="ttp-title">🎨 TAHTA TEMASI</div>
-    <div class="ttp-grid">
-      ${Object.entries(THEMES).map(([key, th]) => `
-        <button class="ttp-card ${key===SELECTED_THEME?'active':''}" data-theme="${key}">
-          <div class="ttp-prev" style="background:${th.felt};border-color:${th.frame}">
-            <span style="background:${th.pointA}"></span><span style="background:${th.pointB}"></span>
-            <span style="background:${th.wTop}"></span><span style="background:${th.bTop}"></span>
-          </div>
-          <div class="ttp-name">${th.name}</div>
-        </button>`).join('')}
-    </div>
-    <button class="ttp-close">KAPAT</button>
-  </div>`;
-  root.appendChild(ov);
-  ov.querySelectorAll('.ttp-card').forEach(card => card.addEventListener('click', () => {
-    SELECTED_THEME = card.dataset.theme;
-    try{ localStorage.setItem('hero_tavla_theme', SELECTED_THEME); }catch(e){}
-    if(G && G.ctx) draw();
-    ov.remove();
-  }));
-  ov.querySelector('.ttp-close').addEventListener('click', () => ov.remove());
+function setTavlaAppearance(root){
+  root.dataset.tvTheme=SELECTED_THEME;
+  const t=THEMES[SELECTED_THEME];
+  const label=root.querySelector('[data-el="materialName"]');
+  if(label)label.textContent=t.name;
+  for(const btn of root.querySelectorAll('[data-act="theme"],[data-act="gameTheme"]'))btn.title='Tema stüdyosu: '+t.name;
+  for(const btn of root.querySelectorAll('[data-quick-theme]'))btn.setAttribute('aria-pressed',String(btn.dataset.quickTheme===SELECTED_THEME));
+}
+function chooseTavlaAppearance(root,key){
+  if(!Object.hasOwn(THEMES,key))return;
+  SELECTED_THEME=key;
+  try{localStorage.setItem('hero_tavla_theme',key);}catch{/* Still applies to this session. */}
+  setTavlaAppearance(root);
+  if(G?.root===root&&G.ctx)draw();
+}
+function paintTavlaMiniature(canvas,t,state){
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return;
+  const W=100,H=139,g=makeTavlaGeometry(W,H);
+  ctx.setTransform(2,0,0,2,0,0);
+  drawTavlaSurface(ctx,W,H,g,t,false);
+  for(let i=0;i<24;i++){
+    const value=state.points[i],point=pointGeometry(i,g,false);
+    for(let k=0;k<Math.abs(value);k++){
+      drawChecker(ctx,point.baseX,point.y0+point.dir*(g.safe+g.checkerR*(1+2*k)),g.checkerR,value>0?'w':'b',t);
+    }
+  }
+  const x=g.rightX+g.halfW/2,y=H/2;
+  drawDie(ctx,x-4.9,y,7.2,5,false,t,0);
+  drawDie(ctx,x+4.9,y,7.2,3,false,t,1);
+}
+function showThemePicker(root,trigger){
+  if(root.querySelector('.tavla-theme-dialog'))return;
+  const dialog=document.createElement('dialog');
+  dialog.className='tavla-theme-dialog';
+  dialog.setAttribute('aria-labelledby','tavla-theme-heading');
+  dialog.innerHTML=`<header class="tv-material-head"><div><span>TAVLA KOLEKSİYONU</span>
+    <h2 id="tavla-theme-heading">Tema stüdyosu</h2></div>
+    <button class="tv-icon" type="button" data-theme-close aria-label="Tema stüdyosunu kapat" autofocus>✕</button></header>
+    <p>Tahta, pullar ve zarlar birlikte değişir.</p>
+    <div class="tv-material-gallery">
+      ${Object.entries(THEMES).map(([key,t])=>`<button type="button" class="tv-material-card" data-theme-choice="${key}" aria-pressed="${key===SELECTED_THEME}">
+        <canvas width="200" height="278" aria-hidden="true"></canvas><span>${t.name}</span><small>${t.detail}</small>
+      </button>`).join('')}
+    </div>`;
+  root.appendChild(dialog);
+  dialog.addEventListener('close',()=>{dialog.remove();if(!root.hidden)trigger?.focus();},{once:true});
+  dialog.querySelector('[data-theme-close]').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',e=>{
+    if(e.target!==dialog)return;
+    const rect=dialog.getBoundingClientRect();
+    if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)dialog.close();
+  });
+  const opening=newGame();
+  for(const button of dialog.querySelectorAll('[data-theme-choice]')){
+    const key=button.dataset.themeChoice;
+    paintTavlaMiniature(button.querySelector('canvas'),THEMES[key],opening);
+    button.addEventListener('click',()=>{chooseTavlaAppearance(root,key);dialog.close();});
+  }
+  dialog.showModal();
 }
 
 // ════════════ ANİMASYONLAR ════════════
@@ -3028,22 +3048,12 @@ function _roundRect(ctx, x, y, w, h, r){
   ctx.arcTo(x, y, x+w, y, r);
   ctx.closePath();
 }
-function star(ctx, cx, cy, spikes, outer, inner){
-  ctx.beginPath();
-  for(let i=0;i<spikes*2;i++){
-    const ang = (Math.PI/spikes)*i - Math.PI/2;
-    const rad = i%2===0 ? outer : inner;
-    const px = cx + Math.cos(ang)*rad, py = cy + Math.sin(ang)*rad;
-    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-  }
-  ctx.closePath(); ctx.fill();
-}
-
 // ════════════ CSS ════════════
 function setPortalMinimized(hidden){
   if(!G?.root)return false;
   G.portalMinimized=!!hidden;G.root.hidden=!!hidden;G.root.inert=!!hidden;
   G.root.style.visibility=hidden?'hidden':'';G.root.style.pointerEvents=hidden?'none':'';
+  if(hidden)G.root.querySelector?.('.tavla-theme-dialog')?.close();
   if(G.state&&!G.online){
     // Don't roll the player's dice while the board is parked. Network play
     // keeps its clocks, automatic actions and synchronization untouched.
@@ -3054,7 +3064,7 @@ function setPortalMinimized(hidden){
 }
 function renderReviewFrame(frame,host){
   const state=frame?.state;if(!isValidState(state))throw new Error('Geçersiz tavla konumu');
-  const theme=THEMES[frame.theme]||THEMES.kizil,flip=!!frame.flip;
+  const theme=Object.hasOwn(THEMES,frame.theme)?THEMES[frame.theme]:THEMES.ceviz,flip=!!frame.flip;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const left=24,right=316,col=40,bar=264,top=29,bottom=591;
   let body='<rect x="2" y="2" width="596" height="616" rx="14" fill="'+theme.frame+'"/><rect x="10" y="10" width="580" height="600" rx="9" fill="'+theme.bg+'"/><rect x="24" y="29" width="552" height="562" fill="'+theme.felt+'"/><rect x="264" y="29" width="52" height="562" fill="'+theme.bar+'" stroke="'+theme.frame+'"/>';
@@ -3075,7 +3085,7 @@ function renderReviewFrame(frame,host){
 }
 
 function injectCSS(){
-  if(!document.getElementById('tavla-premium-css')){const link=document.createElement('link');link.id='tavla-premium-css';link.rel='stylesheet';link.href=new URL('../../css/tavla-premium.css?v=157',import.meta.url).href;document.head.appendChild(link);}
+  if(!document.getElementById('tavla-premium-css')){const link=document.createElement('link');link.id='tavla-premium-css';link.rel='stylesheet';link.href=new URL('../../css/tavla-premium.css?v=162',import.meta.url).href;document.head.appendChild(link);}
   if(document.getElementById('tavla-css')) return;
   const s = document.createElement('style');
   s.id = 'tavla-css';

@@ -1,0 +1,132 @@
+/* Finite entrance motion for the home screen. All text and controls are
+   visible on the first frame; artwork never scales beyond its static crop. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-shell {
+    --hm-ease:cubic-bezier(.22,.75,.24,1);
+    --hm-delay:0ms;
+  }
+
+  .hero-shell .portal-header .brand-mark {
+    position:relative;
+    overflow:hidden;
+    animation:hm161-brand-in 640ms var(--hm-ease);
+    transition:translate 200ms var(--hm-ease);
+  }
+  .hero-shell .portal-header .brand-mark::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    pointer-events:none;
+    opacity:0;
+    background:linear-gradient(112deg,transparent 21%,#c9efff33 43%,#fff8 51%,transparent 75%);
+    animation:hm161-glint 1050ms var(--hm-ease) 180ms;
+  }
+  .hero-shell .portal-header .portal-brand:focus-visible .brand-mark,
+  .hero-shell .portal-header .portal-brand:active .brand-mark {
+    translate:0 -2px;
+  }
+
+  .hero-shell .home-screen.active :is(
+    .studio-kicker,#home-title,.studio-hero-copy > p:not(.studio-kicker),.studio-hero-actions,
+    .library-heading,.discovery-toolbar,.game-pc,.rail-heading,.player-layout,
+    .ritual-heading,.eco-quick-btn,.studio-discover-heading,.portal-discover-card,.portal-footer
+  ) {
+    animation:hm161-rise 480ms var(--hm-ease) var(--hm-delay) backwards;
+  }
+  .hero-shell .home-screen #home-title { --hm-delay:35ms; }
+  .hero-shell .home-screen .studio-hero-copy > p:not(.studio-kicker) { --hm-delay:64ms; }
+  .hero-shell .home-screen .studio-hero-actions { --hm-delay:90ms; }
+  .hero-shell .home-screen :is(.library-heading,.rail-heading) { --hm-delay:75ms; }
+  .hero-shell .home-screen :is(.discovery-toolbar,.player-layout,.ritual-heading,.studio-discover-heading) { --hm-delay:100ms; }
+  .hero-shell .home-screen :is(.game-pc,.eco-quick-btn,.portal-discover-card) { --hm-delay:110ms; }
+  .hero-shell .home-screen :is(.game-pc,.eco-quick-btn,.portal-discover-card):nth-child(2) { --hm-delay:150ms; }
+  .hero-shell .home-screen :is(.game-pc,.eco-quick-btn,.portal-discover-card):nth-child(3) { --hm-delay:190ms; }
+  .hero-shell .home-screen .game-pc:nth-child(4) { --hm-delay:230ms; }
+
+  .hero-shell .home-screen .studio-hero-art {
+    overflow:hidden;
+  }
+  .hero-shell .home-screen.active .studio-hero-art img {
+    transform-origin:right bottom;
+    animation:hm161-art-in 790ms var(--hm-ease);
+  }
+  .hero-shell .home-screen.active .studio-hero-art::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0;
+    background:radial-gradient(ellipse at 55% 25%,#effcffb8 0%,#f6fcff50 24%,transparent 61%);
+    animation:hm161-art-light 1850ms ease-in-out 75ms;
+  }
+  .hero-shell .home-screen.active .studio-kicker > span {
+    animation:hm161-spark 740ms var(--hm-ease) 120ms;
+  }
+
+  .hero-shell .home-screen :is(.studio-game-art svg,.studio-button.primary svg,.card-play > span,.eco-quick-ico,.portal-discover-card > span,.footer-brand img),
+  .hero-shell .portal-header .nav-item .ni-ico {
+    transition:transform 230ms var(--hm-ease);
+  }
+  .hero-shell .home-screen .game-pc[data-game-card="tetris"] { --hm-cover-tilt:-2deg; }
+  .hero-shell .home-screen .game-pc[data-game-card="chess"] { --hm-cover-tilt:1.5deg; }
+  .hero-shell .home-screen .game-pc[data-game-card="tavla"] { --hm-cover-tilt:-1.5deg; }
+  .hero-shell .home-screen .game-pc[data-game-card="kelime"] { --hm-cover-tilt:2deg; }
+  .hero-shell .home-screen .game-pc:focus-within .studio-game-art svg {
+    transform:translateY(var(--hm-cover-rise,-2px)) rotate(var(--hm-cover-tilt,0deg));
+  }
+  .hero-shell .home-screen :is(.studio-button.primary:focus-visible svg,.card-play:focus-visible > span) {
+    transform:translateX(2px);
+  }
+  .hero-shell .home-screen :is(.eco-quick-btn,.portal-discover-card,.footer-brand):focus-visible > :is(.eco-quick-ico,[aria-hidden="true"],img),
+  .hero-shell .portal-header .nav-item:is(:focus-visible,:active) .ni-ico {
+    transform:translateY(-2px);
+  }
+
+  @media (hover:hover) and (pointer:fine) {
+    .hero-shell .portal-header .portal-brand:hover .brand-mark { translate:0 -2px; }
+    .hero-shell .portal-header .nav-item:hover .ni-ico { transform:translateY(-2px); }
+    .hero-shell .home-screen .game-pc:hover .studio-game-art svg {
+      transform:translateY(var(--hm-cover-rise,-2px)) rotate(var(--hm-cover-tilt,0deg));
+    }
+    .hero-shell .home-screen :is(.studio-button.primary:hover svg,.card-play:hover > span) { transform:translateX(2px); }
+    .hero-shell .home-screen :is(.eco-quick-btn,.portal-discover-card,.footer-brand):hover > :is(.eco-quick-ico,[aria-hidden="true"],img) {
+      transform:translateY(-2px);
+    }
+  }
+  @media (max-width:680px) {
+    .hero-shell .home-screen .game-pc[data-game-card] { --hm-cover-tilt:0deg; --hm-cover-rise:-1px; }
+  }
+  @media (forced-colors:active) {
+    .hero-shell .portal-header .brand-mark::after,
+    .hero-shell .home-screen.active .studio-hero-art::after { content:none; }
+  }
+
+  @keyframes hm161-rise {
+    from { opacity:.9; translate:0 6px; }
+    to { opacity:1; translate:0 0; }
+  }
+  @keyframes hm161-brand-in {
+    from { transform:scale(.94) rotate(-4deg); }
+    72% { transform:scale(1.04) rotate(1deg); }
+    to { transform:none; }
+  }
+  @keyframes hm161-glint {
+    0% { opacity:0; transform:translateX(-100%); }
+    23% { opacity:.76; }
+    82% { opacity:.52; }
+    100% { opacity:0; transform:translateX(100%); }
+  }
+  @keyframes hm161-art-in {
+    from { opacity:.85; scale:.982; }
+    to { opacity:1; scale:1; }
+  }
+  @keyframes hm161-art-light {
+    0%,100% { opacity:0; transform:translateX(-6%); }
+    47% { opacity:.48; transform:translateX(5%); }
+  }
+  @keyframes hm161-spark {
+    0%,100% { transform:none; }
+    50% { transform:rotate(18deg) scale(1.16); }
+  }
+}
