@@ -11,10 +11,10 @@ const clone=value=>value==null?null:JSON.parse(JSON.stringify(value));
 const snapshot=value=>({val:()=>clone(value),exists:()=>value!=null});
 function fixture(profile={kaju:100,level:1,xp:{level:1,xp:10,totalXP:10}}){
  let uid='alice',queue=Promise.resolve();
- const records=new Map([['users/alice',clone(profile)]]),writes=[],logs=[],events=[],options=[],reads=[];
+ const records=new Map([['users/alice',clone(profile)]]),writes=[],logs=[],events=[],options=[],reads=[],listeners=[];
  const hooks={reject:false,before:null,after:null,nullFirst:false,coldAbort:false,abortSnapshot:null,getReject:false,beforeGet:null};
  const context=vm.createContext({
-  console,Date,Number,Object,Array,Math,Promise,KAJU_MAX:999999999,
+  console,Date,Number,Object,Array,Math,Promise,setTimeout,clearTimeout,KAJU_MAX:999999999,
   Auth:{getState:()=>({uid,status:uid?'google':'offline'})},db:{},
   player:{uid:'alice',kaju:100,level:1,xp:10,totalXP:10},
   finiteAmount:(v,f=0)=>Number.isFinite(Number(v))?Math.max(0,Math.floor(Number(v))):f,
@@ -45,11 +45,16 @@ function fixture(profile={kaju:100,level:1,xp:{level:1,xp:10,totalXP:10}}){
    const [parent,value]=[...records].find(([key])=>path===key||path.startsWith(key+'/')) || [];
    return snapshot(parent && path===parent ? value : parent && path.slice(parent.length+1).split('/').reduce((at,key)=>at?.[key],value));
   },
+  onValue:(path,fn)=>{
+   const listener={path,closed:false};listeners.push(listener);
+   queueMicrotask(()=>{if(!listener.closed)fn(snapshot(records.get(path)));});
+   return ()=>{listener.closed=true;};
+  },
   set:async(path,value)=>{records.set(path,clone(value));writes.push(path);},
   logKaju:(...args)=>logs.push(args),emit:()=>events.push('emit'),_trackQuestSafe:(...args)=>events.push(args)
  });
  vm.runInContext(code,context);
- return {context,records,writes,logs,events,hooks,options,reads,setUid:value=>{uid=value;}};
+ return {context,records,writes,logs,events,hooks,options,reads,listeners,setUid:value=>{uid=value;}};
 }
 let groups=0;
 {
@@ -117,8 +122,37 @@ let groups=0;
  assert.equal(r.claimed,true);
  assert.equal(f.options.length,2,'cold null abort retries after a confirmed profile read');
  assert.equal(f.writes.length,1);
+ assert.deepEqual(f.listeners,[{path:'users/alice',closed:true}]);
  assert.equal(f.records.get('users/alice').heroWalletRevision,7,'an XP prize does not touch the Kaju revision');
  groups++;
+}
+{
+ const prior={kaju:'100',level:1,xp:{level:1,xp:10,totalXP:10},heroWalletRevision:7};
+ const f=fixture(prior);
+ const r=await f.context.claimWheelReward('2026-10-22',{type:'xp',amount:40},'alice');
+ assert.equal(r.claimed,true);
+ const saved=f.records.get('users/alice');
+ assert.equal(saved.kaju,100,'normalize old text balance without a Kaju credit');
+ assert.equal(saved.heroWalletRevision,7);assert.equal(saved.xp.totalXP,50);groups++;
+}
+{
+ const valid={amount:25,type:'earn',game:'chess',reason:'Maç ödülü',ts:1700000000000,extra:'kept'};
+ const legacy={amount:'-5',ts:'1600000000000',type:'spend',source:'historic fixture'};
+ const f=fixture({kaju:100,kaju_history:{present:valid,old:legacy}});
+ const result=await f.context.claimKajuOnce('quest_day_play3',100,'quest','3 games','alice');
+ const saved=f.records.get('users/alice');
+ assert.equal(result.claimed,true);
+ assert.deepEqual(saved.kaju_history.present,valid);
+ assert.deepEqual(saved.kaju_history.old,{...legacy,amount:-5,ts:1600000000000,game:'kaju',reason:'Eski işlem kaydı'});
+ assert.equal(saved.kaju,200);assert.deepEqual(f.writes.filter(path=>path==='users/alice'),['users/alice']);groups++;
+}
+{
+ const original={kaju:100,kaju_history:{old:{amount:'bilinmiyor',ts:'1600000000000',type:'spend'}}};
+ const f=fixture(original);
+ const result=await f.context.claimWheelReward('2026-10-22',{type:'kaju',amount:50},'alice');
+ assert.equal(result.reason,'legacy-profile');
+ assert.deepEqual(f.records.get('users/alice'),original);
+ assert.equal(f.writes.length,0);groups++;
 }
 {
  const f=fixture();f.hooks.after=()=>{throw Object.assign(Error('Connection stopped before acknowledgement'),{code:'DISCONNECTED'});};

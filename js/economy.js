@@ -126,6 +126,7 @@ async function grantWheelEgg(owner, eggId){
   if(!kz.grantEgg || !await kz.grantEgg(owner, eggId)) throw new Error('Yumurta teslim edilemedi');
 }
 function showRewardError(error){
+  if(error?.code === 'legacy-profile') return 'Kaju verilerinde doğrulanamayan eski bir kayıt var. Ödül hakkın korunuyor; destek için yöneticiye haber ver.';
   const code = String(error?.code || error?.message || '').toLowerCase();
   if(code.includes('permission') || code.includes('denied')) return 'Sunucu ödülün kaydına izin vermedi; hakkın korunuyor. Daha sonra yeniden deneyebilirsin.';
   if(code.includes('network') || code.includes('offline') || code.includes('disconnected') || code.includes('unavailable')) return 'Bağlantı kurulamadı. Hakkın korunuyor; bağlantın geldiğinde yeniden deneyebilirsin.';
@@ -234,7 +235,9 @@ export function openDailyWheel(){
             }
           }, 10000);
           const result = await _S.claimWheelReward(day, seg, st.uid);
-          if(!result || (!result.claimed && !result.alreadyClaimed) || !result.receipt) throw new Error('Ödül doğrulanamadı');
+          if(!result || (!result.claimed && !result.alreadyClaimed) || !result.receipt){
+            throw Object.assign(new Error('Ödül doğrulanamadı'), {code:result?.reason});
+          }
           const receipt = result.receipt;
           if(receipt.type === 'egg'){
             awaitingEgg = true;
@@ -430,7 +433,9 @@ function renderQuests(){
     try{
       const receipt = 'quest_' + day + '_' + qid;
       const result = await _S.claimKajuOnce(receipt, q.reward, 'quest', q.title, owner);
-      if(!result || (!result.claimed && !result.alreadyClaimed)) throw new Error('Ödül doğrulanamadı');
+      if(!result || (!result.claimed && !result.alreadyClaimed)){
+        throw Object.assign(new Error('Ödül doğrulanamadı'), {code:result?.reason});
+      }
       // Merge current progress; another task may have advanced during the write.
       const latest = loadQuests(key);
       latest[qid] = {...(latest[qid] || cur), claimed:true};

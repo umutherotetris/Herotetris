@@ -435,7 +435,9 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
     if(balance === null){ rejected = 'invalid-profile'; return; }
     if(!Number.isSafeInteger(amount) || amount <= 0){ rejected = 'ineligible'; return; }
     if(balance + amount > KAJU_MAX){ rejected = 'balance-limit'; return; }
-    return {...profile, ...fields, kaju:balance + amount, heroWalletRevision:nextWalletRevision(profile),
+    const history = rewardHistoryPatch(profile.kaju_history);
+    if(!history){ rejected = 'legacy-profile'; return; }
+    return {...profile, ...fields, ...history, kaju:balance + amount, heroWalletRevision:nextWalletRevision(profile),
       heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:{amount, ts:Date.now()}}};
   }, {applyLocally:false});
   if(Auth.getState().uid !== uid) return {claimed:false, reason:'identity'};
@@ -466,6 +468,34 @@ export async function claimKajuOnce(receiptId, reward, game, reason, uid = playe
   return {claimed:true, alreadyClaimed:false, amount, balance, fields, receipt};
 }
 
+// Whole-profile transactions also validate existing Kaju history. Preserve
+// every row and extension field; normalize only lossless legacy representations.
+// Never invent an amount, a date or the direction of an unknown transaction.
+function rewardHistoryPatch(history){
+  if(history == null) return {};
+  if(typeof history !== 'object') return null;
+  const asNumber = value => {
+    if(typeof value === 'number' && Number.isFinite(value)) return value;
+    if(typeof value === 'string' && /^-?\d+$/.test(value)){
+      const n = Number(value);
+      if(Number.isSafeInteger(n)) return n;
+    }
+    return null;
+  };
+  let changed = null;
+  for(const [id,row] of Object.entries(history)){
+    if(row == null) continue; // Numeric keys can produce holes in SDK arrays.
+    if(typeof row !== 'object' || Array.isArray(row) || row.type == null) return null;
+    const amount = asNumber(row.amount), ts = asNumber(row.ts);
+    if(amount === null || ts === null) return null;
+    if(amount !== row.amount || ts !== row.ts || row.game == null || row.reason == null){
+      changed ??= {...history};
+      changed[id] = {...row, amount, ts, game:row.game ?? 'kaju', reason:row.reason ?? 'Eski işlem kaydı'};
+    }
+  }
+  return changed ? {kaju_history:changed} : {};
+}
+
 // All wheel sectors share one daily receipt. The selected outcome and its
 // Kaju/XP credit commit together, so retrying cannot reroll or change sectors.
 // Egg delivery is a recoverable second step keyed by receipt.eggId in Kozmos.
@@ -478,6 +508,21 @@ function wheelReceipt(value, day){
   if(value?.kind !== 'wheel' || ![1,2].includes(value.vipMult) || !Number.isSafeInteger(value.amount)) return null;
   if(value.type === 'egg') return value.eggId === 'daily_spin_' + day && value.amount === 50 * value.vipMult ? value : null;
   return isWheelReward(value.type, value.amount / value.vipMult) ? value : null;
+}
+async function withWheelProfileCache(profileRef, action){
+  let unsubscribe, timer;
+  try{
+    await new Promise((resolve,reject) => {
+      timer = setTimeout(() => reject(Object.assign(new Error('Reward profile unavailable'), {code:'unavailable'})), 7000);
+      // Keep this listener attached through the retry. An SDK get() can read
+      // the server without retaining the cache that a transaction starts from.
+      unsubscribe = onValue(profileRef, snapshot => { if(snapshot.exists()) resolve(); }, reject);
+    });
+    return await action();
+  }finally{
+    clearTimeout(timer);
+    unsubscribe?.();
+  }
 }
 export async function claimWheelReward(day, segment, uid = player.uid){
   const current = () => !!uid && Auth.getState().uid === uid && Auth.getState().status === 'google';
@@ -503,6 +548,15 @@ export async function claimWheelReward(day, segment, uid = player.uid){
     const receipt = {kind:'wheel', type, amount, vipMult, ts:Date.now()};
     const fields = {};
     if(type === 'xp'){
+      // Old accounts may store the same intact balance as text. XP must not
+      // replay that invalid shape on a full-profile write or credit any Kaju.
+      if(profile.kaju != null && typeof profile.kaju !== 'number'){
+        const balance = walletBalance(profile.kaju);
+        if(balance === null){ rejected='legacy-profile'; return; }
+        fields.kaju = balance;
+      }else if(typeof profile.kaju === 'number' && (!Number.isFinite(profile.kaju) || profile.kaju < 0 || profile.kaju > KAJU_MAX)){
+        rejected='legacy-profile'; return;
+      }
       const stored = profile.xp && typeof profile.xp === 'object' ? profile.xp : {};
       let level = Math.max(1, finiteAmount(profile.level || stored.level, 1));
       let xp = finiteAmount(stored.xp ?? profile.xp), totalXP = finiteAmount(stored.totalXP ?? profile.totalXP);
@@ -523,7 +577,9 @@ export async function claimWheelReward(day, segment, uid = player.uid){
       fields.heroWalletRevision = nextWalletRevision(profile);
       if(type === 'egg') receipt.eggId = 'daily_spin_' + day;
     }
-    return {...profile, ...fields, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
+    const history = rewardHistoryPatch(profile.kaju_history);
+    if(!history){ rejected='legacy-profile'; return; }
+    return {...profile, ...fields, ...history, heroRewardClaims:{...profile.heroRewardClaims, [receiptId]:receipt}};
   }, {applyLocally:false});
   let result, profile;
   try{
@@ -532,11 +588,17 @@ export async function claimWheelReward(day, segment, uid = player.uid){
     profile = (result.committed ? result.snapshot : await get(profileRef)).val();
     if(!current()) return wrongAccount();
     // On a cold SDK cache the first callback can see null and abort even though
-    // the profile exists. Warm it once and retry only the same atomic claim.
+    // the profile exists. Keep a live snapshot until the same claim is retried.
     if(!result.committed && cold && !sawProfile && profile && !profile.deleted && !profile.heroRewardClaims?.[receiptId]){
-      result = await attempt();
-      if(!current()) return wrongAccount();
-      profile = (result.committed ? result.snapshot : await get(profileRef)).val();
+      const warmed = await withWheelProfileCache(profileRef, async () => {
+        if(!current()) return null;
+        const retried = await attempt();
+        if(!current()) return null;
+        const snapshot = retried.committed ? retried.snapshot : await get(profileRef);
+        return { result:retried, profile:snapshot.val() };
+      });
+      if(!warmed || !current()) return wrongAccount();
+      ({result, profile} = warmed);
     }
   }catch(error){
     if(!current()) return wrongAccount();
