@@ -7,6 +7,13 @@ const games = {
 };
 let pending = null;
 const activeGame = () => document.querySelector('.tetris-overlay,.hero-select-overlay,.chess-root,.tavla-root,.kl-root');
+const parkedDock = root => root?.dataset?.portalMinimized === 'true' ? document.querySelector('.portal-resume') : null;
+const activeMessage = root => {
+  const dock=parkedDock(root), name=dock && games[dock.dataset?.game]?.name;
+  return name && !dock.hidden
+    ? name + ' açık. Oyuna dön düğmesiyle kaldığın yerden devam edebilirsin.'
+    : 'Önce açık oyunu kapat, sonra yeni oyuna geç.';
+};
 function announce(message, error = false){
   if(window.Hero?.toast) window.Hero.toast(message, error);
   else {
@@ -16,8 +23,9 @@ function announce(message, error = false){
 }
 export function canLaunchPortalGame(){
   if(pending?.isCurrent && !pending.isCurrent()) pending = null;
-  if(pending || activeGame()){
-    announce(pending ? 'Oyun hazırlanıyor. Birazdan hazır olacak.' : 'Önce açık oyunu kapat, sonra yeni oyuna geç.', true);
+  const current = activeGame();
+  if(pending || current){
+    announce(pending ? 'Oyun hazırlanıyor. Birazdan hazır olacak.' : activeMessage(current), true);
     return false;
   }
   return true;
@@ -31,7 +39,12 @@ export function launchPortalGame(key, options = {}){
   // Ordinary collection taps keep the most recent choice while imports load.
   // Invitations reserve the slot through their preparation so their context
   // cannot be overtaken by an unrelated collection tap or invitation.
-  if(activeGame() || (pending && (pending.custom || options.open))){
+  const current = activeGame(), dock = parkedDock(current);
+  if(!options.open && dock?.dataset?.game === key && !dock.hidden){
+    dock.click();
+    return Promise.resolve(current.dataset.portalMinimized !== 'true');
+  }
+  if(current || (pending && (pending.custom || options.open))){
     canLaunchPortalGame();
     return Promise.resolve(false);
   }
@@ -43,8 +56,9 @@ export function launchPortalGame(key, options = {}){
       const module = await import(entry.path);
       if(pending !== request || request.isCurrent && !request.isCurrent()) return false;
       // A direct invitation/module callback may have opened a game while loading.
-      if(activeGame()){
-        announce('Önce açık oyunu kapat, sonra yeni oyuna geç.', true);
+      const current=activeGame();
+      if(current){
+        announce(activeMessage(current), true);
         return false;
       }
       const open = options.open || (loaded => loaded[entry.open]());

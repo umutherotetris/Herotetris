@@ -7,13 +7,14 @@ const read=name=>fs.readFileSync(new URL('../js/'+name,import.meta.url),'utf8');
 const ui=read('ui.js'),social=read('social.js'),admin=read('admin.js');
 const modalCode=ui.slice(ui.indexOf('export function openKajuModal('),ui.indexOf('// Gelen Kaju bildirimi')).replace(/^export /gm,'').replace("await import('./firebase-config.js')",'await __config()').replace(/await import\(`https:\/\/www\.gstatic\.com\/firebasejs\/\$\{cfg\.FIREBASE_SDK\}\/firebase-database\.js`\)/,'await __database()');
 const cardCode=social.slice(social.indexOf('function bindPlayerKajuSend('),social.indexOf('export async function openPlayerCard(')).replace("await import('./store.js')",'await __loadStore()');
-const adminCode=admin.slice(admin.indexOf('async function doKaju('),admin.indexOf('// ── Nick zorla değiştir'));
+const adminCode=admin.slice(admin.indexOf('function toggleDisclosure('),admin.indexOf('// ── Panel aç/kapa'))+admin.slice(admin.indexOf('async function doKaju('),admin.indexOf('// ── Nick zorla değiştir'));
 class Node{
  constructor(){this.value='';this.disabled=false;this.isConnected=true;this.style={};this.dataset={};this.children=new Map();this.handlers=new Map();this.innerHTML='';this.textContent='';}
  querySelector(s){if(!this.children.has(s))this.children.set(s,new Node());return this.children.get(s);}
  querySelectorAll(s){return s==='[data-amt]'?(this.quick||[]):s==='.adm-sug-it'?(this.replaced||[]):[];}
  addEventListener(t,fn){if(!this.handlers.has(t))this.handlers.set(t,[]);this.handlers.get(t).push(fn);}
  async fire(t='click'){for(const fn of this.handlers.get(t)||[])await fn({target:this});}
+ setAttribute(){}
  remove(){this.isConnected=false;}focus(){}scrollIntoView(){}
  replaceChildren(...nodes){this.replaced=nodes;}
 }
@@ -83,11 +84,12 @@ for(const invalidate of [f=>{f.nick.value='Different';f.nick.fire('input');},f=>
  const f=panel();let release;f.store.adminAdjustKaju=()=>new Promise(r=>release=r);const p=f.context.doKaju();f.setUid('other');release({ok:true,appliedDelta:-50,newBalance:0});await p;assert.equal(f.logs.length,0);assert.equal(f.target.profile.kaju,50,'old admin callback cannot repaint or log under a different account');groups++;
 }
 {
- const f=panel();for(const value of ['NaN','Infinity','1.5','9007199254740992','0']){f.amount.value=value;await f.context.doKaju();}assert.equal(f.calls.length,0);groups++;
+ const f=panel();for(const value of ['NaN','Infinity','1.5','9007199254740992','0','0x50','-1e2']){f.amount.value=value;await f.context.doKaju();}assert.equal(f.calls.length,0);groups++;
 }
 {
  const f=panel();let n=0;f.store.adminAdjustKaju=async(...args)=>{f.calls.push(args);return ++n===1?{ok:false,uncertain:true,error:'Onay belirsiz'}:{ok:true,appliedDelta:-50,newBalance:0};};
- await f.context.doKaju();await f.context.doKaju();assert.equal(f.calls[0][3],f.calls[1][3]);assert.equal(f.amount.value,'');await f.context.doKaju();assert.equal(f.calls.length,2,'cleared successful form prevents rapid reapplication');groups++;
+ await f.context.doKaju();await f.context.doKaju();assert.equal(f.calls[0][3],f.calls[1][3]);assert.equal(f.amount.value,'');await f.context.doKaju();assert.equal(f.calls.length,2,'cleared successful form prevents rapid reapplication');
+ f.amount.value='-100';await f.context.doKaju();assert.equal(f.calls.length,3);assert.notEqual(f.calls[1][3],f.calls[2][3],'an explicitly resubmitted, already confirmed delta must have a new receipt');groups++;
 }
 {
  const f=panel();const box=f.root.querySelector('[data-el="khist"]');box.style.display='none';let release;f.fdb.get=()=>new Promise(r=>release=r);const p=f.context.toggleKHist();f.panel.target={uid:'new',profile:{}};box.innerHTML='New target';release({exists:()=>false});await p;assert.equal(box.innerHTML,'New target');groups++;

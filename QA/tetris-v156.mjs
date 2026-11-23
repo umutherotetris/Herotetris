@@ -173,4 +173,27 @@ await test('restoring a minimized replacement round never resumes that new round
   c.minimize(true);s.round={};c.minimize(false);assert.deepEqual(calls,[true]);
 });
 
+await test('game social pauses solo Tetris, but keeps manual pauses and online play intact',()=>{
+  for(const config of [{},{paused:true},{versus:true}]){
+    const calls=[],root={isConnected:true},s={round:{},paused:false,root,controlStops:[()=>calls.push('stop')],...config};
+    const c=vm.createContext({G:s,document:{hidden:false},togglePause:on=>{calls.push(on);s.paused=on;}});
+    vm.runInContext(fn('setPortalSocialOpen')+'\nthis.social=setPortalSocialOpen;',c);
+    c.social(true,root);c.social(true,root);
+    assert.equal(s.paused,!config.versus);
+    c.social(false,{isConnected:false});assert.ok(s.portalSocialOpen,'a stale toolbar cannot dismiss a different root');
+    c.social(false,root);
+    assert.equal(s.paused,!!config.paused);
+    assert.deepEqual(calls,config.paused||config.versus?['stop']:['stop',true,false]);
+  }
+});
+
+await test('portal navigation owns the resume when a locally paused social sheet closes during minimization',()=>{
+  const calls=[],root={isConnected:true},s={round:{},paused:false,root};
+  const c=vm.createContext({G:s,document:{hidden:false},togglePause:on=>{calls.push(on);s.paused=on;},requestAnimationFrame:()=>{}});
+  vm.runInContext(fn('setPortalSocialOpen')+fn('setPortalMinimized')+'\nthis.social=setPortalSocialOpen;this.minimize=setPortalMinimized;',c);
+  c.social(true,root);c.minimize(true);c.social(false,root);
+  assert.deepEqual(calls,[true]);assert.equal(s.paused,true);
+  c.minimize(false);assert.deepEqual(calls,[true,false]);assert.equal(s.paused,false);
+});
+
 if(failed)process.exitCode=1;

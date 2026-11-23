@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="aurora">
+<html lang="tr" data-theme="aurora" data-hero-portal>
 <head>
   <meta charset="UTF-8">
-  <meta name="hero-build" content="158">
+  <meta name="hero-build" content="159">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#f3f7ff">
+  <meta name="color-scheme" content="only light">
   <meta name="description" content="Hero Portal: Tetris, satranç, tavla ve Kelimecik. Kendi oyununu bul, dostlarınla buluş ve bir sonraki rekoruna ulaş.">
   <title>Hero Portal — Senin oyun alanın</title>
-  <script async src="js/portal-worker.js?v=158"></script>
+  <script async src="js/portal-worker.js?v=159"></script>
   <link rel="icon" type="image/svg+xml" href="assets/hero-brand-v158.svg">
   <link rel="manifest" href="hero.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Hero Portal">
   <script>try{let t=localStorage.getItem('hero_theme');if(!localStorage.getItem('hero_aurora_v142')){if(!t||t==='lounge'){t='aurora';localStorage.setItem('hero_theme',t);}localStorage.setItem('hero_aurora_v142','1');}document.documentElement.dataset.theme=['aurora','lounge','ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono'].includes(t)?t:'aurora';}catch(e){}</script>
+  <script>try{const p=localStorage.getItem('hero_portal_palette');if(p==='pearl'||p==='sea'){document.documentElement.dataset.portalPalette=p;document.querySelector('meta[name="theme-color"]').content=p==='pearl'?'#faf5ee':'#eff8f6';}}catch(e){}</script>
   <link rel="stylesheet" href="css/tokens.css?v=138">
   <link rel="stylesheet" href="css/base.css?v=124">
   <link rel="stylesheet" href="css/components.css?v=157">
@@ -25,9 +27,12 @@
   <link rel="stylesheet" href="css/lobby.css?v=157">
   <link rel="stylesheet" href="css/aurora.css?v=157">
   <link rel="apple-touch-icon" href="assets/hero-icon-192-v158.png">
-  <link rel="stylesheet" href="css/hero-shell-v158.css">
+  <link rel="stylesheet" href="css/hero-shell-v158.css?v=159">
   <link rel="stylesheet" href="css/hero-panels-v158.css">
   <link rel="stylesheet" href="css/hero-game-chrome-v158.css">
+  <link rel="stylesheet" href="css/hero-game-layout-v159.css">
+  <link rel="stylesheet" href="css/game-return-v159.css">
+  <link rel="stylesheet" href="css/hero-theme-v159.css">
   <link rel="preload" as="image" href="assets/hero-studio-v158.webp">
 </head>
 <body class="portal lobby hero-shell">
@@ -51,7 +56,7 @@
         <div class="studio-hero-copy">
           <p class="studio-kicker"><span aria-hidden="true">✦</span> HERO OYUN KULÜBÜ</p>
           <h1 id="home-title">Bir oyun seç.<br><span>Gerisi keyif.</span></h1>
-          <p>Sevdiğin klasikler bir arada. Rekorunu kır ya da bir arkadaşına meydan oku.</p>
+          <p>Rekorunu kır, bir dostuna meydan oku.</p>
           <div class="studio-hero-actions"><a class="studio-button primary" href="#games"><svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path d="M6 3.7a1 1 0 0 0-1.5.85v10.9a1 1 0 0 0 1.5.85l8.6-5.45a1 1 0 0 0 0-1.7Z"/></svg>Oyunları keşfet</a><a class="studio-button quiet" href="#friends" data-nav="friends">Arkadaşlarım</a></div>
         </div>
       </section>
@@ -137,6 +142,6 @@
   <dialog id="gameGuide" class="lobby-dialog" aria-labelledby="guideTitle"><div class="dialog-top"><p class="eyebrow">İLK HAMLEDEN ÖNCE</p><button type="button" data-close-dialog aria-label="Kapat">×</button></div><h2 id="guideTitle"></h2><p id="guideIntro"></p><ol id="guideSteps"></ol><p class="guide-note" id="guideNote"></p><button type="button" class="stage-play" id="guidePlay">Oyunu aç ↗</button></dialog>
   <dialog id="gameSearch" class="lobby-dialog search-dialog" aria-labelledby="searchTitle"><div class="dialog-top"><h2 id="searchTitle">Ne oynamak istersin?</h2><button type="button" data-close-dialog aria-label="Kapat">×</button></div><label class="search-field"><span aria-hidden="true">⌕</span><input id="gameSearchInput" type="search" placeholder="Oyun adı veya türü…" autocomplete="off" aria-label="Oyun ara"></label><div id="searchResults"></div><p class="search-hint">Oyunu seç, lobide keşfet. <kbd>Esc</kbd> ile kapat.</p></dialog>
   <script defer src="js/vendor/peerjs-1.5.4.min.js?v=138"></script>
-  <script type="module" src="js/portal.js?v=158"></script>
+  <script type="module" src="js/portal.js?v=159"></script>
 </body>
 </html>

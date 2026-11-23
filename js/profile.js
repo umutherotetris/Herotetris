@@ -4,6 +4,7 @@
 import { Auth, db, fdb } from './auth.js';
 import { Store } from './store.js';
 import { getProfileStyle, openPersonalize, decorateProfile } from './profile-personalize.js';
+import { PORTAL_PALETTES, readPortalPalette, applyPortalPalette } from './portal-palette.js';
 
 
 // Hafif toast helper (alert yerine)
@@ -16,7 +17,7 @@ const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':
 const fmt = (n) => { const v=Number(n); return (Number.isFinite(v)?v:0).toLocaleString('tr-TR'); };
 const byId = (id) => document.getElementById(id);
 function defaultAvatar(uid){ if(!uid)return '⭐'; let h=0; for(let i=0;i<uid.length;i++)h=((h<<5)-h)+uid.charCodeAt(i); const A=['🐉','🦊','🦁','🐯','🐺','🐼','🐸','🦄','👾','🤖','👻','👽','🎃','⚡','🔥','❄️','💎','🌙','⭐','🌊','🏆','🎯','🎮','🌈']; return A[Math.abs(h)%A.length]; }
-function setOn(key,def){ const v=localStorage.getItem(key); return v===null?def:v!=='0'; }
+function setOn(key,def){ try{ const v=localStorage.getItem(key); return v===null?def:v!=='0'; }catch{ return def; } }
 function keyboardAction(element, action, label){
   element.setAttribute('role', 'button');
   element.tabIndex = 0;
@@ -403,14 +404,17 @@ if(typeof document !== 'undefined'){ try{ applyUIScale(getUIScale()); }catch(e){
 
 function openSettings(){
   if(byId('setModal')) return;
-  const ov=document.createElement('div'); ov.id='setModal'; ov.className='nick-modal-ov';
-  const inner=document.createElement('div'); inner.className='nick-modal';
-  inner.style.maxHeight='88vh'; inner.style.overflowY='auto'; inner.style.webkitOverflowScrolling='touch';
+  const ov=document.createElement('dialog'); ov.id='setModal'; ov.className='portal-settings-dialog';
+  ov.setAttribute('aria-labelledby','settingsTitle');
+  ov.style.setProperty('--settings-zoom',String(getUIScale()));
+  const inner=document.createElement('div'); inner.className='nick-modal settings-sheet';
+  const closeSettings=()=>ov.close();
   const st=Auth.getState();
   const fabOn=setOn('hero_set_fabs',true);
   const hfOn=setOn('hero_set_hidefriends',false);
-  inner.innerHTML='<div class="nm-title">⚙️ Ayarlar</div>'
-    +'<div class="set-theme-section"><div class="set-theme-lbl">🎨 TEMA & RENK</div><div class="set-theme-grid" id="themeGrid"></div></div>'
+  inner.innerHTML='<header class="settings-head"><div><p class="settings-kicker">HERO PORTAL</p><h2 id="settingsTitle">Ayarlar</h2></div><button type="button" class="nm-btn nm-cancel settings-close" id="stClose" aria-label="Ayarları kapat" autofocus>×</button></header><div class="settings-scroll">'
+    +'<section class="set-theme-section" aria-labelledby="portalPaletteLabel"><h3 class="set-theme-lbl" id="portalPaletteLabel">Portal görünümü</h3><p class="settings-hint">Ana ekran, paneller ve menülerin rengini seç. Oyun tahtaları ve profil stilin ayrı ayarlanır.</p><div class="portal-palette-grid" id="portalPaletteGrid" role="group" aria-labelledby="portalPaletteLabel"></div><p id="paletteSaveStatus" class="settings-hint" role="status" hidden></p></section>'
+    +'<details class="set-theme-section settings-accents"><summary class="set-theme-lbl">Vurgu renkleri</summary><p class="settings-hint">Oyun ve profil efektlerinin kullandığı renkleri değiştir.</p><div class="set-theme-grid" id="themeGrid"></div></details>'
     +'<div class="set-scale-section"><div class="set-scale-lbl">🔍 Arayüz Boyutu <span id="scaleVal">'+Math.round(getUIScale()*100)+'%</span></div>'
       +'<div class="set-scale-row"><button class="scale-btn" id="scaleDown">A−</button>'
       +'<input type="range" id="scaleSlider" aria-label="Arayüz boyutu" min="80" max="130" step="5" value="'+Math.round(getUIScale()*100)+'" class="scale-slider">'
@@ -423,13 +427,12 @@ function openSettings(){
     +'<div class="set-row"><span>🧹 Önbelleği temizle + yenile</span><button class="set-tgl" id="stCache">TEMİZLE</button></div>'
     +(st.status==='google'?'<div class="set-row"><span>🚪 Hesaptan çık</span><button class="set-tgl warn" id="stLogout">ÇIKIŞ</button></div>':'')
     +(st.isAdmin===true?'<div class="set-row set-admin-row" style="border:1px solid rgba(255,82,82,.25);border-radius:10px;background:rgba(255,82,82,.05);margin-top:4px"><span style="color:#FF9090;font-weight:700">👑 Admin Paneli</span><button class="set-tgl" id="stAdminPanel" style="background:linear-gradient(135deg,#FF5252,#c62828);color:#fff;font-weight:900">PANEL AÇ</button></div>':'')
-    +'<div class="set-ver">Hero Oyun Portalı · modüler sürüm</div>'
-    +'<div class="nm-actions"><button class="nm-btn nm-cancel" id="stClose">Kapat</button></div>';
-  inner.querySelector('#stClose').addEventListener('click',()=>ov.remove());
+    +'</div>';
+  inner.querySelector('#stClose').addEventListener('click',closeSettings);
   // Admin Paneli butonu (sadece adminlerde gorunur)
   const adminBtn = inner.querySelector('#stAdminPanel');
   if(adminBtn) adminBtn.addEventListener('click',()=>{
-    ov.remove();
+    closeSettings();
     import('./admin.js').then(m=>m.openAdminPanel()).catch(()=>{
       try{ if(window.Hero&&window.Hero.openAdminPanel) window.Hero.openAdminPanel(); }catch(e){}
     });
@@ -437,13 +440,27 @@ function openSettings(){
   // 🔍 UI ölçek kontrolleri
   const slider=inner.querySelector('#scaleSlider');
   const scaleVal=inner.querySelector('#scaleVal');
-  const setScale=(pct)=>{ pct=Math.max(80,Math.min(130,pct)); slider.value=pct; if(scaleVal)scaleVal.textContent=pct+'%'; applyUIScale(pct/100); };
+  const setScale=(pct)=>{ pct=Math.max(80,Math.min(130,pct)); slider.value=pct; if(scaleVal)scaleVal.textContent=pct+'%'; ov.style.setProperty('--settings-zoom',String(pct/100)); applyUIScale(pct/100); };
   if(slider){
     slider.addEventListener('input',()=>setScale(parseInt(slider.value)));
     inner.querySelector('#scaleDown').addEventListener('click',()=>setScale(parseInt(slider.value)-5));
     inner.querySelector('#scaleUp').addEventListener('click',()=>setScale(parseInt(slider.value)+5));
   }
-  // 🎨 Tema seçici
+  const paletteGrid=inner.querySelector('#portalPaletteGrid');
+  const currentPalette=readPortalPalette();
+  paletteGrid.innerHTML=PORTAL_PALETTES.map(p=>
+    '<button type="button" class="portal-palette" data-palette="'+p.key+'" aria-pressed="'+(p.key===currentPalette)+'">'
+    +'<span class="palette-preview" aria-hidden="true" style="--pv-canvas:'+p.canvas+';--pv-soft:'+p.soft+';--pv-ink:'+p.ink+';--pv-accent:'+p.accent+'"><span></span><i></i><i></i></span>'
+    +'<span class="palette-name">'+p.name+'</span><small>'+p.caption+'</small></button>'
+  ).join('');
+  const selectionStatus=inner.querySelector('#paletteSaveStatus');
+  paletteGrid.querySelectorAll('[data-palette]').forEach(btn=>btn.addEventListener('click',()=>{
+    const persisted=applyPortalPalette(btn.dataset.palette);
+    paletteGrid.querySelectorAll('[data-palette]').forEach(choice=>choice.setAttribute('aria-pressed',String(choice===btn)));
+    selectionStatus.hidden=persisted;
+    selectionStatus.textContent=persisted?'':'Bu görünüm bu sekmede uygulandı; tarayıcı tercihi kaydedemedi.';
+  }));
+  // Legacy accent tokens remain independent of the portal palette.
   const THEMES=[
     {key:'aurora', name:'Aurora', c1:'#a346ff',c2:'#23dcff'},
     {key:'lounge', name:'Hero Lounge', c1:'#101210',c2:'#d5f57a'},
@@ -457,22 +474,23 @@ function openSettings(){
     {key:'ocean',   name:'Okyanus', c1:'#42A5F5',c2:'#26C6DA'},
     {key:'mono',    name:'Gümüş',   c1:'#E0E0FF',c2:'#B0B0D0'},
   ];
-  let curTheme=document.documentElement.dataset.theme||'ivory';
-  try{ curTheme=localStorage.getItem('hero_theme')||'ivory'; }catch(e){}
+  const curTheme=document.documentElement.dataset.theme||'aurora';
   const tg=inner.querySelector('#themeGrid');
   if(tg){
     tg.innerHTML=THEMES.map(t=>
-      '<button class="theme-chip'+(t.key===curTheme?' active':'')+'" data-theme="'+t.key+'">'
-        +'<div class="theme-swatch" style="background:linear-gradient(135deg,'+t.c1+','+t.c2+')"></div>'
-        +'<div class="theme-name">'+t.name+'</div>'
+      '<button type="button" class="theme-chip'+(t.key===curTheme?' active':'')+'" data-theme="'+t.key+'" aria-pressed="'+(t.key===curTheme)+'">'
+        +'<span class="theme-swatch" aria-hidden="true" style="background:linear-gradient(135deg,'+t.c1+','+t.c2+')"></span>'
+        +'<span class="theme-name">'+t.name+'</span>'
       +'</button>'
     ).join('');
     tg.querySelectorAll('[data-theme]').forEach(btn=>btn.addEventListener('click',()=>{
       const key=btn.dataset.theme;
       try{ localStorage.setItem('hero_theme',key); }catch(e){}
       document.documentElement.setAttribute('data-theme',key);
-      tg.querySelectorAll('.theme-chip').forEach(c=>c.classList.remove('active'));
-      btn.classList.add('active');
+      tg.querySelectorAll('.theme-chip').forEach(c=>{
+        c.classList.toggle('active',c===btn);
+        c.setAttribute('aria-pressed',String(c===btn));
+      });
       // Parçacık renklerini yenile
       try{
         const c=document.getElementById('bgParticles');
@@ -528,7 +546,7 @@ function openSettings(){
   });
   // 🚫 Engellediklerim listesi
   const blkBtn=inner.querySelector('#stBlocked');
-  if(blkBtn) blkBtn.addEventListener('click',async()=>{ ov.remove(); openBlockedList(); });
+  if(blkBtn) blkBtn.addEventListener('click',()=>{ closeSettings(); openBlockedList(); });
   inner.querySelector('#stCache').addEventListener('click',async()=>{
     try{
       if(window.caches && caches.keys){
@@ -540,9 +558,11 @@ function openSettings(){
     location.reload();
   });
   const lo=inner.querySelector('#stLogout');
-  if(lo) lo.addEventListener('click',async()=>{ if(confirm('Hesaptan çıkılsın mı?')){ try{await Auth.logout();}catch(e){} ov.remove(); } });
+  if(lo) lo.addEventListener('click',async()=>{ if(confirm('Hesaptan çıkılsın mı?')){ try{await Auth.logout();}catch(e){} closeSettings(); } });
   ov.appendChild(inner); document.body.appendChild(ov);
-  ov.addEventListener('click',e=>{ if(e.target===ov)ov.remove(); });
+  ov.addEventListener('close',()=>ov.remove(),{once:true});
+  ov.addEventListener('click',e=>{ if(e.target===ov)closeSettings(); });
+  ov.showModal();
 }
 
 // ── Rozetler + Sıra ──────────────────────────────────────────

@@ -8,6 +8,7 @@ import { Auth, db, fdb } from './auth.js';
 import { makeFabDraggable } from './jewel-drag.js';
 import { canLaunchPortalGame, launchPortalGame } from './game-launcher.js';
 import { openPanel, element, button, ensureCenterStyles } from './portal-panels.js';
+import { gameSocialBounds, setGameSocialState, visibleGameSocial } from './game-social.js';
 
 /* ═══════════ SOSYALPLUS: DÜZENLEME / SİLME / QUICK BAR ═══════════ */
 const _EDIT_MS = 5 * 60 * 1000;
@@ -610,12 +611,13 @@ export async function openPlayerCard(uid){
   ov.id = 'pcPop'; ov.className = 'pcp-ov';
   ov.innerHTML = '<div class="pcp-card"><div class="pcp-load">⏳</div></div>';
   document.body.appendChild(ov);
+  const dismiss=hubChildDismiss(ov,'Oyuncu profili');
   const current=()=>ov.isConnected&&Auth.getState().uid===ownerUid;
   let off=()=>{},observer=null;
   const cleanup=()=>{off();observer?.disconnect();};
   off=Auth.subscribe(()=>{if(!current()){ov.remove();cleanup();}});
   if(typeof MutationObserver!=='undefined'){observer=new MutationObserver(()=>{if(!ov.isConnected)cleanup();});observer.observe(document.body,{childList:true,subtree:true});}
-  ov.addEventListener('click', (e) => { if(e.target === ov) ov.remove(); });
+  ov.addEventListener('click', (e) => { if(e.target === ov) dismiss(); });
   let p = {}, pr = {};
   try{ const s = await fdb.get(fdb.ref(db, 'users/' + uid)); p = s.exists() ? s.val() : {}; }catch(e){}
   if(!current())return;
@@ -721,9 +723,9 @@ export async function openPlayerCard(uid){
     ${_renderProfileFriends(p, uid, isAdm)}
     ${_renderProfileKozmos(p, uid)}
     <button class="pcp-x">Kapat</button>`;
-  ov.querySelector('.pcp-x').addEventListener('click', () => ov.remove());
+  ov.querySelector('.pcp-x').addEventListener('click', dismiss);
   const dmB = ov.querySelector('[data-pc="dm"]');
-  if(dmB) dmB.addEventListener('click', () => { ov.remove(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
+  if(dmB) dmB.addEventListener('click', () => { dismiss(); applyFabSetting(); openHubTab('ozel'); dmOpenThread(uid, nick); });
   // Dürt (arkadaş veya admin)
   const pokeB = ov.querySelector('[data-pc="poke"]');
   if(pokeB) pokeB.addEventListener('click', async () => {
@@ -956,8 +958,29 @@ export function dmOpenThreadExternal(uid, nick){
 
 export function openHubTab(tab){
   if(!H) return;
+  const game = visibleGameSocial();
+  if(game) return openGameHub(tab,game);
   switchTab(tab || 'chat');
   if(!H.open) open();
+}
+
+export function openGameHub(tab,game){
+  if(!game || !game.opener.isConnected || game.root.hidden || game.root.inert) return false;
+  if(!H) initSocial();
+  if(!H) return false;
+  if(H.game !== game){
+    if(H.open) close({restoreFocus:false});
+    setHubGame(game);
+    document.dispatchEvent(new CustomEvent('hero:game-social-opened',{detail:{root:game.root}}));
+  }
+  switchTab(tab || 'chat');
+  if(!H.open) open(true);
+  else if(!byId('gemHubPanel')?.contains(document.activeElement)) byId('ghpCloseBtn')?.focus({preventScroll:true});
+  return true;
+}
+
+export function closeGameHub(root,restoreFocus=true){
+  if(H?.game?.root === root) close({restoreFocus});
 }
 
 export function initSocial(){
@@ -999,23 +1022,24 @@ export function initSocial(){
   panel.id = 'gemHubPanel';
   panel.setAttribute('role', 'region');
   panel.setAttribute('aria-label', 'Sosyal Hub');
+  panel.inert = true;
   panel.innerHTML = `
     <div class="ghp-drag" id="ghpDragHandle">
-      <div class="ghp-title"><span class="ghp-title-gem">💎</span> SOSYAL HUB</div>
+      <div><div class="ghp-title"><span class="ghp-title-gem" aria-hidden="true">💎</span><span id="ghpPanelTitle">SOSYAL HUB</span></div><small class="ghp-game-context" hidden>Oyun açık · Süreler devam edebilir</small></div>
       <div class="ghp-acts"><button class="ghp-act" id="ghpSettingsBtn" title="Ayarlar" aria-label="Sohbet ayarları">⚙️</button><button class="ghp-act" id="ghpSizeBtn" title="Sohbet boyutu" aria-label="Sohbet boyutunu değiştir">⤢</button><button class="ghp-act" id="ghpCloseBtn" aria-label="Sohbeti kapat">✕</button></div>
     </div>
     <div class="ghp-tabs" role="group" aria-label="Sosyal Hub bölümleri">
-      <button class="ghp-tab active" data-ghptab="chat" aria-label="Genel sohbet" aria-pressed="true">💬 CHAT</button>
-      <button class="ghp-tab" data-ghptab="ozel" aria-label="Özel mesajlar" aria-pressed="false">✉️<span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
-      <button class="ghp-tab" data-ghptab="dost" aria-label="Arkadaşlar" aria-pressed="false">👥</button>
-      <button class="ghp-tab" data-ghptab="lider" aria-label="Liderlik" aria-pressed="false">🏆</button>
-      <button class="ghp-tab" data-ghptab="notif" aria-label="Bildirimler" aria-pressed="false">🔔<span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
+      <button class="ghp-tab active" data-ghptab="chat" aria-label="Genel sohbet" aria-pressed="true"><span aria-hidden="true">💬</span><span class="ghp-tab-label">Sohbet</span></button>
+      <button class="ghp-tab" data-ghptab="ozel" aria-label="Özel mesajlar" aria-pressed="false"><span aria-hidden="true">✉️</span><span class="ghp-tab-label" data-in-game-only hidden>Mesajlar</span><span class="ghp-tab-badge" id="ghpDMBadge" style="display:none">0</span></button>
+      <button class="ghp-tab" data-ghptab="dost" aria-label="Arkadaşlar" aria-pressed="false"><span aria-hidden="true">👥</span><span class="ghp-tab-label" data-in-game-only hidden>Arkadaşlar</span></button>
+      <button class="ghp-tab" data-ghptab="lider" aria-label="Liderlik" aria-pressed="false"><span aria-hidden="true">🏆</span><span class="ghp-tab-label" data-in-game-only hidden>Liderlik</span></button>
+      <button class="ghp-tab" data-ghptab="notif" aria-label="Bildirimler" aria-pressed="false"><span aria-hidden="true">🔔</span><span class="ghp-tab-label" data-in-game-only hidden>Bildirimler</span><span class="ghp-tab-badge" id="ghpNotifBadge" style="display:none">0</span></button>
     </div>
     <div class="ghp-body">
       <div class="ghp-pane active" id="ghpPane-chat">
         <div class="ghp-chat-head" id="ghpChatHead">
           <span class="ghp-chat-head-title">💬 Genel Sohbet</span>
-          <span class="ghp-chat-head-online" id="ghpChatOnline" data-el="chatOnlineBtn">👥 …</span>
+          <button type="button" class="ghp-chat-head-online" id="ghpChatOnline" data-el="chatOnlineBtn" aria-label="Sohbette olan oyuncular">👥 …</button>
         </div>
         <div class="ghp-list" id="ghpChatList"><div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">SOHBET YÜKLENİYOR…</div></div></div>
         <div class="ghp-quick-bar" id="ghpChatQuick"><button class="ghp-qb" data-q="😂">😂</button><button class="ghp-qb" data-q="❤️">❤️</button><button class="ghp-qb" data-q="👍">👍</button><button class="ghp-qb" data-q="🔥">🔥</button><button class="ghp-qb" data-q="😮">😮</button><button class="ghp-qb" data-q="😢">😢</button><button class="ghp-qb" data-q="🎉">🎉</button><button class="ghp-qb" data-q="💪">💪</button><span class="ghp-qb-sep"></span><button class="ghp-qb ghp-qb-text" data-q="GG">GG</button><button class="ghp-qb ghp-qb-text" data-q="Merhaba! 👋">Mrb</button><button class="ghp-qb ghp-qb-text" data-q="Tebrikler! 🎉">Tebrik</button><button class="ghp-qb ghp-qb-text" data-q="İyi oyunlar! ⚔️">İyi oyun</button></div>
@@ -1059,9 +1083,14 @@ export function initSocial(){
       </div>
     </div>`;
   document.body.appendChild(panel);
+  const backdrop = element('div','ghp-game-backdrop');
+  backdrop.id = 'ghpGameBackdrop'; backdrop.hidden = true;
+  backdrop.setAttribute('aria-hidden','true');
+  backdrop.addEventListener('click', () => close());
+  document.body.append(backdrop);
   _injectMsgCSS();
 
-  H = { open:false, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
+  H = { open:false, game:null, tab:'chat', dmUnread:0, notifUnread:0, dmThread:null, offChat:null, offDM:null, offNotif:null, dmWatch:{}, seen: loadSeen() };
 
   // FAB davranışları
   const gemMoved = makeFabDraggable(gem, () => { if(H.open) position(true); });
@@ -1077,14 +1106,16 @@ export function initSocial(){
   window.visualViewport?.addEventListener('scroll', scheduleHubLayout);
   if(typeof ResizeObserver === 'function') new ResizeObserver(scheduleHubLayout).observe(panel);
   panel.addEventListener('keydown', event => {
-    if(event.key !== 'Escape' || event.isComposing || !H.open) return;
+    if(event.isComposing || !H.open) return;
+    if(H.game && event.key === 'Tab'){ trapHubTab(event,panel); return; }
+    if(event.key !== 'Escape') return;
     event.preventDefault();event.stopPropagation();close();
   });
   panel.querySelector('#ghpCloseBtn').addEventListener('click', close);
   panel.querySelector('#ghpSizeBtn').addEventListener('click', cycleSize);
   const _cob = panel.querySelector('#ghpChatOnline'); if(_cob) _cob.addEventListener('click', _showChatOnlineList);
   applySize();
-  document.addEventListener('pointerdown', (e) => { if(!H.open) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
+  document.addEventListener('pointerdown', (e) => { if(!H.open || H.game) return; if(panel.contains(e.target) || gem.contains(e.target)) return; close(); }, { passive:true });
   // Sekmeler
   panel.querySelectorAll('.ghp-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.ghptab)));
   const setBtn = byId('ghpSettingsBtn');
@@ -1151,12 +1182,21 @@ export function initSocial(){
     const identity = (st.uid || '') + ':' + st.status;
     // Profile updates must not disconnect the conversation already on screen.
     if(identity === listenerIdentity) return;
+    if(listenerIdentity !== null && H.game) close({restoreFocus:false});
     listenerIdentity = identity;
     teardownListeners();
     _leaveChatRoom();
     dmBack();
     H.dmUnread = H.notifUnread = 0;
     H.notifRows = []; H.kelimeInviteRows = []; H.bcastRows = [];
+    const chatInput=byId('ghpChatInput'),chatSend=byId('ghpChatSend');
+    chatInput.value='';chatInput.disabled=chatSend.disabled=!st.uid;
+    byId('ghpChatQuick').hidden=!st.uid;
+    if(!st.uid && st.status!=='boot'){
+      byId('ghpChatList').innerHTML='<div class="ghp-empty"><div class="ghp-empty-text">Sohbet bağlantısı yok. Bağlantını kontrol et.</div></div>';
+    }else{
+      byId('ghpChatList').innerHTML='<div class="ghp-empty"><div class="ghp-empty-text">Sohbet yükleniyor…</div></div>';
+    }
     renderNotifPane();
     if(H.tab === 'dost') renderFriends();
     updateBadges();
@@ -1170,13 +1210,54 @@ export function initSocial(){
 // ── Panel aç/kapa/konum ─────────────────────────────────────────
 function byId(id){ return document.getElementById(id); }
 const SIZES = ['midi','mini','full'];
+function trapHubTab(event,panel){
+  const focusable = [...panel.querySelectorAll('button,input,select,textarea,a[href],[tabindex]')]
+    .filter(node => !node.disabled && node.tabIndex >= 0 && node.getClientRects().length && !node.closest('[inert]'));
+  const edge = event.shiftKey ? focusable[0] : focusable.at(-1);
+  if(!edge || (document.activeElement !== edge && document.activeElement !== panel)) return;
+  event.preventDefault();event.stopPropagation();
+  (event.shiftKey ? focusable.at(-1) : focusable[0])?.focus({preventScroll:true});
+}
+function hubChildDismiss(node,label){
+  const game=H?.game,previous=document.activeElement;
+  const dismiss=()=>{
+    node.remove();
+    if(!game || game !== H?.game || !H.open)return;
+    const panel=byId('gemHubPanel');
+    (panel?.contains(previous) && previous.isConnected ? previous : byId('ghpCloseBtn'))?.focus({preventScroll:true});
+  };
+  if(!game) return dismiss;
+  node.dataset.gameSocialChild='';
+  node.setAttribute('role','dialog');node.setAttribute('aria-label',label);node.setAttribute('aria-modal','true');
+  node.tabIndex=-1;node.focus({preventScroll:true});
+  node.addEventListener('keydown',event=>{
+    if(event.key==='Tab'){trapHubTab(event,node);return;}
+    if(event.key!=='Escape'||event.isComposing)return;
+    event.preventDefault();event.stopPropagation();dismiss();
+  });
+  return dismiss;
+}
+function setHubGame(game){
+  const p=byId('gemHubPanel'),backdrop=byId('ghpGameBackdrop');
+  H.game=game;
+  p.classList.toggle('ghp-in-game',!!game);
+  p.setAttribute('role',game?'dialog':'region');
+  p.setAttribute('aria-label',game?'Oyun sırasında sohbet ve arkadaşlar':'Sosyal Hub');
+  if(game) p.setAttribute('aria-modal','true');
+  else p.removeAttribute('aria-modal');
+  byId('ghpPanelTitle').textContent=game?'Sohbet ve arkadaşlar':'SOSYAL HUB';
+  byId('ghpCloseBtn').setAttribute('aria-label',game?'Sohbeti kapat ve oyuna dön':'Sohbeti kapat');
+  p.querySelectorAll('.ghp-game-context,[data-in-game-only]').forEach(el=>{el.hidden=!game;});
+  backdrop.hidden=!game;
+  applySize();
+}
 function curSize(){
   try{ const v=localStorage.getItem('hero_hub_size');if(SIZES.includes(v))return v; }catch(e){}
   return 'midi';
 }
 function applySize(){
   const p = byId('gemHubPanel'); if(!p) return;
-  const sz = curSize();
+  const sz = H?.game ? 'game' : curSize();
   p.classList.toggle('ghp-mini', sz === 'mini');
   p.classList.toggle('ghp-full', sz === 'full');
   const btn = byId('ghpSizeBtn'); if(btn) btn.textContent = sz === 'full' ? '⤡' : (sz === 'mini' ? '▣' : '⤢');
@@ -1220,9 +1301,15 @@ function position(resetDrag=false){
   if(resetDrag)hubDragged=null;
   const panel=byId('gemHubPanel'),fab=byId('gemFloatBtn');
   if(!panel||!fab)return;
-  const view=hubViewport(),zoom=Number(window.__uiScale)||1,size=curSize();
+  const view=hubViewport(),zoom=Number(window.__uiScale)||1,size=H.game?'game':curSize();
   panel.classList.toggle('ghp-compact-height',view.height/zoom<390);
   panel.style.right=panel.style.bottom='auto';
+  if(size==='game'){
+    const rect=gameSocialBounds(view,zoom);
+    for(const k of ['left','top','width','height'])panel.style[k]=(rect[k]/zoom)+'px';
+    panel.style.maxHeight='none';
+    return;
+  }
   if(size==='full'){
     panel.style.left=(view.left/zoom)+'px';panel.style.top=(view.top/zoom)+'px';
     panel.style.width=(view.width/zoom)+'px';panel.style.height=(view.height/zoom)+'px';
@@ -1245,13 +1332,25 @@ function open(keyboard=false){
   if(keyboard)byId('ghpCloseBtn')?.focus({preventScroll:true});
   if(H.tab==='chat')_joinChatRoom();
 }
-function close(){
+function close({restoreFocus=true}={}){
   if(!H?.open)return;
   H.open=false;
   const panel=byId('gemHubPanel'),fab=byId('gemFloatBtn');
-  if(panel.contains(document.activeElement))fab?.focus({preventScroll:true});
-  panel.inert=true;panel.classList.add('ghp-closing');fab?.setAttribute('aria-expanded','false');
-  clearTimeout(closeTimer);closeTimer=setTimeout(()=>{if(!H.open)panel.classList.remove('ghp-open','ghp-closing');},260);
+  const game=H.game;
+  if(restoreFocus && (game || panel.contains(document.activeElement))){
+    const opener=game?.opener||fab;
+    if(opener?.isConnected)opener.focus({preventScroll:true});
+  }
+  panel.inert=true;fab?.setAttribute('aria-expanded','false');clearTimeout(closeTimer);
+  if(game){
+    panel.classList.remove('ghp-open','ghp-closing');
+    for(const nested of document.querySelectorAll('[data-game-social-child]')) nested.remove();
+    setHubGame(null);
+    updateBadges();
+  }else{
+    panel.classList.add('ghp-closing');
+    closeTimer=setTimeout(()=>{if(!H.open)panel.classList.remove('ghp-open','ghp-closing');},260);
+  }
   _leaveChatRoom();
 }
 function toggle(keyboard){H.open?close():open(keyboard);}
@@ -1358,6 +1457,7 @@ function updateBadges(){
   set('ghpDMBadge', H.dmUnread); set('ghpNotifBadge', H.notifUnread);
   const total = H.dmUnread + H.notifUnread, gb = byId('gemFabBadge');
   if(gb){ gb.textContent = total > 9 ? '9+' : total; gb.style.display = total > 0 ? 'grid' : 'none'; }
+  setGameSocialState({entry:H.game,open:H.open,unread:total});
 }
 function loadSeen(){ try{ const value=JSON.parse(localStorage.getItem('hero_hub_seen') || '{}'); return value && typeof value === 'object' && !Array.isArray(value) ? value : {}; }catch(e){ return {}; } }
 function saveSeen(){ try{ localStorage.setItem('hero_hub_seen', JSON.stringify(H.seen)); }catch(e){} }
@@ -1551,13 +1651,15 @@ function _showChatOnlineList(){
   const ov = document.createElement('div');
   ov.id = 'chatOnlineOv'; ov.className = 'ghp-online-ov';
   const rowsHtml = _chatOnlineRows.length
-    ? _chatOnlineRows.map(u=>'<div class="ghp-online-row" data-pcuid="'+u.uid+'"><div class="ghp-online-ava">'+esc(u.avatar||'👤')+'</div><div class="ghp-online-nm">'+esc(u.name||'Oyuncu')+'</div><div class="ghp-online-dot"></div></div>').join('')
+    ? _chatOnlineRows.map(u=>'<button type="button" class="ghp-online-row" data-pcuid="'+esc(u.uid)+'"><span class="ghp-online-ava">'+esc(u.avatar||'👤')+'</span><span class="ghp-online-nm">'+esc(u.name||'Oyuncu')+'</span><span class="ghp-online-dot"></span></button>').join('')
     : '<div class="pcp-nobest">Şu an sohbette kimse yok</div>';
-  ov.innerHTML = '<div class="ghp-online-panel"><div class="ghp-online-title">👥 Sohbette Olanlar ('+_chatOnlineRows.length+')</div>'+rowsHtml+'</div>';
+  ov.innerHTML = '<div class="ghp-online-panel"><div class="ghp-online-title">👥 Sohbette Olanlar ('+_chatOnlineRows.length+') <button class="ghp-act" type="button" data-online-close aria-label="Oyuncu listesini kapat">✕</button></div>'+rowsHtml+'</div>';
   document.body.appendChild(ov);
-  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  const dismiss=hubChildDismiss(ov,'Sohbette olan oyuncular');
+  ov.querySelector('[data-online-close]').addEventListener('click',dismiss);
+  ov.addEventListener('click', e=>{ if(e.target===ov) dismiss(); });
   ov.querySelectorAll('[data-pcuid]').forEach(row=>{
-    row.addEventListener('click', ()=>{ ov.remove(); openPlayerCard(row.dataset.pcuid); });
+    row.addEventListener('click', ()=>{ dismiss(); openPlayerCard(row.dataset.pcuid); });
   });
 }
 
@@ -1565,8 +1667,10 @@ function _showChatOnlineList(){
 function listenChat(){
   _injectCosmeticCSS();
   if(H.open && H.tab === 'chat') _joinChatRoom();
+  const uid=Auth.getState().uid;
   const ref = fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(40));
   H.offChat = fdb.onValue(ref, (snap) => {
+    if(uid!==Auth.getState().uid)return;
     const list = byId('ghpChatList'); if(!list) return;
     if(!snap.exists()){ list.innerHTML = '<div class="ghp-empty"><div class="ghp-empty-icon">💬</div><div class="ghp-empty-text">İLK MESAJI SEN YAZ</div></div>'; return; }
     const me = Auth.getState().uid;
@@ -1621,6 +1725,10 @@ function listenChat(){
       openPlayerCard(targetUid);
     }));
     list.scrollTop = list.scrollHeight;
+  },()=>{
+    if(uid!==Auth.getState().uid)return;
+    const list=byId('ghpChatList');
+    if(list)list.innerHTML='<div class="ghp-empty"><div class="ghp-empty-text">Sohbet şu anda yüklenemiyor.</div></div>';
   });
 }
 let chatSending = false;
@@ -2441,7 +2549,7 @@ async function clearNotifs(){
 function makePanelDrag(panel, handle){
   let drag=null;
   handle.addEventListener('pointerdown', event=>{
-    if(drag||event.button!==0||event.target.closest('button')||curSize()==='full')return;
+    if(drag||H?.game||event.button!==0||event.target.closest('button')||curSize()==='full')return;
     const rect=panel.getBoundingClientRect();
     drag={id:event.pointerId,x:event.clientX-rect.left,y:event.clientY-rect.top};
     handle.setPointerCapture?.(event.pointerId);event.preventDefault();

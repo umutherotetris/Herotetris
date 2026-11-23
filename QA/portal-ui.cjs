@@ -144,24 +144,38 @@ async function setup(page, fixtures=true){
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   await page.locator('.bottom-nav [data-nav="profile"]').click();
   await page.locator('[data-p="settings"]').click();
+  const chromeTheme = await page.locator('html').getAttribute('data-theme');
+  for (const [palette,canvas] of [['pearl','rgb(250, 245, 238)'],['sea','rgb(239, 248, 246)'],['sapphire','rgb(243, 247, 255)']]){
+    await page.locator(`.portal-palette[data-palette="${palette}"]`).click();
+    assert.equal(await page.locator('.portal-palette[aria-pressed="true"]').getAttribute('data-palette'),palette);
+    assert.equal(await page.locator('html').getAttribute('data-theme'),chromeTheme,'board and effect palette are independent');
+    assert.equal(await page.locator('body').evaluate(body=>getComputedStyle(body).backgroundColor),canvas);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('hero_portal_palette')),palette);
+  }
+  await page.locator('.settings-accents summary').click();
   for(const theme of ['aurora','lounge','ivory','neon','cosmic','sunset','emerald','golden','crimson','ocean','mono']){
     await page.locator(`.theme-chip[data-theme="${theme}"]`).click();
     assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${theme} settings overflow`);
   }
   await page.locator('.theme-chip[data-theme="ivory"]').click();
-  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.set-row')).color==='rgb(49, 89, 64)',null,{timeout:2000});
-  assert.equal(await page.locator('.set-row').first().evaluate(el=>getComputedStyle(el).color),'rgb(49, 89, 64)','ivory settings labels remain readable on a light background');
+  assert.equal(await page.locator('.theme-chip[aria-pressed="true"]').getAttribute('data-theme'),'ivory');
+  assert.equal(await page.locator('.portal-palette[aria-pressed="true"]').getAttribute('data-palette'),'sapphire','accent selection preserves portal preference');
   for(const scale of [80,130,100]){
     await page.locator('#scaleSlider').evaluate((slider,value)=>{slider.value=value;slider.dispatchEvent(new Event('input',{bubbles:true}));},String(scale));
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`UI scale ${scale} overflow`);
     assert.equal(await page.locator('.nick-modal').evaluate(modal=>{const r=modal.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1;}),true,`settings stay inside viewport at scale ${scale}`);
   }
-  await page.locator('#stClose').click();
+  await page.locator('.portal-palette[data-palette="sea"]').click();
+  await page.keyboard.press('Escape');
+  await page.locator('#setModal').waitFor({state:'detached'});
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.p),'settings','Escape restores focus to the opener');
   await page.locator('.bottom-nav [data-nav="home"]').click();
   await page.evaluate(()=>localStorage.setItem('hero_theme','emerald'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
   assert.equal(await page.locator('html').getAttribute('data-theme'),'emerald');
+  assert.equal(await page.locator('html').getAttribute('data-portal-palette'),'sea');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#eff8f6');
   assert.equal(await page.locator('#gameTetris').evaluate(el=>getComputedStyle(el).animationName),'none');
   await page.evaluate(()=>localStorage.setItem('hero_theme','ivory'));
   await page.reload(); await page.waitForFunction(()=>!!window.Hero);
@@ -180,7 +194,7 @@ async function setup(page, fixtures=true){
   await page.evaluate(()=>window.__testAuth({status:'anon',uid:null,isAdmin:false,displayName:'Misafir Oyuncu',profile:null}));
   assert.equal(await page.locator('#adminFloatBtn').isVisible(),false);
   if(process.env.PORTAL_SCREENSHOTS){
-    await page.evaluate(()=>{localStorage.setItem('hero_theme','aurora');localStorage.removeItem('hero_lobby_recent');localStorage.removeItem('hero_lobby_favorites');});
+    await page.evaluate(()=>{localStorage.setItem('hero_theme','aurora');localStorage.removeItem('hero_portal_palette');localStorage.removeItem('hero_lobby_recent');localStorage.removeItem('hero_lobby_favorites');});
     await page.reload();await page.waitForFunction(()=>!!window.Hero);await page.evaluate(()=>document.fonts.ready);
     await page.evaluate(()=>{document.activeElement.blur();window.scrollTo(0,0);});
     await page.setViewportSize({width:1440,height:1000}); await page.waitForTimeout(200); await page.screenshot({path:path.join(process.env.PORTAL_SCREENSHOTS,'portal-desktop.png'),fullPage:true});

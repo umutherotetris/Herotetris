@@ -55,10 +55,15 @@ function lockPanel(panel,on,label='İşlem sürüyor…'){
   panel.root.setAttribute?.('aria-busy',String(on));
   panel.root.querySelectorAll('button,input,select').forEach(el=>{
     if(el.dataset.a==='close')return;
-    if(on){el.dataset.adminWasDisabled=el.disabled?'1':'0';el.disabled=true;}
+    if(on){if(el.dataset.adminWasDisabled===undefined)el.dataset.adminWasDisabled=el.disabled?'1':'0';el.disabled=true;}
     else if(el.dataset.adminWasDisabled!==undefined){el.disabled=el.dataset.adminWasDisabled==='1';delete el.dataset.adminWasDisabled;}
   });
   const status=$(panel.root,'[data-el="busy"]');if(status){status.textContent=on?label:'Hazır';status.dataset.busy=String(on);}
+}
+function setAdminDisabled(panel,control,disabled){
+  if(!control)return;
+  if(panel.busy)control.dataset.adminWasDisabled=disabled?'1':'0';
+  control.disabled=!!panel.busy||disabled;
 }
 async function runAdminAction(work,label){
   const panel=activeAdmin();if(!panel||panel.busy)return;
@@ -68,7 +73,7 @@ async function runAdminAction(work,label){
 let adminCssLoaded=false;
 function ensureAdminCss(){
   if(adminCssLoaded)return;adminCssLoaded=true;
-  const link=document.createElement('link');link.rel='stylesheet';link.href='css/admin-premium.css?v=156';document.head.appendChild(link);
+  const link=document.createElement('link');link.rel='stylesheet';link.href='css/admin-premium.css?v=159';document.head.appendChild(link);
 }
 
 // ── adminLog kaydı ──────────────────────────────────────────────
@@ -101,7 +106,6 @@ function adminOperation(prefix){return prefix+'_'+(globalThis.crypto?.randomUUID
 
 async function logAdmin(action, targetUid, detail){
   const P=activeAdmin();if(!P)return;
-  const msg=(text,ok)=>panelMessage(P,text,ok);
   try{
     const me = Auth.getState();
     const k = 'a' + Date.now() + '_' + Math.floor(Math.random()*100000);
@@ -110,6 +114,26 @@ async function logAdmin(action, targetUid, detail){
       action, target: targetUid || '', detail: String(detail||'').slice(0, 200)
     });
   }catch(e){}
+}
+
+const ADMIN_VIEWS=['Players','Community','System'];
+function showAdminView(panel,key,focus=false){
+  if(!activeAdmin(panel)||panel.busy||!ADMIN_VIEWS.includes(key))return;
+  for(const id of ADMIN_VIEWS){
+    const tab=$(panel.root,'[data-admin-tab="'+id+'"]'),view=$(panel.root,'[data-admin-view="'+id+'"]');
+    const on=id===key;
+    if(tab){tab.tabIndex=on?0:-1;tab.setAttribute('aria-selected',String(on));if(on&&focus)tab.focus();}
+    if(view)view.hidden=!on;
+  }
+  $(panel.root,'[data-el="sug"]').hidden=true;
+  const scroller=$(panel.root,'.adm-body');if(scroller&&panel.view!==key)scroller.scrollTop=0;
+  panel.view=key;
+}
+function toggleDisclosure(panel,action,box){
+  const open=box.style.display==='none';
+  box.style.display=open?'':'none';
+  $(panel.root,'[data-a="'+action+'"]')?.setAttribute('aria-expanded',String(open));
+  return open;
 }
 
 // ── Panel aç/kapa ───────────────────────────────────────────────
@@ -125,95 +149,115 @@ export function openAdminPanel(){
   ov.innerHTML = `
     <div class="adm-panel">
       <div class="adm-head">
-        <div><div class="adm-eyebrow">HERO · YÖNETİM MERKEZİ</div><div class="adm-title" id="adminPanelTitle">Oyuncular ve topluluk</div></div>
-        <button class="adm-x" data-a="close" aria-label="Yönetim panelini kapat">✕</button>
+        <div><p class="adm-eyebrow">HERO PORTAL</p><h2 class="adm-title" id="adminPanelTitle">Yönetim merkezi</h2></div>
+        <button class="adm-x" type="button" data-a="close" aria-label="Yönetim panelini kapat">✕</button>
+      </div>
+      <div class="adm-tabs" role="tablist" aria-label="Yönetim alanları">
+        <button type="button" class="adm-tab" id="adminTabPlayers" data-admin-tab="Players" role="tab" aria-selected="true" aria-controls="adminViewPlayers">Oyuncular</button>
+        <button type="button" class="adm-tab" id="adminTabCommunity" data-admin-tab="Community" role="tab" aria-selected="false" aria-controls="adminViewCommunity" tabindex="-1">Topluluk</button>
+        <button type="button" class="adm-tab" id="adminTabSystem" data-admin-tab="System" role="tab" aria-selected="false" aria-controls="adminViewSystem" tabindex="-1">Sistem</button>
       </div>
       <div class="adm-selection"><span data-el="selected">İşlem için bir oyuncu seç</span><span class="adm-busy" data-el="busy" role="status">Hazır</span></div>
+      <div class="adm-msg" data-el="msg" role="status" aria-live="polite"></div>
       <div class="adm-body">
-        <div class="adm-row" style="position:relative">
-          <input class="adm-in" data-el="q" aria-label="Oyuncu nicki veya UID ara" placeholder="Nick veya UID ara…" autocomplete="off" spellcheck="false">
-          <button class="adm-btn p" data-a="search" aria-label="Oyuncu ara">Ara</button>
-          <div class="adm-sug" data-el="sug" style="display:none"></div>
-        </div>
-        <div class="adm-msg" data-el="msg" role="status" aria-live="polite"></div>
-        <div data-el="result"></div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="rebuild">📇 Nick Defterini Onar <span style="opacity:.6;font-weight:400">— tüm oyuncuları aramaya ekler</span></button>
-        </div>
-        <div class="adm-stats" data-el="stats">📊 yükleniyor…</div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="onlinelist">🟢 Çevrimiçi Oyuncular <span data-el="oncount" style="color:#5fd38a;font-weight:800"></span> <span>▾</span></button>
-          <div class="adm-log" data-el="online" style="display:none"></div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="chatmod">💬 Sohbet Moderasyonu <span>▾</span></button>
-          <div class="adm-log" data-el="chatmod" style="display:none"></div>
-        </div>
-        <div class="adm-sec">
-          <div class="adm-row">
-            <button class="adm-acc" style="flex:1" data-a="chatlock">🔒 Sohbet Kilidi: <b data-el="lockState">…</b></button>
-            <button class="adm-acc" style="flex:1" data-a="glow">✨ Nick Işıltısı</button>
+        <section class="adm-view" data-admin-view="Players" id="adminViewPlayers" role="tabpanel" aria-labelledby="adminTabPlayers" tabindex="0">
+          <div class="adm-row adm-search" role="search" aria-label="Oyuncu arama">
+            <input class="adm-in" data-el="q" aria-label="Oyuncu nicki veya UID ara" aria-controls="adminSearchSuggestions" placeholder="Nick veya UID ara…" autocomplete="off" spellcheck="false">
+            <button type="button" class="adm-btn p" data-a="search">Ara</button>
+            <div class="adm-sug" id="adminSearchSuggestions" data-el="sug" hidden></div>
           </div>
-          <div class="adm-log" data-el="glowbox" style="display:none"></div>
-        </div>
-        <div class="adm-sec">
-          <div class="adm-row" style="gap:6px;flex-wrap:wrap">
-            <button class="adm-acc" style="flex:1" data-a="allusers">👥 Tüm Kullanıcılar <span data-el="ucount" style="color:#5fd38a;font-weight:800"></span> <span>▾</span></button>
-            <button class="adm-btn r" style="flex:0;white-space:nowrap" data-a="cleanAnon">🧹 Nick'siz Temizle</button>
-            <button class="adm-btn r" style="flex:0;white-space:nowrap" data-a="cleanDup">🔁 Duplicate Temizle</button>
+          <div class="adm-stats" data-el="stats" aria-live="polite">Oyuncu sayıları yükleniyor…</div>
+          <div data-el="result"></div>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="onlinelist" aria-controls="adminOnlineList" aria-expanded="false">Çevrimiçi oyuncular <span data-el="oncount"></span></button>
+            <div class="adm-log" id="adminOnlineList" data-el="online" style="display:none"></div>
           </div>
-          <div class="adm-row" style="gap:4px;flex-wrap:wrap;margin-top:4px;display:none" id="userFilterRow">
-            <button class="adm-btn p" data-filter="all" style="font-size:10px;padding:4px 8px">Tümü</button>
-            <button class="adm-btn" data-filter="nonick" style="font-size:10px;padding:4px 8px">Nick'siz</button>
-            <button class="adm-btn" data-filter="anon" style="font-size:10px;padding:4px 8px">Anonim</button>
-            <button class="adm-btn" data-filter="dup" style="font-size:10px;padding:4px 8px">Duplicate</button>
-            <input class="adm-in" data-el="userSearch" placeholder="Nick ara…" style="flex:1;min-width:80px;padding:4px 8px;font-size:11px">
-          </div>
-          <div class="adm-log" data-el="allusers" style="display:none"></div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="ghost">👻 Ghost Modu: <b data-el="ghostState">…</b> <span style="opacity:.6;font-weight:400">— listelerde görünmezsin</span></button>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="toggleAdmFab">👑 Admin FAB Görünürlüğü: <b data-el="admFabState">…</b> <span style="opacity:.6;font-weight:400">— ekrandaki admin butonu</span></button>
-        </div>
-        <div class="adm-sec" style="border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:8px">
-          <div class="adm-lbl" style="color:#4dd0e1">🩺 SİSTEM CHECK-UP & DEBUG</div>
-          <button class="adm-acc" data-a="toggleDebug">🔬 Debug Modu: <b data-el="debugState">…</b> <span style="opacity:.6;font-weight:400">— ekranda hata/durum overlay'i</span></button>
-          <button class="adm-btn p" data-a="runCheckup" style="width:100%;margin-top:6px">🩺 Tam Sistem Check-Up Çalıştır</button>
-          <div class="adm-log" data-el="checkup" style="display:none;margin-top:6px;font-size:10px;font-family:monospace;line-height:1.7;max-height:300px;overflow:auto"></div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="ipbans">🌐 IP Yasakları <span>▾</span></button>
-          <div class="adm-log" data-el="ipbans" style="display:none"></div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="nickbans">🚷 Nick Yasakları <span>▾</span></button>
-          <div class="adm-log" data-el="nickbans" style="display:none">
-            <div class="adm-row">
-              <input class="adm-in" data-el="nbText" maxlength="16" placeholder="Yasaklanacak nick" autocapitalize="off">
-              <button class="adm-btn r" data-a="nbAdd">Yasakla</button>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="allusers" aria-controls="adminUsersList" aria-expanded="false">Tüm oyuncular <span data-el="ucount"></span></button>
+            <div class="adm-user-list" id="adminUsersList" data-el="usersList" style="display:none">
+              <div class="adm-user-filter" id="userFilterRow">
+                <div class="adm-filter-options" role="group" aria-label="Oyuncu listesi filtresi">
+                  <button type="button" class="adm-btn p" data-filter="all" aria-pressed="true">Tümü</button>
+                  <button type="button" class="adm-btn" data-filter="nonick" aria-pressed="false">Nick yok</button>
+                  <button type="button" class="adm-btn" data-filter="anon" aria-pressed="false">Misafir</button>
+                  <button type="button" class="adm-btn" data-filter="dup" aria-pressed="false">Nick çakışması</button>
+                </div>
+                <input class="adm-in" data-el="userSearch" aria-label="Listede nick veya UID ara" placeholder="Listede nick veya UID ara…" autocomplete="off">
+              </div>
+              <p class="adm-list-meta" data-el="userCount" role="status"></p>
+              <div class="adm-log" data-el="allusers" style="display:none"></div>
+              <button type="button" class="adm-btn" data-a="moreUsers" hidden>Daha fazla göster</button>
             </div>
-            <div data-el="nbList"></div>
           </div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="dupclean">🧹 Kopya/Yetim Defter Temizliği <span style="opacity:.6;font-weight:400">— nicks/ düzenler</span></button>
-        </div>
-        <div class="adm-sec"><div class="adm-lbl">📣 PORTALA DUYURU GÖNDER</div>
-          <div class="adm-row">
-            <input class="adm-in" data-el="bcText" maxlength="200" placeholder="Duyuru metni (tüm oyunculara)">
-            <button class="adm-btn p" data-a="bcSend">Gönder</button>
+        </section>
+        <section class="adm-view" data-admin-view="Community" id="adminViewCommunity" role="tabpanel" aria-labelledby="adminTabCommunity" tabindex="0" hidden>
+          <div class="adm-sec adm-wide">
+            <label class="adm-lbl" for="adminAnnouncement">Portal duyurusu</label>
+            <p class="adm-help">Gönderilen duyuru tüm oyunculara görünür.</p>
+            <div class="adm-row">
+              <input class="adm-in" id="adminAnnouncement" data-el="bcText" maxlength="200" placeholder="Duyuru metni…">
+              <button type="button" class="adm-btn p" data-a="bcSend">Gönder</button>
+            </div>
           </div>
-        </div>
-        <div class="adm-sec">
-          <button class="adm-acc" data-a="loglist">📜 Son admin işlemleri <span data-el="logarrow">▾</span></button>
-          <div class="adm-log" data-el="log" style="display:none"></div>
-        </div>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="chatmod" aria-controls="adminChatLog" aria-expanded="false">Sohbet moderasyonu</button>
+            <div class="adm-log" id="adminChatLog" data-el="chatmod" style="display:none"></div>
+          </div>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="chatlock">Genel sohbet: <b data-el="lockState">…</b></button>
+            <button type="button" class="adm-acc" data-a="glow" aria-controls="adminGlowPicker" aria-expanded="false">Nick ışıltısı</button>
+            <div class="adm-log" id="adminGlowPicker" data-el="glowbox" style="display:none"></div>
+          </div>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="ipbans" aria-controls="adminIPBans" aria-expanded="false">IP yasakları</button>
+            <div class="adm-log" id="adminIPBans" data-el="ipbans" style="display:none"></div>
+          </div>
+          <div class="adm-sec">
+            <button type="button" class="adm-acc" data-a="nickbans" aria-controls="adminNickBans" aria-expanded="false">Nick yasakları</button>
+            <div class="adm-log" id="adminNickBans" data-el="nickbans" style="display:none">
+              <div class="adm-row">
+                <input class="adm-in" data-el="nbText" aria-label="Yasaklanacak nick" maxlength="16" placeholder="Yasaklanacak nick" autocapitalize="off">
+                <button type="button" class="adm-btn r" data-a="nbAdd">Yasakla</button>
+              </div>
+              <div data-el="nbList"></div>
+            </div>
+          </div>
+        </section>
+        <section class="adm-view" data-admin-view="System" id="adminViewSystem" role="tabpanel" aria-labelledby="adminTabSystem" tabindex="0" hidden>
+          <div class="adm-sec adm-wide">
+            <h3 class="adm-lbl">Sistem sağlığı</h3>
+            <p class="adm-help">Oturumu, oyun modüllerini ve veri bağlantısını kontrol et.</p>
+            <button type="button" class="adm-btn p" data-a="runCheckup">Tanılamayı çalıştır</button>
+            <div class="adm-log adm-checkup" data-el="checkup" role="status" aria-live="polite" style="display:none"></div>
+          </div>
+          <div class="adm-sec">
+            <h3 class="adm-lbl">Görünürlük</h3>
+            <button type="button" class="adm-acc" data-a="ghost">Gizli mod: <b data-el="ghostState">…</b></button>
+            <button type="button" class="adm-acc" data-a="toggleAdmFab">Yönetici taç düğmesi: <b data-el="admFabState">…</b></button>
+            <button type="button" class="adm-acc" data-a="toggleDebug">Hata göstergesi: <b data-el="debugState">…</b></button>
+          </div>
+          <div class="adm-sec">
+            <h3 class="adm-lbl">Nick defteri</h3>
+            <button type="button" class="adm-acc" data-a="rebuild">Nick defterini onar</button>
+            <button type="button" class="adm-acc" data-a="dupclean">Sahipsiz defter kayıtlarını temizle</button>
+          </div>
+          <details class="adm-sec adm-wide adm-maintenance">
+            <summary>Oyuncu kayıt bakımı</summary>
+            <p class="adm-help">Oyuncu kayıtlarını etkileyen işlemleri buradan yapabilirsin.</p>
+            <div class="adm-row">
+              <button type="button" class="adm-btn r" data-a="cleanAnon">Boş misafir kayıtlarını temizle</button>
+              <button type="button" class="adm-btn r" data-a="cleanDup">Çakışan nickleri temizle</button>
+            </div>
+          </details>
+          <div class="adm-sec adm-wide">
+            <button type="button" class="adm-acc" data-a="loglist" aria-controls="adminActionLog" aria-expanded="false">Son yönetici işlemleri</button>
+            <div class="adm-log" id="adminActionLog" data-el="log" style="display:none"></div>
+          </div>
+        </section>
       </div>
     </div>`;
   document.body.appendChild(ov);
-  P = { root: ov, target: null,ownerUid:st.uid,authorized:true,off:[],opener,searchVersion:0 };
+  P = { root: ov, target: null,ownerUid:st.uid,authorized:true,off:[],opener,view:'Players',searchVersion:0,userFilter:'all',userLimit:40 };
   const panel=P;
   _allUsersCache=[];_dupNickMap=Object.create(null);
   const watchAuth=Auth.subscribe(next=>{if(P===panel&&(next.uid!==st.uid||next.status!=='google'||next.isAdmin!==true))closePanel();});
@@ -223,40 +267,64 @@ export function openAdminPanel(){
   },()=>{if(P===panel){panel.authorized=false;closePanel();}});
     if(P===panel)panel.off.push(watchRole);else watchRole();
   }
+  const search=$(ov,'[data-el="q"]'),suggestions=$(ov,'[data-el="sug"]');
+  for(const [index,key] of ADMIN_VIEWS.entries()){
+    const tab=$(ov,'[data-admin-tab="'+key+'"]');
+    tab.addEventListener('click',()=>showAdminView(panel,key));
+    tab.addEventListener('keydown',event=>{
+      let next;
+      if(event.key==='ArrowLeft')next=(index+ADMIN_VIEWS.length-1)%ADMIN_VIEWS.length;
+      else if(event.key==='ArrowRight')next=(index+1)%ADMIN_VIEWS.length;
+      else if(event.key==='Home')next=0;
+      else if(event.key==='End')next=ADMIN_VIEWS.length-1;
+      if(next!==undefined){event.preventDefault();showAdminView(panel,ADMIN_VIEWS[next],true);}
+    });
+  }
   ov.addEventListener('keydown',event=>{
-    if(event.key==='Escape'){event.preventDefault();closePanel();return;}
+    if(event.key==='Escape'){
+      event.preventDefault();
+      if(!suggestions.hidden&&suggestions.childElementCount){suggestions.hidden=true;search.focus();}
+      else closePanel();
+      return;
+    }
     if(event.key!=='Tab')return;
-    const focusable=Array.from(ov.querySelectorAll('button,input,select,[tabindex="0"]')).filter(el=>!el.disabled&&el.getClientRects().length);
+    const focusable=Array.from(ov.querySelectorAll('button,input,select,summary,[tabindex="0"]')).filter(el=>!el.disabled&&el.tabIndex>=0&&el.getClientRects().length);
     if(!focusable.length)return;
     const first=focusable[0],last=focusable.at(-1);
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   });
-  ov.addEventListener('click', (e) => { if(e.target === ov) closePanel(); });
+  ov.addEventListener('click', (e) => {
+    if(e.target === ov){closePanel();return;}
+    if(!e.target.closest?.('.adm-search'))suggestions.hidden=true;
+  });
   $(ov,'[data-a="close"]').addEventListener('click', closePanel);
   $(ov,'[data-a="search"]').addEventListener('click', doSearch);
-  $(ov,'[data-el="q"]').addEventListener('keydown', (e) => { if(e.key==='Enter') doSearch(); });
-  // Canlı öneri: 2+ harf yazınca kayıt defterini tara (harf duyarsız)
-  let sugT = null;
-  $(ov,'[data-el="q"]').addEventListener('input', () => {
-    const v = $(ov,'[data-el="q"]').value.trim();
-    const box = $(ov,'[data-el="sug"]');
-    clearTimeout(sugT);
-    if(v.length < 2 || (v.length >= 20 && !/\s/.test(v))){ box.style.display='none'; return; }
-    sugT = setTimeout(async () => {
-      if(!activeAdmin(panel)||panel.busy)return;
-      const list = (Auth.searchNicks ? await Auth.searchNicks(v, 8) : []);
-      if(!activeAdmin(panel)||panel.busy)return;
-      if($(ov,'[data-el="q"]').value.trim() !== v) return;
-      if(!list.length){ box.style.display='none'; return; }
-      box.innerHTML = list.map(x => `<button type="button" class="adm-sug-it" data-uid="${esc(x.uid)}">👤 ${esc(x.nick)}</button>`).join('');
-      box.style.display = '';
-      box.querySelectorAll('.adm-sug-it').forEach(it => it.addEventListener('click', () => {
-        box.style.display = 'none';
-        $(ov,'[data-el="q"]').value = it.textContent.replace('👤 ','');
-        loadTarget(it.dataset.uid);
-      }));
-    }, 220);
+  search.addEventListener('keydown',event=>{
+    if(event.key==='Enter'){event.preventDefault();doSearch();}
+    else if(event.key==='ArrowDown'&&!suggestions.hidden){
+      const first=suggestions.querySelector('.adm-sug-it');if(first){event.preventDefault();first.focus();}
+    }
+  });
+  let sugT=null,sugVersion=0;
+  search.addEventListener('input',()=>{
+    const value=search.value.trim(),version=++sugVersion;
+    ++panel.searchVersion;clearTimeout(sugT);suggestions.hidden=true;
+    if(value.length<2||value.length>16)return;
+    sugT=setTimeout(async()=>{
+      if(!activeAdmin(panel)||panel.busy||panel.view!=='Players')return;
+      try{
+        const list=Auth.searchNicks?await Auth.searchNicks(value,8):[];
+        if(!activeAdmin(panel)||panel.busy||panel.view!=='Players'||version!==sugVersion||search.value.trim()!==value)return;
+        if(document.activeElement!==search&&!suggestions.contains(document.activeElement))return;
+        if(!list.length)return;
+        suggestions.innerHTML=list.map(item=>`<button type="button" class="adm-sug-it" data-uid="${esc(item.uid)}">${esc(item.nick)}</button>`).join('');
+        suggestions.hidden=false;
+        suggestions.querySelectorAll('.adm-sug-it').forEach(item=>item.addEventListener('click',()=>{
+          suggestions.hidden=true;search.value=item.textContent;loadTarget(item.dataset.uid);
+        }));
+      }catch(error){if(activeAdmin(panel)&&version===sugVersion)suggestions.hidden=true;}
+    },220);
   });
   $(ov,'[data-a="loglist"]').addEventListener('click', toggleLog);
   $(ov,'[data-a="rebuild"]').addEventListener('click', rebuildRegistry);
@@ -267,14 +335,18 @@ export function openAdminPanel(){
   $(ov,'[data-a="allusers"]').addEventListener('click', toggleAllUsers);
   $(ov,'[data-a="cleanAnon"]').addEventListener('click', cleanAnonUsers);
   $(ov,'[data-a="cleanDup"]').addEventListener('click', cleanDupNicks);
-  // Filtre butonları
-  ov.querySelectorAll('[data-filter]').forEach(btn => btn.addEventListener('click', () => {
-    ov.querySelectorAll('[data-filter]').forEach(b => b.className = 'adm-btn');
-    btn.className = 'adm-btn p';
-    applyUserFilter(btn.dataset.filter);
+  ov.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+    if(!activeAdmin(panel)||panel.busy)return;
+    panel.userFilter=btn.dataset.filter;panel.userLimit=40;refreshUserFilter(panel);
   }));
-  const usrSearch = $(ov,'[data-el="userSearch"]');
-  if(usrSearch) usrSearch.addEventListener('input', () => applyUserFilter('search', usrSearch.value));
+  $(ov,'[data-el="userSearch"]').addEventListener('input',()=>{
+    if(!activeAdmin(panel)||panel.busy)return;
+    panel.userLimit=40;refreshUserFilter(panel);
+  });
+  $(ov,'[data-a="moreUsers"]').addEventListener('click',()=>{
+    if(!activeAdmin(panel)||panel.busy)return;
+    panel.userLimit+=40;refreshUserFilter(panel);
+  });
   $(ov,'[data-a="ghost"]').addEventListener('click', toggleGhost);
   $(ov,'[data-a="toggleAdmFab"]').addEventListener('click', toggleAdminFab);
   $(ov,'[data-a="toggleDebug"]').addEventListener('click', toggleDebugMode);
@@ -285,21 +357,31 @@ export function openAdminPanel(){
   $(ov,'[data-a="dupclean"]').addEventListener('click', cleanRegistry);
   loadStats(); loadLockState(); loadGhostState(); loadAdminFabState(); loadDebugState();
   $(ov,'[data-a="bcSend"]').addEventListener('click', sendBroadcast);
-  setTimeout(() => {if(activeAdmin(panel))$(ov,'[data-el="q"]').focus();},60);
+  $(ov,'[data-a="close"]').focus({preventScroll:true});
 }
 
 // ── 📊 İstatistik şeridi ────────────────────────────────────────
+async function panelRead(panel,reference){
+  if(!activeAdmin(panel))throw new Error('Yönetim paneli kapalı');
+  const snapshot=await rawFdb.get(reference);
+  if(!activeAdmin(panel))throw new Error('Yönetim paneli değişti');
+  return snapshot;
+}
 async function loadStats(){
-  const P=activeAdmin();if(!P)return;
-  const msg=(text,ok)=>panelMessage(P,text,ok);
-  const el = $(P.root,'[data-el="stats"]'); if(!el) return;
-  let total = '?', online = 0;
-  try{ const s = await fdb.get(fdb.ref(db, 'users')); if(s.exists()) total = Object.keys(s.val()).length; }catch(e){}
-  try{
-    const s = await fdb.get(fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
-    if(s.exists()){ const now = Date.now(); s.forEach(ch => { const v = ch.val(); if(now - (v.lastSeen||0) < 180000) online++; }); }
-  }catch(e){}
-  el.innerHTML = `📊 Kayıtlı: <b>${fmt(total)}</b> · 🟢 Çevrimiçi: <b style="color:#5fd38a">${online}</b>`;
+  const panel=activeAdmin();if(!panel)return;
+  const el=$(panel.root,'[data-el="stats"]');if(!el)return;
+  const [users,presence]=await Promise.allSettled([
+    panelRead(panel,fdb.ref(db,'users')),
+    panelRead(panel,fdb.query(fdb.ref(db,'presence'),fdb.orderByChild('online'),fdb.equalTo(true)))
+  ]);
+  if(!activeAdmin(panel))return;
+  const total=users.status==='fulfilled'?fmt(Object.values(users.value.val()||{}).filter(profile=>profile&&!profile.deleted).length):'—';
+  const online=presence.status==='fulfilled'?fmt(Object.values(presence.value.val()||{}).filter(isFreshPresence).length):'—';
+  el.innerHTML=`<div><span>Portal oyuncusu</span><strong>${total}</strong></div><div><span>Çevrimiçi</span><strong>${online}</strong></div>`;
+}
+function isFreshPresence(record){
+  const elapsed=Date.now()-Number(record?.lastSeen);
+  return record?.online===true&&elapsed>=-60000&&elapsed<180000;
 }
 
 // ── 💬 Sohbet moderasyonu: son mesajlar + silme ─────────────────
@@ -307,10 +389,10 @@ async function toggleChatMod(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="chatmod"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  if(!toggleDisclosure(P,'chatmod',box))return;
+  box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(15)));
+    const snap = await panelRead(P,fdb.query(fdb.ref(db, 'globalChat'), fdb.limitToLast(15)));
     if(!snap.exists()){ box.innerHTML = '<i>Mesaj yok</i>'; return; }
     const rows = []; snap.forEach(ch => { rows.push({ ...ch.val(), key:ch.key }); });
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
@@ -318,7 +400,7 @@ async function toggleChatMod(){
       <div class="adm-li" style="align-items:center">
         <b>${esc(m.name || '?')}</b>
         <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.text || '')}</span>
-        <button class="adm-btn r" style="flex:0;padding:5px 9px;font-size:11px" data-del="${esc(m.key)}">🗑</button>
+        <button type="button" class="adm-btn r" aria-label="Mesajı sil" data-del="${esc(m.key)}">Sil</button>
       </div>`).join('');
     box.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => runAdminAction(async () => {if(!activeAdmin(P))return;
       if(!confirm('Bu mesaj silinsin mi?')) return;
@@ -335,8 +417,8 @@ async function toggleChatMod(){
 async function loadLockState(){
   const panel=activeAdmin();if(!panel)return null;
   try{
-    const snap=await fdb.get(fdb.ref(db,'chatModeration/locked')),on=snap.val()?.locked===true;
-    const label=$(panel.root,'[data-el="lockState"]');if(label){label.textContent=on?'KİLİTLİ':'AÇIK';label.style.color=on?'#ff8fa0':'#5fd38a';}return on;
+    const snap=await panelRead(panel,fdb.ref(db,'chatModeration/locked')),on=snap.val()?.locked===true;
+    const label=$(panel.root,'[data-el="lockState"]');if(label){label.textContent=on?'KİLİTLİ':'AÇIK';label.dataset.state=on?'warning':'on';}return on;
   }catch(e){if(activeAdmin(panel))$(panel.root,'[data-el="lockState"]').textContent='OKUNAMADI';return null;}
 }
 
@@ -357,10 +439,9 @@ async function toggleGlowPicker(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="glowbox"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
+  if(!toggleDisclosure(P,'glow',box))return;
   let GS = {}, cur = localStorage.getItem('hero_glow_style') || 'classic';
   try{ const m = await import('./social.js'); if(!activeAdmin(P))return; GS = m.GLOW_STYLES || {}; }catch(e){}
-  box.style.display = '';
   box.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px 0">' +
     Object.keys(GS).map(k => `
       <button class="adm-acc" data-glow="${esc(k)}" style="${k===cur?'border-color:#ffd86b;':''}">
@@ -379,87 +460,82 @@ let _allUsersCache = [];
 let _dupNickMap = Object.create(null);  // nick → [uid1, uid2, ...]
 
 async function toggleAllUsers(){
-  const P=activeAdmin();if(!P)return;
-  const msg=(text,ok)=>panelMessage(P,text,ok);
-  const box = $(P.root,'[data-el="allusers"]');
-  const filterRow = P.root.querySelector('#userFilterRow');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; if(filterRow) filterRow.style.display='none'; return; }
-  box.style.display = ''; if(filterRow) filterRow.style.display='';
-  box.innerHTML = 'Yükleniyor…';
+  const panel=activeAdmin();if(!panel)return;
+  const box=$(panel.root,'[data-el="allusers"]'),list=$(panel.root,'[data-el="usersList"]');
+  const request=panel.usersRequest=(panel.usersRequest||0)+1;
+  const open=toggleDisclosure(panel,'allusers',box);
+  if(list)list.style.display=open?'':'none';
+  if(!open)return;
+  box.innerHTML='Oyuncular yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.ref(db, 'users'));
-    if(!snap.exists()){ box.innerHTML = '<i>Kullanıcı yok</i>'; return; }
-    const v = snap.val();
-    _allUsersCache = Object.keys(v).filter(uid=>v[uid]&&!v[uid].deleted).map(uid => ({ ...v[uid],uid }));
-    _allUsersCache.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
-
-    // Duplicate nick tespiti
-    _dupNickMap = Object.create(null);
-    _allUsersCache.forEach(u => {
-      const n=nickKeySafe(u.nick||'');
-      if(n){ (_dupNickMap[n] = _dupNickMap[n]||[]).push(u.uid); }
-    });
-
-    const countEl = $(P.root,'[data-el="ucount"]');
-    if(countEl) countEl.textContent = '(' + _allUsersCache.length + ')';
-
-    renderUserList(_allUsersCache);
-    // İlk filtre butonunu aktif et
-    const firstFilter = P.root.querySelector('[data-filter="all"]');
-    if(firstFilter){ P.root.querySelectorAll('[data-filter]').forEach(b => b.className='adm-btn'); firstFilter.className='adm-btn p'; }
-  }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
+    const users=await readAdminUsers(panel);
+    if(request!==panel.usersRequest)return;
+    setAdminUsers(panel,users);
+  }catch(error){if(activeAdmin(panel)&&request===panel.usersRequest)box.innerHTML='<i>Oyuncular okunamadı. Listeyi kapatıp yeniden aç.</i>';}
 }
-
-function renderUserList(rows){
-  const P=activeAdmin();if(!P)return;
-  const msg=(text,ok)=>panelMessage(P,text,ok);
-  const box = $(P.root,'[data-el="allusers"]');
-  if(!box) return;
-  const dupSet = new Set(Object.values(_dupNickMap).filter(a=>a.length>1).flat());
-  const display = rows.slice(0, 100);
-  if(!display.length){ box.innerHTML = '<i style="color:#9fb0d8">Sonuç yok</i>'; return; }
-  box.innerHTML = display.map(u => {
-    const nick = u.nick || u.name || u.displayName || '';
-    const isDup = nick && dupSet.has(u.uid);
-    const isAnon = !nick || nick.startsWith('Misafir') || nick.startsWith('Oyuncu');
-    const noNick = !nick;
-    return `<div class="adm-li" role="button" tabindex="0" data-uid="${esc(u.uid)}" style="cursor:pointer;align-items:center;${noNick?'opacity:.5':''}">
-      <b style="${isDup?'color:#FFD740':''}">${esc(nick||'—')} ${isDup?'<span title="Duplicate nick">⚠️</span>':''}</b>
-      ${u.isAdmin?'<span class="adm-tag" style="background:rgba(255,215,64,.15);color:#ffd86b;border:1px solid rgba(255,215,64,.35)">👑</span>':''}
-      ${u.isVice?'<span class="adm-tag" style="background:rgba(206,147,216,.15);color:#CE93D8;border:1px solid rgba(206,147,216,.35)">⭐</span>':''}
-      ${u.banned===true?'<span class="adm-tag ban">🚫</span>':''}
-      ${u.muted===true?'<span class="adm-tag mute">🔇</span>':''}
-      ${isAnon&&nick?'<span class="adm-tag" style="background:rgba(150,150,150,.15);color:#9fb0d8;border:1px solid rgba(150,150,150,.3);font-size:9px">ANONİM</span>':''}
-      <span style="margin-left:auto">💰 ${fmt(u.kaju)}</span>
-    </div>`;
-  }).join('');
-  if(rows.length > 100) box.innerHTML += `<div style="padding:6px;color:#6d7aa8;font-size:10px;text-align:center">+${rows.length-100} daha… Aramayı daralt</div>`;
-  box.querySelectorAll('[data-uid]').forEach(el => {el.addEventListener('click',()=>loadTarget(el.dataset.uid));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();loadTarget(el.dataset.uid);}});});
+async function readAdminUsers(panel){
+  const users=(await panelRead(panel,fdb.ref(db,'users'))).val()||{};
+  return Object.keys(users).filter(uid=>validUid(uid)&&users[uid]&&!users[uid].deleted).map(uid=>({...users[uid],uid}));
 }
-
-function applyUserFilter(filter, searchVal){
-  const P=activeAdmin();if(!P)return;
-  const msg=(text,ok)=>panelMessage(P,text,ok);
-  if(!_allUsersCache.length) return;
-  const dupSet = new Set(Object.values(_dupNickMap).filter(a=>a.length>1).flat());
-  let rows = _allUsersCache;
-  if(filter === 'nonick'){
-    rows = _allUsersCache.filter(u => !(u.nick||u.name||u.displayName||'').trim());
-  } else if(filter === 'anon'){
-    rows = _allUsersCache.filter(u => {
-      const n = (u.nick||u.name||u.displayName||'').trim();
-      return !n || n.startsWith('Misafir') || n.startsWith('Oyuncu') || n.startsWith('Anonim');
-    });
-  } else if(filter === 'dup'){
-    rows = _allUsersCache.filter(u => dupSet.has(u.uid));
-  } else if(filter === 'search' && searchVal){
-    const q = searchVal.toLowerCase().trim();
-    rows = _allUsersCache.filter(u => {
-      const n = (u.nick||u.name||u.displayName||'').toLowerCase();
-      return n.includes(q) || u.uid.toLowerCase().includes(q);
-    });
+function setAdminUsers(panel,users){
+  if(!activeAdmin(panel))return;
+  _allUsersCache=users.sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0));
+  rebuildDupMap();
+  $(panel.root,'[data-el="ucount"]').textContent=fmt(_allUsersCache.length);
+  refreshUserFilter(panel);
+}
+function adminSearchKey(value){
+  return String(value??'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').normalize('NFD').replace(/[̀-ͯ]/g,'');
+}
+function userName(user){return String(user.nick||user.name||user.displayName||'').trim();}
+function isGuestAccount(user){
+  if(user.isGuest===true||user.anonymous===true)return true;
+  if(user.email||user.provider==='google.com'||user.provider==='google')return false;
+  const name=adminSearchKey(userName(user));
+  return !name||/^(misafir|oyuncu|anonim)(?:[\s_#-]|\d|$)/.test(name);
+}
+function refreshUserFilter(panel){
+  if(!activeAdmin(panel))return;
+  panel.userFilter ||= 'all';
+  for(const btn of panel.root.querySelectorAll('[data-filter]')){
+    const on=btn.dataset.filter===panel.userFilter;
+    btn.className=on?'adm-btn p':'adm-btn';btn.setAttribute('aria-pressed',String(on));
   }
-  renderUserList(rows);
+  applyUserFilter(panel.userFilter,$(panel.root,'[data-el="userSearch"]')?.value||'');
+}
+function renderUserList(rows,dupSet){
+  const panel=activeAdmin();if(!panel)return;
+  const box=$(panel.root,'[data-el="allusers"]'),meta=$(panel.root,'[data-el="userCount"]'),more=$(panel.root,'[data-a="moreUsers"]');
+  const visible=rows.slice(0,panel.userLimit||40);
+  if(meta)meta.textContent=rows.length?`${fmt(visible.length)} / ${fmt(rows.length)} oyuncu`:'Aramaya uygun oyuncu yok';
+  if(more)more.hidden=visible.length>=rows.length;
+  if(!visible.length){box.innerHTML='<p class="adm-empty">Sonuç yok.</p>';return;}
+  box.innerHTML=visible.map(user=>{
+    const name=userName(user)||'İsimsiz oyuncu',collision=dupSet.has(user.uid);
+    return `<button type="button" class="adm-li adm-user" data-uid="${esc(user.uid)}">
+      <b>${esc(name)}</b>
+      ${collision?'<span class="adm-tag mute">Nick çakışması</span>':''}
+      ${user.isAdmin?'<span class="adm-tag" aria-label="Yönetici">👑</span>':''}
+      ${user.isVice?'<span class="adm-tag" aria-label="Yardımcı yönetici">⭐</span>':''}
+      ${user.banned===true?'<span class="adm-tag ban">Yasaklı</span>':''}
+      ${user.muted===true?'<span class="adm-tag mute">Susturulmuş</span>':''}
+      ${isGuestAccount(user)?'<span class="adm-tag">Misafir</span>':''}
+      <span class="adm-user-kaju">${fmt(user.kaju)} Kaju</span>
+    </button>`;
+  }).join('');
+  box.querySelectorAll('[data-uid]').forEach(control=>control.addEventListener('click',()=>loadTarget(control.dataset.uid)));
+  if(panel.busy)lockPanel(panel,true);
+}
+function applyUserFilter(filter,searchValue){
+  const dupSet=new Set(Object.values(_dupNickMap).filter(owners=>owners.length>1).flat());
+  const query=adminSearchKey(searchValue).trim();
+  const rows=_allUsersCache.filter(user=>{
+    if(filter==='nonick'&&String(user.nick||'').trim())return false;
+    if(filter==='anon'&&!isGuestAccount(user))return false;
+    if(filter==='dup'&&!dupSet.has(user.uid))return false;
+    return !query||adminSearchKey(userName(user)).includes(query)||adminSearchKey(user.uid).includes(query);
+  });
+  renderUserList(rows,dupSet);
 }
 
 // 🧹 Nick'siz (boş isimli) anonim kullanıcıları sil
@@ -479,8 +555,10 @@ function isEmptyAnonymous(profile){
 
 async function cleanAnonUsers(){
   const panel=activeAdmin();if(!panel)return;
-  const candidates=_allUsersCache.filter(isEmptyAnonymous);
-  if(!candidates.length){panelMessage(panel,'İlerlemesi olmayan boş kayıt bulunamadı. Önce kullanıcı listesini yenile.',false);return;}
+  let users;try{users=await readAdminUsers(panel);}catch(error){panelMessage(panel,'Oyuncular okunamadı; kayıtlar değiştirilmedi.',false);return;}
+  if(!activeAdmin(panel))return;
+  const candidates=users.filter(isEmptyAnonymous);
+  if(!candidates.length){panelMessage(panel,'İlerlemesi olmayan boş kayıt bulunamadı.',true);return;}
   if(!confirm(candidates.length+' boş kayıt güncel verileri yeniden doğrulanarak temizlenecek. Devam?'))return;
   const deleted=new Set();let failed=0,skipped=0;
   for(const row of candidates){
@@ -495,13 +573,16 @@ async function cleanAnonUsers(){
       if(result.committed)deleted.add(row.uid);else skipped++;
     }catch(e){if(!activeAdmin(panel))return;failed++;}
   }
-  _allUsersCache=_allUsersCache.filter(row=>!deleted.has(row.uid));renderUserList(_allUsersCache);
-  $(panel.root,'[data-el="ucount"]').textContent='('+_allUsersCache.length+')';
+  if(!activeAdmin(panel))return;
+  setAdminUsers(panel,users.filter(row=>!deleted.has(row.uid)));
+  void loadStats();
   panelMessage(panel,deleted.size+' kayıt silindi · '+skipped+' değişmiş/korunan kayıt atlandı'+(failed?' · '+failed+' başarısız':''),failed===0);logAdmin('anon-temizle','',deleted.size+' silindi, '+failed+' başarısız');
 }
 
 async function cleanDupNicks(){
   const panel=activeAdmin();if(!panel)return;
+  try{setAdminUsers(panel,await readAdminUsers(panel));}catch(error){panelMessage(panel,'Oyuncular okunamadı; nickler değiştirilmedi.',false);return;}
+  if(!activeAdmin(panel))return;
   const groups=Object.entries(_dupNickMap).filter(([,uids])=>uids.length>1);
   if(!groups.length){panelMessage(panel,'Tekrarlanan kayıtlı nick bulunamadı',true);return;}
   if(!confirm(groups.length+' nick grubu yeniden doğrulanacak. Kayıt defterindeki sahibi ve yöneticiler korunur; diğer hesaplarda yalnız aynı nick boşaltılır. Devam?'))return;
@@ -522,7 +603,7 @@ async function cleanDupNicks(){
       }
     }catch(e){if(!activeAdmin(panel))return;failed++;}
   }
-  rebuildDupMap();renderUserList(_allUsersCache);panelMessage(panel,fixed+' nick düzeltildi · '+skipped+' korundu/atlandı'+(failed?' · '+failed+' başarısız':''),failed===0);logAdmin('dup-temizle','',fixed+' nick, '+failed+' başarısız');
+  rebuildDupMap();refreshUserFilter(panel);panelMessage(panel,fixed+' nick düzeltildi · '+skipped+' korundu/atlandı'+(failed?' · '+failed+' başarısız':''),failed===0);logAdmin('dup-temizle','',fixed+' nick, '+failed+' başarısız');
 }
 function rebuildDupMap(){
   _dupNickMap=Object.create(null);for(const row of _allUsersCache){const key=nickKeySafe(row.nick||'');if(key)(_dupNickMap[key]||=[]).push(row.uid);}
@@ -532,23 +613,23 @@ async function toggleOnline(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="online"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  if(!toggleDisclosure(P,'onlinelist',box))return;
+  box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
+    const snap = await panelRead(P,fdb.query(fdb.ref(db, 'presence'), fdb.orderByChild('online'), fdb.equalTo(true)));
     if(!snap.exists()){ box.innerHTML = '<i>Şu an çevrimiçi oyuncu yok</i>'; $(P.root,'[data-el="oncount"]').textContent = '(0)'; return; }
     const rows = []; snap.forEach(ch => { rows.push({ ...ch.val(),uid:ch.key }); });
     // 3 dakikadan eski "online" kayıtları bayat say (kapanışta onDisconnect kaçmış olabilir)
-    const fresh = rows.filter(r => (Date.now() - (r.lastSeen || 0)) < 180000);
+    const fresh = rows.filter(isFreshPresence);
     fresh.sort((a,b) => (b.lastSeen||0)-(a.lastSeen||0));
     $(P.root,'[data-el="oncount"]').textContent = '(' + fresh.length + ')';
     if(!fresh.length){ box.innerHTML = '<i>Şu an çevrimiçi oyuncu yok</i>'; return; }
     box.innerHTML = fresh.map(r =>
-      `<div class="adm-li adm-online" role="button" tabindex="0" data-uid="${esc(r.uid)}" style="cursor:pointer;align-items:center">
-        <span style="width:8px;height:8px;border-radius:50%;background:#5fd38a;box-shadow:0 0 6px #5fd38a;flex-shrink:0"></span>
-        <b>${esc(r.name || 'Oyuncu')}</b> <span>${tAgoA(r.lastSeen)}</span>
-      </div>`).join('');
-    box.querySelectorAll('.adm-online').forEach(el => {el.addEventListener('click',()=>loadTarget(el.dataset.uid));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();loadTarget(el.dataset.uid);}});});
+      `<button type="button" class="adm-li adm-online adm-user" data-uid="${esc(r.uid)}">
+        <span class="adm-online-dot" aria-hidden="true"></span>
+        <b>${esc(r.name || 'Oyuncu')}</b> <span class="adm-user-kaju">${tAgoA(r.lastSeen)}</span>
+      </button>`).join('');
+    box.querySelectorAll('.adm-online').forEach(el=>el.addEventListener('click',()=>loadTarget(el.dataset.uid)));
   }catch(e){ box.innerHTML = '<i>Okunamadı</i>'; }
 }
 function tAgoA(ts){ const d = Date.now()-(ts||0); if(d<90e3) return 'şimdi'; if(d<3600e3) return Math.floor(d/60e3)+' dk önce'; return Math.floor(d/3600e3)+' sa önce'; }
@@ -558,10 +639,13 @@ async function sendBroadcast(){
   const panel=activeAdmin();if(!panel)return;const input=$(panel.root,'[data-el="bcText"]'),text=input.value.trim().slice(0,200);
   if(!text){panelMessage(panel,'Duyuru metni boş',false);return;}
   if(!confirm('Bu duyuru tüm oyunculara gösterilecek:\n\n'+text+'\n\nGönderilsin mi?'))return;
-  if(panel.broadcastAttempt?.text!==text)panel.broadcastAttempt={text,id:adminOperation('broadcast')};
+  if(panel.broadcastAttempt?.text!==text)panel.broadcastAttempt={text,id:adminOperation('broadcast'),ts:Date.now()};
+  const attempt=panel.broadcastAttempt;
   try{
-    const actor=Auth.getState();await fdb.set(fdb.ref(db,'broadcasts/'+panel.broadcastAttempt.id),{text,ts:Date.now(),by:actor.displayName||'Admin',byUid:actor.uid});
-    if(!activeAdmin(panel))return;if(input.value.trim()===text)input.value='';panelMessage(panel,'✓ Duyuru kaydedildi',true);logAdmin('duyuru','',text.slice(0,80));
+    const actor=Auth.getState();await fdb.set(fdb.ref(db,'broadcasts/'+attempt.id),{text,ts:attempt.ts,by:actor.displayName||'Admin',byUid:actor.uid});
+    if(!activeAdmin(panel))return;
+    if(panel.broadcastAttempt===attempt)panel.broadcastAttempt=null;
+    if(input.value.trim()===text)input.value='';panelMessage(panel,'✓ Duyuru kaydedildi',true);logAdmin('duyuru','',text.slice(0,80));
   }catch(e){panelMessage(panel,'Duyuru doğrulanamadı; aynı metinle yeniden kontrol edebilirsin',false);}
 }
 
@@ -601,19 +685,27 @@ function msg(t,ok){panelMessage(P,t,ok);}
 async function doSearch(){
   const panel=activeAdmin();if(!panel||panel.busy)return;
   const input=$(panel.root,'[data-el="q"]'),q=input.value.trim(),version=++panel.searchVersion;
+  $(panel.root,'[data-el="sug"]').hidden=true;
   if(!q){panelMessage(panel,'Nick veya UID gir',false);return;}
-  panelMessage(panel,'Aranıyor…',true);
+  clearSelection(panel);panelMessage(panel,'Oyuncu aranıyor…',true);
   try{
     const result=q.length>=20&&!/\s/.test(q)?{uid:q}:await Auth.resolveNick(q);
     if(!activeAdmin(panel)||panel.busy||version!==panel.searchVersion||input.value.trim()!==q)return;
-    if(!result?.uid){panelMessage(panel,'Oyuncu bulunamadı',false);return;}
-    await loadTarget(result.uid,version);
+    const uid=result?.uid||q;
+    if(!validUid(uid)){panelMessage(panel,'Oyuncu bulunamadı',false);return;}
+    await loadTarget(uid,version);
   }catch(e){if(activeAdmin(panel)&&version===panel.searchVersion)panelMessage(panel,'Arama tamamlanamadı. Yeniden dene.',false);}
 }
 
+function clearSelection(panel){
+  panel.target=null;
+  $(panel.root,'[data-el="selected"]').textContent='İşlem için bir oyuncu seç';
+  $(panel.root,'[data-el="result"]').innerHTML='';
+}
 async function loadTarget(uid,requestVersion){
   const panel=activeAdmin();if(!panel||panel.busy||!validUid(uid))return;
   const version=requestVersion??++panel.searchVersion;
+  if(requestVersion===undefined){clearSelection(panel);panelMessage(panel,'Oyuncu yükleniyor…',true);}
   try{
     const snap=await fdb.get(fdb.ref(db,'users/'+uid));
     if(!activeAdmin(panel)||panel.busy||version!==panel.searchVersion)return;
@@ -621,17 +713,21 @@ async function loadTarget(uid,requestVersion){
     panel.target={uid,profile:snap.val()||{}};
     panelMessage(panel,'',true);renderTarget();
     $(panel.root,'[data-el="selected"]').textContent='Seçili: '+String(panel.target.profile.nick||panel.target.profile.name||uid)+' · '+uid.slice(0,10)+'…';
-    $(panel.root,'[data-el="result"]').scrollIntoView?.({block:'nearest',behavior:'smooth'});
+    $(panel.root,'[data-el="targetTitle"]')?.focus({preventScroll:true});
+    $(panel.root,'[data-el="result"]').scrollIntoView?.({block:'nearest'});
   }catch(e){if(activeAdmin(panel)&&version===panel.searchVersion)panelMessage(panel,'Oyuncu okunamadı. Bağlantını ve yetkini kontrol et.',false);}
 }
 
 function renderTarget(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
+  if(!P.target)return;
   const { uid, profile: p } = P.target;
   if(p.deleted){
-    $(P.root,'[data-el="result"]').innerHTML='<div class="adm-card"><div class="adm-prow">Portal erişimi kapalı</div><div class="adm-uid">'+esc(uid)+'</div><div class="adm-sec"><p>Finansal işlem makbuzları korunuyor. Yarım kalan yan kayıt temizliğini yeniden çalıştırabilirsin.</p><button class="adm-btn r" data-a="deleteUser">Yan kayıt temizliğini tamamla</button></div></div>';
-    $(P.root,'[data-a="deleteUser"]').addEventListener('click',doDeleteUser);return;
+    $(P.root,'[data-el="result"]').innerHTML='<div class="adm-card"><h3 class="adm-prow" data-el="targetTitle" tabindex="-1">Portal erişimi kapalı</h3><div class="adm-uid">'+esc(uid)+'</div><div class="adm-sec"><p>Finansal işlem makbuzları korunuyor. Yarım kalan yan kayıt temizliğini yeniden çalıştırabilirsin.</p><button class="adm-btn r" data-a="deleteUser">Yan kayıt temizliğini tamamla</button></div></div>';
+    $(P.root,'[data-a="deleteUser"]').addEventListener('click',doDeleteUser);
+    if(P.busy)lockPanel(P,true);
+    return;
   }
   const banned = p.banned === true;
   const muted = p.muted === true;
@@ -639,7 +735,7 @@ function renderTarget(){
   const muteInfo = muted ? ('→ ' + (p.muteUntil ? new Date(p.muteUntil).toLocaleString('tr-TR') : '?')) : '';
   $(P.root,'[data-el="result"]').innerHTML = `
     <div class="adm-card">
-      <div class="adm-prow"><b>${esc(p.nick || p.name || p.displayName || '—')}</b>
+      <div class="adm-prow"><h3 data-el="targetTitle" tabindex="-1">${esc(p.nick || p.name || p.displayName || '—')}</h3>
         ${banned?'<span class="adm-tag ban">🚫 BANLI '+esc(banInfo)+'</span>':''}
         ${muted?'<span class="adm-tag mute">🔇 SUSTURULMUŞ '+esc(muteInfo)+'</span>':''}
       </div>
@@ -655,8 +751,8 @@ function renderTarget(){
           <input class="adm-in" data-el="kAmt" inputmode="numeric" placeholder="+ekle / −eksilt (örn. -500)">
           <button class="adm-btn p" data-a="kaju">Uygula</button>
         </div>
-        <button class="adm-acc" data-a="khist">📒 Kaju geçmişi <span>▾</span></button>
-        <div class="adm-log" data-el="khist" style="display:none"></div>
+        <button class="adm-acc" data-a="khist" aria-expanded="false" aria-controls="adminKajuHistory">Kaju geçmişi</button>
+        <div class="adm-log" id="adminKajuHistory" data-el="khist" style="display:none"></div>
       </div>
 
       <div class="adm-sec"><div class="adm-lbl">🔔 OYUNCUYA BİLDİRİM</div>
@@ -674,7 +770,7 @@ function renderTarget(){
 
       <div class="adm-sec"><div class="adm-lbl">🚫 BAN / 🔇 MUTE</div>
         <div class="adm-row">
-          <select class="adm-in" data-el="dur">
+          <select class="adm-in" data-el="dur" aria-label="Yasak veya susturma süresi">
             <option value="3600000">1 saat</option><option value="86400000">1 gün</option>
             <option value="604800000">7 gün</option><option value="0">KALICI</option>
           </select>
@@ -698,8 +794,8 @@ function renderTarget(){
       <div class="adm-sec" style="border:1px solid rgba(255,82,82,.25);border-radius:10px;padding:8px">
         <div class="adm-lbl" style="color:#ff8fa0">Kalıcı işlemler</div>
         <div style="font-size:10px;color:#6d7aa8;margin-bottom:6px">Seçili oyuncuya uygulanır. Silme portal erişimini kapatır; Google hesabını silmez.</div>
-        <button class="adm-acc" data-a="deldetail" style="width:100%;margin-bottom:4px">🗂 Silinecekler <span>▾</span></button>
-        <div data-el="deldetail" style="display:none;font-size:10px;color:#9fb0d8;padding:4px 0;line-height:1.8">
+        <button class="adm-acc" data-a="deldetail" aria-expanded="false" aria-controls="adminDeletionDetails" style="width:100%;margin-bottom:4px">🗂 Silinecekler <span>▾</span></button>
+        <div id="adminDeletionDetails" data-el="deldetail" style="display:none;font-size:10px;color:#9fb0d8;padding:4px 0;line-height:1.8">
           ☑ Profil bilgileri kaldırılır; finansal makbuzlar korunur<br>
           ☑ nicks/ (nick kayıt defteri)<br>
           ☑ presence/${esc(uid)} (çevrimiçi durum)<br>
@@ -743,10 +839,11 @@ function renderTarget(){
   const detailBtn = $(R,'[data-a="deldetail"]');
   if(detailBtn) detailBtn.addEventListener('click', () => {
     const d = $(R,'[data-el="deldetail"]');
-    if(d) d.style.display = d.style.display === 'none' ? '' : 'none';
+    if(d)toggleDisclosure(P,'deldetail',d);
   });
   if(resetBtn) resetBtn.addEventListener('click', doResetProgress);
   if(delBtn) delBtn.addEventListener('click', doDeleteUser);
+  if(P.busy)lockPanel(P,true);
 }
 
 // ── 👻 Ghost ────────────────────────────────────────────────────
@@ -829,11 +926,11 @@ async function runSystemCheckup(){
   const box = $(P.root,'[data-el="checkup"]');
   if(!box) return;
   box.style.display = '';
-  box.innerHTML = '<div style="color:#4dd0e1">🩺 Check-up çalışıyor…</div>';
+  box.innerHTML = '<p>Tanılama çalışıyor…</p>';
   const lines = [];
-  const ok  = (t) => lines.push('<div style="color:#5fd38a">✓ '+esc(t)+'</div>');
-  const bad = (t) => lines.push('<div style="color:#ff6b8a;font-weight:bold">✗ '+esc(t)+'</div>');
-  const inf = (t) => lines.push('<div style="color:#9fb0d8">• '+esc(t)+'</div>');
+  const ok  = (t) => lines.push('<div class="adm-check-pass">✓ '+esc(t)+'</div>');
+  const bad = (t) => lines.push('<div class="adm-check-error">✗ '+esc(t)+'</div>');
+  const inf = (t) => lines.push('<div>• '+esc(t)+'</div>');
 
   // 1. Auth durumu
   let st = {};
@@ -856,7 +953,7 @@ async function runSystemCheckup(){
   try{ const Store = (await import('./store.js')).default || (await import('./store.js')).Store; const ss = Store.getState(); ok('Store.getState() OK → kaju:'+(ss.kaju||0)+' lvl:'+(ss.level||1)); }catch(e){ bad('Store HATA: '+e.message); }
 
   // 4. Kritik modüller yüklenebiliyor mu
-  const mods = ['ui.js','nav.js','profile.js','social.js','clan.js','store.js','auth.js','kozmos.js'];
+  const mods = ['ui.js','nav.js','profile.js','social.js','clan.js','store.js','auth.js','kozmos.js','games/tetris.js','games/chess.js','games/tavla.js','games/kelime.js'];
   for(const mod of mods){
     if(!activeAdmin(P))return;
     try{ await import('./'+mod); ok(mod+' yükleniyor'); }
@@ -894,7 +991,7 @@ async function runSystemCheckup(){
     catch(e){ bad('SW HATA: '+e.message); }
   }
 
-  lines.push('<div style="color:#FFD740;margin-top:6px;font-weight:bold">── Check-up tamamlandı ──</div>');
+  lines.push('<strong>Tanılama tamamlandı</strong>');
   if(activeAdmin(P))box.innerHTML = lines.join('');
 }
 
@@ -941,15 +1038,15 @@ let _ipKey = null;
 async function ipKeyOf(ip){ const m = await import('./auth.js'); return m.ipKey(ip); }
 async function checkTargetIPBan(){
   const c=selectedAdmin();if(!c||!c.target.profile.lastIP)return;
-  const button=$(c.panel.root,'[data-a="ipban"]'),label=$(c.panel.root,'[data-el="ipBanState"]');if(button)button.disabled=true;
+  const button=$(c.panel.root,'[data-a="ipban"]'),label=$(c.panel.root,'[data-el="ipBanState"]');setAdminDisabled(c.panel,button,true);
   try{
     const key=await ipKeyOf(c.target.profile.lastIP);if(!c.current())return;
     const snap=await fdb.get(fdb.ref(db,'ipBans/'+key));
     if(!c.current()||$(c.panel.root,'[data-a="ipban"]')!==button)return;
     c.target.ipBanned=snap.exists();c.target.ipBanKey=key;
     if(label)label.textContent=snap.exists()?'IP YASAKLI':'';
-    if(button){button.textContent=snap.exists()?'IP Yasağını Kaldır':'IP Yasakla';button.className='adm-btn '+(snap.exists()?'g':'r');button.disabled=!!c.panel.busy;}
-  }catch(e){if(c.current()&&button){button.textContent='IP durumu okunamadı';button.disabled=true;}}
+    if(button){button.textContent=snap.exists()?'IP Yasağını Kaldır':'IP Yasakla';button.className='adm-btn '+(snap.exists()?'g':'r');setAdminDisabled(c.panel,button,false);}
+  }catch(e){if(c.current()&&button){button.textContent='IP durumu okunamadı';setAdminDisabled(c.panel,button,true);}}
 }
 
 async function doIPBan(){
@@ -970,10 +1067,10 @@ async function toggleIPBans(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="ipbans"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  if(!toggleDisclosure(P,'ipbans',box))return;
+  box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.ref(db, 'ipBans'));
+    const snap = await panelRead(P,fdb.ref(db, 'ipBans'));
     if(!snap.exists()){ box.innerHTML = '<i>IP yasağı yok</i>'; return; }
     const rows = []; snap.forEach(ch => { rows.push({ ...ch.val(), key:ch.key }); });
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
@@ -985,7 +1082,7 @@ async function toggleIPBans(){
     box.querySelectorAll('[data-ipun]').forEach(btn => btn.addEventListener('click', () => runAdminAction(async () => {if(!activeAdmin(P))return;
       try{ await fdb.set(fdb.ref(db, 'ipBans/' + btn.dataset.ipun), null); btn.closest('.adm-li').remove(); logAdmin('ipban-kaldir', '', btn.dataset.ipun); }catch(e){ msg('✗ Kaldırılamadı', false); }
     })));
-  }catch(e){ box.innerHTML = '<i>Okunamadı — kurallar v526 mı?</i>'; }
+  }catch(e){ box.innerHTML = '<i>IP yasakları okunamadı</i>'; }
 }
 
 // ── 🚷 Nick yasakları ───────────────────────────────────────────
@@ -994,8 +1091,7 @@ async function toggleNickBans(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="nickbans"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = '';
+  if(!toggleDisclosure(P,'nickbans',box))return;
   refreshNickBans();
 }
 async function refreshNickBans(){
@@ -1004,7 +1100,7 @@ async function refreshNickBans(){
   const list = $(P.root,'[data-el="nbList"]'); if(!list) return;
   list.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.ref(db, 'nickBans'));
+    const snap = await panelRead(P,fdb.ref(db, 'nickBans'));
     if(!snap.exists()){ list.innerHTML = '<i>Yasaklı nick yok</i>'; return; }
     const rows = []; snap.forEach(ch => { rows.push({ ...ch.val(), key:ch.key }); });
     list.innerHTML = rows.map(r => `
@@ -1015,7 +1111,7 @@ async function refreshNickBans(){
     list.querySelectorAll('[data-nbun]').forEach(btn => btn.addEventListener('click', () => runAdminAction(async () => {if(!activeAdmin(P))return;
       try{ await fdb.set(fdb.ref(db, 'nickBans/' + btn.dataset.nbun), null); btn.closest('.adm-li').remove(); logAdmin('nickban-kaldir', '', btn.dataset.nbun); }catch(e){ msg('✗ Kaldırılamadı', false); }
     })));
-  }catch(e){ list.innerHTML = '<i>Okunamadı — kurallar v526 mı?</i>'; }
+  }catch(e){ list.innerHTML = '<i>Nick yasakları okunamadı</i>'; }
 }
 async function addNickBan(){
   const panel=activeAdmin();if(!panel)return;const input=$(panel.root,'[data-el="nbText"]'),value=Auth.validateNick(input.value.trim());
@@ -1030,12 +1126,12 @@ async function addNickBan(){
 
 async function refreshOPBtn(){
   const c=selectedAdmin();if(!c)return;const btn=$(c.panel.root,'[data-el="opBtn"]');if(!btn)return;
-  btn.disabled=true;
+  setAdminDisabled(c.panel,btn,true);
   try{
     const snap=await fdb.get(fdb.ref(db,'gcOperators/'+c.uid));
     if(!c.current()||$(c.panel.root,'[data-el="opBtn"]')!==btn)return;
-    const on=snap.val()===true;btn.textContent=on?'🔧 OP Kaldır':'🔧 OP Yap';btn.className='adm-btn '+(on?'g':'p');btn.dataset.on=on?'1':'0';btn.disabled=!!c.panel.busy;
-  }catch(e){if(c.current()){btn.textContent='OP durumu okunamadı';delete btn.dataset.on;btn.disabled=true;}}
+    const on=snap.val()===true;btn.textContent=on?'🔧 OP Kaldır':'🔧 OP Yap';btn.className='adm-btn '+(on?'g':'p');btn.dataset.on=on?'1':'0';setAdminDisabled(c.panel,btn,false);
+  }catch(e){if(c.current()){btn.textContent='OP durumu okunamadı';delete btn.dataset.on;setAdminDisabled(c.panel,btn,true);}}
 }
 
 async function doOP(){
@@ -1227,11 +1323,14 @@ async function sendUserNotif(){
   const input=$(c.panel.root,'[data-el="ntfText"]'),text=input.value.trim().slice(0,150);
   if(!text){c.say('Bildirim metni boş',false);return;}
   const signature=c.uid+':'+text;
-  if(c.panel.noticeAttempt?.signature!==signature)c.panel.noticeAttempt={signature,id:adminOperation('notice')};
+  if(c.panel.noticeAttempt?.signature!==signature)c.panel.noticeAttempt={signature,id:adminOperation('notice'),ts:Date.now()};
+  const attempt=c.panel.noticeAttempt;
   try{
     await readTarget(c);
-    await fdb.set(fdb.ref(db,'userNotifs/'+c.uid+'/'+c.panel.noticeAttempt.id),{icon:'📩',text,ts:Date.now(),from:'admin',fromUid:c.actor.uid});
-    if(!c.current())return;if(input.value.trim()===text)input.value='';
+    await fdb.set(fdb.ref(db,'userNotifs/'+c.uid+'/'+attempt.id),{icon:'📩',text,ts:attempt.ts,from:'admin',fromUid:c.actor.uid});
+    if(!c.current())return;
+    if(c.panel.noticeAttempt===attempt)c.panel.noticeAttempt=null;
+    if(input.value.trim()===text)input.value='';
     c.say('✓ Bildirim kaydedildi',true);logAdmin('bildirim',c.uid,text.slice(0,60));
   }catch(e){c.say('Bildirim doğrulanamadı; aynı metinle yeniden kontrol edebilirsin',false);}
 }
@@ -1243,14 +1342,17 @@ async function doKaju(){
   const visible = () => current() && panel.target === target;
   const input = $(panel.root,'[data-el="kAmt"]'), button = $(panel.root,'[data-a="kaju"]');
   const raw = input.value.trim(), v = Number(raw);
-  if(!Number.isSafeInteger(v) || v === 0){ msg('Geçerli bir tam sayı gir (örn. 500 veya -500)', false); return; }
+  if(!/^[+-]?\d+$/.test(raw) || !Number.isSafeInteger(v) || v === 0){ msg('Geçerli bir tam sayı gir (örn. 500 veya -500)', false); return; }
   panel._kajuBusy = true; if(button) button.disabled = true;
   if(panel._kajuAttempt?.uid !== target.uid || panel._kajuAttempt?.delta !== v) panel._kajuAttempt = {uid:target.uid, delta:v, id:'admin_ui_' + (globalThis.crypto?.randomUUID?.() || Date.now().toString(36) + '_' + Math.random().toString(36).slice(2))};
+  const attempt=panel._kajuAttempt;
   msg('Uygulanıyor…', true);
   try{
-    const r = await Store.adminAdjustKaju(target.uid, v, 'admin-panel', panel._kajuAttempt.id);
+    const r = await Store.adminAdjustKaju(target.uid, v, 'admin-panel', attempt.id);
     if(!current()) return;
     if(!r.ok){ if(visible()) msg('✗ ' + r.error, false); return; }
+    // Retry the same receipt only while the previous attempt is unconfirmed.
+    if(panel._kajuAttempt===attempt)panel._kajuAttempt=null;
     // The result and audit entry belong to the target captured before the await.
     if(target.profile) target.profile.kaju = r.newBalance;
     if(visible()){
@@ -1268,8 +1370,8 @@ async function toggleKHist(){
   if(!panel || !target || Auth.getState().isAdmin !== true) return;
   const box = $(panel.root,'[data-el="khist"]');
   const current = () => P === panel && panel.target === target && panel.root.isConnected && Auth.getState().uid === owner && Auth.getState().isAdmin === true && $(panel.root,'[data-el="khist"]') === box;
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  if(!toggleDisclosure(panel,'khist',box))return;
+  box.innerHTML = 'Yükleniyor…';
   try{
     const snap = await fdb.get(fdb.query(fdb.ref(db, 'users/' + target.uid + '/kaju_history'), fdb.limitToLast(15)));
     if(!current()) return;
@@ -1358,10 +1460,10 @@ async function toggleLog(){
   const P=activeAdmin();if(!P)return;
   const msg=(text,ok)=>panelMessage(P,text,ok);
   const box = $(P.root,'[data-el="log"]');
-  if(box.style.display !== 'none'){ box.style.display = 'none'; return; }
-  box.style.display = ''; box.innerHTML = 'Yükleniyor…';
+  if(!toggleDisclosure(P,'loglist',box))return;
+  box.innerHTML = 'Yükleniyor…';
   try{
-    const snap = await fdb.get(fdb.query(fdb.ref(db, 'adminLog'), fdb.limitToLast(20)));
+    const snap = await panelRead(P,fdb.query(fdb.ref(db, 'adminLog'), fdb.limitToLast(20)));
     if(!snap.exists()){ box.innerHTML = '<i>Kayıt yok</i>'; return; }
     const rows = []; snap.forEach(ch => { rows.push(ch.val()); });
     rows.sort((a,b) => (b.ts||0)-(a.ts||0));
@@ -1372,6 +1474,7 @@ async function toggleLog(){
 }
 
 // A single visible action lock also protects queued double clicks and maintenance.
+const original_runSystemCheckup=runSystemCheckup;runSystemCheckup=(...args)=>runAdminAction(()=>original_runSystemCheckup(...args),'Sistem kontrol ediliyor…');
 const original_toggleChatLock=toggleChatLock;toggleChatLock=(...args)=>runAdminAction(()=>original_toggleChatLock(...args),'İşlem sürüyor…');
 const original_cleanAnonUsers=cleanAnonUsers;cleanAnonUsers=(...args)=>runAdminAction(()=>original_cleanAnonUsers(...args),'İşlem sürüyor…');
 const original_cleanDupNicks=cleanDupNicks;cleanDupNicks=(...args)=>runAdminAction(()=>original_cleanDupNicks(...args),'İşlem sürüyor…');

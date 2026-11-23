@@ -15,7 +15,7 @@ const clone=value=>JSON.parse(JSON.stringify(value));
 function context(game,names,extra={}){
  const c=vm.createContext({...game==='chess'?chess:tavla,console,JSON,Date,Math,globalThis:{crypto:{randomUUID:()=>String(Math.random()).slice(2)}},
  Auth:{getState:()=>({uid:'a'})},draw:noop,updateTurn:noop,updateStatus:noop,updateControls:noop,updateCaptured:noop,updateClockDisplay:noop,
- clearAIGame:noop,clearBreakTimers:noop,clearMoveGrace:noop,clearAutoRollTimer:noop,saveAIGame:noop,maybeAITurn:noop,afterTurn:noop,
+ clearAIGame:noop,clearBreakTimers:noop,clearMoveGrace:noop,clearAutoRollTimer:noop,startAutoRollTimer:noop,saveAIGame:noop,maybeAITurn:noop,afterTurn:noop,
  setTimeout:noop,clearTimeout:noop,cancelAnimationFrame:noop,Sound:new Proxy({},{get:()=>noop}),TavlaMP:{connected:true,send:()=>true},
  G:{state:game==='chess'?chess.newGame():tavla.newGame(),mode:'ai',playerColor:'w',moveHistory:[],flip:false,root:{querySelector:()=>null}},
  SELECTED_THEME:'kizil',THEMES:{kizil:{frame:'#d4af37',bg:'#2a0a10',felt:'#7a1420',bar:'#5c0c14',pointA:'#a81c2c',pointB:'#f0e0c0'}},
@@ -108,8 +108,30 @@ await test('tavla hit centers preserve 24 points, bar and collection gutter on n
   for(let i=0;i<24;i++){const p=c.api.pointGeometry(i),y=p.top?g.innerY+g.innerH*.1:g.innerY+g.innerH*.9;assert.equal(c.api.hitTest(p.baseX,y),i);assert.ok(p.baseX-g.checkerR>=g.innerX-1&&p.baseX+g.checkerR<=g.bearX+1);}assert.equal(c.api.hitTest(g.barX+g.barW/2,height/2),'bar');assert.equal(c.api.hitTest(g.bearX+g.bearW/2,height/2),'off');
  }
 });
-await test('portal minimization changes only presentation and restores measured canvas without ending either match',()=>{
+await test('portal minimization preserves board and clock objects and restores measured canvas without ending either match',()=>{
  for(const game of ['chess','tavla']){let fitted=0,drawn=0;const c=context(game,['setPortalMinimized'],{fitCanvas:()=>fitted++,draw:()=>drawn++});c.G.root={style:{}};c.G.clock={w:60,b:60};const state=c.G.state,clock=c.G.clock;c.api.setPortalMinimized(true);assert.equal(c.G.root.inert,true);assert.equal(c.G.root.hidden,true);assert.equal(c.G.state,state);assert.equal(c.G.clock,clock);assert.notEqual(c.G.gameEnded,true);c.api.setPortalMinimized(false);assert.equal(c.G.root.inert,false);assert.equal(c.G.root.hidden,false);assert.equal(fitted,1);assert.equal(drawn,1);}
+});
+await test('parked local chess keeps its remaining time but a connected online clock ticks',()=>{
+ let tick;
+ const c=context('chess',['startClockTick'],{
+  stopClockTick:noop,setInterval:fn=>{tick=fn;return 1;},ChessMP:{connected:true}
+ });
+ c.G.clock={w:60,b:60};c.G.state.turn='w';c.G.portalMinimized=true;
+ c.api.startClockTick();tick();assert.equal(c.G.clock.w,60);
+ c.G.mode='online';tick();assert.equal(c.G.clock.w,59);
+ c.G.mode='ai';c.G.portalMinimized=false;tick();assert.equal(c.G.clock.w,58);
+});
+await test('tavla only defers its automatic dice while a local game is parked',()=>{
+ const outcomes=[];
+ const c=context('tavla',['setPortalMinimized','startAutoRollTimer'],{
+  AUTO_ROLL:true,AUTO_ROLL_MS:4000,setInterval:noop,
+  setTimeout:(fn,ms)=>{outcomes.push(ms);return 1;},fitCanvas:noop
+ });
+ c.G.root.style={};c.G.state.turn='w';c.api.setPortalMinimized(true);
+ c.api.startAutoRollTimer();assert.equal(outcomes.length,0);
+ c.api.setPortalMinimized(false);assert.deepEqual(outcomes,[4000]);
+ c.G.online=true;c.G.mode='online';c.api.setPortalMinimized(true);
+ c.api.startAutoRollTimer();assert.deepEqual(outcomes,[4000,4000]);
 });
 await test('a delayed tavla draw cannot open its old review over a restarted match',async()=>{
  let release;const rewards=[],c=context('tavla',['finishTavlaDraw'],{finishTavlaReview:()=>({id:'old'}),Store:{trackQuestEvent:noop,recordMatchResult:()=>new Promise(r=>release=r)},rewardFixture:{showReward:async r=>rewards.push(r)}});c.G._turnToken={};c.G.gameEnded=true;c.G._reviewUid='a';const pending=c.api.finishTavlaDraw();c.G._turnToken={};release();await pending;assert.equal(rewards.length,0);

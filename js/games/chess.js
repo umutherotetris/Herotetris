@@ -1930,6 +1930,7 @@ function startClockTick(){
   G.clockTimer = setInterval(() => {
     if(G!==game)return;
     if(!G.clock || G.gameEnded){ stopClockTick(); return; }
+    if(G.portalMinimized && G.mode!=='online') return;
     if(G.mode==='online' && (G.oppLeft || G.syncPending || !ChessMP.connected || G.animating)) return;
     const turn = G.state.turn;
     G.clock[turn] = Math.max(0, G.clock[turn] - 1);

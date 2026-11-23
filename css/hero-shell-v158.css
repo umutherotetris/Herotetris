@@ -1,11 +1,13 @@
 /* Porcelain surfaces, sapphire actions, and distinct game illustrations.
    Shell-specific tokens leave the four in-game palettes and jewels intact. */
+/* Keep Chrome's automatic darkening off the authored shell and artwork. */
+html[data-hero-portal] { color-scheme:only light; }
 body.portal.lobby.hero-shell {
   --hp-ink:#14234c; --hp-muted:#576583; --hp-accent:#2452e7;
   --hp-line:#dbe4f4; --hp-canvas:#f3f7ff; --hp-surface:#fff;
   --hp-soft:#eaf0ff; --hp-shadow:0 10px 30px #23417512;
   --hp-width:1264px; --hp-gutter:clamp(16px,3.2vw,42px);
-  color:var(--hp-ink); background:#f3f7ff; background-image:none;
+  color:var(--hp-ink); background:var(--hp-canvas); background-image:none;
   min-height:100dvh; height:auto; overflow-x:clip;
 }
 .hero-shell :is(#app,.portal-header) {
@@ -13,7 +15,7 @@ body.portal.lobby.hero-shell {
   --portal-muted:var(--hp-muted); --portal-surface:var(--hp-surface);
   --portal-raised:var(--hp-soft); --portal-border:var(--hp-line);
   --portal-accent:var(--hp-accent); --accent-on:#fff;
-  color-scheme:light; min-width:0;
+  color-scheme:only light; min-width:0;
 }
 .portal.lobby.hero-shell > .portal-header {
   max-width:none; width:100%; margin:0; padding:max(15px,env(safe-area-inset-top)) max(var(--hp-gutter),calc((100vw - var(--hp-width))/2 + var(--hp-gutter))) 15px;
@@ -97,7 +99,7 @@ body.portal.lobby.hero-shell {
 .portal.lobby.hero-shell .card-actions { display:flex; align-items:center; margin:auto 0 0; gap:6px; border:0; }
 .portal.lobby.hero-shell .card-play,.portal.lobby.hero-shell .game-guide-button { display:flex; align-items:center; justify-content:center; min-height:42px; padding:6px 8px; gap:6px; border:1px solid var(--hp-line); border-radius:10px; font:850 13px/1.2 var(--font-body); box-shadow:none; color:#284cc6; background:#edf2ff; }
 .portal.lobby.hero-shell .card-play { flex:1; background:#edf2ff; color:#2443ae; border-color:#e4eafc; text-transform:none; }
-.portal.lobby.hero-shell .card-play span { font-size:9px; }
+.portal.lobby.hero-shell .card-play span { width:8px; height:9px; flex:none; font-size:0; background:currentColor; clip-path:polygon(0 0,100% 50%,0 100%); }
 .portal.lobby.hero-shell .game-guide-button { flex:none; width:42px; background:white; color:#57698c; }
 .portal.lobby.hero-shell .card-play:hover,.portal.lobby.hero-shell .card-play:focus-visible { background:#254cd5; color:#fff; }
 .portal.lobby.hero-shell .game-guide-button:hover { background:#edf2ff; color:#2443ae; }
@@ -165,7 +167,7 @@ body.portal.lobby.hero-shell {
   .hero-shell .studio-hero-copy { padding:28px; }
 }
 @media (max-width:680px) {
-  .portal.lobby.hero-shell > .portal-header { min-height:62px; gap:8px; padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left)); }
+  .portal.lobby.hero-shell > .portal-header { min-height:57px; gap:8px; padding:max(6px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left)); }
   .portal.lobby.hero-shell .portal-brand { gap:6px; }
   .portal.lobby.hero-shell .brand-mark { width:34px; height:34px; border-radius:9px; }
   .portal.lobby.hero-shell .brand-name { gap:0; flex-direction:column; font-size:15px; }
@@ -174,25 +176,28 @@ body.portal.lobby.hero-shell {
   .portal.lobby.hero-shell .search-trigger :is(kbd,.search-label),.portal.lobby.hero-shell #headerPlayerName { display:none; }
   .portal.lobby.hero-shell .header-link { display:grid; place-items:center; width:44px; padding:0; }
   .portal.lobby.hero-shell .header-avatar { width:36px; height:36px; }
-  .portal.lobby.hero-shell > #app { padding-top:14px; }
-  .hero-shell .studio-hero { grid-template-columns:1fr; grid-template-rows:auto clamp(142px,44vw,185px); min-height:0; border-radius:19px; }
-  .hero-shell .studio-hero-copy { grid-row:1; padding:18px 16px 12px; }
-  .hero-shell .studio-hero h1 { font-size:clamp(37px,10vw,54px); line-height:.99; margin-bottom:10px; }
-  .hero-shell .studio-kicker { margin-bottom:9px; font-size:9px; padding:4px 8px; }
-  .hero-shell .studio-hero-copy > p:not(.studio-kicker) { max-width:39ch; font-size:13px; line-height:1.52; }
-  .hero-shell .studio-hero-actions { margin-top:14px; gap:7px; }
-  .hero-shell .studio-button { min-height:43px; padding:0 9px; gap:5px; font-size:12px; }
+  .portal.lobby.hero-shell > #app { padding-top:12px; }
+  .hero-shell .studio-hero { display:block; min-height:0; border-radius:18px; }
+  .hero-shell .studio-hero-copy { width:min(68%,355px); padding:13px 0 14px 14px; }
+  .hero-shell .studio-hero h1 { font-size:clamp(27px,8vw,45px); line-height:1.01; margin-bottom:7px; }
+  .hero-shell .studio-kicker { margin-bottom:7px; font-size:8.5px; padding:3px 7px; }
+  .hero-shell .studio-kicker span { font-size:12px; }
+  .hero-shell .studio-hero-copy > p:not(.studio-kicker) { max-width:20ch; font-size:12px; line-height:1.35; }
+  .hero-shell .studio-hero-actions { margin-top:10px; gap:7px; }
+  .hero-shell .studio-button { min-height:44px; padding:0 10px; gap:5px; font-size:12px; }
+  .hero-shell .studio-button.quiet { display:none; }
   .hero-shell .studio-button svg { width:13px; height:13px; }
-  .hero-shell .studio-hero-art { position:relative; grid-row:2; width:100%; height:100%; }
-  .hero-shell .studio-hero-art img { object-position:54% 56%; mask-image:linear-gradient(to bottom,transparent,#000 14%); }
-  .portal.lobby.hero-shell .lobby-layout { grid-template-columns:minmax(0,1fr); margin-top:23px; gap:21px; }
+  .hero-shell .studio-hero-art { inset:auto 0 0 auto; width:min(58%,325px); aspect-ratio:3/2; }
+  .hero-shell .studio-hero-art img { object-fit:contain; object-position:right bottom; mask-image:linear-gradient(to right,transparent,#000 33%),linear-gradient(to bottom,transparent,#000 8%); mask-composite:intersect; }
+  .portal.lobby.hero-shell .lobby-layout { grid-template-columns:minmax(0,1fr); margin-top:14px; gap:21px; }
+  .hero-shell .library-heading .studio-section-tag { display:none; }
   .portal.lobby.hero-shell :is(.library-heading,.rail-heading,.studio-discover-heading) h2 { font-size:24px; }
   .portal.lobby.hero-shell .library-heading,.portal.lobby.hero-shell .rail-heading { margin-bottom:8px; }
   .portal.lobby.hero-shell .game-filters { gap:3px; margin-bottom:10px; }
   .portal.lobby.hero-shell .game-filters button { min-height:44px; padding:5px 8px; font-size:12px; }
   .portal.lobby.hero-shell .games-premium { gap:8px; }
   .portal.lobby.hero-shell .game-pc { border-radius:14px; }
-  .hero-shell .studio-game-art { height:112px; border-radius:13px 13px 0 0; }
+  .hero-shell .studio-game-art { height:clamp(84px,25vw,111px); border-radius:13px 13px 0 0; }
   .hero-shell .aurora-card-top { inset:5px 5px auto 5px; }
   .hero-shell .aurora-category { padding-inline:4px; font-size:9px; min-height:24px; }
   .portal.lobby.hero-shell .favorite-game { width:44px; height:44px; min-width:44px; min-height:44px; }
@@ -209,6 +214,22 @@ body.portal.lobby.hero-shell {
   .portal.lobby.hero-shell .bottom-nav { padding-inline:3px; }
   .portal.lobby.hero-shell .ni-lbl { font-size:9.5px; }
   .portal.lobby.hero-shell .game-filters button { padding-inline:7px; font-size:11px; }
+  .hero-shell .studio-hero-copy > p:not(.studio-kicker),
+  .hero-shell .aurora-card-content > p { display:none; }
+}
+@media (max-height:500px) and (orientation:landscape) and (min-width:681px) and (max-width:1100px) {
+  .portal.lobby.hero-shell > .portal-header { min-height:58px; padding-block:6px; }
+  .portal.lobby.hero-shell > #app { padding-top:10px; }
+  .hero-shell .studio-hero { display:block; min-height:0; border-radius:17px; }
+  .hero-shell .studio-hero-copy { display:flex; align-items:center; flex-wrap:wrap; gap:10px 18px; width:74%; padding:13px 16px; }
+  .hero-shell .studio-hero h1 { font-size:29px; margin:0; line-height:1.02; }
+  .hero-shell .studio-hero-copy > p, .hero-shell .studio-button.quiet, .hero-shell .library-heading .studio-section-tag { display:none; }
+  .hero-shell .studio-hero-actions { margin:0; }
+  .hero-shell .studio-hero-art { width:37%; }
+  .hero-shell .studio-hero-art img { object-position:right 60%; }
+  .portal.lobby.hero-shell .lobby-layout { grid-template-columns:minmax(0,1fr); margin-top:14px; }
+  .portal.lobby.hero-shell .games-premium { grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+  .hero-shell .studio-game-art { height:88px; }
 }
 @media (hover:none),(prefers-reduced-motion:reduce) {
   .portal.lobby.hero-shell .game-pc:hover { transform:none; }

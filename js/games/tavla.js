@@ -1815,7 +1815,7 @@ function clearAutoRollTimer(){
 function startAutoRollTimer(){
   if(!G) return;
   clearAutoRollTimer();
-  if(!AUTO_ROLL || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking || G.paused) return;
+  if(!AUTO_ROLL || G._awaitingStart || G.breakState || G.gameEnded || G.rolled || G.aiThinking || G.paused || (G.portalMinimized&&!G.online)) return;
   // AI sırasında gerekmez (AI kendi atar); online'da yalnızca kendi sıramda
   if(G.mode === 'ai' && G.state.turn === G.aiColor) return;
   if(G.online && (G.oppLeft || G._syncPending || (TavlaMP && TavlaMP.connected === false) || G.state.turn !== G.playerColor)) return;
@@ -3044,6 +3044,12 @@ function setPortalMinimized(hidden){
   if(!G?.root)return false;
   G.portalMinimized=!!hidden;G.root.hidden=!!hidden;G.root.inert=!!hidden;
   G.root.style.visibility=hidden?'hidden':'';G.root.style.pointerEvents=hidden?'none':'';
+  if(G.state&&!G.online){
+    // Don't roll the player's dice while the board is parked. Network play
+    // keeps its clocks, automatic actions and synchronization untouched.
+    if(hidden)clearAutoRollTimer();
+    else startAutoRollTimer();
+  }
   if(!hidden){fitCanvas();draw();}return true;
 }
 function renderReviewFrame(frame,host){

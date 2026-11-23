@@ -1,0 +1,132 @@
+body.portal.hero-shell .portal-game-tools .portal-game-social {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding-inline: 8px;
+  color: var(--hp-accent,#2348c2);
+  border-color: var(--hp-line,#d4dfff);
+  background: var(--hp-soft,#ecf2ff);
+}
+body.portal.hero-shell .portal-game-tools .portal-game-social:is(:hover,:focus-visible) {
+  color: var(--hp-ink,#1435a3);
+  background: color-mix(in srgb,var(--hp-soft,#e0eaff),var(--hp-accent,#2452e7) 6%);
+}
+.portal-game-social svg { flex: none; }
+.portal-game-social .portal-social-badge {
+  position: absolute;
+  inset: -4px -4px auto auto;
+  min-inline-size: 16px;
+  padding: 1px 3px;
+  color: #fff;
+  background: #a71c54;
+  border: 1px solid white;
+  border-radius: 12px;
+  font: 800 9px/1.35 system-ui;
+  text-align: center;
+}
+@media (max-width: 540px) {
+  .portal-game-social .portal-social-label { display: none; }
+}
+
+.ghp-game-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 11990;
+  background: #15264a55;
+  touch-action: none;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game {
+  z-index: 12000;
+  transform-origin: bottom center;
+  border: 1px solid var(--hp-line,#b9c9ed);
+  border-radius: 20px;
+  background: var(--hp-surface,#fbfdff);
+  padding-bottom: env(safe-area-inset-bottom,0px);
+  overflow: hidden;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game::before { background: linear-gradient(90deg,var(--hp-accent,#2452e7),var(--hp-soft,#77b2ff)); }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-drag { cursor: default; padding: 7px 10px 7px 13px; gap: 8px; }
+#gemHubPanel .ghp-game-context { display: none; min-width: 0; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-game-context {
+  display: block;
+  color: var(--hp-muted,#526686);
+  font-size: 10px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-weight: 650;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-title { font-size: 14px; letter-spacing: -.02em; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game :is(#ghpSizeBtn,#ghpSettingsBtn) { display: none; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game #ghpCloseBtn {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  font-size: 18px;
+  line-height: 1;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tabs { padding: 5px 7px 0; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tab { min-block-size: 44px; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-list { min-height: 0; max-height: none; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game.ghp-compact-height :is(.ghp-body,.ghp-pane.active,#ghpDMThread) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game.ghp-compact-height :is(.ghp-quick-bar,.ghp-chat-head) { display: none; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tab-label { font-size: 10px; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tabs .ghp-tab {
+  position: relative;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px 1px;
+  line-height: 1.15;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tabs .ghp-tab-badge {
+  position: absolute;
+  inset: 2px 2px auto auto;
+  box-shadow: none;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game :is(.ghp-act,.ghp-tab,.ghp-input,.ghp-send):focus-visible {
+  outline: 2px solid #2452e7;
+  outline-offset: -2px;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-chat-head-title { color: #213c68; }
+body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-chat-head-online {
+  color: #166950;
+  background: #ecf8f4;
+  border-color: #bbded1;
+}
+body.portal.hero-shell #gemHubPanel.ghp-in-game ._ctxt {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+body.portal.hero-shell #chatOnlineOv[data-game-social-child] .ghp-online-panel {
+  padding-bottom: max(16px,env(safe-area-inset-bottom,0px));
+  background: var(--hp-surface,#f9fbff);
+  border-color: var(--hp-line,#dce5f6);
+}
+body.portal.hero-shell #chatOnlineOv[data-game-social-child] .ghp-online-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--hp-ink,#14234c);
+}
+body.portal.hero-shell #chatOnlineOv[data-game-social-child] :is(.ghp-online-row,[data-online-close]) {
+  color: var(--hp-ink,#14234c);
+  background: var(--hp-soft,#ecf2ff);
+  border: 1px solid var(--hp-line,#dce5f6);
+  min-height: 44px;
+}
+body.portal.hero-shell #chatOnlineOv[data-game-social-child] .ghp-online-row {
+  width: 100%;
+  margin-top: 5px;
+  text-align: start;
+}
+body.portal.hero-shell #chatOnlineOv[data-game-social-child] .ghp-online-nm { color: var(--hp-ink,#14234c); }
+body.portal.hero-shell:has(#gemHubPanel.ghp-in-game.ghp-open) #pcPop { z-index: 12100; }
+body.portal.hero-shell:has(#gemHubPanel.ghp-in-game.ghp-open) #ghpGameHome { visibility: hidden; }
+@media (max-width: 365px) { body.portal.hero-shell #gemHubPanel.ghp-in-game .ghp-tab-label { font-size: 9px; } }

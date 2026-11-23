@@ -1,12 +1,12 @@
-/* Hero Portal 158: replace the legacy Sukun worker at its existing URL. */
+/* Hero Portal 159: replace the legacy Sukun worker at its existing URL. */
 'use strict';
-const HERO_BUILD = '158';
+const HERO_BUILD = '159';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
 const CACHE_NAME = CACHE_PREFIX + HERO_BUILD;
 const CORE_ASSETS = [
-  'css/hero-shell-v158.css', 'css/hero-panels-v158.css', 'css/hero-game-chrome-v158.css',
+  'css/hero-shell-v158.css?v=159', 'css/hero-panels-v158.css', 'css/hero-game-chrome-v158.css',
   'assets/hero-brand-v158.svg', 'assets/hero-icon-192-v158.png', 'assets/hero-icon-512-v158.png',
   'assets/hero-maskable-512-v158.png', 'assets/hero-studio-v158.webp', 'assets/hero-games-v158.svg',
   'js/jewel-drag.js', 'js/profile-personalize.js',
@@ -16,7 +16,10 @@ const CORE_ASSETS = [
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=157',
   'css/tetris.css?v=157', 'css/portal-centers.css?v=157', 'css/themes.css?v=124', 'css/portal.css?v=144',
-  'js/portal-worker.js?v=158', 'js/portal.js?v=158', 'js/nav.js',
+  'js/portal-worker.js?v=159', 'js/portal.js?v=159', 'js/app.js?v=159', 'js/nav.js',
+  'js/game-return.js', 'js/game-launcher.js', 'js/game-home.js', 'js/game-social.js',
+  'js/portal-palette.js', 'js/profile.js', 'js/social.js',
+  'css/hero-game-layout-v159.css', 'css/game-return-v159.css', 'css/game-social.css', 'css/hero-theme-v159.css',
   'assets/portal-orbit.svg?v=138', 'assets/game-tetris.svg?v=140',
   'assets/game-chess.svg?v=140', 'assets/game-tavla.svg?v=140', 'assets/game-word.svg?v=140',
   'assets/fonts/manrope-latin-wght.woff2?v=138', 'assets/fonts/manrope-latin-ext-wght.woff2?v=138',

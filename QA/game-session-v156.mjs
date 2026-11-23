@@ -12,6 +12,8 @@ async function load(file,f){
   const source=fs.readFileSync(new URL('../js/'+file,import.meta.url),'utf8')
     .replace(/^import \{([^}]+)\} from ['"]\.\/auth\.js['"];?$/gm,(_all,names)=>`const {${names}}=${from};`)
     .replace(/^import \{([^}]+)\} from ['"]\.\/portal-panels\.js['"];?$/gm,(_all,names)=>`const {${names}}=${from}.panels;`)
+    .replace(/^import \{\s*mountGameSocial\s*\} from ['"]\.\/game-social\.js['"];?$/gm,`const {mountGameSocial}=${from};`)
+    .replace(/^import \{\s*go\s*\} from ['"]\.\/nav\.js['"];?$/gm,`const {go}=${from};`)
     .replace(/import\('\.\/games\/'\s*\+\s*key\s*\+\s*'\.js'\)/g,`${from}.loadGame(key)`)
     .replaceAll('import.meta.url',JSON.stringify(new URL('../js/'+file,import.meta.url).href));
   return import(dataURL(source+`\n// actual ES module ${id}`));
@@ -49,17 +51,20 @@ class Element{
   querySelector(selector){return this.querySelectorAll(selector)[0]||null;}
 }
 function fixture(){
-  let state={uid:'alice',status:'google'};const observers=new Set(),subscribers=new Set(),calls=[],loads=[],closes=[];
+  let state={uid:'alice',status:'google'};const observers=new Set(),subscribers=new Set(),calls=[],loads=[],closes=[],events=[],nav=[],social=[];
   const doc={activeElement:null,events:new Map(),
     createElement:tag=>new Element(tag,doc),querySelector:selector=>doc.body.querySelector(selector)||doc.head.querySelector(selector),
     querySelectorAll:selector=>[...doc.body.querySelectorAll(selector),...doc.head.querySelectorAll(selector)],
     getElementById:id=>doc.querySelector('#'+id),
     addEventListener(type,fn){if(!this.events.has(type))this.events.set(type,new Set());this.events.get(type).add(fn);},
     removeEventListener(type,fn){this.events.get(type)?.delete(fn);},
+    dispatchEvent(event){events.push(event);for(const fn of [...this.events.get(event.type)||[]])fn(event);return !event.defaultPrevented;},
     mutate(node){if(!node.isConnected)return;for(const observer of observers){if(observer.pending)continue;observer.pending=true;queueMicrotask(()=>{observer.pending=false;if(observers.has(observer))observer.callback([],observer);});}}};
   doc.body=new Element('body',doc);doc.head=new Element('head',doc);
   class Observer{constructor(callback){this.callback=callback;this.pending=false;}observe(){observers.add(this);}disconnect(){observers.delete(this);}takeRecords(){return[];}}
-  const f={doc,observers,subscribers,calls,loads,closes,panels:{},
+  const f={doc,observers,subscribers,calls,loads,closes,panels:{},events,nav,social,
+    go:(...args)=>nav.push(args),
+    mountGameSocial:(root,tools)=>{social.push({root,tools});return{destroy:()=>social.push({root,destroyed:true})};},
     Auth:{getState:()=>state,subscribe:fn=>{subscribers.add(fn);fn(state);return()=>subscribers.delete(fn);}},
     gameModule:key=>({setPortalMinimized:hidden=>{calls.push({key,hidden});return true;},closePortalGame:root=>{closes.push({key,root});root.remove();return true;}}),
     loadGame:async key=>{loads.push(key);return f.gameModule(key);},
@@ -127,6 +132,26 @@ await test('minimize/restore preserves root visibility, inert state, scroll lock
   assert.equal(root.hidden,true);assert.equal(root.inert,true);assert.equal(root.dataset.portalMinimized,'true');assert.equal(dock.hidden,false);assert.equal(f.doc.body.style.overflow,'');assert.equal(f.doc.activeElement,dock);
   await dock.fire();await settle();assert.equal(root.hidden,false);assert.equal(root.inert,false);assert.equal(root.dataset.portalMinimized,undefined);assert.equal(dock.hidden,true);assert.equal(f.doc.body.style.overflow,'hidden');assert.equal(f.doc.activeElement,control);
   assert.deepEqual(f.calls,[{key:'tetris',hidden:true},{key:'tetris',hidden:false}]);f.dispose();
+});
+await test('all four complete visits retain one mounted game and its social tools',async()=>{
+  for(const [key,name] of Object.entries({tetris:'HeroTetris',chess:'Satranç',tavla:'Tavla',kelime:'Kelimecik'})){
+    const f=await returnFixture(),{root,header}=f.game(key);
+    f.module.initGameReturn();await settle();
+    const control=header.querySelector('.portal-minimize'),dock=f.doc.body.querySelector('.portal-resume');
+    assert.ok(control);assert.equal(f.social.length,1);
+    const exitRequest=new CustomEvent('hero:request-game-portal',{cancelable:true,detail:{root,screen:'home'}});
+    assert.equal(f.doc.dispatchEvent(exitRequest),false,'settings delegates rather than closing the game');
+    assert.deepEqual(f.nav,[['home',false,'push']]);
+    assert.equal(dock.dataset.game,key);assert.match(dock.textContent,new RegExp(name));
+    assert.equal(root.isConnected,true);assert.equal(root.hidden,true);
+    f.doc.dispatchEvent(new CustomEvent('hero:screen-changed',{detail:{screen:'profile'}}));
+    await settle();assert.equal(dock.hidden,false);
+    await dock.fire();assert.equal(root.isConnected,true);assert.equal(root.hidden,false);
+    assert.deepEqual(f.events.filter(e=>e.type==='hero:game-visibility').map(e=>e.detail),[{key,root,minimized:true},{key,root,minimized:false}]);
+    assert.equal(f.social.length,1,'parking does not remount tools or drop their unread state');
+    root.remove();await settle();assert.equal(f.social.at(-1).destroyed,true);assert.equal(f.closes.length,0);
+    f.dispose();
+  }
 });
 await test('only one game can be minimized and repeated return clicks cannot double-resume',async()=>{
   const f=await returnFixture(),t=f.game(),chess=f.game('chess');f.module.initGameReturn();await settle();

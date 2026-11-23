@@ -1,7 +1,7 @@
 // ════════════════════════════════════════════════════════════════
 //  Hero Oyun Portalı — OYUN İÇİ KONTROL MERKEZİ (portatif/sürüklenebilir)
-//  Küçük yuvarlak FAB. Dokununca akordiyon panel açılır:
-//   • Ana menü + nav kısayolları (Arkadaş/Liderlik/Profil/Bildirim)
+//  Oyun araçlarına bağlanan ayar düğmesi:
+//   • Portala oyun açıkken dönüş, sosyal kısayollar ve ayrı çıkış
 //   • Ses / Müzik / Titreşim aç-kapa (oyuna özel)
 //   • UI ölçek ayarı (A− / A+)
 //   • Nasıl Oynanır (oyuna özel rehber)
@@ -116,7 +116,7 @@ function inject(){
     }
     .ghp-cc-home:active{ transform:scale(.96); }
     /* Nav grid */
-    .ghp-cc-nav{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:9px; }
+    .ghp-cc-nav{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:9px; }
     .ghp-cc-navbtn{
       display:flex; flex-direction:column; align-items:center; gap:3px;
       padding:8px 2px; border-radius:10px; cursor:pointer;
@@ -205,10 +205,16 @@ export function mountGameHome(gameKey, onExit, api = {}){
   document.getElementById('ghpGameHome')?.remove();
   document.getElementById('ghpGameHomePanel')?.remove();
 
-  const fab = document.createElement('div');
+  const gameRoot = document.querySelector(({tetris:'.tetris-overlay',chess:'.chess-root',tavla:'.tavla-root',kelime:'.kl-root'})[gameKey]||'.no-game-root');
+  const fab = document.createElement('button');
   fab.className = 'ghp-cc-fab';
   fab.id = 'ghpGameHome';
-  fab.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V10.5z"/><path d="M9 21V13h6v8"/></svg>`;
+  fab.type = 'button';
+  fab.title = 'Oyun ayarları';
+  fab.setAttribute('aria-label','Oyun ayarları');
+  fab.setAttribute('aria-controls','ghpGameHomePanel');
+  fab.setAttribute('aria-expanded','false');
+  fab.innerHTML = `<svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 17h16"/><circle cx="8" cy="7" r="2.5" fill="var(--tool-track,#f7f9ff)"/><circle cx="16" cy="17" r="2.5" fill="var(--tool-track,#f7f9ff)"/></svg>`;
   fab.style.setProperty('--cc-accent', theme.accent);
   fab.style.setProperty('--cc-glow', theme.glow);
 
@@ -223,18 +229,38 @@ export function mountGameHome(gameKey, onExit, api = {}){
   document.body.appendChild(fab);
 
   // ── Sürükleme ──
-  let removed=false, guide=null, confirmation=null;
+  let removed=false, guide=null, confirmation=null, docked=false;
   let drag=false, moved=false, sx=0, sy=0, ox=0, oy=0;
-  const down = (e)=>{ if(removed) return; const t=e.touches?e.touches[0]:e; drag=true; moved=false; sx=t.clientX; sy=t.clientY; ox=pos.left; oy=pos.top; fab.classList.add('dragging'); };
+  const down = (e)=>{ if(removed||docked) return; const t=e.touches?e.touches[0]:e; drag=true; moved=false; sx=t.clientX; sy=t.clientY; ox=pos.left; oy=pos.top; fab.classList.add('dragging'); };
   const move = (e)=>{ if(!drag) return; const t=e.touches?e.touches[0]:e; const dx=t.clientX-sx, dy=t.clientY-sy;
     if(Math.abs(dx)+Math.abs(dy)>6) moved=true; pos.left=ox+dx; pos.top=oy+dy; clamp(); place(); if(e.cancelable) e.preventDefault(); };
   const up = ()=>{ if(!drag) return; drag=false; fab.classList.remove('dragging');
     if(moved){ try{ localStorage.setItem('hero_cc_pos_'+gameKey, JSON.stringify(pos)); }catch(e){} }
-    else { togglePanel(); } };
+    else { moved=false; } };
   const cancel = ()=>{ drag=false; moved=false; fab.classList.remove('dragging'); };
   fab.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
   fab.addEventListener('touchstart', down, {passive:false}); window.addEventListener('touchmove', move, {passive:false}); window.addEventListener('touchend', up);
   window.addEventListener('touchcancel', cancel);
+  fab.addEventListener('click', e=>{if(!moved||docked||e.detail===0)togglePanel();moved=false;});
+
+  function dock(tools){
+    if(!tools||removed)return;
+    docked=true;cancel();
+    fab.className='portal-tool portal-settings';
+    fab.style.left='';fab.style.top='';
+    tools.append(fab);
+  }
+  function onTools(event){if(event.detail?.root===gameRoot)dock(event.detail.tools);}
+  function onVisibility(event){
+    if(event.detail?.root!==gameRoot)return;
+    const {minimized}=event.detail;
+    fab.hidden=minimized;
+    if(minimized){cancel();closePanel();guide?.remove();confirmation?.remove();}
+  }
+  document.addEventListener('hero:game-tools-mounted',onTools);
+  document.addEventListener('hero:game-visibility',onVisibility);
+  dock(gameRoot?.querySelector('.portal-game-tools'));
+  if(gameRoot?.hidden)fab.hidden=true;
 
   // ── Panel ──
   let panel=null;
@@ -242,19 +268,24 @@ export function mountGameHome(gameKey, onExit, api = {}){
     if(e.key!=='Escape') return;
     if(guide?.isConnected) guide.remove();
     else if(confirmation?.isConnected) confirmation.remove();
-    else if(panel) closePanel();
+    else if(panel) closePanel(true);
     else return;
     e.preventDefault(); e.stopImmediatePropagation();
   };
   window.addEventListener('keydown', onKey, true);
   function togglePanel(){ panel ? closePanel() : openPanel(); }
-  function closePanel(){ panel?.remove(); panel=null; }
+  function closePanel(restoreFocus=false){
+    panel?.remove();panel=null;fab.setAttribute('aria-expanded','false');
+    if(restoreFocus&&!fab.hidden)fab.focus({preventScroll:true});
+  }
   function openPanel(){
-    if(removed) return;
+    if(removed||gameRoot?.hidden) return;
     closePanel();
     panel = document.createElement('div');
     panel.className = 'ghp-cc-panel';
     panel.id = 'ghpGameHomePanel';
+    panel.setAttribute('role','region');
+    panel.setAttribute('aria-label','Oyun ayarları');
     panel.style.setProperty('--cc-accent', theme.accent);
     panel.style.setProperty('--cc-glow', theme.glow);
 
@@ -262,26 +293,26 @@ export function mountGameHome(gameKey, onExit, api = {}){
     const hasMusic = api.music && api.music.get;
     const hasVibe  = api.vibe && api.vibe.get;
     const scale = (()=>{ try{ return parseFloat(localStorage.getItem('hero_ui_scale')||'1'); }catch(e){ return 1; } })();
+    const switchFor=(label,key,on)=>`<button type="button" class="ghp-cc-sw ${on?'on':''}" ${key} role="switch" aria-label="${label}" aria-checked="${!!on}"></button>`;
 
     panel.innerHTML = `
       <div class="ghp-cc-head">
         <span style="font-size:15px">${theme.icon}</span>
         <span class="t">${theme.name}</span>
-        <button class="x" data-cc="close">✕</button>
+        <button class="x" type="button" data-cc="close" aria-label="Ayarları kapat">✕</button>
       </div>
       <div class="ghp-cc-body">
-        <button class="ghp-cc-home" data-cc="home">🏠 ANA MENÜ</button>
-        <div class="ghp-cc-nav">
-          <div class="ghp-cc-navbtn" data-nav="home"><span class="i">🏠</span>Ana</div>
-          <div class="ghp-cc-navbtn" data-nav="friends"><span class="i">👥</span>Arkadaş</div>
-          <div class="ghp-cc-navbtn" data-nav="leaderboard"><span class="i">🏆</span>Liderlik</div>
-          <div class="ghp-cc-navbtn" data-nav="notifications"><span class="i">🔔</span>Bildirim</div>
-        </div>
+        <button class="ghp-cc-home" type="button" data-cc="home">${gameRoot?'Portala dön':'Ana menü'}</button>
+        ${gameRoot?'':`<div class="ghp-cc-nav">
+          <button type="button" class="ghp-cc-navbtn" data-nav="friends"><span class="i">👥</span>Arkadaş</button>
+          <button type="button" class="ghp-cc-navbtn" data-nav="leaderboard"><span class="i">🏆</span>Liderlik</button>
+          <button type="button" class="ghp-cc-navbtn" data-nav="notifications"><span class="i">🔔</span>Bildirim</button>
+        </div>`}
 
         ${(hasSound||hasMusic||hasVibe) ? `<div class="ghp-cc-sec">🔊 Ses & Müzik</div>` : ''}
-        ${hasSound ? `<div class="ghp-cc-row"><span class="ri">🔊</span><span class="rl">Ses Efektleri</span><div class="ghp-cc-sw ${api.sound.get()?'on':''}" data-sw="sound"></div></div>` : ''}
-        ${hasMusic ? `<div class="ghp-cc-row"><span class="ri">🎵</span><span class="rl">Müzik</span><div class="ghp-cc-sw ${api.music.get()?'on':''}" data-sw="music"></div></div>` : ''}
-        ${hasVibe ? `<div class="ghp-cc-row"><span class="ri">📳</span><span class="rl">Titreşim</span><div class="ghp-cc-sw ${api.vibe.get()?'on':''}" data-sw="vibe"></div></div>` : ''}
+        ${hasSound ? `<div class="ghp-cc-row"><span class="ri" aria-hidden="true">🔊</span><span class="rl">Ses Efektleri</span>${switchFor('Ses efektleri','data-sw="sound"',api.sound.get())}</div>` : ''}
+        ${hasMusic ? `<div class="ghp-cc-row"><span class="ri" aria-hidden="true">🎵</span><span class="rl">Müzik</span>${switchFor('Müzik','data-sw="music"',api.music.get())}</div>` : ''}
+        ${hasVibe ? `<div class="ghp-cc-row"><span class="ri" aria-hidden="true">📳</span><span class="rl">Titreşim</span>${switchFor('Titreşim','data-sw="vibe"',api.vibe.get())}</div>` : ''}
 
         <div class="ghp-cc-sec">🔍 Görünüm</div>
         <div class="ghp-cc-scale">
@@ -289,40 +320,42 @@ export function mountGameHome(gameKey, onExit, api = {}){
           <span class="sv" data-el="scaleVal">%${Math.round(scale*100)}</span>
           <button class="sb" data-scale="+">A+</button>
         </div>
-        <div class="ghp-cc-row"><span class="ri">🌗</span><span class="rl">Yüksek Kontrast</span><div class="ghp-cc-sw ${localStorage.getItem('hero_high_contrast')==='1'?'on':''}" data-sw2="contrast"></div></div>
-        <div class="ghp-cc-row"><span class="ri">🎨</span><span class="rl">Renk Körü Modu</span><div class="ghp-cc-sw ${localStorage.getItem('hero_colorblind')==='1'?'on':''}" data-sw2="colorblind"></div></div>
+        <div class="ghp-cc-row"><span class="ri" aria-hidden="true">🌗</span><span class="rl">Yüksek Kontrast</span>${switchFor('Yüksek kontrast','data-sw2="contrast"',localStorage.getItem('hero_high_contrast')==='1')}</div>
+        <div class="ghp-cc-row"><span class="ri" aria-hidden="true">🎨</span><span class="rl">Renk Körü Modu</span>${switchFor('Renk körü modu','data-sw2="colorblind"',localStorage.getItem('hero_colorblind')==='1')}</div>
 
         ${api.onTheme ? `<button class="ghp-cc-guide-btn" style="margin-bottom:5px" data-cc="theme">🎨 Tahta / Taş Teması</button>` : ''}
         ${GUIDE[gameKey] ? `<button class="ghp-cc-guide-btn" data-cc="guide">📖 Nasıl Oynanır?</button>` : ''}
+        ${gameRoot ? `<button class="ghp-cc-guide-btn" type="button" data-cc="exit">Oyundan çık</button>` : ''}
       </div>`;
     document.body.appendChild(panel);
+    fab.setAttribute('aria-expanded','true');
     positionPanel();
 
     // events
-    panel.querySelector('[data-cc="close"]').addEventListener('click', closePanel);
-    panel.querySelector('[data-cc="home"]').addEventListener('click', confirmExit);
+    panel.querySelector('[data-cc="close"]').addEventListener('click',()=>closePanel(true));
+    panel.querySelector('[data-cc="home"]').addEventListener('click', ()=>{
+      if(!gameRoot){confirmExit();return;}
+      const enterPortal=new CustomEvent('hero:request-game-portal',{cancelable:true,detail:{root:gameRoot,screen:'home'}});
+      if(document.dispatchEvent(enterPortal))gameRoot.querySelector('.portal-minimize')?.click();
+    });
+    panel.querySelector('[data-cc="exit"]')?.addEventListener('click',confirmExit);
     panel.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', async () => {
       const screen = b.dataset.nav;
       closePanel();
-      if(screen === 'home'){
-        doExit(async () => {
-          try{ const n = await import('./nav.js'); if(n.go) n.go('home'); }catch(e){ console.warn('[cc] nav', e); }
-        });
-      } else {
-        // Arkadaş / Liderlik / Bildirim → hepsi social hub overlay (oyundan çıkmadan)
-        const tabMap = { friends:'dost', notifications:'notif', leaderboard:'lider' };
-        const tab = tabMap[screen] || screen;
-        try{
-          const soc = await import('./social.js');
-          if(removed) return;
-          if(soc.openHubTab) soc.openHubTab(tab);
-        }catch(e){ console.warn('[cc] social', e); }
-      }
+      // Arkadaş / Liderlik / Bildirim sohbet alanından açılır, oyun çalışır.
+      const tabMap = { friends:'dost', notifications:'notif', leaderboard:'lider' };
+      const tab = tabMap[screen] || screen;
+      try{
+        const soc = await import('./social.js');
+        if(removed||gameRoot?.hidden) return;
+        if(soc.openHubTab) soc.openHubTab(tab);
+      }catch(e){ console.warn('[cc] social', e); }
     }));
     panel.querySelectorAll('[data-sw]').forEach(sw => sw.addEventListener('click', () => {
       const kind = sw.dataset.sw; let on=false;
       try{ on = api[kind].toggle(); }catch(e){}
       sw.classList.toggle('on', !!on);
+      sw.setAttribute('aria-checked',String(!!on));
     }));
     panel.querySelectorAll('[data-sw2]').forEach(sw => sw.addEventListener('click', () => {
       const kind = sw.dataset.sw2;
@@ -332,6 +365,7 @@ export function mountGameHome(gameKey, onExit, api = {}){
       localStorage.setItem(key, on ? '1' : '0');
       document.documentElement.classList.toggle(cls, on);
       sw.classList.toggle('on', on);
+      sw.setAttribute('aria-checked',String(on));
     }));
     panel.querySelectorAll('[data-scale]').forEach(b => b.addEventListener('click', () => {
       let s = parseFloat(localStorage.getItem('hero_ui_scale')||'1');
@@ -347,19 +381,20 @@ export function mountGameHome(gameKey, onExit, api = {}){
 
   function positionPanel(){
     if(!panel) return;
-    const pw=248, ph=panel.offsetHeight||300, gap=8;
-    let left = pos.left - pw + 46; // FAB'ın sol üstüne hizala
-    let top = pos.top - ph - gap;  // FAB'ın üstüne aç
+    const pw=panel.offsetWidth||248, ph=panel.offsetHeight||300, gap=8;
+    const anchor=fab.getBoundingClientRect();
+    let left = anchor.right - pw;
+    let top = docked ? anchor.bottom + gap : anchor.top - ph - gap;
     if(left < 8) left = 8;
     if(left + pw > window.innerWidth-8) left = window.innerWidth-pw-8;
-    if(top < 70){ top = pos.top + 54; } // yukarı sığmazsa aşağı aç
-    if(top + ph > window.innerHeight-8) top = window.innerHeight-ph-8;
+    if(top < 8){ top = anchor.bottom + gap; }
+    if(top + ph > window.innerHeight-8) top = Math.max(8,window.innerHeight-ph-8);
     panel.style.left = left+'px'; panel.style.top = top+'px';
   }
 
   function applyScale(s){
     // Oyun root'una ölçek uygula (varsa), yoksa body font-size
-    const roots = ['.tetris-overlay','.chess-root','.tg-root','.kl-root','[data-el="game"]'];
+    const roots = ['.tetris-overlay','.chess-root','.tavla-root','.kl-root','[data-el="game"]'];
     let applied=false;
     for(const sel of roots){ const el=document.querySelector(sel); if(el){ el.style.fontSize=(s*100)+'%'; applied=true; } }
     if(!applied) document.documentElement.style.setProperty('--hero-ui-scale', s);
@@ -396,9 +431,9 @@ export function mountGameHome(gameKey, onExit, api = {}){
     confirmation=c;
     c.className='ghp-cc-confirm'; c.style.setProperty('--cc-accent', theme.accent);
     c.innerHTML = `<div class="ghp-cc-confirm-box">
-      <div class="ti">🏠</div><div class="tt">Ana menüye dön?</div>
-      <div class="ts">${theme.name} oyunundan çıkacaksın. İlerlemen kaydedilir.</div>
-      <div class="bs"><button class="stay">Devam</button><button class="go">🏠 Çık</button></div>
+      <div class="tt">Oyun kapatılsın mı?</div>
+      <div class="ts">Açık oyun oturumu kapanır. Daha sonra aynı oturuma dönmek için Portala dön seçeneğini kullan.</div>
+      <div class="bs"><button class="stay">Oyunda kal</button><button class="go">Oyundan çık</button></div>
     </div>`;
     document.body.appendChild(c);
     c.querySelector('.stay').addEventListener('click', ()=>c.remove());
@@ -421,6 +456,8 @@ export function mountGameHome(gameKey, onExit, api = {}){
     window.removeEventListener('touchmove', move); window.removeEventListener('touchend', up);
     window.removeEventListener('touchcancel', cancel);
     window.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('hero:game-tools-mounted',onTools);
+    document.removeEventListener('hero:game-visibility',onVisibility);
     if(activeHome===controller) activeHome=null;
   }
 

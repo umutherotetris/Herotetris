@@ -77,6 +77,12 @@ test('replay resets an exchange lock whose old-round timer was invalidated',()=>
 test('the timed counter cannot start for an AI turn',()=>{
  const h=harness();h.G.seri={turnTime:30};h.G.who='B';h.G.aiThinking=true;h.startTurnTimer();assert.equal(h.G.timer,undefined);
 });
+test('parking a local timed round preserves the unused seconds',()=>{
+ const h=harness();h.G.seri={turnTime:30};h.startTurnTimer();
+ const tick=h.timers.at(-1);tick();assert.equal(h.G.timeLeft,29);
+ h.G._minimized=true;tick();tick();assert.equal(h.G.timeLeft,29);
+ h.G._minimized=false;tick();assert.equal(h.G.timeLeft,28);
+});
 test('opening Kelime twice preserves the active board and root',()=>{
  const h=harness(),original=h.G;h.openKelime();h.openKelime();assert.equal(h.get(),original);assert.equal(h.created.length,0);
 });

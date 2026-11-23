@@ -1,0 +1,234 @@
+/* Portal palettes tint interface chrome. Artwork, boards and launcher jewels
+   retain their original colors; those carry game and navigation meaning. */
+html[data-portal-palette="pearl"] body.portal.hero-shell {
+  --hp-canvas:#faf5ee; --hp-surface:#fffdfa; --hp-ink:#2f2a25; --hp-muted:#65574b;
+  --hp-accent:#783b24; --hp-line:#ded1c1; --hp-soft:#f5eadc;
+  --hp-panel-tint:#fcf7f0; --hp-panel-blue:#f5eadc; --hp-panel-blue-line:#e0ceba;
+  --hp-shadow:0 10px 30px #5b3b2414;
+  --palette-hover:#60311f; --palette-hero:#f2e5d3; --palette-on:#fffaf4;
+}
+html[data-portal-palette="sea"] body.portal.hero-shell {
+  --hp-canvas:#eff8f6; --hp-surface:#fbfffe; --hp-ink:#193732; --hp-muted:#465f58;
+  --hp-accent:#146054; --hp-line:#c9e1da; --hp-soft:#e1f0ec;
+  --hp-panel-tint:#f1faf7; --hp-panel-blue:#e1f0ec; --hp-panel-blue-line:#bbd9d0;
+  --hp-shadow:0 10px 30px #1b594e15;
+  --palette-hover:#104a41; --palette-hero:#d8ece7; --palette-on:#f8fffd;
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) body.portal.hero-shell {
+  background-color:var(--hp-canvas);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.portal-header,.game-pc,.recent-game,.collection-empty,.portal-status,.player-layout,.eco-quick-btn,.portal-discover-card,.game-guide-button) {
+  background-color:var(--hp-surface);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.search-trigger,.stats-bar .stat,.xp-bar-track,.xp-lv-badge) {
+  background-color:var(--hp-panel-tint);
+  border-color:var(--hp-line);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-hero,.game-pc:hover,.portal-discover-card:hover) {
+  border-color:var(--hp-line);
+  box-shadow:var(--hp-shadow);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell .studio-hero {
+  background:linear-gradient(112deg,var(--hp-surface),var(--palette-hero) 76%);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-hero h1,.studio-button.quiet) {
+  color:var(--hp-ink);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-hero-copy > p:not(.studio-kicker),.game-guide-button,.xp-label,.xp-next,.xp-cur,.xp-pct,.xp-max) {
+  color:var(--hp-muted);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell .studio-button.quiet {
+  background:var(--hp-surface);
+  border-color:var(--hp-line);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-hero h1 span,.studio-section-tag,.stat-v,.portal-footer a:last-child) {
+  color:var(--hp-accent);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-kicker,.header-avatar,.nav-item:is(.active,:hover),.game-filters button:is([aria-pressed="true"],:hover),.card-play,.auth-guest-icon,.auth-kaju-send,.eco-quick-ico,.portal-discover-card > span,.recent-game .studio-recent-play,.xp-lv-badge) {
+  background-color:var(--hp-soft);
+  border-color:var(--hp-line);
+  color:var(--hp-accent);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell #gameCount {
+  background:var(--hp-soft);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-button.primary,.auth-google-btn,.eco-quick-badge,.card-actions .card-play:is(:hover,:focus-visible)) {
+  background:var(--hp-accent);
+  color:var(--palette-on);
+  box-shadow:none;
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.studio-button.primary,.auth-google-btn,.pc-button.primary,#guidePlay):hover {
+  background:var(--palette-hover);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.eco-quick-btn,.game-guide-button,.portal-discover-card):hover {
+  background:var(--hp-soft);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell .xp-bar-fill {
+  background:linear-gradient(90deg,var(--hp-accent),color-mix(in srgb,var(--hp-accent),white 22%));
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.lobby.hero-shell :is(button,a,input):focus-visible {
+  outline-color:var(--hp-accent);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.hero-select-overlay,.tetris-overlay,.chess-root,.tavla-root,.kl-root) {
+  --gc-blue:var(--hp-accent);
+  --gc-soft:var(--hp-panel-tint);
+  --gc-tint:var(--hp-soft);
+  --gc-face:linear-gradient(154deg,var(--hp-surface) 36%,var(--hp-panel-tint));
+  --gc-accent:linear-gradient(135deg,var(--hp-accent),var(--palette-hover));
+  --gc-ambient:radial-gradient(ellipse at 5% 0%,var(--hp-soft),transparent 65%),var(--hp-canvas);
+  --gc-focus:var(--hp-accent);
+}
+html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell :is(.cm-head,.tvm-head,.tetris-head,.kl-men-head) {
+  background:linear-gradient(122deg,var(--hp-surface),var(--hp-soft));
+}
+@media (max-width:1100px) {
+  html:is([data-portal-palette="pearl"],[data-portal-palette="sea"]) .portal.hero-shell .bottom-nav {
+    background:var(--hp-surface);
+    background:color-mix(in srgb,var(--hp-surface) 97%,transparent);
+  }
+}
+
+/* Scroll the controls, leaving the dialog title and close button accessible. */
+body.portal.hero-shell .portal-settings-dialog {
+  position:fixed;
+  inset:0;
+  margin:auto;
+  min-width:0;
+  width:min(34rem,calc((100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)) / var(--settings-zoom,1)));
+  max-width:none;
+  max-height:none;
+  padding:0;
+  border:1px solid var(--hp-line);
+  border-radius:20px;
+  background:var(--hp-surface);
+  color:var(--hp-ink);
+  box-shadow:var(--hp-dialog-shadow);
+  overflow:hidden;
+  color-scheme:light;
+}
+body.portal.hero-shell .portal-settings-dialog::backdrop { background:#13214785; backdrop-filter:blur(7px); }
+body.portal.hero-shell .portal-settings-dialog .settings-sheet {
+  display:flex;
+  flex-direction:column;
+  max-height:min(42rem,calc((100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) / var(--settings-zoom,1)));
+  min-width:0;
+  width:100%;
+  max-width:none;
+  padding:0;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+}
+body.portal.hero-shell .portal-settings-dialog .settings-head {
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--hp-line);
+  background:var(--hp-surface);
+}
+body.portal.hero-shell .portal-settings-dialog .settings-head h2 {
+  font:850 22px/1.15 var(--font-body);
+  letter-spacing:-.04em;
+  color:var(--hp-ink);
+}
+body.portal.hero-shell .portal-settings-dialog .settings-kicker {
+  margin:0 0 2px;
+  font:850 9px/1.3 var(--font-body);
+  letter-spacing:.14em;
+  color:var(--hp-accent);
+}
+body.portal.hero-shell .portal-settings-dialog .settings-close {
+  display:grid;
+  place-items:center;
+  flex:0 0 44px;
+  min-width:44px;
+  min-height:44px;
+  padding:0;
+  border-radius:11px;
+  font:650 24px/1 var(--font-body);
+}
+body.portal.hero-shell .portal-settings-dialog .settings-scroll {
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:12px 16px 16px;
+  scrollbar-color:var(--hp-panel-blue-line) transparent;
+}
+body.portal.hero-shell .portal-settings-dialog .set-theme-section { margin-top:0; }
+body.portal.hero-shell .portal-settings-dialog .set-theme-lbl {
+  font:850 13px/1.25 var(--font-body);
+  letter-spacing:0;
+}
+body.portal.hero-shell .portal-settings-dialog .settings-accents summary { cursor:pointer; min-height:36px; padding:8px 0; }
+body.portal.hero-shell .portal-settings-dialog .settings-hint {
+  margin:4px 0 10px;
+  color:var(--hp-muted);
+  font:600 11px/1.45 var(--font-body);
+}
+body.portal.hero-shell .portal-palette-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+body.portal.hero-shell .portal-palette {
+  display:grid;
+  align-content:start;
+  gap:3px;
+  min-width:0;
+  padding:6px;
+  border:1px solid var(--hp-line);
+  border-radius:10px;
+  background:var(--hp-surface);
+  color:var(--hp-ink);
+  text-align:left;
+}
+body.portal.hero-shell .portal-palette[aria-pressed="true"] {
+  background:var(--hp-panel-blue);
+  border-color:var(--hp-accent);
+  box-shadow:inset 0 0 0 1px var(--hp-accent);
+}
+body.portal.hero-shell .portal-palette .palette-name { font:850 11px/1.2 var(--font-body); }
+body.portal.hero-shell .portal-palette small { color:var(--hp-muted); font:650 10px/1.25 var(--font-body); }
+body.portal.hero-shell .portal-palette .palette-preview {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:16px 10px;
+  gap:3px;
+  margin-bottom:3px;
+  padding:4px;
+  border:1px solid var(--hp-line);
+  border-radius:5px;
+  background:var(--pv-canvas);
+}
+body.portal.hero-shell .palette-preview > span {
+  display:flex;
+  align-items:center;
+  grid-column:1/-1;
+  padding:2px 3px;
+  border-radius:3px;
+  background:var(--pv-soft);
+}
+body.portal.hero-shell .palette-preview > span::before {
+  content:"";
+  width:55%;
+  height:5px;
+  background:var(--pv-ink);
+  border-radius:2px;
+}
+body.portal.hero-shell .palette-preview > i { border-radius:2px; background:var(--pv-soft); }
+body.portal.hero-shell .palette-preview > i:first-of-type { background:var(--pv-accent); }
+body.portal.hero-shell .portal-settings-dialog :is(.portal-palette,summary):focus-visible {
+  outline:2px solid var(--hp-accent);
+  outline-offset:2px;
+}
+body.portal.hero-shell .portal-settings-dialog .set-row > span { min-width:0; overflow-wrap:anywhere; }
+body.portal.hero-shell .portal-settings-dialog .set-tgl { flex:none; max-width:58%; padding-inline:8px; overflow-wrap:anywhere; }
+@media (max-width:390px) {
+  body.portal.hero-shell .portal-settings-dialog :is(.settings-head,.settings-scroll) { padding-inline:12px; }
+  body.portal.hero-shell .portal-settings-dialog .set-theme-section { padding-inline:8px; }
+  body.portal.hero-shell .portal-palette small { font-size:9px; }
+}

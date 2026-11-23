@@ -523,6 +523,7 @@ function drawCBSymbol(ctx, px, py, size, color){
 }
 
 function drawBoard(){
+  if(!G?.cellSize) return;
   const ctx = G.ctx, s = G.cellSize;
   ctx.clearRect(0,0,G.canvas.width,G.canvas.height);
   const bed=ctx.createLinearGradient(0,0,COLS*s,ROWS*s);
@@ -2097,7 +2098,7 @@ function build(){
       <div class="tetris-board-wrap">
         <canvas class="tetris-canvas" style="position:relative;z-index:1"></canvas>
         <div class="t-fxlayer"></div>
-        <canvas class="tetris-ai-canvas" style="display:none;position:absolute;top:0;left:0;z-index:0;pointer-events:none"></canvas>
+        <canvas class="tetris-ai-canvas" style="display:none;pointer-events:none"></canvas>
         <div class="t-ai-label" style="display:none">🤖 AI</div>
         <div class="t-flash"></div>
         <div class="tetris-gameover">
@@ -2174,59 +2175,40 @@ function build(){
 
 function fitCanvas(){
   const wrap = G.root.querySelector('.tetris-board-wrap');
-  // Genişlik
-  let availW = wrap.clientWidth;
-  if(!availW || availW < 40){
-    const sideW = 56 + 6;    // yan panel(56) + gap(6)
-    availW = Math.max(120, (window.innerWidth || 360) - sideW - 12);
-  }
-  // Yükseklik: sarmalayıcının GERÇEK yüksekliğini ölç (mod barı, güç satırı,
-  // kontroller flex ile yer kaptıktan SONRA kalan alan). Sabit tahmin yapma.
-  let availH = wrap.clientHeight;
-  if(!availH || availH < 60){
-    // İlk render'da ölçülememişse güvenli tahmin (tüm UI elemanlarını düş)
-    const modeBarH = (G.mode && G.mode !== 'solo') ? 30 : 0;
-    availH = Math.max(200, (window.innerHeight || 640) - 56 - modeBarH - 66 - 70 - 24);
-  }
-  // Hücre boyutu: hem genişliğe hem yüksekliğe sığmalı (küçük olanı seç)
-  let cs;
-  if(G.ai && G.el.aiCanvas){
-    // Bölünmüş ekran: oyuncu tahtası (büyük) + AI tahtası (küçük) yan yana
-    // Genişliği paylaş: oyuncu ~62%, AI ~34%, arada boşluk
-    const gap = 8;
-    const playerW = Math.floor((availW - gap) * 0.64);
-    const aiW = Math.floor((availW - gap) * 0.36);
-    const csW = Math.floor(playerW / COLS);
-    const csH = Math.floor(availH / ROWS);
-    cs = Math.min(csW, csH);
-    if(cs < 8) cs = 8;
-    G.cellSize = cs;
-    // AI hücre boyutu (kendi genişliğine + yüksekliğe sığsın)
-    const aiCsW = Math.floor(aiW / COLS);
-    const aiCsH = Math.floor(availH / ROWS);
-    let aiCs = Math.min(aiCsW, aiCsH);
-    if(aiCs < 5) aiCs = 5;
-    G.aiCell = aiCs;
-    const dpr = window.devicePixelRatio || 1;
-    G.canvas.width = COLS*cs*dpr; G.canvas.height = ROWS*cs*dpr;
-    G.canvas.style.width = (COLS*cs)+'px'; G.canvas.style.height = (ROWS*cs)+'px';
-    G.ctx.setTransform(dpr,0,0,dpr,0,0);
-    G.el.aiCanvas.width = COLS*aiCs*dpr; G.el.aiCanvas.height = ROWS*aiCs*dpr;
-    G.el.aiCanvas.style.width = (COLS*aiCs)+'px'; G.el.aiCanvas.style.height = (ROWS*aiCs)+'px';
-    G.aiCtx.setTransform(dpr,0,0,dpr,0,0);
-    return;
-  }
-  const csW = Math.floor(availW / COLS);
+  // A hidden or very short board must never get a guessed full-height canvas.
+  // Reserve its frame in both axes before selecting a whole number of pixels.
+  const availW = wrap.clientWidth - 4;
+  const availH = wrap.clientHeight - 4;
+  if(availW < COLS || availH < ROWS) return false;
   const csH = Math.floor(availH / ROWS);
-  cs = Math.min(csW, csH);
-  if(cs < 8) cs = 8;
-  G.cellSize = cs;
   const dpr = window.devicePixelRatio || 1;
-  G.canvas.width  = COLS * cs * dpr;
-  G.canvas.height = ROWS * cs * dpr;
+  let cs = Math.min(Math.floor(availW / COLS), csH);
+  let aiCs = null;
+  if(G.ai && G.el.aiCanvas){
+    // Two real flex children: reserve the second frame and the 8px gap.
+    const splitWidth = availW - 12;
+    const aiW = Math.max(COLS, Math.floor(splitWidth * .36));
+    cs = Math.min(Math.floor((splitWidth - aiW) / COLS), csH);
+    aiCs = Math.min(Math.floor(aiW / COLS), csH);
+    if(cs < 1) return false;
+  }
+  if(G.cellSize === cs && G.aiCell === aiCs && G.canvasDpr === dpr) return false;
+  if(aiCs !== null){
+    G.el.aiCanvas.width = Math.floor(COLS * aiCs * dpr);
+    G.el.aiCanvas.height = Math.floor(ROWS * aiCs * dpr);
+    G.el.aiCanvas.style.width = COLS * aiCs + 'px';
+    G.el.aiCanvas.style.height = ROWS * aiCs + 'px';
+    G.aiCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  G.cellSize = cs;
+  G.aiCell = aiCs;
+  G.canvasDpr = dpr;
+  G.canvas.width  = Math.floor(COLS * cs * dpr);
+  G.canvas.height = Math.floor(ROWS * cs * dpr);
   G.canvas.style.width  = (COLS*cs) + 'px';
   G.canvas.style.height = (ROWS*cs) + 'px';
   G.ctx.setTransform(dpr,0,0,dpr,0,0);
+  return true;
 }
 
 function bindControls(){
@@ -2286,7 +2268,7 @@ function bindControls(){
 
   // Klavye (masaüstü testte kolaylık)
   G.keyHandler = (e) => {
-    if(!G || G.portalMinimized || G.networkHold) return;
+    if(!G || G.portalMinimized || G.portalSocialOpen || G.networkHold) return;
     const target=e.target;
     if(e.isComposing || target?.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(target?.tagName||'') || target?.closest?.('[role="textbox"]')) return;
     const k = e.key;
@@ -2421,16 +2403,35 @@ export function setPortalMinimized(hidden){
   if(hidden){
     G.controlStops?.forEach(stop=>stop());
     G.portalMinimizeRound=G.round;
-    G.portalResumeAfterMinimize=!(G.versus&&!G.ai)&&!G.over&&!G.paused;
-    if(G.portalResumeAfterMinimize)togglePause(true);
+    const socialPause=G.portalSocialOpen?.paused && G.portalSocialOpen.round===G.round;
+    G.portalResumeAfterMinimize=!(G.versus&&!G.ai)&&!G.over&&(!G.paused||socialPause);
+    if(G.portalResumeAfterMinimize&&!G.paused)togglePause(true);
   }else{
     const resume=G.portalResumeAfterMinimize&&G.portalMinimizeRound===G.round;
     G.portalResumeAfterMinimize=false;G.portalMinimizeRound=null;
-    if(resume&&!(G.versus&&!G.ai)&&!G.over)togglePause(false);
+    if(resume&&!G.portalSocialOpen&&!(G.versus&&!G.ai)&&!G.over)togglePause(false);
     const session=G;
     requestAnimationFrame(()=>{if(G===session&&!G.portalMinimized){fitCanvas();drawBoard();}});
   }
   return true;
+}
+
+// Reading portal chat pauses only local play. The room connection and clocks
+// of an online duel keep running, and a manual pause is left as the user set it.
+export function setPortalSocialOpen(open,root){
+  const game=G;
+  if(!game || (root && game.root!==root)) return;
+  if(open){
+    if(game.portalSocialOpen || !game.root?.isConnected) return;
+    game.controlStops?.forEach(stop=>stop());
+    const paused=!!game.round && !game.portalMinimized && !game.over && !game.paused && !(game.versus&&!game.ai);
+    game.portalSocialOpen={round:game.round,paused};
+    if(paused)togglePause(true);
+    return;
+  }
+  const social=game.portalSocialOpen;
+  game.portalSocialOpen=null;
+  if(social?.paused && social.round===game.round && game.root?.isConnected && !game.portalMinimized && !game.over && !document.hidden && !(game.versus&&!game.ai))togglePause(false);
 }
 
 function startGame(){
@@ -2602,6 +2603,7 @@ export function closePortalGame(root){
 }
 function close(discard=false){
   if(!G) return;
+  G.boardObserver?.disconnect();
   clearTimeout(G.onlineCloseTimer);
   clearTimeout(G.onlineSyncTimer);
   clearTimeout(G.onlineSyncRetryTimer);
@@ -2649,8 +2651,18 @@ function launchGame(){
     },
     raf: 0
   };
-  G.resizeHandler = () => { if(G){ fitCanvas(); drawBoard(); } };
+  const session=G;
+  G.resizeHandler = () => {
+    if(G===session && !G.portalMinimized && fitCanvas()){
+      drawBoard();
+      drawAIBoard();
+    }
+  };
   window.addEventListener('resize', G.resizeHandler);
+  if(typeof ResizeObserver==='function'){
+    G.boardObserver = new ResizeObserver(G.resizeHandler);
+    G.boardObserver.observe(root.querySelector('.tetris-board-wrap'));
+  }
   G.vis = () => {
     if(!G) return;
     G.last = 0;
@@ -2676,10 +2688,8 @@ function launchGame(){
     });
   }catch(e){}
   startGame();
-  const session=G;
-  // DOM yerleştikten sonra gerçek ölçüyle yeniden boyutlandır (mod barı dahil)
-  requestAnimationFrame(() => { if(G===session){ fitCanvas(); drawBoard(); } });
-  setTimeout(() => { if(G===session){ fitCanvas(); drawBoard(); } }, 80);
+  // Read the final area after the synchronous mode bar / HUD update too.
+  requestAnimationFrame(session.resizeHandler);
 }
 
 // Çok oyunculu oyunu başlat (versus modu)

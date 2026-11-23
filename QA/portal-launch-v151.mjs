@@ -7,10 +7,10 @@ const source = fs.readFileSync(new URL('js/game-launcher.js', root), 'utf8');
 const social = fs.readFileSync(new URL('js/social.js', root), 'utf8');
 function fixture(){
   const events = [], messages = [], imports = [], storage = new Map();
-  let active = null, uid = 'player-a';
+  let active = null, dock = null, uid = 'player-a';
   const context = vm.createContext({
     window:{Hero:{toast:(...args) => messages.push(args)}},
-    document:{querySelector:() => active, dispatchEvent:event => events.push(event)},
+    document:{querySelector:selector => selector === '.portal-resume' ? dock : active, dispatchEvent:event => events.push(event)},
     CustomEvent:class { constructor(type, options){ this.type = type; this.detail = options.detail; } },
     console:{error:()=>{}},
     __load:path => new Promise((resolve,reject) => imports.push({path,resolve,reject})),
@@ -21,9 +21,21 @@ function fixture(){
   const start = social.indexOf('function _launchGameAsInviteHost(');
   const end = social.indexOf('// ── Profil: arkadaş listesi', start);
   vm.runInContext(social.slice(start,end) + '\nthis.host=_launchGameAsInviteHost;this.guest=_acceptGameInvite;', context);
-  return {context, events, messages, imports, storage, setActive:value => active=value, setUid:value => uid=value};
+  return {context, events, messages, imports, storage, setActive:value => active=value, setDock:value=>dock=value, setUid:value => uid=value};
 }
 let groups = 0;
+{
+  const f=fixture(),root={dataset:{portalMinimized:'true'}};
+  let restores=0;
+  f.setActive(root);
+  f.setDock({hidden:false,dataset:{game:'chess'},click:()=>{restores++;delete root.dataset.portalMinimized;}});
+  assert.equal(await f.context.launch('tavla'),false,'another game cannot replace a parked match');
+  assert.match(f.messages.at(-1)[0],/Satranç açık/);
+  assert.equal(await f.context.launch('chess',{open:()=>assert.fail('invite must not replace a parked match')}),false);
+  assert.equal(restores,0);
+  assert.equal(await f.context.launch('chess'),true,'same ordinary card restores its existing round');
+  assert.equal(restores,1);assert.equal(f.imports.length,0);assert.equal(f.events.length,0);groups++;
+}
 {
   const f = fixture(); let opens=0;
   const first = f.context.launch('chess'), duplicate = f.context.launch('chess');

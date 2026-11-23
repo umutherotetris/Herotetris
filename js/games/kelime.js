@@ -106,17 +106,12 @@ function injectStyles(){
 .kl-status .kl-turn.opp{background:rgba(168,85,247,.2);color:#e3d3ff;border:1px solid rgba(200,170,255,.25)}
 .kl-boardwrap{flex:1 1 auto;display:flex;align-items:center;justify-content:center;padding:4px 8px;min-height:0;position:relative}
 .kl-boardwrap.large-scroll{align-items:flex-start;justify-content:flex-start;overflow:auto;-webkit-overflow-scrolling:touch}
-.kl-zoomdock{position:fixed;z-index:9998;display:flex;align-items:center;gap:3px;padding:3px 3px 3px 9px;border-radius:999px;background:linear-gradient(165deg,rgba(52,37,23,.92),rgba(30,21,13,.92));backdrop-filter:blur(6px);border:1px solid rgba(255,220,170,.22);box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,235,200,.14);touch-action:none;user-select:none;cursor:grab}
-.kl-zoomdock::before{content:'';width:3px;height:14px;margin-right:4px;border-radius:2px;background:repeating-linear-gradient(180deg,rgba(255,225,170,.45) 0 2px,transparent 2px 4px)}
-.kl-zoomdock:active{cursor:grabbing}
-.kl-zbtn{width:22px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.05);color:#ffe08a;font-size:10px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:none;transition:transform .12s,background .12s}
-.kl-zbtn:active{transform:scale(.88);background:rgba(255,220,150,.18)}
-.kl-zbtn.active{background:rgba(240,177,50,.32);border-color:#f0b132;box-shadow:0 0 9px rgba(240,177,50,.45)}
-.kl-zbtn:active{transform:scale(.88)}
-.kl-ztip{position:fixed;white-space:nowrap;background:#2a1c12;color:#ffe9b8;font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,220,170,.3);box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999}
-.kl-ztip.show{opacity:1}
+.kl-board-tools{display:flex;align-items:center;gap:6px;padding:0 7px;flex:0 0 auto;min-width:0}
+.kl-zoomdock{display:flex;align-items:center;gap:4px;margin-inline-start:auto}
+.kl-zbtn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.09);color:#ffe08a;font-size:13px;line-height:1;display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
+.kl-zbtn.active{background:rgba(240,177,50,.32);border-color:#f0b132}
 .kl-starbar{text-align:center;font-size:15px;letter-spacing:3px;color:#ffd86b;line-height:1;margin:-2px 0 3px;flex:0 0 auto;text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.kl-flagbtn{position:absolute;top:8px;right:10px;z-index:30;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,220,170,.25);background:linear-gradient(165deg,rgba(52,37,23,.9),rgba(30,21,13,.9));font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);transition:transform .12s}
+.kl-flagbtn{position:static;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,220,170,.25);background:linear-gradient(165deg,rgba(52,37,23,.9),rgba(30,21,13,.9));font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.4);transition:transform .12s}
 .kl-flagbtn:active{transform:scale(.9)}
 .kl-gm-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
 .kl-board{display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);gap:1.5px;width:min(96vw,460px);aspect-ratio:1;background:linear-gradient(145deg,#77583b,#48331f);border:3px solid #2c2013;border-radius:12px;padding:5px;box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 0 1px rgba(255,220,170,.16),inset 0 0 0 2px rgba(255,208,138,.18),inset 0 2px 5px rgba(0,0,0,.42);isolation:isolate;color:#5f482d}
@@ -337,8 +332,8 @@ export function closePortalGame(root){
 function closeKelime(discard=false){ cancelTileInteractions(); G?._boardObserver?.disconnect(); G?._sessionStatus?.destroy(); G?._tip?.remove(); G?._hud?.destroy?.(); try{ if(G && G._home) G._home.remove(); }catch(e){} try{ if(discard!==true)saveKelimeResume(); }catch(e){} if(G && G._oppGrace){ try{ clearTimeout(G._oppGrace); }catch(e){} } try{ stopOnlineHeartbeat(); }catch(e){} try{ stopInviteListen(); }catch(e){} try{ stopTurnTimer(); }catch(e){} try{ if(KO) KO.leaveRoom(); }catch(e){} if(G && G.vis){ try{ document.removeEventListener('visibilitychange', G.vis); }catch(e){} } if(G && G.root) G.root.remove(); G=null; }
 
 
-// Portal navigation keeps the live round mounted. Timers and online transport
-// continue; held pointer gestures and the floating home control are released.
+// Keep the round mounted. Online deadlines are independent of this view;
+// local timed rounds preserve their remaining time when the board is hidden.
 export function setPortalMinimized(hidden){
   if(!G?.root) return false;
   const minimized=!!hidden;
@@ -1308,13 +1303,17 @@ function buildGameDOM(){
         <div class="pt" data-el="ptB">0</div>
       </div>
     </div>
-    <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
-    <button class="kl-flagbtn" data-act="gamemenu" title="Oyun seçenekleri">🏳️</button>
+    <div class="kl-board-tools">
+      <div class="kl-starbar" data-el="starbar" title="Performans yıldızların"><span data-el="stars">★☆☆</span></div>
+      <div class="kl-zoomdock" data-el="zoomdock" role="group" aria-label="Tahta ölçeği">
+        <button type="button" class="kl-zbtn" data-act="zin" aria-label="Tahtayı yakınlaştır" title="Yakınlaştır">＋</button>
+        <button type="button" class="kl-zbtn" data-act="zout" aria-label="Tahtayı ekrana sığdır" title="Ekrana sığdır">⤢</button>
+      </div>
+      <button type="button" class="kl-flagbtn" data-act="gamemenu" aria-label="Oyun seçenekleri" title="Oyun seçenekleri">🏳️</button>
+    </div>
     <div class="kl-timerbar" data-el="timerbar"><div class="kl-timerfill" data-el="timerfill"></div></div>
     <div class="kl-status" data-el="status"></div>
     <div class="kl-session-host" data-el="session"></div>
-    <div class="kl-zoomdock" data-el="zoomdock"><button class="kl-zbtn" data-act="zin" title="Yakınlaştır">🔎</button><button class="kl-zbtn" data-act="zout" title="Uzaklaştır">🔭</button></div>
-    <span class="kl-ztip" data-el="ztip"></span>
     <div class="kl-boardwrap"><div class="kl-board" data-el="board">${cells}</div></div>
     <div class="kl-rackwrap">
       <div class="kl-rack" data-el="rack"></div>
@@ -1363,71 +1362,13 @@ function sndZoom(zin){
   else { tone(760,0.06,'sine',0.06); setTimeout(()=>tone(420,0.09,'sine',0.06),55); }
 }
 
-// Büyüteç/teleskop dock'u: iki simge yan yana, ekranda her yere sürüklenip park edilebilir, dokun=zoom
+// Tahta ölçeği sabit araç satırında kalsın; üst çubuğu veya kareleri örtmesin.
 function bindZoomDock(){
   const dock = G.root.querySelector('[data-el="zoomdock"]');
-  if(!dock) return;
-  // varsayılan konum: tahtanın hemen üstü (yoksa) — yan yana
-  if(G.zoomPos){ placeDock(dock, G.zoomPos.left, G.zoomPos.top); }
-  else { requestAnimationFrame(()=>defaultDockPos(dock)); }
-  let sx=0, sy=0, dx0=0, dy0=0, moved=false, dragging=false, startBtn=null;
-  dock.addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    dragging=true; moved=false;
-    startBtn = e.target.closest('.kl-zbtn');
-    const r=dock.getBoundingClientRect();
-    sx=e.clientX; sy=e.clientY; dx0=r.left; dy0=r.top;
-    try{ dock.setPointerCapture(e.pointerId); }catch(_){}
-    if(startBtn) showZTip(startBtn);
-  });
-  dock.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    // ZOOM telafisi: Arayüz Boyutu (body zoom) aktifken clientX ölçekli, rect ölçeksiz gelir.
-    const _z = (window.__uiScale && window.__uiScale !== 1) ? window.__uiScale : 1;
-    const mx=(e.clientX-sx)/_z, my=(e.clientY-sy)/_z;
-    if(Math.abs(mx)+Math.abs(my)>6){ moved=true; hideZTip(); }
-    if(moved){
-      const nl=Math.max(2,Math.min(window.innerWidth-dock.offsetWidth-2, dx0+mx));
-      const nt=Math.max(2,Math.min(window.innerHeight-dock.offsetHeight-2, dy0+my));
-      placeDock(dock, nl, nt);
-    }
-  });
-  const end = e=>{
-    if(!dragging) return; dragging=false;
-    try{ dock.releasePointerCapture(e.pointerId); }catch(_){}
-    if(moved){ const r=dock.getBoundingClientRect(); G.zoomPos={ left:r.left, top:r.top }; }
-    else if(startBtn){ doZoom(startBtn.dataset.act === 'zin'); }   // dokunma → o simgenin zoom'u
-    setTimeout(hideZTip, 700);
-    startBtn=null;
-  };
-  dock.addEventListener('pointerup', end);
-  dock.addEventListener('pointercancel', end);
-  dock.querySelectorAll('.kl-zbtn').forEach(btn=>{
-    btn.addEventListener('pointerenter', ()=>{ if(!dragging) showZTip(btn); });
-    btn.addEventListener('pointerleave', ()=>{ if(!dragging) hideZTip(); });
+  dock?.querySelectorAll('.kl-zbtn').forEach(btn=>{
+    btn.addEventListener('click',()=>doZoom(btn.dataset.act === 'zin'));
   });
 }
-function placeDock(dock, left, top){ dock.style.left=left+'px'; dock.style.top=top+'px'; }
-function defaultDockPos(dock){
-  const board = G.root.querySelector('[data-el="board"]');
-  if(!board){ placeDock(dock, window.innerWidth-90, 120); return; }
-  const r = board.getBoundingClientRect();
-  const left = r.left + r.width - dock.offsetWidth - 4;
-  const top  = Math.max(4, r.top - dock.offsetHeight - 10);   // tahtanın üstünün biraz daha üstü
-  placeDock(dock, left, top);
-}
-function showZTip(btn){
-  const tip = G.root.querySelector('[data-el="ztip"]'); if(!tip || !btn) return;
-  tip.textContent = btn.dataset.act === 'zin' ? 'Yakınlaştır' : 'Uzaklaştır';
-  tip.classList.add('show');
-  const r = btn.getBoundingClientRect();
-  const tw = tip.offsetWidth || 90;
-  let left = r.left + r.width/2 - tw/2;
-  left = Math.max(4, Math.min(window.innerWidth - tw - 4, left));
-  tip.style.left = left+'px';
-  tip.style.top = Math.max(4, r.top - (tip.offsetHeight||26) - 6)+'px';   // simgenin üstünde
-}
-function hideZTip(){ const tip = G && G.root && G.root.querySelector('[data-el="ztip"]'); if(tip) tip.classList.remove('show'); }
 
 // Tahtaya çift dokunma → zoom aç/kapa
 function bindBoardDoubleTap(){
@@ -1460,8 +1401,8 @@ function applyZoom(){
   const large = G.zoom === 'large';
   board.classList.toggle('large', large); wrap.classList.toggle('large-scroll', large);
   const zin = G.root.querySelector('[data-act="zin"]'), zout = G.root.querySelector('[data-act="zout"]');
-  if(zin) zin.classList.toggle('active', large);
-  if(zout) zout.classList.toggle('active', !large);
+  if(zin){ zin.classList.toggle('active', large); zin.setAttribute('aria-pressed',String(large)); }
+  if(zout){ zout.classList.toggle('active', !large); zout.setAttribute('aria-pressed',String(!large)); }
 }
 
 function renderAll(){ renderScores(); renderBoard(); renderRack(); if(G.pending && G.pending.length) previewMove(); }
@@ -2092,6 +2033,7 @@ function startTurnTimer(){
   updateTimerUI();
   G.timer = setInterval(()=>{
     if(!G || !G.seri){ stopTurnTimer(); return; }
+    if(G._minimized && !G.online) return;
     G.timeLeft--;
     if(G.who==='A' && !G.aiThinking && G.timeLeft>0 && G.timeLeft<=5) tone(940,0.05,'square',0.05);
     updateTimerUI();

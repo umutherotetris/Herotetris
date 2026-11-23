@@ -41,7 +41,7 @@ function fixture(){
  const context=vm.createContext({console,rawFdb,Auth,Store,db:{},document,window:{Hero:{toast:(...args)=>notices.push(args)},addEventListener(){}},navigator:{},alert:(...a)=>notices.push(a),confirm:()=>true,
   localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value))},Date,Math,Number,Object,Array,Map,Set,Promise,JSON,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},
   __authModule:async()=>({ipKey:ip=>String(ip).replace(/\./g,'_'),isGhost:()=>false,setGhost:async()=>{}}),__socialModule:async()=>({GLOW_STYLES:{classic:{cls:'glow',label:'Classic'}}}),__checkModule:async()=>({})});
- vm.runInContext(source+`\nthis.A={setPanel:p=>P=p,getPanel:()=>P,getUsers:()=>_allUsersCache,setUsers:rows=>{_allUsersCache=rows;rebuildDupMap();},doSearch,loadTarget,renderTarget,doBan,doMute,doVice,doKick,doOP,refreshOPBtn,checkTargetIPBan,doIPBan,sendUserNotif,sendBroadcast,doForceNick,cleanAnonUsers,cleanDupNicks,cleanRegistry,rebuildRegistry,doDeleteUser,doResetProgress,toggleKHist,toggleChatLock,toggleAllUsers,openAdminPanel,closePanel,toggleLog,toggleOnline,toggleChatMod,refreshNickBans,toggleIPBans,runSystemCheckup};`,context);
+ vm.runInContext(source+`\nthis.A={setPanel:p=>P=p,getPanel:()=>P,getUsers:()=>_allUsersCache,setUsers:rows=>{_allUsersCache=rows;rebuildDupMap();},doSearch,loadTarget,renderTarget,applyUserFilter,showAdminView,doBan,doMute,doVice,doKick,doOP,refreshOPBtn,checkTargetIPBan,doIPBan,sendUserNotif,sendBroadcast,doForceNick,cleanAnonUsers,cleanDupNicks,cleanRegistry,rebuildRegistry,doDeleteUser,doResetProgress,toggleKHist,toggleChatLock,toggleAllUsers,openAdminPanel,closePanel,toggleLog,toggleOnline,toggleChatMod,refreshNickBans,toggleIPBans,runSystemCheckup};`,context);
  context.A.setPanel(panel);
  return{A:context.A,context,data,root,panel,target,document,opener,elements,reads,writes,hooks,listeners,storage,notices,rawFdb,read,put,
   node:selector=>root.querySelector(selector),setAuth:patch=>{state={...state,...patch};for(const fn of [...subscribers])fn(state);},emitRole:value=>{put('admins/admin',value);for(const listener of listeners)if(listener.active&&listener.path==='admins/admin')listener.fn(snap(value));}};
@@ -100,6 +100,30 @@ await test('notification retry after a lost reply reuses one row and preserves e
 await test('broadcast retry is idempotent and cannot continue as a new account',async()=>{
  const f=fixture();f.node('[data-el="bcText"]').value='Announcement';let once=true;f.hooks.afterSet=path=>{if(path.startsWith('broadcasts/')&&once){once=false;throw new Error('Ack lost');}};
  await f.A.sendBroadcast();f.hooks.afterSet=null;await f.A.sendBroadcast();assert.equal(Object.keys(f.data.broadcasts).length,1);
+});
+await test('fresh identical, previously confirmed messages are new writes',async()=>{
+ const f=fixture();
+ for(let round=0;round<2;round++){
+  f.node('[data-el="bcText"]').value='Repeated announcement';await f.A.sendBroadcast();
+  f.node('[data-el="ntfText"]').value='Repeated notice';await f.A.sendUserNotif();
+ }
+ assert.equal(Object.keys(f.data.broadcasts).length,2);
+ assert.equal(Object.keys(f.data.userNotifs.old).length,2);
+});
+await test('a missing search target clears the former selection and its controls',async()=>{
+ const f=fixture();f.context.Auth.resolveNick=async()=>null;f.node('[data-el="q"]').value='Nonexistent';
+ f.node('[data-el="result"]').innerHTML='Stale player';
+ await f.A.doSearch();
+ assert.equal(f.panel.target,null);assert.equal(f.node('[data-el="result"]').innerHTML,'');
+ assert.match(f.node('[data-el="msg"]').textContent,/bulunamadı/);
+});
+await test('player filters combine Turkish search with assigned nickname state',async()=>{
+ const f=fixture();
+ f.A.setUsers([{uid:'a',nick:'İpek',name:'İpek'},{uid:'b',name:'Işıl'},{uid:'c',name:'Different'}]);
+ f.A.applyUserFilter('nonick','iSiL');
+ assert.match(f.node('[data-el="allusers"]').innerHTML,/Işıl/);
+ assert.doesNotMatch(f.node('[data-el="allusers"]').innerHTML,/İpek|Different/);
+ assert.equal(f.node('[data-el="userCount"]').textContent,'1 / 1 oyuncu');
 });
 await test('operator and IP reads belong to the original target and cannot default to unsafe writes',async()=>{
  const f=fixture();await f.A.doOP();assert.equal(f.read('gcOperators/old'),null);
@@ -161,4 +185,4 @@ await test('live role revocation closes panel, removes listeners and restores op
  const f=fixture();f.A.closePanel();f.A.openAdminPanel();await settle();const panel=f.A.getPanel();assert.ok(panel);assert.equal(panel.root.attributes.role,'dialog');
  f.emitRole(null);assert.equal(f.A.getPanel(),null);assert.equal(panel.root.isConnected,false);assert.ok(f.listeners.every(listener=>!listener.active));assert.equal(f.opener.focused,true);
 });
-console.log(`PASS Admin v156: ${groups} actor, selection, authority, transaction, maintenance, deletion and UI lifecycle groups`);
+console.log(`PASS Admin v159: ${groups} actor, selection, authority, transaction, maintenance, deletion and UI lifecycle groups`);

@@ -4,7 +4,7 @@ umask 077
 
 android_src=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo=$(dirname "$android_src")
-apk_out="${1:-$(dirname "$repo")/Hero-Portal-v158.apk}"
+apk_out="${1:-$(dirname "$repo")/Hero-Portal-v159.apk}"
 sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
 sdk_jar="${ANDROID_JAR:-$sdk/platforms/android-36/android.jar}"
 tools="${ANDROID_BUILD_TOOLS:-$sdk/build-tools/36.0.0}"

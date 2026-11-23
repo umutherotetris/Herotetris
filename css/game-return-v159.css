@@ -1,0 +1,140 @@
+/* Match and portal controls share the shell's spacing and clear focus states. */
+body.portal.hero-shell .portal-game-tools {
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  min-width:0;
+  max-width:100%;
+  margin-inline-start:auto;
+}
+
+body.portal.hero-shell .portal-game-tools .portal-tool {
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  margin:0;
+  padding:0 8px;
+  min-height:42px;
+  border:1px solid #cfdbf4;
+  border-radius:9px;
+  background:#f7f9ff;
+  color:#233b75;
+  box-shadow:none;
+  white-space:nowrap;
+  font:750 11px/1.2 var(--font-body,system-ui);
+}
+body.portal.hero-shell .portal-game-tools .portal-tool:active {
+  background:#e5edff;
+  color:#193995;
+}
+body.portal.hero-shell .portal-game-tools .portal-tool:focus-visible,
+body.portal.hero-shell .portal-resume:focus-visible {
+  outline:2px solid #2452e7;
+  outline-offset:2px;
+}
+body.portal.hero-shell .portal-game-tools .portal-settings {
+  width:42px;
+  padding-inline:0;
+  font-size:17px;
+}
+
+body.portal.hero-shell .portal-resume {
+  position:sticky;
+  inset:auto;
+  top:max(4px,env(safe-area-inset-top,0px));
+  z-index:16;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:9px;
+  width:min(calc(100% - 24px),540px);
+  max-width:none;
+  min-height:48px;
+  margin:6px auto 0;
+  padding:5px 8px;
+  text-align:start;
+  border:1px solid #bfcef1;
+  border-radius:13px;
+  background:#f8faff;
+  box-shadow:0 5px 18px #16386d23;
+  color:#19346c;
+  font:750 13px/1.25 var(--font-body,system-ui);
+}
+body.portal.hero-shell .portal-resume[hidden] {display:none}
+.portal-resume-glyph {
+  display:grid;
+  place-items:center;
+  width:30px;height:30px;
+  border-radius:8px;
+  background:#e8efff;
+  color:#2549bc;
+  font-size:20px;
+}
+.portal-resume-copy {display:grid;gap:1px;min-width:0}
+.portal-resume-copy strong,.portal-resume-sub {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.portal-resume-sub {font-size:10px;font-weight:650;color:#536688}
+.portal-resume-cta {
+  padding:7px 10px;
+  border-radius:7px;
+  background:#244bd3;
+  color:#fff;
+  white-space:nowrap;
+}
+
+@media (max-width:420px) {
+  body.portal.hero-shell .portal-game-tools {gap:3px}
+  body.portal.hero-shell .portal-game-tools .portal-tool {padding-inline:6px;min-height:44px}
+  body.portal.hero-shell .portal-game-tools .portal-settings {width:44px;padding:0}
+}
+@media (max-height:510px) and (orientation:landscape) {
+  body.portal.hero-shell .portal-game-tools .portal-tool {min-height:34px}
+  body.portal.hero-shell .portal-game-tools .portal-settings {width:34px}
+}
+
+body.portal.hero-shell :is(.ghp-cc-panel,.ghp-cc-guide-box,.ghp-cc-confirm-box) {
+  --cc-accent:#244bd3;
+  --cc-glow:#5684f41a;
+  color:#183568;
+  background:#f8faff;
+  border-color:#ccd8f1;
+  box-shadow:0 12px 40px #1935753d;
+}
+body.portal.hero-shell :is(.ghp-cc-head,.ghp-cc-guide-h) {
+  background:#f2f6ff;
+  border-color:#dae4f9;
+}
+body.portal.hero-shell .ghp-cc-head :is(.t,.x),
+body.portal.hero-shell .ghp-cc-guide-h :is(.gt,.gx),
+body.portal.hero-shell .ghp-cc-confirm-box .tt,
+body.portal.hero-shell .ghp-cc-row .rl {
+  color:#183568;
+}
+body.portal.hero-shell :is(.ghp-cc-head .x,.ghp-cc-guide-h .gx) {
+  background:#fff;
+  border-color:#d0dcf6;
+}
+body.portal.hero-shell :is(.ghp-cc-home,.ghp-cc-confirm .go) {
+  color:white;
+}
+body.portal.hero-shell :is(.ghp-cc-confirm .ts,.ghp-cc-guide-item .gp) {
+  color:#455b87;
+}
+body.portal.hero-shell :is(.ghp-cc-confirm .stay,.ghp-cc-scale .sb,.ghp-cc-guide-btn) {
+  background:#eaf1ff;
+  color:#244581;
+  border-color:#d0dbf4;
+}
+body.portal.hero-shell .ghp-cc-guide-btn[data-cc=exit] {
+  margin-top:8px;
+  color:#8e2639;
+  background:#fff0f1;
+  border-color:#f2c9d0;
+}
+body.portal.hero-shell .ghp-cc-sw:not(.on) {
+  border-color:#a4b5d8;
+  background:#8295bc;
+}

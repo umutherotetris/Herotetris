@@ -22,9 +22,10 @@ import android.widget.TextView;
 
 public final class PortalActivity extends Activity {
     private static final Uri PORTAL_HOME = Uri.parse("https://umutherotetris.github.io/Herotetris/");
-    private static final int PORTAL_COLOR = 0xfff5f8ff;
+    private static final int PORTAL_COLOR = 0xfff3f7ff;
     private static final int INK_COLOR = 0xff12224a;
     private static final String CUSTOM_TABS_SERVICE = "android.support.customtabs.action.CustomTabsService";
+    private static final int CUSTOM_TABS_LIGHT_SCHEME = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,10 @@ public final class PortalActivity extends Activity {
                 Bundle extras = new Bundle();
                 // Standard Custom Tabs extras. Null session preserves a normal browser profile.
                 extras.putBinder("android.support.customtabs.extra.SESSION", (IBinder) null);
+                extras.putInt("androidx.browser.customtabs.extra.COLOR_SCHEME", CUSTOM_TABS_LIGHT_SCHEME);
                 extras.putInt("android.support.customtabs.extra.TOOLBAR_COLOR", PORTAL_COLOR);
+                extras.putInt("androidx.browser.customtabs.extra.NAVIGATION_BAR_COLOR", PORTAL_COLOR);
+                extras.putBoolean("android.support.customtabs.extra.ENABLE_URLBAR_HIDING", true);
                 Intent customTab = portalIntent().setPackage(browserPackage).putExtras(extras);
                 if (tryOpen(customTab)) return;
             }
