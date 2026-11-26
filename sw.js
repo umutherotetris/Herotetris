@@ -1,6 +1,6 @@
-/* Hero Portal 164: scoped game and portal cache. */
+/* Hero Portal 165: scoped game and portal cache. */
 'use strict';
-const HERO_BUILD = '164';
+const HERO_BUILD = '165';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
@@ -16,10 +16,10 @@ const CORE_ASSETS = [
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=157',
   'css/tetris.css?v=157', 'css/portal-centers.css?v=157', 'css/themes.css?v=124', 'css/portal.css?v=144',
-  'js/portal-worker.js?v=164', 'js/portal.js?v=164', 'js/app.js?v=164', 'js/nav.js',
+  'js/portal-worker.js?v=165', 'js/portal.js?v=165', 'js/app.js?v=165', 'js/nav.js',
   'js/economy.js', 'js/store.js', 'js/wallet-center.js',
   'js/game-return.js', 'js/game-launcher.js', 'js/game-home.js', 'js/game-social.js',
-  'js/games/chess.js', 'js/games/chess-engine.js', 'js/games/chess-board-art.js', 'js/games/chess-figure-atlas.js', 'css/chess-premium.css?v=162',
+  'js/games/chess.js', 'js/games/chess-engine.js', 'js/games/chess-board-art.js', 'js/games/chess-figure-atlas.js?v=165', 'css/chess-premium.css?v=162',
   'js/games/chess-ottoman.js', 'js/games/chess-ottoman-mesh.js?v=164', 'assets/ottoman-figures-v162.webp', 'assets/chess-ottoman-3d-v162.webp',
   'js/games/tavla.js', 'js/games/tavla-engine.js', 'css/tavla-premium.css?v=162',
   'js/portal-palette.js', 'js/profile.js', 'js/social.js',

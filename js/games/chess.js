@@ -117,7 +117,7 @@ let G = null;   // aktif oyun durumu (DOM + state)
 // Appearance is local to this device. It never enters a move, FEN or room message.
 const PIECE_STYLE_KEY = 'hero_chess_piece_style';
 const PIECE_PACKS = new Map([
-  ['ottoman3d', () => import('./chess-figure-atlas.js')],
+  ['ottoman3d', () => import('./chess-figure-atlas.js?v=165')],
   ['ottomanSculpt', () => import('./chess-ottoman.js')],
   ['ottomanMesh', () => import('./chess-ottoman-mesh.js?v=164')]
 ]);
