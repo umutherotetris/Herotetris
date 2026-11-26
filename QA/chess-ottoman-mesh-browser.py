@@ -102,9 +102,10 @@ with sync_playwright() as p:
                 if not row["mesh"]:
                     assert row["args"][0]==576
                     continue
-                x,y,w,h=row["args"]; centers.add((round(x+w/2,2),round(y+h*.53,2)))
+                x,y,w,h=row["args"]; centers.add((round(x+w/2,2),round(y+h*.5,2)))
                 assert inset <= x and x+w <= size-inset and 0 <= y and y+h <= size
                 assert w<=cell and h<=cell
+                assert y >= inset and y+h <= size-inset
             options={(round(inset+(col+.5)*cell,2),round(inset+(rank+.5)*cell,2))
                 for col in range(8) for rank in (0,1,6,7) if all32 or (col,rank) not in ((4,0),(4,7))}
             assert centers==options,(centers-options,options-centers)

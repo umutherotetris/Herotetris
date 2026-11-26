@@ -4,7 +4,7 @@
 import { loadOttomanPieces as loadFallback, drawOttomanPiece as drawFallback } from './chess-ottoman.js';
 
 const URLS = Object.fromEntries([...'rnbqkp'].map(piece=>[piece,new URL(`../../assets/ottoman-v163/ottoman-${piece}.glb`,import.meta.url).href]));
-const HEIGHT_FRAC={k:.86,q:.80,b:.75,n:.73,r:.69,p:.63};
+const HEIGHT_FRAC={k:.965,q:.94,b:.92,n:.91,r:.88,p:.83};
 const DEFAULT_YAW=.23, PIECE_YAW={n:.72,b:-.49};
 const TILE = 160;
 let tiles, loading;
@@ -85,7 +85,7 @@ void main(){
   float diffuse=max(dot(v,l),0.), fill=max(dot(v,normalize(vec3(.85,.25,.6))),0.);
   float edge=pow(1.-abs(v.z),2.);
   float sheen=pow(max(dot(v,normalize(l+vec3(0.,0.,1.))),0.),20.);
-  frag=vec4(uPalette[region]*(.72+.34*diffuse+.17*fill)+vec3(.065)*edge+vec3(.12)*sheen,1.);
+  frag=vec4(uPalette[region]*(.82+.34*diffuse+.19*fill)+vec3(.105)*edge+vec3(.10)*sheen,1.);
 }`;
 // Keep the calibrated silhouette inside the cell, with a common baseline.
 export function fitChessTile(mesh,piece) {
@@ -97,8 +97,8 @@ export function fitChessTile(mesh,piece) {
     const x=c*u-s*w,y=cu*v-su*(s*u+c*w);
     lx=Math.min(lx,x);hx=Math.max(hx,x);ly=Math.min(ly,y);hy=Math.max(hy,y);
   }
-  const scale=Math.min(1.72/(hx-lx),2*HEIGHT_FRAC[piece]/(hy-ly));
-  return {scale,center,yaw,offset:[-(lx+hx)*scale/2,-.79-ly*scale],
+  const scale=Math.min(1.90/(hx-lx),2*HEIGHT_FRAC[piece]/(hy-ly));
+  return {scale,center,yaw,offset:[-(lx+hx)*scale/2,-.95-ly*scale],
           projected:[(hx-lx)*scale,(hy-ly)*scale]};
 }
 function buildTiles(gl, mesh, piece) {
@@ -182,11 +182,11 @@ export async function loadOttomanPieces(onReady){
 export function drawOttomanPiece(ctx,cx,cy,cell,piece){
   const mesh=tiles?.get(piece?.t)?.get(piece.c);
   if(!mesh) return drawFallback(ctx,cx,cy,cell,piece);
-  const size=cell*.97;
+  const size=cell;
   ctx.save();
   ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();
-  ctx.ellipse(cx,cy+cell*.35,cell*.235,cell*.055,0,0,Math.PI*2);ctx.fill();
-  ctx.drawImage(mesh,cx-size/2,cy-size*.53,size,size);
+  ctx.ellipse(cx,cy+cell*.445,cell*.235,cell*.033,0,0,Math.PI*2);ctx.fill();
+  ctx.drawImage(mesh,cx-size/2,cy-size/2,size,size);
   ctx.restore();
   return true;
 }

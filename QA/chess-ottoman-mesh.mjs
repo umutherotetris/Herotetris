@@ -22,7 +22,9 @@ test('All six model assets are small, indexed, genuinely 3D, multi-region and sa
     assert.notDeepEqual([...m.palettes.w.data.slice(0,3)],[...m.palettes.b.data.slice(0,3)]);
     assert.equal(m.placeholder,false);
     const tile=fitChessTile(m,p);
-    assert.ok(tile.projected[0]<=1.721&&tile.projected[1]<=1.721);
+    assert.ok(tile.projected[0]<=1.901&&tile.projected[1]<=1.931);
+    assert.ok(tile.projected[1]>=(p==='p'?1.65:1.75), 'stone fills most of cell vertically');
+    assert.ok(-.95+tile.projected[1]<.99, 'stone does not clip at top');
     assert.ok(tile.projected[0]>0&&tile.projected[1]>0);
     assert.throws(()=>readChessMesh(glb.slice(0,-12)),/Invalid GLB/);
     const badChunks=glb.slice(0);

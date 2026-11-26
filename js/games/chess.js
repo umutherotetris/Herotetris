@@ -119,7 +119,7 @@ const PIECE_STYLE_KEY = 'hero_chess_piece_style';
 const PIECE_PACKS = new Map([
   ['ottoman3d', () => import('./chess-figure-atlas.js')],
   ['ottomanSculpt', () => import('./chess-ottoman.js')],
-  ['ottomanMesh', () => import('./chess-ottoman-mesh.js')]
+  ['ottomanMesh', () => import('./chess-ottoman-mesh.js?v=164')]
 ]);
 let SELECTED_PIECE_STYLE = 'classic';
 try{
