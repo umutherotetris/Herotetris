@@ -118,7 +118,8 @@ let G = null;   // aktif oyun durumu (DOM + state)
 const PIECE_STYLE_KEY = 'hero_chess_piece_style';
 const PIECE_PACKS = new Map([
   ['ottoman3d', () => import('./chess-figure-atlas.js')],
-  ['ottomanSculpt', () => import('./chess-ottoman.js')]
+  ['ottomanSculpt', () => import('./chess-ottoman.js')],
+  ['ottomanMesh', () => import('./chess-ottoman-mesh.js')]
 ]);
 let SELECTED_PIECE_STYLE = 'classic';
 try{
@@ -131,9 +132,11 @@ function prepareOttomanPieces(){
   if(!pack || loadedPiecePacks.has(style) || loadingPiecePacks.has(style)) return;
   loadingPiecePacks.add(style);
   pack().then(async module => {
-    if(!await module.loadOttomanPieces()) return;
-    loadedPiecePacks.set(style,module);
-    if(SELECTED_PIECE_STYLE === style && G?.ctx && G.root?.isConnected) draw();
+    const ready = () => {
+      loadedPiecePacks.set(style,module);
+      if(SELECTED_PIECE_STYLE === style && G?.ctx && G.root?.isConnected) draw();
+    };
+    if(await module.loadOttomanPieces(ready)) ready();
   }).catch(() => { /* The standard set remains available without the atlas. */ })
     .finally(() => { loadingPiecePacks.delete(style); });
 }
@@ -2309,7 +2312,8 @@ function showPromotion(color, cb){
 const CHESS_STUDIO_PIECES = {
   classic: {name:'Klasik', description:'Fildişi ve koyu metal, tanıdık silüetler.', icon:'♜'},
   ottoman3d: {name:'Osmanlı 3B', description:'Aynı figürler, fildişi ve koyu obsidyen. Atlı, fil, yeniçeri ve saray taşları.', icon:'♞'},
-  ottomanSculpt: {name:'Osmanlı Minyatür', description:'3B heykellerden işlenen yalın, hacimli figürler.', icon:'♟'}
+  ottomanSculpt: {name:'Osmanlı Minyatür', description:'3B heykellerden işlenen yalın, hacimli figürler.', icon:'♟'},
+  ottomanMesh: {name:'Osmanlı Renkli 3B', description:'Lacivert ve bordo taşlar gerçek 3B modellerden çizilir. 3B açılmazsa ilgili taş minyatüre döner.', icon:'♚'}
 };
 
 function refreshChessStudioLabels(root){

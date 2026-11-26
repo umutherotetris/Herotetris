@@ -1,6 +1,6 @@
-/* Hero Portal 162: scoped game and portal cache. */
+/* Hero Portal 163: scoped game and portal cache. */
 'use strict';
-const HERO_BUILD = '162';
+const HERO_BUILD = '163';
 const SCOPE = new URL(self.registration.scope);
 const HOME = new URL('index.html', SCOPE);
 const CACHE_PREFIX = 'hero-portal:' + SCOPE.pathname + ':';
@@ -16,11 +16,11 @@ const CORE_ASSETS = [
   'index.html', 'hero.webmanifest', 'assets/hero-portal.svg?v=140',
   'css/tokens.css?v=138', 'css/base.css?v=124', 'css/components.css?v=157',
   'css/tetris.css?v=157', 'css/portal-centers.css?v=157', 'css/themes.css?v=124', 'css/portal.css?v=144',
-  'js/portal-worker.js?v=162', 'js/portal.js?v=162', 'js/app.js?v=162', 'js/nav.js',
+  'js/portal-worker.js?v=163', 'js/portal.js?v=163', 'js/app.js?v=163', 'js/nav.js',
   'js/economy.js', 'js/store.js', 'js/wallet-center.js',
   'js/game-return.js', 'js/game-launcher.js', 'js/game-home.js', 'js/game-social.js',
   'js/games/chess.js', 'js/games/chess-engine.js', 'js/games/chess-board-art.js', 'js/games/chess-figure-atlas.js', 'css/chess-premium.css?v=162',
-  'js/games/chess-ottoman.js', 'assets/ottoman-figures-v162.webp', 'assets/chess-ottoman-3d-v162.webp',
+  'js/games/chess-ottoman.js', 'js/games/chess-ottoman-mesh.js', 'assets/ottoman-figures-v162.webp', 'assets/chess-ottoman-3d-v162.webp',
   'js/games/tavla.js', 'js/games/tavla-engine.js', 'css/tavla-premium.css?v=162',
   'js/portal-palette.js', 'js/profile.js', 'js/social.js',
   'css/hero-game-layout-v159.css', 'css/game-return-v159.css', 'css/game-social.css', 'css/hero-theme-v159.css', 'css/hero-home-motion-v161.css',
@@ -52,7 +52,7 @@ async function cacheHome(response){
   return true;
 }
 function wrongAssetType(request, response){
-  return /\.(?:m?js|css)(?:\?|$)/i.test(request.url) && /text\/html/i.test(response.headers.get('Content-Type') || '');
+  return /\.(?:m?js|css|glb)(?:\?|$)/i.test(request.url) && /text\/html/i.test(response.headers.get('Content-Type') || '');
 }
 async function cacheAsset(request, response){
   if(response && response.ok && !wrongAssetType(request, response)){
@@ -117,7 +117,7 @@ self.addEventListener('fetch', event => {
     if(isHome(url)) event.respondWith(navigationResponse(request));
     return; // Explicit nero.html/other apps are never replaced with the Hero home page.
   }
-  if(/\.(?:m?js|css|json|webmanifest|svg|png|jpe?g|webp|woff2?)$/i.test(url.pathname) && !url.pathname.endsWith('/sw.js')){
+  if(/\.(?:m?js|css|glb|json|webmanifest|svg|png|jpe?g|webp|woff2?)$/i.test(url.pathname) && !url.pathname.endsWith('/sw.js')){
     event.respondWith(assetResponse(request));
   }
 });
